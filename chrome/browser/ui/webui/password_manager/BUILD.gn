@@ -21,6 +21,7 @@ source_set("password_manager_ui_handler") {
   deps = [
     ":mojo_bindings",
     "//chrome/browser/extensions",
+    "//chrome/browser/sync",
     "//components/password_manager/core/browser",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",

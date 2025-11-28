@@ -8,12 +8,16 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager.mojom-forward.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager.mojom.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/actor_login_permission.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -56,13 +60,15 @@ void PasswordManagerUIHandler::RemoveBackupPassword(int id) {
 void PasswordManagerUIHandler::GetActorLoginPermissions(
     GetActorLoginPermissionsCallback callback) {
   std::vector<password_manager::mojom::ActorLoginPermissionPtr> result;
+  syncer::SyncService* sync_service = SyncServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   for (const auto& site :
-       GetSavedPasswordsPresenter()->GetActorLoginPermissions()) {
+       GetSavedPasswordsPresenter()->GetActorLoginPermissions(sync_service)) {
     auto url = password_manager::mojom::DomainInfo::New(
         site.domain_info.name, site.domain_info.url,
         site.domain_info.signon_realm);
     result.push_back(password_manager::mojom::ActorLoginPermission::New(
-        std::move(url), base::UTF16ToUTF8(site.username)));
+        std::move(url), site.favicon_url, base::UTF16ToUTF8(site.username)));
   }
   std::move(callback).Run(std::move(result));
 }

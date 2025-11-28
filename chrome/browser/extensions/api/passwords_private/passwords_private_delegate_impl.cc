@@ -318,37 +318,6 @@ webauthn::PasskeyModel* MaybeGetPasskeyModel(Profile* profile) {
   return PasskeyModelFactory::GetInstance()->GetForProfile(profile);
 }
 
-std::string GetGroupIconUrl(const password_manager::AffiliatedGroup& group,
-                            const syncer::SyncService* sync_service) {
-  if (!sync_service) {
-    return group.GetFallbackIconURL().spec();
-  }
-
-  if (sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
-    // Users with explicit passphrase should only use fallback icon.
-    return group.GetFallbackIconURL().spec();
-  }
-
-  // TODO(crbug.com/40066949): Remove this codepath once
-  // `IsSyncFeatureEnabled()` is fully deprecated.
-  if (password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
-          sync_service)) {
-    // Syncing users can use icon provided by the affiliation service.
-    return group.GetIconURL().spec();
-  }
-
-  for (const CredentialUIEntry& credential : group.GetCredentials()) {
-    if (credential.stored_in.contains(
-            password_manager::PasswordForm::Store::kAccountStore)) {
-      // If at least one credential is stored in the account, icon provided by
-      // the affiliation service can be used for the whole group.
-      return group.GetIconURL().spec();
-    }
-  }
-
-  return group.GetFallbackIconURL().spec();
-}
-
 }  // namespace
 
 namespace extensions {
@@ -445,7 +414,8 @@ PasswordsPrivateDelegateImpl::GetCredentialGroups() {
     api::passwords_private::CredentialGroup group_api;
     group_api.name = group.GetDisplayName();
     group_api.icon_url =
-        GetGroupIconUrl(group, SyncServiceFactory::GetForProfile(profile_));
+        group.GetAllowedIconUrl(SyncServiceFactory::GetForProfile(profile_))
+            .spec();
 
     CHECK(!group.GetCredentials().empty());
     for (const CredentialUIEntry& credential : group.GetCredentials()) {

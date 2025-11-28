@@ -186,8 +186,8 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // PasswordsProvider:
   std::vector<CredentialUIEntry> GetSavedCredentials() const override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  base::flat_set<ActorLoginPermission> GetActorLoginPermissions()
-      const override;
+  base::flat_set<ActorLoginPermission> GetActorLoginPermissions(
+      syncer::SyncService* sync_service) const override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // Returns a list of affiliated groups for the Password Manager.

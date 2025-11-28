@@ -34,6 +34,7 @@
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/password_undo_helper.h"
 #include "components/password_manager/core/browser/ui/passwords_grouper.h"
+#include "components/sync/service/sync_service.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "url/gurl.h"
@@ -442,7 +443,8 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetBlockedSites() {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 base::flat_set<ActorLoginPermission>
-SavedPasswordsPresenter::GetActorLoginPermissions() const {
+SavedPasswordsPresenter::GetActorLoginPermissions(
+    syncer::SyncService* sync_service) const {
   std::vector<ActorLoginPermission> permissions;
   std::vector<AffiliatedGroup> groups =
       passwords_grouper_->GetAffiliatedGroupsWithGroupingInfo();
@@ -464,7 +466,8 @@ SavedPasswordsPresenter::GetActorLoginPermissions() const {
           if (form_domain_info_it == affiliated_domains.end()) {
             continue;
           }
-          permissions.emplace_back(*form_domain_info_it, form.username_value);
+          permissions.emplace_back(*form_domain_info_it, form.username_value,
+                                   group.GetAllowedIconUrl(sync_service));
         }
       }
     }

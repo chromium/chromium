@@ -84,6 +84,7 @@ source_set("ui") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "affiliated_group_unittest.cc",
     "credential_ui_entry_unittest.cc",
     "credential_utils_unittest.cc",
     "password_undo_helper_unittest.cc",

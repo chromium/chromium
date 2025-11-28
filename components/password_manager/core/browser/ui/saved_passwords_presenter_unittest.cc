@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "base/scoped_observation.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -34,6 +35,7 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -98,6 +100,24 @@ CredentialUIEntry AsCredentialUIEntry(
 }
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+constexpr char kDefaultFallbackIconUrl[] = "https://t1.gstatic.com/faviconV2";
+constexpr char kFallbackIconQueryParams[] =
+    "client=PASSWORD_MANAGER&type=FAVICON&fallback_opts=TYPE,SIZE,URL,"
+    "TOP_DOMAIN&size=32&url=";
+constexpr char kDefaultAndroidIcon[] =
+    "https://www.gstatic.com/images/branding/product/1x/play_apps_32dp.png";
+
+GURL CreateFaviconUrl(GURL url) {
+  GURL::Replacements replacements;
+  std::string query = kFallbackIconQueryParams +
+                      base::EscapeQueryParamValue(url.spec(),
+                                                  /*use_plus=*/false);
+  replacements.SetQueryStr(query);
+  return GURL(kDefaultFallbackIconUrl).ReplaceComponents(replacements);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 class SavedPasswordsPresenterTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -120,6 +140,8 @@ class SavedPasswordsPresenterTest : public testing::Test {
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
   void AdvanceClock(base::TimeDelta time) { task_env_.AdvanceClock(time); }
 
+  syncer::TestSyncService* GetSyncService() { return &test_sync_service_; }
+
   constexpr bool IsGroupingEnabled() {
 #if BUILDFLAG(IS_ANDROID)
     return false;
@@ -134,6 +156,7 @@ class SavedPasswordsPresenterTest : public testing::Test {
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
   FakeAffiliationService affiliation_service_;
+  syncer::TestSyncService test_sync_service_;
 #if !BUILDFLAG(IS_ANDROID)
   webauthn::TestPasskeyModel test_passkey_store_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
@@ -1914,12 +1937,13 @@ TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_SingleSite) {
   store().AddLogins({form_1, form_2});
   RunUntilIdle();
 
-  EXPECT_THAT(presenter().GetActorLoginPermissions(),
+  EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
               UnorderedElementsAre(ActorLoginPermission{
                   .domain_info = {.name = "test1.com",
                                   .url = form_1.url,
                                   .signon_realm = form_1.signon_realm},
-                  .username = form_1.username_value}));
+                  .username = form_1.username_value,
+                  .favicon_url = CreateFaviconUrl(form_1.url)}));
 }
 
 TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_Deduplicates) {
@@ -1931,12 +1955,13 @@ TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_Deduplicates) {
   store().AddLogins({form_1, form_2});
   RunUntilIdle();
 
-  EXPECT_THAT(presenter().GetActorLoginPermissions(),
+  EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
               UnorderedElementsAre(ActorLoginPermission{
                   .domain_info = {.name = "test0.com",
                                   .url = form_1.url,
                                   .signon_realm = form_1.signon_realm},
-                  .username = form_1.username_value}));
+                  .username = form_1.username_value,
+                  .favicon_url = CreateFaviconUrl(form_1.url)}));
 }
 
 TEST_F(SavedPasswordsPresenterTest,
@@ -1955,19 +1980,21 @@ TEST_F(SavedPasswordsPresenterTest,
   RunUntilIdle();
 
   EXPECT_THAT(
-      presenter().GetActorLoginPermissions(),
+      presenter().GetActorLoginPermissions(GetSyncService()),
       UnorderedElementsAre(
           ActorLoginPermission{
               .domain_info = {.name = "test0.com",
                               .url = form_1.url,
                               .signon_realm = form_1.signon_realm},
-              .username = form_1.username_value},
+              .username = form_1.username_value,
+              .favicon_url = CreateFaviconUrl(form_1.url)},
           ActorLoginPermission{
               .domain_info = {.name = "App Name",
                               .url = GURL("https://play.google.com/store/apps/"
                                           "details?id=com.app.name"),
                               .signon_realm = form_2.signon_realm},
-              .username = form_2.username_value}));
+              .username = form_2.username_value,
+              .favicon_url = GURL(kDefaultAndroidIcon)}));
 }
 
 TEST_F(SavedPasswordsPresenterTest,
@@ -1984,18 +2011,20 @@ TEST_F(SavedPasswordsPresenterTest,
   store().AddLogins({form_1, form_2});
   RunUntilIdle();
 
-  EXPECT_THAT(presenter().GetActorLoginPermissions(),
+  EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
               UnorderedElementsAre(
                   ActorLoginPermission{
                       .domain_info = {.name = "test0.com",
                                       .url = form_1.url,
                                       .signon_realm = form_1.signon_realm},
-                      .username = form_1.username_value},
+                      .username = form_1.username_value,
+                      .favicon_url = CreateFaviconUrl(form_1.url)},
                   ActorLoginPermission{
                       .domain_info = {.name = "test1.com",
                                       .url = form_2.url,
                                       .signon_realm = form_2.signon_realm},
-                      .username = form_2.username_value}));
+                      .username = form_2.username_value,
+                      .favicon_url = CreateFaviconUrl(form_2.url)}));
 }
 
 TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission) {

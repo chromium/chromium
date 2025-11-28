@@ -9,6 +9,10 @@
 #include "components/password_manager/core/browser/ui/actor_login_permission.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace password_manager {
 
 // Interface for an object holding saved credentials and providing
@@ -28,8 +32,8 @@ class PasswordsProvider {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Returns the set of sites where Actor Login is allowed, deduped by a url +
   // username pair.
-  virtual base::flat_set<ActorLoginPermission> GetActorLoginPermissions()
-      const = 0;
+  virtual base::flat_set<ActorLoginPermission> GetActorLoginPermissions(
+      syncer::SyncService* sync_service) const = 0;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 };
 

@@ -12,6 +12,10 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace password_manager {
 
 // Struct that represents a collection of credential groups that are grouped
@@ -35,13 +39,19 @@ class AffiliatedGroup final {
   // Method that returns the display name for this affiliated group.
   const std::string& GetDisplayName() const { return branding_info_.name; }
 
-  // Method that returns the icon URL for this affiliated group.
-  const GURL& GetIconURL() const { return branding_info_.icon_url; }
-
   // Fallback icon when icon returned by the affiliation service can't be used.
   GURL GetFallbackIconURL() const;
 
+  // Choose between fallback and main icon based on if the user allowed syncing.
+  GURL GetAllowedIconUrl(const syncer::SyncService* sync_service) const;
+
+  friend bool operator==(const AffiliatedGroup& lhs,
+                         const AffiliatedGroup& rhs);
+
  private:
+  // Method that returns the icon URL for this affiliated group.
+  const GURL& GetIconURL() const { return branding_info_.icon_url; }
+
   // The branding information for the affiliated group. Corresponds to the
   // `BrandingInfo` message in affiliation_api.proto.
   affiliations::FacetBrandingInfo branding_info_;
@@ -49,8 +59,6 @@ class AffiliatedGroup final {
   // List of credential groups in the affiliated group.
   std::vector<CredentialUIEntry> credential_groups_;
 };
-
-bool operator==(const AffiliatedGroup& lhs, const AffiliatedGroup& rhs);
 
 }  // namespace password_manager
 

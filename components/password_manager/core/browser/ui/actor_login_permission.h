@@ -24,6 +24,9 @@ struct ActorLoginPermission {
   // considered to have the permission.
   std::u16string username;
 
+  // URL that allows downloading favicon.
+  GURL favicon_url;
+
   friend bool operator==(const ActorLoginPermission& lhs,
                          const ActorLoginPermission& rhs) = default;
 
