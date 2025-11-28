@@ -152,8 +152,7 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   void AddClient(mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,
                  GlobalRenderFrameHostId client_render_frame_host_id,
-                 const blink::MessagePortChannel& port,
-                 ukm::SourceId client_ukm_source_id);
+                 const blink::MessagePortChannel& port);
 
   void SetServiceWorkerHandle(
       std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle);

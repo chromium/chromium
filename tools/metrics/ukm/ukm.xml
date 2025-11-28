@@ -28373,29 +28373,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Worker.ClientAdded">
-  <owner>cfredric@google.com</owner>
-  <summary>
-    Recorded when a client connects to an existing SharedWorker or
-    ServiceWorker; records the source IDs of the client (which may be a document
-    or another worker), and the type of the worker being connected to. In the
-    case of a ServiceWorker, this is recorded for each worker-client pair that
-    could communicate (whether or not they actually do) and this is only
-    recorded once the client is execution ready. Note also that emission can be
-    caused by the creation of a new ServiceWorker or a new ServiceWorker client.
-  </summary>
-  <metric name="ClientSourceId">
-    <summary>
-      The UKM source ID of the connecting client, as an integer.
-    </summary>
-  </metric>
-  <metric name="WorkerType" enum="WorkerType">
-    <summary>
-      The type of the worker that was connected to.
-    </summary>
-  </metric>
-</event>
-
 <event name="XR.WebXR" singular="True">
   <owner>billorr@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>

@@ -125,7 +125,6 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     blink::mojom::SharedWorkerCreationContextType creation_context_type,
     const blink::MessagePortChannel& message_port,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    ukm::SourceId client_ukm_source_id,
     const std::optional<blink::StorageKey>& storage_key_override) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -217,7 +216,7 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     }
 
     host->AddClient(std::move(client), client_render_frame_host_id,
-                    message_port, client_ukm_source_id);
+                    message_port);
     return;
   }
 
@@ -242,8 +241,7 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
     return;
   }
-  host->AddClient(std::move(client), client_render_frame_host_id, message_port,
-                  client_ukm_source_id);
+  host->AddClient(std::move(client), client_render_frame_host_id, message_port);
 }
 
 SharedWorkerHost* SharedWorkerServiceImpl::GetSharedWorkerHostFromToken(

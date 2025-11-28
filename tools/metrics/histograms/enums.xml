@@ -27075,11 +27075,6 @@ This is true even if the type has been removed from the mojom file.
   <int value="2" label="NeverActive"/>
 </enum>
 
-<enum name="WorkerType">
-  <int value="0" label="SharedWorker"/>
-  <int value="1" label="ServiceWorker"/>
-</enum>
-
 <enum name="XRFeatureRequestStatus">
   <int value="0" label="NotRequested"/>
   <int value="1" label="Required"/>

@@ -49,8 +49,6 @@ namespace {
 
 using ::testing::ElementsAre;
 
-const ukm::SourceId kClientUkmSourceId = 1;
-
 void ConnectToSharedWorker(
     mojo::Remote<blink::mojom::SharedWorkerConnector> connector,
     const GURL& url,
@@ -76,7 +74,7 @@ void ConnectToSharedWorker(
 
   connector->Connect(std::move(info), std::move(client_proxy),
                      blink::mojom::SharedWorkerCreationContextType::kSecure,
-                     pipe.TakePort1(), mojo::NullRemote(), kClientUkmSourceId);
+                     pipe.TakePort1(), mojo::NullRemote());
 }
 
 }  // namespace

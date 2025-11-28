@@ -40,7 +40,6 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/service_worker_context.h"
-#include "content/public/browser/worker_type.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "net/base/isolation_info.h"
@@ -890,8 +889,7 @@ void SharedWorkerHost::ReportNoBinderForInterface(const std::string& error) {
 void SharedWorkerHost::AddClient(
     mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,
     GlobalRenderFrameHostId client_render_frame_host_id,
-    const blink::MessagePortChannel& port,
-    ukm::SourceId client_ukm_source_id) {
+    const blink::MessagePortChannel& port) {
   mojo::Remote<blink::mojom::SharedWorkerClient> remote_client(
       std::move(client));
 
@@ -940,14 +938,6 @@ void SharedWorkerHost::AddClient(
   // Observe when the client goes away.
   info.client.set_disconnect_handler(base::BindOnce(
       &SharedWorkerHost::OnClientConnectionLost, weak_factory_.GetWeakPtr()));
-
-  ukm::DelegatingUkmRecorder* ukm_recorder = ukm::DelegatingUkmRecorder::Get();
-  if (ukm_recorder) {
-    ukm::builders::Worker_ClientAdded(ukm_source_id_)
-        .SetClientSourceId(client_ukm_source_id)
-        .SetWorkerType(static_cast<int64_t>(WorkerType::kSharedWorker))
-        .Record(ukm_recorder);
-  }
 
   worker_->Connect(info.connection_request_id, port.ReleaseHandle());
 

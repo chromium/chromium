@@ -10,7 +10,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_connector.mojom.h"
@@ -51,8 +50,7 @@ class CONTENT_EXPORT SharedWorkerConnectorImpl
       mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,
       blink::mojom::SharedWorkerCreationContextType creation_context_type,
       blink::MessagePortDescriptor message_port,
-      mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
-      ukm::SourceId client_ukm_source_id) override;
+      mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token) override;
 
   // Used for permission checks, metrics, and events.
   const GlobalRenderFrameHostId client_render_frame_host_id_;

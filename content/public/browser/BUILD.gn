@@ -535,7 +535,6 @@ source_set("browser_sources") {
     "webui_config.h",
     "webui_config_map.cc",
     "webui_config_map.h",
-    "worker_type.h",
     "zoom_level_delegate.h",
   ]
   configs += [

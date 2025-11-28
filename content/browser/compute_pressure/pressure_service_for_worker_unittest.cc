@@ -27,7 +27,6 @@
 #include "services/device/public/cpp/test/scoped_pressure_manager_overrider.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/pressure_update.mojom.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -284,8 +283,7 @@ class PressureServiceForSharedWorkerTest
         std::vector<network::mojom::ContentSecurityPolicyPtr>(),
         base::MakeRefCounted<PolicyContainerHost>());
     AddClient(receiver_.InitWithNewPipeAndPassRemote(), rfh->GetGlobalId(),
-              blink::MessagePortChannel(port_pair_.TakePort0()),
-              kClientUkmSourceId);
+              blink::MessagePortChannel(port_pair_.TakePort0()));
     mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
         worker_host_->browser_interface_broker_receiver_for_testing();
     blink::mojom::BrowserInterfaceBroker* broker = bib.internal_state()->impl();
@@ -299,16 +297,14 @@ class PressureServiceForSharedWorkerTest
 
   void AddClient(mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,
                  GlobalRenderFrameHostId client_render_frame_host_id,
-                 const blink::MessagePortChannel& port,
-                 ukm::SourceId client_ukm_source_id) {
+                 const blink::MessagePortChannel& port) {
     worker_host_->AddClient(std::move(client), client_render_frame_host_id,
-                            port, client_ukm_source_id);
+                            port);
   }
 
  protected:
   const GURL kTestUrl{"https://example.com/compute_pressure.html"};
   const GURL kWorkerUrl{"https://example.com/w.js"};
-  const ukm::SourceId kClientUkmSourceId = 12345;
 
   mojo::Remote<blink::mojom::WebPressureManager> pressure_manager_;
   mojo::PendingReceiver<blink::mojom::SharedWorkerClient> receiver_;
@@ -389,8 +385,7 @@ TEST_F(PressureServiceForSharedWorkerTest,
   mojo::PendingReceiver<blink::mojom::SharedWorkerClient> receiver;
   blink::MessagePortDescriptorPair port_pair;
   AddClient(receiver.InitWithNewPipeAndPassRemote(), rfh->GetGlobalId(),
-            blink::MessagePortChannel(port_pair.TakePort0()),
-            kClientUkmSourceId);
+            blink::MessagePortChannel(port_pair.TakePort0()));
   EXPECT_EQ(worker_host_->pressure_service(), nullptr);
 }
 

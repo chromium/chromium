@@ -33,7 +33,6 @@
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
@@ -50,10 +49,6 @@
 using blink::MessagePortChannel;
 
 namespace content {
-
-namespace {
-const ukm::SourceId kClientUkmSourceId = 12345;
-}  // namespace
 
 class SharedWorkerHostTest : public testing::Test {
  public:
@@ -168,7 +163,7 @@ class SharedWorkerHostTest : public testing::Test {
     MessagePortChannel local_port(port_pair.TakePort0());
     MessagePortChannel remote_port(port_pair.TakePort1());
     host->AddClient(std::move(client), dummy_render_frame_host_id,
-                    std::move(remote_port), kClientUkmSourceId);
+                    std::move(remote_port));
     return local_port;
   }
 
