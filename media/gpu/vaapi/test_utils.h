@@ -59,7 +59,7 @@ DecodedImage ScopedVAImageToDecodedImage(const ScopedVAImage* scoped_va_image);
 std::unique_ptr<DecodedImage> NativePixmapToDecodedImage(
     gfx::NativePixmapHandle& handle,
     const gfx::Size& size,
-    const gfx::BufferFormat& format);
+    const viz::SharedImageFormat& format);
 #endif
 
 // Compares the result of sw decoding |reference_image| with |hw_decoded_image|

@@ -528,10 +528,10 @@ TEST_P(VaapiJpegDecoderWithDmaBufsTest, DecodeSucceeds) {
   EXPECT_EQ(VaapiImageDecodeStatus::kInvalidState, image_status);
 
   // Workaround: in order to import and map the pixmap using minigbm when the
-  // format is gfx::BufferFormat::YVU_420, we need to reorder the planes so that
-  // the offsets are in increasing order as assumed in https://bit.ly/2NLubNN.
-  // Otherwise, we get a validation error. In essence, we're making minigbm
-  // think that it is mapping a YVU_420, but it's actually mapping a YUV_420.
+  // format is kYV12, we need to reorder the planes so that the offsets are in
+  // increasing order as assumed in https://bit.ly/2NLubNN.  Otherwise, we get
+  // a validation error. In essence, we're making minigbm think that it is
+  // mapping a kYV12, but it's actually mapping a kNV12.
   //
   // TODO(andrescj): revisit this once crrev.com/c/1573718 lands.
   gfx::NativePixmapHandle handle = exported_pixmap->pixmap->ExportHandle();
@@ -546,10 +546,7 @@ TEST_P(VaapiJpegDecoderWithDmaBufsTest, DecodeSucceeds) {
 
   std::unique_ptr<vaapi_test_utils::DecodedImage> decoded_image =
       vaapi_test_utils::NativePixmapToDecodedImage(
-          handle, exported_pixmap->pixmap->GetBufferSize(),
-          si_format == viz::MultiPlaneFormat::kYV12
-              ? gfx::BufferFormat::YVU_420
-              : gfx::BufferFormat::YUV_420_BIPLANAR);
+          handle, exported_pixmap->pixmap->GetBufferSize(), si_format);
   ASSERT_TRUE(decoded_image);
 
   // Decode the image using libyuv. Using |temp_*| for resource management.
