@@ -140,6 +140,8 @@ void Client::SendRequest(int32_t request_id,
                          base::TimeDelta timeout) {
   DVLOG(1) << "SendRequest started.";
 
+  // Records the request size in bytes. The max value is 1M bytes.
+  base::UmaHistogramCounts1M("Legion.Client.RequestSize", request.size());
   auto wrapped_callback =
       base::BindOnce(&Client::OnRequestCompleted, weak_factory_.GetWeakPtr(),
                      std::move(callback), base::TimeTicks::Now());
@@ -278,6 +280,9 @@ void Client::OnRequestCompleted(
   const auto latency = base::TimeTicks::Now() - start_time;
 
   if (result.has_value()) {
+    // Records the response size in bytes. The max value is 1M bytes.
+    base::UmaHistogramCounts1M("Legion.Client.ResponseSize.Success",
+                                  result->size());
     base::UmaHistogramMediumTimes("Legion.Client.RequestLatency.Success",
                                   latency);
   } else if (result.error() == ErrorCode::kTimeout) {

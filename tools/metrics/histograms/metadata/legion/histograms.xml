@@ -52,6 +52,32 @@ reviewer.
   </token>
 </histogram>
 
+<histogram name="Legion.Client.RequestSize" units="bytes"
+    expires_after="2026-11-25">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the size of the request payload sent from the Legion Client.
+    Recorded for every request.
+  </summary>
+</histogram>
+
+<histogram name="Legion.Client.ResponseSize.Success" units="bytes"
+    expires_after="2026-11-25">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the size of the response payload received by the Legion Client for
+    successful requests. Recorded for every successful request.
+  </summary>
+</histogram>
+
 <histogram name="Legion.SecureChannel.GetAttestationRequestLatency.{Status}"
     units="ms" expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>
