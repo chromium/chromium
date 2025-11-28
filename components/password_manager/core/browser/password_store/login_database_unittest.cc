@@ -955,7 +955,7 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
 
   // Get everything from today's date and on.
   std::vector<PasswordForm> forms;
-  EXPECT_TRUE(db().GetLoginsCreatedBetween(now, base::Time(), &forms));
+  EXPECT_TRUE(db().GetLoginsCreatedBetween(now, base::Time::Max(), &forms));
   EXPECT_EQ(2U, forms.size());
   forms.clear();
 
@@ -966,7 +966,7 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
 
   // Delete everything from today's date and on.
   PasswordStoreChangeList changes;
-  db().RemoveLoginsCreatedBetween(now, base::Time(), &changes);
+  db().RemoveLoginsCreatedBetween(now, base::Time::Max(), &changes);
   ASSERT_EQ(2U, changes.size());
   // The 3rd and the 4th should have been deleted.
   EXPECT_EQ(3, changes[0].form().primary_key.value().value());
