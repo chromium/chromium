@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/byte_count.h"
@@ -18,8 +19,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -256,11 +255,10 @@ void PluginVmInstallerView::OnStateUpdated(InstallingState new_state) {
 }
 
 void PluginVmInstallerView::OnLinkClicked() {
-  NavigateParams params(profile_,
-                        GURL("https://support.google.com/chrome/a/?p=pluginvm"),
-                        ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
+      GURL("https://support.google.com/chrome/a/?p=pluginvm"),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void PluginVmInstallerView::OnProgressUpdated(double fraction_complete) {
