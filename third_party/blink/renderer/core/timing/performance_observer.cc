@@ -211,8 +211,8 @@ void PerformanceObserver::observe(ScriptState* script_state,
       PerformanceEntry::EntryType entry_type =
           PerformanceEntry::ToEntryTypeEnum(AtomicString(entry_type_string));
       if (!(supported_types & entry_type)) {
-        String message = "The entry type '" + entry_type_string +
-                         "' does not exist or isn't supported.";
+        String message = StrCat({"The entry type '", entry_type_string,
+                                 "' does not exist or isn't supported."});
         if (GetExecutionContext()) {
           GetExecutionContext()->AddConsoleMessage(
               MakeGarbageCollected<ConsoleMessage>(
@@ -262,8 +262,8 @@ void PerformanceObserver::observe(ScriptState* script_state,
     PerformanceEntryType entry_type =
         PerformanceEntry::ToEntryTypeEnum(entry_type_atomic_string);
     if (!(supported_types & entry_type)) {
-      String message = "The entry type '" + observer_init->type() +
-                       "' does not exist or isn't supported.";
+      String message = StrCat({"The entry type '", observer_init->type(),
+                               "' does not exist or isn't supported."});
       if (GetExecutionContext()) {
         GetExecutionContext()->AddConsoleMessage(
             MakeGarbageCollected<ConsoleMessage>(

@@ -335,7 +335,7 @@ String GetStringFromScriptHelper(
     // stripped. Thus we'll add the prefix here, but will return the string
     // without.
     if (do_javascript_url_check &&
-        !KURL("javascript:" + result->toString()).IsValid()) {
+        !KURL(StrCat({"javascript:", result->toString()})).IsValid()) {
       if (TrustedTypeFail(
               kNavigateToJavascriptURLAndDefaultPolicyCreatedInvalidURL,
               context, interface_name, property_name, exception_state,

@@ -150,7 +150,7 @@ double UserTiming::FindExistingMarkStartTime(const AtomicString& mark_name,
   if (!PerformanceTiming::IsAttributeName(mark_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "The mark '" + mark_name + "' does not exist.");
+        StrCat({"The mark '", mark_name, "' does not exist."}));
     return 0.0;
   }
 
@@ -159,10 +159,10 @@ double UserTiming::FindExistingMarkStartTime(const AtomicString& mark_name,
     // According to
     // https://w3c.github.io/user-timing/#convert-a-name-to-a-timestamp.
     exception_state.ThrowTypeError(
-        "When converting a mark name ('" + mark_name +
-        "') to a timestamp given a name that is a read only attribute in the "
-        "PerformanceTiming interface, the global object has to be a Window "
-        "object.");
+        StrCat({"When converting a mark name ('", mark_name,
+                "') to a timestamp given a name that is a read only attribute "
+                "in the PerformanceTiming interface, the global object has to "
+                "be a Window object."}));
     return 0.0;
   }
 
@@ -170,11 +170,11 @@ double UserTiming::FindExistingMarkStartTime(const AtomicString& mark_name,
   // (from above), we know calling |GetNamedAttribute| won't fail.
   double value = static_cast<double>(timing->GetNamedAttribute(mark_name));
   if (!value) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
-                                      "'" + mark_name +
-                                          "' is empty: either the event hasn't "
-                                          "happened yet, or it would provide "
-                                          "cross-origin timing information.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        StrCat({"'", mark_name,
+                "' is empty: either the event hasn't happened yet, or it would "
+                "provide cross-origin timing information."}));
     return 0.0;
   }
 
@@ -196,8 +196,8 @@ double UserTiming::GetTimeOrFindMarkTime(
     case V8UnionDoubleOrString::ContentType::kDouble: {
       const double time = mark_or_time->GetAsDouble();
       if (time < 0.0) {
-        exception_state.ThrowTypeError("'" + measure_name +
-                                       "' cannot have a negative time stamp.");
+        exception_state.ThrowTypeError(StrCat(
+            {"'", measure_name, "' cannot have a negative time stamp."}));
       }
       return time;
     }

@@ -289,8 +289,8 @@ TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
             kDisallowedDuplicateName;
     const String message =
         disallowed_because_of_duplicate_name
-            ? "Policy with name \"" + policy_name + "\" already exists."
-            : "Policy \"" + policy_name + "\" disallowed.";
+            ? StrCat({"Policy with name \"", policy_name, "\" already exists."})
+            : StrCat({"Policy \"", policy_name, "\" disallowed."});
     v8::Isolate* isolate = GetExecutionContext()->GetIsolate();
     TryRethrowScope rethrow_scope(isolate, exception_state);
     auto exception = V8ThrowException::CreateTypeError(isolate, message);

@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/number_parsing_options.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "url/url_constants.h"
 

@@ -54,8 +54,8 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
     if (mark_options->hasStartTime()) {
       start = mark_options->startTime();
       if (start < 0.0) {
-        exception_state.ThrowTypeError("'" + mark_name +
-                                       "' cannot have a negative start time.");
+        exception_state.ThrowTypeError(
+            StrCat({"'", mark_name, "' cannot have a negative start time."}));
         return nullptr;
       }
       // |start| is in milliseconds from the start of navigation.
@@ -80,9 +80,9 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
       PerformanceTiming::IsAttributeName(mark_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "'" + mark_name +
-            "' is part of the PerformanceTiming interface, and "
-            "cannot be used as a mark name.");
+        StrCat({"'", mark_name,
+                "' is part of the PerformanceTiming interface, and cannot be "
+                "used as a mark name."}));
     return nullptr;
   }
 

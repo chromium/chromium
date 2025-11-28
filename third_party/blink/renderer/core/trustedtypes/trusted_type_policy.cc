@@ -48,8 +48,9 @@ TrustedHTML* TrustedTypePolicy::createHTMLInternal(
   // can use this for both createHTML and default policy handling.
   if (!policy_options_->hasCreateHTML()) {
     exception_state.ThrowTypeError(
-        "Policy " + name_ +
-        "'s TrustedTypePolicyOptions did not specify a 'createHTML' member.");
+        StrCat({"Policy ", name_,
+                "'s TrustedTypePolicyOptions did not specify a 'createHTML' "
+                "member."}));
     return nullptr;
   }
   TryRethrowScope rethrow_scope(isolate, exception_state);
@@ -91,8 +92,9 @@ TrustedScript* TrustedTypePolicy::createScriptInternal(
   // can use this for both createScript and default policy handling.
   if (!policy_options_->hasCreateScript()) {
     exception_state.ThrowTypeError(
-        "Policy " + name_ +
-        "'s TrustedTypePolicyOptions did not specify a 'createScript' member.");
+        StrCat({"Policy ", name_,
+                "'s TrustedTypePolicyOptions did not "
+                "specify a 'createScript' member."}));
     return nullptr;
   }
   TryRethrowScope rethrow_scope(isolate, exception_state);
@@ -135,9 +137,10 @@ TrustedScriptURL* TrustedTypePolicy::createScriptURLInternal(
   // Except that we'll pass through null-ish Strings to the caller, so that we
   // can use this for both createScriptURL and default policy handling.
   if (!policy_options_->hasCreateScriptURL()) {
-    exception_state.ThrowTypeError("Policy " + name_ +
-                                   "'s TrustedTypePolicyOptions did not "
-                                   "specify a 'createScriptURL' member.");
+    exception_state.ThrowTypeError(
+        StrCat({"Policy ", name_,
+                "'s TrustedTypePolicyOptions did not specify a "
+                "'createScriptURL' member."}));
     return nullptr;
   }
   TryRethrowScope rethrow_scope(isolate, exception_state);
