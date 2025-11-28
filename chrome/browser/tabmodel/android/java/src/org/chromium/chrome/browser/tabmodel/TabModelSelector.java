@@ -83,10 +83,10 @@ public interface TabModelSelector {
     ObservableSupplier<Integer> getCurrentModelTabCountSupplier();
 
     /**
-     * Convenience function to get the {@link TabModel} for a {@link Tab} specified by
-     * {@code id}.
+     * Convenience function to get the {@link TabModel} for a {@link Tab} specified by {@code id}.
+     *
      * @param id The id of the {@link Tab} to find the {@link TabModel} for.
-     * @return   The {@link TabModel} that owns the {@link Tab} specified by {@code id}.
+     * @return The {@link TabModel} that owns the {@link Tab} specified by {@code id}.
      */
     @Nullable TabModel getModelForTabId(int id);
 

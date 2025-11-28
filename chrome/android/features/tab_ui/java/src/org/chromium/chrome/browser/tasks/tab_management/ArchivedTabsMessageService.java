@@ -222,8 +222,7 @@ public class ArchivedTabsMessageService
 
         if (mArchivedTabModelOrchestrator.isTabModelInitialized()) {
             mArchivedTabModelOrchestratorObserver.onTabModelCreated(
-                    mArchivedTabModelOrchestrator
-                            .getTabModelSelector()
+                    assumeNonNull(mArchivedTabModelOrchestrator.getTabModelSelector())
                             .getModel(/* incognito= */ false));
         } else {
             mArchivedTabModelOrchestrator.addObserver(mArchivedTabModelOrchestratorObserver);
