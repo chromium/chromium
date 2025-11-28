@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpBackgroundImageCoordinator;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -556,7 +557,8 @@ public class FeedSurfaceCoordinator
 
                         @Override
                         public void onBackgroundColorChanged(
-                                int backgroundColor,
+                                @Nullable NtpThemeColorInfo ntpThemeColorInfo,
+                                @ColorInt int backgroundColor,
                                 boolean fromInitialization,
                                 @NtpBackgroundImageType int oldType,
                                 @NtpBackgroundImageType int newType) {

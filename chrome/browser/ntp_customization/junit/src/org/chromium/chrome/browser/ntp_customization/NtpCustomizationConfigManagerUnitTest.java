@@ -171,7 +171,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         /* oldType= */ eq(NtpBackgroundImageType.DEFAULT),
                         /* newType= */ eq(NtpBackgroundImageType.IMAGE_FROM_DISK));
         verify(mListener, never())
-                .onBackgroundColorChanged(anyInt(), anyBoolean(), anyInt(), anyInt());
+                .onBackgroundColorChanged(any(), anyInt(), anyBoolean(), anyInt(), anyInt());
     }
 
     @Test
@@ -187,6 +187,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         // fromInitialization=true.
         verify(mListener)
                 .onBackgroundColorChanged(
+                        eq(null),
                         eq(defaultColor),
                         /* fromInitialization= */ eq(true),
                         /* oldType= */ eq(NtpBackgroundImageType.DEFAULT),
@@ -211,6 +212,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         // fromInitialization=true.
         verify(mListener)
                 .onBackgroundColorChanged(
+                        eq(colorFromHexInfo),
                         eq(backgroundColor),
                         /* fromInitialization= */ eq(true),
                         /* oldType= */ eq(NtpBackgroundImageType.DEFAULT),
@@ -252,7 +254,7 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         // Verifies the listener is removed.
         verify(mListener, never())
-                .onBackgroundColorChanged(anyInt(), anyBoolean(), anyInt(), anyInt());
+                .onBackgroundColorChanged(any(), anyInt(), anyBoolean(), anyInt(), anyInt());
     }
 
     @Test
@@ -323,6 +325,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertEquals(colorInfoId, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
         verify(mListener)
                 .onBackgroundColorChanged(
+                        eq(colorInfo),
                         eq(backgroundColor),
                         eq(false),
                         eq(NtpBackgroundImageType.DEFAULT),
@@ -341,6 +344,7 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         verify(mListener)
                 .onBackgroundColorChanged(
+                        eq(null),
                         eq(defaultColor),
                         eq(false),
                         eq(NtpBackgroundImageType.CHROME_COLOR),
@@ -371,6 +375,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
         verify(mListener)
                 .onBackgroundColorChanged(
+                        eq(colorFromHexInfo),
                         eq(backgroundColor),
                         eq(false),
                         eq(NtpBackgroundImageType.DEFAULT),
@@ -451,7 +456,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         /* oldType= */ eq(NtpBackgroundImageType.DEFAULT),
                         /* newType= */ eq(NtpBackgroundImageType.THEME_COLLECTION));
         verify(mListener, never())
-                .onBackgroundColorChanged(anyInt(), anyBoolean(), anyInt(), anyInt());
+                .onBackgroundColorChanged(any(), anyInt(), anyBoolean(), anyInt(), anyInt());
     }
 
     @Test

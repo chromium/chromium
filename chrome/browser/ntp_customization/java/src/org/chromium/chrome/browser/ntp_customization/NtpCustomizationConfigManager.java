@@ -71,6 +71,7 @@ public class NtpCustomizationConfigManager {
          * Called when the user chooses a customized homepage background color or resets to the
          * default Chrome's color.
          *
+         * @param ntpThemeColorInfo The NtpThemeColorInfo for color theme.
          * @param backgroundColor The new background color.
          * @param fromInitialization Whether the update of the background comes from the
          *     initialization of the {@link NtpCustomizationConfigManager}, i.e, loading the image
@@ -79,6 +80,7 @@ public class NtpCustomizationConfigManager {
          * @param newType The new background type of NTPs.
          */
         default void onBackgroundColorChanged(
+                @Nullable NtpThemeColorInfo ntpThemeColorInfo,
                 @ColorInt int backgroundColor,
                 boolean fromInitialization,
                 @NtpBackgroundImageType int oldType,
@@ -208,6 +210,7 @@ public class NtpCustomizationConfigManager {
                     NtpBackgroundImageType.COLOR_FROM_HEX,
                     NtpBackgroundImageType.DEFAULT ->
                     listener.onBackgroundColorChanged(
+                            mNtpThemeColorInfo,
                             getBackgroundColor(context),
                             /* fromInitialization= */ true,
                             NtpBackgroundImageType.DEFAULT,
@@ -370,7 +373,11 @@ public class NtpCustomizationConfigManager {
                 NtpThemeColorUtils.getBackgroundColorFromColorInfo(context, mNtpThemeColorInfo);
         for (HomepageStateListener listener : mHomepageStateListeners) {
             listener.onBackgroundColorChanged(
-                    backgroundColor, fromInitialization, oldType, mBackgroundImageType);
+                    mNtpThemeColorInfo,
+                    backgroundColor,
+                    fromInitialization,
+                    oldType,
+                    mBackgroundImageType);
         }
     }
 
