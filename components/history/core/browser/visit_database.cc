@@ -217,26 +217,30 @@ bool VisitDatabase::InitVisitTable() {
   // should be created and dropped at the same time.
   if (!GetDB().DoesTableExist("visit_source")) {
     if (!GetDB().Execute("CREATE TABLE visit_source("
-                         "id INTEGER PRIMARY KEY,source INTEGER NOT NULL)"))
+                         "id INTEGER PRIMARY KEY,source INTEGER NOT NULL)")) {
       return false;
+    }
   }
 
   // Index over url so we can quickly find visits for a page.
   if (!GetDB().Execute(
-          "CREATE INDEX IF NOT EXISTS visits_url_index ON visits (url)"))
+          "CREATE INDEX IF NOT EXISTS visits_url_index ON visits (url)")) {
     return false;
+  }
 
   // Create an index over from visits so that we can efficiently find
   // referrers and redirects.
   if (!GetDB().Execute("CREATE INDEX IF NOT EXISTS visits_from_index ON "
-                       "visits (from_visit)"))
+                       "visits (from_visit)")) {
     return false;
+  }
 
   // Create an index over time so that we can efficiently find the visits in a
   // given time range (most history views are time-based).
   if (!GetDB().Execute("CREATE INDEX IF NOT EXISTS visits_time_index ON "
-                       "visits (visit_time)"))
+                       "visits (visit_time)")) {
     return false;
+  }
 
   // Create an index over originator visit IDs so that Sync can efficiently
   // re-map them into local IDs.
@@ -246,8 +250,9 @@ bool VisitDatabase::InitVisitTable() {
   if (GetDB().DoesColumnExist("visits", "originator_visit_id")) {
     if (!GetDB().Execute(
             "CREATE INDEX IF NOT EXISTS visits_originator_id_index ON visits "
-            "(originator_visit_id)"))
+            "(originator_visit_id)")) {
       return false;
+    }
   }
 
   return true;
@@ -291,8 +296,9 @@ void VisitDatabase::FillVisitRow(sql::Statement& statement, VisitRow* visit) {
 // static
 bool VisitDatabase::FillVisitVector(sql::Statement& statement,
                                     VisitVector* visits) {
-  if (!statement.is_valid())
+  if (!statement.is_valid()) {
     return false;
+  }
 
   while (statement.Step()) {
     VisitRow visit;
@@ -319,8 +325,9 @@ bool VisitDatabase::FillVisitVectorWithOptions(sql::Statement& statement,
     FillVisitRow(statement, &visit);
 
     // Skip transitions that aren't user-visible.
-    if (!TransitionIsVisible(visit.transition))
+    if (!TransitionIsVisible(visit.transition)) {
       continue;
+    }
 
     if (options.duplicate_policy != QueryOptions::KEEP_ALL_DUPLICATES) {
       if (options.duplicate_policy == QueryOptions::REMOVE_DUPLICATES_PER_DAY &&
@@ -360,8 +367,9 @@ bool VisitDatabase::FillVisitVectorWithOptions(sql::Statement& statement,
       found_urls[key] = visit;
     }
 
-    if (static_cast<int>(visits->size()) >= options.EffectiveMaxCount())
+    if (static_cast<int>(visits->size()) >= options.EffectiveMaxCount()) {
       return true;
+    }
     visits->push_back(visit);
   }
   return false;
@@ -429,15 +437,17 @@ void VisitDatabase::DeleteVisit(const VisitRow& visit) {
       SQL_FROM_HERE, "UPDATE visits SET from_visit=? WHERE from_visit=?"));
   update_chain.BindInt64(0, visit.referring_visit);
   update_chain.BindInt64(1, visit.visit_id);
-  if (!update_chain.Run())
+  if (!update_chain.Run()) {
     return;
+  }
 
   // Now delete the actual visit.
   sql::Statement del(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM visits WHERE id=?"));
   del.BindInt64(0, visit.visit_id);
-  if (!del.Run())
+  if (!del.Run()) {
     return;
+  }
 
   // Try to delete the entry in visit_source table as well.
   // If the visit was browsed, there is no corresponding entry in visit_source
@@ -454,15 +464,17 @@ bool VisitDatabase::GetRowForVisit(VisitID visit_id, VisitRow* out_visit) {
       "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits WHERE id=?"));
   statement.BindInt64(0, visit_id);
 
-  if (!statement.Step())
+  if (!statement.Step()) {
     return false;
+  }
 
   FillVisitRow(statement, out_visit);
 
   // We got a different visit than we asked for, something is wrong.
   DCHECK_EQ(visit_id, out_visit->visit_id);
-  if (visit_id != out_visit->visit_id)
+  if (visit_id != out_visit->visit_id) {
     return false;
+  }
 
   return true;
 }
@@ -478,15 +490,17 @@ bool VisitDatabase::GetLastRowForVisitByVisitTime(base::Time visit_time,
       "FROM visits WHERE visit_time=? ORDER BY id DESC LIMIT 1"));
   statement.BindTime(0, visit_time);
 
-  if (!statement.Step())
+  if (!statement.Step()) {
     return false;
+  }
 
   FillVisitRow(statement, out_visit);
 
   // We got a different visit than we asked for, something is wrong.
   DCHECK_EQ(visit_time, out_visit->visit_time);
-  if (visit_time != out_visit->visit_time)
+  if (visit_time != out_visit->visit_time) {
     return false;
+  }
 
   return true;
 }
@@ -502,8 +516,9 @@ bool VisitDatabase::GetRowForForeignVisit(
   statement.BindString(0, originator_cache_guid);
   statement.BindInt64(1, originator_visit_id);
 
-  if (!statement.Step())
+  if (!statement.Step()) {
     return false;
+  }
 
   FillVisitRow(statement, out_visit);
   return true;
@@ -512,8 +527,9 @@ bool VisitDatabase::GetRowForForeignVisit(
 bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
   // Don't store inconsistent data to the database.
   DCHECK_NE(visit.visit_id, visit.referring_visit);
-  if (visit.visit_id == visit.referring_visit)
+  if (visit.visit_id == visit.referring_visit) {
     return false;
+  }
 
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
@@ -676,8 +692,9 @@ bool VisitDatabase::GetVisitsForTimes(const std::vector<base::Time>& times,
 
     statement.BindTime(0, time);
 
-    if (!FillVisitVector(statement, visits))
+    if (!FillVisitVector(statement, visits)) {
       return false;
+    }
   }
   return true;
 }
@@ -891,8 +908,9 @@ VisitID VisitDatabase::GetMostRecentVisitForURL(
   }
 
   statement.BindInt64(0, url_id);
-  if (!statement.Step())
+  if (!statement.Step()) {
     return 0;  // No visits for this URL.
+  }
 
   if (visit_row) {
     FillVisitRow(statement, visit_row);
@@ -968,12 +986,15 @@ bool VisitDatabase::GetRedirectFromVisit(
   statement.BindInt64(0, from_visit);
   statement.BindInt64(1, ui::PAGE_TRANSITION_IS_REDIRECT_MASK);
 
-  if (!statement.Step())
+  if (!statement.Step()) {
     return false;  // No redirect from this visit. (Or SQL error)
-  if (to_visit)
+  }
+  if (to_visit) {
     *to_visit = statement.ColumnInt64(0);
-  if (to_url)
+  }
+  if (to_url) {
     *to_url = GURL(statement.ColumnStringView(1));
+  }
   return true;
 }
 
@@ -981,11 +1002,13 @@ bool VisitDatabase::GetRedirectToVisit(VisitID to_visit,
                                        VisitID* from_visit,
                                        GURL* from_url) {
   VisitRow row;
-  if (!GetRowForVisit(to_visit, &row))
+  if (!GetRowForVisit(to_visit, &row)) {
     return false;
+  }
 
-  if (from_visit)
+  if (from_visit) {
     *from_visit = row.referring_visit;
+  }
 
   if (from_url) {
     sql::Statement statement(GetDB().GetCachedStatement(
@@ -997,8 +1020,9 @@ bool VisitDatabase::GetRedirectToVisit(VisitID to_visit,
     statement.BindInt64(1, (ui::PAGE_TRANSITION_IS_REDIRECT_MASK |
                             ui::PAGE_TRANSITION_CHAIN_START));
 
-    if (!statement.Step())
+    if (!statement.Step()) {
       return false;
+    }
 
     *from_url = GURL(statement.ColumnStringView(0));
   }
@@ -1008,8 +1032,9 @@ bool VisitDatabase::GetRedirectToVisit(VisitID to_visit,
 bool VisitDatabase::GetVisibleVisitCountToHost(const GURL& url,
                                                int* count,
                                                base::Time* first_visit) {
-  if (!url.SchemeIs(url::kHttpScheme) && !url.SchemeIs(url::kHttpsScheme))
+  if (!url.SchemeIs(url::kHttpScheme) && !url.SchemeIs(url::kHttpsScheme)) {
     return false;
+  }
 
   // We need to search for URLs with a matching host/port. One way to query for
   // this is to use the LIKE operator, eg 'url LIKE http://google.com/%'. This
@@ -1019,8 +1044,9 @@ bool VisitDatabase::GetVisibleVisitCountToHost(const GURL& url,
   // 'url >= http://google.com/' and url < http://google.com0'.
   // 0 is used as it is one character greater than '/'.
   const std::string host_query_min = url.DeprecatedGetOriginAsURL().spec();
-  if (host_query_min.empty())
+  if (host_query_min.empty()) {
     return false;
+  }
 
   // We also want to restrict ourselves to main frame navigations that are not
   // in the middle of redirect chains, hence the transition checks.
@@ -1039,18 +1065,21 @@ bool VisitDatabase::GetVisibleVisitCountToHost(const GURL& url,
   int visit_count = 0;
   base::Time min_visit_time = base::Time::Max();
   while (statement.Step()) {
-    if (!TransitionIsVisible(statement.ColumnInt(1)))
+    if (!TransitionIsVisible(statement.ColumnInt(1))) {
       continue;
+    }
     ++visit_count;
     min_visit_time = std::min(statement.ColumnTime(0), min_visit_time);
   }
 
-  if (!statement.Succeeded())
+  if (!statement.Succeeded()) {
     return false;
+  }
 
   *count = visit_count;
-  if (visit_count > 0)
+  if (visit_count > 0) {
     *first_visit = min_visit_time;
+  }
 
   return true;
 }
