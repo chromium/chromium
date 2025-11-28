@@ -77,3 +77,5 @@ void BackgroundTaskUpdateScheduler::OnStartTaskDelayed() {
 }
 
 }  // namespace component_updater
+
+DEFINE_JNI(UpdateScheduler)

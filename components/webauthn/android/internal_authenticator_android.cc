@@ -236,3 +236,5 @@ JavaRef<jobject>& InternalAuthenticatorAndroid::GetJavaObject() {
 }
 
 }  // namespace webauthn
+
+DEFINE_JNI(InternalAuthenticator)

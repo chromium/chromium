@@ -186,3 +186,5 @@ ScopedJavaLocalRef<jobject> ToJniType<PrefService>(JNIEnv* env,
   return pref_service->GetJavaObject();
 }
 }  // namespace jni_zero
+
+DEFINE_JNI(PrefService)

@@ -76,3 +76,5 @@ static jlong JNI_CSPCheckerBridge_CreateNativeCSPChecker(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(CSPCheckerBridge)

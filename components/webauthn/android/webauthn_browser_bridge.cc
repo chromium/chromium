@@ -286,3 +286,5 @@ void WebauthnBrowserBridge::Destroy(JNIEnv* env) {
 }
 
 }  // namespace webauthn
+
+DEFINE_JNI(WebauthnBrowserBridge)

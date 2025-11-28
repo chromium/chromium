@@ -316,3 +316,5 @@ void ExternalBeginFrameSourceAndroid::SetEnabled(bool enabled) {
 }
 
 }  // namespace viz
+
+DEFINE_JNI(ExternalBeginFrameSourceAndroid)

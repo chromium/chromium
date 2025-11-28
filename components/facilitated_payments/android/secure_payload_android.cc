@@ -37,3 +37,6 @@ ScopedJavaLocalRef<jobject> ConvertSecurePayloadToJavaObject(
 }
 
 }  // namespace payments::facilitated
+
+DEFINE_JNI(SecureData)
+DEFINE_JNI(SecurePayload)

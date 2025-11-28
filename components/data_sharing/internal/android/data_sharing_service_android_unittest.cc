@@ -283,3 +283,5 @@ TEST_F(DataSharingServiceAndroidTest, GroupChangeObservation) {
 }
 
 }  // namespace data_sharing
+
+DEFINE_JNI(TestServiceObserver)

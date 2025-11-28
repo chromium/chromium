@@ -254,3 +254,5 @@ void AutocompleteMatch::UpdateJavaDescription() {
         ToJavaIntArray(env, description_class_styles));
   }
 }
+
+DEFINE_JNI(AutocompleteMatch)

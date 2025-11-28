@@ -201,3 +201,5 @@ void WebappsIconUtils::SetIconSizesForTesting(std::vector<int> sizes) {
 }
 
 }  // namespace webapps
+
+DEFINE_JNI(WebappsIconUtils)

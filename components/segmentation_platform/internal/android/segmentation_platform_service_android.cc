@@ -170,3 +170,5 @@ SegmentationPlatformServiceAndroid::GetJavaObject() {
 }
 
 }  // namespace segmentation_platform
+
+DEFINE_JNI(SegmentationPlatformServiceImpl)

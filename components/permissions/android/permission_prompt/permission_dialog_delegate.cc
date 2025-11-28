@@ -311,3 +311,6 @@ jint PermissionDialogDelegate::GetInitialGeolocationAccuracySelection(
 }
 
 }  // namespace permissions
+
+DEFINE_JNI(PermissionDialogController)
+DEFINE_JNI(PermissionDialogDelegate)

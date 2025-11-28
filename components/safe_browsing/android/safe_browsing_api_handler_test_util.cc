@@ -149,3 +149,5 @@ void WithMockSafeBrowsingApiHandler::RunHashRealTimeUrlCheck(
 }
 
 }  // namespace safe_browsing::test
+
+DEFINE_JNI(SafeBrowsingApiHandlerBridgeNativeUnitTestHelper)

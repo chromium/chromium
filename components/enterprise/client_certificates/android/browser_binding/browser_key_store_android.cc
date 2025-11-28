@@ -69,3 +69,5 @@ void BrowserKeyStoreAndroid::DeleteBrowserKey(
 BrowserKeyStoreAndroid::~BrowserKeyStoreAndroid() = default;
 
 }  // namespace client_certificates
+
+DEFINE_JNI(BrowserKeyStore)

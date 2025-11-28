@@ -33,3 +33,5 @@ static jlong JNI_AccessibilityFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace browser_ui
+
+DEFINE_JNI(AccessibilityFeatureMap)

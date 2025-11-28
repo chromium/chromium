@@ -33,3 +33,5 @@ ToJniType<tabs::TabStripCollection>(JNIEnv* env,
 }  // namespace jni_zero
 
 #endif  // COMPONENTS_TABS_PUBLIC_ANDROID_JNI_CONVERSION_H_
+
+DEFINE_JNI(TabStripCollection)

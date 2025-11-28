@@ -161,3 +161,5 @@ void LargeIconBridge::OnGoogleFaviconServerResponse(
 }
 
 }  // namespace favicon
+
+DEFINE_JNI(LargeIconBridge)

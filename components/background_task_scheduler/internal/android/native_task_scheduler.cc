@@ -28,3 +28,5 @@ void NativeTaskScheduler::Cancel(int task_id) {
 }
 
 }  // namespace background_task
+
+DEFINE_JNI(NativeTaskScheduler)

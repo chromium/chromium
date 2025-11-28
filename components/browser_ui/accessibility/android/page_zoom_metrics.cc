@@ -49,3 +49,5 @@ void PageZoomMetrics::LogZoomLevelUKMHelper(ukm::SourceId ukm_source_id,
 }
 
 }  // namespace browser_ui
+
+DEFINE_JNI(PageZoomMetrics)

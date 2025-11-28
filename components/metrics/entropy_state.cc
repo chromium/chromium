@@ -249,3 +249,7 @@ bool EntropyState::IsValidLimitedEntropyRandomizationSource(
 }
 
 }  // namespace metrics
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(LowEntropySource)
+#endif

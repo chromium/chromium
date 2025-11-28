@@ -71,3 +71,5 @@ scoped_refptr<BrowserBoundKeyStore> GetBrowserBoundKeyStoreInstance(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(BrowserBoundKeyStore)

@@ -75,3 +75,5 @@ static void JNI_CrashKeys_Set(
     }
   }
 }
+
+DEFINE_JNI(CrashKeys)

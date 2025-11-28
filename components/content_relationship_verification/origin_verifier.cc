@@ -110,3 +110,5 @@ static jlong JNI_OriginVerifier_Init(
     const base::android::JavaParamRef<jobject>& jbrowser_context_handle) {
   return OriginVerifier::Init(env, obj, jbrowser_context_handle);
 }
+
+DEFINE_JNI(OriginVerifier)

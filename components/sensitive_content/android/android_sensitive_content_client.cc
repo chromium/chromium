@@ -72,3 +72,5 @@ JNI_SensitiveContentClient_GetJavaSensitiveContentClientFromWebContents(
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AndroidSensitiveContentClient);
 
 }  // namespace sensitive_content
+
+DEFINE_JNI(SensitiveContentClient)

@@ -2487,3 +2487,7 @@ void SyncServiceImpl::AcknowledgeBookmarksLimitExceededError() {
 }
 
 }  // namespace syncer
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(ExplicitPassphrasePlatformClient)
+#endif

@@ -347,3 +347,5 @@ void ImageFetcherBridge::OnImageFetched(
 }
 
 }  // namespace image_fetcher
+
+DEFINE_JNI(ImageFetcherBridge)

@@ -170,3 +170,7 @@ FillingProduct GetFillingProductFromFieldTypeGroup(
 }
 
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(FillingProductBridge)
+#endif

@@ -39,3 +39,5 @@ BASE_FEATURE(kProbeStylusWritingInBackground,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace stylus_handwriting::android
+
+DEFINE_JNI(StylusHandwritingFeatureMap)

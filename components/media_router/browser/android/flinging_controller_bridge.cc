@@ -152,3 +152,6 @@ base::TimeDelta FlingingControllerBridge::GetApproximateCurrentTime() {
 }
 
 }  // namespace media_router
+
+DEFINE_JNI(FlingingControllerBridge)
+DEFINE_JNI(MediaStatusBridge)

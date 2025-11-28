@@ -75,3 +75,5 @@ void TestChildFrameNavigationObserver::DidStartNavigation(
 }
 
 }  // namespace external_intents
+
+DEFINE_JNI(TestChildFrameNavigationObserver)

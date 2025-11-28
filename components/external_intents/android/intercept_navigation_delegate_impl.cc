@@ -50,3 +50,5 @@ static void JNI_InterceptNavigationDelegateImpl_OnSubframeAsyncActionTaken(
 }
 
 }  // namespace external_intents
+
+DEFINE_JNI(InterceptNavigationDelegateImpl)

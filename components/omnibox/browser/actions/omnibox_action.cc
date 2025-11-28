@@ -153,3 +153,7 @@ void OmniboxAction::OpenURL(OmniboxAction::ExecutionContext& context,
            /*destination_url_entered_with_http_scheme=*/false, u"",
            AutocompleteMatch(), AutocompleteMatch());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(OmniboxAction)
+#endif

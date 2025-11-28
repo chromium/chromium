@@ -174,3 +174,5 @@ static int JNI_QuicTestServer_NumSessions(JNIEnv* env) {
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(QuicTestServer)

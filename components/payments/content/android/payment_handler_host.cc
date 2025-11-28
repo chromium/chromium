@@ -72,3 +72,5 @@ void PaymentHandlerHost::OnPaymentDetailsNotUpdated(JNIEnv* env) {
 
 }  // namespace android
 }  // namespace payments
+
+DEFINE_JNI(PaymentHandlerHost)

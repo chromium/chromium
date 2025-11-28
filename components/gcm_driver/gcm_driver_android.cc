@@ -269,3 +269,5 @@ void GCMDriverAndroid::RecordDecryptionFailure(const std::string& app_id,
 }
 
 }  // namespace gcm
+
+DEFINE_JNI(GCMDriver)

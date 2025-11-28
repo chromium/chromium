@@ -16,3 +16,5 @@ void ThrowUncaughtException() {
 }
 
 }  // namespace viz
+
+DEFINE_JNI(ThrowUncaughtException)

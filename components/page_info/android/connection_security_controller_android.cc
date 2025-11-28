@@ -133,3 +133,5 @@ void ConnectionSecurityControllerAndroid::SetIdentityInfo(
 void ConnectionSecurityControllerAndroid::ResetCertDecisions(JNIEnv* env) {
   presenter_->OnRevokeSSLErrorBypassButtonPressed();
 }
+
+DEFINE_JNI(PageInfoConnectionSecurityController)

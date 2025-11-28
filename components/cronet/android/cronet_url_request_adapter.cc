@@ -336,3 +336,5 @@ void CronetURLRequestAdapter::OnMetricsCollected(
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(CronetUrlRequest)

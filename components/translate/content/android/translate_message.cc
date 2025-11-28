@@ -698,3 +698,5 @@ TranslateMessage::ConstructLanguagePickerMenu(
 }
 
 }  // namespace translate
+
+DEFINE_JNI(TranslateMessage)

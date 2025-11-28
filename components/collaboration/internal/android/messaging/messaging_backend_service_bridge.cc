@@ -256,3 +256,5 @@ void MessagingBackendServiceBridge::HideInstantaneousMessage(
 }
 
 }  // namespace collaboration::messaging::android
+
+DEFINE_JNI(MessagingBackendServiceBridge)

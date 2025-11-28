@@ -11,3 +11,5 @@ void UninstallPureJavaExceptionHandler() {
   Java_PureJavaExceptionHandler_uninstallHandler(
       jni_zero::AttachCurrentThread());
 }
+
+DEFINE_JNI(PureJavaExceptionHandler)

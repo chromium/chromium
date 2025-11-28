@@ -60,3 +60,5 @@ static jlong JNI_PermissionsAndroidFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace permissions
+
+DEFINE_JNI(PermissionsAndroidFeatureMap)

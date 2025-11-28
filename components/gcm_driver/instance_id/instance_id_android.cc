@@ -221,3 +221,5 @@ void InstanceIDAndroid::DidDeleteID(JNIEnv* env,
 }
 
 }  // namespace instance_id
+
+DEFINE_JNI(InstanceIDBridge)

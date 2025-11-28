@@ -37,3 +37,5 @@ static jlong JNI_PhotoPickerFeatures_GetFeature(JNIEnv* env, jint ordinal) {
 
 }  // namespace features
 }  // namespace photo_picker
+
+DEFINE_JNI(PhotoPickerFeatures)

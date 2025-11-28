@@ -90,3 +90,5 @@ static jint JNI_SecurityStateModel_GetSecurityLevelForWebContents(
   return security_state::internal::GetSecurityLevelForWebContentsInternal(
       web_contents, security_state::internal::GetSecurityStateModelDelegate());
 }
+
+DEFINE_JNI(SecurityStateModel)

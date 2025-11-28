@@ -72,3 +72,5 @@ BASE_FEATURE(kUpdatePaymentDetailsIntentFilterInPaymentApp,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace payments::android
+
+DEFINE_JNI(PaymentFeatureMap)

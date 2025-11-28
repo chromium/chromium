@@ -54,3 +54,5 @@ ByteArrayCallbackListener::ByteArrayCallbackListener(
 ByteArrayCallbackListener::~ByteArrayCallbackListener() = default;
 
 }  // namespace ip_protection::android
+
+DEFINE_JNI(ByteArrayCallbackListener)

@@ -90,3 +90,5 @@ void AndroidSmsOtpFetchReceiverBridge::OnOtpValueRetrievalErrorInternal(
 }
 
 }  // namespace one_time_tokens
+
+DEFINE_JNI(AndroidSmsOtpFetchReceiverBridge)

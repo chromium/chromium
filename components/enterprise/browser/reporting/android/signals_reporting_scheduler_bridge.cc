@@ -65,3 +65,5 @@ void SignalsReportingSchedulerBridge::StartReporting() {
 }
 
 }  // namespace enterprise_reporting
+
+DEFINE_JNI(SignalsReportingSchedulerBridge)

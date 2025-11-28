@@ -163,3 +163,5 @@ JNI_JavascriptAppModalDialog_GetCurrentModalDialog(JNIEnv* env) {
 }
 
 }  // namespace javascript_dialogs
+
+DEFINE_JNI(JavascriptAppModalDialog)

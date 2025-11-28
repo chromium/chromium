@@ -72,3 +72,5 @@ void LocationSettingsImpl::PromptToEnableSystemLocationSetting(
               },
               std::move(callback))));
 }
+
+DEFINE_JNI(LocationSettings)

@@ -529,3 +529,5 @@ TemplateUrlServiceAndroid::GetImageUrlAndPostContent(JNIEnv* env) {
   output.push_back(post_content.first);
   return base::android::ToJavaArrayOfStrings(env, output);
 }
+
+DEFINE_JNI(TemplateUrlService)

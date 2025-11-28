@@ -387,3 +387,5 @@ static void JNI_InterceptNavigationDelegate_OnShouldIgnoreNavigationResult(
 }
 
 }  // namespace navigation_interception
+
+DEFINE_JNI(InterceptNavigationDelegate)

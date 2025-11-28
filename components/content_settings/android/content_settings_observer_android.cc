@@ -57,3 +57,5 @@ static jlong JNI_ContentSettingsObserver_Init(
 }
 
 }  // namespace content_settings
+
+DEFINE_JNI(ContentSettingsObserver)

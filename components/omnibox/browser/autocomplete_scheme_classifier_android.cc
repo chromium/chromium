@@ -18,3 +18,5 @@ AutocompleteSchemeClassifier* AutocompleteSchemeClassifierAndroid::FromJavaObj(
           base::android::AttachCurrentThread(),
           jautocomplete_scheme_classifier));
 }
+
+DEFINE_JNI(AutocompleteSchemeClassifier)

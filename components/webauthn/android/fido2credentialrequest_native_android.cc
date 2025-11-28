@@ -105,3 +105,5 @@ JNI_Fido2CredentialRequest_ReportOptionsToJson(
 }
 
 }  // namespace webauthn
+
+DEFINE_JNI(Fido2CredentialRequest)

@@ -148,3 +148,5 @@ bool InputStream::Read(net::IOBuffer* dest, int length, int* bytes_read) {
 }
 
 }  // namespace embedder_support
+
+DEFINE_JNI(InputStreamUtil)

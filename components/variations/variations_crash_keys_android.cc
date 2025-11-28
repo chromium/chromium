@@ -60,3 +60,5 @@ void SaveVariationsForAnrReporting(
 }
 
 }  // namespace variations
+
+DEFINE_JNI(AnrCollector)

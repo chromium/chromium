@@ -129,3 +129,5 @@ static jlong JNI_DistilledPagePrefs_InitObserverAndroid(
 }  // namespace android
 
 }  // namespace dom_distiller
+
+DEFINE_JNI(DistilledPagePrefs)

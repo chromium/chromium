@@ -209,3 +209,5 @@ ScopedJavaLocalRef<jobject> ActivityLogItemsToJava(
 }
 
 }  // namespace collaboration::messaging::android
+
+DEFINE_JNI(ConversionUtils)

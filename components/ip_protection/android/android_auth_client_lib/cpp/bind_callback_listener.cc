@@ -42,3 +42,5 @@ BindCallbackListener::BindCallbackListener(
 BindCallbackListener::~BindCallbackListener() = default;
 
 }  // namespace ip_protection::android
+
+DEFINE_JNI(BindCallbackListener)

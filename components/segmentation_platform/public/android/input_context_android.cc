@@ -166,3 +166,5 @@ static void JNI_InputContext_FillNative(
 }
 
 }  // namespace segmentation_platform
+
+DEFINE_JNI(InputContext)

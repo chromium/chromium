@@ -195,3 +195,5 @@ static jlong JNI_CronetTestUtil_GetTaggedBytes(JNIEnv* env,
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(CronetTestUtil)

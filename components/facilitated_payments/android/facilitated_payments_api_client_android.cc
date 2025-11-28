@@ -133,3 +133,5 @@ bool FacilitatedPaymentsApiClientAndroid::IsAnyCallbackPending() const {
 }
 
 }  // namespace payments::facilitated
+
+DEFINE_JNI(FacilitatedPaymentsApiClientBridge)

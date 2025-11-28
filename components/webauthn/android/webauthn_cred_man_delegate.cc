@@ -128,3 +128,5 @@ WebAuthnCredManDelegate::CredManMode() {
 std::optional<int> WebAuthnCredManDelegate::cred_man_support_ = std::nullopt;
 
 }  // namespace webauthn
+
+DEFINE_JNI(CredManSupportProvider)

@@ -114,3 +114,5 @@ static void JNI_Module_LoadNative(
 }
 
 }  // namespace module_installer
+
+DEFINE_JNI(Module)

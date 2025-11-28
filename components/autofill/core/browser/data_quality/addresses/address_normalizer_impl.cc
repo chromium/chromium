@@ -360,3 +360,7 @@ void AddressNormalizerImpl::AddNormalizationRequestForRegion(
 }
 
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AddressNormalizer)
+#endif

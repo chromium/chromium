@@ -55,3 +55,5 @@ static jlong JNI_FontSizePrefs_Init(
 }
 
 }  // namespace browser_ui
+
+DEFINE_JNI(FontSizePrefs)

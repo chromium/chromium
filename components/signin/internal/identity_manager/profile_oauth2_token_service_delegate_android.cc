@@ -479,3 +479,5 @@ static void JNI_ProfileOAuth2TokenServiceDelegate_OnOAuth2TokenFetched(
            base::Time::FromSecondsSinceUnixEpoch(expiration_time_secs));
 }
 }  // namespace signin
+
+DEFINE_JNI(ProfileOAuth2TokenServiceDelegate)

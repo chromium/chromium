@@ -91,3 +91,7 @@ void PenguinClient::PerformAPICall_var4(
 #endif
 
 }  // namespace penguin
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(PenguinClient)
+#endif

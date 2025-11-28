@@ -59,3 +59,5 @@ NetworkStatusListenerAndroid::GetConnectionType() {
 }
 
 }  // namespace download
+
+DEFINE_JNI(NetworkStatusListenerAndroid)

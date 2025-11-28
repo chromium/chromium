@@ -125,3 +125,5 @@ BluetoothScanningPromptAndroid::CreateForTesting(
 }
 
 }  // namespace permissions
+
+DEFINE_JNI(BluetoothScanningPermissionDialog)

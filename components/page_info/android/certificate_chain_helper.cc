@@ -43,3 +43,5 @@ JNI_CertificateChainHelper_GetCertificateChain(
 
   return base::android::ToJavaArrayOfByteArray(env, cert_chain);
 }
+
+DEFINE_JNI(CertificateChainHelper)

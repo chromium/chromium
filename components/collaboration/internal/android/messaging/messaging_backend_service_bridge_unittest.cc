@@ -568,3 +568,5 @@ TEST_F(MessagingBackendServiceBridgeTest, TestGetActivityLog) {
 }
 
 }  // namespace collaboration::messaging::android
+
+DEFINE_JNI(MessagingBackendServiceBridgeUnitTestCompanion)

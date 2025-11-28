@@ -816,3 +816,7 @@ void IdentityManager::FireOnEndBatchOfPrimaryAccountChanges() {
 }
 #endif  // BUILDFLAG(IS_IOS)
 }  // namespace signin
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(IdentityManagerImpl)
+#endif

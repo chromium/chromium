@@ -63,3 +63,6 @@ BlobGenerationResult GenerateAttestationBlob(std::string_view flow_name,
 }
 
 }  // namespace enterprise
+
+DEFINE_JNI(AttestationBlobGenerator)
+DEFINE_JNI(BlobGenerationResult)

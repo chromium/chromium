@@ -186,3 +186,6 @@ void CollaborationServiceAndroid::OnServiceStatusChanged(
 }
 
 }  // namespace collaboration
+
+DEFINE_JNI(CollaborationServiceImpl)
+DEFINE_JNI(ServiceStatus)

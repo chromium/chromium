@@ -69,3 +69,5 @@ void ProxyCallbackRequestAdapter::Cancel(JNIEnv* env) {
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(ProxyCallbackRequestImpl)

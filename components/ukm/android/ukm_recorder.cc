@@ -79,3 +79,5 @@ static void JNI_UkmRecorder_RecordEventWithMultipleMetrics(
 }
 
 }  // namespace metrics
+
+DEFINE_JNI(UkmRecorder)

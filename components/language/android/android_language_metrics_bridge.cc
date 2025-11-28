@@ -16,3 +16,5 @@ static void JNI_AndroidLanguageMetricsBridge_ReportHashMetricName(
       base::android::ConvertJavaStringToUTF8(histogramName),
       base::HashMetricName(base::android::ConvertJavaStringToUTF8(value)));
 }
+
+DEFINE_JNI(AndroidLanguageMetricsBridge)

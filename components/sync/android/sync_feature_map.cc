@@ -34,3 +34,5 @@ static jlong JNI_SyncFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace syncer
+
+DEFINE_JNI(SyncFeatureMap)

@@ -400,3 +400,5 @@ void EmbeddedTestServerAdapter::RegisterRequestHandler(
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(NativeTestServer)

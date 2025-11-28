@@ -202,3 +202,5 @@ bool MediaRouterDialogControllerAndroid::IsShowingMediaRouterDialog() const {
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaRouterDialogControllerAndroid);
 
 }  // namespace media_router
+
+DEFINE_JNI(BrowserMediaRouterDialogController)

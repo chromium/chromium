@@ -38,3 +38,5 @@ void SendEmail(const std::u16string& d_email,
 }
 
 }  // namespace browser_ui
+
+DEFINE_JNI(IntentHelper)

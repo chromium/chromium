@@ -76,3 +76,5 @@ void InfoBarAndroid::CloseJavaInfoBar() {
 }
 
 }  // namespace infobars
+
+DEFINE_JNI(InfoBar)

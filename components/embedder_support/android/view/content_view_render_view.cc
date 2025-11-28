@@ -133,3 +133,5 @@ void ContentViewRenderView::InitCompositor() {
 }
 
 }  // namespace embedder_support
+
+DEFINE_JNI(ContentViewRenderView)

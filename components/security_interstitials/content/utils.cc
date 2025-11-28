@@ -104,3 +104,7 @@ void LaunchDateAndTimeSettings() {
 #endif
 
 }  // namespace security_interstitials
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(DateAndTimeSettingsHelper)
+#endif

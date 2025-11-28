@@ -55,3 +55,5 @@ JNI_AccountInfoSerializer_JsonStringToAccountInfo(JNIEnv* env,
 }
 
 }  // namespace signin
+
+DEFINE_JNI(AccountInfoSerializer)

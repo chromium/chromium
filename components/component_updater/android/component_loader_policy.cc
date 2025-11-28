@@ -278,3 +278,5 @@ AndroidComponentLoaderPolicy::ToJavaArrayOfAndroidComponentLoaderPolicy(
 }
 
 }  // namespace component_updater
+
+DEFINE_JNI(ComponentLoaderPolicyBridge)

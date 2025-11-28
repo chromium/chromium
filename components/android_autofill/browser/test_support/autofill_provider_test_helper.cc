@@ -160,3 +160,5 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillProviderTestHelper)

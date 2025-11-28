@@ -340,3 +340,5 @@ static void JNI_DataSharingSDKDelegateBridge_RunAddAccessTokenCallback(
 }
 
 }  // namespace data_sharing
+
+DEFINE_JNI(DataSharingSDKDelegateBridge)

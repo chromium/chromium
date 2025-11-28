@@ -150,3 +150,5 @@ JNI_UrlFormatter_FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
 }  // namespace android
 
 }  // namespace url_formatter
+
+DEFINE_JNI(UrlFormatter)

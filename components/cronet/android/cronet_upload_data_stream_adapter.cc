@@ -142,3 +142,5 @@ static jlong JNI_CronetUploadDataStream_CreateUploadDataStreamForTesting(
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(CronetUploadDataStream)

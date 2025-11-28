@@ -1380,3 +1380,7 @@ const UsageHistoryInformation& AutofillProfile::usage_history() const {
 }
 
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AutofillProfile)
+#endif

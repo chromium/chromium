@@ -33,3 +33,5 @@ JNI_ErrorMessageUtil_GetNotSupportedErrorMessage(
 
 }  // namespace android
 }  // namespace payments
+
+DEFINE_JNI(ErrorMessageUtil)

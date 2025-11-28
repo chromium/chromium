@@ -130,3 +130,5 @@ jlong JNI_AddToHomescreenCoordinator_StartForAppMenu(
 }
 
 }  // namespace webapps
+
+DEFINE_JNI(AddToHomescreenCoordinator)

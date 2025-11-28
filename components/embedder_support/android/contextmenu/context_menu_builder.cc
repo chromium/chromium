@@ -82,3 +82,5 @@ content::ContextMenuParams* ContextMenuParamsFromJavaObject(
 }
 
 }  // namespace context_menu
+
+DEFINE_JNI(ContextMenuParams)

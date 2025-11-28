@@ -331,3 +331,5 @@ void PlayerCompositorDelegateAndroid::Destroy(JNIEnv* env) {
 PlayerCompositorDelegateAndroid::~PlayerCompositorDelegateAndroid() = default;
 
 }  // namespace paint_preview
+
+DEFINE_JNI(PlayerCompositorDelegateImpl)

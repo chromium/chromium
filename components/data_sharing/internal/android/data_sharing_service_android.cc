@@ -342,3 +342,6 @@ void DataSharingServiceAndroid::SetSharedEntitiesPreviewForTesting(
 }
 
 }  // namespace data_sharing
+
+DEFINE_JNI(DataSharingServiceImpl)
+DEFINE_JNI(ObserverBridge)

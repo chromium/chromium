@@ -141,3 +141,5 @@ void ThirdPartyCredentialManagerBridge::Store(
 }
 
 }  // namespace credential_management
+
+DEFINE_JNI(ThirdPartyCredentialManagerBridge)

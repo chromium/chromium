@@ -140,3 +140,5 @@ void ContentFiltersObserverBridge::SetEnabled(bool enabled) {
 }
 
 }  // namespace supervised_user
+
+DEFINE_JNI(ContentFiltersObserverBridge)

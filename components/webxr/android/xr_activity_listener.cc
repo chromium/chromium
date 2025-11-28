@@ -63,3 +63,5 @@ void XrActivityListener::OnActivityResumed(JNIEnv* env) {
   }
 }
 }  // namespace webxr
+
+DEFINE_JNI(XrActivityListener)

@@ -27,3 +27,5 @@ static void JNI_ImageDecoder_InitializePhotoPickerSandbox(JNIEnv* env) {
 #endif
   starter.StartSandbox();
 }
+
+DEFINE_JNI(ImageDecoder)

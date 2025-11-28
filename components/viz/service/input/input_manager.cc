@@ -957,3 +957,7 @@ bool InputManager::TransferInputBackToBrowser() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace viz
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(InputTransferHandlerViz)
+#endif

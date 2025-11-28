@@ -293,3 +293,5 @@ const SkBitmap MessageWrapper::GetIconBitmap() {
 }
 
 }  // namespace messages
+
+DEFINE_JNI(MessageWrapper)

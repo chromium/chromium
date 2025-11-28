@@ -56,3 +56,5 @@ bool PaymentRequestUpdateEventListener::ChangeShippingAddress(
 
 }  // namespace android
 }  // namespace payments
+
+DEFINE_JNI(PaymentRequestUpdateEventListener)

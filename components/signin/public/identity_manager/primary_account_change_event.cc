@@ -213,3 +213,7 @@ ConvertToJavaPrimaryAccountChangeEvent(
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace signin
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(PrimaryAccountChangeEvent)
+#endif

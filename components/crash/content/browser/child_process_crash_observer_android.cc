@@ -48,3 +48,5 @@ void ChildProcessCrashObserver::OnChildExitImpl(
 }
 
 }  // namespace crash_reporter
+
+DEFINE_JNI(ChildProcessCrashObserver)

@@ -142,3 +142,5 @@ static jlong JNI_CookieControlsBridge_Init(
 }
 
 }  // namespace content_settings
+
+DEFINE_JNI(CookieControlsBridge)

@@ -82,3 +82,5 @@ static jlong JNI_FindInPageBridge_Init(
 }
 
 }  // namespace find_in_page
+
+DEFINE_JNI(FindInPageBridge)

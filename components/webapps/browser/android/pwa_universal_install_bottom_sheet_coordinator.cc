@@ -78,3 +78,5 @@ static void JNI_PwaUniversalInstallBottomSheetCoordinator_FetchAppData(
 }
 
 }  // namespace webapps
+
+DEFINE_JNI(PwaUniversalInstallBottomSheetCoordinator)

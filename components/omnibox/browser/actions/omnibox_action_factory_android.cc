@@ -86,3 +86,5 @@ std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaOmniboxActionsList(
   // actions were found, but none was applicable to Android.
   return ret;
 }
+
+DEFINE_JNI(OmniboxActionFactory)

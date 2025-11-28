@@ -449,3 +449,6 @@ bool ShoppingServiceAndroid::IsDiscountEligibleToShowOnNavigation(JNIEnv* env) {
 }
 
 }  // namespace commerce
+
+DEFINE_JNI(DiscountInfo)
+DEFINE_JNI(ShoppingService)

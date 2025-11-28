@@ -252,3 +252,5 @@ TEST(WebInputEventBuilderAndroidTest, WebMouseEventCoordinates) {
 }
 
 // TODO(crbug.com/41353469): Add more tests for WebMouseEventBuilder
+
+DEFINE_JNI(MotionEvent)

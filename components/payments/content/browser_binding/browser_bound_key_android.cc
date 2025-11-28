@@ -46,3 +46,5 @@ std::vector<uint8_t> BrowserBoundKeyAndroid::GetPublicKeyAsCoseKey() const {
 }
 
 }  // namespace payments
+
+DEFINE_JNI(BrowserBoundKey)

@@ -92,3 +92,5 @@ static jlong JNI_MockCertVerifier_CreateFreeForAllMockCertVerifier(
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(MockCertVerifier)

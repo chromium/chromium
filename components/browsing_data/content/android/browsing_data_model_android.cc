@@ -82,3 +82,5 @@ void BrowsingDataModelAndroid::Destroy(JNIEnv* env) {
       "Android.BrowsingDataModel.ModelDestructionTime");
   delete this;
 }
+
+DEFINE_JNI(BrowsingDataModel)

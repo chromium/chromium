@@ -120,3 +120,5 @@ JNI_TemplateUrl_GetBuiltInSearchEngineIcon(JNIEnv* env,
 #endif
   return {};
 }
+
+DEFINE_JNI(TemplateUrl)

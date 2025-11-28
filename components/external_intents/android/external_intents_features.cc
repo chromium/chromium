@@ -40,3 +40,5 @@ static jlong JNI_ExternalIntentsFeatures_GetFeature(JNIEnv* env, jint ordinal) {
 }
 
 }  // namespace external_intents
+
+DEFINE_JNI(ExternalIntentsFeatures)

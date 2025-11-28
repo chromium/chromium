@@ -44,3 +44,5 @@ TEST_F(OfflineItemBridgeTest, CreateOfflineItem) {
 }  // namespace
 }  // namespace android
 }  // namespace offline_items_collection
+
+DEFINE_JNI(OfflineItemBridgeUnitTest)

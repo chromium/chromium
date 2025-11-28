@@ -66,3 +66,5 @@ JNI_InstalledAppProviderImpl_CheckDigitalAssetLinksRelationshipForWebApk(
 }
 
 }  // namespace installedapp
+
+DEFINE_JNI(InstalledAppProviderImpl)

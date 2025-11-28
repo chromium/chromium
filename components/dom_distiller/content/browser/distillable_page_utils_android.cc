@@ -79,3 +79,5 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(JniDistillabilityObserverWrapper);
 
 }  // namespace android
 }  // namespace dom_distiller
+
+DEFINE_JNI(DistillablePageUtils)

@@ -272,3 +272,5 @@ void AndroidAutofillProviderBridgeImpl::OnTriggerPasskeyRequest(JNIEnv* env) {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillProvider)

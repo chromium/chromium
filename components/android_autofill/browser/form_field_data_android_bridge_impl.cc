@@ -164,3 +164,5 @@ void FormFieldDataAndroidBridgeImpl::UpdateFocusable(bool visible) {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(FormFieldData)

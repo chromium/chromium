@@ -473,3 +473,8 @@ AccountInfo ConvertFromJavaAccountInfo(
 }
 
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AccountInfo)
+DEFINE_JNI(CoreAccountInfo)
+#endif

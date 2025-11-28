@@ -1351,3 +1351,6 @@ JNI_WebsitePreferenceBridge_ToHostOnlyPattern(
           ContentSettingsPattern::FromString(pattern_string));
   return ConvertUTF8ToJavaString(env, host_only_pattern.ToString());
 }
+
+DEFINE_JNI(GeolocationSetting)
+DEFINE_JNI(WebsitePreferenceBridge)

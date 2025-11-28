@@ -32,3 +32,5 @@ JNI_CardboardUtils_NativeCheckQrCodeScannerWasLaunchedForTesting(JNIEnv* env) {
 }
 
 }  // namespace webxr
+
+DEFINE_JNI(CardboardUtils)

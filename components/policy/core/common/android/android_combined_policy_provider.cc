@@ -72,3 +72,5 @@ bool AndroidCombinedPolicyProvider::IsFirstPolicyLoadComplete(
 
 }  // namespace android
 }  // namespace policy
+
+DEFINE_JNI(CombinedPolicyProvider)

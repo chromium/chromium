@@ -132,3 +132,5 @@ bool DeviceDelegateAndroid::IsPixSupportAvailableViaGboard() const {
 }
 
 }  // namespace payments::facilitated
+
+DEFINE_JNI(DeviceDelegate)

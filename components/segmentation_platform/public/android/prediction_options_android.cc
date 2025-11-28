@@ -53,3 +53,5 @@ static void JNI_PredictionOptions_FillNative(
 }
 
 }  // namespace segmentation_platform
+
+DEFINE_JNI(PredictionOptions)

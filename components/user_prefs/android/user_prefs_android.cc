@@ -33,3 +33,5 @@ static base::android::ScopedJavaLocalRef<jobject> JNI_UserPrefs_Get(
 }
 
 }  // namespace user_prefs
+
+DEFINE_JNI(UserPrefs)

@@ -441,3 +441,8 @@ void PrintTo(const Suggestion& suggestion, std::ostream* os) {
 }
 
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AutofillProfilePayload)
+DEFINE_JNI(PaymentsPayload)
+#endif

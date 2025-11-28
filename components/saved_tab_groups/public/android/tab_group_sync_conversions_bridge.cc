@@ -181,3 +181,5 @@ void TabGroupSyncConversionsBridge::FillNativeSavedTabGroup(
 }
 
 }  // namespace tab_groups
+
+DEFINE_JNI(TabGroupSyncConversionsBridge)

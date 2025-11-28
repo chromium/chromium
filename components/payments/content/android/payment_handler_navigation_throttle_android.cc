@@ -24,3 +24,5 @@ static void JNI_PaymentHandlerNavigationThrottle_MarkPaymentHandlerWebContents(
 }
 }  // namespace android
 }  // namespace payments
+
+DEFINE_JNI(PaymentHandlerNavigationThrottle)

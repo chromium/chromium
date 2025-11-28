@@ -153,3 +153,7 @@ DeviceAccountsSynchronizer* IdentityMutator::GetDeviceAccountsSynchronizer() {
   return device_accounts_synchronizer_.get();
 }
 }  // namespace signin
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(IdentityMutator)
+#endif

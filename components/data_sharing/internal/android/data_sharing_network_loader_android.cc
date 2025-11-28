@@ -78,3 +78,5 @@ void DataSharingNetworkLoaderAndroid::OnResponseAvailable(
 }
 
 }  // namespace data_sharing
+
+DEFINE_JNI(DataSharingNetworkLoaderImpl)

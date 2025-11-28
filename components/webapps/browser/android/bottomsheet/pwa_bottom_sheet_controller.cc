@@ -214,3 +214,6 @@ void PwaBottomSheetController::UpdateScreenshot(
 }
 
 }  // namespace webapps
+
+DEFINE_JNI(PwaBottomSheetControllerProvider)
+DEFINE_JNI(PwaBottomSheetController)

@@ -1148,3 +1148,7 @@ ScopedJavaLocalRef<jobject> CrossDevicePrefTrackerImpl::GetMostRecentValue(
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace sync_preferences
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(CrossDevicePrefTracker)
+#endif

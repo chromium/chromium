@@ -38,3 +38,5 @@ void NfcSystemLevelSettingImpl::PromptToEnableNfcSystemLevelSetting(
 }
 
 }  // namespace permissions
+
+DEFINE_JNI(NfcSystemLevelSetting)

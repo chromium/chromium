@@ -364,3 +364,5 @@ JNI_CrashReportMimeWriter_RewriteMinidumpsAsMIMEsAndGetCrashKeys(
 }
 
 }  // namespace minidump_uploader
+
+DEFINE_JNI(CrashReportMimeWriter)

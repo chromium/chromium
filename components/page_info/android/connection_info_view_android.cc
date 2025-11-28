@@ -128,3 +128,5 @@ void ConnectionInfoViewAndroid::SetIdentityInfo(
           env, l10n_util::GetStringUTF8(IDS_PAGE_INFO_HELP_CENTER_LINK)));
   Java_ConnectionInfoView_onReady(env, popup_jobject_);
 }
+
+DEFINE_JNI(ConnectionInfoView)

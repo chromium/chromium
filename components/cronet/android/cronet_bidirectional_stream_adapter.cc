@@ -532,3 +532,6 @@ std::optional<CronetMetrics> CronetBidirectionalStreamAdapter::GetMetrics() {
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(CronetBidirectionalStream)
+DEFINE_JNI(CronetMetrics)

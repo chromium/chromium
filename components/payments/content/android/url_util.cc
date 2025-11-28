@@ -40,3 +40,5 @@ static jboolean JNI_UrlUtil_IsLocalDevelopmentUrl(
 
 }  // namespace android
 }  // namespace payments
+
+DEFINE_JNI(UrlUtil)

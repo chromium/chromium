@@ -53,3 +53,5 @@ static jint JNI_PaymentRequestWebContentsData_GetSPCTransactionMode(
 
 }  // namespace android
 }  // namespace payments
+
+DEFINE_JNI(PaymentRequestWebContentsData)

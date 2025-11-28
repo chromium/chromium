@@ -81,3 +81,5 @@ static ScopedJavaLocalRef<jstring> JNI_DomDistillerUrlUtils_GetValueForKeyInUrl(
 }  // namespace url_utils
 
 }  // namespace dom_distiller
+
+DEFINE_JNI(DomDistillerUrlUtils)

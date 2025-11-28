@@ -63,3 +63,5 @@ void PolicyCacheUpdater::UpdateCache(const PolicyMap& current_policy_map) {
 
 }  // namespace android
 }  // namespace policy
+
+DEFINE_JNI(PolicyCacheUpdater)

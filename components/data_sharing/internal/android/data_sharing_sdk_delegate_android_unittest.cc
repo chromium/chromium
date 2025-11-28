@@ -263,3 +263,5 @@ TEST_F(DataSharingSDKDelegateAndroidTest, TestAddAccessToken) {
 
 }  // namespace
 }  // namespace data_sharing
+
+DEFINE_JNI(DataSharingSDKDelegateAndroidTestSupport)

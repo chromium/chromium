@@ -277,3 +277,7 @@ content::WebContents* OnscreenContentProviderAndroid::GetWebContents() {
 }
 
 }  // namespace content_capture
+
+DEFINE_JNI(ContentCaptureData)
+DEFINE_JNI(ContentCaptureFrame)
+DEFINE_JNI(OnscreenContentProvider)

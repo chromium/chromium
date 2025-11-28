@@ -230,3 +230,5 @@ void MediaRouterAndroidBridge::OnMessage(
 }
 
 }  // namespace media_router
+
+DEFINE_JNI(BrowserMediaRouter)

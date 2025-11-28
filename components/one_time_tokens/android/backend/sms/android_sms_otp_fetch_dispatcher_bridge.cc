@@ -46,3 +46,5 @@ void AndroidSmsOtpFetchDispatcherBridge::RetrieveSmsOtp() {
 }
 
 }  // namespace one_time_tokens
+
+DEFINE_JNI(AndroidSmsOtpFetchDispatcherBridge)

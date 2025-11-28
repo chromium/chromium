@@ -68,3 +68,5 @@ JNI_VariationsAssociatedData_GetGoogleAppVariations(JNIEnv* env) {
 
 }  // namespace android
 }  // namespace variations
+
+DEFINE_JNI(VariationsAssociatedData)

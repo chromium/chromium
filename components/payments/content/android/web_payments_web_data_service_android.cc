@@ -250,3 +250,5 @@ WebPaymentsWebDataServiceAndroid::GetWebPaymentsWebDataService() {
 }
 
 }  // namespace payments
+
+DEFINE_JNI(WebPaymentsWebDataService)

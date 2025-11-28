@@ -53,3 +53,5 @@ void MessagesTestHelper::OnMessageEnqueued(JNIEnv* env) {
 }
 
 }  // namespace messages
+
+DEFINE_JNI(MessagesTestHelper)

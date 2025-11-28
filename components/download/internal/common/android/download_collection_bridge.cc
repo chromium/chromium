@@ -217,3 +217,5 @@ void DownloadCollectionBridge::ResetExistingFileNamesForTesting() {
 }
 
 }  // namespace download
+
+DEFINE_JNI(DownloadCollectionBridge)

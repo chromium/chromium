@@ -133,3 +133,5 @@ static jlong JNI_JourneyLogger_InitJourneyLoggerAndroid(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(JourneyLogger)

@@ -245,3 +245,5 @@ void PolicyConverter::SetPolicyValue(const std::string& key,
 
 }  // namespace android
 }  // namespace policy
+
+DEFINE_JNI(PolicyConverter)

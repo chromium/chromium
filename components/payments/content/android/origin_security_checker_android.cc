@@ -36,3 +36,5 @@ static jboolean JNI_OriginSecurityChecker_IsSchemeCryptographic(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(OriginSecurityChecker)

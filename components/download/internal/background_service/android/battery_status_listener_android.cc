@@ -26,3 +26,5 @@ int BatteryStatusListenerAndroid::GetBatteryPercentageInternal() {
 }
 
 }  // namespace download
+
+DEFINE_JNI(BatteryStatusListenerAndroid)

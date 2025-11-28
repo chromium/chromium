@@ -641,3 +641,7 @@ jboolean RegionalCapabilitiesService::IsInEeaCountry(JNIEnv* env) {
 #endif
 
 }  // namespace regional_capabilities
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(RegionalCapabilitiesService)
+#endif

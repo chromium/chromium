@@ -107,3 +107,5 @@ const base::Value* PolicyMapAndroid::GetValue(
 
 }  // namespace android
 }  // namespace policy
+
+DEFINE_JNI(PolicyMap)

@@ -239,3 +239,5 @@ ScopedJavaLocalRef<jobject> XrSessionCoordinator::GetActivity(
 }
 
 }  // namespace webxr
+
+DEFINE_JNI(XrSessionCoordinator)

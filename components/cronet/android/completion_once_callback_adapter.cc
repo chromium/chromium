@@ -46,3 +46,5 @@ void CompletionOnceCallbackAdapter::Run(JNIEnv* env, net::Error result) {
   delete this;
 }
 }  // namespace cronet
+
+DEFINE_JNI(CompletionOnceCallback)

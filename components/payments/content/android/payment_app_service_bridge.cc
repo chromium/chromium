@@ -408,3 +408,5 @@ PaymentAppServiceBridge::PaymentAppServiceBridge(
       set_opt_out_offered_callback_(std::move(set_opt_out_offered_callback)) {}
 
 }  // namespace payments
+
+DEFINE_JNI(PaymentAppServiceBridge)

@@ -132,3 +132,5 @@ void CompositorViewImpl::UpdateLayerTreeHost() {
 
 }  // namespace android
 }  // namespace thin_webview
+
+DEFINE_JNI(CompositorViewImpl)

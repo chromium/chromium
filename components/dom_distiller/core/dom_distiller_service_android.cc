@@ -38,3 +38,5 @@ jlong DomDistillerServiceAndroid::GetDistilledPagePrefsPtr(JNIEnv* env) {
 
 }  // namespace android
 }  // namespace dom_distiller
+
+DEFINE_JNI(DomDistillerService)

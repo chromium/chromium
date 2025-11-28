@@ -60,3 +60,5 @@ ScopedJavaLocalRef<jobject> SmsInfoBar::CreateRenderInfoBar(
 }
 
 }  // namespace sms
+
+DEFINE_JNI(WebOTPServiceInfoBar)

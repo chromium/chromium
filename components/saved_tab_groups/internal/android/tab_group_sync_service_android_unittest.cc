@@ -498,3 +498,5 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnMessageUiDismissed) {
 }
 
 }  // namespace tab_groups
+
+DEFINE_JNI(TabGroupSyncServiceAndroidUnitTest)

@@ -207,3 +207,5 @@ void BluetoothChooserAndroid::OpenURL(const char* url) {
 }
 
 }  // namespace permissions
+
+DEFINE_JNI(BluetoothChooserDialog)

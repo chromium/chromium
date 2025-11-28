@@ -33,3 +33,5 @@ static jlong JNI_NotificationFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace browser_ui
+
+DEFINE_JNI(NotificationFeatureMap)

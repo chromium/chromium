@@ -61,3 +61,5 @@ static jlong JNI_PrefChangeRegistrar_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(
       new PrefChangeRegistrarAndroid(env, obj, prefs));
 }
+
+DEFINE_JNI(PrefChangeRegistrar)

@@ -97,3 +97,5 @@ static ScopedJavaLocalRef<jstring> JNI_CertificateViewer_GetCertSANText(
   return ConvertUTF8ToJavaString(
       env, l10n_util::GetStringUTF8(IDS_CERT_X509_SUBJECT_ALT_NAME));
 }
+
+DEFINE_JNI(CertificateViewer)

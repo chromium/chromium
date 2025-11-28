@@ -45,3 +45,5 @@ jboolean HeapProfilingTestShim::RunTestForMode(
   options.profiling_already_started = !dynamically_start_profiling;
   return driver.RunTest(options);
 }
+
+DEFINE_JNI(HeapProfilingTestShim)

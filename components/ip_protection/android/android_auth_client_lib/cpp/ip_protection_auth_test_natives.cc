@@ -869,3 +869,5 @@ JNI_IpProtectionAuthTestNatives_TestUnresolvedCallbacksRejectedAfterCrash(
     CHECK(response.error() == ip_protection::android::AuthRequestError::kOther);
   }
 }
+
+DEFINE_JNI(IpProtectionAuthTestNatives)

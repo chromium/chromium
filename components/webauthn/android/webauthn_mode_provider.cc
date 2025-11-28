@@ -68,3 +68,5 @@ static jint JNI_WebauthnModeProvider_GetWebauthnModeForWebContents(
 }
 
 }  // namespace webauthn
+
+DEFINE_JNI(WebauthnModeProvider)

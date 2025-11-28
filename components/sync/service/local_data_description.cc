@@ -120,3 +120,7 @@ static std::u16string JNI_LocalDataDescription_GetDomainsDisplayText(
 #endif
 
 }  // namespace syncer
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(LocalDataDescription)
+#endif

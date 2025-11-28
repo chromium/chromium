@@ -53,3 +53,5 @@ static jboolean JNI_CommerceFeatureUtils_IsPriceAnnotationsEnabled(
 }
 
 }  // namespace commerce
+
+DEFINE_JNI(CommerceFeatureUtils)

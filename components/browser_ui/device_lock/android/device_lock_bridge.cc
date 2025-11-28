@@ -68,3 +68,5 @@ bool DeviceLockBridge::DeviceLockPageHasBeenPassed() {
   return Java_DeviceLockBridge_deviceLockPageHasBeenPassed(
       base::android::AttachCurrentThread());
 }
+
+DEFINE_JNI(DeviceLockBridge)

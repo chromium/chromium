@@ -85,3 +85,5 @@ static void JNI_ContentCaptureTestSupport_SimulateDidUpdateFaviconURL(
 }
 
 }  // namespace content_capture
+
+DEFINE_JNI(ContentCaptureTestSupport)

@@ -291,3 +291,5 @@ PaintPreviewTestService::Frame& PaintPreviewTestService::Frame::operator=(
     Frame&& rhs) noexcept = default;
 
 }  // namespace paint_preview
+
+DEFINE_JNI(PaintPreviewTestService)

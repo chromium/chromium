@@ -210,3 +210,6 @@ base::AutoReset<bool> EnableSystemLocationSettingForTesting() {
 }
 
 }  // namespace permissions
+
+DEFINE_JNI(PermissionUtil)
+DEFINE_JNI(AndroidPermissionRequester)

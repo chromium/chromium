@@ -400,3 +400,7 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
 #endif  // BUILDFLAG(IS_ANDROID)
 // Note: no new flags beyond this point.
 }  // namespace omnibox
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(OmniboxFeatureMap)
+#endif

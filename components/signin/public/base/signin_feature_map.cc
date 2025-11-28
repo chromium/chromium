@@ -49,3 +49,5 @@ static jlong JNI_SigninFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace signin
+
+DEFINE_JNI(SigninFeatureMap)

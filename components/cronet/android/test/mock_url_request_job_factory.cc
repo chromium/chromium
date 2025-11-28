@@ -140,3 +140,5 @@ JNI_MockUrlRequestJobFactory_GetMockUrlForHangingRead(JNIEnv* jenv) {
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(MockUrlRequestJobFactory)

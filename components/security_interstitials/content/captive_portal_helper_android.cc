@@ -45,3 +45,5 @@ bool IsBehindCaptivePortal() {
 }
 
 }  // namespace security_interstitials
+
+DEFINE_JNI(CaptivePortalHelper)

@@ -157,3 +157,5 @@ SpellCheckerSessionBridge::SpellingRequest::~SpellingRequest() {
   if (callback_)
     std::move(callback_).Run(std::vector<SpellCheckResult>());
 }
+
+DEFINE_JNI(SpellCheckerSessionBridge)

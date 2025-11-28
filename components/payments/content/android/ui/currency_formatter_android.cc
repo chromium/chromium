@@ -66,3 +66,5 @@ static jlong JNI_CurrencyFormatter_InitCurrencyFormatterAndroid(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(CurrencyFormatter)

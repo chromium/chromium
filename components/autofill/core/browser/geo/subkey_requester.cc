@@ -199,3 +199,7 @@ void SubKeyRequester::CancelPendingGetSubKeys(JNIEnv* env) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(SubKeyRequester)
+#endif

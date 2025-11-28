@@ -117,3 +117,5 @@ TEST_F(GroupSuggestionsServiceAndroidTest, ShowSuggestionNotifyDelegate) {
 }
 
 }  // namespace visited_url_ranking
+
+DEFINE_JNI(TestServiceDelegate)

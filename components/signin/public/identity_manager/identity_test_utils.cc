@@ -736,3 +736,7 @@ void SetIgnoreNonOfficialApiKeys() {
 }
 
 }  // namespace signin
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AccountManagerFacadeUtil)
+#endif

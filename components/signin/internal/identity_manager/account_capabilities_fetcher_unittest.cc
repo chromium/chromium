@@ -463,3 +463,7 @@ INSTANTIATE_TEST_SUITE_P(,
 #endif
 
 );
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AccountCapabilitiesFetcherTestUtil)
+#endif

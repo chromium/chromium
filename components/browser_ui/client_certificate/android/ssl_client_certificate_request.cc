@@ -402,3 +402,5 @@ size_t GetCountOfSSLClientCertificateSelectorForTesting(  // IN-TEST
 }
 
 }  // namespace browser_ui
+
+DEFINE_JNI(SSLClientCertificateRequest)

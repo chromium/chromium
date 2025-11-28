@@ -330,3 +330,5 @@ void PageInfoControllerAndroid::SetAdPersonalizationInfo(
       env, controller_jobject_, info.has_joined_user_to_interest_group,
       base::android::ToJavaArrayOfStrings(env, topic_names));
 }
+
+DEFINE_JNI(PageInfoController)

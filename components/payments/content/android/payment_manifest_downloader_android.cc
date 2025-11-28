@@ -141,3 +141,5 @@ JNI_PaymentManifestDownloader_CreateOpaqueOriginForTest(JNIEnv* env) {
 }
 
 }  // namespace payments
+
+DEFINE_JNI(PaymentManifestDownloader)

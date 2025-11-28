@@ -30,3 +30,5 @@ OfflineItemShareInfoBridge::CreateOfflineItemShareInfo(
 
 }  // namespace android
 }  // namespace offline_items_collection
+
+DEFINE_JNI(OfflineItemShareInfoBridge)

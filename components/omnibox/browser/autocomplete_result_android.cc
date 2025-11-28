@@ -209,3 +209,5 @@ bool AutocompleteResult::VerifyCoherency(
                             MatchVerificationResult::COUNT);
   return true;
 }
+
+DEFINE_JNI(AutocompleteResult)

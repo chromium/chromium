@@ -215,3 +215,5 @@ bool InMemoryDownloadFile::IsMemoryFile() {
 }
 
 }  //  namespace download
+
+DEFINE_JNI(InMemoryDownloadFile)

@@ -51,3 +51,5 @@ inline jni_zero::ScopedJavaLocalRef<jobject> ToJniType<autofill::LoyaltyCard>(
 }  // namespace jni_zero
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_VALUABLES_ANDROID_LOYALTY_CARD_ANDROID_H_
+
+DEFINE_JNI(LoyaltyCard)

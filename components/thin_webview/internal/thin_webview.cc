@@ -111,3 +111,5 @@ void ThinWebView::ResizeWebContents(const gfx::Size& size) {
 
 }  // namespace android
 }  // namespace thin_webview
+
+DEFINE_JNI(ThinWebViewImpl)

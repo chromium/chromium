@@ -94,3 +94,7 @@ BASE_FEATURE(kEnableReaderModeNewCss, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace dom_distiller
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(DomDistillerFeatureMap)
+#endif

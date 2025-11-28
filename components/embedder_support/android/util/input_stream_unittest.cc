@@ -162,3 +162,5 @@ TEST_F(InputStreamTest, DoesNotCrashWhenExceptionThrown) {
   // This closes the stream.
   input_stream.reset(nullptr);
 }
+
+DEFINE_JNI(InputStreamUnittest)

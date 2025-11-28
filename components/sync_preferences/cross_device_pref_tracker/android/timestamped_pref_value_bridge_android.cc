@@ -72,3 +72,5 @@ TimestampedPrefValueBridge::GetJavaObject() const {
 }
 
 }  // namespace sync_preferences
+
+DEFINE_JNI(TimestampedPrefValue)

@@ -144,3 +144,5 @@ TabModalDialogViewAndroid::TabModalDialogViewAndroid(
 }
 
 }  // namespace javascript_dialogs
+
+DEFINE_JNI(JavascriptTabModalDialog)

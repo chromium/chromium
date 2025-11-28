@@ -58,3 +58,5 @@ base::ScopedClosureRunner ScreenshotResult::GetReleaseCallback() const {
 }
 
 }  // namespace web_contents_delegate_android
+
+DEFINE_JNI(ScreenshotResult)

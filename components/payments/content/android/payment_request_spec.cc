@@ -122,3 +122,5 @@ PaymentRequestSpec::~PaymentRequestSpec() = default;
 
 }  // namespace android
 }  // namespace payments
+
+DEFINE_JNI(PaymentRequestSpec)

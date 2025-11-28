@@ -68,3 +68,5 @@ JNI_CronetUrlRequestContextTest_VerifyUrlRequestContextQuicOffConfig(
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(CronetUrlRequestContextTest)

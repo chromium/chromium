@@ -57,3 +57,5 @@ static jboolean JNI_Fido2Api_ParseAttestationObject(
 }
 
 }  // namespace webauthn
+
+DEFINE_JNI(Fido2Api)

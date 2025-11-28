@@ -249,3 +249,5 @@ jni_zero::ScopedJavaLocalRef<jobject> ConvertPaymentEntityLogoToJavaObject(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(JniPaymentApp)

@@ -52,3 +52,5 @@ static jboolean JNI_HasEnrolledInstrumentQuery_CanQuery(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(HasEnrolledInstrumentQuery)

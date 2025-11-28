@@ -483,3 +483,6 @@ void SyncServiceAndroidBridge::KeepAccountSettingsPrefsOnlyForUsers(
 }
 
 }  // namespace syncer
+
+DEFINE_JNI(SyncServiceImpl)
+DEFINE_JNI(SyncService)

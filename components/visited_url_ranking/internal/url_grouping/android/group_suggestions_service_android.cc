@@ -301,3 +301,10 @@ GroupSuggestionsServiceAndroid::GetJavaDelegateBridge() {
 }
 
 }  // namespace visited_url_ranking
+
+DEFINE_JNI(DelegateBridge)
+DEFINE_JNI(GroupSuggestionsServiceImpl)
+DEFINE_JNI(CachedSuggestions)
+DEFINE_JNI(GroupSuggestion)
+DEFINE_JNI(GroupSuggestions)
+DEFINE_JNI(UserResponseMetadata)

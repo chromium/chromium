@@ -35,3 +35,5 @@ static jboolean JNI_SslValidityChecker_IsValidPageInPaymentHandlerWindow(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(SslValidityChecker)

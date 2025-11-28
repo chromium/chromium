@@ -33,3 +33,5 @@ static jlong JNI_WebauthnFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace webauthn::features
+
+DEFINE_JNI(WebauthnFeatureMap)

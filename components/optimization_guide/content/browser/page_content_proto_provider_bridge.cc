@@ -46,3 +46,5 @@ static void JNI_PageContentProtoProviderBridge_GetAiPageContent(
 }
 
 }  // namespace optimization_guide::android
+
+DEFINE_JNI(PageContentProtoProviderBridge)

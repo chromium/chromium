@@ -72,3 +72,5 @@ JNI_ExperimentalOptionsTest_ExperimentalOptionsParsingIsAllowedToFail(
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(ExperimentalOptionsTest)

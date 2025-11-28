@@ -273,3 +273,7 @@ AccountCapabilities::ConvertToAccountCapabilitiesIOS() {
   return capabilities_map_;
 }
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AccountCapabilities)
+#endif

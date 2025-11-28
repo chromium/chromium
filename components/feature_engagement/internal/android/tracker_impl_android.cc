@@ -253,3 +253,5 @@ void DisplayLockHandleAndroid::Release(JNIEnv* env) {
 }
 
 }  // namespace feature_engagement
+
+DEFINE_JNI(TrackerImpl)

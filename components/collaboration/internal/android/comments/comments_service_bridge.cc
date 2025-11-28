@@ -158,3 +158,5 @@ void CommentsServiceBridge::RemoveObserver(
 }
 
 }  // namespace collaboration::comments::android
+
+DEFINE_JNI(CommentsServiceBridge)

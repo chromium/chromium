@@ -158,3 +158,5 @@ TEST_F(CommentsServiceBridgeTest, TestDeleteComment) {
 }
 
 }  // namespace collaboration::comments::android
+
+DEFINE_JNI(CommentsServiceBridgeUnitTestCompanion)

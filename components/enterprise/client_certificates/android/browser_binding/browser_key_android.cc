@@ -98,3 +98,5 @@ BrowserKey::SecurityLevel BrowserKeyAndroid::GetSecurityLevel() const {
 }
 
 }  // namespace client_certificates
+
+DEFINE_JNI(BrowserKey)

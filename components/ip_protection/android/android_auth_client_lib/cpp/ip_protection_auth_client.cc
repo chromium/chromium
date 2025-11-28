@@ -117,3 +117,5 @@ IpProtectionAuthClient::~IpProtectionAuthClient() {
 }
 
 }  // namespace ip_protection::android
+
+DEFINE_JNI(IpProtectionAuthClient)

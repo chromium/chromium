@@ -351,3 +351,5 @@ void SetNetworkThreadPriorityOnNetworkThread(double priority) {
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(CronetLibraryLoader)

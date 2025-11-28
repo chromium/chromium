@@ -27,3 +27,5 @@ JNI_NormalizedMurmurHashEntropyProviderTestUtilsBridge_GetEntropyForTrial(
       entropy_value);
   return entropy_provider.GetEntropyForTrial("", randomization_seed);
 }
+
+DEFINE_JNI(NormalizedMurmurHashEntropyProviderTestUtilsBridge)

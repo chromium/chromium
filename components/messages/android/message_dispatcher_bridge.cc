@@ -95,3 +95,5 @@ void MessageDispatcherBridge::Initialize(ResourceIdMapper resource_id_mapper) {
 }
 
 }  // namespace messages
+
+DEFINE_JNI(MessageDispatcherBridge)

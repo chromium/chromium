@@ -41,3 +41,5 @@ static jlong JNI_MessageFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace messages
+
+DEFINE_JNI(MessageFeatureMap)

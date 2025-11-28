@@ -50,3 +50,5 @@ LegalMessageLineAndroid::ConvertToJavaLinkedList(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(LegalMessageLine)

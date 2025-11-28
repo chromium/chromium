@@ -356,3 +356,5 @@ static jlong JNI_CronetUrlRequestContext_CreateRequestContextAdapter(
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(CronetUrlRequestContext)

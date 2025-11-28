@@ -766,3 +766,5 @@ JNI_AppBannerManager_SetOverrideSegmentationResultForTesting(  // IN-TEST
 }
 
 }  // namespace webapps
+
+DEFINE_JNI(AppBannerManager)

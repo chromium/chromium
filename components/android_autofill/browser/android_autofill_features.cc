@@ -68,3 +68,5 @@ static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env, jint ordinal) {
 }
 
 }  // namespace autofill::features
+
+DEFINE_JNI(AndroidAutofillFeatures)

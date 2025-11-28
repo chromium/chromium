@@ -25,3 +25,5 @@ static void JNI_CrashpadMain_CrashpadMain(
 }
 
 }  // namespace crashpad
+
+DEFINE_JNI(CrashpadMain)

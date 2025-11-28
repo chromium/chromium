@@ -204,3 +204,7 @@ ChromeLatencyInfo2::InputResultState InputEventResultStateToProto(
 }
 
 }  // namespace input
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(InputUtils)
+#endif

@@ -822,3 +822,5 @@ void SafeBrowsingApiHandlerBridge::OnSafeBrowsingApiNonRecoverableFailure() {
 }
 
 }  // namespace safe_browsing
+
+DEFINE_JNI(SafeBrowsingApiBridge)

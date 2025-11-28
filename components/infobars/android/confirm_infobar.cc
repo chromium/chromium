@@ -90,3 +90,5 @@ void ConfirmInfoBar::ProcessButton(int action) {
 }
 
 }  // namespace infobars
+
+DEFINE_JNI(ConfirmInfoBar)

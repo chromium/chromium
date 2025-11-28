@@ -58,3 +58,5 @@ void AddToHomescreenInstaller::InstallOrOpenNativeApp(
 }
 
 }  // namespace webapps
+
+DEFINE_JNI(AddToHomescreenInstaller)

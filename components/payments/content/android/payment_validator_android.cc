@@ -50,3 +50,5 @@ static jboolean JNI_PaymentValidator_ValidatePaymentValidationErrorsAndroid(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(PaymentValidator)

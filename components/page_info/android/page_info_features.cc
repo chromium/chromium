@@ -33,3 +33,5 @@ static jlong JNI_PageInfoFeatures_GetFeature(JNIEnv* env, jint ordinal) {
 }
 
 }  // namespace page_info
+
+DEFINE_JNI(PageInfoFeatures)

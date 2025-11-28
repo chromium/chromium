@@ -76,3 +76,5 @@ bool WebappsUtils::IsAutoMintedTwaEnabled() {
 }
 
 }  // namespace webapps
+
+DEFINE_JNI(WebappsUtils)

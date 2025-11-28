@@ -186,3 +186,5 @@ void AddToHomescreenMediator::RecordEventForAppMenu(
 }
 
 }  // namespace webapps
+
+DEFINE_JNI(AddToHomescreenMediator)

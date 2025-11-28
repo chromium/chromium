@@ -441,3 +441,5 @@ void TabGroupSyncServiceAndroid::SetCollaborationAvailableInFinderForTesting(
 }
 
 }  // namespace tab_groups
+
+DEFINE_JNI(TabGroupSyncServiceImpl)

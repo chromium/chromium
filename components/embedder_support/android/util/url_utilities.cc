@@ -208,3 +208,5 @@ static ScopedJavaLocalRef<jobject> JNI_UrlUtilities_ClearPort(
 }
 
 }  // namespace embedder_support
+
+DEFINE_JNI(UrlUtilities)

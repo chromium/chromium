@@ -172,3 +172,5 @@ static jlong JNI_PaymentManifestParser_CreatePaymentManifestParserAndroid(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(PaymentManifestParser)

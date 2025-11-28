@@ -29,3 +29,5 @@ static jboolean JNI_WebXrAndroidFeatureMap_IsHandTrackingEnabled(JNIEnv* env) {
 }
 
 }  // namespace webxr
+
+DEFINE_JNI(WebXrAndroidFeatureMap)

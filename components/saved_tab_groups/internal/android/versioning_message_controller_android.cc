@@ -78,3 +78,5 @@ void VersioningMessageControllerAndroid::OnMessageUiDismissed(
 }
 
 }  // namespace tab_groups
+
+DEFINE_JNI(VersioningMessageControllerImpl)

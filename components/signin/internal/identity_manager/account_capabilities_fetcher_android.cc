@@ -63,3 +63,5 @@ static void JNI_AccountCapabilitiesFetcher_OnCapabilitiesFetchComplete(
           env, account_capabilities));
 }
 }  // namespace signin
+
+DEFINE_JNI(AccountCapabilitiesFetcher)

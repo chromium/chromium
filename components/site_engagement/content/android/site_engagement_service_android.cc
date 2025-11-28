@@ -83,3 +83,5 @@ JNI_SiteEngagementService_SiteEngagementServiceForBrowserContext(
 }
 
 }  // namespace site_engagement
+
+DEFINE_JNI(SiteEngagementService)

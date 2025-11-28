@@ -142,3 +142,5 @@ bool WebResourceResponse::GetResponseHeaders(
 }
 
 }  // namespace embedder_support
+
+DEFINE_JNI(WebResourceResponseInfo)
