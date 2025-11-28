@@ -352,8 +352,8 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (instancetype)initWithBrowser:(Browser*)browser
        hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot {
-  DCHECK(browser);
-  DCHECK_EQ(browser->type(), Browser::Type::kRegular);
+  CHECK(browser, base::NotFatalUntil::M151);
+  CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M151);
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
@@ -369,7 +369,7 @@ struct EnhancedSafeBrowsingActivePromoData
         ChromeAccountManagerServiceFactory::GetForProfile(_profile);
     // It is expected that `identityManager` should never be nil except in
     // tests. In that case, the tests should be fixed.
-    DCHECK(identityManager);
+    CHECK(identityManager, base::NotFatalUntil::M151);
     _identityObserverBridge.reset(
         new signin::IdentityManagerObserverBridge(identityManager, self));
     syncer::SyncService* syncService =
@@ -441,7 +441,7 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)dealloc {
-  DCHECK(_settingsAreDismissed)
+  CHECK(_settingsAreDismissed, base::NotFatalUntil::M151)
       << "-settingsWillBeDismissed must be called before -dealloc";
 }
 
@@ -1200,7 +1200,7 @@ struct EnhancedSafeBrowsingActivePromoData
   infoButton.statusText = status;
   if (image) {
     infoButton.iconImage = image;
-    DCHECK(imageBackground);
+    CHECK(imageBackground, base::NotFatalUntil::M151);
     infoButton.iconBackgroundColor = imageBackground;
     infoButton.iconTintColor = UIColor.whiteColor;
   }
@@ -1748,7 +1748,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForProfile(_profile);
-  DCHECK(syncService);
+  CHECK(syncService, base::NotFatalUntil::M151);
   identityAccountItem.shouldDisplayError =
       GetAccountErrorUIInfo(syncService) != nil;
 }
@@ -2191,7 +2191,7 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)settingsWillBeDismissed {
-  DCHECK(!_settingsAreDismissed);
+  CHECK(!_settingsAreDismissed, base::NotFatalUntil::M151);
 
   // Remove Enhanced Safe Browsing Promo.
   [self removeEnhancedSafeBrowsingPromoFETDataIfNeeded];
@@ -2470,7 +2470,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (void)BWGSettingsCoordinatorViewControllerWasRemoved:
     (BWGSettingsCoordinator*)coordinator {
-  DCHECK_EQ(_BWGSettingsCoordinator, coordinator);
+  CHECK_EQ(_BWGSettingsCoordinator, coordinator, base::NotFatalUntil::M151);
   [_BWGSettingsCoordinator stop];
   _BWGSettingsCoordinator = nil;
 }
@@ -2479,7 +2479,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (void)contentSettingsCoordinatorViewControllerWasRemoved:
     (ContentSettingsCoordinator*)coordinator {
-  DCHECK_EQ(_contentSettingsCoordinator, coordinator);
+  CHECK_EQ(_contentSettingsCoordinator, coordinator, base::NotFatalUntil::M151);
   [_contentSettingsCoordinator stop];
   _contentSettingsCoordinator = nil;
 }
@@ -2488,7 +2488,8 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (void)googleServicesSettingsCoordinatorDidRemove:
     (GoogleServicesSettingsCoordinator*)coordinator {
-  DCHECK_EQ(_googleServicesSettingsCoordinator, coordinator);
+  CHECK_EQ(_googleServicesSettingsCoordinator, coordinator,
+           base::NotFatalUntil::M151);
   [_googleServicesSettingsCoordinator stop];
   _googleServicesSettingsCoordinator.delegate = nil;
   _googleServicesSettingsCoordinator = nil;
@@ -2507,7 +2508,7 @@ struct EnhancedSafeBrowsingActivePromoData
 #pragma mark - SafetyCheckCoordinatorDelegate
 
 - (void)safetyCheckCoordinatorDidRemove:(SafetyCheckCoordinator*)coordinator {
-  DCHECK_EQ(_safetyCheckCoordinator, coordinator);
+  CHECK_EQ(_safetyCheckCoordinator, coordinator, base::NotFatalUntil::M151);
   [_safetyCheckCoordinator stop];
   _safetyCheckCoordinator.delegate = nil;
   _safetyCheckCoordinator = nil;
@@ -2516,7 +2517,7 @@ struct EnhancedSafeBrowsingActivePromoData
 #pragma mark - PasswordsCoordinatorDelegate
 
 - (void)passwordsCoordinatorDidRemove:(PasswordsCoordinator*)coordinator {
-  DCHECK_EQ(_passwordsCoordinator, coordinator);
+  CHECK_EQ(_passwordsCoordinator, coordinator, base::NotFatalUntil::M151);
   [_passwordsCoordinator stop];
   _passwordsCoordinator.delegate = nil;
   _passwordsCoordinator = nil;
@@ -2547,7 +2548,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (void)notificationsCoordinatorDidRemove:
     (NotificationsCoordinator*)coordinator {
-  DCHECK_EQ(_notificationsCoordinator, coordinator);
+  CHECK_EQ(_notificationsCoordinator, coordinator, base::NotFatalUntil::M151);
   [_notificationsCoordinator stop];
   _notificationsCoordinator = nil;
 }
@@ -2556,7 +2557,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (void)privacyCoordinatorViewControllerWasRemoved:
     (PrivacyCoordinator*)coordinator {
-  DCHECK_EQ(_privacyCoordinator, coordinator);
+  CHECK_EQ(_privacyCoordinator, coordinator, base::NotFatalUntil::M151);
   [_privacyCoordinator stop];
   _privacyCoordinator = nil;
 }
@@ -2608,14 +2609,15 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (void)manageSyncSettingsCoordinatorWasRemoved:
     (ManageSyncSettingsCoordinator*)coordinator {
-  DCHECK_EQ(_manageSyncSettingsCoordinator, coordinator);
+  CHECK_EQ(_manageSyncSettingsCoordinator, coordinator,
+           base::NotFatalUntil::M151);
   [self stopManageSyncSettingsCoordinator];
 }
 
 #pragma mark - TabsSettingsCoordinatorDelegate
 
 - (void)tabsSettingsCoordinatorDidRemove:(TabsSettingsCoordinator*)coordinator {
-  DCHECK_EQ(coordinator, _tabsCoordinator);
+  CHECK_EQ(coordinator, _tabsCoordinator, base::NotFatalUntil::M151);
   [self stopTabsCoordinator];
 }
 
