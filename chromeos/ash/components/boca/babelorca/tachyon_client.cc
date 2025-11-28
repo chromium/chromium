@@ -26,7 +26,7 @@ void TachyonClient::HandleResponse(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     std::unique_ptr<RequestDataWrapper> request_data,
     AuthFailureCallback auth_failure_cb,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   std::optional<int> http_status_code =
       url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers
           ? std::make_optional(

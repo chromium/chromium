@@ -30,9 +30,9 @@ TEST(TachyonRegistrarTest, SuccessfulRegistration) {
   registrar.Register(kClientUuid, test_future.GetCallback());
   SignInGaiaResponse signin_response;
   signin_response.mutable_auth_token()->set_payload(kTachyonToken);
-  authed_client.ExecuteResponseCallback(TachyonResponse(
-      net::OK, net::HttpStatusCode::HTTP_OK,
-      std::make_unique<std::string>(signin_response.SerializeAsString())));
+  authed_client.ExecuteResponseCallback(
+      TachyonResponse(net::OK, net::HttpStatusCode::HTTP_OK,
+                      signin_response.SerializeAsString()));
 
   EXPECT_TRUE(test_future.Get());
   ASSERT_TRUE(registrar.GetTachyonToken().has_value());

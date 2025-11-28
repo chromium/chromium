@@ -134,12 +134,12 @@ class UserCloudSigninRestrictionPolicyFetcher
   void OnGetTokenFailure(const GoogleServiceAuthError& error) override;
   std::string GetConsumerName() const override;
 
-  // Retrieves the policy value from `response_body` and runs `callback` with
+  // Retrieves the policy value from `response_body` and runs `callback_` with
   // the retrieved value and `Status::kSuccess` status if successful.
-  // If there was an error in fetching the policy, it will runs `callback` with
+  // If there was an error in fetching the policy, it will run `callback_` with
   // `std::nullopt` and the proper error status.
   void OnSecondaryGoogleAccountUsageResult(
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
  private:
   // Fetch access token with `GaiaConstants::kGoogleUserInfoEmail` and

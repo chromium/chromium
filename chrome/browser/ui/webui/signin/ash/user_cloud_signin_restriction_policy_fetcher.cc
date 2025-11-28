@@ -257,7 +257,7 @@ void UserCloudSigninRestrictionPolicyFetcher::FinalizeResult(
 
 void UserCloudSigninRestrictionPolicyFetcher::
     OnSecondaryGoogleAccountUsageResult(
-        std::unique_ptr<std::string> response_body) {
+        std::optional<std::string> response_body) {
   const char* histogram_name =
       IsFetchingArcPolicy() ? kSecondaryAccountAllowedInArcLatencyHistogramName
                             : kSecondaryGoogleAccountUsageLatencyHistogramName;
