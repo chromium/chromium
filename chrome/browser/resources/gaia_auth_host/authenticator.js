@@ -1577,8 +1577,6 @@ export class Authenticator extends EventTarget {
   recordAccountCreated_() {
     // Record true account is created during the first sign in event
     // and false if another account existed.
-    // TODO (b/307591058): add metric to track if account is created
-    // during login or not.
     chrome.send('metricsHandler:recordBooleanHistogram',[
       GAIA_CREATE_ACCOUNT_FIRST_USER,
       this.isFirstUser_
