@@ -6,7 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
-#import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_table_view_controller.h"
+#import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_container_view_controller.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/save_card/save_card_infobar_modal_overlay_mediator.h"
@@ -58,12 +58,12 @@
   SaveCardInfobarModalOverlayMediator* modalMediator =
       [[SaveCardInfobarModalOverlayMediator alloc]
           initWithRequest:self.request];
-  InfobarSaveCardTableViewController* modalViewController =
-      [[InfobarSaveCardTableViewController alloc]
+  InfobarSaveCardContainerViewController* modalViewController =
+      [[InfobarSaveCardContainerViewController alloc]
           initWithModalDelegate:modalMediator];
   modalViewController.title =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_CARD);
-  modalMediator.consumer = modalViewController;
+  modalMediator.consumer = modalViewController.saveCardConsumer;
   modalMediator.save_card_delegate = self;
   self.modalMediator = modalMediator;
   self.modalViewController = modalViewController;

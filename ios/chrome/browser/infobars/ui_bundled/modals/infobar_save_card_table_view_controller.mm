@@ -17,10 +17,8 @@
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_constants.h"
-#import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_delegate.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_link_item.h"
@@ -54,16 +52,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCardExpireYear,
   ItemTypeCardCvc,
   ItemTypeCardLegalMessage,
-  ItemTypeCardSave,
 };
 
 @interface InfobarSaveCardTableViewController () <TableViewTextEditItemDelegate,
                                                   TableViewTextLinkCellDelegate,
                                                   UITextFieldDelegate>
 
-// InfobarSaveCardModalDelegate for this ViewController.
-@property(nonatomic, strong) id<InfobarSaveCardModalDelegate>
-    saveCardModalDelegate;
 // Used to build and record metrics.
 @property(nonatomic, strong) InfobarMetricsRecorder* metricsRecorder;
 
@@ -107,17 +101,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, strong) TableViewTextEditItem* expirationYearItem;
 // Item for displaying and editing the security code.
 @property(nonatomic, strong) TableViewTextEditItem* cardCvcItem;
-// Item for displaying the save card button .
-@property(nonatomic, strong) TableViewTextButtonItem* saveCardButtonItem;
+
 @end
 
-@implementation InfobarSaveCardTableViewController
+@implementation InfobarSaveCardTableViewController {
+  NSLayoutConstraint* _tableViewHeightConstraint;
+}
 
-- (instancetype)initWithModalDelegate:
-    (id<InfobarSaveCardModalDelegate>)modalDelegate {
-  self = [super initWithStyle:UITableViewStylePlain];
+- (instancetype)initWithStyle:(UITableViewStyle)style {
+  self = [super initWithStyle:style];
   if (self) {
-    _saveCardModalDelegate = modalDelegate;
     _metricsRecorder = [[InfobarMetricsRecorder alloc]
         initWithType:InfobarType::kInfobarTypeSaveCard];
   }
@@ -129,42 +122,47 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+
+  // The table view height will be set to its content view in
+  // viewDidLayoutSubviews. Provide a default value here.
+  _tableViewHeightConstraint = [self.tableView.heightAnchor
+      constraintEqualToConstant:self.view.bounds.size.height];
+  _tableViewHeightConstraint.active = YES;
+  self.tableView.scrollEnabled = NO;
+  self.tableView.tableFooterView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
+
   self.tableView.sectionHeaderHeight = 0;
   [self.tableView
       setSeparatorInset:UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0, 0)];
 
-  // Configure the NavigationBar.
-  UIBarButtonItem* closeButton = [[UIBarButtonItem alloc]
-      initWithTitle:l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_CARD_CLOSE)
-              style:UIBarButtonItemStylePlain
-             target:self
-             action:@selector(dismissInfobarModal)];
-  closeButton.accessibilityIdentifier = kInfobarModalCancelButton;
-  self.navigationItem.leftBarButtonItem = closeButton;
-  self.navigationController.navigationBar.prefersLargeTitles = NO;
-
   [self loadModel];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-  [super viewDidAppear:animated];
-  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Presented];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-  [self.saveCardModalDelegate modalInfobarWasDismissed:self];
-  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Dismissed];
-  [super viewDidDisappear:animated];
 }
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  CGFloat tableViewScrollableHeight =
+  _tableViewHeightConstraint.constant =
       self.tableView.contentSize.height +
       self.tableView.adjustedContentInset.top +
       self.tableView.adjustedContentInset.bottom;
-  self.tableView.bounces =
-      tableViewScrollableHeight > self.view.frame.size.height;
+}
+
+#pragma mark - Properties
+
+- (NSString*)currentCardholderName {
+  return self.cardholderNameItem.textFieldValue;
+}
+
+- (NSString*)currentExpirationMonth {
+  return self.expirationMonthItem.textFieldValue;
+}
+
+- (NSString*)currentExpirationYear {
+  return self.expirationYearItem.textFieldValue;
+}
+
+- (NSString*)currentCardCVC {
+  return self.cardCvcItem.textFieldValue;
 }
 
 #pragma mark - TableViewModel
@@ -247,15 +245,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
         toSectionWithIdentifier:SectionIdentifierContent];
   }
 
-  self.saveCardButtonItem =
-      [[TableViewTextButtonItem alloc] initWithType:ItemTypeCardSave];
-  self.saveCardButtonItem.buttonText =
-      l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_CARD);
-  self.saveCardButtonItem.enabled = !self.currentCardSaveAccepted;
-  self.saveCardButtonItem.disableButtonIntrinsicWidth = YES;
-  [model addItem:self.saveCardButtonItem
-      toSectionWithIdentifier:SectionIdentifierContent];
-
   if (self.supportsEditing) {
     [self.cardholderNameItem
         setHasValidText:[self isCardholderNameValid:self.cardholderName]];
@@ -285,6 +274,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.displayedTargetAccountEmail = prefs[kDisplayedTargetAccountEmailPrefKey];
   self.logoIcon = prefs[kLogoIconPrefKey];
   [self.tableView reloadData];
+
+  [self updateSaveCardButtonState];
 }
 
 #pragma mark - UITableViewDataSource
@@ -322,17 +313,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       TableViewTextLinkCell* linkCell =
           base::apple::ObjCCast<TableViewTextLinkCell>(cell);
       linkCell.delegate = self;
-      linkCell.separatorInset =
-          UIEdgeInsetsMake(0, self.tableView.bounds.size.width, 0, 0);
-      break;
-    }
-    case ItemTypeCardSave: {
-      TableViewTextButtonCell* tableViewTextButtonCell =
-          base::apple::ObjCCastStrict<TableViewTextButtonCell>(cell);
-      [tableViewTextButtonCell.button
-                 addTarget:self
-                    action:@selector(saveCardButtonWasPressed:)
-          forControlEvents:UIControlEventTouchUpInside];
       break;
     }
   }
@@ -346,41 +326,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // == YES`, sets a checkmark on the button to show card upload has completed.
 // Also disables the button and hides its text.
 - (void)showProgressWithUploadCompleted:(BOOL)uploadCompleted {
-  self.saveCardButtonItem.buttonText = @"";
-  self.saveCardButtonItem.enabled = NO;
-  self.saveCardButtonItem.showsActivityIndicator = !uploadCompleted;
-  self.saveCardButtonItem.showsCheckmark = uploadCompleted;
-  if (uploadCompleted) {
-    self.saveCardButtonItem.buttonBackgroundColor =
-        [UIColor colorNamed:kBlue100Color];
-    self.saveCardButtonItem.dimBackgroundWhenDisabled = NO;
-    // VoiceOver would only announce button's accessibility label when its
-    // state changes from enabled to disabled. For confirmation state, the
-    // button's state is already disabled from previously showing loading state.
-    // Thus posting accessibility announcement here.
-    UIAccessibilityPostNotification(
-        UIAccessibilityAnnouncementNotification,
-        l10n_util::GetNSString(
-            IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME));
-  }
-  // Set the accessibility label on the button that would be read by the
-  // VoiceOver when the button is focused. Also, there's no need to specially
-  // post accessibility announcement for loading, since VoiceOver will announce
-  // the button's accessibility label on its state change from previously
-  // showing enabled state when `Save Card` is offered to disabled state while
-  // loading.
-  self.saveCardButtonItem.buttonAccessibilityLabel =
-      uploadCompleted
-          ? l10n_util::GetNSString(
-                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME)
-          : l10n_util::GetNSString(
-                IDS_AUTOFILL_SAVE_CARD_PROMPT_LOADING_THROBBER_ACCESSIBLE_NAME);
+  [self.containerDelegate showProgressWithUploadCompleted:uploadCompleted];
 
   [self updateItemsInProgressState];
 
   NSMutableArray* items = [NSMutableArray arrayWithArray:@[
     self.cardLastDigitsItem, self.cardholderNameItem, self.expirationMonthItem,
-    self.expirationYearItem, self.saveCardButtonItem
+    self.expirationYearItem
   ]];
   if (self.cardCvcItem) {
     [items addObject:self.cardCvcItem];
@@ -423,7 +375,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       // No metrics recorded.
       break;
     case ItemTypeCardLegalMessage:
-    case ItemTypeCardSave:
       NOTREACHED();
   }
 }
@@ -447,7 +398,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self cvcDidChange];
       break;
     case ItemTypeCardLegalMessage:
-    case ItemTypeCardSave:
       NOTREACHED();
   }
 }
@@ -460,7 +410,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)tableViewTextLinkCell:(TableViewTextLinkCell*)cell
             didRequestOpenURL:(CrURL*)URL {
-  [self.saveCardModalDelegate dismissModalAndOpenURL:URL.gurl];
+  [self.containerDelegate dismissModalAndOpenURL:URL.gurl];
 }
 
 #pragma mark - Private Methods
@@ -469,21 +419,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // current editable items.
 - (void)updateSaveCardButtonState {
   BOOL newButtonState = [self isCurrentInputValid];
-  if ([self.saveCardButtonItem isEnabled] != newButtonState) {
-    self.saveCardButtonItem.enabled = newButtonState;
-    [self reconfigureCellsForItems:@[ self.saveCardButtonItem ]];
+  // If card is already saved, disable the button.
+  if (self.currentCardSaveAccepted) {
+    newButtonState = NO;
   }
-}
-
-- (void)saveCardButtonWasPressed:(UIButton*)sender {
-  base::RecordAction(
-      base::UserMetricsAction("MobileMessagesModalAcceptedTapped"));
-  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Accepted];
-  [self.saveCardModalDelegate
-      saveCardWithCardholderName:self.cardholderNameItem.textFieldValue
-                 expirationMonth:self.expirationMonthItem.textFieldValue
-                  expirationYear:self.expirationYearItem.textFieldValue
-                         cardCvc:self.cardCvcItem.textFieldValue];
+  [self.containerDelegate updateSaveButtonEnabled:newButtonState];
 }
 
 - (void)nameEditDidBegin {
@@ -581,13 +521,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       setHasValidText:[self isCVCValid:self.cardCvcItem.textFieldValue]];
   [self reconfigureCellsForItems:@[ self.cardCvcItem ]];
   [self updateSaveCardButtonState];
-}
-
-- (void)dismissInfobarModal {
-  base::RecordAction(
-      base::UserMetricsAction("MobileMessagesModalCancelledTapped"));
-  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Canceled];
-  [self.saveCardModalDelegate dismissInfobarModal:self];
 }
 
 // In progress state, disables the text and icon for the items of

@@ -8,17 +8,36 @@
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_consumer.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
-@protocol InfobarSaveCardModalDelegate;
-@class SaveCardMessageWithLinks;
+class GURL;
+
+@protocol InfobarSaveCardTableViewControllerContainerDelegate
+
+// Updates the save button state.
+- (void)updateSaveButtonEnabled:(BOOL)enabled;
+
+// Updates the save button to show progress.
+- (void)showProgressWithUploadCompleted:(BOOL)uploadCompleted;
+
+// Asks the container to dismiss the modal and open the URL.
+- (void)dismissModalAndOpenURL:(const GURL&)URL;
+
+@end
 
 // InfobarSaveCardTableViewController represents the content for the Save Card
 // InfobarModal.
 @interface InfobarSaveCardTableViewController
     : LegacyChromeTableViewController <InfobarSaveCardModalConsumer>
 
-- (instancetype)initWithModalDelegate:
-    (id<InfobarSaveCardModalDelegate>)modalDelegate NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
+// Delegate containing the view controller.
+@property(nonatomic, weak)
+    id<InfobarSaveCardTableViewControllerContainerDelegate>
+        containerDelegate;
+
+// Returns the current values of the card fields.
+@property(nonatomic, readonly) NSString* currentCardholderName;
+@property(nonatomic, readonly) NSString* currentExpirationMonth;
+@property(nonatomic, readonly) NSString* currentExpirationYear;
+@property(nonatomic, readonly) NSString* currentCardCVC;
 
 @end
 
