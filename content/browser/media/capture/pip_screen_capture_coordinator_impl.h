@@ -45,6 +45,7 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
   void OnPipClosed();
 
   std::optional<NativeWindowId> PipWindowId() const;
+  std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo> Captures() const;
 
   void AddCapture(PipScreenCaptureCoordinatorProxy::CaptureInfo capture_info);
   void RemoveCapture(const base::UnguessableToken& session_id);

@@ -34,6 +34,10 @@ class PipScreenCaptureCoordinatorProxyImpl::UiThreadObserver
     coordinator_ = coordinator;
     if (coordinator_) {
       coordinator_->AddObserver(this);
+
+      // Update the proxy with the latest state
+      OnPipWindowIdChanged(coordinator_->PipWindowId());
+      OnCapturesChanged(coordinator_->Captures());
     }
   }
 
@@ -168,6 +172,9 @@ void PipScreenCaptureCoordinatorProxyImpl::SetPipWindowId(
 void PipScreenCaptureCoordinatorProxyImpl::SetCaptures(
     const std::vector<CaptureInfo>& captures) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (captures_ == captures) {
+    return;
+  }
   captures_ = captures;
   for (Observer& obs : observers_) {
     obs.OnCapturesChanged(captures_);

@@ -63,6 +63,11 @@ std::optional<NativeWindowId> PipScreenCaptureCoordinatorImpl::PipWindowId()
   return pip_window_id_;
 }
 
+std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>
+PipScreenCaptureCoordinatorImpl::Captures() const {
+  return captures_;
+}
+
 void PipScreenCaptureCoordinatorImpl::AddCapture(
     PipScreenCaptureCoordinatorProxy::CaptureInfo capture_info) {
   captures_.push_back(std::move(capture_info));
