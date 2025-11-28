@@ -582,7 +582,9 @@ TEST_F(NewTabPageCoordinatorTest, ProxiesNTPViewControllerMethods) {
                           @selector(isNTPScrolledToTop));
   ExpectMethodToProxyToVC(@selector(willUpdateSnapshot),
                           @selector(willUpdateSnapshot));
-  ExpectMethodToProxyToVC(@selector(focusFakebox), @selector(focusOmnibox));
+  if (!IsComposeboxIOSEnabled()) {
+    ExpectMethodToProxyToVC(@selector(focusFakebox), @selector(focusOmnibox));
+  }
   ExpectMethodToProxyToVC(@selector(locationBarDidResignFirstResponder),
                           @selector(omniboxDidResignFirstResponder));
 
