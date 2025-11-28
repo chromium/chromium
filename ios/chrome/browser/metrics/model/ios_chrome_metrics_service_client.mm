@@ -55,6 +55,7 @@
 #import "components/metrics/net/net_metrics_log_uploader.h"
 #import "components/metrics/net/network_metrics_provider.h"
 #import "components/metrics/persistent_histograms.h"
+#import "components/metrics/private_metrics/puma_service.h"
 #import "components/metrics/stability_metrics_helper.h"
 #import "components/metrics/ui/form_factor_metrics_provider.h"
 #import "components/metrics/ui/screen_info_metrics_provider.h"
@@ -189,6 +190,7 @@ void IOSChromeMetricsServiceClient::RegisterPrefs(
   metrics::RegisterMetricsReportingStatePrefs(registry);
   ukm::UkmService::RegisterPrefs(registry);
   metrics::dwa::DwaService::RegisterPrefs(registry);
+  metrics::private_metrics::PumaService::RegisterPrefs(registry);
 }
 
 variations::SyntheticTrialRegistry*
@@ -206,6 +208,11 @@ ukm::UkmService* IOSChromeMetricsServiceClient::GetUkmService() {
 
 metrics::dwa::DwaService* IOSChromeMetricsServiceClient::GetDwaService() {
   return dwa_service_.get();
+}
+
+metrics::private_metrics::PumaService*
+IOSChromeMetricsServiceClient::GetPumaService() {
+  return puma_service_.get();
 }
 
 void IOSChromeMetricsServiceClient::SetMetricsClientId(
@@ -292,6 +299,11 @@ void IOSChromeMetricsServiceClient::Initialize() {
     dwa_service_ = std::make_unique<metrics::dwa::DwaService>(
         this, local_state,
         GetApplicationContext()->GetSharedURLLoaderFactory());
+  }
+
+  if (metrics::private_metrics::PumaService::IsPumaEnabled()) {
+    puma_service_ = std::make_unique<metrics::private_metrics::PumaService>(
+        this, local_state);
   }
 }
 

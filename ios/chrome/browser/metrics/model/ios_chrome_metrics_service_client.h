@@ -54,6 +54,10 @@ namespace metrics::dwa {
 class DwaService;
 }
 
+namespace metrics::private_metrics {
+class PumaService;
+}
+
 // IOSChromeMetricsServiceClient provides an implementation of
 // MetricsServiceClient that depends on //ios/chrome/.
 class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
@@ -83,6 +87,7 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
   metrics::dwa::DwaService* GetDwaService() override;
+  metrics::private_metrics::PumaService* GetPumaService() override;
   void SetMetricsClientId(const std::string& client_id) override;
   int32_t GetProduct() override;
   std::string GetApplicationLocale() override;
@@ -220,6 +225,9 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 
   // The DwaService that `this` is a client of.
   std::unique_ptr<metrics::dwa::DwaService> dwa_service_;
+
+  // The PumaService that `this` is a client of.
+  std::unique_ptr<metrics::private_metrics::PumaService> puma_service_;
 
   // Observation of the ProfileManagerIOS.
   base::ScopedObservation<ProfileManagerIOS, ProfileManagerObserverIOS>

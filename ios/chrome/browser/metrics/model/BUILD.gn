@@ -215,6 +215,7 @@ source_set("unit_tests") {
     "//components/metrics",
     "//components/metrics:test_support",
     "//components/metrics/private_metrics",
+    "//components/metrics/private_metrics:private_metrics_features",
     "//components/network_time",
     "//components/prefs",
     "//components/prefs:test_support",
