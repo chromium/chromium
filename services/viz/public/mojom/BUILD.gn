@@ -732,7 +732,6 @@ mojom("shared_image_format") {
     },
   ]
 
-  # TODO(crbug.com/40244048): Does this need to be public_deps vs. deps?
   public_deps =
       [ "//services/viz/public/mojom/compositing/internal:singleplanar_format" ]
 }
