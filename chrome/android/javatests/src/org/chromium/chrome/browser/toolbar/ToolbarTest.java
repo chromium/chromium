@@ -367,6 +367,7 @@ public class ToolbarTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @DisabledTest(message = "Flaky, see crbug.com/464502425")
     public void testToggleTabStripVisibility() {
         int tabStripHeightResource =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
