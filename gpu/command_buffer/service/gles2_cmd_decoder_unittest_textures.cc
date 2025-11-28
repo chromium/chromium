@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
@@ -658,7 +654,7 @@ TEST_P(GLES2DecoderManualInitTest, CopyTexImage2DUnsizedInternalFormat) {
   for (size_t i = 0; i < std::size(kUnsizedInternalFormats); ++i) {
     // Copy from main framebuffer to texture, using the unsized internal format.
     DoBindFramebuffer(GL_FRAMEBUFFER, 0, 0);
-    GLenum internal_format = kUnsizedInternalFormats[i];
+    GLenum internal_format = UNSAFE_TODO(kUnsizedInternalFormats[i]);
     DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
     DoCopyTexImage2D(target, level, internal_format, 0, 0, width, height, border);
     EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -738,7 +734,7 @@ TEST_P(GLES2DecoderManualInitTest, CopyTexImage2DUnsizedInternalFormatES3) {
   for (size_t i = 0; i < std::size(kUnsizedInternalFormats); ++i) {
     // Copy from main framebuffer to texture, using the unsized internal format.
     DoBindFramebuffer(GL_FRAMEBUFFER, 0, 0);
-    GLenum internal_format = kUnsizedInternalFormats[i].unsized;
+    GLenum internal_format = UNSAFE_TODO(kUnsizedInternalFormats[i]).unsized;
     DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
     DoCopyTexImage2D(target, level, internal_format,
                      0, 0, width, height, border);
@@ -767,7 +763,7 @@ TEST_P(GLES2DecoderManualInitTest, CopyTexImage2DUnsizedInternalFormatES3) {
     if (DoCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
       continue;
 
-    internal_format = kUnsizedInternalFormats[i].sized;
+    internal_format = UNSAFE_TODO(kUnsizedInternalFormats[i]).sized;
     DoBindTexture(GL_TEXTURE_2D, kNewClientId, kNewServiceId);
 
     bool complete =
@@ -1676,7 +1672,7 @@ TEST_P(GLES2DecoderManualInitTest, CompressedTexImage2DS3TCWebGL) {
   };
 
   for (size_t ii = 0; ii < std::size(test_data); ++ii) {
-    const S3TCTestData& test = test_data[ii];
+    const S3TCTestData& test = UNSAFE_TODO(test_data[ii]);
     cmds::CompressedTexImage2DBucket cmd;
     // test small width.
     DoCompressedTexImage2D(
@@ -1832,7 +1828,7 @@ TEST_P(GLES2DecoderManualInitTest, CompressedTexImage2DS3TC) {
   };
 
   for (size_t ii = 0; ii < std::size(test_data); ++ii) {
-    const S3TCTestData& test = test_data[ii];
+    const S3TCTestData& test = UNSAFE_TODO(test_data[ii]);
     cmds::CompressedTexImage2DBucket cmd;
     // test small width.
     DoCompressedTexImage2D(
@@ -3346,7 +3342,7 @@ class GLES2DecoderCompressedFormatsTest : public GLES2DecoderManualInitTest {
 
   static bool ValueInArray(GLint value, GLint* array, GLint count) {
     for (GLint ii = 0; ii < count; ++ii) {
-      if (array[ii] == value) {
+      if (UNSAFE_TODO(array[ii]) == value) {
         return true;
       }
     }
@@ -3392,8 +3388,8 @@ class GLES2DecoderCompressedFormatsTest : public GLES2DecoderManualInitTest {
     EXPECT_EQ(num_formats, result->GetNumResults());
 
     for (int i = 0; i < count; ++i) {
-      EXPECT_TRUE(
-          ValueInArray(formats[i], result->GetData(), result->GetNumResults()));
+      UNSAFE_TODO(EXPECT_TRUE(ValueInArray(formats[i], result->GetData(),
+                                           result->GetNumResults())));
     }
 
     EXPECT_EQ(GL_NO_ERROR, GetGLError());

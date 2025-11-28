@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/gl_utils.h"
 
 #include <algorithm>
 #include <array>
 #include <unordered_set>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
@@ -343,7 +339,8 @@ void PopulateDRMCapabilities(Capabilities* caps,
 bool CheckUniqueAndNonNullIds(GLsizei n, const GLuint* client_ids) {
   if (n <= 0)
     return true;
-  std::unordered_set<uint32_t> unique_ids(client_ids, client_ids + n);
+  std::unordered_set<uint32_t> unique_ids(client_ids,
+                                          UNSAFE_TODO(client_ids + n));
   return (unique_ids.size() == static_cast<size_t>(n)) &&
          (unique_ids.find(0) == unique_ids.end());
 }

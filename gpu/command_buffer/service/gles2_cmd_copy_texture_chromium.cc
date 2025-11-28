@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/gles2_cmd_copy_texture_chromium.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <unordered_map>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_copy_texture_chromium_utils.h"
@@ -646,10 +642,10 @@ void convertToRGB(const uint8_t* source,
                   unsigned length) {
   for (unsigned i = 0; i < length; ++i) {
     destination[0] = source[0];
-    destination[1] = source[1];
-    destination[2] = source[2];
-    source += 4;
-    destination += 3;
+    UNSAFE_TODO(destination[1]) = UNSAFE_TODO(source[1]);
+    UNSAFE_TODO(destination[2]) = UNSAFE_TODO(source[2]);
+    UNSAFE_TODO(source += 4);
+    UNSAFE_TODO(destination += 3);
   }
 }
 
@@ -660,10 +656,10 @@ void convertToRGBFloat(const uint8_t* source,
   const float scaleFactor = 1.0f / 255.0f;
   for (unsigned i = 0; i < length; ++i) {
     destination[0] = source[0] * scaleFactor;
-    destination[1] = source[1] * scaleFactor;
-    destination[2] = source[2] * scaleFactor;
-    source += 4;
-    destination += 3;
+    UNSAFE_TODO(destination[1]) = UNSAFE_TODO(source[1]) * scaleFactor;
+    UNSAFE_TODO(destination[2]) = UNSAFE_TODO(source[2]) * scaleFactor;
+    UNSAFE_TODO(source += 4);
+    UNSAFE_TODO(destination += 3);
   }
 }
 
@@ -706,7 +702,7 @@ void PrepareUnpackBuffer(GLuint buffer[2],
     bytes_per_group =
         gpu::gles2::GLES2Util::ComputeImageGroupSize(format, type);
     buf_size = pixel_num * bytes_per_group;
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffer[1]);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, UNSAFE_TODO(buffer[1]));
     glBufferData(GL_PIXEL_UNPACK_BUFFER, buf_size, data.data(), GL_STATIC_DRAW);
 #else
     glBindBuffer(GL_PIXEL_PACK_BUFFER, buffer[0]);
@@ -715,7 +711,7 @@ void PrepareUnpackBuffer(GLuint buffer[2],
     void* pixels =
         glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, buf_size, GL_MAP_READ_BIT);
 
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffer[1]);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, UNSAFE_TODO(buffer[1]));
     bytes_per_group =
         gpu::gles2::GLES2Util::ComputeImageGroupSize(format, type);
     buf_size = pixel_num * bytes_per_group;

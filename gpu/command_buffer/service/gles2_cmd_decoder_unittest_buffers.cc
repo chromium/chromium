@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
@@ -113,8 +109,8 @@ TEST_P(GLES3DecoderTest, MapBufferRangeUnmapBufferReadSucceeds) {
              result_shm_id, result_shm_offset);
     *result = 0;
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-    int8_t* mem = reinterpret_cast<int8_t*>(&result[1]);
-    EXPECT_EQ(0, memcmp(&data[0], mem, kSize));
+    int8_t* mem = reinterpret_cast<int8_t*>(UNSAFE_TODO(&result[1]));
+    UNSAFE_TODO(EXPECT_EQ(0, memcmp(&data[0], mem, kSize)));
     EXPECT_EQ(1u, *result);
   }
 
@@ -146,7 +142,8 @@ TEST_P(GLES3DecoderTest, MapBufferRangeUnmapBufferWriteSucceeds) {
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(uint32_t);
 
   auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
-  int8_t* client_data = GetSharedMemoryAs<int8_t*>() + sizeof(uint32_t);
+  int8_t* client_data =
+      UNSAFE_TODO(GetSharedMemoryAs<int8_t*>() + sizeof(uint32_t));
 
   DoBindBuffer(kTarget, client_buffer_id_, kServiceBufferId);
   Buffer* buffer = GetBuffer(client_buffer_id_);
@@ -165,7 +162,7 @@ TEST_P(GLES3DecoderTest, MapBufferRangeUnmapBufferWriteSucceeds) {
   EXPECT_TRUE(shadow_data);
   // Verify the shadow data is initialized.
   for (GLsizeiptr ii = 0; ii < kTotalSize; ++ii) {
-    EXPECT_EQ(static_cast<int8_t>(ii % 128), shadow_data[ii]);
+    UNSAFE_TODO(EXPECT_EQ(static_cast<int8_t>(ii % 128), shadow_data[ii]));
   }
 
   {  // MapBufferRange succeeds
@@ -181,12 +178,12 @@ TEST_P(GLES3DecoderTest, MapBufferRangeUnmapBufferWriteSucceeds) {
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
     EXPECT_EQ(1u, *result);
     // Verify the buffer range from GPU is copied to client mem.
-    EXPECT_EQ(0, memcmp(&gpu_data[kOffset], client_data, kSize));
+    UNSAFE_TODO(EXPECT_EQ(0, memcmp(&gpu_data[kOffset], client_data, kSize)));
   }
 
   // Update the client mem.
   const int8_t kValue0 = 21;
-  memset(client_data, kValue0, kSize);
+  UNSAFE_TODO(memset(client_data, kValue0, kSize));
 
   {  // UnmapBuffer succeeds
     EXPECT_CALL(*gl_, UnmapBuffer(kTarget))
@@ -201,10 +198,10 @@ TEST_P(GLES3DecoderTest, MapBufferRangeUnmapBufferWriteSucceeds) {
     for (GLsizeiptr ii = 0; ii < kTotalSize; ++ii) {
       if (ii < kOffset) {
         EXPECT_EQ(static_cast<int8_t>(ii % 128), gpu_data[ii]);
-        EXPECT_EQ(static_cast<int8_t>(ii % 128), shadow_data[ii]);
+        UNSAFE_TODO(EXPECT_EQ(static_cast<int8_t>(ii % 128), shadow_data[ii]));
       } else {
         EXPECT_EQ(kValue0, gpu_data[ii]);
-        EXPECT_EQ(kValue0, shadow_data[ii]);
+        UNSAFE_TODO(EXPECT_EQ(kValue0, shadow_data[ii]));
       }
     }
   }
@@ -230,7 +227,8 @@ TEST_P(GLES3DecoderTest, FlushMappedBufferRangeSucceeds) {
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(uint32_t);
 
   auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
-  int8_t* client_data = GetSharedMemoryAs<int8_t*>() + sizeof(uint32_t);
+  int8_t* client_data =
+      UNSAFE_TODO(GetSharedMemoryAs<int8_t*>() + sizeof(uint32_t));
 
   DoBindBuffer(kTarget, client_buffer_id_, kServiceBufferId);
   Buffer* buffer = GetBuffer(client_buffer_id_);
@@ -249,7 +247,7 @@ TEST_P(GLES3DecoderTest, FlushMappedBufferRangeSucceeds) {
   EXPECT_TRUE(shadow_data);
   // Verify the shadow data is initialized.
   for (GLsizeiptr ii = 0; ii < kTotalSize; ++ii) {
-    EXPECT_EQ(static_cast<int8_t>(ii % 128), shadow_data[ii]);
+    UNSAFE_TODO(EXPECT_EQ(static_cast<int8_t>(ii % 128), shadow_data[ii]));
   }
 
   {  // MapBufferRange succeeds
@@ -266,12 +264,13 @@ TEST_P(GLES3DecoderTest, FlushMappedBufferRangeSucceeds) {
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
     EXPECT_EQ(1u, *result);
     // Verify the buffer range from GPU is copied to client mem.
-    EXPECT_EQ(0, memcmp(&gpu_data[kMappedOffset], client_data, kMappedSize));
+    UNSAFE_TODO(EXPECT_EQ(
+        0, memcmp(&gpu_data[kMappedOffset], client_data, kMappedSize)));
   }
 
   // Update the client mem, including data within and outside the flush range.
   const int8_t kValue0 = 21;
-  memset(client_data, kValue0, kTotalSize);
+  UNSAFE_TODO(memset(client_data, kValue0, kTotalSize));
 
   {  // FlushMappedBufferRange succeeds
     EXPECT_CALL(*gl_, FlushMappedBufferRange(kTarget, kFlushRangeOffset,
@@ -289,10 +288,10 @@ TEST_P(GLES3DecoderTest, FlushMappedBufferRangeSucceeds) {
       if (ii >= kMappedOffset + kFlushRangeOffset &&
           ii < kMappedOffset + kFlushRangeOffset + kFlushRangeSize) {
         EXPECT_EQ(kValue0, gpu_data[ii]);
-        EXPECT_EQ(kValue0, shadow_data[ii]);
+        UNSAFE_TODO(EXPECT_EQ(kValue0, shadow_data[ii]));
       } else {
         EXPECT_EQ(static_cast<int8_t>(ii % 128), gpu_data[ii]);
-        EXPECT_EQ(static_cast<int8_t>(ii % 128), shadow_data[ii]);
+        UNSAFE_TODO(EXPECT_EQ(static_cast<int8_t>(ii % 128), shadow_data[ii]));
       }
     }
   }
@@ -311,10 +310,10 @@ TEST_P(GLES3DecoderTest, FlushMappedBufferRangeSucceeds) {
       if (ii >= kMappedOffset + kFlushRangeOffset &&
           ii < kMappedOffset + kFlushRangeOffset + kFlushRangeSize) {
         EXPECT_EQ(kValue0, gpu_data[ii]);
-        EXPECT_EQ(kValue0, shadow_data[ii]);
+        UNSAFE_TODO(EXPECT_EQ(kValue0, shadow_data[ii]));
       } else {
         EXPECT_EQ(static_cast<int8_t>(ii % 128), gpu_data[ii]);
-        EXPECT_EQ(static_cast<int8_t>(ii % 128), shadow_data[ii]);
+        UNSAFE_TODO(EXPECT_EQ(static_cast<int8_t>(ii % 128), shadow_data[ii]));
       }
     }
   }
@@ -368,8 +367,8 @@ TEST_P(GLES3DecoderTest, MapBufferRangeWriteInvalidateRangeSucceeds) {
   uint32_t data_shm_id = shared_memory_id_;
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
-  int8_t* mem = reinterpret_cast<int8_t*>(&result[1]);
-  memset(mem, 72, kSize);  // Init to a random value other than 0.
+  int8_t* mem = reinterpret_cast<int8_t*>(UNSAFE_TODO(&result[1]));
+  UNSAFE_TODO(memset(mem, 72, kSize));  // Init to a random value other than 0.
 
   cmds::MapBufferRange cmd;
   cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
@@ -406,8 +405,8 @@ TEST_P(GLES3DecoderTest, MapBufferRangeWriteInvalidateBufferSucceeds) {
   uint32_t data_shm_id = shared_memory_id_;
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
-  int8_t* mem = reinterpret_cast<int8_t*>(&result[1]);
-  memset(mem, 72, kSize);  // Init to a random value other than 0.
+  int8_t* mem = reinterpret_cast<int8_t*>(UNSAFE_TODO(&result[1]));
+  UNSAFE_TODO(memset(mem, 72, kSize));  // Init to a random value other than 0.
 
   cmds::MapBufferRange cmd;
   cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
@@ -442,14 +441,14 @@ TEST_P(GLES3DecoderTest, MapBufferRangeWriteUnsynchronizedBit) {
   uint32_t data_shm_id = shared_memory_id_;
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
-  int8_t* mem = reinterpret_cast<int8_t*>(&result[1]);
-  memset(mem, 72, kSize);  // Init to a random value other than 0.
+  int8_t* mem = reinterpret_cast<int8_t*>(UNSAFE_TODO(&result[1]));
+  UNSAFE_TODO(memset(mem, 72, kSize));  // Init to a random value other than 0.
 
   cmds::MapBufferRange cmd;
   cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
            result_shm_id, result_shm_offset);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(0, memcmp(&data[0], mem, kSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&data[0], mem, kSize)));
 }
 
 TEST_P(GLES3DecoderTest, MapBufferRangeWithError) {
@@ -469,16 +468,16 @@ TEST_P(GLES3DecoderTest, MapBufferRangeWithError) {
   uint32_t data_shm_id = shared_memory_id_;
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
-  int8_t* mem = reinterpret_cast<int8_t*>(&result[1]);
-  memset(mem, 72, kSize);  // Init to a random value other than 0.
+  int8_t* mem = reinterpret_cast<int8_t*>(UNSAFE_TODO(&result[1]));
+  UNSAFE_TODO(memset(mem, 72, kSize));  // Init to a random value other than 0.
 
   cmds::MapBufferRange cmd;
   cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
            result_shm_id, result_shm_offset);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  memset(&data[0], 72, kSize);
+  UNSAFE_TODO(memset(&data[0], 72, kSize));
   // Mem is untouched.
-  EXPECT_EQ(0, memcmp(&data[0], mem, kSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&data[0], mem, kSize)));
   EXPECT_EQ(0u, *result);
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
 }
@@ -686,9 +685,9 @@ TEST_P(GLES3DecoderTest, CopyBufferSubDataValidArgs) {
   DoBindBuffer(kTarget, client_buffer_id_, kServiceBufferId);
   DoBufferData(kTarget, kSize);
   auto data = base::HeapArray<char>::Uninit(kHalfSize);
-  memset(data.data(), kValue0, kHalfSize);
+  UNSAFE_TODO(memset(data.data(), kValue0, kHalfSize));
   DoBufferSubData(kTarget, 0, kHalfSize, data.data());
-  memset(data.data(), kValue1, kHalfSize);
+  UNSAFE_TODO(memset(data.data(), kValue1, kHalfSize));
   DoBufferSubData(kTarget, kHalfSize, kHalfSize, data.data());
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   Buffer* buffer = GetBuffer(client_buffer_id_);
@@ -698,10 +697,10 @@ TEST_P(GLES3DecoderTest, CopyBufferSubDataValidArgs) {
   EXPECT_TRUE(shadow_data);
   // Verify the shadow data is initialized.
   for (GLsizeiptr ii = 0; ii < kHalfSize; ++ii) {
-    EXPECT_EQ(kValue0, shadow_data[ii]);
+    UNSAFE_TODO(EXPECT_EQ(kValue0, shadow_data[ii]));
   }
   for (GLsizeiptr ii = kHalfSize; ii < kSize; ++ii) {
-    EXPECT_EQ(kValue1, shadow_data[ii]);
+    UNSAFE_TODO(EXPECT_EQ(kValue1, shadow_data[ii]));
   }
 
   EXPECT_CALL(*gl_, CopyBufferSubData(kTarget, kTarget,
@@ -712,13 +711,13 @@ TEST_P(GLES3DecoderTest, CopyBufferSubDataValidArgs) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   // Verify the shadow data is updated.
   for (GLsizeiptr ii = 0; ii < kHalfSize; ++ii) {
-    EXPECT_EQ(kValue0, shadow_data[ii]);
+    UNSAFE_TODO(EXPECT_EQ(kValue0, shadow_data[ii]));
   }
   for (GLsizeiptr ii = kHalfSize; ii < kSize; ++ii) {
     if (ii >= kWriteOffset && ii < kWriteOffset + kCopySize) {
-      EXPECT_EQ(kValue0, shadow_data[ii]);
+      UNSAFE_TODO(EXPECT_EQ(kValue0, shadow_data[ii]));
     } else {
-      EXPECT_EQ(kValue1, shadow_data[ii]);
+      UNSAFE_TODO(EXPECT_EQ(kValue1, shadow_data[ii]));
     }
   }
 }

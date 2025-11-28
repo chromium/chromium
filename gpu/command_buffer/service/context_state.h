@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file contains the ContextState class.
 
 #ifndef GPU_COMMAND_BUFFER_SERVICE_CONTEXT_STATE_H_
@@ -17,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -331,7 +327,7 @@ struct GPU_GLES2_EXPORT ContextState {
   template <typename T>
   void GetWindowRectangle(GLuint index, T* box) {
     for (size_t i = 0; i < 4; ++i) {
-      box[i] = window_rectangles_[4 * index + i];
+      UNSAFE_TODO(box[i]) = window_rectangles_[4 * index + i];
     }
   }
   void UpdateWindowRectangles() const;

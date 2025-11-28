@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/copy_shared_image_helper.h"
 
 #include <array>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -229,7 +225,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
   DLOG_IF(ERROR, !source_mailbox.Verify())
       << "CopySubTexture was passed an invalid mailbox";
   Mailbox dest_mailbox = Mailbox::FromVolatile(
-      reinterpret_cast<const volatile Mailbox*>(mailboxes)[1]);
+      UNSAFE_TODO(reinterpret_cast<const volatile Mailbox*>(mailboxes)[1]));
   DLOG_IF(ERROR, !dest_mailbox.Verify())
       << "CopySubTexture was passed an invalid mailbox";
 
@@ -586,9 +582,9 @@ bool GraphiteImageReadPixels(GraphiteSharedContext* graphite_shared_context,
     // When `src_rect` was originally contained in the src image bounds, this
     // is equal to the original `pixel_address`.
     uint8_t* subset_pixel_addr =
-        static_cast<uint8_t*>(pixel_address) +
-        (src_rect.y() - src_y) * row_bytes +
-        (src_rect.x() - src_x) * dst_info.bytesPerPixel();
+        UNSAFE_TODO(static_cast<uint8_t*>(pixel_address) +
+                    (src_rect.y() - src_y) * row_bytes +
+                    (src_rect.x() - src_x) * dst_info.bytesPerPixel());
     SkImageInfo subset_dst_info =
         dst_info.makeWH(src_rect.width(), src_rect.height());
 

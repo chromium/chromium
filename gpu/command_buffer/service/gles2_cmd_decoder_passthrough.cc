@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -293,13 +289,14 @@ void ReturnProgramInfoData(DecoderClient* client,
 
   std::vector<uint8_t> return_data;
   return_data.resize(sizeof(cmds::GLES2ReturnProgramInfo) + info.size());
-  auto* return_program_info =
-      reinterpret_cast<cmds::GLES2ReturnProgramInfo*>(return_data.data());
+  auto* return_program_info = UNSAFE_TODO(
+      reinterpret_cast<cmds::GLES2ReturnProgramInfo*>(return_data.data()));
   return_program_info->return_data_header.return_data_type = type;
   return_program_info->program_client_id = program;
-  memcpy(return_program_info->deserialized_buffer, info.data(), info.size());
+  UNSAFE_TODO(memcpy(return_program_info->deserialized_buffer, info.data(),
+                     info.size()));
   client->HandleReturnData(
-      base::span<uint8_t>(return_data.data(), return_data.size()));
+      UNSAFE_TODO(base::span<uint8_t>(return_data.data(), return_data.size())));
 }
 
 }  // anonymous namespace
@@ -721,7 +718,7 @@ GLES2Decoder::Error GLES2DecoderPassthroughImpl::DoCommandsImpl(
     const unsigned int arg_count = size - 1;
     unsigned int command_index = command - kFirstGLES2Command;
     if (command_index < std::size(command_info)) {
-      const CommandInfo& info = command_info[command_index];
+      const CommandInfo& info = UNSAFE_TODO(command_info[command_index]);
       unsigned int info_arg_count = static_cast<unsigned int>(info.arg_count);
       if ((info.arg_flags == cmd::kFixed && arg_count == info_arg_count) ||
           (info.arg_flags == cmd::kAtLeastN && arg_count >= info_arg_count)) {
@@ -762,7 +759,7 @@ GLES2Decoder::Error GLES2DecoderPassthroughImpl::DoCommandsImpl(
 
     if (result != error::kDeferCommandUntilLater) {
       process_pos += size;
-      cmd_data += size;
+      UNSAFE_TODO(cmd_data += size);
     }
   }
 
@@ -1654,7 +1651,8 @@ GLsizeiptr GLES2DecoderPassthroughImpl::BlobCacheGet(const void* key,
   }
 
   const uint8_t* key_begin = reinterpret_cast<const uint8_t*>(key);
-  PassthroughProgramCache::Key entry_key(key_begin, key_begin + key_size);
+  PassthroughProgramCache::Key entry_key(key_begin,
+                                         UNSAFE_TODO(key_begin + key_size));
   return cache->Get(entry_key, value, value_size);
 }
 
@@ -1672,11 +1670,12 @@ void GLES2DecoderPassthroughImpl::BlobCacheSet(const void* key,
   }
 
   const uint8_t* key_begin = reinterpret_cast<const uint8_t*>(key);
-  PassthroughProgramCache::Key entry_key(key_begin, key_begin + key_size);
+  PassthroughProgramCache::Key entry_key(key_begin,
+                                         UNSAFE_TODO(key_begin + key_size));
 
   const uint8_t* value_begin = reinterpret_cast<const uint8_t*>(value);
-  PassthroughProgramCache::Value entry_value(value_begin,
-                                             value_begin + value_size);
+  PassthroughProgramCache::Value entry_value(
+      value_begin, UNSAFE_TODO(value_begin + value_size));
 
   cache->Set(
       std::move(entry_key), std::move(entry_value),
@@ -2372,7 +2371,7 @@ void GLES2DecoderPassthroughImpl::ReadBackBuffersIntoShadowCopies(
       group_->LoseContexts(error::kUnknown);
       return;
     }
-    memcpy(shadow, mapped, update.size);
+    UNSAFE_TODO(memcpy(shadow, mapped, update.size));
     bool unmap_ok = api()->glUnmapBufferFn(GL_ARRAY_BUFFER);
     if (unmap_ok == GL_FALSE) {
       DLOG(ERROR) << "glUnmapBuffer unexpectedly returned GL_FALSE";
@@ -2430,7 +2429,7 @@ error::Error GLES2DecoderPassthroughImpl::ProcessReadPixels(bool did_finish) {
         break;
       }
 
-      memcpy(pixels, data, pending_read_pixels.pixels_size);
+      UNSAFE_TODO(memcpy(pixels, data, pending_read_pixels.pixels_size));
       api()->glUnmapBufferFn(GL_PIXEL_PACK_BUFFER);
       api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER,
                             resources_->buffer_id_map.GetServiceIDOrInvalid(

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/persistent_cache/backend_storage.h"
@@ -61,7 +57,7 @@ TEST_F(DawnCachingInterfaceTest, StoreThenLoadSameInterface) {
                                                         nullptr, 0));
   EXPECT_EQ(kDataSize, dawn_caching_interface->LoadData(kKey.data(), kKeySize,
                                                         buffer, kDataSize));
-  EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
 }
 
 TEST_F(DawnCachingInterfaceTest, StoreThenLoadSameHandle) {
@@ -74,7 +70,7 @@ TEST_F(DawnCachingInterfaceTest, StoreThenLoadSameHandle) {
             load_interface->LoadData(kKey.data(), kKeySize, nullptr, 0));
   EXPECT_EQ(kDataSize,
             load_interface->LoadData(kKey.data(), kKeySize, buffer, kDataSize));
-  EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
 }
 
 TEST_F(DawnCachingInterfaceTest, StoreDestroyThenLoadSameHandle) {
@@ -88,7 +84,7 @@ TEST_F(DawnCachingInterfaceTest, StoreDestroyThenLoadSameHandle) {
             load_interface->LoadData(kKey.data(), kKeySize, nullptr, 0));
   EXPECT_EQ(kDataSize,
             load_interface->LoadData(kKey.data(), kKeySize, buffer, kDataSize));
-  EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
 }
 
 // If the handle is released before a new cache is created, the new cache should

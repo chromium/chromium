@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // This file contains the GLES2Decoder class.
 
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_H_
@@ -19,6 +14,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -73,7 +69,7 @@ struct GPU_GLES2_EXPORT DisallowedFeatures {
   }
 
   bool operator==(const DisallowedFeatures& other) const {
-    return !std::memcmp(this, &other, sizeof(*this));
+    return !UNSAFE_TODO(std::memcmp(this, &other, sizeof(*this)));
   }
 
   bool npot_support = false;

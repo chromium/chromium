@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -121,7 +117,7 @@ TEST_P(GLES2DecoderTest, GetIntegervCached) {
       },
   };
   for (size_t ii = 0; ii < sizeof(tests) / sizeof(tests[0]); ++ii) {
-    const TestInfo& test = tests[ii];
+    const TestInfo& test = UNSAFE_TODO(tests[ii]);
     auto* result =
         static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
     EXPECT_CALL(*gl_, GetError())
@@ -731,27 +727,28 @@ static void CheckBeginEndQueryBadMemoryFails(GLES2DecoderTestBase* test,
 
 TEST_P(GLES2DecoderManualInitTest, BeginEndQueryEXTBadMemoryIdFails) {
   for (size_t i = 0; i < std::size(kQueryTypes); ++i) {
-    CheckBeginEndQueryBadMemoryFails(this, kNewClientId, kQueryTypes[i],
-                                     kInvalidSharedMemoryId,
-                                     kSharedMemoryOffset);
+    CheckBeginEndQueryBadMemoryFails(
+        this, kNewClientId, UNSAFE_TODO(kQueryTypes[i]), kInvalidSharedMemoryId,
+        kSharedMemoryOffset);
   }
 }
 
 TEST_P(GLES2DecoderManualInitTest, BeginEndQueryEXTBadMemoryOffsetFails) {
   for (size_t i = 0; i < std::size(kQueryTypes); ++i) {
     // Out-of-bounds.
-    CheckBeginEndQueryBadMemoryFails(this, kNewClientId, kQueryTypes[i],
-                                     shared_memory_id_,
-                                     kInvalidSharedMemoryOffset);
+    CheckBeginEndQueryBadMemoryFails(
+        this, kNewClientId, UNSAFE_TODO(kQueryTypes[i]), shared_memory_id_,
+        kInvalidSharedMemoryOffset);
     // Overflow.
-    CheckBeginEndQueryBadMemoryFails(this, kNewClientId, kQueryTypes[i],
+    CheckBeginEndQueryBadMemoryFails(this, kNewClientId,
+                                     UNSAFE_TODO(kQueryTypes[i]),
                                      shared_memory_id_, 0xfffffffcu);
   }
 }
 
 TEST_P(GLES2DecoderManualInitTest, QueryReuseTest) {
   for (size_t i = 0; i < std::size(kQueryTypes); ++i) {
-    const QueryType& query_type = kQueryTypes[i];
+    const QueryType& query_type = UNSAFE_TODO(kQueryTypes[i]);
 
     GLES2DecoderTestBase::InitState init;
     init.extensions =
@@ -1072,7 +1069,7 @@ TEST_P(GLES2DecoderTest, IsEnabledReturnsCachedValue) {
   };
   for (size_t ii = 0; ii < std::size(kStates); ++ii) {
     cmds::Enable enable_cmd;
-    GLenum state = kStates[ii];
+    GLenum state = UNSAFE_TODO(kStates[ii]);
     enable_cmd.Init(state);
     EXPECT_EQ(error::kNoError, ExecuteCmd(enable_cmd));
     auto* result =
@@ -1299,7 +1296,7 @@ class GLES2DecoderDoCommandsTest : public GLES2DecoderTest {
  public:
   GLES2DecoderDoCommandsTest() {
     for (int i = 0; i < 3; i++) {
-      cmds_[i].Init(GL_BLEND);
+      UNSAFE_TODO(cmds_[i]).Init(GL_BLEND);
     }
     entries_per_cmd_ = ComputeNumEntries(cmds_[0].ComputeSize());
   }

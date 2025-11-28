@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <algorithm>
 #include <array>
 #include <memory>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -56,7 +52,8 @@ error::Error GenHelper(GLsizei n,
                        ClientServiceMap<ClientType, ServiceType>* id_map,
                        GenFunction gen_function) {
   DCHECK(n >= 0);
-  std::vector<ClientType> client_ids_copy(client_ids, client_ids + n);
+  std::vector<ClientType> client_ids_copy(client_ids,
+                                          UNSAFE_TODO(client_ids + n));
   for (GLsizei ii = 0; ii < n; ++ii) {
     if (id_map->HasClientID(client_ids_copy[ii])) {
       return error::kInvalidArguments;
@@ -95,7 +92,7 @@ error::Error DeleteHelper(GLsizei n,
   DCHECK(n >= 0);
   std::vector<ServiceType> service_ids(n, 0);
   for (GLsizei ii = 0; ii < n; ++ii) {
-    ClientType client_id = client_ids[ii];
+    ClientType client_id = UNSAFE_TODO(client_ids[ii]);
 
     // Don't pass service IDs of objects with a client ID of 0.  They are
     // emulated and should not be deleteable
@@ -196,14 +193,14 @@ void InsertValueIntoBuffer(std::vector<uint8_t>* data,
                            const T& value,
                            size_t offset) {
   DCHECK_LE(offset + sizeof(T), data->size());
-  memcpy(data->data() + offset, &value, sizeof(T));
+  UNSAFE_TODO(memcpy(data->data() + offset, &value, sizeof(T)));
 }
 
 template <typename T>
 void AppendValueToBuffer(std::vector<uint8_t>* data, const T& value) {
   const base::CheckedNumeric<size_t> old_size = data->size();
   data->resize((old_size + sizeof(T)).ValueOrDie());
-  memcpy(data->data() + old_size.ValueOrDie(), &value, sizeof(T));
+  UNSAFE_TODO(memcpy(data->data() + old_size.ValueOrDie(), &value, sizeof(T)));
 }
 
 void AppendStringToBuffer(std::vector<uint8_t>* data,
@@ -211,7 +208,7 @@ void AppendStringToBuffer(std::vector<uint8_t>* data,
                           size_t len) {
   const base::CheckedNumeric<size_t> old_size = data->size();
   data->resize((old_size + len).ValueOrDie());
-  memcpy(data->data() + old_size.ValueOrDie(), str, len);
+  UNSAFE_TODO(memcpy(data->data() + old_size.ValueOrDie(), str, len));
 }
 
 // In order to minimize the amount of data copied, the command buffer client
@@ -962,7 +959,7 @@ error::Error GLES2DecoderPassthroughImpl::DoDeleteBuffers(
 
   std::vector<GLuint> service_ids(n, 0);
   for (GLsizei ii = 0; ii < n; ++ii) {
-    GLuint client_id = buffers[ii];
+    GLuint client_id = UNSAFE_TODO(buffers[ii]);
 
     // Update the bound and mapped buffer state tracking
     for (auto& buffer_binding : bound_buffers_) {
@@ -999,7 +996,8 @@ error::Error GLES2DecoderPassthroughImpl::DoDeleteFramebuffers(
     return error::kNoError;
   }
 
-  std::vector<GLuint> framebuffers_copy(framebuffers, framebuffers + n);
+  std::vector<GLuint> framebuffers_copy(framebuffers,
+                                        UNSAFE_TODO(framebuffers + n));
 
   // If a bound framebuffer is deleted, it's binding is reset to 0.  In the case
   // of an emulated default framebuffer, bind the emulated one.
@@ -1089,7 +1087,7 @@ error::Error GLES2DecoderPassthroughImpl::DoDeleteTextures(
   // unreferenced.  Only delete textures that are not in this map.
   std::vector<GLuint> non_mailbox_client_ids;
   for (GLsizei ii = 0; ii < n; ++ii) {
-    GLuint client_id = textures[ii];
+    GLuint client_id = UNSAFE_TODO(textures[ii]);
     scoped_refptr<TexturePassthrough> texture;
     if (!resources_->texture_object_map.GetServiceID(client_id, &texture) ||
         texture == nullptr) {
@@ -1325,7 +1323,7 @@ error::Error GLES2DecoderPassthroughImpl::DoFlushMappedBufferRange(
     return error::kOutOfBounds;
   }
 
-  memcpy(map_info.map_ptr + offset, mem + offset, size);
+  UNSAFE_TODO(memcpy(map_info.map_ptr + offset, mem + offset, size));
   api()->glFlushMappedBufferRangeFn(target, offset, size);
 
   return error::kNoError;
@@ -2188,7 +2186,7 @@ error::Error GLES2DecoderPassthroughImpl::DoGetVertexAttribPointerv(
          temp_length <= static_cast<GLsizei>(temp_pointers.size()) &&
          temp_length <= bufsize);
   for (GLsizei ii = 0; ii < temp_length; ii++) {
-    pointer[ii] =
+    UNSAFE_TODO(pointer[ii]) =
         static_cast<GLuint>(reinterpret_cast<uintptr_t>(temp_pointers[ii]));
   }
   *length = temp_length;
@@ -2210,7 +2208,8 @@ error::Error GLES2DecoderPassthroughImpl::DoInvalidateFramebuffer(
     return error::kNoError;
   }
 
-  std::vector<GLenum> attachments_copy(attachments, attachments + count);
+  std::vector<GLenum> attachments_copy(attachments,
+                                       UNSAFE_TODO(attachments + count));
   if (IsEmulatedFramebufferBound(target)) {
     // Update the attachment do the equivalent one in the emulated framebuffer
     if (!ModifyAttachmentsForEmulatedFramebuffer(&attachments_copy)) {
@@ -2236,7 +2235,8 @@ error::Error GLES2DecoderPassthroughImpl::DoInvalidateSubFramebuffer(
     return error::kNoError;
   }
 
-  std::vector<GLenum> attachments_copy(attachments, attachments + count);
+  std::vector<GLenum> attachments_copy(attachments,
+                                       UNSAFE_TODO(attachments + count));
   if (IsEmulatedFramebufferBound(target)) {
     // Update the attachment do the equivalent one in the emulated framebuffer
     if (!ModifyAttachmentsForEmulatedFramebuffer(&attachments_copy)) {
@@ -3751,7 +3751,7 @@ error::Error GLES2DecoderPassthroughImpl::DoGenQueriesEXT(
           api()->glGenQueriesFn(n, queries);
         } else {
           for (GLsizei i = 0; i < n; i++) {
-            queries[i] = 0;
+            UNSAFE_TODO(queries[i]) = 0;
           }
         }
       });
@@ -3766,7 +3766,7 @@ error::Error GLES2DecoderPassthroughImpl::DoDeleteQueriesEXT(
     return error::kNoError;
   }
 
-  std::vector<GLuint> queries_copy(queries, queries + n);
+  std::vector<GLuint> queries_copy(queries, UNSAFE_TODO(queries + n));
   // If any of these queries are pending or active, remove them from the lists
   for (GLuint query_client_id : queries_copy) {
     GLuint query_service_id = 0;
@@ -4143,7 +4143,7 @@ error::Error GLES2DecoderPassthroughImpl::DoMapBufferRange(
   }
 
   if ((filtered_access & GL_MAP_INVALIDATE_RANGE_BIT) == 0) {
-    memcpy(ptr, mapped_ptr, size);
+    UNSAFE_TODO(memcpy(ptr, mapped_ptr, size));
   }
 
   // Track the mapping of this buffer so that data can be synchronized when it
@@ -4203,7 +4203,7 @@ error::Error GLES2DecoderPassthroughImpl::DoUnmapBuffer(GLenum target) {
       return error::kOutOfBounds;
     }
 
-    memcpy(map_info.map_ptr, mem, map_info.size);
+    UNSAFE_TODO(memcpy(map_info.map_ptr, mem, map_info.size));
   }
 
   api()->glUnmapBufferFn(target);
@@ -4742,7 +4742,8 @@ error::Error GLES2DecoderPassthroughImpl::DoDiscardFramebufferEXT(
     InsertError(GL_INVALID_VALUE, "count cannot be negative.");
     return error::kNoError;
   }
-  std::vector<GLenum> attachments_copy(attachments, attachments + count);
+  std::vector<GLenum> attachments_copy(attachments,
+                                       UNSAFE_TODO(attachments + count));
 
   if (feature_info_->gl_version_info().is_es3) {
     api()->glInvalidateFramebufferFn(target, count, attachments_copy.data());
@@ -4811,7 +4812,7 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawBuffersEXT(
     InsertError(GL_INVALID_VALUE, "count cannot be negative.");
     return error::kNoError;
   }
-  std::vector<GLenum> bufs_copy(bufs, bufs + count);
+  std::vector<GLenum> bufs_copy(bufs, UNSAFE_TODO(bufs + count));
   api()->glDrawBuffersARBFn(count, bufs_copy.data());
   return error::kNoError;
 }
@@ -4869,7 +4870,7 @@ error::Error GLES2DecoderPassthroughImpl::DoWindowRectanglesEXT(
     GLenum mode,
     GLsizei n,
     const volatile GLint* box) {
-  std::vector<GLint> box_copy(box, box + (n * 4));
+  std::vector<GLint> box_copy(box, UNSAFE_TODO(box + (n * 4)));
   api()->glWindowRectanglesEXTFn(mode, n, box_copy.data());
   return error::kNoError;
 }
@@ -5194,7 +5195,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBeginPixelLocalStorageANGLE(
     return error::kNoError;
   }
   GLenum loadops_copy[kPassthroughMaxPLSPlanes];
-  std::copy(loadops, loadops + n, loadops_copy);
+  std::copy(loadops, UNSAFE_TODO(loadops + n), loadops_copy);
   api()->glBeginPixelLocalStorageANGLEFn(n, loadops_copy);
   has_activated_pixel_local_storage_ = true;
   return error::kNoError;
@@ -5218,7 +5219,7 @@ error::Error GLES2DecoderPassthroughImpl::DoEndPixelLocalStorageANGLE(
     return error::kNoError;
   }
   GLenum storeops_copy[kPassthroughMaxPLSPlanes];
-  std::copy(storeops, storeops + n, storeops_copy);
+  std::copy(storeops, UNSAFE_TODO(storeops + n), storeops_copy);
   api()->glEndPixelLocalStorageANGLEFn(n, storeops_copy);
   return error::kNoError;
 }

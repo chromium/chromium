@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
@@ -213,15 +209,17 @@ TEST_P(GLES2DecoderWithShaderTest, VertexAttribPointer) {
       0, 0, 1, 0, 1, 0, 0,
   };
   for (size_t tt = 0; tt < std::size(types); ++tt) {
-    GLenum type = types[tt];
-    GLsizei num_bytes = sizes[tt];
+    GLenum type = UNSAFE_TODO(types[tt]);
+    GLsizei num_bytes = UNSAFE_TODO(sizes[tt]);
     for (size_t ii = 0; ii < std::size(indices); ++ii) {
-      GLuint index = indices[ii];
+      GLuint index = UNSAFE_TODO(indices[ii]);
       for (GLint size = 0; size < 5; ++size) {
         for (size_t oo = 0; oo < std::size(offset_mult); ++oo) {
-          GLuint offset = num_bytes * offset_mult[oo] + offset_offset[oo];
+          GLuint offset = num_bytes * UNSAFE_TODO(offset_mult[oo]) +
+                          UNSAFE_TODO(offset_offset[oo]);
           for (size_t ss = 0; ss < std::size(stride_mult); ++ss) {
-            GLsizei stride = num_bytes * stride_mult[ss] + stride_offset[ss];
+            GLsizei stride = num_bytes * UNSAFE_TODO(stride_mult[ss]) +
+                             UNSAFE_TODO(stride_offset[ss]);
             for (int normalize = 0; normalize < 2; ++normalize) {
               bool index_good = index < static_cast<GLuint>(kNumVertexAttribs);
               bool size_good = (size > 0 && size < 5);
