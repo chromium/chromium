@@ -190,3 +190,5 @@ static void JNI_SimpleConfirmInfoBarBuilder_Create(
           j_listener, infobar_identifier, icon_bitmap, message_str, primary_str,
           secondary_str, link_text_str, auto_expire)));
 }
+
+DEFINE_JNI(SimpleConfirmInfoBarBuilder)

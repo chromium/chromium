@@ -30,3 +30,5 @@ static jboolean JNI_IncognitoUtils_GetIncognitoModeManaged(JNIEnv* env,
   return prefs->IsManagedPreference(
       policy::policy_prefs::kIncognitoModeAvailability);
 }
+
+DEFINE_JNI(IncognitoUtils)

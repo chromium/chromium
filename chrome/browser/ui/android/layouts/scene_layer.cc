@@ -75,3 +75,5 @@ static jlong JNI_SceneLayer_Init(JNIEnv* env,
 }
 
 }  // namespace android
+
+DEFINE_JNI(SceneLayer)

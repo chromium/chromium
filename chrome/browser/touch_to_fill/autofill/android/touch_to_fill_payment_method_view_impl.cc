@@ -334,3 +334,8 @@ void TouchToFillPaymentMethodViewImpl::SetVisible(bool visible) {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(TouchToFillPaymentMethodViewBridge)
+DEFINE_JNI(LoyaltyCard)
+DEFINE_JNI(BnplIssuerContext)
+DEFINE_JNI(BnplIssuerTosDetail)

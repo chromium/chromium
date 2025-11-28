@@ -99,3 +99,5 @@ void NoPasskeysBottomSheetBridge::OnClickUseAnotherDevice(JNIEnv* env) {
   CHECK(on_click_use_another_device_callback_);
   std::move(on_click_use_another_device_callback_).Run();
 }
+
+DEFINE_JNI(NoPasskeysBottomSheetBridge)

@@ -203,3 +203,5 @@ AutofillKeyboardAccessoryView::Create(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillKeyboardAccessoryViewBridge)

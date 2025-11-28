@@ -106,3 +106,5 @@ uint64_t GetReliabilityLoggingId(PrefService& prefs,
 }
 
 }  // namespace readaloud
+
+DEFINE_JNI(ReadAloudPrefs)

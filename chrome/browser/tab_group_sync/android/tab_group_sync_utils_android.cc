@@ -109,3 +109,5 @@ static jboolean JNI_TabGroupSyncUtils_IsSaveableNavigation(
   return tab_groups::TabGroupSyncUtils::IsSaveableNavigation(
       is_extension_navigation_allowed, navigation_handle);
 }
+
+DEFINE_JNI(TabGroupSyncUtils)

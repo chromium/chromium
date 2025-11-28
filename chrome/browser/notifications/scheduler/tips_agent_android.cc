@@ -187,3 +187,5 @@ static void JNI_TipsAgent_RemovePendingNotifications(JNIEnv* env,
       NotificationScheduleServiceFactory::GetForKey(profile->GetProfileKey());
   service->DeleteNotifications(notifications::SchedulerClientType::kTips);
 }
+
+DEFINE_JNI(TipsAgent)

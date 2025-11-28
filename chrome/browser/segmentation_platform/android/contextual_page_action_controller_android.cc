@@ -97,3 +97,5 @@ static void JNI_ContextualPageActionController_ComputeContextualPageAction(
       base::BindOnce(&RunGetClassificationResultCallback,
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
 }
+
+DEFINE_JNI(ContextualPageActionController)

@@ -90,3 +90,5 @@ CardNameFixFlowViewAndroid::GetOrCreateJavaObject() {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillNameFixFlowBridge)

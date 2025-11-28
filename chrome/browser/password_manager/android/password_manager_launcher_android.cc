@@ -23,3 +23,5 @@ void ShowPasswordSettings(content::WebContents* web_contents,
 }
 
 }  // namespace password_manager_launcher
+
+DEFINE_JNI(PasswordManagerLauncher)

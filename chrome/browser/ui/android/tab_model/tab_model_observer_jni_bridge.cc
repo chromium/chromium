@@ -171,3 +171,5 @@ void TabModelObserverJniBridge::RemoveTabListInterfaceObserver(
     TabListInterfaceObserver* observer) {
   interface_observers_.RemoveObserver(observer);
 }
+
+DEFINE_JNI(TabModelObserverJniBridge)

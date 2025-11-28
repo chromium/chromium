@@ -182,3 +182,5 @@ void InstalledWebappGeolocationBridge::OnNewErrorAvailable(
           device::mojom::GeopositionErrorCode::kPositionUnavailable, message,
           /*error_technical=*/"")));
 }
+
+DEFINE_JNI(InstalledWebappGeolocationBridge)

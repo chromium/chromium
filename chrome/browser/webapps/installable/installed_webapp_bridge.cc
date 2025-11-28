@@ -108,3 +108,5 @@ void InstalledWebappBridge::DecidePermission(ContentSettingsType type,
       env, static_cast<int>(type), origin_url.spec(), last_committed_url.spec(),
       reinterpret_cast<jlong>(callback_ptr));
 }
+
+DEFINE_JNI(InstalledWebappBridge)

@@ -254,3 +254,5 @@ static void JNI_OfflineTestUtil_WaitForConnectivityState(
 }
 
 }  // namespace offline_pages
+
+DEFINE_JNI(OfflineTestUtil)

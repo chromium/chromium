@@ -48,3 +48,5 @@ void PasswordCheckupLauncherHelperImpl::LaunchSafetyHub(
   Java_PasswordCheckupLauncher_launchSafetyHub(env,
                                                windowAndroid->GetJavaObject());
 }
+
+DEFINE_JNI(PasswordCheckupLauncher)

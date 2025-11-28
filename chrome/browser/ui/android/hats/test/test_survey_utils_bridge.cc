@@ -36,3 +36,5 @@ std::string TestSurveyUtilsBridge::GetLastShownSurveyTriggerId() {
 }
 
 }  // namespace hats
+
+DEFINE_JNI(TestSurveyUtilsBridge)

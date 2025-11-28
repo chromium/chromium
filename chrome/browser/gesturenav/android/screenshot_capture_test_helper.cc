@@ -47,3 +47,5 @@ static void JNI_ScreenshotCaptureTestHelper_SetNavScreenshotCallbackForTesting(
 }
 
 }  // namespace gesturenav
+
+DEFINE_JNI(ScreenshotCaptureTestHelper)

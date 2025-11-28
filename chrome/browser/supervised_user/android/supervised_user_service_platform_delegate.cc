@@ -18,3 +18,5 @@ void SupervisedUserServicePlatformDelegate::CloseIncognitoTabs() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SupervisedUserServicePlatformDelegate_closeIncognitoTabs(env);
 }
+
+DEFINE_JNI(SupervisedUserServicePlatformDelegate)

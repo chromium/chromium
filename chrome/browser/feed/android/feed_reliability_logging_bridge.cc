@@ -265,3 +265,5 @@ void FeedReliabilityLoggingBridge::Destroy(JNIEnv* env) {
 
 }  // namespace android
 }  // namespace feed
+
+DEFINE_JNI(FeedReliabilityLoggingBridge)

@@ -47,3 +47,5 @@ void AndroidBrowserWindowEnumerator::OnBrowserWindowRemoved(
   std::erase(browser_windows_,
              reinterpret_cast<BrowserWindowInterface*>(j_browser_window_ptr));
 }
+
+DEFINE_JNI(AndroidBrowserWindowEnumerator)

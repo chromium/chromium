@@ -804,3 +804,5 @@ ScopedJavaLocalRef<jobject> OfflinePageBridge::CreateClientId(
 
 }  // namespace android
 }  // namespace offline_pages
+
+DEFINE_JNI(OfflinePageBridge)

@@ -96,3 +96,5 @@ TabGroupSyncDelegateAndroid::CreateSavedTabGroupFromLocalGroup(
 }
 
 }  // namespace tab_groups
+
+DEFINE_JNI(TabGroupSyncDelegate)

@@ -142,3 +142,5 @@ base::WeakPtr<CardUnmaskOtpInputDialogView> CreateAndShowOtpInputDialog(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(OtpVerificationDialogBridge)

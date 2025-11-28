@@ -172,3 +172,5 @@ ExtensionInstallPrompt::ShowDialogCallback
 ExtensionInstallPrompt::GetDefaultShowDialogCallback() {
   return base::BindRepeating(&ShowExtensionInstallDialogAndroid);
 }
+
+DEFINE_JNI(ExtensionInstallDialogBridge)

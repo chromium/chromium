@@ -84,3 +84,6 @@ static void JNI_MagicStackBridge_DismissCompromisedPasswordsModule(
   service->DismissActiveNotificationOfModule(
       safety_hub::SafetyHubModuleType::PASSWORDS);
 }
+
+DEFINE_JNI(MagicStackBridge)
+DEFINE_JNI(MagicStackEntry)

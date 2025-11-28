@@ -62,3 +62,5 @@ static void JNI_ProfileManager_DestroyWhenAppropriate(JNIEnv* env,
   // RenderViewHost might not be deleted yet.
   ProfileDestroyer::DestroyOTRProfileWhenAppropriate(profile);
 }
+
+DEFINE_JNI(ProfileManager)

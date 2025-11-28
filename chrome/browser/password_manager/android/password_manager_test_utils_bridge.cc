@@ -20,3 +20,5 @@ void SetUpGmsCoreFakeBackends() {
   Java_PasswordManagerTestUtilsBridge_setUpGmsCoreFakeBackends(
       jni_zero::AttachCurrentThread());
 }
+
+DEFINE_JNI(PasswordManagerTestUtilsBridge)

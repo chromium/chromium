@@ -19,3 +19,5 @@ JNI_GroupSuggestionsServiceFactory_GetForProfile(JNIEnv* env,
           profile);
   return visited_url_ranking::GroupSuggestionsService::GetJavaObject(service);
 }
+
+DEFINE_JNI(GroupSuggestionsServiceFactory)

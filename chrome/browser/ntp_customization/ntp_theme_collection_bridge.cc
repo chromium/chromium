@@ -223,3 +223,5 @@ void NtpThemeCollectionBridge::ResetCustomBackground(JNIEnv* env) {
 
   ntp_custom_background_service_->ResetCustomBackgroundInfo();
 }
+
+DEFINE_JNI(NtpThemeCollectionBridge)

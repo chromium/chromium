@@ -84,3 +84,5 @@ bool IsVisible(gfx::NativeView view) {
 }
 
 } // namespace platform_util
+
+DEFINE_JNI(PlatformUtil)

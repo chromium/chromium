@@ -107,3 +107,5 @@ void FamilyInfoFeedbackSource::OnComplete() {
 }
 
 }  // namespace chrome::android
+
+DEFINE_JNI(FamilyInfoFeedbackSource)

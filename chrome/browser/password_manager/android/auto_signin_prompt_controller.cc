@@ -31,3 +31,5 @@ void ShowAutoSigninPrompt(content::WebContents* web_contents,
   Java_AutoSigninSnackbarController_showSnackbar(env, tab->GetJavaObject(),
                                                  message);
 }
+
+DEFINE_JNI(AutoSigninSnackbarController)

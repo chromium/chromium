@@ -477,3 +477,6 @@ static void JNI_TranslateBridge_SetIgnoreMissingKeyForTesting(  // IN-TEST
   translate::TranslateManager::SetIgnoreMissingKeyForTesting(  // IN-TEST
       ignore);
 }
+
+DEFINE_JNI(TranslateBridge)
+DEFINE_JNI(TranslationObserver)

@@ -16,3 +16,5 @@ void InitChromeMediaRouterJavaClient() {
 }
 
 }  // namespace media_router
+
+DEFINE_JNI(ChromeMediaRouterClient)

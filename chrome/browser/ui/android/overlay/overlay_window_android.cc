@@ -543,3 +543,5 @@ void OverlayWindowAndroid::MaybeUpdateVisibleAction(
                        base::Unretained(this)));
   }
 }
+
+DEFINE_JNI(PictureInPictureActivity)

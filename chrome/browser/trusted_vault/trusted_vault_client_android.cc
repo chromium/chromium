@@ -286,3 +286,5 @@ static void JNI_TrustedVaultClient_RecordRecoverabilityDegradedFixTrigger(
   syncer::RecordRecoverabilityDegradedFixTrigger(
       static_cast<trusted_vault::TrustedVaultUserActionTriggerForUMA>(trigger));
 }
+
+DEFINE_JNI(TrustedVaultClient)

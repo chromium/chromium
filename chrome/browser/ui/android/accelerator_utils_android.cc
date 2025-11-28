@@ -20,3 +20,5 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
   return Java_KeyboardShortcuts_isChromeAccelerator(
       env, platform_event.AsKeyboardEventAndroid()->GetJavaObject());
 }
+
+DEFINE_JNI(KeyboardShortcuts)

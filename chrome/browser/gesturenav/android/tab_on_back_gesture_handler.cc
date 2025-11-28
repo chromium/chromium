@@ -163,3 +163,5 @@ static jboolean JNI_TabOnBackGestureHandler_ShouldAnimateNavigationTransition(
 }
 
 }  // namespace gesturenav
+
+DEFINE_JNI(TabOnBackGestureHandler)

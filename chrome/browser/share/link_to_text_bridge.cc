@@ -71,3 +71,5 @@ static void JNI_LinkToTextBridge_LogLinkToTextReshareStatus(JNIEnv* env,
   shared_highlighting::LogLinkToTextReshareStatus(
       static_cast<shared_highlighting::LinkToTextReshareStatus>(status));
 }
+
+DEFINE_JNI(LinkToTextBridge)

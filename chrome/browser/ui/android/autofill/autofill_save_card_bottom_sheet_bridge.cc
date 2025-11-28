@@ -139,3 +139,6 @@ void AutofillSaveCardBottomSheetBridge::ResetSaveCardDelegate() {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillSaveCardBottomSheetBridge)
+DEFINE_JNI(AutofillSaveCardUiInfo)

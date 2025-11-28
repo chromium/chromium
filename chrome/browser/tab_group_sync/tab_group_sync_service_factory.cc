@@ -133,3 +133,7 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
 }
 
 }  // namespace tab_groups
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(TabGroupSyncDepsProvider)
+#endif

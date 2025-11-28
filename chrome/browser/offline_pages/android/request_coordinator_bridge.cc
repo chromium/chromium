@@ -190,3 +190,6 @@ static JNI_EXPORT void JNI_RequestCoordinatorBridge_RemoveRequestsFromQueue(
 
 }  // namespace android
 }  // namespace offline_pages
+
+DEFINE_JNI(RequestCoordinatorBridge)
+DEFINE_JNI(SavePageRequest)

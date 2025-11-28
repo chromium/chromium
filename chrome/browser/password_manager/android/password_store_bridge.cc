@@ -195,3 +195,6 @@ void PasswordStoreBridge::OnEdited(
           base::android::ConvertUTF16ToJavaString(env, credential.username),
           base::android::ConvertUTF16ToJavaString(env, credential.password)));
 }
+
+DEFINE_JNI(PasswordStoreBridge)
+DEFINE_JNI(PasswordStoreCredential)

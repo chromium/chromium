@@ -206,3 +206,5 @@ void JavaUnreadContentObserver::Destroy(JNIEnv*) {
 }
 
 }  // namespace feed
+
+DEFINE_JNI(FeedServiceBridge)

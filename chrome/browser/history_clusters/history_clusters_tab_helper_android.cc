@@ -27,3 +27,5 @@ static void JNI_HistoryClustersTabHelper_OnCurrentTabUrlShared(
     clusters_helper->OnOmniboxUrlShared();
   }
 }
+
+DEFINE_JNI(HistoryClustersTabHelper)

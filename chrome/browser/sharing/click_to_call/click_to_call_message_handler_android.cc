@@ -53,3 +53,5 @@ void ClickToCallMessageHandler::HandlePhoneNumber(
   JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_ClickToCallMessageHandler_handleMessage(env, phone_number);
 }
+
+DEFINE_JNI(ClickToCallMessageHandler)

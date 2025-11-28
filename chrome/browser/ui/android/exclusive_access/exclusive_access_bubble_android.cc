@@ -148,3 +148,5 @@ void ExclusiveAccessBubbleAndroid::RunHideCallbackIfNeeded(
     std::move(first_hide_callback_).Run(reason);
   }
 }
+
+DEFINE_JNI(ExclusiveAccessBubble)

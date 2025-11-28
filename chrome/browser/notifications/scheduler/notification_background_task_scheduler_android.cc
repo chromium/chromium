@@ -57,3 +57,5 @@ void NotificationBackgroundTaskSchedulerAndroid::Cancel() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NotificationSchedulerTask_cancel(env);
 }
+
+DEFINE_JNI(NotificationSchedulerTask)

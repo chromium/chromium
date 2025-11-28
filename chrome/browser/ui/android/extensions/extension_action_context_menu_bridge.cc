@@ -74,3 +74,5 @@ static jlong JNI_ExtensionActionContextMenuBridge_Init(
 }
 
 }  // namespace extensions
+
+DEFINE_JNI(ExtensionActionContextMenuBridge)

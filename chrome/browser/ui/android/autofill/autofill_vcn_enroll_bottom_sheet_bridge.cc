@@ -104,3 +104,5 @@ void AutofillVCNEnrollBottomSheetBridge::RecordLinkClickMetric(JNIEnv* env,
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillVcnEnrollBottomSheetBridge)

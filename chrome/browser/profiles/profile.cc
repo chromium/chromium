@@ -632,3 +632,7 @@ std::string Profile::ToDebugString() {
 
   return out.str();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(OtrProfileId)
+#endif

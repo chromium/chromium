@@ -622,3 +622,7 @@ EnabledAutomaticManagementDisclaimerAcceptanceUntilReset(Profile* profile) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace enterprise_util
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(ManagedBrowserUtils)
+#endif

@@ -138,3 +138,5 @@ static void JNI_ChromeSessionState_SetIsInMultiWindowMode(
     jboolean j_is_in_multi_window_mode) {
   is_in_multi_window_mode = j_is_in_multi_window_mode;
 }
+
+DEFINE_JNI(ChromeSessionState)

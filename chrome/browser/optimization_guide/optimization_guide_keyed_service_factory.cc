@@ -87,3 +87,7 @@ JNI_OptimizationGuideBridgeFactory_GetForProfile(JNIEnv* env,
   return service->GetJavaObject();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(OptimizationGuideBridgeFactory)
+#endif

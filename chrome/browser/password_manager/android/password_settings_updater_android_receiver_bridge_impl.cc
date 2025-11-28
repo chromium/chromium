@@ -105,3 +105,5 @@ void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::OnFailedSettingChange(
 }
 
 }  // namespace password_manager
+
+DEFINE_JNI(PasswordSettingsUpdaterReceiverBridge)

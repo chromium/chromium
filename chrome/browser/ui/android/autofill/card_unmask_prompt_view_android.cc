@@ -188,3 +188,5 @@ CardUnmaskPromptViewAndroid::GetOrCreateJavaObject() {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(CardUnmaskBridge)

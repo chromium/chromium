@@ -72,3 +72,5 @@ static void JNI_ExtensionParentApproval_OnCompletion(JNIEnv* env,
       static_cast<extensions::SupervisedExtensionApprovalResult>(result_value);
   std::move(*cb).Run(result_enum);
 }
+
+DEFINE_JNI(ExtensionParentApproval)

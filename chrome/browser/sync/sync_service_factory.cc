@@ -653,3 +653,7 @@ JNI_SyncServiceFactory_GetForProfile(JNIEnv* env, Profile* profile) {
   return sync_service->GetJavaObject();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(SyncServiceFactory)
+#endif

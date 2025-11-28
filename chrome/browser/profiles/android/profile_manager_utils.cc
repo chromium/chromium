@@ -64,3 +64,5 @@ static void JNI_ProfileManagerUtils_RemoveSessionCookiesForAllProfiles(
       g_browser_process->profile_manager()->GetLoadedProfiles(),
       RemoveSessionCookiesForProfile);
 }
+
+DEFINE_JNI(ProfileManagerUtils)

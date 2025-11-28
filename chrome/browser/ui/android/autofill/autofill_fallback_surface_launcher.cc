@@ -43,3 +43,5 @@ JNI_AutofillFallbackSurfaceLauncher_GetPlusAddressManagementUrl(JNIEnv* env) {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillFallbackSurfaceLauncher)

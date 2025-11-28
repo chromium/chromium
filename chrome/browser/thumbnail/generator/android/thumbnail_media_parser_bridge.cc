@@ -61,3 +61,6 @@ static void JNI_ThumbnailMediaParserBridge_Parse(
       base::BindOnce(&OnMediaParsed, base::Owned(parser),
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback)));
 }
+
+DEFINE_JNI(ThumbnailMediaData)
+DEFINE_JNI(ThumbnailMediaParserBridge)

@@ -69,3 +69,5 @@ internal::ReferringAppInfo GetReferringAppInfo(
 }
 
 }  // namespace safe_browsing
+
+DEFINE_JNI(SafeBrowsingReferringAppBridge)

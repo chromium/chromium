@@ -18,3 +18,5 @@ void ExtensionDeveloperPrivateBridge::ShowSiteSettings(
 }
 
 }  // namespace extensions
+
+DEFINE_JNI(ExtensionDeveloperPrivateBridge)

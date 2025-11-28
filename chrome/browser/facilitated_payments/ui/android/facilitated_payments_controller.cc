@@ -181,3 +181,5 @@ void FacilitatedPaymentsController::ClearJavaViewComponents() {
   }
   java_object_.Reset();
 }
+
+DEFINE_JNI(FacilitatedPaymentsPaymentMethodsControllerBridge)

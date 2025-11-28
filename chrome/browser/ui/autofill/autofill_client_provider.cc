@@ -115,3 +115,7 @@ void AutofillClientProvider::CreateClientForWebContents(
 }
 
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AutofillClientProviderUtils)
+#endif

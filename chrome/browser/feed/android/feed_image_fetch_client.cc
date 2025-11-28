@@ -72,3 +72,5 @@ static void JNI_FeedImageFetchClient_Cancel(JNIEnv* env, jint j_request_id) {
 }
 
 }  // namespace feed
+
+DEFINE_JNI(FeedImageFetchClient)

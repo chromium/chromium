@@ -153,3 +153,5 @@ void AutoTranslateSnackbarController::NativeDismissSnackbar() {
 }
 
 }  // namespace translate
+
+DEFINE_JNI(AutoTranslateSnackbarController)

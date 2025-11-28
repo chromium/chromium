@@ -66,3 +66,5 @@ KnownInterceptionDisclosureInfoBarDelegate*
 KnownInterceptionDisclosureInfoBar::GetDelegate() {
   return static_cast<KnownInterceptionDisclosureInfoBarDelegate*>(delegate());
 }
+
+DEFINE_JNI(KnownInterceptionDisclosureInfoBar)

@@ -150,3 +150,5 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::OnLoginChanged(
 }
 
 }  // namespace password_manager
+
+DEFINE_JNI(PasswordStoreAndroidBackendReceiverBridgeImpl)

@@ -111,3 +111,5 @@ static void JNI_FeedPersistentKeyValueCache_Evict(
 }
 
 }  // namespace feed
+
+DEFINE_JNI(FeedPersistentKeyValueCache)

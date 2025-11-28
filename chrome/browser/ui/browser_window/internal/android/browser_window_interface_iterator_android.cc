@@ -87,3 +87,5 @@ BrowserWindowInterface* GetLastActiveBrowserWindowInterfaceWithAnyProfile() {
              ? nullptr
              : browser_windows_ordered_by_activation[0];
 }
+
+DEFINE_JNI(BrowserWindowInterfaceIteratorAndroid)

@@ -233,3 +233,5 @@ TEST_F(ExtensionWindowControllerBridgeUnitTest,
   extensions::WindowControllerList::GetInstance()->RemoveObserver(
       &mock_window_list_observer);
 }
+
+DEFINE_JNI(ExtensionWindowControllerBridgeNativeUnitTestSupport)

@@ -88,3 +88,5 @@ static void JNI_HomeModulesRankingHelper_NotifyCardInteracted(
   std::string native_card_label = ConvertJavaStringToUTF8(env, card_label);
   registry->NotifyCardInteracted(native_card_label.c_str());
 }
+
+DEFINE_JNI(HomeModulesRankingHelper)

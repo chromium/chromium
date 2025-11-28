@@ -96,3 +96,5 @@ void DisplayAgentAndroid::ShowNotification(
   Java_DisplayAgent_showNotification(env, java_notification_data,
                                      java_system_data);
 }
+
+DEFINE_JNI(DisplayAgent)

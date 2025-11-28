@@ -80,3 +80,5 @@ static void JNI_SupervisedUserServiceTestBridge_EnableSearchContentFilters(
       ->SetEnabled(true);
 }
 }  // namespace supervised_user
+
+DEFINE_JNI(SupervisedUserServiceTestBridge)

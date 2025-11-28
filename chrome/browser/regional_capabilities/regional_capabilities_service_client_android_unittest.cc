@@ -115,3 +115,5 @@ TEST(RegionalCapabilitiesServiceClientAndroidTest,
 
 }  // namespace
 }  // namespace regional_capabilities
+
+DEFINE_JNI(RegionalCapabilitiesServiceTestUtil)

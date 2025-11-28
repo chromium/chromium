@@ -81,3 +81,5 @@ static void JNI_TaskManagerServiceBridge_KillTask(JNIEnv* env, TaskId task_id) {
 }
 
 }  // namespace task_manager
+
+DEFINE_JNI(TaskManagerServiceBridge)

@@ -57,3 +57,5 @@ void TaskManagerObserverAndroid::OnTaskUnresponsive(TaskId id) {
 }
 
 }  // namespace task_manager
+
+DEFINE_JNI(TaskManagerObserver)

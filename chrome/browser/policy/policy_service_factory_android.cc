@@ -34,3 +34,5 @@ JNI_PolicyServiceFactory_GetProfilePolicyService(JNIEnv* env,
 
 }  // namespace android
 }  // namespace policy
+
+DEFINE_JNI(PolicyServiceFactory)

@@ -586,3 +586,6 @@ NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
 
 NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
     ~RegeneratedNotificationInfo() = default;
+
+DEFINE_JNI(ActionInfo)
+DEFINE_JNI(NotificationPlatformBridge)

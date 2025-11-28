@@ -597,3 +597,5 @@ static jlong JNI_TabCollectionTabModelImpl_Init(
 }
 
 }  // namespace tabs
+
+DEFINE_JNI(TabCollectionTabModelImpl)

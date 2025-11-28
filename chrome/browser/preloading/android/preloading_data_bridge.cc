@@ -31,3 +31,5 @@ static void JNI_PreloadingDataBridge_SetIsNavigationInDomainCallbackForCct(
       base::BindRepeating([](content::NavigationHandle* navigation_handle)
                               -> bool { return true; }));
 }
+
+DEFINE_JNI(PreloadingDataBridge)

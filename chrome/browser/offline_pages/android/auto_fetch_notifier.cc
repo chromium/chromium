@@ -67,3 +67,5 @@ void ShowAutoFetchCompleteNotification(const std::u16string& pageTitle,
 }
 
 }  // namespace offline_pages
+
+DEFINE_JNI(AutoFetchNotifier)

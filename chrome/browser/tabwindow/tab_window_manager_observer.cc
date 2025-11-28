@@ -25,3 +25,5 @@ void TabWindowManagerObserver::OnTabStateInitialized(JNIEnv* env) {
 }
 
 }  // namespace tab_window
+
+DEFINE_JNI(TabWindowManagerObserver)

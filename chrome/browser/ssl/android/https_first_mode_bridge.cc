@@ -40,3 +40,5 @@ static jboolean JNI_HttpsFirstModeBridge_IsManaged(
   Profile* profile = Profile::FromJavaObject(j_profile);
   return profile->GetPrefs()->IsManagedPreference(prefs::kHttpsOnlyModeEnabled);
 }
+
+DEFINE_JNI(HttpsFirstModeBridge)

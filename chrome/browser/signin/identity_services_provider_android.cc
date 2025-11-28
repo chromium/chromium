@@ -29,3 +29,5 @@ JNI_IdentityServicesProvider_GetSigninManager(JNIEnv* env, Profile* profile) {
   // traces, so just let the Java side handle possible issues with null.
   return signin_manager ? signin_manager->GetJavaObject() : nullptr;
 }
+
+DEFINE_JNI(IdentityServicesProvider)

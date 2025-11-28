@@ -129,3 +129,5 @@ std::unique_ptr<AutofillProgressDialogView> CreateAndShowProgressDialog(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillProgressDialogBridge)

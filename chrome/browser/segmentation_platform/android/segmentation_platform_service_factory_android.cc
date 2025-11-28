@@ -20,3 +20,5 @@ JNI_SegmentationPlatformServiceFactory_GetForProfile(JNIEnv* env,
   return segmentation_platform::SegmentationPlatformService::GetJavaObject(
       service);
 }
+
+DEFINE_JNI(SegmentationPlatformServiceFactory)

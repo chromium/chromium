@@ -418,3 +418,5 @@ static std::string JNI_PartnerBookmarksReader_GetNativeUrlString(
     std::string& url) {
   return GURL(url).spec();
 }
+
+DEFINE_JNI(PartnerBookmarksReader)

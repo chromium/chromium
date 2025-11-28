@@ -253,3 +253,5 @@ void AccountChooserDialogAndroid::OnReauthCompleted(size_t index,
   }
   delete this;
 }
+
+DEFINE_JNI(AccountChooserDialog)

@@ -233,3 +233,5 @@ void SmsFetchRequestHandler::Request::SendFailureMessage(
 void SmsFetchRequestHandler::Request::OnFailure(FailureType failure_type) {
   SendFailureMessage(failure_type);
 }
+
+DEFINE_JNI(SmsFetcherMessageHandler)

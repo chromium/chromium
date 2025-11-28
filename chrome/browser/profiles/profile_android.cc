@@ -149,3 +149,5 @@ static ScopedJavaLocalRef<jobject> JNI_Profile_FromWebContents(
   }
   return profile->GetJavaObject();
 }
+
+DEFINE_JNI(Profile)

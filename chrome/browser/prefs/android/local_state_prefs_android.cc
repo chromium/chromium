@@ -22,3 +22,5 @@ JNI_LocalStatePrefs_GetPrefService(JNIEnv* env) {
 }
 
 }  // namespace chrome_browser_prefs
+
+DEFINE_JNI(LocalStatePrefs)

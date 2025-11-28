@@ -71,3 +71,5 @@ JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  // IN
           is_allowed ? safe_search_api::ClientClassification::kAllowed
                      : safe_search_api::ClientClassification::kRestricted));
 }
+
+DEFINE_JNI(SupervisedUserSettingsTestBridge)

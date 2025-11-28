@@ -668,3 +668,5 @@ static jlong JNI_TabModelJniBridge_Init(JNIEnv* env,
       is_archived_tab_model);
   return reinterpret_cast<intptr_t>(tab_model);
 }
+
+DEFINE_JNI(TabModelJniBridge)

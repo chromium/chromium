@@ -28,3 +28,5 @@ JNI_LoginDbDeprecationUtilBridge_GetAutoExportCsvFilePath(JNIEnv* env,
                .Append(FILE_PATH_LITERAL(kExportedPasswordsFileName))
                .value());
 }
+
+DEFINE_JNI(LoginDbDeprecationUtilBridge)

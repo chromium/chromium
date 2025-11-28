@@ -167,3 +167,5 @@ static jlong JNI_ExclusiveAccessManager_Init(
       env, jeam, j_context, j_fullscreen_manager, j_activity_tab_provider);
   return reinterpret_cast<intptr_t>(content);
 }
+
+DEFINE_JNI(ExclusiveAccessManager)

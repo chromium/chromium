@@ -158,3 +158,5 @@ JNI_ServiceWorkerPaymentAppBridge_GetSourceIdForPaymentAppFromScope(
   return content::PaymentAppProviderUtil::GetSourceIdForPaymentAppFromScope(
       url::GURLAndroid::ToNativeGURL(env, jscope).DeprecatedGetOriginAsURL());
 }
+
+DEFINE_JNI(ServiceWorkerPaymentAppBridge)

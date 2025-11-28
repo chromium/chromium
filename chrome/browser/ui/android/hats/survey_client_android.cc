@@ -99,3 +99,5 @@ void SurveyClientAndroid::Destroy() {
 }
 
 }  // namespace hats
+
+DEFINE_JNI(SurveyClientBridge)

@@ -101,3 +101,5 @@ const BrowserExtensionWindowController&
 ExtensionWindowControllerBridge::GetExtensionWindowControllerForTesting() {
   return extension_window_controller_;
 }
+
+DEFINE_JNI(ExtensionWindowControllerBridgeImpl)

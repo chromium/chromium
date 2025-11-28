@@ -301,3 +301,5 @@ void GetRankedSessionVariantButtons(
   }
 }
 }  // namespace adaptive_toolbar
+
+DEFINE_JNI(AdaptiveToolbarBridge)

@@ -119,3 +119,5 @@ static void JNI_LevelDBPersistedDataStorage_Init(
       reinterpret_cast<intptr_t>(new PersistedStateDB(
           content::BrowserContextFromJavaHandle(jprofile))));
 }
+
+DEFINE_JNI(LevelDBPersistedDataStorage)

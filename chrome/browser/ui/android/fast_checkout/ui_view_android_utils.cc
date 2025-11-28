@@ -224,3 +224,6 @@ std::unique_ptr<autofill::CreditCard> CreateFastCheckoutCreditCardFromJava(
       Java_FastCheckoutCreditCard_getProductDescription(env, jcredit_card)));
   return credit_card;
 }
+
+DEFINE_JNI(FastCheckoutAutofillProfile)
+DEFINE_JNI(FastCheckoutCreditCard)

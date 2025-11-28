@@ -39,3 +39,5 @@ void TerminateAndroid() {
 }
 
 }  // namespace chrome
+
+DEFINE_JNI(ApplicationLifetime)

@@ -23,3 +23,5 @@ static jboolean JNI_SupervisedUserServiceBridge_IsSupervisedLocally(
   return supervised_user_service->IsSupervisedLocally();
 }
 }  // namespace supervised_user
+
+DEFINE_JNI(SupervisedUserServiceBridge)

@@ -116,3 +116,5 @@ TEST_F(AndroidBaseWindowUnitTest,
   // Assert.
   InvokeJavaVerifyBoundsToSet(bounds_to_set);
 }
+
+DEFINE_JNI(AndroidBaseWindowNativeUnitTestSupport)

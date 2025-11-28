@@ -405,3 +405,5 @@ void TouchToFillPaymentMethodControllerImpl::ResetJavaObject() {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(TouchToFillPaymentMethodControllerBridge)

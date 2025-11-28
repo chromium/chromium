@@ -483,3 +483,5 @@ JNI_FeedSurfaceRendererBridge_ReportContentSliceVisibleTimeForGoodVisits(
 }
 
 }  // namespace feed::android
+
+DEFINE_JNI(FeedSurfaceRendererBridge)

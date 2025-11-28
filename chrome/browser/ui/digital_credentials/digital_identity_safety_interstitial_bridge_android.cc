@@ -72,3 +72,5 @@ void DigitalIdentitySafetyInterstitialBridgeAndroid::Abort() {
   JNIEnv* env = AttachCurrentThread();
   Java_DigitalIdentitySafetyInterstitialBridge_abort(env, j_bridge_);
 }
+
+DEFINE_JNI(DigitalIdentitySafetyInterstitialBridge)

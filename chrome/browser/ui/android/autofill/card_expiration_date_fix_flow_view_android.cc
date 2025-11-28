@@ -76,3 +76,5 @@ CardExpirationDateFixFlowViewAndroid::~CardExpirationDateFixFlowViewAndroid() {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillExpirationDateFixFlowBridge)

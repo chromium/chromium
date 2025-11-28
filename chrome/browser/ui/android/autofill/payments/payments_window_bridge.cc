@@ -68,3 +68,5 @@ void PaymentsWindowBridge::OnWebContentsDestroyed(JNIEnv* env) {
 }
 
 }  // namespace autofill::payments
+
+DEFINE_JNI(PaymentsWindowBridge)

@@ -93,3 +93,5 @@ bool MediaCapturePickerManagerBridge::ShouldFilterWebContents(
   }
   return !web_contents_filter_.Run(web_contents);
 }
+
+DEFINE_JNI(MediaCapturePickerManagerBridge)

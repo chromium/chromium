@@ -283,3 +283,5 @@ JNI_PrivacySandboxBridge_GetEmbeddedPrivacyPolicyURL(
           static_cast<privacy_sandbox::PrivacyPolicyColorScheme>(color_scheme),
           base::android::ConvertJavaStringToUTF8(env, locale)));
 }
+
+DEFINE_JNI(PrivacySandboxBridge)

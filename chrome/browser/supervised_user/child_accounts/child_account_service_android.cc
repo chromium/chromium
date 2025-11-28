@@ -54,3 +54,5 @@ static void JNI_ChildAccountService_OnReauthenticationFailed(
 
   callback->Run();
 }
+
+DEFINE_JNI(ChildAccountService)

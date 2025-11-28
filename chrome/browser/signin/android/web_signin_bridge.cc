@@ -61,3 +61,5 @@ static jlong JNI_WebSigninBridge_Create(
 static void JNI_WebSigninBridge_Destroy(JNIEnv* env, jlong web_signin_bridge) {
   delete reinterpret_cast<WebSigninBridge*>(web_signin_bridge);
 }
+
+DEFINE_JNI(WebSigninBridge)

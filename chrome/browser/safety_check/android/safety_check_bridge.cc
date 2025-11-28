@@ -29,3 +29,5 @@ static jint JNI_SafetyCheckBridge_CheckSafeBrowsing(
       safety_check::CheckSafeBrowsing(user_prefs::UserPrefs::Get(
           content::BrowserContextFromJavaHandle(jhandle))));
 }
+
+DEFINE_JNI(SafetyCheckBridge)

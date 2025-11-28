@@ -134,3 +134,5 @@ static void JNI_NotificationSuspender_ReDisplayNotifications(
                                         base::DoNothing());
   }
 }
+
+DEFINE_JNI(NotificationSuspender)

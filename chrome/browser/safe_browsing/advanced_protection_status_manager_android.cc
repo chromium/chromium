@@ -71,3 +71,5 @@ void AdvancedProtectionStatusManagerAndroid::UpdateState() {
 }
 
 }  // namespace safe_browsing
+
+DEFINE_JNI(AdvancedProtectionStatusManagerAndroidBridge)

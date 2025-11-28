@@ -206,3 +206,7 @@ bool TouchToFillViewImpl::RecreateJavaObject() {
       controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject());
   return !!java_object_internal_;
 }
+
+DEFINE_JNI(TouchToFillBridge)
+DEFINE_JNI(Credential)
+DEFINE_JNI(WebauthnCredential)

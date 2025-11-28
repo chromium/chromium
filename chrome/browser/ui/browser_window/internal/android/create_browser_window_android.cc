@@ -64,3 +64,6 @@ BrowserWindowInterface::CreationStatus GetBrowserWindowCreationStatusForProfile(
 
   return BrowserWindowInterface::CreationStatus::kOk;
 }
+
+DEFINE_JNI(AndroidBrowserWindowCreateParamsImpl)
+DEFINE_JNI(BrowserWindowCreatorBridge)

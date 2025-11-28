@@ -107,3 +107,5 @@ static jlong JNI_InfoBarContainer_Init(
       new InfoBarContainerAndroid(env, obj);
   return reinterpret_cast<intptr_t>(infobar_container);
 }
+
+DEFINE_JNI(InfoBarContainer)

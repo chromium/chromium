@@ -1941,3 +1941,8 @@ PushMessagingServiceImpl::GetDevToolsContext(const GURL& origin) const {
 
   return devtools_context;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(PushMessagingServiceBridge)
+DEFINE_JNI(PushMessagingServiceObserver)
+#endif

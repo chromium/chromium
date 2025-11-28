@@ -118,3 +118,5 @@ PermissionBlockedDialogController::GetOrCreateJavaObject() {
              env, reinterpret_cast<intptr_t>(this),
              view_android->GetWindowAndroid()->GetJavaObject());
 }
+
+DEFINE_JNI(PermissionBlockedDialog)

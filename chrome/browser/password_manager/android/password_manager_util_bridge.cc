@@ -39,3 +39,5 @@ bool PasswordManagerUtilBridge::IsGooglePlayServicesUpdatable() {
 }
 
 }  // namespace password_manager_android_util
+
+DEFINE_JNI(PasswordManagerUtilBridge)

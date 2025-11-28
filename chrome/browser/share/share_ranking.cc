@@ -592,3 +592,7 @@ static void JNI_ShareRankingBridge_Rank(
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(ShareRankingBridge)
+#endif

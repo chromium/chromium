@@ -25,3 +25,5 @@ std::string AndroidAboutAppInfo::GetOsInfo() {
              embedder_support::IncludeAndroidBuildNumber::Include,
              embedder_support::IncludeAndroidModel::Include);
 }
+
+DEFINE_JNI(PlayServicesVersionInfo)

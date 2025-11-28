@@ -173,3 +173,6 @@ static void JNI_SyncTestSigninUtils_OnShutdownComplete(JNIEnv* env,
 }
 
 }  // namespace sync_test_utils_android
+
+DEFINE_JNI(SyncTestSigninUtils)
+DEFINE_JNI(SyncTestTabGroupHelpers)

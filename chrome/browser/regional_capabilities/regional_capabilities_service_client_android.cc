@@ -70,3 +70,5 @@ Program RegionalCapabilitiesServiceClientAndroid::GetDeviceProgram() {
 }
 
 }  // namespace regional_capabilities
+
+DEFINE_JNI(RegionalCapabilitiesServiceClientAndroid)

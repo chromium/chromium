@@ -46,3 +46,5 @@ static int JNI_SystemInfoFeedbackSource_GetTotalMemoryMB(JNIEnv* env) {
 
 }  // namespace android
 }  // namespace chrome
+
+DEFINE_JNI(SystemInfoFeedbackSource)

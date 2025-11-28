@@ -81,3 +81,5 @@ static void JNI_EnterpriseInfo_UpdateNativeOwnedState(
       static_cast<bool>(hasProfileOwnerApp),
       static_cast<bool>(hasDeviceOwnerApp));
 }
+
+DEFINE_JNI(EnterpriseInfo)

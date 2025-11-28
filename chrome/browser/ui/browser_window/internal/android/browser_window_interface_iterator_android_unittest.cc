@@ -287,3 +287,5 @@ TEST_F(BrowserWindowInterfaceIteratorAndroidUnitTest,
   EXPECT_THAT(visited, testing::ElementsAre(browser_window_3, browser_window_1,
                                             browser_window_4));
 }
+
+DEFINE_JNI(BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport)

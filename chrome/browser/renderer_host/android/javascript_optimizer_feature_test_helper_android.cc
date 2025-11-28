@@ -18,3 +18,5 @@ JNI_JavascriptOptimizerFeatureTestHelperAndroid_AreJavascriptOptimizersEnabledOn
               ->GetProcess()
               ->AreV8OptimizationsDisabled();
 }
+
+DEFINE_JNI(JavascriptOptimizerFeatureTestHelperAndroid)

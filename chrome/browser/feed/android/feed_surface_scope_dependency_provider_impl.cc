@@ -75,3 +75,5 @@ static void JNI_FeedSurfaceScopeDependencyProviderImpl_FetchResource(
 }
 
 }  // namespace feed::android
+
+DEFINE_JNI(FeedSurfaceScopeDependencyProviderImpl)

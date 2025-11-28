@@ -79,3 +79,7 @@ JNI_PaintPreviewTabServiceFactory_GetServiceInstanceForCurrentProfile(
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace paint_preview
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(PaintPreviewTabServiceFactory)
+#endif

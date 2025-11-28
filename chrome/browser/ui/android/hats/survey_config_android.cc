@@ -79,3 +79,5 @@ static jlong JNI_SurveyConfig_InitHolder(
 }
 
 }  // namespace hats
+
+DEFINE_JNI(SurveyConfig)

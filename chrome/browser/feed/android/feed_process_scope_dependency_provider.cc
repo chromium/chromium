@@ -92,3 +92,5 @@ JNI_FeedProcessScopeDependencyProvider_GetFeedLaunchCuiMetadata(JNIEnv* env) {
 
 }  // namespace android
 }  // namespace feed
+
+DEFINE_JNI(FeedProcessScopeDependencyProvider)

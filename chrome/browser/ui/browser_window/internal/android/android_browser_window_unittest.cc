@@ -224,3 +224,5 @@ TEST_F(AndroidBrowserWindowUnitTest, GetProfileReturnsCorrectProfile) {
   // Assert.
   EXPECT_EQ(expected_profile, actual_profile);
 }
+
+DEFINE_JNI(AndroidBrowserWindowNativeUnitTestSupport)

@@ -74,3 +74,5 @@ void CreditCardScannerViewAndroid::Show() {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(CreditCardScannerBridge)

@@ -32,3 +32,5 @@ static void JNI_TrackingProtectionSettingsBridge_MaybeSetRollbackPrefsModeB(
   privacy_sandbox::MaybeSetRollbackPrefsModeB(GetSyncService(j_profile),
                                               GetPrefService(j_profile));
 }
+
+DEFINE_JNI(TrackingProtectionSettingsBridge)

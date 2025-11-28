@@ -46,3 +46,5 @@ void SigninBridge::OpenAccountPickerBottomSheet(
   Java_SigninBridge_openAccountPickerBottomSheet(env, tab->GetJavaObject(),
                                                  continue_url);
 }
+
+DEFINE_JNI(SigninBridge)

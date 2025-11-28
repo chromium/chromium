@@ -718,3 +718,7 @@ JNI_HistoryTabHelper_GetAppIdForTestingNative(
 }
 #endif
 WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryTabHelper);
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(HistoryTabHelper)
+#endif

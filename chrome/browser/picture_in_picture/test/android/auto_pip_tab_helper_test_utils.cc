@@ -81,3 +81,5 @@ JNI_AutoPictureInPictureTabHelperTestUtils_SetIsUsingCameraOrMicrophone(
 }
 
 }  // namespace picture_in_picture
+
+DEFINE_JNI(AutoPictureInPictureTabHelperTestUtils)

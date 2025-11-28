@@ -42,3 +42,5 @@ static ScopedJavaLocalRef<jobject> JNI_QRCodeGenerator_GenerateBitmap(
   }
   return java_bitmap;
 }
+
+DEFINE_JNI(QRCodeGenerator)

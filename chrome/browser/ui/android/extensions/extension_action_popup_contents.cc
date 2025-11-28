@@ -175,3 +175,5 @@ static ScopedJavaLocalRef<jobject> JNI_ExtensionActionPopupContents_Create(
 }
 
 }  // namespace extensions
+
+DEFINE_JNI(ExtensionActionPopupContents)

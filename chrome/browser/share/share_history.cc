@@ -261,3 +261,7 @@ static void JNI_ShareHistoryBridge_Clear(JNIEnv* env, Profile* profile) {
     instance->Clear();
 }
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(ShareHistoryBridge)
+#endif

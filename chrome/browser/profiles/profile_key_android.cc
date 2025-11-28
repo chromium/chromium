@@ -59,3 +59,5 @@ jlong ProfileKeyAndroid::GetSimpleFactoryKeyPointer(JNIEnv* env) {
 ScopedJavaLocalRef<jobject> ProfileKeyAndroid::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(obj_);
 }
+
+DEFINE_JNI(ProfileKey)

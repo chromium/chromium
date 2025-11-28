@@ -421,3 +421,7 @@ void PaintPreviewTabService::RunAudit(
 }
 
 }  // namespace paint_preview
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(PaintPreviewTabService)
+#endif

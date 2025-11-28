@@ -304,3 +304,6 @@ static jboolean JNI_ExtensionActionsBridge_ExtensionsEnabled(JNIEnv* env,
 }
 
 }  // namespace extensions
+
+DEFINE_JNI(ExtensionAction)
+DEFINE_JNI(ExtensionActionsBridge)

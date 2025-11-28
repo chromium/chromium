@@ -53,3 +53,5 @@ static void JNI_BitmapDownloadRequest_DownloadBitmap(
   params->set_suggested_name(filename);
   download_manager->DownloadUrl(std::move(params));
 }
+
+DEFINE_JNI(BitmapDownloadRequest)

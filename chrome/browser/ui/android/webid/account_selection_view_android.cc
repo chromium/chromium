@@ -535,3 +535,11 @@ int AccountSelectionView::GetBrandIconIdealSize(blink::mojom::RpMode rp_mode) {
   return Java_AccountSelectionBridge_getBrandIconIdealSize(
       base::android::AttachCurrentThread(), static_cast<jint>(rp_mode));
 }
+
+DEFINE_JNI(AccountSelectionBridge)
+DEFINE_JNI(Account)
+DEFINE_JNI(ClientIdMetadata)
+DEFINE_JNI(IdentityCredentialTokenError)
+DEFINE_JNI(IdentityProviderData)
+DEFINE_JNI(IdentityProviderMetadata)
+DEFINE_JNI(RelyingPartyData)

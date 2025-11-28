@@ -76,3 +76,5 @@ void PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::
 }
 
 }  // namespace password_manager
+
+DEFINE_JNI(PasswordSettingsUpdaterDispatcherBridge)

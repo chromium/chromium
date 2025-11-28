@@ -26,3 +26,5 @@ JNI_PageContentExtractionServiceFactory_GetForProfile(JNIEnv* env,
 }
 
 }  // namespace page_content_annotations
+
+DEFINE_JNI(PageContentExtractionServiceFactory)

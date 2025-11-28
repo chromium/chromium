@@ -86,3 +86,7 @@ JNI_CrossDevicePrefTrackerFactory_GetForProfile(JNIEnv* env, Profile* profile) {
   return pref_tracker->GetJavaObject();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(CrossDevicePrefTrackerFactory)
+#endif

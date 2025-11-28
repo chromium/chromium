@@ -106,3 +106,5 @@ void AcknowledgeGroupedCredentialSheetBridge::OnDismissed(JNIEnv* env,
       dismiss_reason_enum);
   std::move(closure_callback_).Run(dismiss_reason_enum);
 }
+
+DEFINE_JNI(AcknowledgeGroupedCredentialSheetBridge)

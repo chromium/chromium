@@ -286,3 +286,5 @@ JNI_DataProtectionBridge_VerifyGenericCopyImageActionIsAllowedByPolicy(
       },
       data);
 }
+
+DEFINE_JNI(DataProtectionBridge)

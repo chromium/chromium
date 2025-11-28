@@ -192,3 +192,12 @@ std::unique_ptr<content::VrUiHost> ChromeXrIntegrationClient::CreateVrUiHost(
   return std::make_unique<VRUiHostImpl>(contents, views, std::move(overlay));
 }
 }  // namespace vr
+
+#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_ARCORE)
+DEFINE_JNI(ArCompositorDelegateProviderImpl)
+#endif  // BUILDFLAG(ENABLE_ARCORE)
+#if BUILDFLAG(ENABLE_CARDBOARD)
+DEFINE_JNI(VrCompositorDelegateProviderImpl)
+#endif  // BUILDFLAG(ENABLE_CARDBOARD)
+#endif  // BUILDFLAG(IS_ANDROID)

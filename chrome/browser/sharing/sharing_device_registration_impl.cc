@@ -271,3 +271,7 @@ void SharingDeviceRegistrationImpl::SetEnabledFeaturesForTesting(
     std::set<SharingSpecificFields::EnabledFeatures> enabled_features) {
   enabled_features_testing_value_ = std::move(enabled_features);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(SharingJNIBridge)
+#endif

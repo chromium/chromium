@@ -309,3 +309,7 @@ MandatoryReauthBubbleControllerImpl::GetJavaControllerBridge() {
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MandatoryReauthBubbleControllerImpl);
 
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(MandatoryReauthOptInBottomSheetControllerBridge)
+#endif

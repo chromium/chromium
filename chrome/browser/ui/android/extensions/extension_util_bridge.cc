@@ -54,3 +54,5 @@ std::optional<std::vector<base::FilePath>> GetOrCreateEmptyFilesUnderDownloads(
 }
 
 }  // namespace extensions
+
+DEFINE_JNI(ExtensionUtilBridge)

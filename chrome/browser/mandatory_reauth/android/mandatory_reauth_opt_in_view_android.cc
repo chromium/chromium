@@ -69,3 +69,5 @@ bool MandatoryReauthOptInViewAndroid::IsMouseHovered() const {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(MandatoryReauthOptInBottomSheetViewBridge)

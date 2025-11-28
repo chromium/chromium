@@ -42,3 +42,5 @@ JNI_ReadAloudFeatures_GetServerExperimentFlag(JNIEnv* env) {
 }
 
 }  // namespace readaloud
+
+DEFINE_JNI(ReadAloudFeatures)

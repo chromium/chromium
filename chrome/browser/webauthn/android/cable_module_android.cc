@@ -447,3 +447,5 @@ static void JNI_CableAuthenticatorModuleProvider_OnHaveWorkProfileResult(
                              static_cast<uintptr_t>(system_interface_pointer))),
                          in_work_profile));
 }
+
+DEFINE_JNI(CableAuthenticatorModuleProvider)

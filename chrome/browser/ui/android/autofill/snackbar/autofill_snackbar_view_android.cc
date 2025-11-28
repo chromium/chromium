@@ -68,3 +68,5 @@ void AutofillSnackbarViewAndroid::OnDismissed(JNIEnv* env) {
 AutofillSnackbarViewAndroid::~AutofillSnackbarViewAndroid() = default;
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillSnackbarController)

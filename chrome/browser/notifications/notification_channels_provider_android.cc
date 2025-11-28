@@ -826,3 +826,5 @@ void NotificationChannelsProviderAndroid::RecordCachedChannelStatus() {
     has_get_rule_iterator_called_ = true;
   }
 }
+
+DEFINE_JNI(NotificationSettingsBridge)

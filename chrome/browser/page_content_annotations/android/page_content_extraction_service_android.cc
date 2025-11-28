@@ -77,3 +77,5 @@ PageContentExtractionServiceAndroid::GetJavaObject() {
 }
 
 }  // namespace page_content_annotations
+
+DEFINE_JNI(PageContentExtractionService)

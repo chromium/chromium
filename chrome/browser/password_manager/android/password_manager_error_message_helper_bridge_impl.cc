@@ -62,3 +62,5 @@ void PasswordManagerErrorMessageHelperBridgeImpl::SaveErrorUIShownTimestamp(
   Java_PasswordManagerErrorMessageHelperBridge_saveErrorUiShownTimestamp(
       base::android::AttachCurrentThread(), profile->GetJavaObject());
 }
+
+DEFINE_JNI(PasswordManagerErrorMessageHelperBridge)

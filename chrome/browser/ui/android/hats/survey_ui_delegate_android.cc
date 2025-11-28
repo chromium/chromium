@@ -50,3 +50,5 @@ const JavaRef<jobject>& SurveyUiDelegateAndroid::GetJavaObject(
 }
 
 }  // namespace hats
+
+DEFINE_JNI(SurveyUiDelegateBridge)

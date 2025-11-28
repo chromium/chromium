@@ -76,3 +76,5 @@ JNI_LongScreenshotsTabServiceFactory_GetServiceInstanceForCurrentProfile(
 }
 
 }  // namespace long_screenshots
+
+DEFINE_JNI(LongScreenshotsTabServiceFactory)

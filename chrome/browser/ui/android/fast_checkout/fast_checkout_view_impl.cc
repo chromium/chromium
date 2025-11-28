@@ -115,3 +115,5 @@ std::unique_ptr<FastCheckoutView> FastCheckoutView::Create(
     base::WeakPtr<FastCheckoutController> controller) {
   return std::make_unique<FastCheckoutViewImpl>(controller);
 }
+
+DEFINE_JNI(FastCheckoutBridge)

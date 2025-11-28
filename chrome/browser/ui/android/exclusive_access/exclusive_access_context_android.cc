@@ -149,3 +149,5 @@ void ExclusiveAccessContextAndroid::ForceActiveTab(
     const jni_zero::JavaRef<jobject>& j_tab) {
   Java_ExclusiveAccessContext_forceActiveTab(env, java_context_, j_tab);
 }
+
+DEFINE_JNI(ExclusiveAccessContext)

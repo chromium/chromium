@@ -15,3 +15,5 @@ static jboolean JNI_PasswordManagerHelper_HasChosenToSyncPasswords(
     syncer::SyncService* sync_service) {
   return password_manager::sync_util::HasChosenToSyncPasswords(sync_service);
 }
+
+DEFINE_JNI(PasswordManagerHelper)

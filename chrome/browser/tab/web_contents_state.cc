@@ -609,3 +609,5 @@ static void JNI_WebContentsState_FreeStringPointer(JNIEnv* env,
                                                    jlong string_pointer) {
   delete reinterpret_cast<std::string*>(string_pointer);
 }
+
+DEFINE_JNI(WebContentsState)

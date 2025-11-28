@@ -111,3 +111,5 @@ static void JNI_SafeBrowsingBridge_ReportIntent(
 }
 
 }  // namespace safe_browsing
+
+DEFINE_JNI(SafeBrowsingBridge)

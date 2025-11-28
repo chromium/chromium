@@ -45,3 +45,5 @@ void AutofillAccessibilityHelper::SetInstanceForTesting(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillAccessibilityUtils)

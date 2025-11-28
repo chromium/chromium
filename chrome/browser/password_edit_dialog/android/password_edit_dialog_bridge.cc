@@ -86,3 +86,5 @@ jboolean PasswordEditDialogBridge::IsUsingAccountStorage(
     std::u16string& username) {
   return delegate_->IsUsingAccountStorage(username);
 }
+
+DEFINE_JNI(PasswordEditDialogBridge)

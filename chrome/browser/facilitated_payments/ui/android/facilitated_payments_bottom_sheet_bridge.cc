@@ -162,3 +162,5 @@ void FacilitatedPaymentsBottomSheetBridge::OnDismissed() {
 }
 
 }  // namespace payments::facilitated
+
+DEFINE_JNI(FacilitatedPaymentsPaymentMethodsViewBridge)

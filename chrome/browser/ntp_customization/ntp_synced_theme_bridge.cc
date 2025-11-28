@@ -69,3 +69,5 @@ void NtpSyncedThemeBridge::OnCustomBackgroundImageUpdated() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NtpSyncedThemeBridge_onCustomBackgroundImageUpdated(env, j_java_obj_);
 }
+
+DEFINE_JNI(NtpSyncedThemeBridge)

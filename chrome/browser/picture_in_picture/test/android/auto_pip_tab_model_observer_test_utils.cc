@@ -74,3 +74,5 @@ static void JNI_AutoPiPTabModelObserverHelperTestUtils_Destroy(JNIEnv* env) {
 }
 
 }  // namespace picture_in_picture
+
+DEFINE_JNI(AutoPiPTabModelObserverHelperTestUtils)

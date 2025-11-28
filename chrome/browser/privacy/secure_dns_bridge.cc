@@ -174,3 +174,5 @@ static jboolean JNI_SecureDnsBridge_ProbeConfig(
   secure_dns::UpdateProbeHistogram(success);
   return success;
 }
+
+DEFINE_JNI(SecureDnsBridge)

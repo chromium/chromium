@@ -155,3 +155,5 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::RemoveLogin(
 }
 
 }  // namespace password_manager
+
+DEFINE_JNI(PasswordStoreAndroidBackendDispatcherBridgeImpl)

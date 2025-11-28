@@ -187,3 +187,7 @@ TEST_F(AutofillClientProviderTest,
 
 }  // namespace
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AutofillClientProviderTestUtils)
+#endif

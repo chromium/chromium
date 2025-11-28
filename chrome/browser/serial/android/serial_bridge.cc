@@ -13,3 +13,5 @@ static jboolean JNI_SerialBridge_IsWebContentsConnectedToSerialPort(
   return content::WebContents::FromJavaWebContents(java_web_contents)
       ->IsCapabilityActive(content::WebContentsCapabilityType::kSerial);
 }
+
+DEFINE_JNI(SerialBridge)

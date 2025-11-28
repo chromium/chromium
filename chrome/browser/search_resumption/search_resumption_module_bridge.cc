@@ -79,3 +79,5 @@ static jlong JNI_SearchResumptionModuleBridge_Create(
 }
 
 }  // namespace search_resumption_module
+
+DEFINE_JNI(SearchResumptionModuleBridge)

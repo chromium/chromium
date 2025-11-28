@@ -141,3 +141,5 @@ void LogoBridge::GetCurrentLogo(JNIEnv* env,
       weak_ptr_factory_.GetWeakPtr(), env, j_logo_observer);
   logo_service_->GetLogo(observer);
 }
+
+DEFINE_JNI(LogoBridge)

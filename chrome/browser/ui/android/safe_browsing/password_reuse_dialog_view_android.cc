@@ -53,3 +53,5 @@ void PasswordReuseDialogViewAndroid::Close(JNIEnv* env) {
 }
 
 }  // namespace safe_browsing
+
+DEFINE_JNI(SafeBrowsingPasswordReuseDialogBridge)

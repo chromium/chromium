@@ -516,3 +516,5 @@ static void JNI_FakeServerHelper_DeleteAllEntitiesForDataType(JNIEnv* env,
   fake_server_ptr->DeleteAllEntitiesForDataType(
       static_cast<syncer::DataType>(data_type));
 }
+
+DEFINE_JNI(FakeServerHelper)

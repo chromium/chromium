@@ -302,3 +302,5 @@ void OptimizationGuideBridge::OnNewPushNotification(
 
 }  // namespace android
 }  // namespace optimization_guide
+
+DEFINE_JNI(OptimizationGuideBridge)

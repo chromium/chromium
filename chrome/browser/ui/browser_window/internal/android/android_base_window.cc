@@ -157,3 +157,5 @@ void AndroidBaseWindow::SetZOrderLevel(ui::ZOrderLevel order) {
   // Per documentation of |ui::ZOrderLevel|, Android ZOrderLevel should always
   // be |ui::ZOrderLevel::kNormal|.
 }
+
+DEFINE_JNI(AndroidBaseWindow)

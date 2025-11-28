@@ -228,3 +228,5 @@ static ScopedJavaLocalRef<jstring> JNI_ProfileResolver_TokenizeProfileKey(
 }
 
 }  // namespace profile_resolver
+
+DEFINE_JNI(ProfileResolver)

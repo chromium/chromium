@@ -109,3 +109,6 @@ AllPasswordsBottomSheetViewImpl::GetOrCreateJavaObject() {
              controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
              controller_->GetFrameUrl().spec());
 }
+
+DEFINE_JNI(AllPasswordsBottomSheetBridge)
+DEFINE_JNI(Credential)

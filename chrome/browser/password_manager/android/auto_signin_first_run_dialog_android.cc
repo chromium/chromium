@@ -127,3 +127,5 @@ void AutoSigninFirstRunDialogAndroid::OnVisibilityChanged(
     Java_AutoSigninFirstRunDialog_dismissDialog(env, dialog_jobject_);
   }
 }
+
+DEFINE_JNI(AutoSigninFirstRunDialog)

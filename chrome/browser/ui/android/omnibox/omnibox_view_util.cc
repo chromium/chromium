@@ -22,3 +22,5 @@ static ScopedJavaLocalRef<jstring> JNI_OmniboxViewUtil_SanitizeTextForPaste(
   pasted_text = omnibox::SanitizeTextForPaste(pasted_text);
   return base::android::ConvertUTF16ToJavaString(env, pasted_text);
 }
+
+DEFINE_JNI(OmniboxViewUtil)

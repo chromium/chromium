@@ -164,3 +164,5 @@ TEST_F(AndroidBrowserWindowEnumeratorTest, IteratorWithRemovals) {
   EXPECT_THAT(visited,
               testing::ElementsAre(browser_window_3, browser_window_1));
 }
+
+DEFINE_JNI(AndroidBrowserWindowEnumeratorNativeUnitTestSupport)

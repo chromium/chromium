@@ -59,3 +59,5 @@ static void JNI_EditorScreenshotTask_GrabWindowSnapshotAsync(
 }
 
 }  // namespace android
+
+DEFINE_JNI(EditorScreenshotTask)

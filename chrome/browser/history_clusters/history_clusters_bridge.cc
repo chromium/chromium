@@ -153,3 +153,5 @@ void HistoryClustersBridge::Destroy(JNIEnv* j_env) {
 }
 
 }  // namespace history_clusters
+
+DEFINE_JNI(HistoryClustersBridge)

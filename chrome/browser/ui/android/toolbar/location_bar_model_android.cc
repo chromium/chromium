@@ -85,3 +85,5 @@ static jlong JNI_LocationBarModel_Init(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj) {
   return reinterpret_cast<intptr_t>(new LocationBarModelAndroid(env, obj));
 }
+
+DEFINE_JNI(LocationBarModel)

@@ -41,3 +41,7 @@ bool IsTabGroupSyncEnabled(PrefService* pref_service) {
 }
 
 }  // namespace tab_groups
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(TabGroupSyncFeatures)
+#endif

@@ -86,3 +86,5 @@ void TouchToFillPasswordGenerationBridgeImpl::OnGeneratedPasswordRejected(
   CHECK(delegate_);
   delegate_->OnGeneratedPasswordRejected();
 }
+
+DEFINE_JNI(TouchToFillPasswordGenerationBridge)

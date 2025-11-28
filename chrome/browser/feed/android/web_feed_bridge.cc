@@ -412,3 +412,5 @@ static void JNI_WebFeedBridge_QueryWebFeedId(
   subscriptions->QueryWebFeedId(id, std::move(callback));
 }
 }  // namespace feed
+
+DEFINE_JNI(WebFeedBridge)

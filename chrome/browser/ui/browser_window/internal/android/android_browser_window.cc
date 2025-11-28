@@ -108,3 +108,5 @@ base::android::ScopedJavaLocalRef<jobject> AndroidBrowserWindow::GetActivity() {
   return Java_AndroidBrowserWindow_getActivity(AttachCurrentThread(),
                                                java_android_browser_window_);
 }
+
+DEFINE_JNI(AndroidBrowserWindow)

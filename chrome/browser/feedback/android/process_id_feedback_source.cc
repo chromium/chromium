@@ -91,3 +91,5 @@ ScopedJavaLocalRef<jlongArray> ProcessIdFeedbackSource::GetProcessIdsForType(
 
 }  // namespace android
 }  // namespace chrome
+
+DEFINE_JNI(ProcessIdFeedbackSource)

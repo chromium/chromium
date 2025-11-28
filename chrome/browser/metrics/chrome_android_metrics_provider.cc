@@ -167,3 +167,6 @@ void ChromeAndroidMetricsProvider::ProvideSystemProfileMetrics(
       system_profile_proto->mutable_hardware();
   hardware->set_full_hardware_class(GetHardwareClass());
 }
+
+DEFINE_JNI(AppUpdateInfoUtils)
+DEFINE_JNI(NotificationSystemStatusUtil)

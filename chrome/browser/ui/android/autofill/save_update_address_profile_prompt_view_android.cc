@@ -124,3 +124,5 @@ void SaveUpdateAddressProfilePromptViewAndroid::SetContent(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(SaveUpdateAddressProfilePrompt)

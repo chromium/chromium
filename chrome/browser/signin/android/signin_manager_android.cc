@@ -309,3 +309,5 @@ void SigninManagerAndroid::SetUserAcceptedAccountManagement(
 bool SigninManagerAndroid::GetUserAcceptedAccountManagement(JNIEnv* env) {
   return enterprise_util::UserAcceptedAccountManagement(profile_);
 }
+
+DEFINE_JNI(SigninManagerImpl)

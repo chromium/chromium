@@ -206,3 +206,5 @@ OfflinePageArchivePublisherImpl::GetWeakPtr() {
 }
 
 }  // namespace offline_pages
+
+DEFINE_JNI(OfflinePageArchivePublisherBridge)

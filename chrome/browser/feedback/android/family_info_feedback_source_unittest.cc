@@ -360,3 +360,5 @@ INSTANTIATE_TEST_SUITE_P(AllFamilyMemberRoles,
                                            kidsmanagement::PARENT));
 
 }  // namespace chrome::android
+
+DEFINE_JNI(FamilyInfoFeedbackSourceTestBridge)

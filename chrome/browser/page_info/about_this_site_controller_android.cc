@@ -67,3 +67,5 @@ static void JNI_PageInfoAboutThisSiteController_OnAboutThisSiteRowClicked(
     jboolean j_withDescription) {
   page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(j_withDescription);
 }
+
+DEFINE_JNI(PageInfoAboutThisSiteController)

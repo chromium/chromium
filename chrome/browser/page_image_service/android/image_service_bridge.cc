@@ -108,3 +108,5 @@ bool ImageServiceBridge::HasConsentToFetchImagesImpl(
   return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
          is_account_data;
 }
+
+DEFINE_JNI(ImageServiceBridge)

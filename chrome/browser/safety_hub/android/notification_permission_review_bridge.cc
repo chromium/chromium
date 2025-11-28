@@ -134,3 +134,6 @@ JNI_NotificationPermissionReviewBridge_ResetNotificationPermissionForOrigin(
     std::string& origin) {
   ResetNotificationPermissionForOrigin(profile, origin);
 }
+
+DEFINE_JNI(NotificationPermissionReviewBridge)
+DEFINE_JNI(NotificationPermissions)

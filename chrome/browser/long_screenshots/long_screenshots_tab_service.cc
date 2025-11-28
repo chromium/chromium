@@ -313,3 +313,5 @@ void LongScreenshotsTabService::LongScreenshotsClosedAndroid(JNIEnv* env) {
   DeleteAllLongScreenshotFiles();
 }
 }  // namespace long_screenshots
+
+DEFINE_JNI(LongScreenshotsTabService)

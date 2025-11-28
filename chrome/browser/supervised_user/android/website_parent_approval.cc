@@ -100,3 +100,5 @@ static void JNI_WebsiteParentApproval_FetchFavicon(
       url, true, min_source_size_in_pixel, desired_size_in_pixel,
       base::android::ScopedJavaGlobalRef<jobject>(on_favicon_fetched_callback));
 }
+
+DEFINE_JNI(WebsiteParentApproval)

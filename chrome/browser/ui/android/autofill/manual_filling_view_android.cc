@@ -395,3 +395,6 @@ std::unique_ptr<ManualFillingViewInterface> ManualFillingViewInterface::Create(
     content::WebContents* web_contents) {
   return std::make_unique<ManualFillingViewAndroid>(controller, web_contents);
 }
+
+DEFINE_JNI(ManualFillingComponentBridge)
+DEFINE_JNI(UserInfoField)

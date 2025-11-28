@@ -140,3 +140,5 @@ BackgroundSchedulerBridge::GetCurrentDeviceConditions() {
 
 }  // namespace android
 }  // namespace offline_pages
+
+DEFINE_JNI(BackgroundSchedulerBridge)

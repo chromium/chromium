@@ -13,3 +13,5 @@ static jboolean JNI_UsbBridge_IsWebContentsConnectedToUsbDevice(
   return content::WebContents::FromJavaWebContents(java_web_contents)
       ->IsCapabilityActive(content::WebContentsCapabilityType::kUSB);
 }
+
+DEFINE_JNI(UsbBridge)

@@ -362,3 +362,5 @@ void OfflinePageEvaluationBridge::NotifyIfDoneLoading() const {
 
 }  // namespace android
 }  // namespace offline_pages
+
+DEFINE_JNI(OfflinePageEvaluationBridge)

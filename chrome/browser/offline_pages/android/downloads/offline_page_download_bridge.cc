@@ -367,3 +367,5 @@ void OfflinePageDownloadBridge::ShowDownloadingToast() {
 
 }  // namespace android
 }  // namespace offline_pages
+
+DEFINE_JNI(OfflinePageDownloadBridge)

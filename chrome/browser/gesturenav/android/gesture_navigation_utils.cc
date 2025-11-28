@@ -27,3 +27,5 @@ JNI_GestureNavigationUtils_SetMinRequiredPhysicalRamMbForTesting(JNIEnv* env,
 }
 
 }  // namespace gesturenav
+
+DEFINE_JNI(GestureNavigationUtils)

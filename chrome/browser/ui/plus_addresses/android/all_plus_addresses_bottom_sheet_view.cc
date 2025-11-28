@@ -83,3 +83,6 @@ AllPlusAddressesBottomSheetView::GetOrCreateJavaObject() {
 }
 
 }  // namespace plus_addresses
+
+DEFINE_JNI(AllPlusAddressesBottomSheetBridge)
+DEFINE_JNI(PlusProfile)

@@ -53,3 +53,5 @@ static void JNI_BoardingPassBridge_DetectBoardingPass(
 }
 
 }  // namespace wallet
+
+DEFINE_JNI(BoardingPassBridge)

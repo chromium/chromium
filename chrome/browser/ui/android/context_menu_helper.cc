@@ -99,3 +99,5 @@ void ContextMenuHelper::SetPopulatorFactory(
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextMenuHelper);
+
+DEFINE_JNI(ContextMenuHelper)

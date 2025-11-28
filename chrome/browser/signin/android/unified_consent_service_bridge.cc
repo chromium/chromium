@@ -51,3 +51,5 @@ static void JNI_UnifiedConsentServiceBridge_RecordSyncSetupDataTypesHistogram(
   unified_consent::metrics::RecordSyncSetupDataTypesHistrogam(
       syncService->GetUserSettings());
 }
+
+DEFINE_JNI(UnifiedConsentServiceBridge)

@@ -28,3 +28,5 @@ NotificationTriggerSchedulerAndroid::NotificationTriggerSchedulerAndroid() {
 
 NotificationTriggerSchedulerAndroid::~NotificationTriggerSchedulerAndroid() =
     default;
+
+DEFINE_JNI(NotificationTriggerScheduler)

@@ -19,3 +19,5 @@ static jboolean JNI_PaintPreviewCompositorUtils_StopWarmCompositor(
 }
 
 }  // namespace paint_preview
+
+DEFINE_JNI(PaintPreviewCompositorUtils)

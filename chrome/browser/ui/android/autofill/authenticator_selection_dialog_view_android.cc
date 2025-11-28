@@ -146,3 +146,5 @@ CreateAndShowCardUnmaskAuthenticationSelectionDialog(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AuthenticatorSelectionDialogBridge)
