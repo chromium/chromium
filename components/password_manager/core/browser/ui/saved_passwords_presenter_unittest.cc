@@ -1915,10 +1915,11 @@ TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_SingleSite) {
   RunUntilIdle();
 
   EXPECT_THAT(presenter().GetActorLoginPermissions(),
-              UnorderedElementsAre(ActorLoginPermission(
-                  form_1.url,
-                  /*human_readable_name=*/"test1.com", form_1.signon_realm,
-                  form_1.username_value)));
+              UnorderedElementsAre(ActorLoginPermission{
+                  .domain_info = {.name = "test1.com",
+                                  .url = form_1.url,
+                                  .signon_realm = form_1.signon_realm},
+                  .username = form_1.username_value}));
 }
 
 TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_Deduplicates) {
@@ -1931,10 +1932,11 @@ TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_Deduplicates) {
   RunUntilIdle();
 
   EXPECT_THAT(presenter().GetActorLoginPermissions(),
-              UnorderedElementsAre(ActorLoginPermission(
-                  form_1.url,
-                  /*human_readable_name=*/"test0.com", form_1.signon_realm,
-                  form_1.username_value)));
+              UnorderedElementsAre(ActorLoginPermission{
+                  .domain_info = {.name = "test0.com",
+                                  .url = form_1.url,
+                                  .signon_realm = form_1.signon_realm},
+                  .username = form_1.username_value}));
 }
 
 TEST_F(SavedPasswordsPresenterTest,
@@ -1955,13 +1957,17 @@ TEST_F(SavedPasswordsPresenterTest,
   EXPECT_THAT(
       presenter().GetActorLoginPermissions(),
       UnorderedElementsAre(
-          ActorLoginPermission(form_1.url,
-                               /*human_readable_name=*/"test0.com",
-                               form_1.signon_realm, form_1.username_value),
-          ActorLoginPermission(GURL("https://play.google.com/store/apps/"
-                                    "details?id=com.app.name"),
-                               "App Name", form_2.signon_realm,
-                               form_2.username_value)));
+          ActorLoginPermission{
+              .domain_info = {.name = "test0.com",
+                              .url = form_1.url,
+                              .signon_realm = form_1.signon_realm},
+              .username = form_1.username_value},
+          ActorLoginPermission{
+              .domain_info = {.name = "App Name",
+                              .url = GURL("https://play.google.com/store/apps/"
+                                          "details?id=com.app.name"),
+                              .signon_realm = form_2.signon_realm},
+              .username = form_2.username_value}));
 }
 
 TEST_F(SavedPasswordsPresenterTest,
@@ -1978,15 +1984,18 @@ TEST_F(SavedPasswordsPresenterTest,
   store().AddLogins({form_1, form_2});
   RunUntilIdle();
 
-  EXPECT_THAT(
-      presenter().GetActorLoginPermissions(),
-      UnorderedElementsAre(
-          ActorLoginPermission(form_1.url,
-                               /*human_readable_name=*/"test0.com",
-                               form_1.signon_realm, form_1.username_value),
-          ActorLoginPermission(form_2.url,
-                               /*human_readable_name=*/"test1.com",
-                               form_2.signon_realm, form_2.username_value)));
+  EXPECT_THAT(presenter().GetActorLoginPermissions(),
+              UnorderedElementsAre(
+                  ActorLoginPermission{
+                      .domain_info = {.name = "test0.com",
+                                      .url = form_1.url,
+                                      .signon_realm = form_1.signon_realm},
+                      .username = form_1.username_value},
+                  ActorLoginPermission{
+                      .domain_info = {.name = "test1.com",
+                                      .url = form_2.url,
+                                      .signon_realm = form_2.signon_realm},
+                      .username = form_2.username_value}));
 }
 
 TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission) {
@@ -1996,9 +2005,8 @@ TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission) {
   store().AddLogin(form);
   RunUntilIdle();
 
-  presenter().RevokeActorLoginPermission(
-      ActorLoginPermission(form.url, /*human_readable_name=*/"test0.com",
-                           form.signon_realm, form.username_value));
+  presenter().RevokeActorLoginPermission(form.username_value,
+                                         form.signon_realm);
   RunUntilIdle();
 
   form.actor_login_approved = false;
@@ -2018,10 +2026,8 @@ TEST_F(SavedPasswordsPresenterTest,
   store().AddLogin(form_2);
   RunUntilIdle();
 
-  presenter().RevokeActorLoginPermission(
-      ActorLoginPermission(form_1.url,
-                           /*human_readable_name=*/"test0.com",
-                           form_1.signon_realm, form_1.username_value));
+  presenter().RevokeActorLoginPermission(form_1.username_value,
+                                         form_1.signon_realm);
   RunUntilIdle();
 
   form_1.actor_login_approved = false;
@@ -2040,9 +2046,8 @@ TEST_F(SavedPasswordsPresenterTest,
   store().AddLogin(form_1);
   RunUntilIdle();
 
-  presenter().RevokeActorLoginPermission(ActorLoginPermission(
-      GURL("https://play.google.com/store/apps/details?id=com.app.name"),
-      "App Name", form_1.signon_realm, form_1.username_value));
+  presenter().RevokeActorLoginPermission(form_1.username_value,
+                                         form_1.signon_realm);
   RunUntilIdle();
 
   form_1.actor_login_approved = false;

@@ -479,6 +479,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   revokeActorLoginPermission(site: ActorLoginPermission) {
     this.methodCalled('revokeActorLoginPermission', site);
     this.data.actorLoginPermissions = this.data.actorLoginPermissions.filter(
-        s => !(s.url.link === site.url.link && s.username === site.username));
+        s =>
+            !(s.domainInfo.signonRealm === site.domainInfo.signonRealm &&
+              s.username === site.username));
   }
 }

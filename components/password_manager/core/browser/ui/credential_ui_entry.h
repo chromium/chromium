@@ -74,6 +74,12 @@ struct CredentialUIEntry {
 
     // signon_realm of a corresponding PasswordForm.
     std::string signon_realm;
+
+    friend bool operator==(const DomainInfo& lhs,
+                           const DomainInfo& rhs) = default;
+
+    friend auto operator<=>(const DomainInfo& lhs,
+                            const DomainInfo& rhs) = default;
   };
 
   // Structure which represents a recovery password for a password changed in a

@@ -15,26 +15,20 @@ namespace password_manager {
 
 // Defines a credential with a permission for Actor Login.
 struct ActorLoginPermission {
-  ActorLoginPermission(GURL url,
-                       std::string human_readable_name,
-                       std::string signon_realm,
-                       std::u16string username);
-  ActorLoginPermission(const ActorLoginPermission& other);
-  ~ActorLoginPermission();
-  // TODO(crbug.com/462214930): remove once kActorLoginPermissionsForAndroid
-  // is cleaned up.
-  GURL url;
-  // Represents human readable info that can be shown in the UI. This also
-  // covers android apps.
-  std::string human_readable_name;
-  // Url or android app. Comes from PasswordForm::signon_realm
-  std::string signon_realm;
-  // The username of the credential with the permission. If there are multiple
-  // credentials with this username and url, all of them are considered to
-  // have the permission.
+  // Contains formatted URL or android app name as well as the unformatted
+  // version.
+  CredentialUIEntry::DomainInfo domain_info;
+
+  // The username of the credential with the permission. If there are
+  // multiple credentials with this username and url, all of them are
+  // considered to have the permission.
   std::u16string username;
 
-  auto operator<=>(const ActorLoginPermission& other) const = default;
+  friend bool operator==(const ActorLoginPermission& lhs,
+                         const ActorLoginPermission& rhs) = default;
+
+  friend auto operator<=>(const ActorLoginPermission& lhs,
+                          const ActorLoginPermission& rhs) = default;
 };
 
 }  // namespace password_manager

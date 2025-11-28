@@ -201,8 +201,10 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   std::vector<CredentialUIEntry> GetBlockedSites();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Revokes actor login permission for all credentials matching the site.
-  void RevokeActorLoginPermission(const ActorLoginPermission& site);
+  // Revokes actor login permission for all credentials matching the `username`
+  // `signon_realm` pair.
+  void RevokeActorLoginPermission(const std::u16string& username,
+                                  const std::string& signon_realm);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // Returns PasswordForms corresponding to |credential|.

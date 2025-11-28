@@ -49,12 +49,12 @@ function assertBlockedSiteList(
  * Helper method that creates an ActorLoginPermission for tests.
  */
 function createActorLoginPermission(
-    url: string, username: string): ActorLoginPermission {
+  domainName: string, username: string): ActorLoginPermission {
   return {
-    url: {
-      humanReadableUrl: url,
-      signonRealm: `https://${url}`,
-      link: `https://${url}`,
+    domainInfo: {
+      humanReadableName: domainName,
+      signonRealm: `https://${domainName}`,
+      url: { url: `https://${domainName}` },
     },
     username,
   };
@@ -580,7 +580,7 @@ suite('SettingsSectionTest', function() {
         assertEquals(2, siteElements.length);
 
         assertEquals(
-            sites[0]!.url.humanReadableUrl,
+          sites[0]!.domainInfo.humanReadableName,
             siteElements[0]!.querySelector<HTMLElement>(
                                 '.label')!.textContent.trim());
         assertEquals(
@@ -588,7 +588,7 @@ suite('SettingsSectionTest', function() {
             siteElements[0]!.querySelector<HTMLElement>(
                                 '.site-username')!.textContent.trim());
         assertEquals(
-            sites[1]!.url.humanReadableUrl,
+          sites[1]!.domainInfo.humanReadableName,
             siteElements[1]!.querySelector<HTMLElement>(
                                 '.label')!.textContent.trim());
         assertEquals(

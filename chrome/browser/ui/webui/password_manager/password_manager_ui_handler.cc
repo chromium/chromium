@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webui/password_manager/password_manager.mojom.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/actor_login_permission.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -57,11 +58,9 @@ void PasswordManagerUIHandler::GetActorLoginPermissions(
   std::vector<password_manager::mojom::ActorLoginPermissionPtr> result;
   for (const auto& site :
        GetSavedPasswordsPresenter()->GetActorLoginPermissions()) {
-    auto url = password_manager::mojom::FormattedUrl::New(
-        site.human_readable_name.empty()
-            ? password_manager::GetShownOrigin(url::Origin::Create(site.url))
-            : site.human_readable_name,
-        site.url.spec(), site.signon_realm);
+    auto url = password_manager::mojom::DomainInfo::New(
+        site.domain_info.name, site.domain_info.url,
+        site.domain_info.signon_realm);
     result.push_back(password_manager::mojom::ActorLoginPermission::New(
         std::move(url), base::UTF16ToUTF8(site.username)));
   }
@@ -71,9 +70,7 @@ void PasswordManagerUIHandler::GetActorLoginPermissions(
 void PasswordManagerUIHandler::RevokeActorLoginPermission(
     password_manager::mojom::ActorLoginPermissionPtr site) {
   GetSavedPasswordsPresenter()->RevokeActorLoginPermission(
-      password_manager::ActorLoginPermission{
-          GURL(site->url->link), site->url->human_readable_url,
-          site->url->signon_realm, base::UTF8ToUTF16(site->username)});
+      base::UTF8ToUTF16(site->username), site->domain_info->signon_realm);
 }
 
 void PasswordManagerUIHandler::ChangePasswordManagerPin(

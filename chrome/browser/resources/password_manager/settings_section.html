@@ -191,11 +191,11 @@
     <div id="actorLoginPermissionsList" class="hr">
       <template is="dom-repeat" items="[[actorLoginPermissions_]]">
         <div class="flex-centered">
-          <site-favicon class="favicon" domain="[[item.url.link]]">
+          <site-favicon class="favicon" domain="[[item.domainInfo.url.url]]">
           </site-favicon>
           <div class="site-content flex-centered"
               first$="[[!index]]">
-            <div class="label">[[item.url.humanReadableUrl]]</div>
+            <div class="label">[[item.domainInfo.humanReadableName]]</div>
             <div class="label site-username cr-secondary-text">
               [[item.username]]
             </div>
@@ -205,7 +205,7 @@
                 on-click="onRemoveActorLoginPermissionClick_"
                 title="$i18n{deletePassword}"
                 aria-label="[[i18n('removeBlockedAriaDescription',
-                    item.url.humanReadableUrl)]]">
+                    item.domainInfo.humanReadableName)]]">
             </cr-icon-button>
           </div>
         </div>
@@ -249,7 +249,7 @@
 <template is="dom-if" if="[[removeActorLoginPermissionSite_]]" restamp>
   <remove-actor-login-permission-dialog
       id="removeActorLoginPermissionDialog"
-      origin="[[removeActorLoginPermissionSite_.url.humanReadableUrl]]"
+      origin="[[removeActorLoginPermissionSite_.domain_info.humanReadableName]]"
       on-close="onCloseRemoveActorLoginPermissionDialog_"
       on-remove-actor-login-permission-click="onRemoveActorLoginPermission_">
   </remove-actor-login-permission-dialog>

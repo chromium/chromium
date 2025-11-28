@@ -217,7 +217,7 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 
   const auto& permissions = future.Get();
   ASSERT_EQ(permissions.size(), 1u);
-  EXPECT_EQ(permissions[0]->url->link, kTestUrl.spec());
+  EXPECT_EQ(permissions[0]->domain_info->url, kTestUrl);
 }
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
@@ -228,9 +228,9 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
                             /*actor_login_approved=*/true);
 
   auto site = mojom::ActorLoginPermission::New();
-  site->url = mojom::FormattedUrl::New(
-      /*human_redable_url=*/std::string(kTestUrl.host()),
-      /*link=*/kTestUrl.spec(),
+  site->domain_info = mojom::DomainInfo::New(
+      /*human_redable_name*/ std::string(kTestUrl.host()),
+      /*url=*/kTestUrl,
       /*signon_realm=*/kTestUrl.spec());
   site->username = base::UTF16ToUTF8(kTestUsername);
 
