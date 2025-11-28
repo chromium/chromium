@@ -56,6 +56,31 @@ function isConditionalMediation(
   return ('mediation' in options && options.mediation === 'conditional');
 }
 
+// Returns whether a Credential is a PublicKeyCredential upon successful
+// completion of navigator.credentials.create() or navigator.credentials.get().
+function isPublicKeyCredential(credential: Credential):
+    credential is PublicKeyCredential {
+  // Verify that the Credential interface matches the webauthn spec as described
+  // here: https://w3c.github.io/webappsec-credential-management/#credential
+  if (credential.type !== 'public-key' || typeof credential.id !== 'string') {
+    return false;
+  }
+
+  // Verify that the PublicKeyCredential interface matches the webauthn spec as
+  // described here: https://w3c.github.io/webauthn/#iface-pkcredential
+  // Note that, while `authenticatorAttachment` is nullable, this attribute
+  // reports the authenticator attachment modality in effect at the time the
+  // navigator.credentials.create() or navigator.credentials.get() methods
+  // successfully complete, so it should not be null.
+  const publicKeyCredential: PublicKeyCredential =
+      (credential as PublicKeyCredential);
+  return publicKeyCredential.rawId instanceof ArrayBuffer &&
+      typeof publicKeyCredential.authenticatorAttachment === 'string' &&
+      publicKeyCredential.response.clientDataJSON instanceof ArrayBuffer &&
+      typeof (publicKeyCredential.getClientExtensionResults) === 'function' &&
+      typeof (publicKeyCredential.toJSON) === 'function';
+}
+
 // Converts an array buffer to a base 64 encoded (forgiving policy) string.
 // base64 spec: https://datatracker.ietf.org/doc/html/rfc4648#autoid-9
 function arrayBufferToBase64(buffer: ArrayBufferLike): string {
@@ -251,14 +276,10 @@ function createEmptyCredential(): PublicKeyCredential {
 
 // Returns whether a credential is non empty.
 function isValidCredential(credential: Credential|null): boolean {
-  return !!credential && credential instanceof PublicKeyCredential &&
-      !!credential.id && typeof credential.id === 'string' &&
-      !!credential.authenticatorAttachment &&
-      typeof credential.authenticatorAttachment === 'string' &&
-      !!credential.rawId && credential.rawId instanceof ArrayBuffer &&
-      credential.type === 'public-key' && !!credential.response &&
-      !!credential.response.clientDataJSON &&
-      typeof credential.response.clientDataJSON === 'string';
+  return !!credential && !!credential.type && !!credential.id &&
+      isPublicKeyCredential(credential) &&
+      !!credential.authenticatorAttachment && !!credential.rawId &&
+      !!credential.response && !!credential.response.clientDataJSON;
 }
 
 // Creates a valid AuthenticatorAttestationResponse from the provided list of
@@ -354,12 +375,13 @@ function createPassthroughRegistrationRequest(
   sendWebKitMessage(HANDLER_NAME, {'event': 'logCreateRequest'});
 
   return cachedNavigatorCredentials.create(options).then((credential) => {
-    if (credential && credential instanceof PublicKeyCredential &&
-        credential.response instanceof AuthenticatorAttestationResponse) {
+    if (credential && isPublicKeyCredential(credential)) {
+      const response: AuthenticatorAttestationResponse =
+          credential.response as AuthenticatorAttestationResponse;
       // Parse the aaguid from authenticator data according to
       // https://w3c.github.io/webauthn/#sctn-authenticator-data.
       const aaguid = new Uint8Array(
-          credential.response.getAuthenticatorData().slice(37).slice(0, 16));
+          response.getAuthenticatorData().slice(37).slice(0, 16));
       sendWebKitMessage(HANDLER_NAME, {
         'event': 'logCreateResolved',
         'isGpm': isGpmAaguid(aaguid),
@@ -378,7 +400,7 @@ function createPassthroughAssertionRequest(
   sendWebKitMessage(HANDLER_NAME, {'event': 'logGetRequest'});
 
   return cachedNavigatorCredentials.get(options).then((credential) => {
-    if (credential && credential instanceof PublicKeyCredential) {
+    if (credential && isPublicKeyCredential(credential)) {
       // rpId is an optional member of publicKey. Default value (caller's
       // origin domain) should be used if it is not specified
       // (https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-rpid).
@@ -513,12 +535,12 @@ function resolveCredentialPromise(
 // assertion credential.
 function resolveAssertionRequest(
     requestId: string, id64: string, authenticatorData64: string,
-    clientDataJson: string, signature64: string, userHandle: string): void {
+    clientDataJson: string, signature64: string, userHandle64: string): void {
   const response: AuthenticatorAssertionResponse = {
     authenticatorData: decodeBase64URLToArrayBuffer(authenticatorData64),
     clientDataJSON: stringToArrayBuffer(clientDataJson),
     signature: decodeBase64URLToArrayBuffer(signature64),
-    userHandle: stringToArrayBuffer(userHandle),
+    userHandle: decodeBase64URLToArrayBuffer(userHandle64),
   };
 
   resolveCredentialPromise(requestId, id64, response);
