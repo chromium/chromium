@@ -42,7 +42,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/ukm/observers/ukm_consent_state_observer.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "components/ukm/ukm_entry_filter.h"
 #include "components/ukm/ukm_pref_names.h"
 #include "components/ukm/ukm_recorder_impl.h"
 #include "components/ukm/ukm_recorder_observer.h"
@@ -1836,106 +1835,6 @@ TEST_F(UkmServiceTest, PurgeNonCarriedOverSources) {
   ASSERT_EQ(2, proto_report.sources_size());
   EXPECT_EQ(navigation_id, proto_report.sources(0).id());
   EXPECT_EQ(app_id, proto_report.sources(1).id());
-}
-
-TEST_F(UkmServiceTest, FilterCanRemoveMetrics) {
-  class TestEntryFilter : public UkmEntryFilter {
-   public:
-    // This implementation removes the last metric in an event and returns it in
-    // |filtered_metric_hashes|.
-    bool FilterEntry(
-        mojom::UkmEntry* entry,
-        base::flat_set<uint64_t>* filtered_metric_hashes) override {
-      EXPECT_FALSE(entry->metrics.empty());
-      auto last_iter = --entry->metrics.end();
-      filtered_metric_hashes->insert(last_iter->first);
-      entry->metrics.erase(last_iter);
-      return !entry->metrics.empty();
-    }
-  };
-
-  UkmService service(&prefs_, &client_,
-                     std::make_unique<MockDemographicMetricsProvider>());
-  service.RegisterEventFilter(std::make_unique<TestEntryFilter>());
-  TestRecordingHelper recorder(&service);
-  ASSERT_EQ(0, GetPersistedLogCount());
-  service.Initialize();
-  task_runner_->RunUntilIdle();
-  service.UpdateRecording({UkmConsentType::MSBB});
-  service.EnableReporting();
-
-  SourceId id = GetAllowlistedSourceId(0);
-  recorder.UpdateSourceURL(id, GURL("https://google.com/foobar"));
-
-  // This event sticks around albeit with a single metric instead of two.
-  TestEvent1(id).SetCpuTime(1).SetNet_CacheBytes2(0).Record(&service);
-
-  // This event is discarded because its only metric gets stripped out.
-  TestEvent1(id).SetNet_CacheBytes2(0).Record(&service);
-
-  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
-  ASSERT_EQ(1, GetPersistedLogCount());
-  Report proto_report = GetPersistedReport();
-  ASSERT_EQ(1, proto_report.entries_size());
-  EXPECT_EQ(1, proto_report.entries(0).metrics_size());
-  ASSERT_EQ(1, proto_report.aggregates().size());
-  EXPECT_EQ(1u, proto_report.aggregates(0).dropped_due_to_filter());
-  EXPECT_EQ(2, proto_report.aggregates(0).metrics_size());
-  EXPECT_EQ(0u, proto_report.aggregates(0).metrics(0).dropped_due_to_filter());
-  EXPECT_EQ(2u, proto_report.aggregates(0).metrics(1).dropped_due_to_filter());
-}
-
-TEST_F(UkmServiceTest, FilterRejectsEvent) {
-  static const auto kTestEvent1EntryNameHash =
-      base::HashMetricName(TestEvent1::kEntryName);
-
-  class TestEntryFilter : public UkmEntryFilter {
-   public:
-    // This filter rejects all events that are not TestEvent1.
-    bool FilterEntry(
-        mojom::UkmEntry* entry,
-        base::flat_set<uint64_t>* filtered_metric_hashes) override {
-      if (entry->event_hash == kTestEvent1EntryNameHash) {
-        return true;
-      }
-
-      filtered_metric_hashes->replace(base::ToVector(
-          entry->metrics, &decltype(entry->metrics)::value_type::first));
-
-      // Note that the event still contains metrics.
-      return false;
-    }
-  };
-
-  UkmService service(&prefs_, &client_,
-                     std::make_unique<MockDemographicMetricsProvider>());
-  service.RegisterEventFilter(std::make_unique<TestEntryFilter>());
-  TestRecordingHelper recorder(&service);
-  ASSERT_EQ(0, GetPersistedLogCount());
-  service.Initialize();
-  task_runner_->RunUntilIdle();
-  service.UpdateRecording({UkmConsentType::MSBB});
-  service.EnableReporting();
-
-  SourceId id = GetAllowlistedSourceId(0);
-  recorder.UpdateSourceURL(id, GURL("https://google.com/foobar"));
-
-  TestEvent1(id).SetCpuTime(0).Record(&service);
-  TestEvent2(id).SetDownloadService(3).Record(&service);
-
-  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
-  ASSERT_EQ(1, GetPersistedLogCount());
-  Report proto_report = GetPersistedReport();
-  EXPECT_EQ(1, proto_report.entries_size());
-  EXPECT_EQ(kTestEvent1EntryNameHash, proto_report.entries(0).event_hash());
-  ASSERT_EQ(2, proto_report.aggregates_size());
-  EXPECT_EQ(1u, proto_report.aggregates(0).dropped_due_to_filter());
-  ASSERT_EQ(1, proto_report.aggregates(0).metrics_size());
-
-  // No dropped_due_to_filter due to the value being equal to the entry's
-  // droppeddropped_due_to_filter.
-  EXPECT_FALSE(
-      proto_report.aggregates(0).metrics(0).has_dropped_due_to_filter());
 }
 
 TEST_F(UkmServiceTest, PruneOldSources) {

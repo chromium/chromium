@@ -470,10 +470,6 @@ void UkmService::RegisterMetricsProvider(
   metrics_providers_.RegisterMetricsProvider(std::move(provider));
 }
 
-void UkmService::RegisterEventFilter(std::unique_ptr<UkmEntryFilter> filter) {
-  SetEntryFilter(std::move(filter));
-}
-
 // static
 void UkmService::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterUint64Pref(prefs::kUkmClientId, 0);

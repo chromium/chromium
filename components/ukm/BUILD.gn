@@ -20,7 +20,6 @@ component("ukm_recorder") {
     "scheme_constants.cc",
     "scheme_constants.h",
     "ukm_consent_state.h",
-    "ukm_entry_filter.h",
     "ukm_recorder_impl.cc",
     "ukm_recorder_impl.h",
     "ukm_recorder_observer.cc",
