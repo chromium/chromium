@@ -161,20 +161,16 @@ base::File VerifyChecksum(base::File file, const std::string& checksum) {
   }
 
   // Safe to truncate down to <int>.
-  int file_length = raw_file_length;
+  const int file_length = raw_file_length;
 
   // Check checksum of the file.
-  std::vector<char> buf(file_length);
-  if (UNSAFE_TODO(file.Read(0, buf.data(), file_length)) != file_length) {
+  std::vector<uint8_t> buf(file_length);
+  if (file.Read(0, buf) != file_length) {
     return base::File();
   }
 
-  const std::string_view contents(buf.data(), file_length);
-
-  const std::string sha_contents = crypto::SHA256HashString(contents);
-
-  const std::string encoded_sha = base::HexEncodeLower(sha_contents);
-
+  const std::string encoded_sha =
+      base::HexEncodeLower(crypto::SHA256HashString(base::as_string_view(buf)));
   if (encoded_sha != checksum) {
     FIRMWARE_LOG(ERROR) << "Wrong checksum, expected: " << checksum
                         << ", got: " << encoded_sha;
