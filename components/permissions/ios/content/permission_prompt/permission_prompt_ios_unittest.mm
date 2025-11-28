@@ -51,13 +51,19 @@ TEST_F(PermissionPromptIOSTest, Construction) {
 
 TEST_F(PermissionPromptIOSTest, ConstructionWithNullWebContents) {
   EXPECT_DEATH_IF_SUPPORTED(
-      std::make_unique<MockPermissionPromptIOS>(nullptr, delegate()),
+      {
+        auto prompt =
+            std::make_unique<MockPermissionPromptIOS>(nullptr, delegate());
+      },
       ".*web_contents.*");
 }
 
 TEST_F(PermissionPromptIOSTest, ConstructionWithNullDelegate) {
   EXPECT_DEATH_IF_SUPPORTED(
-      std::make_unique<MockPermissionPromptIOS>(web_contents(), nullptr),
+      {
+        auto prompt =
+            std::make_unique<MockPermissionPromptIOS>(web_contents(), nullptr);
+      },
       ".*delegate.*");
 }
 
