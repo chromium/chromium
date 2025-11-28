@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
 <translation id="5602622065581044566">बुल्गेरियन फोनेटिक किबोर्ड</translation>
 <translation id="5605830556594064952">युएस ड्भोराक</translation>
+<translation id="560739212255190568">तपाईंका एड्मिनले निम्न प्रोक्सी लागू गर्नुका साथै प्रोक्सी ओभरराइडसम्बन्धी नियमहरू सेट गर्नुभएको छ</translation>
 <translation id="5618330573454123917">यो फाइल Macintosh सफ्टवेयर प्रयोग गर्ने कम्प्युटरका लागि तयार पारिएको हो। यो फाइल ChromeOS चल्ने तपाईंको डिभाइससँग कम्प्याटिबल छैन। ChromeOS मा फाइल खोल्ने तरिकाका बारेमा <ph name="BEGIN_LINK_HELP" />थप जान्नुहोस्<ph name="END_LINK_HELP" />।</translation>
 <translation id="5625294776298156701">तमिल Tamil99 किबोर्ड</translation>
 <translation id="5633226425545095130">तपाईंले यो वस्तु सार्नुभयो भने '<ph name="DESTINATION_NAME" />' नामक साझा फोल्डर हेर्न सक्ने सबै जनासँग यो वस्तु सेयर हुने छ।</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> को <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
 <translation id="8545476925160229291">अङ्ग्रेजी (सं. रा. अमेरिकी)</translation>
 <translation id="854655314928502177">वेब प्रोक्सी स्वतः खोजको URL</translation>
+<translation id="8547747809824590510">तपाईंका एड्मिनले प्रोक्सी ओभरराइडसम्बन्धी नियमहरू सेट गर्नुभएको छ</translation>
 <translation id="8549186985808798022">इटालियन</translation>
 <translation id="8551494947769799688">लाट्भियन</translation>
 <translation id="8560515948038859357">क्यान्टोनिज</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नाम गरेको फाइल पहिलेदेखि नै अवस्थित छ। कृपया कुनै फरक नाम चयन गर्नुहोस्।</translation>
 <translation id="9046895021617826162">जडान असफल भयो,</translation>
 <translation id="9065512565307033593">तपाईंले पुष्टि गर्न सक्नुभएन भने तपाईं अब नेटवर्क प्रयोग गर्न पाउनु हुने छैन।</translation>
+<translation id="9079844694307518094">तपाईंका एड्मिन निम्न प्रोक्सी लागू गर्दै हुनुहुन्छ</translation>
 <translation id="908378762078012445">रसियाली फोनेटिक AATSEEL किबोर्ड</translation>
 <translation id="9086302186042011942">समक्रमण गर्दै</translation>
 <translation id="9099674669267916096">पृष्ठको गणना</translation>

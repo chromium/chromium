@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Адрас сайта скапіраваны</translation>
 <translation id="3280562213547448728">Галасавы пошук</translation>
 <translation id="3289505634533552500">Галасавы пошук</translation>
-<translation id="3293080634164207409">Дадайце ўкладкі</translation>
 <translation id="3295904109373959849">Групы ўкладак у выглядзе сеткі</translation>
 <translation id="3302837541200840455">Укладка "<ph name="TAB_TITLE" />", новае дзеянне</translation>
 <translation id="3305294846493618482">яшчэ</translation>
@@ -1284,6 +1283,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count} новая ўкладка}one{{count} новая ўкладка}few{{count} новыя ўкладкі}many{{count} новых укладак}other{{count} новай укладкі}}</translation>
 <translation id="5911030830365207728">Перакладчык Google</translation>
 <translation id="5922999516621365983">Каб замацаваць укладку, перацягніце яе сюды.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Дадайце не больш за 1 файл, укладку або відарыс}one{Дадайце не больш за {COUNT} файл, укладку або відарыс}few{Дадайце не больш за {COUNT} файлы, укладкі або відарысы}many{Дадайце не больш за {COUNT} файлаў, укладак або відарысаў}other{Дадайце не больш за {COUNT} файла, укладкі або відарыса}}</translation>
 <translation id="5936006948844852401">Кіраваць сховішчам</translation>
 <translation id="5936065461722368675">Перакласці ўсю старонку</translation>
 <translation id="5937560539988385583">Старонка перакладзена</translation>

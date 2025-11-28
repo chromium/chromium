@@ -2176,6 +2176,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4506599922270137252">Contacteu amb l'administrador del sistema</translation>
 <translation id="450710068430902550">Comparteix informació amb l'administrador</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per traduir aquesta pàgina amb el Traductor de Google</translation>
+<translation id="4510703642214459906">Lloc</translation>
 <translation id="4515275063822566619">Les targetes i les adreces s'obtenen de Chrome i del teu Compte de Google (<ph name="ACCOUNT_EMAIL" />). Pots gestionar-les des de <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Microcotxes i utilitaris</translation>
 <translation id="451601984112574365">Verd 3</translation>
@@ -4372,6 +4373,7 @@ Detalls addicionals:
 <translation id="8077669823243888800">Sobre xinès número 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vols penjar el fitxer confidencial?}other{Vols penjar els fitxers confidencials?}}</translation>
 <translation id="8079031581361219619">Vols tornar a carregar el lloc web?</translation>
+<translation id="8079591184016291275">Nom de l'esdeveniment</translation>
 <translation id="8079976827192572403">Lloc web perillós</translation>
 <translation id="8081087320434522107">Berlines</translation>
 <translation id="8086429410809447605">Moda femenina</translation>

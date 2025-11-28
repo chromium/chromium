@@ -2060,6 +2060,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4299919199185766032">El nombre del acceso directo supera la longitud máxima permitida de <ph name="MAX_LENGTH" /> caracteres.</translation>
 <translation id="4300272766492248925">Abrir aplicación</translation>
 <translation id="4300675098767811073">Perforado múltiple en la parte derecha</translation>
+<translation id="4300841966382281549">Viaje</translation>
 <translation id="4302514097724775343">Toca el dinosaurio para jugar</translation>
 <translation id="4304049446746819918">{0,plural, =1{La política del administrador no recomienda mover este archivo a <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda mover estos archivos a <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Lee las evaluaciones de los clientes sobre productos, servicios o experiencias y toma decisiones más fundamentadas con las reseñas.</translation>
@@ -3425,6 +3426,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6539092367496845964">Se ha producido un error. Vuelve a intentarlo más tarde.</translation>
 <translation id="6540488083026747005">Has permitido el uso de cookies de terceros en este sitio</translation>
 <translation id="6545864417968258051">Búsqueda de dispositivos Bluetooth</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" />-<ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Perforado doble en la parte izquierda</translation>
 <translation id="6549443526281184652">Disfraces</translation>
 <translation id="6550245281449521513">Bloqueo del ratón no permitido</translation>
@@ -4809,6 +4811,7 @@ Más información:
 <translation id="8814547618907885931">Ver todas las tablas comparativas</translation>
 <translation id="8814707942599948500">Sobre C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para actualizar Chrome desde la configuración de Chrome</translation>
+<translation id="8819855907485254989">Guardar billete de transporte en Wallet</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="882338992931677877">Ranura manual</translation>
 <translation id="8827067923357481311">Opciones de pagar más tarde</translation>

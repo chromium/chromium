@@ -223,7 +223,6 @@
 <translation id="1959679933317802873">Очікується контент</translation>
 <translation id="1960290143419248813">Chrome більше не оновлюється в цій версії Android</translation>
 <translation id="1962061488333185936"><ph name="TAB_TITLE" /> (одна з вибраних вкладок, на якій увімкнено звук)</translation>
-<translation id="1963056249988316027">Перевірку особи ввімкнено, але не вдалося підтвердити вашу особу</translation>
 <translation id="1963976881984600709">Стандартний захист</translation>
 <translation id="1966710179511230534">Оновіть свої дані для входу.</translation>
 <translation id="1969037871259811890">Якщо видалити дані вебперегляду, ви не вийдете з облікового запису Google. Для цього потрібно <ph name="BEGIN_LINK1" />вийти з Chrome<ph name="END_LINK1" />.</translation>
@@ -601,7 +600,6 @@
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{і ще один сайт}one{і ще # сайт}few{і ще # сайти}many{і ще # сайтів}other{і ще # сайту}}</translation>
 <translation id="3625870480639975468">Скинути масштабування</translation>
 <translation id="3631987586758005671">Надсилання на пристрій <ph name="DEVICE_NAME" /></translation>
-<translation id="363484704507524488">Параметрами перевірки особи можна керувати в налаштуваннях захисту від крадіжки. <ph name="BEGIN_LINK" />Перейти в налаштування<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Chrome зможе перевірити ваші паролі, коли ви їх збережете</translation>
 <translation id="3636940436873918441">Вибрані мови</translation>
 <translation id="3637744895182738742">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />видаліть дані Chrome у своєму обліковому записі<ph name="END_LINK" />.</translation>
@@ -1131,7 +1129,6 @@
 <translation id="5869522115854928033">Збережені паролі</translation>
 <translation id="5870416898561279542">Повторювані або неактивні протягом <ph name="DAYS_INACTIVE" /> дн. вкладки й групи переміщуються сюди <ph name="AUTODELETE_SECTION" /> Це можна будь-коли змінити в розділі "<ph name="DECLUTTER_SETTINGS_TITLE" />".</translation>
 <translation id="587735546353481577">Щоб підписатися на сайт, перейдіть на нього, відкрийте меню Chrome і натисніть "Підписатися".</translation>
-<translation id="5883855034004058011">Забагато невдалих спроб автентифікації за допомогою біометричних даних. Щоб повторити спробу, заблокуйте й розблокуйте пристрій.</translation>
 <translation id="5885378508678660271">Сповіщення <ph name="SEPARATOR" /> Chrome скасував ці дозволи, оскільки сайт небезпечний</translation>
 <translation id="5899667542927581604">Екран "Немає ключів доступу" закрито</translation>
 <translation id="5907542076239273525">Закладку збережено в папці "<ph name="FOLDER_NAME" />"</translation>
@@ -1340,7 +1337,6 @@
 <translation id="670498945988402717">Перевірено вчора</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Вийшов час на таймері веб-сайту <ph name="FQDN" />. Завтра він знову запрацює.</translation>
-<translation id="671928215901716392">Блокування екрана</translation>
 <translation id="6723740634201835758">В обліковому записі Google</translation>
 <translation id="6734310707649923383">Ви можете переглядати сторінки, які відвідували, або видаляти їх з історії</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" /> (закріплена анонімна вкладка, на якій увімкнено запис)</translation>
@@ -1872,6 +1868,7 @@
 <translation id="8840953339110955557">Ця сторінка може відрізнятися від онлайн-версії.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Приховано</translation>
+<translation id="8849164661359544855">Вебсайт <ph name="URL" /> запитує дозвіл на автоматичний перехід у режим "Картинка в картинці"</translation>
 <translation id="8854223127042600341">Переглянути офлайн-файли</translation>
 <translation id="885480114717186641">Ви можете переключитися на комп’ютерну версію сайту <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Показувати описи</translation>

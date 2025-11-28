@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">தள முகவரி நகலெடுக்கப்பட்டது</translation>
 <translation id="3280562213547448728">குரல் தேடல்</translation>
 <translation id="3289505634533552500">குரல் தேடல்</translation>
-<translation id="3293080634164207409">பக்கங்களைச் சேருங்கள்</translation>
 <translation id="3295904109373959849">பக்கக் குழுக்கள் கட்டம்</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, புதிய செயல்பாடு</translation>
 <translation id="3305294846493618482">மேலும்</translation>
@@ -1284,6 +1283,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count} புதிய பக்கம்}other{{count} புதிய பக்கங்கள்}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">உலாவிப் பக்கத்தைப் பின் செய்ய அதை இங்கே இழுக்கவும்.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{அதிகபட்சம் 1 ஃபைல், பக்கம் அல்லது படத்தைச் சேர்க்கவும்}other{அதிகபட்சம் {COUNT} ஃபைல்கள், பக்கங்கள் அல்லது படங்களைச் சேர்க்கவும்}}</translation>
 <translation id="5936006948844852401">சேமிப்பகத்தை நிர்வகியுங்கள்</translation>
 <translation id="5936065461722368675">அனைத்தையும் மொழிபெயர்</translation>
 <translation id="5937560539988385583">பக்கம் மொழிபெயர்க்கப்பட்டது</translation>

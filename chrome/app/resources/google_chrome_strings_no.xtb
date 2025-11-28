@@ -558,6 +558,7 @@
 <translation id="7285616922384953075"><ph name="MANAGER" /> administrerer Chrome</translation>
 <translation id="7288567540154601580">Faner og utvidelser</translation>
 <translation id="7296210096911315575">Viktig informasjon om bruk og sikkerhet</translation>
+<translation id="7302361266603927550">Noen av Chrome-dataene dine er ikke lagret i Google-kontoen din ennå. Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="7308322188646931570">Chrome må ha lagringstilgang for å laste ned filer</translation>
 <translation id="7339898014177206373">Nytt vindu</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
@@ -614,6 +615,7 @@
 <translation id="7801699035218095297">Google Chrome prøver å kopiere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="7804364787702057554">Kontoen din i Chrome</translation>
 <translation id="7808348361785373670">Fjern fra Chrome</translation>
+<translation id="7827099906024714326">Chrome må bekrefte at det er deg, før enkelte data kan lagres i Google-kontoen din og brukes på alle enhetene dine. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="7845233973568007926">Installasjonen er fullført. Start datamaskinen på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Fortsett der du avsluttet: Chrome kan gjenopprette fanene dine hver gang du starter på nytt. For å slå på dette, gå til</translation>
 <translation id="7872446069773932638">Laster ned … <ph name="SECONDS" /> sekund(er) igjen</translation>

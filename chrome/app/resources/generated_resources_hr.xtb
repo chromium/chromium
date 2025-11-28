@@ -1804,9 +1804,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2220572644011485463">PIN ili zaporka</translation>
 <translation id="222115440608612541">Promjena teme kad sunce izađe i zađe</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">Vanjska aplikacija želi imati potpunu kontrolu nad ovom sesijom Chromea radi otklanjanja pogrešaka. To uključuje pristup vašim spremljenim podacima, kolačićima i podacima web-lokacije te mogućnost prelaska na bilo koji URL.
-
-Tu značajku trebaju uključiti samo web-razvojni programeri i upotrebljavati je samo s pouzdanim aplikacijama.</translation>
 <translation id="222201875806112242">Neimenovan medijski izvor</translation>
 <translation id="2224337661447660594">Nema interneta</translation>
 <translation id="2224444042887712269">Ova postavka pripada korisniku <ph name="OWNER_EMAIL" />.</translation>
@@ -6586,6 +6583,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5523532775593636291">Web-lokacije koje dodate uvijek će ostati aktivne, a memorija za njih neće se osloboditi.</translation>
 <translation id="5523558474028191231">Naziv može sadržavati slova, brojke i posebne znakove, a maksimalni je dopušteni broj znakova <ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="5526745900034778153">Prijavite se opet da biste ponovo pokrenuli sinkronizaciju</translation>
+<translation id="5527211644528700597">Upotrebljava metode na uređaju za otkrivanje prijetnji</translation>
 <translation id="5527463195266282916">Pokušaj vraćanja proširenja na stariju verziju.</translation>
 <translation id="5527474464531963247">Također možete odabrati neku drugu mrežu.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, instaliranje</translation>
@@ -6779,6 +6777,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5663459693447872156">Automatski prijelaz na poluširinu</translation>
 <translation id="5663653125349867535">&amp;Popis za čitanje</translation>
 <translation id="5663918299073387939">Web-lokacije obično traže dopuštenje za kontrolu i reprogramiranje MIDI uređaja radi stvaranja glazbe, uređivanja glazbe ili ažuriranja firmwarea uređaja</translation>
+<translation id="5666116074010586111">Šalje URL i sadržaj stranice Googleu radi bržeg otkrivanja prijetnji</translation>
 <translation id="5666911576871845853">Dod&amp;ajte novi profil</translation>
 <translation id="5667293444945855280">Zlonamjerni softver</translation>
 <translation id="5667546120811588575">Postavljanje Google Playa...</translation>
@@ -7958,6 +7957,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6508261954199872201">Aplikacija: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Ponovo pokrenite Chromebook i pokušajte ponovo</translation>
 <translation id="6511827214781912955">Razmislite o brisanju datoteke <ph name="FILENAME" /> kako osobe koje upotrebljavaju ovaj uređaj ne bi mogle vidjeti vaše zaporke</translation>
+<translation id="6512364354776355686">Upozorava vas na sve nesigurne veze</translation>
 <translation id="6512759338201777379">Generirana je slika <ph name="INDEX" /> za <ph name="SUBJECT" /> s ugođajem <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome upotrijebit će mobilne podatke ako niste povezani na drugu mrežu.</translation>
 <translation id="6514010653036109809">Dostupan uređaj:</translation>
@@ -9146,6 +9146,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7340179705876485790">Da biste se vratili za više od jedne stranice, kliknite i zadržite Natrag.</translation>
 <translation id="7340650977506865820">Web-lokacija dijeli vaš zaslon</translation>
 <translation id="7340757554212515731">Automatski Googleu šalje izvješća o padu programa kao i podatke o upotrebi i dijagnostici</translation>
+<translation id="7340886226071938450">Položaj vrpce kartica</translation>
 <translation id="734088800888587319">Mrežni mjerni podaci</translation>
 <translation id="7341834142292923918">Želi pristup ovoj web-lokaciji</translation>
 <translation id="7343372807593926528">Prije slanja povratnih informacija opišite problem.</translation>
@@ -9876,6 +9877,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7830833461614351956">Želite li datoteke (njih <ph name="NUM_OF_FILES" />) kopirati datoteke u mapu <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Ovdje će se pojaviti spremljene prilagođene riječi</translation>
+<translation id="7833725807105678871">Daje prednost brzini web-lokacije u odnosu na poboljšane sigurnosne značajke</translation>
 <translation id="7834832693620032149">Da biste dijelili zvuk, podijelite karticu ili prozor</translation>
 <translation id="7836577093182643605">Popis tema koje ste blokirali i koje ne želite dijeliti s web-lokacijama</translation>
 <translation id="7836850009646241041">Pokušajte ponovo dodirnuti sigurnosni ključ</translation>
@@ -11148,6 +11150,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8690129572193755009">Web-lokacije mogu tražiti dopuštenje za upravljanje protokolima</translation>
 <translation id="869144235543261764">Ova kartica prikazuje videozapis u načinu slike u slici</translation>
 <translation id="869167754614449887">Datoteka <ph name="FILE_NAME" /> izbrisana je iz povijesti preuzimanja</translation>
+<translation id="8691990641861252959">Upozorava vas na nesigurne veze na otvorenom internetu</translation>
 <translation id="8692107307702113268">Broj znakova zaporke ne smije biti veći od 1000</translation>
 <translation id="8693862390730570097">Nemoj dopustiti automatsko otvaranje pomoći pri pisanju</translation>
 <translation id="8694596275649352090">Zaključaj tijekom mirovanja ili kad je poklopac zatvoren</translation>
@@ -11351,6 +11354,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8821268776955756404">Aplikacija <ph name="APP_NAME" /> spremna je za upotrebu.</translation>
 <translation id="8821647731831124007">Nema dostupnih žarišnih točaka</translation>
 <translation id="882204272221080310">Ažuriraj firmware radi dodatne zaštite.</translation>
+<translation id="8822690627597552656">Usporava neke nepoznate web-lokacije kako bi se blokirali uobičajeni napadi</translation>
 <translation id="8823514049557262177">Kopiraj te&amp;kst veze</translation>
 <translation id="8823704566850948458">Predloži zaporku...</translation>
 <translation id="8823963789776061136">Možete i odabrati PPD pisača. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>

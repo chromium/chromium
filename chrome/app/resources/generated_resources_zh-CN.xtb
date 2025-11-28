@@ -1795,9 +1795,6 @@
 <translation id="2220572644011485463">PIN 码或密码</translation>
 <translation id="222115440608612541">在日出和日落时切换主题</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">一款外部应用请求完全控制此 Chrome 会话以进行调试。这包括访问您保存的数据、Cookie 和网站数据，以及前往任意网址。
-
-此功能只应由 Web 开发者开启，且只能与受信任的应用搭配使用。</translation>
 <translation id="222201875806112242">未命名的媒体来源</translation>
 <translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="2224444042887712269">此设置属于<ph name="OWNER_EMAIL" />。</translation>
@@ -6573,6 +6570,7 @@
 <translation id="5523532775593636291">您添加的网站将始终保持活跃状态，且系统不会释放它们占用的内存</translation>
 <translation id="5523558474028191231">名称可以使用字母、数字和特殊字符，并且不得超过 <ph name="MAX_CHARACTER_COUNT" /> 个字符</translation>
 <translation id="5526745900034778153">需重新登录才能继续同步</translation>
+<translation id="5527211644528700597">使用设备端方法检测威胁</translation>
 <translation id="5527463195266282916">已尝试对扩展程序降级。</translation>
 <translation id="5527474464531963247">您也可以选择其他网络。</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />，正在安装</translation>
@@ -6766,6 +6764,7 @@
 <translation id="5663459693447872156">自动切换至半角</translation>
 <translation id="5663653125349867535">阅读清单(&amp;R)</translation>
 <translation id="5663918299073387939">网站通常会请求控制 MIDI 设备以及为其重新编程，以便创作音乐、编辑音乐或更新设备固件</translation>
+<translation id="5666116074010586111">将网址和网页内容发送给 Google，以便更快地检测威胁</translation>
 <translation id="5666911576871845853">添加新个人资料(&amp;A)</translation>
 <translation id="5667293444945855280">恶意软件</translation>
 <translation id="5667546120811588575">正在设置 Google Play…</translation>
@@ -7842,7 +7841,7 @@
 <translation id="6434309073475700221">舍弃</translation>
 <translation id="6434325376267409267">您需要更新设备，才能使用 <ph name="APP_NAME" />。</translation>
 <translation id="6434755719322447931">混乱</translation>
-<translation id="6435307030888827407">保持退出账号状态</translation>
+<translation id="6435307030888827407">保持未登录状态</translation>
 <translation id="6435339218366409950">选择要将字幕翻译成哪种语言</translation>
 <translation id="6436164536244065364">在 Chrome 应用商店中查看</translation>
 <translation id="6436778875248895551">您的管理员已屏蔽扩展程序“<ph name="EXTENSION_NAME" />”</translation>
@@ -7945,6 +7944,7 @@
 <translation id="6508261954199872201">应用：<ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">请重启 Chromebook，然后重试</translation>
 <translation id="6511827214781912955">不妨考虑删除“<ph name="FILENAME" />”，让使用此设备的他人看不到您的密码</translation>
+<translation id="6512364354776355686">在您访问任何不安全的连接时发出警告</translation>
 <translation id="6512759338201777379">生成了第 <ph name="INDEX" /> 张<ph name="SUBJECT" />图片，情感基调是<ph name="MOOD" />。</translation>
 <translation id="6513247462497316522">如果您没有连接到其他网络，则 Google Chrome 会使用移动数据网络。</translation>
 <translation id="6514010653036109809">可用的设备：</translation>
@@ -9129,6 +9129,7 @@
 <translation id="7340179705876485790">若要返回到多个页面，请点击并按住“返回”。</translation>
 <translation id="7340650977506865820">该网站正在共享您的屏幕</translation>
 <translation id="7340757554212515731">自动向 Google 发送崩溃报告以及诊断数据和使用情况数据</translation>
+<translation id="7340886226071938450">标签栏位置</translation>
 <translation id="734088800888587319">网络指标</translation>
 <translation id="7341834142292923918">想要访问此网站</translation>
 <translation id="7343372807593926528">请先阐明问题，然后再发送反馈。</translation>
@@ -9859,6 +9860,7 @@
 <translation id="7830833461614351956">将 <ph name="NUM_OF_FILES" /> 个文件复制到 <ph name="CLOUD_PROVIDER" />后再打开？</translation>
 <translation id="7831754656372780761">“<ph name="TAB_TITLE" />”<ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">已保存的自定义字词将显示在这里</translation>
+<translation id="7833725807105678871">优先考虑网站速度而非增强型安全功能</translation>
 <translation id="7834832693620032149">若要分享音频，请改为分享标签页或窗口</translation>
 <translation id="7836577093182643605">主题列表，这些主题已被您屏蔽，因为您不想将它们分享给网站</translation>
 <translation id="7836850009646241041">请再次尝试轻触您的安全密钥</translation>
@@ -11131,6 +11133,7 @@
 <translation id="8690129572193755009">网站可以请求处理协议</translation>
 <translation id="869144235543261764">此标签页正在“画中画”模式中播放视频</translation>
 <translation id="869167754614449887">“<ph name="FILE_NAME" />”已从下载记录中删除</translation>
+<translation id="8691990641861252959">在您访问开放互联网上不安全的连接时发出警告</translation>
 <translation id="8692107307702113268">密码长度超过了 1,000 个字符</translation>
 <translation id="8693862390730570097">不允许自动打开“帮我写”功能</translation>
 <translation id="8694596275649352090">在休眠或合盖时锁定</translation>
@@ -11332,6 +11335,7 @@
 <translation id="8821268776955756404">现在可以使用 <ph name="APP_NAME" /> 了。</translation>
 <translation id="8821647731831124007">没有可用的热点</translation>
 <translation id="882204272221080310">更新固件以提高安全性。</translation>
+<translation id="8822690627597552656">让陌生网站的加载速度变慢，以便抵御常见攻击</translation>
 <translation id="8823514049557262177">复制链接文字(&amp;X)</translation>
 <translation id="8823704566850948458">建议密码…</translation>
 <translation id="8823963789776061136">或者，选择打印机 PPD。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>

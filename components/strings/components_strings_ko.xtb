@@ -2176,6 +2176,7 @@
 <translation id="4506599922270137252">시스템 관리자에게 문의</translation>
 <translation id="450710068430902550">관리자와 공유</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google 번역으로 이 페이지를 번역하려면 Tab을 누른 다음 Enter 누르기</translation>
+<translation id="4510703642214459906">장소</translation>
 <translation id="4515275063822566619">카드와 주소는 Chrome 및 Google 계정(<ph name="ACCOUNT_EMAIL" />)에서 가져왔습니다. 이 정보는 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
 <translation id="4515847625438516456">마이크로카 및 서브 콤팩트카</translation>
 <translation id="451601984112574365">초록색 3</translation>
@@ -4371,6 +4372,7 @@
 <translation id="8077669823243888800">봉투 Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{기밀 파일을 업로드하시겠습니까?}other{기밀 파일을 업로드하시겠습니까?}}</translation>
 <translation id="8079031581361219619">사이트를 새로고침하시겠습니까?</translation>
+<translation id="8079591184016291275">이벤트 이름</translation>
 <translation id="8079976827192572403">위험한 사이트</translation>
 <translation id="8081087320434522107">세단</translation>
 <translation id="8086429410809447605">여성 의류</translation>

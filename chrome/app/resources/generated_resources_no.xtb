@@ -1806,9 +1806,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2220572644011485463">PIN-kode eller passord</translation>
 <translation id="222115440608612541">Bytt tema ved soloppgang og solnedgang</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">En ekstern app vil ha full kontroll over denne Chrome-økten for å feilsøke den. Dette inkluderer tilgang til de lagrede dataene dine, informasjonskapsler og nettstedsdata samt muligheten til å navigere til hvilken som helst nettadresse.
-
-Bare nettutviklere bør slå på denne funksjonen, og de bør bare bruke den med klarerte apper.</translation>
 <translation id="222201875806112242">Mediekilde uten navn</translation>
 <translation id="2224337661447660594">Ingen nettilkobling</translation>
 <translation id="2224444042887712269">Denne innstillingen tilhører <ph name="OWNER_EMAIL" />.</translation>

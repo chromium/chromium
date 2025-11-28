@@ -1811,9 +1811,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2220572644011485463">PIN-kód vagy jelszó</translation>
 <translation id="222115440608612541">Témaváltás napkeltekor és napnyugtakor</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">Egy külső alkalmazás teljes irányítást szeretne szerezni a Chrome-munkamenet felett a hibakereséshez. Ez magában foglalja a mentett adatokhoz, a cookie-khoz és a webhelyadatokhoz való hozzáférést, valamint bármelyik URL felkeresését.
-
-Ezt a funkciót csak a webfejlesztőknek ajánlott bekapcsolni, és csak megbízható alkalmazásokkal érdemes használni.</translation>
 <translation id="222201875806112242">Névtelen médiaforrás</translation>
 <translation id="2224337661447660594">Nincs internet</translation>
 <translation id="2224444042887712269">Ez a beállítás a következő fiókhoz tartozik: <ph name="OWNER_EMAIL" />.</translation>
@@ -3709,6 +3706,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3527085408025491307">Mappa</translation>
 <translation id="3528498924003805721">Parancsikonok célpontjai</translation>
 <translation id="3529851166527095708">&amp;Címek és egyebek</translation>
+<translation id="3530919970074558307">Csoport fókuszának megszüntetése</translation>
 <translation id="3531070080754387701">A Microsoft 365 nem tudja megnyitni ebből a mappából a következő fájlt: <ph name="FILE_NAMES" /></translation>
 <translation id="3531883061432162622">Olvasólistáját és könyvjelzőit a könyvjelzők és listák között találja majd</translation>
 <translation id="3532273508346491126">Szinkronizálás kezelése</translation>
@@ -4062,6 +4060,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3757567010566591880">Kitűzés feloldása az eszköztáron</translation>
 <translation id="3757645900890881944">Keresőeszközök</translation>
 <translation id="3757733214359997190">A program nem talált egy webhelyet sem</translation>
+<translation id="3757825964096339958">Csoport fókuszba helyezése</translation>
 <translation id="375841316537350618">Proxyszkript letöltése...</translation>
 <translation id="3758887577462995665">Tipp:</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> hónap</translation>
@@ -4850,6 +4849,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4292613336957320546">Gyorsulás</translation>
 <translation id="429312253194641664">Az egyik webhely médiatartalmat játszik le</translation>
 <translation id="4293219510510666933">Hétköznapi nyelven kereshet a böngészési előzmények között, és megkeresheti a korábban felkeresett webhelyeket. Kérdéseket is feltehet, és válaszokat kaphat a böngészési előzményei alapján. Ez a beállítás be van kapcsolva.</translation>
+<translation id="429344752071832554">Csoport fókuszának megszüntetése</translation>
 <translation id="4294392694389031609">A(z) <ph name="FILE_NAME" /> törölve a letöltési előzmények közül, de az eszközön továbbra is megtalálható</translation>
 <translation id="4295072614469448764">Az alkalmazás rendelkezésre áll a terminálból. Lehet, hogy ikon is került az Indítóba.</translation>
 <translation id="4295979599050707005">Jelentkezzen be ismét annak megerősítése céljából, hogy fiókja (<ph name="USER_EMAIL" />) használható webhelyekkel, alkalmazásokkal és bővítményekkel a Chrome-ban, illetve a Google Playjel. El is távolíthatja ezt a fiókot. <ph name="LINK_BEGIN" />További információ.<ph name="LINK_END" /></translation>
@@ -5005,6 +5005,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4405224443901389797">Áthelyezés…</translation>
 <translation id="4405781821077215583">Nagyíthatja vagy kicsinyítheti a képernyőn megjelenő elemeket (például a szöveget).</translation>
 <translation id="4406308048672435032">Inaktiválhatja ezt a lapot, illetve frissítheti a teljes lista ismételt megjelenítéséhez</translation>
+<translation id="4406881185911439342">Csoport fókuszba helyezése</translation>
 <translation id="4406883609789734330">Élő feliratozás</translation>
 <translation id="4406963243402726564">Nem mentett adatok</translation>
 <translation id="4408599188496843485">&amp;Súgó</translation>
@@ -6597,6 +6598,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5523532775593636291">A hozzáadott webhelyek mindig aktívak maradnak, és a rendszer nem szabadítja fel az általuk használt memóriát.</translation>
 <translation id="5523558474028191231">A név tartalmazhat betűket, számokat, speciális karaktereket, és legfeljebb<ph name="MAX_CHARACTER_COUNT" /> karakter lehet</translation>
 <translation id="5526745900034778153">Jelentkezzen be a szinkronizálás folytatásához</translation>
+<translation id="5527211644528700597">Eszközalapú módszereket használ a fenyegetések észlelésére</translation>
 <translation id="5527463195266282916">Megpróbálta alacsonyabb verzióra váltani a bővítményt.</translation>
 <translation id="5527474464531963247">Másik hálózatot is választhat.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, telepítés folyamatban</translation>
@@ -6793,6 +6795,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5663459693447872156">Automatikus váltás félszélesség módra</translation>
 <translation id="5663653125349867535">&amp;Olvasólista</translation>
 <translation id="5663918299073387939">A webhelyek általában a MIDI-eszközök vezérlését vagy átprogramozását kérik zene létrehozása és szerkesztése vagy eszközfirmware frissítése céljából</translation>
+<translation id="5666116074010586111">Elküldi az URL-t és az oldaltartalmat a Google-nak a fenyegetések gyorsabb észlelése érdekében</translation>
 <translation id="5666911576871845853">&amp;Új profil hozzáadása</translation>
 <translation id="5667293444945855280">Ártalmas program</translation>
 <translation id="5667546120811588575">A Google Play beállítása…</translation>
@@ -7973,6 +7976,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6508261954199872201">Alkalmazás: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Indítsa újra a Chromebookot, majd próbálja újra.</translation>
 <translation id="6511827214781912955">Fontolja meg a(z) <ph name="FILENAME" /> törlését, hogy az eszközt használó többi személy ne láthassa az Ön jelszavait</translation>
+<translation id="6512364354776355686">Figyelmezteti az összes nem biztonságos kapcsolatra</translation>
 <translation id="6512759338201777379"><ph name="INDEX" />. generált <ph name="SUBJECT" /> kép, <ph name="MOOD" /> hangulattal.</translation>
 <translation id="6513247462497316522">A Google Chrome mobil-adatforgalmat fog használni, ha nem kapcsolódik másik hálózathoz.</translation>
 <translation id="6514010653036109809">Rendelkezésre álló eszköz:</translation>
@@ -9157,6 +9161,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7340179705876485790">Ha nem csak egy oldalt szeretne visszalépni, tartsa lenyomva a Vissza gombot.</translation>
 <translation id="7340650977506865820">A webhely megosztja a képernyőjét</translation>
 <translation id="7340757554212515731">A hibajelentések, valamint a diagnosztikai és használati adatok automatikus elküldése a Google-nak</translation>
+<translation id="7340886226071938450">Lapsor pozíciója</translation>
 <translation id="734088800888587319">Hálózati mutatók</translation>
 <translation id="7341834142292923918">Hozzáférést kér ehhez a webhelyhez</translation>
 <translation id="7343372807593926528">Visszajelzés küldése előtt ismertesse a problémát.</translation>
@@ -9886,6 +9891,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7830833461614351956">Átmásol <ph name="NUM_OF_FILES" /> fájlt a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásba, mielőtt megnyitja őket?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">A mentett egyéni szavak itt jelennek meg</translation>
+<translation id="7833725807105678871">A webhelysebességet a fokozott biztonsági funkciók elé helyezi</translation>
 <translation id="7834832693620032149">Hang megosztásához használjon inkább lapot vagy ablakot</translation>
 <translation id="7836577093182643605">Azoknak az Ön által letiltott témaköröknek a listája, amelyeket nem szeretne megosztani a webhelyekkel.</translation>
 <translation id="7836850009646241041">Próbálja meg ismét megérinteni a biztonsági kulcsot</translation>
@@ -11158,6 +11164,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8690129572193755009">A webhelyek engedélyt kérhetnek a protokollok kezelésére</translation>
 <translation id="869144235543261764">A videó lejátszása a lapon kép a képben módban történik</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> törölve a letöltési előzmények közül</translation>
+<translation id="8691990641861252959">Figyelmezteti Önt a nyílt interneten lévő nem biztonságos kapcsolatokra</translation>
 <translation id="8692107307702113268">A jelszó több mint 1000 karakterből áll</translation>
 <translation id="8693862390730570097">A „Segítség az íráshoz” funkció nem nyílik meg automatikusan</translation>
 <translation id="8694596275649352090">Zárolás alvó üzemmódban és a fedél lecsukásakor</translation>
@@ -11359,6 +11366,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8821268776955756404">A(z) <ph name="APP_NAME" /> használatra kész.</translation>
 <translation id="8821647731831124007">Nincs rendelkezésre álló hotspot</translation>
 <translation id="882204272221080310">Firmware frissítése a nagyobb biztonság érdekében.</translation>
+<translation id="8822690627597552656">Lelassít egyes kevésbé ismert webhelyeket a gyakori támadások megakadályozása érdekében</translation>
 <translation id="8823514049557262177">Link szövegének má&amp;solása</translation>
 <translation id="8823704566850948458">Jelszó ajánlása…</translation>
 <translation id="8823963789776061136">Másik lehetőségként válassza ki a nyomtatóhoz tartozó PPD-fájlt. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>

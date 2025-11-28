@@ -1799,9 +1799,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="222115440608612541">Cambia de tema al amanecer y al atardecer</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">Una app externa quiere tener control total de esta sesión de Chrome para depurarla. Esto incluye el acceso a los datos de sitios, cookies y tus datos guardados, y la capacidad de navegar a cualquier URL.
-
-Solo los desarrolladores web deben activar esta función y solo deben usarla con apps de confianza.</translation>
 <translation id="222201875806112242">Fuente de contenido multimedia sin nombre</translation>
 <translation id="2224337661447660594">Sin Internet</translation>
 <translation id="2224444042887712269">Esta configuración pertenece a <ph name="OWNER_EMAIL" />.</translation>
@@ -6583,6 +6580,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5523532775593636291">Los sitios que agregues siempre permanecerán activos y no se liberará la memoria</translation>
 <translation id="5523558474028191231">El nombre puede incluir letras, números y caracteres especiales, y debe tener <ph name="MAX_CHARACTER_COUNT" /> caracteres como máximo.</translation>
 <translation id="5526745900034778153">Volver a acceder para reanudar la sincronización</translation>
+<translation id="5527211644528700597">Usa métodos integrados en el dispositivo para detectar amenazas.</translation>
 <translation id="5527463195266282916">Se ha intentado instalar una versión anterior de la extensión.</translation>
 <translation id="5527474464531963247">También puedes seleccionar otra red.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, instalando</translation>
@@ -6778,6 +6776,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5663459693447872156">Cambiar automáticamente a ancho medio</translation>
 <translation id="5663653125349867535">&amp;Lista de lectura</translation>
 <translation id="5663918299073387939">Por lo general, los sitios solicitan permiso para controlar y reprogramar los dispositivos MIDI para crear o editar música, o para actualizar el firmware del dispositivo.</translation>
+<translation id="5666116074010586111">Envía la URL y el contenido de la página a Google para detectar amenazas más rápido.</translation>
 <translation id="5666911576871845853">&amp;Agregar nuevo perfil</translation>
 <translation id="5667293444945855280">Software malicioso</translation>
 <translation id="5667546120811588575">Configurando Google Play…</translation>
@@ -7958,6 +7957,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6508261954199872201">Aplicación: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Reinicia la Chromebook y vuelve a intentarlo.</translation>
 <translation id="6511827214781912955">Considera borrar <ph name="FILENAME" /> para que las otras personas que usan este dispositivo no puedan ver tus contraseñas</translation>
+<translation id="6512364354776355686">Te advierte sobre todas las conexiones no seguras.</translation>
 <translation id="6512759338201777379">Imagen generada <ph name="INDEX" /> de <ph name="SUBJECT" />, con el estado de ánimo <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome utilizará los datos para celulares si no te conectas a otra red.</translation>
 <translation id="6514010653036109809">Dispositivo disponible:</translation>
@@ -9142,6 +9142,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7340179705876485790">Para retroceder más de 1 página, mantén presionado Atrás.</translation>
 <translation id="7340650977506865820">El sitio está compartiendo la pantalla</translation>
 <translation id="7340757554212515731">Envía automáticamente informes de fallas, datos de uso y de diagnóstico a Google</translation>
+<translation id="7340886226071938450">Posición de la barra de pestañas</translation>
 <translation id="734088800888587319">Métricas de red</translation>
 <translation id="7341834142292923918">Requiere acceso a este sitio</translation>
 <translation id="7343372807593926528">Describe el problema antes de enviar los comentarios.</translation>
@@ -9872,6 +9873,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7830833461614351956">¿Quieres copiar <ph name="NUM_OF_FILES" /> archivos en <ph name="CLOUD_PROVIDER" /> para abrirlos?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Las palabras personalizadas guardadas aparecerán aquí</translation>
+<translation id="7833725807105678871">Prioriza la velocidad del sitio por sobre las funciones de seguridad mejoradas.</translation>
 <translation id="7834832693620032149">Para compartir audio, comparte una pestaña o pantalla</translation>
 <translation id="7836577093182643605">Lista de temas que bloqueaste y no quieres que se compartan con los sitios</translation>
 <translation id="7836850009646241041">Vuelve a tocar tu llave de seguridad</translation>
@@ -11144,6 +11146,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8690129572193755009">Permitir que los sitios soliciten permiso para procesar protocolos</translation>
 <translation id="869144235543261764">Esta pestaña está reproduciendo un video en el modo de pantalla en pantalla</translation>
 <translation id="869167754614449887">Se borró <ph name="FILE_NAME" /> del historial de descargas</translation>
+<translation id="8691990641861252959">Te advierte sobre las conexiones no seguras en la Internet abierta.</translation>
 <translation id="8692107307702113268">La contraseña tiene más de 1,000 caracteres</translation>
 <translation id="8693862390730570097">No permitir que se abra automáticamente “Ayúdame a escribir”</translation>
 <translation id="8694596275649352090">Bloquear al cerrar la tapa o en el modo de suspensión</translation>
@@ -11345,6 +11348,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8821268776955756404">Ya se puede usar <ph name="APP_NAME" />.</translation>
 <translation id="8821647731831124007">No hay hotspots disponibles</translation>
 <translation id="882204272221080310">Actualizar el firmware para mejorar la seguridad</translation>
+<translation id="8822690627597552656">Ralentiza algunos sitios desconocidos para bloquear ataques comunes.</translation>
 <translation id="8823514049557262177">Copiar texto del vínculo</translation>
 <translation id="8823704566850948458">Sugerir contraseña…</translation>
 <translation id="8823963789776061136">También puedes seleccionar el PPD de la impresora. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>

@@ -82,7 +82,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{סגירת הפריט}one{סגירת פריטים}two{סגירת פריטים}other{סגירת פריטים}}</translation>
 <translation id="3652027618765638838"><ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
 <translation id="374923079891132274">תצוגה מקדימה ממוזערת לשיתוף גיליון.</translation>
-<translation id="3776329373944672717">שם קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="3776329373944672717">השם של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">ניהול</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{ביטול ההצמדה של הכרטיסייה}one{ביטול ההצמדה של הכרטיסיות}two{ביטול ההצמדה של הכרטיסיות}other{ביטול ההצמדה של הכרטיסיות}}</translation>
 <translation id="3940195383040445971">מעקב אחר המחירים בכרטיסיות</translation>

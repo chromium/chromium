@@ -566,6 +566,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> upravlja Chrome</translation>
 <translation id="7288567540154601580">Zavihki in razširitve</translation>
 <translation id="7296210096911315575">Pomembne informacije glede uporabe in varnosti</translation>
+<translation id="7302361266603927550">Nekateri podatki v Chromu še niso shranjeni v računu Google. Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="7308322188646931570">Chrome za prenos datotek potrebuje dostop do shrambe</translation>
 <translation id="7339898014177206373">Novo okno</translation>
 <translation id="7352651011704765696">Prišlo je do neznane težave</translation>
@@ -622,6 +623,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7801699035218095297">Google Chrome poskuša kopirati gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="7804364787702057554">Vaš račun v Chromu</translation>
 <translation id="7808348361785373670">Odstranitev iz Chroma ...</translation>
+<translation id="7827099906024714326">Chrome mora preveriti vašo identiteto, preden bo mogoče nekatere podatke shraniti v račun Google in jih uporabiti v vseh vaših napravah. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="7845233973568007926">Hvala, ker ste se odločili za namestitev. Preden uporabite <ph name="BUNDLE_NAME" />, morate znova zagnati računalnik.</translation>
 <translation id="7849037457735762883">Nadaljujte, kjer ste končali: Chrome lahko ob vsakem vnovičnem zagonu obnovi zavihke. Če želite to vklopiti, odprite</translation>
 <translation id="7872446069773932638">Prenašanje … Še <ph name="SECONDS" /> s.</translation>

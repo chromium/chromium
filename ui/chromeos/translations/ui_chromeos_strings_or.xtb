@@ -591,6 +591,7 @@
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="5602622065581044566">ଫୋନେଟିକ୍ କୀବୋର୍ଡ ସହ ବୁଲଗେରିଆନ୍</translation>
 <translation id="5605830556594064952">US ଡିଭୋରାକ୍</translation>
+<translation id="560739212255190568">ନିମ୍ନୋକ୍ତ ପ୍ରକ୍ସିକୁ ଲାଗୁ କରିବା ସହିତ ଆପଣଙ୍କ ଆଡମିନ ପ୍ରକ୍ସି ଓଭରରାଇଡ ନିୟମ ସେଟ କରିଛନ୍ତି</translation>
 <translation id="5618330573454123917">Macintosh ସଫ୍ଟୱେର ବ୍ୟବହାର କରୁଥିବା ଏକ କମ୍ପ୍ୟୁଟର ପାଇଁ ଏହି ଫାଇଲକୁ ଡିଜାଇନ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସରେ ଏହା କମ୍ପାଟିବଲ ନୁହେଁ। ChromeOSରେ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ବିଷୟରେ <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" />।</translation>
 <translation id="5625294776298156701">ତାମିଲ99 କୀବୋର୍ଡ ସହ ତାମିଲ</translation>
 <translation id="5633226425545095130">ଏହି ଆଇଟମକୁ ମୁଭ୍ କରିବା ଫଳରେ, ସେୟାର୍ କରାଯାଇଥିବା ଫୋଲ୍ଡର୍ '<ph name="DESTINATION_NAME" />'କୁ ଦେଖିପାରୁଥିବା ସମସ୍ତ ଲୋକଙ୍କ ସହିତ ଏହା ସେୟାର୍ ହେବ।</translation>
@@ -990,6 +991,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗ୍‌ନାଲ୍‌ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ବିବରଣୀ</translation>
 <translation id="8545476925160229291">ଇଂରାଜୀ (US)</translation>
 <translation id="854655314928502177">ୱେବ୍ ପ୍ରକ୍ସି ସ୍ୱତଃ ଡିସ୍କଭରୀ URL:</translation>
+<translation id="8547747809824590510">ଆପଣଙ୍କ ଆଡମିନ ପ୍ରକ୍ସି ଓଭରରାଇଡ ନିୟମ ସେଟ କରିଛନ୍ତି</translation>
 <translation id="8549186985808798022">ଇଟାଲୀୟ</translation>
 <translation id="8551494947769799688">ଲାଟଭିଆନ୍</translation>
 <translation id="8560515948038859357">କାଣ୍ଟୋନିଜ୍</translation>
@@ -1050,6 +1052,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" ଫାଇଲ୍ ନାମ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଏକ ଭିନ୍ନ ନାମ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="9046895021617826162">ସଂଯୋଗ ବିଫଳ ହେଲା</translation>
 <translation id="9065512565307033593">ଯଦି ଆପଣ ଯାଞ୍ଚ କରିବାକୁ ବିଫଳ ହୁଅନ୍ତି, ତେବେ ଆପଣଙ୍କ ନେଟୱାର୍କ ଆକ୍ସେସକୁ ଅକ୍ଷମ କରିଦିଆଯିବ।</translation>
+<translation id="9079844694307518094">ଆପଣଙ୍କ ଆଡମିନ ନିମ୍ନୋକ୍ତ ପ୍ରକ୍ସିକୁ ଲାଗୁ କରୁଛନ୍ତି</translation>
 <translation id="908378762078012445">ଫୋନେଟିକ୍ AATSEEL କୀବୋର୍ଡ ସହ ଋଷୀୟ</translation>
 <translation id="9086302186042011942">ସିଙ୍କ୍ ହେଉଛି</translation>
 <translation id="9099674669267916096">ପୃଷ୍ଠା ସଂଖ୍ୟା</translation>

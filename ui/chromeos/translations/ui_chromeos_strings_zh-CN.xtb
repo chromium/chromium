@@ -591,6 +591,7 @@
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5602622065581044566">保加利亚语注音键盘</translation>
 <translation id="5605830556594064952">美国英语(Dvorak)</translation>
+<translation id="560739212255190568">您的管理员设置了代理替换规则，并强制启用了以下代理</translation>
 <translation id="5618330573454123917">此文件适用于运行 Macintosh 软件的计算机，不适用于运行 Chrome 操作系统的设备。<ph name="BEGIN_LINK_HELP" />详细了解<ph name="END_LINK_HELP" />如何在 Chrome 操作系统中打开文件。</translation>
 <translation id="5625294776298156701">泰米尔语 Tamil99 键盘</translation>
 <translation id="5633226425545095130">移动此内容会将其分享给所有能看到共享文件夹“<ph name="DESTINATION_NAME" />”的人。</translation>
@@ -990,6 +991,7 @@
 <translation id="8540608333167683902">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="8545476925160229291">英语（美国）</translation>
 <translation id="854655314928502177">网络代理自动发现网址：</translation>
+<translation id="8547747809824590510">您的管理员设置了代理替换规则</translation>
 <translation id="8549186985808798022">意大利语</translation>
 <translation id="8551494947769799688">拉脱维亚语</translation>
 <translation id="8560515948038859357">粤语</translation>
@@ -1050,6 +1052,7 @@
 <translation id="9038620279323455325">已有名为“<ph name="FILE_NAME" />”的文件。请另选一个名称。</translation>
 <translation id="9046895021617826162">连接失败</translation>
 <translation id="9065512565307033593">如果您未通过验证，我们将禁止您访问网络。</translation>
+<translation id="9079844694307518094">您的管理员正在强制启用以下代理</translation>
 <translation id="908378762078012445">俄语注音 AATSEEL 键盘</translation>
 <translation id="9086302186042011942">正在同步</translation>
 <translation id="9099674669267916096">页数</translation>

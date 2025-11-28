@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Diğer seçenekler</translation>
 <translation id="5602622065581044566">Fonetik klavye ile Bulgarca</translation>
 <translation id="5605830556594064952">ABD Dvorak</translation>
+<translation id="560739212255190568">Yöneticiniz, aşağıdaki proxy'yi zorunlu kılmanın yanı sıra proxy geçersiz kılma kuralları belirledi</translation>
 <translation id="5618330573454123917">Bu dosya Macintosh yazılımı kullanan bilgisayarlar için tasarlanmıştır. ChromeOS çalıştıran cihazınızla uyumlu değildir. ChromeOS'de dosya açma hakkında <ph name="BEGIN_LINK_HELP" />daha fazla bilgi alın<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">Tamil99 klavye ile Tamilce</translation>
 <translation id="5633226425545095130">Bu öğe, "<ph name="DESTINATION_NAME" />" adlı paylaşılan klasöre taşınırsa bu klasörü görebilen herkesle paylaşılır.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Ayrıntılar</translation>
 <translation id="8545476925160229291">İngilizce (ABD)</translation>
 <translation id="854655314928502177">Web Proxy Otomatik Bulma URL'si:</translation>
+<translation id="8547747809824590510">Yöneticiniz proxy geçersiz kılma kuralları belirledi</translation>
 <translation id="8549186985808798022">İtalyanca</translation>
 <translation id="8551494947769799688">Letonca</translation>
 <translation id="8560515948038859357">Kantonca</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" adlı dosya zaten var. Lütfen farklı bir ad seçin.</translation>
 <translation id="9046895021617826162">Bağlantı başarısız oldu</translation>
 <translation id="9065512565307033593">Kimliğinizi doğrulayamazsanız ağ erişiminiz devre dışı bırakılacaktır.</translation>
+<translation id="9079844694307518094">Yöneticiniz şu proxy'yi zorunlu kılıyor</translation>
 <translation id="908378762078012445">Fonetik AATSEEL klavye ile Rusça</translation>
 <translation id="9086302186042011942">Senkronize ediliyor</translation>
 <translation id="9099674669267916096">Sayfa sayısı</translation>

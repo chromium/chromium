@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Дадатковыя параметры</translation>
 <translation id="5602622065581044566">Балгарская (фанетычная раскладка)</translation>
 <translation id="5605830556594064952">ЗША (раскладка Дворака)</translation>
+<translation id="560739212255190568">Адміністратар наладзіў правілы перавызначэння проксі-сервера і прымусовае выкарыстанне наступнага проксі-сервера</translation>
 <translation id="5618330573454123917">Гэты файл прызначаны для камп’ютара з праграмным забеспячэннем Macintosh. Ён несумяшчальны з вашай прыладай Chrome OS. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="5625294776298156701">Тамільская (раскладка Tamil99)</translation>
 <translation id="5633226425545095130">Пры перамяшчэнні гэтага элемента ён будзе абагулены з усімі карыстальнікамі, якія могуць бачыць абагуленую папку "<ph name="DESTINATION_NAME" />".</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="8545476925160229291">Англійская (ЗША)</translation>
 <translation id="854655314928502177">URL-адрас аўтаматычнага выяўлення вэб-проксі:</translation>
+<translation id="8547747809824590510">Адміністратар наладзіў правілы перавызначэння проксі-сервера</translation>
 <translation id="8549186985808798022">Італьянская</translation>
 <translation id="8551494947769799688">Латышская</translation>
 <translation id="8560515948038859357">Кантонскі дыялект</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Файл пад назвай "<ph name="FILE_NAME" />" ужо існуе. Выберыце іншую назву.</translation>
 <translation id="9046895021617826162">Збой падключэння</translation>
 <translation id="9065512565307033593">Калі вы ўведзяце няправільны PUK-код, доступ да сеткі будзе адключаны.</translation>
+<translation id="9079844694307518094">Адміністратар наладзіў прымусовае выкарыстанне наступнага проксі-сервера</translation>
 <translation id="908378762078012445">Руская (фанетычная раскладка AATSEEL)</translation>
 <translation id="9086302186042011942">Сінхранізацыя</translation>
 <translation id="9099674669267916096">Колькасць старонак</translation>

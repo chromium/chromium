@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="5602622065581044566">Болгарська, фонетична розкладка</translation>
 <translation id="5605830556594064952">Розкладка Дворака (США)</translation>
+<translation id="560739212255190568">Ваш адміністратор налаштував правила перевизначення проксі-сервера й примусове застосування наведеного нижче проксі-сервера</translation>
 <translation id="5618330573454123917">Цей файл створено для комп’ютерів із програмним забезпеченням Macintosh. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /> про те, як відкривати файли в ОС Chrome.</translation>
 <translation id="5625294776298156701">Тамільська, розкладка Tamil99</translation>
 <translation id="5633226425545095130">Якщо перемістити цей файл, до нього отримають доступ усі користувачі, які можуть переглядати спільну папку "<ph name="DESTINATION_NAME" />".</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Докладніше</translation>
 <translation id="8545476925160229291">Англійська (США)</translation>
 <translation id="854655314928502177">URL-адреса автоматичного виявлення веб-проксі:</translation>
+<translation id="8547747809824590510">Ваш адміністратор налаштував правила перевизначення проксі-сервера</translation>
 <translation id="8549186985808798022">Італійська</translation>
 <translation id="8551494947769799688">Латвійська</translation>
 <translation id="8560515948038859357">Кантонський діалект</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Файл із назвою "<ph name="FILE_NAME" />" уже існує. Виберіть іншу назву.</translation>
 <translation id="9046895021617826162">Помилка з'єднання</translation>
 <translation id="9065512565307033593">Якщо ви не пройдете цю перевірку, вам буде закрито доступ до мережі.</translation>
+<translation id="9079844694307518094">Ваш адміністратор налаштував примусове застосування наведеного нижче проксі-сервера</translation>
 <translation id="908378762078012445">Російська, фонетична розкладка AATSEEL</translation>
 <translation id="9086302186042011942">Синхронізація</translation>
 <translation id="9099674669267916096">Кількість сторінок</translation>

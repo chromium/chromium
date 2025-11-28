@@ -2060,6 +2060,7 @@
 <translation id="4299919199185766032">शॉर्टकट के नाम में, तय सीमा <ph name="MAX_LENGTH" /> से ज़्यादा वर्ण नहीं हो सकते.</translation>
 <translation id="4300272766492248925">ऐप्लिकेशन खोलें</translation>
 <translation id="4300675098767811073">दाईं ओर एक से ज़्यादा पंच</translation>
+<translation id="4300841966382281549">यात्रा</translation>
 <translation id="4302514097724775343">डायनो को चलाने के लिए, उस पर टैप करें</translation>
 <translation id="4304049446746819918">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती}}</translation>
 <translation id="4304485328308299773">प्रॉडक्ट, सेवाओं या अनुभवों के बारे में ग्राहकों की समीक्षाएं पढ़ें, ताकि आप सोच-समझकर फ़ैसले ले सकें.</translation>
@@ -3425,6 +3426,7 @@
 <translation id="6539092367496845964">कोई गड़बड़ी हुई. बाद में कोशिश करें.</translation>
 <translation id="6540488083026747005">इस साइट पर आपने तीसरे पक्ष की कुकी को अनुमति दी है</translation>
 <translation id="6545864417968258051">ब्लूटूथ स्कैन करना</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> - <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">बाईं ओर ड्युएल पंच</translation>
 <translation id="6549443526281184652">पोशाक</translation>
 <translation id="6550245281449521513">माउस लॉक इस्तेमाल करने की अनुमति नहीं है</translation>
@@ -4810,6 +4812,7 @@
 <translation id="8814547618907885931">तुलना के लिए दी गई सभी टेबल देखें</translation>
 <translation id="8814707942599948500">C8 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग से Chrome अपडेट करने के लिए, Tab के बाद Enter दबाएं</translation>
+<translation id="8819855907485254989">बस, मेट्रो वगैरह के टिकट को Wallet में सेव करें</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="882338992931677877">मैन्युअल स्लॉट</translation>
 <translation id="8827067923357481311">बाद में पेमेंट करने के विकल्प</translation>

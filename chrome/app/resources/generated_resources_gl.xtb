@@ -1801,9 +1801,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2220572644011485463">PIN ou contrasinal</translation>
 <translation id="222115440608612541">Cambia de tema ao amencer e ao solpor</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">Unha aplicación externa quere o control total sobre esta sesión de Chrome para depurala. Isto inclúe o acceso aos datos que teñas gardados, ás cookies e aos datos dos sitios, así como a posibilidade de navegar a calquera URL.
-
-Só as persoas encargadas da programación web deben activar esta función. Ademais só deben usala con aplicacións de confianza.</translation>
 <translation id="222201875806112242">Fonte de información sen nome</translation>
 <translation id="2224337661447660594">Non hai conexión a Internet</translation>
 <translation id="2224444042887712269">Esta configuración pertence a <ph name="OWNER_EMAIL" />.</translation>
@@ -6588,6 +6585,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5523532775593636291">Os sitios que engadas sempre estarán activos e non se liberará a memoria que ocupen</translation>
 <translation id="5523558474028191231">O nome pode conter letras, números e caracteres especiais; debe incluír como máximo <ph name="MAX_CHARACTER_COUNT" /> caracteres</translation>
 <translation id="5526745900034778153">Volve iniciar sesión para retomar a sincronización</translation>
+<translation id="5527211644528700597">Usa métodos no dispositivo para detectar ameazas</translation>
 <translation id="5527463195266282916">Intentouse cambiar a extensión a unha versión anterior.</translation>
 <translation id="5527474464531963247">Tamén podes seleccionar outra rede.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, instalando</translation>
@@ -6781,6 +6779,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5663459693447872156">Cambiar automaticamente a largura media</translation>
 <translation id="5663653125349867535">Lista de lectura</translation>
 <translation id="5663918299073387939">Os sitios adoitan solicitar permiso para controlar e volver programar os dispositivos MIDI co fin de crear e editar música, ou actualizar o firmware do dispositivo</translation>
+<translation id="5666116074010586111">Envía o URL e o contido da páxina a Google para detectar as ameazas máis rápido</translation>
 <translation id="5666911576871845853">&amp;Engadir novo perfil</translation>
 <translation id="5667293444945855280">Software malicioso</translation>
 <translation id="5667546120811588575">Configurando Google Play...</translation>
@@ -7960,6 +7959,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6508261954199872201">Aplicación: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Reinicia o Chromebook e téntao de novo</translation>
 <translation id="6511827214781912955">Considera a posibilidade de eliminar <ph name="FILENAME" />, de modo que outras persoas que usen este dispositivo non vexan os teus contrasinais</translation>
+<translation id="6512364354776355686">Avísate sobre todas as conexións pouco seguras</translation>
 <translation id="6512759338201777379">Imaxe xerada <ph name="INDEX" /> de <ph name="SUBJECT" />. Estado de ánimo: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome utilizará datos móbiles se non estás conectado a outra rede.</translation>
 <translation id="6514010653036109809">Dispositivo dispoñible:</translation>
@@ -9143,6 +9143,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7340179705876485790">Para retroceder máis de 1 páxina, fai clic sen soltar en Atrás.</translation>
 <translation id="7340650977506865820">O sitio está compartindo a túa pantalla</translation>
 <translation id="7340757554212515731">Envía a Google de forma automática os informes de fallos, así como os datos de uso e de diagnóstico</translation>
+<translation id="7340886226071938450">Posición da franxa de pestanas</translation>
 <translation id="734088800888587319">Métricas da rede</translation>
 <translation id="7341834142292923918">Quere acceder a este sitio</translation>
 <translation id="7343372807593926528">Describe o problema antes de enviar comentarios.</translation>
@@ -9873,6 +9874,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7830833461614351956">Queres copiar <ph name="NUM_OF_FILES" /> ficheiros en <ph name="CLOUD_PROVIDER" /> para abrilos?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">As palabras personalizadas gardadas aparecerán aquí</translation>
+<translation id="7833725807105678871">Prioriza a velocidade do sitio sobre as funcións de seguranza melloradas</translation>
 <translation id="7834832693620032149">Para compartir o audio, o mellor é que compartas unha pestana ou pantalla</translation>
 <translation id="7836577093182643605">Lista de temas que bloqueaches e que non queres compartir cos sitios</translation>
 <translation id="7836850009646241041">Proba a tocar de novo a túa chave de seguranza</translation>
@@ -11144,6 +11146,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8690129572193755009">Os sitios poden pediche permiso para xestionar protocolos</translation>
 <translation id="869144235543261764">Esta pestana está reproducindo un vídeo no modo de pantalla superposta</translation>
 <translation id="869167754614449887">Eliminouse <ph name="FILE_NAME" /> do historial de descargas</translation>
+<translation id="8691990641861252959">Avísate sobre conexións pouco seguras na Internet aberta</translation>
 <translation id="8692107307702113268">O contrasinal ten máis de 1000 caracteres</translation>
 <translation id="8693862390730570097">Non se permite que a función Axúdame a escribir se abra automaticamente</translation>
 <translation id="8694596275649352090">Bloquear cando estea en suspensión ou cando se peche a tapa</translation>
@@ -11345,6 +11348,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8821268776955756404">A aplicación <ph name="APP_NAME" /> está lista para usarse.</translation>
 <translation id="8821647731831124007">Non hai zonas wifi dispoñibles</translation>
 <translation id="882204272221080310">Actualizar o firmware para conseguir maior seguranza.</translation>
+<translation id="8822690627597552656">Diminúe a velocidade dalgúns sitios descoñecidos para bloquear ataques habituais</translation>
 <translation id="8823514049557262177">Copiar te&amp;xto da ligazón</translation>
 <translation id="8823704566850948458">Suxerir contrasinal…</translation>
 <translation id="8823963789776061136">Tamén podes seleccionar o PPD da impresora. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>

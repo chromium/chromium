@@ -339,6 +339,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="4635969503923889910">Nemoj dozvoliti web lokacijama da koriste NFC uređaje</translation>
 <translation id="4644713492825682049">Izbriši i poništi</translation>
 <translation id="4645575059429386691">Upravlja roditelj</translation>
+<translation id="4652266463001779298">Nije dozvoljeno</translation>
 <translation id="4663373278480897665">Kamera je dozvoljena</translation>
 <translation id="4670064810192446073">Virtuelna realnost</translation>
 <translation id="4672315773691449562">Dodir na aplikaciju Preglednik, a zatim na Chrome</translation>
@@ -680,7 +681,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="8487700953926739672">Dostupno van mreže</translation>
 <translation id="848952951823693243">Uvijek zatraži verziju web lokacije za mobilni uređaj</translation>
 <translation id="8492822722330266509">Web lokacije mogu slati skočne prozore i koristiti preusmjeravanja</translation>
-<translation id="8493548450030356203">Skočni prozor za zumiranje</translation>
+<translation id="8493548450030356203">Skočni prozor zumiranja</translation>
 <translation id="8499083585497694743">Uključi mikrofon</translation>
 <translation id="8514955299594277296">Nemojte dozvoliti web lokacijama da pohranjuju podatke na vašem uređaju (ne preporučuje se)</translation>
 <translation id="851751545965956758">Blokirajte web lokacije da se ne povezuju s uređajima</translation>

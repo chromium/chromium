@@ -223,7 +223,6 @@
 <translation id="1959679933317802873">Αναμονή για περιεχόμενο</translation>
 <translation id="1960290143419248813">Οι ενημερώσεις Chrome δεν υποστηρίζονται πλέον για αυτή την έκδοση Android</translation>
 <translation id="1962061488333185936"><ph name="TAB_TITLE" />, Καρτέλα από πολλαπλή επιλογή που έχει ήχο</translation>
-<translation id="1963056249988316027">Ο Έλεγχος ταυτότητας είναι ενεργός, αλλά δεν μπορεί να επαληθεύσει την ταυτότητά σας</translation>
 <translation id="1963976881984600709">Βασική προστασία</translation>
 <translation id="1966710179511230534">Ενημερώστε τα στοιχεία σύνδεσής σας.</translation>
 <translation id="1969037871259811890">Η διαγραφή των δεδομένων περιήγησης δεν σας αποσυνδέει από τον Λογαριασμό σας Google. Για να γίνει αυτό, <ph name="BEGIN_LINK1" />αποσυνδεθείτε από το Chrome<ph name="END_LINK1" />.</translation>
@@ -601,7 +600,6 @@
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 ιστότοπος}other{+ # ιστότοποι}}</translation>
 <translation id="3625870480639975468">Επαναφορά εστίασης</translation>
 <translation id="3631987586758005671">Κοινοποίηση σε <ph name="DEVICE_NAME" /></translation>
-<translation id="363484704507524488">Μπορείτε να διαχειριστείτε τον Έλεγχο ταυτότητας στις ρυθμίσεις προστασίας από κλοπή. <ph name="BEGIN_LINK" />Μετάβαση στις ρυθμίσεις<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Το Chrome μπορεί να ελέγξει τους κωδικούς πρόσβασής σας όταν τους αποθηκεύετε</translation>
 <translation id="3636940436873918441">Προτιμώμενες γλώσσες</translation>
 <translation id="3637744895182738742">Εάν ξεχάσετε τη φράση πρόσβασης ή θέλετε να αλλάξετε αυτή τη ρύθμιση, <ph name="BEGIN_LINK" />διαγράψτε τα δεδομένα του Chrome στον λογαριασμό σας<ph name="END_LINK" />.</translation>
@@ -1131,7 +1129,6 @@
 <translation id="5869522115854928033">Αποθηκευμένοι κωδικοί πρόσβασης</translation>
 <translation id="5870416898561279542">Οι διπλότυπες καρτέλες και ομάδες ή αυτές που δεν χρησιμοποιούνται για <ph name="DAYS_INACTIVE" /> ημέρες μετακινούνται εδώ <ph name="AUTODELETE_SECTION" />. Μπορείτε να αλλάξετε αυτή τη ρύθμιση ανά πάσα στιγμή στην ενότητα <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="587735546353481577">Για να ακολουθήσετε έναν ιστότοπο, μεταβείτε στον ιστότοπο, ανοίξτε το μενού Chrome και πατήστε Παρακολούθηση.</translation>
-<translation id="5883855034004058011">Η χρήση βιομετρικών απέτυχε πάρα πολλές φορές. Κλειδώστε και ξεκλειδώστε τη συσκευή σας, για να δοκιμάσετε ξανά.</translation>
 <translation id="5885378508678660271">Ειδοποιήσεις <ph name="SEPARATOR" /> Το Chrome κατάργησε αυτές τις άδειες, επειδή αυτός ο ιστότοπος είναι επικίνδυνος</translation>
 <translation id="5899667542927581604">Το φύλλο κλειδιών πρόσβασης έκλεισε</translation>
 <translation id="5907542076239273525">Ο σελιδοδείκτης αποθηκεύτηκε στον φάκελο <ph name="FOLDER_NAME" /></translation>
@@ -1340,7 +1337,6 @@
 <translation id="670498945988402717">Ελέγχθηκε χθες</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>
 <translation id="671481426037969117">Η αντίστροφη μέτρηση <ph name="FQDN" /> εξαντλήθηκε. Θα ξεκινήσει ξανά αύριο.</translation>
-<translation id="671928215901716392">Κλείδωμα οθόνης</translation>
 <translation id="6723740634201835758">Στον Λογαριασμό σας Google</translation>
 <translation id="6734310707649923383">Μπορείτε να δείτε τις σελίδες που έχετε επισκεφτεί ή να τις διαγράψετε από το ιστορικό σας</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα ανώνυμης περιήγησης που κάνει εγγραφή</translation>
@@ -1872,6 +1868,7 @@
 <translation id="8840953339110955557">Αυτή η σελίδα μπορεί να διαφέρει από την έκδοση στο διαδίκτυο.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Κρυφή</translation>
+<translation id="8849164661359544855">Ο ιστότοπος <ph name="URL" /> θέλει να εισέρχεται αυτόματα στη λειτουργία picture-in-picture</translation>
 <translation id="8854223127042600341">Δείτε τα αρχεία εκτός σύνδεσης</translation>
 <translation id="885480114717186641">Μπορείτε να ζητήσετε τον ιστότοπο για υπολογιστές του <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Λήψη περιγραφών</translation>

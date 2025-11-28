@@ -597,6 +597,7 @@
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5602622065581044566">בולגרית עם מקלדת פונטית</translation>
 <translation id="5605830556594064952">‏ארה"ב - Dvorak</translation>
+<translation id="560739212255190568">‏האדמין הגדיר כללים לשינוי שרת ה-proxy בנוסף לאכיפת שרת ה-proxy הבא</translation>
 <translation id="5618330573454123917">‏קובץ זה מיועד למחשב שיכול להפעיל תוכנות Macintosh. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה ChromeOS. <ph name="BEGIN_LINK_HELP" />לרשותך מידע נוסף<ph name="END_LINK_HELP" /> על פתיחת קבצים ב-ChromeOS.</translation>
 <translation id="5625294776298156701">‏טמילית עם מקלדת Tamil99</translation>
 <translation id="5633226425545095130">לאחר העברת הפריט הזה, הוא ישותף עם כל מי שיכול לראות את התיקייה המשותפת '<ph name="DESTINATION_NAME" />'.</translation>
@@ -996,6 +997,7 @@
 <translation id="8540608333167683902">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, פרטים</translation>
 <translation id="8545476925160229291">אנגלית (ארה"ב)</translation>
 <translation id="854655314928502177">‏כתובת האתר לגילוי אוטומטי של שרת proxy באינטרנט:</translation>
+<translation id="8547747809824590510">‏האדמין הגדיר כללים לשינוי שרת ה-proxy</translation>
 <translation id="8549186985808798022">איטלקית</translation>
 <translation id="8551494947769799688">לטבית</translation>
 <translation id="8560515948038859357">קנטונזית</translation>
@@ -1056,6 +1058,7 @@
 <translation id="9038620279323455325">הקובץ שנקרא "<ph name="FILE_NAME" />" כבר קיים. יש לבחור שם אחר.</translation>
 <translation id="9046895021617826162">החיבור נכשל</translation>
 <translation id="9065512565307033593">אם האימות ייכשל, הגישה שלך לרשת תושבת.</translation>
+<translation id="9079844694307518094">‏האדמין אוכף את שרת ה-proxy הבא</translation>
 <translation id="908378762078012445">‏רוסית עם מקלדת פונטית AATSEEL</translation>
 <translation id="9086302186042011942">הסנכרון מתבצע</translation>
 <translation id="9099674669267916096">מספר עמודים</translation>

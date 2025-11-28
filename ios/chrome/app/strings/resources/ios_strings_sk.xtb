@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Adresa webu bola skopírovaná</translation>
 <translation id="3280562213547448728">Hlasové vyhľadávanie</translation>
 <translation id="3289505634533552500">Hlasové vyhľadávanie</translation>
-<translation id="3293080634164207409">Pridajte karty</translation>
 <translation id="3295904109373959849">Mriežka skupín kariet</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, nová aktivita</translation>
 <translation id="3305294846493618482">viac</translation>
@@ -1284,6 +1283,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5902752768726620872">{count,plural, =1{{count} nová karta}few{{count} nové karty}many{{count} new tabs}other{{count} nových kariet}}</translation>
 <translation id="5911030830365207728">Prekladač Google</translation>
 <translation id="5922999516621365983">Ak kartu chcete pripnúť, presuňte ju sem.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Pridajte maximálne 1 súbor, kartu alebo obrázok}few{Pridajte maximálne {COUNT} súbory, karty alebo obrázky}many{Add up to {COUNT} files, tabs, or images}other{Pridajte maximálne {COUNT} súborov, kariet alebo obrázkov}}</translation>
 <translation id="5936006948844852401">Spravovať priestor</translation>
 <translation id="5936065461722368675">Preložiť celú stránku</translation>
 <translation id="5937560539988385583">Stránka je preložená</translation>

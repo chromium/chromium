@@ -2176,6 +2176,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4506599922270137252">Kontakte systemadministratoren</translation>
 <translation id="450710068430902550">Deling med administrator</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at oversætte denne side med Google Oversæt</translation>
+<translation id="4510703642214459906">Sted</translation>
 <translation id="4515275063822566619">Kort og adresser stammer fra Chrome og din Google-konto (<ph name="ACCOUNT_EMAIL" />). Du kan administrere dem i <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Mikrobiler og minibiler</translation>
 <translation id="451601984112574365">Grøn 3</translation>
@@ -4372,6 +4373,7 @@ Yderligere oplysninger:
 <translation id="8077669823243888800">Konvolut Kinesisk nr. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vil du uploade den fortrolige fil?}one{Vil du uploade den fortrolige fil?}other{Vil du uploade de fortrolige filer?}}</translation>
 <translation id="8079031581361219619">Vil du genindlæse websitet?</translation>
+<translation id="8079591184016291275">Navn på begivenhed</translation>
 <translation id="8079976827192572403">Farligt website</translation>
 <translation id="8081087320434522107">Sedaner</translation>
 <translation id="8086429410809447605">Dametøj</translation>

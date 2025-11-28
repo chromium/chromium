@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Дагы параметрлер</translation>
 <translation id="5602622065581044566">Болгарча (фонетикалык баскычтоп)</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
+<translation id="560739212255190568">Администраторуңуз төмөнкү проксини колдонуудан тышкары, проксини өзгөртүү эрежелерин койду</translation>
 <translation id="5618330573454123917">Бул файл Macintosh программасын колдонгон компьютер үчүн түзүлгөн. Ал ChromeOS негизинде иштеген түзмөгүңүзгө дал келбейт. Файлдарды ChromeOS'то ачуу жөнүндө <ph name="BEGIN_LINK_HELP" />кеңири маалымат<ph name="END_LINK_HELP" /> алыңыз.</translation>
 <translation id="5625294776298156701">Тамилче (Tamil99 баскычтобу)</translation>
 <translation id="5633226425545095130">Эгер бул нерсени жылдырсаңыз, ал "<ph name="DESTINATION_NAME" />" бөлүшүлгөн папкасын көрө алган адамдардын баары менен бөлүшүлөт.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Чоо-жайы</translation>
 <translation id="8545476925160229291">Англисче (АКШ)</translation>
 <translation id="854655314928502177">Веб проксини авто табуу URL'и:</translation>
+<translation id="8547747809824590510">Администраторуңуз проксини өзгөртүү эрежелерин койду</translation>
 <translation id="8549186985808798022">Италиянча</translation>
 <translation id="8551494947769799688">Латвияча</translation>
 <translation id="8560515948038859357">Кантончо</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" деген файл мурунтан эле бар. Файлды башкача атаңыз.</translation>
 <translation id="9046895021617826162">Туташпай калды</translation>
 <translation id="9065512565307033593">Эгер текшерүүдөн өтпөсөңүз, тармакка кирүү мүмкүнчүлүгү өчүрүлөт.</translation>
+<translation id="9079844694307518094">Администраторуңуз төмөнкү проксини колдонууга мажбурлап жатат</translation>
 <translation id="908378762078012445">Орусча (AATSEEL фонетикалык баскычтобу)</translation>
 <translation id="9086302186042011942">Шайкештештирилүүдө</translation>
 <translation id="9099674669267916096">Барактардын саны</translation>

@@ -223,7 +223,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1959679933317802873">콘텐츠 대기 중</translation>
 <translation id="1960290143419248813">이 버전의 Android에서는 더 이상 Chrome 업데이트가 지원되지 않습니다.</translation>
 <translation id="1962061488333185936"><ph name="TAB_TITLE" />, 여러 개 선택되고 청취 가능한 탭</translation>
-<translation id="1963056249988316027">신원 확인이 사용 설정되어 있으며 본인 인증을 할 수 없습니다</translation>
 <translation id="1963976881984600709">표준 보호 모드</translation>
 <translation id="1966710179511230534">로그인 세부정보를 업데이트하세요.</translation>
 <translation id="1969037871259811890">인터넷 사용 기록을 삭제해도 Google 계정에서는 로그아웃되지 않습니다. 다시 시작하려면 <ph name="BEGIN_LINK1" />Chrome에서 로그아웃<ph name="END_LINK1" />하세요.</translation>
@@ -601,7 +600,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{외 사이트 1개}other{외 사이트 #개}}</translation>
 <translation id="3625870480639975468">확대/축소 재설정</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />에 공유하는 중</translation>
-<translation id="363484704507524488">도난 방지 설정에서 신원 확인을 관리할 수 있습니다. <ph name="BEGIN_LINK" />설정으로 이동<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">비밀번호를 저장하면 Chrome에서 확인할 수 있습니다.</translation>
 <translation id="3636940436873918441">기본 언어</translation>
 <translation id="3637744895182738742">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
@@ -1131,7 +1129,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5869522115854928033">저장된 비밀번호</translation>
 <translation id="5870416898561279542">중복되거나 <ph name="DAYS_INACTIVE" />일 동안 사용하지 않은 탭 및 그룹은 여기로 이동되며<ph name="AUTODELETE_SECTION" />. 언제든지 <ph name="DECLUTTER_SETTINGS_TITLE" />에서 변경할 수 있습니다.</translation>
 <translation id="587735546353481577">사이트를 팔로우하려면 사이트로 이동해서 Chrome 메뉴를 연 다음 팔로우를 탭합니다.</translation>
-<translation id="5883855034004058011">생체 인식 실패 횟수가 너무 많습니다. 기기를 잠갔다가 잠금 해제한 후 다시 시도하세요.</translation>
 <translation id="5885378508678660271">알림 <ph name="SEPARATOR" /> 위험한 사이트이므로 Chrome에서 이러한 권한을 삭제했습니다.</translation>
 <translation id="5899667542927581604">닫힌 패스키 시트 없음</translation>
 <translation id="5907542076239273525"><ph name="FOLDER_NAME" />에 북마크가 저장되었습니다.</translation>
@@ -1340,7 +1337,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="670498945988402717">어제 확인됨</translation>
 <translation id="6710213216561001401">이전</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> 타이머가 종료되었습니다. 타이머는 내일 다시 시작됩니다.</translation>
-<translation id="671928215901716392">잠금 화면</translation>
 <translation id="6723740634201835758">내 Google 계정에서</translation>
 <translation id="6734310707649923383">방문한 페이지를 확인하거나 방문 기록에서 삭제할 수 있습니다</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, 고정되고 녹화 중인 시크릿 탭</translation>
@@ -1872,6 +1868,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8840953339110955557">이 페이지는 온라인 버전과 다를 수 있습니다.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">숨김</translation>
+<translation id="8849164661359544855"><ph name="URL" />에서 PIP 모드로 자동 전환하려고 합니다</translation>
 <translation id="8854223127042600341">오프라인 파일 보기</translation>
 <translation id="885480114717186641"><ph name="HOST_NAME" />의 데스크톱 사이트를 요청할 수 있습니다.</translation>
 <translation id="8856607253650333758">설명 보기</translation>

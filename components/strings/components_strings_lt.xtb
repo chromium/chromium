@@ -2061,6 +2061,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4299919199185766032">Šaukinio pavadinimas viršija didžiausią leistiną <ph name="MAX_LENGTH" /> simb. ilgį.</translation>
 <translation id="4300272766492248925">Atidaryti programą</translation>
 <translation id="4300675098767811073">Kelios skylės dešinėje</translation>
+<translation id="4300841966382281549">Kelionė</translation>
 <translation id="4302514097724775343">Palieskite dinozaurą, kad paleistumėte</translation>
 <translation id="4304049446746819918">{0,plural, =1{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šio failo į <ph name="DESTINATION_NAME" />}one{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į <ph name="DESTINATION_NAME" />}few{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į <ph name="DESTINATION_NAME" />}many{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į <ph name="DESTINATION_NAME" />}other{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Perskaitykite klientų pateiktus produktų, paslaugų ar funkcijų įvertinimus, kurie padės priimti sprendimus.</translation>
@@ -2177,6 +2178,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4506599922270137252">Susisiekti su sistemos administratoriumi</translation>
 <translation id="450710068430902550">Bendrinimas su administratoriumi</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad šis puslapis būtų išverstas naudojant „Google“ vertėją</translation>
+<translation id="4510703642214459906">Vieta</translation>
 <translation id="4515275063822566619">Kortelės ir adresai naudojami iš „Chrome“ ir jūsų „Google“ paskyros (<ph name="ACCOUNT_EMAIL" />). Galite juos tvarkyti skiltyje <ph name="BEGIN_LINK" />Nustatymai<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Nedideli ir subkompaktiniai automobiliai</translation>
 <translation id="451601984112574365">3 žalia</translation>
@@ -3425,6 +3427,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6539092367496845964">Įvyko klaida. Vėliau bandykite dar kartą.</translation>
 <translation id="6540488083026747005">Leidote trečiųjų šalių slapukus šioje svetainėje</translation>
 <translation id="6545864417968258051">„Bluetooth“ nuskaitymas</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" />–<ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Dvi skylės kairėje</translation>
 <translation id="6549443526281184652">Kostiumai</translation>
 <translation id="6550245281449521513">Pelės užraktas neleidžiamas</translation>
@@ -4373,6 +4376,7 @@ Papildoma išsami informacija:
 <translation id="8077669823243888800">Nr. 8 kinietiškas vokas</translation>
 <translation id="8078006011486731853">{0,plural, =1{Įkelti konfidencialų failą?}one{Įkelti konfidencialius failus?}few{Įkelti konfidencialius failus?}many{Įkelti konfidencialius failus?}other{Įkelti konfidencialius failus?}}</translation>
 <translation id="8079031581361219619">Iš naujo įkelti svetainę?</translation>
+<translation id="8079591184016291275">Įvykio pavadinimas</translation>
 <translation id="8079976827192572403">Pavojinga svetainė</translation>
 <translation id="8081087320434522107">Sedanai</translation>
 <translation id="8086429410809447605">Moterų apranga</translation>
@@ -4809,6 +4813,7 @@ Papildoma išsami informacija:
 <translation id="8814547618907885931">Žr. visas palyginimo lenteles</translation>
 <translation id="8814707942599948500">C8 vokas</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad „Chrome“ nustatymuose būtų atnaujinta naršyklė „Chrome“</translation>
+<translation id="8819855907485254989">Transporto bilieto išsaugojimas sistemoje „Wallet“</translation>
 <translation id="8820817407110198400">Žymės</translation>
 <translation id="882338992931677877">Neautomatinė dėtuvė</translation>
 <translation id="8827067923357481311">Mokėjimo vėliau parinktys</translation>

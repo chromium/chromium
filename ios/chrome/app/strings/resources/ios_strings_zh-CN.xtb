@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">已复制网站地址</translation>
 <translation id="3280562213547448728">语音搜索</translation>
 <translation id="3289505634533552500">语音搜索</translation>
-<translation id="3293080634164207409">添加标签页</translation>
 <translation id="3295904109373959849">标签页分组网格</translation>
 <translation id="3302837541200840455">“<ph name="TAB_TITLE" />”，有新活动</translation>
 <translation id="3305294846493618482">更多</translation>
@@ -1284,6 +1283,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count} 个新标签页}other{{count} 个新标签页}}</translation>
 <translation id="5911030830365207728">Google 翻译</translation>
 <translation id="5922999516621365983">将标签页拖到此处即可固定。</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{最多可添加 1 个文件、标签页或图片}other{最多可添加 {COUNT} 个文件、标签页或图片}}</translation>
 <translation id="5936006948844852401">管理存储空间</translation>
 <translation id="5936065461722368675">翻译整页内容</translation>
 <translation id="5937560539988385583">网页翻译完毕</translation>
@@ -1437,7 +1437,7 @@
 <translation id="6421038304268477484">译文</translation>
 <translation id="6429213933892582367">打开“密码选项”</translation>
 <translation id="6435236283694032571">添加到阅读清单</translation>
-<translation id="6435307030888827407">保持退出账号状态</translation>
+<translation id="6435307030888827407">保持未登录状态</translation>
 <translation id="6436318499800111867">与我分享的日期：<ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442697326824312960">取消固定标签页</translation>
 <translation id="6443118737398455446">过期日期无效</translation>

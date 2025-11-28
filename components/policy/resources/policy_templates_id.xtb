@@ -756,6 +756,14 @@ Jika kebijakan ini tidak disetel, Pemilih emoji akan diaktifkan untuk pengguna n
 <translation id="1523587744262636189">port 10080 (blokir dapat dibatalkan hingga 01/04/2022)</translation>
 <translation id="1523774894176285446">Browser alternatif untuk membuka situs yang dikonfigurasi.</translation>
 <translation id="152657506688053119">Daftar URL pengganti untuk penyedia penelusuran default</translation>
+<translation id="1526766414933532012">Kebijakan untuk mengontrol apakah setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
+
+Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Pengukuran iklan akan dinonaktifkan untuk pengguna Anda.
+Jika Anda menyetel kebijakan ini ke Aktif atau tidak menyetelnya, pengguna Anda akan dapat mengaktifkan atau menonaktifkan setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.
+
+Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> harus disetel ke Nonaktif.
+
+Kebijakan ini tidak digunakan lagi mulai <ph name="PRODUCT_NAME" /> versi 144 dengan penghentian penggunaan Attribution Reporting API.</translation>
 <translation id="1530812829012954197">Selalu urai pola URL berikut di browser host</translation>
 <translation id="1532928374875633053">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs yang akan otomatis memberikan izin penempatan jendela. Hal ini akan memperluas kemampuan situs untuk melihat informasi tentang layar perangkat dan menggunakan informasi tersebut untuk membuka dan menempatkan jendela atau meminta mode layar penuh pada layar tertentu.
 
@@ -2626,6 +2634,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan dapat mentr
 <translation id="2731627323327011390">Menonaktifkan penggunaan sertifikat <ph name="PRODUCT_OS_NAME" /> untuk aplikasi ARC</translation>
 <translation id="273678600057164019">Resolusi DNS sistem akan berjalan di dalam proses jaringan.</translation>
 <translation id="2737917415184832294">Gunakan HTTPS untuk download update</translation>
+<translation id="2738525271405092369">Jangan izinkan berbagi konten dengan integrasi <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="2739213523971537320">Nonaktifkan keyboard virtual sentuh di layar login</translation>
 <translation id="2742843273354638707">Menyembunyikan aplikasi Chrome Webstore serta link footer dari Halaman Tab Baru dan peluncur aplikasi <ph name="PRODUCT_OS_NAME" />.
 
@@ -5684,6 +5693,21 @@ Jika kebijakan disetel ke Nonaktif, promo Ekstensi Penyedia Kredensial tidak aka
 
       Jika tidak disetel, layar pengantar Gemini akan dilewati untuk pengguna yang dikelola perusahaan dan ditampilkan untuk pengguna yang tidak dikelola.</translation>
 <translation id="4783415902268741066">Mengizinkan halaman hasil penelusuran mesin telusur default terbaru ditampilkan di panel samping Browser</translation>
+<translation id="4784457904946078535">Kebijakan ini mengontrol berbagi konten halaman dan file dengan <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> melalui panel samping atau tab <ph name="PRODUCT_NAME" />.
+
+Perhatikan bahwa kebijakan ini tidak memengaruhi <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> di web. Kebijakan ini hanya mengontrol cara pengguna dapat berbagi informasi dengannya saat menggunakan <ph name="PRODUCT_NAME" />.
+
+0/tidak disetel = pengguna dapat membagikan konten halaman atau file dengan <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+1 = pengguna tidak dapat membagikan konten halaman atau file dengan <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Titik entri untuk berbagi konteks akan dinonaktifkan atau disembunyikan.
+
+Kebijakan ini akan diabaikan jika <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> bukan mesin telusur default pengguna karena fitur ini dinonaktifkan.
+
+Kebijakan ini terpisah dari kebijakan <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. Kebijakan <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> hanya mengontrol titik entri di kotak penelusuran NTP atau omnibox, sedangkan kebijakan ini mengontrol berbagi konteks melalui panel samping atau tab.
+
+Kebijakan ini juga tidak mengontrol integrasi <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> yang dapat dinonaktifkan oleh <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4786784434769279324">Tindakan yang akan dijalankan saat komputer sedang tidak ada aktivitas</translation>
 <translation id="4787763197941188108">Mengganti ukuran halaman pencetakan default.
 
@@ -6139,6 +6163,14 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
 <translation id="5063480226653192405">Penggunaan</translation>
 <translation id="5067143124345820993">Daftar putih pengguna masuk</translation>
 <translation id="50689955292091946">Aktifkan keyboard virtual aksesibilitas di layar login</translation>
+<translation id="5069453818168036580">Kebijakan untuk mengontrol apakah setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
+
+Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Iklan yang disarankan situs akan dinonaktifkan untuk pengguna Anda.
+Jika Anda menyetel kebijakan ini ke Aktif atau tidak menyetelnya, pengguna Anda akan dapat mengaktifkan atau menonaktifkan setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.
+
+Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> harus disetel ke Nonaktif.
+
+Kebijakan ini tidak digunakan lagi mulai <ph name="PRODUCT_NAME" /> versi 144 seiring dengan penghentian penggunaan Protected Audience API.</translation>
 <translation id="5069522005630249098">Setelan ini menentukan jumlah data pengguna yang disimpan setelah <ph name="LACROS_NAME" /> dinonaktifkan.
 
       Jika kebijakan ini disetel ke <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> atau tidak disetel, migrasi data mundur tidak akan dilakukan.
@@ -7707,6 +7739,7 @@ Jika Anda ingin membatasi akses Developer Tools berdasarkan URL halaman, gunakan
 <translation id="6011969832398368671">Izinkan situs meminta pengguna memberikan akses tulis ke file dan direktori</translation>
 <translation id="601234435141599215">Izinkan penerusan port ke mesin virtual Linux</translation>
 <translation id="6012952794649558174">Gunakan perilaku browser default.</translation>
+<translation id="6013875085491664033">Aktifkan berbagi konten dengan integrasi <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /></translation>
 <translation id="6015281292796053435">Kebijakan ini mengontrol apakah informasi Safe Browsing akan dilaporkan atau tidak, termasuk jumlah peringatan Safe Browsing dan jumlah klik-tayang peringatan Safe Browsing.
 
       Jika kebijakan <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> tidak disetel atau disetel ke nonaktif, kebijakan ini akan diabaikan.
@@ -9776,6 +9809,7 @@ Jadwal dengan interval yang tumpang tindih tidak didukung. Kebijakan ini tidak a
 Perangkat <ph name="PRODUCT_OS_NAME" /> akan menggunakan zona waktu sistem untuk menerapkan interval ini.
 
 Catatan Penting: Jadwal yang disetel oleh kebijakan ini mungkin tidak berjalan seperti yang diharapkan jika jadwal tersebut bertentangan dengan setelan pengelolaan daya lainnya, misalnya <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />. Pastikan setelan ini dikonfigurasi agar mengizinkan penerapan interval penangguhan terjadwal.</translation>
+<translation id="7196583864907169857">Izinkan berbagi konten dengan integrasi <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="7196944905905233325">Mengaktifkan penyedia framework
 aksesibilitas <ph name="UIA_NAME" /> di <ph name="PRODUCT_NAME" /> untuk digunakan oleh
 alat aksesibilitas.
@@ -11899,6 +11933,14 @@ Kebijakan ini merupakan tindakan sementara dan akan dihapus setelah beberapa ver
       Menyetel kebijakan ke Nonaktif akan merugikan keamanan dan stabilitas <ph name="PRODUCT_NAME" /> karena kode yang tidak dikenal dan berpotensi berbahaya dapat dimuat dalam proses browser <ph name="PRODUCT_NAME" />. Nonaktifkan kebijakan hanya jika terdapat masalah kompatibilitas dengan software pihak ketiga yang harus berjalan dalam proses browser <ph name="PRODUCT_NAME" />.
 
       Catatan: Baca selengkapnya tentang Kebijakan mitigasi proses ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
+<translation id="8672039014434141545">Kebijakan untuk mengontrol apakah setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
+
+Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Topik iklan akan dinonaktifkan untuk pengguna Anda.
+Jika Anda menyetel kebijakan ini ke Aktif atau tidak menyetelnya, pengguna Anda akan dapat mengaktifkan atau menonaktifkan setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.
+
+Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> harus disetel ke Nonaktif.
+
+Kebijakan ini tidak digunakan lagi mulai <ph name="PRODUCT_NAME" /> versi 144 seiring dengan penghentian penggunaan Topics API.</translation>
 <translation id="8672321184841719703">Versi Update Otomatis Target</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
 <translation id="8676959842615154675">Jika kebijakan disetel ke Aktif, host akses jarak jauh akan membandingkan nama pengguna lokal yang dikaitkan dengan host dan nama Akun Google yang terdaftar sebagai pemilik host (misalnya, "johan" jika host dimiliki oleh "johan@example.com"). Host ini tidak akan dimulai jika nama pemilik host berbeda dengan nama pengguna lokal yang dikaitkan dengan host. Gunakan kebijakan dengan <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> untuk menegaskan bahwa Akun Google pemilik dikaitkan dengan domain tertentu.

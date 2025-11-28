@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5602622065581044566">Búlgaro con teclado fonético</translation>
 <translation id="5605830556594064952">Inglés (Estados Unidos; Dvorak)</translation>
+<translation id="560739212255190568">Tu administrador estableció reglas de anulación de proxy además de aplicar el siguiente proxy</translation>
 <translation id="5618330573454123917">Este archivo se diseñó para computadoras que usan software Macintosh. No es compatible con tu dispositivo, el cual ejecuta ChromeOS. <ph name="BEGIN_LINK_HELP" />Obtén más información<ph name="END_LINK_HELP" /> para abrir archivos en ChromeOS.</translation>
 <translation id="5625294776298156701">Tamil con teclado Tamil99</translation>
 <translation id="5633226425545095130">Si mueves este elemento, se compartirá con las personas que pueden ver la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, detalles</translation>
 <translation id="8545476925160229291">Inglés (EE.UU.)</translation>
 <translation id="854655314928502177">URL de detección automática de proxy web:</translation>
+<translation id="8547747809824590510">Tu administrador estableció reglas de anulación de proxy</translation>
 <translation id="8549186985808798022">Italiano</translation>
 <translation id="8551494947769799688">Letón</translation>
 <translation id="8560515948038859357">Cantonés</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Ya existe un archivo con el nombre "<ph name="FILE_NAME" />". Elige otro.</translation>
 <translation id="9046895021617826162">No se pudo conectar</translation>
 <translation id="9065512565307033593">Si no puedes verificar tu identidad, se inhabilitará tu acceso a la red.</translation>
+<translation id="9079844694307518094">Tu administrador está aplicando el siguiente proxy</translation>
 <translation id="908378762078012445">Ruso con teclado fonético AATSEEL</translation>
 <translation id="9086302186042011942">Sincronización</translation>
 <translation id="9099674669267916096">Cantidad de páginas</translation>

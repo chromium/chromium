@@ -595,6 +595,7 @@
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5602622065581044566">Bulgaro con tastiera fonetica</translation>
 <translation id="5605830556594064952">Dvorak USA</translation>
+<translation id="560739212255190568">L'amministratore ha impostato regole di override del proxy e ha applicato in modo forzato il seguente proxy</translation>
 <translation id="5618330573454123917">Questo file è supportato su computer con software Macintosh. Non è compatibile con il tuo dispositivo, che esegue ChromeOS. <ph name="BEGIN_LINK_HELP" />Scopri di più<ph name="END_LINK_HELP" /> sull'apertura di file in ChromeOS.</translation>
 <translation id="5625294776298156701">Tamil con tastiera Tamil99</translation>
 <translation id="5633226425545095130">Se lo sposti, questo elemento verrà condiviso con chiunque abbia accesso alla cartella condivisa "<ph name="DESTINATION_NAME" />".</translation>
@@ -994,6 +995,7 @@
 <translation id="8540608333167683902">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, dettagli</translation>
 <translation id="8545476925160229291">Inglese (USA)</translation>
 <translation id="854655314928502177">URL rilevamento automatico proxy web:</translation>
+<translation id="8547747809824590510">L'amministratore ha impostato le regole di override del proxy</translation>
 <translation id="8549186985808798022">Italiano</translation>
 <translation id="8551494947769799688">Lettone</translation>
 <translation id="8560515948038859357">Cantonese</translation>
@@ -1054,6 +1056,7 @@
 <translation id="9038620279323455325">Esiste già un file chiamato "<ph name="FILE_NAME" />". Scegli un altro nome.</translation>
 <translation id="9046895021617826162">Connessione non riuscita</translation>
 <translation id="9065512565307033593">Se non superi la verifica, l'accesso alla rete verrà disattivato.</translation>
+<translation id="9079844694307518094">L'amministratore sta applicando in modo forzato il seguente proxy</translation>
 <translation id="908378762078012445">Russo con tastiera fonetica AATSEEL</translation>
 <translation id="9086302186042011942">Sincronizzazione in corso</translation>
 <translation id="9099674669267916096">Numero di pagine</translation>

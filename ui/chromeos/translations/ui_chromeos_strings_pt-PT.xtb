@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5602622065581044566">Búlgaro com teclado fonético</translation>
 <translation id="5605830556594064952">EUA Dvorak</translation>
+<translation id="560739212255190568">O seu administrador definiu regras de substituição de proxy, além de aplicar o seguinte proxy</translation>
 <translation id="5618330573454123917">Este ficheiro foi concebido para computadores com software Macintosh. Não é compatível com o seu dispositivo, pois este tem o ChromeOS instalado. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir ficheiros no ChromeOS.</translation>
 <translation id="5625294776298156701">Tâmil com teclado Tamil99</translation>
 <translation id="5633226425545095130">Se mover este item, partilha-o com todas as pessoas que conseguem ver a pasta partilhada "<ph name="DESTINATION_NAME" />".</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="8545476925160229291">Inglês (EUA)</translation>
 <translation id="854655314928502177">URL de deteção automática de proxy da Web</translation>
+<translation id="8547747809824590510">O seu administrador definiu regras de substituição de proxy</translation>
 <translation id="8549186985808798022">Italiano</translation>
 <translation id="8551494947769799688">Letão</translation>
 <translation id="8560515948038859357">Cantonês</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">O ficheiro com o nome "<ph name="FILE_NAME" />" já existe. Escolha um nome diferente.</translation>
 <translation id="9046895021617826162">A ligação falhou</translation>
 <translation id="9065512565307033593">Se não validar, o seu acesso à rede será desativado.</translation>
+<translation id="9079844694307518094">O seu administrador está a aplicar o seguinte proxy</translation>
 <translation id="908378762078012445">Russo com teclado AATSEEL fonético</translation>
 <translation id="9086302186042011942">A sincronizar</translation>
 <translation id="9099674669267916096">Contagem de páginas</translation>

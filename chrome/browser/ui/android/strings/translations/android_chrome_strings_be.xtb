@@ -223,7 +223,6 @@
 <translation id="1959679933317802873">Чакаецца атрыманне змесціва</translation>
 <translation id="1960290143419248813">Абнаўленні Chrome больш не падтрымліваюцца для гэтай версіі Android.</translation>
 <translation id="1962061488333185936"><ph name="TAB_TITLE" />, укладка з уключаным гукам, выбраная разам з іншымі ўкладкамі</translation>
-<translation id="1963056249988316027">Функцыя праверкі асобы ўключана і не можа пацвердзіць вашу асобу</translation>
 <translation id="1963976881984600709">Стандартная абарона</translation>
 <translation id="1966710179511230534">Абнавіце ўліковыя даныя для ўваходу.</translation>
 <translation id="1969037871259811890">Пры выдаленні даных пра работу ў браўзеры вы не выйдзеце з Уліковага запісу Google. Калі вам неабходна гэта зрабіць, <ph name="BEGIN_LINK1" />выйдзіце з Chrome<ph name="END_LINK1" />.</translation>
@@ -601,7 +600,6 @@
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}one{+ # сайт}few{+ # сайты}many{+ # сайтаў}other{+ # сайта}}</translation>
 <translation id="3625870480639975468">Скінуць маштабаванне</translation>
 <translation id="3631987586758005671">Абагульваецца з прыладай "<ph name="DEVICE_NAME" />"</translation>
-<translation id="363484704507524488">Кіраваць функцыяй праверкі асобы можна ў наладах абароны ад крадзяжу. <ph name="BEGIN_LINK" />Перайсці ў налады<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Chrome можа правяраць толькі захаваныя паролі</translation>
 <translation id="3636940436873918441">Прыярытэтныя мовы</translation>
 <translation id="3637744895182738742">Калі вы забылі фразу-пароль або хочаце змяніць гэту наладу, <ph name="BEGIN_LINK" />выдаліце даныя Chrome з уліковага запісу<ph name="END_LINK" />.</translation>
@@ -1131,7 +1129,6 @@
 <translation id="5869522115854928033">Захаваныя паролі</translation>
 <translation id="5870416898561279542">Сюды перамяшчаюцца копіі ўкладак і груп, а таксама ўкладкі і групы, якія не выкарыстоўваліся на працягу <ph name="DAYS_INACTIVE" /> сут<ph name="AUTODELETE_SECTION" />. Каб змяніць гэты параметр, перайдзіце ў <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="587735546353481577">Каб падпісацца на сайт, перайдзіце на яго, адкрыйце меню Chrome і націсніце "Падпісацца".</translation>
-<translation id="5883855034004058011">Занадта многа няўдалых праверак біяметрычных даных. Каб паўтарыць спробу, заблакіруйце і разблакіруйце прыладу.</translation>
 <translation id="5885378508678660271">Апавяшчэнні <ph name="SEPARATOR" /> Браўзер Chrome адклікаў гэтыя дазволы, бо гэты сайт небяспечны</translation>
 <translation id="5899667542927581604">Аркуш з інфармацыяй пра адсутнасць ключоў доступу закрыты</translation>
 <translation id="5907542076239273525">Закладка захавана ў папку "<ph name="FOLDER_NAME" />"</translation>
@@ -1340,7 +1337,6 @@
 <translation id="670498945988402717">Праверка праводзілася ўчора</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Спрацаваў таймер праграмы "<ph name="FQDN" />". Заўтра ён зноў будзе запушчаны.</translation>
-<translation id="671928215901716392">Экран блакіроўкі</translation>
 <translation id="6723740634201835758">У вашым Уліковым запісе Google</translation>
 <translation id="6734310707649923383">Вы можаце прагледзець наведаныя старонкі або выдаліць іх з гісторыі</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта, на якой ідзе запіс</translation>
@@ -1872,6 +1868,7 @@
 <translation id="8840953339110955557">Гэта старонка можа адрознівацца ад сваёй інтэрнэт-версіі.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Схавана</translation>
+<translation id="8849164661359544855">Сайт <ph name="URL" /> запытвае дазвол аўтаматычна запускаць рэжым "відарыс у відарысе"</translation>
 <translation id="8854223127042600341">Праглядзіце файлы, даступныя па-за сеткай</translation>
 <translation id="885480114717186641">Вы можаце запытаць версію сайта <ph name="HOST_NAME" /> для камп’ютараў</translation>
 <translation id="8856607253650333758">Атрымліваць апісанні</translation>

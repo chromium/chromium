@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5602622065581044566">Bulgarisch mit phonetischer Tastatur</translation>
 <translation id="5605830556594064952">USA – Dvorak</translation>
+<translation id="560739212255190568">Dein Administrator hat Proxy-Überschreibungsregeln festgelegt und erzwingt außerdem den folgenden Proxy</translation>
 <translation id="5618330573454123917">Diese Datei wurde für Computer mit Macintosh-Software entwickelt. Sie ist nicht mit deinem Chrome OS-Gerät kompatibel. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
 <translation id="5625294776298156701">Tamil mit Tamil99-Tastatur</translation>
 <translation id="5633226425545095130">Wenn du dieses Element verschiebst, wird es für alle Personen freigegeben, die den freigegebenen Ordner „<ph name="DESTINATION_NAME" />“ sehen können.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
 <translation id="8545476925160229291">Englisch (USA)</translation>
 <translation id="854655314928502177">URL für Web-Proxy Autodiscovery</translation>
+<translation id="8547747809824590510">Dein Administrator hat Proxy-Überschreibungsregeln festgelegt</translation>
 <translation id="8549186985808798022">Italienisch</translation>
 <translation id="8551494947769799688">Lettisch</translation>
 <translation id="8560515948038859357">Kantonesisch</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Die Datei mit dem Namen "<ph name="FILE_NAME" />" existiert bereits. Wähle einen anderen Namen aus.</translation>
 <translation id="9046895021617826162">Verbindungsaufbau fehlgeschlagen</translation>
 <translation id="9065512565307033593">Ohne diese Bestätigung wird der Netzwerkzugriff deaktiviert.</translation>
+<translation id="9079844694307518094">Dein Administrator erzwingt den folgenden Proxy</translation>
 <translation id="908378762078012445">Russisch mit phonetischer Tastatur (AATSEEL)</translation>
 <translation id="9086302186042011942">Synchronisierung läuft...</translation>
 <translation id="9099674669267916096">Seitenzahl</translation>

@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Կայքի հասցեն պատճենվել է</translation>
 <translation id="3280562213547448728">Ձայնային որոնում</translation>
 <translation id="3289505634533552500">Ձայնային որոնում</translation>
-<translation id="3293080634164207409">Ավելացրեք ներդիրներ</translation>
 <translation id="3295904109373959849">Ներդիրների խմբերի ցանց</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, նոր գործողություններ</translation>
 <translation id="3305294846493618482">ավելին</translation>
@@ -1284,6 +1283,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5902752768726620872">{count,plural, =1{{count} նոր ներդիր}one{{count} նոր ներդիր}other{{count} նոր ներդիր}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">Ներդիրն ամրացնելու համար քաշեք այն այստեղ։</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Ավելացրեք մինչև 1 ֆայլ, ներդիր կամ պատկեր}one{Ավելացրեք մինչև {COUNT} ֆայլ, ներդիր կամ պատկեր}other{Ավելացրեք մինչև {COUNT} ֆայլ, ներդիր կամ պատկեր}}</translation>
 <translation id="5936006948844852401">Կառավարել պահոցը</translation>
 <translation id="5936065461722368675">Թարգմանել ամբողջ էջը</translation>
 <translation id="5937560539988385583">Էջը թարգմանված է</translation>

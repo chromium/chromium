@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Skopiowano adres strony</translation>
 <translation id="3280562213547448728">Wyszukiwanie głosowe</translation>
 <translation id="3289505634533552500">Wyszukiwanie głosowe</translation>
-<translation id="3293080634164207409">Dodaj karty</translation>
 <translation id="3295904109373959849">Siatka grup kart</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, nowa aktywność</translation>
 <translation id="3305294846493618482">więcej</translation>
@@ -1284,6 +1283,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5902752768726620872">{count,plural, =1{{count} nowa karta}few{{count} nowe karty}many{{count} nowych kart}other{{count} nowej karty}}</translation>
 <translation id="5911030830365207728">Tłumacz Google</translation>
 <translation id="5922999516621365983">Przeciągnij kartę tutaj, żeby ją przypiąć.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Dodaj maksymalnie 1 plik, kartę lub obraz}few{Dodaj maksymalnie {COUNT} pliki, karty lub obrazy}many{Dodaj maksymalnie {COUNT} plik, kartę lub obraz}other{Dodaj maksymalnie {COUNT} pliku, karty lub obrazu}}</translation>
 <translation id="5936006948844852401">Zarządzaj miejscem na dane</translation>
 <translation id="5936065461722368675">Przetłumacz całą stronę</translation>
 <translation id="5937560539988385583">Strona została przetłumaczona</translation>

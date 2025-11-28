@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="5602622065581044566">Búlgar amb teclat fonètic</translation>
 <translation id="5605830556594064952">Dvorak nord-americà</translation>
+<translation id="560739212255190568">L'administrador ha establert regles d'anul·lació del servidor intermediari, a més d'aplicar el servidor intermediari següent</translation>
 <translation id="5618330573454123917">Aquest fitxer està dissenyat per a un ordinador amb programari Macintosh. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. <ph name="BEGIN_LINK_HELP" />Obtén més informació<ph name="END_LINK_HELP" /> sobre com pots obrir fitxers a Chrome OS.</translation>
 <translation id="5625294776298156701">Tàmil amb teclat Tamil99</translation>
 <translation id="5633226425545095130">En moure aquest element, es compartirà amb tothom que pugui veure la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, detalls</translation>
 <translation id="8545476925160229291">Anglès (EUA)</translation>
 <translation id="854655314928502177">URL de detecció automàtica de servidors intermediaris web:</translation>
+<translation id="8547747809824590510">L'administrador ha establert regles d'anul·lació del servidor intermediari</translation>
 <translation id="8549186985808798022">Italià</translation>
 <translation id="8551494947769799688">Letó</translation>
 <translation id="8560515948038859357">Cantonès</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Ja hi ha un fitxer anomenat <ph name="FILE_NAME" />. Tria un altre nom.</translation>
 <translation id="9046895021617826162">Hi ha hagut un error en la connexió</translation>
 <translation id="9065512565307033593">Si no fas la verificació, l'accés a la xarxa es desactivarà.</translation>
+<translation id="9079844694307518094">L'administrador està aplicant el servidor intermediari següent</translation>
 <translation id="908378762078012445">Rus amb teclat AATSEEL fonètic</translation>
 <translation id="9086302186042011942">Sincronització</translation>
 <translation id="9099674669267916096">Nombre de pàgines</translation>

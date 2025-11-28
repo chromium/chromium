@@ -1802,9 +1802,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2220572644011485463">PIN və ya parol</translation>
 <translation id="222115440608612541">Gün çıxanda və batanda mövzuları dəyişdirin</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">Xarici tətbiq xətaları aradan qaldırmaq üçün bu Chrome sessiyasına tam nəzarət etmək istəyir. Buraya yadda saxlanılmış dataya, kukilərə və sayt datasına giriş və istənilən URL-ə keçmək imkanı daxildir.
-
-Yalnız veb-tərtibatçılar bu funksiyanı aktiv etməli və etibarlı tətbiqlərlə istifadə etməlidirlər.</translation>
 <translation id="222201875806112242">Adsız media mənbəyi</translation>
 <translation id="2224337661447660594">İnternet yoxdur</translation>
 <translation id="2224444042887712269">Bu ayarlar <ph name="OWNER_EMAIL" /> hesabına məxsusdur.</translation>
@@ -6587,6 +6584,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5523532775593636291">Əlavə etdiyiniz saytlar həmişə aktiv qalacaq və yaddaş boşaldılmayacaq</translation>
 <translation id="5523558474028191231">Adda hərflər, rəqəmlər və xüsusi simvollar ola bilər və maksimum <ph name="MAX_CHARACTER_COUNT" /> simvol ola bilər</translation>
 <translation id="5526745900034778153">Sinxronizasiyaya davam etmək üçün daxil olun</translation>
+<translation id="5527211644528700597">Təhlükələri aşkarlamaq üçün cihazdakı metodlardan istifadə edir</translation>
 <translation id="5527463195266282916">Artırma versiyasının aşağı salınmasına cəhd edildi.</translation>
 <translation id="5527474464531963247">Başqa bir şəbəkə seçə bilərsiniz.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, quraşdırılır</translation>
@@ -6782,6 +6780,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5663459693447872156">Avtomatik olaraq yarımenə keçirin</translation>
 <translation id="5663653125349867535">&amp;Oxu siyahısı</translation>
 <translation id="5663918299073387939">Saytlar, adətən, musiqi yaratmaq, redaktə etmək və ya cihazın iç proqramını güncəlləmək üçün MIDI cihazlarını idarə etmək və təkrar proqramlaşdırmaq istəyir</translation>
+<translation id="5666116074010586111">Təhlükələri daha tez aşkarlamaq üçün URL və səhifə kontentini Google-a göndərir</translation>
 <translation id="5666911576871845853">&amp;Yeni profil əlavə edin</translation>
 <translation id="5667293444945855280">Zərərli proqram</translation>
 <translation id="5667546120811588575">Google Play quraşdırılır...</translation>
@@ -7960,6 +7959,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6508261954199872201">Tətbiq: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Chromebook-u yenidən başladın və təkrar cəhd edin</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> faylını silin ki, bu cihazı istifadə edən başqa şəxslər parollarınızı görməsin</translation>
+<translation id="6512364354776355686">Bütün güvənsiz bağlantılar barədə xəbərdarlıq edir</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> əhvalı ilə <ph name="INDEX" /> indeksli <ph name="SUBJECT" /> şəkli yaradıldı.</translation>
 <translation id="6513247462497316522">Digər şəbəkəyə qoşulmadığınız halda Google Chrome mobil data istifadə edəcək.</translation>
 <translation id="6514010653036109809">Əlçatan cihaz:</translation>
@@ -9143,6 +9143,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7340179705876485790">1 səhifədən çox geri getmək üçün Geri üzərinə klikləyib saxlayın.</translation>
 <translation id="7340650977506865820">Sayt ekranınızı paylaşır</translation>
 <translation id="7340757554212515731">Xəta hesabatları, eləcə də diaqnostika və istifadə datasını avtomatik Google'a göndərir</translation>
+<translation id="7340886226071938450">Tab zolağının mövqeyi</translation>
 <translation id="734088800888587319">Şəbəkə Göstəriciləri</translation>
 <translation id="7341834142292923918">Bu sayta giriş tələb edir</translation>
 <translation id="7343372807593926528">Rəy göndərməzdən əvvəl problemi təsvir edin.</translation>
@@ -9873,6 +9874,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7830833461614351956">Açmaq üçün <ph name="NUM_OF_FILES" /> fayl <ph name="CLOUD_PROVIDER" /> provayderinə kopyalansın?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Yadda saxlanmış fərdi sözlər burada görünəcək</translation>
+<translation id="7833725807105678871">Təkmilləşdirilmiş güvənlik funksiyalarından daha çox sayt sürətinə üstünlük verir</translation>
 <translation id="7834832693620032149">Audio paylaşmaq üçün əvəzinə tab və ya pəncərə paylaşın</translation>
 <translation id="7836577093182643605">Blokladığınız və saytlarla paylaşılmasını istəmədiyiniz mövzuların siyahısı</translation>
 <translation id="7836850009646241041">Təhlükəsizlik açarınıza yenidən toxunmağı sınayın</translation>
@@ -11144,6 +11146,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8690129572193755009">Saytlar protokolları nizamlamaq üçün icazə istəyə bilər</translation>
 <translation id="869144235543261764">Bu tab şəkildə şəkil rejimində video göstərir</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> endirmə tarixçəsindən silindi</translation>
+<translation id="8691990641861252959">Açıq internetdə güvənsiz bağlantılar barədə xəbərdarlıq edir</translation>
 <translation id="8692107307702113268">Parol 1000 simvoldan uzundur</translation>
 <translation id="8693862390730570097">"Yazmağa kömək et" funksiyasının avtomatik açılmasına icazə verməyin</translation>
 <translation id="8694596275649352090">Yatarkən və ya qapaq bağlı olduqda kilidləyin</translation>
@@ -11343,6 +11346,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="8821268776955756404"><ph name="APP_NAME" /> istifadəyə hazırdır.</translation>
 <translation id="8821647731831124007">Əlçatan hotspot yoxdur</translation>
 <translation id="882204272221080310">Əlavə təhlükəsizlik üçün daimi proqram təminatı güncəlləyin.</translation>
+<translation id="8822690627597552656">Geniş yayılmış hücumların qarşısını almaq üçün bəzi tanış olmayan saytları yavaşladır</translation>
 <translation id="8823514049557262177">Link mətnini kopyalayın</translation>
 <translation id="8823704566850948458">Parol təklif edin...</translation>
 <translation id="8823963789776061136">Alternativ olaraq, printer PPD'ni seçin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>

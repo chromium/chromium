@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Veffang afritað</translation>
 <translation id="3280562213547448728">Raddleit</translation>
 <translation id="3289505634533552500">Raddleit</translation>
-<translation id="3293080634164207409">Bæta við flipum</translation>
 <translation id="3295904109373959849">Töfluyfirlit yfir flipahópa</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, ný virkni</translation>
 <translation id="3305294846493618482">meira</translation>
@@ -1284,6 +1283,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5902752768726620872">{count,plural, =1{{count} nýr flipi}one{{count} nýr flipi}other{{count} nýir flipar}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">Dragðu flipann hingað til að festa hann.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Bættu við allt að einni skrá, flipa eða mynd}one{Bættu við allt að {COUNT} skrám, flipum eða myndum}other{Bættu við allt að {COUNT} skrám, flipum eða myndum}}</translation>
 <translation id="5936006948844852401">Stjórna geymslurými</translation>
 <translation id="5936065461722368675">Þýða alla síðuna</translation>
 <translation id="5937560539988385583">Síða þýdd</translation>

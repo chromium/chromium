@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Kopiatu da webgunearen helbidea</translation>
 <translation id="3280562213547448728">Ahozko bilaketa</translation>
 <translation id="3289505634533552500">Ahozko bilaketa</translation>
-<translation id="3293080634164207409">Gehitu fitxak</translation>
 <translation id="3295904109373959849">Fitxa taldeen sareta</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, jarduera berria</translation>
 <translation id="3305294846493618482">gehiago</translation>
@@ -1284,6 +1283,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count} fitxa berri}other{{count} fitxa berri}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">Fitxa ainguratzeko, arrasta ezazu hona.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Gehitu fitxategi, fitxa edo irudi bat gehienez}other{Gehitu {COUNT} fitxategi, fitxa edo irudi gehienez}}</translation>
 <translation id="5936006948844852401">Kudeatu biltegia</translation>
 <translation id="5936065461722368675">Itzuli orri osoa</translation>
 <translation id="5937560539988385583">Itzuli da orria</translation>

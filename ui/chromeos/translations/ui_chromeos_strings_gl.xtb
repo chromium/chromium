@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5602622065581044566">Búlgaro con teclado fonético</translation>
 <translation id="5605830556594064952">Dvorak para EUA</translation>
+<translation id="560739212255190568">Ademais de aplicar o seguinte proxy, quen administra o teu dispositivo definiu normas de omisión de proxy</translation>
 <translation id="5618330573454123917">Este ficheiro está deseñado para un ordenador que utilice o software de Macintosh. Non é compatible co teu dispositivo, que ten Chrome OS. Obtén <ph name="BEGIN_LINK_HELP" />máis información<ph name="END_LINK_HELP" /> sobre como abrir ficheiros en Chrome OS.</translation>
 <translation id="5625294776298156701">Támil con teclado Tamil99</translation>
 <translation id="5633226425545095130">Ao mover este elemento, compartirase con todas as persoas que poidan ver o cartafol compartido <ph name="DESTINATION_NAME" />.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="8545476925160229291">Inglés (EUA)</translation>
 <translation id="854655314928502177">URL de Discovery automático de proxy web</translation>
+<translation id="8547747809824590510">Quen administra o teu dispositivo definiu normas de omisión de proxy</translation>
 <translation id="8549186985808798022">Italiano</translation>
 <translation id="8551494947769799688">Letón</translation>
 <translation id="8560515948038859357">Cantonés</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Xa existe un ficheiro denominado "<ph name="FILE_NAME" />". Escolle un nome diferente.</translation>
 <translation id="9046895021617826162">Erro na conexión</translation>
 <translation id="9065512565307033593">Se non levas a cabo a verificación correctamente, desactivaráseche o acceso á rede.</translation>
+<translation id="9079844694307518094">Quen administra o teu dispositivo está aplicando o seguinte proxy</translation>
 <translation id="908378762078012445">Ruso con teclado AATSEEL fonético</translation>
 <translation id="9086302186042011942">Sincronizando</translation>
 <translation id="9099674669267916096">Número de páxinas</translation>

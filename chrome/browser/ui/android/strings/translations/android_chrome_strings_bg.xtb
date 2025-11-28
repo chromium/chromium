@@ -223,7 +223,6 @@
 <translation id="1959679933317802873">Изчаква се съдържание</translation>
 <translation id="1960290143419248813">Актуализациите на Chrome вече не се поддържат за тази версия на Android</translation>
 <translation id="1962061488333185936"><ph name="TAB_TITLE" /> – раздел, който възпроизвежда звук и е избран заедно с други</translation>
-<translation id="1963056249988316027">Проверката на самоличността е включена и не може да потвърди, че това сте вие</translation>
 <translation id="1963976881984600709">Стандартна защита</translation>
 <translation id="1966710179511230534">Моля, актуализирайте данните си за вход.</translation>
 <translation id="1969037871259811890">С изтриването на данните за сърфирането няма да излезете от профила си в Google. За да направите това, <ph name="BEGIN_LINK1" />излезте от профила си в Chrome<ph name="END_LINK1" />.</translation>
@@ -601,7 +600,6 @@
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайта}}</translation>
 <translation id="3625870480639975468">Повторно задаване на мащаба</translation>
 <translation id="3631987586758005671">Споделя се с(ъс) <ph name="DEVICE_NAME" /></translation>
-<translation id="363484704507524488">Можете да управлявате проверката на самоличността от настройките на функцията за защита при кражба. <ph name="BEGIN_LINK" />Към настройките<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Chrome може да проверява паролите ви, когато ги запазите</translation>
 <translation id="3636940436873918441">Предпочитани езици</translation>
 <translation id="3637744895182738742">Ако сте забравили пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chrome в профила си<ph name="END_LINK" />.</translation>
@@ -1131,7 +1129,6 @@
 <translation id="5869522115854928033">Запазени пароли</translation>
 <translation id="5870416898561279542">Дублираните раздели и групи или тези, които не са използвани от <ph name="DAYS_INACTIVE" /> дни, се преместват тук<ph name="AUTODELETE_SECTION" />. Можете да промените това по всяко време от „<ph name="DECLUTTER_SETTINGS_TITLE" />“.</translation>
 <translation id="587735546353481577">За да последвате даден сайт, посетете го, отворете менюто на Chrome и докоснете съответната опция.</translation>
-<translation id="5883855034004058011">Твърде много неуспешни опити за биометрично удостоверяване. За да опитате отново, заключете устройството си и го отключете.</translation>
 <translation id="5885378508678660271">Известия <ph name="SEPARATOR" /> Chrome премахна тези разрешения, защото сайтът е опасен</translation>
 <translation id="5899667542927581604">Долният лист без налични ключове за достъп бе затворен</translation>
 <translation id="5907542076239273525">Отметката е запазена в папката „<ph name="FOLDER_NAME" />“</translation>
@@ -1340,7 +1337,6 @@
 <translation id="670498945988402717">Проверено вчера</translation>
 <translation id="6710213216561001401">Предишно</translation>
 <translation id="671481426037969117">Таймерът ви за <ph name="FQDN" /> изтече и ще се стартира отново утре.</translation>
-<translation id="671928215901716392">Заключване на екрана</translation>
 <translation id="6723740634201835758">В профила ви в Google</translation>
 <translation id="6734310707649923383">Можете да видите посетените от вас страници или да ги изтриете от историята си</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" /> – фиксиран раздел в режим „инкогнито“, който записва</translation>
@@ -1872,6 +1868,7 @@
 <translation id="8840953339110955557">Тази страница може да се различава от онлайн версията.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Скрито</translation>
+<translation id="8849164661359544855"><ph name="URL" /> иска да премине автоматично в режим „картина в картината“</translation>
 <translation id="8854223127042600341">Преглед на офлайн файловете ви</translation>
 <translation id="885480114717186641">Можете да заявите настолната версия на сайта <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Получаване на описания</translation>

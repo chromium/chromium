@@ -338,6 +338,7 @@
 <translation id="1549470594296187301">Для использования этой функции необходимо включить JavaScript.</translation>
 <translation id="1553152622374372421">Зимние виды спорта</translation>
 <translation id="1553358976309200471">Обновить Chrome</translation>
+<translation id="1555014818414775661">Добавить изображения</translation>
 <translation id="1555130319947370107">Синий</translation>
 <translation id="1555191101192706055">На этом сайте злоумышленники могут обманом заставить вас установить вредоносное ПО, которое будет мешать вашей работе в браузере (например, менять главную страницу или показывать дополнительную рекламу на сайтах).</translation>
 <translation id="1559231233244409191">Картон (трехслойный)</translation>
@@ -1216,6 +1217,7 @@
 <translation id="2979424420072875974">Ресурсы для писателей</translation>
 <translation id="2979639724566107830">Открыть в новом окне</translation>
 <translation id="2980742331521553164">CVC-код этой карты будет зашифрован и сохранен в вашем аккаунте Google, чтобы вы могли оплачивать покупки быстрее.</translation>
+<translation id="2983311431122838216">Используйте режим ИИ для Google Поиска</translation>
 <translation id="2983666748527428214">Открыть вкладку инкогнито</translation>
 <translation id="2985306909656435243">Если функция включена, Chromium будет хранить на этом устройстве данные карты для быстрого заполнения форм.</translation>
 <translation id="2985398929374701810">Укажите действительный адрес.</translation>
@@ -1393,6 +1395,7 @@
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать мероприятие в Google Календаре, нажмите Tab, а затем Ввод.</translation>
 <translation id="3261488570342242926">Подробнее…</translation>
 <translation id="3262698603497362968">Предложения</translation>
+<translation id="3264315627780269177">Этой вкладкой нельзя поделиться</translation>
 <translation id="3266367459139339908">Мы добавляем новые способы ограничивать информацию, которую сайты могут собирать о вас при показе персонализированной рекламы, например:</translation>
 <translation id="3266793032086590337">Значение (конфликтующее)</translation>
 <translation id="3268451620468152448">Вкладки</translation>
@@ -1644,6 +1647,7 @@
 <translation id="3665100783276035932">Большинство сайтов работают без изменений</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Подробнее…<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Номер</translation>
+<translation id="3670159164851218963">История режима ИИ</translation>
 <translation id="3670229581627177274">Включить Bluetooth</translation>
 <translation id="3671540257457995106">Разрешить изменение размера?</translation>
 <translation id="3672568546897166916">Ошибка: <ph name="ERROR_PATH" />. <ph name="ERROR_MESSAGE" /></translation>
@@ -1872,6 +1876,7 @@
 <translation id="4031179711345676612">Доступ к микрофону разрешен</translation>
 <translation id="4036753017940930924">Землеустройство</translation>
 <translation id="4039506337798853114">Чтобы увидеть указатель, нажмите |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045070493270310437">Восстановить вкладки</translation>
 <translation id="4045226534284799755">Войдите в аккаунт Microsoft и повторите попытку.</translation>
 <translation id="4045441967987592849">Открыть</translation>
 <translation id="4047351652147966654">18 x 24 дюйма</translation>
@@ -2123,6 +2128,7 @@
 <translation id="4406896451731180161">Результаты поиска</translation>
 <translation id="4407758156081352648">В целях безопасности ваша организация запретила повторно использовать пароли в Chrome. Мы шифруем пароли, чтобы защищать конфиденциальность пользователей.</translation>
 <translation id="4408413947728134509">Настройки файлов cookie <ph name="NUM_COOKIES" /></translation>
+<translation id="4409556632583862731">Новая цепочка</translation>
 <translation id="4412074349188076601">Установка ВМ в этой конфигурации допустима, однако это невозможно сделать, так как для данной архитектуры отсутствует необходимый образ.</translation>
 <translation id="4412377069090572315">Отзывы</translation>
 <translation id="4414452699610169758">Использовать Google Менеджер паролей и автозаполнение в Chrome, чтобы сохранять и вставлять пароли, адреса и данные способов оплаты</translation>
@@ -2772,6 +2778,7 @@
     <ph name="LINE_BREAK" />
     Обратитесь к системному администратору.</translation>
 <translation id="5496804587179176046">Сохранять защитные коды, нет сохраненных защитных кодов</translation>
+<translation id="5499229993630251170">Продолжить эту цепочку?</translation>
 <translation id="550365051221576010">Заполнить все поля</translation>
 <translation id="5506286895894263601">В списке нет действительных ярлыков.</translation>
 <translation id="5508443345185481044">Фото- и видеокамеры</translation>
@@ -3082,6 +3089,7 @@
 <translation id="6018650639991193045">Удалить историю браузера, файлы cookie, кеш и другие данные в настройках Chrome</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (данные синхронизируются)</translation>
+<translation id="6025471531651464742">Добавить файлы</translation>
 <translation id="6028591542479806248">Управление уведомлениями по электронной почте и на мобильном устройстве</translation>
 <translation id="6028833024483927901">Кухни мира</translation>
 <translation id="603068602130820122">Две скобы справа</translation>
@@ -3119,6 +3127,7 @@
 <translation id="6062405040252994646">Инструмент</translation>
 <translation id="6062937464449575061">Перестать отслеживать цену</translation>
 <translation id="6063415549109819824">Ипотечное кредитование</translation>
+<translation id="6069343053547121389">Узнайте больше об этой вкладке в режиме ИИ</translation>
 <translation id="6070432475334343308">Не удалось загрузить один или несколько файлов в папку "<ph name="FOLDER_NAME" />" сервиса "<ph name="CLOUD_PROVIDER" />".</translation>
 <translation id="6071503852498277813">Сервис синтаксического анализа файлов закладок</translation>
 <translation id="6078069862923723141">Бирюзовый 2</translation>
@@ -3362,6 +3371,7 @@
 <translation id="6443406338865242315">Установленные расширения и плагины</translation>
 <translation id="6444329331928531170">Пенсия</translation>
 <translation id="6445051938772793705">Страна</translation>
+<translation id="6446256167362544629">Боковая панель ИИ</translation>
 <translation id="6446608382365791566">Укажите дополнительную информацию</translation>
 <translation id="6447842834002726250">Файлы сookie</translation>
 <translation id="6448371595882710519">Подробнее об элементах управления</translation>
@@ -3453,6 +3463,7 @@
 <translation id="6597665340361269064">90 градусов</translation>
 <translation id="6598976221101665070">Драмы</translation>
 <translation id="6599642189720630047">Отслеживаемые товары</translation>
+<translation id="6608426252530537984">Добавить можно не более 10 вкладок.</translation>
 <translation id="6613742613135780554">отслеживание рук</translation>
 <translation id="6613866251791999074">Узнать больше о выборе поисковой системы в Chrome</translation>
 <translation id="6615297766614333076">Укладчик 2</translation>
@@ -3574,6 +3585,7 @@
 <translation id="6799145206637008376">Укажите CVC-код этой виртуальной карты</translation>
 <translation id="6805030849054648206">Конверт B6/C4</translation>
 <translation id="6807791860691150411">Образование</translation>
+<translation id="6808579246645021886">Общие вкладки и файлы</translation>
 <translation id="681021252041861472">Обязательное поле</translation>
 <translation id="6810899417690483278">Идентификатор персонализации</translation>
 <translation id="6816109178681043245">Спортивные товары</translation>
@@ -4990,6 +5002,7 @@
 <translation id="9133985615769429248">Если устройством пользуется кто-то ещё, настройте блокировку экрана, чтобы только вы могли получать доступ к своим сохраненным паролям</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, виртуальная карта</translation>
 <translation id="9138037198177304356">Доступ к уведомлениям разрешен</translation>
+<translation id="913846191326613072">Когда вы делитесь вкладками, их содержимое и URL отправляются в Google.</translation>
 <translation id="9139318394846604261">Покупки</translation>
 <translation id="9140198744651252040">Chrome запрашивает использование отпечатка пальца, чтобы подтверждать автозаполнение паролей.</translation>
 <translation id="9141013498910525015">Управление адресами</translation>
@@ -5081,6 +5094,7 @@
 <translation id="955429569736351433">Дано разрешение на использование VR</translation>
 <translation id="955627189349169688">Вы можете отключить эту функцию в <ph name="BEGIN_LINK" />настройках синхронизации Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Желтый 2</translation>
+<translation id="961372935451193190">Вкладки и файлы</translation>
 <translation id="961663415146723894">Скрепление снизу</translation>
 <translation id="961856697154696964">Удалить данные браузера</translation>
 <translation id="961930410699694996">Дано разовое разрешение на доступ к данным о местоположении</translation>

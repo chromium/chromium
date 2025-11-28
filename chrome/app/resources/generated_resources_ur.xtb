@@ -1803,9 +1803,6 @@
 <translation id="2220572644011485463">‏PIN یا پاس ورڈ</translation>
 <translation id="222115440608612541">طلوع آفتاب اور غروب آفتاب کی تھیمز پر سوئچ کریں</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">‏ایک بیرونی ایپ اس Chrome سیشن کو ڈیبگ کرنے کے لیے اس پر مکمل کنٹرول چاہتی ہے۔ اس میں آپ کے محفوظ کردہ ڈیٹا، کوکیز اور سائٹ ڈیٹا تک رسائی اور کسی بھی URL پر نیویگیٹ کرنے کی اہلیت شامل ہے۔
-
-صرف ویب ڈویلپرز کو اس خصوصیت کو آن کرنا چاہیے اور اسے صرف بھروسہ مند ایپس کے ساتھ استعمال کرنا چاہیے۔</translation>
 <translation id="222201875806112242">بے نام میڈیا ماخذ</translation>
 <translation id="2224337661447660594">انٹرنیٹ نہیں ہے</translation>
 <translation id="2224444042887712269">یہ ترتیب <ph name="OWNER_EMAIL" /> سے متعلق ہے۔</translation>
@@ -6583,6 +6580,7 @@
 <translation id="5523532775593636291">آپ جو سائٹس شامل کرتے ہیں وہ ہمیشہ فعال رہیں گی اور ان سے میموری کو خالی نہیں کیا جائے گا</translation>
 <translation id="5523558474028191231">نام میں کلمات، نمبرز اور مخصوص حروف کا استعمال کیا جا سکتا ہے اور نام میں <ph name="MAX_CHARACTER_COUNT" /> یا اس سے کم حروف کا ہونا ضروری ہے</translation>
 <translation id="5526745900034778153">مطابقت پذیری دوبارہ شروع کرنے کیلئے دوبارہ سائن ان کریں</translation>
+<translation id="5527211644528700597">اس سے خطرات کا پتا لگانے کے لیے آلہ پر موجود طریقوں کو استعمال کیا جاتا ہے</translation>
 <translation id="5527463195266282916">ایکسٹینشن کو ڈاؤن گریڈ کرنے کی کوشش کی۔</translation>
 <translation id="5527474464531963247">آپ ایک دوسرے نیٹ ورک کو بھی منتخب کر سکتے ہیں۔</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" /> کو انسٹال کیا جا رہا ہے</translation>
@@ -6778,6 +6776,7 @@
 <translation id="5663459693447872156">خود بخود نصف چوڑائی پر سوئچ کریں</translation>
 <translation id="5663653125349867535">&amp;پڑھنے کی فہرست</translation>
 <translation id="5663918299073387939">‏سائٹس موسیقی تخلیق کرنے، موسیقی میں ترمیم کرنے یا آلے کے فرم ویئر کو اپ ڈیٹ کرنے کے لیے عام طور پر MIDI آلات کو کنٹرول اور دوبارہ پروگرام کرنے کا مطالبہ کرتی ہیں</translation>
+<translation id="5666116074010586111">‏اس سے خطرات کا تیزی سے پتا لگانے کے لیے Google کو URL اور صفحہ کا مواد بھیجا جاتا ہے</translation>
 <translation id="5666911576871845853">نیا پروفائل &amp;شامل کریں</translation>
 <translation id="5667293444945855280">میلوئیر</translation>
 <translation id="5667546120811588575">‏Google Play کو سیٹ کیا جا رہا ہے...</translation>
@@ -6884,7 +6883,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">ٹیدرنگ کی تیاری چیک کریں</translation>
 <translation id="5753570386948603678">سرگزشت سے حذف کریں</translation>
-<translation id="5755101376452091923">‏آپ <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ <ph name="END_LINK" /> میں<ph name="USERNAME" /> اپنے نام میں ترمیم کر سکتے ہیں۔</translation>
+<translation id="5755101376452091923">‏آپ <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ <ph name="END_LINK" /> <ph name="USERNAME" /> میں اپنے نام میں ترمیم کر سکتے ہیں۔</translation>
 <translation id="5756163054456765343">امدادی &amp;مرکز</translation>
 <translation id="5757187557809630523">اگلا ٹریک</translation>
 <translation id="5758631781033351321">آپ اپنی پڑھنے کی فہرست یہاں پائیں گے</translation>
@@ -7958,6 +7957,7 @@
 <translation id="6508261954199872201">ایپ: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">‏اپنا Chromebook دوبارہ شروع کریں اور دوبارہ کوشش کریں</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> کو حذف کرنے پر غور کریں، تاکہ اس آلے کو استعمال کرنے والے دوسرے لوگ آپ کے پاس ورڈز نہ دیکھ سکیں</translation>
+<translation id="6512364354776355686">اس سے آپ کو تمام غیر محفوظ کنکشنز کے بارے میں متنبہ کیا جاتا ہے</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> مُوڈ کے ساتھ <ph name="SUBJECT" /> کی تخلیق کردہ تصویر <ph name="INDEX" /></translation>
 <translation id="6513247462497316522">‏اگر آپ کسی دوسرے نیٹ ورک سے منسلک نہیں ہیں تو Google Chrome موبائل ڈیٹا کا استعمال کرے گا۔</translation>
 <translation id="6514010653036109809">دستیاب آلہ:</translation>
@@ -9141,6 +9141,7 @@
 <translation id="7340179705876485790">1 سے زیادہ صفحات پر واپس جانے کے لیے، واپس جائیں پر کلک کریں اور دبائے رکھیں۔</translation>
 <translation id="7340650977506865820">سائٹ آپ کی اسکرین کا اشتراک کر رہی ہے</translation>
 <translation id="7340757554212515731">‏Google کو کریش رپورٹس کے ساتھ ساتھ ڈائیگناسٹک اور استعمال کا ڈیٹا خودکار طور پر بھیجتا ہے</translation>
+<translation id="7340886226071938450">ٹیب اسٹرپ کی پوزیشن</translation>
 <translation id="734088800888587319">نیٹ ورک کے میٹرکس</translation>
 <translation id="7341834142292923918">اس سائٹ تک رسائی درکار ہے</translation>
 <translation id="7343372807593926528">براہ کرم تاثرات بھیجنے سے پہلے مسئلے کی توضیح کریں۔</translation>
@@ -9871,6 +9872,7 @@
 <translation id="7830833461614351956">کھولنے کے لیے <ph name="NUM_OF_FILES" /> فائلز کو <ph name="CLOUD_PROVIDER" /> میں کاپی کریں؟</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">محفوظ کردہ حسب ضرورت الفاظ یہاں ظاہر ہوں گے</translation>
+<translation id="7833725807105678871">اس سے بہتر کردہ سیکیورٹی کی خصوصیات پر سائٹ کی رفتار کو ترجیح دیا جاتا ہے</translation>
 <translation id="7834832693620032149">آڈیو کا اشتراک کرنے کے لیے، اس کے بجائے ایک ٹیب یا ونڈو کا اشتراک کریں</translation>
 <translation id="7836577093182643605">ان موضوعات کی فہرست جنہیں آپ نے مسدود کیا ہے اور ان کا اشتراک سائٹس کے ساتھ نہیں کرنا چاہتے ہیں</translation>
 <translation id="7836850009646241041">اپنی سیکیورٹی کلید کو دوبارہ چھونے کی کوشش کریں</translation>
@@ -11142,6 +11144,7 @@
 <translation id="8690129572193755009">سائٹس پروٹوکولز ہینڈل کرنے کے لئے پوچھ سکتی ہیں</translation>
 <translation id="869144235543261764">یہ ٹیب تصویر میں تصویر وضع میں ویڈیو چلا رہا ہے</translation>
 <translation id="869167754614449887">ڈاؤن لوڈ کی سرگزشت سے <ph name="FILE_NAME" /> کو حذف کر دیا گیا</translation>
+<translation id="8691990641861252959">اس سے آپ کو اوپن انٹرنیٹ پر غیر محفوظ کنکشنز کے بارے میں متنبہ کیا جاتا ہے</translation>
 <translation id="8692107307702113268">پاس ورڈ میں 1000 سے زیادہ حروف ہیں</translation>
 <translation id="8693862390730570097">"لکھنے میں میری مدد کریں" خصوصیت کو خودکار طور پر کھلنے کی اجازت نہ دیں</translation>
 <translation id="8694596275649352090">سوتے وقت یا لِڈ بند ہونے پر مقفل کریں</translation>
@@ -11343,6 +11346,7 @@
 <translation id="8821268776955756404">استعمال کے لیے <ph name="APP_NAME" /> تیار ہے۔</translation>
 <translation id="8821647731831124007">کوئی ہاٹ اسپاٹ دستیاب نہیں ہے</translation>
 <translation id="882204272221080310">اضافی سیکیورٹی کیلئے فرم ویئر اپ ڈیٹ کریں۔</translation>
+<translation id="8822690627597552656">اس سے عام حملوں کو بلاک کرنے کے لیے کچھ غیر مانوس سائٹس کو سست کیا جاتا ہے</translation>
 <translation id="8823514049557262177">لنک کا مت&amp;ن کاپی کریں</translation>
 <translation id="8823704566850948458">پاس ورڈ تجویز کریں...</translation>
 <translation id="8823963789776061136">‏متبادل طور پر، پرنٹر PPD منتخب کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>

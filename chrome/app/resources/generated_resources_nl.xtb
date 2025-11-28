@@ -1802,9 +1802,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2220572644011485463">Pincode of wachtwoord</translation>
 <translation id="222115440608612541">Wijzig het thema bij zonsopgang en zonsondergang</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">Een externe app wil volledige controle over deze Chrome-sessie om hiervoor foutopsporing uit te voeren. Dit omvat toegang tot je opgeslagen gegevens, cookies en sitegegevens en de mogelijkheid om naar elke URL te navigeren.
-
-Alleen webontwikkelaars mogen deze functie aanzetten en alleen gebruiken met vertrouwde apps.</translation>
 <translation id="222201875806112242">Naamloze mediabron</translation>
 <translation id="2224337661447660594">Geen internet</translation>
 <translation id="2224444042887712269">Deze instelling hoort bij <ph name="OWNER_EMAIL" />.</translation>
@@ -6581,6 +6578,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5523532775593636291">Sites die je toevoegt, blijven altijd actief en er wordt geen geheugen van vrijgemaakt.</translation>
 <translation id="5523558474028191231">De naam mag letters, cijfers en speciale tekens bevatten en mag maximaal <ph name="MAX_CHARACTER_COUNT" /> tekens lang zijn</translation>
 <translation id="5526745900034778153">Log opnieuw in om door te gaan met synchroniseren</translation>
+<translation id="5527211644528700597">Gebruikt methoden op het apparaat om dreigingen op te sporen</translation>
 <translation id="5527463195266282916">Je probeert een oudere versie van de extensie te installeren.</translation>
 <translation id="5527474464531963247">Je kunt ook een ander netwerk selecteren.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, installeren</translation>
@@ -6774,6 +6772,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5663459693447872156">Automatisch schakelen naar halve breedte</translation>
 <translation id="5663653125349867535">&amp;Leeslijst</translation>
 <translation id="5663918299073387939">Sites vragen meestal om MIDI-apparaten te bedienen en te herprogrammeren om muziek te maken en te bewerken of apparaatfirmware te updaten</translation>
+<translation id="5666116074010586111">Stuurt de URL en paginacontent naar Google om dreigingen sneller op te sporen</translation>
 <translation id="5666911576871845853">&amp;Nieuw profiel toevoegen</translation>
 <translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Google Play instellen...</translation>
@@ -7953,6 +7952,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6508261954199872201">Applicatie: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Start je Chromebook opnieuw op en probeer het nog een keer</translation>
 <translation id="6511827214781912955">Overweeg <ph name="FILENAME" /> te verwijderen, zodat anderen die dit apparaat gebruiken je wachtwoorden niet kunnen zien.</translation>
+<translation id="6512364354776355686">Waarschuwt je voor alle niet-beveiligde verbindingen</translation>
 <translation id="6512759338201777379">Afbeelding <ph name="INDEX" /> van <ph name="SUBJECT" /> gegenereerd, met de stemming <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome maakt gebruik van mobiele data als je geen verbinding hebt met een ander netwerk.</translation>
 <translation id="6514010653036109809">Beschikbaar apparaat:</translation>
@@ -9137,6 +9137,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7340179705876485790">Als je meer dan 1 pagina wilt teruggaan, houd je Terug ingedrukt.</translation>
 <translation id="7340650977506865820">Site deelt je scherm</translation>
 <translation id="7340757554212515731">Hiermee stuur je automatisch crashrapporten, diagnostische gegevens en gebruiksgegevens naar Google</translation>
+<translation id="7340886226071938450">Positie van tabbladstrook</translation>
 <translation id="734088800888587319">Netwerkstatistieken</translation>
 <translation id="7341834142292923918">Wil toegang tot deze site</translation>
 <translation id="7343372807593926528">Beschrijf het probleem zo goed mogelijk voordat je feedback stuurt.</translation>
@@ -9866,6 +9867,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> bestanden naar <ph name="CLOUD_PROVIDER" /> kopiëren om te openen?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Opgeslagen aangepaste woorden zie je hier</translation>
+<translation id="7833725807105678871">Geeft prioriteit aan sitesnelheid boven verbeterde beveiligingsfuncties</translation>
 <translation id="7834832693620032149">Als je audio wilt delen, deel je in plaats daarvan een tabblad of venster</translation>
 <translation id="7836577093182643605">Lijst met geblokkeerde onderwerpen die je niet wilt delen met sites</translation>
 <translation id="7836850009646241041">Raak je beveiligingssleutel opnieuw aan</translation>
@@ -11138,6 +11140,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="8690129572193755009">Sites kunnen vragen of ze protocollen mogen verwerken</translation>
 <translation id="869144235543261764">Dit tabblad speelt een video in de scherm-in-scherm-modus af</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> is verwijderd uit de downloadgeschiedenis</translation>
+<translation id="8691990641861252959">Waarschuwt je voor niet-beveiligde verbindingen op het open internet</translation>
 <translation id="8692107307702113268">Het wachtwoord is langer dan 1000 tekens</translation>
 <translation id="8693862390730570097">Niet toestaan dat Help me met schrijven automatisch wordt geopend</translation>
 <translation id="8694596275649352090">Vergrendelen in de slaapstand of als de klep is gesloten</translation>
@@ -11340,6 +11343,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8821268776955756404"><ph name="APP_NAME" /> is klaar voor gebruik.</translation>
 <translation id="8821647731831124007">Geen beschikbare hotspots</translation>
 <translation id="882204272221080310">Firmware updaten voor extra beveiliging</translation>
+<translation id="8822690627597552656">Vertraagt sommige onbekende sites om veelvoorkomende aanvallen te blokkeren</translation>
 <translation id="8823514049557262177">Lin&amp;ktekst kopiëren</translation>
 <translation id="8823704566850948458">Wachtwoord voorstellen...</translation>
 <translation id="8823963789776061136">Je kunt ook de PPD van de printer selecteren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>

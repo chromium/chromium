@@ -328,6 +328,7 @@
 <translation id="4673151026126227699">如果您同時分享 Chromium 使用情況報告，這些報告將會包含您瀏覽的網址</translation>
 <translation id="4677944499843243528">另一部電腦 (<ph name="HOST_NAME" />) 的 Chromium 處理程序 (<ph name="PROCESS_ID" />) 正在使用這個設定檔。Chromium 已鎖定這個設定檔，確保其不致受損。如果您確定其他處理程序目前未使用此設定檔，請解除鎖定，然後重新啟動 Chromium。</translation>
 <translation id="4680828127924988555">取消安裝</translation>
+<translation id="469259825538636168">部分 Chromium 資料尚未儲存至 Google 帳戶。請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除此資料。</translation>
 <translation id="4708193446201257833">登入後，你可以在 Chromium 使用 Google 帳戶儲存的密碼和其他資料。按 <ph name="SHORTCUT" /> 可以更改 Google 服務設定。</translation>
 <translation id="4708774505295300557">先前已有其他人在這部電腦上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身分登入 Chromium。請建立新的 Chromium 使用者以個別保存您的資料。</translation>
 <translation id="4724676981607797757">由於發生不支援通訊協定的錯誤，因此無法安裝。</translation>
@@ -631,6 +632,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="837460953767177950">你將需要重新啟動 Chromium。</translation>
 <translation id="8397248745433792218">Chromium 建議你移除此擴充程式。<ph name="BEGIN_LINK" />進一步瞭解支援的擴充程式<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">此擴充程式已由開發人員取消發佈，且可能不安全。請從 Chromium 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
+<translation id="8416884904046428725">Chromium 需要先驗證身分，才能將部分資料儲存至 Google 帳戶，並在所有裝置上使用。如果你現在登出，系統將刪除有關資料。</translation>
 <translation id="8417404458978023919">{0,plural, =1{請在 1 天內重新啟動 Chromium}other{請在 # 天內重新啟動 Chromium}}</translation>
 <translation id="8438543370129609977">使用「圖片搜尋」時，網頁標題、網址和內容 (包括 PDF) 會傳送至伺服器。<ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">安裝程式封存檔案已損毀或無效，請重新下載 Chromium。</translation>

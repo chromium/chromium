@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">כתובת האתר הועתקה</translation>
 <translation id="3280562213547448728">חיפוש קולי</translation>
 <translation id="3289505634533552500">חיפוש קולי</translation>
-<translation id="3293080634164207409">הוספת כרטיסיות</translation>
 <translation id="3295904109373959849">תצוגה של קבוצות כרטיסיות</translation>
 <translation id="3302837541200840455">‫<ph name="TAB_TITLE" />, פעילות חדשה</translation>
 <translation id="3305294846493618482">עוד</translation>
@@ -1284,6 +1283,7 @@
 <translation id="5902752768726620872">{count,plural, =1{מספר הכרטיסיות החדשות: {count}}one{מספר הכרטיסיות החדשות: {count}}two{מספר הכרטיסיות החדשות: {count}}other{מספר הכרטיסיות החדשות: {count}}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">כדי להצמיד את הכרטיסייה, גוררים אותה לכאן.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{אפשר להוסיף עד קובץ אחד, כרטיסייה אחת או תמונה אחת}one{אפשר להוסיף עד {COUNT} קבצים, כרטיסיות או תמונות}two{אפשר להוסיף עד {COUNT} קבצים, כרטיסיות או תמונות}other{אפשר להוסיף עד {COUNT} קבצים, כרטיסיות או תמונות}}</translation>
 <translation id="5936006948844852401">ניהול האחסון</translation>
 <translation id="5936065461722368675">תרגום הדף המלא</translation>
 <translation id="5937560539988385583">הדף תורגם</translation>

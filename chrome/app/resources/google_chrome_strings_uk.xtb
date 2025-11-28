@@ -558,6 +558,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7285616922384953075">Вебпереглядачем Chrome керує <ph name="MANAGER" /></translation>
 <translation id="7288567540154601580">Вкладки й розширення</translation>
 <translation id="7296210096911315575">Важлива інформація про використання й безпеку</translation>
+<translation id="7302361266603927550">Деякі дані Chrome іще не збережено у вашому обліковому записі Google. Зачекайте кілька хвилин, перш ніж виходити з облікового запису. Якщо вийти зараз, ці дані буде видалено.</translation>
 <translation id="7308322188646931570">Chrome потрібен доступ до пам’яті, щоб завантажувати файли</translation>
 <translation id="7339898014177206373">Нове вікно</translation>
 <translation id="7352651011704765696">Виникли проблеми</translation>
@@ -614,6 +615,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7801699035218095297">Google Chrome намагається скопіювати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="7804364787702057554">Ваш обліковий запис у Chrome</translation>
 <translation id="7808348361785373670">Видалити з Chrome…</translation>
+<translation id="7827099906024714326">Chrome має підтвердити вашу особу, перш ніж деякі дані можна буде зберігати в обліковому записі Google і використовувати на всіх ваших пристроях. Якщо вийти зараз, ці дані буде видалено.</translation>
 <translation id="7845233973568007926">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити комп’ютер.</translation>
 <translation id="7849037457735762883">Продовжуйте роботу з місця, де зупинилися: Chrome може відновлювати ваші вкладки після кожного перезапуску. Щоб увімкнути цю функцію, перейдіть у</translation>
 <translation id="7872446069773932638">Завантаження… Залишилося: <ph name="SECONDS" /> с.</translation>

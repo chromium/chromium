@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">సైట్ అడ్రస్‌ కాపీ చేయబడింది</translation>
 <translation id="3280562213547448728">వాయిస్ సెర్చ్</translation>
 <translation id="3289505634533552500">వాయిస్ సెర్చ్</translation>
-<translation id="3293080634164207409">ట్యాబ్‌లను జోడించండి</translation>
 <translation id="3295904109373959849">ట్యాబ్ గ్రూప్‌ల గ్రిడ్</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, కొత్త యాక్టివిటీ</translation>
 <translation id="3305294846493618482">మరిన్ని</translation>
@@ -1284,6 +1283,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count} కొత్త ట్యాబ్}other{{count} కొత్త ట్యాబ్‌లు}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">దాన్ని పిన్ చేయడానికి ట్యాబ్‌ను ఇక్కడకు లాగండి.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{గరిష్ఠంగా 1 ఫైల్‌ను, ట్యాబ్‌ను, లేదా ఇమేజ్‌ను జోడించండి}other{గరిష్ఠంగా {COUNT} ఫైల్స్‌ను, ట్యాబ్‌లను, లేదా ఇమేజ్‌లను జోడించండి}}</translation>
 <translation id="5936006948844852401">స్టోరేజ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="5936065461722368675">మొత్తం పేజీని అనువదించండి</translation>
 <translation id="5937560539988385583">పేజీ అనువదించండి</translation>

@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Vietnes adrese ir nokopēta</translation>
 <translation id="3280562213547448728">Meklēšana ar balsi</translation>
 <translation id="3289505634533552500">Meklēšana ar balsi</translation>
-<translation id="3293080634164207409">Pievienot cilnes</translation>
 <translation id="3295904109373959849">Ciļņu grupu režģis</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, jaunas darbības</translation>
 <translation id="3305294846493618482">vēl</translation>
@@ -1284,6 +1283,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5902752768726620872">{count,plural, =1{{count} jauna cilne}zero{{count} jaunu ciļņu}one{{count} jauna cilne}other{{count} jaunas cilnes}}</translation>
 <translation id="5911030830365207728">Google tulkotājs</translation>
 <translation id="5922999516621365983">Velciet cilni šeit, lai to piespraustu.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Pievienojiet ne vairāk kā 1 failu, cilni vai attēlu.}zero{Pievienojiet ne vairāk kā {COUNT} failus, cilnes vai attēlus.}one{Pievienojiet ne vairāk kā {COUNT} failu, cilni vai attēlu.}other{Pievienojiet ne vairāk kā {COUNT} failus, cilnes vai attēlus.}}</translation>
 <translation id="5936006948844852401">Pārvaldīt krātuvi</translation>
 <translation id="5936065461722368675">Tulkot visu lapu</translation>
 <translation id="5937560539988385583">Lapa pārtulkota</translation>

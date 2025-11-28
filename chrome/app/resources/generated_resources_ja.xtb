@@ -1799,9 +1799,6 @@
 <translation id="2220572644011485463">PIN またはパスワード</translation>
 <translation id="222115440608612541">日の出と日の入りに合わせてテーマを切り替えます</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">外部アプリが、この Chrome セッションをデバッグするため完全に制御することを求めています。これには、保存されたデータ、Cookie、サイトデータへのアクセス、任意の URL への移動などが含まれます。
-
-この機能は、ウェブ デベロッパーが信頼できるアプリでのみ使用してください。</translation>
 <translation id="222201875806112242">名前のないメディアソース</translation>
 <translation id="2224337661447660594">インターネットに接続されていません</translation>
 <translation id="2224444042887712269">この設定は <ph name="OWNER_EMAIL" /> に帰属します。</translation>
@@ -6571,6 +6568,7 @@
 <translation id="5523532775593636291">追加したサイトは常にアクティブになり、メモリの解放は行われません</translation>
 <translation id="5523558474028191231">名前には文字、数字、特殊文字を使用できます。<ph name="MAX_CHARACTER_COUNT" /> 文字以内で指定してください</translation>
 <translation id="5526745900034778153">同期を再開するにはもう一度ログインしてください</translation>
+<translation id="5527211644528700597">デバイス上で実行される方法を使用して脅威を検出します</translation>
 <translation id="5527463195266282916">拡張機能のダウングレードが試行されました。</translation>
 <translation id="5527474464531963247">別のネットワークも選択できます。</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />、インストール中</translation>
@@ -6766,6 +6764,7 @@
 <translation id="5663459693447872156">自動的に半角に切り替える</translation>
 <translation id="5663653125349867535">リーディング リスト(&amp;R)</translation>
 <translation id="5663918299073387939">多くのサイトは、音楽の制作や編集、デバイスのファームウェアの更新のため、MIDI デバイスの操作と再プログラムをリクエストします。</translation>
+<translation id="5666116074010586111">URL とページ コンテンツを Google に送信して、脅威を迅速に検出します</translation>
 <translation id="5666911576871845853">新しいプロフィールを追加(&amp;A)</translation>
 <translation id="5667293444945855280">マルウェア</translation>
 <translation id="5667546120811588575">Google Play を設定しています...</translation>
@@ -7946,6 +7945,7 @@
 <translation id="6508261954199872201">アプリ: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Chromebook を再起動してから、もう一度お試しください</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> を削除して、このデバイスを使用する他のユーザーがパスワードを確認できないようにすることを検討してください</translation>
+<translation id="6512364354776355686">すべての安全でない接続について警告します</translation>
 <translation id="6512759338201777379">生成画像 <ph name="INDEX" />/<ph name="SUBJECT" />、ムード: <ph name="MOOD" />。</translation>
 <translation id="6513247462497316522">他のネットワークに接続していない場合、Google Chrome はモバイル データを使用します。</translation>
 <translation id="6514010653036109809">接続可能なデバイス:</translation>
@@ -9128,6 +9128,7 @@
 <translation id="7340179705876485790">いくつか前のページに戻るには、「戻る」を長押しします。</translation>
 <translation id="7340650977506865820">サイトで画面が共有されています</translation>
 <translation id="7340757554212515731">障害レポート、診断データ、使用状況データを自動的に Google に送信します</translation>
+<translation id="7340886226071938450">タブバーの位置</translation>
 <translation id="734088800888587319">ネットワーク指標</translation>
 <translation id="7341834142292923918">このサイトへのアクセス許可が必要です</translation>
 <translation id="7343372807593926528">問題の詳細を記入してからフィードバックを送信してください。</translation>
@@ -9857,6 +9858,7 @@
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> 個のファイルを <ph name="CLOUD_PROVIDER" /> にコピーして開きますか？</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">保存したカスタムの単語がここに表示されます</translation>
+<translation id="7833725807105678871">高度なセキュリティ機能よりもサイトの速度を優先します</translation>
 <translation id="7834832693620032149">音声を共有するには、タブまたはウィンドウを共有してください</translation>
 <translation id="7836577093182643605">サイトと共有しないようブロックしたトピックのリスト</translation>
 <translation id="7836850009646241041">もう一度セキュリティ キーをタッチしてください</translation>
@@ -11129,6 +11131,7 @@
 <translation id="8690129572193755009">サイトがプロトコルの処理を要求できるようにする</translation>
 <translation id="869144235543261764">このタブはピクチャー イン ピクチャー モードで動画を再生しています</translation>
 <translation id="869167754614449887">ダウンロード履歴から <ph name="FILE_NAME" /> を削除しました</translation>
+<translation id="8691990641861252959">公共のインターネット上の安全でない接続について警告します</translation>
 <translation id="8692107307702113268">パスワードが 1,000 文字を超えています</translation>
 <translation id="8693862390730570097">「文書作成サポート」を自動的に開くことを許可しない</translation>
 <translation id="8694596275649352090">スリープ状態またはディスプレイを閉じたときにロックする</translation>
@@ -11330,6 +11333,7 @@
 <translation id="8821268776955756404"><ph name="APP_NAME" /> を使用できるようになりました。</translation>
 <translation id="8821647731831124007">利用可能なアクセス ポイントはありません</translation>
 <translation id="882204272221080310">セキュリティ強化のためにファームウェアをアップデートする。</translation>
+<translation id="8822690627597552656">一般的な攻撃をブロックするため、一部の未知のサイトの動作を遅くします</translation>
 <translation id="8823514049557262177">リンクテキストをコピー(&amp;X)</translation>
 <translation id="8823704566850948458">パスワードを自動生成...</translation>
 <translation id="8823963789776061136">または、プリンタの PPD を選択します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>

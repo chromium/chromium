@@ -1812,9 +1812,6 @@
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="222115440608612541">在日出和日落時切換主題</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">外部應用程式想完全控制這個 Chrome 工作階段以進行偵錯，包括存取已儲存的資料、Cookie 和網站資料，以及前往任何網址。
-
-此功能只應由網絡開發人員開啟，並與受信任的應用程式一併使用。</translation>
 <translation id="222201875806112242">未命名嘅媒體來源</translation>
 <translation id="2224337661447660594">沒有互聯網</translation>
 <translation id="2224444042887712269">這項設定屬於 <ph name="OWNER_EMAIL" />。</translation>

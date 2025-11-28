@@ -1812,9 +1812,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2220572644011485463">PIN atau sandi</translation>
 <translation id="222115440608612541">Beralih tema saat matahari terbit dan terbenam</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">Aplikasi eksternal ingin mengontrol sepenuhnya sesi Chrome ini untuk melakukan debug. Hal ini mencakup akses ke data tersimpan, cookie dan data situs, serta kemampuan untuk membuka URL apa pun.
-
-Hanya developer web yang boleh mengaktifkan fitur ini, dan hanya menggunakannya dengan aplikasi tepercaya.</translation>
 <translation id="222201875806112242">Sumber media tidak bernama</translation>
 <translation id="2224337661447660594">Tidak ada internet</translation>
 <translation id="2224444042887712269">Setelan ini adalah milik <ph name="OWNER_EMAIL" />.</translation>
@@ -6599,6 +6596,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5523532775593636291">Situs yang Anda tambahkan akan selalu aktif dan memori tidak akan dikosongkan dari situs tersebut</translation>
 <translation id="5523558474028191231">Nama dapat menggunakan huruf, angka, serta karakter khusus, dan harus maksimal <ph name="MAX_CHARACTER_COUNT" /> karakter</translation>
 <translation id="5526745900034778153">Login lagi untuk melanjutkan sinkronisasi</translation>
+<translation id="5527211644528700597">Menggunakan metode di perangkat untuk mendeteksi ancaman</translation>
 <translation id="5527463195266282916">Berusaha menurunkan versi ekstensi.</translation>
 <translation id="5527474464531963247">Anda juga dapat memilih jaringan lain.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, menginstal</translation>
@@ -6794,6 +6792,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5663459693447872156">Alihkan ke lebar paruh secara otomatis</translation>
 <translation id="5663653125349867535">&amp;Daftar bacaan</translation>
 <translation id="5663918299073387939">Situs biasanya meminta untuk mengontrol dan memprogram ulang perangkat MIDI guna membuat musik, mengedit musik, atau mengupdate firmware perangkat</translation>
+<translation id="5666116074010586111">Mengirimkan URL dan konten halaman ke Google untuk mendeteksi ancaman lebih cepat</translation>
 <translation id="5666911576871845853">&amp;Tambahkan profil baru</translation>
 <translation id="5667293444945855280">Program Jahat</translation>
 <translation id="5667546120811588575">Menyiapkan Google Play...</translation>
@@ -7974,6 +7973,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6508261954199872201">Aplikasi: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Mulai ulang Chromebook Anda, lalu coba lagi</translation>
 <translation id="6511827214781912955">Sebaiknya hapus <ph name="FILENAME" />, agar orang lain yang menggunakan perangkat ini tidak dapat melihat sandi Anda</translation>
+<translation id="6512364354776355686">Memberi peringatan tentang semua koneksi tidak aman</translation>
 <translation id="6512759338201777379">Gambar <ph name="SUBJECT" /> yang dihasilkan <ph name="INDEX" />, dengan mood <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome akan menggunakan data seluler jika Anda tidak terhubung ke jaringan lain.</translation>
 <translation id="6514010653036109809">Perangkat yang tersedia:</translation>
@@ -9158,6 +9158,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7340179705876485790">Untuk kembali ke lebih dari 1 halaman, klik lama tombol Kembali.</translation>
 <translation id="7340650977506865820">Situs sedang membagikan layar</translation>
 <translation id="7340757554212515731">Otomatis mengirimkan laporan kerusakan serta diagnostik dan data penggunaan ke Google</translation>
+<translation id="7340886226071938450">Posisi kolom tab</translation>
 <translation id="734088800888587319">Metrik Jaringan</translation>
 <translation id="7341834142292923918">Ingin mengakses situs ini</translation>
 <translation id="7343372807593926528">Jelaskan masalahnya sebelum mengirim masukan.</translation>
@@ -9887,6 +9888,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7830833461614351956">Salin <ph name="NUM_OF_FILES" /> file ke <ph name="CLOUD_PROVIDER" /> untuk dibuka?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Kata khusus yang disimpan akan muncul di sini</translation>
+<translation id="7833725807105678871">Memprioritaskan kecepatan situs daripada fitur keamanan yang ditingkatkan</translation>
 <translation id="7834832693620032149">Untuk berbagi audio, bagikan tab atau jendela</translation>
 <translation id="7836577093182643605">Daftar topik yang Anda blokir dan tidak ingin dibagikan ke situs</translation>
 <translation id="7836850009646241041">Coba sentuh lagi kunci keamanan Anda</translation>
@@ -11159,6 +11161,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8690129572193755009">Situs dapat meminta untuk menangani protokol</translation>
 <translation id="869144235543261764">Tab ini memutar video dalam mode picture-in-picture</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> dihapus dari histori download</translation>
+<translation id="8691990641861252959">Memberi peringatan tentang koneksi tidak aman di internet terbuka</translation>
 <translation id="8692107307702113268">Sandi berisi lebih dari 1.000 karakter</translation>
 <translation id="8693862390730570097">Jangan izinkan "Bantu tulis" dibuka secara otomatis</translation>
 <translation id="8694596275649352090">Kunci saat dalam mode tidur atau penutup ditutup</translation>
@@ -11360,6 +11363,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8821268776955756404"><ph name="APP_NAME" /> siap digunakan.</translation>
 <translation id="8821647731831124007">Tidak ada hotspot yang tersedia</translation>
 <translation id="882204272221080310">Update firmware untuk tambahan keamanan.</translation>
+<translation id="8822690627597552656">Memperlambat beberapa situs yang tidak dikenal untuk memblokir serangan umum</translation>
 <translation id="8823514049557262177">Salin te&amp;ks link</translation>
 <translation id="8823704566850948458">Sarankan sandi...</translation>
 <translation id="8823963789776061136">Atau, pilih PPD printer. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>

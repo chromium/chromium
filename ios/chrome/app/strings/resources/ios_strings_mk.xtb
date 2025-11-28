@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Адресата на сајтот е копирана</translation>
 <translation id="3280562213547448728">Гласовно пребарување</translation>
 <translation id="3289505634533552500">Гласовно пребарување</translation>
-<translation id="3293080634164207409">Додајте картички</translation>
 <translation id="3295904109373959849">Мрежа со групи картички</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, нова активност</translation>
 <translation id="3305294846493618482">повеќе</translation>
@@ -1284,6 +1283,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5902752768726620872">{count,plural, =1{Нови картички: {count}}one{Нови картички: {count}}other{Нови картички: {count}}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">Повлечете ја картичката тука за да ја закачите.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Додајте најмногу 1 датотека, картичка или слика}one{Додајте најмногу {COUNT} датотека, картичка или слика}other{Додајте најмногу {COUNT} датотеки, картички или слики}}</translation>
 <translation id="5936006948844852401">Управувајте со просторот</translation>
 <translation id="5936065461722368675">Преведи ја целата страница</translation>
 <translation id="5937560539988385583">Страницата е преведена</translation>

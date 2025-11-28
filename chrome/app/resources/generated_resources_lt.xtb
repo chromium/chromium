@@ -1815,9 +1815,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2220572644011485463">PIN kodas arba slaptažodis</translation>
 <translation id="222115440608612541">Perjunkite temas saulei patekėjus ir nusileidus</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">Išorinė programa nori visiškai valdyti šį „Chrome“ seansą, kad galėtų jį derinti. Tai apima prieigą prie išsaugotų duomenų, slapukų ir svetainės duomenų bei galimybę pereiti prie bet kurio URL.
-
-Šią funkciją turėtų įjungti tik žiniatinklio kūrėjai ir naudoti tik su patikimomis programomis.</translation>
 <translation id="222201875806112242">Medijos šaltinis be pavadinimo</translation>
 <translation id="2224337661447660594">Nėra interneto ryšio</translation>
 <translation id="2224444042887712269">Šis nustatymas priklauso <ph name="OWNER_EMAIL" />.</translation>
@@ -3713,6 +3710,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3527085408025491307">Aplankas</translation>
 <translation id="3528498924003805721">Tiksliniai spartieji klavišai</translation>
 <translation id="3529851166527095708">&amp;Adresai ir kt.</translation>
+<translation id="3530919970074558307">Panaikinti grupės paryškinimą</translation>
 <translation id="3531070080754387701">„Microsoft 365“ nepavyksta atidaryti failo „<ph name="FILE_NAMES" />“ iš šio aplanko</translation>
 <translation id="3531883061432162622">Raskite skaitymo sąrašą ir žymes skiltyje „Žymės ir sąrašai“</translation>
 <translation id="3532273508346491126">Sinchronizuoti valdymą</translation>
@@ -4066,6 +4064,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3757567010566591880">Atsegti nuo įrankių juostos</translation>
 <translation id="3757645900890881944">Paieškos įrankiai</translation>
 <translation id="3757733214359997190">Svetainių nerasta</translation>
+<translation id="3757825964096339958">Paryškinti grupę</translation>
 <translation id="375841316537350618">Atsisiunčiamas įgaliotojo serverio scenarijus...</translation>
 <translation id="3758887577462995665">Pastaba</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> mėn.</translation>
@@ -4855,6 +4854,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4292613336957320546">Spartinimas</translation>
 <translation id="429312253194641664">Svetainėje leidžiama medija</translation>
 <translation id="4293219510510666933">Naudodami kasdienę kalbą ieškokite naršymo istorijoje ir raskite svetaines, kuriose lankėtės. Taip pat galite užduoti klausimų ir gauti atsakymų pagal naršymo istoriją. Šis nustatymas įjungtas.</translation>
+<translation id="429344752071832554">Panaikinti grupės paryškinimą</translation>
 <translation id="4294392694389031609">„<ph name="FILE_NAME" />“ ištrintas iš atsisiuntimų istorijos, bet jis vis dar yra įrenginyje</translation>
 <translation id="4295072614469448764">Programa pasiekiama jūsų terminale. Piktograma taip pat gali būti Paleidimo priemonėje.</translation>
 <translation id="4295979599050707005">Prisijunkite dar kartą, kad patvirtintumėte, jog jūsų paskyrą (<ph name="USER_EMAIL" />) galima naudoti su svetainėmis, programomis ir plėtiniais naršyklėje „Chrome“ ir „Google Play“. Taip pat galite pašalinti šią paskyrą. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
@@ -5010,6 +5010,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4405224443901389797">Perkelti į…</translation>
 <translation id="4405781821077215583">Sumažinti arba padidinti elementus ekrane, įskaitant tekstą</translation>
 <translation id="4406308048672435032">Galite padaryti šį skirtuką neaktyvų arba atnaujinti, kad vėl matytumėte visą sąrašą</translation>
+<translation id="4406881185911439342">Paryškinti grupę</translation>
 <translation id="4406883609789734330">Subtitrai realiuoju laiku</translation>
 <translation id="4406963243402726564">Neišsaugoti duomenys</translation>
 <translation id="4408599188496843485">P&amp;agalba</translation>

@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">S'ha copiat l'adreça del lloc web</translation>
 <translation id="3280562213547448728">Cerca per veu</translation>
 <translation id="3289505634533552500">Cerca per veu</translation>
-<translation id="3293080634164207409">Afegeix pestanyes</translation>
 <translation id="3295904109373959849">Quadrícula de grups de pestanyes</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, activitat nova</translation>
 <translation id="3305294846493618482">més</translation>
@@ -1284,6 +1283,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5902752768726620872">{count,plural, =1{{count} pestanya nova}other{{count} pestanyes noves}}</translation>
 <translation id="5911030830365207728">Traductor de Google</translation>
 <translation id="5922999516621365983">Arrossega la pestanya aquí per fixar-la.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Afegeix fins a 1 fitxer, pestanya o imatge}other{Afegeix fins a {COUNT} fitxers, pestanyes o imatges}}</translation>
 <translation id="5936006948844852401">Gestiona l'emmagatzematge</translation>
 <translation id="5936065461722368675">Tradueix la pàgina completa</translation>
 <translation id="5937560539988385583">S'ha traduït la pàgina</translation>

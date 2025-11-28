@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">साइट अ‍ॅड्रेस कॉपी केला</translation>
 <translation id="3280562213547448728">व्हॉइस शोध</translation>
 <translation id="3289505634533552500">व्हॉइस शोध</translation>
-<translation id="3293080634164207409">टॅब जोडा</translation>
 <translation id="3295904109373959849">टॅब गट ग्रिड</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, नवीन अ‍ॅक्टिव्हिटी</translation>
 <translation id="3305294846493618482">आणखी</translation>
@@ -1284,6 +1283,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count} नवीन टॅब}other{{count} नवीन टॅब}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">पिन करण्यासाठी टॅब येथे ड्रॅग करा.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{कमाल १ फाइल, टॅब किंवा इमेज जोडा}other{कमाल {COUNT} फाइल, टॅब किंवा इमेज जोडा}}</translation>
 <translation id="5936006948844852401">स्टोरेज व्यवस्थापित करा</translation>
 <translation id="5936065461722368675">पूर्ण पेजचे भाषांतर करा</translation>
 <translation id="5937560539988385583">पेजचे भाषांतर केले</translation>

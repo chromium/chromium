@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">ಸೈಟ್‌ ವಿಳಾಸವನ್ನು ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3280562213547448728">ಧ್ವನಿ ಹುಡುಕಾಟ</translation>
 <translation id="3289505634533552500">ಧ್ವನಿ ಹುಡುಕಾಟ</translation>
-<translation id="3293080634164207409">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="3295904109373959849">ಟ್ಯಾಬ್ ಗುಂಪುಗಳ ಗ್ರಿಡ್</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, ಹೊಸ ಚಟುವಟಿಕೆ</translation>
 <translation id="3305294846493618482">ಇನ್ನಷ್ಟು</translation>
@@ -1284,6 +1283,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count} ಹೊಸ ಟ್ಯಾಬ್}one{{count} ಹೊಸ ಟ್ಯಾಬ್‌ಗಳು}other{{count} ಹೊಸ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">ಟ್ಯಾಬ್ ಅನ್ನು ಪಿನ್ ಮಾಡಲು ಅದನ್ನು ಇಲ್ಲಿಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{1 ಫೈಲ್, ಟ್ಯಾಬ್ ಅಥವಾ ಚಿತ್ರದವರೆಗೆ ಸೇರಿಸಿ}one{ಗರಿಷ್ಠ {COUNT} ಫೈಲ್‌ಗಳು, ಟ್ಯಾಬ್‌ಗಳು ಅಥವಾ ಚಿತ್ರಗಳನ್ನು ಸೇರಿಸಿ}other{ಗರಿಷ್ಠ {COUNT} ಫೈಲ್‌ಗಳು, ಟ್ಯಾಬ್‌ಗಳು ಅಥವಾ ಚಿತ್ರಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
 <translation id="5936006948844852401">ಸಂಗ್ರಹಣೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5936065461722368675">ಪೂರ್ಣ ಪುಟವನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="5937560539988385583">ಪುಟವನ್ನು ಅನುವಾದಿಸಲಾಗಿದೆ</translation>
@@ -1539,6 +1539,7 @@
 <translation id="6761393919622941301">ಆಡಿಯೊ</translation>
 <translation id="6770452996697898492">[ಬುಕ್ ಮಾಡಲಾಗಿದೆ]</translation>
 <translation id="6779455296366983087">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
+<translation id="6782531425936234573">ಡೇಟಾ ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿ</translation>
 <translation id="6791425686608802741">"ಹೊಸ ಗುಂಪಿಗೆ ಟ್ಯಾಬ್ ಸೇರಿಸಿ" ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="6794476726485507147">ಈ ಪುಟಕ್ಕೆ ಮತ್ತೊಮ್ಮೆ ಭೇಟಿ ನೀಡಲು ರಿಮೈಂಡರ್ ನೋಟಿಫಿಕೇಶನ್ ಸ್ವೀಕರಿಸಲು ದಿನಾಂಕ ಮತ್ತು ಸಮಯವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="6795481620482106033">ಅಮಾನ್ಯ ಡೇಟಾ</translation>

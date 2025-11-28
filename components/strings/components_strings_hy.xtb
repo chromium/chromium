@@ -2066,6 +2066,7 @@
 <translation id="4299919199185766032">Դյուրանցման անվանումը գերազանցում է նիշերի առավելագույն թույլատրելի քանակը (<ph name="MAX_LENGTH" />)։</translation>
 <translation id="4300272766492248925">Բացել հավելվածը</translation>
 <translation id="4300675098767811073">Մի քանի անցք աջ կողմում</translation>
+<translation id="4300841966382281549">Ուղևորություն</translation>
 <translation id="4302514097724775343">Խաղալու համար սեղմեք դինոզավրի վրա</translation>
 <translation id="4304049446746819918">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը տեղափոխել <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը տեղափոխել <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը տեղափոխել <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Կարդալ հաճախորդների տպավորությունները և նրանց կարծիքները ապրանքների և ծառայությունների մասին՝ օգնելու ձեզ կշռադատված որոշումներ կայացնել։</translation>
@@ -2182,6 +2183,7 @@
 <translation id="4506599922270137252">Կապվել համակարգի ադմինիստրատորի հետ</translation>
 <translation id="450710068430902550">Համօգտագործում ադմինիստրատորի հետ</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Այս էջը Google Translate-ով թարգմանելու համար սեղմեք Tab, ապա՝ Enter։</translation>
+<translation id="4510703642214459906">Անցկացման վայրը</translation>
 <translation id="4515275063822566619">Քարտերն ու հասցեները նշված են ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />) և Chrome-ում: Դրանք կարող եք կառավարել <ph name="BEGIN_LINK" />Կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="4515847625438516456">Միկրոմեքենաներ և քիչ վառելիք ծախսող մեքենաներ</translation>
 <translation id="451601984112574365">Կանաչ 3</translation>
@@ -3433,6 +3435,7 @@
 <translation id="6539092367496845964">Սխալ առաջացավ: Փորձեք ավելի ուշ:</translation>
 <translation id="6540488083026747005">Դուք թույլատրել եք երրորդ կողմի քուքիներն այս կայքի համար</translation>
 <translation id="6545864417968258051">Bluetooth սարքերի որոնում</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> – <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Երկու անցք ձախ կողմում</translation>
 <translation id="6549443526281184652">Կոստյումներ</translation>
 <translation id="6550245281449521513">Մկնիկի կողպումը չի թույլատրվում</translation>
@@ -4380,6 +4383,7 @@
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Վերբեռնե՞լ կոնֆիդենցիալ ֆայլը}one{Վերբեռնե՞լ կոնֆիդենցիալ ֆայլը}other{Վերբեռնե՞լ կոնֆիդենցիալ ֆայլերը}}</translation>
 <translation id="8079031581361219619">Վերաբեռնե՞լ կայքը</translation>
+<translation id="8079591184016291275">Միջոցառման անվանումը</translation>
 <translation id="8079976827192572403">Վտանգավոր կայք</translation>
 <translation id="8081087320434522107">Սեդաններ</translation>
 <translation id="8086429410809447605">Կանանց հագուստ</translation>
@@ -4815,6 +4819,7 @@
 <translation id="8814547618907885931">Տեսնել բոլոր համեմատական աղյուսակները</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ը թարմացելու համար սեղմեք Tab, ապա՝ Enter։</translation>
+<translation id="8819855907485254989">Պահեք ուղետոմսը Wallet-ում</translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>
 <translation id="882338992931677877">Ձեռքով զետեղման դարակ</translation>
 <translation id="8827067923357481311">Ապառիկ գնման տարբերակներ</translation>

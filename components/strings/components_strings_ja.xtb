@@ -2176,6 +2176,7 @@
 <translation id="4506599922270137252">システム管理者に問い合わせる</translation>
 <translation id="450710068430902550">管理者との共有</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google 翻訳を使用してこのページを翻訳します</translation>
+<translation id="4510703642214459906">会場</translation>
 <translation id="4515275063822566619">Chrome と Google アカウント（<ph name="ACCOUNT_EMAIL" />）に保存されているクレジット カードと住所です。[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で管理できます。</translation>
 <translation id="4515847625438516456">マイクロカー、小型車</translation>
 <translation id="451601984112574365">緑 3</translation>
@@ -4373,6 +4374,7 @@
 <translation id="8077669823243888800">中国 #8 封筒</translation>
 <translation id="8078006011486731853">{0,plural, =1{機密ファイルをアップロードしますか？}other{機密ファイルをアップロードしますか？}}</translation>
 <translation id="8079031581361219619">このサイトを再読み込みしますか？</translation>
+<translation id="8079591184016291275">イベント名</translation>
 <translation id="8079976827192572403">危険なサイト</translation>
 <translation id="8081087320434522107">セダン</translation>
 <translation id="8086429410809447605">婦人服</translation>

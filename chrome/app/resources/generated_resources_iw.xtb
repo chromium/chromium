@@ -1811,9 +1811,6 @@
 <translation id="2220572644011485463">קוד אימות או סיסמה</translation>
 <translation id="222115440608612541">החלפת העיצוב בזריחה ובשקיעה</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">‏אפליקציה של צד שלישי רוצה לקבל שליטה מלאה בסשן הזה של Chrome כדי לבצע בו ניפוי באגים. ההרשאות האלה כוללות גישה לנתונים השמורים, לקובצי Cookie ולנתונים מאתרים, וגם את היכולת לנווט לכל כתובת URL.
-
-רק מפתחי אתרים צריכים להפעיל את התכונה הזו, ורק באפליקציות מהימנות.</translation>
 <translation id="222201875806112242">מקור מדיה ללא שם</translation>
 <translation id="2224337661447660594">אין אינטרנט</translation>
 <translation id="2224444042887712269">ההגדרה הזו שייכת ל-<ph name="OWNER_EMAIL" />.</translation>
@@ -6599,6 +6596,7 @@
 <translation id="5523532775593636291">אתרים שמוסיפים לרשימה תמיד נשארים פעילים ושמורים בזיכרון</translation>
 <translation id="5523558474028191231">שם יכול לכלול אותיות, ספרות ותווים מיוחדים, והוא חייב להיות באורך של <ph name="MAX_CHARACTER_COUNT" /> תווים או פחות</translation>
 <translation id="5526745900034778153">צריך להיכנס מחדש כדי להמשיך את הסנכרון</translation>
+<translation id="5527211644528700597">נעשה שימוש בשיטות במכשיר כדי לזהות איומים</translation>
 <translation id="5527463195266282916">בוצע ניסיון לשדרג תוסף לאחור.</translation>
 <translation id="5527474464531963247">אפשר גם לבחור רשת אחרת.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, בתהליך התקנה</translation>
@@ -6794,6 +6792,7 @@
 <translation id="5663459693447872156">עבור באופן אוטומטי לחצי רוחב</translation>
 <translation id="5663653125349867535">רשימת הקריאה</translation>
 <translation id="5663918299073387939">‏בדרך כלל אתרים מבקשים לשלוט במכשירי MIDI ולתכנת אותם מחדש כדי ליצור מוזיקה, לערוך מוזיקה או לעדכן קושחה במכשיר.</translation>
+<translation id="5666116074010586111">‏כתובת ה-URL ותוכן הדף נשלחים אל Google כדי לזהות איומים מהר יותר</translation>
 <translation id="5666911576871845853">&amp;הוספת פרופיל חדש</translation>
 <translation id="5667293444945855280">תוכנה זדונית</translation>
 <translation id="5667546120811588575">‏הגדרת Google Play מתבצעת...</translation>
@@ -7974,6 +7973,7 @@
 <translation id="6508261954199872201">יישום: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">‏עליך להפעיל את Chromebook מחדש ולנסות שוב.</translation>
 <translation id="6511827214781912955">כדאי למחוק את <ph name="FILENAME" /> כדי שמשתמשים אחרים במכשיר לא יוכלו לראות את הסיסמאות שלך</translation>
+<translation id="6512364354776355686">מקבלים אזהרה לגבי כל החיבורים הלא מאובטחים</translation>
 <translation id="6512759338201777379">תמונה <ph name="INDEX" /> של <ph name="SUBJECT" /> שנוצרה, באווירה <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">‏Google Chrome ישתמש בחבילת הגלישה אם אין לך חיבור לרשת אחרת.</translation>
 <translation id="6514010653036109809">מכשיר זמין:</translation>
@@ -9162,6 +9162,7 @@
 <translation id="7340179705876485790">כדי לחזור לכמה דפים, לוחצים לחיצה ארוכה על 'הקודם'.</translation>
 <translation id="7340650977506865820">האתר משתף את המסך שלך</translation>
 <translation id="7340757554212515731">‏שליחה אוטומטית של דוחות קריסה ושל נתוני אבחון ונתוני שימוש במכשיר אל Google</translation>
+<translation id="7340886226071938450">המיקום של שורת הכרטיסיות</translation>
 <translation id="734088800888587319">מדדי הרשת</translation>
 <translation id="7341834142292923918">רוצה גישה לאתר הזה</translation>
 <translation id="7343372807593926528">יש לתאר את הבעיה לפני שליחת המשוב.</translation>
@@ -9892,6 +9893,7 @@
 <translation id="7830833461614351956">להעתיק <ph name="NUM_OF_FILES" /> קבצים אל <ph name="CLOUD_PROVIDER" /> כדי לפתוח אותם?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">כאן יופיעו המילים המותאמות ששמרת</translation>
+<translation id="7833725807105678871">העדיפות היא למהירות האתר ולא לאמצעי אבטחה משופרים</translation>
 <translation id="7834832693620032149">כדי לשתף אודיו, צריך לשתף את הכרטיסייה או החלון במקום זאת</translation>
 <translation id="7836577093182643605">רשימת נושאים חסומים שאינך רוצה לשתף עם אתרים</translation>
 <translation id="7836850009646241041">עליך לנסות לגעת שוב במפתח האבטחה</translation>
@@ -11166,6 +11168,7 @@
 <translation id="8690129572193755009">אתרים יכולים לבקש הרשאה לטפל בפרוטוקולים</translation>
 <translation id="869144235543261764">בכרטיסייה הזו מופעל סרטון במצב 'תמונה בתוך תמונה'</translation>
 <translation id="869167754614449887">מחקת את <ph name="FILE_NAME" /> מהיסטוריית ההורדות</translation>
+<translation id="8691990641861252959">מקבלים אזהרה לגבי חיבורים לא מאובטחים ברשת האינטרנט הפתוחה</translation>
 <translation id="8692107307702113268">הסיסמה מכילה יותר מ-1,000 תווים</translation>
 <translation id="8693862390730570097">לא לאפשר לתכונה 'עזרה בכתיבה' להיפתח אוטומטית</translation>
 <translation id="8694596275649352090">נעילה במצב שינה או כשהמכסה סגור</translation>
@@ -11369,6 +11372,7 @@
 <translation id="8821268776955756404">האפליקציה <ph name="APP_NAME" /> מוכנה לשימוש.</translation>
 <translation id="8821647731831124007">‏אין נקודות זמינות לשיתוף אינטרנט (Hotspot)</translation>
 <translation id="882204272221080310">כדאי לעדכן את הקושחה כדי להגביר את האבטחה.</translation>
+<translation id="8822690627597552656">האטה של אתרים לא מוכרים כדי לחסום התקפות נפוצות</translation>
 <translation id="8823514049557262177">העתקת ט&amp;קסט קישור</translation>
 <translation id="8823704566850948458">הצעת סיסמה...</translation>
 <translation id="8823963789776061136">‏אפשר גם לבחור ב-PPD של המדפסת. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>

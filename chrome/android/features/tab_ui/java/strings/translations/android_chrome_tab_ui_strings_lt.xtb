@@ -82,6 +82,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Uždaryti elementą}one{Uždaryti elementus}few{Uždaryti elementus}many{Uždaryti elementus}other{Uždaryti elementus}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Bendrinimo lapo peržiūros miniatiūra.</translation>
+<translation id="3776329373944672717">Skirtukų grupės pavadinimas „<ph name="TITLE_OF_GROUP" />“</translation>
 <translation id="3810973564298564668">Tvarkyti</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Atsegti skirtuką}one{Atsegti skirtukus}few{Atsegti skirtukus}many{Atsegti skirtukus}other{Atsegti skirtukus}}</translation>
 <translation id="3940195383040445971">Stebėti kainas skirtukuose</translation>

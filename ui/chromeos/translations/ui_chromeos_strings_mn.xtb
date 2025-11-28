@@ -594,6 +594,7 @@
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5602622065581044566">Авиа зүйн гартай болгар</translation>
 <translation id="5605830556594064952">АНУ-ын Дворак</translation>
+<translation id="560739212255190568">Танай админ дараах проксиг хэрэгжүүлэхээс гадна проксиг дарах дүрмийг тохируулсан</translation>
 <translation id="5618330573454123917">Энэ файл нь Macintosh программ хангамжийг ашиглаж буй компьютерт зориулагдсан байна. Энэ нь таны ChromeOS-г ажиллуулдаг төхөөрөмжид тохирохгүй. ChromeOS дээр файл нээх талаар <ph name="BEGIN_LINK_HELP" />нэмэлт мэдээлэл авна уу<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">Tamil99 гартай тамил</translation>
 <translation id="5633226425545095130">Энэ зүйлийг зөөснөөр үүнийг '<ph name="DESTINATION_NAME" />' хуваалцсан фолдерыг харах боломжтой бүх хүнтэй хуваалцана.</translation>
@@ -993,6 +994,7 @@
 <translation id="8540608333167683902">Cүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="8545476925160229291">Англи (US)</translation>
 <translation id="854655314928502177">Веб прокси автоматаар илрүүлэх URL:</translation>
+<translation id="8547747809824590510">Танай админ проксиг дарах дүрмийг тохируулсан</translation>
 <translation id="8549186985808798022">Итали</translation>
 <translation id="8551494947769799688">Латви хэл</translation>
 <translation id="8560515948038859357">Кантон</translation>
@@ -1053,6 +1055,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" нэртэй файл аль хэдийн байна. Өөр нэр сонгоно уу.</translation>
 <translation id="9046895021617826162">Холболт амжилтгүй боллоо</translation>
 <translation id="9065512565307033593">Хэрэв та баталгаажуулж чадаагүй бол таны сүлжээний хандалтыг идэвхгүй болгоно.</translation>
+<translation id="9079844694307518094">Танай админ дараах проксиг хэрэгжүүлж байна</translation>
 <translation id="908378762078012445">AATSEEL авиа зүйн гартай орос</translation>
 <translation id="9086302186042011942">Sync хийж байна.</translation>
 <translation id="9099674669267916096">Хуудасны тоо</translation>

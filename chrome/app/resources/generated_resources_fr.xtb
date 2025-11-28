@@ -1803,9 +1803,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2220572644011485463">Code ou mot de passe</translation>
 <translation id="222115440608612541">Permet de changer le thème au lever et au coucher du soleil</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">Une application externe souhaite contrôler entièrement cette session Chrome pour la déboguer. Cela inclut l'accès à vos données enregistrées, aux cookies et aux données des sites, ainsi que la possibilité d'accéder à n'importe quelle URL.
-
-Seuls les développeurs Web devraient activer cette fonctionnalité, et ne l'utiliser qu'avec des applications approuvées.</translation>
 <translation id="222201875806112242">Source multimédia sans nom</translation>
 <translation id="2224337661447660594">Aucun accès à Internet</translation>
 <translation id="2224444042887712269">Ce paramètre appartient à <ph name="OWNER_EMAIL" />.</translation>
@@ -6552,7 +6549,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="549957179819296104">Nouvelle icône</translation>
 <translation id="5499634624419508916">Remplacer le groupe d'onglets existant</translation>
 <translation id="5500163593833085874">Lorsque le bouton gauche de la souris est sélectionné, utiliser "+" pour double-cliquer</translation>
-<translation id="5500168250243071806">L'<ph name="BEGIN_LINK_SEARCH" />historique des recherches<ph name="END_LINK_SEARCH" /> et d'<ph name="BEGIN_LINK_GOOGLE" />autres formes d'activité<ph name="END_LINK_GOOGLE" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
+<translation id="5500168250243071806">L‘<ph name="BEGIN_LINK_SEARCH" />historique des recherches<ph name="END_LINK_SEARCH" /> et d‘<ph name="BEGIN_LINK_GOOGLE" />autres formes d'activité<ph name="END_LINK_GOOGLE" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="5501322521654567960">Panneau latéral aligné à gauche</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}one{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}other{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="5501979953419946416">Rédige quelque chose d'inédit</translation>
@@ -6583,6 +6580,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5523532775593636291">Les sites que vous ajoutez restent toujours actifs et sont conservés dans la mémoire</translation>
 <translation id="5523558474028191231">Le nom peut contenir des lettres, des chiffres et des caractères spéciaux, et ne doit pas dépasser <ph name="MAX_CHARACTER_COUNT" /> caractères</translation>
 <translation id="5526745900034778153">Connectez-vous de nouveau à votre compte pour reprendre la synchronisation</translation>
+<translation id="5527211644528700597">Utilise des méthodes sur l'appareil pour détecter les menaces</translation>
 <translation id="5527463195266282916">Tentative d'installation d'une version antérieure de l'extension.</translation>
 <translation id="5527474464531963247">Vous pouvez également sélectionner un autre réseau.</translation>
 <translation id="5527597176701279474">Installation de <ph name="APP_NAME" /> en cours</translation>
@@ -6779,6 +6777,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5663459693447872156">Passer automatiquement en demi-chasse</translation>
 <translation id="5663653125349867535">Liste de lecture</translation>
 <translation id="5663918299073387939">Les sites demandent généralement de contrôler et reprogrammer les appareils MIDI pour créer et modifier de la musique, ou mettre à jour le micrologiciel des appareils</translation>
+<translation id="5666116074010586111">Envoie l'URL et le contenu de la page à Google pour détecter les menaces plus rapidement</translation>
 <translation id="5666911576871845853">&amp;Ajouter un profil</translation>
 <translation id="5667293444945855280">Logiciels malveillants</translation>
 <translation id="5667546120811588575">Configuration de Google Play…</translation>
@@ -7959,6 +7958,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6508261954199872201">Application : <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Redémarrez votre Chromebook, puis réessayez.</translation>
 <translation id="6511827214781912955">Pensez à supprimer <ph name="FILENAME" /> afin que les autres utilisateurs de cet appareil ne puissent pas voir vos mots de passe</translation>
+<translation id="6512364354776355686">Vous avertit de toutes les connexions non sécurisées</translation>
 <translation id="6512759338201777379">Image générée <ph name="INDEX" /> sur <ph name="SUBJECT" />, humeur <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Si vous n'êtes connecté à aucun autre réseau, Google Chrome va utiliser un service Internet mobile.</translation>
 <translation id="6514010653036109809">Appareil disponible :</translation>
@@ -9145,6 +9145,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7340179705876485790">Pour revenir en arrière de plus d'une page, cliquez de manière prolongée sur Retour.</translation>
 <translation id="7340650977506865820">Le site partage votre écran</translation>
 <translation id="7340757554212515731">Envoie automatiquement à Google les rapports d'erreur, ainsi que les données d'utilisation et de diagnostic</translation>
+<translation id="7340886226071938450">Position de la barre d'onglets</translation>
 <translation id="734088800888587319">Métriques concernant le réseau</translation>
 <translation id="7341834142292923918">Souhaite accéder à ce site</translation>
 <translation id="7343372807593926528">Veuillez décrire le problème avant d'envoyer des commentaires.</translation>
@@ -9606,7 +9607,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7654941827281939388">Ce compte est déjà utilisé sur cet ordinateur.</translation>
 <translation id="7655411746932645568">Les sites peuvent demander à se connecter aux ports série</translation>
 <translation id="7657090467145778067">Petites économies</translation>
-<translation id="7657218410916651670">D'<ph name="BEGIN_LINK_GOOGLE" />autres formes d'activité<ph name="END_LINK_GOOGLE" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
+<translation id="7657218410916651670">D‘<ph name="BEGIN_LINK_GOOGLE" />autres formes d'activité<ph name="END_LINK_GOOGLE" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7658395071164441475">Certains mots de passe ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="7659154729610375585">Quitter quand même le mode navigation privée ?</translation>
@@ -9875,6 +9876,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7830833461614351956">Copier <ph name="NUM_OF_FILES" /> fichiers dans <ph name="CLOUD_PROVIDER" /> et les ouvrir ?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Les mots personnalisés enregistrés s'afficheront ici</translation>
+<translation id="7833725807105678871">Donne la priorité à la vitesse du site plutôt qu'aux fonctionnalités de sécurité améliorées</translation>
 <translation id="7834832693620032149">Pour partager l'audio, partagez plutôt un onglet ou une fenêtre</translation>
 <translation id="7836577093182643605">Liste des thèmes que vous avez bloqués et que vous ne voulez pas partager avec les sites</translation>
 <translation id="7836850009646241041">Appuyez de nouveau sur votre clé de sécurité</translation>
@@ -11147,6 +11149,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8690129572193755009">Les sites peuvent demander à gérer des protocoles</translation>
 <translation id="869144235543261764">Une vidéo est diffusée en mode Picture-in-picture dans cet onglet</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> a été supprimé de l'historique des téléchargements</translation>
+<translation id="8691990641861252959">Vous avertit des connexions non sécurisées sur l'Internet ouvert</translation>
 <translation id="8692107307702113268">Le mot de passe contient plus de 1 000 caractères</translation>
 <translation id="8693862390730570097">Ne pas autoriser M'aider à écrire à s'ouvrir automatiquement</translation>
 <translation id="8694596275649352090">Verrouiller quand l'appareil est en veille ou que l'écran est rabattu</translation>
@@ -11349,6 +11352,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8821268776955756404"><ph name="APP_NAME" /> est prêt à être utilisé.</translation>
 <translation id="8821647731831124007">Aucun point d'accès disponible</translation>
 <translation id="882204272221080310">Mettre à jour le micrologiciel pour plus de sécurité.</translation>
+<translation id="8822690627597552656">Ralentit certains sites inconnus pour bloquer les attaques courantes</translation>
 <translation id="8823514049557262177">Copier le te&amp;xte du lien</translation>
 <translation id="8823704566850948458">Suggérer un mot de passe</translation>
 <translation id="8823963789776061136">Vous pouvez également sélectionner le PPD de l'imprimante. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>

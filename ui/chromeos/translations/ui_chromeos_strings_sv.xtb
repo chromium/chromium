@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5602622065581044566">bulgariskt fonetiskt tangentbord</translation>
 <translation id="5605830556594064952">USA (dvorak)</translation>
+<translation id="560739212255190568">Administratören har angett regler för åsidosättande av proxy utöver att tillämpa följande proxy</translation>
 <translation id="5618330573454123917">Den här filen är avsedd för en Macintosh. Den är inte kompatibel med din enhet, som har ChromeOS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i ChromeOS.</translation>
 <translation id="5625294776298156701">tamilskt tangentbord (Tamil99)</translation>
 <translation id="5633226425545095130">Om du flyttar det här objektet delas det med alla som har åtkomst till den delade mappen <ph name="DESTINATION_NAME" />.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="8545476925160229291">engelska (USA)</translation>
 <translation id="854655314928502177">Webbadress för automatisk identifiering av webbproxy:</translation>
+<translation id="8547747809824590510">Administratören har angett regler för åsidosättande av proxy</translation>
 <translation id="8549186985808798022">italienska</translation>
 <translation id="8551494947769799688">lettiska</translation>
 <translation id="8560515948038859357">kantonesiska</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Det finns redan en fil med namnet <ph name="FILE_NAME" />. Välj ett annat namn.</translation>
 <translation id="9046895021617826162">Anslutningen misslyckades</translation>
 <translation id="9065512565307033593">Nätverksåtkomsten kommer att inaktiveras om du misslyckas med verifieringen.</translation>
+<translation id="9079844694307518094">Administratören tillämpar följande proxy</translation>
 <translation id="908378762078012445">ryskt fonetiskt tangentbord (AATSEEL)</translation>
 <translation id="9086302186042011942">Synkroniserar</translation>
 <translation id="9099674669267916096">Sidantal</translation>

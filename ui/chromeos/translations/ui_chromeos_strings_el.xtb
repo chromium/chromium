@@ -609,6 +609,7 @@
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
 <translation id="5602622065581044566">Βουλγαρικά με φωνητικό πληκτρολόγιο</translation>
 <translation id="5605830556594064952">Dvorak ΗΠΑ</translation>
+<translation id="560739212255190568">Ο διαχειριστής σας όρισε κανόνες παράκαμψης διακομιστή μεσολάβησης, επιπλέον της επιβολής του ακόλουθου διακομιστή μεσολάβησης</translation>
 <translation id="5618330573454123917">Αυτό το αρχείο έχει σχεδιαστεί για υπολογιστή που χρησιμοποιεί λογισμικό Macintosh. Δεν είναι συμβατό με τη συσκευή σας, η οποία εκτελεί Chrome OS. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
 <translation id="5625294776298156701">Ταμίλ με πληκτρολόγιο Tamil99</translation>
 <translation id="5633226425545095130">Με τη μετακίνηση αυτού του στοιχείου, αυτό θα κοινοποιηθεί σε όλους τους χρήστες που μπορούν να δουν τον κοινόχρηστο φάκελο "<ph name="DESTINATION_NAME" />".</translation>
@@ -1014,6 +1015,7 @@
 <translation id="8540608333167683902">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="8545476925160229291">Αγγλικά (ΗΠΑ)</translation>
 <translation id="854655314928502177">URL αυτόματου εντοπισμού διακομιστή μεσολάβησης ιστού</translation>
+<translation id="8547747809824590510">Ο διαχειριστής σας όρισε κανόνες παράκαμψης διακομιστή μεσολάβησης</translation>
 <translation id="8549186985808798022">Ιταλικά</translation>
 <translation id="8551494947769799688">Λετονικά
 </translation>
@@ -1078,6 +1080,7 @@
 <translation id="9038620279323455325">Το αρχείο με το όνομα "<ph name="FILE_NAME" />" υπάρχει ήδη. Επιλέξτε ένα διαφορετικό όνομα.</translation>
 <translation id="9046895021617826162">Η σύνδεση απέτυχε</translation>
 <translation id="9065512565307033593">Εάν δεν επαληθεύσετε, θα απενεργοποιηθεί η πρόσβαση δικτύου σας.</translation>
+<translation id="9079844694307518094">Ο διαχειριστής σας επιβάλλει τον ακόλουθο διακομιστή μεσολάβησης</translation>
 <translation id="908378762078012445">Ρωσικά με φωνητικό πληκτρολόγιο AATSEEL</translation>
 <translation id="9086302186042011942">Συγχρονισμός</translation>
 <translation id="9099674669267916096">Πλήθος σελίδων</translation>

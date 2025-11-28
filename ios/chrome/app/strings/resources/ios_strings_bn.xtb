@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">সাইটের ঠিকানা কপি করা হয়েছে</translation>
 <translation id="3280562213547448728">ভয়েস সার্চ</translation>
 <translation id="3289505634533552500">ভয়েস সার্চ</translation>
-<translation id="3293080634164207409">ট্যাব যোগ করুন</translation>
 <translation id="3295904109373959849">ট্যাব গ্রুপ গ্রিড</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, নতুন অ্যাক্টিভিটি</translation>
 <translation id="3305294846493618482">আরও</translation>
@@ -1285,6 +1284,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count}টি নতুন ট্যাব}one{{count}টি নতুন ট্যাব}other{{count}টি নতুন ট্যাব}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">এটি পিন করার জন্য এখানে ট্যাব টেনে আনুন।</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{সর্বাধিক ১টি ফাইল, ট্যাব বা ছবি যোগ করুন}one{সর্বাধিক {COUNT}টি ফাইল, ট্যাব বা ছবি যোগ করুন}other{সর্বাধিক {COUNT}টি ফাইল, ট্যাব বা ছবি যোগ করুন}}</translation>
 <translation id="5936006948844852401">স্টোরেজ ম্যানেজ করুন</translation>
 <translation id="5936065461722368675">সম্পূর্ণ পৃষ্ঠা অনুবাদ করুন</translation>
 <translation id="5937560539988385583">পৃষ্ঠা অনুবাদ করা হয়ে গেছে</translation>

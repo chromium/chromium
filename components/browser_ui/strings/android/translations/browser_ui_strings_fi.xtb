@@ -339,6 +339,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4635969503923889910">Älä salli sivustojen käyttää NFC-laitteita</translation>
 <translation id="4644713492825682049">Poista ja nollaa luvat</translation>
 <translation id="4645575059429386691">Vanhempasi hallinnoima</translation>
+<translation id="4652266463001779298">Ei sallittu</translation>
 <translation id="4663373278480897665">Kamera sallittu</translation>
 <translation id="4670064810192446073">Virtuaalitodellisuus</translation>
 <translation id="4672315773691449562">Valitse Selainsovellus ja sitten Chrome</translation>
@@ -680,6 +681,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="8487700953926739672">Käytettävissä offline-tilassa</translation>
 <translation id="848952951823693243">Pyydä aina mobiilisivustoa</translation>
 <translation id="8492822722330266509">Sivustot saavat lähettää ponnahdusikkunoita ja uudelleenohjata</translation>
+<translation id="8493548450030356203">Ponnahdusikkunan zoomaus</translation>
 <translation id="8499083585497694743">Poista mikrofonin mykistys</translation>
 <translation id="8514955299594277296">Älä salli sivustojen tallentaa dataa laitteellesi (ei suositella)</translation>
 <translation id="851751545965956758">Estä sivustoja yhdistämästä laitteisiin</translation>

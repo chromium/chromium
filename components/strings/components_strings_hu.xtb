@@ -2057,6 +2057,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4299919199185766032">A gyorsparancs neve meghaladja a maximálisan engedélyezett <ph name="MAX_LENGTH" /> karaktert.</translation>
 <translation id="4300272766492248925">Alkalmazás megnyitása</translation>
 <translation id="4300675098767811073">Több lyuk a jobb oldalon</translation>
+<translation id="4300841966382281549">Utazás</translation>
 <translation id="4302514097724775343">A játékhoz koppintson a dinóra</translation>
 <translation id="4304049446746819918">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak az áthelyezését a következő helyre: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak az áthelyezését a következő helyre: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Olvassa el az ügyfelek által a termékekről, a szolgáltatásokról vagy az élményekről készített értékeléseket, amelyek segítségével megalapozott döntéseket hozhat.</translation>
@@ -2173,6 +2174,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4506599922270137252">Kapcsolatfelvétel a rendszergazdával</translation>
 <translation id="450710068430902550">Megosztás a rendszergazdával</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt az oldalnak a Google Fordítóval történő lefordításához</translation>
+<translation id="4510703642214459906">Helyszín</translation>
 <translation id="4515275063822566619">A kártyák és a címek a Chrome-ból és az Ön Google-fiókjából (<ph name="ACCOUNT_EMAIL" />) származnak. A <ph name="BEGIN_LINK" />Beállításokban<ph name="END_LINK" /> kezelheti őket.</translation>
 <translation id="4515847625438516456">Kisautók és szubkompakt autók</translation>
 <translation id="451601984112574365">Zöld 3</translation>
@@ -3421,6 +3423,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6539092367496845964">Hiba történt. Próbálja újra később.</translation>
 <translation id="6540488083026747005">Engedélyezte a harmadik féltől származó cookie-kat ezen a webhelyen</translation>
 <translation id="6545864417968258051">Bluetooth-alapú keresés</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> – <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Kettő lyuk a bal oldalon</translation>
 <translation id="6549443526281184652">Jelmezek</translation>
 <translation id="6550245281449521513">Az egér zárolása nem engedélyezett</translation>
@@ -4369,6 +4372,7 @@ További részletek:
 <translation id="8077669823243888800">8. kínai boríték</translation>
 <translation id="8078006011486731853">{0,plural, =1{Feltölti a bizalmas fájlt?}other{Feltölti a bizalmas fájlokat?}}</translation>
 <translation id="8079031581361219619">Újratölti a webhelyet?</translation>
+<translation id="8079591184016291275">Esemény neve</translation>
 <translation id="8079976827192572403">Veszélyes webhely</translation>
 <translation id="8081087320434522107">Szedánok</translation>
 <translation id="8086429410809447605">Női ruházat</translation>
@@ -4806,6 +4810,7 @@ További részletek:
 <translation id="8814547618907885931">Az összes összehasonlító táblázat megtekintése</translation>
 <translation id="8814707942599948500">C8 boríték</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt a Chrome-nak a Chrome beállításaiban való frissítéséhez</translation>
+<translation id="8819855907485254989">Tömegközlekedési jegy mentése a Walletbe</translation>
 <translation id="8820817407110198400">Könyvjelzők</translation>
 <translation id="882338992931677877">Manuális nyílás</translation>
 <translation id="8827067923357481311">Későbbi fizetési lehetőségek</translation>

@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Lisäasetukset</translation>
 <translation id="5602622065581044566">bulgaria, foneettinen näppäimistö</translation>
 <translation id="5605830556594064952">USA, Dvorak</translation>
+<translation id="560739212255190568">Järjestelmänvalvoja on määrittänyt välityspalvelimen ohitussäännöt seuraavan välityspalvelimen pakottamisen lisäksi</translation>
 <translation id="5618330573454123917">Tämä tiedosto on tarkoitettu Windows-ohjelmistoa käyttävälle tietokoneelle. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
 <translation id="5625294776298156701">tamil, tamil99-näppäimistö</translation>
 <translation id="5633226425545095130">Kun tämä siirretään, se jaetaan kaikille, jotka voivat nähdä jaetun kansion "<ph name="DESTINATION_NAME" />"</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, lisätietoja</translation>
 <translation id="8545476925160229291">englanti (Yhdysvallat)</translation>
 <translation id="854655314928502177">Verkkovälityspalvelimen automaattisen tunnistamisen URL-osoite:</translation>
+<translation id="8547747809824590510">Järjestelmänvalvoja on määrittänyt välityspalvelimen ohitussäännöt</translation>
 <translation id="8549186985808798022">italia</translation>
 <translation id="8551494947769799688">latvia</translation>
 <translation id="8560515948038859357">kantoninkiina</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Tiedosto nimeltä <ph name="FILE_NAME" /> on jo olemassa. Valitse toinen nimi.</translation>
 <translation id="9046895021617826162">Yhdistäminen epäonnistui</translation>
 <translation id="9065512565307033593">Jos vahvistus ei onnistu, pääsy verkkoon estyy.</translation>
+<translation id="9079844694307518094">Järjestelmänvalvoja pakottaa seuraavan välityspalvelimen</translation>
 <translation id="908378762078012445">venäjä, foneettinen AATSEEL-näppäimistö</translation>
 <translation id="9086302186042011942">Synkronoidaan</translation>
 <translation id="9099674669267916096">Sivumäärä</translation>

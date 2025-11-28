@@ -223,7 +223,6 @@
 <translation id="1959679933317802873">Ожидается контент</translation>
 <translation id="1960290143419248813">Невозможно обновить Chrome в текущей версии Android.</translation>
 <translation id="1962061488333185936">Выбранная вместе с несколькими другими вкладка "<ph name="TAB_TITLE" />" с включенным звуком</translation>
-<translation id="1963056249988316027">Не удалось выполнить проверку личности</translation>
 <translation id="1963976881984600709">Стандартная защита</translation>
 <translation id="1966710179511230534">Обновите учетные данные</translation>
 <translation id="1969037871259811890">Удаление данных о работе в браузере не приведет к выходу из аккаунта Google. Вы можете <ph name="BEGIN_LINK1" />сделать это вручную<ph name="END_LINK1" />.</translation>
@@ -601,7 +600,6 @@
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{и ещё 1 сайт}one{и ещё # сайт}few{и ещё # сайта}many{и ещё # сайтов}other{и ещё # сайта}}</translation>
 <translation id="3625870480639975468">Исходный масштаб</translation>
 <translation id="3631987586758005671">Отправка на устройство "<ph name="DEVICE_NAME" />"…</translation>
-<translation id="363484704507524488">Изменить параметры проверки личности можно в настройках защиты от кражи. <ph name="BEGIN_LINK" />Открыть настройки<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Чтобы браузер Chrome мог проверять пароли, сохраните их</translation>
 <translation id="3636940436873918441">Предпочитаемые языки</translation>
 <translation id="3637744895182738742">Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
@@ -1131,7 +1129,6 @@
 <translation id="5869522115854928033">Сохраненные пароли</translation>
 <translation id="5870416898561279542">Сюда переносятся одинаковые вкладки и группы, а также те, которые не использовались в течение <ph name="DAYS_INACTIVE" /> дн. <ph name="AUTODELETE_SECTION" />. Чтобы изменить этот параметр, перейдите в <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="587735546353481577">Чтобы подписаться на сайт, откройте его, перейдите в меню Google Chrome и нажмите "Подписаться".</translation>
-<translation id="5883855034004058011">Слишком много неудачных попыток подтвердить биометрические данные. Чтобы продолжить, заблокируйте и разблокируйте устройство.</translation>
 <translation id="5885378508678660271">Уведомления <ph name="SEPARATOR" /> Chrome отозвал разрешения у этого опасного сайта</translation>
 <translation id="5899667542927581604">Пустой список ключей доступа был закрыт</translation>
 <translation id="5907542076239273525">Закладка добавлена в папку "<ph name="FOLDER_NAME" />"</translation>
@@ -1340,7 +1337,7 @@
 <translation id="670498945988402717">Проверено вчера.</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Время на таймере <ph name="FQDN" /> истекло. Завтра сайт снова станет доступен.</translation>
-<translation id="671928215901716392">Блокировать экран</translation>
+<translation id="6716434912087331834">Чтобы восстановить новое окно, убедитесь, что число активных окон не превышает <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Неактивные окна удаляются через шесть месяцев.</translation>
 <translation id="6723740634201835758">В аккаунте Google</translation>
 <translation id="6734310707649923383">Вы сможете посмотреть посещенные страницы или удалить их из истории.</translation>
 <translation id="6737429434215739253">Закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />", которой ведется запись</translation>
@@ -1658,6 +1655,7 @@
 <translation id="7942131818088350342">Версия <ph name="PRODUCT_NAME" /> устарела.</translation>
 <translation id="7944772052836377867">Подтвердите личность для синхронизации</translation>
 <translation id="7951102827450076904">Всегда открывать скачанные PDF-файлы</translation>
+<translation id="7952479614398473176">Чтобы открыть новое окно, убедитесь, что число активных окон не превышает <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7957413488482743710">Виртуальная карта помогает скрыть ваши данные от мошенников. <ph name="BEGIN_LINK1" />Подробнее…<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Вкладки на этом устройстве</translation>
 <translation id="7961926449547174351">Откройте доступ к хранилищу в настройках устройства.</translation>

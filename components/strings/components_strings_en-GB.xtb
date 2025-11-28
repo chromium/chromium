@@ -2060,6 +2060,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4299919199185766032">The name of the shortcut exceeds the maximum allowed length of <ph name="MAX_LENGTH" /> characters.</translation>
 <translation id="4300272766492248925">Open app</translation>
 <translation id="4300675098767811073">Multiple punch right</translation>
+<translation id="4300841966382281549">Trip</translation>
 <translation id="4302514097724775343">Tap the dino to play</translation>
 <translation id="4304049446746819918">{0,plural, =1{Administrator policy doesn’t recommend moving this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend moving these files to <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Read customer evaluations of products, services or experiences to help inform your decisions with reviews.</translation>
@@ -3425,6 +3426,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6539092367496845964">Something went wrong. Try again later.</translation>
 <translation id="6540488083026747005">You allowed third-party cookies on this site</translation>
 <translation id="6545864417968258051">Bluetooth scanning</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> – <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Dual punch left</translation>
 <translation id="6549443526281184652">Costumes</translation>
 <translation id="6550245281449521513">Mouse lock not allowed</translation>
@@ -4809,6 +4811,7 @@ Additional details:
 <translation id="8814547618907885931">See all comparison tables</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to update Chrome from your Chrome settings</translation>
+<translation id="8819855907485254989">Save transport ticket to Wallet</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="882338992931677877">Manual slot</translation>
 <translation id="8827067923357481311">Pay later options</translation>

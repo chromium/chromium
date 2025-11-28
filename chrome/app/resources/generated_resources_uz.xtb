@@ -1801,9 +1801,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2220572644011485463">PIN kod yoki parol</translation>
 <translation id="222115440608612541">Mavzularni quyosh chiqishi va botishida almashtirish</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">Tashqi ilova xatolarni tuzatish uchun bu Chrome seansini toʻliq boshqarmoqchi. Bunga saqlangan maʼlumotlar, cookie fayllar va sayt maʼlumotlariga kirish hamda istalgan URL manzilga kirish imkoniyati kiradi.
-
-Bu funksiyani faqat veb-dasturchilar yoqishi va faqat ishonchli ilovalar bilan ishlatishi kerak.</translation>
 <translation id="222201875806112242">Nomsiz media manba</translation>
 <translation id="2224337661447660594">Internet yo‘q</translation>
 <translation id="2224444042887712269">Bu sozlama <ph name="OWNER_EMAIL" /> tomonidan o‘rnatilingan.</translation>
@@ -3697,6 +3694,7 @@ Bu funksiyani faqat veb-dasturchilar yoqishi va faqat ishonchli ilovalar bilan i
 <translation id="3527085408025491307">Jild</translation>
 <translation id="3528498924003805721">Yorliq manzillari</translation>
 <translation id="3529851166527095708">&amp;Manzillar va hokazo</translation>
+<translation id="3530919970074558307">Guruhni fokusdan yechish</translation>
 <translation id="3531070080754387701">Microsoft 365 <ph name="FILE_NAMES" /> faylini bu jilddan ocha olmaydi</translation>
 <translation id="3531883061432162622">Bukmarklar va mutolaa roʻyxatingizni Bukmarklar va roʻyxatlar panelidan topasiz</translation>
 <translation id="3532273508346491126">Sinxronizatsiya boshqaruvi</translation>
@@ -4050,6 +4048,7 @@ Bu funksiyani faqat veb-dasturchilar yoqishi va faqat ishonchli ilovalar bilan i
 <translation id="3757567010566591880">Asboblar panelidan yechish</translation>
 <translation id="3757645900890881944">Qidiruv vositalari</translation>
 <translation id="3757733214359997190">Hech qanday sayt topilmadi</translation>
+<translation id="3757825964096339958">Guruhni fokuslash</translation>
 <translation id="375841316537350618">Proksi-server skripti yuklab olinmoqda...</translation>
 <translation id="3758887577462995665">Maslahat:</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> oy</translation>
@@ -4839,6 +4838,7 @@ Bu funksiyani faqat veb-dasturchilar yoqishi va faqat ishonchli ilovalar bilan i
 <translation id="4292613336957320546">Tezlanishi</translation>
 <translation id="429312253194641664">Saytda media-fayl ijro etilmoqda</translation>
 <translation id="4293219510510666933">Sodda iboralardan tuzilgan soʻrovlar yordamida brauzer tarixida ochilgan saytlarni qidiring. Shuningdek, brauzer tarixi asosida savollar berishingiz va javob olishingiz mumkin. Bu sozlama yoniq.</translation>
+<translation id="429344752071832554">Guruhni fokusdan yechish</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> yuklanmalar tarixidan oʻchirildi, lekin fayl qurilmangizda saqlangan</translation>
 <translation id="4295072614469448764">Ilova terminalingizda mavjud. Launcherda ikonka bo‘lishi kerak.</translation>
 <translation id="4295979599050707005"><ph name="USER_EMAIL" /> hisobingizga qaytadan kirib, Chrome va Google Play hisobingizni saytlar, ilova va kengaytmalarga kirishda ishlatishiga ruxsat berishingizni tasdiqlang. Bu hisobni olib tashlashingiz ham mumkin. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -4994,6 +4994,7 @@ Bu funksiyani faqat veb-dasturchilar yoqishi va faqat ishonchli ilovalar bilan i
 <translation id="4405224443901389797">Boshqa joyga olish…</translation>
 <translation id="4405781821077215583">Ekrandagi matn kabi elementlarni kichiklashtirish yoki kattalashtirish</translation>
 <translation id="4406308048672435032">Toʻliq roʻyxatni qayta koʻrish uchun bu varaqni nofaol qiling yoki yangilang</translation>
+<translation id="4406881185911439342">Guruhni fokuslash</translation>
 <translation id="4406883609789734330">Jonli izoh</translation>
 <translation id="4406963243402726564">Saqlanmagan maʼlumotlar</translation>
 <translation id="4408599188496843485">&amp;Yordam</translation>
@@ -6585,6 +6586,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5523532775593636291">Siz kiritgan saytlar doim faol qoladi va ularning xotirasi boʻshatilmaydi</translation>
 <translation id="5523558474028191231">Nomi kamida <ph name="MAX_CHARACTER_COUNT" /> ta harf, raqam yoki maxsus belgilardan iborat boʻlsin</translation>
 <translation id="5526745900034778153">Sinxronizatsiyani qaytarish uchun hisobingizga kiring</translation>
+<translation id="5527211644528700597">Tahdidlarni aniqlash uchun qurilmadagi uslublardan foydalanadi</translation>
 <translation id="5527463195266282916">Kengaytmani avvalgi versiyaga qaytarishga urinib ko‘rildi.</translation>
 <translation id="5527474464531963247">Boshqa tarmoqni ham tanlashingiz mumkin.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, oʻrnatilmoqda</translation>
@@ -6780,6 +6782,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5663459693447872156">Avtomatik ravishda halfwidth usuliga o'tish</translation>
 <translation id="5663653125349867535">&amp;Saqlangan sahifalar</translation>
 <translation id="5663918299073387939">Saytlar odatda musiqa yaratish, musiqani tahrirlash yoki qurilma mikrodasturini yangilash uchun MIDI qurilmalarini boshqarish va qayta dasturlashni soʻraydi</translation>
+<translation id="5666116074010586111">Tahdidlarni tezroq aniqlash uchun URL va sahifa kontentini Googlega yuboradi</translation>
 <translation id="5666911576871845853">Yangi profil kiritish</translation>
 <translation id="5667293444945855280">Zararli dastur</translation>
 <translation id="5667546120811588575">Google Play sozlanmoqda</translation>
@@ -7960,6 +7963,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6508261954199872201">Ilova: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Chromebook qurilmasini qayta yoqing va qaytadan urining</translation>
 <translation id="6511827214781912955">Bu qurilmaning boshqa foydalanuvchilari parollaringizni koʻrmasligi uchun <ph name="FILENAME" /> faylini oʻchirib tashlang</translation>
+<translation id="6512364354776355686">Barcha himoyasiz ulanishlar haqida ogohlantiradi</translation>
 <translation id="6512759338201777379">Yaratilgan rasm: <ph name="INDEX" />/<ph name="SUBJECT" />, kayfiyat: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Boshqa tarmoqqa ulanish yo‘qligida, Google Chrome mobil internet tarmog‘idan foydalanadi.</translation>
 <translation id="6514010653036109809">Mavjud qurilma:</translation>
@@ -9143,6 +9147,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7340179705876485790">Eskiroq sahifalarga qaytish uchun Orqaga tugmasini bosib turing.</translation>
 <translation id="7340650977506865820">Sayt ekraningizni namoyish qilmoqda</translation>
 <translation id="7340757554212515731">Google serverlariga xatoliklar hisoboti, shuningdek, diagnostika va foydalanish statistikasi maʼlumotlari avtomatik yuboriladi</translation>
+<translation id="7340886226071938450">Varaqlar panelining joylashuvi</translation>
 <translation id="734088800888587319">Tarmoq statistikasi</translation>
 <translation id="7341834142292923918">Bu saytga ruxsat olmoqchi</translation>
 <translation id="7343372807593926528">Fikr-mulohaza yuborishdan oldin muammo haqida batafsil yozing.</translation>
@@ -9873,6 +9878,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7830833461614351956">Ochish uchun <ph name="NUM_OF_FILES" /> ta fayl <ph name="CLOUD_PROVIDER" /> xizmatiga nusxalansinmi?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Saqlangan so‘zlar shu yerda turadi</translation>
+<translation id="7833725807105678871">Sayt tezligi kuchaytirilgan xavfsizlik funksiyalaridan ustuvor qiladi</translation>
 <translation id="7834832693620032149">Ovozni ulashish uchun varaq yoki oynani ulashing</translation>
 <translation id="7836577093182643605">Saytlarga ulashilmaydigan bloklangan mavzular roʻyxati</translation>
 <translation id="7836850009646241041">Elektron kalit tugmasini qayta bosib turing</translation>
@@ -11144,6 +11150,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8690129572193755009">Saytlar protokollarga ishlov berish uchun ruxsat soʻray oladi</translation>
 <translation id="869144235543261764">Bu varaqdagi video tasvir ustida tasvir rejimida ijro etilmoqda</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> yuklanmalar tarixidan oʻchirildi</translation>
+<translation id="8691990641861252959">Ochiq internetda himoyasiz ulanishlar haqida ogohlantiradi</translation>
 <translation id="8692107307702113268">Parolda 1000 tadan ortiq belgi kiritildi</translation>
 <translation id="8693862390730570097">"Matn yordamchisi" avtomatik ochilmasin</translation>
 <translation id="8694596275649352090">Uxlayotganda yoki qopqoq yopilganda qulflansin</translation>
@@ -11345,6 +11352,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="8821268776955756404"><ph name="APP_NAME" /> foydalanish uchun tayyor.</translation>
 <translation id="8821647731831124007">Hech qanday hotspot topilmadi</translation>
 <translation id="882204272221080310">Xavfsizlikni oshirish uchun mikrodasturni yangilang.</translation>
+<translation id="8822690627597552656">Tanish hujumlarni bloklash uchun ayrim notanish saytlarni sekinlashtiradi</translation>
 <translation id="8823514049557262177">Havoladan nusxa olish</translation>
 <translation id="8823704566850948458">Parol yaratish...</translation>
 <translation id="8823963789776061136">Yoki printer PPD faylini tanlang. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>

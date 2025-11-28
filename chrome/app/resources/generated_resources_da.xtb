@@ -1814,9 +1814,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2220572644011485463">Pin- eller adgangskode</translation>
 <translation id="222115440608612541">Skift tema ved solopgang og solnedgang</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">En ekstern app vil have fuld kontrol over denne Chrome-session for at foretage fejlretning. Dette omfatter adgang til dine gemte data, cookies og websitedata samt muligheden for at gå til en hvilken som helst webadresse.
-
-Det er kun webudviklere, der bør aktivere denne funktion, og den bør kun bruges med apps, der er tillid til.</translation>
 <translation id="222201875806112242">Unavngiven mediekilde</translation>
 <translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
 <translation id="2224444042887712269">Denne indstilling tilhører <ph name="OWNER_EMAIL" />.</translation>
@@ -6601,6 +6598,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5523532775593636291">De websites, du tilføjer, forbliver aktive, og der frigøres ikke hukommelse fra dem.</translation>
 <translation id="5523558474028191231">Navne må indeholde bogstaver, tal og specialtegn og må maks. være på <ph name="MAX_CHARACTER_COUNT" /> tegn</translation>
 <translation id="5526745900034778153">Log ind igen for at genoptage synkroniseringen</translation>
+<translation id="5527211644528700597">Bruger metoder på enheden til at registrere trusler</translation>
 <translation id="5527463195266282916">Forsøgte at nedgradere udvidelsen.</translation>
 <translation id="5527474464531963247">Du kan også vælge et andet netværk.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, installeres</translation>
@@ -6796,6 +6794,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5663459693447872156">Skift automatisk til halv bredde</translation>
 <translation id="5663653125349867535">Læseliste</translation>
 <translation id="5663918299073387939">Websites anmoder normalt om at styre og omprogrammere MIDI-enheder for at skabe musik, redigere musik eller opdatere enhedens firmware</translation>
+<translation id="5666116074010586111">Sender webadressen og sideindholdet til Google, så trusler registreres hurtigere</translation>
 <translation id="5666911576871845853">&amp;Tilføj ny profil</translation>
 <translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Konfigurerer Google Play...</translation>
@@ -7976,6 +7975,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6508261954199872201">Program: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Genstart din Chromebook, og prøv igen</translation>
 <translation id="6511827214781912955">Du bør overveje at slette <ph name="FILENAME" />, så andre, der bruger denne enhed, ikke kan se dine adgangskoder</translation>
+<translation id="6512364354776355686">Advarer dig om alle usikre forbindelser</translation>
 <translation id="6512759338201777379">Billede <ph name="INDEX" /> af <ph name="SUBJECT" /> med stemningen <ph name="MOOD" /> er genereret.</translation>
 <translation id="6513247462497316522">Google Chrome anvender mobildata, hvis du ikke har forbindelse til et andet netværk.</translation>
 <translation id="6514010653036109809">Tilgængelig enhed:</translation>
@@ -9162,6 +9162,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7340179705876485790">Klik på Tilbage, hvis du vil gå mere end 1 side tilbage.</translation>
 <translation id="7340650977506865820">Websitet deler din skærm</translation>
 <translation id="7340757554212515731">Sender automatisk nedbrudsrapporter samt diagnostik- og brugsdata til Google</translation>
+<translation id="7340886226071938450">Fanelinjens placering</translation>
 <translation id="734088800888587319">Metrics for netværket</translation>
 <translation id="7341834142292923918">Udvidelsen anmoder om adgang til dette website</translation>
 <translation id="7343372807593926528">Beskriv problemet, før du sender feedback</translation>
@@ -9892,6 +9893,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7830833461614351956">Vil du kopiere <ph name="NUM_OF_FILES" /> filer til <ph name="CLOUD_PROVIDER" />, så de kan åbnes?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Dine gemte tilføjelser til ordbogen vises her</translation>
+<translation id="7833725807105678871">Prioriterer websitehastighed frem for stærkere sikkerhedsfunktioner</translation>
 <translation id="7834832693620032149">Hvis du vil dele lyd, skal du dele en fane eller et vindue i stedet</translation>
 <translation id="7836577093182643605">Liste over emner, du har blokeret, som du ikke vil have delt med websites</translation>
 <translation id="7836850009646241041">Prøv at trykke på din sikkerhedsnøgle igen</translation>
@@ -11164,6 +11166,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8690129572193755009">Websites kan anmode om tilladelse til at håndtere protokoller</translation>
 <translation id="869144235543261764">Denne fane afspiller en video i tilstanden med integreret billede</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> er blevet slettet fra downloadhistorikken</translation>
+<translation id="8691990641861252959">Advarer dig om usikre forbindelser på det åbne internet</translation>
 <translation id="8692107307702113268">Adgangskoden er på mere end 1.000 tegn</translation>
 <translation id="8693862390730570097">Tillad ikke, at "Hjælp mig med at skrive" åbnes automatisk</translation>
 <translation id="8694596275649352090">Lås, når enheden skifter til dvaletilstand, eller låget lukkes</translation>
@@ -11367,6 +11370,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="8821268776955756404"><ph name="APP_NAME" /> er klar til brug.</translation>
 <translation id="8821647731831124007">Ingen tilgængelige hotspots</translation>
 <translation id="882204272221080310">Opdater firmwaren for ekstra beskyttelse.</translation>
+<translation id="8822690627597552656">Sænker hastigheden på nogle ukendte websites for at blokere almindelige angreb</translation>
 <translation id="8823514049557262177">Kopiér linkte&amp;kst</translation>
 <translation id="8823704566850948458">Foreslå adgangskode...</translation>
 <translation id="8823963789776061136">Du kan også vælge PPD-filen for printeren i stedet. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>

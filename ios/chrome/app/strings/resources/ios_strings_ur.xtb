@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">سائٹ کا پتہ کاپی ہو گیا</translation>
 <translation id="3280562213547448728">صوتی تلاش</translation>
 <translation id="3289505634533552500">صوتی تلاش</translation>
-<translation id="3293080634164207409">ٹیبز شامل کریں</translation>
 <translation id="3295904109373959849">ٹیب گروپس گرڈ</translation>
 <translation id="3302837541200840455">‫<ph name="TAB_TITLE" />، نئی سرگرمی</translation>
 <translation id="3305294846493618482">مزید</translation>
@@ -1284,6 +1283,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5902752768726620872">{count,plural, =1{‫{count} نیا ٹیب}other{‫{count} نئے ٹیبز}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">اسے پن کرنے کے لیے ٹیب کو یہاں گھسیٹیں۔</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{‫1 فائل، ٹیب یا تصویر تک شامل کریں}other{‫{COUNT} فائلز، ٹیبز یا تصاویر تک شامل کریں}}</translation>
 <translation id="5936006948844852401">اسٹوریج کا نظم کریں</translation>
 <translation id="5936065461722368675">مکمل صفحے کا ترجمہ کریں</translation>
 <translation id="5937560539988385583">صفحہ کا ترجمہ ہو گیا</translation>

@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="5602622065581044566">Tastatură bulgară fonetică</translation>
 <translation id="5605830556594064952">S.U.A. Dvorak</translation>
+<translation id="560739212255190568">Administratorul a setat reguli de modificare a proxy-ului, pe lângă aplicarea următorului proxy</translation>
 <translation id="5618330573454123917">Fișierul este creat pentru un computer care folosește software Macintosh. Acesta nu este compatibil cu dispozitivul tău care rulează sistemul de operare Chrome. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>
 <translation id="5625294776298156701">Tastatură tamilă Tamil99</translation>
 <translation id="5633226425545095130">În cazul în care muți elementul, acesta va putea fi accesat de toată lumea care vede dosarul comun <ph name="DESTINATION_NAME" />.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
 <translation id="8545476925160229291">Engleză (S.U.A.)</translation>
 <translation id="854655314928502177">Adresa URL a protocolului WPAD (Web Proxy Auto-Discovery):</translation>
+<translation id="8547747809824590510">Administratorul a setat reguli de modificare a proxy-ului</translation>
 <translation id="8549186985808798022">Italiană</translation>
 <translation id="8551494947769799688">Letonă</translation>
 <translation id="8560515948038859357">Cantoneză</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Fișierul cu numele „<ph name="FILE_NAME" />” există deja. Alege un alt nume.</translation>
 <translation id="9046895021617826162">Conectare nereușită</translation>
 <translation id="9065512565307033593">Dacă nu confirmi codul, accesul tău la rețea va fi oprit.</translation>
+<translation id="9079844694307518094">Administratorul aplică următorul proxy</translation>
 <translation id="908378762078012445">Tastatură rusă fonetică AATSEEL</translation>
 <translation id="9086302186042011942">Se sincronizează</translation>
 <translation id="9099674669267916096">Numărul de pagini</translation>

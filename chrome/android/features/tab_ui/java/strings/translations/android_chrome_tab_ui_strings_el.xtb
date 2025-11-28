@@ -82,6 +82,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Κλείσιμο στοιχείου}other{Κλείσιμο στοιχείων}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Μικρ. προεπ. φύλλου κοινής χρήσης.</translation>
+<translation id="3776329373944672717">Τίτλος ομάδας καρτελών <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Ξεκαρφίτσωμα καρτέλας}other{Ξεκαρφίτσωμα καρτελών}}</translation>
 <translation id="3940195383040445971">Παρακολούθηση τιμών σε καρτέλες</translation>

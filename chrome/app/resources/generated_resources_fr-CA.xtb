@@ -1803,9 +1803,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2220572644011485463">NIP ou mot de passe</translation>
 <translation id="222115440608612541">Changez de thème au lever et au coucher du soleil</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">Une appli externe souhaite avoir le contrôle total de cette session Chrome pour la déboguer. Cela comprend l'accès à vos données enregistrées, à vos témoins et à vos données relatives aux sites, ainsi que la possibilité d'accéder à n'importe quelle URL.
-
-Seuls les développeurs Web doivent activer cette fonctionnalité, et ils ne doivent l'utiliser qu'avec des applications de confiance.</translation>
 <translation id="222201875806112242">Source multimédia anonyme</translation>
 <translation id="2224337661447660594">Aucune connexion Internet</translation>
 <translation id="2224444042887712269">Ce paramètre appartient à <ph name="OWNER_EMAIL" />.</translation>
@@ -6587,6 +6584,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5523532775593636291">Les sites que vous ajoutez resteront toujours actifs et leur mémoire ne sera pas libérée</translation>
 <translation id="5523558474028191231">Le nom peut comprendre des lettres, des chiffres et des caractères spéciaux, et doit comporter un maximum de<ph name="MAX_CHARACTER_COUNT" /> caractères</translation>
 <translation id="5526745900034778153">Reconnectez-vous pour reprendre la synchronisation</translation>
+<translation id="5527211644528700597">Utilise des méthodes sur l'appareil pour détecter les menaces</translation>
 <translation id="5527463195266282916">Tentative d'installation d'une version antérieure de l'extension.</translation>
 <translation id="5527474464531963247">Vous pouvez également sélectionner un autre réseau.</translation>
 <translation id="5527597176701279474">Installation de <ph name="APP_NAME" /> en cours…</translation>
@@ -6782,6 +6780,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5663459693447872156">Passer automatiquement en demi-largeur</translation>
 <translation id="5663653125349867535">Liste de lecture</translation>
 <translation id="5663918299073387939">Les sites demandent généralement de contrôler et de reprogrammer les appareils MIDI pour créer de la musique, modifier de la musique ou mettre à jour le micrologiciel de l'appareil</translation>
+<translation id="5666116074010586111">Envoie l'URL et le contenu des pages à Google pour détecter les menaces plus rapidement</translation>
 <translation id="5666911576871845853">&amp;Ajouter un nouveau profil</translation>
 <translation id="5667293444945855280">Logiciels malveillants</translation>
 <translation id="5667546120811588575">Configuration de Google Play en cours…</translation>
@@ -7962,6 +7961,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6508261954199872201">Application : <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Redémarrez votre Chromebook et réessayez</translation>
 <translation id="6511827214781912955">Envisagez de supprimer <ph name="FILENAME" /> afin que les autres utilisateurs de cet appareil ne puissent pas voir vos mots de passe</translation>
+<translation id="6512364354776355686">Vous avertit de toutes les connexions non sécurisées</translation>
 <translation id="6512759338201777379">Image <ph name="INDEX" /> de <ph name="SUBJECT" /> générée, avec l'ambiance <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Si vous n'êtes pas connecté à un autre réseau, Google Chrome va utiliser un service de données mobiles.</translation>
 <translation id="6514010653036109809">Appareil disponible :</translation>
@@ -9147,6 +9147,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7340179705876485790">Pour revenir en arrière de plus d'une page, cliquez et maintenez Retour.</translation>
 <translation id="7340650977506865820">Le site partage votre écran</translation>
 <translation id="7340757554212515731">Envoie automatiquement à Google les rapports de plantage ainsi que les données de diagnostic et d'utilisation</translation>
+<translation id="7340886226071938450">Position de la bande d'onglets</translation>
 <translation id="734088800888587319">Mesures du réseau</translation>
 <translation id="7341834142292923918">Souhaite accéder à ce site</translation>
 <translation id="7343372807593926528">Veuillez décrire le problème avant d'envoyer des commentaires.</translation>
@@ -9877,6 +9878,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7830833461614351956">Copier <ph name="NUM_OF_FILES" /> fichiers vers <ph name="CLOUD_PROVIDER" /> pour les ouvrir?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Les mots personnalisés enregistrés s'afficheront ici</translation>
+<translation id="7833725807105678871">Donne la priorité à la vitesse du site plutôt qu'aux fonctionnalités de sécurité améliorées</translation>
 <translation id="7834832693620032149">Pour partager l'audio, partagez plutôt un onglet ou un écran</translation>
 <translation id="7836577093182643605">Liste des sujets bloqués que vous ne souhaitez pas partager avec les sites</translation>
 <translation id="7836850009646241041">Essayez de toucher votre clé de sécurité à nouveau</translation>
@@ -11148,6 +11150,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8690129572193755009">Les sites peuvent demander à gérer des protocoles</translation>
 <translation id="869144235543261764">Cet onglet fait jouer une vidéo en mode d'incrustation d'image</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> a été supprimé de l'historique des téléchargements</translation>
+<translation id="8691990641861252959">Vous avertit des connexions non sécurisées sur l'Internet ouvert</translation>
 <translation id="8692107307702113268">Le mot de passe comprend plus de 1 000 caractères</translation>
 <translation id="8693862390730570097">Ne pas autoriser l'ouverture automatique de l'« Aide à la rédaction »</translation>
 <translation id="8694596275649352090">Verrouiller lorsque l'appareil est en veille ou que le couvercle est fermé</translation>
@@ -11349,6 +11352,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8821268776955756404"><ph name="APP_NAME" /> est prête à l'utilisation.</translation>
 <translation id="8821647731831124007">Aucun point d'accès sans fil disponible</translation>
 <translation id="882204272221080310">Pour une sécurité accrue, mettez à jour le micrologiciel.</translation>
+<translation id="8822690627597552656">Ralentit certains sites inconnus pour bloquer les attaques courantes</translation>
 <translation id="8823514049557262177">Copier le texte du lien</translation>
 <translation id="8823704566850948458">Suggérer un mot de passe…</translation>
 <translation id="8823963789776061136">Vous pouvez également sélectionner le PPD de l'imprimante. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>

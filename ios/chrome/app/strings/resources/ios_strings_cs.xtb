@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Adresa webu byla zkopírována</translation>
 <translation id="3280562213547448728">Hlasové vyhledávání</translation>
 <translation id="3289505634533552500">Hlasové vyhledávání</translation>
-<translation id="3293080634164207409">Přidání karet</translation>
 <translation id="3295904109373959849">Mřížka skupin karet</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, nová aktivita</translation>
 <translation id="3305294846493618482">více</translation>
@@ -1284,6 +1283,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5902752768726620872">{count,plural, =1{{count} nová karta}few{{count} nové karty}many{{count} nové karty}other{{count} nových karet}}</translation>
 <translation id="5911030830365207728">Překladač Google</translation>
 <translation id="5922999516621365983">Pokud kartu chcete připnout, přetáhněte ji sem</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Přidejte až 1 soubor, kartu nebo obrázek}few{Přidejte až {COUNT} soubory, karty nebo obrázky}many{Přidejte až {COUNT} souboru, karty nebo obrázku}other{Přidejte až {COUNT} souborů, karet nebo obrázků}}</translation>
 <translation id="5936006948844852401">Spravovat úložiště</translation>
 <translation id="5936065461722368675">Přeložit celou stránku</translation>
 <translation id="5937560539988385583">Stránka byla přeložena</translation>

@@ -1802,9 +1802,6 @@
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="222115440608612541">在日出和日落時切換主題</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">為了進行偵錯，外部應用程式想要完全掌控這個 Chrome 工作階段，包括存取儲存的資料、Cookie 和網站資料，以及前往任何網址。
-
-這項功能只有網頁程式開發人員可以開啟，而且只能搭配可信任的應用程式使用。</translation>
 <translation id="222201875806112242">未命名的媒體來源</translation>
 <translation id="2224337661447660594">沒有網際網路連線</translation>
 <translation id="2224444042887712269">這項設定屬於 <ph name="OWNER_EMAIL" />。</translation>
@@ -6577,6 +6574,7 @@
 <translation id="5523532775593636291">清單內的網站一律會保持使用中的狀態，系統不會釋出記憶體</translation>
 <translation id="5523558474028191231">名稱可以包含字母、數字和特殊字元，且不得超過 <ph name="MAX_CHARACTER_COUNT" /> 個字元</translation>
 <translation id="5526745900034778153">如要繼續同步處理，請重新登入</translation>
+<translation id="5527211644528700597">使用裝置端方法偵測威脅</translation>
 <translation id="5527463195266282916">試圖降級外掛程式。</translation>
 <translation id="5527474464531963247">你也可以選取其他網路。</translation>
 <translation id="5527597176701279474">正在安裝「<ph name="APP_NAME" />」</translation>
@@ -6770,6 +6768,7 @@
 <translation id="5663459693447872156">自動切換為半形</translation>
 <translation id="5663653125349867535">閱讀清單(&amp;R)</translation>
 <translation id="5663918299073387939">網站通常會要求控制 MIDI 裝置及重設程式，以便建立和編輯音樂或更新裝置韌體</translation>
+<translation id="5666116074010586111">將網址和網頁內容傳送給 Google，加快偵測威脅的速度</translation>
 <translation id="5666911576871845853">新增設定檔(&amp;A)</translation>
 <translation id="5667293444945855280">惡意程式</translation>
 <translation id="5667546120811588575">正在設定 Google Play...</translation>
@@ -7948,6 +7947,7 @@
 <translation id="6508261954199872201">應用程式：<ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">請重新啟動 Chromebook，然後再試一次</translation>
 <translation id="6511827214781912955">建議你刪除「<ph name="FILENAME" />」，讓這部裝置的其他使用者無法查看你的密碼</translation>
+<translation id="6512364354776355686">針對所有不安全連線發出警告</translation>
 <translation id="6512759338201777379">AI 生成的<ph name="SUBJECT" />圖片 <ph name="INDEX" />，情境為<ph name="MOOD" />。</translation>
 <translation id="6513247462497316522">如果你沒有連線至其他網路，Google Chrome 將使用行動數據網路連線。</translation>
 <translation id="6514010653036109809">可用的裝置：</translation>
@@ -9131,6 +9131,7 @@
 <translation id="7340179705876485790">如果要返回的頁數超過 1 頁以上，請點選並按住「返回」。</translation>
 <translation id="7340650977506865820">網站正在分享你的螢幕畫面</translation>
 <translation id="7340757554212515731">自動將當機報告連同診斷與使用資料傳送給 Google</translation>
+<translation id="7340886226071938450">分頁列位置</translation>
 <translation id="734088800888587319">網路指標</translation>
 <translation id="7341834142292923918">需要這個網站的存取權限</translation>
 <translation id="7343372807593926528">請先說明問題再傳送意見回饋。</translation>
@@ -9861,6 +9862,7 @@
 <translation id="7830833461614351956">要將 <ph name="NUM_OF_FILES" /> 個檔案複製到「<ph name="CLOUD_PROVIDER" />」再開啟嗎？</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">你所儲存的自訂字詞會顯示在這裡</translation>
+<translation id="7833725807105678871">首重網站速度，而非強化安全防護功能</translation>
 <translation id="7834832693620032149">如要分享音訊，請改為分享分頁或視窗</translation>
 <translation id="7836577093182643605">這份主題封鎖清單列出了你不希望與其他網站分享的主題</translation>
 <translation id="7836850009646241041">請再次輕觸你的安全金鑰</translation>
@@ -11133,6 +11135,7 @@
 <translation id="8690129572193755009">網站可以要求處理通訊協定</translation>
 <translation id="869144235543261764">這個分頁正在使用子母畫面模式播放影片</translation>
 <translation id="869167754614449887">已從下載記錄中刪除「<ph name="FILE_NAME" />」</translation>
+<translation id="8691990641861252959">針對外部網際網路的不安全連線發出警告</translation>
 <translation id="8692107307702113268">密碼長度超過 1000 個半形字元</translation>
 <translation id="8693862390730570097">不允許自動開啟「幫我寫」</translation>
 <translation id="8694596275649352090">在休眠或機蓋蓋上時鎖定</translation>
@@ -11334,6 +11337,7 @@
 <translation id="8821268776955756404"><ph name="APP_NAME" /> 已可使用。</translation>
 <translation id="8821647731831124007">沒有可用的無線基地台</translation>
 <translation id="882204272221080310">更新韌體以提升安全性。</translation>
+<translation id="8822690627597552656">降低部分陌生網站的速度，以封鎖常見攻擊</translation>
 <translation id="8823514049557262177">複製連結文字(&amp;X)</translation>
 <translation id="8823704566850948458">建議密碼...</translation>
 <translation id="8823963789776061136">您也可以選取印表機 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>

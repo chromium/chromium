@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Indirizzo del sito copiato</translation>
 <translation id="3280562213547448728">Ricerca vocale</translation>
 <translation id="3289505634533552500">Ricerca vocale</translation>
-<translation id="3293080634164207409">Aggiungi schede</translation>
 <translation id="3295904109373959849">Griglia dei gruppi di schede</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, nuova attività</translation>
 <translation id="3305294846493618482">altro</translation>
@@ -1284,6 +1283,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5902752768726620872">{count,plural, =1{{count} nuova scheda}other{{count} nuove schede}}</translation>
 <translation id="5911030830365207728">Google Traduttore</translation>
 <translation id="5922999516621365983">Trascina qui la scheda per bloccarla.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Aggiungi fino a 1 file, scheda o immagine}other{Aggiungi fino a {COUNT} file, schede o immagini}}</translation>
 <translation id="5936006948844852401">Gestisci spazio di archiviazione</translation>
 <translation id="5936065461722368675">Traduci pagina intera</translation>
 <translation id="5937560539988385583">Pagina tradotta</translation>

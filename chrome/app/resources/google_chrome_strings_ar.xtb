@@ -562,6 +562,7 @@
 <translation id="7285616922384953075">‏تدير "<ph name="MANAGER" />" متصفِّح Chrome</translation>
 <translation id="7288567540154601580">علامات التبويب والإضافات</translation>
 <translation id="7296210096911315575">معلومات مهمّة حول الأمان والاستخدام</translation>
+<translation id="7302361266603927550">‏لم يتم حفظ بعض بيانات Chrome في حسابك على Google إلى الآن. يُرجى الانتظار بضع دقائق قبل تسجيل الخروج. إذا سجّلت الخروج الآن، فسيتم حذف هذه البيانات.</translation>
 <translation id="7308322188646931570">‏يحتاج Chrome للوصول إلى مساحة التخزين لتنزيل الملفات.</translation>
 <translation id="7339898014177206373">نافذة جديدة</translation>
 <translation id="7352651011704765696">حدث خطأ</translation>
@@ -618,6 +619,7 @@
 <translation id="7801699035218095297">‏يحاول Google Chrome نسخ كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="7804364787702057554">‏حسابك في Chrome</translation>
 <translation id="7808348361785373670">‏جارٍ الإزالة من Chrome...</translation>
+<translation id="7827099906024714326">‏يحتاج Chrome إلى إثبات هويتك قبل حفظ بعض البيانات في حسابك على Google واستخدامها على جميع أجهزتك. إذا سجّلت الخروج الآن، فسيتم حذف هذه البيانات.</translation>
 <translation id="7845233973568007926">شكرًا على التثبيت. عليك إعادة تشغيل الكمبيوتر قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">‏المتابعة من حيث توقفت: يمكن لمتصفح Chrome استعادة علامات التبويب كلما أعدت تشغيله. لتفعيل هذه الميزة، يُرجى الانتقال إلى</translation>
 <translation id="7872446069773932638">جارٍ التنزيل… الثواني المتبقّية: <ph name="SECONDS" /></translation>

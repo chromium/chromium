@@ -2176,6 +2176,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4506599922270137252">Contacter l'administrateur système</translation>
 <translation id="450710068430902550">Partage avec l'administrateur</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyer sur Tabulation, puis sur Entrée pour traduire cette page avec Google Traduction</translation>
+<translation id="4510703642214459906">Lieu</translation>
 <translation id="4515275063822566619">Les cartes et les adresses proviennent de Chrome et de votre compte Google (<ph name="ACCOUNT_EMAIL" />). Vous pouvez les gérer dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Très petites voitures</translation>
 <translation id="451601984112574365">Vert 3</translation>
@@ -4373,6 +4374,7 @@ Informations supplémentaires :
 <translation id="8077669823243888800">Enveloppe chinoise n°8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Importer le fichier confidentiel ?}one{Importer le fichier confidentiel ?}other{Importer les fichiers confidentiels ?}}</translation>
 <translation id="8079031581361219619">Actualiser le site Web ?</translation>
+<translation id="8079591184016291275">Nom de l'événement</translation>
 <translation id="8079976827192572403">Site dangereux</translation>
 <translation id="8081087320434522107">Berlines</translation>
 <translation id="8086429410809447605">Vêtements pour femmes</translation>

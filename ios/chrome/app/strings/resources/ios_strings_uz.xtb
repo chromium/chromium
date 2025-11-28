@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Sayt manzilidan nusxa olindi</translation>
 <translation id="3280562213547448728">Ovozli qidiruv</translation>
 <translation id="3289505634533552500">Ovozli qidiruv</translation>
-<translation id="3293080634164207409">Varaqlarni kiriting</translation>
 <translation id="3295904109373959849">Varaqlar guruhi katagi</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, yangi harakat</translation>
 <translation id="3305294846493618482">yana</translation>
@@ -1284,6 +1283,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5902752768726620872">{count,plural, =1{{count} ta yangi varaq}other{{count} ta yangi varaq}}</translation>
 <translation id="5911030830365207728">Google Tarjima</translation>
 <translation id="5922999516621365983">Varaqni shu yerga tortib mahkamlang.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Maksimum 1 ta fayl, varaq yoki rasm kiritish}other{Maksimum {COUNT} ta fayl, varaq yoki rasm kiritish}}</translation>
 <translation id="5936006948844852401">Xotirani boshqarish</translation>
 <translation id="5936065461722368675">Toʻliq sahifani tarjima qilish</translation>
 <translation id="5937560539988385583">Sahifa tarjima qilindi</translation>

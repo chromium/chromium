@@ -1813,9 +1813,6 @@
 <translation id="2220572644011485463">PIN 또는 비밀번호</translation>
 <translation id="222115440608612541">일출 및 일몰 시 테마를 전환합니다.</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">외부 앱에서 이 Chrome 세션을 완전히 제어하여 디버그하려고 합니다. 여기에는 저장된 데이터, 쿠키, 사이트 데이터에 대한 액세스 권한과 모든 URL로 이동할 수 있는 기능이 포함됩니다.
-
-웹 개발자만 이 기능을 사용 설정해야 하며, 신뢰할 수 있는 앱에서만 사용해야 합니다.</translation>
 <translation id="222201875806112242">이름이 지정되지 않은 미디어 소스</translation>
 <translation id="2224337661447660594">인터넷 연결 없음</translation>
 <translation id="2224444042887712269"><ph name="OWNER_EMAIL" />의 설정입니다.</translation>
@@ -6600,6 +6597,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5523532775593636291">추가한 사이트는 항상 활성 상태로 유지되며 이러한 사이트에서 메모리가 확보되지 않습니다.</translation>
 <translation id="5523558474028191231">이름은 문자, 숫자, 특수문자를 포함할 수 있고 <ph name="MAX_CHARACTER_COUNT" />자 미만(영문 기준)이어야 합니다</translation>
 <translation id="5526745900034778153">다시 로그인하여 동기화 재개</translation>
+<translation id="5527211644528700597">기기 내 방법을 사용하여 위협을 감지합니다.</translation>
 <translation id="5527463195266282916">확장 프로그램을 다운그레이드하려고 했습니다.</translation>
 <translation id="5527474464531963247">다른 네트워크를 선택할 수도 있습니다.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, 설치 중</translation>
@@ -6795,6 +6793,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5663459693447872156">반각으로 자동 전환</translation>
 <translation id="5663653125349867535">읽기 목록</translation>
 <translation id="5663918299073387939">사이트에서는 보통 음악을 만들거나 수정하거나 기기 펌웨어를 업데이트하기 위해 MIDI 기기를 제어하고 다시 프로그래밍하도록 요청합니다.</translation>
+<translation id="5666116074010586111">위협을 더 빠르게 감지하기 위해 URL 및 페이지 콘텐츠를 Google에 전송합니다.</translation>
 <translation id="5666911576871845853">새 프로필 추가(&amp;A)</translation>
 <translation id="5667293444945855280">악성 코드</translation>
 <translation id="5667546120811588575">Google Play 설정 중...</translation>
@@ -7975,6 +7974,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6508261954199872201">애플리케이션:<ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Chromebook을 다시 시작한 후 다시 시도해 보세요.</translation>
 <translation id="6511827214781912955">이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 <ph name="FILENAME" /> 파일을 삭제해 보세요.</translation>
+<translation id="6512364354776355686">모든 안전하지 않은 연결에 경고를 표시합니다.</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> 분위기로 생성된 <ph name="SUBJECT" />의 이미지 <ph name="INDEX" /></translation>
 <translation id="6513247462497316522">다른 네트워크에 연결되어 있지 않을 경우 Chrome은 모바일 데이터를 사용합니다.</translation>
 <translation id="6514010653036109809">사용할 수 있는 기기:</translation>
@@ -9159,6 +9159,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7340179705876485790">두 개 이상의 페이지로 돌아가려면 뒤로를 길게 클릭하세요.</translation>
 <translation id="7340650977506865820">사이트에서 화면을 공유하고 있습니다.</translation>
 <translation id="7340757554212515731">진단 및 사용 데이터와 함께 비정상 종료 보고서를 Google에 자동으로 전송합니다.</translation>
+<translation id="7340886226071938450">탭 표시줄 위치</translation>
 <translation id="734088800888587319">네트워크 측정항목</translation>
 <translation id="7341834142292923918">이 사이트의 액세스 권한이 필요합니다.</translation>
 <translation id="7343372807593926528">의견을 보내기 전에 문제를 설명해 주세요.</translation>
@@ -9888,6 +9889,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7830833461614351956">파일 <ph name="NUM_OF_FILES" />개를 <ph name="CLOUD_PROVIDER" />에 복사하여 여시겠습니까?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">저장한 맞춤 단어가 여기에 표시됩니다.</translation>
+<translation id="7833725807105678871">향상된 보안 기능보다 사이트 속도를 우선시합니다.</translation>
 <translation id="7834832693620032149">오디오를 공유하려면 탭이나 창을 대신 공유하세요.</translation>
 <translation id="7836577093182643605">사이트와 공유하지 않으려는 차단된 주제 목록</translation>
 <translation id="7836850009646241041">보안 키 다시 터치해 보기</translation>
@@ -11161,6 +11163,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8690129572193755009">사이트에서 프로토콜 처리를 요청할 수 있음</translation>
 <translation id="869144235543261764">이 탭에서는 PIP 모드로 동영상이 재생되고 있습니다</translation>
 <translation id="869167754614449887">다운로드 기록에서 <ph name="FILE_NAME" /> 파일이 삭제되었습니다.</translation>
+<translation id="8691990641861252959">개방형 인터넷에서 비보안 연결에 경고를 표시합니다.</translation>
 <translation id="8692107307702113268">비밀번호가 1,000자(영문 기준)를 초과합니다.</translation>
 <translation id="8693862390730570097">'작성 지원 기능'이 자동으로 열리도록 허용하지 않음</translation>
 <translation id="8694596275649352090">절전 모드일 때 또는 덮개가 닫힌 경우 잠금</translation>
@@ -11362,6 +11365,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> 앱을 사용할 수 있습니다.</translation>
 <translation id="8821647731831124007">사용 가능한 핫스팟 없음</translation>
 <translation id="882204272221080310">펌웨어를 업데이트하여 보안 강화</translation>
+<translation id="8822690627597552656">일반적인 공격을 차단하기 위해 익숙하지 않은 일부 사이트의 속도를 늦춥니다.</translation>
 <translation id="8823514049557262177">링크 텍스트 복사(&amp;X)</translation>
 <translation id="8823704566850948458">비밀번호 추천...</translation>
 <translation id="8823963789776061136">또는 프린터 PPD를 선택합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>

@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5602622065581044566">bugarski s fonetskom tastaturom</translation>
 <translation id="5605830556594064952">SAD Dvorak</translation>
+<translation id="560739212255190568">Administrator je postavio pravila o nadjačavanju proksi servera uz primjenu sljedećeg proksi servera</translation>
 <translation id="5618330573454123917">Ovaj fajl je dizajniran za računar koji koristi Macintosh softver. Sadržaj nije kompatibilan s vašim uređajem koji koristi ChromeOS. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju fajlova u ChromeOS-u.</translation>
 <translation id="5625294776298156701">tamilski s tastaturom Tamil99</translation>
 <translation id="5633226425545095130">Ako premjestite ovu stavku, dijelit će se sa svakim ko može vidjeti dijeljeni folder "<ph name="DESTINATION_NAME" />".</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
 <translation id="8545476925160229291">engleski (SAD)</translation>
 <translation id="854655314928502177">URL za automatsko otkrivanje web proksi servera:</translation>
+<translation id="8547747809824590510">Administrator je postavio pravila o nadjačavanju proksi servera</translation>
 <translation id="8549186985808798022">italijanski</translation>
 <translation id="8551494947769799688">Latvijska</translation>
 <translation id="8560515948038859357">kantonski</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Fajl s nazivom "<ph name="FILE_NAME" />" već postoji. Odaberite drugi naziv fajla.</translation>
 <translation id="9046895021617826162">Povezivanje nije uspjelo</translation>
 <translation id="9065512565307033593">Ako ne uspijete potvrditi, onemogućit će vam se pristup mreži.</translation>
+<translation id="9079844694307518094">Administrator primjenjuje sljedeći proksi server</translation>
 <translation id="908378762078012445">ruski s fonetskom tastaturom AATSEEL</translation>
 <translation id="9086302186042011942">Sinhroniziranje</translation>
 <translation id="9099674669267916096">Broj stranica</translation>

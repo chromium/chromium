@@ -2173,6 +2173,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4506599922270137252">Contattare l'amministratore di sistema</translation>
 <translation id="450710068430902550">Condivisione con l'amministratore</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per tradurre questa pagina con Google Traduttore</translation>
+<translation id="4510703642214459906">Sede</translation>
 <translation id="4515275063822566619">Carte di credito e indirizzi provengono da Chrome e dall'Account Google (<ph name="ACCOUNT_EMAIL" />). Puoi gestirli in <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Microvetture e utilitarie</translation>
 <translation id="451601984112574365">Verde 3</translation>
@@ -4368,6 +4369,7 @@ Ulteriori dettagli:
 <translation id="8077669823243888800">Busta Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vuoi caricare un file riservato?}other{Vuoi caricare file riservati?}}</translation>
 <translation id="8079031581361219619">Vuoi ricaricare il sito?</translation>
+<translation id="8079591184016291275">Nome evento</translation>
 <translation id="8079976827192572403">Sito pericoloso</translation>
 <translation id="8081087320434522107">Berline</translation>
 <translation id="8086429410809447605">Abbigliamento donna</translation>

@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">დამატებითი ვარიანტები</translation>
 <translation id="5602622065581044566">ბულგარული ფონეტიკური კლავიატურით</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
+<translation id="560739212255190568">თქვენმა ადმინისტრატორმა დააყენა პროქსის უგულებელყოფის წესები, გარდა შემდეგი პროქსი-სერვერის სავალდებულო გამოყენებისა</translation>
 <translation id="5618330573454123917">ეს ფაილი განკუთვნილია კომპიუტერისთვის, რომელიც იყენებს Macintosh პროგრამულ უზრუნველყოფას. ის არ არის თავსებადი თქვენს მოწყობილობასთან, რომელზეც გაშვებულია ChromeOS. <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /> ChromeOS-ზე ფაილების გახსნის შესახებ.</translation>
 <translation id="5625294776298156701">ტამილური Tamil99 კლავიატურით</translation>
 <translation id="5633226425545095130">ამ ერთეულის გადატანის შემთხვევაში ის გაზიარდება ყველასთან, ვისაც შეუძლია საზიარო საქაღალდის „<ph name="DESTINATION_NAME" />“ ნახვა.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
 <translation id="8545476925160229291">ინგლისური (აშშ)</translation>
 <translation id="854655314928502177">ვებ პროქსი-სერვერის ავტომატური აღმოჩენის URL:</translation>
+<translation id="8547747809824590510">თქვენმა ადმინისტრატორმა დააყენა პროქსი-სერვერის უგულებელყოფის წესები</translation>
 <translation id="8549186985808798022">იტალიური</translation>
 <translation id="8551494947769799688">ლატვიური</translation>
 <translation id="8560515948038859357">კანტონური</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">ფაილი სახელად „<ph name="FILE_NAME" />“ უკვე არსებობს. გთხოვთ, აირჩიოთ სხვა სახელი.</translation>
 <translation id="9046895021617826162">დაკავშირება ვერ მოხერხდა</translation>
 <translation id="9065512565307033593">თუ დადასტურებას ვერ მოახერხებთ, ქსელზე წვდომა გაითიშება.</translation>
+<translation id="9079844694307518094">თქვენი ადმინისტრატორის მიერ სავალდებულოდ დაყენებულია შემდეგი პროქსი-სერვერი</translation>
 <translation id="908378762078012445">რუსული ფონეტიკური AATSEEL კლავიატურით</translation>
 <translation id="9086302186042011942">სინქრონიზაცია</translation>
 <translation id="9099674669267916096">გვერდების რაოდენობა</translation>

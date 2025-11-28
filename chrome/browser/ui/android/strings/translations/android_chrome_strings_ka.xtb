@@ -223,7 +223,6 @@
 <translation id="1959679933317802873">კონტენტის მოლოდინში</translation>
 <translation id="1960290143419248813">Chrome-ის განახლებები აღარ არის მხარდაჭერილი Android-ის ამ ვერსიისთვის</translation>
 <translation id="1962061488333185936"><ph name="TAB_TITLE" />, არჩეულია რამდენიმე ჩანართი კონტენტის მოსასმენად</translation>
-<translation id="1963056249988316027">ვინაობის შემოწმება ჩართულია, თუმცა თქვენს ვინაობას ვერ ადასტურებს</translation>
 <translation id="1963976881984600709">სტანდარტული დაცვა</translation>
 <translation id="1966710179511230534">გთხოვთ, განაახლოთ თქვენი შესვლის დეტალები.</translation>
 <translation id="1969037871259811890">თქვენი დათვალიერების მონაცემების წაშლა არ გამოგიყვანთ თქვენი Google ანგარიშიდან. ამისთვის <ph name="BEGIN_LINK1" />Chrome-იდან უნდა გახვიდეთ<ph name="END_LINK1" />.</translation>
@@ -497,6 +496,7 @@
 <translation id="3114507951000454849">გაეცანით დღის სიახლეებს <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">დაწვრილებით</translation>
 <translation id="3123734510202723619">განცხადებები</translation>
+<translation id="3134385238404760368">ბოლოდროინდელი ჩანართები არ არის</translation>
 <translation id="314939179385989105">Chrome-ის მთავარი გვერდი</translation>
 <translation id="3158667104057012316">ხელით არჩეული მიმდევრობით დალაგება</translation>
 <translation id="3159335509547415276">ვრცლად დაბლოკილი ანგარიშების შესახებ</translation>
@@ -601,7 +601,6 @@
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 საიტი}other{+ # საიტი}}</translation>
 <translation id="3625870480639975468">მასშტაბის განულება</translation>
 <translation id="3631987586758005671">მიმდინარეობს გაზიარება <ph name="DEVICE_NAME" />-თან</translation>
-<translation id="363484704507524488">ვინაობის შემოწმების მართვა ქურდობისგან დაცვის პარამეტრებიდან შეგიძლიათ. <ph name="BEGIN_LINK" />პარამეტრებში გადასვლა<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">პაროლების შემოწმებას Chrome შეძლებს მათი შენახვის შემდეგ</translation>
 <translation id="3636940436873918441">უპირატესი ენები</translation>
 <translation id="3637744895182738742">საიდუმლო ფრაზის დავიწყების ან ამ პარამეტრის შეცვლის სურვილის შემთხვევაში, <ph name="BEGIN_LINK" />წაშალეთ Chrome-ის მონაცემები თქვენი ანგარიშიდან<ph name="END_LINK" />.</translation>
@@ -819,6 +818,7 @@
 <translation id="4577115723294378384">ა-დან ჰ-მდე დალაგება</translation>
 <translation id="4578289292431526768">დავიწყოთ</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# წუთის წინ}other{# წუთის წინ}}</translation>
+<translation id="4585751637295612750">გახსენით ახალი ჩანართი, რომ დაამატოთ ის თქვენს შეკითხვას</translation>
 <translation id="4587589328781138893">საიტები</translation>
 <translation id="4594952190837476234">ეს ხაზგარეშე გვერდი თარიღდება <ph name="CREATION_TIME" />-ით და შეიძლება განსხვავდებოდეს ონლაინ-ვერსიისგან.</translation>
 <translation id="4595237294768457124">გახსენით ახალი ჩანართის გვერდი</translation>
@@ -1131,7 +1131,6 @@
 <translation id="5869522115854928033">შენახული პაროლები</translation>
 <translation id="5870416898561279542">დუბლირებული ან <ph name="DAYS_INACTIVE" /> დღის განმავლობაში გამოუყენებელი ჯგუფები გადმოტანილია აქ <ph name="AUTODELETE_SECTION" />. ამის შესაცვლელად ნებისმიერ დროს გახსენით <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="587735546353481577">საიტისთვის თვალის მისადევნებლად გადადით საიტზე, გახსენით Chrome-ის მენიუ და შეეხეთ „თვალის მიდევნებას“.</translation>
-<translation id="5883855034004058011">ბიომეტრიული მონაცემების დადასტურება მეტისმეტად ბევრჯერ დასრულდა წარუმატებლად. ხელახლა საცდელად ჩაკეტეთ და განბლოკეთ თქვენი მოწყობილობა.</translation>
 <translation id="5885378508678660271">შეტყობინებები <ph name="SEPARATOR" /> Chrome-მა ამოშალა ეს ნებართვები, რადგან ეს საიტი სახიფათოა</translation>
 <translation id="5899667542927581604">წვდომის გასაღებების არარსებობის ფურცელი დახურულია</translation>
 <translation id="5907542076239273525">სანიშნე შენახულია საქაღალდეში „<ph name="FOLDER_NAME" />“.</translation>
@@ -1340,7 +1339,6 @@
 <translation id="670498945988402717">შემოწმდა გუშინ</translation>
 <translation id="6710213216561001401">წინა</translation>
 <translation id="671481426037969117">თქვენი <ph name="FQDN" />-ის ტაიმერი ამოიწურა. ხვალ ის ხელახლა დაიწყება.</translation>
-<translation id="671928215901716392">ჩაკეტილი ეკრანი</translation>
 <translation id="6723740634201835758">თქვენს Google ანგარიშში</translation>
 <translation id="6734310707649923383">თქვენ შეგიძლიათ ნახოთ გვერდები, რომლებსაც ესტუმრეთ, ან წაშალოთ ისინი ისტორიიდან</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, ჩამაგრებულია ინკოგნიტო ჩანართი, რომელშიც მიმდინარეობს ჩაწერა</translation>
@@ -1872,6 +1870,7 @@
 <translation id="8840953339110955557">ეს გვერდი შეიძლება განსხვავდებოდეს ონლაინ-ვერსიისგან.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">დამალული</translation>
+<translation id="8849164661359544855"><ph name="URL" />-ს სურს რეჟიმში „ეკრანი ეკრანში“ ავტომატურად შესვლა</translation>
 <translation id="8854223127042600341">ხაზგარეშე ფაილების ნახვა</translation>
 <translation id="885480114717186641">შეგიძლიათ მოითხოვოთ დესკტოპის საიტი <ph name="HOST_NAME" />-ისთვის</translation>
 <translation id="8856607253650333758">აღწერილობების მიღება</translation>

@@ -2055,6 +2055,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4299919199185766032">Yorqlining nomi juda uzun. Ruxsat etilgan belgilar soni: <ph name="MAX_LENGTH" />.</translation>
 <translation id="4300272766492248925">Ilovani ochish</translation>
 <translation id="4300675098767811073">Oʻngdan bir necha teshik ochish</translation>
+<translation id="4300841966382281549">Sayohat</translation>
 <translation id="4302514097724775343">Boshlash uchun dinozavrni bosing</translation>
 <translation id="4304049446746819918">{0,plural, =1{Administrator bu faylni <ph name="DESTINATION_NAME" />ga koʻchirishni tavsiya qilmaydi}other{Administrator bu fayllarni <ph name="DESTINATION_NAME" />ga koʻchirishni tavsiya qilmaydi}}</translation>
 <translation id="4304485328308299773">Sharhlardagi fikringizni aniqlashtirishda yordam beradigan mijozlarning mahsulot sharhlari va tajribalari bilan tanishing.</translation>
@@ -3419,6 +3420,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6539092367496845964">Xatolik yuz berdi. Keyinroq qaytadan urining.</translation>
 <translation id="6540488083026747005">Bu sayt uchun tashqi cookie fayllarga ruxsat bergansiz</translation>
 <translation id="6545864417968258051">Bluetooth qurilmalarni qidirish</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> – <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Chapdan 2 ta teshik ochish</translation>
 <translation id="6549443526281184652">Kostyumlar</translation>
 <translation id="6550245281449521513">Sichqoncha qulflash taqiqlangan</translation>
@@ -4802,6 +4804,7 @@ Batafsil axborot:
 <translation id="8814547618907885931">Barcha taqqoslash jadvallari</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali Chromeni yangilash uchun Enter tugmasini bosing</translation>
+<translation id="8819855907485254989">Transport chiptasini Walletga saqlang</translation>
 <translation id="8820817407110198400">Bukmarklar</translation>
 <translation id="882338992931677877">Mustaqil orqaliq</translation>
 <translation id="8827067923357481311">Keyinroq toʻlash usullari</translation>

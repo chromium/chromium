@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="5602622065581044566">Bulgare avec clavier phonétique</translation>
 <translation id="5605830556594064952">Dvorak américain</translation>
+<translation id="560739212255190568">Votre administrateur a défini des règles de remplacement de proxy en plus d'appliquer le proxy suivant</translation>
 <translation id="5618330573454123917">Ce fichier est conçu pour un ordinateur Macintosh. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS</translation>
 <translation id="5625294776298156701">Tamoul (avec clavier Tamil99)</translation>
 <translation id="5633226425545095130">En déplaçant cet élément, vous le partagerez avec toute personne pouvant voir le dossier partagé "<ph name="DESTINATION_NAME" />".</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="8545476925160229291">Anglais (États-Unis)</translation>
 <translation id="854655314928502177">URL du proxy Web Auto Discovery :</translation>
+<translation id="8547747809824590510">Votre administrateur a défini des règles de remplacement de proxy</translation>
 <translation id="8549186985808798022">Italien</translation>
 <translation id="8551494947769799688">Letton</translation>
 <translation id="8560515948038859357">Cantonais</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Le nom "<ph name="FILE_NAME" />" est déjà attribué à un fichier. Veuillez en choisir un autre.</translation>
 <translation id="9046895021617826162">Échec de la connexion</translation>
 <translation id="9065512565307033593">En cas d'échec de la validation, votre accès réseau sera désactivé.</translation>
+<translation id="9079844694307518094">Votre administrateur applique le proxy suivant</translation>
 <translation id="908378762078012445">Russe avec clavier phonétique AATSEEL</translation>
 <translation id="9086302186042011942">Synchronisation en cours</translation>
 <translation id="9099674669267916096">Nombre de pages</translation>

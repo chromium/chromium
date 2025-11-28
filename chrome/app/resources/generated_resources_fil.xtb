@@ -1813,9 +1813,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="222115440608612541">Magpalit ng tema sa pagsikat at paglubog ng araw</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">May external app na gustong magkaroon ng ganap na kontrol sa session ng Chrome na ito para i-debug ito. Kabilang dito ang access sa iyong naka-save na data, cookies at data ng site, at ang kakayahang mag-navigate sa anumang URL.
-
-Mga web developer lang ang dapat mag-on ng feature na ito, at gamitin lang ito sa mga pinagkakatiwalaang app.</translation>
 <translation id="222201875806112242">Walang pangalan na media source</translation>
 <translation id="2224337661447660594">Walang internet</translation>
 <translation id="2224444042887712269">Ang setting na ito ay kay <ph name="OWNER_EMAIL" />.</translation>

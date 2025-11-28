@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Endereço do site copiado</translation>
 <translation id="3280562213547448728">Pesquisa por voz</translation>
 <translation id="3289505634533552500">Pesquisa por voz</translation>
-<translation id="3293080634164207409">Adicionar separadores</translation>
 <translation id="3295904109373959849">Grelha de grupos de separadores</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, nova atividade</translation>
 <translation id="3305294846493618482">mais</translation>
@@ -1284,6 +1283,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5902752768726620872">{count,plural, =1{{count} novo separador}other{{count} novos separadores}}</translation>
 <translation id="5911030830365207728">Google Tradutor</translation>
 <translation id="5922999516621365983">Arrastar o separador para aqui para o fixar.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Adicione até 1 ficheiro, separador ou imagem}other{Adicione até {COUNT} ficheiros, separadores ou imagens}}</translation>
 <translation id="5936006948844852401">Gerir armazenamento</translation>
 <translation id="5936065461722368675">Traduzir página inteira</translation>
 <translation id="5937560539988385583">Página traduzida</translation>
@@ -1539,6 +1539,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6761393919622941301">Áudio</translation>
 <translation id="6770452996697898492">[RESERVADO]</translation>
 <translation id="6779455296366983087">Os seus dados de navegação vão ser eliminados</translation>
+<translation id="6782531425936234573">Exportar dados</translation>
 <translation id="6791425686608802741">Toque em "Adicionar separador a novo grupo"</translation>
 <translation id="6794476726485507147">Escolha uma data e uma hora para receber uma notificação de lembrete para consultar esta página novamente</translation>
 <translation id="6795481620482106033">Dados inválidos</translation>

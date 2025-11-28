@@ -223,7 +223,6 @@
 <translation id="1959679933317802873">Բովանդակության սպասում</translation>
 <translation id="1960290143419248813">Chrome-ն այլևս չի թարմացվում Android-ի այս տարբերակում</translation>
 <translation id="1962061488333185936"><ph name="TAB_TITLE" />, ընտրված մի քանի ներդիրներից մեկը, որում ձայն է նվագարկվում</translation>
-<translation id="1963056249988316027">Ինքնության ստուգումը միացված է, սակայն ձեր ինքնությունը չհաջողվեց հաստատել</translation>
 <translation id="1963976881984600709">Սովորական պաշտպանություն</translation>
 <translation id="1966710179511230534">Թարմացրեք ձեր մուտքի տվյալները:</translation>
 <translation id="1969037871259811890">Ձեր այցելությունների պատմությունը ջնջելով՝ դուք դուրս չեք գա ձեր Google հաշվից։ Հաշվից դուրս գալու համար անհրաժեշտ է <ph name="BEGIN_LINK1" />դուրս գալ Chrome-ից<ph name="END_LINK1" />։</translation>
@@ -601,7 +600,6 @@
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 կայք}one{+ # կայք}other{+ # կայք}}</translation>
 <translation id="3625870480639975468">Վերակայել խոշորացումը</translation>
 <translation id="3631987586758005671">Ուղարկվում է <ph name="DEVICE_NAME" /> սարքին</translation>
-<translation id="363484704507524488">Դուք կարող եք փոխել ինքնության ստուգման կարգավորումները գողությունից պաշտպանության կարգավորումներում։ <ph name="BEGIN_LINK" />Անցնել կարգավորումներ<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Chrome-ը կարող է ստուգել ձեր գաղտնաբառերը, երբ պահում եք դրանք</translation>
 <translation id="3636940436873918441">Նախընտրելի լեզուներ</translation>
 <translation id="3637744895182738742">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />ջնջեք Chrome-ի տվյալները ձեր հաշվում<ph name="END_LINK" />։</translation>
@@ -1131,7 +1129,6 @@
 <translation id="5869522115854928033">Պահված գաղտնաբառեր</translation>
 <translation id="5870416898561279542">Կրկնօրինակ կամ <ph name="DAYS_INACTIVE" /> օր չօգտագործված ներդիրներն ու խմբերը տեղափոխվում են այստեղ<ph name="AUTODELETE_SECTION" />։ Սա ցանկացած ժամանակ կարող եք փոխել <ph name="DECLUTTER_SETTINGS_TITLE" />ում։</translation>
 <translation id="587735546353481577">Կայքին հետևելու համար անցեք այդ կայք, բացեք Chrome-ի ընտրացանկն ու հպեք «Հետևել»։</translation>
-<translation id="5883855034004058011">Կենսաչափական տվյալները հաստատելու չափազանց շատ անհաջող փորձեր են արվել։ Նորից փորձելու համար կողպեք և ապակողպեք ձեր սարքը։</translation>
 <translation id="5885378508678660271">Ծանուցումներ <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները, քանի որ այս կայքը վտանգավոր է</translation>
 <translation id="5899667542927581604">«Հասանելի մուտքի բանալիներ չկան» թերթը փակվեց</translation>
 <translation id="5907542076239273525">Էջանիշը պահվեց «<ph name="FOLDER_NAME" />» պանակում</translation>
@@ -1340,7 +1337,6 @@
 <translation id="670498945988402717">Ստուգվել է երեկ</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="671481426037969117"><ph name="FQDN" />-ի համար նախատեսված ժամանակը լրացել է։ Վաղը այն նորից կաշխատի:</translation>
-<translation id="671928215901716392">Կողպել էկրանը</translation>
 <translation id="6723740634201835758">Ձեր Google հաշվում</translation>
 <translation id="6734310707649923383">Դուք կարող եք դիտել ձեր այցելած էջերը կամ ջնջել դրանք պատմությունից</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, ամրացված ինկոգնիտո ներդիր, որում տեսագրում է արվում</translation>
@@ -1872,6 +1868,7 @@
 <translation id="8840953339110955557">Այս էջը կարող է տարբերվել առցանց տարբերակից։</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Ոչ ոք</translation>
+<translation id="8849164661359544855"><ph name="URL" /> կայքն ուզում է ավտոմատ բացել «Նկար նկարի մեջ» պատուհանները</translation>
 <translation id="8854223127042600341">Դիտեք անցանց ֆայլերը</translation>
 <translation id="885480114717186641">Դուք կարող եք <ph name="HOST_NAME" /> կայքի համակարգչային տարբերակը խնդրել</translation>
 <translation id="8856607253650333758">Ստանալ նկարագրություններ</translation>

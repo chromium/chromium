@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Saidi aadress on kopeeritud</translation>
 <translation id="3280562213547448728">Häälotsing</translation>
 <translation id="3289505634533552500">Häälotsing</translation>
-<translation id="3293080634164207409">Lisage vahelehti</translation>
 <translation id="3295904109373959849">Vahelehegruppide ruudustik</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, uus tegevus</translation>
 <translation id="3305294846493618482">rohkem</translation>
@@ -1284,6 +1283,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5902752768726620872">{count,plural, =1{{count} uus vaheleht}other{{count} uut vahelehte}}</translation>
 <translation id="5911030830365207728">Google'i tõlge</translation>
 <translation id="5922999516621365983">Vahelehe kinnitamiseks lohistage see siia.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Lisage kuni üks fail, vahekaart või pilt.}other{Lisage kuni {COUNT} faili, vahekaarti või pilti.}}</translation>
 <translation id="5936006948844852401">Salvestusruumi haldamine</translation>
 <translation id="5936065461722368675">Tõlgi kogu leht</translation>
 <translation id="5937560539988385583">Leht on tõlgitud</translation>

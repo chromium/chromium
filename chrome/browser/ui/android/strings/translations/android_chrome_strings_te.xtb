@@ -223,7 +223,6 @@
 <translation id="1959679933317802873">కంటెంట్ కోసం వేచి ఉంది</translation>
 <translation id="1960290143419248813">Chrome అప్‌డేట్‌లకు ఈ Android వెర్షన్‌లో మద్దతు లేదు</translation>
 <translation id="1962061488333185936"><ph name="TAB_TITLE" />, ఆడియోను ప్లే చేసే మల్టీసెలెక్టెడ్ ట్యాబ్</translation>
-<translation id="1963056249988316027">ఐడెంటిటీ చెక్ ఆన్‌లో ఉంది, ఇది మీరేనని వెరిఫై చేయడం సాధ్యం కాలేదు</translation>
 <translation id="1963976881984600709">స్టాండర్డ్ రక్షణ</translation>
 <translation id="1966710179511230534">దయచేసి మీ సైన్-ఇన్ వివరాలను అప్‌డేట్ చేయండి.</translation>
 <translation id="1969037871259811890">మీ బ్రౌజింగ్ డేటాను తొలగిస్తే మీరు Google ఖాతా నుండి సైన్ అవుట్ కారు. ఇలా చేయడం కోసం, <ph name="BEGIN_LINK1" />Chrome నుండి సైన్ అవుట్ అవ్వండి<ph name="END_LINK1" />.</translation>
@@ -601,7 +600,6 @@
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 సైట్}other{+ # సైట్‌లు}}</translation>
 <translation id="3625870480639975468">జూమ్‌ని రీసెట్ చేయండి</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />తో షేర్ చేస్తోంది</translation>
-<translation id="363484704507524488">మీరు దొంగతనం నుండి రక్షణకు సంబంధించిన సెట్టింగ్‌లలో ఐడెంటిటీ చెక్ ఇన్‌ను మేనేజ్ చేయవచ్చు. <ph name="BEGIN_LINK" />సెట్టింగ్‌లకు వెళ్లండి<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">మీరు పాస్‌వర్డ్‌లను సేవ్ చేసినప్పుడు Chrome మీ వాటిని చెక్ చేయగలదు</translation>
 <translation id="3636940436873918441">ప్రాధాన్య భాషలు</translation>
 <translation id="3637744895182738742">మీ రహస్య పదబంధాన్ని మీరు మర్చిపోయినా లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకున్నా, <ph name="BEGIN_LINK" />మీ ఖాతాలోని Chrome డేటాను తొలగించండి<ph name="END_LINK" />.</translation>
@@ -1131,7 +1129,6 @@
 <translation id="5869522115854928033">సేవ్  చేసిన పాస్‌వర్డ్‌లు</translation>
 <translation id="5870416898561279542">డూప్లికేట్ ట్యాబ్‌లు, గ్రూప్‌లు లేదా <ph name="DAYS_INACTIVE" /> రోజులుగా ఉపయోగించనివి ఇక్కడికి తరలించబడతాయి<ph name="AUTODELETE_SECTION" />. మీరు దీన్ని ఏ సమయంలోనైనా <ph name="DECLUTTER_SETTINGS_TITLE" />‌లో మార్చవచ్చు.</translation>
 <translation id="587735546353481577">సైట్‌ను ఫాలో చేయడానికి, సైట్‌కు వెళ్లి, Chrome మెనూను తెరిచి, 'ఫాలో చేయండి'ని ట్యాప్ చేయండి.</translation>
-<translation id="5883855034004058011">బయోమెట్రిక్ డేటా చాలా సార్లు విఫలమైంది. మళ్లీ ట్రై చేయడానికి మీ పరికరాన్ని లాక్ చేసి, అన్‌లాక్ చేయండి.</translation>
 <translation id="5885378508678660271">నోటిఫికేషన్‌లు <ph name="SEPARATOR" /> ఈ సైట్ ప్రమాదకరమైనది కాబట్టి Chrome ఈ అనుమతులను తీసివేసింది</translation>
 <translation id="5899667542927581604">పాస్-కీల షీట్ ఏదీ మూసివేయబడలేదు</translation>
 <translation id="5907542076239273525">బుక్‌మార్క్ <ph name="FOLDER_NAME" />‌కు సేవ్ అయ్యింది</translation>
@@ -1338,7 +1335,6 @@
 <translation id="670498945988402717">నిన్న చెక్ చేసింది</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
 <translation id="671481426037969117">మీ <ph name="FQDN" /> టైమర్ పూర్తయింది. అది మళ్లీ రేపు ప్రారంభమవుతుంది.</translation>
-<translation id="671928215901716392">స్క్రీన్‌ను లాక్ చేయి</translation>
 <translation id="6723740634201835758">మీ Google ఖాతాలో</translation>
 <translation id="6734310707649923383">మీరు తెరిచిన పేజీలను చూడవచ్చు లేదా వాటిని మీ హిస్టరీ నుండి తొలగించవచ్చు</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, అజ్ఞాత మోడ్‌లో మీడియాను రికార్డ్ చేసే పిన్ చేసిన ట్యాబ్</translation>
@@ -1870,6 +1866,7 @@
 <translation id="8840953339110955557">ఈ పేజీ మరియు ఆన్‌లైన్ వెర్షన్ వేరుగా ఉండవచ్చు.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">దాచబడింది</translation>
+<translation id="8849164661359544855"><ph name="URL" /> పిక్చర్-ఇన్-పిక్చర్ మోడ్‌కు ఆటోమేటిక్‌గా ప్రవేశించాలనుకుంటోంది</translation>
 <translation id="8854223127042600341">మీ ఆఫ్‌లైన్ ఫైళ్లను చూడండి</translation>
 <translation id="885480114717186641">మీరు <ph name="HOST_NAME" /> కోసం డెస్క్‌టాప్ సైట్‌ను రిక్వెస్ట్ చేయవచ్చు</translation>
 <translation id="8856607253650333758">వివరణలను పొందండి</translation>

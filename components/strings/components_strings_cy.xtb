@@ -2176,6 +2176,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4506599922270137252">Cysylltu â gweinyddwr y system</translation>
 <translation id="450710068430902550">Rhannu â'r Gweinyddwr</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab ac Enter i gyfieithu'r dudalen hon gyda Google Translate</translation>
+<translation id="4510703642214459906">Lleoliad</translation>
 <translation id="4515275063822566619">Daw cardiau a chyfeiriadau o Chrome a'ch Cyfrif Google (<ph name="ACCOUNT_EMAIL" />). Gallwch eu rheoli yn y <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Ceir Meicro a Chryno Iawn</translation>
 <translation id="451601984112574365">Gwyrdd 3</translation>
@@ -4371,6 +4372,7 @@ Manylion ychwanegol:
 <translation id="8077669823243888800">Amlen Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Uwchlwytho ffeil gyfrinachol?}zero{Uwchlwytho ffeiliau cyfrinachol?}two{Uwchlwytho ffeiliau cyfrinachol?}few{Uwchlwytho ffeiliau cyfrinachol?}many{Uwchlwytho ffeiliau cyfrinachol?}other{Uwchlwytho ffeiliau cyfrinachol?}}</translation>
 <translation id="8079031581361219619">Ail-lwytho'r dudalen?</translation>
+<translation id="8079591184016291275">Enw Digwyddiad</translation>
 <translation id="8079976827192572403">Gwefan beryglus</translation>
 <translation id="8081087320434522107">Ceir sedan</translation>
 <translation id="8086429410809447605">Dillad Menywod</translation>

@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">คัดลอกที่อยู่เว็บไซต์แล้ว</translation>
 <translation id="3280562213547448728">ค้นหาด้วยเสียง</translation>
 <translation id="3289505634533552500">ค้นหาด้วยเสียง</translation>
-<translation id="3293080634164207409">เพิ่มแท็บ</translation>
 <translation id="3295904109373959849">ตารางกริดของกลุ่มแท็บ</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, กิจกรรมใหม่</translation>
 <translation id="3305294846493618482">เพิ่มเติม</translation>
@@ -1284,6 +1283,7 @@
 <translation id="5902752768726620872">{count,plural, =1{แท็บใหม่ {count} แท็บ}other{แท็บใหม่ {count} แท็บ}}</translation>
 <translation id="5911030830365207728">Google แปลภาษา</translation>
 <translation id="5922999516621365983">ลากแท็บมาที่นี่เพื่อปักหมุด</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{เพิ่มไฟล์ แท็บ หรือรูปภาพได้สูงสุด 1 รายการ}other{เพิ่มไฟล์ แท็บ หรือรูปภาพได้สูงสุด {COUNT} รายการ}}</translation>
 <translation id="5936006948844852401">จัดการพื้นที่เก็บข้อมูล</translation>
 <translation id="5936065461722368675">แปลทั้งหน้า</translation>
 <translation id="5937560539988385583">แปลหน้าเว็บแล้ว</translation>

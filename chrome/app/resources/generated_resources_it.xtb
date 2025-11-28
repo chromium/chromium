@@ -1802,9 +1802,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="222115440608612541">Cambia tema all'alba e al tramonto</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> e <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">Un'app esterna richiede il controllo completo di questa sessione di Chrome per eseguire il debug. Ciò include l'accesso ai dati salvati, ai cookie e ai dati dei siti, nonché la possibilità di navigare in qualsiasi URL.
-
-Solo gli sviluppatori web dovrebbero attivare questa funzionalità e utilizzarla unicamente con app attendibili.</translation>
 <translation id="222201875806112242">Origine di contenuti multimediali senza nome</translation>
 <translation id="2224337661447660594">Nessuna connessione a internet</translation>
 <translation id="2224444042887712269">Questa impostazione appartiene a <ph name="OWNER_EMAIL" />.</translation>
@@ -6585,6 +6582,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5523532775593636291">I siti che aggiungi saranno sempre attivi e non verrà eliminata memoria per questi siti</translation>
 <translation id="5523558474028191231">Il nome può contenere lettere, numeri e caratteri speciali e non può superare i <ph name="MAX_CHARACTER_COUNT" /> caratteri</translation>
 <translation id="5526745900034778153">Accedi nuovamente per riprendere la sincronizzazione</translation>
+<translation id="5527211644528700597">Utilizza metodi sul dispositivo per rilevare le minacce</translation>
 <translation id="5527463195266282916">Hai tentato di eseguire il downgrade dell'estensione.</translation>
 <translation id="5527474464531963247">Potresti inoltre selezionare un'altra rete.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, installazione in corso…</translation>
@@ -6778,6 +6776,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5663459693447872156">Passa automaticamente a metà larghezza</translation>
 <translation id="5663653125349867535">&amp;Elenco di lettura</translation>
 <translation id="5663918299073387939">In genere, i siti chiedono di controllare e riprogrammare i dispositivi MIDI per creare e modificare musica o aggiornare il firmware del dispositivo</translation>
+<translation id="5666116074010586111">Invia l'URL e i contenuti della pagina a Google per rilevare più rapidamente le minacce</translation>
 <translation id="5666911576871845853">&amp;Aggiungi nuovo profilo</translation>
 <translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Configurazione di Google Play...</translation>
@@ -7957,6 +7956,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6508261954199872201">Applicazione: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Riavvia Chromebook e riprova</translation>
 <translation id="6511827214781912955">Ti consigliamo di eliminare il file <ph name="FILENAME" /> per impedire alle altre persone che usano questo dispositivo di vedere le tue password</translation>
+<translation id="6512364354776355686">Ti avvisa in caso di connessioni non sicure di qualsiasi tipo</translation>
 <translation id="6512759338201777379">Immagine generata <ph name="INDEX" /> di <ph name="SUBJECT" />, con stato d'animo <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome utilizzerà i dati mobili se non sei connesso a un'altra rete.</translation>
 <translation id="6514010653036109809">Dispositivo disponibile:</translation>
@@ -9141,6 +9141,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7340179705876485790">Per tornare indietro di più di una pagina, fai clic su Indietro e tieni premuto.</translation>
 <translation id="7340650977506865820">Il sito sta condividendo lo schermo</translation>
 <translation id="7340757554212515731">Invia automaticamente a Google report sugli arresti anomali e dati diagnostici e sull'utilizzo</translation>
+<translation id="7340886226071938450">Posizione della tabstrip</translation>
 <translation id="734088800888587319">Metriche di rete</translation>
 <translation id="7341834142292923918">Vuole accedere a questo sito</translation>
 <translation id="7343372807593926528">Prima di inviare il feedback, descrivi il problema.</translation>
@@ -9871,6 +9872,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7830833461614351956">Vuoi copiare <ph name="NUM_OF_FILES" /> file in <ph name="CLOUD_PROVIDER" /> per aprirli?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Le parole personalizzate salvate verranno visualizzate qui</translation>
+<translation id="7833725807105678871">Dà la priorità alla velocità del sito rispetto alle funzionalità di sicurezza avanzate</translation>
 <translation id="7834832693620032149">Per condividere l'audio, condividi una scheda o una finestra</translation>
 <translation id="7836577093182643605">Elenco di argomenti che hai bloccato e che non vuoi condividere con i siti</translation>
 <translation id="7836850009646241041">Prova a toccare di nuovo il token di sicurezza</translation>
@@ -11143,6 +11145,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8690129572193755009">I siti possono chiedere di gestire protocolli</translation>
 <translation id="869144235543261764">Questa scheda sta riproducendo un video in modalità Picture in picture</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> eliminato dalla cronologia dei download</translation>
+<translation id="8691990641861252959">Ti avvisa in caso di connessioni non sicure su reti internet aperte</translation>
 <translation id="8692107307702113268">La password contiene più di 1000 caratteri</translation>
 <translation id="8693862390730570097">Non consentire l'apertura automatica di "Aiutami a scrivere"</translation>
 <translation id="8694596275649352090">Blocca quando sospeso o alla chiusura del coperchio</translation>
@@ -11344,6 +11347,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8821268776955756404">L'app <ph name="APP_NAME" /> è pronta per l'utilizzo.</translation>
 <translation id="8821647731831124007">Nessun hotspot disponibile</translation>
 <translation id="882204272221080310">Aggiorna il firmware per maggiore sicurezza.</translation>
+<translation id="8822690627597552656">Rallenta alcuni siti sconosciuti per bloccare gli attacchi comuni</translation>
 <translation id="8823514049557262177">Copia testo del lin&amp;k</translation>
 <translation id="8823704566850948458">Suggerisci password...</translation>
 <translation id="8823963789776061136">In alternativa, seleziona il file PPD della stampante. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>

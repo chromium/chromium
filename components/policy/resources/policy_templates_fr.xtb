@@ -726,6 +726,14 @@ Si cette règle n'est pas configurée, le sélecteur d'emoji est activé pour le
 <translation id="1523587744262636189">port 10080 (peut être débloqué jusqu'au 01/04/2022)</translation>
 <translation id="1523774894176285446">Navigateur secondaire à lancer pour les sites Web configurés.</translation>
 <translation id="152657506688053119">Liste d'URL alternatives pour le moteur de recherche par défaut</translation>
+<translation id="1526766414933532012">Règle permettant de décider si le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
+
+Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
+Si elle est activée ou qu'elle n'est pas configurée, vos utilisateurs pourront activer ou désactiver le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
+
+Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.
+
+Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />, en raison de l'abandon de l'API Attribution Reporting.</translation>
 <translation id="1530812829012954197">Toujours rendre les formats d'URL suivants dans le navigateur hôte</translation>
 <translation id="1532928374875633053">Permet de lister les formats d'URL des sites qui accordent automatiquement l'autorisation de positionnement des fenêtres. Cela étend la capacité des sites à voir les informations concernant les écrans de l'appareil, ainsi qu'à utiliser ces informations pour ouvrir et positionner des fenêtres, ou demander le passage en plein écran sur certains écrans.
 
@@ -2493,6 +2501,7 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisate
 <translation id="2731627323327011390">Désactiver l'utilisation de certificats <ph name="PRODUCT_OS_NAME" /> pour les applications ARC</translation>
 <translation id="273678600057164019">La résolution DNS du système sera exécutée dans le processus réseau.</translation>
 <translation id="2737917415184832294">Utiliser HTTPS pour télécharger les mises à jour</translation>
+<translation id="2738525271405092369">Ne pas autoriser le partage de contenu avec les intégrations <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="2739213523971537320">Désactive le clavier virtuel tactile sur l'écran de connexion</translation>
 <translation id="2742843273354638707">Masque l'application Chrome Web Store et le lien de bas de page sur la page Nouvel onglet et dans le lanceur d'applications de <ph name="PRODUCT_OS_NAME" />.
 
@@ -5459,6 +5468,21 @@ Si cette règle est désactivée, l'utilisateur ne voit pas cette promo.</transl
 
       Si elle n'est pas configurée, l'écran d'introduction de Gemini sera passé pour les utilisateurs gérés par une entreprise, mais s'affichera pour les utilisateurs non gérés.</translation>
 <translation id="4783415902268741066">Autoriser l'affichage de la page des résultats les plus récents du moteur de recherche par défaut dans un panneau latéral du navigateur</translation>
+<translation id="4784457904946078535">Cette règle contrôle le partage du contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> via le panneau latéral ou les onglets de <ph name="PRODUCT_NAME" />.
+
+Sachez que cette règle n'a pas d'incidence sur le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> sur le Web. Elle contrôle uniquement la façon dont les utilisateurs peuvent partager des informations avec ce mode lorsqu'ils utilisent <ph name="PRODUCT_NAME" />.
+
+0/Non configurée : les utilisateurs peuvent partager le contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+1 : les utilisateurs ne peuvent pas partager le contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Les points d'entrée pour partager le contexte seront désactivés ou masqués.
+
+Cette règle sera ignorée lorsque la <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> ne sera pas le moteur de recherche par défaut des utilisateurs, car la fonctionnalité sera désactivée.
+
+Cette règle est indépendante de la règle <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La règle <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> ne contrôle que les points d'entrée sur l'omnibox ou le champ de recherche de la page "Nouvel onglet", tandis que cette règle contrôle le partage de contexte via le panneau latéral ou les onglets.
+
+Cette règle ne contrôle pas non plus l'intégration de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, qui peut être désactivée par <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4786784434769279324">Actions à exécuter lorsque l'ordinateur est inactif</translation>
 <translation id="4787763197941188108">Cette règle permet d'ignorer le format de la page d'impression par défaut.
 
@@ -5889,6 +5913,14 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="5063480226653192405">Utilisation</translation>
 <translation id="5067143124345820993">Liste des utilisateurs autorisés à se connecter</translation>
 <translation id="50689955292091946">Activer le clavier virtuel d'accessibilité sur l'écran de connexion</translation>
+<translation id="5069453818168036580">Règle permettant de décider si le paramètre des annonces suggérées par les sites de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
+
+Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
+Si elle est activée ou qu'elle n'est pas configurée, vos utilisateurs pourront activer ou désactiver le paramètre des annonces suggérées par les sites <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
+
+Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.
+
+Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />, en raison de l'abandon de l'API Protected Audience.</translation>
 <translation id="5069522005630249098">Ce paramètre détermine la quantité de données utilisateur conservées une fois <ph name="LACROS_NAME" /> désactivé.
 
       Si la règle est définie sur <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> ou n'est pas configurée, la rétromigration des données n'est pas effectuée.
@@ -7433,6 +7465,7 @@ Si vous souhaitez limiter l'accès aux outils pour les développeurs en fonction
 <translation id="6011969832398368671">Autoriser les sites à demander aux utilisateurs l'accès en écriture aux fichiers et répertoires</translation>
 <translation id="601234435141599215">Autoriser le transfert de port vers les machines virtuelles Linux</translation>
 <translation id="6012952794649558174">Utiliser le comportement par défaut du navigateur.</translation>
+<translation id="6013875085491664033">Activer le partage de contenu avec les intégrations <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /></translation>
 <translation id="6015281292796053435">Cette règle détermine si les informations de navigation sécurisée, y compris le nombre d'avertissements de navigation sécurisée et le nombre de clics sur les avertissements de navigation sécurisée, doivent être enregistrées.
 
       Cette règle est ignorée si la règle <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> n'est pas définie ou si elle est désactivée.
@@ -9350,6 +9383,7 @@ Les plannings dont les intervalles se chevauchent ne sont pas acceptés. Cette r
 Les appareils <ph name="PRODUCT_OS_NAME" /> utiliseront le fuseau horaire du système pour appliquer ces intervalles.
 
 Remarque importante : Il est possible que les plannings définis par cette règle ne soient pas suivis comme prévu s'ils entrent en conflit avec d'autres paramètres de gestion de l'alimentation, comme <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />. Assurez-vous que ces paramètres sont configurés pour permettre l'application des intervalles de suspension planifiés.</translation>
+<translation id="7196583864907169857">Autoriser le partage de contenu avec les intégrations <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="7196944905905233325">Active le fournisseur de framework d'accessibilité <ph name="UIA_NAME" /> dans <ph name="PRODUCT_NAME" /> pour en permettre l'utilisation par les outils d'accessibilité.
 
 Cette règle est disponible dans <ph name="PRODUCT_NAME" /> pendant une période de transition d'un an afin de permettre aux administrateurs d'entreprise de contrôler le déploiement du fournisseur de framework d'accessibilité <ph name="UIA_NAME" /> du navigateur. Les outils d'accessibilité et autres qui utilisent le framework d'accessibilité <ph name="UIA_NAME" /> pour interagir avec le navigateur peuvent nécessiter des mises à jour pour fonctionner correctement avec le fournisseur <ph name="UIA_NAME" /> du navigateur. Les administrateurs peuvent utiliser cette règle pour désactiver temporairement le fournisseur <ph name="UIA_NAME" /> du navigateur (et rétablir ainsi l'ancien comportement) pendant qu'ils travaillent avec les fournisseurs pour proposer des mises à jour aux outils concernés.
@@ -11400,6 +11434,14 @@ Cette règle est une mesure temporaire qui sera supprimée dans quelque temps.</
       Si elle est désactivée, cela altère la sécurité et la stabilité de <ph name="PRODUCT_NAME" />, car des codes inconnus et potentiellement hostiles pourront être chargés dans les processus du navigateur <ph name="PRODUCT_NAME" />. Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec des logiciels tiers devant s'exécuter dans les processus du navigateur <ph name="PRODUCT_NAME" />.
 
       Remarque : Consultez la page https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies pour en savoir plus sur les règles d'atténuation des risques liés aux processus.</translation>
+<translation id="8672039014434141545">Règle permettant de décider si le paramètre des thèmes des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
+
+Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
+Si elle est activée ou qu'elle n'est pas configurée, les utilisateurs pourront activer ou désactiver le paramètre des thèmes des annonces <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
+
+Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.
+
+Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />, en raison de l'abandon de l'API Topics.</translation>
 <translation id="8672321184841719703">Cibler une version pour les mises à jour automatiques</translation>
 <translation id="867410340948518937">U2F (Deuxième facteur universel)</translation>
 <translation id="8676959842615154675">Si cette règle est activée, l'hôte d'accès à distance compare le nom de l'utilisateur local auquel il est associé au nom du compte Google enregistré en tant que propriétaire de l'hôte (par exemple, "pierredupont" si l'hôte appartient à pierredupont@example.com). Cet hôte ne démarre pas si le nom de son propriétaire diffère de celui de l'utilisateur local auquel l'hôte est associé. Pour faire en sorte que le compte Google du propriétaire soit associé à un domaine spécifique, utilisez la règle avec "<ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />".

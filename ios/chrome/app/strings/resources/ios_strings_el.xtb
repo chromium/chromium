@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Η διεύθυνση ιστοτόπου αντιγράφηκε</translation>
 <translation id="3280562213547448728">Φωνητική αναζήτηση</translation>
 <translation id="3289505634533552500">Φωνητική αναζήτηση</translation>
-<translation id="3293080634164207409">Προσθήκη καρτελών</translation>
 <translation id="3295904109373959849">Πλέγμα ομάδων καρτελών</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, νέα δραστηριότητα</translation>
 <translation id="3305294846493618482">περισσότερα</translation>
@@ -1284,6 +1283,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count} νέα καρτέλα}other{{count} νέες καρτέλες}}</translation>
 <translation id="5911030830365207728">Μετάφραση Google</translation>
 <translation id="5922999516621365983">Σύρετε την καρτέλα εδώ για να την καρφιτσώσετε.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Προσθέστε έως και 1 αρχείο, καρτέλα ή εικόνα}other{Προσθέστε έως και {COUNT} αρχεία, καρτέλες ή εικόνες}}</translation>
 <translation id="5936006948844852401">Διαχ. αποθ. χώρου</translation>
 <translation id="5936065461722368675">Μετάφραση πλήρους σελίδας</translation>
 <translation id="5937560539988385583">Η σελίδα μεταφράστηκε</translation>

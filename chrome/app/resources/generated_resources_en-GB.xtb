@@ -1812,9 +1812,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2220572644011485463">PIN or password</translation>
 <translation id="222115440608612541">Switch themes at sunrise and sunset</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">An external app wants full control over this Chrome session to debug it. This includes access to your saved data, cookies and site data, and the ability to navigate to any URL.
-
-Only web developers should turn on this feature, and only use it with trusted apps.</translation>
 <translation id="222201875806112242">Unnamed media source</translation>
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="2224444042887712269">This setting belongs to <ph name="OWNER_EMAIL" />.</translation>
@@ -3710,6 +3707,7 @@ Only web developers should turn on this feature, and only use it with trusted ap
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3528498924003805721">Shortcut targets</translation>
 <translation id="3529851166527095708">Addresses and more</translation>
+<translation id="3530919970074558307">Unfocus group</translation>
 <translation id="3531070080754387701">Microsoft 365 can't open <ph name="FILE_NAMES" /> from this folder</translation>
 <translation id="3531883061432162622">Find your reading list and bookmarks in Bookmarks and Lists</translation>
 <translation id="3532273508346491126">Sync management</translation>
@@ -4063,6 +4061,7 @@ Only web developers should turn on this feature, and only use it with trusted ap
 <translation id="3757567010566591880">Unpin from Toolbar</translation>
 <translation id="3757645900890881944">Search tools</translation>
 <translation id="3757733214359997190">No sites found</translation>
+<translation id="3757825964096339958">Focus group</translation>
 <translation id="375841316537350618">Downloading proxy script...</translation>
 <translation id="3758887577462995665">Tip:</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> month</translation>
@@ -4852,6 +4851,7 @@ Only web developers should turn on this feature, and only use it with trusted ap
 <translation id="4292613336957320546">Acceleration</translation>
 <translation id="429312253194641664">A site is playing media</translation>
 <translation id="4293219510510666933">Use everyday language to search your browsing history and find sites that you visited. You can also ask questions and get answers based on your browsing history. This setting is on.</translation>
+<translation id="429344752071832554">Unfocus group</translation>
 <translation id="4294392694389031609">Deleted <ph name="FILE_NAME" /> from download history, but it's still on your device</translation>
 <translation id="4295072614469448764">App is available in your terminal. There may also be an icon in your Launcher.</translation>
 <translation id="4295979599050707005">Please sign in again to confirm that your account <ph name="USER_EMAIL" /> can be used with websites, apps and extensions in Chrome and Google Play. You may also remove this account. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -5007,6 +5007,7 @@ Only web developers should turn on this feature, and only use it with trusted ap
 <translation id="4405224443901389797">Move to…</translation>
 <translation id="4405781821077215583">Make items on your screen, including text, smaller or larger</translation>
 <translation id="4406308048672435032">You can make this tab inactive or refresh to see the full list again</translation>
+<translation id="4406881185911439342">Focus group</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406963243402726564">Unsaved data</translation>
 <translation id="4408599188496843485">H&amp;elp</translation>

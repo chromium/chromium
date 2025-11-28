@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Сайттын дареги көчүрүлдү</translation>
 <translation id="3280562213547448728">Айтып издөө</translation>
 <translation id="3289505634533552500">Айтып издөө</translation>
-<translation id="3293080634164207409">Өтмөктөрдү кошуу</translation>
 <translation id="3295904109373959849">Өтмөк топторунун торчосу</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, жаңы аракет</translation>
 <translation id="3305294846493618482">дагы</translation>
@@ -1284,6 +1283,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="5902752768726620872">{count,plural, =1{{count} жаңы өтмөк}other{{count} жаңы өтмөк}}</translation>
 <translation id="5911030830365207728">Google Котормо</translation>
 <translation id="5922999516621365983">Кадоо үчүн өтмөктү бул жерге сүйрөп келиңиз.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{1 файл, өтмөк же сүрөт кошуңуз}other{{COUNT} файлга, өтмөккө же сүрөткө чейин кошуңуз}}</translation>
 <translation id="5936006948844852401">Сактагычты башкаруу</translation>
 <translation id="5936065461722368675">Толук баракты которуу</translation>
 <translation id="5937560539988385583">Барак которулду</translation>

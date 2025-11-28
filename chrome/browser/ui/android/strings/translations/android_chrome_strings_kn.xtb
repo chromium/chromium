@@ -223,7 +223,6 @@
 <translation id="1959679933317802873">ವಿಷಯಕ್ಕಾಗಿ ಕಾಯಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1960290143419248813">Android ನ ಈ ಆವೃತ್ತಿಯಲ್ಲಿ ಇನ್ನು ಮುಂದೆ Chrome ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಬೆಂಬಲಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="1962061488333185936"><ph name="TAB_TITLE" />, ಬಹು ಆಯ್ಕೆ ಮಾಡಲಾದ ಆಡಿಬಲ್ ಟ್ಯಾಬ್</translation>
-<translation id="1963056249988316027">ಗುರುತಿನ ಪರಿಶೀಲನೆ ಆನ್ ಆಗಿದೆ ಮತ್ತು ಇದು ನೀವೇ ಎಂದು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="1963976881984600709">ಪ್ರಮಾಣಿತ ಸುರಕ್ಷತೆ</translation>
 <translation id="1966710179511230534">ದಯವಿಟ್ಟು ನಿಮ್ಮ ಸೈನ್-ಇನ್ ವಿವರಗಳನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ.</translation>
 <translation id="1969037871259811890">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸುವುದರಿಂದ ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ನೀವು ಸೈನ್ ಔಟ್ ಆಗುವುದಿಲ್ಲ. ಇದನ್ನು ಮಾಡಲು, <ph name="BEGIN_LINK1" />Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ<ph name="END_LINK1" />.</translation>
@@ -601,7 +600,6 @@
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 ಸೈಟ್}one{+ # ಸೈಟ್‌ಗಳು}other{+ # ಸೈಟ್‌ಗಳು}}</translation>
 <translation id="3625870480639975468">ಝೂಮ್ ಅನ್ನು ಮರುಹೊಂದಿಸು</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
-<translation id="363484704507524488">'ಕಳ್ಳತನದಿಂದ ರಕ್ಷಣೆ' ಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು ಗುರುತಿನ ಪರಿಶೀಲನೆಯನ್ನು ನಿರ್ವಹಿಸಬಹುದು. <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">ನೀವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಿದಾಗ, Chrome ಅವುಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="3636940436873918441">ಆದ್ಯತೆಯ ಭಾಷೆಗಳು</translation>
 <translation id="3637744895182738742">ನೀವು ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ಮರೆತಿದ್ದರೆ ಅಥವಾ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಲು ಬಯಸಿದರೆ, <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿರುವ Chrome ಡೇಟಾವನ್ನು ಅಳಿಸಿ<ph name="END_LINK" />.</translation>
@@ -1130,7 +1128,6 @@
 <translation id="5869522115854928033">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="5870416898561279542">ನಕಲಿ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಗುಂಪುಗಳು ಅಥವಾ <ph name="DAYS_INACTIVE" /> ದಿನಗಳವರೆಗೆ ಬಳಸದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಇಲ್ಲಿಗೆ ಸರಿಸಲಾಗಿದೆ<ph name="AUTODELETE_SECTION" />. ನೀವು ಇದನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ <ph name="DECLUTTER_SETTINGS_TITLE" /> ನಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="587735546353481577">ಸೈಟ್ ಅನ್ನು ಫಾಲೋ ಮಾಡಲು, ಸೈಟ್‌ಗೆ ಹೋಗಿ, Chrome ಮೆನುವನ್ನು ತೆರೆಯಿರಿ, ಹಾಗೂ ಫಾಲೋ ಮಾಡಿ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
-<translation id="5883855034004058011">ಬಯೋಮೆಟ್ರಿಕ್ಸ್ ಹಲವು ಬಾರಿ ವಿಫಲವಾಗಿದೆ. ಮರುಪ್ರಯತ್ನಿಸಲು ನಿಮ್ಮ ಸಾಧನವನ್ನು ಲಾಕ್ ಮಾಡಿ ಮತ್ತು ಅನ್‌ಲಾಕ್ ಮಾಡಿ.</translation>
 <translation id="5885378508678660271">ನೋಟಿಫಿಕೇಶನ್‌ಗಳು <ph name="SEPARATOR" /> ಈ ಸೈಟ್ ಅಪಾಯಕಾರಿಯಾದ ಕಾರಣ Chrome ಈ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ</translation>
 <translation id="5899667542927581604">ಯಾವುದೇ ಪಾಸ್‌ಕೀಗಳ ಶೀಟ್ ಅನ್ನು ಮುಚ್ಚಿಲ್ಲ</translation>
 <translation id="5907542076239273525">ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು <ph name="FOLDER_NAME" /> ನಲ್ಲಿ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1339,7 +1336,7 @@
 <translation id="670498945988402717">ನಿನ್ನೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ</translation>
 <translation id="6710213216561001401">ಹಿಂದಿನದು</translation>
 <translation id="671481426037969117">ನಿಮ್ಮ <ph name="FQDN" /> ಟೈಮರ್ ಅವಧಿ ಮುಗಿದಿದೆ. ಅದು ನಾಳೆ ಮತ್ತೊಮ್ಮೆ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ.</translation>
-<translation id="671928215901716392">ಪರದೆಯನ್ನು ಲಾಕ್ ಮಾಡಿ</translation>
+<translation id="6716434912087331834">ಹೊಸ ವಿಂಡೋವನ್ನು ಮರುಸ್ಥಾಪಿಸಲು, ಸಕ್ರಿಯ ವಿಂಡೋಗಳ ಒಟ್ಟು ಸಂಖ್ಯೆಯನ್ನು <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ಅಥವಾ ಅದಕ್ಕಿಂತ ಕಡಿಮೆ ಮಾಡಿ. ನಿಷ್ಕ್ರಿಯ ವಿಂಡೋಗಳನ್ನು 6 ತಿಂಗಳ ನಂತರ ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="6723740634201835758">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವವು</translation>
 <translation id="6734310707649923383">ನೀವು ಭೇಟಿ ನೀಡಿದ ಪುಟಗಳನ್ನು ನೀವು ನೋಡಬಹುದು ಅಥವಾ ನಿಮ್ಮ ಇತಿಹಾಸದಿಂದ ಅವುಗಳನ್ನು ಅಳಿಸಬಹುದು</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, ಪಿನ್ ಮಾಡಿದ ರೆಕಾರ್ಡಿಂಗ್ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
@@ -1657,6 +1654,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ನ ಅವಧಿ ಮುಗಿದಿದೆ.</translation>
 <translation id="7944772052836377867">ಇದು ನೀವೇ ಎಂದು ಪರಿಶೀಲಿಸಲು ಸಿಂಕ್‌ಗೆ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="7951102827450076904">ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ PDF ಗಳನ್ನು ಯಾವಾಗಲೂ ತೆರೆಯಿರಿ</translation>
+<translation id="7952479614398473176">ಹೊಸ ವಿಂಡೋವನ್ನು ತೆರೆಯಲು, ಸಕ್ರಿಯ ವಿಂಡೋಗಳ ಒಟ್ಟು ಸಂಖ್ಯೆಯನ್ನು <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ಅಥವಾ ಅದಕ್ಕಿಂತ ಕಡಿಮೆ ಮಾಡಿ.</translation>
 <translation id="7957413488482743710">ಸಂಭವನೀಯ ವಂಚನೆಯಿಂದ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ನಿಮ್ಮ ನಿಜವಾದ ಕಾರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡುತ್ತದೆ. <ph name="BEGIN_LINK1" />ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">ಈ ಸಾಧನದಲ್ಲಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="7961926449547174351">ನೀವು ಸಂಗ್ರಹಣೆಯ ಪ್ರವೇಶವನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದೀರಿ, ಅದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
@@ -1871,6 +1869,7 @@
 <translation id="8840953339110955557">ಈ ಪುಟವು ಆನ್‌ಲೈನ್ ಆವೃತ್ತಿಗಿಂತ ಭಿನ್ನವಾಗಿರಬಹುದು.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">ಮರೆಮಾಡಲಾಗಿದೆ</translation>
+<translation id="8849164661359544855"><ph name="URL" /> ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪಿಕ್ಚರ್-ಇನ್-ಪಿಕ್ಚರ್ ನಮೂದಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="8854223127042600341">ನಿಮ್ಮ ಆಫ್‌ಲೈನ್ ಫೈಲ್‌ಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="885480114717186641">ನೀವು <ph name="HOST_NAME" /> ಗಾಗಿ ಡೆಸ್ಕ್‌ಟಾಪ್ ಸೈಟ್ ಅನ್ನು ವಿನಂತಿಸಬಹುದು</translation>
 <translation id="8856607253650333758">ವಿವರಣೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>

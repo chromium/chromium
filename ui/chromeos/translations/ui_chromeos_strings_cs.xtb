@@ -595,6 +595,7 @@
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="5602622065581044566">bulharština s fonetickou klávesnicí</translation>
 <translation id="5605830556594064952">Americká klávesnice Dvorak</translation>
+<translation id="560739212255190568">Administrátor nastavil pravidla přepsání proxy serveru a vynucuje následující proxy server</translation>
 <translation id="5618330573454123917">Tento soubor je určen pro počítač se softwarem Macintosh. S vaším zařízením se systémem ChromeOS není kompatibilní. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /> o otevírání souborů v systému ChromeOS.</translation>
 <translation id="5625294776298156701">tamilština s klávesnicí Tamil99</translation>
 <translation id="5633226425545095130">Když tuto položku přesunete, budete ji sdílet s každým, kdo může zobrazit sdílenou složku <ph name="DESTINATION_NAME" />.</translation>
@@ -994,6 +995,7 @@
 <translation id="8540608333167683902">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="8545476925160229291">angličtina (USA)</translation>
 <translation id="854655314928502177">Adresa URL automatického zjišťování webového proxy serveru:</translation>
+<translation id="8547747809824590510">Administrátor nastavil pravidla přepsání proxy serveru</translation>
 <translation id="8549186985808798022">italština</translation>
 <translation id="8551494947769799688">lotyština</translation>
 <translation id="8560515948038859357">kantonština</translation>
@@ -1054,6 +1056,7 @@
 <translation id="9038620279323455325">Soubor s názvem „<ph name="FILE_NAME" />“ již existuje. Zvolte jiný název.</translation>
 <translation id="9046895021617826162">Připojení selhalo</translation>
 <translation id="9065512565307033593">Pokud se vám nepodaří provést ověření, bude vám zakázán přístup k síti.</translation>
+<translation id="9079844694307518094">Administrátor vynucuje používání následujícího proxy serveru</translation>
 <translation id="908378762078012445">ruština s fonetickou klávesnicí AATSEEL</translation>
 <translation id="9086302186042011942">Synchronizace</translation>
 <translation id="9099674669267916096">Počet stránek</translation>

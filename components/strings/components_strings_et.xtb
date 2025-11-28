@@ -2176,6 +2176,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4506599922270137252">Võtke ühendust süsteemiadministraatoriga</translation>
 <translation id="450710068430902550">Administraatoriga jagamine</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage selle lehe tõlkimiseks rakendusega Google'i tõlge tabulaatorit ja siis sisestusklahvi</translation>
+<translation id="4510703642214459906">Toimumiskoht</translation>
 <translation id="4515275063822566619">Kaardid ja aadressid pärinevad Chrome'ist ning teie Google'i kontolt (<ph name="ACCOUNT_EMAIL" />). Neid saate hallata menüüs <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Mikro- ja subkompaktautod</translation>
 <translation id="451601984112574365">Roheline 3</translation>
@@ -4372,6 +4373,7 @@ Lisateave:
 <translation id="8077669823243888800">Ümbrik Hiina nr 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Kas laadida üles konfidentsiaalne fail?}other{Kas laadida üles konfidentsiaalsed failid?}}</translation>
 <translation id="8079031581361219619">Kas laadida sait uuesti?</translation>
+<translation id="8079591184016291275">Sündmuse nimi</translation>
 <translation id="8079976827192572403">Ohtlik sait</translation>
 <translation id="8081087320434522107">Sedaanid</translation>
 <translation id="8086429410809447605">Naisteriided</translation>

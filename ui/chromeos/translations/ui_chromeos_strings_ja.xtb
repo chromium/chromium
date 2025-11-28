@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5602622065581044566">ブルガリア語（表音）キーボード</translation>
 <translation id="5605830556594064952">US Dvorak 配列</translation>
+<translation id="560739212255190568">管理者が次のプロキシの適用に加え、プロキシのオーバーライド ルールを設定しています</translation>
 <translation id="5618330573454123917">このファイルは Macintosh ソフトウェアを使用するパソコン用に作成されています。ご使用のデバイスでは ChromeOS が実行されているため、互換性がありません。ChromeOS でファイルを開く方法については、<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
 <translation id="5625294776298156701">タミル語（Tamil99）キーボード</translation>
 <translation id="5633226425545095130">このアイテムを移動すると、アイテムは共有フォルダ「<ph name="DESTINATION_NAME" />」を閲覧できるすべてのユーザーと共有されます。</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="8545476925160229291">英語（アメリカ）</translation>
 <translation id="854655314928502177">ウェブプロキシ自動検出 URL:</translation>
+<translation id="8547747809824590510">管理者がプロキシのオーバーライド ルールを設定しています</translation>
 <translation id="8549186985808798022">イタリア語</translation>
 <translation id="8551494947769799688">ラトビア語</translation>
 <translation id="8560515948038859357">広東語</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">「<ph name="FILE_NAME" />」という名前のファイルはすでに存在します。別の名前を選択してください。</translation>
 <translation id="9046895021617826162">接続に失敗しました</translation>
 <translation id="9065512565307033593">確認に失敗した場合、ネットワーク アクセスは無効になります。</translation>
+<translation id="9079844694307518094">管理者が次のプロキシを適用しています</translation>
 <translation id="908378762078012445">ロシア語（表音 AATSEEL）キーボード</translation>
 <translation id="9086302186042011942">同期しています</translation>
 <translation id="9099674669267916096">ページ数</translation>

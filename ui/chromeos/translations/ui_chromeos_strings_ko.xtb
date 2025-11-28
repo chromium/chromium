@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5602622065581044566">불가리아어(표음 키보드)</translation>
 <translation id="5605830556594064952">영어(미국) 드보락</translation>
+<translation id="560739212255190568">관리자가 다음 프록시를 적용하는 것 외에도 프록시 재정의 규칙을 설정했습니다.</translation>
 <translation id="5618330573454123917">이 파일은 Macintosh 소프트웨어를 사용하는 컴퓨터용으로 설계되었습니다. 따라서 ChromeOS를 실행하는 기기와는 호환되지 않습니다. ChromeOS에서 파일을 여는 방법을 <ph name="BEGIN_LINK_HELP" />자세히 알아보세요<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">타밀어(Tamil99 키보드)</translation>
 <translation id="5633226425545095130">이 항목을 옮기면 '<ph name="DESTINATION_NAME" />' 공유 폴더를 볼 수 있는 모든 사용자와 항목이 공유됩니다.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="8545476925160229291">영어(미국)</translation>
 <translation id="854655314928502177">웹 프록시 자동 검색 URL:</translation>
+<translation id="8547747809824590510">관리자가 프록시 재정의 규칙을 설정했습니다.</translation>
 <translation id="8549186985808798022">이탈리아어</translation>
 <translation id="8551494947769799688">라트비아어</translation>
 <translation id="8560515948038859357">광둥어</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">'<ph name="FILE_NAME" />' 파일이 이미 존재합니다. 다른 이름을 선택하세요.</translation>
 <translation id="9046895021617826162">연결 실패</translation>
 <translation id="9065512565307033593">확인하지 못하면 네트워크 액세스가 사용 중지됩니다.</translation>
+<translation id="9079844694307518094">관리자가 다음 프록시를 적용하고 있습니다.</translation>
 <translation id="908378762078012445">러시아어(표음 AATSEEL 키보드)</translation>
 <translation id="9086302186042011942">동기화 중</translation>
 <translation id="9099674669267916096">페이지 수</translation>

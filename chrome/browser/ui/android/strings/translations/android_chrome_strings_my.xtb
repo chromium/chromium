@@ -223,7 +223,6 @@
 <translation id="1959679933317802873">အကြောင်းအရာကို စောင့်နေသည်</translation>
 <translation id="1960290143419248813">Chrome အပ်ဒိတ်များကို ဤ Android ဗားရှင်းတွင် ပံ့ပိုးထားခြင်း မရှိတော့ပါ</translation>
 <translation id="1962061488333185936"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားသည့် အသံထွက်နေသောတဘ်</translation>
-<translation id="1963056249988316027">Identity Check ဖွင့်ထားပြီး သင်ဖြစ်ကြောင်း အတည်ပြု၍မရပါ</translation>
 <translation id="1963976881984600709">ပုံမှန်ကာကွယ်မှု</translation>
 <translation id="1966710179511230534">ကျေးဇူးပြု၍ သင်၏ လက်မှတ်ထိုးဝင်ရောက်မှု အသေးစိတ်ကို မွမ်းမံပါ။</translation>
 <translation id="1969037871259811890">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဖျက်ခြင်းဖြင့် Google Account မှ ထွက်မည်မဟုတ်ပါ။ ထိုသို့ပြုလုပ်ရန်အတွက် <ph name="BEGIN_LINK1" />Chrome မှထွက်ရန်<ph name="END_LINK1" />။</translation>
@@ -601,7 +600,6 @@
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{ဝဘ်ဆိုက် + ၁ ခု}other{ဝဘ်ဆိုက် + # ခု}}</translation>
 <translation id="3625870480639975468">ဇူးမ် ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> သို့ မျှဝေနေသည်</translation>
-<translation id="363484704507524488">Identity Check ကို ခိုးယူမှုမှ ကာကွယ်ခြင်း ဆက်တင်များတွင် စီမံနိုင်သည်။ <ph name="BEGIN_LINK" />ဆက်တင်များသို့ သွားရန်<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">သင်စကားဝှက်များကို သိမ်းသည့်အခါ Chrome က၎င်းတို့ကို စစ်ဆေးနိုင်သည်</translation>
 <translation id="3636940436873918441">ဦးစားပေး ဘာသာစကားများ</translation>
 <translation id="3637744895182738742">သင့်စကားဝှက်စာ မေ့သွားပါက (သို့) ဤဆက်တင်ကို ပြောင်းလိုပါက <ph name="BEGIN_LINK" />သင့်အကောင့်ရှိ Chrome ဒေတာကို ဖျက်ပါ<ph name="END_LINK" />။</translation>
@@ -1131,7 +1129,6 @@
 <translation id="5869522115854928033">သိမ်းဆည်းထားသည့် စကားဝှက်များ</translation>
 <translation id="5870416898561279542">ထပ်နေသော တဘ်နှင့် တဘ်အုပ်စုများ (သို့) <ph name="DAYS_INACTIVE" /> ရက်ကြာ အသုံးမပြုသော တဘ်နှင့် တဘ်အုပ်စုများကို ဤနေရာသို့ ရွှေ့ပြီး <ph name="AUTODELETE_SECTION" />။ ၎င်းကို <ph name="DECLUTTER_SETTINGS_TITLE" /> တွင် အချိန်မရွေး ပြောင်းနိုင်သည်။</translation>
 <translation id="587735546353481577">ဝဘ်ဆိုက်တစ်ခုကို လိုက်ကြည့်ရန် ၎င်းသို့သွားပြီး Chrome မီနူးဖွင့်ကာ ‘လိုက်ကြည့်ရန်’ ကို တို့ပါ။</translation>
-<translation id="5883855034004058011">မအောင်မြင်သည့် ဇီဝမက်ထရစ် ကြိုးပမ်းမှုများ များပြားလွန်းသည်။ ထပ်စမ်းရန် သင့်စက်ကို လော့ခ်ချပြီး ပြန်ဖွင့်ပါ။</translation>
 <translation id="5885378508678660271">အကြောင်းကြားချက်များ <ph name="SEPARATOR" /> ဤဝဘ်ဆိုက်သည် အန္တရာယ်ရှိသဖြင့် Chrome က ဤခွင့်ပြုချက်များကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="5899667542927581604">ပိတ်ထားသော လျှို့ဝှက်ကီးစာမျက်နှာများ မရှိပါ</translation>
 <translation id="5907542076239273525">လိပ်စာကို <ph name="FOLDER_NAME" /> တွင် သိမ်းလိုက်သည်</translation>
@@ -1339,7 +1336,6 @@
 <translation id="670498945988402717">မနေ့က စစ်ဆေးခဲ့သည်</translation>
 <translation id="6710213216561001401">အရင်</translation>
 <translation id="671481426037969117">သင်၏ <ph name="FQDN" /> တိုင်မာ အချိန်ကုန်သွားပါပြီ။ မနက်ဖြန် ထပ်မံစတင်ပါမည်။</translation>
-<translation id="671928215901716392">လော့ခ်မျက်နှာပြင်</translation>
 <translation id="6723740634201835758">သင့် Google အကောင့်တွင်-</translation>
 <translation id="6734310707649923383">သင်ဝင်ကြည့်ထားသော စာမျက်နှာများကို ကြည့်နိုင်သည် (သို့) ၎င်းတို့ကို သင့်မှတ်တမ်းမှ ဖျက်နိုင်သည်</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် ရိုက်ကူးနေသော ရုပ်ဖျက်တဘ်</translation>
@@ -1871,6 +1867,7 @@
 <translation id="8840953339110955557">ဤဝဘ်ဆိုက်သည် အွန်လိုင်းဗားရှင်းနှင့် ကွဲပြားနိုင်ပါသည်။</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">ဖျောက်ထားသည်</translation>
+<translation id="8849164661359544855"><ph name="URL" /> သည် နှစ်ခုထပ်၍ကြည့်ခြင်းသို့ အလိုအလျောက်ဝင်ရောက်လိုသည်</translation>
 <translation id="8854223127042600341">သင်၏အော့ဖ်လိုင်း ဖိုင်များ ကြည့်ရန်</translation>
 <translation id="885480114717186641"><ph name="HOST_NAME" /> အတွက် ဒက်စ်တော့ဝဘ်ဆိုက်ကို တောင်းဆိုနိုင်သည်</translation>
 <translation id="8856607253650333758">ရှင်းလင်းချက်များ ရယူရန်</translation>

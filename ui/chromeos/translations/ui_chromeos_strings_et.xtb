@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5602622065581044566">bulgaaria, foneetilise klaviatuuriga</translation>
 <translation id="5605830556594064952">USA Dvorak</translation>
+<translation id="560739212255190568">Teie administraator määras lisaks järgmise puhverserveri jõustamisele ka puhverserveri alistamise reeglid.</translation>
 <translation id="5618330573454123917">See fail on mõeldud Macintoshi tarkvara kasutavale arvutile. See ei ühildu teie seadmega, mis käitab Chrome OS-i. <ph name="BEGIN_LINK_HELP" />Vaadake lisateavet<ph name="END_LINK_HELP" /> Chrome OS-is failide avamise kohta.</translation>
 <translation id="5625294776298156701">tamili, Tamil99-klaviatuuriga</translation>
 <translation id="5633226425545095130">Selle üksuse teisaldamisel jagatakse seda kõigiga, kes jagatud kausta „<ph name="DESTINATION_NAME" />“ näevad.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>
 <translation id="8545476925160229291">inglise (USA)</translation>
 <translation id="854655314928502177">Veebipõhise puhverserveri automaattuvastamise URL:</translation>
+<translation id="8547747809824590510">Teie administraator määras puhverserveri alistamise reeglid.</translation>
 <translation id="8549186985808798022">itaalia</translation>
 <translation id="8551494947769799688">läti keel</translation>
 <translation id="8560515948038859357">kantoni</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Fail nimega „<ph name="FILE_NAME" />” on juba olemas? Valige muu nimi.</translation>
 <translation id="9046895021617826162">Ühendamine nurjus</translation>
 <translation id="9065512565307033593">Kui kinnitamine ebaõnnestub, keelatakse juurdepääs võrgule.</translation>
+<translation id="9079844694307518094">Teie administraator jõustab järgmise puhverserveri.</translation>
 <translation id="908378762078012445">vene, foneetilise AATSEEL-klaviatuuriga</translation>
 <translation id="9086302186042011942">Sünkroonimine</translation>
 <translation id="9099674669267916096">Lehtede arv</translation>

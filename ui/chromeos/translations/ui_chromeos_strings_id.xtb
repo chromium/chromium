@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Opsi lainnya</translation>
 <translation id="5602622065581044566">Bulgaria dengan keyboard Fonetik</translation>
 <translation id="5605830556594064952">Dvorak AS</translation>
+<translation id="560739212255190568">Admin Anda menetapkan aturan penggantian proxy selain menerapkan proxy berikut</translation>
 <translation id="5618330573454123917">File ini dirancang untuk komputer yang menggunakan software Macintosh. File ini tidak kompatibel dengan perangkat Anda yang menjalankan ChromeOS. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di ChromeOS.</translation>
 <translation id="5625294776298156701">Tamil dengan keyboard Tamil99</translation>
 <translation id="5633226425545095130">Memindahkan item ini akan membagikannya ke siapa saja yang dapat melihat folder bersama '<ph name="DESTINATION_NAME" />'.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="8545476925160229291">Inggris (AS)</translation>
 <translation id="854655314928502177">URL Penemuan Otomatis Proxy Web:</translation>
+<translation id="8547747809824590510">Admin Anda menetapkan aturan penggantian proxy</translation>
 <translation id="8549186985808798022">Italia</translation>
 <translation id="8551494947769799688">Latvia</translation>
 <translation id="8560515948038859357">Kanton</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">File bernama "<ph name="FILE_NAME" />" sudah ada. Harap pilih nama lain.</translation>
 <translation id="9046895021617826162">Gagal menyambung</translation>
 <translation id="9065512565307033593">Jika gagal memverifikasi, akses jaringan Anda akan dinonaktifkan.</translation>
+<translation id="9079844694307518094">Admin Anda menerapkan proxy berikut</translation>
 <translation id="908378762078012445">Rusia dengan keyboard AATSEEL Fonetik</translation>
 <translation id="9086302186042011942">Menyinkronkan</translation>
 <translation id="9099674669267916096">Hitungan halaman</translation>

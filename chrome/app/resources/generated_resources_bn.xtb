@@ -1813,9 +1813,6 @@
 <translation id="2220572644011485463">PIN বা পাসওয়ার্ড</translation>
 <translation id="222115440608612541">সূর্যোদয় এবং সূর্যাস্তের থিমে পাল্টান</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2221265863788848174">একটি এক্সটার্নাল অ্যাপ এই Chrome সেশন ডিবাগ করার জন্য এতে সম্পূর্ণ কন্ট্রোল চায়। এর মধ্যে আপনার সেভ করা ডেটা, কুকি ও সাইট ডেটা অ্যাক্সেস করা এবং যেকোনও URL-এ নেভিগেট করার ক্ষমতা অন্তর্ভুক্ত।
-
-শুধু ওয়েব ডেভেলপাররা এই ফিচার চালু করা উচিত এবং শুধু বিশ্বস্ত অ্যাপের সাথে এটি ব্যবহার করা উচিত।</translation>
 <translation id="222201875806112242">নামবিহীন মিডিয়া সোর্স</translation>
 <translation id="2224337661447660594">ইন্টারনেট কানেকশন নেই</translation>
 <translation id="2224444042887712269">এই সেটিংটি <ph name="OWNER_EMAIL" /> এর৷</translation>
@@ -6600,6 +6597,7 @@
 <translation id="5523532775593636291">আপনার যোগ করা সাইট সব সময় অ্যাক্টিভ থাকবে এবং সেগুলি থেকে মেমরি খালি হয়ে যাবে না</translation>
 <translation id="5523558474028191231">নামে অক্ষর, সংখ্যা ও বিশেষ অক্ষর ব্যবহার করা যেতে পারে এবং সর্বাধিক <ph name="MAX_CHARACTER_COUNT" /> অক্ষরের মধ্যে লিখতে হবে</translation>
 <translation id="5526745900034778153">সিঙ্ক আবার চালু করতে আবার সাইন-ইন করুন</translation>
+<translation id="5527211644528700597">বিপদ শনাক্ত করতে অন-ডিভাইস পদ্ধতি ব্যবহার করে</translation>
 <translation id="5527463195266282916">এক্সটেনশনটির আগের ভার্সন ফিরিয়ে আনার চেষ্টা চলছে৷</translation>
 <translation id="5527474464531963247">আপনি হয়ত অন্য নেটওয়ার্ক নির্বাচন করতে পারেন৷</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, ইনস্টল করা হচ্ছে</translation>
@@ -6796,6 +6794,7 @@
 <translation id="5663459693447872156">স্বয়ংক্রিয়ভাবে অর্ধপ্রস্থে স্যুইচ করুন</translation>
 <translation id="5663653125349867535">&amp;পড়ার তালিকা</translation>
 <translation id="5663918299073387939">সাইট সাধারণত, মিউজিক তৈরি, এডিট বা ডিভাইসের ফার্মওয়্যার আপডেট করতে MIDI ডিভাইস কন্ট্রোল ও রিপ্রোগ্রাম করার জন্য অনুমতি চায়</translation>
+<translation id="5666116074010586111">আরও দ্রুত ঝুঁকি শনাক্ত করার জন্য URL ও পৃষ্ঠার কন্টেন্ট Google-এ পাঠিয়ে দেয়</translation>
 <translation id="5666911576871845853">&amp;নতুন প্রোফাইল যোগ করুন</translation>
 <translation id="5667293444945855280">দূষিত</translation>
 <translation id="5667546120811588575">Google Play সেট-আপ করা হচ্ছে...</translation>
@@ -7976,6 +7975,7 @@
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">আপনার Chromebook রিস্টার্ট করে আবার চেষ্টা করুন</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> মুছে ফেলার বিষয়টি বিবেচনা করুন, যাতে এই ডিভাইসটি ব্যবহার করে অন্যরা আপনার পাসওয়ার্ড দেখতে না পারে</translation>
+<translation id="6512364354776355686">অসুরক্ষিত সব কানেকশন সম্পর্কে আপনাকে সতর্ক করে</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> মুড সহ <ph name="SUBJECT" />-এর <ph name="INDEX" />টি জেনারেট করা ছবি।</translation>
 <translation id="6513247462497316522">যদি আপনি অন্য নেটওয়ার্কের সাথে সংযুক্ত না থাকেন তাহলে Google Chrome মোবাইল ডেটা ব্যবহার করবে৷</translation>
 <translation id="6514010653036109809">উপলব্ধ ডিভাইস:</translation>
@@ -9162,6 +9162,7 @@
 <translation id="7340179705876485790">১টির বেশি পৃষ্ঠায় ফিরে যেতে হলে, 'ফিরে যান' বোতামে ক্লিক করে ধরে রাখুন।</translation>
 <translation id="7340650977506865820">সাইটটি আপনার স্ক্রিন শেয়ার করছে</translation>
 <translation id="7340757554212515731">ক্র্যাশ রিপোর্ট, ডায়াগনস্টিক ও ব্যবহারের ডেটা অটোমেটিক Google-কে পাঠানো হয়</translation>
+<translation id="7340886226071938450">ট্যাব বারের অবস্থান</translation>
 <translation id="734088800888587319">নেটওয়ার্ক মেট্রিক্স</translation>
 <translation id="7341834142292923918">এই সাইটে অ্যাক্সেস চায়</translation>
 <translation id="7343372807593926528">মতামত পাঠানোর আগে সমস্যাটি বর্ণনা করুন।</translation>
@@ -9892,6 +9893,7 @@
 <translation id="7830833461614351956">খোলার জন্য <ph name="CLOUD_PROVIDER" />-এ <ph name="NUM_OF_FILES" />টি ফাইল কপি করবেন?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">সংরক্ষিত কাস্টম শব্দ এখানে দেখা যাবে</translation>
+<translation id="7833725807105678871">উন্নত নিরাপত্তা ফিচারের চেয়ে সাইটের স্পিডকে অগ্রাধিকার দেয়</translation>
 <translation id="7834832693620032149">অডিও শেয়ার করার জন্য বরং কোনও ট্যাব অথবা উইন্ডো শেয়ার করুন</translation>
 <translation id="7836577093182643605">আপনি ব্লক করেছেন এমন বিষয়গুলির তালিকা যা আপনি সাইটে শেয়ার করতে চান না</translation>
 <translation id="7836850009646241041">আপনার নিরাপত্তা কী আবার স্পর্শ করার চেষ্টা করুন</translation>
@@ -11164,6 +11166,7 @@
 <translation id="8690129572193755009">সাইটগুলি প্রোটোকল নিয়ন্ত্রণ করতে চাইতে পারে</translation>
 <translation id="869144235543261764">এই ট্যাবটি 'ছবির-মধ্যে-ছবি' মোডে ভিডিও চালাচ্ছে</translation>
 <translation id="869167754614449887">ডাউনলোড ইতিহাস থেকে <ph name="FILE_NAME" /> মুছে ফেলা হয়েছে</translation>
+<translation id="8691990641861252959">ওপেন ইন্টারনেটে আপনাকে অসুরক্ষিত কানেকশনের ব্যাপারে সতর্ক করে</translation>
 <translation id="8692107307702113268">পাসওয়ার্ডে ১০০০টির বেশি অক্ষর আছে</translation>
 <translation id="8693862390730570097">"আমাকে লিখতে সাহায্য করো" ফিচারকে অটোমেটিক খোলার অনুমতি দেবেন না</translation>
 <translation id="8694596275649352090">স্লিপ মোড বা যখন ঢাকনাটি বন্ধ থাকবে তখন বন্ধ করুন</translation>
@@ -11366,6 +11369,7 @@
 <translation id="8821268776955756404">এবার <ph name="APP_NAME" /> ব্যবহার করতে পারবেন।</translation>
 <translation id="8821647731831124007">কোনও হটস্পট উপলভ্য নেই</translation>
 <translation id="882204272221080310">নিরাপত্তা আরও সুরক্ষার জন্য ফার্মওয়্যার আপডেট করুন।</translation>
+<translation id="8822690627597552656">সাধারণ অ্যাটাক ব্লক করতে, কিছু অপরিচিত সাইট স্লো করে দেয়</translation>
 <translation id="8823514049557262177">লিঙ্ক টেক্সট কপি করুন</translation>
 <translation id="8823704566850948458">পাসওয়ার্ড সাজেস্ট করুন...</translation>
 <translation id="8823963789776061136">বিকল্প হিসেবে প্রিন্টার PPD বেছে নিন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>

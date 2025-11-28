@@ -596,7 +596,6 @@
 <translation id="3277021493514034324">Ikheli lesayithi likopishiwe</translation>
 <translation id="3280562213547448728">Ukusesha ngezwi</translation>
 <translation id="3289505634533552500">Ukusesha Ngezwi</translation>
-<translation id="3293080634164207409">Faka amathebhu</translation>
 <translation id="3295904109373959849">Igridi Yamaqembu Ethebhu</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, umsebenzi omusha</translation>
 <translation id="3305294846493618482">okuningi</translation>
@@ -1284,6 +1283,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="5902752768726620872">{count,plural, =1{Ithebhu entsha engu-{count}}one{Amathebhu amasha angu-{count}}other{Amathebhu amasha angu-{count}}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">Hudula ithebhu lapha ukuze uyiphine.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Engeza ifayela, ithebhu, noma isithombe esingafika kwesi-1}one{Engeza amafayela, amathebhu, noma izithombe ezifika kwezingu-{COUNT}}other{Engeza amafayela, amathebhu, noma izithombe ezifika kwezingu-{COUNT}}}</translation>
 <translation id="5936006948844852401">Phatha isitoreji</translation>
 <translation id="5936065461722368675">Humusha ikhasi eligcwele</translation>
 <translation id="5937560539988385583">Ikhasi lihunyushiwe</translation>

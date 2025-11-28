@@ -566,6 +566,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> hanterar Chrome</translation>
 <translation id="7288567540154601580">Flikar och tillägg</translation>
 <translation id="7296210096911315575">Viktig användnings- och säkerhetsinformation</translation>
+<translation id="7302361266603927550">Viss Chrome-data har inte sparats i ditt Google-konto ännu. Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="7308322188646931570">Du behöver ge Chrome åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="7339898014177206373">Nytt fönster</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
@@ -622,6 +623,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7801699035218095297">Skriv ditt Windows-lösenord om du tillåter att lösenorden i Google Chrome kopieras.</translation>
 <translation id="7804364787702057554">Ditt konto i Chrome</translation>
 <translation id="7808348361785373670">Ta bort från Chrome …</translation>
+<translation id="7827099906024714326">Chrome måste verifiera din identitet innan viss data kan sparas i Google-kontot och användas på alla dina enheter. Om du loggar ut nu raderas denna data.</translation>
 <translation id="7845233973568007926">Tack för att du installerat programmet. Du måste starta om datorn innan du använder <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Fortsätt där du slutade: Chrome kan återställa dina flikar varje gång du startar om. Aktivera detta genom att öppna</translation>
 <translation id="7872446069773932638">Laddar ned … <ph name="SECONDS" /> sekund/sekunder återstår</translation>

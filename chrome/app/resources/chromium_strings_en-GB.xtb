@@ -329,6 +329,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4673151026126227699">If you also share Chromium usage reports, those reports include the URLs that you visit</translation>
 <translation id="4677944499843243528">The profile appears to be in use by another Chromium process (<ph name="PROCESS_ID" />) on another computer (<ph name="HOST_NAME" />). Chromium has locked the profile so that it doesn't get corrupted. If you are sure that no other processes are using this profile, you can unlock the profile and relaunch Chromium.</translation>
 <translation id="4680828127924988555">Cancel installation</translation>
+<translation id="469259825538636168">Some of your Chromium data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="4708193446201257833">While you're signed in, you can use your passwords and more from your Google Account in Chromium. <ph name="SHORTCUT" /> can change your Google services settings.</translation>
 <translation id="4708774505295300557">Someone previously signed in to Chromium on this computer as <ph name="ACCOUNT_EMAIL_LAST" />. Please create a new Chromium user to keep your information separate.</translation>
 <translation id="4724676981607797757">Installation failed because of an unsupported protocol error.</translation>
@@ -634,6 +635,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="837460953767177950">You'll then need to restart Chromium.</translation>
 <translation id="8397248745433792218">Chromium recommends that you remove it. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">This extension was unpublished by its developer and might be unsafe. Remove it from Chromium so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
+<translation id="8416884904046428725">Chromium needs to verify that it's you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data will be deleted.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Relaunch Chromium within a day}other{Relaunch Chromium within # days}}</translation>
 <translation id="8438543370129609977">When you use image search, the page title, URL and content, including PDFs, are sent to the server. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">The installer archive is corrupted or invalid. Please download Chromium again.</translation>

@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5602622065581044566">保加利亞文搭配拼音鍵盤</translation>
 <translation id="5605830556594064952">Dvorak 美式配置</translation>
+<translation id="560739212255190568">管理員除了強制執行下列 Proxy 政策，還設定了 Proxy 覆寫規則</translation>
 <translation id="5618330573454123917">這個檔案是專為使用 Macintosh 軟體的電腦所設計，與搭載 Chrome OS 的裝置不相容。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome OS 中開啟檔案。</translation>
 <translation id="5625294776298156701">泰米爾文搭配 Tamil99 鍵盤</translation>
 <translation id="5633226425545095130">這個項目移動至「<ph name="DESTINATION_NAME" />」共用資料夾後，就會與所有看得到該資料夾的使用者共用。</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="8545476925160229291">英文 (美國)</translation>
 <translation id="854655314928502177">網路 Proxy 自動探索網址：</translation>
+<translation id="8547747809824590510">管理員已設定 Proxy 覆寫規則</translation>
 <translation id="8549186985808798022">義大利文</translation>
 <translation id="8551494947769799688">拉脫維亞文</translation>
 <translation id="8560515948038859357">粵語</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">名稱為「<ph name="FILE_NAME" />」的檔案已經存在，請選擇其他名稱。</translation>
 <translation id="9046895021617826162">連線失敗</translation>
 <translation id="9065512565307033593">如未完成驗證，你將無法存取網路。</translation>
+<translation id="9079844694307518094">管理員已強制執行下列 Proxy 政策</translation>
 <translation id="908378762078012445">俄文搭配拼音 (AATSEEL) 鍵盤</translation>
 <translation id="9086302186042011942">正在同步處理</translation>
 <translation id="9099674669267916096">頁數</translation>

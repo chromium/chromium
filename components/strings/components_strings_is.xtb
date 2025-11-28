@@ -2176,6 +2176,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4506599922270137252">Hafa samband við kerfisstjórann</translation>
 <translation id="450710068430902550">Deilir með kerfisstjóra.</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að þýða þessa síðu með Google Translate</translation>
+<translation id="4510703642214459906">Staður</translation>
 <translation id="4515275063822566619">Kort og heimilisföng eru fengin úr Chrome og Google reikningnum þínum (<ph name="ACCOUNT_EMAIL" />). Þú getur haft umsjón með þeim í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Smábílar og borgarbílar</translation>
 <translation id="451601984112574365">Grænn 3</translation>
@@ -4371,6 +4372,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8077669823243888800">Umslag: kínverskt #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Hlaða upp skrá sem inniheldur trúnaðarmál?}one{Hlaða upp skrám sem innihalda trúnaðarmál?}other{Hlaða upp skrám sem innihalda trúnaðarmál?}}</translation>
 <translation id="8079031581361219619">Viltu endurhlaða vefsvæðið?</translation>
+<translation id="8079591184016291275">Heiti viðburðar</translation>
 <translation id="8079976827192572403">Hættulegt vefsvæði</translation>
 <translation id="8081087320434522107">Fólksbifreiðar</translation>
 <translation id="8086429410809447605">Kvenfatnaður</translation>

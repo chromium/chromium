@@ -2060,6 +2060,7 @@
 <translation id="4299919199185766032">ამ მალსახმობის სახელი აღემატება სიმბოლოების მაქსიმალურ რაოდენობას - <ph name="MAX_LENGTH" />.</translation>
 <translation id="4300272766492248925">აპის გახსნა</translation>
 <translation id="4300675098767811073">მრავლად გახვრეტა მარჯვნივ</translation>
+<translation id="4300841966382281549">მგზავრობა</translation>
 <translation id="4302514097724775343">სათამაშოდ შეეხეთ დინოზავრს</translation>
 <translation id="4304049446746819918">{0,plural, =1{ადმინისტრატორის წესების მიხედვით, ამ ფაილის <ph name="DESTINATION_NAME" />-ში გადატანა რეკომენდებული არ არის}other{ადმინისტრატორის წესების მიხედვით, ამ ფაილების <ph name="DESTINATION_NAME" />-ში გადატანა რეკომენდებული არ არის}}</translation>
 <translation id="4304485328308299773">გაეცანით კლიენტების შეფასებას პროდუქტების, სერვისებისა თუ შთაბეჭდილებების შესახებ, რაც დაგეხმარებათ გამოხმაურებების მეშვეობით საფუძვლიანი გადაწყვეტილების მიღებაში.</translation>
@@ -2160,6 +2161,7 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ეს ფორმა არ არის დაცული. ავტომატური შევსება გამოირთო.</translation>
 <translation id="4477350412780666475">შემდეგი ჩანაწერი</translation>
+<translation id="4479915773139026885">ხელოვნური ინტელექტის რეჟიმი Google Search-ში</translation>
 <translation id="4480760608050410381">MP4 ვიდეო</translation>
 <translation id="448363931695049633">პიცერიები</translation>
 <translation id="4489023393592172404">კონვერტი Kaku 4</translation>
@@ -3156,6 +3158,7 @@
 <translation id="6124432979022149706">Chrome Enterprise მაერთებლები</translation>
 <translation id="6124996493718543728">„იყიდეთ ახლა, გადაიხადეთ მოგვიანებით“ პროგრესის ეკრანი გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />დაწვრილებით<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, დააჭირეთ შეყვანას Google Search-ში ხელოვნური ინტელექტის რეჟიმისთვის საკითხავად</translation>
 <translation id="6126565365696310362">კონვერტი Chinese 2</translation>
 <translation id="6131824478727057281">მდებარეობა</translation>
 <translation id="6133320744616005677">დაშვების გაგრძელება</translation>
@@ -3425,6 +3428,7 @@
 <translation id="6539092367496845964">წარმოიქმნა შეფერხება. ცადეთ მოგვიანებით.</translation>
 <translation id="6540488083026747005">თქვენ დაუშვით მესამე მხარის ქუქი-ჩანაწერები ამ საიტზე</translation>
 <translation id="6545864417968258051">Bluetooth სკანირება</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> — <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">ორმაგად გახვრეტა მარცხნივ</translation>
 <translation id="6549443526281184652">კოსტიუმები</translation>
 <translation id="6550245281449521513">მაუსის ჩაკეტვა არაა დაშვებული</translation>
@@ -3891,6 +3895,7 @@
 <translation id="7337248890521463931">მეტი ხაზის ჩვენება</translation>
 <translation id="7337706099755338005">მიუწვდომელია თქვენი პლატფორმისთვის.</translation>
 <translation id="733923710415886693">სერვერის სერტიფიკატის გამოქვეყნება სერტიფიკატთა გამჭვირვალობის შესახებ წესების შესაბამისად არ მომხდარა.</translation>
+<translation id="73398226265793546">ხელოვნური ინტელექტის რეჟიმის ღილაკი, გაააქტიურეთ Google Search-ში ხელოვნური ინტელექტის რეჟიმისთვის საკითხავად</translation>
 <translation id="7346048084945669753">აფილირებულობა:</translation>
 <translation id="7346062987309535530">სასადილო ჭურჭელი</translation>
 <translation id="7346081071264046066">„დადებითი პასუხის გაცემა ამ საქორწინო მოსაწვევზე სიხარულით“</translation>
@@ -4808,6 +4813,7 @@
 <translation id="8814547618907885931">შედარების ყველა ცხრილის ნახვა</translation>
 <translation id="8814707942599948500">კონვერტი C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის პარამეტრებიდან Chrome-ის გასაახლებლად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
+<translation id="8819855907485254989">ტრანსპორტის ბილეთის საფულეში შენახვა</translation>
 <translation id="8820817407110198400">სანიშნეები</translation>
 <translation id="882338992931677877">ინდივიდუალური სათავსო</translation>
 <translation id="8827067923357481311">მოგვიანებით გადახდის ვარიანტები</translation>

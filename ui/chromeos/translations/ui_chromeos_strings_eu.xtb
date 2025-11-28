@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="5602622065581044566">Bulgariarra, teklatu fonetikoarekin</translation>
 <translation id="5605830556594064952">Dvorak estatubatuarra</translation>
+<translation id="560739212255190568">Administratzaileak proxya ordezteko arauak ezarri ditu, proxy hau aplikatzeaz gain</translation>
 <translation id="5618330573454123917">macOS sistema eragilea darabilen ordenagailu baterako diseinatuta dago fitxategia. Gailua Chrome OS-koa denez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
 <translation id="5625294776298156701">Tamildarra, Tamil99 teklatuarekin</translation>
 <translation id="5633226425545095130">Elementu hau mugituz gero, "<ph name="DESTINATION_NAME" />" karpeta partekatua ikus dezakeen edonorekin partekatuko da.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Xehetasunak.</translation>
 <translation id="8545476925160229291">Ingelesa (AEB)</translation>
 <translation id="854655314928502177">Web-proxyaren hautemate automatikoaren URLa:</translation>
+<translation id="8547747809824590510">Administratzaileak proxya ordezteko arauak ezarri ditu</translation>
 <translation id="8549186985808798022">Italiarra</translation>
 <translation id="8551494947769799688">Letoniarra</translation>
 <translation id="8560515948038859357">Kantondarra</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" izena duen fitxategia bazegoen lehendik ere. Aukeratu beste izen bat.</translation>
 <translation id="9046895021617826162">Ezin izan da konektatu</translation>
 <translation id="9065512565307033593">Egiaztapena gauzatzen ez baduzu, desgaitu egingo da sarerako sarbidea.</translation>
+<translation id="9079844694307518094">Administratzaileak proxy hau aplikatu du</translation>
 <translation id="908378762078012445">Errusiarra, AATSEEL teklatu fonetikoarekin</translation>
 <translation id="9086302186042011942">Sinkronizatzen</translation>
 <translation id="9099674669267916096">Orri kopurua</translation>

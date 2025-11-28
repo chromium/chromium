@@ -753,6 +753,14 @@ Se esta política não for definida, o seletor de emojis será ativado para usu�
 <translation id="1523587744262636189">porta 10080 (pode ser desbloqueada até 01/04/2022)</translation>
 <translation id="1523774894176285446">Navegador alternativo que será iniciado com sites configurados.</translation>
 <translation id="152657506688053119">Lista de URLs alternativos para o provedor de pesquisa padrão</translation>
+<translation id="1526766414933532012">Uma política para controlar se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para medição de anúncio pode ser desativada para os usuários.
+
+Se a política for desativada, a configuração de medição de anúncios também será desativada para os usuários.
+Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para medição de anúncios no dispositivo.
+
+A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.
+
+Esta política foi descontinuada na versão 144 do <ph name="PRODUCT_NAME" /> com a descontinuação da API Attribution Reporting.</translation>
 <translation id="1530812829012954197">Sempre renderizar os seguintes padrões de URL no navegador do host</translation>
 <translation id="1532928374875633053">Permite definir uma lista de padrões de URL que especificam os sites que vão conceder automaticamente a permissão para posicionamento de janelas. Isso vai ampliar a capacidade dos sites de acessar informações sobre as telas do dispositivo e de usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em casos específicos.
 
@@ -2620,6 +2628,7 @@ Se a política for definida como desativada ou não for definida, o usuário pod
 <translation id="2731627323327011390">Desativar o uso de certificados do <ph name="PRODUCT_OS_NAME" /> para apps Arc</translation>
 <translation id="273678600057164019">A resolução de DNS do sistema vai ser executada no processo de rede.</translation>
 <translation id="2737917415184832294">Usar HTTPS para downloads de atualizações</translation>
+<translation id="2738525271405092369">Não permitir o compartilhamento de conteúdo com integrações do <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="2739213523971537320">Desativar o teclado virtual de toque na tela de login</translation>
 <translation id="2742843273354638707">Oculta o link do aplicativo e do rodapé da Chrome Web Store na página "Nova guia" e no iniciador de aplicativos do <ph name="PRODUCT_OS_NAME" />.
 
@@ -5673,6 +5682,21 @@ Quando ela é desativada, a promoção da extensão do provedor de credenciais n
 
       Se não for definida, a tela inicial do Gemini será ignorada para usuários gerenciados por empresas e mostrada para usuários não gerenciados.</translation>
 <translation id="4783415902268741066">Permitir mostrar a página de resultados mais recente do mecanismo de pesquisa padrão em um painel lateral do navegador</translation>
+<translation id="4784457904946078535">Esta política controla o compartilhamento de conteúdo de páginas e arquivos com o <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> pelo painel lateral ou pelas guias do <ph name="PRODUCT_NAME" />.
+
+Ela não afeta o <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> na web. Esta política só controla como os usuários podem compartilhar informações ao usar o <ph name="PRODUCT_NAME" />.
+
+Se ela definida como "0" ou deixada sem definição, os usuários poderão compartilhar conteúdo de páginas ou arquivos com o <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+Se ela for definida como "1", os usuários não poderão compartilhar conteúdo de páginas ou arquivos com o <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Os pontos de entrada para compartilhar contexto serão desativados ou ocultados.
+
+Esta política será ignorada quando o <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> não for o mecanismo de pesquisa padrão dos usuários, já que o recurso está desativado.
+
+Esta política é independente da <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. A política <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> controla apenas os pontos de entrada na caixa de pesquisa da omnibox ou da página "Nova guia" (NTP, na sigla em inglês), enquanto esta política controla o compartilhamento de contexto pelo painel lateral ou pelas guias.
+
+Esta política também não controla a integração do <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que pode ser desativada pelo <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4786784434769279324">Ações a serem executadas quando o computador estiver inativo</translation>
 <translation id="4787763197941188108">Modifica o tamanho da página para impressão padrão.
 
@@ -6126,6 +6150,14 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="5063480226653192405">Uso</translation>
 <translation id="5067143124345820993">Lista de permissões de login de usuário</translation>
 <translation id="50689955292091946">Ativar o teclado virtual de acessibilidade na tela de login</translation>
+<translation id="5069453818168036580">Uma política para controlar se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> de anúncios sugeridos por sites pode ser desativada para os usuários.
+
+Se ela for desativada, a configuração de anúncios sugeridos por sites também será desativada para os usuários.
+Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para anúncios sugeridos por sites no dispositivo.
+
+A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.
+
+Esta política foi descontinuada na versão 144 do <ph name="PRODUCT_NAME" /> com a descontinuação da API Protected Audience.</translation>
 <translation id="5069522005630249098">Esta configuração decide quantos dados do usuário são mantidos após a desativação do <ph name="LACROS_NAME" />.
 
       Se a política for definida como <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> ou for deixada sem definição, a migração de dados de versões anteriores não vai ser realizada.
@@ -7690,6 +7722,7 @@ Se você quiser restringir o acesso às ferramentas para desenvolvedores com bas
 <translation id="6011969832398368671">Permitir que sites peçam ao usuário para conceder acesso de gravação de arquivos e diretórios</translation>
 <translation id="601234435141599215">Permitir o encaminhamento de portas a máquinas virtuais Linux</translation>
 <translation id="6012952794649558174">Usar comportamento do navegador padrão.</translation>
+<translation id="6013875085491664033">Ativar o compartilhamento de conteúdo com integrações do <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /></translation>
 <translation id="6015281292796053435">Esta política controla a permissão de fornecimento de informações do "Navegação segura", incluindo o número de avisos e de cliques no aviso.
 
       Quando a <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> não for definida ou for desativada, esta política será ignorada.
@@ -9751,6 +9784,7 @@ Não é possível usar programações com intervalos sobrepostos. Esta política
 Os dispositivos <ph name="PRODUCT_OS_NAME" /> vão usar o fuso horário do sistema para aplicar esses intervalos.
 
 Importante: as programações definidas por esta política podem não ocorrer como esperado se entrarem em conflito com outras configurações de gerenciamento de energia, como <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />. Verifique se essas configurações estão definidas para permitir que os intervalos de suspensão programados entrem em vigor.</translation>
+<translation id="7196583864907169857">Permitir o compartilhamento de conteúdo com integrações do <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="7196944905905233325">Ativa o provedor do sistema de acessibilidade de <ph name="UIA_NAME" /> no
 <ph name="PRODUCT_NAME" /> para uso por ferramentas
 de acessibilidade.
@@ -11877,6 +11911,14 @@ Esta política é uma medida temporária e será removida após alguns marcos.</
       Se a política for desativada, a segurança e a estabilidade do <ph name="PRODUCT_NAME" /> serão prejudicadas, já que códigos desconhecidos e possivelmente hostis poderão ser carregados nos processos do navegador <ph name="PRODUCT_NAME" />. Desative a política apenas se softwares de terceiros que precisam ser executados nos processos do navegador <ph name="PRODUCT_NAME" /> apresentarem problemas de compatibilidade.
 
       Observação: leia mais sobre políticas de mitigação de processos em https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies (link em inglês).</translation>
+<translation id="8672039014434141545">Uma política para controlar se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios pode ser desativada para os usuários.
+
+Se a política for desativada, a configuração de temas de anúncios também vai ser desativada para os usuários.
+Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios no dispositivo.
+
+A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.
+
+Esta política foi descontinuada na versão 144 do <ph name="PRODUCT_NAME" /> com a desativação da API Topics.</translation>
 <translation id="8672321184841719703">Versão de atualização automática de destino</translation>
 <translation id="867410340948518937">Segundo fator universal (U2F, na sigla em inglês)</translation>
 <translation id="8676959842615154675">Se a política for definida como "Ativada", o host de acesso remoto fará a comparação entre o nome do usuário local associado com o host e o nome da Conta do Google registrada como proprietária do host ("joaosilva", se o host for propriedade de "joaosilva@exemplo.com"). Este host não será iniciado se o nome do proprietário do host for diferente do nome do usuário local associado com o host. Use a política <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> para garantir que a Conta do Google do proprietário seja associada com um domínio específico.

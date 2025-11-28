@@ -183,7 +183,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1292701964462482250">"Un software en tu computadora evita que Chrome se conecte de forma segura a la Web" (solo en computadoras con Windows)</translation>
 <translation id="1293556467332435079">Archivos</translation>
 <translation id="1293797321964802402">Sobre de 22.8 × 27.9 cm</translation>
-<translation id="129553762522093515">Cerrado recientemente</translation>
+<translation id="129553762522093515">Cerradas recientemente</translation>
 <translation id="1296930489679394997">Ofertas</translation>
 <translation id="1297814096526086484">¿Quieres bloquear el teclado y el mouse?</translation>
 <translation id="1297832388362139384">Verde 1</translation>
@@ -2177,6 +2177,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4506599922270137252">Comunicarse con el administrador del sistema.</translation>
 <translation id="450710068430902550">Compartir con el administrador</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para traducir esta página con Google Traductor</translation>
+<translation id="4510703642214459906">Lugar</translation>
 <translation id="4515275063822566619">Las tarjetas y direcciones provienen de Chrome y de tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />). Puedes administrar esta información en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Microautos y subcompactos</translation>
 <translation id="451601984112574365">Verde 3</translation>
@@ -4373,6 +4374,7 @@ Detalles adicionales:
 <translation id="8077669823243888800">Sobre chino n.º 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{¿Quieres subir este archivo confidencial?}other{¿Quieres subir estos archivos confidenciales?}}</translation>
 <translation id="8079031581361219619">¿Deseas volver a cargar el sitio?</translation>
+<translation id="8079591184016291275">Nombre del evento</translation>
 <translation id="8079976827192572403">Sitio peligroso</translation>
 <translation id="8081087320434522107">Vehículos tipo sedán</translation>
 <translation id="8086429410809447605">Indumentaria femenina</translation>

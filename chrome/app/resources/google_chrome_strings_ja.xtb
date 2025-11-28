@@ -557,6 +557,7 @@
 <translation id="7285616922384953075">Chrome は <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="7288567540154601580">タブと拡張機能</translation>
 <translation id="7296210096911315575">使用と安全に関する重要事項</translation>
+<translation id="7302361266603927550">Chrome データの一部が Google アカウントにまだ保存されていません。数分待ってからログアウトしてください。今すぐログアウトすると、このデータは削除されます。</translation>
 <translation id="7308322188646931570">ファイルをダウンロードするには、Chrome でストレージへのアクセスを許可する必要があります</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
@@ -613,6 +614,7 @@
 <translation id="7801699035218095297">Google Chrome がパスワードをコピーしようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="7804364787702057554">Chrome のアカウント設定</translation>
 <translation id="7808348361785373670">Chrome から削除...</translation>
+<translation id="7827099906024714326">Google アカウントに一部のデータを保存してすべてのデバイスで使用できるようにするには、Chrome で本人確認を行う必要があります。今すぐログアウトすると、このデータは削除されます。</translation>
 <translation id="7845233973568007926">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはコンピュータを再起動してください。</translation>
 <translation id="7849037457735762883">前回開いていたページを開く: Chrome で再起動するたびにタブを復元できます。この機能をオンにするには、</translation>
 <translation id="7872446069773932638">ダウンロードしています... 残り <ph name="SECONDS" /> 秒です</translation>

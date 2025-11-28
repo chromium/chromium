@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">ໂຕ​ເລືອກ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="5602622065581044566">ພາສາບຸນກາຣີທີ່ໃຊ້ແປ້ນພິມຕາມການອອກສຽງ</translation>
 <translation id="5605830556594064952">ດີ​ໂວຣັກ ສະຫະລັດ</translation>
+<translation id="560739212255190568">ຜູ້ເບິ່ງແຍງຂອງທ່ານໄດ້ຕັ້ງຄ່າກົດລະບຽບການຍົກເລີກພຣັອກຊີນອກເໜືອຈາກການບັງຄັບໃຊ້ພຣັອກຊີຕໍ່ໄປນີ້</translation>
 <translation id="5618330573454123917">ໄຟລ໌ນີ້ຖືກອອກແບບມາສໍາລັບຄອມພິວເຕີທີ່ໃຊ້ຊອບແວ Macintosh. ສິ່ງນີ້ບໍ່ເຂົ້າກັນໄດ້ກັບອຸປະກອນຂອງທ່ານເຊິ່ງໃຊ້ ChromeOS. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ຢູ່ ChromeOS.</translation>
 <translation id="5625294776298156701">ພາສາທາມິລທີ່ໃຊ້ແປ້ນພິມ Tamil99</translation>
 <translation id="5633226425545095130">ການຍ້າຍລາຍການນີ້ຈະແບ່ງປັນມັນໃຫ້ກັບທຸກຄົນທີ່ສາມາດເບິ່ງເຫັນໂຟນເດີທີ່ແບ່ງປັນ '<ph name="DESTINATION_NAME" />' ໄດ້.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ລາຍລະອຽດ</translation>
 <translation id="8545476925160229291">ອັງກິດ (ສະຫະລັດ)</translation>
 <translation id="854655314928502177">URL ການຄົ້ນຫາອັດຕະໂນມັດຂອງພຣັອກຊີເວັບ</translation>
+<translation id="8547747809824590510">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງຄ່າກົດລະບຽບການຍົກເລີກພຣັອກຊີ</translation>
 <translation id="8549186985808798022">ພາສາອີຕາລຽນ</translation>
 <translation id="8551494947769799688">ພາສາລັດເວຍ</translation>
 <translation id="8560515948038859357">ຈີນກວາງຕຸ້ງ</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">ມີໄຟລ໌ຊື່ "<ph name="FILE_NAME" />" ຢູ່ແລ້ວ. ກະລຸນາເລືອກຊື່ໄຟລ໌ອື່ນ.</translation>
 <translation id="9046895021617826162">ເຊື່ອມຕໍ່ບໍ່ສໍາເລັດ</translation>
 <translation id="9065512565307033593">ຖ້າທ່ານຢັ້ງຢືນບໍ່ສຳເລັດ, ລະບົບຈະປິດການນຳໃຊ້ສິດເຂົ້າເຖິງເຄືອຂ່າຍຂອງທ່ານ.</translation>
+<translation id="9079844694307518094">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານກຳລັງບັງຄັບໃຊ້ພຣັອກຊີຕໍ່ໄປນີ້</translation>
 <translation id="908378762078012445">ພາສາຣັດເຊຍທີ່ໃຊ້ແປ້ນພິມ AATSEEL ຕາມການອອກສຽງ</translation>
 <translation id="9086302186042011942">ກໍາລັງຊິງຄ໌</translation>
 <translation id="9099674669267916096">ຈຳນວນໜ້າ</translation>

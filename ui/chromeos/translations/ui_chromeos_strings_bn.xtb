@@ -595,6 +595,7 @@
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="5602622065581044566">বুলগেরিয়ান ভাষায় ফোনেটিক কীবোর্ড</translation>
 <translation id="5605830556594064952">মার্কিন যুক্তরাষ্ট্রীয় দভোরাক</translation>
+<translation id="560739212255190568">আপনার অ্যাডমিন নিম্নলিখিত প্রক্সি প্রয়োগ করার পাশাপাশি প্রক্সি ওভাররাইড করার নিয়ম সেট করেছেন</translation>
 <translation id="5618330573454123917">Macintosh সফ্টওয়্যার ব্যবহার করে এমন একটি কম্পিউটারের জন্য এই ফাইলটি ডিজাইন করা হয়েছে। আপনার ডিভাইস ChromeOS-এ চলে বলে সেটি এর জন্য মানানসই নয়। ChromeOS-এ ফাইল খোলা সম্পর্কে <ph name="BEGIN_LINK_HELP" />আরও জানুন<ph name="END_LINK_HELP" />।</translation>
 <translation id="5625294776298156701">তামিল ভাষায় তামিল৯৯ (Tamil99) কীবোর্ড</translation>
 <translation id="5633226425545095130">এই আইটেম অন্য কোথাও সরিয়ে দিলে, এটি শেয়ার করা ফোল্ডার '<ph name="DESTINATION_NAME" />' দেখতে পাওয়া প্রতিটি ব্যক্তির সাথে শেয়ার হয়ে যাবে।</translation>
@@ -994,6 +995,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
 <translation id="8545476925160229291">ইংরেজি (মার্কিন যুক্তরাষ্ট্র)</translation>
 <translation id="854655314928502177">ওয়েব প্রক্সি অটো আবিষ্কার URL:</translation>
+<translation id="8547747809824590510">আপনার অ্যাডমিন প্রক্সি ওভাররাইড করার নিয়ম সেট করেছেন</translation>
 <translation id="8549186985808798022">ইতালিয়ান</translation>
 <translation id="8551494947769799688">লাটভিও</translation>
 <translation id="8560515948038859357">ক্যান্টনিজ</translation>
@@ -1054,6 +1056,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" নামের ফাইল আগে থেকেই আছে। অন্য একটি নাম লিখুন।</translation>
 <translation id="9046895021617826162">সংযোগ ব্যর্থ হয়েছে</translation>
 <translation id="9065512565307033593">আপনি যাচাই না করলে, আপনার নেটওয়ার্ক অ্যাক্সেস করার সুবিধা বন্ধ হয়ে যাবে।</translation>
+<translation id="9079844694307518094">আপনার অ্যাডমিন নিম্নলিখিত প্রক্সি প্রয়োগ করছেন</translation>
 <translation id="908378762078012445">রাশিয়ান ভাষায় ফোনেটিক আটসিল (AATSEEL) কীবোর্ড</translation>
 <translation id="9086302186042011942">সিঙ্ক হচ্ছে</translation>
 <translation id="9099674669267916096">পৃষ্ঠার সংখ্যা</translation>

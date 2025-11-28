@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Več možnosti</translation>
 <translation id="5602622065581044566">bolgarščina s fonetično tipkovnico</translation>
 <translation id="5605830556594064952">Združene države – Dvorak</translation>
+<translation id="560739212255190568">Skrbnik je poleg uveljavljanja tega strežnika proxy nastavil pravila za preglasitev strežnika proxy</translation>
 <translation id="5618330573454123917">Ta datoteka je zasnovana za računalnike s programsko opremo Macintosh, in ni združljiva z vašo napravo, ki uporablja sistem Chrome OS. <ph name="BEGIN_LINK_HELP" />Preberite več<ph name="END_LINK_HELP" /> o odpiranju datotek v sistemu Chrome OS.</translation>
 <translation id="5625294776298156701">tamilščina s tipkovnico Tamil99</translation>
 <translation id="5633226425545095130">Če boste premaknili ta element, bo deljen z vsemi osebami, ki jim je vidna deljena mapa »<ph name="DESTINATION_NAME" />«.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="8545476925160229291">angleščina (ZDA)</translation>
 <translation id="854655314928502177">URL za samodejno odkrivanje spletnega strežnika proxy:</translation>
+<translation id="8547747809824590510">Skrbnik je nastavil pravila za preglasitev strežnika proxy</translation>
 <translation id="8549186985808798022">italijanščina</translation>
 <translation id="8551494947769799688">latvijščina</translation>
 <translation id="8560515948038859357">kantonščina</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Datoteka z imenom »<ph name="FILE_NAME" />« že obstaja. Izberite drugo ime.</translation>
 <translation id="9046895021617826162">Vzpostavljanje povezave ni uspelo</translation>
 <translation id="9065512565307033593">Če ne preverite, bo dostop do omrežja onemogočen.</translation>
+<translation id="9079844694307518094">Skrbnik uveljavlja ta strežnik proxy</translation>
 <translation id="908378762078012445">ruščina s fonetično tipkovnico AATSEEL</translation>
 <translation id="9086302186042011942">Sinhroniziranje</translation>
 <translation id="9099674669267916096">Število strani</translation>

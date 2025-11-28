@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="5602622065581044566">ਧੁਨੀਆਤਮਿਕ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਬੁਲਗਾਰੀਆਈ</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
+<translation id="560739212255190568">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਅੱਗੇ ਦਿੱਤੀ ਪ੍ਰੌਕਸੀ ਨੂੰ ਲਾਗੂ ਕਰਨ ਤੋਂ ਇਲਾਵਾ ਪ੍ਰੌਕਸੀ ਓਵਰਰਾਈਡ ਨਿਯਮ ਸੈੱਟ ਕੀਤੇ ਹਨ</translation>
 <translation id="5618330573454123917">ਇਹ ਫ਼ਾਈਲ Macintosh ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ ਕੰਪਿਊਟਰ ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ ChromeOS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਰੂਪ ਨਹੀਂ ਹੈ। ChromeOS 'ਤੇ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਬਾਰੇ <ph name="BEGIN_LINK_HELP" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_HELP" />।</translation>
 <translation id="5625294776298156701">ਤਮਿਲ99 ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਤਮਿਲ</translation>
 <translation id="5633226425545095130">ਇਸ ਆਈਟਮ ਦੀ ਜਗ੍ਹਾ ਬਦਲਣ ਨਾਲ ਇਸਨੂੰ ਹਰ ਉਸ ਵਿਅਕਤੀ ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਜਾਵੇਗਾ ਜੋ ਸਾਂਝਾ ਕੀਤੇ ਫੋਲਡਰ '<ph name="DESTINATION_NAME" />' ਨੂੰ ਦੇਖ ਸਕਦੇ ਹਨ।</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਵੇਰਵੇ</translation>
 <translation id="8545476925160229291">ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਐੱਸ.)</translation>
 <translation id="854655314928502177">ਵੈੱਬ ਪ੍ਰੌਕਸੀ ਸਵੈਚਲਿਤ ਖੋਜ URL:</translation>
+<translation id="8547747809824590510">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਪ੍ਰੌਕਸੀ ਓਵਰਰਾਈਡ ਨਿਯਮ ਸੈੱਟ ਕੀਤੇ ਹਨ</translation>
 <translation id="8549186985808798022">ਇਤਾਲਵੀ</translation>
 <translation id="8551494947769799688">Latvian</translation>
 <translation id="8560515948038859357">ਕੈਂਟੋਨੀਜ਼</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" ਨਾਮਕ ਫ਼ਾਈਲ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕੋਈ ਵੱਖਰਾ ਨਾਮ ਚੁਣੋ।</translation>
 <translation id="9046895021617826162">ਕਨੈਕਟ ਅਸਫ਼ਲ ਹੋ ਗਿਆ</translation>
 <translation id="9065512565307033593">ਜੇ ਤੁਸੀਂ ਪੁਸ਼ਟੀ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਰਹਿੰਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਡੀ ਨੈੱਟਵਰਕ ਪਹੁੰਚ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="9079844694307518094">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਅੱਗੇ ਦਿੱਤੀ ਪ੍ਰੌਕਸੀ ਨੂੰ ਲਾਗੂ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="908378762078012445">ਧੁਨੀਆਤਮਿਕ AATSEEL ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਰੂਸੀ</translation>
 <translation id="9086302186042011942">ਸਿੰਕ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="9099674669267916096">ਪੰਨਾ ਗਿਣਤੀ</translation>
