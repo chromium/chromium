@@ -300,7 +300,7 @@ bool SetProxyOverrideRules(const PrefService* pref_service,
 
 }  // namespace
 
-BASE_FEATURE(kEnableProxyOverrideRules, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableProxyOverrideRules, base::FEATURE_ENABLED_BY_DEFAULT);
 
 //============================= ProxyConfigServiceImpl =======================
 

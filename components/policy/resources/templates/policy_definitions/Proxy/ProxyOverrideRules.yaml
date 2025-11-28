@@ -52,9 +52,10 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
-- chrome.*
-- chrome_os
 - android
+supported_on:
+- chrome.*:144-
+- chrome_os:144-
 owners:
 - seblalancette@chromium.org
 - domfc@chromium.org
