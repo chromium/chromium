@@ -24,7 +24,6 @@
 
 namespace em = ::enterprise_management;
 
-// TODO(crbug.com/40703888): Move Chrome OS code to its own delegate
 namespace enterprise_reporting {
 
 BrowserReportGeneratorDesktop::BrowserReportGeneratorDesktop() = default;
