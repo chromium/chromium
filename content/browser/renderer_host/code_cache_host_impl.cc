@@ -329,8 +329,7 @@ class LocalCodeCacheHost : public CodeCacheHostImpl {
   // CodeCacheHostImpl:
   void GetPendingBackend(blink::mojom::CodeCacheType cache_type,
                          GetPendingBackendCallback callback) override {
-    // This method is only used for the PersistentCache implementation below.
-    NOTREACHED();
+    mojo::ReportBadMessage("Not using PersistentCache");
   }
 
   void DidGenerateCacheableMetadata(blink::mojom::CodeCacheType cache_type,
