@@ -91,7 +91,7 @@ class SyncServiceImplHarness {
   // syncing user signs out of the content area.
   // TODO(crbug.com/401470426): Replace the usages with
   // Enter/ExitSignInPendingStateForPrimaryAccount().
-  void EnterSyncPausedStateForPrimaryAccount();
+  bool EnterSyncPausedStateForPrimaryAccount();
   bool ExitSyncPausedStateForPrimaryAccount();
 
   // Enters the "Sign-in pending" state and waits until the sync transport

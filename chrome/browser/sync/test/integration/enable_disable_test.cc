@@ -597,39 +597,13 @@ IN_PROC_BROWSER_TEST_P(EnableDisableSingleClientTest, RedownloadsAfterSignout) {
 IN_PROC_BROWSER_TEST_P(EnableDisableSingleClientTest,
                        DoesNotRedownloadAfterSyncUnpaused) {
   ASSERT_TRUE(SetupClients());
+  InjectSyncedBookmark();
+
   ASSERT_FALSE(bookmarks_helper::GetBookmarkModel(0)->IsBookmarked(
       GURL(kSyncedBookmarkURL)));
-
-  // Create a bookmark on the server, then turn on Sync on the client.
-  InjectSyncedBookmark();
-  // Disable any LowPriorityUserTypes() (in practice, history, and incoming
-  // password sharing invitations controlled by Passwords data type): This test
-  // inspects the last-sync-cycle state. If low-prio types are active, they
-  // cause another (uninteresting) cycle and mess up the stats we're interested
-  // in.
-  // TODO(crbug.com/40215602): Rewrite this test to avoid disabling low priotiy
-  // types.
-  ASSERT_TRUE(GetClient(0)->SetupSyncWithCustomSettings(
-      base::BindOnce([](syncer::SyncUserSettings* settings) {
-        UserSelectableTypeSet types = settings->GetRegisteredSelectableTypes();
-        types.Remove(syncer::UserSelectableType::kHistory);
-        types.Remove(syncer::UserSelectableType::kPasswords);
-        settings->SetSelectedTypes(/*sync_everything=*/false, types);
-#if !BUILDFLAG(IS_CHROMEOS)
-        settings->SetInitialSyncFeatureSetupComplete(
-            syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-      })));
-  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
-  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().HasAny(
-      syncer::LowPriorityUserTypes()));
-
-  // Make sure the bookmark got synced down.
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(bookmarks_helper::GetBookmarkModel(0)->IsBookmarked(
       GURL(kSyncedBookmarkURL)));
-  // Note: The response may also contain permanent nodes, so we can't check the
-  // exact count.
-  ASSERT_GT(GetNumUpdatesDownloadedInLastCycle(), 0);
 
   // Pause sync.
   if (GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTheFeature) {
@@ -647,11 +621,11 @@ IN_PROC_BROWSER_TEST_P(EnableDisableSingleClientTest,
   } else {
     GetClient(0)->ExitSignInPendingStateForPrimaryAccount();
   }
+
   ASSERT_EQ(GetSyncService(0)->GetTransportState(),
             syncer::SyncService::TransportState::ACTIVE);
 
   // The bookmark should still be there, *without* having been redownloaded.
-  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(bookmarks_helper::GetBookmarkModel(0)->IsBookmarked(
       GURL(kSyncedBookmarkURL)));
   EXPECT_EQ(0, histogram_tester.GetBucketCount(

@@ -265,10 +265,13 @@ void SyncServiceImplHarness::SignOutPrimaryAccount() {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
-void SyncServiceImplHarness::EnterSyncPausedStateForPrimaryAccount() {
-  DCHECK(service_->IsSyncFeatureActive());
-  signin::SetInvalidRefreshTokenForPrimaryAccount(
-      IdentityManagerFactory::GetForProfile(profile_.get()));
+bool SyncServiceImplHarness::EnterSyncPausedStateForPrimaryAccount() {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_.get());
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  CHECK(service_->IsSyncFeatureEnabled());
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+  return AwaitSyncTransportPaused();
 }
 
 bool SyncServiceImplHarness::ExitSyncPausedStateForPrimaryAccount() {
@@ -279,8 +282,7 @@ bool SyncServiceImplHarness::ExitSyncPausedStateForPrimaryAccount() {
 }
 
 bool SyncServiceImplHarness::EnterSignInPendingStateForPrimaryAccount() {
-  CHECK_EQ(service_->GetTransportState(),
-           syncer::SyncServiceImpl::TransportState::ACTIVE);
+  CHECK(!service_->IsSyncFeatureEnabled());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_.get());
   CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
