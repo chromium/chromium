@@ -125,17 +125,17 @@ public final class ToolbarSecurityIconTest {
         Context context =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mLocationBarModel =
+                spy(
+                        new LocationBarModel(
+                                context,
+                                NewTabPageDelegate.EMPTY,
+                                (url) -> url.getSpec(),
+                                ToolbarUnitTestUtils.OFFLINE_STATUS,
+                                new ObservableSupplierImpl(ControlsPosition.TOP)));
+        ProfileManager.setLastUsedProfileForTesting(mMockProfile);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mLocationBarModel =
-                            spy(
-                                    new LocationBarModel(
-                                            context,
-                                            NewTabPageDelegate.EMPTY,
-                                            (url) -> url.getSpec(),
-                                            ToolbarUnitTestUtils.OFFLINE_STATUS,
-                                            new ObservableSupplierImpl(ControlsPosition.TOP)));
-                    ProfileManager.setLastUsedProfileForTesting(mMockProfile);
                     mLocationBarModel.initializeWithNative();
                     UserDataHost userDataHost = new UserDataHost();
                     userDataHost.setUserData(TrustedCdn.USER_DATA_KEY, mTrustedCdn);

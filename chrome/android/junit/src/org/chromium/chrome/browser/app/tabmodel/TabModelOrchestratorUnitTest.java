@@ -48,9 +48,15 @@ public class TabModelOrchestratorUnitTest {
 
         when(mMockTabModelSelectorBase.getModel(anyBoolean())).thenReturn(mMockTabModel);
 
-        mTabModelOrchestrator = new TabModelOrchestrator();
-        mTabModelOrchestrator.initForTesting(
-                mMockTabModelSelectorBase, mMockTabPersistentStore, mTabPersistencePolicy);
+        mTabModelOrchestrator =
+                new TabModelOrchestrator() {
+                    @Override
+                    public TabModelSelectorBase getTabModelSelector() {
+                        return mMockTabModelSelectorBase;
+                    }
+                };
+        mTabModelOrchestrator.setTabPersistentStoreForTesting(mMockTabPersistentStore);
+        mTabModelOrchestrator.setTabPersistencePolicyForTesting(mTabPersistencePolicy);
         when(mTabPersistencePolicy.getMetadataFileName()).thenReturn("metadata");
 
         mObserverCaptor = ArgumentCaptor.forClass(TabPersistentStoreObserver.class);

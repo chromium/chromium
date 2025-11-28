@@ -19,8 +19,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SupplierUtils;
-import org.chromium.build.annotations.EnsuresNonNull;
-import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -92,13 +91,13 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final CipherFactory mCipherFactory;
     // Effectively final after createTabModels().
-    private @MonotonicNonNull String mWindowTag;
+    private String mWindowTag;
 
-    private @MonotonicNonNull OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
+    private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
     // This class is driven by TabbedModeTabModelOrchestrator to prevent duplicate glue code in
     // ChromeTabbedActivity.
-    private @MonotonicNonNull ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
+    private @Nullable ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private @Nullable Supplier<TabModel> mArchivedHistoricalObserverSupplier;
 
     // Currently used to perform shadow operations for an alternative storage. Not always enabled.
@@ -138,21 +137,6 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         super.destroy();
     }
 
-    @EnsuresNonNull({
-        "mTabPersistentStore",
-        "mTabPersistencePolicy",
-        "mWindowTag",
-        "mTabModelSelector",
-        "mProfileProviderSupplier",
-    })
-    private void assertCreated() {
-        assert mTabPersistentStore != null;
-        assert mTabPersistencePolicy != null;
-        assert mWindowTag != null;
-        assert mTabModelSelector != null;
-        assert mProfileProviderSupplier != null;
-    }
-
     /**
      * Creates the TabModelSelector and the TabPersistentStore.
      *
@@ -166,6 +150,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
      * @return Whether the creation was successful. It may fail is we reached the limit of number of
      *     windows.
      */
+    @Initializer
     public boolean createTabModels(
             Activity activity,
             ModalDialogManager modalDialogManager,
@@ -269,7 +254,6 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
     @Override
     public void cleanupInstance(int instanceId) {
-        assertCreated();
         mTabPersistentStore.cleanupStateFile(instanceId);
     }
 
@@ -280,7 +264,6 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         if (!ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled()) {
             return;
         }
-        assertCreated();
 
         if (ChromeFeatureList.sAndroidTabDeclutterPerformanceImprovements.isEnabled()) {
             TabModelUtils.runOnTabStateInitialized(
@@ -304,7 +287,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
             TabCreatorManager shadowTabCreatorManager =
                     incognito -> incognito ? mIncognitoShadowTabCreator : mRegularShadowTabCreator;
-            assert !mWindowTag.isEmpty();
+            assert mWindowTag != null && !mWindowTag.isEmpty();
             mShadowTabPersistentStore =
                     new TabStateStore(
                             TabStateStorageServiceFactory.getForProfile(profile),
@@ -320,7 +303,6 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     }
 
     private void onBothStateLoaded() {
-        assertCreated();
         // Unless mTabStateStoreIsAuthoritative is true, createNewTabArgumentsList should be empty.
         assert Boolean.FALSE.equals(mTabStateStoreIsAuthoritative)
                 || mRegularShadowTabCreator.createNewTabArgumentsList.isEmpty();
@@ -395,7 +377,6 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     private void createAndInitArchivedTabModelOrchestrator(TabContentManager tabContentManager) {
         if (mActivityLifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
         ThreadUtils.assertOnUiThread();
-        assertCreated();
         // The profile will be available because native is initialized.
         assert mProfileProviderSupplier.get() != null;
         assert tabContentManager != null;
@@ -407,7 +388,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         mArchivedTabModelOrchestrator.maybeCreateAndInitTabModels(
                 tabContentManager, mCipherFactory);
         mArchivedHistoricalObserverSupplier =
-                () -> mTabModelSelector.getModel(/* incognito= */ false);
+                () -> getTabModelSelector().getModel(/* incognito= */ false);
         mArchivedTabModelOrchestrator.initializeHistoricalTabModelObserver(
                 mArchivedHistoricalObserverSupplier);
         // Registering will automatically do an archive pass, and schedule recrurring passes for
@@ -416,7 +397,6 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     }
 
     public TabPersistentStoreImpl getTabPersistentStoreForTesting() {
-        assertCreated();
         return (TabPersistentStoreImpl) mTabPersistentStore;
     }
 }

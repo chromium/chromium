@@ -14,6 +14,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -46,7 +47,7 @@ public abstract class TabModelSelectorBase
     private final List<TabModel> mTabModels = new ArrayList<>();
 
     private final List<TabModelInternal> mTabModelInternals = new ArrayList<>();
-    private @Nullable IncognitoTabModel mIncognitoTabModel;
+    private IncognitoTabModel mIncognitoTabModel;
 
     private final TabGroupModelFilterProvider mTabGroupModelFilterProvider =
             new TabGroupModelFilterProvider();
@@ -87,7 +88,7 @@ public abstract class TabModelSelectorBase
                 mTabModelSupplier.createTransitive(TabModel::getTabCountSupplier);
     }
 
-    // Do not use @Initializer. Not called immediately after constructor.
+    @Initializer
     protected final void initialize(
             TabModelHolder normalModelHolder, IncognitoTabModelHolder incognitoModelHolder) {
         // Only normal and incognito supported for now.

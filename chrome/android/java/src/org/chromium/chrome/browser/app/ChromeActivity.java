@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.app;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
@@ -2120,7 +2118,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             throw new IllegalStateException(
                     "Attempting to access TabModelSelector before initialization");
         }
-        return assertNonNull(mTabModelOrchestrator.getTabModelSelector());
+        return mTabModelOrchestrator.getTabModelSelector();
     }
 
     /** Returns an {@link ObservableSupplier} for {@link TabModelOrchestrator}. */

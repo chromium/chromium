@@ -887,14 +887,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     @Override
     public void onTabStateInitialized() {
         TabModelSelector selector = mTabModelOrchestratorSupplier.get().getTabModelSelector();
-        assert selector != null;
         writeTabCount(mInstanceId, selector);
     }
 
     @VisibleForTesting
     protected void installTabModelObserver() {
         TabModelSelector selector = mTabModelOrchestratorSupplier.get().getTabModelSelector();
-        assert selector != null;
         mTabModelObserver =
                 new TabModelSelectorTabModelObserver(selector) {
                     @Override
@@ -1550,12 +1548,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     private Profile getProfile() {
-        TabModelSelector tabModelSelector =
-                mTabModelOrchestratorSupplier.get().getTabModelSelector();
-        assumeNonNull(tabModelSelector);
-        var profile = tabModelSelector.getCurrentModel().getProfile();
-        assert profile != null;
-        return profile;
+        var profile =
+                mTabModelOrchestratorSupplier
+                        .get()
+                        .getTabModelSelector()
+                        .getCurrentModel()
+                        .getProfile();
+        return assumeNonNull(profile);
     }
 
     @Override

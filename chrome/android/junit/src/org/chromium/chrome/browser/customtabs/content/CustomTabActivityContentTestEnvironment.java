@@ -257,7 +257,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     public void saveTab(Tab tab) {
         when(activity.getSavedInstanceState()).thenReturn(new Bundle());
         when(tabModelSelector.getCurrentTab()).thenReturn(tab);
-        when(tabModelOrchestrator.getCurrentTab()).thenReturn(tab);
     }
 
     public WebContents prepareTransferredWebcontents() {

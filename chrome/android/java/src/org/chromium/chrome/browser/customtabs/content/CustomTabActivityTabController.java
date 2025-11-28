@@ -336,7 +336,6 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         TabModelOrchestrator tabModelOrchestrator = mTabFactory.getTabModelOrchestrator();
         assumeNonNull(tabModelOrchestrator);
         TabModelSelectorBase tabModelSelector = tabModelOrchestrator.getTabModelSelector();
-        assumeNonNull(tabModelSelector);
 
         TabModel tabModel = tabModelSelector.getModel(mIntentDataProvider.isOffTheRecord());
         tabModel.addObserver(mTabObserverRegistrar);
@@ -411,7 +410,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
 
         tabModelOrchestrator.loadState(/* ignoreIncognitoFiles= */ false, null);
         tabModelOrchestrator.restoreTabs(true);
-        Tab tab = tabModelOrchestrator.getCurrentTab();
+        Tab tab = tabModelOrchestrator.getTabModelSelector().getCurrentTab();
         if (tab != null) {
             initializeTab(tab, false);
         }
