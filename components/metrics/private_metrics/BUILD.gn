@@ -64,7 +64,6 @@ static_library("private_metrics") {
     "dkm_entry_builder.h",
     "dkm_entry_builder_base.cc",
     "dkm_entry_builder_base.h",
-    "private_metrics_pref_names.cc",
     "private_metrics_pref_names.h",
     "private_metrics_reporting_service.cc",
     "private_metrics_reporting_service.h",
@@ -72,6 +71,8 @@ static_library("private_metrics") {
     "private_metrics_unsent_log_store_metrics.h",
     "puma_histogram_encoder.cc",
     "puma_histogram_encoder.h",
+    "puma_service.cc",
+    "puma_service.h",
   ]
   public_deps = [
     ":dwa_recorder",
@@ -107,6 +108,7 @@ source_set("unit_tests") {
     "//components/metrics/dwa/dwa_recorder_unittest.cc",
     "//components/metrics/dwa/dwa_service_unittest.cc",
     "//components/metrics/private_metrics/puma_histogram_encoder_unittest.cc",
+    "//components/metrics/private_metrics/puma_service_unittest.cc",
     "data_upload_config_downloader_unittest.cc",
     "dkm_entry_builder_unittest.cc",
   ]
