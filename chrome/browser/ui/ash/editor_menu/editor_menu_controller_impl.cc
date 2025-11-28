@@ -209,7 +209,9 @@ void EditorMenuControllerImpl::OnPromoCardWidgetClosed(
   OnEditorCardHidden();
 }
 
-void EditorMenuControllerImpl::OnEditorMenuVisibilityChanged(bool visible) {
+void EditorMenuControllerImpl::OnEditorMenuVisibilityChanged(
+    bool visible,
+    bool destroy_session) {
   if (!card_session_ || card_session_->editor_manager() == nullptr) {
     return;
   }
@@ -217,7 +219,7 @@ void EditorMenuControllerImpl::OnEditorMenuVisibilityChanged(bool visible) {
   card_session_->editor_manager()->OnEditorMenuVisibilityChanged(visible);
 
   if (!visible) {
-    OnEditorCardHidden();
+    OnEditorCardHidden(destroy_session);
   }
 }
 
@@ -367,10 +369,10 @@ void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext(
   }
 }
 
-void EditorMenuControllerImpl::OnEditorCardHidden() {
+void EditorMenuControllerImpl::OnEditorCardHidden(bool destroy_session) {
   // The currently visible card is closing and being removed from the user's
   // view, the EditorCardSession has ended.
-  if (card_session_) {
+  if (destroy_session && card_session_) {
     card_session_.reset();
   }
 }

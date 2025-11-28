@@ -61,7 +61,10 @@ class MockEditorMenuViewDelegate : public EditorMenuViewDelegate {
               OnPromoCardWidgetClosed,
               (views::Widget::ClosedReason closed_reason),
               (override));
-  MOCK_METHOD(void, OnEditorMenuVisibilityChanged, (bool visible), (override));
+  MOCK_METHOD(void,
+              OnEditorMenuVisibilityChanged,
+              (bool visible, bool destroy_session),
+              (override));
   MOCK_METHOD(void, OnTabSelected, (int index), (override));
 };
 
