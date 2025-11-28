@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/byte_count.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_monitor.h"
@@ -57,6 +58,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/allocator/buildflags.h"
@@ -195,8 +197,11 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   graph->PassToGraph(std::move(discard_eligibility_policy));
 
 #if BUILDFLAG(IS_WIN)
+  // TerminationTargetPolicy is incompatible with --single-process mode.
   if (base::FeatureList::IsEnabled(
-          performance_manager::features::kTerminationTargetPolicy)) {
+          performance_manager::features::kTerminationTargetPolicy) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSingleProcess)) {
     graph->PassToGraph(
         std::make_unique<performance_manager::TerminationTargetPolicy>());
   }
