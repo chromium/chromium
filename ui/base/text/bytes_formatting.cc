@@ -4,6 +4,8 @@
 
 #include "ui/base/text/bytes_formatting.h"
 
+#include <array>
+
 #include "base/byte_count.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -63,20 +65,21 @@ DataUnits GetByteDisplayUnits(base::ByteCount bytes) {
   // The byte thresholds at which we display amounts. A byte count is displayed
   // in unit U when kUnitThresholds[U] <= bytes < kUnitThresholds[U+1].
   // This must match the DataUnits enum.
-  static const base::ByteCount kUnitThresholds[] = {
+  static const auto kUnitThresholds = std::to_array<base::ByteCount>({
       base::ByteCount(0),  // DataUnits::kByte,
       base::KiB(3),        // DataUnits::kKibibyte,
       base::MiB(2),        // DataUnits::kMebibyte,
       base::GiB(1),        // DataUnits::kGibibyte,
       base::TiB(1),        // DataUnits::kTebibyte,
       base::PiB(1)         // DataUnits::kPebibyte,
-  };
+  });
+  static const auto kUnitThresholdsSpan = base::span(kUnitThresholds);
 
   CHECK_GE(bytes, base::ByteCount(0));
 
-  int unit_index = std::size(kUnitThresholds);
+  size_t unit_index = kUnitThresholdsSpan.size();
   while (--unit_index > 0) {
-    if (bytes >= UNSAFE_TODO(kUnitThresholds[unit_index])) {
+    if (bytes >= kUnitThresholdsSpan[unit_index]) {
       break;
     }
   }
