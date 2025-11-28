@@ -117,7 +117,10 @@ void ArcVmDataMigrationNotifier::OnArcSessionBlockedByArcVmDataMigration(
   }
   LOG(WARNING) << "Showing a non-dismissible notification for ARCVM /data "
                   "migration, because auto-resume is disabled";
-  // TODO(b/258278176): Implement appropriate UI.
+  // Just reuse the same notification as the regular non-resume case, although
+  // we should ideally inform the user here that the migration has been halted
+  // because of too many retry attempts, and ARC is unusable until the user
+  // re-initiates the migration. See crrev.com/c/4339340 for the context.
   base::UmaHistogramBoolean("Arc.VmDataMigration.ResumeNotificationShown",
                             true);
   ShowNotification();
