@@ -98,7 +98,7 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
     signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
-                                        signin::ConsentLevel::kSync);
+                                        signin::ConsentLevel::kSignin);
     signin::SetRefreshTokenForPrimaryAccount(identity_manager);
     signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
 

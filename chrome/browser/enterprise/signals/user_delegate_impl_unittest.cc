@@ -151,21 +151,10 @@ TEST_F(UserDelegateImplTest, IsSameUser_NoPrimaryUser) {
   EXPECT_FALSE(user_delegate_->IsSameUser(kOtherUserGaiaId));
 }
 
-// Tests that IsSameUser returns true when given the same user, and the
-// user did not give Sync consent.
-TEST_F(UserDelegateImplTest, IsSameUser_SameUser_Signin) {
+// Tests that IsSameUser returns true when given the same user.
+TEST_F(UserDelegateImplTest, IsSameUser_SameUser) {
   auto account = identity_test_env_.MakePrimaryAccountAvailable(
       kUserEmail, signin::ConsentLevel::kSignin);
-
-  CreateDelegate();
-  EXPECT_TRUE(user_delegate_->IsSameUser(account.gaia));
-}
-
-// Tests that IsSameUser returns true when given the same user, and the
-// user gave Sync consent.
-TEST_F(UserDelegateImplTest, IsSameUser_SameUser_Sync) {
-  auto account = identity_test_env_.MakePrimaryAccountAvailable(
-      kUserEmail, signin::ConsentLevel::kSync);
 
   CreateDelegate();
   EXPECT_TRUE(user_delegate_->IsSameUser(account.gaia));

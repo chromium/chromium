@@ -201,7 +201,7 @@ class DataProtectionNavigationObserverTest
         profile())
         ->SetBrowserCloudPolicyClientForTesting(client_.get());
     identity_test_environment_.MakePrimaryAccountAvailable(
-        "test-user@chromium.org", signin::ConsentLevel::kSync);
+        "test-user@chromium.org", signin::ConsentLevel::kSignin);
     enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
         profile())
         ->SetIdentityManagerForTesting(

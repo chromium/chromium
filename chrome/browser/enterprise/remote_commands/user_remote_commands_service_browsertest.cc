@@ -129,7 +129,7 @@ class UserRemoteCommandsServiceTest
   void CreateIdentityTestEnv() {
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_env_->MakePrimaryAccountAvailable(
-        kTestUser, signin::ConsentLevel::kSync);
+        kTestUser, signin::ConsentLevel::kSignin);
   }
 
   policy::UserCloudPolicyManager* InitCloudPolicyManager() {

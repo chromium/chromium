@@ -999,7 +999,7 @@ EventReportValidatorHelper::EventReportValidatorHelper(Profile* profile,
   RealtimeReportingClientFactory::GetForProfile(profile)
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
   identity_test_environment_.MakePrimaryAccountAvailable(
-      "test-user@chromium.org", signin::ConsentLevel::kSync);
+      "test-user@chromium.org", signin::ConsentLevel::kSignin);
   RealtimeReportingClientFactory::GetForProfile(profile)
       ->SetIdentityManagerForTesting(
           identity_test_environment_.identity_manager());
