@@ -113,6 +113,13 @@ BASE_FEATURE(kReturnDeniedForNotificationsWhenNoAppLevelSettings,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Only applicable if kApproximateGeolocationPermission is enabled. When
+// enabled, will use the returned accuracy from CPSS to select the initial value
+// of the geolocation accuracy (precise/approximate) for geolocation permission
+// prompts.
+BASE_FEATURE(kPermissionPredictionsGeolocationAccuracy,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace feature_params {

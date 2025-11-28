@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -41,6 +42,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/switches.h"
 #include "components/tabs/public/tab_interface.h"
@@ -864,6 +866,27 @@ void PermissionRequestManager::SetPromptOptions(PromptOptions prompt_options) {
   }
 }
 
+GeolocationAccuracy
+PermissionRequestManager::GetInitialGeolocationAccuracySelection() const {
+  static constexpr GeolocationAccuracy kDefaultAccuracy =
+      GeolocationAccuracy::kPrecise;
+  if (!base::FeatureList::IsEnabled(
+          features::kPermissionPredictionsGeolocationAccuracy)) {
+    return kDefaultAccuracy;
+  }
+  CHECK(current_request_ui_to_use_.has_value());
+  switch (current_request_ui_to_use_->geolocation_accuracy) {
+    case PermissionUiSelector::GeolocationAccuracy::kUnspecified:
+      return kDefaultAccuracy;
+    case PermissionUiSelector::GeolocationAccuracy::kPrecise:
+      return GeolocationAccuracy::kPrecise;
+    case PermissionUiSelector::GeolocationAccuracy::kApproximate:
+      return GeolocationAccuracy::kApproximate;
+    default:
+      NOTREACHED();
+  }
+}
+
 bool PermissionRequestManager::
     IsCurrentRequestEmbeddedPermissionElementInitiated() const {
   return IsRequestInProgress() &&
@@ -955,8 +978,7 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
   }
 
   if (permission_ui_selectors_.empty()) {
-    current_request_ui_to_use_ =
-        UiDecision(UiDecision::UseNormalUi(), UiDecision::ShowNoWarning());
+    current_request_ui_to_use_ = UiDecision::UseNormalUiAndShowNoWarning();
     ShowPrompt();
     return;
   }
@@ -1530,6 +1552,10 @@ void PermissionRequestManager::StorePermissionActionForUMA(
 
 std::optional<PermissionRequestManager::UiDecision>
 PermissionRequestManager::TakePermissionUiDecisionIfReady() {
+  using GeolocationAccuracy = PermissionUiSelector::GeolocationAccuracy;
+  GeolocationAccuracy first_selected_geolocation_accuracy =
+      GeolocationAccuracy::kUnspecified;
+
   for (size_t i = 0; i < selector_decisions_.size(); i++) {
     const std::optional<UiDecision>& decision = selector_decisions_[i];
     const std::unique_ptr<PermissionUiSelector>& selector =
@@ -1568,9 +1594,15 @@ PermissionRequestManager::TakePermissionUiDecisionIfReady() {
       // decision.
       return decision;
     }
+    if (decision->geolocation_accuracy != GeolocationAccuracy::kUnspecified &&
+        first_selected_geolocation_accuracy ==
+            GeolocationAccuracy::kUnspecified) {
+      first_selected_geolocation_accuracy = decision->geolocation_accuracy;
+    }
   }
   // If all selectors are done and none was conclusive, show a normal UI.
-  return UiDecision::UseNormalUiAndShowNoWarning();
+  return UiDecision::UseNormalUi(UiDecision::ShowNoWarning(),
+                                 first_selected_geolocation_accuracy);
 }
 
 void PermissionRequestManager::OnPermissionUiSelectorDone(

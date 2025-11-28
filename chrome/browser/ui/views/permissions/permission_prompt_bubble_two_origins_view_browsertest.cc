@@ -9,6 +9,7 @@
 
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
@@ -67,6 +68,9 @@ class TestDelegateTwoOrigins : public permissions::PermissionPrompt::Delegate {
   void Dismiss() override {}
   void Ignore() override {}
   void SetPromptOptions(PromptOptions prompt_options) override {}
+  GeolocationAccuracy GetInitialGeolocationAccuracySelection() const override {
+    NOTREACHED();
+  }
   void FinalizeCurrentRequests() override {}
   void OpenHelpCenterLink(const ui::Event& event) override {}
   void PreIgnoreQuietPrompt() override {}
@@ -176,4 +180,3 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleTwoOriginsViewBrowserTest,
   const auto link = base::UTF16ToUTF8(label_with_link->GetText());
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "Learn more", link);
 }
-

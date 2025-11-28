@@ -28,6 +28,7 @@
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
@@ -178,9 +179,10 @@ INSTANTIATE_TEST_SUITE_P(
     CmdLineValueToDecision,
     PredictionBasedPermissionUiDecisionTest,
     testing::ValuesIn<CmdLineDecisionTestCase>(
-        {{"very-unlikely", Decision(PermissionsAiUiSelector::QuietUiReason::
-                                        kServicePredictedVeryUnlikelyGrant,
-                                    Decision::ShowNoWarning())},
+        {{"very-unlikely",
+          Decision::UseQuietUi(PermissionsAiUiSelector::QuietUiReason::
+                                   kServicePredictedVeryUnlikelyGrant,
+                               Decision::ShowNoWarning())},
          {"unlikely", Decision::UseNormalUiAndShowNoWarning()},
          {"neutral", Decision::UseNormalUiAndShowNoWarning()},
          {"likely", Decision::UseNormalUiAndShowNoWarning()},

@@ -231,4 +231,9 @@ void PermissionPromptAndroid::SetPromptOptions(
   delegate_->SetPromptOptions(std::move(prompt_options));
 }
 
+GeolocationAccuracy
+PermissionPromptAndroid::GetInitialGeolocationAccuracySelection() const {
+  return delegate_->GetInitialGeolocationAccuracySelection();
+}
+
 }  // namespace permissions

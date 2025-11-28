@@ -16,6 +16,7 @@
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace content {
@@ -100,6 +101,8 @@ class PermissionPromptAndroid : public PermissionPrompt {
   bool IsShowing() const { return this == delegate()->GetCurrentPrompt(); }
 
   void SetPromptOptions(PromptOptions prompt_options);
+
+  GeolocationAccuracy GetInitialGeolocationAccuracySelection() const;
 
  protected:
   Delegate* delegate() const { return delegate_; }

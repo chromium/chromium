@@ -656,14 +656,11 @@ class QuietChipAutoPopupBubbleInteractiveTest
 
  protected:
   using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
-  using WarningReason = permissions::PermissionUiSelector::WarningReason;
+  using Decision = permissions::PermissionUiSelector::Decision;
 
-  void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
-                           std::optional<WarningReason> warning_reason) {
+  void SetCannedUiDecision(const Decision& decision) {
     test_api_->manager()->set_permission_ui_selector_for_testing(
-        std::make_unique<MockPermissionUiSelector>(
-            permissions::PermissionUiSelector::Decision(quiet_ui_reason,
-                                                        warning_reason)));
+        std::make_unique<MockPermissionUiSelector>(decision));
   }
 
  private:
@@ -760,7 +757,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason :
        {QuietUiReason::kEnabledInPrefs,
         QuietUiReason::kServicePredictedVeryUnlikelyGrant}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -793,7 +791,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason :
        {QuietUiReason::kEnabledInPrefs,
         QuietUiReason::kServicePredictedVeryUnlikelyGrant}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -835,7 +834,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -870,7 +870,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -899,7 +900,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -928,7 +930,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -957,7 +960,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -986,7 +990,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -1028,8 +1033,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   ASSERT_TRUE(
       base::FeatureList::IsEnabled(features::kQuietNotificationPrompts));
 
-  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
-                      std::nullopt);
+  SetCannedUiDecision(Decision::UseQuietUi(
+      QuietUiReason::kTriggeredDueToAbusiveContent, Decision::ShowNoWarning()));
 
   RequestPermission(permissions::RequestType::kCameraStream);
 
@@ -1077,13 +1082,11 @@ class QuietChipFailFastInteractiveTest
  protected:
   using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
   using WarningReason = permissions::PermissionUiSelector::WarningReason;
+  using Decision = permissions::PermissionUiSelector::Decision;
 
-  void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
-                           std::optional<WarningReason> warning_reason) {
+  void SetCannedUiDecision(const Decision& decision) {
     test_api_->manager()->set_permission_ui_selector_for_testing(
-        std::make_unique<MockPermissionUiSelector>(
-            permissions::PermissionUiSelector::Decision(quiet_ui_reason,
-                                                        warning_reason)));
+        std::make_unique<MockPermissionUiSelector>(decision));
   }
 
  private:
@@ -1178,8 +1181,9 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
                        EventListenerAddedTest) {
   base::HistogramTester histograms;
 
-  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveRequests,
-                      WarningReason::kAbusiveRequests);
+  SetCannedUiDecision(
+      Decision::UseQuietUi(QuietUiReason::kTriggeredDueToAbusiveRequests,
+                           WarningReason::kAbusiveRequests));
 
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/title1.html"));

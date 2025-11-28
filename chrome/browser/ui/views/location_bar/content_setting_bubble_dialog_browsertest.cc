@@ -207,7 +207,7 @@ void ContentSettingBubbleDialogTest::TriggerQuietNotificationPermissionRequest(
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   permission_request_manager->set_permission_ui_selector_for_testing(
       std::make_unique<MockPermissionUiSelector>(
-          Decision(simulated_reason_for_quiet_ui, std::nullopt)));
+          Decision::UseQuietUi(simulated_reason_for_quiet_ui, std::nullopt)));
 
   permission_request_manager->AddRequest(
       web_contents->GetPrimaryMainFrame(),

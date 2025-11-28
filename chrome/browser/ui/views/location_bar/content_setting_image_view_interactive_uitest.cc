@@ -102,7 +102,7 @@ class LocationBarViewQuietNotificationInteractiveUITest
   void SetCannedUiDecision() {
     test_api_->manager()->set_permission_ui_selector_for_testing(
         std::make_unique<MockPermissionUiSelector>(
-            permissions::PermissionUiSelector::Decision(
+            permissions::PermissionUiSelector::Decision::UseQuietUi(
                 permissions::PermissionUiSelector::QuietUiReason::
                     kEnabledInPrefs,
                 std::nullopt)));

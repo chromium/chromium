@@ -43,6 +43,7 @@ class TestPermissionBubbleViewDelegate
   void Dismiss() override {}
   void Ignore() override {}
   void SetPromptOptions(PromptOptions prompt_options) override {}
+  GeolocationAccuracy GetInitialGeolocationAccuracySelection() const override;
   void FinalizeCurrentRequests() override {}
   void OpenHelpCenterLink(const ui::Event& event) override {}
   void PreIgnoreQuietPrompt() override {}

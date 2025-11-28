@@ -34,16 +34,16 @@ void PrefBasedQuietPermissionUiSelector::SelectUiToUse(
   if (content_settings_type == ContentSettingsType::NOTIFICATIONS &&
       profile_->GetPrefs()->GetBoolean(
           prefs::kEnableQuietNotificationPermissionUi)) {
-    std::move(callback).Run(
-        Decision(QuietUiReason::kEnabledInPrefs, Decision::ShowNoWarning()));
+    std::move(callback).Run(Decision::UseQuietUi(QuietUiReason::kEnabledInPrefs,
+                                                 Decision::ShowNoWarning()));
     return;
   }
   if ((content_settings_type ==
        permissions::PermissionUtil::GetGeolocationType()) &&
       profile_->GetPrefs()->GetBoolean(
           prefs::kEnableQuietGeolocationPermissionUi)) {
-    std::move(callback).Run(
-        Decision(QuietUiReason::kEnabledInPrefs, Decision::ShowNoWarning()));
+    std::move(callback).Run(Decision::UseQuietUi(QuietUiReason::kEnabledInPrefs,
+                                                 Decision::ShowNoWarning()));
     return;
   }
   std::move(callback).Run(Decision::UseNormalUiAndShowNoWarning());

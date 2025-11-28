@@ -47,23 +47,32 @@ class PermissionUiSelector {
     kDisruptiveBehavior,
   };
 
+  enum class GeolocationAccuracy {
+    kUnspecified,
+    kPrecise,
+    kApproximate,
+  };
+
   struct Decision {
-    Decision(std::optional<QuietUiReason> quiet_ui_reason,
-             std::optional<WarningReason> warning_reason);
     ~Decision();
 
     Decision(const Decision&);
     Decision& operator=(const Decision&);
 
-    static constexpr std::optional<QuietUiReason> UseNormalUi() {
-      return std::nullopt;
-    }
+    bool operator==(const Decision&) const;
 
     static constexpr std::optional<WarningReason> ShowNoWarning() {
       return std::nullopt;
     }
 
     static Decision UseNormalUiAndShowNoWarning();
+
+    static Decision UseNormalUi(std::optional<WarningReason> warning_reason,
+                                GeolocationAccuracy geolocation_accuracy =
+                                    GeolocationAccuracy::kUnspecified);
+
+    static Decision UseQuietUi(QuietUiReason quiet_ui_reason,
+                               std::optional<WarningReason> warning_reason);
 
     // The reason for showing the quiet UI, or `std::nullopt` if the normal UI
     // should be used.
@@ -72,6 +81,14 @@ class PermissionUiSelector {
     // The reason for printing a warning to the console, or `std::nullopt` if
     // no warning should be printed.
     std::optional<WarningReason> warning_reason;
+
+    // The preselected geolocation accuracy (for geolocation prompts).
+    GeolocationAccuracy geolocation_accuracy;
+
+   private:
+    Decision(std::optional<QuietUiReason> quiet_ui_reason,
+             std::optional<WarningReason> warning_reason,
+             GeolocationAccuracy geolocation_acuracy);
   };
 
   using DecisionMadeCallback = base::OnceCallback<void(const Decision&)>;

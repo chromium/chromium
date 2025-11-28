@@ -29,6 +29,7 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/prediction_service/prediction_service.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
@@ -59,6 +60,7 @@ using ::permissions::PermissionRequest;
 using ::permissions::PermissionRequestRelevance;
 using ::permissions::PermissionsAiv3Handler;
 using ::permissions::PermissionsAiv4Handler;
+using ::permissions::PermissionUiSelector;
 using ::permissions::PermissionUmaUtil;
 using ::permissions::PredictionModelHandlerProvider;
 using ::permissions::PredictionModelType;
@@ -113,12 +115,31 @@ ParsePredictionServiceMockLikelihood(const std::string& value) {
 }
 
 bool ShouldPredictionTriggerQuietUi(
-    permissions::PermissionUiSelector::PredictionGrantLikelihood likelihood) {
+    PermissionUiSelector::PredictionGrantLikelihood likelihood) {
   if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIP92)) {
     return likelihood == Unlikely || likelihood == VeryUnlikely;
   }
   return likelihood == VeryUnlikely;
 }
+
+PermissionUiSelector::GeolocationAccuracy GetPredictedGeolocationAccuracy(
+    const permissions::GeneratePredictionsResponse& response) {
+  if (!response.prediction(0).has_geolocation_prediction()) {
+    return PermissionUiSelector::GeolocationAccuracy::kUnspecified;
+  }
+  switch (response.prediction(0).geolocation_prediction().accuracy()) {
+    case permissions::PermissionPrediction::GeolocationPrediction::
+        ACCURACY_UNSPECIFIED:
+      return PermissionUiSelector::GeolocationAccuracy::kUnspecified;
+    case permissions::PermissionPrediction::GeolocationPrediction::
+        ACCURACY_PRECISE:
+      return PermissionUiSelector::GeolocationAccuracy::kPrecise;
+    case permissions::PermissionPrediction::GeolocationPrediction::
+        ACCURACY_APPROXIMATE:
+      return PermissionUiSelector::GeolocationAccuracy::kApproximate;
+  };
+}
+
 }  // namespace
 
 inline PermissionsAiUiSelector::ModelExecutionData::ModelExecutionData() =
@@ -369,8 +390,9 @@ void PermissionsAiUiSelector::SelectUiToUse(
                "command line";
     if (ShouldPredictionTriggerQuietUi(
             likelihood_override_for_testing_.value())) {
-      FinishRequest(Decision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
-                             Decision::ShowNoWarning()));
+      FinishRequest(Decision::UseQuietUi(
+          QuietUiReason::kServicePredictedVeryUnlikelyGrant,
+          Decision::ShowNoWarning()));
     } else {
       FinishRequest(Decision::UseNormalUiAndShowNoWarning());
     }
@@ -496,7 +518,7 @@ bool PermissionsAiUiSelector::IsPermissionRequestSupported(
          request_type == permissions::RequestType::kGeolocation;
 }
 
-std::optional<permissions::PermissionUiSelector::PredictionGrantLikelihood>
+std::optional<PermissionUiSelector::PredictionGrantLikelihood>
 PermissionsAiUiSelector::PredictedGrantLikelihoodForUKM() {
   return last_request_grant_likelihood_;
 }
@@ -610,7 +632,8 @@ void PermissionsAiUiSelector::LookupResponseReceived(
   if (ShouldHoldBack(request_metadata)) {
     VLOG(1) << "[CPSS] Prediction service decision held back";
     was_decision_held_back_ = true;
-    FinishRequest(Decision(Decision::UseNormalUi(), Decision::ShowNoWarning()));
+    FinishRequest(Decision::UseNormalUi(
+        Decision::ShowNoWarning(), GetPredictedGeolocationAccuracy(*response)));
     return;
   }
   was_decision_held_back_ = false;
@@ -619,15 +642,16 @@ void PermissionsAiUiSelector::LookupResponseReceived(
           << last_request_grant_likelihood_.value();
 
   if (ShouldPredictionTriggerQuietUi(last_request_grant_likelihood_.value())) {
-    FinishRequest(
-        Decision(is_on_device_cpss_v1
-                     ? QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant
-                     : QuietUiReason::kServicePredictedVeryUnlikelyGrant,
-                 Decision::ShowNoWarning()));
+    FinishRequest(Decision::UseQuietUi(
+        is_on_device_cpss_v1
+            ? QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant
+            : QuietUiReason::kServicePredictedVeryUnlikelyGrant,
+        Decision::ShowNoWarning()));
     return;
   }
 
-  FinishRequest(Decision(Decision::UseNormalUi(), Decision::ShowNoWarning()));
+  FinishRequest(Decision(Decision::UseNormalUi(
+      Decision::ShowNoWarning(), GetPredictedGeolocationAccuracy(*response))));
 }
 
 bool PermissionsAiUiSelector::ShouldHoldBack(

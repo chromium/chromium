@@ -77,6 +77,9 @@ class PermissionPrompt {
 
     virtual void SetPromptOptions(PromptOptions prompt_options) = 0;
 
+    virtual GeolocationAccuracy GetInitialGeolocationAccuracySelection()
+        const = 0;
+
     // Called to explicitly finalize the request, if
     // |ShouldFinalizeRequestAfterDecided| returns false.
     virtual void FinalizeCurrentRequests() = 0;

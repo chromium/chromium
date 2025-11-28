@@ -130,7 +130,17 @@ message PermissionPrediction {
   message NotificationPrediction {}
 
   // Additional information regarding the geolocation prediction.
-  message GeolocationPrediction {}
+  message GeolocationPrediction {
+    // Accuracy of the granted geolocation permission.
+    enum Accuracy {
+      ACCURACY_UNSPECIFIED = 0;
+      ACCURACY_PRECISE = 1;
+      ACCURACY_APPROXIMATE = 2;
+    }
+    // Predicted accuracy, most likely to be granted for this permission
+    // request.
+    optional Accuracy accuracy = 1;
+  }
 
   // This field has two purposes:
   //   * it specifies the permission type for which we generated the suggestion

@@ -64,40 +64,39 @@ std::optional<Decision> GetDecisionBasedOnSiteReputation(
         return Decision::UseNormalUiAndShowNoWarning();
       if (!Config::IsCrowdDenyTriggeringEnabled())
         return std::nullopt;
-      return Decision(QuietUiReason::kTriggeredByCrowdDeny,
-                      Decision::ShowNoWarning());
+      return Decision::UseQuietUi(QuietUiReason::kTriggeredByCrowdDeny,
+                                  Decision::ShowNoWarning());
     }
     case CrowdDenyPreloadData::SiteReputation::ABUSIVE_PROMPTS: {
       if (site_reputation->warning_only()) {
         if (!Config::IsAbusiveRequestWarningEnabled())
           return Decision::UseNormalUiAndShowNoWarning();
-        return Decision(Decision::UseNormalUi(),
-                        WarningReason::kAbusiveRequests);
+        return Decision::UseNormalUi(WarningReason::kAbusiveRequests);
       }
       if (!Config::IsAbusiveRequestBlockingEnabled())
         return std::nullopt;
-      return Decision(QuietUiReason::kTriggeredDueToAbusiveRequests,
-                      Decision::ShowNoWarning());
+      return Decision::UseQuietUi(QuietUiReason::kTriggeredDueToAbusiveRequests,
+                                  Decision::ShowNoWarning());
     }
     case CrowdDenyPreloadData::SiteReputation::ABUSIVE_CONTENT: {
       if (site_reputation->warning_only()) {
         if (!Config::IsAbusiveContentTriggeredRequestWarningEnabled())
           return Decision::UseNormalUiAndShowNoWarning();
-        return Decision(Decision::UseNormalUi(),
-                        WarningReason::kAbusiveContent);
+        return Decision::UseNormalUi(WarningReason::kAbusiveContent);
       }
       if (!Config::IsAbusiveContentTriggeredRequestBlockingEnabled())
         return std::nullopt;
-      return Decision(QuietUiReason::kTriggeredDueToAbusiveContent,
-                      Decision::ShowNoWarning());
+      return Decision::UseQuietUi(QuietUiReason::kTriggeredDueToAbusiveContent,
+                                  Decision::ShowNoWarning());
     }
     case CrowdDenyPreloadData::SiteReputation::DISRUPTIVE_BEHAVIOR: {
       DCHECK(!site_reputation->warning_only());
 
       if (!base::FeatureList::IsEnabled(features::kQuietNotificationPrompts))
         return std::nullopt;
-      return Decision(QuietUiReason::kTriggeredDueToDisruptiveBehavior,
-                      Decision::ShowNoWarning());
+      return Decision::UseQuietUi(
+          QuietUiReason::kTriggeredDueToDisruptiveBehavior,
+          Decision::ShowNoWarning());
     }
     case CrowdDenyPreloadData::SiteReputation::UNKNOWN: {
       return std::nullopt;

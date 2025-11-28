@@ -301,8 +301,13 @@ static jint JNI_PermissionDialogDelegate_GetRequestTypeEnumSize(JNIEnv* env) {
 }
 
 jint PermissionDialogDelegate::GetInitialGeolocationAccuracySelection(
-    JNIEnv* env) {
-  return static_cast<int>(GeolocationAccuracy::kPrecise);
+    JNIEnv* env) const {
+  CHECK(permission_prompt_);
+  CHECK_EQ(permission_prompt_->PermissionCount(), 1u);
+  CHECK_EQ(permission_prompt_->GetContentSettingType(0),
+           ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+  return static_cast<int>(
+      permission_prompt_->GetInitialGeolocationAccuracySelection());
 }
 
 }  // namespace permissions

@@ -886,10 +886,8 @@ class PermissionRequestManagerQuietUiBrowserTest
   using WarningReason = permissions::PermissionUiSelector::WarningReason;
 
   MockPermissionUiSelector* SetUiSelectorWithCannedDecision(
-      std::optional<QuietUiReason> quiet_ui_reason,
-      std::optional<WarningReason> warning_reason) {
-    auto selector = std::make_unique<MockPermissionUiSelector>(
-        UiDecision(quiet_ui_reason, warning_reason));
+      const UiDecision& decision) {
+    auto selector = std::make_unique<MockPermissionUiSelector>(decision);
     auto selector_ptr = selector.get();
     GetPermissionRequestManager()->set_permission_ui_selector_for_testing(
         std::move(selector));
@@ -944,8 +942,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   constexpr PermissionRequestRelevance kPermissionRequestRelevance =
       PermissionRequestRelevance::kVeryLow;
 
-  MockPermissionUiSelector* selector = SetUiSelectorWithCannedDecision(
-      QuietUiReason::kEnabledInPrefs, UiDecision::ShowNoWarning());
+  MockPermissionUiSelector* selector =
+      SetUiSelectorWithCannedDecision(UiDecision::UseQuietUi(
+          QuietUiReason::kEnabledInPrefs, UiDecision::ShowNoWarning()));
   selector->was_decision_held_back_ = std::make_optional(kWasDecisionHeldBack);
   selector->last_request_grant_likelihood_ =
       std::make_optional(kRequestGrantLikelihood);
@@ -981,8 +980,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   constexpr PermissionRequestRelevance kPermissionRequestRelevance =
       PermissionRequestRelevance::kVeryLow;
 
-  MockPermissionUiSelector* selector = SetUiSelectorWithCannedDecision(
-      QuietUiReason::kEnabledInPrefs, UiDecision::ShowNoWarning());
+  MockPermissionUiSelector* selector =
+      SetUiSelectorWithCannedDecision(UiDecision::UseQuietUi(
+          QuietUiReason::kEnabledInPrefs, UiDecision::ShowNoWarning()));
   selector->was_decision_held_back_ = std::make_optional(kWasDecisionHeldBack);
   selector->last_request_grant_likelihood_ =
       std::make_optional(kRequestGrantLikelihood);
@@ -1009,8 +1009,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
                        PermissionPromptDisposition) {
-  SetUiSelectorWithCannedDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
-                                  WarningReason::kAbusiveContent);
+  SetUiSelectorWithCannedDecision(
+      UiDecision::UseQuietUi(QuietUiReason::kTriggeredDueToAbusiveContent,
+                             WarningReason::kAbusiveContent));
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   auto request_quiet = std::make_unique<permissions::MockPermissionRequest>(
@@ -1035,8 +1036,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
                        PermissionPromptDispositionHidden) {
-  SetUiSelectorWithCannedDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
-                                  WarningReason::kAbusiveContent);
+  SetUiSelectorWithCannedDecision(
+      UiDecision::UseQuietUi(QuietUiReason::kTriggeredDueToAbusiveContent,
+                             WarningReason::kAbusiveContent));
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1076,23 +1078,25 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
                        ConsoleMessages) {
   const struct {
-    std::optional<QuietUiReason> simulated_quiet_ui_reason;
-    std::optional<WarningReason> simulated_warning_reason;
+    UiDecision simulated_decision;
     const char* expected_message;
   } kTestCases[] = {
-      {UiDecision::UseNormalUi(), UiDecision::ShowNoWarning(), nullptr},
-      {QuietUiReason::kEnabledInPrefs, UiDecision::ShowNoWarning(), nullptr},
-      {QuietUiReason::kTriggeredByCrowdDeny, UiDecision::ShowNoWarning(),
+      {UiDecision::UseNormalUiAndShowNoWarning(), nullptr},
+      {UiDecision::UseQuietUi(QuietUiReason::kEnabledInPrefs,
+                              UiDecision::ShowNoWarning()),
        nullptr},
-      {QuietUiReason::kTriggeredDueToAbusiveRequests,
-       UiDecision::ShowNoWarning(),
+      {UiDecision::UseQuietUi(QuietUiReason::kTriggeredByCrowdDeny,
+                              UiDecision::ShowNoWarning()),
+       nullptr},
+      {UiDecision::UseQuietUi(QuietUiReason::kTriggeredDueToAbusiveRequests,
+                              UiDecision::ShowNoWarning()),
        permissions::kAbusiveNotificationRequestsEnforcementMessage},
-      {UiDecision::UseNormalUi(), WarningReason::kAbusiveRequests,
+      {UiDecision::UseNormalUi(WarningReason::kAbusiveRequests),
        permissions::kAbusiveNotificationRequestsWarningMessage},
-      {QuietUiReason::kTriggeredDueToAbusiveContent,
-       UiDecision::ShowNoWarning(),
+      {UiDecision::UseQuietUi(QuietUiReason::kTriggeredDueToAbusiveContent,
+                              UiDecision::ShowNoWarning()),
        permissions::kAbusiveNotificationContentEnforcementMessage},
-      {UiDecision::UseNormalUi(), WarningReason::kAbusiveContent,
+      {UiDecision::UseNormalUi(WarningReason::kAbusiveContent),
        permissions::kAbusiveNotificationContentWarningMessage},
   };
 
@@ -1101,8 +1105,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   for (const auto& test : kTestCases) {
     SCOPED_TRACE(testing::Message() << "Test index: " << (&test - kTestCases));
 
-    SetUiSelectorWithCannedDecision(test.simulated_quiet_ui_reason,
-                                    test.simulated_warning_reason);
+    SetUiSelectorWithCannedDecision(test.simulated_decision);
 
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     content::WebContentsConsoleObserver console_observer(web_contents);

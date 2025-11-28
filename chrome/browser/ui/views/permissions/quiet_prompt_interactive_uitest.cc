@@ -118,14 +118,11 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
   }
 
   using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
-  using WarningReason = permissions::PermissionUiSelector::WarningReason;
+  using Decision = permissions::PermissionUiSelector::Decision;
 
-  void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
-                           std::optional<WarningReason> warning_reason) {
+  void SetCannedUiDecision(const Decision& decision) {
     test_api_->manager()->set_permission_ui_selector_for_testing(
-        std::make_unique<MockPermissionUiSelector>(
-            permissions::PermissionUiSelector::Decision(quiet_ui_reason,
-                                                        warning_reason)));
+        std::make_unique<MockPermissionUiSelector>(decision));
   }
 
   // Checks that the permission chip is visible and in the given mode.
@@ -170,8 +167,9 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
                        CPSSv3Notification1DenyRequestChipTest) {
-  SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
-                      std::nullopt);
+  SetCannedUiDecision(
+      Decision::UseQuietUi(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
+                           Decision::ShowNoWarning()));
   permissions::PermissionActionsHistory* permission_actions_history =
       GetPermissionActionsHistory();
 
@@ -197,8 +195,9 @@ IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
                        CPSSv3Notification1DenyPromptTest) {
-  SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
-                      std::nullopt);
+  SetCannedUiDecision(
+      Decision::UseQuietUi(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
+                           Decision::ShowNoWarning()));
   permissions::PermissionActionsHistory* permission_actions_history =
       GetPermissionActionsHistory();
 
@@ -228,8 +227,9 @@ IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
                        CPSSv3Notification5DeniesPromptTest) {
-  SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
-                      std::nullopt);
+  SetCannedUiDecision(
+      Decision::UseQuietUi(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
+                           Decision::ShowNoWarning()));
   permissions::PermissionActionsHistory* permission_actions_history =
       GetPermissionActionsHistory();
 
@@ -261,8 +261,9 @@ IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
                        CPSSv3Geolocation1DenyRequestChipTest) {
-  SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
-                      std::nullopt);
+  SetCannedUiDecision(
+      Decision::UseQuietUi(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
+                           Decision::ShowNoWarning()));
   permissions::PermissionActionsHistory* permission_actions_history =
       GetPermissionActionsHistory();
 
@@ -288,8 +289,9 @@ IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
                        CPSSv3Geolocation1DenyPromptTest) {
-  SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
-                      std::nullopt);
+  SetCannedUiDecision(
+      Decision::UseQuietUi(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
+                           Decision::ShowNoWarning()));
   permissions::PermissionActionsHistory* permission_actions_history =
       GetPermissionActionsHistory();
 
@@ -319,8 +321,9 @@ IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
                        CPSSv3Geolocation5DeniesPromptTest) {
-  SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
-                      std::nullopt);
+  SetCannedUiDecision(
+      Decision::UseQuietUi(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
+                           Decision::ShowNoWarning()));
   permissions::PermissionActionsHistory* permission_actions_history =
       GetPermissionActionsHistory();
 
@@ -403,8 +406,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(QuietPromptInteractiveParamUITest,
                        AllowQuietPromptAndMaybeShowInfobar) {
-  SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
-                      std::nullopt);
+  SetCannedUiDecision(
+      Decision::UseQuietUi(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
+                           Decision::ShowNoWarning()));
 
   auto [test_name, js, should_show] = GetParam();
 
