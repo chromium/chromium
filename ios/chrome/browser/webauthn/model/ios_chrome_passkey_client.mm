@@ -38,9 +38,13 @@ void IOSChromePasskeyClient::FetchKeys(webauthn::ReauthenticatePurpose purpose,
   std::move(callback).Run({});
 }
 
-void IOSChromePasskeyClient::ShowSuggestionBottomSheet() {
-  // TODO(crbug.com/460486095): Open the suggestion bottom sheet.
+void IOSChromePasskeyClient::ShowSuggestionBottomSheet(std::string request_id) {
+  // TODO(crbug.com/460485496): Open the suggestion bottom sheet.
   // See CredentialSuggestionBottomSheet* classes.
+}
+
+void IOSChromePasskeyClient::ShowCreationBottomSheet(std::string request_id) {
+  // TODO(crbug.com/460486095): Open the creation confirmation bottom sheet.
 }
 
 void IOSChromePasskeyClient::AllowPasskeyCreationInfobar(bool allowed) {

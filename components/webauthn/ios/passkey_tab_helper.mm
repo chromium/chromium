@@ -7,6 +7,7 @@
 #import "base/base64.h"
 #import "base/base64url.h"
 #import "base/check_deref.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "components/password_manager/core/browser/passkey_credential.h"
@@ -175,6 +176,12 @@ void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
 
   // Send available passkeys to the WebAuthnCredentialsDelegate.
   delegate->OnCredentialsReceived(std::move(filtered_passkeys));
+
+  // Open the suggestion bottom sheet. The delegate's suggestions will be
+  // presented in it and will be selectable by the user.
+  std::string request_id = params.RequestId();
+  assertion_requests_.emplace(request_id, std::move(params));
+  client_->ShowSuggestionBottomSheet(std::move(request_id));
 }
 
 void PasskeyTabHelper::HandleCreateRequestedEvent(
@@ -196,8 +203,12 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
     return;
   }
 
-  // TODO(crbug.com/460485333): Handle this event.
-  DeferToRenderer(web_frame, params);
+  // Open the creation confirmation bottom sheet. A passkey will end up being
+  // created by PasskeyTabHelper::StartPasskeyCreation() upon confirmation by
+  // the user.
+  std::string request_id = params.RequestId();
+  registration_requests_.emplace(request_id, std::move(params));
+  client_->ShowCreationBottomSheet(std::move(request_id));
 }
 
 bool PasskeyTabHelper::HasCredential(const std::string& rp_id,
@@ -279,7 +290,45 @@ void PasskeyTabHelper::AddNewPasskey(
   passkey_model_->CreatePasskey(passkey);
 }
 
-void PasskeyTabHelper::StartPasskeyCreation(RegistrationRequestParams params) {
+std::optional<AssertionRequestParams>
+PasskeyTabHelper::ExtractParamsFromAssertionRequestsMap(
+    std::string request_id) {
+  // Get parameters and remove the entry from the map.
+  auto params_handle = assertion_requests_.extract(request_id);
+  if (params_handle) {
+    return std::move(params_handle.mapped());
+  }
+
+  // Passkey request not found. The UI should never be requesting passkey
+  // assertion for the same passkey request ID twice.
+  base::debug::DumpWithoutCrashing();
+  return std::nullopt;
+}
+
+std::optional<RegistrationRequestParams>
+PasskeyTabHelper::ExtractParamsFromRegistrationRequestsMap(
+    std::string request_id) {
+  // Get parameters and remove the entry from the map.
+  auto params_handle = registration_requests_.extract(request_id);
+  if (params_handle) {
+    return std::move(params_handle.mapped());
+  }
+
+  // Passkey request not found. The UI should never be requesting passkey
+  // creation for the same passkey request ID twice.
+  base::debug::DumpWithoutCrashing();
+  return std::nullopt;
+}
+
+void PasskeyTabHelper::StartPasskeyCreation(std::string request_id) {
+  std::optional<RegistrationRequestParams> optional_params =
+      ExtractParamsFromRegistrationRequestsMap(request_id);
+  if (!optional_params.has_value()) {
+    // Passkey request not found.
+    return;
+  }
+
+  RegistrationRequestParams params = std::move(*optional_params);
   web::WebFrame* web_frame = GetWebFrame(params);
   if (!web_frame) {
     return;
@@ -341,8 +390,16 @@ void PasskeyTabHelper::CompletePasskeyCreation(
 }
 
 void PasskeyTabHelper::StartPasskeyAssertion(
-    AssertionRequestParams params,
+    std::string request_id,
     sync_pb::WebauthnCredentialSpecifics passkey) {
+  std::optional<AssertionRequestParams> optional_params =
+      ExtractParamsFromAssertionRequestsMap(request_id);
+  if (!optional_params.has_value()) {
+    // Passkey request not found.
+    return;
+  }
+
+  AssertionRequestParams params = std::move(*optional_params);
   web::WebFrame* web_frame = GetWebFrame(params);
   if (!web_frame) {
     return;

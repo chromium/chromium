@@ -32,7 +32,10 @@ class IOSPasskeyClient {
                          KeysFetchedCallback callback) = 0;
 
   // Shows the bottom sheet with passkey suggestions.
-  virtual void ShowSuggestionBottomSheet() = 0;
+  virtual void ShowSuggestionBottomSheet(std::string request_id) = 0;
+
+  // Shows the bottom sheet to confirm passkey creation.
+  virtual void ShowCreationBottomSheet(std::string request_id) = 0;
 
   // Sets whether showing the passkey creation infobar is allowed. Should be
   // enabled before passkey creation happens within the passkey model and

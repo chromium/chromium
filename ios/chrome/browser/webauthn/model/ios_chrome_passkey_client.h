@@ -22,7 +22,8 @@ class IOSChromePasskeyClient : public webauthn::IOSPasskeyClient {
   bool PerformUserVerification() override;
   void FetchKeys(webauthn::ReauthenticatePurpose purpose,
                  webauthn::KeysFetchedCallback callback) override;
-  void ShowSuggestionBottomSheet() override;
+  void ShowSuggestionBottomSheet(std::string request_id) override;
+  void ShowCreationBottomSheet(std::string request_id) override;
   void AllowPasskeyCreationInfobar(bool allowed) override;
   password_manager::WebAuthnCredentialsDelegate*
   GetWebAuthnCredentialsDelegateForDriver(

@@ -11,6 +11,7 @@
 #import "components/webauthn/ios/passkey_request_params.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
@@ -81,7 +82,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Fetches the shared keys list and calls the CompletePasskeyCreation
   // callback.
   // TODO(crbug.com/460485333): Test passkey creation flow.
-  void StartPasskeyCreation(RegistrationRequestParams params);
+  void StartPasskeyCreation(std::string request_id);
 
   // Callback which creates a passkey given the provided shared keys list and
   // params. The newly created passkey is added to the passkey model and the
@@ -95,7 +96,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // provided params. Fetches the shared keys list and calls the
   // CompletePasskeyAssertion callback.
   // TODO(crbug.com/460485333): Test passkey assertion flow.
-  void StartPasskeyAssertion(AssertionRequestParams params,
+  void StartPasskeyAssertion(std::string request_id,
                              sync_pb::WebauthnCredentialSpecifics passkey);
 
   // Callback which uses the provided passkey for assertion given the provided
@@ -114,6 +115,18 @@ class PasskeyTabHelper : public web::WebStateObserver,
   void DeferToRenderer(web::WebFrame* web_frame,
                        const PasskeyRequestParams& request_params) const;
 
+  // If `request_id` exists in the `assertion_requests_` map, this function will
+  // remove the parameters from the `assertion_requests_` map and return them.
+  // Returns std::nullopt otherwise.
+  std::optional<AssertionRequestParams> ExtractParamsFromAssertionRequestsMap(
+      std::string request_id);
+
+  // If `request_id` exists in the `registration_requests_` map, this function
+  // will remove the parameters from the `registration_requests_` map and return
+  // them. Returns std::nullopt otherwise.
+  std::optional<RegistrationRequestParams>
+  ExtractParamsFromRegistrationRequestsMap(std::string request_id);
+
   // Returns a web frame from a web frame id. May return null.
   web::WebFrame* GetWebFrame(const PasskeyRequestParams& request_params) const;
 
@@ -131,6 +144,13 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   // The client used to perform user facing tasks for the PasskeyTabHelper.
   std::unique_ptr<IOSPasskeyClient> client_;
+
+  // A map of request IDs (as std::string) to assertion request parameters.
+  absl::flat_hash_map<std::string, AssertionRequestParams> assertion_requests_;
+
+  // A map of request IDs (as std::string) to registration request parameters.
+  absl::flat_hash_map<std::string, RegistrationRequestParams>
+      registration_requests_;
 
   // This is necessary because this object could be deleted during any callback,
   // and we don't want to risk a UAF if that happens.
