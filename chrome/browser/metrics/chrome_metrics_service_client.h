@@ -53,6 +53,10 @@ namespace network_time {
 class NetworkTimeTracker;
 }  // namespace network_time
 
+namespace metrics::private_metrics {
+class PumaService;
+}
+
 namespace metrics {
 class MetricsService;
 class MetricsStateManager;
@@ -97,6 +101,7 @@ class ChromeMetricsServiceClient
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
   metrics::dwa::DwaService* GetDwaService() override;
+  metrics::private_metrics::PumaService* GetPumaService() override;
   IdentifiabilityStudyState* GetIdentifiabilityStudyState() override;
   metrics::structured::StructuredMetricsService* GetStructuredMetricsService()
       override;
@@ -273,6 +278,9 @@ class ChromeMetricsServiceClient
 
   // The DwaService that |this| is a client of.
   std::unique_ptr<metrics::dwa::DwaService> dwa_service_;
+
+  // The PumaService that |this| is a client of.
+  std::unique_ptr<metrics::private_metrics::PumaService> puma_service_;
 
   // Listener for changes in incognito activity.
   std::unique_ptr<IncognitoObserver> incognito_observer_;

@@ -101,6 +101,7 @@
 #include "components/metrics/net/network_metrics_provider.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/metrics/persistent_synthetic_trial_observer.h"
+#include "components/metrics/private_metrics/puma_service.h"
 #include "components/metrics/sampling_metrics_provider.h"
 #include "components/metrics/stability_metrics_helper.h"
 #include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
@@ -539,6 +540,7 @@ void ChromeMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
   metrics::MetricsService::RegisterPrefs(registry);
   ukm::UkmService::RegisterPrefs(registry);
   metrics::dwa::DwaService::RegisterPrefs(registry);
+  metrics::private_metrics::PumaService::RegisterPrefs(registry);
   metrics::StabilityMetricsHelper::RegisterPrefs(registry);
   prefs::RegisterPrivacyBudgetPrefs(registry);
 
@@ -598,6 +600,11 @@ ChromeMetricsServiceClient::GetStructuredMetricsService() {
 
 metrics::dwa::DwaService* ChromeMetricsServiceClient::GetDwaService() {
   return dwa_service_.get();
+}
+
+metrics::private_metrics::PumaService*
+ChromeMetricsServiceClient::GetPumaService() {
+  return puma_service_.get();
 }
 
 void ChromeMetricsServiceClient::SetMetricsClientId(
@@ -734,6 +741,10 @@ void ChromeMetricsServiceClient::Initialize() {
   if (metrics::dwa::DwaRecorder::IsDwaOrPrivateMetricsFeatureEnabled()) {
     dwa_service_ = std::make_unique<metrics::dwa::DwaService>(
         this, local_state, g_browser_process->shared_url_loader_factory());
+  }
+  if (metrics::private_metrics::PumaService::IsPumaEnabled()) {
+    puma_service_ = std::make_unique<metrics::private_metrics::PumaService>(
+        this, local_state);
   }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)

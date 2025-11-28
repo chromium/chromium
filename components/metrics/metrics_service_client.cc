@@ -96,6 +96,10 @@ metrics::dwa::DwaService* MetricsServiceClient::GetDwaService() {
   return nullptr;
 }
 
+metrics::private_metrics::PumaService* MetricsServiceClient::GetPumaService() {
+  return nullptr;
+}
+
 IdentifiabilityStudyState*
 MetricsServiceClient::GetIdentifiabilityStudyState() {
   return nullptr;

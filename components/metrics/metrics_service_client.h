@@ -28,6 +28,10 @@ namespace metrics::dwa {
 class DwaService;
 }
 
+namespace metrics::private_metrics {
+class PumaService;
+}
+
 namespace network_time {
 class NetworkTimeTracker;
 }
@@ -73,6 +77,9 @@ class MetricsServiceClient {
 
   // Returns the DwaService instance that this client is associated with.
   virtual metrics::dwa::DwaService* GetDwaService();
+
+  // Returns the PumaService instance that this client is associated with.
+  virtual metrics::private_metrics::PumaService* GetPumaService();
 
   // Returns the IdentifiabilityStudyState instance that this client is
   // associated with. Might be nullptr.
