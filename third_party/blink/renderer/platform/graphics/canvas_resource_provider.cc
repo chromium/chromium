@@ -135,7 +135,7 @@ class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
   base::WeakPtrFactory<CanvasImageProvider> weak_factory_{this};
 };
 
-CanvasResourceProviderBitmap::CanvasResourceProviderBitmap(
+Canvas2DResourceProviderBitmap::Canvas2DResourceProviderBitmap(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
@@ -149,9 +149,9 @@ CanvasResourceProviderBitmap::CanvasResourceProviderBitmap(
                              /*context_provider_wrapper=*/nullptr,
                              delegate) {}
 
-scoped_refptr<StaticBitmapImage> CanvasResourceProviderBitmap::Snapshot(
+scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderBitmap::Snapshot(
     ImageOrientation orientation) {
-  TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::Snapshot");
+  TRACE_EVENT0("blink", "Canvas2DResourceProviderBitmap::Snapshot");
   return UnacceleratedSnapshot(orientation);
 }
 
@@ -262,24 +262,24 @@ void CanvasResourceProviderExternalBitmap::RasterRecord(
   return UnacceleratedRasterRecord(last_recording);
 }
 
-sk_sp<SkSurface> CanvasResourceProviderBitmap::CreateSkSurface() const {
-  TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::CreateSkSurface");
+sk_sp<SkSurface> Canvas2DResourceProviderBitmap::CreateSkSurface() const {
+  TRACE_EVENT0("blink", "Canvas2DResourceProviderBitmap::CreateSkSurface");
 
   const auto info = GetSkImageInfo().makeAlphaType(kPremul_SkAlphaType);
   const auto props = GetSkSurfaceProps();
   return SkSurfaces::Raster(info, &props);
 }
 
-void CanvasResourceProviderBitmap::RasterRecord(
+void Canvas2DResourceProviderBitmap::RasterRecord(
     cc::PaintRecord last_recording) {
   return UnacceleratedRasterRecord(last_recording);
 }
 
-bool CanvasResourceProviderBitmap::WritePixels(const SkImageInfo& orig_info,
-                                               const void* pixels,
-                                               size_t row_bytes,
-                                               int x,
-                                               int y) {
+bool Canvas2DResourceProviderBitmap::WritePixels(const SkImageInfo& orig_info,
+                                                 const void* pixels,
+                                                 size_t row_bytes,
+                                                 int x,
+                                                 int y) {
   return UnacceleratedWritePixels(orig_info, pixels, row_bytes, x, y);
 }
 
@@ -1205,16 +1205,16 @@ CanvasResourceProvider::CreateExternalBitmapProvider(
   return nullptr;
 }
 
-std::unique_ptr<CanvasResourceProviderBitmap>
-CanvasResourceProviderBitmap::Create(gfx::Size size,
-                                     viz::SharedImageFormat format,
-                                     SkAlphaType alpha_type,
-                                     const gfx::ColorSpace& color_space,
-                                     ShouldInitialize should_initialize,
-                                     Delegate* delegate) {
-  auto provider = base::WrapUnique<CanvasResourceProviderBitmap>(
-      new CanvasResourceProviderBitmap(size, format, alpha_type, color_space,
-                                       delegate));
+std::unique_ptr<Canvas2DResourceProviderBitmap>
+Canvas2DResourceProviderBitmap::Create(gfx::Size size,
+                                       viz::SharedImageFormat format,
+                                       SkAlphaType alpha_type,
+                                       const gfx::ColorSpace& color_space,
+                                       ShouldInitialize should_initialize,
+                                       Delegate* delegate) {
+  auto provider = base::WrapUnique<Canvas2DResourceProviderBitmap>(
+      new Canvas2DResourceProviderBitmap(size, format, alpha_type, color_space,
+                                         delegate));
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
@@ -1928,12 +1928,12 @@ CanvasResourceProvider::GetRecorderHighEntropyCanvasOpTypes() const {
 }
 
 std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProviderBitmap::CreateForTesting(
+Canvas2DResourceProviderBitmap::CreateForTesting(
     gfx::Size size,
     const Canvas2DColorParams& color_params,
     ShouldInitialize initialize_provider,
     Delegate* delegate) {
-  return CanvasResourceProviderBitmap::Create(
+  return Canvas2DResourceProviderBitmap::Create(
       size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
       color_params.GetGfxColorSpace(), initialize_provider, delegate);
 }

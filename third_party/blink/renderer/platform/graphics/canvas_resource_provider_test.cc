@@ -528,7 +528,7 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_EQ(original_shared_image, provider->Snapshot()->GetSharedImage());
 }
 
-TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
+TEST_F(CanvasResourceProviderTest, Canvas2DResourceProviderBitmap) {
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo =
       SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
@@ -536,7 +536,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = CanvasResourceProviderBitmap::CreateForTesting(
+  auto provider = Canvas2DResourceProviderBitmap::CreateForTesting(
       kSize, color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
 
@@ -633,15 +633,15 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_Bitmap) {
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = CanvasResourceProviderBitmap::CreateForTesting(
+  auto provider = Canvas2DResourceProviderBitmap::CreateForTesting(
       gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());
-  provider = CanvasResourceProviderBitmap::CreateForTesting(
+  provider = Canvas2DResourceProviderBitmap::CreateForTesting(
       gfx::Size(kMaxTextureSize, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());
-  provider = CanvasResourceProviderBitmap::CreateForTesting(
+  provider = Canvas2DResourceProviderBitmap::CreateForTesting(
       gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());
