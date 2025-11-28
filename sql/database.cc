@@ -1146,6 +1146,10 @@ bool Database::RazeInternal() {
                      << sqlite_result_code;
     RecordRazeDatabaseFailureReason(histogram_tag_,
                                     RazeDatabaseFailedReason::kUnknownError);
+    base::UmaHistogramSparse(
+        base::StrCat(
+            {"Sql.Database.Raze.UnhandledErrorCode.", histogram_tag()}),
+        static_cast<int>(sqlite_result_code));
     return false;
   }
 

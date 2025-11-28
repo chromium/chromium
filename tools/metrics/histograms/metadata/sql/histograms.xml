@@ -133,6 +133,17 @@ chromium-metrics-reviews@google.com.
   <token key="DatabaseTag" variants="DatabaseTag"/>
 </histogram>
 
+<histogram name="Sql.Database.Raze.UnhandledErrorCode.{DatabaseTag}"
+    enum="SqliteResultCode" expires_after="2026-06-01">
+  <owner>etienneb@chromium.org</owner>
+  <owner>jpgravel@chromium.org</owner>
+  <summary>
+    Reports sqlite errors that triggered when
+    Sql.Database.Raze.FailureReason.{DatabaseTag} is kUnknownError.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
 <histogram name="Sql.Database.RazeTime.{DatabaseTag}" units="microseconds"
     expires_after="2026-06-01">
   <owner>etienneb@chromium.org</owner>
