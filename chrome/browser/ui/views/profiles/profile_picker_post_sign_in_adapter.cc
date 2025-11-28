@@ -160,13 +160,11 @@ void ProfilePickerPostSignInAdapter::ShowHistorySyncOptinScreen(
         history_optin_completed_callback) {
   CHECK(history_optin_completed_callback.value());
   CHECK(on_post_signin_in_finished_callback_.value());
-  std::vector<HistorySyncOptinHelper::FlowCompletedCallback> callbacks;
-  callbacks.push_back(std::move(on_post_signin_in_finished_callback_));
-  callbacks.push_back(std::move(history_optin_completed_callback));
   on_post_signin_in_finished_callback_ =
       CombineCallbacks<HistorySyncOptinHelper::FlowCompletedCallback,
                        HistorySyncOptinHelper::ScreenChoiceResult>(
-          std::move(callbacks));
+          std::move(on_post_signin_in_finished_callback_),
+          std::move(history_optin_completed_callback));
 
   // Finishes the sign-in process by moving to the history sync optin screen.
   CHECK(IsInitialized());
@@ -206,11 +204,8 @@ void ProfilePickerPostSignInAdapter::FinishAndOpenBrowser(
   if (url_to_open_.is_valid()) {
     auto open_url_callback = PostHostClearedCallback(
         base::BindOnce(&OpenNewTabInBrowser, url_to_open_));
-    std::vector<PostHostClearedCallback> callbacks;
-    callbacks.push_back(std::move(open_url_callback));
-    callbacks.push_back(std::move(callback));
     callback = CombineCallbacks<PostHostClearedCallback, Browser*>(
-        std::move(callbacks));
+        std::move(open_url_callback), std::move(callback));
   }
 
   FinishAndOpenBrowserInternal(std::move(callback), is_continue_callback);

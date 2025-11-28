@@ -209,11 +209,8 @@ class ProfileCreationPostSignInAdapter : public ProfilePickerPostSignInAdapter {
       return;
     }
     is_finishing_ = true;
-    std::vector<PostHostClearedCallback> callbacks;
-    callbacks.push_back(std::move(callback));
-    callbacks.push_back(CreateFreshProfileExperienceCallback());
     callback = CombineCallbacks<PostHostClearedCallback, Browser*>(
-        std::move(callbacks));
+        std::move(callback), CreateFreshProfileExperienceCallback());
 
     profile_name_resolver_->RunWithProfileName(base::BindOnce(
         &ProfileCreationPostSignInAdapter::FinishFlow,

@@ -34,21 +34,18 @@ using PostHostClearedCallback =
 // `callback2`. `Params` must match with `CallbackType` input parameters.
 // Empty/Null callbacks are accepted and ignored.
 // Note: `CallbackType` should be of type `base::StrongAlias<Tag, Callback>`.
-#include <vector>
-
-// Combines multiple callbacks into a single callback. The callbacks are run in
-// the order that they are provided.
 template <class CallbackType, class... Params>
-CallbackType CombineCallbacks(std::vector<CallbackType> callbacks) {
+CallbackType CombineCallbacks(CallbackType callback1, CallbackType callback2) {
   return CallbackType(base::BindOnce(
-      [](std::vector<CallbackType> cbs, Params... params) {
-        for (auto& cb : cbs) {
-          if (!cb->is_null()) {
-            std::move(*cb).Run(params...);
-          }
+      [](CallbackType cb1, CallbackType cb2, Params... params) {
+        if (!cb1->is_null()) {
+          std::move(*cb1).Run(params...);
+        }
+        if (!cb2->is_null()) {
+          std::move(*cb2).Run(params...);
         }
       },
-      std::move(callbacks)));
+      std::move(callback1), std::move(callback2)));
 }
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_TYPES_H_
