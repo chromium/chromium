@@ -1017,7 +1017,13 @@ BASE_FEATURE(kStrictOriginIsolation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, RenderWidgetHost in BFCache doesn't contribute to the priority
 // of the renderer process.
-BASE_FEATURE(kSubframePriorityContribution, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSubframePriorityContribution,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.
