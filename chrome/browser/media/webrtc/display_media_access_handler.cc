@@ -351,7 +351,7 @@ void DisplayMediaAccessHandler::ShowMediaSelectionDialog(
       picker_factory_->CreatePicker(&request);
   if (!picker) {
     std::move(callback).Run(blink::mojom::StreamDevicesSet(),
-                            MediaStreamRequestResult::INVALID_STATE,
+                            MediaStreamRequestResult::NOT_SUPPORTED,
                             /*ui=*/nullptr);
     return;
   }
