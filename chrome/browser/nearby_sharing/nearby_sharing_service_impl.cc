@@ -50,8 +50,6 @@
 #include "chrome/browser/nearby_sharing/wifi_network_configuration/wifi_network_configuration_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/services/sharing/public/cpp/conversions.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
