@@ -151,7 +151,7 @@ std::unique_ptr<GbmBuffer> GpuMemoryBufferSupportX11::CreateBuffer(
                                size, BufferUsageToGbmFlags(usage));
 }
 
-bool GpuMemoryBufferSupportX11::CanCreateNativePixmapForFormat(
+bool GpuMemoryBufferSupportX11::CanCreateBufferForFormat(
     viz::SharedImageFormat format) {
   return device_ && device_->CanCreateBufferForFormat(
                         GetFourCCFormatFromSharedImageFormat(format));
