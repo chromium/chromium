@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -388,8 +384,8 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmd) {
         // Prep packed data for packing view formats and the mailbox.
         std::vector<GLuint> packed_data;
         packed_data.resize(sizeof(mailbox.name) / sizeof(uint32_t));
-        memcpy(reinterpret_cast<char*>(packed_data.data()), &mailbox.name,
-               sizeof(mailbox.name));
+        UNSAFE_TODO(memcpy(reinterpret_cast<char*>(packed_data.data()),
+                           &mailbox.name, sizeof(mailbox.name)));
 
         uint32_t view_format_count = 0u;
         if (GetParam().format == viz::SinglePlaneFormat::kRGBA_F16) {
@@ -951,7 +947,7 @@ TEST_P(WebGPUMailboxTextureTest,
       readback_buffer.GetConstMappedRange(0, buffer_desc.size));
   // Contents should be black because the texture was lazily cleared.
   for (uint32_t i = 0; i < buffer_desc.size; ++i) {
-    EXPECT_EQ(data[i], uint8_t(0));
+    UNSAFE_TODO(EXPECT_EQ(data[i], uint8_t(0)));
   }
 
   // Associate the SharedImage with a new Dawn texture in a read-only access.
@@ -1067,7 +1063,7 @@ TEST_P(WebGPUMailboxTextureTest,
       readback_buffer.GetConstMappedRange(0, buffer_desc.size));
   // Contents should be black because the texture was lazily cleared.
   for (uint32_t i = 0; i < buffer_desc.size; ++i) {
-    EXPECT_EQ(data[i], uint8_t(0));
+    UNSAFE_TODO(EXPECT_EQ(data[i], uint8_t(0)));
   }
 }
 
@@ -1139,7 +1135,7 @@ TEST_P(
       readback_buffer.GetConstMappedRange(0, buffer_desc.size));
   // Contents should be black because the texture was lazily cleared.
   for (uint32_t i = 0; i < buffer_desc.size; ++i) {
-    EXPECT_EQ(data[i], uint8_t(0));
+    UNSAFE_TODO(EXPECT_EQ(data[i], uint8_t(0)));
   }
 }
 

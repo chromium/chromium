@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
@@ -18,6 +13,7 @@
 #include <memory>
 
 #include "base/bit_cast.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -87,8 +83,8 @@ TEST_F(GLReadbackTest, ReadPixelsWithPBOAndQuery) {
           GL_READ_ONLY));
   EXPECT_TRUE(data);
   EXPECT_EQ(data[0], 0);   // red
-  EXPECT_EQ(data[1], 0);   // green
-  EXPECT_EQ(data[2], 255); // blue
+  UNSAFE_TODO(EXPECT_EQ(data[1], 0));    // green
+  UNSAFE_TODO(EXPECT_EQ(data[2], 255));  // blue
   glUnmapBufferCHROMIUM(GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM);
   glBindBuffer(GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM, 0);
   glDeleteBuffers(1, &b);
@@ -171,14 +167,14 @@ TEST_F(GLReadbackTest, MAYBE_ReadPixelsFloat) {
   size_t test_count = 0;
   const char *extensions = reinterpret_cast<const char*>(
       glGetString(GL_EXTENSIONS));
-  if (strstr(extensions, "GL_OES_texture_half_float") != nullptr) {
+  if (UNSAFE_TODO(strstr(extensions, "GL_OES_texture_half_float")) != nullptr) {
     TestFormat rgb16f = {GL_RGB, GL_HALF_FLOAT_OES, 3};
     test_formats[test_count++] = rgb16f;
 
     TestFormat rgba16f = {GL_RGBA, GL_HALF_FLOAT_OES, 4};
     test_formats[test_count++] = rgba16f;
   }
-  if (strstr(extensions, "GL_OES_texture_float") != nullptr) {
+  if (UNSAFE_TODO(strstr(extensions, "GL_OES_texture_float")) != nullptr) {
     TestFormat rgb32f = {GL_RGB, GL_FLOAT, 3};
     test_formats[test_count++] = rgb32f;
 

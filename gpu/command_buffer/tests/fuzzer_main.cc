@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,6 +11,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/icu_util.h"
@@ -202,7 +198,7 @@ class BitIterator {
   bool GetBit() {
     if (offset_ == size_)
       return false;
-    bool value = !!(data_[offset_] & (1u << bit_));
+    bool value = !!(UNSAFE_TODO(data_[offset_]) & (1u << bit_));
     if (++bit_ == 8) {
       bit_ = 0;
       ++offset_;
@@ -258,7 +254,7 @@ struct Config {
 
     bool desktop_driver = it.GetBit();
     size_t version_index = (desktop_driver ? 2 : 0) + (es3 ? 1 : 0);
-    version = kDriverVersions[version_index];
+    version = UNSAFE_TODO(kDriverVersions[version_index]);
 #else
     // We consume bits even if we don't use them, so that the same inputs can be
     // used for every fuzzer variation
@@ -407,7 +403,7 @@ class CommandBufferSetup {
     for (uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
          usage <= LAST_CLIENT_USAGE; usage <<= 1) {
       Mailbox::Name name;
-      memset(name, 0, sizeof(name));
+      UNSAFE_TODO(memset(name, 0, sizeof(name)));
       name[0] = usage;
 
       // Mark this as a SharedImage mailbox.
@@ -533,7 +529,7 @@ class CommandBufferSetup {
     consumed = (consumed + 3) & ~3;
     if (consumed > size)
       return;
-    data += consumed;
+    UNSAFE_TODO(data += consumed);
     size -= consumed;
     // The commands are flushed at a uint32_t granularity. If the data is not
     // a full command, we zero-pad it.
@@ -552,9 +548,9 @@ class CommandBufferSetup {
     CHECK_LE(padded_size, buffer_size);
     command_buffer_->SetGetBuffer(buffer_id_);
     auto* memory = static_cast<char*>(buffer_->memory());
-    memcpy(memory, data, size);
+    UNSAFE_TODO(memcpy(memory, data, size));
     if (size < buffer_size)
-      memset(memory + size, 0, buffer_size - size);
+      UNSAFE_TODO(memset(memory + size, 0, buffer_size - size));
     command_buffer_->Flush(padded_size / 4);
     ResetDecoder();
   }
@@ -563,7 +559,7 @@ class CommandBufferSetup {
   void CreateTransferBuffer(uint32_t size, int32_t id) {
     scoped_refptr<Buffer> buffer =
         command_buffer_->CreateTransferBufferWithId(size, id);
-    memset(buffer->memory(), 0, size);
+    UNSAFE_TODO(memset(buffer->memory(), 0, size));
   }
 
   void InitializeInitialCommandBuffer() {
