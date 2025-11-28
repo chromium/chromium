@@ -129,6 +129,16 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
   }
 }
 
+PlatformPriorityOverride SetThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
+    ThreadType thread_type) {
+  return false;
+}
+
+void RemoveThreadTypeOverrideImpl(
+    const PlatformPriorityOverride& priority_override_handle,
+    ThreadType thread_type) {}
+
 }  // namespace internal
 
 // static

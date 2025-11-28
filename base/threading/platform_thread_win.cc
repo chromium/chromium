@@ -352,14 +352,15 @@ bool PlatformThread::CanChangeThreadType(ThreadType from, ThreadType to) {
 
 namespace {
 
-void SetCurrentThreadPriority(ThreadType thread_type) {
-  PlatformThreadHandle::Handle thread_handle =
-      PlatformThread::CurrentHandle().platform_handle();
+void SetThreadPriority(PlatformThreadHandle thread_handle,
+                       ThreadType thread_type) {
+  PlatformThreadHandle::Handle platform_handle =
+      thread_handle.platform_handle();
 
   if (thread_type != ThreadType::kBackground) {
     // Exit background mode if the new priority is not BACKGROUND. This is a
     // no-op if not in background mode.
-    ::SetThreadPriority(thread_handle, THREAD_MODE_BACKGROUND_END);
+    ::SetThreadPriority(platform_handle, THREAD_MODE_BACKGROUND_END);
     // We used to DCHECK that memory priority is MEMORY_PRIORITY_NORMAL here,
     // but found that it is not always the case (e.g. in the installer).
     // crbug.com/1340578#c2
@@ -395,7 +396,7 @@ void SetCurrentThreadPriority(ThreadType thread_type) {
   }
 
   [[maybe_unused]] const BOOL cpu_priority_success =
-      ::SetThreadPriority(thread_handle, desired_priority);
+      ::SetThreadPriority(platform_handle, desired_priority);
   DPLOG_IF(ERROR, !cpu_priority_success)
       << "Failed to set thread priority to " << desired_priority;
 
@@ -404,7 +405,7 @@ void SetCurrentThreadPriority(ThreadType thread_type) {
     MEMORY_PRIORITY_INFORMATION memory_priority{.MemoryPriority =
                                                     MEMORY_PRIORITY_NORMAL};
     [[maybe_unused]] const BOOL memory_priority_success =
-        SetThreadInformation(thread_handle, ::ThreadMemoryPriority,
+        SetThreadInformation(platform_handle, ::ThreadMemoryPriority,
                              &memory_priority, sizeof(memory_priority));
     DPLOG_IF(ERROR, !memory_priority_success)
         << "Set thread memory priority failed.";
@@ -413,8 +414,8 @@ void SetCurrentThreadPriority(ThreadType thread_type) {
     // and I/O priorities but not the CPU priority (kernel bug?). Use
     // THREAD_PRIORITY_LOWEST to also lower the CPU priority.
     // https://crbug.com/901483
-    if (::GetThreadPriority(thread_handle) >= THREAD_PRIORITY_BELOW_NORMAL) {
-      ::SetThreadPriority(thread_handle, THREAD_PRIORITY_LOWEST);
+    if (::GetThreadPriority(platform_handle) >= THREAD_PRIORITY_BELOW_NORMAL) {
+      ::SetThreadPriority(platform_handle, THREAD_PRIORITY_LOWEST);
       // We used to DCHECK that memory priority is MEMORY_PRIORITY_VERY_LOW
       // here, but found that it is not always the case (e.g. in the installer).
       // crbug.com/1340578#c2
@@ -422,7 +423,8 @@ void SetCurrentThreadPriority(ThreadType thread_type) {
   }
 }
 
-void SetCurrentThreadQualityOfService(ThreadType thread_type) {
+void SetThreadQualityOfService(PlatformThreadHandle thread_handle,
+                               ThreadType thread_type) {
   // QoS and power throttling were introduced in Win10 1709.
   bool desire_ecoqos = false;
   switch (thread_type) {
@@ -446,7 +448,7 @@ void SetCurrentThreadQualityOfService(ThreadType thread_type) {
           desire_ecoqos ? THREAD_POWER_THROTTLING_EXECUTION_SPEED : 0ul,
   };
   [[maybe_unused]] const BOOL success = ::SetThreadInformation(
-      ::GetCurrentThread(), ::ThreadPowerThrottling,
+      thread_handle.platform_handle(), ::ThreadPowerThrottling,
       &thread_power_throttling_state, sizeof(thread_power_throttling_state));
   // Failure is expected on versions of Windows prior to RS3.
   DPLOG_IF(ERROR, !success && win::GetVersion() >= win::Version::WIN10_RS3)
@@ -459,8 +461,25 @@ namespace internal {
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
-  SetCurrentThreadPriority(thread_type);
-  SetCurrentThreadQualityOfService(thread_type);
+  PlatformThreadHandle thread_handle = PlatformThread::CurrentHandle();
+  SetThreadPriority(thread_handle, thread_type);
+  SetThreadQualityOfService(thread_handle, thread_type);
+}
+
+PlatformPriorityOverride SetThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
+    ThreadType thread_type) {
+  SetThreadPriority(thread_handle, thread_type);
+  SetThreadQualityOfService(thread_handle, thread_type);
+  return true;
+}
+
+void RemoveThreadTypeOverrideImpl(
+    const PlatformPriorityOverride& priority_override_handle,
+    ThreadType thread_type) {
+  PlatformThreadHandle thread_handle = PlatformThread::CurrentHandle();
+  SetThreadPriority(thread_handle, thread_type);
+  SetThreadQualityOfService(thread_handle, thread_type);
 }
 
 }  // namespace internal

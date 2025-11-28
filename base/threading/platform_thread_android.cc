@@ -5,8 +5,11 @@
 #include "base/threading/platform_thread.h"
 
 #include <errno.h>
+#include <pthread.h>
 #include <stddef.h>
 #include <sys/prctl.h>
+#include <sys/resource.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -118,6 +121,26 @@ std::optional<ThreadType> GetCurrentEffectiveThreadTypeForPlatformForTest() {
     return std::make_optional(ThreadType::kRealtimeAudio);
   }
   return std::nullopt;
+}
+
+PlatformPriorityOverride SetThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
+    ThreadType thread_type) {
+  PlatformThreadId thread_id(
+      pthread_gettid_np(thread_handle.platform_handle()));
+  if (GetThreadNiceValue(thread_id) <= ThreadTypeToNiceValue(thread_type)) {
+    return false;
+  }
+  return SetThreadNiceFromType(thread_id, thread_type);
+}
+
+void RemoveThreadTypeOverrideImpl(
+    const PlatformPriorityOverride& priority_override_handle,
+    ThreadType thread_type) {
+  if (!priority_override_handle) {
+    return;
+  }
+  SetCurrentThreadTypeImpl(thread_type, MessagePumpType::DEFAULT);
 }
 
 }  // namespace internal

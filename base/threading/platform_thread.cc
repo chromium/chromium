@@ -61,4 +61,12 @@ void PlatformThreadBase::SetNameCommon(const std::string& name) {
   ThreadIdNameManager::GetInstance()->SetName(name);
 }
 
+namespace internal {
+
+void RemoveThreadTypeOverride(
+    const PlatformPriorityOverride& priority_override_handle) {
+  RemoveThreadTypeOverrideImpl(priority_override_handle, current_thread_type);
+}
+
+}  // namespace internal
 }  // namespace base

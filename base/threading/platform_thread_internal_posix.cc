@@ -48,7 +48,7 @@ int GetThreadNiceValue(PlatformThreadId id) {
   return nice_value;
 }
 
-void SetThreadNiceFromType(PlatformThreadId thread_id, ThreadType thread_type) {
+bool SetThreadNiceFromType(PlatformThreadId thread_id, ThreadType thread_type) {
   // setpriority(2) should change the whole thread group's (i.e. process)
   // priority. However, as stated in the bugs section of
   // http://man7.org/linux/man-pages/man2/getpriority.2.html: "under the current
@@ -61,7 +61,9 @@ void SetThreadNiceFromType(PlatformThreadId thread_id, ThreadType thread_type) {
   if (setpriority(PRIO_PROCESS, static_cast<id_t>(syscall_tid), nice_setting)) {
     DVPLOG(1) << "Failed to set nice value of thread " << thread_id << " to "
               << nice_setting;
+    return false;
   }
+  return true;
 }
 
 }  // namespace base::internal

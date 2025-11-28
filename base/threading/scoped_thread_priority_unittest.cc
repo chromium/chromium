@@ -4,6 +4,7 @@
 
 #include "base/threading/scoped_thread_priority.h"
 
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
@@ -94,6 +95,75 @@ TEST_F(ScopedThreadPriorityTest, BasicTest) {
               from, to));
     }
   }
+}
+
+void TestPriorityResultingFromBoost(ThreadType initial_thread_type,
+                                    ThreadType target_thread_type) {
+  Thread thread("ScopedThreadPriorityTest");
+  thread.StartWithOptions(Thread::Options(initial_thread_type));
+  thread.WaitUntilThreadStarted();
+
+  WaitableEvent thread_ready;
+  WaitableEvent thread_boosted;
+  raw_ptr<ScopedBoostablePriority> scoped_boostable_priority_ptr;
+
+  bool will_boost_priority =
+#if BUILDFLAG(IS_LINUX)
+      // Linux doesn't support priority boosting.
+      false;
+#else
+      initial_thread_type < target_thread_type &&
+      PlatformThread::CanChangeThreadType(initial_thread_type,
+                                          target_thread_type) &&
+      PlatformThread::CanChangeThreadType(target_thread_type,
+                                          initial_thread_type);
+#endif
+
+  thread.task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&]() {
+        EXPECT_EQ(PlatformThread::GetCurrentThreadType(), initial_thread_type);
+
+        {
+          ScopedBoostablePriority scoped_boostable_priority;
+          scoped_boostable_priority_ptr = &scoped_boostable_priority;
+          thread_ready.Signal();
+          thread_boosted.Wait();
+          scoped_boostable_priority_ptr = nullptr;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+          // Apple priority boost doesn't reflect in the effective ThreadType.
+          if (will_boost_priority) {
+            EXPECT_EQ(PlatformThread::GetCurrentEffectiveThreadTypeForTest(),
+                      target_thread_type);
+          }
+#endif
+        }
+        EXPECT_EQ(PlatformThread::GetCurrentThreadType(), initial_thread_type);
+        EXPECT_EQ(PlatformThread::GetCurrentEffectiveThreadTypeForTest(),
+                  initial_thread_type);
+      }));
+
+  thread_ready.Wait();
+  bool did_boost_priority =
+      scoped_boostable_priority_ptr->BoostPriority(target_thread_type);
+  EXPECT_EQ(did_boost_priority, will_boost_priority);
+  thread_boosted.Signal();
+
+  thread.FlushForTesting();
+}
+
+TEST_F(ScopedThreadPriorityTest, BoostableTest) {
+  TestPriorityResultingFromBoost(ThreadType::kBackground, ThreadType::kUtility);
+  TestPriorityResultingFromBoost(ThreadType::kBackground, ThreadType::kDefault);
+  TestPriorityResultingFromBoost(ThreadType::kBackground,
+                                 ThreadType::kDisplayCritical);
+
+  TestPriorityResultingFromBoost(ThreadType::kUtility, ThreadType::kDefault);
+  TestPriorityResultingFromBoost(ThreadType::kUtility,
+                                 ThreadType::kDisplayCritical);
+
+  TestPriorityResultingFromBoost(ThreadType::kDefault,
+                                 ThreadType::kDisplayCritical);
 }
 
 TEST_F(ScopedThreadPriorityDeathTest, NoRealTime) {

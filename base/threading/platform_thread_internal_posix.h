@@ -51,7 +51,7 @@ std::optional<ThreadType> GetCurrentEffectiveThreadTypeForPlatformForTest();
 int GetCurrentThreadNiceValue();
 int GetThreadNiceValue(PlatformThreadId id);
 
-void SetThreadNiceFromType(PlatformThreadId thread_id, ThreadType thread_type);
+bool SetThreadNiceFromType(PlatformThreadId thread_id, ThreadType thread_type);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void SetThreadTypeLinux(ProcessId process_id,

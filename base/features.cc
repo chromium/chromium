@@ -10,6 +10,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/files/file_path.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
+#include "base/task/thread_pool/job_task_source.h"
 #include "base/threading/platform_thread.h"
 #include "build/blink_buildflags.h"
 #include "build/buildflag.h"
@@ -205,6 +206,7 @@ void Init() {
 
   sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
   sequence_manager::internal::ThreadController::InitializeFeatures();
+  base::internal::JobTaskSource::InitializeFeatures();
 
   debug::StackTrace::InitializeFeatures();
   FilePath::InitializeFeatures();

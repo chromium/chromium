@@ -279,6 +279,22 @@ void SetPriorityRealtimeAudio(TimeDelta realtime_period) {
   return;
 }
 
+std::optional<qos_class_t> ThreadTypeToQoSClass(ThreadType thread_type) {
+  switch (thread_type) {
+    case ThreadType::kBackground:
+      return QOS_CLASS_BACKGROUND;
+    case ThreadType::kUtility:
+      return QOS_CLASS_UTILITY;
+    case ThreadType::kDefault:
+      return QOS_CLASS_USER_INITIATED;
+    case ThreadType::kDisplayCritical:
+    case ThreadType::kInteractive:
+      return QOS_CLASS_USER_INTERACTIVE;
+    case ThreadType::kRealtimeAudio:
+      return std::nullopt;
+  }
+}
+
 }  // anonymous namespace
 
 // static
@@ -295,25 +311,37 @@ namespace internal {
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
-  switch (thread_type) {
-    case ThreadType::kBackground:
-      pthread_set_qos_class_self_np(QOS_CLASS_BACKGROUND, 0);
-      break;
-    case ThreadType::kUtility:
-      pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
-      break;
-    case ThreadType::kDefault:
-      pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
-      break;
-    case ThreadType::kDisplayCritical:
-    case ThreadType::kInteractive:
-      pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
-      break;
-    case ThreadType::kRealtimeAudio:
-      SetPriorityRealtimeAudio(GetCurrentThreadRealtimePeriod());
-      DCHECK_EQ([NSThread.currentThread threadPriority], 1.0);
-      break;
+  std::optional<qos_class_t> qos_class = ThreadTypeToQoSClass(thread_type);
+
+  if (qos_class) {
+    pthread_set_qos_class_self_np(*qos_class, 0);
+  } else {
+    CHECK_EQ(thread_type, ThreadType::kRealtimeAudio);
+    SetPriorityRealtimeAudio(GetCurrentThreadRealtimePeriod());
+    DCHECK_EQ([NSThread.currentThread threadPriority], 1.0);
   }
+}
+
+PlatformPriorityOverride SetThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
+    ThreadType thread_type) {
+  std::optional<qos_class_t> qos_class = ThreadTypeToQoSClass(thread_type);
+
+  if (qos_class) {
+    return pthread_override_qos_class_start_np(thread_handle.platform_handle(),
+                                               *qos_class, 0);
+  }
+
+  return PlatformPriorityOverride();
+}
+
+void RemoveThreadTypeOverrideImpl(
+    const PlatformPriorityOverride& priority_override_handle,
+    ThreadType thread_type) {
+  if (priority_override_handle == nullptr) {
+    return;
+  }
+  pthread_override_qos_class_end_np(priority_override_handle);
 }
 
 }  // namespace internal
@@ -325,9 +353,7 @@ ThreadType PlatformThreadBase::GetCurrentEffectiveThreadTypeForTest() {
     return ThreadType::kRealtimeAudio;
   }
 
-  qos_class_t qos_class;
-  int relative_priority;
-  pthread_get_qos_class_np(pthread_self(), &qos_class, &relative_priority);
+  qos_class_t qos_class = qos_class_self();
   switch (qos_class) {
     case QOS_CLASS_BACKGROUND:
       return ThreadType::kBackground;

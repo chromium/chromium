@@ -11,7 +11,31 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
+
 namespace base {
+
+namespace {
+
+PlatformThreadHandle PortableCurrentThreadHandle() {
+  PlatformThreadHandle current = PlatformThread::CurrentHandle();
+#if BUILDFLAG(IS_WIN)
+  PlatformThreadHandle::Handle platform_handle;
+  BOOL did_dup = ::DuplicateHandle(
+      ::GetCurrentProcess(), current.platform_handle(), ::GetCurrentProcess(),
+      &platform_handle, 0, false, DUPLICATE_SAME_ACCESS);
+  if (!did_dup) {
+    return PlatformThreadHandle();
+  }
+  return PlatformThreadHandle(platform_handle);
+#else
+  return current;
+#endif
+}
+
+}  // namespace
 
 ScopedBoostPriority::ScopedBoostPriority(ThreadType target_thread_type) {
   CHECK_LT(target_thread_type, ThreadType::kRealtimeAudio);
@@ -32,6 +56,48 @@ ScopedBoostPriority::~ScopedBoostPriority() {
   if (original_thread_type_.has_value()) {
     PlatformThread::SetCurrentThreadType(original_thread_type_.value());
   }
+}
+
+ScopedBoostablePriority::ScopedBoostablePriority()
+    : initial_thread_type_(PlatformThread::GetCurrentThreadType()),
+      thread_handle_(PortableCurrentThreadHandle())
+#if BUILDFLAG(IS_WIN)
+      ,
+      scoped_handle_(thread_handle_.platform_handle())
+#endif
+{
+}
+
+ScopedBoostablePriority::~ScopedBoostablePriority() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (thread_handle_.is_null()) {
+    return;
+  }
+  if (did_override_priority_) {
+    internal::RemoveThreadTypeOverride(priority_override_handle_);
+  }
+}
+
+bool ScopedBoostablePriority::BoostPriority(ThreadType target_thread_type) {
+  CHECK_LT(target_thread_type, ThreadType::kRealtimeAudio);
+  if (thread_handle_.is_null()) {
+    return false;
+  }
+  const bool should_boost = target_thread_type > initial_thread_type_ &&
+                            PlatformThread::CanChangeThreadType(
+                                initial_thread_type_, target_thread_type) &&
+                            PlatformThread::CanChangeThreadType(
+                                target_thread_type, initial_thread_type_);
+  if (!should_boost) {
+    return false;
+  }
+  if (did_override_priority_) {
+    return false;
+  }
+  did_override_priority_ = true;
+  priority_override_handle_ =
+      internal::SetThreadTypeOverride(thread_handle_, target_thread_type);
+  return priority_override_handle_;
 }
 
 TaskMonitoringScopedBoostPriority::TaskMonitoringScopedBoostPriority(

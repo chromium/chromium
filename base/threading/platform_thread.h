@@ -450,6 +450,20 @@ using PlatformThread = PlatformThreadBase;
 
 namespace internal {
 
+#if BUILDFLAG(IS_APPLE)
+using PlatformPriorityOverride = pthread_override_t;
+#else
+using PlatformPriorityOverride = bool;
+#endif
+PlatformPriorityOverride SetThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
+    ThreadType thread_type);
+void RemoveThreadTypeOverride(
+    const PlatformPriorityOverride& priority_override_handle);
+void RemoveThreadTypeOverrideImpl(
+    const PlatformPriorityOverride& priority_override_handle,
+    ThreadType thread_type);
+
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint);
 
