@@ -201,7 +201,7 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
   [self populateCurrentValuesMap];
 }
 
-#pragma mark - AutofillProfileEditTableViewControllerDelegate
+#pragma mark - AutofillProfileEditTableViewHelperDelegate
 
 - (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country {
   [_delegate willSelectCountryWithCurrentlySelectedCountry:country

@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -98,7 +98,7 @@ class AutofillSettingsProfileEditTableViewControllerTest
                                    userEmail:base::SysUTF16ToNSString(
                                                  kTestSyncingEmail)];
     autofill_profile_edit_table_view_controller_ =
-        [[AutofillProfileEditTableViewController alloc]
+        [[AutofillProfileEditTableViewHelper alloc]
             initWithDelegate:autofill_profile_edit_mediator_
                    userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
                   controller:viewController
@@ -161,7 +161,7 @@ class AutofillSettingsProfileEditTableViewControllerTest
     }
   }
 
-  AutofillProfileEditTableViewController*
+  AutofillProfileEditTableViewHelper*
       autofill_profile_edit_table_view_controller_;
   AutofillProfileEditMediator* autofill_profile_edit_mediator_;
   std::unique_ptr<autofill::AutofillProfile> profile_;
@@ -228,7 +228,7 @@ class AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest
                                    userEmail:base::SysUTF16ToNSString(
                                                  kTestSyncingEmail)];
     autofill_profile_edit_table_view_controller_ =
-        [[AutofillProfileEditTableViewController alloc]
+        [[AutofillProfileEditTableViewHelper alloc]
             initWithDelegate:autofill_profile_edit_mediator_
                    userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
                   controller:viewController

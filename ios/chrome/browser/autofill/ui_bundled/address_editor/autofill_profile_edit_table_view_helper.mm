@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_helper.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
@@ -12,7 +12,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
-#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_helper_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/autofill_edit_profile_button_footer_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/autofill_profile_edit_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
@@ -34,7 +34,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 }  // namespace
 
-@interface AutofillProfileEditTableViewController () <
+@interface AutofillProfileEditTableViewHelper () <
     AutofillEditProfileButtonFooterDelegate>
 
 // If YES, denotes that the view is laid out for the migration prompt.
@@ -42,11 +42,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 @end
 
-@implementation AutofillProfileEditTableViewController {
+@implementation AutofillProfileEditTableViewHelper {
   NSString* _userEmail;
 
-  // The AutofillProfileEditTableViewControllerDelegate for this ViewController.
-  __weak id<AutofillProfileEditTableViewControllerDelegate> _delegate;
+  // The AutofillProfileEditTableViewHelperDelegate for this ViewController.
+  __weak id<AutofillProfileEditTableViewHelperDelegate> _delegate;
 
   // The shown view controller.
   __weak LegacyChromeTableViewController* _controller;
@@ -79,7 +79,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 #pragma mark - Initialization
 
 - (instancetype)initWithDelegate:
-                    (id<AutofillProfileEditTableViewControllerDelegate>)delegate
+                    (id<AutofillProfileEditTableViewHelperDelegate>)delegate
                        userEmail:(NSString*)userEmail
                       controller:(LegacyChromeTableViewController*)controller
                   addressContext:(SaveAddressContext)addressContext {
@@ -602,10 +602,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
                                    (AutofillProfileDetailsSectionIdentifier)
                                        addSection {
   TableViewModel* model = _controller.tableViewModel;
-  __weak AutofillProfileEditTableViewController* weakSelf = self;
+  __weak AutofillProfileEditTableViewHelper* weakSelf = self;
   [_controller
       performBatchTableViewUpdates:^{
-        AutofillProfileEditTableViewController* strongSelf = weakSelf;
+        AutofillProfileEditTableViewHelper* strongSelf = weakSelf;
 
         if (!strongSelf) {
           return;

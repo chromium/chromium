@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_helper.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -14,7 +14,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/autofill_edit_profile_button_footer_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/autofill_profile_edit_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
@@ -34,7 +34,7 @@ namespace {
 
 const char16_t kTestSyncingEmail[] = u"test@email.com";
 
-struct AutofillProfileEditTableViewControllerTestCase {
+struct AutofillProfileEditTableViewHelperTestCase {
   // Determines the objective of the prompt shown.
   AutofillSaveProfilePromptMode prompt_mode;
   // Yes, if the profile is an account profile.
@@ -43,10 +43,10 @@ struct AutofillProfileEditTableViewControllerTestCase {
   SaveAddressContext address_context;
 };
 
-class AutofillProfileEditTableViewControllerTest
+class AutofillProfileEditTableViewHelperTest
     : public LegacyChromeTableViewControllerTest,
       public ::testing::WithParamInterface<
-          AutofillProfileEditTableViewControllerTestCase> {
+          AutofillProfileEditTableViewHelperTestCase> {
  protected:
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
@@ -66,7 +66,7 @@ class AutofillProfileEditTableViewControllerTest
            addManualAddress:NO];
 
     autofill_profile_edit_table_view_controller_ =
-        [[AutofillProfileEditTableViewController alloc]
+        [[AutofillProfileEditTableViewHelper alloc]
             initWithDelegate:autofill_profile_edit_mediator_
                    userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
                   controller:controller()
@@ -171,7 +171,7 @@ class AutofillProfileEditTableViewControllerTest
     return attributedText;
   }
 
-  AutofillProfileEditTableViewController*
+  AutofillProfileEditTableViewHelper*
       autofill_profile_edit_table_view_controller_;
   AutofillProfileEditMediator* autofill_profile_edit_mediator_;
   NSString* full_name_;
@@ -189,63 +189,63 @@ class AutofillProfileEditTableViewControllerTest
 
 INSTANTIATE_TEST_SUITE_P(
     /* No InstantiationName */,
-    AutofillProfileEditTableViewControllerTest,
+    AutofillProfileEditTableViewHelperTest,
     testing::Values(
         // Editing an account profile via settings.
-        AutofillProfileEditTableViewControllerTestCase{
+        AutofillProfileEditTableViewHelperTestCase{
             AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/YES,
             /*address_context=*/SaveAddressContext::kEditingSavedAddress},
 
         // Editing a local profile via settings.
-        AutofillProfileEditTableViewControllerTestCase{
+        AutofillProfileEditTableViewHelperTestCase{
             AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/NO,
             /*address_context=*/SaveAddressContext::kEditingSavedAddress},
 
         // Save Flow via Overlay UI: Editing an account profile.
-        AutofillProfileEditTableViewControllerTestCase{
+        AutofillProfileEditTableViewHelperTestCase{
             AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/YES,
             /*address_context=*/SaveAddressContext::kInfobarSaveUpdateAddress},
 
         // Save Flow via Overlay UI: Editing a local profile.
-        AutofillProfileEditTableViewControllerTestCase{
+        AutofillProfileEditTableViewHelperTestCase{
             AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/NO,
             /*address_context=*/SaveAddressContext::kInfobarSaveUpdateAddress},
 
         // Save Flow via Overlay UI: Editing an account profile after showing
         // the update prompt.
-        AutofillProfileEditTableViewControllerTestCase{
+        AutofillProfileEditTableViewHelperTestCase{
             AutofillSaveProfilePromptMode::kUpdateProfile,
             /*account_profile=*/YES,
             /*address_context=*/SaveAddressContext::kInfobarSaveUpdateAddress},
 
         // Save Flow via Overlay UI: Editing a local profile after showing the
         // update prompt.
-        AutofillProfileEditTableViewControllerTestCase{
+        AutofillProfileEditTableViewHelperTestCase{
             AutofillSaveProfilePromptMode::kUpdateProfile,
             /*account_profile=*/NO,
             /*address_context=*/SaveAddressContext::kInfobarSaveUpdateAddress},
 
         // Save Flow via Overlay UI: Editing a local profile after showing the
         // migration to account prompt.
-        AutofillProfileEditTableViewControllerTestCase{
+        AutofillProfileEditTableViewHelperTestCase{
             AutofillSaveProfilePromptMode::kMigrateProfile,
             /*account_profile=*/NO, /*address_context=*/
             SaveAddressContext::kInfobarSaveUpdateAddress},
 
         // Manually adding an account address from settings.
-        AutofillProfileEditTableViewControllerTestCase{
+        AutofillProfileEditTableViewHelperTestCase{
             AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/YES,
             /*address_context=*/SaveAddressContext::kAddingManualAddress},
 
         // Manually adding a local address from settings.
-        AutofillProfileEditTableViewControllerTestCase{
+        AutofillProfileEditTableViewHelperTestCase{
             AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/NO,
             /*address_context=*/SaveAddressContext::kAddingManualAddress}));
 
 }  // namespace
 
 // Tests the items present in the view.
-TEST_P(AutofillProfileEditTableViewControllerTest, TestItems) {
+TEST_P(AutofillProfileEditTableViewHelperTest, TestItems) {
   auto test_case = GetParam();
   int numOfSections;
   if (test_case.address_context == SaveAddressContext::kEditingSavedAddress) {
@@ -318,7 +318,7 @@ TEST_P(AutofillProfileEditTableViewControllerTest, TestItems) {
 }
 
 // Test the contents of the view when the value requirements fail.
-TEST_P(AutofillProfileEditTableViewControllerTest, TestRequirements) {
+TEST_P(AutofillProfileEditTableViewHelperTest, TestRequirements) {
   TableViewTextEditItem* city_item =
       static_cast<TableViewTextEditItem*>(GetTableViewItem(1, 1));
   // Remove the city field value.
@@ -376,8 +376,7 @@ TEST_P(AutofillProfileEditTableViewControllerTest, TestRequirements) {
 }
 
 // Tests the items in the view when the country value changes.
-TEST_P(AutofillProfileEditTableViewControllerTest,
-       TestItemsOnCountrySelection) {
+TEST_P(AutofillProfileEditTableViewHelperTest, TestItemsOnCountrySelection) {
   auto test_case = GetParam();
   TableViewTextEditItem* city_item =
       static_cast<TableViewTextEditItem*>(GetTableViewItem(1, 1));

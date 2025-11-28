@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_table_view_controller.h"
@@ -42,8 +42,7 @@
   AutofillEditProfileBottomSheetTableViewController* _viewController;
 
   // Mediator and view controller used to display the edit view.
-  AutofillProfileEditTableViewController*
-      _autofillProfileEditTableViewController;
+  AutofillProfileEditTableViewHelper* _AutofillProfileEditTableViewHelper;
   AutofillProfileEditMediator* _autofillProfileEditMediator;
 
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
@@ -101,20 +100,19 @@
           : SaveAddressContext::kInfobarSaveUpdateAddress;
 
   // View controller that lays down the table views for the edit profile view.
-  _autofillProfileEditTableViewController =
-      [[AutofillProfileEditTableViewController alloc]
+  _AutofillProfileEditTableViewHelper =
+      [[AutofillProfileEditTableViewHelper alloc]
           initWithDelegate:_autofillProfileEditMediator
                  userEmail:[_handler userEmail]
                 controller:editModalViewController
             addressContext:saveAddressContext];
-  _autofillProfileEditMediator.consumer =
-      _autofillProfileEditTableViewController;
+  _autofillProfileEditMediator.consumer = _AutofillProfileEditTableViewHelper;
   // `editModalViewController` lays down the bottom sheet view and communicates
-  // with `_autofillProfileEditTableViewController` via
+  // with `_AutofillProfileEditTableViewHelper` via
   // `AutofillProfileEditHandler` protocol.
-  // `_autofillProfileEditTableViewController` is responsible for loading the
+  // `_AutofillProfileEditTableViewHelper` is responsible for loading the
   // model and dealing with the table view user interactions.
-  editModalViewController.handler = _autofillProfileEditTableViewController;
+  editModalViewController.handler = _AutofillProfileEditTableViewHelper;
 
   _viewController = editModalViewController;
 

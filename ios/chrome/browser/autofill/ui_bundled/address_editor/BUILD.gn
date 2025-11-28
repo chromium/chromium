@@ -21,9 +21,9 @@ source_set("autofill_shared_ui") {
     "autofill_profile_edit_mediator.h",
     "autofill_profile_edit_mediator.mm",
     "autofill_profile_edit_mediator_delegate.h",
-    "autofill_profile_edit_table_view_controller.h",
-    "autofill_profile_edit_table_view_controller.mm",
-    "autofill_profile_edit_table_view_controller_delegate.h",
+    "autofill_profile_edit_table_view_helper.h",
+    "autofill_profile_edit_table_view_helper.mm",
+    "autofill_profile_edit_table_view_helper_delegate.h",
   ]
   deps = [
     ":constants",
@@ -56,7 +56,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "autofill_profile_edit_mediator_unittest.mm",
-    "autofill_profile_edit_table_view_controller_unittest.mm",
+    "autofill_profile_edit_table_view_helper_unittest.mm",
   ]
   deps = [
     ":autofill_shared_ui",
