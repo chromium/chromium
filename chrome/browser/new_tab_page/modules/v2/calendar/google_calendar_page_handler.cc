@@ -35,7 +35,6 @@ namespace {
 const char kGoogleCalendarLastDismissedTimePrefName[] =
     "NewTabPage.GoogleCalendar.LastDimissedTime";
 
-// TODO(crbug.com/343738665): Update when more granular policy is added.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("google_calendar_page_handler", R"(
        semantics {
