@@ -326,8 +326,6 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
 
 void ProcessDiceHeaderDelegateImpl::EnableSync(
     const CoreAccountInfo& account_info) {
-  // TODO(crbug.com/420635510): Address the case of a flashing Interception
-  // bubble which gets self-dismissed when the browser user is signed in.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile_.get());
   CHECK(identity_manager);
