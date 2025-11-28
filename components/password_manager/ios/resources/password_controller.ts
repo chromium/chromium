@@ -6,7 +6,7 @@ import * as fillConstants from '//components/autofill/ios/form_util/resources/fi
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {getFormControlElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -86,7 +86,7 @@ function addSubmitButtonTouchEndHandler(form: HTMLFormElement) {
  */
 function onSubmitButtonTouchEnd(evt: Event) {
   const form = (evt.currentTarget as HTMLFormElement)['form'];
-  const formData = gCrWebLegacy.passwords.getPasswordFormData(form);
+  const formData = getPasswordFormData(form);
   if (!formData) {
     return;
   }
@@ -136,9 +136,8 @@ function getPasswordFormDataAsString(identifier: number): string {
   if (!form && hasFormTag) {
     return '{}';
   }
-  const formData = hasFormTag ?
-    gCrWebLegacy.passwords.getPasswordFormData(form) :
-    gCrWebLegacy.passwords.getPasswordFormDataFromUnownedElements();
+  const formData = hasFormTag ? getPasswordFormData(form) :
+                                getPasswordFormDataFromUnownedElements();
   if (!formData) {
     return '{}';
   }
@@ -377,8 +376,9 @@ function getPasswordFormDataList(formDataList: fillUtil.AutofillFormData[]) {
       addSubmitButtonTouchEndHandler(form);
     }
   }
+  // TODO(crbug.com/454044167): Cleanup autofill TS type casting.
   const unownedFormData =
-  gCrWebLegacy.passwords.getPasswordFormDataFromUnownedElements();
+      getPasswordFormDataFromUnownedElements() as fillUtil.AutofillFormData;
   if (unownedFormData && isRecognizedCredentialForm(unownedFormData)) {
     formDataList.push(unownedFormData);
   }
@@ -419,11 +419,15 @@ function getPasswordFormData(
   return ok ? formData : null;
 }
 
-gCrWebLegacy.passwords = {
-  findPasswordForms,
-  getPasswordFormDataAsString,
-  fillPasswordForm,
-  fillPasswordFormWithGeneratedPassword,
-  getPasswordFormDataFromUnownedElements,
-  getPasswordFormData,
-};
+const passwordsApi = new CrWebApi();
+
+passwordsApi.addFunction('findPasswordForms', findPasswordForms);
+passwordsApi.addFunction('fillPasswordForm', fillPasswordForm);
+passwordsApi.addFunction(
+    'fillPasswordFormWithGeneratedPassword',
+    fillPasswordFormWithGeneratedPassword);
+passwordsApi.addFunction('getPasswordFormData', getPasswordFormData);
+passwordsApi.addFunction(
+    'getPasswordFormDataAsString', getPasswordFormDataAsString);
+
+gCrWeb.registerApi('passwords', passwordsApi);
