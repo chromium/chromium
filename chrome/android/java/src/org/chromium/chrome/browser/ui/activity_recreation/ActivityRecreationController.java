@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 /**
@@ -30,12 +31,12 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 @NullMarked
 public class ActivityRecreationController {
     static final String ACTIVITY_RECREATION_UI_STATE = "activity_recreation_ui_state";
-
     private final OneshotSupplier<ToolbarManager> mToolbarManagerSupplier;
     private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     private final ActivityTabProvider mActivityTabProvider;
     private final Handler mLayoutStateHandler;
     private @Nullable ActivityRecreationUiState mRetainedUiState;
+    private @Nullable final ExclusiveAccessManager mExclusiveAccessManager;
 
     /**
      * Construct a {@link ActivityRecreationController} instance.
@@ -44,16 +45,19 @@ public class ActivityRecreationController {
      * @param layoutManagerSupplier The {@link LayoutManager} instance supplier.
      * @param activityTabProvider The current activity tab provider.
      * @param layoutStateHandler The {@link Handler} to post UI state restoration.
+     * @param exclusiveAccessManager The {@link ExclusiveAccessManager} instance.
      */
     public ActivityRecreationController(
             OneshotSupplierImpl<ToolbarManager> toolbarManagerSupplier,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             ActivityTabProvider activityTabProvider,
-            Handler layoutStateHandler) {
+            Handler layoutStateHandler,
+            @Nullable ExclusiveAccessManager exclusiveAccessManager) {
         mToolbarManagerSupplier = toolbarManagerSupplier;
         mLayoutManagerSupplier = layoutManagerSupplier;
         mActivityTabProvider = activityTabProvider;
         mLayoutStateHandler = layoutStateHandler;
+        mExclusiveAccessManager = exclusiveAccessManager;
     }
 
     /**
@@ -79,6 +83,11 @@ public class ActivityRecreationController {
             if (layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
                 mRetainedUiState.mIsTabSwitcherShown = true;
             }
+        }
+
+        if (mExclusiveAccessManager != null) {
+            mRetainedUiState.mIsPointerLocked = mExclusiveAccessManager.isPointerLocked();
+            mRetainedUiState.mIsKeyboardLocked = mExclusiveAccessManager.isKeyboardLocked();
         }
     }
 
@@ -120,6 +129,7 @@ public class ActivityRecreationController {
                 mLayoutStateHandler);
         restoreKeyboardState(uiState, mActivityTabProvider, layoutManager, mLayoutStateHandler);
         restoreTabSwitcherState(uiState, layoutManager);
+        restoreExclusiveAccessState(uiState, mExclusiveAccessManager, mActivityTabProvider);
     }
 
     private boolean getKeyboardVisibilityState() {
@@ -240,6 +250,35 @@ public class ActivityRecreationController {
             return;
         }
         layoutManager.showLayout(LayoutType.TAB_SWITCHER, false);
+    }
+
+    private static void restoreExclusiveAccessState(
+            ActivityRecreationUiState uiState,
+            @Nullable ExclusiveAccessManager exclusiveAccessManager,
+            ActivityTabProvider activityTabProvider) {
+        // Due to renderer synchronization issues the full screen state is recreated during tab
+        // restoration. UI state restoration is done after active tab restoration and as such
+        // renderer will receive the window state update before this restore is done.
+        if (exclusiveAccessManager == null) {
+            return;
+        }
+        var tab = activityTabProvider.get();
+        if (tab == null) {
+            return;
+        }
+        var webContents = tab.getWebContents();
+        if (webContents == null) {
+            return;
+        }
+        if (!uiState.mIsPointerLocked && !uiState.mIsKeyboardLocked) {
+            return;
+        }
+        if (uiState.mIsPointerLocked) {
+            exclusiveAccessManager.requestPointerLock(webContents, true, true);
+        }
+        if (uiState.mIsKeyboardLocked) {
+            exclusiveAccessManager.requestKeyboardLock(webContents, false);
+        }
     }
 
     private static void setUrlBarFocusAndText(

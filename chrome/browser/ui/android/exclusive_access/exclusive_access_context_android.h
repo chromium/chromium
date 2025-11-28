@@ -66,6 +66,8 @@ class ExclusiveAccessContextAndroid : public ExclusiveAccessContext {
   // their own, and this function allows us to check for that.
   bool CanUserExitFullscreen() const override;
 
+  void ForceActiveTab(JNIEnv* env, const jni_zero::JavaRef<jobject>& j_tab);
+
   base::WeakPtr<ExclusiveAccessContextAndroid> GetAsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

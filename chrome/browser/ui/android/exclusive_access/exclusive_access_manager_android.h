@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "third_party/jni_zero/jni_zero.h"
 
+class ExclusiveAccessContextAndroid;
+
 // Exclusive Access Manager Android class is the Exclusive Access Manager
 // wrapper used for synchronization of Pointer Lock, Keyboard Lock and
 // Fullscreen features. The main responsibilities of EAM are to monitor which
@@ -53,12 +55,16 @@ class ExclusiveAccessManagerAndroid {
       JNIEnv* env,
       const jni_zero::JavaRef<jobject>& jweb_contents);
 
+  bool IsKeyboardLocked(JNIEnv* env);
+
   void RequestPointerLock(JNIEnv* env,
                           const jni_zero::JavaRef<jobject>& jweb_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target);
 
   void LostPointerLock(JNIEnv* env);
+
+  bool IsPointerLocked(JNIEnv* env);
 
   void ExitExclusiveAccess(JNIEnv* env);
 
@@ -73,10 +79,12 @@ class ExclusiveAccessManagerAndroid {
   void OnTabClosing(JNIEnv* env,
                     const jni_zero::JavaRef<jobject>& jweb_contents);
 
+  void ForceActiveTab(JNIEnv* env, const jni_zero::JavaRef<jobject>& j_tab);
+
  private:
   // Our global reference to the Java ExclusiveAccessManagerAndroid.
   base::android::ScopedJavaGlobalRef<jobject> j_eam_;
-  std::unique_ptr<ExclusiveAccessContext> eac_;
+  std::unique_ptr<ExclusiveAccessContextAndroid> eac_;
   ExclusiveAccessManager eam_;
 };
 

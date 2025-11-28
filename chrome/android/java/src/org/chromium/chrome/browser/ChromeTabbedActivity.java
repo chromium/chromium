@@ -898,7 +898,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                             TabAttributes.from(tab)
                                                     .get(TabAttributeKeys.FULLSCREEN_OPTIONS);
                                     if (fo != null) {
-                                        getFullscreenManager().onEnterFullscreen(tab, fo);
+                                        if (!ChromeFeatureList.sEnableExclusiveAccessManager
+                                                .isEnabled()) {
+                                            getFullscreenManager().onEnterFullscreen(tab, fo);
+                                        }
                                     }
                                 } else {
                                     TabAttributes attrs = TabAttributes.from(tab);

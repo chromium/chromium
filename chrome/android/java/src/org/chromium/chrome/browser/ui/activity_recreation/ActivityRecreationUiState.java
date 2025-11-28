@@ -17,6 +17,8 @@ final class ActivityRecreationUiState implements Parcelable {
     @Nullable String mUrlBarEditText;
     boolean mIsKeyboardShown;
     boolean mIsTabSwitcherShown;
+    boolean mIsPointerLocked;
+    boolean mIsKeyboardLocked;
 
     public static final Parcelable.Creator<ActivityRecreationUiState> CREATOR =
             new Parcelable.Creator<>() {
@@ -37,7 +39,9 @@ final class ActivityRecreationUiState implements Parcelable {
                 /* isUrlBarFocused= */ false,
                 /* urlBarEditText= */ "",
                 /* isKeyboardShown= */ false,
-                /* isTabSwitcherShown= */ false);
+                /* isTabSwitcherShown= */ false,
+                /* isPointerLocked= */ false,
+                /* isKeyboardLocked= */ false);
     }
 
     /**
@@ -52,11 +56,15 @@ final class ActivityRecreationUiState implements Parcelable {
             boolean isUrlBarFocused,
             @Nullable String urlBarEditText,
             boolean isKeyboardShown,
-            boolean isTabSwitcherShown) {
+            boolean isTabSwitcherShown,
+            boolean isPointerLocked,
+            boolean isKeyboardLocked) {
         mIsUrlBarFocused = isUrlBarFocused;
         mUrlBarEditText = urlBarEditText;
         mIsKeyboardShown = isKeyboardShown;
         mIsTabSwitcherShown = isTabSwitcherShown;
+        mIsPointerLocked = isPointerLocked;
+        mIsKeyboardLocked = isKeyboardLocked;
     }
 
     private ActivityRecreationUiState(Parcel in) {
@@ -64,7 +72,9 @@ final class ActivityRecreationUiState implements Parcelable {
                 /* isUrlBarFocused= */ in.readInt() == 1,
                 /* urlBarEditText= */ in.readString(),
                 /* isKeyboardShown= */ in.readInt() == 1,
-                /* isTabSwitcherShown= */ in.readInt() == 1);
+                /* isTabSwitcherShown= */ in.readInt() == 1,
+                /* mIsPointerLocked */ in.readInt() == 1,
+                /* mIsKeyboardLocked */ in.readInt() == 1);
     }
 
     /** Implements {@link Parcelable} */
@@ -80,9 +90,15 @@ final class ActivityRecreationUiState implements Parcelable {
         out.writeString(mUrlBarEditText);
         out.writeInt(mIsKeyboardShown ? 1 : 0);
         out.writeInt(mIsTabSwitcherShown ? 1 : 0);
+        out.writeInt(mIsPointerLocked ? 1 : 0);
+        out.writeInt(mIsKeyboardLocked ? 1 : 0);
     }
 
     boolean shouldRetainState() {
-        return mIsUrlBarFocused || mIsKeyboardShown || mIsTabSwitcherShown;
+        return mIsUrlBarFocused
+                || mIsKeyboardShown
+                || mIsTabSwitcherShown
+                || mIsPointerLocked
+                || mIsKeyboardLocked;
     }
 }

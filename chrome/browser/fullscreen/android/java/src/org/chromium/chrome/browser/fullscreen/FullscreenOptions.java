@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.chromium.build.annotations.NullMarked;
 
 /** Options to control a fullscreen request. */
 @NullMarked
-public class FullscreenOptions {
+public class FullscreenOptions implements Parcelable {
     /** Whether the navigation bar should be shown. */
     public final boolean showNavigationBar;
 
@@ -21,6 +24,19 @@ public class FullscreenOptions {
     // Used by FullscreenHtmlApiHandler internally to indicate that the fullscreen request
     // associated with this option got canceled at the pending state.
     private boolean mCanceled;
+
+    public static final Parcelable.Creator<FullscreenOptions> CREATOR =
+            new Parcelable.Creator<>() {
+                @Override
+                public FullscreenOptions createFromParcel(Parcel in) {
+                    return new FullscreenOptions(in);
+                }
+
+                @Override
+                public FullscreenOptions[] newArray(int size) {
+                    return new FullscreenOptions[size];
+                }
+            };
 
     /**
      * Constructs FullscreenOptions.
@@ -35,12 +51,30 @@ public class FullscreenOptions {
         this.displayId = displayId;
     }
 
+    public FullscreenOptions(Parcel in) {
+        this(in.readBoolean(), in.readBoolean(), in.readLong());
+    }
+
     void setCanceled() {
         mCanceled = true;
     }
 
     boolean canceled() {
         return mCanceled;
+    }
+
+    /** Implements {@link Parcelable} */
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    /** Implements {@link Parcelable} */
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeBoolean(showNavigationBar);
+        out.writeBoolean(showStatusBar);
+        out.writeLong(displayId);
     }
 
     @Override

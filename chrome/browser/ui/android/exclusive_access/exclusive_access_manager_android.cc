@@ -99,6 +99,10 @@ void ExclusiveAccessManagerAndroid::CancelKeyboardLockRequest(
   eam_.keyboard_lock_controller()->CancelKeyboardLockRequest(wc);
 }
 
+bool ExclusiveAccessManagerAndroid::IsKeyboardLocked(JNIEnv* env) {
+  return eam_.keyboard_lock_controller()->IsKeyboardLockActive();
+}
+
 void ExclusiveAccessManagerAndroid::RequestPointerLock(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& jweb_contents,
@@ -137,6 +141,16 @@ void ExclusiveAccessManagerAndroid::OnTabClosing(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& jweb_contents) {
   eam_.OnTabClosing(content::WebContents::FromJavaWebContents(jweb_contents));
+}
+
+bool ExclusiveAccessManagerAndroid::IsPointerLocked(JNIEnv* env) {
+  return eam_.pointer_lock_controller()->IsPointerLocked();
+}
+
+void ExclusiveAccessManagerAndroid::ForceActiveTab(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& j_tab) {
+  eac_->ForceActiveTab(env, j_tab);
 }
 
 void ExclusiveAccessManagerAndroid::Destroy(JNIEnv* env) {

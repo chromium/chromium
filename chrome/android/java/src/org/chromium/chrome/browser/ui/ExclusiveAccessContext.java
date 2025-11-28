@@ -93,4 +93,9 @@ public class ExclusiveAccessContext implements Destroyable {
             mFullscreenManager.onExitFullscreen(mActiveTab);
         }
     }
+
+    @CalledByNative
+    public void forceActiveTab(Tab tab) {
+        mActiveTab = tab;
+    }
 }

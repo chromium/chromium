@@ -143,3 +143,9 @@ bool ExclusiveAccessContextAndroid::CanUserEnterFullscreen() const {
 bool ExclusiveAccessContextAndroid::CanUserExitFullscreen() const {
   return true;
 }
+
+void ExclusiveAccessContextAndroid::ForceActiveTab(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& j_tab) {
+  Java_ExclusiveAccessContext_forceActiveTab(env, java_context_, j_tab);
+}
