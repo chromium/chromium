@@ -215,8 +215,7 @@ class LocalDeviceEnvironment(environment.Environment):
 
       # There is a change in soft keyboard behavior since Android 16.
       # See https://crbug.com/443782461 for more details.
-      # In Android 15, GBoard also shows the stylus onboarding.
-      if d.build_version_sdk >= version_codes.VANILLA_ICE_CREAM:
+      if d.build_version_sdk >= version_codes.BAKLAVA:
         with d.GboardPreferences() as gboard_prefs:
           # Disable the stylus.
           gboard_prefs.SetBoolean('enable_scribe', False)
