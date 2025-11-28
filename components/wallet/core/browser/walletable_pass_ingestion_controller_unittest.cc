@@ -239,18 +239,6 @@ TEST_F(WalletablePassIngestionControllerTest,
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
-       StartWalletablePassDetectionFlow_NotEligible) {
-  GURL url("https://example.com");
-  EXPECT_CALL(mock_decider(),
-              CanApplyOptimization(
-                  url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
-      .WillOnce(Return(kFalse));
-
-  EXPECT_CALL(*controller(), GetAnnotatedPageContent).Times(0);
-  test_api(controller()).StartWalletablePassDetectionFlow(url);
-}
-
-TEST_F(WalletablePassIngestionControllerTest,
        StartWalletablePassDetectionFlow_Eligible) {
   test_identity_environment().MakePrimaryAccountAvailable(
       "test@gmail.com", signin::ConsentLevel::kSignin);
@@ -321,16 +309,25 @@ TEST_F(WalletablePassIngestionControllerTest,
 
   test_api(controller()).StartWalletablePassDetectionFlow(url);
 }
-
 TEST_F(WalletablePassIngestionControllerTest,
-       StartWalletablePassDetectionFlow_NotEligible_NotAllowedCountryCode) {
+       StartWalletablePassDetectionFlow_NotEligible_UrlNotAollowlisted) {
   test_identity_environment().MakePrimaryAccountAvailable(
       "test@gmail.com", signin::ConsentLevel::kSignin);
   GURL url("https://example.com");
   EXPECT_CALL(mock_decider(),
               CanApplyOptimization(
                   url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
-      .WillOnce(Return(kTrue));
+      .WillOnce(Return(kFalse));
+
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent).Times(0);
+  test_api(controller()).StartWalletablePassDetectionFlow(url);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       StartWalletablePassDetectionFlow_NotEligible_NotAllowedCountryCode) {
+  test_identity_environment().MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  GURL url("https://example.com");
 
   // Set country code to something not in allowlist (allowlist is US).
   EXPECT_CALL(mock_client(), GetGeoIpCountryCode)
@@ -346,10 +343,6 @@ TEST_F(WalletablePassIngestionControllerTest,
 TEST_F(WalletablePassIngestionControllerTest,
        StartWalletablePassDetectionFlow_NotEligible_NotSignedIn) {
   GURL url("https://example.com");
-  EXPECT_CALL(mock_decider(),
-              CanApplyOptimization(
-                  url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
-      .WillOnce(Return(kTrue));
 
   EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble).Times(0);
   EXPECT_CALL(*controller(), GetAnnotatedPageContent).Times(0);

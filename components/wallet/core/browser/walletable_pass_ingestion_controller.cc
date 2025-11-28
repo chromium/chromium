@@ -59,13 +59,13 @@ void WalletablePassIngestionController::RegisterOptimizationTypes() {
 
 void WalletablePassIngestionController::StartWalletablePassDetectionFlow(
     const GURL& url) {
-  std::optional<PassCategory> pass_category = GetPassCategoryForURL(url);
-  if (!pass_category) {
+  if (!IsEligibleForWalletablePassDetection(client_->GetIdentityManager(),
+                                            client_->GetGeoIpCountryCode())) {
     return;
   }
 
-  if (!IsEligibleForWalletablePassDetection(client_->GetIdentityManager(),
-                                            client_->GetGeoIpCountryCode())) {
+  std::optional<PassCategory> pass_category = GetPassCategoryForURL(url);
+  if (!pass_category) {
     return;
   }
 
