@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
 
 #include <dawn/native/DawnNative.h>
@@ -16,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -110,11 +106,11 @@ class IOSurfaceImageBackingFactoryTest : public SharedImageTestBase {
 
     for (int i = 0; i < num_pixels; i++) {
       // Compare the pixel values.
-      const uint8_t* pixel = dst_pixels.data() + (i * 4);
+      const uint8_t* pixel = UNSAFE_TODO(dst_pixels.data() + (i * 4));
       EXPECT_EQ(pixel[0], expected_color[0]);
-      EXPECT_EQ(pixel[1], expected_color[1]);
-      EXPECT_EQ(pixel[2], expected_color[2]);
-      EXPECT_EQ(pixel[3], expected_color[3]);
+      UNSAFE_TODO(EXPECT_EQ(pixel[1], expected_color[1]));
+      UNSAFE_TODO(EXPECT_EQ(pixel[2], expected_color[2]));
+      UNSAFE_TODO(EXPECT_EQ(pixel[3], expected_color[3]));
     }
   }
 };

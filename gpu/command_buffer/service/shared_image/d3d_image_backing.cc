@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 
 #include <d3d11_3.h>
 #include <wrl/client.h>
+
+#include "base/compiler_specific.h"
 
 // clang-format off
 #include <dawn/native/D3D11Backend.h>
@@ -85,7 +82,8 @@ bool CanUseUpdateSubresource(const std::vector<SkPixmap>& pixmaps) {
   for (size_t i = 1; i < pixmaps.size(); ++i) {
     // UpdateSubresource() cannot update planes individually, so the planes'
     // data has to be packed in one memory block.
-    if (static_cast<const uint8_t*>(pixmaps[i].addr()) != addr + plane_offset) {
+    if (static_cast<const uint8_t*>(pixmaps[i].addr()) !=
+        UNSAFE_TODO(addr + plane_offset)) {
       return false;
     }
     plane_offset += pixmaps[i].computeByteSize();
@@ -664,7 +662,7 @@ bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
     const size_t source_stride = pixmap.rowBytes();
 
     uint8_t* dest_memory =
-        static_cast<uint8_t*>(mapped_resource.pData) + dest_offset;
+        UNSAFE_TODO(static_cast<uint8_t*>(mapped_resource.pData) + dest_offset);
     const size_t dest_stride = mapped_resource.RowPitch;
 
     gfx::Size plane_size = format().GetPlaneSize(plane, size());
@@ -717,8 +715,8 @@ bool D3DImageBacking::ReadbackFromStagingTexture(
     uint8_t* dest_memory = static_cast<uint8_t*>(pixmap.writable_addr());
     const size_t dest_stride = pixmap.rowBytes();
 
-    const uint8_t* source_memory =
-        static_cast<uint8_t*>(mapped_resource.pData) + source_offset;
+    const uint8_t* source_memory = UNSAFE_TODO(
+        static_cast<uint8_t*>(mapped_resource.pData) + source_offset);
     const size_t source_stride = mapped_resource.RowPitch;
 
     gfx::Size plane_size = format().GetPlaneSize(plane, size());
@@ -1250,8 +1248,8 @@ void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
   if (use_cross_device_fence_synchronization()) {
     auto& cached_fences = dawn_signaled_fences_map_[device.Get()];
     for (size_t i = 0; i < end_state.fenceCount; ++i) {
-      auto& signaled_value = end_state.signaledValues[i];
-      auto& fence = end_state.fences[i];
+      auto& signaled_value = UNSAFE_TODO(end_state.signaledValues[i]);
+      auto& fence = UNSAFE_TODO(end_state.fences[i]);
       wgpu::SharedFenceDXGISharedHandleExportInfo shared_handle_info;
       wgpu::SharedFenceExportInfo export_info;
       export_info.nextInChain = &shared_handle_info;
@@ -1641,8 +1639,8 @@ void D3DImageBacking::EndAccessDawnBuffer(const wgpu::Device& device,
   D3DSharedFenceSet signaled_fences;
   signaled_fences.reserve(end_state.fenceCount);
   for (size_t i = 0; i < end_state.fenceCount; ++i) {
-    auto& signaled_value = end_state.signaledValues[i];
-    auto& fence = end_state.fences[i];
+    auto& signaled_value = UNSAFE_TODO(end_state.signaledValues[i]);
+    auto& fence = UNSAFE_TODO(end_state.fences[i]);
     wgpu::SharedFenceDXGISharedHandleExportInfo shared_handle_info;
     wgpu::SharedFenceExportInfo export_info;
     export_info.nextInChain = &shared_handle_info;

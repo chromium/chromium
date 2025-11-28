@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing.h"
 
 #include <utility>
@@ -14,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
@@ -1057,7 +1053,8 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
     std::vector<SkPixmap> pixmaps;
     for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
       auto& sk_image_info = plane_data[plane].image_info;
-      uint8_t* memory = cpu_buffer.data() + plane_data[plane].offset;
+      uint8_t* memory =
+          UNSAFE_TODO(cpu_buffer.data() + plane_data[plane]).offset;
       pixmaps.emplace_back(sk_image_info, memory, sk_image_info.minRowBytes());
 
       if (!gl_textures_[plane].ReadbackToMemory(pixmaps.back())) {
@@ -1089,7 +1086,8 @@ void ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
     std::vector<SkPixmap> pixmaps;
     for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
       auto& sk_image_info = plane_data[plane].image_info;
-      uint8_t* memory = cpu_buffer.data() + plane_data[plane].offset;
+      uint8_t* memory =
+          UNSAFE_TODO(cpu_buffer.data() + plane_data[plane]).offset;
       pixmaps.emplace_back(sk_image_info, memory, sk_image_info.minRowBytes());
     }
 
@@ -1154,7 +1152,8 @@ void ExternalVkImageBacking::
 
   for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
     auto& sk_image_info = plane_data[plane].image_info;
-    uint8_t* memory = static_cast<uint8_t*>(buffer) + plane_data[plane].offset;
+    uint8_t* memory =
+        UNSAFE_TODO(static_cast<uint8_t*>(buffer) + plane_data[plane]).offset;
     SkPixmap pixmap(sk_image_info, memory, sk_image_info.minRowBytes());
 
     if (!gl_textures_[plane].ReadbackToMemory(pixmap)) {
@@ -1322,7 +1321,8 @@ void ExternalVkImageBacking::
 
   for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
     auto& sk_image_info = plane_data[plane].image_info;
-    uint8_t* memory = static_cast<uint8_t*>(buffer) + plane_data[plane].offset;
+    uint8_t* memory =
+        UNSAFE_TODO(static_cast<uint8_t*>(buffer) + plane_data[plane]).offset;
     SkPixmap pixmap(sk_image_info, memory, sk_image_info.minRowBytes());
     if (!gl_textures_[plane].UploadFromMemory(pixmap)) {
       DLOG(ERROR) << "GL upload failed";

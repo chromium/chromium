@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
 
 #include <android/hardware_buffer.h>
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
@@ -325,9 +321,9 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, InitialData) {
   SkBitmap expected_bitmap;
   expected_bitmap.allocPixels(image_info);
 
-  base::span<uint8_t> pixel_span(
+  base::span<uint8_t> UNSAFE_TODO(pixel_span(
       static_cast<uint8_t*>(expected_bitmap.pixmap().writable_addr()),
-      expected_bitmap.computeByteSize());
+      expected_bitmap.computeByteSize()));
   for (size_t i = 0; i < pixel_span.size(); i++) {
     pixel_span[i] = static_cast<uint8_t>(i);
   }

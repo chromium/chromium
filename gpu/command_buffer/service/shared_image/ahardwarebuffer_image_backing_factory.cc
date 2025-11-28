@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
 
 #include <android/hardware_buffer.h>
@@ -20,6 +15,7 @@
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -967,10 +963,11 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     }
 
     for (size_t y = 0; y < height; y++) {
-      void* dst = reinterpret_cast<uint8_t*>(address) + dst_stride * y;
-      const void* src = pixel_data.data() + src_stride * y;
+      void* dst =
+          UNSAFE_TODO(reinterpret_cast<uint8_t*>(address) + dst_stride * y);
+      const void* src = UNSAFE_TODO(pixel_data.data() + src_stride * y);
 
-      memcpy(dst, src, src_stride);
+      UNSAFE_TODO(memcpy(dst, src, src_stride));
     }
 
     int32_t fence = -1;
@@ -1184,11 +1181,11 @@ bool AHardwareBufferImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
   const int src_uv_stride = desc.stride;
   const int dst_stride = desc.width;
 
-  int result =
-      libyuv::NV12Copy(src_y, src_y_stride, src_y + src_y_stride * desc.height,
-                       src_uv_stride, dst_buffer.data(), dst_stride,
-                       dst_buffer.subspan(desc.height * dst_stride).data(),
-                       dst_stride, desc.width, desc.height);
+  int result = libyuv::NV12Copy(
+      src_y, src_y_stride, UNSAFE_TODO(src_y + src_y_stride * desc.height),
+      src_uv_stride, dst_buffer.data(), dst_stride,
+      dst_buffer.subspan(desc.height * dst_stride).data(), dst_stride,
+      desc.width, desc.height);
 
   AHardwareBuffer_unlock(hardware_buffer, &fence);
   return result == 0;
