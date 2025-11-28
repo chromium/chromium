@@ -20,13 +20,12 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_web_contents.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
@@ -418,12 +417,7 @@ void ChromeKeyboardControllerClient::OnSessionStateChanged() {
   // virtual keyboard behavior on the login screen.
   pref_change_registrar_.reset();
 
-  auto* user = user_manager::UserManager::Get()->GetPrimaryUser();
-  Profile* profile = Profile::FromBrowserContext(
-      user != nullptr
-          ? ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user)
-          : ash::BrowserContextHelper::Get()->GetSigninBrowserContext());
-
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile->GetPrefs());
   pref_change_registrar_->Add(
@@ -471,14 +465,7 @@ Profile* ChromeKeyboardControllerClient::GetProfile() {
   // Always use the active profile for generating keyboard events so that any
   // virtual keyboard extensions associated with the active user are notified.
   // (Note: UI and associated extensions only exist for the active user).
-  auto* user = user_manager::UserManager::Get()->GetActiveUser();
-  if (user == nullptr) {
-    return Profile::FromBrowserContext(
-        ash::BrowserContextHelper::Get()->GetSigninBrowserContext());
-  }
-
-  return Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
+  return ProfileManager::GetActiveUserProfile();
 }
 
 gfx::Rect ChromeKeyboardControllerClient::BoundsFromScreen(
