@@ -31,6 +31,8 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_controller_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator+Testing.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller+Testing.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
@@ -679,4 +681,56 @@ TEST_F(NewTabPageCoordinatorTest, TestShowsAndHidesFeed) {
   EXPECT_EQ(fake_feed_view_controller_.parentViewController,
             coordinator_.feedWrapperViewController);
   [coordinator_ stop];
+}
+
+// Tests that stopping the coordinator while the customization menu is open
+// does NOT call `dismissAllSnackbars` if the SnackbarCommands dispatcher
+// is already stopped.
+TEST_F(NewTabPageCoordinatorTest,
+       StopCoordinatorDoesNotDismissSnackbarsIfDispatcherStopped) {
+  CreateCoordinator(/*off_the_record=*/false);
+  SetupCommandHandlerMocks();
+  [coordinator_ start];
+
+  // Open the customization menu by tapping on the customization button.
+  UIButton* customizationMenuButton =
+      coordinator_.headerViewController.headerView.customizationMenuButton;
+  [customizationMenuButton
+      sendActionsForControlEvents:UIControlEventTouchUpInside];
+
+  // Stop SnackbarCommands dispatching, simulating it was already stopped (e.g.,
+  // by browser shutdown).
+  [browser_.get()->GetCommandDispatcher()
+      stopDispatchingForProtocol:@protocol(SnackbarCommands)];
+
+  // Assert `dismissAllSnackbars` was never called.
+  OCMReject([snackbar_commands_handler_mock_ dismissAllSnackbars]);
+
+  // Stop the coordinator while the customization button is still opened.
+  [coordinator_ stop];
+}
+
+// Tests that stopping the coordinator while the customization menu is open
+// does call `dismissAllSnackbars` if the SnackbarCommands dispatcher
+// is started.
+TEST_F(NewTabPageCoordinatorTest,
+       StopCoordinatorDismissesSnackbarsIfDispatcherActive) {
+  CreateCoordinator(/*off_the_record=*/false);
+  SetupCommandHandlerMocks();
+  [coordinator_ start];
+
+  // Open the customization menu by tapping on the customization button.
+  UIButton* customizationMenuButton =
+      coordinator_.headerViewController.headerView.customizationMenuButton;
+  [customizationMenuButton
+      sendActionsForControlEvents:UIControlEventTouchUpInside];
+
+  // Expect dismissAllSnackbars to be called when coordinator stops.
+  OCMExpect([snackbar_commands_handler_mock_ dismissAllSnackbars]);
+
+  // Stop the coordinator while the customization button is still opened.
+  [coordinator_ stop];
+
+  // Assert `dismissAllSnackbars` was called.
+  EXPECT_OCMOCK_VERIFY(snackbar_commands_handler_mock_);
 }
