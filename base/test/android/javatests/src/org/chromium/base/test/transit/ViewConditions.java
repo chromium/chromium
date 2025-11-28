@@ -25,6 +25,7 @@ import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** {@link Condition}s related to Android {@link View}s. */
 @NullMarked
@@ -47,6 +48,7 @@ public class ViewConditions {
     public static class DisplayedCondition<ViewT extends View> extends ConditionWithResult<ViewT> {
         private final Matcher<View> mMatcher;
         private final Class<ViewT> mViewClass;
+        private final Supplier<@Nullable ActivityElement<?>> mActivityElementSupplier;
         private final Options mOptions;
         private int mPreviousViewX = Integer.MIN_VALUE;
         private int mPreviousViewY = Integer.MIN_VALUE;
@@ -55,10 +57,17 @@ public class ViewConditions {
         private long mLastChangeMs = -1;
         private @Nullable Root mMatchedRoot;
 
-        public DisplayedCondition(Matcher<View> matcher, Class<ViewT> viewClass, Options options) {
+        public DisplayedCondition(
+                Matcher<View> matcher,
+                Class<ViewT> viewClass,
+                Supplier<@Nullable ActivityElement<?>> activityElementSupplier,
+                Options options) {
             super(/* isRunOnUiThread= */ true);
             mMatcher = matcher;
             mViewClass = viewClass;
+            // Do not dependOnSupplier(activityElementSupplier) because a null supplied Activity is
+            // valid.
+            mActivityElementSupplier = activityElementSupplier;
             mOptions = options;
         }
 
@@ -97,10 +106,8 @@ public class ViewConditions {
             // more details later in this method.
             ArrayList<String> messages = new ArrayList<>();
 
-            assert mOwnerState != null : "No owner state, cannot be a Transition Condition";
-
+            ActivityElement<?> activityElement = mActivityElementSupplier.get();
             Activity activity;
-            ActivityElement<?> activityElement = mOwnerState.determineActivityElement();
             if (activityElement == null) {
                 // TODO(crbug.com/456768907): Allow this only for dialogs.
                 activity = null;

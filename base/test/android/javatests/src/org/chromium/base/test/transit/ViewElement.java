@@ -77,14 +77,21 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     public @Nullable ConditionWithResult<ViewT> createEnterCondition() {
         Matcher<View> viewMatcher = mViewSpec.getViewMatcher();
         DisplayedCondition.Options conditionOptions =
-                DisplayedCondition.newOptions()
-                        .withInDialogRoot(mOptions.mInDialog)
-                        .withExpectEnabled(mOptions.mExpectEnabled)
-                        .withExpectDisabled(mOptions.mExpectDisabled)
-                        .withDisplayingAtLeast(mOptions.mDisplayedPercentageRequired)
-                        .withSettleTimeMs(mOptions.mInitialSettleTimeMs)
-                        .build();
-        return new DisplayedCondition<>(viewMatcher, mViewSpec.getViewClass(), conditionOptions);
+                newDisplayedConditionOptions(mOptions).build();
+        return new DisplayedCondition<>(
+                viewMatcher,
+                mViewSpec.getViewClass(),
+                mOwner::determineActivityElement,
+                conditionOptions);
+    }
+
+    static DisplayedCondition.Options.Builder newDisplayedConditionOptions(Options options) {
+        return DisplayedCondition.newOptions()
+                .withInDialogRoot(options.mInDialog)
+                .withExpectEnabled(options.mExpectEnabled)
+                .withExpectDisabled(options.mExpectDisabled)
+                .withDisplayingAtLeast(options.mDisplayedPercentageRequired)
+                .withSettleTimeMs(options.mInitialSettleTimeMs);
     }
 
     @Override
@@ -133,7 +140,11 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
      * <p>Requires the View to be >90% displayed.
      */
     public TripBuilder clickTo() {
-        return performViewActionTo(ViewActions.click());
+        if (mOptions.mDisplayedPercentageRequired > 90) {
+            return performViewActionTo(ViewActions.click());
+        } else {
+            return performViewActionTo(ForgivingClickAction.forgivingClick());
+        }
     }
 
     /** Start a Transition by long pressing this View. */
@@ -150,7 +161,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         return performViewActionTo(ForgivingClickAction.forgivingClick());
     }
 
-    /** Start a Transition by typing |text| into this View. */
+    /** Start a Transition by typing |text| into this View char by char. */
     public TripBuilder typeTextTo(String text) {
         return new TripBuilder()
                 .withContext(this)

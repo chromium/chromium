@@ -103,6 +103,45 @@ public class Elements extends BaseElements {
             return declareView(viewSpec(viewClass, viewMatcher), options);
         }
 
+        /** See {@link ConditionalState#declareOptionalView(ViewSpec)}. */
+        public <ViewT extends View> OptionalViewElement<ViewT> declareOptionalView(
+                ViewSpec<ViewT> viewSpec) {
+            return declareOptionalView(viewSpec, ViewElement.Options.DEFAULT);
+        }
+
+        /** See {@link ConditionalState#declareView(ViewSpec, ViewElement.Options)}. */
+        public <ViewT extends View> OptionalViewElement<ViewT> declareOptionalView(
+                ViewSpec<ViewT> viewSpec, ViewElement.Options options) {
+            OptionalViewElement<ViewT> element = new OptionalViewElement<>(viewSpec, options);
+            return declareElement(element);
+        }
+
+        /** See {@link ConditionalState#declareOptionalView(Matcher)}. */
+        public OptionalViewElement<View> declareOptionalView(Matcher<View> viewMatcher) {
+            return declareOptionalView(viewSpec(viewMatcher), ViewElement.Options.DEFAULT);
+        }
+
+        /** See {@link ConditionalState#declareOptionalView(Matcher, ViewElement.Options)}. */
+        public OptionalViewElement<View> declareOptionalView(
+                Matcher<View> viewMatcher, ViewElement.Options options) {
+            return declareOptionalView(viewSpec(viewMatcher), options);
+        }
+
+        /** See {@link ConditionalState#declareOptionalView(Class, Matcher)}. */
+        public <ViewT extends View> OptionalViewElement<ViewT> declareOptionalView(
+                Class<ViewT> viewClass, Matcher<View> viewMatcher) {
+            return declareOptionalView(
+                    viewSpec(viewClass, viewMatcher), ViewElement.Options.DEFAULT);
+        }
+
+        /**
+         * See {@link ConditionalState#declareOptionalView(Class, Matcher, ViewElement.Options)}.
+         */
+        public <ViewT extends View> OptionalViewElement<ViewT> declareOptionalView(
+                Class<ViewT> viewClass, Matcher<View> viewMatcher, ViewElement.Options options) {
+            return declareOptionalView(viewSpec(viewClass, viewMatcher), options);
+        }
+
         /** See {@link ConditionalState#declareElementFactory(Element, Callback)}. */
         public void declareElementFactory(
                 Element<?> element, Callback<Elements.Builder> delayedDeclarations) {
@@ -159,6 +198,14 @@ public class Elements extends BaseElements {
 
         /** See {@link ConditionalState#declareElement(Element)}. */
         public <T extends Element<?>> T declareElement(T element) {
+            assertNotBuilt();
+            element.bind(mOwner.mOwnerState);
+            mElements.add(element);
+            return element;
+        }
+
+        /** See {@link ConditionalState#declareOptionalElement(Element)}. */
+        public <T extends Element<?>> T declareOptionalElement(T element) {
             assertNotBuilt();
             element.bind(mOwner.mOwnerState);
             mElements.add(element);
