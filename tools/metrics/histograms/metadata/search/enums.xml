@@ -289,27 +289,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinator.java:DialogSuppressionStatus) -->
 
-<!-- LINT.IfChange(PendingChoiceScreenDisplayStateStatus) -->
-
-<enum name="PendingChoiceScreenDisplayStateStatus">
-  <int value="0" label="ParseError">
-    Terminal state, the pending data seems corrupted and will be wiped
-  </int>
-  <int value="1" label="TimedOut">
-    Terminal state, the mismatch was not resolved within the time limit. The
-    pending data will be wiped
-  </int>
-  <int value="2" label="Uploaded">
-    Terminal state, the pending data was logged to metrics, the local cache will
-    be wiped
-  </int>
-  <int value="3" label="StayPending">
-    Intermediate state, the pending data processing will be re-attempted later
-  </int>
-</enum>
-
-<!-- LINT.ThenChange(//components/search_engines/search_engine_choice/search_engine_choice_service.cc:PendingDisplayStateStatus) -->
-
 <enum name="QueryTilesGroupPruneReason">
   <int value="0" label="Expired"/>
   <int value="1" label="InvalidLocale"/>

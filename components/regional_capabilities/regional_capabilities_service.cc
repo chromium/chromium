@@ -374,15 +374,6 @@ bool RegionalCapabilitiesService::
   return true;
 }
 
-bool RegionalCapabilitiesService::CanRecordDisplayStateForCountry(
-    CountryId display_state_country_id) {
-  // As the display state might be a proxy to pinpoint to a specific profile
-  // country, we only record it if this data would not add extra location info
-  // compared to what would be already present in the logs session (the metrics
-  // session's country is assume to be variations latest).
-  return display_state_country_id == client_->GetVariationsLatestCountryId();
-}
-
 bool RegionalCapabilitiesService::
     ShouldRecordSearchEngineChoicesMadeFromSettings() {
   return GetActiveProgramSettings()

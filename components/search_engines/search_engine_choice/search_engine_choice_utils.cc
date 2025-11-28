@@ -145,12 +145,6 @@ std::optional<ChoiceScreenDisplayState> ChoiceScreenDisplayState::FromDict(
     return std::nullopt;
   }
 
-  if (!parsed_country_id->IsValid()) {
-    // Should never happen if a choice screen was shown. The triggering logic
-    // ensures this is not possible.
-    return std::nullopt;
-  }
-
   std::vector<SearchEngineType> search_engines;
   for (const base::Value& search_engine_type : *parsed_search_engines) {
     search_engines.push_back(
