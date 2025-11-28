@@ -319,6 +319,14 @@ CreateInputDataFromAnnotatedPageContent(
 
   if (_composeboxQueryController) {
     _composeboxQueryController->DeleteFile(item.token);
+    if (base::FeatureList::IsEnabled(
+            omnibox::kComposeboxUsesChromeComposeClient) &&
+        _items.count <= 1) {
+      // Reload suggestions to reflect the updated context. This is done only
+      // when there is one or no attachment, as multi-attachment contextual
+      // suggestions are not currently supported.
+      [self.delegate reloadAutocompleteSuggestions];
+    }
   }
 
   if (base::FeatureList::IsEnabled(kComposeboxAutoattachTab) &&
@@ -654,7 +662,10 @@ CreateInputDataFromAnnotatedPageContent(
       [self removeItem:item];
       break;
     case contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady:
-      [self.delegate reloadAutocompleteSuggestions];
+      // Avoid reloading when suggest inputs are invalid (e.g. empty).
+      if (AreLensSuggestInputsReady([self suggestInputs])) {
+        [self.delegate reloadAutocompleteSuggestions];
+      }
       break;
     case contextual_search::FileUploadStatus::kNotUploaded:
     case contextual_search::FileUploadStatus::kProcessing:
@@ -972,9 +983,6 @@ CreateInputDataFromAnnotatedPageContent(
           recordAiModeActivationSource:AiModeActivationSource::kImplicit];
     }
     [self.consumer setAIModeEnabled:YES];
-  } else if (base::FeatureList::IsEnabled(
-                 omnibox::kComposeboxUsesChromeComposeClient)) {
-    [self.delegate reloadAutocompleteSuggestions];
   }
 }
 
