@@ -282,6 +282,10 @@ class WebRequestProxyingURLLoaderFactory
     std::unique_ptr<FollowRedirectParams> pending_follow_redirect_params_;
     State state_ = State::kInProgress;
 
+    // Whether URLLoaderClient's OnReceiveResponse() has been called. It must be
+    // called at most once. It is added to debug crbug.com/463388771.
+    bool has_forwarded_response_ = false;
+
     // A task runner that should be used for the request when non-null. Non-null
     // when this was created for a navigation request.
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner_;

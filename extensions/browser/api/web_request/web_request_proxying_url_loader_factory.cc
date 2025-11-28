@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1251,6 +1252,13 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 
   WebRequestEventRouter::Get(factory_->browser_context_)
       ->OnResponseStarted(factory_->browser_context_, &info_.value(), net::OK);
+
+  // OnReceiveResponse() can be called at most once. This check is added to
+  // debug crbug.com/463388771.
+  SCOPED_CRASH_KEY_STRING1024("crbug463388771", "proxied_url",
+                              request_.url.spec());
+  CHECK(!has_forwarded_response_);
+  has_forwarded_response_ = true;
   target_client_->OnReceiveResponse(current_response_.Clone(),
                                     std::move(current_body_),
                                     std::move(current_cached_metadata_));
