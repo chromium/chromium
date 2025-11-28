@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <deque>
+#include <map>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -15,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/legion/attestation_handler.h"
 #include "components/legion/legion_common.h"
@@ -88,6 +90,9 @@ class SecureChannelImpl : public SecureChannel {
   std::deque<Request> pending_encryption_requests_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::vector<EstablishChannelCallback> pending_establishment_callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::map<State, base::TimeTicks> state_entry_times_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<SecureChannelImpl> weak_factory_

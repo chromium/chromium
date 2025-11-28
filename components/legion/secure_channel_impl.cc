@@ -11,7 +11,9 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/legion/attestation_handler.h"
 #include "components/legion/legion_common.h"
@@ -164,12 +166,21 @@ void SecureChannelImpl::OnAttestationResponse(
   // Step 2: Verify Attestation Response
   if (!attestation_handler_->VerifyAttestationResponse(response)) {
     DLOG(ERROR) << "Attestation verification failed.";
+    base::UmaHistogramMediumTimes(
+        "Legion.SecureChannel.SendAttestationRequestLatency.Error",
+        base::TimeTicks::Now() -
+            state_entry_times_[State::kPerformingAttestation]);
     FailAllRequestsAndClose(ErrorCode::kAttestationFailed);
     return;
   }
   DVLOG(1) << "Attestation verified successfully.";
+  base::UmaHistogramMediumTimes(
+      "Legion.SecureChannel.SendAttestationRequestLatency.Success",
+      base::TimeTicks::Now() -
+          state_entry_times_[State::kPerformingAttestation]);
 
   state_ = SecureChannelImpl::State::kWaitingHandshakeMessage;
+  state_entry_times_[state_] = base::TimeTicks::Now();
 
   // Step 3: Get and Send Handshake Request
   secure_session_->GetHandshakeMessage(base::BindOnce(
@@ -182,7 +193,13 @@ void SecureChannelImpl::OnHandshakeMessageReady(
 
   DCHECK_EQ(state_, State::kWaitingHandshakeMessage);
 
+  base::UmaHistogramMediumTimes(
+      "Legion.SecureChannel.GetHandshakeMessageLatency.Success",
+      base::TimeTicks::Now() -
+          state_entry_times_[State::kWaitingHandshakeMessage]);
+
   state_ = SecureChannelImpl::State::kPerformingHandshake;
+  state_entry_times_[state_] = base::TimeTicks::Now();
 
   DVLOG(1) << "Sending handshake request.";
   oak::session::v1::SessionRequest request;
@@ -211,10 +228,18 @@ void SecureChannelImpl::OnHandshakeVerification(bool handshake_verified) {
 
   if (!handshake_verified) {
     DLOG(ERROR) << "Failed to handle handshake response.";
+    base::UmaHistogramMediumTimes(
+        "Legion.SecureChannel.SendHandshakeRequestLatency.Error",
+        base::TimeTicks::Now() -
+            state_entry_times_[State::kPerformingHandshake]);
     FailAllRequestsAndClose(ErrorCode::kHandshakeFailed);
     return;
   }
   DVLOG(1) << "Handshake response handled successfully.";
+
+  base::UmaHistogramMediumTimes(
+      "Legion.SecureChannel.SendHandshakeRequestLatency.Success",
+      base::TimeTicks::Now() - state_entry_times_[State::kPerformingHandshake]);
 
   state_ = State::kEstablished;
 
@@ -262,15 +287,23 @@ void SecureChannelImpl::StartSessionEstablishment() {
          !pending_establishment_callbacks_.empty());
 
   // Step 1: Get and Send Attestation Request
+  auto get_attestation_start_time = base::TimeTicks::Now();
   std::optional<oak::session::v1::AttestRequest> attestation_req =
       attestation_handler_->GetAttestationRequest();
   if (!attestation_req.has_value()) {
     DLOG(ERROR) << "Failed to get attestation request.";
+    base::UmaHistogramMediumTimes(
+        "Legion.SecureChannel.GetAttestationRequestLatency.Error",
+        base::TimeTicks::Now() - get_attestation_start_time);
     FailAllRequestsAndClose(ErrorCode::kAttestationFailed);
     return;
   }
+  base::UmaHistogramMediumTimes(
+      "Legion.SecureChannel.GetAttestationRequestLatency.Success",
+      base::TimeTicks::Now() - get_attestation_start_time);
 
   state_ = State::kPerformingAttestation;
+  state_entry_times_[state_] = base::TimeTicks::Now();
   DVLOG(1) << "Sending attestation request.";
   oak::session::v1::SessionRequest request;
   *request.mutable_attest_request() = std::move(attestation_req.value());
