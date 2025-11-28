@@ -50,6 +50,8 @@ using testing::WithArg;
 
 using GetCredentialsDetails =
     optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails;
+using ParsedFormDetails =
+    optimization_guide::proto::ActorLoginQuality_ParsedFormDetails;
 
 namespace {
 
@@ -376,8 +378,8 @@ TEST_F(ActorLoginGetCredentialsHelperTest, UsernameAndPasswordFieldsVisible) {
       optimization_guide::proto::
           ActorLoginQuality_GetCredentialsDetails_PermissionDetails_NO_PERMANENT_PERMISSION);
   expected_details.set_getting_credentials_time_ms(0);
-  *expected_details.add_parsed_form_details() =
-      CreateExpectedFormDetails(saved_form);
+  *expected_details.add_parsed_form_details() = CreateExpectedLoginFormDetails(
+      saved_form, /*is_username_visible=*/true, /*is_password_visible=*/true);
 
   EXPECT_CALL(*mqls_logger(),
               SetGetCredentialsDetails(ProtoEquals(expected_details)));
@@ -448,8 +450,8 @@ TEST_F(ActorLoginGetCredentialsHelperTest, FieldsAreNotVisible) {
       optimization_guide::proto::
           ActorLoginQuality_GetCredentialsDetails_PermissionDetails_HAS_PERMANENT_PERMISSION);
   expected_details.set_getting_credentials_time_ms(0);
-  *expected_details.add_parsed_form_details() =
-      CreateExpectedFormDetails(saved_form);
+  *expected_details.add_parsed_form_details() = CreateExpectedLoginFormDetails(
+      saved_form, /*is_username_visible=*/false, /*is_password_visible=*/false);
 
   EXPECT_CALL(*mqls_logger(),
               SetGetCredentialsDetails(ProtoEquals(expected_details)));
@@ -592,25 +594,35 @@ TEST_F(ActorLoginGetCredentialsHelperTest, NestedFrameWithSameOrigin) {
 }
 
 TEST_F(ActorLoginGetCredentialsHelperTest, IgnoresSameSiteNestedFrame) {
-  base::test::ScopedFeatureList feature_list;
   const GURL same_site_url = GURL("https://login.foo.com");
   const url::Origin same_site_origin = url::Origin::Create(same_site_url);
+
   PasswordForm saved_form =
       CreatePasswordForm(same_site_url.spec(), u"user", u"pass");
+
+  // Populate form_data and renderer IDs so the expected proto matches the
+  // actual proto (which derives data from the PasswordFormManager).
+  saved_form.form_data = actor_login::CreateSigninFormData(same_site_url);
+  saved_form.username_element_renderer_id =
+      saved_form.form_data.fields()[0].renderer_id();
+  saved_form.password_element_renderer_id =
+      saved_form.form_data.fields()[1].renderer_id();
+
   client()->profile_store()->AddLogin(saved_form);
-  AddFormManager(
-      CreateFormManager(same_site_origin,
-                        /*is_in_main_frame=*/false,
-                        actor_login::CreateSigninFormData(same_site_url),
-                        client(), driver(), form_fetcher()));
+  AddFormManager(CreateFormManager(same_site_origin,
+                                   /*is_in_main_frame=*/false,
+                                   saved_form.form_data, client(), driver(),
+                                   form_fetcher()));
   form_fetcher()->SetBestMatches({saved_form});
 
   ON_CALL(driver(), IsDirectChildOfPrimaryMainFrame)
       .WillByDefault(Return(false));
 
   base::test::TestFuture<CredentialsOrError> future;
-  ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        mqls_logger(), future.GetCallback());
+  auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
+      kOrigin, client(), password_manager(), mqls_logger(),
+      future.GetCallback());
+
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
   ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
@@ -620,6 +632,26 @@ TEST_F(ActorLoginGetCredentialsHelperTest, IgnoresSameSiteNestedFrame) {
   const auto& credentials = future.Get().value();
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
+
+  GetCredentialsDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_NO_SIGN_IN_FORM);
+  expected_details.set_permission_details(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_PermissionDetails_NO_PERMANENT_PERMISSION);
+  expected_details.set_getting_credentials_time_ms(0);
+
+  optimization_guide::proto::ActorLoginQuality_ParsedFormDetails
+      saved_form_details;
+  *saved_form_details.mutable_form_data() = CreateExpectedFormData(saved_form);
+  saved_form_details.set_is_valid_frame_and_origin(false);
+  *expected_details.add_parsed_form_details() = saved_form_details;
+
+  EXPECT_CALL(*mqls_logger(),
+              SetGetCredentialsDetails(ProtoEquals(expected_details)));
+  // Destroy the helper, because it sends logs in the destructor.
+  helper.reset();
 }
 
 TEST_F(ActorLoginGetCredentialsHelperTest,
@@ -819,8 +851,8 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
       optimization_guide::proto::
           ActorLoginQuality_GetCredentialsDetails_PermissionDetails_HAS_PERMANENT_PERMISSION);
   expected_details.set_getting_credentials_time_ms(0);
-  *expected_details.add_parsed_form_details() =
-      CreateExpectedFormDetails(exact_match);
+  *expected_details.add_parsed_form_details() = CreateExpectedLoginFormDetails(
+      exact_match, /*is_username_visible=*/true, /*is_password_visible=*/true);
 
   EXPECT_CALL(*mqls_logger(),
               SetGetCredentialsDetails(ProtoEquals(expected_details)));

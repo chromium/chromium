@@ -20,12 +20,11 @@ using autofill::test::CreateTestFormField;
 using autofill::test::MakeFormRendererId;
 using password_manager::PasswordForm;
 
-optimization_guide::proto::ActorLoginQuality_ParsedFormDetails
-CreateExpectedFormDetails(const PasswordForm& form) {
-  optimization_guide::proto::ActorLoginQuality_ParsedFormDetails details;
-  auto* form_data_proto = details.mutable_form_data();
+optimization_guide::proto::ActorLoginQuality_FormData CreateExpectedFormData(
+    const PasswordForm& form) {
+  optimization_guide::proto::ActorLoginQuality_FormData form_data_proto;
 
-  form_data_proto->set_form_signature(
+  form_data_proto.set_form_signature(
       autofill::CalculateFormSignature(form.form_data).value());
 
   for (const auto& field : form.form_data.fields()) {
@@ -55,8 +54,26 @@ CreateExpectedFormDetails(const PasswordForm& form) {
           optimization_guide::proto::ActorLoginQuality_FormData_FieldData::
               UNKNOWN);
     }
-    *form_data_proto->add_field_data() = field_data;
+    *form_data_proto.add_field_data() = field_data;
   }
+
+  return form_data_proto;
+}
+
+optimization_guide::proto::ActorLoginQuality_ParsedFormDetails
+CreateExpectedLoginFormDetails(const PasswordForm& form,
+                               bool is_username_visible,
+                               bool is_password_visible,
+                               std::optional<int> async_check_time_ms) {
+  optimization_guide::proto::ActorLoginQuality_ParsedFormDetails details;
+  *details.mutable_form_data() = CreateExpectedFormData(form);
+
+  details.set_is_username_field_visible(is_username_visible);
+  details.set_is_password_field_visible(is_password_visible);
+  details.set_is_new_password_visible(false);
+  details.set_is_valid_frame_and_origin(true);
+  details.set_async_check_time_ms(async_check_time_ms.value_or(0));
+
   return details;
 }
 

@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/concurrent_callbacks.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -27,6 +28,7 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "url/origin.h"
 
 namespace {
@@ -56,39 +58,10 @@ bool IsLoginForm(const password_manager::PasswordForm& form) {
          !has_focusable_new_password;
 }
 
-enum class LoginFieldType {
-  kUsername,
-  kPassword,
-  kNewPassword,
-};
-
-bool OnLoginFormChecksDone(
-    std::vector<std::pair<LoginFieldType, bool>> results) {
-  bool is_username_visible = false;
-  bool is_password_visible = false;
-  bool is_new_password_visible = false;
-
-  for (const auto& [type, is_visible] : results) {
-    switch (type) {
-      case LoginFieldType::kUsername:
-        is_username_visible = is_visible;
-        break;
-      case LoginFieldType::kPassword:
-        is_password_visible = is_visible;
-        break;
-      case LoginFieldType::kNewPassword:
-        is_new_password_visible = is_visible;
-        break;
-    }
-  }
-
-  return (is_username_visible || is_password_visible) &&
-         !is_new_password_visible;
-}
-
 void OnCheckViewAreaVisibleFinished(
-    LoginFieldType type,
-    base::RepeatingCallback<void(std::pair<LoginFieldType, bool>)> barrier,
+    actor_login::LoginFieldType type,
+    base::RepeatingCallback<void(std::pair<actor_login::LoginFieldType, bool>)>
+        barrier,
     bool visible) {
   barrier.Run(std::make_pair(type, visible));
 }
@@ -157,6 +130,7 @@ bool IsValidFrameAndOriginToFill(
 
   bool is_same_origin =
       driver->GetLastCommittedOrigin().IsSameOriginWith(main_frame_origin);
+
   // We can fill a form if its frame context is considered safe and not overly
   // nested. A "fillable context" is either the primary main frame itself, or
   // a direct child of the primary main frame that is not a fenced frame.
@@ -171,6 +145,12 @@ void OnIsLoginFormAsyncFinished(
     bool is_login_form) {
   std::move(notify_concurrent_callback)
       .Run(std::make_pair(std::move(key), is_login_form));
+}
+
+int64_t ComputeRequestDurationForLogs(base::TimeTicks start_time) {
+  base::TimeDelta request_duration = base::TimeTicks::Now() - start_time;
+  return ukm::GetSemanticBucketMinForDurationTiming(
+      request_duration.InMilliseconds());
 }
 
 }  // namespace
@@ -278,13 +258,19 @@ void ActorLoginFormFinder::GetEligibleLoginFormManagersAsync(
       continue;
     }
 
-    if (!IsValidFrameAndOriginToFill(manager->GetDriver(), origin)) {
-      continue;
-    }
-
     if (!manager->GetParsedObservedForm()) {
       continue;
     }
+
+    if (!IsValidFrameAndOriginToFill(manager->GetDriver(), origin)) {
+      optimization_guide::proto::ActorLoginQuality_ParsedFormDetails
+          form_details;
+      SetFormData(form_details, *manager->GetParsedObservedForm());
+      form_details.set_is_valid_frame_and_origin(false);
+      parsed_forms_details_.emplace_back(std::move(form_details));
+      continue;
+    }
+
     candidate_managers.emplace_back(manager.get());
   }
 
@@ -321,6 +307,8 @@ void ActorLoginFormFinder::IsLoginFormAsync(
     const password_manager::PasswordForm& form,
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
     base::OnceCallback<void(bool)> callback) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
+
   if (!driver) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
@@ -329,9 +317,9 @@ void ActorLoginFormFinder::IsLoginFormAsync(
 
   optimization_guide::proto::ActorLoginQuality_ParsedFormDetails form_details;
   SetFormData(form_details, form);
-  // TODO(crbug.com/462393631): Append the log after the results for the async
-  // check are recorded.
-  parsed_forms_details_.emplace_back(std::move(form_details));
+  // This method should only be called for forms that are in a valid frame and
+  // origin so setting this to `true` is correct.
+  form_details.set_is_valid_frame_and_origin(true);
 
   // Add the fields to be checked.
   std::vector<std::pair<LoginFieldType, autofill::FieldRendererId>>
@@ -350,14 +338,16 @@ void ActorLoginFormFinder::IsLoginFormAsync(
   }
 
   if (fields_to_check.empty()) {
+    parsed_forms_details_.emplace_back(std::move(form_details));
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
-  // The final callback processes the aggregated results from the barrier.
   auto on_all_checks_done =
-      base::BindOnce(&OnLoginFormChecksDone).Then(std::move(callback));
+      base::BindOnce(&ActorLoginFormFinder::OnVisibilityChecksComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(form_details),
+                     start_time, std::move(callback));
 
   auto barrier = base::BarrierCallback<std::pair<LoginFieldType, bool>>(
       fields_to_check.size(), std::move(on_all_checks_done));
@@ -367,6 +357,44 @@ void ActorLoginFormFinder::IsLoginFormAsync(
         renderer_id,
         base::BindOnce(&OnCheckViewAreaVisibleFinished, type, barrier));
   }
+}
+
+void ActorLoginFormFinder::OnVisibilityChecksComplete(
+    optimization_guide::proto::ActorLoginQuality_ParsedFormDetails form_details,
+    base::TimeTicks start_time,
+    base::OnceCallback<void(bool)> callback,
+    std::vector<std::pair<LoginFieldType, bool>> results) {
+  bool is_username_visible = false;
+  bool is_password_visible = false;
+  bool is_new_password_visible = false;
+
+  for (const auto& [type, is_visible] : results) {
+    switch (type) {
+      case LoginFieldType::kUsername:
+        is_username_visible = is_visible;
+        break;
+      case LoginFieldType::kPassword:
+        is_password_visible = is_visible;
+        break;
+      case LoginFieldType::kNewPassword:
+        is_new_password_visible = is_visible;
+        break;
+    }
+  }
+
+  form_details.set_is_username_field_visible(is_username_visible);
+  form_details.set_is_password_field_visible(is_password_visible);
+  form_details.set_is_new_password_visible(is_new_password_visible);
+
+  // Calculate and record time
+  form_details.set_async_check_time_ms(
+      ComputeRequestDurationForLogs(start_time));
+  parsed_forms_details_.emplace_back(std::move(form_details));
+
+  bool is_login_form =
+      (is_username_visible || is_password_visible) && !is_new_password_visible;
+
+  std::move(callback).Run(is_login_form);
 }
 
 void ActorLoginFormFinder::OnAllEligibleChecksCompleted(

@@ -7,11 +7,13 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -54,6 +56,14 @@ struct FormFinderResult {
       parsed_forms_details;
 };
 
+// Class for field types that can be found in a form.
+// Defined here so it can be used by helper functions in the implementation.
+enum class LoginFieldType {
+  kUsername,
+  kPassword,
+  kNewPassword,
+};
+
 // Helper class to find all the login forms.
 class ActorLoginFormFinder {
  public:
@@ -92,10 +102,23 @@ class ActorLoginFormFinder {
                                          EligibleManagersCallback callback);
 
  private:
+  // Checks if the `PasswordForm` visible fields correspond to a login form.
+  // It should always be called for forms that are in a valid frame
+  // and origin.
   void IsLoginFormAsync(
       const password_manager::PasswordForm& form,
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
       base::OnceCallback<void(bool)> callback);
+
+  // Callback executed when the visibility checks for a specific form are done.
+  // It populates the `ParsedFormDetails`, records the timing, and replies to
+  // callback with whether the form is a login form.
+  void OnVisibilityChecksComplete(
+      optimization_guide::proto::ActorLoginQuality_ParsedFormDetails
+          form_details,
+      base::TimeTicks start_time,
+      base::OnceCallback<void(bool)> callback,
+      std::vector<std::pair<LoginFieldType, bool>> results);
 
   // Callback for when all candidate forms have been checked for eligibility.
   // It filters the candidates and passes the final eligible list to `callback`.
