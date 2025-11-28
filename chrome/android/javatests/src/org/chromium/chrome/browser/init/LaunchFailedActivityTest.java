@@ -19,6 +19,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -63,6 +64,8 @@ public class LaunchFailedActivityTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "crbug.com/464010980")
+    @DisableIf.Build(supported_abis_includes = "armeabi-v7a", message = "crbug.com/464010980")
     public void testLaunchFailedWithCallbackRaisesExceptionAndStartsActivity() {
         LibraryLoader.getInstance().resetForTesting();
 
