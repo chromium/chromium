@@ -4,6 +4,7 @@
 
 #include "base/sampling_heap_profiler/lock_free_bloom_filter.h"
 
+#include <math.h>
 #include <stdint.h>
 
 #include <memory>
@@ -22,6 +23,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace base {
 
@@ -107,6 +109,18 @@ TEST(LockFreeBloomFilterTest, SingleHash) {
   filter.SetFakeHashFunctionsForTesting(true);
   EXPECT_EQ(0, filter.CountBits());
 
+  // See the chart above the kAlpha definition for expected hash results.
+  EXPECT_EQ(filter.GetBitsForKey(reinterpret_cast<void*>(kAlfa)),
+            0x10'000);  // 2^16
+  EXPECT_EQ(filter.GetBitsForKey(reinterpret_cast<void*>(kBravo)),
+            0x20'000);  // 2^17
+  EXPECT_EQ(filter.GetBitsForKey(reinterpret_cast<void*>(kCharlie)),
+            0x40'000);  // 2^18
+  EXPECT_EQ(filter.GetBitsForKey(reinterpret_cast<void*>(kDelta)),
+            0x100'000'000);  // 2^32
+  EXPECT_EQ(filter.GetBitsForKey(reinterpret_cast<void*>(kEcho)),
+            0x10'000);  // 2^16
+
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kAlfa)));
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kBravo)));
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kCharlie)));
@@ -131,12 +145,28 @@ TEST(LockFreeBloomFilterTest, SingleHash) {
   EXPECT_TRUE(filter.MaybeContains(reinterpret_cast<void*>(kCharlie)));
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kDelta)));
   EXPECT_TRUE(filter.MaybeContains(reinterpret_cast<void*>(kEcho)));
+
+  // Reset to only kAlfa.
+  filter.AtomicSetBits(filter.GetBitsForKey(reinterpret_cast<void*>(kAlfa)));
+  EXPECT_EQ(filter.GetBitsForTesting(), 0x10'000);
 }
 
 TEST(LockFreeBloomFilterTest, MultiHash) {
   LockFreeBloomFilter filter(/*num_hash_functions=*/3);
   filter.SetFakeHashFunctionsForTesting(true);
   EXPECT_EQ(filter.CountBits(), 0);
+
+  // See the chart above the kAlpha definition for expected hash results.
+  EXPECT_EQ(filter.GetBitsForKey(reinterpret_cast<void*>(kAlfa)),
+            0x10'110);  // 2^16 | 2^8 | 2^4
+  EXPECT_EQ(filter.GetBitsForKey(reinterpret_cast<void*>(kBravo)),
+            0x20'110);  // 2^17 | 2^8 | 2^4
+  EXPECT_EQ(filter.GetBitsForKey(reinterpret_cast<void*>(kCharlie)),
+            0x40'210);  // 2^18 | 2^9 | 2^4
+  EXPECT_EQ(filter.GetBitsForKey(reinterpret_cast<void*>(kDelta)),
+            0x100'010'100);  // 2^32 | 2^16 | 2^8
+  EXPECT_EQ(filter.GetBitsForKey(reinterpret_cast<void*>(kEcho)),
+            0x10'000'110'000);  // 2^16 | 2^40 | 2^20
 
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kAlfa)));
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kBravo)));
@@ -169,6 +199,10 @@ TEST(LockFreeBloomFilterTest, MultiHash) {
   EXPECT_TRUE(filter.MaybeContains(reinterpret_cast<void*>(kCharlie)));
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kDelta)));
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kEcho)));
+
+  // Reset to only kAlfa.
+  filter.AtomicSetBits(filter.GetBitsForKey(reinterpret_cast<void*>(kAlfa)));
+  EXPECT_EQ(filter.GetBitsForTesting(), 0x10'110);  // 2^16 | 2^8 | 2^4
 }
 
 TEST(LockFreeBloomFilterTest, FalsePositivesWithSingleBitFilterCollisions) {
@@ -201,7 +235,7 @@ TEST(LockFreeBloomFilterTest, FalsePositivesWithSingleBitFilterCollisions) {
 TEST(LockFreeBloomFilterTest, EverythingMatches) {
   // Provide filter data with all bits set ON.
   LockFreeBloomFilter filter(/*num_hash_functions=*/7);
-  filter.SetBitsForTesting(static_cast<LockFreeBloomFilter::BitStorage>(-1));
+  filter.AtomicSetBits(static_cast<LockFreeBloomFilter::BitStorage>(-1));
 
   EXPECT_TRUE(filter.MaybeContains(reinterpret_cast<void*>(kAlfa)));
   EXPECT_TRUE(filter.MaybeContains(reinterpret_cast<void*>(kBravo)));
@@ -272,7 +306,26 @@ TEST(LockFreeBloomFilterTest, ConcurrentAccess) {
       // Don't starve the writer threads.
       PlatformThread::YieldCurrentThread();
     }
-    filter.SetBitsForTesting(0u);
+    filter.AtomicSetBits(0u);
+  }
+}
+
+TEST(LockFreeBloomFilterTest, IndependentHashes) {
+  LockFreeBloomFilter filter(3);
+
+  std::vector<void*> ptrs;
+  absl::Cleanup free_on_exit = [&ptrs] {
+    for (void* ptr : ptrs) {
+      free(ptr);
+    }
+  };
+
+  absl::flat_hash_set<LockFreeBloomFilter::BitStorage> bit_patterns;
+  for (int i = 1; i <= 1000; ++i) {
+    ptrs.push_back(malloc(64));
+    bit_patterns.insert(filter.GetBitsForKey(ptrs.back()));
+    ASSERT_GE(bit_patterns.size(), floor(i * 0.8))
+        << i << " keys, " << bit_patterns.size() << " distinct bit patterns";
   }
 }
 

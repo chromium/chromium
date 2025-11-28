@@ -115,36 +115,66 @@ void LockFreeAddressHashSet::Insert(void* key) {
   // and freeing an invalid pointer is undefined behaviour that makes the memory
   // stats unreliable anyway.
   //
-  // When the Bloom filter is used, Insert() and Contains() are no longer
-  // atomic. They each access `filter_` and `buckets_` in separate atomic
+  // On Remove() the situation is similar: in a well-behaved program only one
+  // thread can be calling the free hook with a given pointer. However a
+  // double free can cause two threads to racily call the free hook with the
+  // same pointer. One will call Remove(), which can race with the other calling
+  // Contains(). If it sees the state after Remove(), Contains(key) returns
+  // kNotFound and the free is ignored. If it sees the state before Remove(),
+  // Contains(key) returns kFound and the profiler incorrectly records that the
+  // memory was freed a second time. (This is ok because a double free is
+  // undefined behaviour that makes the memory stats unreliable anyway.) Then it
+  // calls Remove(), enters it after the first thread releases the lock, and
+  // hits a DCHECK since the key is no longer in the set.
+  //
+  // When the Bloom filter is used, Insert() / Remove() and Contains() are no
+  // longer atomic. They each access `filter_` and `buckets_` in separate atomic
   // operations. This is safe because the possible outcomes don't change:
   //
-  // When thread T1 races to look up `key` while thread T2 inserts it, T1 calls
-  // filter_.MaybeContains(key), then only if MaybeContains returned true,
-  // searches `buckets_` with FindNode(key). Meanwhile in T2, `filter_` and
-  // `buckets_` can be updated in either order due to code reordering, and T1
-  // can run between the updates. The possible states observed by T1 are
-  // summarized in the following table.
+  // When thread T1 races to look up `key` while thread T2 inserts or removes
+  // it, T1 calls filter_.MaybeContains(key), then only if MaybeContains
+  // returned true, searches `buckets_` with FindNode(key). Meanwhile in T2,
+  // `filter_` and `buckets_` can be updated in either order due to code
+  // reordering, and T1 can run between the updates.
+  //
+  // The possible states observed by T1 are summarized in the following table.
   //
   // MaybeContains | FindNode     | Causes
   // --------------+--------------+---------------------------------------------
-  // False         | undefined    | T1 sees state before Insert() call (FindNode
-  //               | (not called) |   would return null)
-  //               |              | T1 sees update to `buckets_` but not
-  //               |              |   `filter_` (FindNode would return non-null)
+  // False         | undefined    | T1 sees state before Insert or after Remove
+  //               | (not called) |   (FindNode would return null)
+  //               |              | T1 sees Insert's update to add `key` to
+  //               |              |   `buckets_`, but not the update to set the
+  //               |              |   `key` bits in `filter_` (FindNode would
+  //               |              |   return non-null)
+  //               |              | T1 sees Remove's update to reset `filter_`
+  //               |              |   without the `key` bits, but not the update
+  //               |              |   to delete `key` from `buckets_` (FindNode
+  //               |              |   would return non-null)
   // --------------+--------------+---------------------------------------------
-  // True          | NULL         | T1 sees state before Insert() call, with a
-  //               |              |   false positive in `filter_`
-  //               |              | T1 sees update to `filter_` but not
-  //               |              |   `buckets_`
+  // True          | NULL         | T1 sees state before Insert or after Remove,
+  //               |              |   with a false positive in `filter_`
+  //               |              | T1 sees Insert's update to set the `key`
+  //               |              |   bits in `filter_`, but not the update to
+  //               |              |   add `key` to `buckets_`
+  //               |              | T1 sees Remove's update to delete `key` from
+  //               |              |   `buckets_`, but not the update to reset
+  //               |              |   `filter_` without the `key` bits
   // --------------+--------------+---------------------------------------------
-  // True          | non-NULL     | T1 sees state after Insert() call
-  //               |              | T1 sees update to `buckets_` but not
-  //               |              |   `filter_`, which had a false positive
+  // True          | non-NULL     | T1 sees state after Insert or before Remove
+  //               |              | T1 sees Insert's update to add `key` to
+  //               |              |   `buckets_`, but not the update to set the
+  //               |              |   `key` bits in `filter_`; however a false
+  //               |              |    positive already set those bits
+  //               |              | T1 sees Remove's update to reset `filter_`
+  //               |              |    without the `key` bits, but not the
+  //               |              |    update to delete `key` from `buckets_`;
+  //               |              |    however a false positive left the bits
+  //               |              |    set after the reset
   //
   // Each of the 3 states that could be seen by T1 due to unsynchronized updates
-  // of `filter_` and `buckets_` could already be seen by T1 if the updates
-  // were sequentially consistent.
+  // of `filter_` and `buckets_` could already be seen by T1 if the updates were
+  // sequentially consistent.
   if (filter_) {
     filter_->Add(key);
   }
@@ -206,6 +236,21 @@ LockFreeAddressHashSet::BucketStats LockFreeAddressHashSet::GetBucketStats()
     key_counts.push_back(key_count);
   }
   return BucketStats(std::move(lengths), ChiSquared(key_counts));
+}
+
+void LockFreeAddressHashSet::RebuildFilter() {
+  DCHECK(filter_);
+  lock_->AssertAcquired();
+  LockFreeBloomFilter::BitStorage bits = 0;
+  for (const std::atomic<Node*>& bucket : buckets_) {
+    for (const Node* node = bucket.load(std::memory_order_relaxed); node;
+         node = node->next) {
+      if (void* key = node->key.load(std::memory_order_relaxed)) {
+        bits |= filter_->GetBitsForKey(key);
+      }
+    }
+  }
+  filter_->AtomicSetBits(bits);
 }
 
 LockFreeAddressHashSet::BucketStats::BucketStats(std::vector<size_t> lengths,

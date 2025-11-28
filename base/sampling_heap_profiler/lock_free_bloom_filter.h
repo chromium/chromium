@@ -111,11 +111,14 @@ class BASE_EXPORT LockFreeBloomFilter {
   // MaybeContains(ptr) will always return true.
   void Add(void* ptr);
 
+  // Atomically overwrites the bloom filter with `bits`.
+  void AtomicSetBits(BitStorage bits);
+
+  // Returns the bits corresponding to `ptr` in this Bloom filter.
+  BitStorage GetBitsForKey(void* ptr) const;
+
   // Returns the bit array data of this Bloom filter as an integer.
   BitStorage GetBitsForTesting() const;
-
-  // Sets the bits to a fixed value for testing.
-  void SetBitsForTesting(const BitStorage& bits);
 
   // If called with `true`, hashing a key with hash function N will shift the
   // key N bits to the right, allowing the test to precisely control how keys

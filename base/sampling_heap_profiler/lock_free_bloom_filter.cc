@@ -7,10 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <atomic>
 #include <bitset>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 
 namespace base {
@@ -24,8 +26,10 @@ ALWAYS_INLINE LockFreeBloomFilter::BitStorage CreateBitmask(
   LockFreeBloomFilter::BitStorage bitmask = 0;
   const uintptr_t int_ptr = reinterpret_cast<uintptr_t>(ptr);
   for (size_t i = 0; i < num_hash_functions; ++i) {
-    const size_t hash =
-        use_fake_hash_functions ? (int_ptr >> i) : base::HashInts(int_ptr, i);
+    std::array<uintptr_t, 2> hash_input{int_ptr, i};
+    const size_t hash = use_fake_hash_functions
+                            ? (int_ptr >> i)
+                            : base::FastHash(base::as_byte_span(hash_input));
     // Make sure the argument of << is the same type as `bitmask` to avoid
     // undefined behaviour on overflow if size_t is narrower.
     static constexpr LockFreeBloomFilter::BitStorage kOneBit = 1;
@@ -54,12 +58,20 @@ void LockFreeBloomFilter::Add(void* ptr) {
   bits_.fetch_or(bitmask, std::memory_order_relaxed);
 }
 
-LockFreeBloomFilter::BitStorage LockFreeBloomFilter::GetBitsForTesting() const {
-  return bits_.load(std::memory_order_relaxed);
+void LockFreeBloomFilter::AtomicSetBits(BitStorage bits) {
+  // memory_order_relaxed is sufficient because this function only guarantees
+  // that `bits_` is updated atomically. If the caller has other data depending
+  // on `bits_`, it's up to them to enforce ordering.
+  bits_.store(bits, std::memory_order_relaxed);
 }
 
-void LockFreeBloomFilter::SetBitsForTesting(const BitStorage& bits) {
-  bits_.store(bits, std::memory_order_relaxed);
+LockFreeBloomFilter::BitStorage LockFreeBloomFilter::GetBitsForKey(
+    void* ptr) const {
+  return CreateBitmask(ptr, num_hash_functions_, use_fake_hash_functions_);
+}
+
+LockFreeBloomFilter::BitStorage LockFreeBloomFilter::GetBitsForTesting() const {
+  return bits_.load(std::memory_order_relaxed);
 }
 
 size_t LockFreeBloomFilter::CountBits() const {

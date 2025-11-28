@@ -159,6 +159,9 @@ class BASE_EXPORT LockFreeAddressHashSet {
   // Returns the hash of `key`.
   ALWAYS_INLINE static uint32_t Hash(void* key);
 
+  // Resets the bloom filter to exactly match the contents of the set.
+  void RebuildFilter();
+
   raw_ref<Lock> lock_;
 
   std::vector<std::atomic<Node*>> buckets_;
@@ -191,8 +194,15 @@ ALWAYS_INLINE void LockFreeAddressHashSet::Remove(void* key) {
   // Instead we just mark it as empty, so |Insert| can reuse it later.
   node->key.store(nullptr, std::memory_order_relaxed);
   --size_;
-  // Keys can't be removed from the bloom filter. Old keys will be cleared out
-  // when the hash set is resized.
+
+  // Keys can't be removed from the bloom filter, so rebuild it from scratch to
+  // keep the false positive rate as low as possible. The overhead of rebuilding
+  // the filter on every delete is acceptable because adding and removing keys
+  // is extremely rare compared to looking them up. (See the comment in Insert()
+  // explaining why this is thread-safe.)
+  if (filter_) {
+    RebuildFilter();
+  }
 }
 
 ALWAYS_INLINE LockFreeAddressHashSet::Node* LockFreeAddressHashSet::FindNode(
