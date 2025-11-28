@@ -599,13 +599,25 @@ class OmniboxPedalManageAddresses : public OmniboxPedal {
 class OmniboxPedalManageSync : public OmniboxPedal {
  public:
   OmniboxPedalManageSync()
-      : OmniboxPedal(
-            OmniboxPedalId::MANAGE_SYNC,
-            LabelStrings(IDS_OMNIBOX_PEDAL_MANAGE_SYNC_HINT,
-                         IDS_OMNIBOX_PEDAL_MANAGE_SYNC_SUGGESTION_CONTENTS,
-                         IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_SUFFIX,
-                         IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC),
-            GURL("chrome://settings/syncSetup/advanced")) {}
+      : OmniboxPedal(OmniboxPedalId::MANAGE_SYNC,
+                     GetLabelStrings(),
+                     GURL("chrome://settings/syncSetup/advanced")) {}
+
+  static LabelStrings GetLabelStrings() {
+#if !BUILDFLAG(IS_CHROMEOS)
+    if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+      return LabelStrings(
+          IDS_OMNIBOX_PEDAL_MANAGE_SYNC_HINT_UPDATED,
+          IDS_OMNIBOX_PEDAL_MANAGE_SYNC_SUGGESTION_CONTENTS_UPDATED,
+          IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_SUFFIX_UPDATED,
+          IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_UPDATED);
+    }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+    return LabelStrings(IDS_OMNIBOX_PEDAL_MANAGE_SYNC_HINT,
+                        IDS_OMNIBOX_PEDAL_MANAGE_SYNC_SUGGESTION_CONTENTS,
+                        IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_SUFFIX,
+                        IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC);
+  }
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
