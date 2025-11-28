@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/favicon/core/favicon_backend_delegate.h"
 #include "components/favicon/core/favicon_database.h"
+#include "components/favicon/core/favicon_types.h"
 #include "components/favicon_base/favicon_util.h"
 #include "components/favicon_base/select_favicon_frames.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -690,16 +691,27 @@ FaviconBackend::GetFaviconsFromDB(const GURL& page_url,
     fallback_to_host_attempted = true;
     std::optional<GURL> fallback_page_url;
 
-    if (base::FeatureList::IsEnabled(kUseLastVisitedFallbackURLFavicon)) {
-      url::Origin page_origin = url::Origin::Create(page_url);
-      fallback_page_url =
-          delegate_->GetMostRecentlyVisitedURLForOrigin(page_origin);
-    } else {
-      // We didn't find any matches, and the caller requested falling back to
-      // the host of `page_url` for fuzzy matching. Query the database for a
-      // page_url that is known to exist and matches the host of `page_url`. Do
-      // this only if we have a HTTP/HTTPS url.
-      fallback_page_url = db_->FindBestPageURLForHost(page_url, icon_types);
+    // We didn't find any matches, and the caller passed `fallback_to_host` to
+    // request to fall back to the host of `page_url` for fuzzy matching. Query
+    // the database for a page_url that is known to exist and matches the host
+    // of `page_url`. Do this only if we have a HTTP/HTTPS url.
+    std::optional<std::pair<GURL, PageUrlType>> fallback_for_host =
+        db_->FindBestPageURLForHost(page_url, icon_types);
+
+    if (fallback_for_host.has_value()) {
+      // If the fallback URL is for a redirect, then use the last visited URL
+      // as a final fallback.
+      // FindBestPageURLForHost() prioritizes page URLs that are not redirects.
+      // Therefore, if the fallback it returns is a redirect, then all page
+      // visits to the host are redirects.
+      if (fallback_for_host->second == PageUrlType::kRedirect &&
+          base::FeatureList::IsEnabled(kUseLastVisitedFallbackURLFavicon)) {
+        url::Origin page_origin = url::Origin::Create(page_url);
+        fallback_page_url =
+            delegate_->GetMostRecentlyVisitedURLForOrigin(page_origin);
+      } else {
+        fallback_page_url = fallback_for_host->first;
+      }
     }
 
     if (fallback_page_url) {

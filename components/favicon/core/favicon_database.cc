@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "components/database_utils/upper_bound_string.h"
 #include "components/database_utils/url_converter.h"
+#include "components/favicon/core/favicon_types.h"
 #include "components/favicon_base/favicon_types.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
@@ -732,7 +733,8 @@ bool FaviconDatabase::GetIconMappingsForPageURL(
   return result;
 }
 
-std::optional<GURL> FaviconDatabase::FindBestPageURLForHost(
+std::optional<std::pair<GURL, PageUrlType>>
+FaviconDatabase::FindBestPageURLForHost(
     const GURL& url,
     const favicon_base::IconTypeSet& required_icon_types) {
   if (url.GetHost().empty()) {
@@ -745,7 +747,8 @@ std::optional<GURL> FaviconDatabase::FindBestPageURLForHost(
   CHECK_EQ(PageUrlType::kRedirect, PageUrlType::kMaxValue);
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE,
-                             "SELECT icon_mapping.page_url, favicons.icon_type "
+                             "SELECT icon_mapping.page_url, "
+                             "favicons.icon_type, icon_mapping.page_url_type "
                              "FROM icon_mapping "
                              "INNER JOIN favicons "
                              "ON icon_mapping.icon_id = favicons.id "
@@ -770,8 +773,11 @@ std::optional<GURL> FaviconDatabase::FindBestPageURLForHost(
     favicon_base::IconType icon_type =
         FaviconDatabase::FromPersistedIconType(statement.ColumnInt(1));
 
-    if (required_icon_types.count(icon_type) != 0)
-      return std::make_optional(GURL(statement.ColumnStringView(0)));
+    if (required_icon_types.count(icon_type) != 0) {
+      return std::make_optional(std::make_pair(
+          GURL(statement.ColumnStringView(0)),
+          FaviconDatabase::FromPersistedPageUrlType(statement.ColumnInt64(2))));
+    }
   }
   return std::nullopt;
 }

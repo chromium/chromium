@@ -78,6 +78,11 @@ class FaviconBackendTest : public testing::Test, public FaviconBackendDelegate {
     return most_recently_visited_url_for_origin_;
   }
 
+  void CacheRedirect(const GURL& from_page_url, const GURL& to_page_url) {
+    recent_redirects_.Put(to_page_url,
+                          std::vector<GURL>{from_page_url, to_page_url});
+  }
+
  protected:
   void SetMostRecentlyVisitedURLForOrigin(const GURL& url) {
     most_recently_visited_url_for_origin_ = url;
@@ -1306,30 +1311,91 @@ TEST_F(FaviconBackendTest, GetFaviconsForUrlFallbackToHost) {
   }
 }
 
-// Test that GetFaviconsForUrl() behaves correctly when the origin fallback
-// feature is enabled.
-TEST_F(FaviconBackendTest, GetFaviconsForUrlFallbackToOrigin) {
+// Test that GetFaviconsForUrl() falls back to the most recently visited URL for
+// an origin if the fallback candidates for the host are redirects.
+TEST_F(FaviconBackendTest, GetFaviconsForUrlFallbackToOriginOnRedirectOnly) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kUseLastVisitedFallbackURLFavicon);
 
-  const GURL page_url_http("http://www.google.com/maps");
-  const GURL page_url_https("https://www.google.com/");
-  const GURL icon_url("https://www.google.com/icon.png");
+  const GURL kRedirectorPageNotInDatabase(
+      "http://www.redirector.com/not_in_database");
+  const GURL kRedirectorPageUrl1("http://www.redirector.com/1");
+  const GURL kRedirectorPageUrl2("http://www.redirector.com/2");
+  const GURL kRedirectorPageUrl1Target("http://www.google.com/1");
+  const GURL kRedirectorPageUrl2Target("http://www.google.com/2");
+  const GURL kIconUrl1("https://www.google.com/icon.png");
+  const GURL kIconUrl2("https://www.google.com/icon2.png");
 
-  SetFavicons({page_url_https}, IconType::kFavicon, icon_url,
-              {gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE)});
-  SetMostRecentlyVisitedURLForOrigin(page_url_https);
+  // Insert two URLs, saved as `PageUrlType::kRedirect` pages.
+  CacheRedirect(kRedirectorPageUrl1, kRedirectorPageUrl1Target);
+  SetFavicons({kRedirectorPageUrl1Target}, IconType::kFavicon, kIconUrl1,
+              {gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorRED)});
+  CacheRedirect(kRedirectorPageUrl2, kRedirectorPageUrl2Target);
+  SetFavicons({kRedirectorPageUrl2Target}, IconType::kFavicon, kIconUrl2,
+              {gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorRED)});
 
   base::HistogramTester histogram_tester;
-  // Test that querying for the http URL with `fallback_to_host`=true returns
-  // the favicon associated with the https URL.
+  // Query for a URL with no icon. With fallback_to_host=true, it should find
+  // the redirect mapping, and then fallback to the last visited URL.
+  // Without the `kUseLastVisitedFallbackURLFavicon` feature, the result would
+  // be `kIconUrl1` because `kRedirectorPageUrl1` is alphabetically before
+  // `kRedirectorPageUrl2`. See http://crbug.com/453728022 for details.
+  ASSERT_LT(kRedirectorPageUrl1, kRedirectorPageUrl2);
+  SetMostRecentlyVisitedURLForOrigin(kRedirectorPageUrl2Target);
   std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results_out =
-      backend_->GetFaviconsForUrl(page_url_http,
+      backend_->GetFaviconsForUrl(kRedirectorPageNotInDatabase,
+                                  {IconType::kFavicon, IconType::kTouchIcon},
+                                  {kSmallEdgeSize}, true);
+  ASSERT_EQ(1u, bitmap_results_out.size());
+  EXPECT_EQ(kIconUrl2, bitmap_results_out[0].icon_url);
+  histogram_tester.ExpectBucketCount("Favicons.FallbackToHostSuccess", true, 1);
+
+  // Ensure the result changes according to the latest visited URL.
+  SetMostRecentlyVisitedURLForOrigin(kRedirectorPageUrl1Target);
+  bitmap_results_out = backend_->GetFaviconsForUrl(
+      kRedirectorPageNotInDatabase, {IconType::kFavicon, IconType::kTouchIcon},
+      {kSmallEdgeSize}, true);
+  ASSERT_EQ(1u, bitmap_results_out.size());
+  EXPECT_EQ(kIconUrl1, bitmap_results_out[0].icon_url);
+  histogram_tester.ExpectBucketCount("Favicons.FallbackToHostSuccess", true, 2);
+}
+
+// Test that GetFaviconsForUrl() falls back to the best page URL for a host if a
+// regular (non-redirect) page URL is available, and does not use the most
+// recently visited URL.
+TEST_F(FaviconBackendTest, GetFaviconsForUrlFallbackToHostWithRegularPageUrl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kUseLastVisitedFallbackURLFavicon);
+
+  const GURL kPageUrlNotInDatabase("http://www.google.com/maps");
+  const GURL kPageUrlWithRegularIcon("http://www.google.com/");
+  const GURL kPageUrlLastVisited("http://www.google.com/search");
+  const GURL kIconUrl1("https://www.google.com/icon.png");
+  const GURL kIconUrl2("https://www.google.com/icon2.png");
+
+  // Add a kRegular icon mapping for a URL with the same host as
+  // `kPageUrlNotInDatabase`. This will be returned by FindBestPageURLForHost().
+  SetFavicons({kPageUrlWithRegularIcon}, IconType::kFavicon, kIconUrl1,
+              {gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorRED)});
+
+  // Add a kRedirect icon for another URL of the same origin.
+  CacheRedirect(GURL("http://redirector"), kPageUrlLastVisited);
+  SetFavicons({kPageUrlLastVisited}, IconType::kFavicon, kIconUrl2,
+              {gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE)});
+
+  SetMostRecentlyVisitedURLForOrigin(kPageUrlLastVisited);
+
+  base::HistogramTester histogram_tester;
+  // Query for a URL with no icon. With fallback_to_host=true, it should find
+  // the regular mapping and return its icon, without trying the last visited
+  // URL.
+  std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results_out =
+      backend_->GetFaviconsForUrl(kPageUrlNotInDatabase,
                                   {IconType::kFavicon, IconType::kTouchIcon},
                                   {kSmallEdgeSize}, true);
 
   ASSERT_EQ(1u, bitmap_results_out.size());
-  EXPECT_EQ(icon_url, bitmap_results_out[0].icon_url);
+  EXPECT_EQ(kIconUrl1, bitmap_results_out[0].icon_url);
   histogram_tester.ExpectBucketCount("Favicons.FallbackToHostSuccess", true, 1);
 }
 

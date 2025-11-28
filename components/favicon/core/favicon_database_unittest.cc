@@ -17,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/favicon/core/favicon_types.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "sql/database.h"
@@ -893,17 +894,20 @@ TEST_F(FaviconDatabaseTest, FindBestPageURLForHost) {
                                          {favicon_base::IconType::kFavicon}));
 
   // Expect a match when we search for a TouchIcon.
-  std::optional<GURL> result = db.FindBestPageURLForHost(
-      kPageUrlHttps,
-      {favicon_base::IconType::kFavicon, favicon_base::IconType::kTouchIcon});
+  std::optional<std::pair<GURL, PageUrlType>> result =
+      db.FindBestPageURLForHost(kPageUrlHttps,
+                                {favicon_base::IconType::kFavicon,
+                                 favicon_base::IconType::kTouchIcon});
 
-  EXPECT_EQ(kPageUrlHttp, result.value());
+  ASSERT_TRUE(result);
+  EXPECT_EQ(kPageUrlHttp, result->first);
+  EXPECT_EQ(PageUrlType::kRegular, result->second);
 
   // Expect that when we query for icon mappings with the result, we retrieve
   // the correct icon URL.
   std::vector<IconMapping> icon_mappings;
   EXPECT_TRUE(db.GetIconMappingsForPageURL(
-      result.value(),
+      result->first,
       {favicon_base::IconType::kFavicon, favicon_base::IconType::kTouchIcon},
       &icon_mappings));
   ASSERT_EQ(1u, icon_mappings.size());
@@ -920,24 +924,48 @@ TEST_F(FaviconDatabaseTest, FindBestPageURLForHostRedirect) {
   const GURL kHostRedirectUrl("https://www.google.com/url?q=www.example.com");
   const GURL kHostUnmappedUrl("https://www.google.com/search?q=cats");
 
-  AddAndMapFaviconSimple(&db, kHostUrl, kIconUrl1,
-                         favicon_base::IconType::kFavicon,
-                         PageUrlType::kRegular);
+  // Populate database in order to test that database entries of
+  // PageUrlType::kRegular but lower favicon_base::IconType have higher
+  // priority over database entries of PageUrlType::kRedirect and higher
+  // favicon_base::IconType.
   AddAndMapFaviconSimple(&db, kDestinationUrl, kIconUrl2,
                          favicon_base::IconType::kWebManifestIcon,
                          PageUrlType::kRegular);
   AddAndMapFaviconSimple(&db, kHostRedirectUrl, kIconUrl2,
                          favicon_base::IconType::kWebManifestIcon,
                          PageUrlType::kRedirect);
+  AddAndMapFaviconSimple(&db, kHostUrl, kIconUrl1,
+                         favicon_base::IconType::kFavicon,
+                         PageUrlType::kRegular);
 
-  // Populate database in order to test that database entries of
-  // PageUrlType::kRegular but lower favicon_base::IconType have higher
-  // priority over database entries of PageUrlType::kRedirect and higher
-  // favicon_base::IconType.
-  std::optional<GURL> result = db.FindBestPageURLForHost(
-      kHostUnmappedUrl, {favicon_base::IconType::kFavicon,
-                         favicon_base::IconType::kWebManifestIcon});
-  EXPECT_EQ(kHostUrl, *result);
+  std::optional<std::pair<GURL, PageUrlType>> result =
+      db.FindBestPageURLForHost(kHostUnmappedUrl,
+                                {favicon_base::IconType::kFavicon,
+                                 favicon_base::IconType::kWebManifestIcon});
+  EXPECT_EQ(kHostUrl, result->first);
+  EXPECT_EQ(PageUrlType::kRegular, result->second);
+}
+
+TEST_F(FaviconDatabaseTest, FindBestPageURLForHostOnlyRedirects) {
+  FaviconDatabase db;
+  ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
+  db.BeginTransaction();
+
+  const GURL kDestinationUrl("https://www.example.com/");
+  const GURL kHostRedirectUrl("https://www.google.com/url?q=www.example.com");
+  const GURL kHostUnmappedUrl("https://www.google.com/search?q=cats");
+
+  // Populate the database with only a redirect for the host.
+  AddAndMapFaviconSimple(&db, kHostRedirectUrl, kIconUrl2,
+                         favicon_base::IconType::kWebManifestIcon,
+                         PageUrlType::kRedirect);
+
+  std::optional<std::pair<GURL, PageUrlType>> result =
+      db.FindBestPageURLForHost(kHostUnmappedUrl,
+                                {favicon_base::IconType::kFavicon,
+                                 favicon_base::IconType::kWebManifestIcon});
+  EXPECT_EQ(kHostRedirectUrl, result->first);
+  EXPECT_EQ(PageUrlType::kRedirect, result->second);
 }
 
 TEST_F(FaviconDatabaseTest, HasMappingFor) {

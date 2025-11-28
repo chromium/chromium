@@ -26,10 +26,11 @@ class FilePath;
 
 namespace favicon {
 
-// This is only used when falling back during favicon lookup for a page URL.
-// If enabled, this will use the icon of the most recently visited URL for the
-// origin instead of always picking the the favicon for the URL for the origin
-// which comes first in alphabetical order.
+// This is only used when the only available fallback URLs during favicon lookup
+// for a page URL are for pages with redirects. If enabled, this will use the
+// icon of the most recently visited page URL for the origin instead of always
+// picking the favicon for the page URL for the origin which comes first in
+// alphabetical order.
 BASE_DECLARE_FEATURE(kUseLastVisitedFallbackURLFavicon);
 
 // The favicon sizes that will be tracked in the histograms. This should be kept
