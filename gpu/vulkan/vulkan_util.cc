@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/vulkan/vulkan_util.h"
 
 #include <algorithm>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
@@ -72,8 +68,9 @@ int GetEMUIVersion() {
   // Huawei puts EMUI version in the build version incremental.
   // Example: 11.0.0.130C00
   int version = 0;
-  if (sscanf(base::android::android_info::version_incremental().c_str(), "%d.",
-             &version) != 1) {
+  if (UNSAFE_TODO(
+          sscanf(base::android::android_info::version_incremental().c_str(),
+                 "%d.", &version)) != 1) {
     return -1;
   }
 
@@ -348,7 +345,8 @@ bool SubmitSignalVkSemaphore(VkQueue vk_queue,
                              VkSemaphore vk_semaphore,
                              VkFence vk_fence) {
   return SubmitSignalVkSemaphores(
-      vk_queue, base::span<VkSemaphore>(&vk_semaphore, 1u), vk_fence);
+      vk_queue, UNSAFE_TODO(base::span<VkSemaphore>(&vk_semaphore, 1u)),
+      vk_fence);
 }
 
 bool SubmitWaitVkSemaphores(VkQueue vk_queue,
@@ -372,7 +370,8 @@ bool SubmitWaitVkSemaphore(VkQueue vk_queue,
                            VkSemaphore vk_semaphore,
                            VkFence vk_fence) {
   return SubmitWaitVkSemaphores(
-      vk_queue, base::span<VkSemaphore>(&vk_semaphore, 1u), vk_fence);
+      vk_queue, UNSAFE_TODO(base::span<VkSemaphore>(&vk_semaphore, 1u)),
+      vk_fence);
 }
 
 VkSemaphore CreateExternalVkSemaphore(

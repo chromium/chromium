@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/vulkan/vulkan_surface.h"
 
 #include <vulkan/vulkan.h>
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -160,7 +156,8 @@ bool VulkanSurface::Initialize(VulkanDeviceQueue* device_queue,
     for (VkSurfaceFormatKHR supported_format : formats) {
       unsigned int counter = 0;
       while (counter < size && format_set == false) {
-        if (supported_format.format == preferred_formats[counter]) {
+        if (supported_format.format ==
+            UNSAFE_TODO(preferred_formats[counter])) {
           surface_format_ = supported_format;
           surface_format_.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
           format_set = true;

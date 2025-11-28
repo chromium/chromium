@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/ipc/in_process_command_buffer.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -905,7 +901,7 @@ void InProcessCommandBuffer::ScheduleGrContextCleanup() {
 
 void InProcessCommandBuffer::HandleReturnData(base::span<const uint8_t> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  std::vector<uint8_t> vec(data.data(), data.data() + data.size());
+  std::vector<uint8_t> vec(data.data(), UNSAFE_TODO(data.data() + data.size()));
   PostOrRunClientCallback(
       base::BindOnce(&InProcessCommandBuffer::HandleReturnDataOnOriginThread,
                      client_thread_weak_ptr_, std::move(vec)));

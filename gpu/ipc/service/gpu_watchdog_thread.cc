@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 
 #include <memory>
@@ -15,6 +10,7 @@
 
 #include "base/bit_cast.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
@@ -831,9 +827,9 @@ void GpuWatchdogThread::UpdateActiveTTY() {
   active_tty_ = -1;
   char tty_string[8] = {};
   if (tty_file_ && !fseek(tty_file_.get(), 0, SEEK_SET) &&
-      fread(tty_string, 1, 7, tty_file_.get())) {
+      UNSAFE_TODO(fread(tty_string, 1, 7, tty_file_.get()))) {
     int tty_number;
-    if (sscanf(tty_string, "tty%d\n", &tty_number) == 1) {
+    if (UNSAFE_TODO(sscanf(tty_string, "tty%d\n", &tty_number)) == 1) {
       active_tty_ = tty_number;
     }
   }
