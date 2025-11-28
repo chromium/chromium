@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -16,8 +15,6 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
 #include "third_party/blink/renderer/core/layout/transform_utils.h"
-#include "third_party/blink/renderer/core/paint/border_shape_painter.h"
-#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
@@ -257,20 +254,6 @@ PhysicalRect ScrollableOverflowCalculator::ScrollableOverflowForPropagation(
 
   if (!ignore_scrollable_overflow) {
     PhysicalRect child_overflow = child_fragment.ScrollableOverflow();
-    // Include border-shape overflow in scrollable overflow.
-    if (child_fragment.Style().HasBorderShape()) {
-      std::optional<BorderShapeReferenceRects> shape_ref_rects =
-          ComputeBorderShapeReferenceRects(overflow, child_fragment.Style(),
-                                           *child_fragment.GetLayoutObject());
-      PhysicalRect outer_reference_rect =
-          shape_ref_rects ? shape_ref_rects->outer : overflow;
-      PhysicalRect inner_reference_rect =
-          shape_ref_rects ? shape_ref_rects->inner : overflow;
-      const PhysicalRect border_shape_box = BorderShapePainter::BoundingRect(
-          child_fragment.Style(), overflow, outer_reference_rect,
-          inner_reference_rect);
-      overflow.Unite(border_shape_box);
-    }
     if (child_fragment.HasNonVisibleOverflow()) {
       const OverflowClipAxes overflow_clip_axes =
           child_fragment.GetOverflowClipAxes();

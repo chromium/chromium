@@ -2012,30 +2012,6 @@ bool LayoutBox::HitTestOverflowControl(
              NodeForHitTest(), hit_test_location) == kStopHitTesting;
 }
 
-namespace {
-
-Path BuildBorderShapeHitTestPath(const LayoutBox& box,
-                                 const PhysicalRect& border_rect) {
-  const ComputedStyle& style = box.StyleRef();
-  std::optional<BorderShapeReferenceRects> reference_rects =
-      ComputeBorderShapeReferenceRects(border_rect, style, box);
-  const PhysicalRect outer_reference_rect =
-      reference_rects ? reference_rects->outer : border_rect;
-
-  return BorderShapePainter::OuterPath(style, outer_reference_rect);
-}
-
-bool HitTestOutsideBorderShape(const LayoutBox& box,
-                               const HitTestLocation& hit_test_location,
-                               const PhysicalOffset& border_box_location) {
-  PhysicalRect border_rect = box.PhysicalBorderBoxRect();
-  border_rect.Move(border_box_location);
-  Path hit_shape = BuildBorderShapeHitTestPath(box, border_rect);
-  return !hit_test_location.Intersects(hit_shape);
-}
-
-}  // namespace
-
 bool LayoutBox::NodeAtPoint(HitTestResult& result,
                             const HitTestLocation& hit_test_location,
                             const PhysicalOffset& accumulated_offset,
@@ -2059,10 +2035,7 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
             accumulated_offset, kExcludeOverlayScrollbarSizeForHitTesting))) {
       skip_children = true;
     }
-    if (!skip_children && StyleRef().HasBorderShape()) {
-      skip_children = HitTestOutsideBorderShape(*this, hit_test_location,
-                                                accumulated_offset);
-    } else if (!skip_children && StyleRef().HasBorderRadius()) {
+    if (!skip_children && StyleRef().HasBorderRadius()) {
       PhysicalRect bounds_rect(accumulated_offset, StitchedSize());
       skip_children = !hit_test_location.Intersects(
           ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
@@ -2075,10 +2048,9 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
     return true;
   }
 
-  if ((StyleRef().HasBorderRadius() || StyleRef().HasBorderShape()) &&
-      HitTestClippedOutByBorder(hit_test_location, accumulated_offset)) {
+  if (StyleRef().HasBorderRadius() &&
+      HitTestClippedOutByBorder(hit_test_location, accumulated_offset))
     return false;
-  }
 
   // Now hit test ourselves.
   if (IsInSelfHitTestingPhase(phase) &&
@@ -2130,13 +2102,6 @@ bool LayoutBox::HitTestClippedOutByBorder(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& border_box_location) const {
   NOT_DESTROYED();
-  if (StyleRef().HasBorderShape()) {
-    return HitTestOutsideBorderShape(*this, hit_test_location,
-                                     border_box_location);
-  }
-  if (!StyleRef().HasBorderRadius()) {
-    return false;
-  }
   PhysicalRect border_rect = PhysicalBorderBoxRect();
   border_rect.Move(border_box_location);
   return !hit_test_location.Intersects(

@@ -44,11 +44,6 @@ class BorderShapePainter {
       const PhysicalRect& border_rect,
       const PhysicalRect& outer_reference_rect,
       const PhysicalRect& inner_reference_rect);
-
-  static PhysicalRect BoundingRect(const ComputedStyle&,
-                                   PhysicalRect border_rect,
-                                   const PhysicalRect& outer_reference_rect,
-                                   const PhysicalRect& inner_reference_rect);
 };
 
 }  // namespace blink

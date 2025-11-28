@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/layout/layout_box.h"
+
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
@@ -15,21 +16,8 @@
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
-#include "third_party/blink/renderer/core/paint/border_shape_painter.h"
-#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 
 namespace blink {
-
-bool LayoutBox::HasHitTestableScrollableOverflow() const {
-  NOT_DESTROYED();
-  if (StyleRef().HasBorderShape()) {
-    return true;
-  }
-  if (!HasScrollableOverflow()) {
-    return false;
-  }
-  return !ShouldClipOverflowAlongBothAxis();
-}
 
 bool LayoutBox::HasHitTestableOverflow() const {
   NOT_DESTROYED();
@@ -55,43 +43,22 @@ bool LayoutBox::MayIntersect(const HitTestResult& result,
     return true;
   }
 
-  PhysicalRect overflow_box = PhysicalBorderBoxRect();
+  PhysicalRect overflow_box;
   if (result.GetHitTestRequest().IsHitTestVisualOverflow()) [[unlikely]] {
-    overflow_box.Unite(VisualOverflowRectIncludingFilters());
-  }
-  if (RuntimeEnabledFeatures::CSSBorderShapeEnabled() &&
-      HasHitTestableScrollableOverflow()) {
-    // If the element has border-shape, we should use the bounding rect of
-    // border-shape for hit testing.
-    if (StyleRef().HasBorderShape()) {
-      PhysicalRect rect = PhysicalBorderBoxRect();
-      std::optional<BorderShapeReferenceRects> shape_ref_rects =
-          ComputeBorderShapeReferenceRects(rect, StyleRef(), *this);
-      PhysicalRect outer_reference_rect =
-          shape_ref_rects ? shape_ref_rects->outer : rect;
-      PhysicalRect inner_reference_rect =
-          shape_ref_rects ? shape_ref_rects->inner : rect;
-      overflow_box.Unite(BorderShapePainter::BoundingRect(
-          StyleRef(), rect, outer_reference_rect, inner_reference_rect));
-    } else {
-      // Otherwise, use scrollable overflow rect, clipped if needed, to account
-      // for possible border-shape descendant.
-      overflow_box.Unite(ScrollableOverflowRect());
-      if (ShouldClipOverflowAlongEitherAxis()) {
-        overflow_box.Intersect(OverflowClipRect(PhysicalOffset()));
-      }
-    }
-  }
-  if (HasHitTestableOverflow()) {
+    overflow_box = VisualOverflowRectIncludingFilters();
+  } else if (HasHitTestableOverflow()) {
     // PhysicalVisualOverflowRect is an approximation of
     // ScrollableOverflowRect excluding self-painting descendants (which
     // hit test by themselves), with false-positive (which won't cause any
     // functional issues) when the point is only in visual overflow, but
     // excluding self-painting descendants is more important for performance.
-    overflow_box.Unite(VisualOverflowRect());
+    overflow_box = VisualOverflowRect();
     if (ShouldClipOverflowAlongEitherAxis()) {
       overflow_box.Intersect(OverflowClipRect(PhysicalOffset()));
     }
+    overflow_box.Unite(PhysicalBorderBoxRect());
+  } else {
+    overflow_box = PhysicalBorderBoxRect();
   }
 
   overflow_box.Move(accumulated_offset);
