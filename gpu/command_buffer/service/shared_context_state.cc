@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/command_buffer/service/shared_context_state.h"
 
+#include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/immediate_crash.h"
 #include "base/metrics/histogram_functions.h"
@@ -181,7 +177,7 @@ GLsizeiptr GL_APIENTRY GLBlobCacheGetCallback(const void* key,
   }
 
   if (value_size > 0 && static_cast<size_t>(value_size) >= sk_data->size()) {
-    memcpy(value, sk_data->data(), sk_data->size());
+    UNSAFE_TODO(memcpy(value, sk_data->data(), sk_data->size()));
   }
 
   // We didn't copy the original key data. Make sure it wasn't stored in the

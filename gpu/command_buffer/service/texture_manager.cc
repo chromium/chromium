@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/texture_manager.h"
 
 #include <stddef.h>
@@ -20,6 +15,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/format_macros.h"
@@ -101,7 +97,7 @@ struct TextureSignature {
                    bool can_render,
                    bool can_render_to,
                    bool npot) {
-    memset(this, 0, sizeof(TextureSignature));
+    UNSAFE_TODO(memset(this, 0, sizeof(TextureSignature)));
     target_ = target;
     level_ = level;
     min_filter_ = sampler_state.min_filter;
@@ -3131,8 +3127,8 @@ void TextureManager::DoTexSubImageRowByRowWorkaround(
       GLsizei image_byte_offset = image * image_bytes;
       for (GLsizei row = 0; row < args.height; ++row) {
         GLsizei byte_offset = image_byte_offset + row * row_bytes;
-        const GLubyte* row_pixels =
-            reinterpret_cast<const GLubyte*>(args.pixels) + byte_offset;
+        const GLubyte* row_pixels = UNSAFE_TODO(
+            reinterpret_cast<const GLubyte*>(args.pixels) + byte_offset);
         glTexSubImage3D(args.target, args.level, args.xoffset,
                         row + args.yoffset, image + args.zoffset, args.width, 1,
                         1, format, args.type, row_pixels);
@@ -3141,8 +3137,8 @@ void TextureManager::DoTexSubImageRowByRowWorkaround(
   } else {
     for (GLsizei row = 0; row < args.height; ++row) {
       GLsizei byte_offset = row * row_bytes;
-      const GLubyte* row_pixels =
-          reinterpret_cast<const GLubyte*>(args.pixels) + byte_offset;
+      const GLubyte* row_pixels = UNSAFE_TODO(
+          reinterpret_cast<const GLubyte*>(args.pixels) + byte_offset);
       glTexSubImage2D(args.target, args.level, args.xoffset, row + args.yoffset,
                       args.width, 1, format, args.type, row_pixels);
     }
@@ -3181,7 +3177,7 @@ void TextureManager::DoTexSubImageLayerByLayerWorkaround(
                     image + args.zoffset, args.width, args.height, 1, format,
                     args.type, image_pixels);
 
-    image_pixels += image_bytes;
+    UNSAFE_TODO(image_pixels += image_bytes);
   }
 
   // Process the last image row by row
@@ -3191,7 +3187,7 @@ void TextureManager::DoTexSubImageLayerByLayerWorkaround(
     glTexSubImage3D(args.target, args.level, args.xoffset, row + args.yoffset,
                     args.depth - 1 + args.zoffset, args.width, 1, 1, format,
                     args.type, row_pixels);
-    row_pixels += row_bytes;
+    UNSAFE_TODO(row_pixels += row_bytes);
   }
   // Restore unpack state
   glPixelStorei(GL_UNPACK_ALIGNMENT, unpack_params.alignment);

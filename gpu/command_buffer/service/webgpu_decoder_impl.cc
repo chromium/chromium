@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/webgpu_decoder_impl.h"
 
 #include <memory>
@@ -16,6 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -1432,7 +1428,7 @@ void WebGPUDecoderImpl::AdapterGetFeaturesImpl(
 
   std::vector<wgpu::FeatureName> exposed_features;
   for (uint32_t i = 0; i < supported_features.featureCount; ++i) {
-    wgpu::FeatureName feature = supported_features.features[i];
+    wgpu::FeatureName feature = UNSAFE_TODO(supported_features.features[i]);
     if (IsFeatureExposed(feature)) {
       exposed_features.push_back(feature);
     };
@@ -1441,7 +1437,7 @@ void WebGPUDecoderImpl::AdapterGetFeaturesImpl(
   WGPUFeatureName* features = new WGPUFeatureName[count];
   uint32_t index = 0;
   for (wgpu::FeatureName feature : exposed_features) {
-    features[index++] = static_cast<WGPUFeatureName>(feature);
+    UNSAFE_TODO(features[index++]) = static_cast<WGPUFeatureName>(feature);
   }
   features_out->featureCount = count;
   features_out->features = features;
@@ -1481,7 +1477,7 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
     size_t requiredFeatureCount = desc.requiredFeatureCount;
     required_features = {
         desc.requiredFeatures,
-        desc.requiredFeatures + requiredFeatureCount,
+        UNSAFE_TODO(desc.requiredFeatures + requiredFeatureCount),
     };
 
     // Check that no disallowed features were requested. They should be hidden
@@ -1917,7 +1913,7 @@ error::Error WebGPUDecoderImpl::DoCommands(unsigned int num_commands,
         result = error::kLostContext;
         break;
       }
-      const CommandInfo& info = command_info[command_index];
+      const CommandInfo& info = UNSAFE_TODO(command_info[command_index]);
       unsigned int info_arg_count = static_cast<unsigned int>(info.arg_count);
       if ((info.arg_flags == cmd::kFixed && arg_count == info_arg_count) ||
           (info.arg_flags == cmd::kAtLeastN && arg_count >= info_arg_count)) {
@@ -1939,7 +1935,7 @@ error::Error WebGPUDecoderImpl::DoCommands(unsigned int num_commands,
 
     if (result != error::kDeferCommandUntilLater) {
       process_pos += size;
-      cmd_data += size;
+      UNSAFE_TODO(cmd_data += size);
     }
   }
 
@@ -2195,15 +2191,16 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
   // Unpack the mailbox
   Mailbox mailbox = Mailbox::FromVolatile(
       *reinterpret_cast<const volatile Mailbox*>(packed_data));
-  packed_data += kMailboxNumEntries;
+  UNSAFE_TODO(packed_data += kMailboxNumEntries);
   DLOG_IF(ERROR, !mailbox.Verify())
       << "AssociateMailbox was passed an invalid mailbox";
 
   // Copy the view formats into a vector.
   static_assert(sizeof(wgpu::TextureFormat) == sizeof(uint32_t));
   std::vector<wgpu::TextureFormat> view_formats(view_format_count);
-  memcpy(view_formats.data(), const_cast<const uint32_t*>(packed_data),
-         view_format_count * sizeof(wgpu::TextureFormat));
+  UNSAFE_TODO(memcpy(view_formats.data(),
+                     const_cast<const uint32_t*>(packed_data),
+                     view_format_count * sizeof(wgpu::TextureFormat)));
 
   if (usage & ~kAllowedMailboxTextureUsages) {
     DLOG(ERROR) << "AssociateMailbox: Invalid usage";
