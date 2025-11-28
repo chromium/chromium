@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/prefs/pref_service.h"

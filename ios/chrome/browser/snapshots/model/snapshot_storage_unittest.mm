@@ -8,6 +8,7 @@
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
+#import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/snapshots/model/constants.h"

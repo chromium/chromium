@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"

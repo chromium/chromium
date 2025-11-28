@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/functional/callback_helpers.h"
 #import "base/location.h"
 #import "base/rand_util.h"
 #import "base/strings/stringprintf.h"

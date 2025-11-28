@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/not_fatal_until.h"

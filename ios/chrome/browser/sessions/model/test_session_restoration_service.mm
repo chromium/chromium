@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/sessions/model/test_session_restoration_service.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

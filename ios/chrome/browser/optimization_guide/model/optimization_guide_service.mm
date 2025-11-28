@@ -7,6 +7,7 @@
 #import "base/apple/bundle_locations.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
 #import "base/system/sys_info.h"

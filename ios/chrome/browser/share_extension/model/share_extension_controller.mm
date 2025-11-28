@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"

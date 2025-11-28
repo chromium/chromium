@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_coordinator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/feature_engagement/public/tracker.h"

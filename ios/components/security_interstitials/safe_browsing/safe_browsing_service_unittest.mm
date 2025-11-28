@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/files/scoped_temp_dir.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"

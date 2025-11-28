@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile.h"
 
 #import "base/check_op.h"
+#import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"

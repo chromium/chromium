@@ -10,6 +10,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/debug/dump_without_crashing.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics_action.h"

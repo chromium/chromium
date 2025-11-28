@@ -6,6 +6,7 @@
 
 #import <optional>
 
+#import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"

@@ -9,6 +9,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"

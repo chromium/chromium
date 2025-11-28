@@ -6,6 +6,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import "base/functional/callback_helpers.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_mock_clock_override.h"

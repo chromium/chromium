@@ -6,6 +6,7 @@
 
 #import <string>
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"

@@ -20,6 +20,7 @@
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/device_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"

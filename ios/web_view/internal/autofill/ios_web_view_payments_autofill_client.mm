@@ -9,6 +9,7 @@
 #import "base/check_deref.h"
 #import "base/containers/span.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/notimplemented.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
 #import "base/test/bind.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"

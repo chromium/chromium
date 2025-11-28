@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"

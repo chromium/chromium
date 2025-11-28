@@ -5,6 +5,7 @@
 #import "ios/web/content/web_state/content_web_state.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/embedder_support/ios/delegate/color_chooser/color_chooser_ios.h"

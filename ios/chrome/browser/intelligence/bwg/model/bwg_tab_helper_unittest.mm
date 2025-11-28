@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/functional/callback_helpers.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/simple_test_clock.h"
 #import "components/feature_engagement/public/event_constants.h"

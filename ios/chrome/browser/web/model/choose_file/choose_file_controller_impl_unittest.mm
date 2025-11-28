@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web/model/choose_file/choose_file_controller_impl.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

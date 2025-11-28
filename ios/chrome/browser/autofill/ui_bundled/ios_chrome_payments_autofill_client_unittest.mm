@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments_autofill_client.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/mock_callback.h"
 #import "base/test/scoped_feature_list.h"

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_price_tracking_mediator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"

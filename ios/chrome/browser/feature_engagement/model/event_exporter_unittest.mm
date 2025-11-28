@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/feature_engagement/model/event_exporter.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"

@@ -9,6 +9,7 @@
 
 #import "base/files/file_path.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/raw_ref.h"
 #import "base/sequence_checker.h"

@@ -7,6 +7,7 @@
 #import "base/base_paths.h"
 #import "base/command_line.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "base/path_service.h"
 #import "components/autofill/core/common/autofill_features.h"

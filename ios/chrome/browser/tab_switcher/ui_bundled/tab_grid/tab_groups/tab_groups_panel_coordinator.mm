@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_coordinator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/collaboration_flow_entry_point.h"

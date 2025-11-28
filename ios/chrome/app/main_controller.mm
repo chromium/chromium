@@ -12,6 +12,7 @@
 #import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/functional/concurrent_closures.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"

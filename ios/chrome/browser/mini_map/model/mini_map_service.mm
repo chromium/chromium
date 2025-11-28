@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/mini_map/model/mini_map_service.h"
 
+#import "base/functional/callback_helpers.h"
 #import "components/google/core/common/google_util.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"

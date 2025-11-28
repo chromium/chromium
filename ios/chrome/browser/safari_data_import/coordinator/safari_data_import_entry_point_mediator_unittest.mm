@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_list.h"

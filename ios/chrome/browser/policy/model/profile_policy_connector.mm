@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 
+#import "base/functional/callback_helpers.h"
 #import "components/policy/core/common/cloud/cloud_policy_store.h"
 #import "components/policy/core/common/local_test_policy_provider.h"
 #import "components/policy/core/common/policy_service_impl.h"

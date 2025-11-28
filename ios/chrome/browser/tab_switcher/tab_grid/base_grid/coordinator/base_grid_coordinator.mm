@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/base_grid_coordinator.h"
 
 #import "base/check.h"
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"

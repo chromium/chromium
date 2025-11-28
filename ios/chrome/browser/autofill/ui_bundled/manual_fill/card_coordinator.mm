@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_coordinator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"

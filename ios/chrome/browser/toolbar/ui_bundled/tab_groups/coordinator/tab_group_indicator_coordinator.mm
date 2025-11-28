@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/coordinator/tab_group_indicator_coordinator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/collaboration_flow_entry_point.h"
 #import "components/collaboration/public/collaboration_flow_type.h"

@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/feature_list.h"
+#import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "build/build_config.h"
 #import "components/gcm_driver/crypto/gcm_encryption_provider.h"

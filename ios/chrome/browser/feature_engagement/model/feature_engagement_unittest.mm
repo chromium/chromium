@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/functional/callback_helpers.h"
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/test/task_environment.h"
 #import "components/feature_engagement/public/event_constants.h"

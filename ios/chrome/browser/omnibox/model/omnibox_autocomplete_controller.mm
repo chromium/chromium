@@ -7,6 +7,7 @@
 #import <optional>
 #import <string>
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"

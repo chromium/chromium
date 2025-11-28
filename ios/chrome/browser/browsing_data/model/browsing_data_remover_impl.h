@@ -7,6 +7,7 @@
 
 #import "base/containers/queue.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
@@ -22,9 +23,6 @@ class ProfileIOS;
 @class WKWebView;
 
 class Browser;
-namespace base {
-class ScopedClosureRunner;
-}
 namespace net {
 class URLRequestContextGetter;
 }

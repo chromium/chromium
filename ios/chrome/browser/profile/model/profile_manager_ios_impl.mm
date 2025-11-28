@@ -16,6 +16,7 @@
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"

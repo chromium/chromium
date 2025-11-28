@@ -6,6 +6,7 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/functional/callback_helpers.h"
 #import "base/i18n/rtl.h"
 #import "base/test/bind.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"

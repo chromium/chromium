@@ -6,6 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/feature_list.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"

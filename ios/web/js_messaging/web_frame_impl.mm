@@ -11,6 +11,7 @@
 #import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/ios_util.h"
 #import "base/json/json_writer.h"
 #import "base/logging.h"

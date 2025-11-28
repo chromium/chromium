@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/memory/weak_ptr.h"
 #import "base/strings/string_number_conversions.h"

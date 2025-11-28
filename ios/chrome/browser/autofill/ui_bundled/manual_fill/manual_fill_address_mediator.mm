@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address_mediator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/i18n/message_formatter.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"

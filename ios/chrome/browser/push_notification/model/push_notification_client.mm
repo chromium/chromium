@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"

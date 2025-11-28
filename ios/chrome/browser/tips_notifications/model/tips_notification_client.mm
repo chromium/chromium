@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_client.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"

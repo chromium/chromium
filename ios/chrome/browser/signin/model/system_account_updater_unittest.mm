@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/functional/callback_helpers.h"
 #import "base/test/task_environment.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

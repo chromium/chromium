@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/functional/callback_helpers.h"
 #import "base/i18n/time_formatting.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"

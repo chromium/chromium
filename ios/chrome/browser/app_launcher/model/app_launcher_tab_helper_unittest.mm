@@ -9,6 +9,7 @@
 #import "base/command_line.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/location.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"

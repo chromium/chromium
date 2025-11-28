@@ -6,6 +6,7 @@
 
 #import <map>
 
+#import "base/functional/callback_helpers.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/thread_pool.h"
 #import "base/types/cxx23_to_underlying.h"

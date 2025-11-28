@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/prefs/pref_service.h"

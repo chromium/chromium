@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/containers/adapters.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/stringprintf.h"

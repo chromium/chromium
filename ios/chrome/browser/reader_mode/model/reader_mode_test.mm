@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"

@@ -6,6 +6,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import "base/functional/callback_helpers.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"

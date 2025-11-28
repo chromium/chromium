@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 
 #import "base/containers/contains.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"

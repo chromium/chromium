@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safe_browsing/model/real_time_url_lookup_service_factory.h"
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #import "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"

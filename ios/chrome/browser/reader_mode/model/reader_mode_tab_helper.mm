@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/time/time.h"
 #import "components/infobars/core/infobar.h"

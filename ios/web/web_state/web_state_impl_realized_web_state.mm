@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/compiler_specific.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_mediator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/i18n/message_formatter.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
