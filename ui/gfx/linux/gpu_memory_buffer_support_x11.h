@@ -45,10 +45,6 @@ class COMPONENT_EXPORT(GBM_SUPPORT_X11) GpuMemoryBufferSupportX11 {
   GpuMemoryBufferSupportX11& operator=(const GpuMemoryBufferSupportX11&) =
       delete;
 
-  const std::vector<gfx::BufferUsageAndFormat>& supported_configs() const {
-    return supported_configs_;
-  }
-
   bool has_gbm_device() const { return device_ != nullptr; }
 
  private:
