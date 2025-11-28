@@ -11,8 +11,6 @@
 
 namespace features {
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2AllowActivationInBackground);
-
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2FallbackPrefetchSpecRules);
 
 // Controls whether `PrefetchMatchResolver` use timeout for prefetch ahead of

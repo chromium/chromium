@@ -64,21 +64,6 @@ bool IsBackground(Visibility visibility) {
   }
 }
 
-// Returns true when it is allowed to activate a prerendered page in a
-// background tab.
-bool IsAllowedToActivateInBackgroundForTesting() {
-  // Now it is allowed to activate a prerendered page in a background only on
-  // macOS for running web platform tests. See comments on the flag definition
-  // for more details.
-#if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(
-          features::kPrerender2AllowActivationInBackground)) {
-    return true;
-  }
-#endif
-  return false;
-}
-
 bool DeviceHasEnoughMemoryForPrerender() {
   // This method disallows prerendering on low-end devices if the
   // kPrerender2MemoryControls feature is enabled.
@@ -1749,11 +1734,27 @@ bool PrerenderHostRegistry::CanNavigationActivateHost(
     return false;
   }
 
+  // Disallow activation when the navigation happens in the hidden tab.
+  //
+  // This visibility check is a bit tricky:
+  //
+  // - If this host is for prerendering in the same tab, `web_contents()` is the
+  //   same as `host.initiator_web_contents()`. Thus, both web_contents should
+  //   return the same visibility. In this case, we don't need to check both
+  //   web_contents here but it's still necessary for the next case.
+  //
+  // - If this host is for prerendering in a new tab (i.e., `target_hint` is
+  //   `_blank` in speculation rules), `web_contents()` is different from
+  //   `host.initiator_web_contents()`. Depending on platforms (e.g., WPT on
+  //   macOS), `web_contents()`'s visibiltiy can still be hidden and instead
+  //   `host.initiator_web_contents()` is visible at this point. Thus,
+  //   activation is allowed when either of them is visible.
+  //
   // TODO(crbug.com/40249964): Remove the restriction after further
-  // investigation and discussion. Disallow activation when the navigation
-  // happens in the hidden tab.
+  // investigation and discussion.
+  CHECK(host.initiator_web_contents());
   if (web_contents()->GetVisibility() == Visibility::HIDDEN &&
-      !IsAllowedToActivateInBackgroundForTesting()) {
+      host.initiator_web_contents()->GetVisibility() == Visibility::HIDDEN) {
     CancelHost(host.frame_tree_node_id(),
                PrerenderFinalStatus::kActivatedInBackground);
     return false;

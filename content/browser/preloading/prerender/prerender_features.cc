@@ -10,15 +10,6 @@
 
 namespace features {
 
-// Allows activation in background tab. For now, this is used only on web
-// platform tests on macOS to run activation with target hint tests that have
-// race conditions between visibility change and activation start on a prerender
-// WebContents. Note that this issue does not happen on browser_tests, so this
-// could be specific to WPT setup.
-// TODO(crbug.com/40249964): Allow activation in background by default.
-BASE_FEATURE(kPrerender2AllowActivationInBackground,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables fallback from prerender to prefetch for Speculation Rules.
 // See https://crbug.com/342089123 for more details.
 //
