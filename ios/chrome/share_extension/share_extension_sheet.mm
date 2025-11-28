@@ -27,8 +27,7 @@ enum SharedItemType {
   kText,
 };
 
-CGFloat const kInnerViewWidthPadding = 40;
-CGFloat const kMainViewHeightPadding = 34;
+CGFloat const kMainViewPadding = 32.0;
 CGFloat const kMainViewCornerRadius = 12;
 CGFloat const kSnapshotViewSize = 150;
 CGFloat const kURLStackSpacing = 8;
@@ -49,16 +48,16 @@ constexpr CGFloat kLogoTitleFontMultiplier = 1.25;
 // The spacing between the sheet's title and icon.
 CGFloat const kTitleViewSpacing = 3.0;
 
-// Custom detent identifier for when the bottom sheet is minimized.
-NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
-
-// Constants for the MIM configuration.
-CGFloat const kMIMStackSpacing = 16.0;
+// Constants for the content configuration.
+CGFloat const kContentStackSpacing = 16.0;
 CGFloat const kAccountRowHeight = 57.0;
-CGFloat const kMIMViewCornerRadius = 25.0;
+CGFloat const kContentCornerRadius = 25.0;
 CGFloat const kAccountCellCornerRadius = 10.0;
 CGFloat const kAvatarImageDimension = 30.0;
 CGFloat const kUpdatedMainViewCornerRadius = 32.0;
+
+// The reuse identifier for the account cell.
+NSString* const kAccountCellIdentifier = @"kAccountCellIdentifier";
 
 }  // namespace
 
@@ -73,7 +72,6 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   NSString* _appName;
   SharedItemType _sharedItemType;
   NSArray<AccountInfo*>* _accounts;
-  UISheetPresentationControllerDetent* _customDetent;
   UITableView* _accountTableView;
   NSLayoutConstraint* _tableViewHeightConstraint;
 }
@@ -88,28 +86,19 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
 }
 
 - (void)viewDidLoad {
-  self.actionHandler = self;
+  self.actionDelegate = self;
   self.configuration.primaryActionString = _primaryString;
   self.configuration.secondaryActionString = _secondaryString;
-
-  self.scrollEnabled = NO;
-  self.alwaysShowImage = YES;
-  self.topAlignedLayout = YES;
-  self.scrollEnabled = YES;
-
 
   self.navigationItem.titleView = [self configureSheetTitleView];
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                            target:self
                            action:@selector(dismissSheet)];
-
-  self.mainBackgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-  self.underTitleView = [self createUnderTitleViewWithMIM];
-
   [super viewDidLoad];
+
+  [self setupContent];
   [self setUpBottomSheetPresentationController];
-  [self setUpBottomSheetDetents];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -154,7 +143,7 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell =
-      [tableView dequeueReusableCellWithIdentifier:@"Account"];
+      [tableView dequeueReusableCellWithIdentifier:kAccountCellIdentifier];
   return [self configureAccountCell:cell];
 }
 
@@ -165,7 +154,7 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   AccountPickerTable* accountPickerView =
       [[AccountPickerTable alloc] initWithAccounts:_accounts
                                    selectedAccount:self.selectedAccountInfo];
-  accountPickerView.customDetent = _customDetent;
+  accountPickerView.customDetent = [self preferredHeightDetent];
   accountPickerView.delegate = self;
   UINavigationController* presentingNavController =
       [[UINavigationController alloc]
@@ -231,9 +220,9 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
       @"The label of the search in incognito button in share extension.");
 }
 
-#pragma mark - ConfirmationAlertActionHandler
+#pragma mark - ButtonStackActionDelegate
 
-- (void)confirmationAlertPrimaryAction {
+- (void)didTapPrimaryActionButton {
   NSString* gaiaID = self.selectedAccountInfo.gaiaIDString;
   switch (_sharedItemType) {
     case kURL:
@@ -247,7 +236,7 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   }
 }
 
-- (void)confirmationAlertSecondaryAction {
+- (void)didTapSecondaryActionButton {
   NSString* gaiaID = self.selectedAccountInfo.gaiaIDString;
   switch (_sharedItemType) {
     case kURL:
@@ -261,7 +250,33 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   }
 }
 
+- (void)didTapTertiaryActionButton {
+  // Not used.
+}
+
 #pragma mark - Private
+
+// Sets up the content view.
+- (void)setupContent {
+  UIView* content;
+  self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  content = [self createMainContentStackView];
+
+  // Wrap the content in a container to prevent it from stretching to fill the
+  // entire scrollable area.
+  UIView* container = [[UIView alloc] init];
+  container.translatesAutoresizingMaskIntoConstraints = NO;
+  [container addSubview:content];
+  [NSLayoutConstraint activateConstraints:@[
+    [content.topAnchor constraintEqualToAnchor:container.topAnchor],
+    [content.leadingAnchor constraintEqualToAnchor:container.leadingAnchor],
+    [content.trailingAnchor constraintEqualToAnchor:container.trailingAnchor],
+    [content.bottomAnchor
+        constraintLessThanOrEqualToAnchor:container.bottomAnchor],
+  ]];
+  [self.contentView addSubview:container];
+  AddSameConstraints(container, self.contentView);
+}
 
 // Configures the account cell with the appropriate configuration based on
 // `selectedAccountInfo`.
@@ -311,24 +326,8 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 }
 
-// Configures the bottom sheet's detents.
-- (void)setUpBottomSheetDetents {
-  UISheetPresentationController* presentationController =
-      self.sheetPresentationController;
-  CGFloat bottomSheetHeight = [self preferredHeightForContent];
-  auto resolver = ^CGFloat(
-      id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return bottomSheetHeight;
-  };
-  _customDetent = [UISheetPresentationControllerDetent
-      customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
-                        resolver:resolver];
-  presentationController.detents =
-      @[ [UISheetPresentationControllerDetent largeDetent] ];
-  presentationController.selectedDetentIdentifier =
-      kCustomMinimizedDetentIdentifier;
-}
-
+// Configures and returns the title view for the sheet, including the logo and
+// title.
 - (UIView*)configureSheetTitleView {
   BrandedNavigationItemTitleView* titleView =
       [[BrandedNavigationItemTitleView alloc]
@@ -366,55 +365,62 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   return titleView;
 }
 
-- (UIView*)configureMainView {
+// Creates and returns the main view with the inner view content.
+- (UIView*)createMainViewWithInnerView {
   UIView* mainView = [[UIView alloc] init];
   UIView* innerView;
-  if (_sharedURL) {
-    innerView = [self configureSharedURLView];
-  } else if (_sharedImage) {
-    innerView = [self configureSharedImageView];
-  } else if (_sharedText) {
-    innerView = [self configureSharedTextView];
+  switch (_sharedItemType) {
+    case kURL:
+      innerView = [self configureSharedURLView];
+      break;
+    case kImage:
+      innerView = [self configureSharedImageView];
+      break;
+    case kText:
+      innerView = [self configureSharedTextView];
+      break;
   }
-
   CHECK(innerView);
-  [mainView addSubview:innerView];
-
-  mainView.backgroundColor = [UIColor colorNamed:kGrey100Color];
-  mainView.layer.cornerRadius = kMainViewCornerRadius;
-  if (@available(iOS 26, *)) {
-    mainView.layer.cornerRadius = kUpdatedMainViewCornerRadius;
-  }
-
   innerView.translatesAutoresizingMaskIntoConstraints = NO;
-  mainView.translatesAutoresizingMaskIntoConstraints = NO;
+  [mainView addSubview:innerView];
   [NSLayoutConstraint activateConstraints:@[
-    [innerView.widthAnchor constraintEqualToAnchor:mainView.widthAnchor
-                                          constant:-kInnerViewWidthPadding],
-    [mainView.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:innerView.heightAnchor
-                                    constant:kMainViewHeightPadding],
+    [innerView.topAnchor constraintEqualToAnchor:mainView.topAnchor
+                                        constant:kMainViewPadding],
+    [innerView.bottomAnchor constraintEqualToAnchor:mainView.bottomAnchor
+                                           constant:-kMainViewPadding],
+    [innerView.leadingAnchor constraintEqualToAnchor:mainView.leadingAnchor
+                                            constant:kMainViewPadding],
+    [innerView.trailingAnchor constraintEqualToAnchor:mainView.trailingAnchor
+                                             constant:-kMainViewPadding],
   ]];
-  AddSameCenterConstraints(mainView, innerView);
-
   return mainView;
 }
 
-- (UIStackView*)createUnderTitleViewWithMIM {
-  UIView* mainView = [self configureMainView];
+// Creates and returns the main content stack view.
+- (UIStackView*)createMainContentStackView {
+  UIView* mainView = [self createMainViewWithInnerView];
   mainView.backgroundColor = [UIColor colorNamed:kGrey200Color];
-  mainView.layer.cornerRadius = kMIMViewCornerRadius;
+  mainView.layer.cornerRadius = kContentCornerRadius;
   if (@available(iOS 26, *)) {
     mainView.layer.cornerRadius = kUpdatedMainViewCornerRadius;
   }
 
   _accountTableView = [self createSelectedAccountTableView];
-  UIStackView* underTitleView = [[UIStackView alloc]
+  UIStackView* mainContentStackView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ mainView, _accountTableView ]];
-  underTitleView.axis = UILayoutConstraintAxisVertical;
-  underTitleView.spacing = kMIMStackSpacing;
+  mainContentStackView.axis = UILayoutConstraintAxisVertical;
+  mainContentStackView.spacing = kContentStackSpacing;
+  mainContentStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  return underTitleView;
+  [NSLayoutConstraint activateConstraints:@[
+    [mainView.leadingAnchor
+        constraintEqualToAnchor:mainContentStackView.leadingAnchor],
+    [mainView.trailingAnchor
+        constraintEqualToAnchor:mainContentStackView.trailingAnchor],
+
+  ]];
+
+  return mainContentStackView;
 }
 
 - (UITableView*)createSelectedAccountTableView {
@@ -428,7 +434,7 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   }
   containerTable.scrollEnabled = NO;
   [containerTable registerClass:[UITableViewCell class]
-         forCellReuseIdentifier:@"Account"];
+         forCellReuseIdentifier:kAccountCellIdentifier];
   containerTable.dataSource = self;
   containerTable.delegate = self;
   _tableViewHeightConstraint =
