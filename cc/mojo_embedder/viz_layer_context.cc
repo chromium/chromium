@@ -681,7 +681,7 @@ void SerializeHudLayerExtra(HeadsUpDisplayLayerImpl& layer,
     extra->uv_bottom_right =
         gfx::PointF(resource_uv_size.width(), resource_uv_size.height());
   } else {
-    extra->transferable_resource = viz::TransferableResource();
+    extra->transferable_resource = std::nullopt;
   }
 }
 
@@ -709,7 +709,7 @@ void SerializeTextureLayerExtra(
       CHECK_EQ(resources.size(), 1u);
       extra->transferable_resource = resources[0];
     } else {
-      extra->transferable_resource = viz::TransferableResource();
+      extra->transferable_resource = std::nullopt;
     }
 
     layer.ClearNeedsSetResourcePush();
