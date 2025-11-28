@@ -98,6 +98,12 @@ class FakeGaia {
     // register the new session will be returned.
     bool reuse_bound_session = false;
 
+    // If true, the server will return a spec-compliant device-bound session
+    // info in the response to OAuthMultilogin.
+    //
+    // NOTE: This is only applicable when `reuse_bound_session` is `false`.
+    bool spec_compliant_device_bound_session = true;
+
     // Overrides the status returned by OAuthMultilogin. If not set, `FakeGaia`
     // determines the status based on the request parameters.
     //

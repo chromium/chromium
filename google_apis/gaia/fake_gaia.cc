@@ -204,12 +204,26 @@ base::Value::List GetDeviceBoundSessionInfoForMultilogin(
                                                .Set("domain", ".google.com")
                                                .Set("path", "/")));
     }
-    device_bound_session_info.Set(
-        "register_session_payload",
+    auto register_session_payload =
         base::Value::Dict()
             .Set("session_identifier", "sidts_session")
-            .Set("credentials", std::move(credentials))
-            .Set("refresh_url", "/RotateBoundCookies"));
+            .Set("refresh_url", "/RotateBoundCookies");
+    if (configuration.spec_compliant_device_bound_session) {
+      register_session_payload.Set("scope",
+                                   base::Value::Dict()
+                                       .Set("origin", "https://google.com")
+                                       .Set("include_site", true));
+      register_session_payload.Set("allowed_refresh_initiators",
+                                   base::Value::List().Append("*"));
+      for (auto& credential : credentials) {
+        credential.GetDict().Set("attributes",
+                                 "Secure; HttpOnly; Domain=.google.com; "
+                                 "Path=/; SameSite=None");
+      }
+    }
+    register_session_payload.Set("credentials", std::move(credentials));
+    device_bound_session_info.Set("register_session_payload",
+                                  std::move(register_session_payload));
   }
   return base::Value::List().Append(std::move(device_bound_session_info));
 }
