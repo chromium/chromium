@@ -142,10 +142,11 @@ OptimizationGuideKeyedService* LoginStateChecker::GetOptimizationService() {
 }
 
 void LoginStateChecker::OnPageContentReceived(
-    std::optional<optimization_guide::AIPageContentResult> content) {
-  CHECK(content);
+    optimization_guide::AIPageContentResultOrError content) {
+  // TODO(bokan): Surely this shouldn't crash on failure?
+  CHECK(content.has_value());
   if (is_request_in_flight_) {
-    cached_page_content_ = std::move(content);
+    cached_page_content_.emplace(std::move(content.value()));
     return;
   }
 
@@ -221,7 +222,7 @@ void LoginStateChecker::OnExecutionResponseCallback(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&LoginStateChecker::OnPageContentReceived,
                                   weak_ptr_factory_.GetWeakPtr(),
-                                  std::move(cached_page_content_)));
+                                  std::move(cached_page_content_.value())));
     // Clear the page content to ensure that this check doesn't pass next time,
     // which would lead to a request with empty page content.
     cached_page_content_ = std::nullopt;

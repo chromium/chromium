@@ -77,7 +77,7 @@ void TabContextualizationController::PrimaryPageChanged(content::Page& page) {
 
 void TabContextualizationController::OnEligibilityChecked(
     bool is_page_context_eligible,
-    std::optional<optimization_guide::AIPageContentResult> apc) {
+    optimization_guide::AIPageContentResultOrError apc) {
   is_page_context_eligible_ = is_page_context_eligible;
 }
 
@@ -107,12 +107,12 @@ void TabContextualizationController::GetAnnotatedPageContent(
 
 void TabContextualizationController::OnAnnotatedPageContentReceived(
     GetApcResultCallback callback,
-    std::optional<optimization_guide::AIPageContentResult> result) {
+    optimization_guide::AIPageContentResultOrError result) {
   // The tab URL is used to check if the page is context eligible.
   const auto& tab_url = tab_->GetContents()->GetLastCommittedURL();
 
   std::vector<optimization_guide::FrameMetadata> frame_metadata_structs;
-  if (result) {
+  if (result.has_value()) {
     // Convert the page metadata to a C struct defined in the
     // `optimization_guide` component so it can be passed to the shared library.
     frame_metadata_structs =
@@ -131,7 +131,7 @@ void TabContextualizationController::
         GetPageContextCallback callback,
         std::unique_ptr<lens::ContextualInputData> data,
         bool page_context_eligible,
-        std::optional<optimization_guide::AIPageContentResult> result) {
+        optimization_guide::AIPageContentResultOrError result) {
   data->is_page_context_eligible = page_context_eligible;
   data->primary_content_type = lens::MimeType::kAnnotatedPageContent;
   data->context_input = std::vector<lens::ContextualInput>();

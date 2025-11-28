@@ -393,7 +393,7 @@ TEST_F(ChangePasswordFormFinderTest, FailsCapturingAnnotatedPageContent) {
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
       capture_annotated_page_content;
   EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(std::nullopt));
+      .WillOnce(base::test::RunOnceCallback<0>(base::unexpected("Failure")));
 
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
       pass_key(), web_contents(), client(), &logs_uploader,

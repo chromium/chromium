@@ -64,7 +64,7 @@ class PasswordChangeSubmissionVerifier {
 
  private:
   void CheckSubmissionSuccessful(
-      std::optional<optimization_guide::AIPageContentResult> page_content);
+      optimization_guide::AIPageContentResultOrError page_content);
   void OnExecutionResponseCallback(
       optimization_guide::OptimizationGuideModelExecutionResult
           execution_result,

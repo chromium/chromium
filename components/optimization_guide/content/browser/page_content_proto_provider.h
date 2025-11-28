@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/document_user_data.h"
@@ -71,9 +72,11 @@ struct AIPageContentResult {
 };
 
 // Provides AIPageContentResult (AnnotatedPageContent proto and metadata) for
-// the primary page displayed in a WebContents.
+// the primary page displayed in a WebContents or an error string on failure.
+using AIPageContentResultOrError =
+    base::expected<AIPageContentResult, std::string>;
 using OnAIPageContentDone =
-    base::OnceCallback<void(std::optional<AIPageContentResult>)>;
+    base::OnceCallback<void(AIPageContentResultOrError)>;
 void GetAIPageContent(content::WebContents* web_contents,
                       blink::mojom::AIPageContentOptionsPtr options,
                       OnAIPageContentDone done_callback);

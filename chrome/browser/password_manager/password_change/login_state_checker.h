@@ -84,7 +84,7 @@ class LoginStateChecker : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
 
   void OnPageContentReceived(
-      std::optional<optimization_guide::AIPageContentResult> content);
+      optimization_guide::AIPageContentResultOrError content);
 
   void OnExecutionResponseCallback(
       optimization_guide::OptimizationGuideModelExecutionResult

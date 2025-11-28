@@ -147,11 +147,11 @@ void PasswordChangeSubmissionVerifier::CheckSubmissionOutcome(
 }
 
 void PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful(
-    std::optional<optimization_guide::AIPageContentResult> page_content) {
+    optimization_guide::AIPageContentResultOrError page_content) {
   CHECK(callback_);
   CHECK(web_contents_);
 
-  if (!page_content) {
+  if (!page_content.has_value()) {
     LogPageContentCaptureFailure(
         password_manager::metrics_util::PasswordChangeFlowStep::
             kVerifySubmissionStep);

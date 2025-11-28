@@ -193,7 +193,7 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
   }
 
   void SetPageContent(base::OnceClosure quit_closure,
-                      std::optional<AIPageContentResult> page_content) {
+                      AIPageContentResultOrError page_content) {
     page_content_ = std::move(page_content->proto);
     metadata_ = std::move(page_content->metadata);
     document_identifiers_ = std::move(page_content->document_identifiers);

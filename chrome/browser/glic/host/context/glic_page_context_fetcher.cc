@@ -111,7 +111,7 @@ void HandleFetchPageResult(
     tab_context->pdf_document_data = std::move(pdf_document_data);
   }
 
-  if (page_context.annotated_page_content_result) {
+  if (page_context.annotated_page_content_result.has_value()) {
     auto annotated_page_data = mojom::AnnotatedPageData::New();
     if (media_root_node) {
       optimization_guide::proto::ContentNode* media_node =

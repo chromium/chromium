@@ -109,7 +109,7 @@ class ActorToolsTest : public InProcessBrowserTest {
 
   void SetPageContent(
       base::OnceClosure quit_closure,
-      std::optional<optimization_guide::AIPageContentResult> page_content);
+      optimization_guide::AIPageContentResultOrError page_content);
 
   TaskId task_id_;
 

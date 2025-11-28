@@ -42,8 +42,8 @@ void ContentWalletablePassIngestionController::GetAnnotatedPageContent(
       web_contents(), std::move(ai_page_content_options),
       base::BindOnce(
           [](AnnotatedPageContentCallback callback,
-             std::optional<optimization_guide::AIPageContentResult> result) {
-            if (!result) {
+             optimization_guide::AIPageContentResultOrError result) {
+            if (!result.has_value()) {
               std::move(callback).Run(std::nullopt);
               return;
             }

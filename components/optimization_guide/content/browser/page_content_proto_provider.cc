@@ -22,6 +22,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/content/browser/autofill_annotations_provider.h"
 #include "components/optimization_guide/content/browser/media_transcript_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
@@ -439,7 +440,7 @@ void OnGotAIPageContentOrTimedOutForAllFrames(
           base::BindRepeating(&GetRenderFrameInfo), frame_token_set,
           page_content);
       !result.has_value()) {
-    std::move(done_callback).Run(std::nullopt);
+    std::move(done_callback).Run(base::unexpected(result.error()));
     return;
   }
 
@@ -523,7 +524,7 @@ void GetAIPageContent(content::WebContents* web_contents,
   DCHECK(web_contents->GetPrimaryMainFrame());
 
   if (!web_contents->GetPrimaryMainFrame()->IsRenderFrameLive()) {
-    std::move(done_callback).Run(std::nullopt);
+    std::move(done_callback).Run(base::unexpected("Main frame not live"));
     return;
   }
 

@@ -201,7 +201,7 @@ TaskId ActorToolsTest::CreateNewTask() {
 
 void ActorToolsTest::SetPageContent(
     base::OnceClosure quit_closure,
-    std::optional<optimization_guide::AIPageContentResult> page_content) {
+    optimization_guide::AIPageContentResultOrError page_content) {
   auto apc = std::move(page_content->proto);
   auto* tab_data = ActorTabData::From(active_tab());
   tab_data->DidObserveContent(apc);

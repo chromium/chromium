@@ -32,6 +32,7 @@ namespace {
 using blink::mojom::AIPageContentMode;
 using blink::mojom::AIPageContentOptionsPtr;
 using optimization_guide::AIPageContentResult;
+using optimization_guide::AIPageContentResultOrError;
 using optimization_guide::OnAIPageContentDone;
 using optimization_guide::proto::AnnotatedPageContent;
 using optimization_guide::proto::ContentNode;
@@ -135,7 +136,7 @@ class ActorUiDomNodeGeometryBrowserTest : public InProcessBrowserTest {
   }
 
   void SetPageContent(base::OnceClosure quit_closure,
-                      std::optional<AIPageContentResult> page_content) {
+                      AIPageContentResultOrError page_content) {
     auto apc = std::move(page_content->proto);
     aria_label_to_dom_node_.clear();
     BuildAriaLabelMap(

@@ -19,6 +19,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
 #include "chrome/browser/page_content_annotations/page_content_screenshot_service.h"
 #include "chrome/browser/page_content_annotations/page_content_screenshot_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,6 +37,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/base_window.h"
@@ -548,11 +550,14 @@ class PageContextFetcher : public content::WebContentsObserver {
   }
 
   void ReceivedAnnotatedPageContent(
-      std::optional<optimization_guide::AIPageContentResult> content) {
+      optimization_guide::AIPageContentResultOrError content) {
     const bool has_result = content.has_value();
     if (has_result) {
       pending_result_->annotated_page_content_result.emplace(
-          std::move(*content));
+          std::move(content.value()));
+    } else {
+      pending_result_->annotated_page_content_result =
+          base::unexpected(content.error());
     }
     annotated_page_content_done_ = true;
     base::UmaHistogramTimes("Glic.PageContextFetcher.GetAnnotatedPageContent",
@@ -561,7 +566,8 @@ class PageContextFetcher : public content::WebContentsObserver {
       if (has_result) {
         progress_listener_->EndAPC(std::nullopt);
       } else {
-        progress_listener_->EndAPC("Error");
+        progress_listener_->EndAPC(
+            absl::StrFormat("Failed: %s", content.error()));
       }
     }
 
@@ -656,7 +662,8 @@ FetchPageContextOptions::FetchPageContextOptions() = default;
 FetchPageContextOptions::~FetchPageContextOptions() = default;
 
 FetchPageContextResult::FetchPageContextResult()
-    : screenshot_result(base::unexpected("Uninitialized")) {}
+    : screenshot_result(base::unexpected("Uninitialized")),
+      annotated_page_content_result(base::unexpected("Uninitialized")) {}
 
 FetchPageContextResult::~FetchPageContextResult() = default;
 

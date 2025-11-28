@@ -83,7 +83,7 @@ class AutofillAnnotationsProviderBrowserTest : public InProcessBrowserTest {
 
   void SetPageContent(
       base::OnceClosure quit_closure,
-      std::optional<optimization_guide::AIPageContentResult> page_content) {
+      optimization_guide::AIPageContentResultOrError page_content) {
     page_content_ = std::move(page_content->proto);
     std::move(quit_closure).Run();
   }

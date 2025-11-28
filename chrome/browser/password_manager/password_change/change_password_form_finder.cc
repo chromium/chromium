@@ -156,7 +156,7 @@ void ChangePasswordFormFinder::OnFormFoundInitially(
 }
 
 void ChangePasswordFormFinder::OnPageContentReceived(
-    std::optional<optimization_guide::AIPageContentResult> content) {
+    optimization_guide::AIPageContentResultOrError content) {
   CHECK(web_contents_);
   CHECK(callback_);
 
@@ -166,7 +166,7 @@ void ChangePasswordFormFinder::OnPageContentReceived(
         content.has_value());
   }
 
-  if (!content) {
+  if (!content.has_value()) {
     LogPageContentCaptureFailure(
         password_manager::metrics_util::PasswordChangeFlowStep::kOpenFormStep);
     std::move(callback_).Run(nullptr);

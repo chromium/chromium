@@ -37,8 +37,7 @@ class AnnotatedPageContentCapturer : public content::WebContentsObserver {
   void DidStopLoading() override;
 
 #if defined(UNIT_TEST)
-  void ReplyWithContent(
-      std::optional<optimization_guide::AIPageContentResult> result) {
+  void ReplyWithContent(optimization_guide::AIPageContentResultOrError result) {
     std::move(callback_).Run(std::move(result));
   }
 #endif
@@ -50,7 +49,7 @@ class AnnotatedPageContentCapturer : public content::WebContentsObserver {
                                GetAIPageContentFunction get_page_content);
 
   void CapturePageContent(
-      std::optional<optimization_guide::AIPageContentResult> result);
+      optimization_guide::AIPageContentResultOrError result);
   blink::mojom::AIPageContentOptionsPtr options_;
   optimization_guide::OnAIPageContentDone callback_;
   GetAIPageContentFunction get_page_content_;

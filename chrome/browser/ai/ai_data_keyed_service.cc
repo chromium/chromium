@@ -89,11 +89,11 @@ constexpr size_t kPdfUploadLimitBytes = 128 * kBytesPerMegabyte;
 
 void OnGotAIPageContentForModelPrototyping(
     AiDataKeyedService::AiDataCallback continue_callback,
-    std::optional<optimization_guide::AIPageContentResult> page_content) {
+    optimization_guide::AIPageContentResultOrError page_content) {
   TRACE_EVENT("browser", "OnGotAIPageContentForModelPrototyping");
 
   AiDataKeyedService::BrowserData data;
-  if (page_content) {
+  if (page_content.has_value()) {
     *data.mutable_page_context()->mutable_annotated_page_content() =
         std::move(page_content->proto);
     std::move(continue_callback).Run(std::move(data));
@@ -105,12 +105,12 @@ void OnGotAIPageContentForModelPrototyping(
 
 void OnGotAIPageContentWithActionableElementsForModelPrototyping(
     AiDataKeyedService::AiDataCallback continue_callback,
-    std::optional<optimization_guide::AIPageContentResult> page_content) {
+    optimization_guide::AIPageContentResultOrError page_content) {
   TRACE_EVENT("browser",
               "OnGotAIPageContentWithActionableElementsForModelPrototyping");
 
   AiDataKeyedService::BrowserData data;
-  if (page_content) {
+  if (page_content.has_value()) {
     *data.mutable_action_annotated_page_content() =
         std::move(page_content->proto);
     std::move(continue_callback).Run(std::move(data));

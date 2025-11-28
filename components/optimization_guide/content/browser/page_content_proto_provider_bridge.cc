@@ -26,9 +26,8 @@ static void JNI_PageContentProtoProviderBridge_GetAiPageContent(
       web_contents, std::move(extraction_options),
       base::BindOnce(
           [](const JavaRef<jobject>& j_callback,
-             std::optional<optimization_guide::AIPageContentResult> result)
-              -> void {
-            if (!result) {
+             optimization_guide::AIPageContentResultOrError result) -> void {
+            if (!result.has_value()) {
               base::android::RunByteArrayCallbackAndroid(
                   j_callback, std::vector<uint8_t>());
               return;

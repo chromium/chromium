@@ -316,7 +316,7 @@ void AnnotatedPageContentRequest::OnPageContextFetched(
   }
 
   if (!result.has_value() || !result.value() ||
-      !result.value()->annotated_page_content_result) {
+      !result.value()->annotated_page_content_result.has_value()) {
     return;
   }
   base::Time extraction_time = base::Time::Now();

@@ -2902,9 +2902,9 @@ void Browser::GetAIPageContent(
 
   optimization_guide::GetAIPageContent(
       web_contents, std::move(options),
-      base::BindOnce([](std::optional<optimization_guide::AIPageContentResult>
-                            result) -> std::string {
-        if (!result) {
+      base::BindOnce([](optimization_guide::AIPageContentResultOrError result)
+                         -> std::string {
+        if (!result.has_value()) {
           return "";
         }
         return result->proto.SerializeAsString();

@@ -561,11 +561,10 @@ void ChromeAutofillClient::GetAiPageContent(GetAiPageContentCallback callback) {
           /*on_critical_path =*/false);
   optimization_guide::GetAIPageContent(
       web_contents(), std::move(extraction_options),
-      base::BindOnce([](std::optional<optimization_guide::AIPageContentResult>
-                            result)
+      base::BindOnce([](optimization_guide::AIPageContentResultOrError result)
                          -> std::optional<
                              optimization_guide::proto::AnnotatedPageContent> {
-        if (!result) {
+        if (!result.has_value()) {
           return std::nullopt;
         }
         // For now, discard all other metadata about the request.

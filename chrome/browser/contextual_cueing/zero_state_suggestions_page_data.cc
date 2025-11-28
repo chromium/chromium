@@ -20,6 +20,7 @@
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_extraction/content/browser/inner_text.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
@@ -56,9 +57,9 @@ void GetEligibilityAndRunCallback(
     base::OnceCallback<
         void(std::optional<optimization_guide::proto::AnnotatedPageContent>)>
         callback,
-    std::optional<optimization_guide::AIPageContentResult> content) {
+    optimization_guide::AIPageContentResultOrError content) {
   bool is_eligible =
-      content &&
+      content.has_value() &&
       (!page_context_eligibility ||
        optimization_guide::IsPageContextEligible(
            url.GetHost(), url.GetPath(),

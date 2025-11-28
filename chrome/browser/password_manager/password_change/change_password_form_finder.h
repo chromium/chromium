@@ -64,7 +64,7 @@ class ChangePasswordFormFinder {
       password_manager::PasswordFormManager* form_manager);
 
   void OnPageContentReceived(
-      std::optional<optimization_guide::AIPageContentResult> content);
+      optimization_guide::AIPageContentResultOrError content);
 
   OptimizationGuideKeyedService* GetOptimizationService();
 

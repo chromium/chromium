@@ -271,7 +271,7 @@ class LensSearchContextualizationController {
   void OnAnnotatedPageContentReceived(
       std::vector<lens::PageContent> page_contents,
       PageContentRetrievedCallback callback,
-      std::optional<optimization_guide::AIPageContentResult> apc);
+      optimization_guide::AIPageContentResultOrError apc);
 
   // Callback for when the page context eligibility is fetched. This should only
   // be used after the APC has been received. For the initial check before the

@@ -106,7 +106,7 @@ class ChangePasswordFormFillingSubmissionHelper {
       const std::optional<autofill::FormData>& submitted_form);
 
   void OnPageContentReceived(
-      std::optional<optimization_guide::AIPageContentResult> content);
+      optimization_guide::AIPageContentResultOrError content);
 
   OptimizationGuideKeyedService* GetOptimizationService();
 

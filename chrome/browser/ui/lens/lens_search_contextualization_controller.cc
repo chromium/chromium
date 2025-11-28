@@ -641,14 +641,14 @@ void LensSearchContextualizationController::MaybeGetAnnotatedPageContent(
 void LensSearchContextualizationController::OnAnnotatedPageContentReceived(
     std::vector<lens::PageContent> page_contents,
     PageContentRetrievedCallback callback,
-    std::optional<optimization_guide::AIPageContentResult> result) {
+    optimization_guide::AIPageContentResultOrError result) {
   // The tab URL is used to check if the page is context eligible.
   const auto& tab_url = lens_search_controller_->GetTabInterface()
                             ->GetContents()
                             ->GetLastCommittedURL();
 
   // Add the apc proto the page_contents if it exists.
-  if (result) {
+  if (result.has_value()) {
     // Convert the page metadata to a C struct defined in the optimization_guide
     // component so it can be passed to the shared library.
     std::vector<optimization_guide::FrameMetadata> frame_metadata_structs =
@@ -661,7 +661,7 @@ void LensSearchContextualizationController::OnAnnotatedPageContentReceived(
         base::BindOnce(&LensSearchContextualizationController::
                            OnPageContextEligibilityFetched,
                        weak_ptr_factory_.GetWeakPtr(), std::move(page_contents),
-                       std::move(callback), std::move(result)));
+                       std::move(callback), std::move(result.value())));
     return;
   }
 

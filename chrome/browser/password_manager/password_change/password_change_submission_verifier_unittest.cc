@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -214,7 +215,8 @@ TEST_F(PasswordChangeSubmissionVerifierTest,
   verifier->CheckSubmissionOutcome(completion_future.GetCallback());
 
   EXPECT_TRUE(verifier->capturer());
-  verifier->capturer()->ReplyWithContent(std::nullopt);
+  verifier->capturer()->ReplyWithContent(
+      base::unexpected("APC Capture Failed"));
 
   EXPECT_FALSE(completion_future.Get());
   histogram_tester.ExpectUniqueSample(

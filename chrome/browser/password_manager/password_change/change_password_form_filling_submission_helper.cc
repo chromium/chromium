@@ -322,13 +322,13 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
 }
 
 void ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived(
-    std::optional<optimization_guide::AIPageContentResult> content) {
+    optimization_guide::AIPageContentResultOrError content) {
   if (auto logger = GetLoggerIfAvailable(client_)) {
     logger->LogBoolean(
         Logger::STRING_AUTOMATED_PASSWORD_CHANGE_PAGE_CONTENT_RECEIVED,
         content.has_value());
   }
-  if (!content) {
+  if (!content.has_value()) {
     LogPageContentCaptureFailure(password_manager::metrics_util::
                                      PasswordChangeFlowStep::kSubmitFormStep);
     std::move(callback_).Run(false);
