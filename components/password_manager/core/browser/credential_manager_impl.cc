@@ -102,8 +102,7 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
   // last_submitted_form_ is saved as a member field because `Update` clears all
   // password forms tracked by Password Manager and we are not guaranteed to
   // receive a single `Update` call from a website.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kEnableActorLoginPermissions) &&
+  if (base::FeatureList::IsEnabled(password_manager::features::kActorLogin) &&
       last_submitted_form_->actor_login_approved &&
       pwm_credential_matches_cmapi_credential) {
     form_manager_->SetShouldStoreActorLoginPermission();

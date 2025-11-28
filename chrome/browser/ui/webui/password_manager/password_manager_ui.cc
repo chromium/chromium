@@ -658,8 +658,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 
   source->AddBoolean(
       "enableActorLoginPermissions",
-      base::FeatureList::IsEnabled(
-          password_manager::features::kEnableActorLoginPermissions));
+      base::FeatureList::IsEnabled(password_manager::features::kActorLogin));
 
   source->AddBoolean("passwordChangeAvailable",
                      PasswordChangeServiceFactory::GetForProfile(profile)

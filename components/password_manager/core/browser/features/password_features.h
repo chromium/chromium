@@ -29,8 +29,6 @@ BASE_DECLARE_FEATURE(kActorLoginReauthTaskRefocus);
 BASE_DECLARE_FEATURE(kActorLoginQualityLogs);
 // Enables finding and filling forms in same-site iframes for actor login.
 BASE_DECLARE_FEATURE(kActorLoginSameSiteIframeSupport);
-// Enables Actor Login permissions UI in Password Manager settings
-BASE_DECLARE_FEATURE(kEnableActorLoginPermissions);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

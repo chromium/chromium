@@ -1876,11 +1876,9 @@ class CredentialManagerImplTestWithActorLoginPermissions
  public:
   CredentialManagerImplTestWithActorLoginPermissions() {
     if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          features::kEnableActorLoginPermissions);
+      feature_list_.InitAndEnableFeature(features::kActorLogin);
     } else {
-      feature_list_.InitAndDisableFeature(
-          features::kEnableActorLoginPermissions);
+      feature_list_.InitAndDisableFeature(features::kActorLogin);
     }
   }
 
