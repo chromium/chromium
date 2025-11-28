@@ -37,11 +37,11 @@ class SecureChannelImpl : public SecureChannel {
 
   // SecureChannel:
   void SetResponseCallback(ResponseCallback callback) override;
+  void EstablishChannel(EstablishChannelCallback callback) override;
   bool Write(const Request& request) override;
 
-
  private:
- // Stages of the secure channel establishment and write process.
+  // Stages of the secure channel establishment and write process.
   enum class State {
     kUninitialized,
     kPerformingAttestation,
@@ -86,6 +86,8 @@ class SecureChannelImpl : public SecureChannel {
 
   ResponseCallback response_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::deque<Request> pending_encryption_requests_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<EstablishChannelCallback> pending_establishment_callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<SecureChannelImpl> weak_factory_

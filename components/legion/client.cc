@@ -122,6 +122,12 @@ Client::Client(SecureChannelFactory channel_factory)
 
 Client::~Client() = default;
 
+void Client::EstablishSession(OnEstablishSessionCompletedCallback callback) {
+  secure_channel_->EstablishChannel(
+      base::BindOnce(&Client::OnSessionEstablished, weak_factory_.GetWeakPtr(),
+                     std::move(callback)));
+}
+
 void Client::RecreateSecureChannel() {
   secure_channel_ = secure_channel_factory_.Run();
   secure_channel_->SetResponseCallback(
@@ -204,6 +210,11 @@ void Client::FailAllPendingRequests(ErrorCode error_code) {
   for (auto& entry : pending_requests) {
     std::move(entry.second).Run(base::unexpected(error_code));
   }
+}
+
+void Client::OnSessionEstablished(OnEstablishSessionCompletedCallback callback,
+                                  base::expected<void, ErrorCode> result) {
+  std::move(callback).Run(std::move(result));
 }
 
 void Client::OnRequestTimeout(int32_t request_id) {

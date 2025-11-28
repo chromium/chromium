@@ -45,6 +45,30 @@ void SecureChannelImpl::SetResponseCallback(ResponseCallback callback) {
   response_callback_ = std::move(callback);
 }
 
+void SecureChannelImpl::EstablishChannel(EstablishChannelCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (state_) {
+    case State::kUninitialized:
+      pending_establishment_callbacks_.push_back(std::move(callback));
+      StartSessionEstablishment();
+      return;
+    case State::kPerformingAttestation:
+    case State::kWaitingHandshakeMessage:
+    case State::kPerformingHandshake:
+    case State::kVerifyingHandshake:
+      pending_establishment_callbacks_.push_back(std::move(callback));
+      return;
+    case State::kEstablished:
+      std::move(callback).Run(base::ok());
+      return;
+    case State::kClosed:
+      DLOG(ERROR) << "SecureChannel is closed.";
+      std::move(callback).Run(base::unexpected(ErrorCode::kError));
+      return;
+  }
+}
+
 bool SecureChannelImpl::Write(const Request& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -193,6 +217,13 @@ void SecureChannelImpl::OnHandshakeVerification(bool handshake_verified) {
   DVLOG(1) << "Handshake response handled successfully.";
 
   state_ = State::kEstablished;
+
+  auto callbacks = std::move(pending_establishment_callbacks_);
+  pending_establishment_callbacks_.clear();
+  for (auto& cb : callbacks) {
+    std::move(cb).Run(base::ok());
+  }
+
   ProcessPendingEncryptionRequests();
 }
 
@@ -227,7 +258,8 @@ void SecureChannelImpl::StartSessionEstablishment() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK_EQ(state_, State::kUninitialized);
-  DCHECK(!pending_encryption_requests_.empty());
+  DCHECK(!pending_encryption_requests_.empty() ||
+         !pending_establishment_callbacks_.empty());
 
   // Step 1: Get and Send Attestation Request
   std::optional<oak::session::v1::AttestRequest> attestation_req =
@@ -248,12 +280,22 @@ void SecureChannelImpl::StartSessionEstablishment() {
 void SecureChannelImpl::FailAllRequestsAndClose(ErrorCode error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (state_ == State::kClosed) {
+    return;
+  }
   state_ = State::kClosed;
+
+  auto establishment_callbacks = std::move(pending_establishment_callbacks_);
+  pending_establishment_callbacks_.clear();
+  for (auto& cb : establishment_callbacks) {
+    std::move(cb).Run(base::unexpected(error_code));
+  }
 
   pending_encryption_requests_.clear();
 
-  CHECK(response_callback_);
-  response_callback_.Run(base::unexpected(error_code));
+  if (response_callback_) {
+    response_callback_.Run(base::unexpected(error_code));
+  }
 }
 
 void SecureChannelImpl::ProcessPendingEncryptionRequests() {

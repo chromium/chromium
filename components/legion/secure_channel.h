@@ -20,11 +20,16 @@ class SecureChannel {
  public:
   using ResponseCallback =
       base::RepeatingCallback<void(base::expected<Response, ErrorCode>)>;
+  using EstablishChannelCallback =
+      base::OnceCallback<void(base::expected<void, ErrorCode>)>;
 
   virtual ~SecureChannel() = default;
 
   // Sets a callback that will be invoked for each response from the server.
   virtual void SetResponseCallback(ResponseCallback callback) = 0;
+
+  // Establishes a secure channel without sending a request.
+  virtual void EstablishChannel(EstablishChannelCallback callback) = 0;
 
   // Asynchronously performs the operation over the secure channel.
   // Returns false if the channel is in a permanent failure state.

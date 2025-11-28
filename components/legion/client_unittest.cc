@@ -42,6 +42,10 @@ class MockSecureChannelClient : public SecureChannel {
               SetResponseCallback,
               (ResponseCallback callback),
               (override));
+  MOCK_METHOD(void,
+              EstablishChannel,
+              (EstablishChannelCallback callback),
+              (override));
   MOCK_METHOD(bool, Write, (const Request& request), (override));
 };
 
@@ -273,7 +277,8 @@ TEST_F(ClientTest, SendTextRequestTimeout) {
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
-                           "some text", future.GetCallback(), base::Seconds(10));
+                           "some text", future.GetCallback(),
+                           base::Seconds(10));
 
   // The request is sent but no response is received yet.
   ASSERT_FALSE(future.IsReady());
@@ -297,7 +302,8 @@ TEST_F(ClientTest, SendTextRequestResponseAfterTimeout) {
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
-                           "some text", future.GetCallback(), base::Seconds(10));
+                           "some text", future.GetCallback(),
+                           base::Seconds(10));
 
   // The request is sent but no response is received yet.
   ASSERT_FALSE(future.IsReady());
@@ -489,5 +495,49 @@ INSTANTIATE_TEST_SUITE_P(
                       serialized_response.begin(), serialized_response.end());
                 }(),
             .expected_error = ErrorCode::kNoResponse}));
+
+// Tests that if session establishment fails, any pending requests are also
+// failed.
+TEST_F(ClientTest, EstablishSessionFailureFailsPendingRequests) {
+  auto* first_channel = factory_.secure_channel_.get();
+
+  // The first write will be queued.
+  EXPECT_CALL(*first_channel, Write(_)).WillOnce(testing::Return(true));
+
+  // The session establishment will fail.
+  EXPECT_CALL(*first_channel, EstablishChannel(_))
+      .WillOnce([&](SecureChannel::EstablishChannelCallback cb) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(cb),
+                           base::unexpected(ErrorCode::kHandshakeFailed)));
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(factory_.response_callback_,
+                           base::unexpected(ErrorCode::kHandshakeFailed)));
+      });
+
+  // Send a request that will get queued.
+  base::test::TestFuture<base::expected<std::string, ErrorCode>> text_future;
+  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+                           "some text", text_future.GetCallback());
+
+  // Attempt to establish the session, which will fail.
+  base::test::TestFuture<base::expected<void, ErrorCode>> establish_future;
+  client_->EstablishSession(establish_future.GetCallback());
+
+  // The establishment should fail.
+  const auto& establish_result = establish_future.Get();
+  ASSERT_FALSE(establish_result.has_value());
+  EXPECT_EQ(establish_result.error(), ErrorCode::kHandshakeFailed);
+
+  // The queued text request should also have failed with the same error.
+  const auto& text_result = text_future.Get();
+  ASSERT_FALSE(text_result.has_value());
+  EXPECT_EQ(text_result.error(), ErrorCode::kHandshakeFailed);
+
+  // A new channel should have been created.
+  EXPECT_NE(first_channel, factory_.secure_channel_.get());
+}
 
 }  // namespace legion

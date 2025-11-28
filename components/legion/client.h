@@ -49,6 +49,10 @@ class Client {
   using OnGenerateContentRequestCompletedCallback = base::OnceCallback<void(
       base::expected<proto::GenerateContentResponse, ErrorCode> result)>;
 
+  // Callback for when a `EstablishSession` operation completes.
+  using OnEstablishSessionCompletedCallback =
+      base::OnceCallback<void(base::expected<void, ErrorCode>)>;
+
   using SecureChannelFactory =
       base::RepeatingCallback<std::unique_ptr<SecureChannel>()>;
 
@@ -66,6 +70,11 @@ class Client {
 
   Client(const Client&) = delete;
   Client& operator=(const Client&) = delete;
+
+  // Establishes a secure session without sending a request. The callback will
+  // be invoked upon completion. Calling this function is optional as a session
+  // will be established automatically when needed/first request is sent.
+  void EstablishSession(OnEstablishSessionCompletedCallback callback);
 
   // Sends a request with a single text content.
   void SendTextRequest(proto::FeatureName feature_name,
@@ -110,6 +119,10 @@ class Client {
 
   // Fails all pending requests with the given error code.
   void FailAllPendingRequests(ErrorCode error_code);
+
+  // Handles the result of a session establishment request.
+  void OnSessionEstablished(OnEstablishSessionCompletedCallback callback,
+                            base::expected<void, ErrorCode> result);
 
   std::unique_ptr<SecureChannel> secure_channel_;
   SecureChannelFactory secure_channel_factory_;
