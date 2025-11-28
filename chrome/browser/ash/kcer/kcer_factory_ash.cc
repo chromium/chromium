@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/nss_service.h"

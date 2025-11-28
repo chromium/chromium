@@ -6,6 +6,7 @@
 
 #include "base/byte_count.h"
 #include "base/check_op.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"

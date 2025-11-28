@@ -18,6 +18,7 @@
 #include "ash/style/typography.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/vector_icons/vector_icons.h"

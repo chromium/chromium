@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"

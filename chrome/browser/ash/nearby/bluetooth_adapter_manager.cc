@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "device/bluetooth/adapter.h"

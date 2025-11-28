@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/experiences/clipboard/clipboard_history_test_util.h"
 
+#include "base/functional/callback_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace clipboard_history {

@@ -6,6 +6,7 @@
 
 #include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"

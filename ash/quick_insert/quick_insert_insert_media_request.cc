@@ -11,6 +11,7 @@
 #include "ash/quick_insert/quick_insert_rich_media.h"
 #include "ash/quick_insert/quick_insert_web_paste_target.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/ime/input_method.h"

@@ -10,6 +10,7 @@
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/cxx23_to_underlying.h"

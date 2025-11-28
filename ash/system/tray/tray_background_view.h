@@ -19,6 +19,10 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/context_menu_controller.h"
 
+namespace base {
+class ScopedClosureRunner;
+}  // namespace base
+
 namespace ui {
 class Event;
 }  // namespace ui

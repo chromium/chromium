@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/quick_insert/views/quick_insert_image_item_view.h"
+#include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"

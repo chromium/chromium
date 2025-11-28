@@ -6,6 +6,7 @@
 
 #include "ash/quick_insert/views/quick_insert_badge_view.h"
 #include "ash/quick_insert/views/quick_insert_list_item_view.h"
+#include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/views_test_base.h"

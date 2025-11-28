@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/grammar_manager.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/grammar_service_client.h"

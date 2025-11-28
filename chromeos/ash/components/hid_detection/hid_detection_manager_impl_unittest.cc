@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/hid_detection/hid_detection_manager_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"

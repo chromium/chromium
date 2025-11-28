@@ -19,6 +19,7 @@
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "google_apis/common/api_error_codes.h"

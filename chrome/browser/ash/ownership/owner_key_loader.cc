@@ -14,6 +14,7 @@
 
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

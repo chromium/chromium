@@ -13,6 +13,7 @@
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/notification_grouping_controller.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chromeos/ash/experiences/arc/message_center/arc_notification_content_view.h"
 #include "chromeos/ash/experiences/arc/message_center/arc_notification_item.h"

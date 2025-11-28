@@ -13,6 +13,7 @@
 #include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
