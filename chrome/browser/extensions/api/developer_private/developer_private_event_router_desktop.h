@@ -8,7 +8,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router_shared.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
-#include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -18,8 +17,7 @@ namespace extensions {
 
 class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
                                     public AppWindowRegistry::Observer,
-                                    public ToolbarActionsModel::Observer,
-                                    public AccountExtensionTracker::Observer {
+                                    public ToolbarActionsModel::Observer {
  public:
   explicit DeveloperPrivateEventRouter(Profile* profile);
 
@@ -43,17 +41,10 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
   void OnToolbarModelInitialized() override {}
   void OnToolbarPinnedActionsChanged() override;
 
-  // AccountExtensionTracker::Observer:
-  void OnExtensionUploadabilityChanged(const ExtensionId& id) override;
-  void OnExtensionsUploadabilityChanged() override;
-
   base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
       app_window_registry_observation_{this};
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_actions_model_observation_{this};
-  base::ScopedObservation<AccountExtensionTracker,
-                          AccountExtensionTracker::Observer>
-      account_extension_tracker_observation_{this};
 };
 
 }  // namespace extensions

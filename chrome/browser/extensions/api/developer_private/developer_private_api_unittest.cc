@@ -3582,9 +3582,7 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest,
 
 // Signing into transport mode and Sign outs are not supported for ChromeOS
 // hence DeveloperPrivateApiTransportModeUnitTest is not run for ChromeOS.
-// TODO(crbug.com/439448250): Enable on desktop android. Currently all the
-// DeveloperPrivateApiTransportModeUnitTest tests block forever on WaitForEvent.
-#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 class DeveloperPrivateApiTransportModeUnitTest
     : public DeveloperPrivateApiUnitTest {
  public:
@@ -3987,6 +3985,6 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
   EXPECT_FALSE(info.can_upload_as_account_extension);
   EXPECT_FALSE(CanUploadToAccount(*extension));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

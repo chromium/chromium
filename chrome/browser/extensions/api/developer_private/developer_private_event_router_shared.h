@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -38,15 +39,17 @@ namespace extensions {
 // By observing these keyed services, we create dependencies on them. Those
 // dependencies are maintained in developer_private_api.cc in the
 // DeclareFactoryDependencies() template function instantiation.
-class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
-                                          public ErrorConsole::Observer,
-                                          public ProcessManagerObserver,
-                                          public ExtensionPrefsObserver,
-                                          public WarningService::Observer,
-                                          public PermissionsManager::Observer,
-                                          public ExtensionManagement::Observer,
-                                          public ExtensionAllowlist::Observer,
-                                          public CommandService::Observer {
+class DeveloperPrivateEventRouterShared
+    : public ExtensionRegistryObserver,
+      public ErrorConsole::Observer,
+      public ProcessManagerObserver,
+      public ExtensionPrefsObserver,
+      public WarningService::Observer,
+      public PermissionsManager::Observer,
+      public ExtensionManagement::Observer,
+      public ExtensionAllowlist::Observer,
+      public CommandService::Observer,
+      public AccountExtensionTracker::Observer {
  public:
   static api::developer_private::UserSiteSettings ConvertToUserSiteSettings(
       const PermissionsManager::UserPermissionsSettings& settings);
@@ -143,6 +146,10 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
   void OnExtensionCommandRemoved(const ExtensionId& extension_id,
                                  const std::string& command_name) override;
 
+  // AccountExtensionTracker::Observer:
+  void OnExtensionUploadabilityChanged(const ExtensionId& id) override;
+  void OnExtensionsUploadabilityChanged() override;
+
   // Handles a profile preference change.
   void OnProfilePrefChanged();
 
@@ -170,6 +177,9 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
       extension_allowlist_observer_{this};
   base::ScopedObservation<CommandService, CommandService::Observer>
       command_service_observation_{this};
+  base::ScopedObservation<AccountExtensionTracker,
+                          AccountExtensionTracker::Observer>
+      account_extension_tracker_observation_{this};
 
   // The set of IDs of the Extensions that have subscribed to DeveloperPrivate
   // events. Since the only consumer of the DeveloperPrivate API is currently

@@ -14,9 +14,11 @@
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
@@ -94,6 +96,11 @@ DeveloperPrivateEventRouterShared::DeveloperPrivateEventRouterShared(
       base::BindRepeating(
           &DeveloperPrivateEventRouterShared::OnProfilePrefChanged,
           base::Unretained(this)));
+
+  if (switches::IsExtensionsExplicitBrowserSigninEnabled()) {
+    account_extension_tracker_observation_.Observe(
+        AccountExtensionTracker::Get(profile));
+  }
 }
 
 DeveloperPrivateEventRouterShared::~DeveloperPrivateEventRouterShared() =
@@ -266,6 +273,22 @@ void DeveloperPrivateEventRouterShared::OnExtensionCommandRemoved(
     const std::string& command_name) {
   BroadcastItemStateChanged(developer::EventType::kCommandRemoved,
                             extension_id);
+}
+
+void DeveloperPrivateEventRouterShared::OnExtensionUploadabilityChanged(
+    const ExtensionId& id) {
+  BroadcastItemStateChanged(developer::EventType::kPrefsChanged, id);
+}
+
+void DeveloperPrivateEventRouterShared::OnExtensionsUploadabilityChanged() {
+  const ExtensionSet extensions =
+      ExtensionRegistry::Get(profile_)->GenerateInstalledExtensionsSet();
+  for (const auto& extension : extensions) {
+    if (sync_util::ShouldSync(profile_, extension.get())) {
+      BroadcastItemStateChanged(developer::EventType::kPrefsChanged,
+                                extension->id());
+    }
+  }
 }
 
 void DeveloperPrivateEventRouterShared::OnProfilePrefChanged() {
