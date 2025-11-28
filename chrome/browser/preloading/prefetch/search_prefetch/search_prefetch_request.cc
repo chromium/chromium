@@ -397,8 +397,6 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
   if (servable_response_code_received_) {
     // Case 3, 4: This can start prerendering because it has received a
     // response.
-    // TODO(crbug.com/40214220): Do not start prerendering if this
-    // request is about to expire.
     if (prerender_url.is_empty()) {
       SCOPED_CRASH_KEY_STRING32(
           "bug447128953", "prefetch_origin",
@@ -430,8 +428,6 @@ void SearchPrefetchRequest::OnServableResponseCodeReceived() {
     base::debug::DumpWithoutCrashing();
     return;
   }
-  // TODO(crbug.com/40214220): Do not start prerendering if this request
-  // is about to expire.
   prerender_manager_->StartPrerenderSearchResult(
       canonical_search_url_, prerender_url_, prerender_preloading_attempt_);
 }
