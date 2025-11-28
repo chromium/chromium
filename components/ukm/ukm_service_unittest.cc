@@ -1838,26 +1838,6 @@ TEST_F(UkmServiceTest, PurgeNonCarriedOverSources) {
   EXPECT_EQ(app_id, proto_report.sources(1).id());
 }
 
-TEST_F(UkmServiceTest, IdentifiabilityMetricsDontExplode) {
-  UkmService service(&prefs_, &client_,
-                     std::make_unique<MockDemographicMetricsProvider>());
-  TestRecordingHelper recorder(&service);
-  ASSERT_EQ(0, GetPersistedLogCount());
-  service.Initialize();
-  task_runner_->RunUntilIdle();
-  service.UpdateRecording({UkmConsentType::MSBB});
-  service.EnableReporting();
-
-  SourceId id = GetAllowlistedSourceId(0);
-  recorder.UpdateSourceURL(id, GURL("https://google.com/foobar"));
-
-  builders::Identifiability(id).SetStudyGeneration_626(0).Record(&service);
-  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
-  ASSERT_EQ(1, GetPersistedLogCount());
-  Report proto_report = GetPersistedReport();
-  EXPECT_EQ(1, proto_report.entries_size());
-}
-
 TEST_F(UkmServiceTest, FilterCanRemoveMetrics) {
   class TestEntryFilter : public UkmEntryFilter {
    public:

@@ -153,15 +153,6 @@ void AppendAllowlistedUrls(
   }
 }
 
-// Returns true if the event corresponding to |event_hash| has a comprehensive
-// decode map that includes all valid metrics.
-bool HasComprehensiveDecodeMap(int64_t event_hash) {
-  // All events other than "Identifiability" conforms to its decode map.
-  // TODO(asanka): It is technically an abstraction violation for
-  // //components/ukm to know this fact.
-  return event_hash != builders::Identifiability::kEntryNameHash;
-}
-
 bool HasUnknownMetrics(const builders::DecodeMap& decode_map,
                        const mojom::UkmEntry& entry) {
   const auto it = decode_map.find(entry.event_hash);
@@ -172,8 +163,6 @@ bool HasUnknownMetrics(const builders::DecodeMap& decode_map,
         << " decode_map.size()=" << decode_map.size() << "]";
     return true;
   }
-  if (!HasComprehensiveDecodeMap(entry.event_hash))
-    return false;
   const auto& metric_map = it->second.metric_map;
   for (const auto& metric : entry.metrics) {
     if (metric_map.count(metric.first) == 0) {

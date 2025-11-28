@@ -267,15 +267,6 @@ class IdentifiableSurface {
     kMaxValue = kServiceWorker,
   };
 
-  static_assert(
-      static_cast<uint64_t>(ReservedSurfaceMetrics::kMaxValue) <
-          std::min(
-              ukm::builders::Identifiability::kGeneratorVersion_926NameHash,
-              ukm::builders::Identifiability::kStudyGeneration_626NameHash),
-      "All the ReservedSurfaceMetrics enum values should be strictly smaller "
-      "than kGeneratorVersion_926NameHash and kStudyGeneration_626NameHash to "
-      "avoid collisions.");
-
   // HTML canvas readback -- bits [0-3] of the 64-bit input are the context type
   // (Type::kCanvasReadback), bits [4-6] are skipped ops, sensitive ops, and
   // partial image ops bits, respectively. The remaining bits are for the canvas

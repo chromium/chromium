@@ -57,7 +57,6 @@
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "chrome/browser/privacy_budget/privacy_budget_metrics_provider.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
-#include "chrome/browser/privacy_budget/privacy_budget_ukm_entry_filter.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_metrics_provider.h"
@@ -728,9 +727,6 @@ void ChromeMetricsServiceClient::Initialize() {
             metrics::MetricsLogUploader::MetricServiceType::UKM));
     ukm_service_->SetIsWebstoreExtensionCallback(
         base::BindRepeating(&IsWebstoreExtension));
-    ukm_service_->RegisterEventFilter(
-        std::make_unique<PrivacyBudgetUkmEntryFilter>(
-            identifiability_study_state_.get()));
 
     RegisterUKMProviders();
   }

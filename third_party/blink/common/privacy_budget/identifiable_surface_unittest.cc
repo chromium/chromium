@@ -12,20 +12,6 @@
 
 namespace blink {
 
-// These metric names were chosen so that they result in a surface type of
-// kReservedInternal. These are static_asserts because these expressions should
-// resolve at compile-time.
-static_assert(IdentifiableSurface::FromMetricHash(
-                  ukm::builders::Identifiability::kStudyGeneration_626NameHash)
-                      .GetType() ==
-                  IdentifiableSurface::Type::kReservedInternal,
-              "");
-static_assert(IdentifiableSurface::FromMetricHash(
-                  ukm::builders::Identifiability::kGeneratorVersion_926NameHash)
-                      .GetType() ==
-                  IdentifiableSurface::Type::kReservedInternal,
-              "");
-
 TEST(IdentifiableSurfaceTest, FromTypeAndTokenIsConstexpr) {
   constexpr uint64_t kTestInputHash = 5u;
   constexpr auto kSurface = IdentifiableSurface::FromTypeAndToken(

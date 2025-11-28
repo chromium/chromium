@@ -36,39 +36,6 @@ void PrivacyBudgetBrowserTestBaseWithTestRecorder::TearDownOnMainThread() {
   PlatformBrowserTest::TearDownOnMainThread();
 }
 
-base::flat_set<uint64_t>
-PrivacyBudgetBrowserTestBaseWithTestRecorder::GetReportedSurfaceKeys(
-    std::vector<uint64_t> expected_keys) {
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      ukm_recorder_->GetMergedEntriesByName(
-          ukm::builders::Identifiability::kEntryName);
-
-  base::flat_set<uint64_t> reported_surface_keys;
-  for (const auto& entry : merged_entries) {
-    for (const auto& metric : entry.second->metrics) {
-      if (base::Contains(expected_keys, metric.first))
-        reported_surface_keys.insert(metric.first);
-    }
-  }
-  return reported_surface_keys;
-}
-
-int PrivacyBudgetBrowserTestBaseWithTestRecorder::GetSurfaceKeyCount(
-    uint64_t expected_key) {
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
-      ukm_recorder_->GetEntriesByName(
-          ukm::builders::Identifiability::kEntryName);
-
-  int count = 0;
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    for (const auto& metric : entry->metrics) {
-      if (expected_key == metric.first)
-        count++;
-    }
-  }
-  return count;
-}
-
 content::WebContents*
 PrivacyBudgetBrowserTestBaseWithTestRecorder::web_contents() {
   return chrome_test_utils::GetActiveWebContents(this);
