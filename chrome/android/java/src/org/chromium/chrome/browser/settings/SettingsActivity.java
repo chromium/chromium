@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -45,6 +46,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
@@ -288,27 +290,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                             fragmentManager.findFragmentByTag(MULTI_COLUMN_FRAGMENT_TAG);
         }
 
-        if (ChromeFeatureList.sSearchInSettings.isEnabled()) {
-            mSearchCoordinator =
-                    new SettingsSearchCoordinator(
-                            this,
-                            this::getUseMultiColumn,
-                            mMultiColumnSettings,
-                            mItemDecorations,
-                            mProfile);
-            mSearchCoordinator.initializeSearchUi();
-        }
-
         if (!mStandalone) {
             if (isMultiColumnSettingEnabled()) {
                 assert mMultiColumnSettings != null;
-                mMultiColumnTitleUpdater =
-                        new MultiColumnTitleUpdater(
-                                mMultiColumnSettings,
-                                actionBar.getContext(),
-                                findViewById(R.id.settings_detailed_pane_title),
-                                this::setTitle);
-                mMultiColumnSettings.addObserver(mMultiColumnTitleUpdater);
+                createMultiColumnTitleUpdater();
             } else {
                 mTitleUpdater = new TitleUpdater();
                 fragmentManager.registerFragmentLifecycleCallbacks(
@@ -353,6 +338,60 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             return true;
         }
         return result;
+    }
+
+    @RequiresNonNull("mMultiColumnSettings")
+    private void createMultiColumnTitleUpdater() {
+        if (!ChromeFeatureList.sSearchInSettings.isEnabled()) {
+            createMultiColumTitleUpdaterInternal(findViewById(R.id.settings_detailed_pane_title));
+        } else {
+            getSupportFragmentManager()
+                    .registerFragmentLifecycleCallbacks(
+                            new FragmentManager.FragmentLifecycleCallbacks() {
+
+                                @Override
+                                public void onFragmentViewCreated(
+                                        @NonNull FragmentManager fm,
+                                        @NonNull Fragment f,
+                                        @NonNull View v,
+                                        @Nullable Bundle savedInstanceState) {
+                                    assert mMultiColumnSettings != null;
+                                    createMultiColumTitleUpdaterInternal(
+                                            v.findViewById(R.id.settings_title_in_detailed_pane));
+                                    fm.unregisterFragmentLifecycleCallbacks(this);
+                                    createSearchCoordinator();
+                                }
+                            },
+                            false);
+        }
+    }
+
+    @RequiresNonNull("mMultiColumnSettings")
+    private void createMultiColumTitleUpdaterInternal(LinearLayout titleContainer) {
+        mMultiColumnTitleUpdater =
+                new MultiColumnTitleUpdater(
+                        mMultiColumnSettings,
+                        titleContainer.getContext(),
+                        titleContainer,
+                        this::setTitle);
+        mMultiColumnSettings.addObserver(mMultiColumnTitleUpdater);
+    }
+
+    private void createSearchCoordinator() {
+        assert ChromeFeatureList.sSearchInSettings.isEnabled();
+        Callback<Integer> updateFirstVisibleTitle =
+                isMultiColumnSettingEnabled()
+                        ? assumeNonNull(mMultiColumnTitleUpdater)::setFirstVisibleTitleIndex
+                        : CallbackUtils.emptyCallback();
+        mSearchCoordinator =
+                new SettingsSearchCoordinator(
+                        this,
+                        this::getUseMultiColumn,
+                        mMultiColumnSettings,
+                        mItemDecorations,
+                        mProfile,
+                        updateFirstVisibleTitle);
+        mSearchCoordinator.initializeSearchUi();
     }
 
     /**

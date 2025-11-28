@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.settings;
 
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import android.content.Context;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -27,6 +30,13 @@ import org.chromium.ui.base.LocalizationUtils;
  */
 @NullMarked
 class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
+
+    private static final LinearLayout.LayoutParams LAYOUT_CENTER_VERTICAL;
+
+    static {
+        LAYOUT_CENTER_VERTICAL = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+        LAYOUT_CENTER_VERTICAL.gravity = Gravity.CENTER_VERTICAL;
+    }
 
     /** Displays one component of the detailed pane fragment stack. */
     private static class DetailedTitle extends AppCompatTextView {
@@ -73,6 +83,17 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     private final Callback<String> mMainTitleSetter;
 
     private boolean mMainMenuShown;
+
+    /**
+     * The index of the first title to show. Used to skip displaying the titles preceding {@code
+     * Search results} when search is going on.
+     *
+     * <p>Example: if search starts with the title text {@code Payment methods > Payment apps >
+     * Search results}, |mFirstVisibleTitleIndex| is set to 2 so that the displayed text will be
+     * just {@code Search results > ..} from that point on. Once search is over, the variable is set
+     * back to 0 and the displayed text becomes {@code Payment method > Payment apps} again.
+     */
+    private int mFirstVisibleTitleIndex;
 
     /**
      * Keeps tracking the current main page title supplier. Null if not tracking, e.g. in two pane
@@ -126,6 +147,11 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         }
     }
 
+    /** Set the index of the first title to show. Non-zero when search is on. */
+    public void setFirstVisibleTitleIndex(int i) {
+        mFirstVisibleTitleIndex = i;
+    }
+
     private void updateDetailedPageTitle() {
         // Reset the current title items if exists.
         for (int i = 0; i < mContainer.getChildCount(); ++i) {
@@ -143,18 +169,24 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
 
         float scaleX = LocalizationUtils.isLayoutRtl() ? -1f : 1f;
         var titles = mMultiColumnSettings.getTitles();
+
         for (int i = 0; i < titles.size(); ++i) {
-            if (i != 0) {
+            if (i < mFirstVisibleTitleIndex) continue;
+
+            if (i != mFirstVisibleTitleIndex) {
                 // '>' separator.
                 var view = new ImageView(mContext);
                 view.setPadding(paddingPx, 0, paddingPx, 0);
                 view.setImageResource(R.drawable.chevron_right);
                 view.setScaleX(scaleX);
+                view.setLayoutParams(LAYOUT_CENTER_VERTICAL);
                 mContainer.addView(view);
             }
             var view = new DetailedTitle(mContext);
             var title = titles.get(i);
             view.setSupplier(title.titleSupplier);
+            view.setGravity(Gravity.CENTER_VERTICAL);
+            view.setLayoutParams(LAYOUT_CENTER_VERTICAL);
 
             final int backStackCount = title.backStackCount;
             view.setOnClickListener(
@@ -175,6 +207,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                                             entry.getId(),
                                             FragmentManager.POP_BACK_STACK_INCLUSIVE);
                         }
+                        // TODO(crbug.com/462459895): Update search UI state.
                     });
             mContainer.addView(view);
         }
@@ -191,13 +224,15 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         }
 
         // Enable detailed page title.
-        // TODO(crbug.com/444464896): Move title from toolbar to the detail content pane when search
-        //     is enabled to avoid the search bar and the title breadcrumb overlapping each other.
-        if (!ChromeFeatureList.sSearchInSettings.isEnabled()) {
-            mContainer.setVisibility(View.VISIBLE);
-        }
+        mContainer.setVisibility(View.VISIBLE);
 
-        // Set left margin to align with the detailed pane.
+        maybeUpdateStartMargin();
+    }
+
+    // Set left margin to align with the detailed pane when displayed in the toolbar.
+    private void maybeUpdateStartMargin() {
+        if (ChromeFeatureList.sSearchInSettings.isEnabled()) return;
+
         View view = mMultiColumnSettings.getHeaderView();
         int headerViewWidth = view.getLayoutParams().width;
         int dividerWidth =
@@ -206,8 +241,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         int contentOffset =
                 view.getResources().getDimensionPixelSize(R.dimen.settings_detailed_title_offset);
 
-        ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams) mContainer.getLayoutParams();
+        var params = (ViewGroup.MarginLayoutParams) mContainer.getLayoutParams();
         params.setMarginStart(headerViewWidth + dividerWidth + contentOffset);
         mContainer.setLayoutParams(params);
         mContainer.invalidate();

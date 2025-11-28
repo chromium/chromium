@@ -35,6 +35,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup.PreferencePositionCallback;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -79,6 +80,8 @@ public class SettingsSearchCoordinator {
     private final Map<Fragment, ContainmentItemDecoration> mItemDecorations;
     private final Handler mHandler = new Handler();
     private final Profile mProfile;
+    private final Callback<Integer> mUpdateFirstVisibleTitle;
+
     private @Nullable Fragment mResultsFragment;
     private @Nullable Runnable mSearchRunnable;
     private @Nullable Runnable mRemoveResultChildViewListener;
@@ -134,19 +137,23 @@ public class SettingsSearchCoordinator {
      *     the multi-column settings feature is enabled.
      * @param itemDecorations Containment style map used to apply the style to the highlighted item.
      * @param profile User profile object.
+     * @param updateFirstVisibleTitle Callback used to set the first visible one of the titles. See
+     *     {@link MultiColumnSettings#mFirstVisibleTitleIndex}.
      */
     public SettingsSearchCoordinator(
             AppCompatActivity activity,
             BooleanSupplier useMultiColumnSupplier,
             @Nullable MultiColumnSettings multiColumnSettings,
             Map<Fragment, ContainmentItemDecoration> itemDecorations,
-            Profile profile) {
+            Profile profile,
+            Callback<Integer> updateFirstVisibleTitle) {
         mActivity = activity;
         mUseMultiColumnSupplier = useMultiColumnSupplier;
         mMultiColumnSettings = multiColumnSettings;
         mFragmentState = FS_SETTINGS;
         mItemDecorations = itemDecorations;
         mProfile = profile;
+        mUpdateFirstVisibleTitle = updateFirstVisibleTitle;
     }
 
     /** Initializes search UI, sets up listeners, backpress action handler, etc. */
@@ -315,6 +322,10 @@ public class SettingsSearchCoordinator {
             mMultiColumnSettings.getSlidingPaneLayout().openPane();
             mPaneOpenedBySearch = true;
         }
+        if (mUseMultiColumn) {
+            int stackCount = getSettingsFragmentManager().getBackStackEntryCount();
+            mUpdateFirstVisibleTitle.onResult(stackCount + 1);
+        }
     }
 
     private void exitSearchState() {
@@ -343,6 +354,7 @@ public class SettingsSearchCoordinator {
 
         mFragmentState = FS_SETTINGS;
         mBackActionCallback.setEnabled(false);
+        if (mUseMultiColumn) mUpdateFirstVisibleTitle.onResult(0);
     }
 
     private void exitResultState() {

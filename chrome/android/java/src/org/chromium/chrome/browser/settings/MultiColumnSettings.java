@@ -25,6 +25,8 @@ import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 
 import java.lang.annotation.Retention;
@@ -189,23 +191,26 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
+        boolean searchEnabled = ChromeFeatureList.sSearchInSettings.isEnabled();
+        if (searchEnabled) {
+            addTitleContainer(inflater, (SlidingPaneLayout) view);
+        }
         mHeaderView = view.findViewById(R.id.preferences_header);
+
         // Set up the initial width of child views.
         {
             var resources = view.getResources();
-            View detailView = view.findViewById(R.id.preferences_detail);
+            View detailView =
+                    view.findViewById(
+                            searchEnabled ? R.id.preferences_detail_pane : R.id.preferences_detail);
             LayoutParams params = detailView.getLayoutParams();
             // Set the minimum required width of detailed view here, so that the
             // SlidingPaneLayout handles single/multi column switch.
             params.width =
-                    resources.getDimensionPixelSize(
-                                    org.chromium.chrome.R.dimen
-                                            .settings_min_multi_column_screen_width)
-                            - resources.getDimensionPixelSize(
-                                    org.chromium.chrome.R.dimen.settings_narrow_header_width);
+                    resources.getDimensionPixelSize(R.dimen.settings_min_multi_column_screen_width)
+                            - resources.getDimensionPixelSize(R.dimen.settings_narrow_header_width);
             detailView.setLayoutParams(params);
         }
-
         // Register the callback to update header size if needed.
         view.addOnLayoutChangeListener(
                 (View v,
@@ -220,6 +225,21 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
                     updateHeaderLayout(v.findViewById(R.id.preferences_header));
                 });
         return view;
+    }
+
+    // Replaces the detailed pane added in super.onCreateView with a new one that displays
+    // the title at the top of the pane.
+    private void addTitleContainer(LayoutInflater inflater, SlidingPaneLayout slidingPaneLayout) {
+        View oldDetailedView = slidingPaneLayout.findViewById(R.id.preferences_detail);
+        slidingPaneLayout.removeView(oldDetailedView);
+        var newDetailedView = inflater.inflate(R.layout.settings_preference_detail_pane, null);
+        var detailLayoutParams =
+                new SlidingPaneLayout.LayoutParams(
+                        getResources().getDimensionPixelSize(R.dimen.preferences_detail_width),
+                        SlidingPaneLayout.LayoutParams.MATCH_PARENT);
+        detailLayoutParams.weight =
+                getResources().getInteger(R.integer.preferences_detail_pane_weight);
+        slidingPaneLayout.addView(newDetailedView, detailLayoutParams);
     }
 
     /**

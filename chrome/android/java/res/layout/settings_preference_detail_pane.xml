@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/preferences_detail_pane"
+    android:layout_width="@dimen/preferences_detail_width"
+    android:layout_height="match_parent"
+    android:layout_weight="@integer/preferences_detail_pane_weight">
+    <!-- Detailed pane title placeholder.
+         Visible only in two pane UI -->
+    <LinearLayout
+        android:id="@+id/settings_title_in_detailed_pane"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_detailed_title_height"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/settings_title_margin"
+        android:layout_gravity="top|start"
+        android:visibility="gone"/>
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/preferences_detail"
+        android:layout_below="@id/settings_title_in_detailed_pane"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</RelativeLayout>

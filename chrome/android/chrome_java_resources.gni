@@ -598,6 +598,7 @@ chrome_java_resources = [
   "java/res/layout/send_tab_to_self_feature_unavailable_prompt.xml",
   "java/res/layout/send_tab_to_self_manage_devices_link.xml",
   "java/res/layout/settings_activity.xml",
+  "java/res/layout/settings_preference_detail_pane.xml",
   "java/res/layout/settings_search_box.xml",
   "java/res/layout/settings_search_query.xml",
   "java/res/layout/share_sheet_content.xml",
