@@ -899,6 +899,7 @@ class Module:
     self.transitive_generated_headers_modules = collections.defaultdict(set)
     self.cargo_env_compat = None
     self.cargo_pkg_version = None
+    self.whole_program_vtables = False
 
   def variant(self, arch_name):
     return self if arch_name == 'common' else self.target[arch_name]
@@ -976,6 +977,8 @@ class Module:
     self._output_field(output, 'static_inline_library')
     self._output_field(output, 'cargo_env_compat')
     self._output_field(output, 'cargo_pkg_version')
+    if self.whole_program_vtables:
+      self._output_field(output, 'whole_program_vtables')
     if self.rtti:
       self._output_field(output, 'rtti')
     target_out = []
@@ -3413,6 +3416,7 @@ def create_cc_defaults_module():
   ]
   defaults.build_file_path = ""
   defaults.include_build_directory = False
+  defaults.whole_program_vtables = True
   defaults.c_std = 'gnu11'
   # Chromium builds do not add a dependency for headers found inside the
   # sysroot, so they are added globally via defaults.
