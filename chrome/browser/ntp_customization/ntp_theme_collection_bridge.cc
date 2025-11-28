@@ -208,6 +208,20 @@ void NtpThemeCollectionBridge::SetThemeCollectionImage(
       base::android::ConvertJavaStringToUTF8(env, j_collection_id));
 }
 
+void NtpThemeCollectionBridge::SetThemeCollectionDailyRefreshed(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_collection_id) {
+  if (!ntp_custom_background_service_) {
+    return;
+  }
+
+  ntp_custom_background_service_->SetCustomBackgroundInfo(
+      /* background_url= */ GURL(), /* thumbnail_url= */ GURL(),
+      /* attribution_line_1= */ std::string(),
+      /* attribution_line_2= */ std::string(), /* action_url= */ GURL(),
+      base::android::ConvertJavaStringToUTF8(env, j_collection_id));
+}
+
 void NtpThemeCollectionBridge::SelectLocalBackgroundImage(JNIEnv* env) {
   if (!ntp_custom_background_service_) {
     return;

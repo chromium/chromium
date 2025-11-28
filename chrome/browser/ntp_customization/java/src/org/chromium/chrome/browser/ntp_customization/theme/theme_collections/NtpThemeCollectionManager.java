@@ -160,6 +160,6 @@ public class NtpThemeCollectionManager {
      * @param themeCollectionId The id of the theme collection
      */
     public void setThemeCollectionDailyRefreshed(String themeCollectionId) {
-        // TODO(crbug.com/423579377): Add logic here.}
+        mNtpThemeCollectionBridge.setThemeCollectionDailyRefreshed(themeCollectionId);
     }
 }

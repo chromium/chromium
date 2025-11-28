@@ -174,6 +174,19 @@ public class NtpThemeCollectionBridge {
     }
 
     /**
+     * Sets the New Tab Page background to a theme collection with daily refresh function enabled.
+     *
+     * @param themeCollectionId The id of the theme collection
+     */
+    public void setThemeCollectionDailyRefreshed(String themeCollectionId) {
+        if (mNativeNtpThemeCollectionBridge == 0) return;
+
+        NtpThemeCollectionBridgeJni.get()
+                .setThemeCollectionDailyRefreshed(
+                        mNativeNtpThemeCollectionBridge, themeCollectionId);
+    }
+
+    /**
      * Callback from native code, triggered when the custom background image has been successfully
      * updated. This can occur after a new theme is selected.
      */
@@ -246,6 +259,9 @@ public class NtpThemeCollectionBridge {
                 @Nullable String attributionLine1,
                 @Nullable String attributionLine2,
                 GURL attributionUrl);
+
+        void setThemeCollectionDailyRefreshed(
+                long nativeNtpThemeCollectionBridge, String collectionId);
 
         @Nullable CustomBackgroundInfo getCustomBackgroundInfo(long nativeNtpThemeCollectionBridge);
 

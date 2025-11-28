@@ -70,6 +70,12 @@ class NtpThemeCollectionBridge : public NtpBackgroundServiceObserver,
       const base::android::JavaParamRef<jstring>& j_attribution_line_2,
       const base::android::JavaParamRef<jobject>& j_attribution_url);
 
+  // Sets the New Tab Page background to a theme collection with daily refresh
+  // enabled.
+  void SetThemeCollectionDailyRefreshed(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& j_collection_id);
+
   // Fetches the current custom background information (e.g., URL, collection
   // ID) from the NtpCustomBackgroundService.
   base::android::ScopedJavaLocalRef<jobject> GetCustomBackgroundInfo(

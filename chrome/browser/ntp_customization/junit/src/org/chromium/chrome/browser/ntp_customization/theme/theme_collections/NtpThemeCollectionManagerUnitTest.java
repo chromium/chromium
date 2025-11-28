@@ -155,4 +155,13 @@ public class NtpThemeCollectionManagerUnitTest {
         mNtpThemeCollectionManager.selectLocalBackgroundImage();
         verify(mNatives).selectLocalBackgroundImage(1L);
     }
+
+    @Test
+    public void testSetThemeCollectionDailyRefreshed() {
+        mNtpThemeCollectionManager =
+                new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
+        String collectionId = "test_id";
+        mNtpThemeCollectionManager.setThemeCollectionDailyRefreshed(collectionId);
+        verify(mNatives).setThemeCollectionDailyRefreshed(eq(1L), eq(collectionId));
+    }
 }

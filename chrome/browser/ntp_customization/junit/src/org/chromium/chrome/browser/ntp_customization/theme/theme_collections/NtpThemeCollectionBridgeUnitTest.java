@@ -201,4 +201,11 @@ public class NtpThemeCollectionBridgeUnitTest {
         mNtpThemeCollectionBridge.onCustomBackgroundImageUpdated();
         verify(mOnThemeUpdatedCallback).onResult(null);
     }
+
+    @Test
+    public void testSetThemeCollectionDailyRefreshed() {
+        String collectionId = "test_id";
+        mNtpThemeCollectionBridge.setThemeCollectionDailyRefreshed(collectionId);
+        verify(mNatives).setThemeCollectionDailyRefreshed(eq(1L), eq(collectionId));
+    }
 }
