@@ -68,6 +68,11 @@ class TwoClientExtensionAppsSyncTest : public AppsSyncTestBase {
       const TwoClientExtensionAppsSyncTest&) = delete;
 
   ~TwoClientExtensionAppsSyncTest() override = default;
+
+  // Apps sync is only supported with Sync-the-feature.
+  SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
