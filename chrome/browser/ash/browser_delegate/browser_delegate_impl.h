@@ -35,6 +35,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   bool IsAttemptingToClose() const override;
   bool IsActive() const override;
   bool IsMinimized() const override;
+  bool IsVisible() const override;
   void Show() override;
   void ShowInactive() override;
   void Activate() override;
