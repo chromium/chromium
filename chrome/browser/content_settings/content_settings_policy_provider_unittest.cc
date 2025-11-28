@@ -35,6 +35,8 @@ using ::testing::_;
 
 namespace content_settings {
 
+constexpr char kTestSubdomainPattern[] = "[*.]google.com";
+
 class PolicyProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -93,6 +95,78 @@ TEST_F(PolicyProviderTest, GeolocationWithOptionsContentSetting) {
   EXPECT_FALSE(rule_iterator->HasNext());
 
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
+
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+  auto setting =
+      std::get<GeolocationSetting>(ValueToPermissionSetting(info, rule->value));
+  EXPECT_EQ(PermissionOption::kDenied, setting.approximate);
+  EXPECT_EQ(PermissionOption::kDenied, setting.precise);
+
+  provider.ShutdownOnUIThread();
+}
+
+TEST_F(PolicyProviderTest, PreciseGeolocationAllowedForUrlsWithOptions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kApproximateGeolocationPermission);
+
+  TestingProfile profile;
+  sync_preferences::TestingPrefServiceSyncable* prefs =
+      profile.GetTestingPrefService();
+  PolicyProvider provider(prefs);
+
+  base::Value::List list;
+  list.Append(kTestSubdomainPattern);
+  prefs->SetManagedPref(prefs::kManagedPreciseGeolocationAllowedForUrls,
+                        std::move(list));
+
+  std::unique_ptr<RuleIterator> rule_iterator = provider.GetRuleIterator(
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS, false);
+  ASSERT_TRUE(rule_iterator);
+  EXPECT_TRUE(rule_iterator->HasNext());
+  std::unique_ptr<Rule> rule = rule_iterator->Next();
+  EXPECT_FALSE(rule_iterator->HasNext());
+
+  EXPECT_EQ(ContentSettingsPattern::FromString(kTestSubdomainPattern),
+            rule->primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
+
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+  auto setting =
+      std::get<GeolocationSetting>(ValueToPermissionSetting(info, rule->value));
+  EXPECT_EQ(PermissionOption::kAllowed, setting.approximate);
+  EXPECT_EQ(PermissionOption::kAllowed, setting.precise);
+
+  provider.ShutdownOnUIThread();
+}
+
+TEST_F(PolicyProviderTest, GeolocationBlockedForUrlsWithOptions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kApproximateGeolocationPermission);
+
+  TestingProfile profile;
+  sync_preferences::TestingPrefServiceSyncable* prefs =
+      profile.GetTestingPrefService();
+  PolicyProvider provider(prefs);
+
+  base::Value::List list;
+  list.Append(kTestSubdomainPattern);
+  prefs->SetManagedPref(prefs::kManagedGeolocationBlockedForUrls,
+                        std::move(list));
+
+  std::unique_ptr<RuleIterator> rule_iterator = provider.GetRuleIterator(
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS, false);
+  ASSERT_TRUE(rule_iterator);
+  EXPECT_TRUE(rule_iterator->HasNext());
+  std::unique_ptr<Rule> rule = rule_iterator->Next();
+  EXPECT_FALSE(rule_iterator->HasNext());
+
+  EXPECT_EQ(ContentSettingsPattern::FromString(kTestSubdomainPattern),
+            rule->primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
 
   auto* info = PermissionSettingsRegistry::GetInstance()->Get(

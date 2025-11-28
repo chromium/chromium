@@ -533,6 +533,19 @@ void PolicyProvider::GetContentSettingsFromPreferences() {
       // Don't set a timestamp for policy settings.
       value_map_.SetValue(pattern_pair.first, secondary_pattern,
                           entry.content_type, base::Value(entry.setting), {});
+
+      if (entry.content_type == ContentSettingsType::GEOLOCATION &&
+          base::FeatureList::IsEnabled(
+              features::kApproximateGeolocationPermission)) {
+        auto* info = PermissionSettingsRegistry::GetInstance()->Get(
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+        value_map_.SetValue(pattern_pair.first, secondary_pattern,
+                            ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+                            info->delegate().ToValue(GeolocationSetting{
+                                ToPermissionOption(entry.setting),
+                                ToPermissionOption(entry.setting)}),
+                            {});
+      }
     }
   }
 }
