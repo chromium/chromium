@@ -43,7 +43,7 @@ public class TipsPromoViewBinder {
             TextView detailPageTitleView = view.findViewById(R.id.details_page_title_text);
             detailPageTitleView.setText(promoData.detailPageTitle);
             ImageView logoView = view.findViewById(R.id.main_page_logo);
-            logoView.setBackgroundResource(promoData.mainPageLogoViewRes);
+            logoView.setImageResource(promoData.mainPageLogoViewRes);
         } else if (key == TipsPromoProperties.DETAILS_BUTTON_CLICK_LISTENER) {
             ButtonCompat detailsButton = view.findViewById(R.id.tips_promo_details_button);
             detailsButton.setOnClickListener(

@@ -7,61 +7,80 @@ found in the LICENSE file.
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:layout_marginBottom="20dp">
 
-    <ImageView
-        android:id="@+id/main_page_logo"
-        android:layout_width="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_height="@dimen/tips_notifications_promo_logo_height"
-        android:importantForAccessibility="no"/>
-
-    <LinearLayout
-        android:accessibilityHeading="true"
+    <ScrollView
+        android:id="@+id/main_page_scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:clickable="true"
-        android:focusable="true">
+        android:scrollbars="none"
+        tools:ignore="UselessParent,MergeRootFrame">
 
-        <TextView
-            android:id="@+id/main_page_title_text"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/tips_notifications_bottom_sheet_title_padding"
-            android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
-            android:textAppearance="@style/TextAppearance.Headline"
-            android:gravity="center_horizontal|top"/>
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
 
-        <TextView
-            android:id="@+id/main_page_description_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="24dp"
-            android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
-            android:lineSpacingExtra="4dp"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-            android:gravity="center_horizontal|top"/>
+            <ImageView
+                android:id="@+id/main_page_logo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"/>
 
-    </LinearLayout>
+            <LinearLayout
+                android:accessibilityHeading="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:focusable="true">
 
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/tips_promo_settings_button" style="@style/FilledButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
-        android:padding="@dimen/tips_notifications_bottom_sheet_button_padding"/>
+                <TextView
+                    android:id="@+id/main_page_title_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/tips_notifications_bottom_sheet_title_padding"
+                    android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+                    android:textAppearance="@style/TextAppearance.Headline"
+                    android:gravity="center_horizontal|top"/>
 
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/tips_promo_details_button" style="@style/TextButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
-        android:padding="@dimen/tips_notifications_bottom_sheet_button_padding"
-        android:text="@string/tips_promo_bottom_sheet_negative_button_text"/>
+                <TextView
+                    android:id="@+id/main_page_description_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="24dp"
+                    android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+                    android:lineSpacingExtra="4dp"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                    android:gravity="center_horizontal|top"/>
+
+            </LinearLayout>
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/tips_promo_settings_button" style="@style/FilledButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+                android:padding="@dimen/tips_notifications_bottom_sheet_button_padding"/>
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/tips_promo_details_button" style="@style/TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+                android:padding="@dimen/tips_notifications_bottom_sheet_button_padding"
+                android:text="@string/tips_promo_bottom_sheet_negative_button_text"/>
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

@@ -102,7 +102,7 @@ public class TipsPromoViewBinderUnitTest {
         assertEquals(PROMO_TITLE, mTitleView.getText());
         assertEquals(PROMO_DESCRIPTION, mDescriptionView.getText());
         assertEquals(DETAILS_TITLE, mDetailsTitleView.getText());
-        assertNotNull(mLogoView.getBackground());
+        assertNotNull(mLogoView.getDrawable());
     }
 
     @SmallTest

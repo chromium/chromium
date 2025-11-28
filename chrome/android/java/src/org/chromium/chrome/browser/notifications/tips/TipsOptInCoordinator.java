@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.notifications.tips;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ScrollView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
@@ -110,10 +111,12 @@ public class TipsOptInCoordinator {
         private final BottomSheetObserver mBottomSheetOpenedObserver;
         private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
                 new ObservableSupplierImpl<>();
+        private final ScrollView mScrollView;
 
         TipsOptInSheetContent(View contentView, BottomSheetController controller) {
             mContentView = contentView;
             mController = controller;
+            mScrollView = mContentView.findViewById(R.id.opt_in_scrollview);
             mBottomSheetOpenedObserver =
                     new EmptyBottomSheetObserver() {
                         @Override
@@ -148,8 +151,18 @@ public class TipsOptInCoordinator {
             return null;
         }
 
+        /**
+         * The vertical scroll offset of the bottom sheet. The offset prevents scroll flinging from
+         * dismissing the sheet.
+         */
         @Override
         public int getVerticalScrollOffset() {
+            if (mScrollView != null) {
+                // Calculate the scroll position of the scrollview and make sure it is
+                // non-zero, otherwise allows swipe to dismiss on the bottom sheet.
+                return mScrollView.getScrollY();
+            }
+
             return 0;
         }
 

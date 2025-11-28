@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -300,6 +301,7 @@ public class TipsPromoCoordinator {
         private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
                 new ObservableSupplierImpl<>();
         private final @TipsNotificationsFeatureType int mFeatureTipType;
+        private final ScrollView mScrollView;
 
         TipsPromoSheetContent(
                 View contentView,
@@ -310,6 +312,7 @@ public class TipsPromoCoordinator {
             mModel = model;
             mController = controller;
             mFeatureTipType = featureTipType;
+            mScrollView = mContentView.findViewById(R.id.main_page_scrollview);
 
             mBottomSheetOpenedObserver =
                     new EmptyBottomSheetObserver() {
@@ -346,8 +349,22 @@ public class TipsPromoCoordinator {
             return null;
         }
 
+        /**
+         * The vertical scroll offset of the bottom sheet. The offset prevents scroll flinging from
+         * dismissing the sheet.
+         */
         @Override
         public int getVerticalScrollOffset() {
+            int currentScreen = mModel.get(TipsPromoProperties.CURRENT_SCREEN);
+
+            if (currentScreen == ScreenType.MAIN_SCREEN) {
+                if (mScrollView != null) {
+                    // Calculate the scroll position of the scrollview and make sure it is
+                    // non-zero, otherwise allows swipe to dismiss on the bottom sheet.
+                    return mScrollView.getScrollY();
+                }
+            }
+
             return 0;
         }
 

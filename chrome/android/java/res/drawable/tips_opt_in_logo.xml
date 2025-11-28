@@ -19,9 +19,6 @@ found in the LICENSE file.
     <clip-path
         android:pathData="M0,16C0,7.16 7.16,0 16,0H396C404.84,0 412,7.16 412,16V312H0V16Z"/>
     <path
-        android:pathData="M0,16C0,7.16 7.16,0 16,0H396C404.84,0 412,7.16 412,16V312H0V16Z"
-        android:fillColor="#ffffff"/>
-    <path
         android:pathData="M121.14,31L290.86,31A47.14,47.14 0,0 1,338 78.14L338,524.82A47.14,47.14 0,0 1,290.86 571.96L121.14,571.96A47.14,47.14 0,0 1,74 524.82L74,78.14A47.14,47.14 0,0 1,121.14 31z"
         android:fillColor="#F2FFF0"/>
     <path
