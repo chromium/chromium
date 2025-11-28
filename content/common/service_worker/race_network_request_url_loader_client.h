@@ -233,6 +233,11 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   void OnCloneCompleted();
   void OnCloneCompletedForFetchHandler();
 
+  void ForwardResponseToClient(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      std::optional<mojo_base::BigBuffer> cached_metadata);
+
   State state_ = State::kWaitForBody;
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
   const GURL resource_request_url_;
@@ -264,6 +269,10 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // TODO(crbug.com/340949948): Remove this after fixing the bug. This is set
   // only when the data cloning to the fetch handler is excplitly cancelled.
   bool clone_response_for_fetch_handler_cancelled_ = false;
+
+  // Whether URLLoaderClient's OnReceiveResponse() has been called. It must be
+  // called at most once. It is added to debug crbug.com/463388771.
+  bool has_forwarded_response_ = false;
 
   base::TimeTicks request_start_;
   base::Time request_start_time_;

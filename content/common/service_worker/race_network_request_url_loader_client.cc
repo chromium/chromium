@@ -190,8 +190,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
       }
       break;
     case DataConsumePolicy::kForwardingOnly:
-      forwarding_client_->OnReceiveResponse(std::move(head), std::move(body),
-                                            std::move(cached_metadata));
+      ForwardResponseToClient(std::move(head), std::move(body),
+                              std::move(cached_metadata));
       break;
   }
 }
@@ -322,7 +322,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
   if (state_ == State::kResponseReceived) {
     TransitionState(State::kDataTransferStarted);
     if (!simple_buffer_manager_.has_value()) {
-      forwarding_client_->OnReceiveResponse(
+      ForwardResponseToClient(
           head_->Clone(),
           write_buffer_manager_for_fetch_handler_.ReleaseConsumerHandle(),
           std::nullopt);
@@ -720,6 +720,20 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
       fetch_handler_end_time_.value() - response_received_time_.value());
 }
 
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::ForwardResponseToClient(
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body,
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
+  // OnReceiveResponse() can be called at most once. This check is added to
+  // debug crbug.com/463388771.
+  SCOPED_CRASH_KEY_STRING1024("crbug463388771", "race_url",
+                              resource_request_url_.spec());
+  CHECK(!has_forwarded_response_);
+  has_forwarded_response_ = true;
+  forwarding_client_->OnReceiveResponse(std::move(head), std::move(body),
+                                        std::move(cached_metadata));
+}
+
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::CloneResponse() {
   simple_buffer_manager_->Clone(
       write_buffer_manager_for_race_network_request_.ReleaseProducerHandle(),
@@ -736,7 +750,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
       base::BindOnce(&ServiceWorkerRaceNetworkRequestURLLoaderClient::
                          OnCloneCompletedForFetchHandler,
                      weak_factory_.GetWeakPtr()));
-  forwarding_client_->OnReceiveResponse(
+  ForwardResponseToClient(
       head_->Clone(),
       write_buffer_manager_for_fetch_handler_.ReleaseConsumerHandle(),
       std::nullopt);
