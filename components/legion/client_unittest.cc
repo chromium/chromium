@@ -157,6 +157,7 @@ TEST_F(ClientTest, SendTextRequestSuccess) {
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 0);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestErrorCode", 0);
 }
 
 // Test that SendRequest fails if SecureChannel::Write fails.
@@ -174,6 +175,8 @@ TEST_F(ClientTest, SendTextRequestWriteFails) {
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 1);
+  histogram_tester_.ExpectUniqueSample("Legion.Client.RequestErrorCode",
+                                       ErrorCode::kError, 1);
 }
 
 // Test that a response with an unknown request_id is ignored.
@@ -212,6 +215,7 @@ TEST_F(ClientTest, IgnoresResponseWithUnknownRequestId) {
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 0);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestErrorCode", 0);
 }
 
 // Test that the secure channel is recreated after a permanent failure.
@@ -234,6 +238,8 @@ TEST_F(ClientTest, SecureChannelRecreation) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 1);
+  histogram_tester_.ExpectUniqueSample("Legion.Client.RequestErrorCode",
+                                       ErrorCode::kNetworkError, 1);
 
   // A new channel should have been created.
   auto second_channel = factory_.secure_channel_;
@@ -292,6 +298,8 @@ TEST_F(ClientTest, SendTextRequestTimeout) {
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 0);
+  histogram_tester_.ExpectUniqueSample("Legion.Client.RequestErrorCode",
+                                       ErrorCode::kTimeout, 1);
 }
 
 // Test that a response received after a timeout is ignored.
@@ -339,6 +347,8 @@ TEST_F(ClientTest, SendTextRequestResponseAfterTimeout) {
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 0);
+  histogram_tester_.ExpectUniqueSample("Legion.Client.RequestErrorCode",
+                                       ErrorCode::kTimeout, 1);
 }
 
 // Test fixture for error conditions in SendTextRequest where the
@@ -367,6 +377,8 @@ TEST_P(ClientSendTextRequestSecureChannelErrorTest, SendTextRequestError) {
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 1);
+  histogram_tester_.ExpectUniqueSample("Legion.Client.RequestErrorCode", error_code,
+                                       1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -468,10 +480,13 @@ TEST_P(ClientSendGenerateContentRequestErrorTest,
     histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success",
                                        1);
     histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 0);
+    histogram_tester_.ExpectTotalCount("Legion.Client.RequestErrorCode", 0);
   } else {
     histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success",
                                        0);
     histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 1);
+    histogram_tester_.ExpectUniqueSample("Legion.Client.RequestErrorCode",
+                                       param.expected_error, 1);
   }
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
 }

@@ -281,10 +281,15 @@ void Client::OnRequestCompleted(
     base::UmaHistogramMediumTimes("Legion.Client.RequestLatency.Success",
                                   latency);
   } else if (result.error() == ErrorCode::kTimeout) {
+    base::UmaHistogramEnumeration("Legion.Client.RequestErrorCode",
+                                  ErrorCode::kTimeout);
     base::UmaHistogramMediumTimes("Legion.Client.RequestLatency.Timeout",
                                   latency);
   } else {
-    base::UmaHistogramMediumTimes("Legion.Client.RequestLatency.Error", latency);
+    base::UmaHistogramEnumeration("Legion.Client.RequestErrorCode",
+                                  result.error());
+    base::UmaHistogramMediumTimes("Legion.Client.RequestLatency.Error",
+                                  latency);
   }
   std::move(callback).Run(std::move(result));
 }

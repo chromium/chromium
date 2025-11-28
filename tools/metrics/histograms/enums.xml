@@ -7557,6 +7557,25 @@ shown properly on the user-facing crash UI.
   <int value="3" label="kConversionFailure"/>
 </enum>
 
+<!-- LINT.IfChange(LegionErrorCode) -->
+
+<enum name="LegionErrorCode">
+  <summary>Client-side errors that can occur during a Legion request.</summary>
+  <int value="0" label="Error"/>
+  <int value="1" label="AuthenticationFailed"/>
+  <int value="2" label="NetworkError"/>
+  <int value="3" label="AttestationFailed"/>
+  <int value="4" label="HandshakeFailed"/>
+  <int value="5" label="EncryptionFailed"/>
+  <int value="6" label="DecryptionFailed"/>
+  <int value="7" label="ResponseParseError"/>
+  <int value="8" label="NoContent"/>
+  <int value="9" label="NoResponse"/>
+  <int value="10" label="Timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/legion/error_code.h:ErrorCode) -->
+
 <enum name="LensClassifyResultState">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success: shoppy image"/>

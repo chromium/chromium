@@ -8,6 +8,10 @@
 namespace legion {
 
 // Represents errors that can occur during a legion client operation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ErrorCode)
 enum class ErrorCode {
   // A non-transient error occurred. The client should not retry the request.
   kError,
@@ -31,7 +35,9 @@ enum class ErrorCode {
   kNoResponse,
   // The request timed out. The client may retry the request.
   kTimeout,
+  kMaxValue = kTimeout,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:LegionErrorCode)
 
 }  // namespace legion
 
