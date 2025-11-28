@@ -35,6 +35,8 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -49,6 +51,9 @@ constexpr GaiaId::Literal kGaia2ID("222222");
 
 constexpr char kUser3Email[] = "test-user3@gmail.com";
 constexpr GaiaId::Literal kGaia3ID("333333");
+
+constexpr char kChildEmail[] = "child-user4@gmail.com";
+constexpr GaiaId::Literal kChildID("444444");
 
 constexpr base::TimeDelta kLoginOnlineShortDelay = base::Seconds(10);
 constexpr base::TimeDelta kLoginOnlineLongDelay = base::Seconds(20);
@@ -226,10 +231,14 @@ class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
   const LoginManagerMixin::TestUserInfo test_user_limit_not_set_{
       AccountId::FromUserEmailGaiaId(kUser3Email, kGaia3ID),
       test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
+  const LoginManagerMixin::TestUserInfo test_child_user_{
+      AccountId::FromUserEmailGaiaId(kChildEmail, kChildID),
+      test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth(),
+      user_manager::UserType::kChild};
   LoginManagerMixin login_mixin_{
       &mixin_host_,
       {test_user_over_the_limit_, test_user_under_the_limit_,
-       test_user_limit_not_set_}};
+       test_user_limit_not_set_, test_child_user_}};
   OfflineLoginTestMixin offline_login_test_mixin_{&mixin_host_};
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
@@ -262,6 +271,18 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenBlockOfflineTest,
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   test::OobeJS().ExpectVisiblePath(kErrorMessageGuestSigninLink);
   test::OobeJS().ExpectVisiblePath(kErrorMessageOfflineSigninLink);
+}
+
+// Offline login link is always hidden during reauth on a device owned by a
+// child.
+IN_PROC_BROWSER_TEST_F(UserSelectionScreenBlockOfflineTest,
+                       ChildDeviceOwnerReauthHideOfflineLink) {
+  user_manager::UserManager::Get()->SetOwnerId(test_child_user_.account_id);
+  offline_login_test_mixin_.GoOffline();
+  OpenGaiaDialog(test_child_user_.account_id);
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  test::OobeJS().ExpectVisiblePath(kErrorMessageGuestSigninLink);
+  test::OobeJS().ExpectHiddenPath(kErrorMessageOfflineSigninLink);
 }
 
 class DarkLightEnabledTest : public LoginManagerTest {

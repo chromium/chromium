@@ -95,8 +95,10 @@ class ErrorScreen : public BaseScreen,
   // been created.
   void MaybeInitCaptivePortalWindowProxy(content::WebContents* web_contents);
 
-  void ShowNetworkErrorMessage(NetworkStateInformer::State state,
-                               NetworkError::ErrorReason reason);
+  void ShowNetworkErrorMessage(
+      NetworkStateInformer::State state,
+      NetworkError::ErrorReason reason,
+      bool show_offline_login_option_if_allowed = true);
 
  protected:
   // BaseScreen:
@@ -151,6 +153,8 @@ class ErrorScreen : public BaseScreen,
       DeviceSettingsService::OwnershipStatus ownership_status);
 
   bool is_persistent_ = false;
+
+  bool is_offline_login_link_shown_ = false;
 
   base::WeakPtr<ErrorScreenView> view_;
 

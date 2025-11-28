@@ -322,6 +322,40 @@ std::string GetOrGenerateDeviceId(const user_manager::KnownUser& known_user,
   return device_id;
 }
 
+// Returns true when the device owner is a child.
+bool IsDeviceOwnedByChild() {
+  AccountId owner_account_id =
+      user_manager::UserManager::Get()->GetOwnerAccountId();
+  if (owner_account_id.empty()) {
+    LOG(WARNING) << "Device owner account could not be determined";
+    return false;
+  }
+
+  const user_manager::User* device_owner =
+      user_manager::UserManager::Get()->FindUser(owner_account_id);
+  if (!device_owner) {
+    LOG(WARNING) << "Device owner user could not be determined";
+    return false;
+  }
+  return device_owner->IsChild();
+}
+
+// Offline login during reauth flow shouldn't be allowed when child is a device
+// owner. It is possible to return back to the default Gaia flow from the
+// OfflineLoginScreen which can cause issues and lead to unexpected behavior.
+// Example: http://b/459871430.
+bool IsOfflineLoginAllowed() {
+  auto* host = LoginDisplayHost::default_host();
+  if (!host) {
+    return false;
+  }
+  const bool is_gaia_reauth_flow =
+      host->GetWizardContext()->gaia_config.gaia_path ==
+      WizardContext::GaiaPath::kReauth;
+
+  return !(is_gaia_reauth_flow && IsDeviceOwnedByChild());
+}
+
 }  // namespace
 
 GaiaScreenHandler::GaiaScreenHandler(
@@ -1581,7 +1615,8 @@ void GaiaScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
     auth_flow_auto_reload_manager_.Terminate();
 
     // Show `ErrorScreen` or update network error message.
-    error_screen_->ShowNetworkErrorMessage(state, reason);
+    error_screen_->ShowNetworkErrorMessage(state, reason,
+                                           IsOfflineLoginAllowed());
     histogram_helper_->OnErrorShow(error_screen_->GetErrorState());
   } else {
     HideOfflineMessage(state, reason);
