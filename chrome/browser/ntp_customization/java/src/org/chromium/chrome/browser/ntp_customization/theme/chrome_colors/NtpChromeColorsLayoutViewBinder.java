@@ -8,6 +8,8 @@ import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.BACKGROUND_COLOR_INPUT_TEXT_WATCHER;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.BACK_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.CUSTOM_COLOR_PICKER_CONTAINER_VISIBILITY;
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER;
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.LEARN_MORE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.PRIMARY_COLOR_CIRCLE_VIEW_COLOR;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.PRIMARY_COLOR_INPUT_TEXT_WATCHER;
@@ -32,6 +34,7 @@ import androidx.constraintlayout.widget.ConstraintSet;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -93,6 +96,15 @@ public class NtpChromeColorsLayoutViewBinder {
                         recyclerViewContainer,
                         model.get(RECYCLER_VIEW_MAX_WIDTH_PX));
             }
+        } else if (propertyKey == IS_DAILY_REFRESH_SWITCH_CHECKED) {
+            MaterialSwitchWithText dailyRefreshSwitch =
+                    view.findViewById(R.id.chrome_colors_switch_button);
+            dailyRefreshSwitch.setChecked(model.get(IS_DAILY_REFRESH_SWITCH_CHECKED));
+        } else if (propertyKey == DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER) {
+            MaterialSwitchWithText dailyRefreshSwitch =
+                    view.findViewById(R.id.chrome_colors_switch_button);
+            dailyRefreshSwitch.setOnCheckedChangeListener(
+                    model.get(DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER));
         }
     }
 

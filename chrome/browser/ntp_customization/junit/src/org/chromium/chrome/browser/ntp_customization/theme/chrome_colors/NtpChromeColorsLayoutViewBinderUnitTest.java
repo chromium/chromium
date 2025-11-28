@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -35,6 +36,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -62,6 +64,8 @@ public class NtpChromeColorsLayoutViewBinderUnitTest {
     @Mock private View.OnClickListener mOnClickListener;
     @Mock private TextWatcher mTextWatcher;
     @Mock private ConstraintSet mConstraintSet;
+    @Mock private MaterialSwitchWithText mDailyRefreshSwitch;
+    @Mock private OnCheckedChangeListener mOnCheckedChangeListener;
 
     private PropertyModel mModel;
 
@@ -86,6 +90,8 @@ public class NtpChromeColorsLayoutViewBinderUnitTest {
         when(mLayoutView.findViewById(R.id.chrome_colors_recycler_view)).thenReturn(mRecyclerView);
         when(mLayoutView.findViewById(R.id.chrome_colors_recycler_view_container))
                 .thenReturn(mRecyclerViewContainer);
+        when(mLayoutView.findViewById(R.id.chrome_colors_switch_button))
+                .thenReturn(mDailyRefreshSwitch);
 
         when(mBackgroundColorCircleView.getBackground()).thenReturn(mGradientDrawable);
         when(mPrimaryColorCircleView.getBackground()).thenReturn(mGradientDrawable);
@@ -179,6 +185,23 @@ public class NtpChromeColorsLayoutViewBinderUnitTest {
         int maxWidthPx = 100;
         mModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_MAX_WIDTH_PX, maxWidthPx);
         assertEquals(maxWidthPx, mModel.get(NtpChromeColorsProperties.RECYCLER_VIEW_MAX_WIDTH_PX));
+    }
+
+    @Test
+    public void testSetDailyRefreshSwitchChecked() {
+        mModel.set(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED, true);
+        verify(mDailyRefreshSwitch).setChecked(eq(true));
+
+        mModel.set(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED, false);
+        verify(mDailyRefreshSwitch).setChecked(eq(false));
+    }
+
+    @Test
+    public void testSetDailyRefreshSwitchOnCheckedChangeListener() {
+        mModel.set(
+                NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER,
+                mOnCheckedChangeListener);
+        verify(mDailyRefreshSwitch).setOnCheckedChangeListener(eq(mOnCheckedChangeListener));
     }
 
     @Test

@@ -13,6 +13,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
@@ -88,6 +89,12 @@ public class NtpChromeColorsCoordinator {
         mPropertyModel.set(
                 NtpChromeColorsProperties.LEARN_MORE_BUTTON_CLICK_LISTENER,
                 this::handleLearnMoreClick);
+        mPropertyModel.set(
+                NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED,
+                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
+        mPropertyModel.set(
+                NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER,
+                this::onDailyRefreshSwitchToggled);
 
         if (ChromeFeatureList.sNewTabPageCustomizationV2ShowColorPicker.getValue()) {
             setupColorInputs();
@@ -114,6 +121,10 @@ public class NtpChromeColorsCoordinator {
                 () -> {
                     delegate.getBottomSheetController().expandSheet();
                 });
+    }
+
+    private void onDailyRefreshSwitchToggled(CompoundButton buttonView, boolean isChecked) {
+        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(isChecked);
     }
 
     private void buildRecyclerView() {
@@ -179,6 +190,8 @@ public class NtpChromeColorsCoordinator {
         mPropertyModel.set(NtpChromeColorsProperties.BACKGROUND_COLOR_INPUT_TEXT_WATCHER, null);
         mPropertyModel.set(NtpChromeColorsProperties.PRIMARY_COLOR_INPUT_TEXT_WATCHER, null);
         mPropertyModel.set(NtpChromeColorsProperties.SAVE_BUTTON_CLICK_LISTENER, null);
+        mPropertyModel.set(
+                NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER, null);
 
         mChromeColorsList.clear();
     }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp_customization.theme.chrome_colors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -23,6 +24,7 @@ import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.View.MeasureSpec;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import androidx.annotation.ColorInt;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -103,6 +105,12 @@ public class NtpChromeColorsCoordinatorUnitTest {
         assertNotNull(
                 mPropertyModel.get(NtpChromeColorsProperties.PRIMARY_COLOR_INPUT_TEXT_WATCHER));
         assertNotNull(mPropertyModel.get(NtpChromeColorsProperties.SAVE_BUTTON_CLICK_LISTENER));
+        assertNotNull(
+                mPropertyModel.get(
+                        NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER));
+        assertEquals(
+                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference(),
+                mPropertyModel.get(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED));
     }
 
     @Test
@@ -132,6 +140,9 @@ public class NtpChromeColorsCoordinatorUnitTest {
         assertNotNull(
                 mPropertyModel.get(NtpChromeColorsProperties.PRIMARY_COLOR_INPUT_TEXT_WATCHER));
         assertNotNull(mPropertyModel.get(NtpChromeColorsProperties.SAVE_BUTTON_CLICK_LISTENER));
+        assertNotNull(
+                mPropertyModel.get(
+                        NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER));
 
         mCoordinator.destroy();
 
@@ -141,6 +152,9 @@ public class NtpChromeColorsCoordinatorUnitTest {
                 mPropertyModel.get(NtpChromeColorsProperties.BACKGROUND_COLOR_INPUT_TEXT_WATCHER));
         assertNull(mPropertyModel.get(NtpChromeColorsProperties.PRIMARY_COLOR_INPUT_TEXT_WATCHER));
         assertNull(mPropertyModel.get(NtpChromeColorsProperties.SAVE_BUTTON_CLICK_LISTENER));
+        assertNull(
+                mPropertyModel.get(
+                        NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER));
     }
 
     @Test
@@ -323,6 +337,21 @@ public class NtpChromeColorsCoordinatorUnitTest {
         // color value.
         colorHex = "FF0000";
         assertEquals(color, mCoordinator.getColorFromHex(colorHex).intValue());
+    }
+
+    @Test
+    public void testDailyRefreshSwitchToggled() {
+        OnCheckedChangeListener dailyRefreshSwitchChangeListener =
+                mPropertyModel.get(
+                        NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER);
+        assertNotNull(dailyRefreshSwitchChangeListener);
+
+        dailyRefreshSwitchChangeListener.onCheckedChanged(null, true);
+        assertTrue(NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
+
+        dailyRefreshSwitchChangeListener.onCheckedChanged(null, false);
+        assertFalse(
+                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
     }
 
     private void createCoordinator() {
