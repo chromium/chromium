@@ -35,7 +35,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.color.DynamicColors;
-import com.google.android.material.color.DynamicColorsOptions;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
@@ -761,10 +760,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         @ColorInt
         Integer primaryColor = NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(this);
         if (primaryColor != null) {
-            DynamicColorsOptions.Builder builder = new DynamicColorsOptions.Builder();
-            builder.setContentBasedSource(primaryColor);
-            DynamicColorsOptions dynamicColorsOptions = builder.build();
-            DynamicColors.applyToActivityIfAvailable(this, dynamicColorsOptions);
+            NtpCustomizationUtils.applyDynamicColorToActivity(this, primaryColor);
         } else {
             DynamicColors.applyToActivityIfAvailable(this);
         }

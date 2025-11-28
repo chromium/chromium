@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.launchUriActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -152,8 +153,17 @@ public class NtpChromeColorsCoordinator {
                 ntpThemeColorInfo instanceof NtpThemeColorFromHexInfo
                         ? NtpBackgroundImageType.COLOR_FROM_HEX
                         : NtpBackgroundImageType.CHROME_COLOR;
+
+        // Applies the primary theme color to the activity before calculating the background color
+        // which is a themed color depending on the activity's theme.
+        if (mContext instanceof Activity activity) {
+            NtpCustomizationUtils.applyDynamicColorToActivity(
+                    activity,
+                    NtpThemeColorUtils.getPrimaryColorFromColorInfo(mContext, ntpThemeColorInfo));
+        }
         NtpCustomizationConfigManager.getInstance()
                 .onBackgroundColorChanged(mContext, ntpThemeColorInfo, newType);
+
         mOnChromeColorSelectedCallback.run();
         mLastClickedColorInfo = ntpThemeColorInfo;
     }

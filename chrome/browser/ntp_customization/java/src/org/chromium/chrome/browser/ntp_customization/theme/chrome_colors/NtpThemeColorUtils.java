@@ -175,6 +175,21 @@ public class NtpThemeColorUtils {
         return ContextCompat.getColor(context, R.color.home_surface_background_color);
     }
 
+    /**
+     * Returns the primary color of the given NtpThemeColorInfo.
+     *
+     * @param context The Context to get themed color.
+     * @param colorInfo The NtpThemeColorInfo instance.
+     */
+    public static @ColorInt int getPrimaryColorFromColorInfo(
+            Context context, NtpThemeColorInfo colorInfo) {
+        if (colorInfo instanceof NtpThemeColorFromHexInfo ntpThemeColorFromHexInfo) {
+            return ntpThemeColorFromHexInfo.primaryColor;
+        }
+
+        return context.getColor(colorInfo.primaryColorResId);
+    }
+
     /** Creates a colored circle drawable based on provides three colors. */
     static LayerDrawable createColoredCircle(
             Context context, int topColor, int bottomLeftColor, int bottomRightColor) {
