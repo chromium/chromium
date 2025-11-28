@@ -1064,6 +1064,9 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Profile customization shown"/>
   <int value="6" label="The user completed profile customization"/>
   <int value="7" label="The user skipped profile customization"/>
+  <int value="8" label="History sync optin shown"/>
+  <int value="9" label="The user turned on history syncing"/>
+  <int value="10" label="The user rejected history syncing"/>
 </enum>
 
 <enum name="SigninInterceptHeuristicOutcome">

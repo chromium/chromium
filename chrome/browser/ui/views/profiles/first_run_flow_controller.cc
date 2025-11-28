@@ -451,10 +451,12 @@ class FirstRunPostSignInAdapter : public ProfilePickerPostSignInAdapter {
     }
     // The supervised user IPH should be called after the present
     // post_host_cleared_callback which finishes the browser creation.
+    std::vector<PostHostClearedCallback> callbacks;
+    callbacks.push_back(std::move(post_host_cleared_callback));
+    callbacks.push_back(CreateSupervisedUserIphCallback());
     auto combined_callback =
         CombineCallbacks<PostHostClearedCallback, Browser*>(
-            std::move(post_host_cleared_callback),
-            CreateSupervisedUserIphCallback());
+            std::move(callbacks));
     std::move(step_completed_callback_)
         .Run(std::move(combined_callback), is_continue_callback);
   }

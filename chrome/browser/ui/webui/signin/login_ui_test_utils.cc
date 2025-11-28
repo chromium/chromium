@@ -581,13 +581,19 @@ class SiginInModalDialogObserver : public SigninViewController::Observer {
 
 bool DismissHistorySyncOptinDialog(Browser* browser,
                                    base::TimeDelta timeout,
-                                   HistorySyncOptinDialogAction action) {
+                                   HistorySyncOptinDialogAction action,
+                                   bool wait_for_dismiss = true) {
   SiginInModalDialogObserver modal_dialog_observer(browser);
 
   const base::Time expire_time = base::Time::Now() + timeout;
   while (base::Time::Now() <= expire_time) {
-    if (SigninViewControllerTestUtil::TryDismissHistorySyncOptinDialog(
-            browser, action)) {
+    bool button_clicked =
+        SigninViewControllerTestUtil::TryDismissHistorySyncOptinDialog(browser,
+                                                                       action);
+    if (button_clicked) {
+      if (!wait_for_dismiss) {
+        return true;
+      }
       modal_dialog_observer.WaitForModalDialogClosed();
       EXPECT_FALSE(SigninViewControllerTestUtil::ShowsModalDialog(browser));
       return true;
@@ -602,9 +608,20 @@ bool ConfirmSyncConfirmationDialog(Browser* browser, base::TimeDelta timeout) {
                                        SyncConfirmationDialogAction::kConfirm);
 }
 
-bool ConfirmHistorySyncOptinDialog(Browser* browser, base::TimeDelta timeout) {
+bool ConfirmHistorySyncOptinDialog(Browser* browser,
+                                   base::TimeDelta timeout,
+                                   bool wait_for_dismiss) {
   return DismissHistorySyncOptinDialog(browser, timeout,
-                                       HistorySyncOptinDialogAction::kConfirm);
+                                       HistorySyncOptinDialogAction::kConfirm,
+                                       wait_for_dismiss);
+}
+
+bool RejectHistorySyncOptinDialog(Browser* browser,
+                                  base::TimeDelta timeout,
+                                  bool wait_for_dismiss) {
+  return DismissHistorySyncOptinDialog(browser, timeout,
+                                       HistorySyncOptinDialogAction::kReject,
+                                       wait_for_dismiss);
 }
 
 bool GoToSettingsSyncConfirmationDialog(Browser* browser,
