@@ -324,8 +324,8 @@ public class TopToolbarOverlayMediatorTest {
 
         mProgressBarObserverCaptor.getValue().onVisibleProgressUpdated();
 
-        assertNull(
-                "The progress bar data should be still be empty.",
+        assertNotNull(
+                "The progress bar data should not be empty.",
                 mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
     }
 

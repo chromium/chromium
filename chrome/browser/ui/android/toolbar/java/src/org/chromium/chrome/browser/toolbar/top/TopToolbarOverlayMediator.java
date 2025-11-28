@@ -429,7 +429,9 @@ public class TopToolbarOverlayMediator {
     /** Update the state of the composited progress bar. */
     private void updateProgress() {
         // Tablets have their own version of a progress "spinner".
-        if (isTablet()) return;
+        if (!ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled() && isTablet()) {
+            return;
+        }
 
         if (mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO) == null) {
             mModel.set(
