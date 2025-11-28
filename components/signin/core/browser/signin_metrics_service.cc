@@ -275,9 +275,17 @@ void SigninMetricsService::OnPrimaryAccountChanged(
           event_details.GetSetPrimaryAccountAccessPoint();
       CHECK(access_point.has_value());
 
+      MaybeRecordMetricsForSigninPromoLimitsExperiment(
+          event_details.GetCurrentState().primary_account,
+          access_point.value());
+
       MaybeRecordWebSigninToChromeSigninMetrics(
           event_details.GetCurrentState().primary_account.account_id,
           access_point.value());
+
+      // Clear all related web signin information on the first Chrome signin
+      // event.
+      pref_service_->ClearPref(kWebSigninAccountStartTimesPref);
 
       RecordSigninInterceptionMetrics(
           event_details.GetCurrentState().primary_account.gaia,
@@ -500,28 +508,80 @@ void SigninMetricsService::RecordExplicitSigninMigrationStatus() {
                                 explicit_signin_migration);
 }
 
+void SigninMetricsService::MaybeRecordMetricsForSigninPromoLimitsExperiment(
+    const CoreAccountInfo& account_info,
+    signin_metrics::AccessPoint access_point) {
+  if (!base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)) {
+    return;
+  }
+
+  bool is_from_web_signin =
+      GetTimeOfWebSignin(account_info.account_id).has_value();
+  switch (access_point) {
+    case signin_metrics::AccessPoint::kAddressBubble:
+      base::UmaHistogramBoolean(
+          "Signin.PromoLimitsExperiment.AddressSigninPromoShownCountAtSignin",
+          is_from_web_signin
+              ? SigninPrefs(pref_service_.get())
+                    .GetAddressSigninPromoImpressionCount(account_info.gaia)
+              : pref_service_->GetInteger(
+                    prefs::
+                        kAddressSignInPromoShownCountPerProfileForLimitsExperiment));
+      break;
+    case signin_metrics::AccessPoint::kPasswordBubble:
+      base::UmaHistogramBoolean(
+          "Signin.PromoLimitsExperiment.PasswordSigninPromoShownCountAtSignin",
+          is_from_web_signin
+              ? SigninPrefs(pref_service_.get())
+                    .GetPasswordSigninPromoImpressionCount(account_info.gaia)
+              : pref_service_->GetInteger(
+                    prefs::
+                        kPasswordSignInPromoShownCountPerProfileForLimitsExperiment));
+      break;
+    case signin_metrics::AccessPoint::kChromeSigninInterceptBubble: {
+      const int uno_bubble_reprompt_count =
+          SigninPrefs(pref_service_.get())
+              .GetChromeSigninBubbleRepromptCount(account_info.gaia);
+      if (uno_bubble_reprompt_count > 0) {
+        base::UmaHistogramBoolean(
+            "Signin.PromoLimitsExperiment.UnoBubbleRepromptCountAtSignin",
+            uno_bubble_reprompt_count);
+      }
+      break;
+    }
+    default:
+      // No other access points are relevant for this experiment.
+      return;
+  }
+}
+
+std::optional<base::Time> SigninMetricsService::GetTimeOfWebSignin(
+    const CoreAccountId& account_id) const {
+  if (!pref_service_->HasPrefPath(kWebSigninAccountStartTimesPref)) {
+    return std::nullopt;
+  }
+
+  const base::Value::Dict& web_signin_account_start_time_dict =
+      pref_service_->GetDict(kWebSigninAccountStartTimesPref);
+
+  // This value only exists if the initial signin was from a web signin
+  // source.
+  const base::Value* start_time_value =
+      web_signin_account_start_time_dict.Find(account_id.ToString());
+  return start_time_value ? base::ValueToTime(start_time_value) : std::nullopt;
+}
+
 void SigninMetricsService::MaybeRecordWebSigninToChromeSigninMetrics(
     const CoreAccountId& account_id,
     signin_metrics::AccessPoint access_point) {
-  if (pref_service_->HasPrefPath(kWebSigninAccountStartTimesPref)) {
-    const base::Value::Dict& web_signin_account_start_time_dict =
-        pref_service_->GetDict(kWebSigninAccountStartTimesPref);
+  std::optional<base::Time> web_signin_start_time =
+      GetTimeOfWebSignin(account_id);
+  if (web_signin_start_time.has_value()) {
+    MaybeRecordWebSigninToChromeSigninTimes(web_signin_start_time.value(),
+                                            access_point);
 
-    // This value only exists if the initial signin was from a web signin
-    // source.
-    const base::Value* start_time_value =
-        web_signin_account_start_time_dict.Find(account_id.ToString());
-    std::optional<base::Time> start_time =
-        start_time_value ? base::ValueToTime(start_time_value) : std::nullopt;
-    if (start_time.has_value()) {
-      MaybeRecordWebSigninToChromeSigninTimes(start_time.value(), access_point);
-
-      base::UmaHistogramEnumeration("Signin.WebSignin.SourceToChromeSignin",
-                                    access_point);
-    }
-    // Clear all related web signin information on the first Chrome signin
-    // event.
-    pref_service_->ClearPref(kWebSigninAccountStartTimesPref);
+    base::UmaHistogramEnumeration("Signin.WebSignin.SourceToChromeSignin",
+                                  access_point);
   }
 }
 

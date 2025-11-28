@@ -158,6 +158,18 @@ const char kSigninAllowedOnNextStartup[] = "signin.allowed_on_next_startup";
 const char kSigninInterceptionIDPCookiesUrl[] =
     "signin.interception.idp_cookies.url";
 
+// Integer pref to store the number of times the address bubble signin promo
+// has been shown per profile while the user is signed out used for
+// SigninPromoLimitsExperiment.
+const char kAddressSignInPromoShownCountPerProfileForLimitsExperiment[] =
+    "signin.AddressSignInPromoShownCountForLimitsExperiment";
+
+// Integer pref to store the number of times the password bubble signin promo
+// has been shown per profile while the user is signed out used for
+// SigninPromoLimitsExperiment.
+const char kPasswordSignInPromoShownCountPerProfileForLimitsExperiment[] =
+    "signin.PasswordSignInPromoShownCountForLimitsExperiment";
+
 // Integer which indicates whether enterprise profile separation is enforced or
 // disabled.
 const char kProfileSeparationSettings[] = "profile_separation.settings";

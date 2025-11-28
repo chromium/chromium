@@ -2693,6 +2693,23 @@ should be kept to monitor/debug signin Multilogin issues-->
   <token key="AccessPoint" variants="SigninPromoAccessPoint"/>
 </histogram>
 
+<histogram name="Signin.PromoLimitsExperiment.{PromoType}CountAtSignin"
+    units="count" expires_after="2026-04-07">
+  <owner>kbajkiewicz@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records the count at which the {PromoType} when the user
+    signs in through it. This is only recorded for the promo limits experiment.
+  </summary>
+  <token key="PromoType">
+    <variant name="AddressSigninPromoShown"
+        summary="Address sign-in promo was shown"/>
+    <variant name="PasswordSigninPromoShown"
+        summary="Password sign-in promo was shown"/>
+    <variant name="UnoBubbleReprompt" summary="Uno bubble was reprompted"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.Reauth.InExplicitFlow.{Event}" enum="ReauthAccessPoint"
     expires_after="2026-05-28">
   <owner>bsazonov@chromium.org</owner>
