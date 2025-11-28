@@ -54,8 +54,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_coordinator.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_coordinator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/infobar_autofill_edit_profile_bottom_sheet_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_coordinator.h"
@@ -494,8 +494,8 @@ const char kChromeAppStoreUrl[] =
 @property(nonatomic, strong)
     PlusAddressBottomSheetCoordinator* plusAddressBottomSheetCoordinator;
 
-@property(nonatomic, strong) AutofillEditProfileBottomSheetCoordinator*
-    autofillEditProfileBottomSheetCoordinator;
+@property(nonatomic, strong)
+    AutofillEditProfileCoordinator* autofillEditProfileCoordinator;
 
 @property(nonatomic, strong)
     SaveCardBottomSheetCoordinator* saveCardBottomSheetCoordinator;
@@ -2229,20 +2229,19 @@ const char kChromeAppStoreUrl[] =
       [[InfobarAutofillEditProfileBottomSheetHandler alloc]
           initWithWebState:self.activeWebState];
 
-  self.autofillEditProfileBottomSheetCoordinator =
-      [[AutofillEditProfileBottomSheetCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser
-                             handler:self.editProfileBottomSheetHandler];
-  [self.autofillEditProfileBottomSheetCoordinator start];
+  self.autofillEditProfileCoordinator = [[AutofillEditProfileCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                         handler:self.editProfileBottomSheetHandler];
+  [self.autofillEditProfileCoordinator start];
 }
 
 - (void)dismissEditAddressBottomSheet {
-  if (self.autofillEditProfileBottomSheetCoordinator) {
-    [self.autofillEditProfileBottomSheetCoordinator stop];
+  if (self.autofillEditProfileCoordinator) {
+    [self.autofillEditProfileCoordinator stop];
   }
 
-  self.autofillEditProfileBottomSheetCoordinator = nil;
+  self.autofillEditProfileCoordinator = nil;
   self.editProfileBottomSheetHandler = nil;
 }
 

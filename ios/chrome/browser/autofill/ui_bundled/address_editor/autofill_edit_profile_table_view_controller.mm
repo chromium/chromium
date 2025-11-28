@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
@@ -31,11 +31,9 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 const CGFloat kDefaultHeaderFooterHeight = 10;
 }  // namespace
 
-@interface AutofillEditProfileBottomSheetTableViewController () <
-    UITextFieldDelegate> {
+@interface AutofillEditProfileTableViewController () <UITextFieldDelegate> {
   // Delegate for this view controller.
-  __weak id<AutofillEditProfileBottomSheetTableViewControllerDelegate>
-      _delegate;
+  __weak id<AutofillEditProfileTableViewControllerDelegate> _delegate;
 
   // Denotes the mode of the address save for the edit profile bottom sheet.
   AutofillSaveProfilePromptMode _editSheetMode;
@@ -43,14 +41,13 @@ const CGFloat kDefaultHeaderFooterHeight = 10;
 
 @end
 
-@implementation AutofillEditProfileBottomSheetTableViewController
+@implementation AutofillEditProfileTableViewController
 
 #pragma mark - Initialization
 
-- (instancetype)
-    initWithDelegate:
-        (id<AutofillEditProfileBottomSheetTableViewControllerDelegate>)delegate
-       editSheetMode:(AutofillSaveProfilePromptMode)editSheetMode {
+- (instancetype)initWithDelegate:
+                    (id<AutofillEditProfileTableViewControllerDelegate>)delegate
+                   editSheetMode:(AutofillSaveProfilePromptMode)editSheetMode {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _delegate = delegate;

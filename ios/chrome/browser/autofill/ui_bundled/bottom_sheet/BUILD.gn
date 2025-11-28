@@ -32,9 +32,6 @@ source_set("constants") {
 
 source_set("bottom_sheet") {
   sources = [
-    "autofill_edit_profile_bottom_sheet_coordinator.h",
-    "autofill_edit_profile_bottom_sheet_coordinator.mm",
-    "autofill_edit_profile_bottom_sheet_handler.h",
     "infobar_autofill_edit_profile_bottom_sheet_handler.h",
     "infobar_autofill_edit_profile_bottom_sheet_handler.mm",
     "payments_suggestion_bottom_sheet_coordinator.h",
@@ -62,6 +59,7 @@ source_set("bottom_sheet") {
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/model/credit_card",
     "//ios/chrome/browser/autofill/ui_bundled:autofill_ui_constants",
+    "//ios/chrome/browser/autofill/ui_bundled/address_editor:autofill_edit",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:autofill_shared_ui",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:constants",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor/cells",
@@ -82,8 +80,6 @@ source_set("bottom_sheet") {
 
 source_set("bottom_sheet_ui") {
   sources = [
-    "autofill_edit_profile_bottom_sheet_table_view_controller.h",
-    "autofill_edit_profile_bottom_sheet_table_view_controller.mm",
     "payments_suggestion_bottom_sheet_consumer.h",
     "payments_suggestion_bottom_sheet_delegate.h",
     "payments_suggestion_bottom_sheet_handler.h",

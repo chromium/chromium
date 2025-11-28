@@ -28,7 +28,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/settings_autofill_edit_profile_bottom_sheet_handler.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_edit_coordinator.h"
@@ -127,8 +127,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Coordinator to present and manage the bottom sheet for manually adding an
   // address.
-  AutofillEditProfileBottomSheetCoordinator*
-      _autofillAddProfileBottomSheetCoordinator;
+  AutofillEditProfileCoordinator* _autofillAddProfileCoordinator;
 }
 
 @property(nonatomic, getter=isAutofillProfileEnabled)
@@ -367,7 +366,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)settingsWillBeDismissed {
   DCHECK(!_settingsAreDismissed);
 
-  [self stopAutofillEditProfileBottomSheetCoordinator];
+  [self stopAutofillAddProfileCoordinator];
 
   [self stopAutofillProfileEditCoordinator];
   _personalDataManager->RemoveObserver(_observer.get());
@@ -717,9 +716,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _autofillProfileEditCoordinator = nil;
 }
 
-- (void)stopAutofillEditProfileBottomSheetCoordinator {
-  [_autofillAddProfileBottomSheetCoordinator stop];
-  _autofillAddProfileBottomSheetCoordinator = nil;
+- (void)stopAutofillAddProfileCoordinator {
+  [_autofillAddProfileCoordinator stop];
+  _autofillAddProfileCoordinator = nil;
   _addProfileBottomSheetHandler = nil;
 }
 
@@ -1014,12 +1013,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
           initWithAddressDataManager:&addressDataManager
                            userEmail:_userEmail];
 
-  _autofillAddProfileBottomSheetCoordinator =
-      [[AutofillEditProfileBottomSheetCoordinator alloc]
-          initWithBaseViewController:self
-                             browser:_browser
-                             handler:_addProfileBottomSheetHandler];
-  [_autofillAddProfileBottomSheetCoordinator start];
+  _autofillAddProfileCoordinator = [[AutofillEditProfileCoordinator alloc]
+      initWithBaseViewController:self
+                         browser:_browser
+                         handler:_addProfileBottomSheetHandler];
+  [_autofillAddProfileCoordinator start];
 }
 
 @end

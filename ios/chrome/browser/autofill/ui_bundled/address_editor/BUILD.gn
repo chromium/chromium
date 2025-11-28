@@ -10,6 +10,51 @@ source_set("constants") {
   deps = [ "//ios/chrome/browser/shared/ui/list_model" ]
 }
 
+source_set("autofill_edit") {
+  sources = [
+    "autofill_edit_profile_coordinator.h",
+    "autofill_edit_profile_coordinator.mm",
+    "autofill_edit_profile_handler.h",
+  ]
+  deps = [
+    ":autofill_shared_ui",
+    ":autofill_ui",
+    ":constants",
+    "//base",
+    "//components/autofill/core/browser",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/ui_bundled/address_editor/cells",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ui/base",
+  ]
+}
+
+source_set("autofill_ui") {
+  sources = [
+    "autofill_edit_profile_table_view_controller.h",
+    "autofill_edit_profile_table_view_controller.mm",
+  ]
+  deps = [
+    ":autofill_shared_ui",
+    ":constants",
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:constants",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ui/base",
+  ]
+}
+
 source_set("autofill_shared_ui") {
   sources = [
     "autofill_country_selection_table_view_controller.h",

@@ -29,9 +29,9 @@
   return self;
 }
 
-#pragma mark - AutofillEditProfileBottomSheetHandler
+#pragma mark - AutofillEditProfileHandler
 
-- (void)didCancelBottomSheetView {
+- (void)didCancelSheetView {
   // No-op.
 }
 

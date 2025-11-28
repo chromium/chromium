@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_coordinator.h"
 
 #import <Foundation/Foundation.h>
 
@@ -10,12 +10,12 @@
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_handler.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_handler.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_table_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -23,15 +23,15 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface AutofillEditProfileBottomSheetCoordinator () <
+@interface AutofillEditProfileCoordinator () <
     AutofillCountrySelectionTableViewControllerDelegate,
-    AutofillEditProfileBottomSheetTableViewControllerDelegate,
+    AutofillEditProfileTableViewControllerDelegate,
     AutofillProfileEditMediatorDelegate,
     UIAdaptivePresentationControllerDelegate>
 
 @end
 
-@implementation AutofillEditProfileBottomSheetCoordinator {
+@implementation AutofillEditProfileCoordinator {
   // Profile to be edited.
   std::unique_ptr<autofill::AutofillProfile> _autofillProfile;
 
@@ -39,7 +39,7 @@
   TableViewNavigationController* _navigationController;
 
   // TVC for displaying the bottom sheet.
-  AutofillEditProfileBottomSheetTableViewController* _viewController;
+  AutofillEditProfileTableViewController* _viewController;
 
   // Mediator and view controller used to display the edit view.
   AutofillProfileEditTableViewHelper* _AutofillProfileEditTableViewHelper;
@@ -53,14 +53,13 @@
   // Handler that manages the process of saving addresses, either by creating a
   // new address record or by editing an existing one before saving, depending
   // on the context in which this coordinator is used.
-  __weak id<AutofillEditProfileBottomSheetHandler> _handler;
+  __weak id<AutofillEditProfileHandler> _handler;
 }
 
 - (instancetype)
     initWithBaseViewController:(UINavigationController*)viewController
                        browser:(Browser*)browser
-                       handler:
-                           (id<AutofillEditProfileBottomSheetHandler>)handler {
+                       handler:(id<AutofillEditProfileHandler>)handler {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     ProfileIOS* profile = browser->GetProfile();
@@ -89,8 +88,8 @@
          addManualAddress:[_handler addingManualAddress]];
 
   // Bottom sheet table VC
-  AutofillEditProfileBottomSheetTableViewController* editModalViewController =
-      [[AutofillEditProfileBottomSheetTableViewController alloc]
+  AutofillEditProfileTableViewController* editModalViewController =
+      [[AutofillEditProfileTableViewController alloc]
           initWithDelegate:self
              editSheetMode:[_handler saveProfilePromptMode]];
 
@@ -176,8 +175,7 @@
                            IDS_IOS_VIEW_CONTROLLER_DISMISS_SAVE_CHANGES)
                 action:^{
                   [weakSelf dismissActionSheetCoordinator];
-                  AutofillEditProfileBottomSheetCoordinator* strongSelf =
-                      weakSelf;
+                  AutofillEditProfileCoordinator* strongSelf = weakSelf;
                   if (strongSelf) {
                     [strongSelf->_autofillProfileEditMediator
                             saveChangesForDismiss];
@@ -245,10 +243,10 @@
   [_navigationController popViewControllerAnimated:YES];
 }
 
-#pragma mark - AutofillEditProfileBottomSheetTableViewControllerDelegate
+#pragma mark - AutofillEditProfileTableViewControllerDelegate
 
 - (void)didCancelBottomSheetView {
-  [_handler didCancelBottomSheetView];
+  [_handler didCancelSheetView];
 
   [self stop];
 }
