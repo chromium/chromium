@@ -430,7 +430,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
       switches::kSearchEngineChoiceCountry, "JP");
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
-      .SetCountryId(CountryId("JP"));
+      .SetVariationsLatestCountryId(CountryId("JP"));
 
   // First, check the state with Google as the default search engine
   ASSERT_TRUE(
@@ -487,7 +487,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
       switches::kSearchEngineChoiceCountry, "JP");
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
-      .SetCountryId(CountryId("JP"));
+      .SetVariationsLatestCountryId(CountryId("JP"));
 
   // A custom search engine will have a `prepopulate_id` of 0.
   const int kCustomSearchEnginePrepopulateId = 0;
@@ -517,7 +517,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
   // Variations country is not available
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
-      .SetCountryId(CountryId());
+      .SetVariationsLatestCountryId(CountryId());
 
   EXPECT_EQ(
       GetStaticConditions(),
@@ -537,7 +537,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
-      .SetCountryId(CountryId());
+      .SetVariationsLatestCountryId(CountryId());
 
   EXPECT_EQ(
       GetStaticConditions(),
@@ -557,7 +557,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
-      .SetCountryId(CountryId("BE"));
+      .SetVariationsLatestCountryId(CountryId("BE"));
 
   EXPECT_EQ(GetStaticConditions(),
             IfSupported(SearchEngineChoiceScreenConditions::kEligible));
@@ -575,7 +575,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
-      .SetCountryId(CountryId("BE"));
+      .SetVariationsLatestCountryId(CountryId("BE"));
 
   EXPECT_EQ(GetStaticConditions(),
             IfSupported(SearchEngineChoiceScreenConditions::kEligible));
@@ -593,7 +593,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
-      .SetCountryId(CountryId("BE"));
+      .SetVariationsLatestCountryId(CountryId("BE"));
 
   EXPECT_EQ(GetStaticConditions(),
             IfSupported(SearchEngineChoiceScreenConditions::kEligible));
@@ -610,7 +610,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
-      .SetCountryId(CountryId("BE"));
+      .SetVariationsLatestCountryId(CountryId("BE"));
 
   EXPECT_EQ(GetStaticConditions(),
             IfSupported(SearchEngineChoiceScreenConditions::kEligible));
@@ -628,7 +628,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
-      .SetCountryId(CountryId("US"));
+      .SetVariationsLatestCountryId(CountryId("US"));
 
   EXPECT_EQ(GetStaticConditions(),
             IfSupported(SearchEngineChoiceScreenConditions::kEligible));
@@ -652,7 +652,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
   // location.
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
-      .SetCountryId(CountryId("PL"));
+      .SetVariationsLatestCountryId(CountryId("PL"));
 
   EXPECT_EQ(
       GetStaticConditions(),
@@ -672,7 +672,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
-      .SetCountryId(CountryId("US"));
+      .SetVariationsLatestCountryId(CountryId("US"));
 
   EXPECT_EQ(
       GetStaticConditions(),
@@ -692,7 +692,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
-      .SetCountryId(CountryId("US"));
+      .SetVariationsLatestCountryId(CountryId("US"));
 
   EXPECT_EQ(
       GetStaticConditions(),
@@ -711,7 +711,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
-      .SetCountryId(CountryId("DE"));
+      .SetVariationsLatestCountryId(CountryId("DE"));
 
   EXPECT_EQ(GetStaticConditions(),
             IfSupported(SearchEngineChoiceScreenConditions::kEligible));
@@ -729,7 +729,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
-      .SetCountryId(CountryId("DE"));
+      .SetVariationsLatestCountryId(CountryId("DE"));
 
   EXPECT_EQ(
       GetStaticConditions(),

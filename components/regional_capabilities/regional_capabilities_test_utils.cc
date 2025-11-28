@@ -23,29 +23,47 @@ std::unique_ptr<RegionalCapabilitiesService> CreateServiceWithFakeClient(
       std::make_unique<FakeRegionalCapabilitiesServiceClient>(country_id));
 }
 
+std::unique_ptr<RegionalCapabilitiesService> CreateServiceWithFakeClient(
+    PrefService& profile_prefs,
+    CountryId variations_latest_country_id,
+    CountryId fetched_country_id,
+    CountryId fallback_country_id) {
+  return std::make_unique<RegionalCapabilitiesService>(
+      profile_prefs, std::make_unique<FakeRegionalCapabilitiesServiceClient>(
+                         variations_latest_country_id, fetched_country_id,
+                         fallback_country_id));
+}
+
 FakeRegionalCapabilitiesServiceClient::FakeRegionalCapabilitiesServiceClient(
     CountryId country_id)
-    : country_id_(country_id) {}
+    : FakeRegionalCapabilitiesServiceClient(
+          /* variations_latest_country_id= */ country_id,
+          /* fetched_country_id= */ country_id,
+          /* fallback_country_id= */ country_id) {}
+
+FakeRegionalCapabilitiesServiceClient::FakeRegionalCapabilitiesServiceClient(
+    CountryId variations_latest_country_id,
+    CountryId fetched_country_id,
+    CountryId fallback_country_id)
+    : variations_latest_country_id_(variations_latest_country_id),
+      fetched_country_id_(fetched_country_id),
+      fallback_country_id_(fallback_country_id) {}
 
 FakeRegionalCapabilitiesServiceClient::
     ~FakeRegionalCapabilitiesServiceClient() = default;
 
-CountryId FakeRegionalCapabilitiesServiceClient::GetFallbackCountryId() {
-  return country_id_;
+CountryId
+FakeRegionalCapabilitiesServiceClient::GetVariationsLatestCountryId() {
+  return variations_latest_country_id_;
 }
 
 void FakeRegionalCapabilitiesServiceClient::FetchCountryId(
     base::OnceCallback<void(CountryId)> on_country_id_fetched) {
-  std::move(on_country_id_fetched).Run(country_id_);
+  std::move(on_country_id_fetched).Run(fetched_country_id_);
 }
 
-CountryId
-FakeRegionalCapabilitiesServiceClient::GetVariationsLatestCountryId() {
-  return country_id_;
-}
-
-void FakeRegionalCapabilitiesServiceClient::SetCountryId(CountryId country_id) {
-  country_id_ = country_id;
+CountryId FakeRegionalCapabilitiesServiceClient::GetFallbackCountryId() {
+  return fallback_country_id_;
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -53,6 +71,27 @@ Program FakeRegionalCapabilitiesServiceClient::GetDeviceProgram() {
   return Program::kDefault;
 }
 #endif
+
+FakeRegionalCapabilitiesServiceClient&
+FakeRegionalCapabilitiesServiceClient::SetVariationsLatestCountryId(
+    CountryId country_id) {
+  variations_latest_country_id_ = country_id;
+  return *this;
+}
+
+FakeRegionalCapabilitiesServiceClient&
+FakeRegionalCapabilitiesServiceClient::SetFetchedCountryId(
+    CountryId country_id) {
+  fetched_country_id_ = country_id;
+  return *this;
+}
+
+FakeRegionalCapabilitiesServiceClient&
+FakeRegionalCapabilitiesServiceClient::SetFallbackCountryId(
+    CountryId country_id) {
+  fallback_country_id_ = country_id;
+  return *this;
+}
 
 void CheckHistogramExpectation(const base::HistogramTester& histogram_tester,
                                std::string_view histogram_name,

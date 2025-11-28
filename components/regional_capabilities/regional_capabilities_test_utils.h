@@ -33,11 +33,20 @@ std::unique_ptr<RegionalCapabilitiesService> CreateServiceWithFakeClient(
     PrefService& profile_prefs,
     CountryId country_id = CountryId());
 
+std::unique_ptr<RegionalCapabilitiesService> CreateServiceWithFakeClient(
+    PrefService& profile_prefs,
+    CountryId variations_latest_country_id,
+    CountryId fetched_country_id,
+    CountryId fallback_country_id);
+
 class FakeRegionalCapabilitiesServiceClient
     : public RegionalCapabilitiesService::Client {
  public:
   explicit FakeRegionalCapabilitiesServiceClient(
       CountryId country_id = CountryId());
+  FakeRegionalCapabilitiesServiceClient(CountryId variations_latest_country_id,
+                                        CountryId fetched_country_id,
+                                        CountryId fallback_country_id);
 
   FakeRegionalCapabilitiesServiceClient(
       const FakeRegionalCapabilitiesServiceClient&) = delete;
@@ -46,21 +55,28 @@ class FakeRegionalCapabilitiesServiceClient
 
   ~FakeRegionalCapabilitiesServiceClient() override;
 
+  // RegionalCapabilitiesService::Client:
+  CountryId GetVariationsLatestCountryId() override;
   void FetchCountryId(
       base::OnceCallback<void(CountryId)> on_country_id_fetched) override;
-
   CountryId GetFallbackCountryId() override;
-
-  CountryId GetVariationsLatestCountryId() override;
-
-  void SetCountryId(CountryId country_id);
-
 #if BUILDFLAG(IS_ANDROID)
   Program GetDeviceProgram() override;
 #endif
 
+  // Internal state setters. They return a reference to the current object for
+  // chaining convenience.
+  FakeRegionalCapabilitiesServiceClient& SetVariationsLatestCountryId(
+      CountryId country_id);
+  FakeRegionalCapabilitiesServiceClient& SetFetchedCountryId(
+      CountryId country_id);
+  FakeRegionalCapabilitiesServiceClient& SetFallbackCountryId(
+      CountryId country_id);
+
  private:
-  CountryId country_id_;
+  CountryId variations_latest_country_id_;
+  CountryId fetched_country_id_;
+  CountryId fallback_country_id_;
 };
 
 using HistogramExpectation =
