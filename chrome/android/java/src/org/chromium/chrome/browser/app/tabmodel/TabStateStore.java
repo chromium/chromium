@@ -11,11 +11,10 @@ import android.os.SystemClock;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.app.tabmodel.TabRestorer.TabRestorerDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CollectionSaveForwarder;
@@ -26,7 +25,6 @@ import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.StorageRestoreOrchestratorFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
-import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
@@ -44,14 +42,12 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabStripCollection;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /** Orchestrates saving of tabs to the {@link TabStateStorageService}. */
 @NullMarked
 public class TabStateStore implements TabPersistentStore {
     private static final String TAG = "TabStateStore";
-    private static final int RESTORE_BATCH_SIZE = 5;
 
     private final TabStateStorageService mTabStateStorageService;
     private final TabCreatorManager mTabCreatorManager;
@@ -63,6 +59,7 @@ public class TabStateStore implements TabPersistentStore {
     private final Map<Token, CollectionSaveForwarder> mGroupForwarderMap = new HashMap<>();
 
     private @Nullable TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
+    private @Nullable TabRestorer mTabRestorer;
     // TODO(https://crbug.com/451614469): This synchronizer is only for incognito right now.
     private @Nullable StorageCollectionSynchronizer mSynchronizer;
     private int mRestoredTabCount;
@@ -131,6 +128,40 @@ public class TabStateStore implements TabPersistentStore {
                 }
             };
 
+    private final TabRestorerDelegate mTabRestorerDelegate =
+            new TabRestorerDelegate() {
+                @Override
+                public void onCancelled() {
+                    deleteDbIfNonAuthoritative();
+                }
+
+                @Override
+                public void onFinished() {
+                    onFinishedCreatingAllTabs();
+                }
+
+                @Override
+                public void onDetailsRead(
+                        int index,
+                        @TabId int tabId,
+                        String url,
+                        boolean isStandardActiveIndex,
+                        boolean isIncognitoActiveIndex,
+                        boolean isIncognito,
+                        boolean fromMerge) {
+                    for (TabPersistentStoreObserver observer : mObservers) {
+                        observer.onDetailsRead(
+                                index,
+                                tabId,
+                                url,
+                                isStandardActiveIndex,
+                                isIncognitoActiveIndex,
+                                isIncognito,
+                                fromMerge);
+                    }
+                }
+            };
+
     /**
      * @param tabStateStorageService The {@link TabStateStorageService} to save to.
      * @param tabModelSelector The {@link TabModelSelector} to observe changes in. Regardless of the
@@ -188,6 +219,8 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void loadState(boolean ignoreIncognitoFiles) {
+        assert mTabRestorer == null;
+        mTabRestorer = new TabRestorer(mTabRestorerDelegate, mTabCreatorManager);
         // TODO(https://crbug.com/458335579): Handle including or ignoring incognito tabs.
         long loadStartTime = SystemClock.elapsedRealtime();
         mTabStateStorageService.loadAllData(
@@ -234,11 +267,11 @@ public class TabStateStore implements TabPersistentStore {
         mTabStateStorageService.clearState();
     }
 
-    @SuppressWarnings("UnusedVariable")
     private void cancelLoadingTabs(boolean incognito) {
-        // TODO(https://crbug.com/448151052): When all tabs are closed during restore, interrupt
-        // current restore aborting any future restore operations to avoid "back from the dead"
-        // tabs.
+        // TODO(https://crbug.com/451614469): Handle incognito.
+        if (incognito || mTabRestorer == null) return;
+
+        mTabRestorer.cancel();
     }
 
     @Override
@@ -248,6 +281,11 @@ public class TabStateStore implements TabPersistentStore {
 
         if (mTabRegistrationObserver != null) {
             mTabRegistrationObserver.destroy();
+        }
+
+        if (mTabRestorer != null) {
+            mTabRestorer.cancel();
+            mTabRestorer = null;
         }
 
         mTabModelSelector.getModel(false).removeObserver(mTabModelObserver);
@@ -345,133 +383,21 @@ public class TabStateStore implements TabPersistentStore {
             initRestoreOrchestrator(data);
         }
 
-        if (mRestoredTabCount == 0) {
-            onFinishedCreatingAllTabs(data);
-            return;
-        }
-
-        restoreActiveTab(data);
-    }
-
-    /**
-     * Restores the active tab from {@code data}. Will post a task to restore the next batch if
-     * there are more tabs to restore otherwise will signal the end of restoration.
-     *
-     * @param data The data to restore tabs from.
-     */
-    private void restoreActiveTab(StorageLoadedData data) {
-        if (mIsDestroyed) {
-            cleanupStorageLoadedData(data);
-            return;
-        }
-
-        LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
-        assert loadedTabStates.length > 0;
-
-        int activeTabIndex = data.getActiveTabIndex();
-        int restoredActiveTabIndex =
-                (activeTabIndex > TabModel.INVALID_TAB_INDEX
-                                && activeTabIndex < loadedTabStates.length)
-                        ? activeTabIndex
-                        : 0;
-        LoadedTabState activeTabState = loadedTabStates[restoredActiveTabIndex];
-        restoreTab(
-                activeTabState,
-                restoredActiveTabIndex,
-                /* isIncognito= */ false,
-                /* isActive= */ true);
-
-        if (loadedTabStates.length == 1) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> onFinishedCreatingAllTabs(data));
-            return;
-        }
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
-                () ->
-                        restoreNextBatchOfTabs(
-                                data,
-                                List.of(activeTabState.tabId),
-                                /* startIndex= */ 0,
-                                /* batchSize= */ RESTORE_BATCH_SIZE));
-    }
-
-    /**
-     * Restores a single tab.
-     *
-     * @param loadedTabState The tab state to restore.
-     * @param index The index of the tab to restore.
-     * @param isIncognito Whether the tab is in incognito mode.
-     * @param isActive Whether the tab is the active tab.
-     */
-    private void restoreTab(
-            LoadedTabState loadedTabState, int index, boolean isIncognito, boolean isActive) {
-        @TabId int tabId = loadedTabState.tabId;
-        Tab tab = resolveTab(loadedTabState.tabState, tabId, index);
-        if (tab == null) return;
-
-        // TODO(https://crbug.com/451624258): This is the opposite order of creation and details
-        // from how the previous implementation did it. Verify this doesn't break anything.
-        for (TabPersistentStoreObserver observer : mObservers) {
-            observer.onDetailsRead(
-                    index,
-                    tabId,
-                    tab.getUrl().getSpec(),
-                    /* isStandardActiveIndex= */ !isIncognito && isActive,
-                    /* isIncognitoActiveIndex= */ isIncognito && isActive,
-                    /* isIncognito= */ isIncognito,
-                    /* fromMerge= */ false);
+        assert mTabRestorer != null;
+        mTabRestorer.onDataLoaded(data);
+        // A side-effect of onDataLoaded may invalidate the mTabRestorer.
+        if (mTabRestorer != null) {
+            // TODO(crbug.com/464029104): Move this to restoreTabs().
+            mTabRestorer.start();
         }
     }
 
-    /**
-     * Restores the next batch of tabs from {@code data}. Will post a task to restore the next batch
-     * if there are more tabs to restore otherwise will signal the end of restoration.
-     *
-     * @param data The data to restore tabs from.
-     * @param tabIdsToIgnore The tab ids to ignore when restoring.
-     * @param startIndex The index of the first tab to restore.
-     * @param batchSize The maximum number of tabs to restore in a single batch.
-     */
-    private void restoreNextBatchOfTabs(
-            StorageLoadedData data, List<Integer> tabIdsToIgnore, int startIndex, int batchSize) {
-        assert startIndex >= 0;
-        assert batchSize > 0;
-        if (mIsDestroyed) {
-            cleanupStorageLoadedData(data);
-            return;
-        }
-
-        LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
-        int i = startIndex;
-        int finalIndex = loadedTabStates.length;
-
-        while (batchSize > 0 && i < finalIndex) {
-            LoadedTabState loadedTabState = loadedTabStates[i];
-            if (!tabIdsToIgnore.contains(loadedTabState.tabId)) {
-                restoreTab(loadedTabState, i, /* isIncognito= */ false, /* isActive= */ false);
-            }
-
-            i++;
-            batchSize--;
-        }
-
-        int nextStartIndex = i;
-        if (nextStartIndex < finalIndex) {
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    () ->
-                            restoreNextBatchOfTabs(
-                                    data, tabIdsToIgnore, nextStartIndex, RESTORE_BATCH_SIZE));
-        } else {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> onFinishedCreatingAllTabs(data));
-        }
-    }
-
-    private void onFinishedCreatingAllTabs(StorageLoadedData data) {
-        cleanupStorageLoadedData(data);
-        data = null;
+    private void onFinishedCreatingAllTabs() {
+        deleteDbIfNonAuthoritative();
 
         if (mIsDestroyed) return;
+
+        mTabRestorer = null;
 
         initCollectionTracking();
 
@@ -492,24 +418,6 @@ public class TabStateStore implements TabPersistentStore {
             // delta and if there is we need a less blunt mechanism to reconcile the difference.
             clearState();
         }
-    }
-
-    private void cleanupStorageLoadedData(StorageLoadedData data) {
-        deleteDbIfNonAuthoritative();
-        if (ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
-            TabGroupVisualDataStore.removeCachedGroups(data.getGroupsData());
-        }
-        data.destroy();
-    }
-
-    private @Nullable Tab resolveTab(TabState tabState, @TabId int tabId, int index) {
-        if (tabState.contentsState == null || tabState.contentsState.buffer().limit() <= 0) {
-            return null;
-        }
-
-        return mTabCreatorManager
-                .getTabCreator(/* incognito= */ false)
-                .createFrozenTab(tabState, tabId, index);
     }
 
     private void saveTabGroupPayload(Token tabGroupId) {
