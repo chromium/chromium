@@ -85,4 +85,18 @@ TEST_F(FragmentDirectiveTest, ParseEmptyAndDuplicates) {
   EXPECT_EQ("foo", text_directives[0]->textStart());
 }
 
+TEST_F(FragmentDirectiveTest, ParseEmptyAndDuplicatesMixedCase) {
+  FragmentDirective* fragment_directive =
+      MakeGarbageCollected<FragmentDirective>(GetDocument());
+
+  KURL url("http://example.com/#:~:text=&text=Foo&text=&text=fOo");
+  fragment_directive->ConsumeFragmentDirective(url);
+
+  HeapVector<Member<TextDirective>> text_directives =
+      fragment_directive->GetDirectives<TextDirective>();
+  ASSERT_EQ(1u, text_directives.size());
+
+  EXPECT_EQ("Foo", text_directives[0]->textStart());
+}
+
 }  // namespace blink

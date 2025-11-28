@@ -4502,6 +4502,11 @@
       name: "ScrollTopLeftInterop",
       status: "stable",
     },
+    // Only consider unique case-insensitive scroll-to-text fragments.
+    {
+      name: "ScrollToTextFragmentUniqueFragments",
+      status: "stable",
+    },
     // Allows CSS styling of browser search results.
     // https://issues.chromium.org/issues/339298411
     // https://chromestatus.com/feature/5195073796177920

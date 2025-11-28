@@ -176,7 +176,10 @@ void FragmentDirective::ParseDirectives(const String& fragment_directive) {
   for (String& directive_string : directive_strings) {
     if (directive_string.StartsWith("text=")) {
       String value = directive_string.Right(directive_string.length() - 5);
-      if (value.empty() || !text_directives.insert(value).is_new_entry) {
+      if (value.empty() ||
+          (RuntimeEnabledFeatures::
+               ScrollToTextFragmentUniqueFragmentsEnabled() &&
+           !text_directives.insert(value.LowerASCII()).is_new_entry)) {
         continue;
       }
 
