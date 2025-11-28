@@ -2178,6 +2178,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             # Allowlisted tests that use kIgnoreCertificateErrors correctly, to
             # test behavior where the user has explicitly ignored cert errors.
             r'^chrome/browser/chrome_content_browser_client_unittest\.cc',
+            r'^chrome/browser/extensions/api/web_request/web_request_apitest\.cc',
             r'^chrome/browser/ssl/ssl_browsertest\.cc',
             r'^components/network_session_configurator/browser/network_session_configurator_unittest\.cc',
             r'^content/browser/fenced_frame/fenced_frame_browsertest\.cc',

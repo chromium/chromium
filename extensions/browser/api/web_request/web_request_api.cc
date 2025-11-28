@@ -72,6 +72,7 @@
 #include "net/http/http_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -920,6 +921,31 @@ WebRequestInternalAddEventListenerFunction::Run() {
                                    .GetByID(extension_id_safe());
   std::string extension_name =
       extension ? extension->name() : extension_id_safe();
+
+  if (extra_info_spec & ExtraInfoSpec::SECURITY_INFO) {
+    if (extension && extension->is_platform_app()) {
+      // The security info should not be available in Chrome Apps.
+      return RespondNow(Error(keys::kSecurityInfoAPINotAvailable));
+    }
+
+    if (extension) {
+      if (!base::FeatureList::IsEnabled(
+              extensions_features::kWebRequestSecurityInfo)) {
+        return RespondNow(Error(keys::kSecurityInfoFlagAbsentInExtensions));
+      }
+    } else {
+      if (!GetContextData()->HasControlledFrameCapability()) {
+        // Available only in extensions and Controlled Frame.
+        return RespondNow(Error(keys::kSecurityInfoAPINotAvailable));
+      }
+
+      if (!base::FeatureList::IsEnabled(
+              blink::features::kControlledFrameWebRequestSecurityInfo)) {
+        return RespondNow(
+            Error(keys::kSecurityInfoFlagAbsentInControlledFrame));
+      }
+    }
+  }
 
   if (web_view_instance_id) {
     // If a web view ID has been supplied and the call is from an extension

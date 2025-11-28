@@ -163,6 +163,8 @@
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/network_session_configurator/common/network_switches.h"
+#include "net/cert/x509_certificate.h"
 #include "ui/base/ui_base_features.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -408,7 +410,7 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
       ContextType context_type = ContextType::kFromManifest)
       : ExtensionApiTest(context_type) {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
+        /*enabled_features=*/{extensions_features::kWebRequestSecurityInfo},
         // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
         // disable this feature.
         /*disabled_features=*/
@@ -454,6 +456,43 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
         ->CreateURLLoaderFactory(
             loader_factory.InitWithNewPipeAndPassReceiver(), std::move(params));
     return loader_factory;
+  }
+
+  void RunSecurityInfoTest(std::string expect_state,
+                           bool use_web_socket,
+                           scoped_refptr<net::X509Certificate> certificate,
+                           GURL request_url) {
+    std::string sha256_string =
+        base::HexEncode(net::X509Certificate::CalculateFingerprint256(
+            certificate->cert_buffer()));
+    std::string pem_string;
+    net::X509Certificate::GetPEMEncoded(certificate->cert_buffer(),
+                                        &pem_string);
+
+    base::Value::Dict custom_args;
+    custom_args.Set("request_url", request_url.spec());
+    custom_args.Set("certificate_bytes", std::move(pem_string));
+    custom_args.Set("certificate_sha256", std::move(sha256_string));
+    custom_args.Set("expect_state", std::move(expect_state));
+    custom_args.Set("use_web_socket", use_web_socket);
+
+    std::string config_string = base::WriteJson(custom_args).value_or("");
+
+    ASSERT_TRUE(RunExtensionTest("webrequest/test_security_info",
+                                 {.custom_arg = config_string.c_str()}))
+        << message_;
+  }
+
+  void RunSecurityInfoInsecureTest(bool use_web_socket, GURL request_url) {
+    base::Value::Dict custom_args;
+    custom_args.Set("request_url", request_url.spec());
+    custom_args.Set("use_web_socket", use_web_socket);
+
+    std::string config_string = base::WriteJson(custom_args).value_or("");
+
+    ASSERT_TRUE(RunExtensionTest("webrequest/test_security_info_insecure",
+                                 {.custom_arg = config_string.c_str()}))
+        << message_;
   }
 
   void InstallWebRequestExtension(const std::string& name) {
@@ -8339,5 +8378,49 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ManifestV3WebRequestApiTestWithSkipResetServiceWorkerURLLoaderFactories,
     testing::Bool());
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, SecurityInfo_Secure) {
+  UseHttpsTestServer(net::EmbeddedTestServer::ServerCertificate::CERT_OK);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  RunSecurityInfoTest("secure", /*use_web_socket=*/false,
+                      embedded_test_server()->GetCertificate(),
+                      embedded_test_server()->GetURL("/simple.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, SecurityInfo_Insecure) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  RunSecurityInfoInsecureTest(/*use_web_socket=*/false,
+                              embedded_test_server()->GetURL("/simple.html"));
+}
+
+class SecurityInfoBrokenWebRequestApiTest : public ExtensionWebRequestApiTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionWebRequestApiTest::SetUpCommandLine(command_line);
+    // This flag is necessary for tests to explore a condition, where a server
+    // certificate is invalid (e.g. expired). It simulates the user clicking to
+    // proceed to a dangerous site.
+    // network::switches::kIgnoreCertificateErrorsSPKIList is a recommended
+    // alternative, which does not allow to explore invalid cert, since it
+    // treats any certificate as valid.
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SecurityInfoBrokenWebRequestApiTest,
+                       SecurityInfo_Broken) {
+  UseHttpsTestServer(net::EmbeddedTestServer::ServerCertificate::CERT_EXPIRED);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  RunSecurityInfoTest("broken", /*use_web_socket=*/false,
+                      embedded_test_server()->GetCertificate(),
+                      embedded_test_server()->GetURL("/simple.html"));
+}
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

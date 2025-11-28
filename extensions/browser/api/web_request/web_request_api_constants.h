@@ -98,6 +98,9 @@ extern const char kInvalidHeaderKeyCombination[];
 extern const char kInvalidHeader[];
 extern const char kInvalidHeaderName[];
 extern const char kInvalidHeaderValue[];
+extern const char kSecurityInfoAPINotAvailable[];
+extern const char kSecurityInfoFlagAbsentInExtensions[];
+extern const char kSecurityInfoFlagAbsentInControlledFrame[];
 
 }  // namespace extension_web_request_api_constants
 

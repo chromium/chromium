@@ -1,0 +1,11 @@
+{
+  "name": "test_security_info_insecure",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests the webRequest API.",
+  "permissions": ["webRequest", "webRequestBlocking", "tabs", "<all_urls>"],
+  "background": {
+    "scripts": ["test_security_info_insecure.js"],
+    "persistent": true
+  }
+}

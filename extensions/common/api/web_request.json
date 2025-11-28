@@ -68,7 +68,9 @@
         "enum": [
           {"name": "blocking", "description": "Specifies the request is blocked until the callback function returns."},
           {"name": "responseHeaders", "description": "Specifies that the response headers should be included in the event."},
-          {"name": "extraHeaders", "description": "Specifies that headers can violate Cross-Origin Resource Sharing (CORS)."}
+          {"name": "extraHeaders", "description": "Specifies that headers can violate Cross-Origin Resource Sharing (CORS)."},
+          {"name": "securityInfo", "description": "Specifies that the SecurityInfo should be included in the event."},
+          {"name": "securityInfoRawDer", "description": "Specifies that the SecurityInfo with raw bytes of certificates should be included in the event."}
         ]
       },
       {
@@ -204,6 +206,40 @@
           }
         },
         "description": "Contains data uploaded in a URL request."
+      },
+      {
+        "id": "SecurityInfo",
+        "type": "object",
+        "properties": {
+          "certificates": {
+            "type": "array",
+            "description": "A list of certificates",
+            "items": {
+              "type": "object",
+              "properties": {
+                "rawDER": {
+                  "type": "binary",
+                  "optional": true,
+                  "description": "Raw bytes of DER encoded server certificate"
+                },
+                "fingerprint": {
+                  "type": "object",
+                  "description": "Fingerprints of the certificate.",
+                  "properties": {
+                    "sha256": {
+                      "type": "string",
+                      "description": "sha256 fingerprint of the certificate."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "state": {
+            "type": "string",
+            "description": "State of the connection. One of secure, insecure, broken."
+          }
+        }
       },
       {
         "id": "FormDataItem",
@@ -419,7 +455,8 @@
               "timeStamp": {"type": "number", "description": "The time when this signal is triggered, in milliseconds since the epoch."},
               "statusLine": {"type": "string", "description": "HTTP status line of the response or the 'HTTP/0.9 200 OK' string for HTTP/0.9 responses (i.e., responses that lack a status line)."},
               "responseHeaders": {"$ref": "HttpHeaders", "optional": true, "description": "The HTTP response headers that have been received with this response."},
-              "statusCode": {"type": "integer", "description": "Standard HTTP status code returned by the server."}
+              "statusCode": {"type": "integer", "description": "Standard HTTP status code returned by the server."},
+              "securityInfo": {"$ref": "SecurityInfo", "optional": true, "description": "Information about the TLS/QUIC connection used for the underlying connection. Only provided if <code>securityInfo<code> is specified in the <code>extraInfoSpec</code> parameter."}
              }
           }
         ],

@@ -322,9 +322,19 @@ class WebRequestEventRouter : public KeyedService {
       content::BrowserContext* browser_context,
       const WebRequestInfo* request);
 
+  // Whether there is a listener matching the request that has
+  // ExtraInfoSpec::SECURITY_INFO set.
+  bool HasSecurityInfoListenerForRequest(
+      content::BrowserContext* browser_context,
+      const WebRequestInfo* request);
+
   // Whether there are any listeners for this context that have
   // ExtraInfoSpec::EXTRA_HEADERS set.
   bool HasAnyExtraHeadersListener(content::BrowserContext* browser_context);
+
+  // Whether there are any listeners for this context that have
+  // ExtraInfoSpec::SECURITY_INFO set.
+  bool HasAnySecurityInfoListener(content::BrowserContext* browser_context);
 
   // Called when a BrowserContext is being destroyed.
   void OnBrowserContextShutdown(content::BrowserContext* browser_context);
@@ -426,6 +436,11 @@ class WebRequestEventRouter : public KeyedService {
       return extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS;
     }
 
+    bool HasSecurityInfo() const {
+      using extension_web_request_api_helpers::ExtraInfoSpec;
+      return extra_info_spec & ExtraInfoSpec::SECURITY_INFO;
+    }
+
     bool IsBlocking() const {
       using extension_web_request_api_helpers::ExtraInfoSpec;
       return extra_info_spec &
@@ -497,7 +512,11 @@ class WebRequestEventRouter : public KeyedService {
     // The number of listeners that request extra headers be included with their
     // events. Modified through `IncrementExtraHeadersListenerCount()` and
     // `DecrementExtraHeadersListenerCount()`.
-    int extra_headers_count = 0;
+    int extra_headers_listeners_count = 0;
+    // The number of listeners that request security info be included with their
+    // events. Modified through `IncrementSecurityInfoListenerCount()` and
+    // `DecrementSecurityInfoListenerCount()`.
+    int security_info_listeners_count = 0;
     // Maps each BrowserContext using the webview key to its respective rules
     // registry. For non-webview contexts, the default value defined by
     // `RulesRegistryService::kDefaultRulesRegistryID` is used.
@@ -685,8 +704,16 @@ class WebRequestEventRouter : public KeyedService {
   void DecrementExtraHeadersListenerCount(
       content::BrowserContext* browser_context);
 
+  void IncrementSecurityInfoListenerCount(
+      content::BrowserContext* browser_context);
+  void DecrementSecurityInfoListenerCount(
+      content::BrowserContext* browser_context);
+
   // Helper for |HasAnyExtraHeadersListener()|.
   bool HasAnyExtraHeadersListenerImpl(content::BrowserContext* browser_context);
+
+  // Helper for |HasAnySecurityInfoListener()|.
+  bool HasAnySecurityInfoListenerImpl(content::BrowserContext* browser_context);
 
   // Returns the instance of the BlockedRequestMap for `browser_context`.
   BlockedRequestMap& GetBlockedRequestMap(

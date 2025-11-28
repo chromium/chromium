@@ -362,7 +362,9 @@ enum class WebRequestEventListenerFlag {
   kAsyncBlocking,
   kRequestBody,
   kExtraHeaders,
-  kMaxValue = kExtraHeaders,
+  kSecurityInfo,
+  kSecurityInfoRawDer,
+  kMaxValue = kSecurityInfoRawDer,
 };
 
 void LogEventListenerFlag(WebRequestEventListenerFlag flag) {
@@ -393,6 +395,11 @@ void RecordAddEventListenerUMAs(int extra_info_spec) {
   }
   if (extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS) {
     LogEventListenerFlag(WebRequestEventListenerFlag::kExtraHeaders);
+  }
+  if (extra_info_spec & ExtraInfoSpec::SECURITY_INFO_RAW_DER) {
+    LogEventListenerFlag(WebRequestEventListenerFlag::kSecurityInfoRawDer);
+  } else if (extra_info_spec & ExtraInfoSpec::SECURITY_INFO) {
+    LogEventListenerFlag(WebRequestEventListenerFlag::kSecurityInfo);
   }
 }
 
@@ -1301,6 +1308,7 @@ int WebRequestEventRouter::OnHeadersReceived(
     std::unique_ptr<WebRequestEventDetails> event_details(
         CreateEventDetails(*request, extra_info_spec));
     event_details->SetResponseHeaders(*request, original_response_headers);
+    event_details->SetSecurityInfo(*request);
 
     initialize_blocked_requests |= DispatchEvent(
         browser_context, request, listeners, std::move(event_details));
@@ -1957,7 +1965,9 @@ bool WebRequestEventRouter::AddEventListener(
   if (is_service_worker_listener && !is_reactivated) {
     AddPersistedLazyListener(browser_context, extension_id, *listener);
   }
-
+  if (!is_reactivated && listener->HasSecurityInfo()) {
+    IncrementSecurityInfoListenerCount(browser_context);
+  }
   data_[browser_context_id].active_listeners[event_name].push_back(
       std::move(listener));
 
@@ -2133,6 +2143,10 @@ void WebRequestEventRouter::CleanUpForListener(const EventListener& listener,
     if (listener.HasExtraHeaders()) {
       DecrementExtraHeadersListenerCount(listener.id.browser_context);
     }
+    if (listener.HasSecurityInfo()) {
+      DecrementSecurityInfoListenerCount(listener.id.browser_context);
+    }
+
     helpers::ClearCacheOnNavigation();
   }
 }
@@ -2286,6 +2300,26 @@ bool WebRequestEventRouter::HasExtraHeadersListenerForRequest(
                                          browser_context->IsOffTheRecord());
 }
 
+bool WebRequestEventRouter::HasSecurityInfoListenerForRequest(
+    content::BrowserContext* browser_context,
+    const WebRequestInfo* request) {
+  DCHECK(request);
+  if (ShouldHideEvent(browser_context, *request)) {
+    return false;
+  }
+
+  int extra_info_spec = 0;
+  for (const char* name : kWebRequestEvents) {
+    GetMatchingListeners(browser_context, name, request, &extra_info_spec);
+    if (extra_info_spec & ExtraInfoSpec::SECURITY_INFO) {
+      return true;
+    }
+  }
+
+  // SecurityInfo is not supported in declarative requests.
+  return false;
+}
+
 bool WebRequestEventRouter::HasAnyExtraHeadersListener(
     content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -2306,20 +2340,54 @@ bool WebRequestEventRouter::HasAnyExtraHeadersListener(
       ->HasAnyExtraHeadersMatcher();
 }
 
+bool WebRequestEventRouter::HasAnySecurityInfoListener(
+    content::BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (HasAnySecurityInfoListenerImpl(browser_context)) {
+    return true;
+  }
+
+  content::BrowserContext* cross_browser_context =
+      GetCrossBrowserContext(browser_context);
+  if (cross_browser_context &&
+      HasAnySecurityInfoListenerImpl(cross_browser_context)) {
+    return true;
+  }
+
+  // SecurityInfo is not supported in declarative requests.
+  return false;
+}
+
 void WebRequestEventRouter::IncrementExtraHeadersListenerCount(
     content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   BrowserContextData& data = data_[GetBrowserContextID(browser_context)];
-  DCHECK_GE(data.extra_headers_count, 0);
-  data.extra_headers_count++;
+  DCHECK_GE(data.extra_headers_listeners_count, 0);
+  data.extra_headers_listeners_count++;
 }
 
 void WebRequestEventRouter::DecrementExtraHeadersListenerCount(
     content::BrowserContext* browser_context) {
   BrowserContextData& data = data_[GetBrowserContextID(browser_context)];
-  data.extra_headers_count--;
-  DCHECK_GE(data.extra_headers_count, 0);
+  data.extra_headers_listeners_count--;
+  DCHECK_GE(data.extra_headers_listeners_count, 0);
+}
+
+void WebRequestEventRouter::IncrementSecurityInfoListenerCount(
+    content::BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  BrowserContextData& data = data_[GetBrowserContextID(browser_context)];
+  DCHECK_GE(data.security_info_listeners_count, 0);
+  data.security_info_listeners_count++;
+}
+
+void WebRequestEventRouter::DecrementSecurityInfoListenerCount(
+    content::BrowserContext* browser_context) {
+  BrowserContextData& data = data_[GetBrowserContextID(browser_context)];
+  data.security_info_listeners_count--;
+  DCHECK_GE(data.security_info_listeners_count, 0);
 }
 
 void WebRequestEventRouter::OnBrowserContextShutdown(
@@ -2436,7 +2504,13 @@ size_t WebRequestEventRouter::GetInactiveListenerCountForTesting(
 bool WebRequestEventRouter::HasAnyExtraHeadersListenerImpl(
     content::BrowserContext* browser_context) {
   auto iter = data_.find(GetBrowserContextID(browser_context));
-  return iter != data_.end() && iter->second.extra_headers_count > 0;
+  return iter != data_.end() && iter->second.extra_headers_listeners_count > 0;
+}
+
+bool WebRequestEventRouter::HasAnySecurityInfoListenerImpl(
+    content::BrowserContext* browser_context) {
+  auto iter = data_.find(GetBrowserContextID(browser_context));
+  return iter != data_.end() && iter->second.security_info_listeners_count > 0;
 }
 
 WebRequestEventRouter::BlockedRequestMap&

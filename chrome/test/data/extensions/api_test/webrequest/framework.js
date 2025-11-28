@@ -619,3 +619,21 @@ function removeHeader(headers, name) {
     }
   }
 }
+
+function getPemEncodedFromDer(arrayBuffer) {
+  // 1. Convert ArrayBuffer to Binary String.
+  const uint8Arr = new Uint8Array(arrayBuffer);
+  let binaryString = '';
+  for (let i = 0; i < uint8Arr.byteLength; i++) {
+    binaryString += String.fromCharCode(uint8Arr[i]);
+  }
+
+  // 2. Convert Binary String to Base64.
+  const base64 = btoa(binaryString);
+
+  // 3. Format as PEM (Wrap at 64 chars and add headers).
+  const formattedBase64 = base64.match(/.{1,64}/g).join('\n');
+
+  return '-----BEGIN CERTIFICATE-----\n' + formattedBase64 +
+      '\n-----END CERTIFICATE-----\n';
+}

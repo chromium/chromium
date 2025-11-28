@@ -1040,12 +1040,12 @@ ExtensionService* ExtensionBrowserTest::extension_service() {
   return ExtensionSystem::Get(profile())->extension_service();
 }
 
-void ExtensionBrowserTest::UseHttpsTestServer() {
+void ExtensionBrowserTest::UseHttpsTestServer(
+    net::EmbeddedTestServer::ServerCertificate server_certificate) {
   https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server_.get()->AddDefaultHandlers(GetChromeTestDataDir());
-  https_test_server_.get()->SetSSLConfig(
-      net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_test_server_.get()->SetSSLConfig(server_certificate);
 }
 
 }  // namespace extensions

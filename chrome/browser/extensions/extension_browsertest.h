@@ -387,7 +387,9 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
   // HTTP embedded_test_server defined in BrowserTestBase. The new test server
   // can then be retrieved using the same embedded_test_server() method used
   // to get the BrowserTestBase HTTP server.
-  void UseHttpsTestServer();
+  void UseHttpsTestServer(
+      net::EmbeddedTestServer::ServerCertificate server_certificate =
+          net::EmbeddedTestServer::ServerCertificate::CERT_TEST_NAMES);
 
   // This will return either the https test server or the
   // default one specified in BrowserTestBase, depending on if an https test

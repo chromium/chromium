@@ -3752,6 +3752,8 @@ Called by update_extension_permission.py.-->
   <int value="5" label="asyncBlocking"/>
   <int value="6" label="requestBody"/>
   <int value="7" label="extraHeaders"/>
+  <int value="8" label="securityInfo"/>
+  <int value="9" label="securityInfoRawDer"/>
 </enum>
 
 <enum name="WebStoreInstallAllowlistParameter">

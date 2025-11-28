@@ -258,6 +258,12 @@ class WebRequestProxyingURLLoaderFactory
     // is only set to true if there is a listener that needs to view or modify
     // headers set in the network process.
     const bool has_any_extra_headers_listeners_ = false;
+
+    // Similar to the |has_any_extra_headers_listeners_|, setting
+    // |has_any_security_info_listeners_| also will make the request to use
+    // network::mojom::kURLLoadOptionUseHeaderClient option.
+    const bool has_any_security_info_listeners_ = false;
+
     bool current_request_uses_header_client_ = false;
     OnBeforeSendHeadersCallback on_before_send_headers_callback_;
     OnHeadersReceivedCallback on_headers_received_callback_;
