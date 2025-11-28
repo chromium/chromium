@@ -124,13 +124,12 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, NoImagesFound) {
       });
 
   base::RunLoop run_loop;
-  detector_.Detect(
-      web_contents(),
-      base::BindLambdaForTesting(
-          [&](const std::vector<WalletBarcodeDetectionResult>& results) {
-            EXPECT_TRUE(results.empty());
-            run_loop.Quit();
-          }));
+  detector_.Detect(web_contents(),
+                   base::BindLambdaForTesting(
+                       [&](const std::vector<WalletBarcode>& results) {
+                         EXPECT_TRUE(results.empty());
+                         run_loop.Quit();
+                       }));
   run_loop.Run();
 }
 
@@ -151,13 +150,12 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, NoBarcodesFound) {
                        callback) { std::move(callback).Run({}); });
 
   base::RunLoop run_loop;
-  detector_.Detect(
-      web_contents(),
-      base::BindLambdaForTesting(
-          [&](const std::vector<WalletBarcodeDetectionResult>& results) {
-            EXPECT_TRUE(results.empty());
-            run_loop.Quit();
-          }));
+  detector_.Detect(web_contents(),
+                   base::BindLambdaForTesting(
+                       [&](const std::vector<WalletBarcode>& results) {
+                         EXPECT_TRUE(results.empty());
+                         run_loop.Quit();
+                       }));
   run_loop.Run();
 }
 
@@ -188,8 +186,8 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, QRCodeFound) {
   detector_.Detect(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](const std::vector<WalletBarcodeDetectionResult>& results) {
-            EXPECT_THAT(results, ElementsAre(WalletBarcodeDetectionResult{
+          [&](const std::vector<WalletBarcode>& results) {
+            EXPECT_THAT(results, ElementsAre(WalletBarcode{
                                      .raw_value = "test_value",
                                      .format = WalletBarcodeFormat::QR_CODE}));
             run_loop.Quit();
@@ -205,13 +203,12 @@ TEST_F(WalletablePassBarcodeDetectorImplTest,
       });
 
   base::RunLoop run_loop;
-  detector_.Detect(
-      web_contents(),
-      base::BindLambdaForTesting(
-          [&](const std::vector<WalletBarcodeDetectionResult>& results) {
-            EXPECT_TRUE(results.empty());
-            run_loop.Quit();
-          }));
+  detector_.Detect(web_contents(),
+                   base::BindLambdaForTesting(
+                       [&](const std::vector<WalletBarcode>& results) {
+                         EXPECT_TRUE(results.empty());
+                         run_loop.Quit();
+                       }));
   run_loop.Run();
 }
 
@@ -234,13 +231,12 @@ TEST_F(WalletablePassBarcodeDetectorImplTest,
       });
 
   base::RunLoop run_loop;
-  detector_.Detect(
-      web_contents(),
-      base::BindLambdaForTesting(
-          [&](const std::vector<WalletBarcodeDetectionResult>& results) {
-            EXPECT_TRUE(results.empty());
-            run_loop.Quit();
-          }));
+  detector_.Detect(web_contents(),
+                   base::BindLambdaForTesting(
+                       [&](const std::vector<WalletBarcode>& results) {
+                         EXPECT_TRUE(results.empty());
+                         run_loop.Quit();
+                       }));
   run_loop.Run();
 }
 
@@ -279,15 +275,14 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, MultipleBarcodesFound) {
   detector_.Detect(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](const std::vector<WalletBarcodeDetectionResult>& results) {
-            EXPECT_THAT(results,
-                        ElementsAre(
-                            WalletBarcodeDetectionResult{
-                                .raw_value = "qr_code_value",
-                                .format = WalletBarcodeFormat::QR_CODE},
-                            WalletBarcodeDetectionResult{
-                                .raw_value = "pdf417_value",
-                                .format = WalletBarcodeFormat::PDF417}));
+          [&](const std::vector<WalletBarcode>& results) {
+            EXPECT_THAT(
+                results,
+                ElementsAre(
+                    WalletBarcode{.raw_value = "qr_code_value",
+                                  .format = WalletBarcodeFormat::QR_CODE},
+                    WalletBarcode{.raw_value = "pdf417_value",
+                                  .format = WalletBarcodeFormat::PDF417}));
             run_loop.Quit();
           }));
   run_loop.Run();

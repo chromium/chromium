@@ -56,9 +56,7 @@ IN_PROC_BROWSER_TEST_F(WalletablePassBarcodeDetectorBrowserTest,
       std::string(kBlackImage) + "'></body>");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  base::test::TestFuture<
-      const std::vector<wallet::WalletBarcodeDetectionResult>&>
-      future;
+  base::test::TestFuture<const std::vector<wallet::WalletBarcode>&> future;
   auto detector = std::make_unique<WalletablePassBarcodeDetectorImpl>();
   detector->Detect(GetWebContents(), future.GetCallback());
 
@@ -74,8 +72,7 @@ IN_PROC_BROWSER_TEST_F(WalletablePassBarcodeDetectorBrowserTest,
   const GURL url("data:text/html,<body><p>hello</p></body>");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  base::test::TestFuture<const std::vector<WalletBarcodeDetectionResult>&>
-      future;
+  base::test::TestFuture<const std::vector<WalletBarcode>&> future;
   auto detector = std::make_unique<WalletablePassBarcodeDetectorImpl>();
   detector->Detect(GetWebContents(), future.GetCallback());
 

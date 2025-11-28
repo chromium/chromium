@@ -9,43 +9,17 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "components/wallet/core/browser/wallet_barcode.h"
 #include "content/public/browser/web_contents.h"
 
 namespace wallet {
-
-// Represents the format of a barcode. This enum corresponds to the
-// BarcodeFormat enum in the Shape Detection API.
-// https://wicg.github.io/shape-detection-api/#barcodeformat-section
-enum WalletBarcodeFormat {
-  AZTEC,
-  CODE_128,
-  CODE_39,
-  CODE_93,
-  CODABAR,
-  DATA_MATRIX,
-  EAN_13,
-  EAN_8,
-  ITF,
-  PDF417,
-  QR_CODE,
-  UNKNOWN,
-  UPC_A,
-  UPC_E
-};
-
-struct WalletBarcodeDetectionResult {
-  std::string raw_value;
-  WalletBarcodeFormat format;
-
-  bool operator==(const WalletBarcodeDetectionResult& other) const = default;
-};
 
 // A class used to detect barcodes from a potential walletable pass web
 // contents.
 class WalletablePassBarcodeDetector {
  public:
-  using WalletBarcodeDetectionDetectCallback = base::OnceCallback<void(
-      const std::vector<WalletBarcodeDetectionResult>&)>;
+  using WalletBarcodeDetectionDetectCallback =
+      base::OnceCallback<void(const std::vector<WalletBarcode>&)>;
 
   virtual ~WalletablePassBarcodeDetector() = default;
 

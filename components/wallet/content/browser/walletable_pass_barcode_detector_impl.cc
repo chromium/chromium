@@ -157,7 +157,7 @@ void WalletablePassBarcodeDetectorImpl::OnAllBarcodesDetected(
     WalletBarcodeDetectionDetectCallback callback,
     std::vector<std::vector<shape_detection::mojom::BarcodeDetectionResultPtr>>
         all_detected_barcodes) {
-  std::vector<WalletBarcodeDetectionResult> results;
+  std::vector<WalletBarcode> results;
   for (const std::vector<shape_detection::mojom::BarcodeDetectionResultPtr>&
            detected_barcodes : all_detected_barcodes) {
     for (const shape_detection::mojom::BarcodeDetectionResultPtr& barcode :
