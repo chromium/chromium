@@ -483,8 +483,10 @@ void MediaStreamUIProxy::ProcessAccessRequestResponse(
     blink::mojom::StreamDevicesSetPtr stream_devices_set,
     blink::mojom::MediaStreamRequestResult result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(!response_callback_.is_null());
-  std::move(response_callback_).Run(*stream_devices_set, result);
+
+  if (response_callback_) {
+    std::move(response_callback_).Run(*stream_devices_set, result);
+  }
 }
 
 void MediaStreamUIProxy::ProcessStopRequestFromUI() {
