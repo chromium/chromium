@@ -629,6 +629,11 @@ void CorsURLLoader::OnReceiveResponse(
   CHECK(!(response_head->did_use_shared_dictionary &&
           (response_tainting_ == mojom::FetchResponseType::kOpaque)));
 
+  // OnReceiveResponse() can be called at most once. This check is added to
+  // debug crbug.com/463388771.
+  SCOPED_CRASH_KEY_STRING1024("crbug463388771", "cors_url_loader_url",
+                              request_.url.spec());
+  CHECK(!has_forwarded_response_);
   has_forwarded_response_ = true;
   timing_allow_failed_flag_ = !PassesTimingAllowOriginCheck(*response_head);
 
