@@ -312,14 +312,6 @@ UIImage* SendButtonImage(BOOL highlighted) {
                   }];
 }
 
-- (void)hideAttachCurrentTabAction:(BOOL)hidden {
-  if (_attachCurrentTabActionHidden == hidden) {
-    return;
-  }
-  _attachCurrentTabActionHidden = hidden;
-  [self updatePlusButtonItems];
-}
-
 - (void)updateState:(ComposeboxInputItemState)state
     forItemWithToken:(const base::UnguessableToken&)token {
   NSDiffableDataSourceSnapshot<NSString*, ComposeboxInputItem*>*
@@ -384,6 +376,18 @@ UIImage* SendButtonImage(BOOL highlighted) {
   _sendButton.hidden = hidden;
 }
 
+- (void)setAIModeEnabled:(BOOL)AIModeEnabled {
+  if (AIModeEnabled == _AIModeEnabled) {
+    return;
+  }
+  _AIModeEnabled = AIModeEnabled;
+  [self updatePlaceholderText];
+  [self updateAIMButtonAppearance];
+  [self updatePlusButtonItems];
+  [self.mutator setAIModeEnabled:_AIModeEnabled];
+  [self triggerGlowEffect];
+}
+
 - (void)setCompact:(BOOL)compact {
   if (_compact == compact) {
     return;
@@ -399,6 +403,14 @@ UIImage* SendButtonImage(BOOL highlighted) {
 
 - (void)setCurrentTabFavicon:(UIImage*)favicon {
   _currentTabFavicon = favicon;
+  [self updatePlusButtonItems];
+}
+
+- (void)hideAttachCurrentTabAction:(BOOL)hidden {
+  if (_attachCurrentTabActionHidden == hidden) {
+    return;
+  }
+  _attachCurrentTabActionHidden = hidden;
   [self updatePlusButtonItems];
 }
 
@@ -584,19 +596,6 @@ UIImage* SendButtonImage(BOOL highlighted) {
   _leadingCarouselFadeView.hidden = contentOffsetX <= 0;
   _trailingCarouselFadeView.hidden =
       contentOffsetX + boundsWidth >= contentWidth;
-}
-
-/// Enables or disables AI Mode and updates the UI accordingly.
-- (void)setAIModeEnabled:(BOOL)AIModeEnabled {
-  if (AIModeEnabled == _AIModeEnabled) {
-    return;
-  }
-  _AIModeEnabled = AIModeEnabled;
-  [self updatePlaceholderText];
-  [self updateAIMButtonAppearance];
-  [self updatePlusButtonItems];
-  [self.mutator setAIModeEnabled:_AIModeEnabled];
-  [self triggerGlowEffect];
 }
 
 /// Initiates the glow animation around the input plate.
