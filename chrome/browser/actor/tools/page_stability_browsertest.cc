@@ -215,7 +215,6 @@ enum class NavigationType { kSameDocument, kSameSite, kCrossSite };
 //
 // Also run with the navigation completing without delay as well as with some
 // induced delay.
-// TODO(crbug.com/414662842): Move to page_stability_browsertest.cc.
 class ActorPageStabilityNavigationTypesTest
     : public ActorPageStabilityTestBase,
       public testing::WithParamInterface<
