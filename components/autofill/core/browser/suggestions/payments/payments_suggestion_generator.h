@@ -280,6 +280,17 @@ std::u16string GetDisplayNicknameForCreditCard(
 std::optional<Suggestion::Text> GetCreditCardBenefitSuggestionLabel(
     const CreditCard& credit_card,
     const AutofillClient& client);
+
+Suggestion CreateManagePaymentMethodsEntry(SuggestionType suggestion_type,
+                                           bool with_gpay_logo);
+
+// Returns true if the new FOP (form-of-payment) display is enabled.
+bool ShouldUseNewFopDisplay();
+
+// Returns the card-linked offers map with credit card guid as the key and the
+// pointer to the linked AutofillOfferData as the value.
+std::map<std::string, const AutofillOfferData*> GetCardLinkedOffers(
+    const AutofillClient& autofill_client);
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PAYMENTS_PAYMENTS_SUGGESTION_GENERATOR_H_

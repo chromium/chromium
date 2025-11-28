@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/suggestions/one_time_passwords/one_time_password_suggestion_data.h"
 #include "components/autofill/core/browser/suggestions/passkeys/hybrid_passkey_availability.h"
 #include "components/autofill/core/browser/suggestions/payments/save_and_fill_suggestion.h"
+#include "components/autofill/core/browser/suggestions/payments/virtual_card_suggestion_data.h"
 #include "components/autofill/core/browser/suggestions/plus_addresses/plus_address.h"
 #include "components/autofill/core/browser/suggestions/plus_addresses/plus_address_for_address_suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -93,6 +94,7 @@ class SuggestionGenerator {
                                       IdentityCredential,
                                       HybridPasskeyAvailability,
                                       SaveAndFillSuggestion,
+                                      VirtualCardSuggestionData,
                                       OneTimePasswordSuggestionData,
                                       PlusAddress,
                                       PlusAddressForAddressSuggestion,

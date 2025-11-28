@@ -42,6 +42,7 @@ class FormFieldData;
 class CreditCardSuggestionGenerator : public SuggestionGenerator {
  public:
   explicit CreditCardSuggestionGenerator(
+      payments::SaveAndFillManager* save_and_fill_manager,
       autofill_metrics::CreditCardFormEventLogger* event_logger,
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics_,
       const std::vector<std::string>& four_digit_combinations_in_dom);
@@ -92,8 +93,8 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
       const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
           all_suggestion_data,
       base::FunctionRef<void(ReturnedSuggestions)> callback);
-
  private:
+  friend class CreditCardSuggestionGeneratorTestApi;
   // Determines whether the "Save and Fill" suggestion should be shown in the
   // credit card autofill dropdown.
   bool ShouldShowCreditCardSaveAndFill(const AutofillClient& client,
@@ -120,15 +121,9 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   std::vector<CreditCard> FetchCreditCardsForCreditCardOrCvcField(
       const AutofillClient& client,
       const FormFieldData& trigger_field,
-      const std::vector<std::string>& four_digit_combinations_in_dom,
       const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
       FieldType trigger_field_type,
       bool should_show_scan_credit_card);
-
-  // Returns the card-linked offers map with credit card guid as the key and the
-  // pointer to the linked AutofillOfferData as the value.
-  std::map<std::string, const AutofillOfferData*> GetCardLinkedOffers(
-      const AutofillClient& client);
 
   // Filter `cards_to_suggest` for CVC fields based on parameters such as field
   // type, four digit combinations found in the DOM (if any were found), and the
@@ -141,14 +136,16 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   // Fetches and filters virtual cards to suggest for a standalone CVC field.
   std::vector<CreditCard> FetchVirtualCardsForStandaloneCvcField(
       const AutofillClient& client,
-      const FormFieldData& trigger_field);
+      const FormFieldData& trigger_field,
+      base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
+          virtual_card_guid_to_last_four_map);
 
   // Generates suggestions for standalone CVC fields from the given
   // `credit_cards`.
   std::vector<Suggestion> GenerateSuggestionsForStandaloneCvcField(
       const FormFieldData& trigger_field,
       const AutofillClient& client,
-      const std::vector<CreditCard>& credit_cards,
+      const std::vector<VirtualCardSuggestionData>& credit_cards,
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
 
   // Returns non credit card suggestions which are displayed below credit card
@@ -169,11 +166,11 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   std::vector<Suggestion> GenerateSuggestionsForCreditCardOrCvcField(
       const FormFieldData& trigger_field,
       const FieldType& trigger_field_type,
-      const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
       const std::vector<CreditCard>& credit_cards,
       CreditCardSuggestionSummary& summary,
-      bool should_show_scan_credit_card);
+      bool should_show_scan_credit_card,
+      bool is_card_number_field_empty);
 
   // Creates a suggestion for the given `credit_card`. `virtual_card_option`
   // suggests whether the suggestion is a virtual card option.
@@ -182,12 +179,13 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   // metadata related information used for metrics logging.
   // TODO(crbug.com/40232456): Separate logic for desktop, Android dropdown, and
   // Keyboard Accessory.
-  Suggestion CreateCreditCardSuggestion(const CreditCard& credit_card,
-                                        const AutofillClient& client,
-                                        FieldType trigger_field_type,
-                                        bool virtual_card_option,
-                                        bool card_linked_offer_available,
-                                        CreditCardSuggestionSummary& summary);
+  Suggestion CreateCreditCardSuggestion(
+      const CreditCard& credit_card,
+      const AutofillClient& client,
+      FieldType trigger_field_type,
+      bool virtual_card_option,
+      bool card_linked_offer_available,
+      autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
 
   // Return the texts shown as the first line of the suggestion, based on the
   // `credit_card` and the `trigger_field_type`. The first index in the pair
@@ -214,9 +212,6 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   // suggestion.
   int GetObfuscationLength();
 
-  // Returns true if the new FOP (form-of-payment) display is enabled.
-  bool ShouldUseNewFopDisplay();
-
   // Returns true if the card name and last four digits should be displayed as
   // separate components in the suggestion.
   bool ShouldSplitCardNameAndLastFourDigits();
@@ -233,6 +228,12 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
       FieldType trigger_field_type,
       Suggestion& suggestion,
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
+
+  // Extract card number value from the form (std::u16string) and whether that
+  // value was autofilled (bool)
+  std::pair<std::u16string, bool> ExtractInfoFromCardForm(
+      const FormData& form,
+      const FormStructure* form_structure);
 
   // Generates a "Save and Fill" suggestion and appends footer suggestions.
   std::vector<Suggestion> GenerateSuggestionsForSaveAndFill(
@@ -260,24 +261,17 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   std::u16string CreateCardInfoRetrievalIphDescriptionText(
       Suggestion suggestion);
 
-  raw_ptr<autofill_metrics::CreditCardFormEventLogger>
-      credit_card_form_event_logger_;
-
-  AutofillMetrics::PaymentsSigninState signin_state_for_metrics_;
-
-  const std::vector<std::string> four_digit_combinations_in_dom_;
-
-  // This value is generated in Fetch phase, and is needed in Generate phase.
-  // It is saved to the class state to avoid recalculation.
-  bool is_card_number_field_empty_ = false;
-
-  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-      virtual_card_guid_to_last_four_map_;
-
   // This could be fetched from AutofillClient, but problems with
   // const-correctness would make us use const_cast in that case.
   // Storing SaveAndFillManager in the state is a workaround for that.
   raw_ptr<payments::SaveAndFillManager> save_and_fill_manager_;
+
+  raw_ref<autofill_metrics::CreditCardFormEventLogger>
+      credit_card_form_event_logger_;
+
+  raw_ref<AutofillMetrics::PaymentsSigninState> signin_state_for_metrics_;
+
+  raw_ref<const std::vector<std::string>> four_digit_combinations_in_dom_;
 
   base::WeakPtrFactory<CreditCardSuggestionGenerator> weak_ptr_factory_{this};
 };

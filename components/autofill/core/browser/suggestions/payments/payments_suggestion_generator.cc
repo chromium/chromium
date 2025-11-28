@@ -117,28 +117,6 @@ std::vector<const CreditCard*> DeduplicateCreditCardsForSuggestions(
   return deduplicated_cards;
 }
 
-// Returns the card-linked offers map with credit card guid as the key and the
-// pointer to the linked AutofillOfferData as the value.
-std::map<std::string, const AutofillOfferData*> GetCardLinkedOffers(
-    const AutofillClient& autofill_client) {
-  if (const AutofillOfferManager* offer_manager =
-          autofill_client.GetPaymentsAutofillClient()
-              ->GetAutofillOfferManager()) {
-    return offer_manager->GetCardLinkedOffersMap(
-        autofill_client.GetLastCommittedPrimaryMainFrameURL());
-  }
-  return {};
-}
-
-bool ShouldUseNewFopDisplay() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return false;
-#else
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableNewFopDisplayDesktop);
-#endif
-}
-
 int GetObfuscationLength() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // On Android and iOS, the obfuscation length is 2.
@@ -169,39 +147,6 @@ bool IsValidPaymentsSuggestionForFieldContents(
   return suggestion_canon.starts_with(field_contents_canon);
 }
 
-bool IsCreditCardExpiryData(FieldType trigger_field_type) {
-  switch (trigger_field_type) {
-    case CREDIT_CARD_EXP_MONTH:
-    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
-    case CREDIT_CARD_EXP_4_DIGIT_YEAR:
-    case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
-    case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
-      return true;
-    default:
-      return false;
-  }
-}
-
-Suggestion CreateManagePaymentMethodsEntry(SuggestionType suggestion_type,
-                                           bool with_gpay_logo) {
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
-      suggestion_type);
-  // On Android and Desktop, Google Pay branding is shown along with Settings.
-  // So Google Pay Icon is just attached to an existing menu item.
-  if (with_gpay_logo) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    suggestion.icon = Suggestion::Icon::kGooglePay;
-#else
-    suggestion.icon = Suggestion::Icon::kSettings;
-    suggestion.trailing_icon = Suggestion::Icon::kGooglePay;
-#endif
-  } else {
-    suggestion.icon = Suggestion::Icon::kSettings;
-  }
-  return suggestion;
-}
-
 // Removes expired local credit cards not used since `min_last_used` from
 // `cards`. The relative ordering of `cards` is maintained.
 void RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
@@ -217,6 +162,19 @@ void RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
   const size_t num_cards_suppressed = original_size - cards.size();
   AutofillMetrics::LogNumberOfCreditCardsSuppressedForDisuse(
       num_cards_suppressed);
+}
+
+bool IsCreditCardExpiryData(FieldType trigger_field_type) {
+  switch (trigger_field_type) {
+    case CREDIT_CARD_EXP_MONTH:
+    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_4_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+      return true;
+    default:
+      return false;
+  }
 }
 
 // Return the texts shown as the first line of the suggestion, based on the
@@ -1483,6 +1441,26 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
   return suggestions;
 }
 
+Suggestion CreateManagePaymentMethodsEntry(SuggestionType suggestion_type,
+                                           bool with_gpay_logo) {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
+      suggestion_type);
+  // On Android and Desktop, Google Pay branding is shown along with Settings.
+  // So Google Pay Icon is just attached to an existing menu item.
+  if (with_gpay_logo) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    suggestion.icon = Suggestion::Icon::kGooglePay;
+#else
+    suggestion.icon = Suggestion::Icon::kSettings;
+    suggestion.trailing_icon = Suggestion::Icon::kGooglePay;
+#endif
+  } else {
+    suggestion.icon = Suggestion::Icon::kSettings;
+  }
+  return suggestion;
+}
+
 Suggestion CreateManageCreditCardsSuggestion(bool with_gpay_logo) {
   return CreateManagePaymentMethodsEntry(SuggestionType::kManageCreditCard,
                                          with_gpay_logo);
@@ -1837,6 +1815,28 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
     cards_to_suggest.push_back(*credit_card);
   }
   return cards_to_suggest;
+}
+
+// Returns the card-linked offers map with credit card guid as the key and the
+// pointer to the linked AutofillOfferData as the value.
+std::map<std::string, const AutofillOfferData*> GetCardLinkedOffers(
+    const AutofillClient& autofill_client) {
+  if (const AutofillOfferManager* offer_manager =
+          autofill_client.GetPaymentsAutofillClient()
+              ->GetAutofillOfferManager()) {
+    return offer_manager->GetCardLinkedOffersMap(
+        autofill_client.GetLastCommittedPrimaryMainFrameURL());
+  }
+  return {};
+}
+
+bool ShouldUseNewFopDisplay() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableNewFopDisplayDesktop);
+#endif
 }
 
 }  // namespace autofill

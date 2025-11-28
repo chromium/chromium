@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/suggestions/payments/credit_card_suggestion_generator.h"
 
+#include <iterator>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,6 +19,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -47,10 +49,12 @@ using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
 constexpr char16_t kEllipsisDotSeparator[] = u"\u2022";
 
 CreditCardSuggestionGenerator::CreditCardSuggestionGenerator(
+    payments::SaveAndFillManager* save_and_fill_manager,
     autofill_metrics::CreditCardFormEventLogger* event_logger,
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     const std::vector<std::string>& four_digit_combinations_in_dom)
-    : credit_card_form_event_logger_(event_logger),
+    : save_and_fill_manager_(save_and_fill_manager),
+      credit_card_form_event_logger_(*event_logger),
       signin_state_for_metrics_(signin_state_for_metrics),
       four_digit_combinations_in_dom_(four_digit_combinations_in_dom) {}
 
@@ -114,7 +118,7 @@ void CreditCardSuggestionGenerator::FetchSuggestionData(
 
   if (trigger_autofill_field->Type().GetTypes().contains_none(
           FieldTypesOfGroup(FieldTypeGroup::kCreditCard)) &&
-        trigger_autofill_field->Type().GetTypes().contains_none(
+      trigger_autofill_field->Type().GetTypes().contains_none(
           FieldTypesOfGroup(FieldTypeGroup::kStandaloneCvcField))) {
     callback({SuggestionDataSource::kCreditCard, {}});
     return;
@@ -131,24 +135,8 @@ void CreditCardSuggestionGenerator::FetchSuggestionData(
     return;
   }
 
-  std::u16string card_number_field_value = u"";
-  bool is_card_number_autofilled = false;
-
-  // Preprocess the form to extract info about card number field.
-  for (const FormFieldData& local_field : form.fields()) {
-    if (const AutofillField* autofill_field =
-            form_structure->GetFieldById(local_field.global_id());
-        autofill_field &&
-        autofill_field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER) {
-      card_number_field_value +=
-          SanitizeCreditCardFieldValue(local_field.value());
-      is_card_number_autofilled |= local_field.is_autofilled();
-    }
-  }
-
-  // We have to use this value in 'Generate' phase, and to avoid going through
-  // the fields twice, we can store in in the class state
-  is_card_number_field_empty_ = card_number_field_value.empty();
+  auto [card_number_field_value, is_card_number_autofilled] =
+      ExtractInfoFromCardForm(form, form_structure);
 
   // Offer suggestion for expiration date field if the card number field is
   // empty or the card number field is autofilled.
@@ -165,30 +153,37 @@ void CreditCardSuggestionGenerator::FetchSuggestionData(
     return;
   }
 
-  std::vector<CreditCard> credit_cards;
-
+  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+      virtual_card_guid_to_last_four_map;
   // Only trigger GetVirtualCreditCardsForStandaloneCvcField if it's standalone
   // CVC field.
   if (trigger_autofill_field->Type().GetCreditCardType() ==
       CREDIT_CARD_STANDALONE_VERIFICATION_CODE) {
-    virtual_card_guid_to_last_four_map_ =
+    virtual_card_guid_to_last_four_map =
         GetVirtualCreditCardsForStandaloneCvcField(client,
                                                    trigger_field.origin());
   }
 
-  SuggestionDataSource suggestion_data_source;
-
   // Non-empty virtual_card_guid_to_last_four_map indicates this is a standalone
   // CVC form AND there is a matched VCN (based on the VCN usages and the last
   // four from the DOM).
-  if (!virtual_card_guid_to_last_four_map_.empty()) {
-    suggestion_data_source = SuggestionDataSource::kVirtualStandaloneCvc;
-    credit_cards =
-        FetchVirtualCardsForStandaloneCvcField(client, trigger_field);
+  if (!virtual_card_guid_to_last_four_map.empty()) {
+    std::vector<CreditCard> credit_cards =
+        FetchVirtualCardsForStandaloneCvcField(
+            client, trigger_field, virtual_card_guid_to_last_four_map);
+
+    std::vector<SuggestionData> suggestion_data = base::ToVector(
+        credit_cards,
+        [&virtual_card_guid_to_last_four_map](const CreditCard& card) {
+          return SuggestionData(std::make_pair(
+              card, virtual_card_guid_to_last_four_map[card.guid()].value()));
+        });
+
+    callback({SuggestionDataSource::kVirtualStandaloneCvc, suggestion_data});
+
   } else {
     // If no virtual cards available for standalone CVC field, fall back to
     // regular credit card suggestions.
-    suggestion_data_source = SuggestionDataSource::kCreditCard;
     std::u16string autofilled_last_four_digits_in_form_for_filtering = u"";
 
     if (is_card_number_autofilled && card_number_field_value.size() >= 4) {
@@ -196,18 +191,21 @@ void CreditCardSuggestionGenerator::FetchSuggestionData(
           card_number_field_value.substr(card_number_field_value.size() - 4);
     }
 
-    credit_cards = FetchCreditCardsForCreditCardOrCvcField(
-        client, trigger_field, four_digit_combinations_in_dom_,
-        autofilled_last_four_digits_in_form_for_filtering,
-        trigger_autofill_field->Type().GetCreditCardType(),
-        ShouldShowScanCreditCard(client, form, trigger_field,
-                                 trigger_autofill_field));
+    std::vector<CreditCard> credit_cards =
+        FetchCreditCardsForCreditCardOrCvcField(
+            client, trigger_field,
+            autofilled_last_four_digits_in_form_for_filtering,
+            trigger_autofill_field->Type().GetCreditCardType(),
+            ShouldShowScanCreditCard(client, form, trigger_field,
+                                     trigger_autofill_field));
+
+    std::vector<SuggestionData> suggestion_data = base::ToVector(
+        credit_cards,
+        [](auto& card) { return SuggestionData(std::move(card)); });
+
+    callback({SuggestionDataSource::kCreditCard, std::move(suggestion_data)});
   }
 
-  std::vector<SuggestionData> suggestion_data = base::ToVector(
-      credit_cards, [](auto& card) { return SuggestionData(std::move(card)); });
-
-  callback({suggestion_data_source, std::move(suggestion_data)});
   return;
 }
 
@@ -223,28 +221,30 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
   std::vector<Suggestion> suggestions;
 
   credit_card_form_event_logger_->set_signin_state_for_metrics(
-      signin_state_for_metrics_);
+      signin_state_for_metrics_.get());
   CreditCardSuggestionSummary summary;
 
   bool is_virtual_card_standalone_cvc_field = false;
 
-  auto get_cards_from_suggestion_data =
-      [](const std::vector<SuggestionData>* data) {
-        return base::ToVector(*data, [](const SuggestionData& suggestion_data) {
-          return std::get<CreditCard>(suggestion_data);
-        });
-      };
   // Only one of SuggestionDataSource::[kCreditCard | kSaveAndFillPromo |
   // kVirtualStandaloneCvc] should be present in all_suggestion_data, because of
   // how CCSG::FetchSuggestionData works.
   if (const std::vector<SuggestionData>* credit_card_data = base::FindOrNull(
           all_suggestion_data, SuggestionDataSource::kCreditCard)) {
+    std::vector<CreditCard> credit_cards = base::ToVector(
+        *credit_card_data, [](const SuggestionData& suggestion_data) {
+          return std::get<CreditCard>(suggestion_data);
+        });
+
+    auto [card_number_field_value, _] =
+        ExtractInfoFromCardForm(form, form_structure);
+
     suggestions = GenerateSuggestionsForCreditCardOrCvcField(
         trigger_field, trigger_autofill_field->Type().GetCreditCardType(),
-        trigger_autofill_field, client,
-        get_cards_from_suggestion_data(credit_card_data), summary,
+        client, credit_cards, summary,
         ShouldShowScanCreditCard(client, form, trigger_field,
-                                 trigger_autofill_field));
+                                 trigger_autofill_field),
+        card_number_field_value.empty());
 
   } else if (base::FindOrNull(all_suggestion_data,
                               SuggestionDataSource::kSaveAndFillPromo)) {
@@ -256,8 +256,14 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
                      SuggestionDataSource::kVirtualStandaloneCvc)) {
     is_virtual_card_standalone_cvc_field = true;
 
+    std::vector<VirtualCardSuggestionData> virtual_suggestion_data =
+        base::ToVector(
+            *virtual_cvc_data, [](const SuggestionData& suggestion_data) {
+              return std::get<VirtualCardSuggestionData>(suggestion_data);
+            });
+
     suggestions = GenerateSuggestionsForStandaloneCvcField(
-        trigger_field, client, get_cards_from_suggestion_data(virtual_cvc_data),
+        trigger_field, client, virtual_suggestion_data,
         summary.metadata_logging_context);
   } else {
     callback({FillingProduct::kCreditCard, {}});
@@ -355,7 +361,6 @@ bool CreditCardSuggestionGenerator::ShouldShowScanCreditCard(
   return trigger_field.value().size() <= kShowScanCreditCardMaxValueLength;
 }
 
-// TODO(crbug.com/409962888): rename to clarify that this returns a map
 base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
 CreditCardSuggestionGenerator::GetVirtualCreditCardsForStandaloneCvcField(
     const AutofillClient& client,
@@ -390,7 +395,7 @@ CreditCardSuggestionGenerator::GetVirtualCreditCardsForStandaloneCvcField(
       VirtualCardUsageData::VirtualCardLastFour virtual_card_last_four =
           it->virtual_card_last_four();
 
-      if (base::Contains(four_digit_combinations_in_dom_,
+      if (base::Contains(four_digit_combinations_in_dom_.get(),
                          base::UTF16ToUTF8(virtual_card_last_four.value()))) {
         // Card has usage data on webpage and last four is present in DOM.
         virtual_card_guid_to_last_four_map[card->guid()] =
@@ -406,7 +411,6 @@ std::vector<CreditCard>
 CreditCardSuggestionGenerator::FetchCreditCardsForCreditCardOrCvcField(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
-    const std::vector<std::string>& four_digit_combinations_in_dom,
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
     FieldType trigger_field_type,
     bool should_show_scan_credit_card) {
@@ -459,17 +463,6 @@ CreditCardSuggestionGenerator::FetchCreditCardsForCreditCardOrCvcField(
   return cards_to_suggest;
 }
 
-std::map<std::string, const AutofillOfferData*>
-CreditCardSuggestionGenerator::GetCardLinkedOffers(
-    const AutofillClient& client) {
-  if (const AutofillOfferManager* offer_manager =
-          client.GetPaymentsAutofillClient()->GetAutofillOfferManager()) {
-    return offer_manager->GetCardLinkedOffersMap(
-        client.GetLastCommittedPrimaryMainFrameURL());
-  }
-  return {};
-}
-
 void CreditCardSuggestionGenerator::FilterCardsToSuggestForCvcFields(
     FieldType trigger_field_type,
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
@@ -484,7 +477,7 @@ void CreditCardSuggestionGenerator::FilterCardsToSuggestForCvcFields(
     // matching the last four digits in the DOM to the last four digits of the
     // cards that can be displayed.
     std::erase_if(cards_to_suggest, [this](const CreditCard& credit_card) {
-      return !base::Contains(this->four_digit_combinations_in_dom_,
+      return !base::Contains(this->four_digit_combinations_in_dom_.get(),
                              base::UTF16ToUTF8(credit_card.LastFourDigits()));
     });
   } else {
@@ -505,7 +498,9 @@ void CreditCardSuggestionGenerator::FilterCardsToSuggestForCvcFields(
 std::vector<CreditCard>
 CreditCardSuggestionGenerator::FetchVirtualCardsForStandaloneCvcField(
     const AutofillClient& client,
-    const FormFieldData& trigger_field) {
+    const FormFieldData& trigger_field,
+    base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
+        virtual_card_guid_to_last_four_map) {
   std::vector<CreditCard> credit_cards = GetOrderedCardsToSuggest(
       client, trigger_field, CREDIT_CARD_VERIFICATION_CODE,
       /*suppress_disused_cards=*/true, /*prefix_match=*/false,
@@ -515,7 +510,7 @@ CreditCardSuggestionGenerator::FetchVirtualCardsForStandaloneCvcField(
   // From the general list of cards, remove any that are not a virtual card
   // relevant to the current standalone CVC field.
   std::erase_if(credit_cards, [&](const CreditCard& credit_card) {
-    return !virtual_card_guid_to_last_four_map_.contains(credit_card.guid());
+    return !virtual_card_guid_to_last_four_map.contains(credit_card.guid());
   });
 
   return credit_cards;
@@ -525,11 +520,11 @@ std::vector<Suggestion>
 CreditCardSuggestionGenerator::GenerateSuggestionsForCreditCardOrCvcField(
     const FormFieldData& trigger_field,
     const FieldType& trigger_field_type,
-    const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     const std::vector<CreditCard>& credit_cards,
     CreditCardSuggestionSummary& summary,
-    bool should_show_scan_credit_card) {
+    bool should_show_scan_credit_card,
+    bool is_card_number_field_empty) {
   std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
       GetCardLinkedOffers(client);
 
@@ -542,7 +537,8 @@ CreditCardSuggestionGenerator::GenerateSuggestionsForCreditCardOrCvcField(
     Suggestion suggestion = CreateCreditCardSuggestion(
         credit_card, client, trigger_field_type,
         credit_card.record_type() == CreditCard::RecordType::kVirtualCard,
-        base::Contains(card_linked_offers_map, credit_card.guid()), summary);
+        base::Contains(card_linked_offers_map, credit_card.guid()),
+        summary.metadata_logging_context);
     suggestions.push_back(suggestion);
   }
 
@@ -563,7 +559,7 @@ CreditCardSuggestionGenerator::GenerateSuggestionsForCreditCardOrCvcField(
       [](const CreditCard& card) { return CreditCard::IsLocalCard(&card); });
 
   const bool should_show_bnpl_suggestion = payments::ShouldAppendBnplSuggestion(
-      client, is_card_number_field_empty_, trigger_field_type);
+      client, is_card_number_field_empty, trigger_field_type);
   std::ranges::move(
       GetCreditCardFooterSuggestions(
           client, should_show_bnpl_suggestion, should_show_scan_credit_card,
@@ -706,13 +702,35 @@ void CreditCardSuggestionGenerator::SetSuggestionLabelsForCard(
   return;
 }
 
+std::pair<std::u16string, bool>
+CreditCardSuggestionGenerator::ExtractInfoFromCardForm(
+    const FormData& form,
+    const FormStructure* form_structure) {
+  std::u16string card_number_field_value = u"";
+  bool is_card_number_autofilled = false;
+
+  // Preprocess the form to extract info about card number field.
+  for (const FormFieldData& local_field : form.fields()) {
+    if (const AutofillField* autofill_field =
+            form_structure->GetFieldById(local_field.global_id());
+        autofill_field &&
+        autofill_field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER) {
+      card_number_field_value +=
+          SanitizeCreditCardFieldValue(local_field.value());
+      is_card_number_autofilled |= local_field.is_autofilled();
+    }
+  }
+
+  return {card_number_field_value, is_card_number_autofilled};
+}
+
 Suggestion CreditCardSuggestionGenerator::CreateCreditCardSuggestion(
     const CreditCard& credit_card,
     const AutofillClient& client,
     FieldType trigger_field_type,
     bool virtual_card_option,
     bool card_linked_offer_available,
-    CreditCardSuggestionSummary& summary) {
+    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
   Suggestion suggestion(SuggestionType::kCreditCardEntry);
   suggestion.icon = credit_card.CardIconForAutofillSuggestion();
   suggestion.acceptability = IsCardSuggestionAcceptable(credit_card, client)
@@ -733,7 +751,7 @@ Suggestion CreditCardSuggestionGenerator::CreateCreditCardSuggestion(
     suggestion.minor_texts.emplace_back(std::move(minor_text));
   }
   SetSuggestionLabelsForCard(credit_card, client, trigger_field_type,
-                             suggestion, summary.metadata_logging_context);
+                             suggestion, metadata_logging_context);
   SetCardArtURL(suggestion, credit_card,
                 client.GetPersonalDataManager().payments_data_manager(),
                 virtual_card_option);
@@ -1076,20 +1094,15 @@ std::vector<Suggestion>
 CreditCardSuggestionGenerator::GenerateSuggestionsForStandaloneCvcField(
     const FormFieldData& trigger_field,
     const AutofillClient& client,
-    const std::vector<CreditCard>& credit_cards,
+    const std::vector<VirtualCardSuggestionData>& suggestion_data,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
   std::vector<Suggestion> suggestions;
 
   metadata_logging_context =
-      autofill_metrics::GetMetadataLoggingContext(credit_cards);
+      autofill_metrics::GetMetadataLoggingContext(base::ToVector(
+          suggestion_data, &std::pair<CreditCard, std::u16string>::first));
 
-  for (const CreditCard& credit_card : credit_cards) {
-    auto it = virtual_card_guid_to_last_four_map_.find(credit_card.guid());
-    if (it == virtual_card_guid_to_last_four_map_.end()) {
-      continue;
-    }
-    const std::u16string& virtual_card_last_four = *it->second;
-
+  for (const auto& [credit_card, virtual_card_last_four] : suggestion_data) {
     Suggestion suggestion(SuggestionType::kVirtualCreditCardEntry);
     suggestion.icon = credit_card.CardIconForAutofillSuggestion();
     suggestion.payload = Suggestion::Guid(credit_card.guid());
@@ -1201,15 +1214,6 @@ int CreditCardSuggestionGenerator::GetObfuscationLength() {
   return 2;
 #else
   return ShouldUseNewFopDisplay() ? 2 : 4;
-#endif
-}
-
-bool CreditCardSuggestionGenerator::ShouldUseNewFopDisplay() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return false;
-#else
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableNewFopDisplayDesktop);
 #endif
 }
 
