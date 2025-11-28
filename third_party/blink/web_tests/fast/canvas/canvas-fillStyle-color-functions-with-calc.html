@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<title>Canvas rendering with calc() in color functions</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<canvas id="canvas" width="100" height="100"></canvas>
+<script>
+// Helper function to render a color and return its pixel value as rgba string.
+function getRenderedColor(ctx, colorString) {
+  ctx.fillStyle = colorString;
+  ctx.fillRect(0, 0, 100, 100);
+  const data = ctx.getImageData(50, 50, 1, 1).data;
+  return `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3]})`;
+}
+
+// Helper function to assert that a group of colors render to the same result.
+function assertColorsEqual(ctx, colorGroup) {
+  const results = colorGroup.map(color => getRenderedColor(ctx, color));
+
+  // All colors in the group should produce the same pixel value.
+  for (let i = 1; i < results.length; i++) {
+    assert_equals(results[i], results[0],
+      `${colorGroup[i]} should render the same as ${colorGroup[0]}`);
+  }
+}
+
+// Test RGB.
+test(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const rgbColors = [
+    'rgb(128 64 192)',              // Base color.
+    'rgb(calc(100 + 28) 64 192)',   // calc in R channel.
+    'rgb(128 calc(80 - 16) 192)',   // calc in G channel.
+    'rgb(128 64 calc(96 * 2))',     // calc in B channel.
+  ];
+
+  assertColorsEqual(ctx, rgbColors);
+}, 'RGB colors with equivalent calc() expressions should render identically');
+
+// Test RGBA.
+test(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const rgbaColors = [
+    'rgba(128, 64, 192, 0.8)',              // Base color.
+    'rgba(calc(100 + 28), 64, 192, 0.8)',   // calc in R channel.
+    'rgba(128, calc(80 - 16), 192, 0.8)',   // calc in G channel.
+    'rgba(128, 64, calc(96 * 2), 0.8)',     // calc in B channel.
+    'rgba(128, 64, 192, calc(0.6 + 0.2))',  // calc in A channel.
+  ];
+
+  assertColorsEqual(ctx, rgbaColors);
+}, 'RGBA colors with equivalent calc() expressions should render identically');
+
+// Test HSL.
+test(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const hslColors = [
+    'hsl(180 50% 60%)',                // Base color.
+    'hsl(calc(120 + 60) 50% 60%)',     // calc in H channel.
+    'hsl(180 calc(30% + 20%) 60%)',    // calc in S channel.
+    'hsl(180 50% calc(40% + 20%))',    // calc in L channel.
+  ];
+
+  assertColorsEqual(ctx, hslColors);
+}, 'HSL colors with equivalent calc() expressions should render identically');
+
+// Test HSLA.
+test(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const hslaColors = [
+    'hsla(180, 50%, 60%, 0.7)',              // Base color.
+    'hsla(calc(120 + 60), 50%, 60%, 0.7)',   // calc in H channel.
+    'hsla(180, calc(30% + 20%), 60%, 0.7)',  // calc in S channel.
+    'hsla(180, 50%, calc(40% + 20%), 0.7)',  // calc in L channel.
+    'hsla(180, 50%, 60%, calc(0.4 + 0.3))',  // calc in A channel.
+  ];
+
+  assertColorsEqual(ctx, hslaColors);
+}, 'HSLA colors with equivalent calc() expressions should render identically');
+
+// Test HWB.
+test(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const hwbColors = [
+    'hwb(240 20% 30%)',                // Base color.
+    'hwb(calc(180 + 60) 20% 30%)',     // calc in H channel.
+    'hwb(240 calc(10% + 10%) 30%)',    // calc in W channel.
+    'hwb(240 20% calc(15% + 15%))',    // calc in B channel.
+  ];
+
+  assertColorsEqual(ctx, hwbColors);
+}, 'HWB colors with equivalent calc() expressions should render identically');
+
+// Test Lab.
+test(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const labColors = [
+    'lab(50% 25 30)',                // Base color.
+    'lab(calc(30% + 20%) 25 30)',    // calc in L channel.
+    'lab(50% calc(40 - 15) 30)',     // calc in a channel.
+    'lab(50% 25 calc(15 + 15))',     // calc in b channel.
+  ];
+
+  assertColorsEqual(ctx, labColors);
+}, 'Lab colors with equivalent calc() expressions should render identically');
+
+// Test Lch.
+test(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const lchColors = [
+    'lch(50 25 30)',              // Base color.
+    'lch(calc(30 + 20) 25 30)',   // calc in L channel.
+    'lch(50 calc(40 - 15) 30)',   // calc in C channel.
+    'lch(50 25 calc(15 + 15))',   // calc in H channel.
+  ];
+
+  assertColorsEqual(ctx, lchColors);
+}, 'Lch colors with equivalent calc() expressions should render identically');
+
+// Test OkLab.
+test(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const oklabColors = [
+    'oklab(0.5 0.2 0.3)',              // Base color.
+    'oklab(calc(0.3 + 0.2) 0.2 0.3)',  // calc in L channel.
+    'oklab(0.5 calc(0.4 - 0.2) 0.3)',  // calc in a channel.
+    'oklab(0.5 0.2 calc(0.1 + 0.2))',  // calc in b channel.
+  ];
+
+  assertColorsEqual(ctx, oklabColors);
+}, 'OkLab colors with equivalent calc() expressions should render identically');
+
+// Test OkLCH.
+test(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const oklchColors = [
+    'oklch(0.5 0.5 50)',              // Base color.
+    'oklch(calc(0.3 + 0.2) 0.5 50)',  // calc in L channel.
+    'oklch(0.5 calc(0.8 - 0.3) 50)',  // calc in C channel.
+    'oklch(0.5 0.5 calc(25 * 2))',    // calc in H channel.
+  ];
+
+  assertColorsEqual(ctx, oklchColors);
+}, 'OkLCH colors with equivalent calc() expressions should render identically');
+
+// Test color(srgb).
+test(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const srgbColors = [
+    'color(srgb 0.5 0.3 0.8)',              // Base color.
+    'color(srgb calc(0.3 + 0.2) 0.3 0.8)',  // calc in R channel.
+    'color(srgb 0.5 calc(0.5 - 0.2) 0.8)',  // calc in G channel.
+    'color(srgb 0.5 0.3 calc(0.4 * 2))',    // calc in B channel.
+  ];
+
+  assertColorsEqual(ctx, srgbColors);
+}, 'color(srgb) with equivalent calc() expressions should render identically');
+
+// Test color(display-p3).
+test(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const displayP3Colors = [
+    'color(display-p3 0.6 0.4 0.7)',              // Base color.
+    'color(display-p3 calc(0.4 + 0.2) 0.4 0.7)',  // calc in R channel.
+    'color(display-p3 0.6 calc(0.6 - 0.2) 0.7)',  // calc in G channel.
+    'color(display-p3 0.6 0.4 calc(0.35 * 2))',   // calc in B channel.
+  ];
+
+  assertColorsEqual(ctx, displayP3Colors);
+}, 'color(display-p3) with equivalent calc() expressions should render identically');
+
+// Test color(xyz-d65).
+test(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const xyzColors = [
+    'color(xyz-d65 0.4 0.5 0.6)',              // Base color.
+    'color(xyz-d65 calc(0.2 + 0.2) 0.5 0.6)',  // calc in X channel.
+    'color(xyz-d65 0.4 calc(0.7 - 0.2) 0.6)',  // calc in Y channel.
+    'color(xyz-d65 0.4 0.5 calc(0.3 * 2))',    // calc in Z channel.
+  ];
+
+  assertColorsEqual(ctx, xyzColors);
+}, 'color(xyz-d65) with equivalent calc() expressions should render identically');
+</script>
