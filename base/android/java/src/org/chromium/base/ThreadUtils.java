@@ -52,6 +52,7 @@ public class ThreadUtils {
     // TODO(b/274802355): Add @CheckDiscard once R8 can remove this.
     public static class ThreadChecker {
         private @Nullable Thread mThread;
+        private @Nullable Throwable mOriginThrowable;
 
         public ThreadChecker() {
             resetThreadId();
@@ -60,6 +61,7 @@ public class ThreadUtils {
         public void resetThreadId() {
             if (BuildConfig.ENABLE_ASSERTS) {
                 mThread = Thread.currentThread();
+                mOriginThrowable = new Throwable("vvv Originally created here vvv");
             }
         }
 
@@ -87,23 +89,26 @@ public class ThreadUtils {
                     return;
                 }
                 Thread uiThread = getUiThreadLooper().getThread();
+                String msg;
                 if (curThread == uiThread) {
-                    assert false
-                            : "Class was initialized on a background thread, but current operation"
-                                  + " was performed on the UI thread (expected: "
+                    msg =
+                            "Class was initialized on a background thread, but current operation"
+                                    + " was performed on the UI thread (expected: "
                                     + mThread
                                     + ")";
                 } else if (mThread == uiThread) {
-                    assert false
-                            : "Class was initialized on the UI thread, but current operation was"
-                                  + " performed on a background thread: "
+                    msg =
+                            "Class was initialized on the UI thread, but current operation was"
+                                    + " performed on a background thread: "
+                                    + curThread;
+                } else {
+                    msg =
+                            "Method called from wrong background thread. Expected: "
+                                    + mThread
+                                    + " Actual: "
                                     + curThread;
                 }
-                assert false
-                        : "Method called from wrong background thread. Expected: "
-                                + mThread
-                                + " Actual: "
-                                + curThread;
+                throw new AssertionError(msg, mOriginThrowable);
             }
         }
     }
