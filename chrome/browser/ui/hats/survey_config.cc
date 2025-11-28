@@ -154,9 +154,6 @@ constexpr char kHatsSurveyTriggerWallpaperSearch[] = "wallpaper-search";
 
 #else   // BUILDFLAG(IS_ANDROID)
 constexpr char kHatsSurveyTriggerAndroidStartupSurvey[] = "startup_survey";
-constexpr char kHatsSurveyTriggerQuickDelete[] = "quick_delete_survey";
-constexpr char kHatsSurveyTriggerClearBrowsingData[] =
-    "clear_browsing_data_survey";
 constexpr char kHatsSurveyTriggerSigninFirstRun[] = "signin-first-run";
 constexpr char kHatsSurveyTriggerSigninWeb[] = "signin-web";
 constexpr char kHatsSurveyTriggerSigninNtpAvatar[] = "signin-ntp-avatar";
@@ -776,14 +773,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
 #else  // BUILDFLAG(IS_ANDROID)
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,
                               kHatsSurveyTriggerAndroidStartupSurvey);
-
-  survey_configs.emplace_back(
-      &chrome::android::kQuickDeleteAndroidSurvey,
-      kHatsSurveyTriggerQuickDelete,
-      chrome::android::kQuickDeleteAndroidSurveyTriggerId.Get());
-
-  survey_configs.emplace_back(&chrome::android::kClearBrowsingDataAndroidSurvey,
-                              kHatsSurveyTriggerClearBrowsingData);
 
   std::vector<std::string> signin_string_psd_fields{"Channel", "Chrome Version",
                                                     "Number of Google Accounts",

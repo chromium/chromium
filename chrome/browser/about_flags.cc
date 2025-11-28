@@ -9325,11 +9325,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSmartSuggestionForLargeDownloadsDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(download::features::kSmartSuggestionForLargeDownloads)},
-
-    {"quick-delete-android-survey",
-     flag_descriptions::kQuickDeleteAndroidSurveyName,
-     flag_descriptions::kQuickDeleteAndroidSurveyDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kQuickDeleteAndroidSurvey)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"pwa-update-dialog-for-icon",

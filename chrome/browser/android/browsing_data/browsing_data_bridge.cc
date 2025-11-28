@@ -26,9 +26,6 @@
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/android/browsing_data_model_android.h"
@@ -294,36 +291,4 @@ static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(
       profile, ChromeBrowsingDataModelDelegate::CreateForProfile(profile),
       base::BindOnce(&OnBrowsingDataModelBuilt, env,
                      ScopedJavaGlobalRef<jobject>(java_callback)));
-}
-
-static void JNI_BrowsingDataBridge_TriggerHatsSurvey(
-    JNIEnv* env,
-    Profile* profile,
-    content::WebContents* web_contents,
-    jboolean quick_delete) {
-  HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
-
-  std::string trigger = quick_delete ? kHatsSurveyTriggerQuickDelete
-                                     : kHatsSurveyTriggerClearBrowsingData;
-  messages::MessageIdentifier message_id =
-      quick_delete
-          ? messages::MessageIdentifier::PROMPT_HATS_QUICK_DELETE
-          : messages::MessageIdentifier::PROMPT_HATS_CLEAR_BROWSING_DATA;
-
-  if (hats_service) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        trigger, web_contents,
-        /*timeout_ms=*/5000,
-        /*product_specific_bits_data=*/{},
-        /*product_specific_string_data=*/{},
-        HatsService::NavigationBehavior::ALLOW_ANY,
-        /*success_callback=*/base::DoNothing(),
-        /*failure_callback=*/base::DoNothing(),
-        /*supplied_trigger_id=*/std::nullopt,
-        HatsService::SurveyOptions(
-            l10n_util::GetStringUTF16(
-                IDS_QUICK_DELETE_PROMPT_SURVEY_CUSTOM_INVITATION),
-            message_id));
-  }
 }

@@ -8739,14 +8739,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "quick-delete-android-survey",
-    "owners": [
-      "zalmashni@google.com",
-      "chrome-browser-privacy-team@google.com"
-    ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "quick-settings-pwa-notifications",
     "owners": [ "yulunwu@chromium.org" ],
     "expiry_milestone": 100

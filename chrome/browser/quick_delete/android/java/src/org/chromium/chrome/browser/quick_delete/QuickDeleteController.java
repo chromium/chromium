@@ -18,7 +18,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -135,13 +134,6 @@ public class QuickDeleteController {
         mQuickDeleteMediator.destroy();
     }
 
-    /**
-     * @return True, if quick delete survey is enabled, false otherwise
-     */
-    public static boolean isQuickDeleteSurveyEnabled() {
-        return ChromeFeatureList.sQuickDeleteAndroidSurvey.isEnabled();
-    }
-
     /** Show the Quick Delete dialog. */
     public void showDialog() {
         mDialogDelegate.showDialog();
@@ -230,9 +222,6 @@ public class QuickDeleteController {
         if (trackerLock == null) return;
         trackerLock.release();
 
-        if (isQuickDeleteSurveyEnabled()) {
-            mDelegate.triggerHatsSurvey();
-        }
         destroy();
     }
 

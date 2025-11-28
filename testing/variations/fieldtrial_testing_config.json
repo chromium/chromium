@@ -6359,25 +6359,6 @@
             ]
         }
     ],
-    "ClearBrowsingDataAndroidSurvey": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "en_site_id": "TmqhVJ5cH0tK1KeaPYj0StW6qFe8",
-                        "probability": "0.0075"
-                    },
-                    "enable_features": [
-                        "ClearBrowsingDataAndroidSurvey"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClearGrShaderDiskCacheOnInvalidPrefix": [
         {
             "platforms": [
@@ -20483,25 +20464,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "QuicLongerIdleConnectionTimeout"
-                    ]
-                }
-            ]
-        }
-    ],
-    "QuickDeleteAndroidSurvey": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "probability": "0.015",
-                        "trigger_id": "GtpVWQGxM0tK1KeaPYj0QBUXAQ9v"
-                    },
-                    "enable_features": [
-                        "QuickDeleteAndroidSurvey"
                     ]
                 }
             ]

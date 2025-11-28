@@ -86,10 +86,4 @@ abstract class QuickDeleteDelegate {
      * @return True if the user has more than one restorable window.
      */
     abstract boolean isInMultiWindowMode();
-
-    /**
-     * Attempt to trigger the HaTS survey 5 seconds after the next page load on any {@link
-     * TabModelSelector}.
-     */
-    abstract void triggerHatsSurvey();
 }

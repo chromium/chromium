@@ -1303,7 +1303,7 @@ chromium-metrics-reviews@google.com.
   <int value="48" label="PermissionBlocked"/>
   <int value="49" label="SaveCardFailure"/>
   <int value="50" label="VirtualCardEnrollFailure"/>
-  <int value="51" label="PromptHatsQuickDelete"/>
+  <int value="51" label="DEPRECATED: PromptHatsQuickDelete"/>
   <int value="52" label="DEPRECATED: PromptHatsSafetyHub"/>
   <int value="53" label="DefaultBrowserPromo"/>
   <int value="54" label="TabRemovedThroughCollaboration"/>
@@ -1311,7 +1311,7 @@ chromium-metrics-reviews@google.com.
   <int value="56" label="CollaborationMemberAdded"/>
   <int value="57" label="CollaborationRemoved"/>
   <int value="58" label="CctAccountMismatchNotice"/>
-  <int value="59" label="PromptHatsClearBrowsingData"/>
+  <int value="59" label="DEPRECATED: PromptHatsClearBrowsingData"/>
   <int value="60" label="OsAdvancedProtectionSettingChangedMessage"/>
   <int value="61" label="MultiInstanceRestorationOnDowngradedLimit"/>
   <int value="62" label="UpdateChromeForTabGroupShare"/>
