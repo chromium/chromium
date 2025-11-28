@@ -792,11 +792,18 @@ GaiaCookieManagerService::GetCookieManagerForPartition() {
   return signin_client_->GetCookieManager();
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
 GaiaCookieManagerService::
     CreateBoundSessionOAuthMultiLoginDelegateForPartition() {
   return signin_client_->CreateBoundSessionOAuthMultiloginDelegate();
 }
+
+network::mojom::DeviceBoundSessionManager*
+GaiaCookieManagerService::GetDeviceBoundSessionManagerForPartition() {
+  return signin_client_->GetDeviceBoundSessionManager();
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void GaiaCookieManagerService::InitializeListedAccountsIds() {
   for (gaia::ListedAccount& account : accounts_) {

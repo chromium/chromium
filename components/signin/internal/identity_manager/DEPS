@@ -6,9 +6,6 @@ include_rules = [
   "+components/signin/public/webdata",
   "+components/signin/public/android/jni_headers",
   "+components/signin/public/android/test_support_jni_headers",
-  # TODO(crbug.com/460212578): Remove this dependency once
-  # `safe_browsing::kGoogleStandardDeviceBoundSessionCredentials` is deprecated.
-  "+components/safe_browsing/core/common",
   "+components/sync/base/features.h",
   "+components/supervised_user/core/common",
   "+components/unexportable_keys",

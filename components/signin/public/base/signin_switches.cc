@@ -202,7 +202,10 @@ BASE_FEATURE(kEnableIdentityInAuthError, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Enables binding the OAuthMultilogin cookies to a device.
+// Enables binding the OAuthMultilogin cookies to a device with DBSC prototype.
+//
+// If `kEnableOAuthMultiloginStandardCookiesBinding` is enabled, DBSC standard
+// takes precedence over DBSC prototype.
 BASE_FEATURE(kEnableOAuthMultiloginCookiesBinding,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -224,9 +227,18 @@ BASE_FEATURE_PARAM(bool,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Kill switch for the OAuthMultilogin cookies standard binding.
+// Enables binding the OAuthMultilogin cookies to a device with DBSC standard.
+//
+// It takes precedence over the `kEnableOAuthMultiloginCookiesBinding` flag.
 BASE_FEATURE(kEnableOAuthMultiloginStandardCookiesBinding,
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+// Kill switch for enabling binding the OAuthMultilogin cookies to a device with
+// DBSC standard for the Glic partition.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+BASE_FEATURE(kEnableOAuthMultiloginStandardCookiesBindingForGlicPartition,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 BASE_FEATURE(kEnablePreferencesAccountStorage,

@@ -65,7 +65,6 @@ source_set("identity_manager") {
   deps = [
     "//components/image_fetcher/core",
     "//components/prefs",
-    "//components/safe_browsing/core/common:features",
     "//components/signin/public/identity_manager:tribool",
     "//components/signin/public/webdata",
     "//components/supervised_user/core/common:features",

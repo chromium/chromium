@@ -34,3 +34,8 @@ std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
 SigninClient::CreateBoundSessionOAuthMultiloginDelegate() const {
   return nullptr;
 }
+
+network::mojom::DeviceBoundSessionManager*
+SigninClient::GetDeviceBoundSessionManager() const {
+  return nullptr;
+}

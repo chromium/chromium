@@ -300,6 +300,11 @@ network::mojom::CookieManager* ChromeSigninClient::GetCookieManager() {
       ->GetCookieManagerForBrowserProcess();
 }
 
+network::mojom::DeviceBoundSessionManager*
+ChromeSigninClient::GetDeviceBoundSessionManager() const {
+  return profile_->GetDefaultStoragePartition()->GetDeviceBoundSessionManager();
+}
+
 network::mojom::NetworkContext* ChromeSigninClient::GetNetworkContext() {
   return profile_->GetDefaultStoragePartition()->GetNetworkContext();
 }
@@ -460,10 +465,6 @@ void ChromeSigninClient::OnPrimaryAccountChanged(
 std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
 ChromeSigninClient::CreateBoundSessionOAuthMultiloginDelegate() const {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (!base::FeatureList::IsEnabled(
-          switches::kEnableOAuthMultiloginCookiesBinding)) {
-    return nullptr;
-  }
   BoundSessionCookieRefreshService* bound_session_cookie_refresh_service =
       BoundSessionCookieRefreshServiceFactory::GetForProfile(profile_);
   if (bound_session_cookie_refresh_service) {

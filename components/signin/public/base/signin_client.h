@@ -42,6 +42,7 @@ class SharedURLLoaderFactory;
 
 namespace mojom {
 class CookieManager;
+class DeviceBoundSessionManager;
 class NetworkContext;
 }  // namespace mojom
 }  // namespace network
@@ -80,6 +81,13 @@ class SigninClient : public KeyedService {
 
   // Returns the CookieManager for the client.
   virtual network::mojom::CookieManager* GetCookieManager() = 0;
+
+  // Returns the DeviceBoundSessionManager for the client.
+  //
+  // TODO(crbug.com/463979316): Make it pure virtual to make sure all embedders
+  // explicitly provide an implementation.
+  virtual network::mojom::DeviceBoundSessionManager*
+  GetDeviceBoundSessionManager() const;
 
   // Returns the NetworkContext for the client.
   virtual network::mojom::NetworkContext* GetNetworkContext() = 0;

@@ -62,6 +62,8 @@ class ChromeSigninClient : public SigninClient {
       signin_metrics::ProfileSignout signout_source_metric) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::CookieManager* GetCookieManager() override;
+  network::mojom::DeviceBoundSessionManager* GetDeviceBoundSessionManager()
+      const override;
   network::mojom::NetworkContext* GetNetworkContext() override;
   bool AreSigninCookiesAllowed() override;
   bool AreSigninCookiesDeletedOnExit() override;

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -75,6 +76,10 @@ class GlicCookieSynchronizer
       GaiaAuthConsumer* consumer,
       const gaia::GaiaSource& source) override;
   network::mojom::CookieManager* GetCookieManagerForPartition() override;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  network::mojom::DeviceBoundSessionManager*
+  GetDeviceBoundSessionManagerForPartition() override;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Handles the webview authentication result.
   void OnAuthFinished(signin::SetAccountsInCookieResult cookie_result);

@@ -381,6 +381,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h:ChromeSignoutConfirmationChoice) -->
 
+<!-- LINT.IfChange(DeviceBoundSessionCreateSessionsResult) -->
+
+<enum name="DeviceBoundSessionCreateSessionsResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+  <int value="2"
+      label="No bound sessions, fallback to legacy set cookies flow"/>
+  <int value="3" label="No binding key, fallback to legacy set cookies flow"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/internal/identity_manager/oauth_multilogin_helper.h:DeviceBoundSessionCreateSessionsResult) -->
+
 <!-- LINT.IfChange(DiceMigrationDialogCloseReason) -->
 
 <enum name="DiceMigrationDialogCloseReason">

@@ -14,11 +14,9 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_response.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
-#include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -35,6 +33,12 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace signin {
 
@@ -57,6 +61,73 @@ std::string FindTokenForAccountId(
   auto it = tokens.find(account_id);
   return it != tokens.end() ? it->second.oauth_token() : std::string();
 }
+
+net::CookieOptions GetCookieOptions() {
+  net::CookieOptions options;
+  options.set_include_httponly();
+  // Permit it to set a SameSite cookie if it wants to.
+  options.set_same_site_cookie_context(
+      net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+  return options;
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+net::device_bound_sessions::SessionParams
+CreateStandardDeviceBoundSessionParamsFromRegistrationPayload(
+    const RegisterBoundSessionPayload& registration_payload) {
+  using net::device_bound_sessions::SessionParams;
+  CHECK(registration_payload.parsed_for_dbsc_standard);
+
+  std::vector<SessionParams::Scope::Specification> specifications;
+  for (const RegisterBoundSessionPayload::Scope& from_spec :
+       registration_payload.scope.specifications) {
+    std::optional<SessionParams::Scope::Specification::Type> type;
+    switch (from_spec.type) {
+      case RegisterBoundSessionPayload::Scope::Type::kExclude:
+        type = SessionParams::Scope::Specification::Type::kExclude;
+        break;
+      case RegisterBoundSessionPayload::Scope::Type::kInclude:
+        type = SessionParams::Scope::Specification::Type::kInclude;
+        break;
+    }
+    CHECK(type.has_value());
+    specifications.push_back(
+        {.type = *type, .domain = from_spec.domain, .path = from_spec.path});
+  }
+
+  SessionParams::Scope scope;
+  scope.include_site = registration_payload.scope.include_site;
+  scope.specifications = std::move(specifications);
+  scope.origin = registration_payload.scope.origin;
+
+  std::vector<SessionParams::Credential> credentials;
+  for (const RegisterBoundSessionPayload::Credential& from_credential :
+       registration_payload.credentials) {
+    CHECK_EQ(from_credential.type, "cookie");
+    credentials.push_back({.name = from_credential.name,
+                           .attributes = from_credential.attributes});
+  }
+
+  return SessionParams(registration_payload.session_id,
+                       // TODO(crbug.com/464268881): Use more robust URL here to
+                       // support different domains.
+                       GaiaUrls::GetInstance()->oauth_multilogin_url(),
+                       registration_payload.refresh_url, std::move(scope),
+                       std::move(credentials),
+                       // Passing an arbitrary key in params as it will be
+                       // retrieved later from the wrapped key passed to
+                       // the `DeviceBoundSessionManager`.
+                       unexportable_keys::UnexportableKeyId(),
+                       registration_payload.allowed_refresh_initiators);
+}
+
+void RecordCreateBoundSessionResult(
+    OAuthMultiloginHelper::DeviceBoundSessionCreateSessionsResult result) {
+  base::UmaHistogramEnumeration(
+      "Signin.DeviceBoundSessions.OAuthMultilogin.CreateSessionsResult",
+      result);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
 
@@ -83,9 +154,11 @@ OAuthMultiloginHelper::OAuthMultiloginHelper(
   DCHECK(!accounts_.empty());
   DCHECK(callback_);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   bound_session_delegate_ =
       partition_delegate
           ->CreateBoundSessionOAuthMultiLoginDelegateForPartition();
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #ifndef NDEBUG
   // Check that there is no duplicate accounts.
@@ -184,21 +257,24 @@ void OAuthMultiloginHelper::StartFetchingMultiLogin() {
       this, gaia_source_);
   gaia::MultiloginCookieBindingParams cookie_binding_params;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (base::FeatureList::IsEnabled(
-          switches::kEnableOAuthMultiloginCookiesBinding) &&
-      base::FeatureList::IsEnabled(
-          switches::kEnableOAuthMultiloginCookiesBindingServerExperiment) &&
-      bound_session_delegate_) {
-    cookie_binding_params.mode =
-        switches::kOAuthMultiloginCookieBindingEnforced.Get()
-            ? gaia::MultiloginCookieBindingParams::Mode::kEnabledEnforced
-            : gaia::MultiloginCookieBindingParams::Mode::kEnabledUnenforced;
+  switch (GetCookieBindingSupport()) {
+    case CookieBindingSupport::kStandard:
+      cookie_binding_params.mode =
+          gaia::MultiloginCookieBindingParams::Mode::kEnabledEnforced;
+      cookie_binding_params.standard_device_bound_session_credentials = true;
+      break;
+    case CookieBindingSupport::kPrototype:
+      if (base::FeatureList::IsEnabled(
+              switches::kEnableOAuthMultiloginCookiesBindingServerExperiment)) {
+        cookie_binding_params.mode =
+            switches::kOAuthMultiloginCookieBindingEnforced.Get()
+                ? gaia::MultiloginCookieBindingParams::Mode::kEnabledEnforced
+                : gaia::MultiloginCookieBindingParams::Mode::kEnabledUnenforced;
+      }
+      break;
+    case CookieBindingSupport::kDisabled:
+      break;
   }
-  cookie_binding_params.standard_device_bound_session_credentials =
-      base::FeatureList::IsEnabled(
-          safe_browsing::kGoogleStandardDeviceBoundSessionCredentials) &&
-      base::FeatureList::IsEnabled(
-          switches::kEnableOAuthMultiloginStandardCookiesBinding);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   gaia_auth_fetcher_->StartOAuthMultilogin(
       mode_, multilogin_credentials, external_cc_result_, std::move(decryptor),
@@ -216,9 +292,26 @@ void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
       VLOG(1) << "Multilogin successful accounts="
               << base::JoinString(account_ids, " ");
     }
-    if (bound_session_delegate_) {
-      bound_session_delegate_->BeforeSetCookies(result);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    switch (GetCookieBindingSupport()) {
+      case CookieBindingSupport::kStandard:
+        if (StartSettingCookiesViaDeviceBoundSessionManager(result)) {
+          // No need to set cookies as they will be set by
+          // `DeviceBoundSessionManager`.
+          return;
+        }
+        // Fallback to the legacy cookie setting flow if setting cookies via
+        // `DeviceBoundSessionManager` has not started successfully.
+        break;
+      case CookieBindingSupport::kPrototype:
+        CHECK(bound_session_delegate_);
+        bound_session_delegate_->BeforeSetCookies(result);
+        break;
+      case CookieBindingSupport::kDisabled:
+        break;
     }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
     StartSettingCookies(result);
     return;
@@ -297,15 +390,9 @@ void OAuthMultiloginHelper::StartSettingCookies(
           base::BindOnce(&OAuthMultiloginHelper::OnCookiesSet,
                          weak_ptr_factory_.GetWeakPtr()));
   for (const auto& [_, cookie] : unique_cookies) {
-    net::CookieOptions options;
-    options.set_include_httponly();
-    // Permit it to set a SameSite cookie if it wants to.
-    options.set_same_site_cookie_context(
-        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-
     cookie_manager->SetCanonicalCookie(
         *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
-        options,
+        GetCookieOptions(),
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             base::OnceCallback<void(net::CookieAccessResult)>(barrier_callback),
             net::CookieAccessResult(default_cookie_inclusion_status)));
@@ -319,11 +406,80 @@ void OAuthMultiloginHelper::OnCookiesSet(
                               result.status.IsInclude());
   }
 
-  if (bound_session_delegate_) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (GetCookieBindingSupport() == CookieBindingSupport::kPrototype) {
     bound_session_delegate_->OnCookiesSet();
   }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
   std::move(callback_).Run(SetAccountsInCookieResult::kSuccess);
   // Do not add anything below this line, because `this` may be deleted.
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+OAuthMultiloginHelper::CookieBindingSupport
+OAuthMultiloginHelper::GetCookieBindingSupport() const {
+  if (partition_delegate_->GetDeviceBoundSessionManagerForPartition() &&
+      base::FeatureList::IsEnabled(
+          switches::kEnableOAuthMultiloginStandardCookiesBinding)) {
+    return CookieBindingSupport::kStandard;
+  }
+  if (bound_session_delegate_ &&
+      base::FeatureList::IsEnabled(
+          switches::kEnableOAuthMultiloginCookiesBinding)) {
+    return CookieBindingSupport::kPrototype;
+  }
+  return CookieBindingSupport::kDisabled;
+}
+
+bool OAuthMultiloginHelper::StartSettingCookiesViaDeviceBoundSessionManager(
+    const OAuthMultiloginResult& result) {
+  std::vector<net::device_bound_sessions::SessionParams> sessions_params;
+  for (const OAuthMultiloginResult::DeviceBoundSession* device_bound_session :
+       result.GetDeviceBoundSessionsToRegister()) {
+    CHECK(device_bound_session);
+    CHECK(device_bound_session->register_session_payload.has_value());
+    sessions_params.push_back(
+        CreateStandardDeviceBoundSessionParamsFromRegistrationPayload(
+            *device_bound_session->register_session_payload));
+  }
+  if (sessions_params.empty()) {
+    RecordCreateBoundSessionResult(
+        DeviceBoundSessionCreateSessionsResult::kFallbackNoBoundSessions);
+    return false;
+  }
+
+  std::vector<uint8_t> wrapped_key;
+  for (const AccountIdGaiaIdPair& account : accounts_) {
+    wrapped_key = token_service_->GetWrappedBindingKey(account.first);
+    if (!wrapped_key.empty()) {
+      break;
+    }
+  }
+  if (wrapped_key.empty()) {
+    RecordCreateBoundSessionResult(
+        DeviceBoundSessionCreateSessionsResult::kFallbackNoBindingKey);
+    return false;
+  }
+
+  network::mojom::DeviceBoundSessionManager* device_bound_session_manager =
+      partition_delegate_->GetDeviceBoundSessionManagerForPartition();
+  CHECK(device_bound_session_manager);
+  device_bound_session_manager->CreateBoundSessions(
+      std::move(sessions_params), wrapped_key, result.cookies(),
+      GetCookieOptions(),
+      base::BindOnce(&OAuthMultiloginHelper::OnBoundSessionsCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
+  return true;
+}
+
+void OAuthMultiloginHelper::OnBoundSessionsCreated(bool session_created) {
+  RecordCreateBoundSessionResult(
+      session_created ? DeviceBoundSessionCreateSessionsResult::kSuccess
+                      : DeviceBoundSessionCreateSessionsResult::kFailure);
+
+  std::move(callback_).Run(SetAccountsInCookieResult::kSuccess);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace signin
