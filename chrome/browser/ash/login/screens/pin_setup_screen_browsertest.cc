@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -19,7 +18,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/test/auth_ui_utils.h"
@@ -89,38 +87,6 @@ const test::UIPath kNextButtonPasswordSelection = {"password-selection",
                                                    "nextButton"};
 const test::UIPath kBackButtonPasswordSelection = {"password-selection",
                                                    "backButton"};
-
-enum class PinPolicy {
-  kUnlock,
-  kWebAuthn,
-};
-
-enum class AllowlistStatus {
-  kPin,
-  kAll,
-  kNone,
-};
-
-// Utility function for setting relevant policy affecting PIN behavior.
-void SetPinPolicy(PinPolicy policy, AllowlistStatus desired_status) {
-  base::Value::List allowlist_status;
-  switch (desired_status) {
-    case AllowlistStatus::kPin:
-      allowlist_status.Append(base::Value("PIN"));
-      break;
-    case AllowlistStatus::kAll:
-      allowlist_status.Append(base::Value("all"));
-      break;
-    case AllowlistStatus::kNone:
-      break;
-  }
-
-  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  const auto* associated_pref = policy == PinPolicy::kWebAuthn
-                                    ? prefs::kWebAuthnFactors
-                                    : prefs::kQuickUnlockModeAllowlist;
-  prefs->SetList(associated_pref, std::move(allowlist_status));
-}
 
 PinSetupScreen* GetScreen() {
   return WizardController::default_controller()->GetScreen<PinSetupScreen>();
@@ -295,14 +261,6 @@ class PinSetupScreenTest : public OobeBaseTest {
   void ShowPinSetupScreen() {
     LoginAndWaitForCryptohomeSetupScreenExit();
     CryptohomeRecoverySetupContinue();
-
-    // When the PIN-only setup is not enabled, the PIN screen is only surfaced
-    // at the end of the flow. Trigger those steps here.
-    if (!ash::features::IsAllowPasswordlessSetupEnabled()) {
-      HandlePasswordSelectionScreen();
-      WaitForFingerprintScreenExit();
-      ExpectFingerprintScreenExitedAndContinue();
-    }
   }
 
   void WaitForScreenShown() {
@@ -372,8 +330,6 @@ class PinSetupScreenTest : public OobeBaseTest {
   // passwordless method.
   bool simulate_passwordless_signin_ = false;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-
  private:
   base::test::TestFuture<PinSetupScreen::Result> screen_exit_result_waiter_;
 
@@ -399,265 +355,8 @@ class PinSetupScreenTest : public OobeBaseTest {
   CryptohomeMixin cryptohome_{&mixin_host_};
 };
 
-class PinSetupScreenTestAsSecondaryFactor : public PinSetupScreenTest {
- public:
-  PinSetupScreenTestAsSecondaryFactor() {
-    SetHardwareSupport(true);
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{ash::features::kAllowPasswordlessSetup});
-  }
-
-  ~PinSetupScreenTestAsSecondaryFactor() override = default;
-};
-
-// By default, OOBE shows the PIN setup screen on supported hardware.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsSecondaryFactor, ShownByDefault) {
-  ShowPinSetupScreen();
-  WaitForScreenShown();
-
-  TapSkipButton();
-  WaitForScreenExit();
-
-  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
-}
-
-// The screen should be skipped when the 'extra_factors_token' isn't present.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsSecondaryFactor,
-                       SkipWhenExtraFactorsTokenMissing) {
-  LoginAndWaitForCryptohomeSetupScreenExit();
-  CryptohomeRecoverySetupContinue();
-  HandlePasswordSelectionScreen();
-  WaitForFingerprintScreenExit();
-
-  LoginDisplayHost::default_host()
-      ->GetWizardContextForTesting()
-      ->extra_factors_token.reset();
-
-  ExpectFingerprintScreenExitedAndContinue();
-  WaitForScreenExit();
-
-  ExpectSkipReason(PinSetupScreen::SkipReason::kMissingExtraFactorsToken);
-  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
-}
-
-// The screen should be skipped when the token is invalid.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsSecondaryFactor,
-                       SkipWhenTokenInvalid) {
-  LoginAndWaitForCryptohomeSetupScreenExit();
-  CryptohomeRecoverySetupContinue();
-  HandlePasswordSelectionScreen();
-  WaitForFingerprintScreenExit();
-
-  ash::AuthSessionStorage::Get()->Invalidate(LoginDisplayHost::default_host()
-                                                 ->GetWizardContextForTesting()
-                                                 ->extra_factors_token.value(),
-                                             base::DoNothing());
-  ExpectFingerprintScreenExitedAndContinue();
-  WaitForScreenExit();
-
-  ExpectSkipReason(PinSetupScreen::SkipReason::kExpiredToken);
-  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
-}
-
-// If the PIN setup screen is shown, auth session should be cleared afterwards.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsSecondaryFactor,
-                       AuthSessionIsClearedOnManualSkip) {
-  ShowPinSetupScreen();
-  WaitForScreenShown();
-
-  TapSkipButton();
-  WaitForScreenExit();
-
-  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
-  CheckCredentialsWereCleared();
-}
-
-// Oobe should skip the PIN setup screen if policies are set such that PIN
-// cannot be used for both login/unlock and web authn.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsSecondaryFactor,
-                       SkipWhenNotAllowedByPolicy) {
-  LoginAndWaitForCryptohomeSetupScreenExit();
-
-  SetPinPolicy(PinPolicy::kUnlock, AllowlistStatus::kNone);
-  SetPinPolicy(PinPolicy::kWebAuthn, AllowlistStatus::kNone);
-
-  CryptohomeRecoverySetupContinue();
-  HandlePasswordSelectionScreen();
-  WaitForFingerprintScreenExit();
-  ExpectFingerprintScreenExitedAndContinue();
-
-  WaitForScreenExit();
-  ExpectSkipReason(PinSetupScreen::SkipReason::kNotAllowedByPolicy);
-  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
-}
-
-// The PIN screen should be shown when policy allows PIN for unlock.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsSecondaryFactor,
-                       ShowWhenPinAllowedForUnlock) {
-  LoginAndWaitForCryptohomeSetupScreenExit();
-
-  SetPinPolicy(PinPolicy::kUnlock, AllowlistStatus::kPin);
-  SetPinPolicy(PinPolicy::kWebAuthn, AllowlistStatus::kNone);
-
-  CryptohomeRecoverySetupContinue();
-  HandlePasswordSelectionScreen();
-  WaitForFingerprintScreenExit();
-  ExpectFingerprintScreenExitedAndContinue();
-
-  TapSkipButton();
-  WaitForScreenExit();
-
-  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
-}
-
-// The PIN screen should be shown when policy allows PIN for WebAuthN.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsSecondaryFactor,
-                       ShowWhenPinAllowedForWebAuthn) {
-  LoginAndWaitForCryptohomeSetupScreenExit();
-
-  SetPinPolicy(PinPolicy::kUnlock, AllowlistStatus::kNone);
-  SetPinPolicy(PinPolicy::kWebAuthn, AllowlistStatus::kAll);
-
-  CryptohomeRecoverySetupContinue();
-  HandlePasswordSelectionScreen();
-  WaitForFingerprintScreenExit();
-  ExpectFingerprintScreenExitedAndContinue();
-
-  TapSkipButton();
-  WaitForScreenExit();
-
-  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
-}
-
-// Skip the flow in the beginning and expect the proper metrics.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsSecondaryFactor, ManualSkipOnStart) {
-  ShowPinSetupScreen();
-  WaitForScreenShown();
-
-  TapSkipButton();
-  WaitForScreenExit();
-
-  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
-  ExpectUserActionMetric(PinSetupScreen::UserAction::kSkipButtonClickedOnStart);
-}
-
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsSecondaryFactor, ManualSkipInFlow) {
-  ShowPinSetupScreen();
-  WaitForScreenShown();
-
-  EnterPin();
-  TapNextButton();
-  // Wait until the back button is visible to ensure that the UI is showing
-  // the 'confirmation' step.
-  test::OobeJS().CreateVisibilityWaiter(true, kBackButton)->Wait();
-
-  TapSkipButton();
-  WaitForScreenExit();
-
-  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
-  ExpectUserActionMetric(PinSetupScreen::UserAction::kSkipButtonClickedInFlow);
-}
-
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsSecondaryFactor, FinishedFlow) {
-  ShowPinSetupScreen();
-  WaitForScreenShown();
-
-  InsertAndConfirmPin();
-  WaitForScreenExit();
-
-  ExpectExitResultAndMetric(PinSetupScreen::Result::kDoneAsSecondaryFactor);
-  ExpectUserActionMetric(PinSetupScreen::UserAction::kDoneButtonClicked);
-  CheckCredentialsWereCleared();
-}
-
-// Ensures the correct strings when PIN is being offered not as the main factor.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsSecondaryFactor,
-                       CorrectStringsWhenPinIsNotTheMainFactor) {
-  ShowPinSetupScreen();
-  WaitForScreenShown();
-
-  WaitForSetupTitleAndSubtitle(IDS_DISCOVER_PIN_SETUP_TITLE1,
-                               IDS_DISCOVER_PIN_SETUP_SUBTITLE1);
-  test::OobeJS().ExpectElementText(
-      l10n_util::GetStringUTF8(IDS_DISCOVER_PIN_SETUP_SKIP), kSkipButtonCore);
-}
-
-// The AuthSession should not be kept alive while offering PIN as a secondary
-// factor.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsSecondaryFactor,
-                       AuthSessionIsNotKeptAliveForSecondaryFactorSetup) {
-  ShowPinSetupScreen();
-  WaitForScreenShown();
-
-  // Ensure that there isn't a SessionRefresher keeping the AuthSession alive.
-  EXPECT_FALSE(AuthSessionStorage::Get()->CheckHasKeepAliveForTesting(
-      LoginDisplayHost::default_host()
-          ->GetWizardContext()
-          ->extra_factors_token.value()));
-}
-
-// Fixture to pretend that hardware support for login is not available.
-class PinSetupScreenTestWithoutLoginSupportAsSecondaryFactor
-    : public PinSetupScreenTestAsSecondaryFactor {
- public:
-  PinSetupScreenTestWithoutLoginSupportAsSecondaryFactor() {
-    SetHardwareSupport(false);
-  }
-
-  ~PinSetupScreenTestWithoutLoginSupportAsSecondaryFactor() override = default;
-};
-
-// By default, OOBE should skip the PIN setup screen when hardware support is
-// not available.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupportAsSecondaryFactor,
-                       SkippedByDefault) {
-  ShowPinSetupScreen();
-  WaitForScreenExit();
-
-  ExpectSkipReason(PinSetupScreen::SkipReason::kUsupportedHardware);
-  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
-}
-
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupportAsSecondaryFactor,
-                       AuthSessionIsClearedWhenSkipped) {
-  ShowPinSetupScreen();
-  WaitForScreenExit();
-
-  ExpectSkipReason(PinSetupScreen::SkipReason::kUsupportedHardware);
-  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
-  CheckCredentialsWereCleared();
-}
-
-// The screen should be shown for tablet devices, regardless of the hardware
-// support status.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupportAsSecondaryFactor,
-                       ShowInTabletMode) {
-  SetTabletMode(true);
-  ShowPinSetupScreen();
-  WaitForScreenShown();
-
-  TapSkipButton();
-  WaitForScreenExit();
-
-  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
-}
-
-class PinSetupScreenTestAsMainFactor : public PinSetupScreenTest {
- public:
-  PinSetupScreenTestAsMainFactor() {
-    SetHardwareSupport(true);
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kAllowPasswordlessSetup},
-        /*disabled_features=*/{});
-  }
-
-  ~PinSetupScreenTestAsMainFactor() override = default;
-};
-
 // Tests that the strings are correct when setting up PIN as the main factor.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
-                       TitleAndSubtitleStrings) {
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, TitleAndSubtitleStrings) {
   ShowPinSetupScreen();
   WaitForScreenShown();
 
@@ -674,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
 
 // The password selection screen should be shown when the user does not want to
 // set up a PIN as a main factor.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest,
                        SkippingLeadsToPasswordSelectionScreen) {
   ShowPinSetupScreen();
   WaitForScreenShown();
@@ -689,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
 // When PIN is set as a main factor, the flow continues into the fingerprint
 // setup screen, which *always* leads to the PIN setup screen. But when the PIN
 // has already been set, the screen is skipped and the auth flow is finished.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor, MainFactorSet) {
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, MainFactorSet) {
   ShowPinSetupScreen();
   WaitForScreenShown();
 
@@ -708,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor, MainFactorSet) {
 
 // PIN is not offered as a second factor when the user explicitly chooses a
 // password.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest,
                        NoAdditionalPinOfferingWhenUserChoosesPassword) {
   ShowPinSetupScreen();
   WaitForScreenShown();
@@ -732,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
 
 // Ensures that the AuthSession is kept alive when PIN is being offered as the
 // main factor.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest,
                        AuthSessionIsKeptAliveForMainFactorSetup) {
   ShowPinSetupScreen();
   WaitForScreenShown();
@@ -745,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
 }
 
 // Ensures that the 'eye' icon for showing/hiding the PIN works.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor, ShowHidePin) {
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ShowHidePin) {
   ShowPinSetupScreen();
   WaitForScreenShown();
 
@@ -766,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor, ShowHidePin) {
 
 // Tests that the 'Back' button logic on the PasswordSelectionScreen can bring
 // the user back to PIN as a main factor setup.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor, BackButtonLogicWorks) {
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, BackButtonLogicWorks) {
   ShowPinSetupScreen();
   WaitForScreenShown();
 
@@ -794,19 +493,16 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor, BackButtonLogicWorks) {
   OobeScreenWaiter(PasswordSelectionScreenView::kScreenId).Wait();
 }
 
-class PinSetupScreenTestAsMainFactorWithoutLoginSupport
-    : public PinSetupScreenTestAsMainFactor {
+class PinSetupScreenTestWithoutLoginSupport : public PinSetupScreenTest {
  public:
-  PinSetupScreenTestAsMainFactorWithoutLoginSupport() {
-    SetHardwareSupport(false);
-  }
+  PinSetupScreenTestWithoutLoginSupport() { SetHardwareSupport(false); }
 
-  ~PinSetupScreenTestAsMainFactorWithoutLoginSupport() override = default;
+  ~PinSetupScreenTestWithoutLoginSupport() override = default;
 };
 
 // Tests that the screen is not shown as a main factor when not supported. When
 // that is the case, the password selection screen should be shown next.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactorWithoutLoginSupport,
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupport,
                        NotShownWhenNotSupported) {
   ShowPinSetupScreen();
   WaitForScreenExit();
@@ -819,22 +515,21 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactorWithoutLoginSupport,
   CheckCredentialsArePresent();
 }
 
-class PinSetupScreenTestAsMainFactorEnterprise
-    : public PinSetupScreenTestAsMainFactor {
+class PinSetupScreenTestEnterprise : public PinSetupScreenTest {
  public:
-  PinSetupScreenTestAsMainFactorEnterprise() { login_as_enterprise_ = true; }
-  ~PinSetupScreenTestAsMainFactorEnterprise() override = default;
+  PinSetupScreenTestEnterprise() { login_as_enterprise_ = true; }
+  ~PinSetupScreenTestEnterprise() override = default;
 
   // Set PINs as allowed for unlock.
   void SetUpOnMainThread() override {
-    PinSetupScreenTestAsMainFactor::SetUpOnMainThread();
+    PinSetupScreenTest::SetUpOnMainThread();
     SetAllowPinUnlockPolicyForEnterpriseUsers();
   }
 };
 
 // Tests that the screen is not shown as a main factor for enterprise users even
 // when PIN is allowed by policy. It is only offered as a secondary factor.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactorEnterprise,
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestEnterprise,
                        SkippedForEnterpriseUsers) {
   LoginAndWaitForCryptohomeSetupScreenExit();
   CryptohomeRecoverySetupContinue();
@@ -858,20 +553,19 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactorEnterprise,
   CheckCredentialsWereCleared();
 }
 
-class PinSetupScreenTestAsMainFactorPasswordlessSignin
-    : public PinSetupScreenTestAsMainFactor {
+class PinSetupScreenTestPasswordlessSignin : public PinSetupScreenTest {
  public:
-  PinSetupScreenTestAsMainFactorPasswordlessSignin() {
+  PinSetupScreenTestPasswordlessSignin() {
     simulate_passwordless_signin_ = true;
   }
-  ~PinSetupScreenTestAsMainFactorPasswordlessSignin() override = default;
+  ~PinSetupScreenTestPasswordlessSignin() override = default;
 };
 
 // Tests that the 'Back' button logic on the LocalPasswordSetupScreen can bring
 // the user back to PIN as a main factor setup when the user did not have an
 // opportunity to choose between an online vs. local password. This is the case
 // when the user goes through Gaia using a passwordless method.
-IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactorPasswordlessSignin,
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestPasswordlessSignin,
                        BackButtonLogicWorks) {
   ShowPinSetupScreen();
   WaitForScreenShown();
@@ -899,24 +593,22 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactorPasswordlessSignin,
   OobeScreenWaiter(LocalPasswordSetupView::kScreenId).Wait();
 }
 
-class PinSetupScreenTestAsMainFactorWithoutLoginSupportPasswordlessSignin
-    : public PinSetupScreenTestAsMainFactorWithoutLoginSupport {
+class PinSetupScreenTestWithoutLoginSupportPasswordlessSignin
+    : public PinSetupScreenTestWithoutLoginSupport {
  public:
-  PinSetupScreenTestAsMainFactorWithoutLoginSupportPasswordlessSignin() {
+  PinSetupScreenTestWithoutLoginSupportPasswordlessSignin() {
     simulate_passwordless_signin_ = true;
   }
 
-  ~PinSetupScreenTestAsMainFactorWithoutLoginSupportPasswordlessSignin()
-      override = default;
+  ~PinSetupScreenTestWithoutLoginSupportPasswordlessSignin() override = default;
 };
 
 // Without hardware support, the PIN screen is not shown for setting up a PIN
 // as the main factor. Additionally, when the user goes through Gaia without
 // using a password, they land directly on the LocalPasswordSetupScreen. In that
 // case, there isn't a back button.
-IN_PROC_BROWSER_TEST_F(
-    PinSetupScreenTestAsMainFactorWithoutLoginSupportPasswordlessSignin,
-    NoBackButtonOnLocalPasswordSetup) {
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupportPasswordlessSignin,
+                       NoBackButtonOnLocalPasswordSetup) {
   ShowPinSetupScreen();
   WaitForScreenExit();
 

@@ -18,11 +18,9 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -156,7 +154,6 @@ class LoginAuthUserViewTestBase
     SetWidget(CreateWidgetWithContent(container_));
   }
 
-  base::test::ScopedFeatureList feature_list_;
   LoginUserInfo user_;
   raw_ptr<views::View, DanglingUntriaged> container_ =
       nullptr;  // Owned by test widget view hierarchy.
@@ -217,21 +214,8 @@ TEST_P(LoginAuthUserViewPixelTest,
       view_));
 }
 
-class LoginAuthUserViewPinOnlyPixelTest : public LoginAuthUserViewPixelTest {
- public:
-  LoginAuthUserViewPinOnlyPixelTest() {
-    feature_list_.Reset();
-    feature_list_.InitAndEnableFeature(features::kAllowPasswordlessSetup);
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    LoginAuthUserViewPinOnlyPixelTest,
-    testing::Bool());
-
 // Verifies the PIN only with auto submit case before entering the pin.
-TEST_P(LoginAuthUserViewPinOnlyPixelTest, PinOnlyModeWithAutosubmitEnabled) {
+TEST_P(LoginAuthUserViewPixelTest, PinOnlyModeWithAutosubmitEnabled) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
   LoginPinInputView::TestApi pin_input_test{auth_test.pin_input_view()};
@@ -252,7 +236,7 @@ TEST_P(LoginAuthUserViewPinOnlyPixelTest, PinOnlyModeWithAutosubmitEnabled) {
 // Verifies the PIN only with auto submit case after all six pin character
 // filled.
 // TODO(crbug.com/364660411): Fix flakiness and re-enable.
-TEST_P(LoginAuthUserViewPinOnlyPixelTest,
+TEST_P(LoginAuthUserViewPixelTest,
        DISABLED_PinOnlyModeWithAutosubmitEnabledFilled) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
@@ -278,7 +262,7 @@ TEST_P(LoginAuthUserViewPinOnlyPixelTest,
 }
 
 // Verifies the PIN only with auto submit off case before entering the pin.
-TEST_P(LoginAuthUserViewPinOnlyPixelTest, PinOnlyModeWithAutosubmitDisabled) {
+TEST_P(LoginAuthUserViewPixelTest, PinOnlyModeWithAutosubmitDisabled) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
   LoginPinInputView::TestApi pin_input_test{auth_test.pin_input_view()};
@@ -300,7 +284,7 @@ TEST_P(LoginAuthUserViewPinOnlyPixelTest, PinOnlyModeWithAutosubmitDisabled) {
 // Verifies the PIN only with auto submit off case after all six pin character
 // filled.
 // TODO(crbug.com/364660411): Fix flakiness and re-enable.
-TEST_P(LoginAuthUserViewPinOnlyPixelTest,
+TEST_P(LoginAuthUserViewPixelTest,
        DISABLED_PinOnlyModeWithAutosubmitDisabledFilled) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();

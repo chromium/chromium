@@ -2474,13 +2474,9 @@ void WizardController::OnCryptohomeRecoverySetupScreenExit(
     CryptohomeRecoverySetupScreen::Result result) {
   OnScreenExit(CryptohomeRecoverySetupScreenView::kScreenId,
                CryptohomeRecoverySetupScreen::GetResultString(result));
-  if (features::IsAllowPasswordlessSetupEnabled()) {
-    // First step of the AuthFactor setup flow. Offer PIN as a main factor. If
-    // there isn't hardware support, the screen exits gracefully.
-    ShowPinSetupScreenAsMainFactor();
-  } else {
-    ShowPasswordSelectionScreen();
-  }
+  // First step of the AuthFactor setup flow. Offer PIN as a main factor. If
+  // there isn't hardware support, the screen exits gracefully.
+  ShowPinSetupScreenAsMainFactor();
 }
 
 void WizardController::OnPasswordSelectionScreenExit(
@@ -2682,48 +2678,44 @@ void WizardController::OnFingerprintSetupScreenExit(
 void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
   OnScreenExit(PinSetupScreenView::kScreenId,
                PinSetupScreen::GetResultString(result));
-  if (features::IsAllowPasswordlessSetupEnabled()) {
-    switch (result) {
-      // PIN as a main factor is not supported or not wanted. In both cases,
-      // proceed to the PasswordSelectionScreen.
-      case PinSetupScreen::Result::kUserChosePassword:
-        // The user does not wish to have a PIN as their main authentication
-        // factor. Setting this setup mode ensures that the screen is not
-        // resurfaced later in the flow a second time, and that a back button
-        // will be shown on PasswordSelectionScreen for the user to go back.
-        wizard_context_->knowledge_factor_setup.pin_setup_mode =
-            WizardContext::PinSetupMode::kUserChosePasswordInstead;
-        [[fallthrough]];
-      case PinSetupScreen::Result::kNotApplicableAsPrimaryFactor:
-        ShowPasswordSelectionScreen();
-        return;
-      case PinSetupScreen::Result::kDoneAsMainFactor:
-        wizard_context_->knowledge_factor_setup.pin_setup_mode =
-            WizardContext::PinSetupMode::kAlreadyPerformed;
-        ShowFingerprintSetupScreen();
-        return;
-      // These are emitted when the screen is surfaced at the end of the flow,
-      // offering PIN as an additional factor.
-      case PinSetupScreen::Result::kDoneAsSecondaryFactor:
-      case PinSetupScreen::Result::kUserSkip:
-      case PinSetupScreen::Result::kNotApplicable:
-      case PinSetupScreen::Result::kTimedOut:
-        FinishAuthFactorsSetup();
-        return;
-      // Proceed into session when PIN is reset via recovery.
-      case PinSetupScreen::Result::kDoneRecoveryReset:
-        CHECK_EQ(wizard_context_->knowledge_factor_setup.auth_setup_flow,
-                 WizardContext::AuthChangeFlow::kRecovery);
+  switch (result) {
+    // PIN as a main factor is not supported or not wanted. In both cases,
+    // proceed to the PasswordSelectionScreen.
+    case PinSetupScreen::Result::kUserChosePassword:
+      // The user does not wish to have a PIN as their main authentication
+      // factor. Setting this setup mode ensures that the screen is not
+      // resurfaced later in the flow a second time, and that a back button
+      // will be shown on PasswordSelectionScreen for the user to go back.
+      wizard_context_->knowledge_factor_setup.pin_setup_mode =
+          WizardContext::PinSetupMode::kUserChosePasswordInstead;
+      [[fallthrough]];
+    case PinSetupScreen::Result::kNotApplicableAsPrimaryFactor:
+      ShowPasswordSelectionScreen();
+      return;
+    case PinSetupScreen::Result::kDoneAsMainFactor:
+      wizard_context_->knowledge_factor_setup.pin_setup_mode =
+          WizardContext::PinSetupMode::kAlreadyPerformed;
+      ShowFingerprintSetupScreen();
+      return;
+    // These are emitted when the screen is surfaced at the end of the flow,
+    // offering PIN as an additional factor.
+    case PinSetupScreen::Result::kDoneAsSecondaryFactor:
+    case PinSetupScreen::Result::kUserSkip:
+    case PinSetupScreen::Result::kNotApplicable:
+    case PinSetupScreen::Result::kTimedOut:
+      FinishAuthFactorsSetup();
+      return;
+    // Proceed into session when PIN is reset via recovery.
+    case PinSetupScreen::Result::kDoneRecoveryReset:
+      CHECK_EQ(wizard_context_->knowledge_factor_setup.auth_setup_flow,
+               WizardContext::AuthChangeFlow::kRecovery);
 
-        if (features::IsRecoveryFlowReorderEnabled()) {
-          ObtainContextAndFinalizeAuth();
-          return;
-        }
-        ObtainContextAndLoginAuthenticated();
+      if (features::IsRecoveryFlowReorderEnabled()) {
+        ObtainContextAndFinalizeAuth();
         return;
-    }
-  } else {
-    FinishAuthFactorsSetup();
+      }
+      ObtainContextAndLoginAuthenticated();
+      return;
   }
 }
 

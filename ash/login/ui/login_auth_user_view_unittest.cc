@@ -20,12 +20,10 @@
 #include "ash/login/ui/smart_lock_auth_factor_model.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -161,7 +159,6 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
     return view_->disabled_auth_message_;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   LoginUserInfo user_;
   raw_ptr<views::View, DanglingUntriaged> container_ =
       nullptr;  // Owned by test widget view hierarchy.
@@ -183,14 +180,6 @@ class LoginAuthUserViewUnittest : public LoginAuthUserViewTestBase {
   void SetUp() override {
     LoginAuthUserViewTestBase::SetUp();
     InitializeViewForUser(CreateUser("user@domain.com"));
-  }
-};
-
-class LoginAuthUserViewPinOnlyUnittest : public LoginAuthUserViewUnittest {
- public:
-  LoginAuthUserViewPinOnlyUnittest() {
-    feature_list_.Reset();
-    feature_list_.InitAndEnableFeature(features::kAllowPasswordlessSetup);
   }
 };
 
@@ -361,7 +350,7 @@ TEST_F(LoginAuthUserViewUnittest, PasswordOnlyFieldMode) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(LoginAuthUserViewPinOnlyUnittest, PinOnlyModeWithAutosubmitEnabled) {
+TEST_F(LoginAuthUserViewUnittest, PinOnlyModeWithAutosubmitEnabled) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
   LoginUserView* user_view(auth_test.user_view());
@@ -397,7 +386,7 @@ TEST_F(LoginAuthUserViewPinOnlyUnittest, PinOnlyModeWithAutosubmitEnabled) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(LoginAuthUserViewPinOnlyUnittest, PinOnlyModeWithAutosubmitDisabled) {
+TEST_F(LoginAuthUserViewUnittest, PinOnlyModeWithAutosubmitDisabled) {
   LoginAuthUserView::TestApi auth_test(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
   auto client = std::make_unique<MockLoginScreenClient>();

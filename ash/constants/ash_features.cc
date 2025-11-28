@@ -2026,10 +2026,6 @@ BASE_FEATURE(kUseAuthPanelInSession, base::FEATURE_ENABLED_BY_DEFAULT);
 // `AuthPanel` on ChromeOS.
 BASE_FEATURE(kAuthPanelUsingAuthHub, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This features controls whether or not passwordless setup is enabled, such as
-// having a pin-only config.
-BASE_FEATURE(kAllowPasswordlessSetup, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This features controls whether or not we'll show the legacy WebAuthNDialog,
 // that lives in ash/in_session_auth/auth_dialog_contents_view or
 // the new dialog that's also shared with Settings and Password Manager,
@@ -3590,10 +3586,6 @@ bool IsUseAuthPanelInSessionEnabled() {
 
 bool IsAuthPanelUsingAuthHub() {
   return base::FeatureList::IsEnabled(kAuthPanelUsingAuthHub);
-}
-
-bool IsAllowPasswordlessSetupEnabled() {
-  return base::FeatureList::IsEnabled(kAllowPasswordlessSetup);
 }
 
 bool IsLocalAuthenticationWithPinEnabled() {
