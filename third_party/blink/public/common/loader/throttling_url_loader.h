@@ -244,6 +244,11 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // Disconnects the client connection and releases the URLLoader.
   void DisconnectClient(std::string_view custom_description);
 
+  void ForwardResponseToClient(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      std::optional<mojo_base::BigBuffer> cached_metadata);
+
   enum DeferredStage {
     DEFERRED_NONE,
     DEFERRED_START,
@@ -364,6 +369,10 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   GURL response_url_;
 
   bool response_intercepted_ = false;
+
+  // Whether URLLoaderClient's OnReceiveResponse() has been called. It must be
+  // called at most once. It is added to debug crbug.com/463388771.
+  bool has_forwarded_response_ = false;
 
   std::vector<std::string> removed_headers_;
   net::HttpRequestHeaders modified_headers_;
