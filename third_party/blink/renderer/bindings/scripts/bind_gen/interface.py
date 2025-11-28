@@ -6232,10 +6232,14 @@ def make_is_exposed(cg_context, function_name):
         is_exposed_def.body.append(
             FormatNode("return {};",
                        expr_from_exposure(class_like.exposure).to_text()))
-        is_exposed_def.accumulate(
-            CodeGenAccumulator.require_include_headers([
-                "third_party/blink/renderer/platform/runtime_enabled_features.h"
-            ]))
+        runtime_enabled_features = class_like.exposure.runtime_enabled_features or any(
+            entry.feature for entry in class_like.exposure.global_names_and_features
+        )
+        if runtime_enabled_features:
+            is_exposed_def.accumulate(
+                CodeGenAccumulator.require_include_headers([
+                    "third_party/blink/renderer/platform/runtime_enabled_features.h"
+                ]))
     else:
         is_exposed_def.body.append(TextNode("return false;"))
     return (is_exposed_decl, is_exposed_def)
