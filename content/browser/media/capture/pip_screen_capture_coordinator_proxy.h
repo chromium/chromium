@@ -45,9 +45,6 @@ class PipScreenCaptureCoordinatorProxy {
   virtual std::optional<NativeWindowId> PipWindowId() const = 0;
   virtual const std::vector<CaptureInfo>& Captures() const = 0;
 
-  virtual void AddCapture(CaptureInfo capture_info) = 0;
-  virtual void RemoveCapture(const base::UnguessableToken& session_id) = 0;
-
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 };

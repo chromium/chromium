@@ -310,15 +310,12 @@ TEST_F(PipScreenCaptureCoordinatorImplTest, AddAndRemoveCapture) {
   coordinator_->RemoveObserver(&observer);
 }
 
-TEST_F(PipScreenCaptureCoordinatorImplTest,
-       AddAndRemoveCaptureFromProxyNotifiesOtherProxy) {
-  auto proxy1 = coordinator_->CreateProxy();
-  auto proxy2 = coordinator_->CreateProxy();
-  ASSERT_TRUE(proxy1);
-  ASSERT_TRUE(proxy2);
+TEST_F(PipScreenCaptureCoordinatorImplTest, AddAndRemoveCaptureNotifiesProxy) {
+  auto proxy = coordinator_->CreateProxy();
+  ASSERT_TRUE(proxy);
 
   MockProxyObserver observer;
-  proxy2->AddObserver(&observer);
+  proxy->AddObserver(&observer);
 
   const base::UnguessableToken session_id1 = base::UnguessableToken::Create();
   const content::GlobalRenderFrameHostId render_frame_host_id1(1, 1);
@@ -345,7 +342,7 @@ TEST_F(PipScreenCaptureCoordinatorImplTest,
     EXPECT_CALL(observer, OnCapturesChanged(testing::ElementsAre(
                               testing::Eq(std::ref(expected_capture_info1)))))
         .WillOnce([&run_loop](const auto&) { run_loop.Quit(); });
-    proxy1->AddCapture(expected_capture_info1);
+    PipScreenCaptureCoordinatorImpl::AddCapture(expected_capture_info1);
     run_loop.Run();
   }
 
@@ -355,7 +352,7 @@ TEST_F(PipScreenCaptureCoordinatorImplTest,
                               testing::Eq(std::ref(expected_capture_info1)),
                               testing::Eq(std::ref(expected_capture_info2)))))
         .WillOnce([&run_loop](const auto&) { run_loop.Quit(); });
-    proxy1->AddCapture(expected_capture_info2);
+    PipScreenCaptureCoordinatorImpl::AddCapture(expected_capture_info2);
     run_loop.Run();
   }
 
@@ -364,7 +361,7 @@ TEST_F(PipScreenCaptureCoordinatorImplTest,
     EXPECT_CALL(observer, OnCapturesChanged(testing::ElementsAre(
                               testing::Eq(std::ref(expected_capture_info2)))))
         .WillOnce([&run_loop](const auto&) { run_loop.Quit(); });
-    proxy1->RemoveCapture(session_id1);
+    PipScreenCaptureCoordinatorImpl::RemoveCapture(session_id1);
     run_loop.Run();
   }
 
@@ -372,11 +369,11 @@ TEST_F(PipScreenCaptureCoordinatorImplTest,
     base::RunLoop run_loop;
     EXPECT_CALL(observer, OnCapturesChanged(testing::IsEmpty()))
         .WillOnce([&run_loop](const auto&) { run_loop.Quit(); });
-    proxy1->RemoveCapture(session_id2);
+    PipScreenCaptureCoordinatorImpl::RemoveCapture(session_id2);
     run_loop.Run();
   }
 
-  proxy2->RemoveObserver(&observer);
+  proxy->RemoveObserver(&observer);
 }
 
 }  // namespace content

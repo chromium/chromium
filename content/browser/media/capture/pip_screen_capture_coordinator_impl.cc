@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator_proxy_impl.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "media/capture/capture_switches.h"
 
@@ -21,6 +22,37 @@ PipScreenCaptureCoordinatorImpl::GetInstance() {
   }
   static base::NoDestructor<PipScreenCaptureCoordinatorImpl> instance;
   return instance.get();
+}
+
+// static
+void PipScreenCaptureCoordinatorImpl::AddCapture(
+    PipScreenCaptureCoordinatorProxy::CaptureInfo capture_info) {
+  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&PipScreenCaptureCoordinatorImpl::AddCapture,
+                                  std::move(capture_info)));
+    return;
+  }
+
+  if (auto* instance = GetInstance()) {
+    instance->AddCaptureOnUIThread(std::move(capture_info));
+  }
+}
+
+// static
+void PipScreenCaptureCoordinatorImpl::RemoveCapture(
+    const base::UnguessableToken& session_id) {
+  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PipScreenCaptureCoordinatorImpl::RemoveCapture,
+                       session_id));
+    return;
+  }
+
+  if (auto* instance = GetInstance()) {
+    instance->RemoveCaptureOnUIThread(session_id);
+  }
 }
 
 PipScreenCaptureCoordinatorImpl::PipScreenCaptureCoordinatorImpl() = default;
@@ -68,7 +100,7 @@ PipScreenCaptureCoordinatorImpl::Captures() const {
   return captures_;
 }
 
-void PipScreenCaptureCoordinatorImpl::AddCapture(
+void PipScreenCaptureCoordinatorImpl::AddCaptureOnUIThread(
     PipScreenCaptureCoordinatorProxy::CaptureInfo capture_info) {
   captures_.push_back(std::move(capture_info));
   for (Observer& obs : observers_) {
@@ -76,7 +108,7 @@ void PipScreenCaptureCoordinatorImpl::AddCapture(
   }
 }
 
-void PipScreenCaptureCoordinatorImpl::RemoveCapture(
+void PipScreenCaptureCoordinatorImpl::RemoveCaptureOnUIThread(
     const base::UnguessableToken& session_id) {
   captures_.erase(std::remove_if(captures_.begin(), captures_.end(),
                                  [&session_id](const auto& c) {

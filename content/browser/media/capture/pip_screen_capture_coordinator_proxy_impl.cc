@@ -101,27 +101,6 @@ PipScreenCaptureCoordinatorProxyImpl::Captures() const {
   return captures_;
 }
 
-void PipScreenCaptureCoordinatorProxyImpl::AddCapture(
-    CaptureInfo capture_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (coordinator_) {
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&PipScreenCaptureCoordinatorImpl::AddCapture,
-                                  coordinator_, std::move(capture_info)));
-  }
-}
-
-void PipScreenCaptureCoordinatorProxyImpl::RemoveCapture(
-    const base::UnguessableToken& session_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (coordinator_) {
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PipScreenCaptureCoordinatorImpl::RemoveCapture,
-                       coordinator_, session_id));
-  }
-}
-
 void PipScreenCaptureCoordinatorProxyImpl::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!bound_sequence_task_runner_) {
