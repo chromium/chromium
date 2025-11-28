@@ -23,14 +23,18 @@ using wallet_helper::UpdateServerCardCredentialData;
 
 namespace {
 
-class TwoClientWalletCredentialSyncTest : public SyncTest {
+class TwoClientWalletCredentialSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   TwoClientWalletCredentialSyncTest() : SyncTest(TWO_CLIENT) {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{kSyncAutofillWalletCredentialData,
-                              autofill::features::
-                                  kAutofillEnableCvcStorageAndFilling},
-        /*disabled_features=*/{});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        kSyncAutofillWalletCredentialData,
+        autofill::features::kAutofillEnableCvcStorageAndFilling};
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+    features_.InitWithFeatures(enabled_features, {});
   }
 
   TwoClientWalletCredentialSyncTest(const TwoClientWalletCredentialSyncTest&) =
@@ -39,6 +43,10 @@ class TwoClientWalletCredentialSyncTest : public SyncTest {
       const TwoClientWalletCredentialSyncTest&) = delete;
 
   ~TwoClientWalletCredentialSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
 
   bool TestUsesSelfNotifications() override { return false; }
 
@@ -77,7 +85,12 @@ class TwoClientWalletCredentialSyncTest : public SyncTest {
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletCredentialSyncTest, AddCvcToCreditCard) {
+INSTANTIATE_TEST_SUITE_P(,
+                       TwoClientWalletCredentialSyncTest,
+                       GetSyncTestModes(),
+                       testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(TwoClientWalletCredentialSyncTest, AddCvcToCreditCard) {
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
   ASSERT_TRUE(SetUpSyncAndInitialize());
 
@@ -104,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletCredentialSyncTest, AddCvcToCreditCard) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletCredentialSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWalletCredentialSyncTest,
                        UpdateCvcForCreditCard) {
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
@@ -136,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletCredentialSyncTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletCredentialSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWalletCredentialSyncTest,
                        RemoveCvcForCreditCard) {
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
