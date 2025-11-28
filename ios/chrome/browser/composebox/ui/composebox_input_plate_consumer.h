@@ -25,9 +25,6 @@
 // Updates the send button visibility.
 - (void)hideSendButton:(BOOL)hidden;
 
-// Sets whether the "Attach current tab" action is enabled.
-- (void)setCanAttachCurrentTab:(BOOL)canAttachCurrentTab;
-
 // Sets whether AI mode is enabled.
 - (void)setAIModeEnabled:(BOOL)AIModeEnabled;
 
@@ -36,6 +33,27 @@
 
 // Sets the favicon for the current tab.
 - (void)setCurrentTabFavicon:(UIImage*)favicon;
+
+// Sets whether the "Attach current tab" action is hidden.
+- (void)hideAttachCurrentTabAction:(BOOL)hidden;
+
+// Sets whether the attach tab actions are hidden.
+- (void)hideAttachTabActions:(BOOL)hidden;
+
+// Sets whether the attach tab actions are disabled.
+- (void)disableAttachTabActions:(BOOL)disabled;
+
+// Sets whether the attach file actions are hidden.
+- (void)hideAttachFileActions:(BOOL)hidden;
+
+// Sets whether the attach file actions are disabled.
+- (void)disableAttachFileActions:(BOOL)disabled;
+
+// Sets whether the create image actions are hidden.
+- (void)hideCreateImageActions:(BOOL)hidden;
+
+// Sets whether the create image actions are disabled.
+- (void)disableCreateImageActions:(BOOL)disabled;
 
 @end
 

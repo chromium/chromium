@@ -382,7 +382,7 @@ CreateInputDataFromAnnotatedPageContent(
       _composeboxQueryController->ClearFiles();
     }
     [_items removeAllObjects];
-    [self.consumer setItems:_items];
+    [self updateConsumerItems];
   }
   [self updateCompactModeIfNeeded];
 }
@@ -491,6 +491,7 @@ CreateInputDataFromAnnotatedPageContent(
   _latestTabSelectionMapping[token] = webState->GetUniqueIdentifier();
 
   [self updateConsumerItems];
+  [self updateConsumerActionsState];
 
   if (_faviconLoader) {
     __weak __typeof(self) weakSelf = self;
@@ -958,7 +959,7 @@ CreateInputDataFromAnnotatedPageContent(
 - (BOOL)updateOptionToAttachCurrentTab {
   web::WebState* webState = _webStateList->GetActiveWebState();
   if (!webState) {
-    [_consumer setCanAttachCurrentTab:NO];
+    [_consumer hideAttachCurrentTabAction:YES];
     return NO;
   }
 
@@ -969,15 +970,34 @@ CreateInputDataFromAnnotatedPageContent(
       alreadyProcessedIDs.contains(webState->GetUniqueIdentifier());
 
   BOOL canAttachTab = !isNTP && !alreadyProcessed;
-  [_consumer setCanAttachCurrentTab:canAttachTab];
+  [_consumer hideAttachCurrentTabAction:!canAttachTab];
   return canAttachTab;
 }
 
+/// Updates the consumer actions enabled/disable state.
+- (void)updateConsumerActionsState {
+  BOOL hasTabOrFile = NO;
+  for (ComposeboxInputItem* item in _items) {
+    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeTab ||
+        item.type == ComposeboxInputItemType::kComposeboxInputItemTypeFile) {
+      hasTabOrFile = YES;
+      break;
+    }
+  }
+  [self.consumer disableCreateImageActions:hasTabOrFile];
+
+  // TODO(crbug.com/454832175): Disable tabs and files actions in image creation
+  // mode.
+  BOOL isImageCreation = NO;
+  [self.consumer disableAttachTabActions:isImageCreation];
+  [self.consumer disableAttachFileActions:isImageCreation];
+}
 /// Updates the consumer items and maybe trigger AIM.
 - (void)updateConsumerItems {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self.consumer setItems:_items];
   [self updateOptionToAttachCurrentTab];
+  [self updateConsumerActionsState];
 
   if (_items.count > 0) {
     if (!_AIModeEnabled) {

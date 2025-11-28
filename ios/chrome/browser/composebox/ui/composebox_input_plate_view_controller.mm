@@ -140,8 +140,17 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   UIView* _trailingCarouselFadeView;
   /// The carousel container.
   UIView* _carouselContainer;
-  /// Wether or not the current tab is attachable.
-  BOOL _canAttachCurrentTab;
+  /// Attach current tab action state.
+  BOOL _attachCurrentTabActionHidden;
+  /// Attach tabs actions state.
+  BOOL _attachTabActionsHidden;
+  BOOL _attachTabActionsDisabled;
+  /// Attach files action state.
+  BOOL _attachFileActionsHidden;
+  BOOL _attachFileActionsDisabled;
+  /// Create image action state.
+  BOOL _createImageActionsHidden;
+  BOOL _createImageActionsDisabled;
   /// Container for the omnibox.
   UIView* _omniboxContainer;
 
@@ -279,11 +288,11 @@ const CGFloat kCloseIndicatorSize = 10.0f;
                   }];
 }
 
-- (void)setCanAttachCurrentTab:(BOOL)canAttachCurrentTab {
-  if (_canAttachCurrentTab == canAttachCurrentTab) {
+- (void)hideAttachCurrentTabAction:(BOOL)hidden {
+  if (_attachCurrentTabActionHidden == hidden) {
     return;
   }
-  _canAttachCurrentTab = canAttachCurrentTab;
+  _attachCurrentTabActionHidden = hidden;
   [self updatePlusButtonItems];
 }
 
@@ -366,6 +375,54 @@ const CGFloat kCloseIndicatorSize = 10.0f;
 
 - (void)setCurrentTabFavicon:(UIImage*)favicon {
   _currentTabFavicon = favicon;
+  [self updatePlusButtonItems];
+}
+
+- (void)hideAttachTabActions:(BOOL)hidden {
+  if (_attachTabActionsHidden == hidden) {
+    return;
+  }
+  _attachTabActionsHidden = hidden;
+  [self updatePlusButtonItems];
+}
+
+- (void)disableAttachTabActions:(BOOL)disabled {
+  if (_attachTabActionsDisabled == disabled) {
+    return;
+  }
+  _attachTabActionsDisabled = disabled;
+  [self updatePlusButtonItems];
+}
+
+- (void)hideAttachFileActions:(BOOL)hidden {
+  if (_attachFileActionsHidden == hidden) {
+    return;
+  }
+  _attachFileActionsHidden = hidden;
+  [self updatePlusButtonItems];
+}
+
+- (void)disableAttachFileActions:(BOOL)disabled {
+  if (_attachFileActionsDisabled == disabled) {
+    return;
+  }
+  _attachFileActionsDisabled = disabled;
+  [self updatePlusButtonItems];
+}
+
+- (void)hideCreateImageActions:(BOOL)hidden {
+  if (_createImageActionsHidden == hidden) {
+    return;
+  }
+  _createImageActionsHidden = hidden;
+  [self updatePlusButtonItems];
+}
+
+- (void)disableCreateImageActions:(BOOL)disabled {
+  if (_createImageActionsDisabled == disabled) {
+    return;
+  }
+  _createImageActionsDisabled = disabled;
   [self updatePlusButtonItems];
 }
 
@@ -869,19 +926,48 @@ const CGFloat kCloseIndicatorSize = 10.0f;
                         handler:^(UIAction* action){
                         }];
 
-  NSMutableArray* attachmentMenuItems = [[NSMutableArray alloc] init];
-  if (_canAttachCurrentTab) {
-    [attachmentMenuItems addObject:attachCurrentTabAction];
+  UIMenuElementAttributes attachTabAttributes = 0;
+  if (_attachTabActionsHidden) {
+    attachTabAttributes |= UIMenuElementAttributesHidden;
   }
-  [attachmentMenuItems addObjectsFromArray:@[
-    selectTabsAction, cameraAction, galleryAction, fileAction
-  ]];
+  if (_attachTabActionsDisabled) {
+    attachTabAttributes |= UIMenuElementAttributesDisabled;
+  }
+  selectTabsAction.attributes = attachTabAttributes;
 
-  UIMenu* attachmentMenu = [UIMenu menuWithTitle:@""
-                                           image:nil
-                                      identifier:nil
-                                         options:UIMenuOptionsDisplayInline
-                                        children:attachmentMenuItems];
+  UIMenuElementAttributes attachCurrentTabAttributes = attachTabAttributes;
+  if (_attachCurrentTabActionHidden) {
+    attachCurrentTabAttributes |= UIMenuElementAttributesHidden;
+  }
+  attachCurrentTabAction.attributes = attachCurrentTabAttributes;
+
+  UIMenuElementAttributes attachFileAttributes = 0;
+  if (_attachFileActionsHidden) {
+    attachFileAttributes |= UIMenuElementAttributesHidden;
+  }
+  if (_attachFileActionsDisabled) {
+    attachFileAttributes |= UIMenuElementAttributesDisabled;
+  }
+  fileAction.attributes = attachFileAttributes;
+
+  UIMenuElementAttributes createImageAttributes = 0;
+  if (_createImageActionsHidden) {
+    createImageAttributes |= UIMenuElementAttributesHidden;
+  }
+  if (_createImageActionsDisabled) {
+    createImageAttributes |= UIMenuElementAttributesDisabled;
+  }
+  createImageAction.attributes = createImageAttributes;
+
+  UIMenu* attachmentMenu =
+      [UIMenu menuWithTitle:@""
+                      image:nil
+                 identifier:nil
+                    options:UIMenuOptionsDisplayInline
+                   children:@[
+                     attachCurrentTabAction, selectTabsAction, cameraAction,
+                     galleryAction, fileAction
+                   ]];
 
   UIMenu* modeMenu = [UIMenu menuWithTitle:@""
                                      image:nil
