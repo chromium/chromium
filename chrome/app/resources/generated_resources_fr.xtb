@@ -6533,7 +6533,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5499476581866658341">Vous pouvez désormais afficher les photos et contenus multimédias récents de votre téléphone</translation>
 <translation id="549957179819296104">Nouvelle icône</translation>
 <translation id="5500163593833085874">Lorsque le bouton gauche de la souris est sélectionné, utiliser "+" pour double-cliquer</translation>
-<translation id="5500168250243071806">L'<ph name="BEGIN_LINK_SEARCH" />historique des recherches<ph name="END_LINK_SEARCH" /> et d'<ph name="BEGIN_LINK_GOOGLE" />autres formes d'activité<ph name="END_LINK_GOOGLE" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
+<translation id="5500168250243071806">L‘<ph name="BEGIN_LINK_SEARCH" />historique des recherches<ph name="END_LINK_SEARCH" /> et d‘<ph name="BEGIN_LINK_GOOGLE" />autres formes d'activité<ph name="END_LINK_GOOGLE" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="5501322521654567960">Panneau latéral aligné à gauche</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}one{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}other{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="5501979953419946416">Rédige quelque chose d'inédit</translation>
@@ -9588,7 +9588,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7654941827281939388">Ce compte est déjà utilisé sur cet ordinateur.</translation>
 <translation id="7655411746932645568">Les sites peuvent demander à se connecter aux ports série</translation>
 <translation id="7657090467145778067">Petites économies</translation>
-<translation id="7657218410916651670">D'<ph name="BEGIN_LINK_GOOGLE" />autres formes d'activité<ph name="END_LINK_GOOGLE" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
+<translation id="7657218410916651670">D‘<ph name="BEGIN_LINK_GOOGLE" />autres formes d'activité<ph name="END_LINK_GOOGLE" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7658395071164441475">Certains mots de passe ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="7659154729610375585">Quitter quand même le mode navigation privée ?</translation>

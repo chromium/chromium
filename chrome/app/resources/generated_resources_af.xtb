@@ -937,7 +937,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1622054403950683339">Vergeet Wi-Fi-netwerk</translation>
 <translation id="1623723619460186680">Dowwer blou lig</translation>
 <translation id="1624863973697515675">Hierdie lêers is te groot vir jou toestel om te bestuur. Probeer dit op ’n ander toestel aflaai</translation>
-<translation id="1626581272720526544">Jy kan Android-apps en -speletjies deur die Play Winkel aflaai. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
+<translation id="1626581272720526544">Jy kan Android-apps en -speletjies deur die Play Winkel aflaai. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="1627276047960621195">Lêerbeskrywers</translation>
 <translation id="1627408615528139100">Reeds afgelaai</translation>
 <translation id="1628948239858170093">Skandeer lêer voordat jy dit oopmaak?</translation>
@@ -4729,7 +4729,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4228071595943929139">Gebruik jou organisasie se e-posadres</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Hierdie uitbreiding word nie toegelaat nie}other{Sommige uitbreidings word nie toegelaat nie}}</translation>
 <translation id="4231053948789591973">Uitsending is tans onderbreek. Jy kan enige tyd die uitsending van jou skerm hervat of ophou uitsaai.</translation>
-<translation id="4231095370974836764">Installeer programme en speletjies van Google Play af op jou <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
+<translation id="4231095370974836764">Installeer apps en speletjies van Google Play af op jou <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">Maak speletjiekontroles toe</translation>
 <translation id="4231231258999726714">Stel tans Steam vir Chromebook op</translation>
 <translation id="4232375817808480934">Stel Kerberos op</translation>

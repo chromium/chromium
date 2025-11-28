@@ -392,7 +392,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1246863218384630739">Não foi possível instalar o <ph name="VM_NAME" />: o URL da imagem retornou um código de erro <ph name="HTTP_ERROR" />. Entre em contato com o administrador.</translation>
 <translation id="1247372569136754018">Microfone (interno)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{As notificações de 1 site foram bloqueadas}one{As notificações de {NUM_SITES} site foram bloqueadas}other{As notificações de {NUM_SITES} sites foram bloqueadas}}</translation>
-<translation id="125097549534200450">limpar</translation>
+<translation id="125097549534200450">limpe</translation>
 <translation id="1251366534849411931">Chave de abertura esperada: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Procurando redes de dados móveis…</translation>
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 favorito e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos. Isso também vai limpar todas as cópias.}one{{BOOKMARK_COUNT} favorito e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos. Isso também vai limpar todas as cópias.}other{{BOOKMARK_COUNT} favoritos e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos. Isso também vai limpar todas as cópias.}}</translation>
@@ -2754,7 +2754,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2855812646048059450">Fazer login com <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Criar um novo contêiner</translation>
 <translation id="2857047802954430547">Faça login para acessar suas senhas, favoritos e muito mais em todos os seus dispositivos</translation>
-<translation id="2859741939921354763">Importar senhas para o <ph name="BRAND" /></translation>
+<translation id="2859741939921354763">Importar senhas para o <ph name="BRAND" />.</translation>
 <translation id="2860710618359053450">Mover a mandíbula para a direita</translation>
 <translation id="2861301611394761800">A atualização do sistema foi concluída. Reinicie o sistema.</translation>
 <translation id="2861402191395139055">Assinaturas de Passpoint</translation>
@@ -9365,7 +9365,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7481358317100446445">Pronto</translation>
 <translation id="748138892655239008">Restrições básicas do certificado </translation>
-<translation id="7482823403440483089">Preenchimento Automático Aprimorado</translation>
+<translation id="7482823403440483089">Preenchimento automático aprimorado</translation>
 <translation id="7483732342458943943">Este link não funciona</translation>
 <translation id="7484645889979462775">Nunca para este site</translation>
 <translation id="7484943269191249363">Você pode usar todas as chaves de acesso salvas no Gerenciador de senhas do Google neste dispositivo. Isso só precisará ser feito uma vez.</translation>
