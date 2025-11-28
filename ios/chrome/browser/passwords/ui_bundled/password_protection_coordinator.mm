@@ -27,7 +27,10 @@
 
 @end
 
-@implementation PasswordProtectionCoordinator
+@implementation PasswordProtectionCoordinator {
+  // Navigation controller for the view controller.
+  UINavigationController* _navigationController;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
@@ -43,29 +46,34 @@
   DCHECK(completion);
   self.completion = completion;
   self.viewController = [[PasswordProtectionViewController alloc] init];
-  self.viewController.showDismissBarButton = YES;
   self.viewController.subtitleString = self.warningText;
   self.viewController.actionHandler = self;
-  self.viewController.modalPresentationStyle = UIModalPresentationFormSheet;
-  self.viewController.modalInPresentation = YES;
-  [self.baseViewController presentViewController:self.viewController
+
+  self.viewController.navigationItem.rightBarButtonItem =
+      [[UIBarButtonItem alloc]
+          initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                               target:self
+                               action:@selector(dismiss)];
+
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:self.viewController];
+
+  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  _navigationController.modalInPresentation = YES;
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
 }
 
 - (void)stop {
-  [self.viewController.presentingViewController
+  [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
   self.viewController = nil;
+  _navigationController = nil;
 }
 
 #pragma mark - ConfirmationAlertActionHandler
-
-- (void)confirmationAlertDismissAction {
-  self.completion(safe_browsing::WarningAction::CLOSE);
-  [self.delegate passwordProtectionCoordinatorWantsToBeStopped:self];
-}
 
 - (void)confirmationAlertPrimaryAction {
   self.completion(safe_browsing::WarningAction::CHANGE_PASSWORD);
@@ -81,6 +89,12 @@
 
   [handler
       showSavedPasswordsSettingsFromViewController:self.baseViewController];
+}
+
+// Dismisses the sheet.
+- (void)dismiss {
+  self.completion(safe_browsing::WarningAction::CLOSE);
+  [self.delegate passwordProtectionCoordinatorWantsToBeStopped:self];
 }
 
 @end
