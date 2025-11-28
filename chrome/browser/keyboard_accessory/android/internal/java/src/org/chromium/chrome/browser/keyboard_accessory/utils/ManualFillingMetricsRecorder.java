@@ -20,7 +20,7 @@ public class ManualFillingMetricsRecorder {
     public static final String UMA_KEYBOARD_ACCESSORY_ACTION_IMPRESSION =
             "KeyboardAccessory.AccessoryActionImpression";
     public static final String UMA_KEYBOARD_ACCESSORY_ACTION_SELECTED =
-            "KeyboardAccessory.AccessoryActionSelected";
+            "KeyboardAccessory.AccessoryActionSelected2";
     public static final String UMA_KEYBOARD_ACCESSORY_TOGGLE_IMPRESSION =
             "KeyboardAccessory.AccessoryToggleImpression";
     public static final String UMA_KEYBOARD_ACCESSORY_TOGGLE_CLICKED =

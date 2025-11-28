@@ -470,7 +470,7 @@ TEST_F(ManualFillingControllerTest, LogsHistogramOnOptionSelected) {
       true, 1);
   histogram_tester.ExpectBucketCount(
       "KeyboardAccessory."
-      "AccessoryActionSelected",
+      "AccessoryActionSelected2",
       AccessoryAction::MANAGE_CREDIT_CARDS, 1);
 
   // User selects non credential field that has autofill suggestions.
@@ -486,7 +486,7 @@ TEST_F(ManualFillingControllerTest, LogsHistogramOnOptionSelected) {
       false, 1);
   histogram_tester.ExpectBucketCount(
       "KeyboardAccessory."
-      "AccessoryActionSelected",
+      "AccessoryActionSelected2",
       AccessoryAction::MANAGE_CREDIT_CARDS, 2);
 
   // User selects a credential field.
@@ -500,6 +500,6 @@ TEST_F(ManualFillingControllerTest, LogsHistogramOnOptionSelected) {
       false, 2);
   histogram_tester.ExpectBucketCount(
       "KeyboardAccessory."
-      "AccessoryActionSelected",
+      "AccessoryActionSelected2",
       AccessoryAction::MANAGE_CREDIT_CARDS, 3);
 }
