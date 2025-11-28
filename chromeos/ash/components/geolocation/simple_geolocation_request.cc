@@ -511,7 +511,8 @@ void SimpleGeolocationRequest::OnSimpleURLLoaderComplete(
   RecordUmaResponseCode(response_code);
 
   const bool parse_success = GetGeolocationFromResponse(
-      is_success, response_code, response_body.value_or(std::string()),
+      is_success, response_code,
+      std::move(response_body).value_or(std::string()),
       simple_url_loader_->GetFinalURL(), &position_);
   // Note that SimpleURLLoader doesn't return a body for non-2xx
   // responses by default.

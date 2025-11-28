@@ -21,6 +21,7 @@
 #include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
@@ -292,7 +293,7 @@ void LogServerResponseError(const std::string& error_response, bool is_setup) {
 
 DemoLoginController::ResultCode GetDemoAccountRequestResult(
     network::SimpleURLLoader* url_loader,
-    std::optional<std::string> response_body) {
+    base::optional_ref<std::string> response_body) {
   if (url_loader->NetError() != net::OK) {
     // TODO(crbug.com/364214790):  Handle any errors (maybe earlier for net
     // connection error) and fallback to MGS.

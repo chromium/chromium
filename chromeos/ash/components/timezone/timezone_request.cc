@@ -436,9 +436,10 @@ void TimeZoneRequest::OnSimpleLoaderComplete(
   RecordUmaResponseCode(response_code);
 
   std::string data;
-  std::unique_ptr<TimeZoneResponseData> timezone = GetTimeZoneFromResponse(
-      is_success, response_code, response_body.value_or(std::string()),
-      url_loader_->GetFinalURL());
+  std::unique_ptr<TimeZoneResponseData> timezone =
+      GetTimeZoneFromResponse(is_success, response_code,
+                              std::move(response_body).value_or(std::string()),
+                              url_loader_->GetFinalURL());
   const bool server_error =
       !is_success || (response_code >= 500 && response_code < 600);
   url_loader_.reset();

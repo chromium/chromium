@@ -197,7 +197,7 @@ PluginVmLicenseChecker::CreateResourceRequest(std::string_view access_token) {
 void PluginVmLicenseChecker::HandleStringResponse(
     std::optional<std::string> response_body) {
   if (!simple_url_loader_->ResponseInfo() ||
-      !simple_url_loader_->ResponseInfo()->headers) {
+      !simple_url_loader_->ResponseInfo()->headers || !response_body) {
     LOG(ERROR) << "Did not recieve a response from server while attempting to"
                << " validate the license.";
     std::move(callback_).Run(false);
