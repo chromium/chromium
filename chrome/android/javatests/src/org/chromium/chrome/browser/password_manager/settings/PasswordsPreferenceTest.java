@@ -51,7 +51,6 @@ import java.io.IOException;
         reason =
                 "The tests can't be batched because the functionality under test is set up during"
                         + " Chrome start up.")
-@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class PasswordsPreferenceTest {
     private static final int RENDER_TEST_REVISION = 2;
 
@@ -84,6 +83,7 @@ public class PasswordsPreferenceTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testPasswordManagerAvailableNoSubtitle() throws IOException {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
         when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
@@ -100,6 +100,7 @@ public class PasswordsPreferenceTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testPwmStoppedWorkingSubtitle() throws IOException {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
         when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
@@ -117,6 +118,7 @@ public class PasswordsPreferenceTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testSomePasswordsNotAccessibleSubtitle() throws IOException {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
         File fakeCsv = File.createTempFile("passwords", null, null);
