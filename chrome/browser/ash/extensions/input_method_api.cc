@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/extensions/language_packs/language_pack_event_router.h"
 #include "chrome/browser/ash/extensions/language_packs/language_packs_extensions_util.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
+#include "chrome/browser/ash/input_method/japanese/japanese_prefs_constants.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/profiles/profile.h"
@@ -373,11 +374,24 @@ ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
       Profile::FromBrowserContext(browser_context())
           ->GetPrefs()
           ->GetDict(prefs::kLanguageInputMethodSpecificSettings);
-  const base::Value* engine_result =
-      input_methods.FindByDottedPath(params->engine_id);
+  const base::DictValue* engine_result =
+      input_methods.FindDictByDottedPath(params->engine_id);
   base::Value result;
-  if (engine_result)
-    result = engine_result->Clone();
+
+  if (engine_result) {
+    base::DictValue modified_engine_result = engine_result->Clone();
+
+    // For Japanese IME, internal use only. Hyphen in name would complicate API.
+    modified_engine_result.Remove(
+        ash::input_method::kJpPrefMetadataOptionsSource);
+
+    // For Japanese IME, obsolete no-longer-used, hence excluded in API specs.
+    modified_engine_result.Remove(
+        ash::input_method::kJpPrefAutomaticallySendStatisticsToGoogle);
+
+    result = base::Value(std::move(modified_engine_result));
+  }
+
   return RespondNow(WithArguments(std::move(result)));
 }
 
