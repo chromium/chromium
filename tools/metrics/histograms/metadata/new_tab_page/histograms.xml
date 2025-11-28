@@ -496,6 +496,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Customization.Theme.ChromeColor.TurnOnDailyRefresh"
+    enum="BooleanEnabled" expires_after="2026-05-28">
+  <owner>hanxi@chromium.org</owner>
+  <owner>yyanting@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records whether the user toggles on or off daily refresh for Chrome Colors.
+    This metric is logged when the Chrome Colors bottom sheet is closed. This
+    metric is logged on Android only.
+  </summary>
+</histogram>
+
 <histogram
     name="NewTabPage.Customization.Theme.ThemeCollection.CollectionSelected"
     enum="NTPCollectionId" expires_after="2026-05-17">

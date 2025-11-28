@@ -79,6 +79,10 @@ public class NtpCustomizationMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_THEME_CHROME_COLOR_ID = HISTOGRAM_THEME_CHROME_COLOR + ".Click";
 
+    @VisibleForTesting
+    static final String HISTOGRAM_CHROME_COLOR_TURN_ON_DAILY_REFRESH =
+            HISTOGRAM_THEME_CHROME_COLOR + ".TurnOnDailyRefresh";
+
     /**
      * Records the type of theme selected for the New Tab Page background. This is logged once on
      * cold startup.
@@ -221,5 +225,15 @@ public class NtpCustomizationMetricsUtils {
     public static void recordChromeColorId(@NtpThemeColorId int themeColorId) {
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_THEME_CHROME_COLOR_ID, themeColorId, NtpThemeColorId.NUM_ENTRIES);
+    }
+
+    /**
+     * Records whether the daily refresh for Chrome Colors is turned on or off.
+     *
+     * @param isTurnedOn Whether daily refresh for Chrome Colors is turned on.
+     */
+    public static void recordChromeColorTurnOnDailyRefresh(boolean isTurnedOn) {
+        RecordHistogram.recordBooleanHistogram(
+                HISTOGRAM_CHROME_COLOR_TURN_ON_DAILY_REFRESH, isTurnedOn);
     }
 }

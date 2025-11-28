@@ -200,6 +200,63 @@ public class NtpChromeColorsCoordinatorUnitTest {
     }
 
     @Test
+    public void testDestroy_logMetricsWithDailyRefreshToggledOn() {
+        OnCheckedChangeListener dailyRefreshSwitchChangeListener =
+                mPropertyModel.get(
+                        NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER);
+        assertNotNull(dailyRefreshSwitchChangeListener);
+        assertFalse(
+                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
+
+        dailyRefreshSwitchChangeListener.onCheckedChanged(null, true);
+
+        String histogramName = "NewTabPage.Customization.Theme.ChromeColor.TurnOnDailyRefresh";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        mCoordinator.destroy();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testDestroy_logMetricsWithDailyRefreshToggledOff() {
+        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
+        createCoordinator();
+        OnCheckedChangeListener dailyRefreshSwitchChangeListener =
+                mPropertyModel.get(
+                        NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER);
+        assertNotNull(dailyRefreshSwitchChangeListener);
+        assertTrue(NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
+
+        dailyRefreshSwitchChangeListener.onCheckedChanged(null, false);
+
+        String histogramName = "NewTabPage.Customization.Theme.ChromeColor.TurnOnDailyRefresh";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        mCoordinator.destroy();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testDestroy_logMetricsWithDailyRefreshToggledMultipleTimes() {
+        OnCheckedChangeListener dailyRefreshSwitchChangeListener =
+                mPropertyModel.get(
+                        NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER);
+        assertNotNull(dailyRefreshSwitchChangeListener);
+        assertFalse(
+                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
+
+        dailyRefreshSwitchChangeListener.onCheckedChanged(null, true);
+        dailyRefreshSwitchChangeListener.onCheckedChanged(null, false);
+        dailyRefreshSwitchChangeListener.onCheckedChanged(null, true);
+
+        String histogramName = "NewTabPage.Customization.Theme.ChromeColor.TurnOnDailyRefresh";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        mCoordinator.destroy();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testColorGridRecyclerView() {
         NtpChromeColorGridRecyclerView gridRecyclerView =
                 new NtpChromeColorGridRecyclerView(mContext, null);

@@ -245,4 +245,18 @@ public class NtpCustomizationMetricsUtilsUnitTest {
             histogramWatcher.assertExpected();
         }
     }
+
+    @Test
+    public void testRecordChromeColorTurnOnDailyRefresh() {
+        String histogramName = "NewTabPage.Customization.Theme.ChromeColor.TurnOnDailyRefresh";
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        NtpCustomizationMetricsUtils.recordChromeColorTurnOnDailyRefresh(true);
+        histogramWatcher.assertExpected();
+
+        histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        NtpCustomizationMetricsUtils.recordChromeColorTurnOnDailyRefresh(false);
+        histogramWatcher.assertExpected();
+    }
 }

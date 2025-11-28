@@ -52,6 +52,8 @@ public class NtpChromeColorsCoordinator {
     private final int mSpacing;
     private final Runnable mOnChromeColorSelectedCallback;
     private final @Nullable NtpThemeColorInfo mPrimaryColorInfo;
+    private boolean mIsDailyRefreshToggled;
+    private boolean mIsDailyRefreshEnabled;
     private @Nullable NtpThemeColorInfo mLastClickedColorInfo;
     private @Nullable @ColorInt Integer mTypedBackgroundColor;
     private @Nullable @ColorInt Integer mTypedPrimaryColor;
@@ -89,9 +91,10 @@ public class NtpChromeColorsCoordinator {
         mPropertyModel.set(
                 NtpChromeColorsProperties.LEARN_MORE_BUTTON_CLICK_LISTENER,
                 this::handleLearnMoreClick);
+        mIsDailyRefreshEnabled =
+                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference();
         mPropertyModel.set(
-                NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED,
-                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
+                NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED, mIsDailyRefreshEnabled);
         mPropertyModel.set(
                 NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER,
                 this::onDailyRefreshSwitchToggled);
@@ -124,6 +127,8 @@ public class NtpChromeColorsCoordinator {
     }
 
     private void onDailyRefreshSwitchToggled(CompoundButton buttonView, boolean isChecked) {
+        mIsDailyRefreshToggled = true;
+        mIsDailyRefreshEnabled = isChecked;
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(isChecked);
     }
 
@@ -183,6 +188,11 @@ public class NtpChromeColorsCoordinator {
     public void destroy() {
         if (mLastClickedColorInfo != null) {
             NtpCustomizationMetricsUtils.recordChromeColorId(mLastClickedColorInfo.id);
+        }
+
+        if (mIsDailyRefreshToggled) {
+            NtpCustomizationMetricsUtils.recordChromeColorTurnOnDailyRefresh(
+                    mIsDailyRefreshEnabled);
         }
 
         mPropertyModel.set(NtpChromeColorsProperties.BACK_BUTTON_CLICK_LISTENER, null);
