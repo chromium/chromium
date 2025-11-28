@@ -86,8 +86,7 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
 
   source->AddBoolean(
       "enableBrowsingHistoryActorIntegrationM1",
-      base::FeatureList::IsEnabled(
-          browsing_data::features::kBrowsingHistoryActorIntegrationM1));
+      browsing_data::features::IsBrowsingHistoryActorIntegrationM1Enabled());
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);

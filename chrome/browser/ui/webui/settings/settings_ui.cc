@@ -611,8 +611,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(browsing_data::features::kDbdRevampDesktop));
   html_source->AddBoolean(
       "enableBrowsingHistoryActorIntegrationM1",
-      base::FeatureList::IsEnabled(
-          browsing_data::features::kBrowsingHistoryActorIntegrationM1));
+      browsing_data::features::IsBrowsingHistoryActorIntegrationM1Enabled());
 
   html_source->AddBoolean(
       "enableSupportForHomeAndWork",
