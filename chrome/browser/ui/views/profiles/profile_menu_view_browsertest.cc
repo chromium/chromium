@@ -2328,6 +2328,51 @@ PROFILE_MENU_CLICK_TEST_WITH_FEATURE_STATES_F(
   RunTest();
 }
 
+// List of actionable items in the correct order as they appear in the menu with
+// Passkey unlock error. If a new button is added to the menu, it should also be
+// added to this list.
+constexpr std::array
+    kActionableItems_PasskeyUnlockError_WhenUnconsentedAccountSignedIn = {
+        ProfileMenuViewBase::ActionableItem::kPasskeyUnlockButton,
+        ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+        ProfileMenuViewBase::ActionableItem::kAccountSettingsButton,
+        ProfileMenuViewBase::ActionableItem::kSignoutButton,
+        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+        // The first button is added again to finish the cycle and test that
+        // there are no other buttons at the end.
+        ProfileMenuViewBase::ActionableItem::kPasskeyUnlockButton};
+
+PROFILE_MENU_CLICK_TEST_WITH_FEATURE_STATES_F(
+    ProfileMenuClickTestWithPasskeyError,
+    kActionableItems_PasskeyUnlockError_WhenUnconsentedAccountSignedIn,
+    ProfileMenuClickTest_PasskeyUnlockError_WhenUnconsentedAccountSignedIn,
+    /*enabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {device::kPasskeyUnlockErrorUi, device::kPasskeyUnlockManager,
+         device::kWebAuthnOpportunisticRetrieval,
+         // Enabling the feature `ReplaceSyncPromosWithSignInPromos` because it
+         // will be fully rolled-out it soon.
+         syncer::kReplaceSyncPromosWithSignInPromos}),
+    /*disabled_features=*/{}) {
+  // Ensuring that we are in the state when sync-the-transport is enabled but
+  // sync-the-feature is not enabled. In this case we can already display a
+  // passkey promo.
+  secondary_account_helper::SignInUnconsentedAccount(
+      GetProfile(), &test_url_loader_factory_, "user@example.com");
+  UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
+  // Check that the setup was successful.
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  RunTest();
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 class ProfileMenuClickTestWebApp : public ProfileMenuClickTest {
  protected:
