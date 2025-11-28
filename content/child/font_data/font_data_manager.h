@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_FONT_DATA_FONT_DATA_MANAGER_H_
-#define CONTENT_RENDERER_FONT_DATA_FONT_DATA_MANAGER_H_
+#ifndef CONTENT_CHILD_FONT_DATA_FONT_DATA_MANAGER_H_
+#define CONTENT_CHILD_FONT_DATA_FONT_DATA_MANAGER_H_
 
 #include <list>
 #include <map>
@@ -34,15 +34,14 @@ class MemoryMappedFile;
 
 namespace font_data_service {
 
-// Replaces the default font manager in the renderer.
+// Replaces the default font manager in the child.
 // Does the following:
-//     - Instantiate renderer -> browser connection.
+//     - Instantiate child -> browser connection.
 //     - Request font from the browser based on family name and font style.
 //     - Convert shared memory region to a SkTypeface and cache the results.
 //
-// Instantiated in the renderer on startup. Font fallback mechanism is still in
-// place/has not changed. Only runs on renderers for TopChrome WebUI on Windows
-// as part of an experiment: see crbug.com/335680565 for more details.
+// Instantiated in the child on startup. Font fallback mechanism is still in
+// place/has not changed.
 //
 // The methods of this class (as imposed by blink requirements) may be called on
 // any thread.
@@ -160,16 +159,16 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
       mapped_regions_ GUARDED_BY(mapped_regions_lock_);
 
   // Cache of the memory mapped files to ensure the mapping lives.
-  // The key is an ID received from the renderer along with the handle that
+  // The key is an ID received from the child along with the handle that
   // uniquely identifies the font file. If 2 matching requests resolve to fonts
-  // that are contained within the same file, the renderer would receive 2
+  // that are contained within the same file, the child would receive 2
   // different handles to the underlying file but each of those requests would
   // receive the same ID. This is used to ensure we reuse an already mapped
   // file if possible rather than creating a new one for each match that
   // resolves to the same file on disk. It's crucial that a mapped file from
   // this map is never unmapped or replaced, as we have already given out
   // typeface objects that reference them which can be used for the entire
-  // lifetime of the renderer process.
+  // lifetime of the child process.
   mutable absl::flat_hash_map<uint64_t, std::unique_ptr<base::MemoryMappedFile>>
       mapped_files_ GUARDED_BY(mapped_files_lock_);
 
@@ -190,4 +189,4 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
 
 }  // namespace font_data_service
 
-#endif  // CONTENT_RENDERER_FONT_DATA_FONT_DATA_MANAGER_H_
+#endif  // CONTENT_CHILD_FONT_DATA_FONT_DATA_MANAGER_H_

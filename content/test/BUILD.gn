@@ -3513,7 +3513,7 @@ test("content_unittests") {
 
   # Platforms with FontDataManager enabled
   if (is_win || is_linux) {
-    sources += [ "../renderer/font_data/font_data_manager_unittest.cc" ]
+    sources += [ "../child/font_data/font_data_manager_unittest.cc" ]
     deps += [ "//components/services/font_data/public/mojom" ]
   }
   if (is_win) {

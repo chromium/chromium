@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/font_data/font_data_manager.h"
+#include "content/child/font_data/font_data_manager.h"
 
 #include <memory>
 #include <string>
@@ -19,7 +19,6 @@
 #include "base/trace_event/trace_event.h"
 #include "content/common/features.h"
 #include "content/public/child/child_thread.h"
-#include "content/public/renderer/render_thread.h"
 #if BUILDFLAG(IS_WIN)
 #include "third_party/skia/src/ports/SkTypeface_win_dw.h"  // nogncheck
 #endif
@@ -76,7 +75,6 @@ FontDataManager::FontDataManager()
       custom_fnt_mgr_(SkFontMgr_New_Custom_Empty()),
 #endif
       main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-  CHECK(content::RenderThread::IsMainThread());
 }
 
 FontDataManager::~FontDataManager() = default;
@@ -292,6 +290,7 @@ void FontDataManager::SetFontServiceForTesting(
 }
 
 size_t FontDataManager::GetMappedFilesCountForTesting() const {
+  base::AutoLock locked(mapped_files_lock_);
   return mapped_files_.size();
 }
 

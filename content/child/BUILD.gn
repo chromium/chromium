@@ -152,6 +152,18 @@ target(link_target_type, "child") {
     libs = [ "dwrite.lib" ]
   }
 
+  if (is_win || is_linux) {
+    sources += [
+      "font_data/font_data_manager.cc",
+      "font_data/font_data_manager.h",
+    ]
+    deps += [
+      # For font_data_manager
+      "//components/services/font_data/public/mojom",
+      "//third_party:freetype_buildflags",
+    ]
+  }
+
   if (is_mac) {
     sources += [
       "child_process_sandbox_support_impl_mac.cc",
