@@ -207,7 +207,7 @@ void ChromeWebViewPermissionHelperDelegate::
     if (audio_denied || video_denied) {
       std::move(callback).Run(
           blink::mojom::StreamDevicesSet(),
-          blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+          blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
           std::unique_ptr<content::MediaStreamUI>());
       return;
     }
@@ -232,10 +232,10 @@ void ChromeWebViewPermissionHelperDelegate::
         bool allow,
         const std::string& user_input) {
   if (!allow) {
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
-        std::unique_ptr<content::MediaStreamUI>());
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            blink::mojom::MediaStreamRequestResult::
+                                PERMISSION_DENIED_BY_EMBEDDER_CONTEXT,
+                            std::unique_ptr<content::MediaStreamUI>());
     return;
   }
   MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(

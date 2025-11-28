@@ -337,6 +337,9 @@ const char* RequestResultToString(
     case blink::mojom::MediaStreamRequestResult::
         ANDROID_CANT_REQUEST_PERMISSION:
       return "ANDROID_CANT_REQUEST_PERMISSION";
+    case blink::mojom::MediaStreamRequestResult::
+        PERMISSION_DENIED_BY_EMBEDDER_CONTEXT:
+      return "PERMISSION_DENIED_BY_EMBEDDER_CONTEXT";
     case blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;  // Not a valid enum value.
   }

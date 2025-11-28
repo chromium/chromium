@@ -177,6 +177,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "STREAM_NOT_FOUND_IN_REGISTRY";
     case MediaStreamRequestResult::ANDROID_CANT_REQUEST_PERMISSION:
       return "ANDROID_CANT_REQUEST_PERMISSION";
+    case MediaStreamRequestResult::PERMISSION_DENIED_BY_EMBEDDER_CONTEXT:
+      return "PERMISSION_DENIED_BY_EMBEDDER_CONTEXT";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;
   }
@@ -335,6 +337,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
     case MediaStreamRequestResult::PERMISSION_DENIED:
     case MediaStreamRequestResult::ANDROID_CANT_REQUEST_PERMISSION:
     case MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY:
+    case MediaStreamRequestResult::PERMISSION_DENIED_BY_EMBEDDER_CONTEXT:
       return "Permission denied";
     case MediaStreamRequestResult::PERMISSION_DISMISSED:
       return "Permission dismissed";
