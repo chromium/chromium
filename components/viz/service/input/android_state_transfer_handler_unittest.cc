@@ -751,5 +751,3 @@ TEST_F(AndroidStateTransferHandlerTest,
 }
 
 }  // namespace viz
-
-DEFINE_JNI(MotionEvent)

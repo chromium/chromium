@@ -187,5 +187,3 @@ TEST_F(VizTouchStateHandlerTest, UpdateLastTransferredBackDownTimeMs) {
 
 }  // namespace
 }  // namespace viz
-
-DEFINE_JNI(MotionEvent)

@@ -325,7 +325,8 @@ def _generate_header(jni_mode,
                      *,
                      enable_definition_macros,
                      include_path_prefix,
-                     extra_includes=None):
+                     extra_includes=None,
+                     add_natives_macro_definition=True):
   user_includes = [f'{include_path_prefix}jni_zero_internal.h']
   if extra_includes:
     user_includes += extra_includes
@@ -337,12 +338,13 @@ def _generate_header(jni_mode,
   sb = common.StringBuilder()
   sb(preamble)
 
-  natives_header.natives_macro_definition(
-      sb,
-      jni_mode,
-      jni_obj,
-      gen_jni_class,
-      enable_definition_macros=enable_definition_macros)
+  if add_natives_macro_definition:
+    natives_header.natives_macro_definition(
+        sb,
+        jni_mode,
+        jni_obj,
+        gen_jni_class,
+        enable_definition_macros=enable_definition_macros)
 
   java_classes = _CollectReferencedClasses(jni_obj)
   if java_classes:
@@ -523,7 +525,8 @@ def _WriteHeaders(jni_mode,
                   include_path_prefix,
                   gen_jni_class=None,
                   enable_definition_macros=False,
-                  extra_includes=None):
+                  extra_includes=None,
+                  add_natives_macro_definition=True):
   for jni_obj, header_name in zip(jni_objs, output_names):
     output_file = os.path.join(output_dir, header_name)
     content = _generate_header(
@@ -532,7 +535,8 @@ def _WriteHeaders(jni_mode,
         gen_jni_class,
         enable_definition_macros=enable_definition_macros,
         include_path_prefix=include_path_prefix,
-        extra_includes=extra_includes)
+        extra_includes=extra_includes,
+        add_natives_macro_definition=add_natives_macro_definition)
 
     with common.atomic_output(output_file, 'w') as f:
       f.write(content)
@@ -632,4 +636,5 @@ def GenerateFromJar(parser, args, jni_mode):
                 args.output_names,
                 args.output_dir,
                 include_path_prefix=args.include_path_prefix,
-                extra_includes=args.extra_includes)
+                extra_includes=args.extra_includes,
+                add_natives_macro_definition=False)
