@@ -20,6 +20,7 @@
 #include "base/metrics/puma_histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -423,6 +424,71 @@ const TemplateURL* MaybeGetCurrentDefaultToHighlight(
   return iter->get();
 }
 
+bool MaybeRecordChoiceScreenDisplayStateInternal(
+    regional_capabilities::RegionalCapabilitiesService&
+        regional_capabilities_service,
+    const ChoiceScreenDisplayState& display_state,
+    bool is_from_cached_state) {
+  if (display_state.selected_engine_index.has_value()) {
+    if (!is_from_cached_state) {
+      // Recorded at the choice moment as it's not part of the display state
+      // that gets restricted in case of country mismatch. So don't record it
+      // from the cache.
+      RecordChoiceScreenSelectedIndex(
+          display_state.selected_engine_index.value());
+    }
+  }
+
+  if (!regional_capabilities_service.CanRecordDisplayStateForCountry(
+          display_state.country_id)) {
+    return false;
+  }
+
+  RecordChoiceScreenPositions(display_state.search_engines);
+  return true;
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PendingDisplayStateStatus)
+enum class PendingDisplayStateStatus {
+  kParseError = 0,
+  kTimedOut = 1,
+  kUploaded = 2,
+  kStayPending = 3,
+  kMaxValue = kStayPending,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:PendingChoiceScreenDisplayStateStatus)
+
+PendingDisplayStateStatus ProcessPendingChoiceScreenDisplayStateInternal(
+    regional_capabilities::RegionalCapabilitiesService&
+        regional_capabilities_service,
+    PrefService& profile_prefs) {
+  const base::Value::Dict& dict = profile_prefs.GetDict(
+      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+  std::optional<ChoiceScreenDisplayState> display_state =
+      ChoiceScreenDisplayState::FromDict(dict);
+  if (!display_state.has_value()) {
+    return PendingDisplayStateStatus::kParseError;
+  }
+
+  // Check if the obtained display state is still valid.
+  std::optional<base::Time> choice_completion_time =
+      GetChoiceScreenCompletionTimestamp(profile_prefs);
+  constexpr base::TimeDelta kDisplayStateMaxPendingDuration = base::Days(7);
+  base::TimeDelta pending_duration =
+      base::Time::Now() - choice_completion_time.value_or(base::Time::Min());
+  if (pending_duration > kDisplayStateMaxPendingDuration) {
+    return PendingDisplayStateStatus::kTimedOut;
+  }
+
+  return MaybeRecordChoiceScreenDisplayStateInternal(
+             regional_capabilities_service, *display_state,
+             /* is_from_cached_state= */ true)
+             ? PendingDisplayStateStatus::kUploaded
+             : PendingDisplayStateStatus::kStayPending;
+}
+
 }  // namespace
 
 // -- SearchEngineChoiceService::Client ---------------------------------------
@@ -754,8 +820,7 @@ void SearchEngineChoiceService::RecordChoiceMade(
 }
 
 void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
-    const ChoiceScreenDisplayState& display_state,
-    bool is_from_cached_state) {
+    const ChoiceScreenDisplayState& display_state) {
   if (!regional_capabilities_service_->IsInSearchEngineChoiceScreenRegion(
           display_state.country_id)) {
     // Tests or command line can force this, but we want to avoid polluting the
@@ -770,46 +835,28 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
   // actually triggered by a user flow, it could imply that they had to complete
   // the choice screen more than once, which is bad UX.
   // See crbug.com/390272573 for context and past debugging attempts.
-  if (!is_from_cached_state) {
-    if (!has_recorded_display_state_) {
-      CHECK(!profile_prefs_->HasPrefPath(
-          prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
-      has_recorded_display_state_ = true;
-    } else {
-      // Re-entry, we just record a histogram and let the code otherwise
-      // proceed.
-      base::UmaHistogramBoolean(
-          "Search.ChoiceDebug.UnexpectedRecordDisplayStateReentryHasCompletion",
-          GetChoiceCompletionMetadata(profile_prefs_.get()).has_value());
-    }
-  }
-
-  if (!is_from_cached_state &&
-      display_state.selected_engine_index.has_value()) {
-    RecordChoiceScreenSelectedIndex(
-        display_state.selected_engine_index.value());
-  }
-
-  if (display_state.country_id != client_->GetVariationsCountry()) {
-    // Not recording if adding position data, which can be used as a proxy for
-    // the profile country, would add new hard to control location info to a
-    // logs session.
-    if (!is_from_cached_state) {
-      // Persist the data so we can attempt to send it later.
-      RecordChoiceScreenPositionsCountryMismatch(true);
-      profile_prefs_->SetDict(
-          prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState,
-          display_state.ToDict());
-    }
-    return;
-  }
-
-  RecordChoiceScreenPositions(display_state.search_engines);
-  if (is_from_cached_state) {
-    profile_prefs_->ClearPref(
-        prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+  if (!has_recorded_display_state_) {
+    CHECK(!profile_prefs_->HasPrefPath(
+        prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
+    has_recorded_display_state_ = true;
   } else {
-    RecordChoiceScreenPositionsCountryMismatch(false);
+    // Re-entry, we just record a histogram and let the code otherwise
+    // proceed.
+    base::UmaHistogramBoolean(
+        "Search.ChoiceDebug.UnexpectedRecordDisplayStateReentryHasCompletion",
+        GetChoiceCompletionMetadata(profile_prefs_.get()).has_value());
+  }
+
+  bool record_rejected = !MaybeRecordChoiceScreenDisplayStateInternal(
+      regional_capabilities_service_.get(), display_state,
+      /* is_from_cached_state= */ false);
+  RecordChoiceScreenPositionsCountryMismatch(record_rejected);
+  if (record_rejected) {
+    // Recording was rejected, persist the data so we can attempt to send it
+    // later.
+    profile_prefs_->SetDict(
+        prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState,
+        display_state.ToDict());
   }
 }
 
@@ -885,29 +932,23 @@ void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState() {
     return;
   }
 
-  const base::Value::Dict& dict = profile_prefs_->GetDict(
-      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
-  std::optional<ChoiceScreenDisplayState> display_state =
-      ChoiceScreenDisplayState::FromDict(dict);
-  if (display_state.has_value()) {
-    // Check if the obtained display state is still valid.
-    std::optional<base::Time> completion_time =
-        GetChoiceScreenCompletionTimestamp(profile_prefs_.get());
-    constexpr base::TimeDelta kDisplayStateMaxPendingDuration = base::Days(7);
-    if (base::Time::Now() - completion_time.value_or(base::Time::Min()) >
-        kDisplayStateMaxPendingDuration) {
-      display_state = std::nullopt;
-    }
-  }
+  auto status = ProcessPendingChoiceScreenDisplayStateInternal(
+      regional_capabilities_service_.get(), profile_prefs_.get());
+  base::UmaHistogramEnumeration(
+      "Search.ChoicePrefsCheck.PendingChoiceScreenDisplayStateStatus", status);
 
-  if (!display_state.has_value()) {
-    profile_prefs_->ClearPref(
-        prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
-    return;
+  switch (status) {
+    case PendingDisplayStateStatus::kParseError:
+    case PendingDisplayStateStatus::kTimedOut:
+    case PendingDisplayStateStatus::kUploaded:
+      profile_prefs_->ClearPref(
+          prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+      return;
+    case PendingDisplayStateStatus::kStayPending:
+      // Do nothing. Processing will be attempted again next time.
+      return;
   }
-
-  MaybeRecordChoiceScreenDisplayState(display_state.value(),
-                                      /*is_from_cached_state=*/true);
+  NOTREACHED();
 }
 
 SearchEngineChoiceService::ChoiceRenewalReasons
@@ -1129,12 +1170,17 @@ void SearchEngineChoiceService::SetSavedSearchEngineBetweenGuestSessions(
   observers_.Notify(&Observer::OnSavedGuestSearchChanged);
 }
 
-// static
+void MarkSearchEngineChoiceCompletedForTesting(
+    PrefService& prefs,
+    ChoiceCompletionMetadata metadata) {
+  CHECK_IS_TEST();
+  SetChoiceCompletionMetadata(prefs, metadata);
+}
+
 void MarkSearchEngineChoiceCompletedForTesting(
     PrefService& prefs,
     regional_capabilities::Program program) {
-  CHECK_IS_TEST();
-  SetChoiceCompletionMetadata(
+  MarkSearchEngineChoiceCompletedForTesting(
       prefs, CreateChoiceCompletionMetadataWithProgram(
                  regional_capabilities::SerializeProgram(program)));
 }
