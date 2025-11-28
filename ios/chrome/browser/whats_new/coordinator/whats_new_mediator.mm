@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/shared/coordinator/utils/credential_provider_settings_utils.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
@@ -70,6 +71,13 @@
       // Handles actions that open Chrome Password Manager.
       [self.settingsHandler showSavedPasswordsSettingsFromViewController:nil];
       break;
+    case WhatsNewPrimaryAction::kNewTab:
+      // Dismiss the What's New before opening a new tab.
+      [self.whatsNewHandler dismissWhatsNew];
+      // Handles actions that open a new tab.
+      [self openNewTabWithUrl:GURL(kChromeUINewTabURL)
+               transitionType:ui::PAGE_TRANSITION_TYPED];
+      break;
     case WhatsNewPrimaryAction::kNoAction:
     case WhatsNewPrimaryAction::kError:
       NOTREACHED();
@@ -78,9 +86,8 @@
 
 - (void)didTapLearnMoreButton:(const GURL&)learnMoreURL
                          type:(WhatsNewType)type {
-  UrlLoadParams params = UrlLoadParams::InNewTab(learnMoreURL);
-  params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-  self.urlLoadingAgent->Load(params);
+  [self openNewTabWithUrl:learnMoreURL
+           transitionType:ui::PAGE_TRANSITION_AUTO_BOOKMARK];
   base::UmaHistogramEnumeration("IOS.WhatsNew.LearnMoreTapped", type);
 }
 
@@ -139,6 +146,14 @@
 - (void)updateConsumer {
   [self.consumer setWhatsNewProperties:[self whatsNewChromeTipItems]
                           featureItems:[self whatsNewFeatureItems]];
+}
+
+// Opens a new tab with the given URL and transition type.
+- (void)openNewTabWithUrl:(const GURL&)url
+           transitionType:(ui::PageTransition)transitionType {
+  UrlLoadParams params = UrlLoadParams::InNewTab(url);
+  params.web_params.transition_type = transitionType;
+  self.urlLoadingAgent->Load(params);
 }
 
 @end

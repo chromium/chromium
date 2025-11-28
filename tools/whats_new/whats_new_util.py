@@ -93,6 +93,8 @@ def _GetPrimaryAction(action: str) -> int:
         return 6
     if action == 'Chrome Password Manager':
         return 7
+    if action == 'New Tab':
+        return 8
     if action == 'None':
         return 0
     return 0

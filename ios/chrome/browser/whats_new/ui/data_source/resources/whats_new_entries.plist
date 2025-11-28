@@ -35,7 +35,7 @@
 				<string>IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_INSTRUCTIONS_STEP_3</string>
 			</array>
 			<key>PrimaryAction</key>
-			<integer>3</integer>
+			<integer>8</integer>
 			<key>LearnMoreUrlString</key>
 			<string>https://support.google.com/chrome/answer/2364824?hl=en&amp;co=GENIE.Platform%3DiOS </string>
 		</dict>
@@ -91,7 +91,7 @@
 			<key>IconImageName</key>
 			<string>platter.filled.bottom.iphone</string>
 			<key>IconBackgroundColor</key>
-			<string>blue</string>
+			<string>green</string>
 			<key>IsSymbol</key>
 			<true/>
 			<key>IsSystemSymbol</key>

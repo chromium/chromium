@@ -79,6 +79,8 @@ NSString* GetPrimaryActionTitle(WhatsNewPrimaryAction action) {
       return l10n_util::GetNSString(IDS_IOS_OPEN_PASSWORD_MANAGER);
     case WhatsNewPrimaryAction::kLens:
       return l10n_util::GetNSString(IDS_IOS_GO_TO_LENS);
+    case WhatsNewPrimaryAction::kNewTab:
+      return l10n_util::GetNSString(IDS_IOS_OPEN_NEW_TAB);
     case WhatsNewPrimaryAction::kNoAction:
     case WhatsNewPrimaryAction::kError:
       return nil;
