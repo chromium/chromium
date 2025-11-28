@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
@@ -164,6 +165,11 @@ class LocationBarCoordinatorTest : public PlatformTest {
     id mock_bwg_handler = OCMProtocolMock(@protocol(BWGCommands));
     [dispatcher startDispatchingToTarget:mock_bwg_handler
                              forProtocol:@protocol(BWGCommands)];
+
+    id mock_browser_coordinator_handler =
+        OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+    [dispatcher startDispatchingToTarget:mock_browser_coordinator_handler
+                             forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     delegate_ = [[TestOmniboxFocusDelegate alloc] init];
 
