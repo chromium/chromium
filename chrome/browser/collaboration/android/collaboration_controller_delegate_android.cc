@@ -272,3 +272,5 @@ CollaborationControllerDelegateAndroid::GetJavaObject() {
 }
 
 }  // namespace collaboration
+
+DEFINE_JNI(CollaborationControllerDelegateImpl)

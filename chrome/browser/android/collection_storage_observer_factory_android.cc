@@ -39,3 +39,5 @@ CollectionStorageObserverFactoryAndroid::Build(
 }
 
 }  // namespace tabs
+
+DEFINE_JNI(CollectionStorageObserverFactory)

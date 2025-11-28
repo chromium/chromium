@@ -118,3 +118,5 @@ static jlong JNI_QuickDeleteBridge_Init(
   QuickDeleteBridge* bridge = new QuickDeleteBridge(env, obj, profile);
   return reinterpret_cast<intptr_t>(bridge);
 }
+
+DEFINE_JNI(QuickDeleteBridge)

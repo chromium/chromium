@@ -190,3 +190,5 @@ int LocaleTemplateUrlLoader::GetDesignatedSearchEngineForChina() {
 }
 
 LocaleTemplateUrlLoader::~LocaleTemplateUrlLoader() = default;
+
+DEFINE_JNI(LocaleTemplateUrlLoader)

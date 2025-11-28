@@ -115,3 +115,5 @@ static jlong JNI_OverscrollSceneLayer_Init(
 }
 
 }  // namespace android
+
+DEFINE_JNI(OverscrollSceneLayer)

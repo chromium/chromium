@@ -61,3 +61,5 @@ static jlong JNI_TrustedCdn_Init(JNIEnv* env,
                                  const JavaParamRef<jobject>& obj) {
   return reinterpret_cast<intptr_t>(new TrustedCdn(env, obj));
 }
+
+DEFINE_JNI(TrustedCdn)

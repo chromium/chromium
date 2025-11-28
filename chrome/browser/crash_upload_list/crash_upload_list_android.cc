@@ -139,3 +139,5 @@ void CrashUploadListAndroid::LoadUnsuccessfulUploadList(
         id, info.creation_time, upload_state, file_size.value()));
   }
 }
+
+DEFINE_JNI(MinidumpUploadServiceImpl)

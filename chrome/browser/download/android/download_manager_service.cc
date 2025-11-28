@@ -696,3 +696,7 @@ static jboolean JNI_DownloadManagerService_IsSupportedMimeType(
     std::string& mime_type) {
   return blink::IsSupportedMimeType(mime_type);
 }
+
+DEFINE_JNI(DownloadItem)
+DEFINE_JNI(DownloadManagerService)
+DEFINE_JNI(DownloadInfo)

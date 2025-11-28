@@ -60,3 +60,5 @@ static jlong JNI_TabBrowserControlsConstraintsHelper_Init(
   return reinterpret_cast<intptr_t>(
       new TabBrowserControlsConstraintsHelper(env, obj));
 }
+
+DEFINE_JNI(TabBrowserControlsConstraintsHelper)

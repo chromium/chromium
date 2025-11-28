@@ -664,3 +664,5 @@ static jlong JNI_TabStripSceneLayer_Init(JNIEnv* env,
 }
 
 }  // namespace android
+
+DEFINE_JNI(TabStripSceneLayer)

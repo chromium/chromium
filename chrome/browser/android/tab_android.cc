@@ -882,3 +882,5 @@ static void JNI_TabImpl_Init(JNIEnv* env,
   // This will automatically bind to the Java object and pass ownership there.
   new TabAndroid(env, obj, profile, id);
 }
+
+DEFINE_JNI(TabImpl)

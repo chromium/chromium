@@ -53,3 +53,5 @@ void PriceTrackingNotificationBridge::OnNotificationPayload(
   Java_PriceTrackingNotificationBridge_showNotification(
       env, java_obj_, base::android::ToJavaByteArray(env, payload.value()));
 }
+
+DEFINE_JNI(PriceTrackingNotificationBridge)

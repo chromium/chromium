@@ -49,3 +49,7 @@ JNI_SubKeyRequesterFactory_GetInstance(JNIEnv* env) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(SubKeyRequesterFactory)
+#endif

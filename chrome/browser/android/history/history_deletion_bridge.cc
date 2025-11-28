@@ -70,3 +70,5 @@ void HistoryDeletionBridge::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
   scoped_history_service_observer_.Reset();
 }
+
+DEFINE_JNI(HistoryDeletionBridge)

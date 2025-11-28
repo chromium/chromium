@@ -99,3 +99,5 @@ static jlong JNI_ContextualSearchContext_Init(
       new NativeContextualSearchContext(env, obj);
   return reinterpret_cast<intptr_t>(context);
 }
+
+DEFINE_JNI(ContextualSearchContext)

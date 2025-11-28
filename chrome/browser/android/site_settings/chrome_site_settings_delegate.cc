@@ -88,3 +88,5 @@ static void JNI_ChromeSiteSettingsDelegate_RevokeFileSystemAccessGrant(
                          base::FilePath(file));
   }
 }
+
+DEFINE_JNI(ChromeSiteSettingsDelegate)

@@ -127,3 +127,5 @@ TEST_F(TabAndroidTest, TabGroupTabCollectionParent) {
 
   EXPECT_EQ(tab_group_id, *(tab_android_->GetGroup()));
 }
+
+DEFINE_JNI(TabAndroidTestHelper)

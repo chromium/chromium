@@ -53,3 +53,5 @@ void DownloadManagerBridge::RemoveCompletedDownload(
   Java_DownloadManagerBridge_removeCompletedDownload(
       env, download->GetGuid(), download->GetFileExternallyRemoved());
 }
+
+DEFINE_JNI(DownloadManagerBridge)

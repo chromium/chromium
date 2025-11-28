@@ -60,3 +60,5 @@ void SetDict(PrefService* pref_service,
 }
 
 }  // namespace dict_pref_backup_serializer
+
+DEFINE_JNI(DictPrefBackupSerializer)

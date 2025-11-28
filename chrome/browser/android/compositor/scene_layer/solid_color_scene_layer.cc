@@ -38,3 +38,5 @@ static jlong JNI_SolidColorSceneLayer_Init(
 }
 
 }  // namespace android
+
+DEFINE_JNI(SolidColorSceneLayer)

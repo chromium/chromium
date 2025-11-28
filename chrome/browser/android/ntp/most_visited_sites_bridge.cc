@@ -312,3 +312,6 @@ static jlong JNI_MostVisitedSitesBridge_Init(JNIEnv* env,
       new MostVisitedSitesBridge(profile, enable_custom_links);
   return reinterpret_cast<intptr_t>(most_visited_sites);
 }
+
+DEFINE_JNI(MostVisitedSitesBridge)
+DEFINE_JNI(MostVisitedSites)

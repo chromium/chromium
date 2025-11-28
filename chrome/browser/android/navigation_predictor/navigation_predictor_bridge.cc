@@ -80,3 +80,5 @@ static void JNI_NavigationPredictorBridge_OnPause(JNIEnv* env,
     search_engine_preconnector->StopPreconnecting();
   }
 }
+
+DEFINE_JNI(NavigationPredictorBridge)

@@ -33,3 +33,5 @@ ChromeBackgroundTaskFactory::GetNativeBackgroundTaskFromTaskId(int task_id) {
   }
   return nullptr;
 }
+
+DEFINE_JNI(ChromeBackgroundTaskFactory)

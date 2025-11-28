@@ -119,3 +119,5 @@ static jlong JNI_ScrollingBottomViewSceneLayer_Init(
 }
 
 }  // namespace android
+
+DEFINE_JNI(ScrollingBottomViewSceneLayer)

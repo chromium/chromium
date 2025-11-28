@@ -232,3 +232,5 @@ void WebApkInstallService::ShowInstallFailedNotification(
       env, notification_id.spec(), short_name, url.spec(), java_primary_icon,
       is_primary_icon_maskable, static_cast<int>(result));
 }
+
+DEFINE_JNI(WebApkInstallService)

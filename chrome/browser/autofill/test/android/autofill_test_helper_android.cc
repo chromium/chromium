@@ -199,3 +199,5 @@ static void JNI_AutofillTestHelper_AddEwallet(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillTestHelper)

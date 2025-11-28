@@ -41,3 +41,5 @@ static void JNI_TrackerFactory_SetTestingFactory(
                    &CreateWrapperTrackerFactory,
                    base::android::ScopedJavaGlobalRef<jobject>(jtracker)));
 }
+
+DEFINE_JNI(TrackerFactory)

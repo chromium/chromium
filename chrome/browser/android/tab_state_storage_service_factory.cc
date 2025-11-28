@@ -107,3 +107,5 @@ TabStateStorageServiceFactory::BuildServiceInstanceForBrowserContext(
 }
 
 }  // namespace tabs
+
+DEFINE_JNI(TabStateStorageServiceFactory)

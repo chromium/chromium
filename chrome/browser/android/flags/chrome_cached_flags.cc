@@ -22,3 +22,5 @@ bool IsJavaDrivenFeatureEnabled(const base::Feature& feature) {
 }
 
 }  // namespace chrome::android
+
+DEFINE_JNI(ChromeCachedFlags)

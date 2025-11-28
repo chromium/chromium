@@ -65,3 +65,5 @@ static int JNI_PolicyAuditor_GetCertificateFailure(
   }
   return NONE;
 }
+
+DEFINE_JNI(PolicyAuditor)

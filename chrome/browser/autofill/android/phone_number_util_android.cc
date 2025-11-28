@@ -101,3 +101,5 @@ static jboolean JNI_PhoneNumberUtil_IsPossibleNumber(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(PhoneNumberUtil)

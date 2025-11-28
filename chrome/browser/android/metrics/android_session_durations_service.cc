@@ -254,3 +254,5 @@ JNI_AndroidSessionDurationsServiceState_RestoreAndroidSessionDurationsServiceSta
   duration_service->RestoreIncognitoSession(session_start_time,
                                             last_reported_duration);
 }
+
+DEFINE_JNI(AndroidSessionDurationsServiceState)

@@ -44,3 +44,5 @@ StorageRestoreOrchestratorFactoryAndroid::Build(
 }
 
 }  // namespace tabs
+
+DEFINE_JNI(StorageRestoreOrchestratorFactory)

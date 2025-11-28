@@ -31,3 +31,5 @@ bool UrlFilterBridge::MatchesUrl(JNIEnv* env,
   GURL url(url_spec);
   return url_filter_.Run(url);
 }
+
+DEFINE_JNI(UrlFilterBridge)

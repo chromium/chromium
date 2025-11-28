@@ -23,3 +23,5 @@ static jboolean JNI_IntentHandler_IsCorsSafelistedHeader(
 
 }  // namespace android
 }  // namespace chrome
+
+DEFINE_JNI(IntentHandler)

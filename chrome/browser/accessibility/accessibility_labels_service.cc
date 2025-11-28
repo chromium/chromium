@@ -314,3 +314,7 @@ static void JNI_ImageDescriptionsController_GetImageDescriptionsOnce(
       });
 }
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(ImageDescriptionsController)
+#endif

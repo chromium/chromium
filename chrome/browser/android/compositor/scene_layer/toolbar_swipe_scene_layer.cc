@@ -82,3 +82,5 @@ static jlong JNI_ToolbarSwipeSceneLayer_Init(
 }
 
 }  // namespace android
+
+DEFINE_JNI(ToolbarSwipeSceneLayer)

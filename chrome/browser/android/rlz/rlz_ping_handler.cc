@@ -168,3 +168,5 @@ static void JNI_RlzPingHandler_StartPing(
 
 }  // namespace android
 }  // namespace chrome
+
+DEFINE_JNI(RlzPingHandler)

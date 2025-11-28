@@ -33,3 +33,5 @@ static jboolean JNI_ComposeplateUtils_IsAimEntrypointLFFEligible(
       chrome::android::kAndroidComposeplateLFFAllLocales,
       chrome::android::kAndroidComposeplateLFF);
 }
+
+DEFINE_JNI(ComposeplateUtils)

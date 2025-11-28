@@ -156,3 +156,5 @@ void ShortcutHelper::SetForceWebApkUpdate(const std::string& id) {
   Java_ShortcutHelper_setForceWebApkUpdate(base::android::AttachCurrentThread(),
                                            id);
 }
+
+DEFINE_JNI(ShortcutHelper)

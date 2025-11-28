@@ -24,3 +24,5 @@ static jboolean JNI_BluetoothBridge_IsWebContentsScanningForBluetoothDevices(
   return web_contents->IsCapabilityActive(
       content::WebContentsCapabilityType::kBluetoothScanning);
 }
+
+DEFINE_JNI(BluetoothBridge)

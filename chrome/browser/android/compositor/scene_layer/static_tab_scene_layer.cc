@@ -122,3 +122,5 @@ static jlong JNI_StaticTabSceneLayer_Init(JNIEnv* env,
 }
 
 }  // namespace android
+
+DEFINE_JNI(StaticTabSceneLayer)

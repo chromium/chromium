@@ -311,3 +311,5 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
       base::android::ToJavaArrayOfStringArray(env, shortcuts),
       base::android::ToJavaArrayOfByteArray(env, shortcut_icon_data));
 }
+
+DEFINE_JNI(WebApkUpdateDataFetcher)

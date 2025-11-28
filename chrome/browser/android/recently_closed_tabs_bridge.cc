@@ -424,3 +424,6 @@ static jlong JNI_RecentlyClosedBridge_Init(JNIEnv* env,
 }
 
 }  // namespace recent_tabs
+
+DEFINE_JNI(RecentlyClosedBridge)
+DEFINE_JNI(RecentlyClosedTab)

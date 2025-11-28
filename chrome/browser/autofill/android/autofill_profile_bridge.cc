@@ -132,3 +132,5 @@ JNI_AutofillProfileBridge_GetAddressEditorUiInfo(JNIEnv* env,
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillProfileBridge)

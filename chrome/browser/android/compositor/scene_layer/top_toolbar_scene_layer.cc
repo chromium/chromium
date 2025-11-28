@@ -138,3 +138,5 @@ static jlong JNI_TopToolbarSceneLayer_Init(JNIEnv* env,
 }
 
 }  // namespace android
+
+DEFINE_JNI(TopToolbarSceneLayer)

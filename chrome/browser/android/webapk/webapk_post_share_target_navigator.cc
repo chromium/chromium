@@ -79,3 +79,5 @@ static void JNI_WebApkPostShareTargetNavigator_NativeLoadViewForShareTargetPost(
   webapk::NavigateShareTargetPost(post_data, header_list, share_target_gurl,
                                   web_contents);
 }
+
+DEFINE_JNI(WebApkPostShareTargetNavigator)

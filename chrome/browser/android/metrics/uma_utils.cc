@@ -58,3 +58,5 @@ static void JNI_UmaUtils_RecordMetricsReportingDefaultOptIn(
 
 }  // namespace android
 }  // namespace chrome
+
+DEFINE_JNI(UmaUtils)

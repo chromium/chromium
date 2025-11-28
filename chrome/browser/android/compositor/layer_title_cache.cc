@@ -203,3 +203,5 @@ static jlong JNI_LayerTitleCache_Init(
 }
 
 }  // namespace android
+
+DEFINE_JNI(LayerTitleCache)

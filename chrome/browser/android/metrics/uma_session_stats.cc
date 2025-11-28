@@ -429,3 +429,5 @@ static jlong JNI_UmaSessionStats_Init(JNIEnv* env) {
   // We should have only one UmaSessionStats instance.
   return reinterpret_cast<intptr_t>(UmaSessionStats::GetInstance());
 }
+
+DEFINE_JNI(UmaSessionStats)

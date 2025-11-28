@@ -86,3 +86,5 @@ void PolicyWarningDownloadDialogBridge::Cancelled(JNIEnv* env,
     download->Remove();
   }
 }
+
+DEFINE_JNI(PolicyWarningDownloadDialogBridge)

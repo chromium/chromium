@@ -47,3 +47,5 @@ static std::string JNI_VariationsSession_GetLatestCountry(JNIEnv* env) {
 
   return latest_country;
 }
+
+DEFINE_JNI(VariationsSession)

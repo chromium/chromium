@@ -1774,3 +1774,7 @@ void ChromeBrowsingDataRemoverDelegate::DisablePasswordsAutoSignin(
             TracingDataType::kDisableAutoSigninForAccountPasswords));
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(PackageHash)
+#endif

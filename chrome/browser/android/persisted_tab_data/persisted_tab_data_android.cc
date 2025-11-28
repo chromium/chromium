@@ -288,3 +288,5 @@ static void JNI_PersistedTabData_OnDeferredStartup(JNIEnv* env) {
 }
 
 TAB_ANDROID_USER_DATA_KEY_IMPL(PersistedTabDataAndroid)
+
+DEFINE_JNI(PersistedTabData)

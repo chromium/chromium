@@ -146,3 +146,5 @@ StorageLoadedDataAndroid* StorageLoadedDataAndroid::FromJavaObject(
 }
 
 }  // namespace tabs
+
+DEFINE_JNI(StorageLoadedData)

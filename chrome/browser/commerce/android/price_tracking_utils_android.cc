@@ -82,3 +82,5 @@ static void JNI_PriceTrackingUtils_IsBookmarkPriceTracked(
 }
 
 }  // namespace commerce
+
+DEFINE_JNI(PriceTrackingUtils)

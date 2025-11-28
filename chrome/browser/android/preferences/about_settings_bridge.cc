@@ -31,3 +31,5 @@ static std::string JNI_AboutSettingsBridge_GetOSVersion(JNIEnv* env) {
       {version_info::GetOSType(), AndroidAboutAppInfo::GetOsInfo()},
       kSeparator);
 }
+
+DEFINE_JNI(AboutSettingsBridge)

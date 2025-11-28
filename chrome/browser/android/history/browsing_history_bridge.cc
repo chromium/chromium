@@ -206,3 +206,5 @@ static jlong JNI_BrowsingHistoryBridge_Init(JNIEnv* env,
   BrowsingHistoryBridge* bridge = new BrowsingHistoryBridge(env, obj, profile);
   return reinterpret_cast<intptr_t>(bridge);
 }
+
+DEFINE_JNI(BrowsingHistoryBridge)

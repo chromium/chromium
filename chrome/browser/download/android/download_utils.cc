@@ -126,3 +126,6 @@ bool DownloadUtils::IsDownloadUserInitiated(download::DownloadItem* download) {
                                   ui::PAGE_TRANSITION_RELOAD) ||
          PageTransitionCoreTypeIs(page_transition, ui::PAGE_TRANSITION_KEYWORD);
 }
+
+DEFINE_JNI(MimeUtils)
+DEFINE_JNI(DownloadUtils)

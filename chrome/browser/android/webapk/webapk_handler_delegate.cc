@@ -83,3 +83,5 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
       static_cast<bool>(jrelax_updates), backing_browser_package_name,
       static_cast<bool>(jis_backing_browser), jupdate_status));
 }
+
+DEFINE_JNI(WebApkHandlerDelegate)

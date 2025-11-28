@@ -1821,3 +1821,5 @@ void BookmarkBridge::CreateOrDestroyAccountReadingListManagerIfNeeded() {
         account_reading_list_manager_.get());
   }
 }
+
+DEFINE_JNI(BookmarkBridge)

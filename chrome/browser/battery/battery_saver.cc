@@ -44,3 +44,7 @@ bool IsBatterySaverEnabled() {
 }
 
 }  // namespace battery
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(BatterySaverOSSetting)
+#endif

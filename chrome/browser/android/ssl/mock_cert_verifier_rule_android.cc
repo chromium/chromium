@@ -27,3 +27,5 @@ void MockCertVerifierRuleAndroid::SetUp(JNIEnv* env) {
 void MockCertVerifierRuleAndroid::TearDown(JNIEnv* env) {
   mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
 }
+
+DEFINE_JNI(MockCertVerifierRuleAndroid)

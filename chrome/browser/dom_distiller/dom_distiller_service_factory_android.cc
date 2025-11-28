@@ -37,3 +37,5 @@ static ScopedJavaLocalRef<jobject> JNI_DomDistillerServiceFactory_GetForProfile(
 
 }  // namespace android
 }  // namespace dom_distiller
+
+DEFINE_JNI(DomDistillerServiceFactory)

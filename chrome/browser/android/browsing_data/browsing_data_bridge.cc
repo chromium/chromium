@@ -292,3 +292,5 @@ static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(
       base::BindOnce(&OnBrowsingDataModelBuilt, env,
                      ScopedJavaGlobalRef<jobject>(java_callback)));
 }
+
+DEFINE_JNI(BrowsingDataBridge)

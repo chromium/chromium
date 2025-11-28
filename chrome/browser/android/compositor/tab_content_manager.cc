@@ -465,3 +465,5 @@ static jlong JNI_TabContentManager_Init(JNIEnv* env,
 }
 
 }  // namespace android
+
+DEFINE_JNI(TabContentManager)

@@ -78,3 +78,5 @@ JNI_WebContentsFactory_CreateWebContentsWithSeparateStoragePartitionForExperimen
 
   return web_contents.release()->GetJavaWebContents();
 }
+
+DEFINE_JNI(WebContentsFactory)

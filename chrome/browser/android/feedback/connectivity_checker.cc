@@ -204,3 +204,5 @@ static jboolean JNI_ConnectivityChecker_IsUrlValid(JNIEnv* env,
 
 }  // namespace android
 }  // namespace chrome
+
+DEFINE_JNI(ConnectivityChecker)

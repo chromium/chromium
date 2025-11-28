@@ -96,3 +96,5 @@ static void JNI_LaunchMetrics_RecordHomePageLaunchMetrics(
 }
 
 }  // namespace metrics
+
+DEFINE_JNI(LaunchMetrics)

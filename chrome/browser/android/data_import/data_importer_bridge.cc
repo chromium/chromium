@@ -96,3 +96,5 @@ static jlong JNI_DataImporterBridge_Init(JNIEnv* env, Profile* profile) {
   DataImporterBridge* bridge = new DataImporterBridge(profile);
   return reinterpret_cast<intptr_t>(bridge);
 }
+
+DEFINE_JNI(DataImporterBridge)

@@ -57,3 +57,5 @@ static void JNI_ScreenshotTask_GrabWindowSnapshotAsync(
 
 }  // namespace android
 }  // namespace chrome
+
+DEFINE_JNI(ScreenshotTask)

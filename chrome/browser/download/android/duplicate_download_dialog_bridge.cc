@@ -91,3 +91,5 @@ void DuplicateDownloadDialogBridge::OnConfirmed(JNIEnv* env,
       reinterpret_cast<DuplicateDownloadDialogCallback*>(callback_id));
   std::move(*cb).Run(accepted);
 }
+
+DEFINE_JNI(DuplicateDownloadDialogBridge)

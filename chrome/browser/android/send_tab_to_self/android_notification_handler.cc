@@ -163,3 +163,6 @@ void AndroidNotificationHandler::UpdateWebContents(
 }
 
 }  // namespace send_tab_to_self
+
+DEFINE_JNI(NotificationManager)
+DEFINE_JNI(SendTabToSelfNotificationReceiver)

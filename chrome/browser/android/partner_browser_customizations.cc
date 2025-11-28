@@ -17,3 +17,5 @@ bool PartnerBrowserCustomizations::IsIncognitoDisabled() {
 }
 
 }  // namespace android
+
+DEFINE_JNI(PartnerBrowserCustomizations)

@@ -26,3 +26,5 @@ static void JNI_SiteIsolator_StartIsolatingSite(
       content::ChildProcessSecurityPolicy::IsolatedOriginSource::
           USER_TRIGGERED);
 }
+
+DEFINE_JNI(SiteIsolator)

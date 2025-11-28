@@ -664,3 +664,5 @@ static ScopedJavaLocalRef<jobject> JNI_AutocompleteController_GetForProfile(
   }
   return native_bridge->GetJavaObject();
 }
+
+DEFINE_JNI(AutocompleteController)

@@ -50,3 +50,5 @@ static void JNI_InnerTextBridge_GetInnerText(
       *render_frame_host, std::nullopt,
       base::BindOnce(&OnGotInnerText, std::move(callback)));
 }
+
+DEFINE_JNI(InnerTextBridge)

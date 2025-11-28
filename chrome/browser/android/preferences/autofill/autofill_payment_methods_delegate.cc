@@ -131,3 +131,5 @@ void AutofillPaymentMethodsDelegate::DeleteSavedCvcs(JNIEnv* env) {
   personal_data_manager_->payments_data_manager().ClearServerCvcs();
 }
 }  // namespace autofill
+
+DEFINE_JNI(AutofillPaymentMethodsDelegate)

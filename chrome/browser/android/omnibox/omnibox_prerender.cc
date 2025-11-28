@@ -171,3 +171,5 @@ void OmniboxPrerender::DoPreconnect(const AutocompleteMatch& match,
         predictors::AutocompleteActionPredictor::IsPreconnectable(match));
   }
 }
+
+DEFINE_JNI(OmniboxPrerender)

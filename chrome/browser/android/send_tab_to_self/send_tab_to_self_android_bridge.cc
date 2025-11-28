@@ -145,3 +145,6 @@ JNI_SendTabToSelfAndroidBridge_GetEntryPointDisplayReason(
 }
 
 }  // namespace send_tab_to_self
+
+DEFINE_JNI(SendTabToSelfAndroidBridge)
+DEFINE_JNI(TargetDeviceInfo)

@@ -45,3 +45,5 @@ static void JNI_ConsentAuditorBridge_RecordConsent(
   ConsentAuditorFactory::GetForProfile(profile)->RecordSyncConsent(
       gaia_id, sync_consent);
 }
+
+DEFINE_JNI(ConsentAuditorBridge)

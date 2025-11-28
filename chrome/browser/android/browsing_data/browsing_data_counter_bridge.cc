@@ -89,3 +89,5 @@ static jlong JNI_BrowsingDataCounterBridge_InitWithoutPeriodPref(
   return reinterpret_cast<intptr_t>(new BrowsingDataCounterBridge(
       env, obj, profile, selected_time_period, data_type));
 }
+
+DEFINE_JNI(BrowsingDataCounterBridge)

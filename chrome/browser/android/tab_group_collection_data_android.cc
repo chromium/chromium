@@ -62,3 +62,5 @@ TabGroupCollectionDataAndroid::GetJavaObject() const {
 }
 
 }  // namespace tabs
+
+DEFINE_JNI(TabGroupCollectionData)

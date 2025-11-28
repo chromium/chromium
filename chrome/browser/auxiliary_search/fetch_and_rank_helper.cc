@@ -267,3 +267,5 @@ void FetchAndRankHelper::OnRanked(URLVisitsMetadata url_visits_metadata,
 
   std::move(entries_callback_).Run(std::move(entries), url_visits_metadata);
 }
+
+DEFINE_JNI(FetchAndRankHelper)

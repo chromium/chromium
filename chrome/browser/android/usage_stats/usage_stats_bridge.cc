@@ -339,3 +339,5 @@ void UsageStatsBridge::HistoryServiceBeingDeleted(
 }
 
 }  // namespace usage_stats
+
+DEFINE_JNI(UsageStatsBridge)

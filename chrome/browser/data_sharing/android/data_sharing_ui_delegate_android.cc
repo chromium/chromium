@@ -45,3 +45,5 @@ void DataSharingUIDelegateAndroid::LazyInitializeIfNeeded() {
 }
 
 }  // namespace data_sharing
+
+DEFINE_JNI(DataSharingUiDelegateAndroid)

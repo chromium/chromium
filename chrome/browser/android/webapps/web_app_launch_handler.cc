@@ -33,3 +33,5 @@ static void JNI_WebAppLaunchHandler_NotifyLaunchQueue(
 }
 
 }  // namespace webapps
+
+DEFINE_JNI(WebAppLaunchHandler)

@@ -27,3 +27,5 @@ JNI_OfflineContentAggregatorFactory_GetOfflineContentAggregator(JNIEnv* env) {
   return offline_items_collection::android::OfflineContentAggregatorBridge::
       GetBridgeForOfflineContentAggregator(aggregator);
 }
+
+DEFINE_JNI(OfflineContentAggregatorFactory)

@@ -65,3 +65,5 @@ void DeviceAuthenticatorBridgeImpl::OnAuthenticationCompleted(JNIEnv* env,
   }
   std::move(response_callback_).Run(static_cast<DeviceAuthUIResult>(result));
 }
+
+DEFINE_JNI(DeviceAuthenticatorBridge)

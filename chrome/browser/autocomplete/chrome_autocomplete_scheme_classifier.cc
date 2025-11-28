@@ -126,3 +126,7 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
   }
   NOTREACHED();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(ChromeAutocompleteSchemeClassifier)
+#endif

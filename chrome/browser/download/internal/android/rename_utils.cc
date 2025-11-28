@@ -18,3 +18,5 @@ static std::string JNI_RenameUtils_GetFileExtension(JNIEnv* env,
                                                     std::string& fileName) {
   return base::FilePath(fileName).Extension();
 }
+
+DEFINE_JNI(RenameUtils)

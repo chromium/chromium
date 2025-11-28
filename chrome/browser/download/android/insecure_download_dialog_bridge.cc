@@ -74,3 +74,5 @@ void InsecureDownloadDialogBridge::OnConfirmed(JNIEnv* env,
       reinterpret_cast<InsecureDownloadDialogCallback*>(callback_id));
   std::move(*cb).Run(accepted);
 }
+
+DEFINE_JNI(InsecureDownloadDialogBridge)

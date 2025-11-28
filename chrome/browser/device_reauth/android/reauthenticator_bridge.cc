@@ -73,3 +73,5 @@ void ReauthenticatorBridge::OnReauthenticationCompleted(bool auth_succeeded) {
 void ReauthenticatorBridge::Destroy(JNIEnv* env) {
   delete this;
 }
+
+DEFINE_JNI(ReauthenticatorBridge)

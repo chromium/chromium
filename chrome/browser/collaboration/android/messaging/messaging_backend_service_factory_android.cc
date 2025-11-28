@@ -27,3 +27,5 @@ JNI_MessagingBackendServiceFactory_GetForProfile(JNIEnv* env,
 }
 
 }  // namespace collaboration::messaging::android
+
+DEFINE_JNI(MessagingBackendServiceFactory)

@@ -40,3 +40,5 @@ static jlong JNI_ChromeOriginVerifier_Init(
 }
 
 }  // namespace customtabs
+
+DEFINE_JNI(ChromeOriginVerifier)

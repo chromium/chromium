@@ -207,3 +207,5 @@ long TabStoragePackagerAndroid::ConsolidateTabStripCollectionData(
 TabStoragePackagerAndroid::~TabStoragePackagerAndroid() = default;
 
 }  // namespace tabs
+
+DEFINE_JNI(TabStoragePackager)

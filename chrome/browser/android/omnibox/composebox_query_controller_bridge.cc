@@ -356,3 +356,5 @@ void ComposeboxQueryControllerBridge::OnGetPageContentFromCache(
 
   OnGetTabPageContext(env, context_token, std::move(input_data));
 }
+
+DEFINE_JNI(ComposeBoxQueryControllerBridge)

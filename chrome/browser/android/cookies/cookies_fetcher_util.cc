@@ -108,3 +108,5 @@ static void JNI_CookiesFetcher_RestoreCookies(JNIEnv* env,
       last_access, last_update, secure, httponly, same_site, priority,
       partition_key, source_scheme, source_port, source_type);
 }
+
+DEFINE_JNI(CookiesFetcher)

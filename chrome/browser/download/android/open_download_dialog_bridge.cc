@@ -53,3 +53,5 @@ void OpenDownloadDialogBridge::OnConfirmed(JNIEnv* env,
                                            jboolean accepted) {
   delegate_->OnConfirmed(guid, accepted);
 }
+
+DEFINE_JNI(OpenDownloadDialogBridge)

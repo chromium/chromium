@@ -123,3 +123,5 @@ static jlong JNI_EdgeToEdgeBottomChinSceneLayer_Init(
 }
 
 }  // namespace android
+
+DEFINE_JNI(EdgeToEdgeBottomChinSceneLayer)

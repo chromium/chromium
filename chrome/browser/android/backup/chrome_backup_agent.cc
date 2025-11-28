@@ -37,3 +37,5 @@ static void JNI_ChromeBackupAgentImpl_MigrateGlobalDataTypePrefsToAccount(
   syncer::SyncPrefs sync_prefs(pref_service);
   sync_prefs.MigrateGlobalDataTypePrefsToAccount(pref_service, gaia_id);
 }
+
+DEFINE_JNI(ChromeBackupAgentImpl)

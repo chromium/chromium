@@ -746,3 +746,5 @@ static void JNI_TabWebContentsDelegateAndroidImpl_OnRendererUnresponsive(
   if (base::RandDouble() < 0.01)
     web_contents->GetPrimaryMainFrame()->GetProcess()->DumpProcessStack();
 }
+
+DEFINE_JNI(TabWebContentsDelegateAndroidImpl)

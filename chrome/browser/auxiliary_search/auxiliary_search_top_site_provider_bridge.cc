@@ -120,3 +120,5 @@ static jlong JNI_AuxiliarySearchTopSiteProviderBridge_Init(
   return reinterpret_cast<intptr_t>(new AuxiliarySearchTopSiteProviderBridge(
       ChromeMostVisitedSitesFactory::NewForProfile(profile)));
 }
+
+DEFINE_JNI(AuxiliarySearchTopSiteProviderBridge)

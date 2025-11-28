@@ -28,3 +28,5 @@ static void JNI_ReparentingTask_AttachTab(
     background_tab_manager->UnregisterBackgroundTab();
   }
 }
+
+DEFINE_JNI(ReparentingTask)

@@ -131,3 +131,5 @@ void DigitalIdentityProviderAndroid::OnReceive(
                         result, base::JSON_PARSE_CHROMIUM_EXTENSIONS)))
           : base::unexpected(status_for_metrics));
 }
+
+DEFINE_JNI(DigitalIdentityProvider)

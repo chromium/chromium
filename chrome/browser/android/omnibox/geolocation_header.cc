@@ -30,3 +30,5 @@ std::optional<std::string> GetGeolocationHeaderIfAllowed(const GURL& url,
 
   return base::android::ConvertJavaStringToUTF8(env, geo_header);
 }
+
+DEFINE_JNI(GeolocationHeader)

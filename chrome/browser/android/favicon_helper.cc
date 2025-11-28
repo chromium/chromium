@@ -162,3 +162,5 @@ void FaviconHelper::OnFaviconBitmapResultAvailable(
   Java_FaviconImageCallback_onFaviconAvailable(
       env, j_favicon_image_callback, j_favicon_bitmap, result.icon_url);
 }
+
+DEFINE_JNI(FaviconHelper)

@@ -70,3 +70,5 @@ void PwaRestoreBottomSheetMediator::OnRestoreWebapps(
 }
 
 }  // namespace webapk
+
+DEFINE_JNI(PwaRestoreBottomSheetMediator)

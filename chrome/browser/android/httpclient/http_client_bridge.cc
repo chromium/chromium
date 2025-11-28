@@ -77,3 +77,5 @@ void HttpClientBridge::OnResult(
 }
 
 }  // namespace httpclient
+
+DEFINE_JNI(SimpleHttpClient)

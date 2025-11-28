@@ -349,3 +349,5 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
 }
 
 }  // namespace historical_tab_saver
+
+DEFINE_JNI(HistoricalTabSaverImpl)

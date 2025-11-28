@@ -20,3 +20,5 @@ static std::u16string JNI_StringUtils_GetFailStateMessage(JNIEnv* env,
   l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_INTERRUPTED, message);
   return message;
 }
+
+DEFINE_JNI(StringUtils)

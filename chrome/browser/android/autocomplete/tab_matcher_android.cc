@@ -213,3 +213,5 @@ TabMatcher::GURLToTabInfoMap TabMatcherAndroid::GetAllHiddenAndNonCCTTabInfos(
 
   return tab_infos;
 }
+
+DEFINE_JNI(ChromeAutocompleteProviderClient)

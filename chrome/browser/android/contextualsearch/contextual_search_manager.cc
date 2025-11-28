@@ -188,3 +188,6 @@ static jboolean JNI_ContextualSearchPolicy_IsContextualSearchResolutionUrlValid(
 
   return url.is_valid();
 }
+
+DEFINE_JNI(ContextualSearchManager)
+DEFINE_JNI(ContextualSearchPolicy)

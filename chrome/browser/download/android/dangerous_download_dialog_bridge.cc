@@ -102,3 +102,5 @@ void DangerousDownloadDialogBridge::Cancelled(JNIEnv* env,
     download->Remove();
   }
 }
+
+DEFINE_JNI(DangerousDownloadDialogBridge)

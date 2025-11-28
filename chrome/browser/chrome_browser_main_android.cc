@@ -111,3 +111,5 @@ void ChromeBrowserMainPartsAndroid::PostBrowserStart() {
 void ChromeBrowserMainPartsAndroid::ShowMissingLocaleMessageBox() {
   NOTREACHED();
 }
+
+DEFINE_JNI(ChromeBackupWatcher)

@@ -118,3 +118,5 @@ static jlong JNI_OverlayPanelContent_Init(JNIEnv* env,
   OverlayPanelContent* content = new OverlayPanelContent(env, obj);
   return reinterpret_cast<intptr_t>(content);
 }
+
+DEFINE_JNI(OverlayPanelContent)

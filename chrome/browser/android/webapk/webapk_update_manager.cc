@@ -276,3 +276,5 @@ static void JNI_WebApkUpdateManager_UpdateWebApkFromFile(
       base::FilePath(update_request_path),
       base::BindOnce(&OnUpdated, callback_ref));
 }
+
+DEFINE_JNI(WebApkUpdateManager)

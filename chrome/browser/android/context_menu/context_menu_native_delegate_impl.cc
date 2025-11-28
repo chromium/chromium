@@ -241,3 +241,5 @@ static jlong JNI_ContextMenuNativeDelegateImpl_Init(
   return reinterpret_cast<intptr_t>(
       new ContextMenuNativeDelegateImpl(web_contents, params));
 }
+
+DEFINE_JNI(ContextMenuNativeDelegateImpl)

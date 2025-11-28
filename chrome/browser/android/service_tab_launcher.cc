@@ -80,3 +80,5 @@ void ServiceTabLauncher::OnTabLaunched(int request_id,
     std::move(*callback).Run(web_contents);
   tab_launched_callbacks_.Remove(request_id);
 }
+
+DEFINE_JNI(ServiceTabLauncher)

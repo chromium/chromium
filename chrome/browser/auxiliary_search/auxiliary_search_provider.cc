@@ -237,3 +237,5 @@ static jlong JNI_AuxiliarySearchBridge_GetForProfile(JNIEnv* env,
 void AuxiliarySearchProvider::EnsureFactoryBuilt() {
   AuxiliarySearchProviderFactory::GetInstance();
 }
+
+DEFINE_JNI(AuxiliarySearchBridge)

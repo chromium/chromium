@@ -95,3 +95,5 @@ bool WebappRegistry::GetNeedsPwaRestore() {
   return Java_WebappRegistry_getNeedsPwaRestore(
       base::android::AttachCurrentThread());
 }
+
+DEFINE_JNI(WebappRegistry)

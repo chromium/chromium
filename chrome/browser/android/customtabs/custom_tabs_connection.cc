@@ -155,3 +155,5 @@ static void JNI_CustomTabsConnection_TextFragmentFindScrollAndHighlight(
 }
 
 }  // namespace customtabs
+
+DEFINE_JNI(CustomTabsConnection)

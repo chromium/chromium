@@ -24,3 +24,5 @@ static void JNI_DocumentPictureInPictureActivity_OnActivityStart(
   PictureInPictureWindowManager::GetInstance()->EnterDocumentPictureInPicture(
       parent_web_contents, web_content);
 }
+
+DEFINE_JNI(DocumentPictureInPictureActivity)

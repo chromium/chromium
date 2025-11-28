@@ -22,3 +22,5 @@ JNI_CollaborationServiceFactory_GetForProfile(JNIEnv* env, Profile* profile) {
 }
 
 }  // namespace collaboration
+
+DEFINE_JNI(CollaborationServiceFactory)

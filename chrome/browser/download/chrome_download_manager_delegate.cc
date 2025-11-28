@@ -2431,3 +2431,7 @@ void ChromeDownloadManagerDelegate::RequestIncognitoSavePackageConfirmationDone(
       base::BindOnce(&OnDetermineSavePackagePathDone, std::move(callback)));
 }
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(PdfUtils)
+#endif

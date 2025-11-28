@@ -46,3 +46,5 @@ JNI_AccessibilitySettingsBridge_IsShowCaretBrowsingDialogPreference(
   Profile* profile = Profile::FromJavaObject(j_profile);
   return profile->GetPrefs()->GetBoolean(prefs::kShowCaretBrowsingDialog);
 }
+
+DEFINE_JNI(AccessibilitySettingsBridge)

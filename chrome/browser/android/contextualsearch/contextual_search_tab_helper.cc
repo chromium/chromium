@@ -97,3 +97,5 @@ static jlong JNI_ContextualSearchTabHelper_Init(
       env, obj, profile);
   return reinterpret_cast<intptr_t>(tab);
 }
+
+DEFINE_JNI(ContextualSearchTabHelper)

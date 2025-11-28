@@ -67,3 +67,5 @@ static void JNI_UkmUtilsForTest_RecordSourceWithId(JNIEnv*, jlong source_id) {
 static jlong JNI_UkmUtilsForTest_GetClientId(JNIEnv*) {
   return ukm::UkmUtilsForTest::GetClientId();
 }
+
+DEFINE_JNI(UkmUtilsForTest)

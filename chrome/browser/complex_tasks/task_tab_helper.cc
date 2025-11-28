@@ -151,3 +151,7 @@ static jlong JNI_TaskTabHelper_GetRootTaskId(
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TaskTabHelper);
 
 }  // namespace tasks
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(TaskTabHelper)
+#endif

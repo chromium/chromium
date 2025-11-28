@@ -51,3 +51,5 @@ JNI_ProfileKeyUtil_GetLastUsedRegularProfileKey(JNIEnv* env) {
 
   return profile_key_android->GetJavaObject();
 }
+
+DEFINE_JNI(ProfileKeyUtil)

@@ -106,3 +106,5 @@ TabStateStorageService::GetJavaObject(
 }
 
 }  // namespace tabs
+
+DEFINE_JNI(TabStateStorageService)

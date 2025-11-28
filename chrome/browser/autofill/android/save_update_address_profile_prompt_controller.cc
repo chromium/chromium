@@ -347,3 +347,5 @@ bool SaveUpdateAddressProfilePromptController::IsMigrationToAccount() const {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(SaveUpdateAddressProfilePromptController)

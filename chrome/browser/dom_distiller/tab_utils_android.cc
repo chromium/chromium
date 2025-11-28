@@ -113,3 +113,5 @@ static void JNI_DomDistillerTabUtils_RunReadabilityHeuristicsOnWebContents(
 }
 
 }  // namespace android
+
+DEFINE_JNI(DomDistillerTabUtils)

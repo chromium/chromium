@@ -56,3 +56,5 @@ AndroidPrerenderManager::GetNewTabPagePreloadPipelineManager(TabAndroid* tab) {
   return tab ? tab->GetTabFeatures()->new_tab_page_preload_pipeline_manager()
              : nullptr;
 }
+
+DEFINE_JNI(AndroidPrerenderManager)

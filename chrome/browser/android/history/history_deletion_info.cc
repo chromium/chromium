@@ -55,3 +55,5 @@ ScopedJavaLocalRef<jobject> CreateHistoryDeletionInfo(
   return Java_HistoryDeletionInfo_create(
       env, reinterpret_cast<intptr_t>(deletion_info));
 }
+
+DEFINE_JNI(HistoryDeletionInfo)

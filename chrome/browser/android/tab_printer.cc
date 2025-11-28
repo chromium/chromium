@@ -48,3 +48,5 @@ static jboolean JNI_TabPrinter_Print(
 }
 
 }  // namespace printing
+
+DEFINE_JNI(TabPrinter)

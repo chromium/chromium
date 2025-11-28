@@ -279,3 +279,5 @@ static jlong JNI_ContextualSearchSceneLayer_Init(
 }
 
 }  // namespace android
+
+DEFINE_JNI(ContextualSearchSceneLayer)

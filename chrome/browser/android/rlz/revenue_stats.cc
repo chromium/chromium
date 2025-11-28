@@ -37,3 +37,5 @@ static void JNI_RevenueStats_SetRlzParameterValue(JNIEnv* env,
 
 }  // namespace android
 }  // namespace chrome
+
+DEFINE_JNI(RevenueStats)

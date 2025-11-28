@@ -43,3 +43,5 @@ static ScopedJavaLocalRef<jobject> JNI_ShoppingServiceFactory_GetForProfile(
 }
 
 }  // namespace commerce
+
+DEFINE_JNI(ShoppingServiceFactory)

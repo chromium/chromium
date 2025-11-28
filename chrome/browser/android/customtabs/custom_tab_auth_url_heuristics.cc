@@ -20,3 +20,5 @@ static void JNI_CustomTabAuthUrlHeuristics_SetFirstCctPageLoadForPasswords(
 
   FirstCctPageLoadMarker::CreateForWebContents(tab->web_contents());
 }
+
+DEFINE_JNI(CustomTabAuthUrlHeuristics)

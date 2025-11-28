@@ -560,3 +560,5 @@ GURL WebApkInstaller::GetServerUrl() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return GURL(Java_WebApkInstaller_getWebApkServerUrl(env, java_ref_));
 }
+
+DEFINE_JNI(WebApkInstaller)

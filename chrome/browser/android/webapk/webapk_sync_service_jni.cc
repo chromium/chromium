@@ -125,3 +125,5 @@ static void JNI_WebApkSyncService_FetchRestorableApps(
 }
 
 }  // namespace webapk
+
+DEFINE_JNI(WebApkSyncService)

@@ -12,3 +12,5 @@ static void JNI_MessagesResourceMapperInitializer_Init(JNIEnv* env) {
   messages::MessageDispatcherBridge::Get()->Initialize(
       base::BindRepeating(&ResourceMapper::MapToJavaDrawableId));
 }
+
+DEFINE_JNI(MessagesResourceMapperInitializer)

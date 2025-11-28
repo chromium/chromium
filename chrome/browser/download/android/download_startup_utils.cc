@@ -46,3 +46,5 @@ ProfileKey* DownloadStartupUtils::EnsureDownloadSystemInitialized(
   DownloadManagerUtils::GetInProgressDownloadManager(profile_key);
   return profile_key;
 }
+
+DEFINE_JNI(DownloadStartupUtils)

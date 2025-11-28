@@ -59,3 +59,5 @@ void StorageCollectionSynchronizerAndroid::Destroy(JNIEnv* env) {
 }
 
 }  // namespace tabs
+
+DEFINE_JNI(StorageCollectionSynchronizer)

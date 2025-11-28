@@ -94,3 +94,5 @@ static jlong JNI_StatusIndicatorSceneLayer_Init(
 }
 
 }  // namespace android
+
+DEFINE_JNI(StatusIndicatorSceneLayer)

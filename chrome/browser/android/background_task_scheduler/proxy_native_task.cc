@@ -96,3 +96,5 @@ jboolean ProxyNativeTask::StopBackgroundTask(JNIEnv* env) {
 
   return background_task_->OnStopTask(task_params_);
 }
+
+DEFINE_JNI(ProxyNativeTask)

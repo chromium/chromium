@@ -47,3 +47,5 @@ static void JNI_ContentUtils_SetUserAgentOverride(
   content::WebContents::FromJavaWebContents(jweb_contents)
       ->SetUserAgentOverride(spoofed_ua, j_override_in_new_tabs);
 }
+
+DEFINE_JNI(ContentUtils)

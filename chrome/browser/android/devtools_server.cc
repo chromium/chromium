@@ -194,3 +194,5 @@ static void JNI_DevToolsServer_SetRemoteDebuggingEnabled(
     devtools_server->Stop();
   }
 }
+
+DEFINE_JNI(DevToolsServer)

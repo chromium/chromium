@@ -41,3 +41,5 @@ static jboolean JNI_DevToolsWindowAndroid_IsDevToolsAllowedFor(
   return JNI_FALSE;
 #endif
 }
+
+DEFINE_JNI(DevToolsWindowAndroid)

@@ -142,3 +142,5 @@ static jlong JNI_TabFavicon_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(
       new TabFavicon(env, obj, navigation_transition_favicon_size));
 }
+
+DEFINE_JNI(TabFavicon)

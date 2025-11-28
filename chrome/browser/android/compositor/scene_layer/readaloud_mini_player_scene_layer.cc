@@ -84,3 +84,5 @@ static jlong JNI_ReadAloudMiniPlayerSceneLayer_Init(
 }
 
 }  // namespace android
+
+DEFINE_JNI(ReadAloudMiniPlayerSceneLayer)

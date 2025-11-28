@@ -56,3 +56,5 @@ void CollectionSaveForwarderAndroid::SavePayload(JNIEnv* env) {
 }
 
 }  // namespace tabs
+
+DEFINE_JNI(CollectionSaveForwarder)

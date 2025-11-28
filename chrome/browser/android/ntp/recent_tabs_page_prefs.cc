@@ -97,3 +97,5 @@ void RecentTabsPagePrefs::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kNtpCollapsedSyncPromo, false);
   registry->RegisterDictionaryPref(prefs::kNtpCollapsedForeignSessions);
 }
+
+DEFINE_JNI(RecentTabsPagePrefs)

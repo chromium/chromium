@@ -37,3 +37,5 @@ void DownloadMessageBridge::ShowUnsupportedDownloadMessage(
   Java_DownloadMessageBridge_showUnsupportedDownloadMessage(
       env, window_android->GetJavaObject());
 }
+
+DEFINE_JNI(DownloadMessageBridge)

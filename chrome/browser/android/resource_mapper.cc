@@ -69,3 +69,5 @@ int ResourceMapper::MapToJavaDrawableId(int resource_id) {
   // The resource couldn't be found.
   NOTREACHED();
 }
+
+DEFINE_JNI(ResourceMapper)

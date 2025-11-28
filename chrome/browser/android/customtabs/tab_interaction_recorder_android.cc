@@ -313,3 +313,5 @@ static ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_CreateForTab(
 }
 
 }  // namespace customtabs
+
+DEFINE_JNI(TabInteractionRecorder)

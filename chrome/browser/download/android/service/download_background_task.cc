@@ -109,3 +109,6 @@ static jboolean JNI_DownloadBackgroundTask_StopBackgroundTask(
 
 }  // namespace android
 }  // namespace download
+
+DEFINE_JNI(DownloadBackgroundTaskCallback)
+DEFINE_JNI(DownloadBackgroundTask)

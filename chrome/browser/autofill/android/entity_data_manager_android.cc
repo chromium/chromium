@@ -44,3 +44,5 @@ void EntityDataManagerAndroid::RemoveEntityInstance(JNIEnv* env,
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(EntityDataManager)

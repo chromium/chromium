@@ -441,3 +441,5 @@ void CompositorView::SetDidSwapBuffersCallbackEnabled(JNIEnv* env,
 }
 
 }  // namespace android
+
+DEFINE_JNI(CompositorView)

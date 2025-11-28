@@ -457,3 +457,5 @@ bool ForeignSessionHelper::RestoreTabNoRenderer(
       WindowOpenDisposition::NEW_BACKGROUND_TAB, true);
   return true;
 }
+
+DEFINE_JNI(ForeignSessionHelper)

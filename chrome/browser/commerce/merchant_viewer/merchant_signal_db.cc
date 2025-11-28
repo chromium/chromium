@@ -135,3 +135,6 @@ static void JNI_MerchantTrustSignalsEventStorage_Init(
       reinterpret_cast<intptr_t>(new MerchantSignalDB(
           content::BrowserContextFromJavaHandle(jprofile))));
 }
+
+DEFINE_JNI(MerchantTrustSignalsEventStorage)
+DEFINE_JNI(MerchantTrustSignalsEvent)

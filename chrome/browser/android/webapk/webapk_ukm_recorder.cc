@@ -163,3 +163,5 @@ static void JNI_WebApkUkmRecorder_RecordUninstall(
       version_code, launch_count, installed_duration_ms);
 }
 }  // namespace webapk
+
+DEFINE_JNI(WebApkUkmRecorder)

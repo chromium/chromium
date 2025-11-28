@@ -153,3 +153,8 @@ BackgroundSyncLauncherAndroid::BackgroundSyncLauncherAndroid() {
 BackgroundSyncLauncherAndroid::~BackgroundSyncLauncherAndroid() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
+
+DEFINE_JNI(BackgroundSyncBackgroundTaskScheduler)
+DEFINE_JNI(BackgroundSyncBackgroundTask)
+DEFINE_JNI(GooglePlayServicesChecker)
+DEFINE_JNI(PeriodicBackgroundSyncChromeWakeUpTask)

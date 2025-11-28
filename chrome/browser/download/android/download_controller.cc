@@ -576,3 +576,5 @@ bool DownloadController::ShouldShowAppVerificationPrompt(
 
   return true;
 }
+
+DEFINE_JNI(DownloadController)

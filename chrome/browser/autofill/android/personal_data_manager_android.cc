@@ -883,3 +883,9 @@ PersonalDataManagerAndroid::CreateBnplIssuerForSettingsFromNative(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(PersonalDataManager)
+DEFINE_JNI(BankAccount)
+DEFINE_JNI(BnplIssuerForSettings)
+DEFINE_JNI(Ewallet)
+DEFINE_JNI(PaymentInstrument)

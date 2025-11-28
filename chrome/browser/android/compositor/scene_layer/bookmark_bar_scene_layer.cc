@@ -177,3 +177,5 @@ static jlong JNI_BookmarkBarSceneLayer_Init(JNIEnv* env,
 }
 
 }  // namespace android
+
+DEFINE_JNI(BookmarkBarSceneLayer)

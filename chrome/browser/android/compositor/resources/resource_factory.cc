@@ -33,3 +33,5 @@ static jlong JNI_ResourceFactory_CreateToolbarContainerResource(
 }
 
 }  // namespace android
+
+DEFINE_JNI(ResourceFactory)

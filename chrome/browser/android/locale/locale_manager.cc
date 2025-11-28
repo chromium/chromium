@@ -29,3 +29,5 @@ std::string LocaleManager::GetMailRUReferralID() {
     return "";
   return Java_LocaleManager_getMailRUReferralId(env, jlocale_manager);
 }
+
+DEFINE_JNI(LocaleManager)

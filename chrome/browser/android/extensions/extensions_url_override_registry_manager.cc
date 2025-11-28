@@ -70,3 +70,5 @@ void ExtensionsUrlOverrideRegistryManager::Destroy(JNIEnv* env) {
 }
 
 }  // namespace extensions
+
+DEFINE_JNI(ExtensionsUrlOverrideRegistryManager)
