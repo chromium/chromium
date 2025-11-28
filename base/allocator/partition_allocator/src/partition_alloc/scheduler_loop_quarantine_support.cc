@@ -4,6 +4,8 @@
 
 #include "partition_alloc/scheduler_loop_quarantine_support.h"
 
+#include "partition_alloc/partition_root.h"
+
 namespace partition_alloc {
 ScopedSchedulerLoopQuarantineExclusion::
     ScopedSchedulerLoopQuarantineExclusion() {

@@ -17,7 +17,6 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/memory/stack_allocated.h"
-#include "partition_alloc/partition_root.h"
 #include "partition_alloc/scheduler_loop_quarantine.h"
 #include "partition_alloc/thread_cache.h"
 
@@ -26,6 +25,8 @@
 // and "scheduler_loop_quarantine.h".
 
 namespace partition_alloc {
+
+struct PartitionRoot;
 
 // When this class is alive, Scheduler-Loop Quarantine for this thread is
 // paused and freed allocations will be freed immediately.
