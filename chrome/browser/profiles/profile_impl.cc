@@ -512,7 +512,8 @@ ProfileImpl::ProfileImpl(
     // tests.
     // Note: |ash::InitializeAccountManager| is idempotent and safe to call
     // multiple times.
-    // TODO(crbug.com/40635309): Remove this call.
+    // Consider removing this initialization and fixing failing tests.
+    // See https://crbug.com/40635309 for reference.
     ash::InitializeAccountManager(
         std::move(shared_url_loader_factory), path_,
         base::DoNothing() /* initialization_callback */);
