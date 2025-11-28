@@ -287,6 +287,10 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
   }
 
   if (!provisionally_saved) {
+    logs_uploader_->SetFlowInterrupted(
+        kSubmitFormFlowStep,
+        ModelQualityLogsUploader::QualityStatus::
+            PasswordChangeQuality_StepQuality_SubmissionStatus_FORM_FILLING_FAILED);
     // Change password form disappeared, some websites practice updating form
     // dynamically which resets the form. Try to find a new change-pwd form.
     form_waiter_ =
