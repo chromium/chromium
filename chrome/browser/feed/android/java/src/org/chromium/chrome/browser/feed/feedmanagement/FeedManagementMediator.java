@@ -101,9 +101,6 @@ public class FeedManagementMediator {
         intent.setClassName(mContext, "org.chromium.chrome.browser.customtabs.CustomTabActivity");
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName());
         mContext.startActivity(intent);
-
-        // TODO(crbug.com/40758890): Record uma by calling ReportOtherUserAction
-        // on the stream.
     }
 
     // Copied from IntentHandler, which is in chrome_java, so we can't call it directly.
