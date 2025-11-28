@@ -3391,6 +3391,9 @@
                         "CheckVisibilityInChangePasswordFormWaiter",
                         "DisableFillingOnPageLoadForLeakedCredentials",
                         "StopLoginCheckOnFailedLogin"
+                    ],
+                    "disable_features": [
+                        "DownloadModelForPasswordChange"
                     ]
                 }
             ]
@@ -3408,7 +3411,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DownloadModelForPasswordChange",
                         "ReduceRequirementsForPasswordChange"
                     ]
                 }
