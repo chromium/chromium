@@ -9,7 +9,7 @@
 <body class="show_output">
 
 <h1>2d.color.space.display-p3-linear</h1>
-<p class="desc">test getImageData and putImageData with a display-p3-linear uint8 canvas</p>
+<p class="desc">test getImageData color conversion with a display-p3-linear uint8 canvas</p>
 
 
 <p class="output">Actual output:</p>
@@ -17,7 +17,7 @@
 
 <ul id="d"></ul>
 <script>
-var t = async_test("test getImageData and putImageData with a display-p3-linear uint8 canvas");
+var t = async_test("test getImageData color conversion with a display-p3-linear uint8 canvas");
 _addTest(function(canvas, ctx) {
 
   const color_style = 'color(display-p3-linear 0.0392 0.3922 0.7843)';
