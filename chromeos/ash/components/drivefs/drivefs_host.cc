@@ -102,9 +102,7 @@ class DriveFsHost::MountState : public DriveFsSession {
         delegate->GetLostAndFoundDirectoryName(),
         base::FeatureList::IsEnabled(ash::features::kDriveFsMirroring),
         delegate->IsVerboseLoggingEnabled(),
-        base::FeatureList::IsEnabled(ash::features::kDriveFsShowCSEFiles)
-            ? mojom::CSESupport::kListing
-            : mojom::CSESupport::kNone,
+        mojom::CSESupport::kListing,
         ash::features::IsLauncherContinueSectionWithRecentsEnabled(),
         ash::features::IsShowSharingUserInLauncherContinueSectionEnabled(),
     };

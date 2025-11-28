@@ -718,9 +718,6 @@ CopyOrMoveIOTaskImpl::GetErrorBehavior() {
 }
 
 bool CopyOrMoveIOTaskImpl::ShouldSkipEncryptedFiles() {
-  if (!base::FeatureList::IsEnabled(ash::features::kDriveFsShowCSEFiles)) {
-    return false;
-  }
   auto* drive_integration_service =
       drive::util::GetIntegrationServiceByProfile(profile_);
   if (!drive_integration_service) {

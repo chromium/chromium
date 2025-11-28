@@ -7075,8 +7075,6 @@ inline constexpr char kEnableExternalDisplayHdr10Description[] =
 inline constexpr char kDriveFsMirroringName[] =
     "Enable local to Drive mirror sync";
 
-inline constexpr char kDriveFsShowCSEFilesName[] =
-    "Enable listing of CSE files";
 inline constexpr char kDriveFsShowCSEFilesDescription[] =
     "Enable listing of CSE files in DriveFS, which will result in these files "
     "being visible in the Files App's Google Drive item.";
