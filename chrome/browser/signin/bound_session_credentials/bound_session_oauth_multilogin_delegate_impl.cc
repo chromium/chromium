@@ -20,8 +20,6 @@ GURL ConvertDeviceBoundSessionDomainToUrl(
   switch (domain) {
     case kGoogle:
       return GURL("https://google.com");
-    case kYoutube:
-      return GURL("https://youtube.com");
     case kUnknown:
       // This shouldn't happen as unknown domains should be filtered out before
       // (at server response parsing).

@@ -1142,7 +1142,7 @@ TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSession) {
             {
               "name": "__Secure-1PSIDTS",
               "value": "secure-1p-sidts-value",
-              "domain": ".youtube.com",
+              "domain": ".google.com",
               "path": "/",
               "isSecure": true,
               "isHttpOnly": true,
@@ -1165,7 +1165,7 @@ TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSession) {
           "token_binding_directed_response": {},
           "device_bound_session_info": [
             {
-              "domain": "YOUTUBE_COM",
+              "domain": "GOOGLE_COM",
               "is_device_bound": true,
               "register_session_payload": {
                 "session_identifier": "id",
@@ -1174,7 +1174,7 @@ TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSession) {
                     "type": "cookie",
                     "name": "__Secure-1PSIDTS",
                     "scope": {
-                      "domain": ".youtube.com",
+                      "domain": ".google.com",
                       "path": "/"
                     }
                   }
@@ -1201,7 +1201,7 @@ TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSession) {
       UnorderedElementsAre(
           AllOf(
               Field(&DeviceBoundSession::is_device_bound, true),
-              Field(&DeviceBoundSession::domain, kYoutube),
+              Field(&DeviceBoundSession::domain, kGoogle),
               Field(&DeviceBoundSession::register_session_payload,
                     Optional(AllOf(
                         Field(&RegisterBoundSessionPayload::session_id, "id"),
@@ -1212,7 +1212,7 @@ TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSession) {
                                   Field(&Credential::name, "__Secure-1PSIDTS"),
                                   Field(&Credential::scope,
                                         AllOf(Field(&Scope::domain,
-                                                    ".youtube.com"),
+                                                    ".google.com"),
                                               Field(&Scope::path, "/")))))))))),
           AllOf(Field(&DeviceBoundSession::is_device_bound, true),
                 Field(&DeviceBoundSession::domain, kGoogle))));
@@ -1235,7 +1235,7 @@ TEST(OAuthMultiloginResultTest, GetDeviceBoundSessionsToRegister) {
           "cookies":[],
           "device_bound_session_info": [
             {
-              "domain": "YOUTUBE_COM",
+              "domain": "GOOGLE_COM",
               "is_device_bound": true,
               "register_session_payload": {
                 "session_identifier": "id",
@@ -1244,7 +1244,7 @@ TEST(OAuthMultiloginResultTest, GetDeviceBoundSessionsToRegister) {
                     "type": "cookie",
                     "name": "__Secure-1PSIDTS",
                     "scope": {
-                      "domain": ".youtube.com",
+                      "domain": ".google.com",
                       "path": "/"
                     }
                   }
@@ -1257,7 +1257,7 @@ TEST(OAuthMultiloginResultTest, GetDeviceBoundSessionsToRegister) {
               "is_device_bound": true
             },
             {
-              "domain": "YOUTUBE_COM",
+              "domain": "GOOGLE_COM",
               "is_device_bound": false
             }
           ]
@@ -1391,7 +1391,7 @@ TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSessionInvalidPayload) {
             {
               "name": "__Secure-1PSIDTS",
               "value": "secure-1p-sidts-value",
-              "domain": ".youtube.com",
+              "domain": ".google.com",
               "path": "/",
               "isSecure": true,
               "isHttpOnly": true,
@@ -1403,7 +1403,7 @@ TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSessionInvalidPayload) {
           "token_binding_directed_response": {},
           "device_bound_session_info": [
             {
-              "domain": "YOUTUBE_COM",
+              "domain": "GOOGLE_COM",
               "is_device_bound": true,
               "register_session_payload": {
                 "credentials": [
@@ -1411,7 +1411,7 @@ TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSessionInvalidPayload) {
                     "type": "cookie",
                     "name": "__Secure-1PSIDTS",
                     "scope": {
-                      "domain": ".youtube.com",
+                      "domain": ".google.com",
                       "path": "/"
                     }
                   }
@@ -1584,7 +1584,7 @@ TEST(OAuthMultiloginResultTest, GetStandardDeviceBoundSessionsToRegister) {
               "is_device_bound": true
             },
             {
-              "domain": "YOUTUBE_COM",
+              "domain": "GOOGLE_COM",
               "is_device_bound": false
             }
           ]

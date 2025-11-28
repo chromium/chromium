@@ -106,7 +106,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuthMultiloginResult {
   // device-bound session.
   struct COMPONENT_EXPORT(GOOGLE_APIS) DeviceBoundSession {
     // The supported top-level domains.
-    enum class Domain { kUnknown, kGoogle, kYoutube };
+    enum class Domain { kUnknown, kGoogle };
 
     DeviceBoundSession();
     ~DeviceBoundSession();

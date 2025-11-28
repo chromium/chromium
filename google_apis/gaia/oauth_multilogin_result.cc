@@ -57,9 +57,6 @@ DeviceBoundSession::Domain ParseDeviceBoundSessionDomain(
   if (base::EqualsCaseInsensitiveASCII(domain, "GOOGLE_COM")) {
     return DeviceBoundSession::Domain::kGoogle;
   }
-  if (base::EqualsCaseInsensitiveASCII(domain, "YOUTUBE_COM")) {
-    return DeviceBoundSession::Domain::kYoutube;
-  }
   return DeviceBoundSession::Domain::kUnknown;
 }
 
