@@ -2966,6 +2966,9 @@ Chromium is unable to recover your settings.
       <message name="IDS_BOOKMARK_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE" desc="Text of the promo displayed at the bottom of the bookmark bubble asking the user to enable UNO.">
         To get this bookmark and more on all your devices, sign in to Chromium
       </message>
+      <message name="IDS_BOOKMARK_INSTALLED_BUBBLE_PROMO_EXPLICIT_SIGNIN_MESSAGE" desc="Text of the promo displayed after the bookmark bubble asking the user to enable UNO.">
+        To get your bookmarks and more on all your devices, sign in to Chromium. This bookmark will be saved in your Google Account after you sign in.
+      </message>
 
       <!-- Dice Migration strings -->
       <message name="IDS_DICE_MIGRATION_DIALOG_TITLE" desc="The title in the Dice Migration dialog advertising the sign-in benefit.">

@@ -1260,6 +1260,12 @@
       other {{BOOKMARK_COUNT} bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
       }
     </message>
+    <message name="IDS_BATCH_UPLOAD_PROMO_SUBTITLE_ITEMS_WITH_LINK" desc="The text for a promotional banner located on the Account Settings page. It informs the user how many items on their local device are waiting to be uploaded. The text contains a placeholder for the number of items (e.g., '5 items') and acts as a clickable link that takes the user to the Batch Upload screen. Please ensure the placeholder handles pluralization correctly.">
+      {ITEM_COUNT, plural,
+      =1 {1 item is saved only to this device. To use it on your other devices, <ph name="BEGIN_LINK">&lt;a href="'#'" id="openBatchUploadLink"&gt;</ph>save it in your Google Account<ph name="END_LINK">&lt;/a&gt;</ph>.}
+      other {{ITEM_COUNT} items are saved only to this device. To use them on your other devices, <ph name="BEGIN_LINK">&lt;a href="'#'" id="openBatchUploadLink"&gt;</ph>save them in your Google Account<ph name="END_LINK">&lt;/a&gt;</ph>.}
+      }
+    </message>
 
     <!-- Signout Confirmation Dialog Desktop -->
     <message name="IDS_SIGNOUT_CONFIRMATION_EXTENSIONS_SECTION_TITLE" desc="Title of the Extensions section in the Signout Confirmation dialog which allows users to remove extensions linked to their account when signing out.">
