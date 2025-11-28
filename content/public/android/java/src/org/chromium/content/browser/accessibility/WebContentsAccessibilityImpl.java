@@ -54,8 +54,8 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEM
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY;
-import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_URL;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_REQUEST_LAYOUT_BASED_ACTIONS;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_URL;
 import static org.chromium.content_public.browser.ContentFeatureList.ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND;
 
 import android.annotation.SuppressLint;
@@ -693,6 +693,15 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 };
     }
 
+    private void maybeUnregisterReceiver() {
+        if (mIsBroadcastReceiverRegistered) {
+            if (mBroadcastReceiver != null) {
+                ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
+            }
+            mIsBroadcastReceiverRegistered = false;
+        }
+    }
+
     // WindowEventObserver
 
     @Override
@@ -715,17 +724,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // When the native code was initialized, also record performance metrics unregister
             // our broadcast receiver.
             if (isNativeInitialized()) {
-                if (mIsBroadcastReceiverRegistered) {
-                    if (ContentFeatureMap.isEnabled(
-                            ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND)) {
-                        sSequencedTaskRunner.execute(
-                                () ->
-                                        ContextUtils.getApplicationContext()
-                                                .unregisterReceiver(mBroadcastReceiver));
-                    } else {
-                        ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
-                    }
-                    mIsBroadcastReceiverRegistered = false;
+                if (ContentFeatureMap.isEnabled(
+                        ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND)) {
+                    sSequencedTaskRunner.execute(() -> maybeUnregisterReceiver());
+                } else {
+                    maybeUnregisterReceiver();
                 }
                 mHistogramRecorder.recordAccessibilityPerformanceHistograms();
                 // When we are in an initialized state, accessibility may be disabled. In that
