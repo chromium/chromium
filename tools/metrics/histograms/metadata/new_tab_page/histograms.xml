@@ -484,7 +484,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Customization.Theme.ChromeColor.ColorId"
+<histogram name="NewTabPage.Customization.Theme.ChromeColor.Click"
     enum="NtpThemeColorId" expires_after="2026-05-24">
   <owner>hanxi@chromium.org</owner>
   <owner>yyanting@google.com</owner>
