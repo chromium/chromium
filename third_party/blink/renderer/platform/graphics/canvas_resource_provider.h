@@ -405,7 +405,7 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
                    int x,
                    int y) override;
 
-  static std::unique_ptr<CanvasResourceProvider> CreateBitmapProviderForTesting(
+  static std::unique_ptr<CanvasResourceProvider> CreateForTesting(
       gfx::Size size,
       const Canvas2DColorParams& color_params,
       ShouldInitialize initialize_provider,
@@ -422,7 +422,7 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
   friend class CanvasRenderingContext2D;
   friend class OffscreenCanvasRenderingContext2D;
 
-  static std::unique_ptr<CanvasResourceProviderBitmap> CreateBitmapProvider(
+  static std::unique_ptr<CanvasResourceProviderBitmap> Create(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
