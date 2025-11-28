@@ -457,7 +457,10 @@ CreateInputDataFromAnnotatedPageContent(
                       }];
     } else {
       [_webStateDeferredExecutor webState:webState
-                        executeOnceLoaded:^{
+                        executeOnceLoaded:^(BOOL success) {
+                          if (!success) {
+                            return;
+                          }
                           [weakSelf attachWebStateContent:webState
                                                     token:token
                                              hasCachedAPC:NO];

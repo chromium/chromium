@@ -51,4 +51,15 @@
   [snackbarHandler showSnackbarMessage:message bottomOffset:bottomOffset];
 }
 
+- (void)showCannotReloadTabError {
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CANNOT_RELOAD_TAB_ERROR);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
+
+  CommandDispatcher* dispatcher = _browser->GetCommandDispatcher();
+  id<SnackbarCommands> snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  [snackbarHandler showSnackbarMessage:message bottomOffset:0];
+}
+
 @end

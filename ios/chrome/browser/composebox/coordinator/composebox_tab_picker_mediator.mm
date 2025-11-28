@@ -32,6 +32,8 @@
   /// Stores the unique identifiers of web states that have valid cached APC
   /// (Annotated Page Content) data.
   std::set<std::string> _validAPCwebStatesIDs;
+  /// Stores the unique identifiers of web states that have failed to load.
+  NSMutableSet<GridItemIdentifier*>* _failedLoadedItemIDs;
   /// Utility to delay execution of blocks until a web state is loaded.
   WebStateDeferredExecutor* _webStateDeferredExecutor;
 }
@@ -54,6 +56,7 @@
         setSelectedTabsCount:self.selectedEditingItems.tabsCount];
 
     _webStateDeferredExecutor = [[WebStateDeferredExecutor alloc] init];
+    _failedLoadedItemIDs = [[NSMutableSet alloc] init];
   }
 
   return self;
@@ -86,6 +89,14 @@
         WebStateSearchCriteria{
             .identifier = itemID.tabSwitcherItem.identifier,
             .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned});
+
+    if (!webState) {
+      return NO;
+    }
+
+    if ([_failedLoadedItemIDs containsObject:itemID] || webState->IsCrashed()) {
+      return NO;
+    }
 
     BOOL cached = _validAPCwebStatesIDs.contains(
         base::NumberToString(webState->GetUniqueIdentifier().identifier()));
@@ -140,7 +151,11 @@
       // Defer snapshot update and item reconfiguration until the web state is
       // fully loaded.
       [_webStateDeferredExecutor webState:webState
-                        executeOnceLoaded:^{
+                        executeOnceLoaded:^(BOOL success) {
+                          if (!success) {
+                            [weakSelf handleFailedTabLoad:itemID];
+                            return;
+                          }
                           [weakSelf
                               updateSnapshotForWebState:webState->GetWeakPtr()
                                                  itemID:itemID];
@@ -270,13 +285,20 @@
       ->CancelPlaceholderForNextNavigation();
 }
 
-// Updates the snapshot for the given web state and reconfigures the grid item.
+/// Updates the snapshot for the given web state and reconfigures the grid item.
 - (void)updateSnapshotForWebState:(base::WeakPtr<web::WebState>)weakWebState
                            itemID:(GridItemIdentifier*)itemID {
   web::WebState* webState = weakWebState.get();
   if (!webState) {
     return;
   }
+
+  // This function is called when the web state successfully loaded, so it is
+  // not a failed loaded item anymore.
+  if ([_failedLoadedItemIDs containsObject:itemID]) {
+    [_failedLoadedItemIDs removeObject:itemID];
+  }
+
   __weak ComposeboxTabPickerMediator* weakSelf = self;
   SnapshotTabHelper::FromWebState(webState)->UpdateSnapshotWithCallback(
       ^(UIImage* image) {
@@ -284,16 +306,29 @@
       });
 }
 
-// Reconfigures the grid item to reflect updated state (e.g., new snapshot).
+/// Reconfigures the grid item to reflect updated state (e.g., new snapshot).
 - (void)reconfigureGridItem:(GridItemIdentifier*)itemID {
   [_gridConsumer replaceItem:itemID withReplacementItem:itemID];
 }
 
+/// Checks if the attachment quota is full. Returns YES only if the limit is
+/// reached and the provided `itemID` is not already selected (since selecting
+/// an existing item implies removal).
 - (BOOL)attachmentLimitReached:(GridItemIdentifier*)itemID {
   return ![self.selectedEditingItems containItem:itemID] &&
          (self.selectedEditingItems.tabsCount +
               [_tabsAttachmentDelegate nonTabAttachmentCount] >=
           kAttachmentLimit);
+}
+
+/// Handles the scenario where a tab fails to load.
+- (void)handleFailedTabLoad:(GridItemIdentifier*)itemID {
+  ComposeboxSnackbarPresenter* snackbar =
+      [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
+  [snackbar showCannotReloadTabError];
+  [_failedLoadedItemIDs addObject:itemID];
+  [self removeFromSelectionItemID:itemID];
+  [self reconfigureGridItem:itemID];
 }
 
 @end

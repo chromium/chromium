@@ -8,7 +8,8 @@
   // Observer for the web state loading.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   // Stores the callbacks to be used once the web state is loaded.
-  std::unordered_map<web::WebStateID, ProceduralBlock> _loadedCallbacks;
+  std::unordered_map<web::WebStateID, WebStateLoadedCompletionBlock>
+      _loadedCallbacks;
   // Stores the callbacks to be used once the web state is realized.
   std::unordered_map<web::WebStateID, ProceduralBlock> _realizedCallbacks;
   // Temporarily stores the active observations.
@@ -27,7 +28,7 @@
 }
 
 - (void)webState:(web::WebState*)webState
-    executeOnceLoaded:(ProceduralBlock)completion {
+    executeOnceLoaded:(WebStateLoadedCompletionBlock)completion {
   _loadedCallbacks[webState->GetUniqueIdentifier()] = completion;
   BOOL realized = webState->IsRealized();
   BOOL loading = webState->IsLoading();
@@ -43,7 +44,8 @@
     return;
   }
 
-  [self callLoadedCompletionForID:webState->GetUniqueIdentifier()];
+  // Already loaded.
+  [self callLoadedCompletionForID:webState->GetUniqueIdentifier() success:YES];
 }
 
 - (void)webState:(web::WebState*)webState
@@ -83,9 +85,10 @@
   webState->ForceRealized();
 }
 
-- (void)callLoadedCompletionForID:(web::WebStateID)webStateID {
+- (void)callLoadedCompletionForID:(web::WebStateID)webStateID
+                          success:(BOOL)success {
   if (auto block = _loadedCallbacks[webStateID]) {
-    block();
+    block(success);
     _loadedCallbacks.erase(webStateID);
   }
 }
@@ -121,7 +124,8 @@
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
   [self removeObserverForWebState:webState];
-  [self callLoadedCompletionForID:webState->GetUniqueIdentifier()];
+  [self callLoadedCompletionForID:webState->GetUniqueIdentifier()
+                          success:success];
 }
 
 - (void)webStateRealized:(web::WebState*)webState {
@@ -134,7 +138,7 @@
 - (void)webStateDestroyed:(web::WebState*)webState {
   [self removeObserverForWebState:webState];
   [self callRealizedCompletionForID:webState->GetUniqueIdentifier()];
-  [self callLoadedCompletionForID:webState->GetUniqueIdentifier()];
+  [self callLoadedCompletionForID:webState->GetUniqueIdentifier() success:NO];
 }
 
 @end

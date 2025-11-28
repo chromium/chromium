@@ -21,6 +21,9 @@ class Browser;
 // Shows a snackbar with a generic error message with a bottom offset.
 - (void)showUnableToAddAttachmentSnackbarWithBottomOffset:(CGFloat)bottomOffset;
 
+// Shows a snackbar with a generic error message if a tab can't be reloaded.
+- (void)showCannotReloadTabError;
+
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

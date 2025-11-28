@@ -9,12 +9,16 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
+// Defines a block to be executed once the web state is loaded, providing a
+// boolean indicating success.
+typedef void (^WebStateLoadedCompletionBlock)(BOOL success);
+
 // Utilitary to delay execution until the web state is loaded.
 @interface WebStateDeferredExecutor : NSObject <CRWWebStateObserver>
 
 // Executes the given `completion` once the web state is loaded.
 - (void)webState:(web::WebState*)webState
-    executeOnceLoaded:(ProceduralBlock)completion;
+    executeOnceLoaded:(WebStateLoadedCompletionBlock)completion;
 
 // Executes the given `completion` once the web state is realized.
 - (void)webState:(web::WebState*)webState
