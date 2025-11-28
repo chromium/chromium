@@ -16,7 +16,6 @@ namespace enterprise_reporting {
 
 // Desktop implementation of platform-specific info fetching for Enterprise
 // browser report generation.
-// TODO(crbug.com/40703888): Move Chrome OS code to its own delegate
 class BrowserReportGeneratorDesktop : public BrowserReportGenerator::Delegate {
  public:
   BrowserReportGeneratorDesktop();
