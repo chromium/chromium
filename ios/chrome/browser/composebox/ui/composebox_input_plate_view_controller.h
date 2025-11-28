@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
-#import "ios/chrome/browser/composebox/ui/composebox_animation_context_provider.h"
+#import "ios/chrome/browser/composebox/ui/composebox_animation_context.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_mutator.h"
 
@@ -65,6 +65,9 @@
 
 // The metrics recorder of the composebox.
 @property(nonatomic, weak) ComposeboxMetricsRecorder* metricsRecorder;
+
+// Whether the UI is in compact (single line) mode.
+@property(nonatomic, readonly, getter=isCompact) BOOL compact;
 
 // Initializes a new instance with a given theme.
 - (instancetype)initWithTheme:(ComposeboxTheme*)theme;

@@ -14,7 +14,7 @@
 #import "base/unguessable_token.h"
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/composebox/public/features.h"
-#import "ios/chrome/browser/composebox/ui/composebox_animation_context_provider.h"
+#import "ios/chrome/browser/composebox/ui/composebox_animation_context.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_cell.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_view.h"
@@ -107,9 +107,6 @@ const CGFloat kCloseIndicatorSize = 10.0f;
 /// Edit view contained in `_omniboxContainer`.
 @property(nonatomic, strong) UIView<TextFieldViewContaining>* editView;
 
-/// Whether the UI is in compact (single line) mode.
-@property(nonatomic, assign) BOOL isCompactMode;
-
 /// The send button.
 @property(nonatomic, strong) UIButton* sendButton;
 
@@ -162,7 +159,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   NSLayoutConstraint* _bottomPaddingConstraint;
 }
 
-/// ComposeboxAnimationContextProvider
+/// ComposeboxAnimationContext
 @synthesize inputPlateViewForAnimation = _inputPlateContainerView;
 @synthesize keyboardHeight = _keyboardHeight;
 
@@ -354,11 +351,11 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   _sendButton.hidden = hidden;
 }
 
-- (void)setIsCompactMode:(BOOL)isCompactMode {
-  if (_isCompactMode == isCompactMode) {
+- (void)setCompact:(BOOL)compact {
+  if (_compact == compact) {
     return;
   }
-  _isCompactMode = isCompactMode;
+  _compact = compact;
 
   if (!self.viewLoaded) {
     return;
@@ -999,7 +996,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
     }
   }
 
-  if (self.isCompactMode) {
+  if (self.compact) {
     [_inputPlateStackView insertArrangedSubview:_plusButton atIndex:0];
     [_inputPlateStackView addArrangedSubview:_micButton];
     [_inputPlateStackView addArrangedSubview:_lensButton];
@@ -1028,16 +1025,16 @@ const CGFloat kCloseIndicatorSize = 10.0f;
 - (void)updateInputPlateStackViewAnimated:(BOOL)animated {
   if (!animated) {
     [self updateInputPlateStackViewContent];
-    [self.editView hideLeadingImage:self.isCompactMode];
+    [self.editView hideLeadingImage:self.compact];
     return;
   }
 
-  CGFloat initialAlpha = self.isCompactMode ? 1 : 0;
+  CGFloat initialAlpha = self.compact ? 1 : 0;
   CGFloat finalAlpha = 1 - initialAlpha;
   [self.editView setLeadingImageAlpha:initialAlpha];
   self.sendButton.alpha = initialAlpha;
 
-  [self.editView hideLeadingImage:self.isCompactMode];
+  [self.editView hideLeadingImage:self.compact];
 
   auto animations = ^() {
     [UIView addKeyframeWithRelativeStartTime:0
@@ -1045,7 +1042,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
                                   animations:^{
                                     [self updateInputPlateStackViewContent];
                                     [self.editView
-                                        hideLeadingImage:self.isCompactMode];
+                                        hideLeadingImage:self.compact];
                                     [self.inputPlateStackView layoutIfNeeded];
                                     [self.view layoutIfNeeded];
                                   }];

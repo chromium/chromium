@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_COORDINATOR_H_
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol ComposeboxAnimationBase;
@@ -25,6 +26,9 @@ enum class ComposeboxEntrypoint;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+/// Gracefully dismisses the coordinator before completing the cleanup.
+- (void)stopAnimatedWithCompletion:(ProceduralBlock)completion;
 
 @end
 

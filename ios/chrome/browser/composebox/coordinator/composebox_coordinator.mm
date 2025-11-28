@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_position.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
-#import "ios/chrome/browser/composebox/ui/composebox_animation_context_provider.h"
+#import "ios/chrome/browser/composebox/ui/composebox_animation_context.h"
 #import "ios/chrome/browser/composebox/ui/composebox_dismiss_animator.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
 #import "ios/chrome/browser/composebox/ui/composebox_present_animator.h"
@@ -34,7 +34,7 @@
 
 @interface ComposeboxCoordinator () <ComposeboxViewControllerDelegate,
                                      ComposeboxNavigationMediatorDelegate,
-                                     ComposeboxAnimationContextProvider,
+                                     ComposeboxAnimationContext,
                                      UIViewControllerTransitioningDelegate>
 
 @end
@@ -51,7 +51,7 @@
   // The container view controller.
   ComposeboxViewController* _viewController;
   // The base of the composebox animations.
-  __weak id<ComposeboxAnimationBase> _composeboxAnimationBase;
+  __weak id<ComposeboxAnimationBase> _animationBase;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -59,12 +59,12 @@
                                 entrypoint:(ComposeboxEntrypoint)entrypoint
                                      query:(NSString*)query
                    composeboxAnimationBase:
-                       (id<ComposeboxAnimationBase>)composeboxAnimationBase {
+                       (id<ComposeboxAnimationBase>)animationBase {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _entrypoint = entrypoint;
     _query = query;
-    _composeboxAnimationBase = composeboxAnimationBase;
+    _animationBase = animationBase;
   }
   return self;
 }
@@ -107,9 +107,32 @@
                                       completion:nil];
 }
 
+- (void)stopAnimatedWithCompletion:(ProceduralBlock)completion {
+  __weak __typeof(self) weakSelf = self;
+  auto dismissComplete = ^{
+    [weakSelf cleanup];
+    if (completion) {
+      completion();
+    }
+  };
+
+  if (!_viewController.presentingViewController) {
+    dismissComplete();
+    return;
+  }
+
+  [_viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:dismissComplete];
+}
+
 - (void)stop {
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+  [_viewController.presentingViewController dismissViewControllerAnimated:NO
                                                                completion:nil];
+  [self cleanup];
+}
+
+- (void)cleanup {
   _viewController = nil;
 
   [_aimComposeboxCoordinator stop];
@@ -125,23 +148,25 @@
     animationControllerForPresentedController:(UIViewController*)presented
                          presentingController:(UIViewController*)presenting
                              sourceController:(UIViewController*)source {
-  ComposeboxPresentAnimator* animator = [[ComposeboxPresentAnimator alloc]
-      initWithContextProvider:self
-                animationBase:_composeboxAnimationBase];
+  ComposeboxPresentAnimator* animator =
+      [[ComposeboxPresentAnimator alloc] initWithContext:self
+                                           animationBase:_animationBase];
   animator.toggleOnAIM = _entrypoint == ComposeboxEntrypoint::kNTPAIMButton;
   return animator;
 }
 
 - (id<UIViewControllerAnimatedTransitioning>)
     animationControllerForDismissedController:(UIViewController*)dismissed {
-  return [[ComposeboxDismissAnimator alloc] initWithContextProvider:self];
+  return [[ComposeboxDismissAnimator alloc]
+      initWithContextProvider:self
+                animationBase:_animationBase];
 }
 
 #pragma mark - ComposeboxViewControllerDelegate
 
 - (void)composeboxViewControllerDidTapCloseButton:
     (ComposeboxInputPlateViewController*)viewController {
-  [self dismissComposeboxImmediately:YES];
+  [self dismissComposeboxImmediately:NO];
 }
 
 #pragma mark - ComposeboxNavigationMediatorDelegate
@@ -187,18 +212,32 @@
   return ComposeboxInputPlatePosition::kTop;
 }
 
-- (UIView*)closeButtonForAnimation {
-  return _viewController.closeButton;
-}
+#pragma mark - ComposeboxAnimationContext
 
 - (UIView*)inputPlateViewForAnimation {
   return [_aimComposeboxCoordinator
               .inputViewController inputPlateViewForAnimation];
 }
 
+- (UIView*)closeButtonForAnimation {
+  return _viewController.closeButton;
+}
+
+- (UIView*)popupViewForAnimation {
+  return _viewController.omniboxPopupContainer;
+}
+
 - (void)setAIModeEnabled:(BOOL)AIModeEnabled {
   [_aimComposeboxCoordinator.inputViewController
       setAIModeEnabled:AIModeEnabled];
+}
+
+- (void)expandInputPlateForDismissal {
+  [_viewController expandInputPlateForDismissal];
+}
+
+- (BOOL)inputPlateIsCompact {
+  return _aimComposeboxCoordinator.inputViewController.compact;
 }
 
 @end

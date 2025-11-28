@@ -2673,14 +2673,17 @@ const char kChromeAppStoreUrl[] =
   if (!_composeboxCoordinator) {
     return;
   }
-  __weak __typeof__(self) weakSelf = self;
-  base::OnceClosure completion = base::BindOnce(^{
-    [weakSelf.composeboxCoordinator stop];
-    weakSelf.composeboxCoordinator = nil;
-  });
+
   if (immediately) {
-    std::move(completion).Run();
+    [self.composeboxCoordinator stop];
+    self.composeboxCoordinator = nil;
   } else {
+    __weak __typeof(self) weakSelf = self;
+    base::OnceClosure completion = base::BindOnce(^{
+      [weakSelf.composeboxCoordinator stopAnimatedWithCompletion:^{
+        weakSelf.composeboxCoordinator = nil;
+      }];
+    });
     // Stop the prototoype on the next run loop as this might be called while
     // the prototype's omnibox is loading a query. TODO(crbug.com/454302076):
     // Remove this workaround once the omnibox can be safely dismissed while

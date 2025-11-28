@@ -7,13 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/composebox/ui/composebox_animation_context_provider.h"
+#import "ios/chrome/browser/composebox/public/composebox_animation_base.h"
+#import "ios/chrome/browser/composebox/ui/composebox_animation_context.h"
 
 // Animator for the custom dismissal of the composebox.
 @interface ComposeboxDismissAnimator
     : NSObject <UIViewControllerAnimatedTransitioning>
-- (instancetype)initWithContextProvider:
-    (id<ComposeboxAnimationContextProvider>)contextProvider;
+
+- (instancetype)
+    initWithContextProvider:(id<ComposeboxAnimationContext>)contextProvider
+              animationBase:(id<ComposeboxAnimationBase>)animationBase;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_DISMISS_ANIMATOR_H_

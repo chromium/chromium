@@ -4,7 +4,7 @@
 
 source_set("ui") {
   sources = [
-    "composebox_animation_context_provider.h",
+    "composebox_animation_context.h",
     "composebox_dismiss_animator.h",
     "composebox_dismiss_animator.mm",
     "composebox_input_item.h",

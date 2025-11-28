@@ -981,8 +981,8 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)updateCompactModeIfNeeded {
   BOOL compactModeAllowed = IsComposeboxCompactModeEnabled();
   BOOL requiresExpansion = _isMultiline || _AIModeEnabled;
-  BOOL isCompactMode = !requiresExpansion && compactModeAllowed;
-  [self.consumer setIsCompactMode:isCompactMode];
+  BOOL compact = !requiresExpansion && compactModeAllowed;
+  [self.consumer setCompact:compact];
 }
 
 #pragma mark - TextFieldViewContainingHeightDelegate

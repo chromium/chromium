@@ -34,9 +34,15 @@
 // The close button.
 @property(nonatomic, readonly) UIButton* closeButton;
 
+// Container for the omnibox popup.
+@property(nonatomic, readonly) UIView* omniboxPopupContainer;
+
 // Adds the input view controller to this ViewController.
 - (void)addInputViewController:
     (ComposeboxInputPlateViewController*)inputViewController;
+
+// Requests the input plate to expand beyond to full width when dismissing.
+- (void)expandInputPlateForDismissal;
 
 @end
 

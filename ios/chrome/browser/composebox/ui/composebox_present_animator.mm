@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/composebox/ui/composebox_present_animator.h"
 
-#import "ios/chrome/browser/composebox/ui/composebox_animation_context_provider.h"
+#import "ios/chrome/browser/composebox/ui/composebox_animation_context.h"
 
 namespace {
 // The total duration of the presentation animation.
@@ -15,17 +15,15 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
 }  // namespace
 
 @implementation ComposeboxPresentAnimator {
-  __weak id<ComposeboxAnimationContextProvider> _contextProvider;
+  __weak id<ComposeboxAnimationContext> _context;
   __weak id<ComposeboxAnimationBase> _animationBase;
 }
 
-- (instancetype)initWithContextProvider:
-                    (id<ComposeboxAnimationContextProvider>)contextProvider
-                          animationBase:
-                              (id<ComposeboxAnimationBase>)animationBase {
+- (instancetype)initWithContext:(id<ComposeboxAnimationContext>)context
+                  animationBase:(id<ComposeboxAnimationBase>)animationBase {
   self = [super init];
   if (self) {
-    _contextProvider = contextProvider;
+    _context = context;
     _animationBase = animationBase;
   }
   return self;
@@ -50,22 +48,22 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
   // This is needed to ensure that the input is correctly sized and positioned.
   [toView layoutIfNeeded];
 
-  UIView* inputPlateView = [_contextProvider inputPlateViewForAnimation];
+  UIView* inputPlateView = [_context inputPlateViewForAnimation];
   CGRect finalFrame = [inputPlateView convertRect:inputPlateView.frame
                                            toView:toView];
 
   BOOL toggleOnAIM = self.toggleOnAIM;
-  __weak id<ComposeboxAnimationContextProvider> contextProvider =
-      _contextProvider;
+  __weak id<ComposeboxAnimationContext> context = _context;
 
   __weak id<ComposeboxAnimationBase> animationBase = _animationBase;
 
   UIView* transitionContainerView = [transitionContext containerView];
   UIView* entrypointCopy = [animationBase entrypointViewVisualCopy];
+  BOOL compact = [_context inputPlateIsCompact];
   // Where the entrypoint is not available as a shared element, fallback to
   // a different transition.
-  if (!entrypointCopy) {
-    [self animateTransitionWihoutSharedElement:transitionContext];
+  if (!entrypointCopy || !compact) {
+    [self animateTransitionWithoutSharedElement:transitionContext];
     return;
   }
 
@@ -79,11 +77,10 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
   // animation.
   [animationBase setEntrypointViewHidden:YES];
 
-  contextProvider.inputPlateViewForAnimation.alpha = 0;
-  contextProvider.closeButtonForAnimation.alpha = 0;
-  contextProvider.closeButtonForAnimation.transform =
-      CGAffineTransformMakeScale(kInitialScaleForAppear,
-                                 kInitialScaleForAppear);
+  context.inputPlateViewForAnimation.alpha = 0;
+  context.closeButtonForAnimation.alpha = 0;
+  context.closeButtonForAnimation.transform = CGAffineTransformMakeScale(
+      kInitialScaleForAppear, kInitialScaleForAppear);
 
   toView.alpha = 1;
 
@@ -122,30 +119,29 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
                                         entrypointCopy.alpha = 0;
                                       }];
         // Scale and reveal the close button.
-        [UIView addKeyframeWithRelativeStartTime:0.3
-                                relativeDuration:0.9
-                                      animations:^{
-                                        contextProvider.closeButtonForAnimation
-                                            .alpha = 1;
-                                        contextProvider.closeButtonForAnimation
-                                            .transform =
-                                            CGAffineTransformMakeScale(1, 1);
-                                      }];
+        [UIView
+            addKeyframeWithRelativeStartTime:0.3
+                            relativeDuration:0.9
+                                  animations:^{
+                                    context.closeButtonForAnimation.alpha = 1;
+                                    context.closeButtonForAnimation.transform =
+                                        CGAffineTransformMakeScale(1, 1);
+                                  }];
         // Scale and reveal the close button.
-        [UIView addKeyframeWithRelativeStartTime:0.7
-                                relativeDuration:0.9
-                                      animations:^{
-                                        contextProvider
-                                            .inputPlateViewForAnimation.alpha =
-                                            1;
-                                      }];
+        [UIView
+            addKeyframeWithRelativeStartTime:0.7
+                            relativeDuration:0.9
+                                  animations:^{
+                                    context.inputPlateViewForAnimation.alpha =
+                                        1;
+                                  }];
         // Enables AIM if needed.
         [UIView
             addKeyframeWithRelativeStartTime:0.2
                             relativeDuration:0.8
                                   animations:^{
                                     if (toggleOnAIM) {
-                                      [contextProvider setAIModeEnabled:YES];
+                                      [context setAIModeEnabled:YES];
                                     }
                                   }];
       }
@@ -158,20 +154,17 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
       }];
 }
 
-- (void)animateTransitionWihoutSharedElement:
+- (void)animateTransitionWithoutSharedElement:
     (id<UIViewControllerContextTransitioning>)transitionContext {
-  __weak id<ComposeboxAnimationContextProvider> contextProvider =
-      _contextProvider;
+  __weak id<ComposeboxAnimationContext> context = _context;
   BOOL toggleOnAIM = self.toggleOnAIM;
 
-  contextProvider.inputPlateViewForAnimation.alpha = 0;
-  contextProvider.closeButtonForAnimation.alpha = 0;
-  contextProvider.inputPlateViewForAnimation.transform =
-      CGAffineTransformMakeScale(kInitialScaleForAppear,
-                                 kInitialScaleForAppear);
-  contextProvider.closeButtonForAnimation.transform =
-      CGAffineTransformMakeScale(kInitialScaleForAppear,
-                                 kInitialScaleForAppear);
+  context.inputPlateViewForAnimation.alpha = 0;
+  context.closeButtonForAnimation.alpha = 0;
+  context.inputPlateViewForAnimation.transform = CGAffineTransformMakeScale(
+      kInitialScaleForAppear, kInitialScaleForAppear);
+  context.closeButtonForAnimation.transform = CGAffineTransformMakeScale(
+      kInitialScaleForAppear, kInitialScaleForAppear);
 
   [UIView
       animateKeyframesWithDuration:[self transitionDuration:transitionContext]
@@ -183,14 +176,12 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
             addKeyframeWithRelativeStartTime:0
                             relativeDuration:1
                                   animations:^{
-                                    contextProvider.closeButtonForAnimation
-                                        .alpha = 1;
-                                    contextProvider.closeButtonForAnimation
-                                        .transform =
+                                    context.closeButtonForAnimation.alpha = 1;
+                                    context.closeButtonForAnimation.transform =
                                         CGAffineTransformMakeScale(1, 1);
-                                    contextProvider.inputPlateViewForAnimation
-                                        .alpha = 1;
-                                    contextProvider.inputPlateViewForAnimation
+                                    context.inputPlateViewForAnimation.alpha =
+                                        1;
+                                    context.inputPlateViewForAnimation
                                         .transform =
                                         CGAffineTransformMakeScale(1, 1);
                                   }];
@@ -200,7 +191,7 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
                             relativeDuration:0.8
                                   animations:^{
                                     if (toggleOnAIM) {
-                                      [contextProvider setAIModeEnabled:YES];
+                                      [context setAIModeEnabled:YES];
                                     }
                                   }];
       }

@@ -32,7 +32,7 @@
 - (void)setAIModeEnabled:(BOOL)AIModeEnabled;
 
 // Whether to present in compact (single line) mode.
-- (void)setIsCompactMode:(BOOL)isCompactMode;
+- (void)setCompact:(BOOL)compact;
 
 // Sets the favicon for the current tab.
 - (void)setCurrentTabFavicon:(UIImage*)favicon;

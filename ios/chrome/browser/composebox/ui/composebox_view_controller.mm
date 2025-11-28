@@ -23,8 +23,6 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 }  // namespace
 
 @implementation ComposeboxViewController {
-  // Container for the omnibox popup.
-  UIView* _omniboxPopupContainer;
   // WebView for the SRP, when AI Mode Immersive SRP is enabled.
   UIView* _webView;
   // The list of constraints for the current position. Updates once the current
@@ -36,6 +34,9 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   __weak ComposeboxInputPlateViewController* _inputViewController;
   // The theme of the composebox.
   ComposeboxTheme* _theme;
+
+  // The trailing input plate constraint to the close button.
+  NSLayoutConstraint* _constraintToCloseButton;
 }
 
 - (instancetype)initWithTheme:(ComposeboxTheme*)theme {
@@ -164,8 +165,17 @@ const CGFloat kCloseButtonAlpha = 0.6f;
                                         constant:kInputPlatePadding],
       ]];
       break;
-    case ComposeboxInputPlatePosition::kTop:
+    case ComposeboxInputPlatePosition::kTop: {
+      _constraintToCloseButton = [_inputViewController.view.trailingAnchor
+          constraintEqualToAnchor:_closeButton.leadingAnchor
+                         constant:-kInputPlatePadding];
+      auto constraintToMargin = [_inputViewController.view.trailingAnchor
+          constraintEqualToAnchor:_closeButton.trailingAnchor
+                         constant:0];
+      constraintToMargin.priority = UILayoutPriorityRequired - 1;
       [_constraintsForCurrentPosition addObjectsFromArray:@[
+        _constraintToCloseButton,
+        constraintToMargin,
         [_closeButton.topAnchor
             constraintEqualToAnchor:safeAreaGuide.topAnchor
                            constant:kCloseButtonDefaultPadding],
@@ -180,9 +190,6 @@ const CGFloat kCloseButtonAlpha = 0.6f;
         [_inputViewController.view.leadingAnchor
             constraintEqualToAnchor:safeAreaGuide.leadingAnchor
                            constant:kInputPlatePadding],
-        [_inputViewController.view.trailingAnchor
-            constraintEqualToAnchor:_closeButton.leadingAnchor
-                           constant:-kInputPlatePadding],
         [_inputViewController.view.topAnchor
             constraintEqualToAnchor:safeAreaGuide.topAnchor
                            constant:kInputPlateTopPadding],
@@ -192,11 +199,16 @@ const CGFloat kCloseButtonAlpha = 0.6f;
                                      constant:-kInputPlatePadding],
       ]];
       break;
+    }
     case ComposeboxInputPlatePosition::kMissing:
       break;
   }
 
   [NSLayoutConstraint activateConstraints:_constraintsForCurrentPosition];
+}
+
+- (void)expandInputPlateForDismissal {
+  _constraintToCloseButton.active = NO;
 }
 
 - (ComposeboxInputPlatePosition)currentInputPlatePosition {
