@@ -221,6 +221,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
                 fieldNameLabelText:l10n_util::GetNSString(IDS_IOS_AUTOFILL_CVC)
                     textFieldValue:self.cardCvc
                   textFieldEnabled:self.supportsEditing];
+    self.cardCvcItem.keyboardType = UIKeyboardTypeNumberPad;
+    self.cardCvcItem.customTextfieldAccessibilityIdentifier =
+        kSaveCardModalCVCTextFieldIdentifier;
     [model addItem:self.cardCvcItem
         toSectionWithIdentifier:SectionIdentifierContent];
   }
@@ -300,34 +303,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
       break;
     }
     case ItemTypeCardHolderName: {
-      TableViewTextEditCell* editCell =
-          base::apple::ObjCCast<TableViewTextEditCell>(cell);
-      editCell.selectionStyle = UITableViewCellSelectionStyleNone;
-      editCell.textField.delegate = self;
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
     }
     case ItemTypeCardExpireMonth: {
-      TableViewTextEditCell* editCell =
-          base::apple::ObjCCast<TableViewTextEditCell>(cell);
-      editCell.selectionStyle = UITableViewCellSelectionStyleNone;
-      editCell.textField.delegate = self;
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
     }
     case ItemTypeCardExpireYear: {
-      TableViewTextEditCell* editCell =
-          base::apple::ObjCCast<TableViewTextEditCell>(cell);
-      editCell.selectionStyle = UITableViewCellSelectionStyleNone;
-      editCell.textField.delegate = self;
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
     }
     case ItemTypeCardCvc: {
-      TableViewTextEditCell* editCell =
-          base::apple::ObjCCast<TableViewTextEditCell>(cell);
-      editCell.textField.keyboardType = UIKeyboardTypeNumberPad;
-      editCell.textField.accessibilityIdentifier =
-          kSaveCardModalCVCTextFieldIdentifier;
-      editCell.selectionStyle = UITableViewCellSelectionStyleNone;
-      editCell.textField.delegate = self;
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
     }
     case ItemTypeCardLegalMessage: {
@@ -645,6 +633,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   textEditItem.hideIcon = !enabled;
   textEditItem.returnKeyType = UIReturnKeyDone;
   textEditItem.delegate = self;
+  textEditItem.textFieldDelegate = self;
 
   return textEditItem;
 }

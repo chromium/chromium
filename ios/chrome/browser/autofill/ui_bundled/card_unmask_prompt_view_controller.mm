@@ -430,6 +430,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   TableViewTextEditItem* CVCInputItem =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeCVCInput];
   CVCInputItem.delegate = self;
+  CVCInputItem.textFieldDelegate = self;
   CVCInputItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_AUTOFILL_CARD_UNMASK_PROMPT_CVC_FIELD_TITLE);
   CVCInputItem.keyboardType = UIKeyboardTypeNumberPad;
@@ -645,14 +646,6 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
   ItemType rowItemType = static_cast<ItemType>(
       [self.tableViewModel itemTypeForIndexPath:indexPath]);
-
-  if (rowItemType == ItemTypeCVCInput) {
-    TableViewTextEditCell* rowCell =
-        base::apple::ObjCCastStrict<TableViewTextEditCell>(cell);
-    rowCell.textField.delegate = self;
-    // Hide the icon from Voice Over.
-    rowCell.identifyingIconButton.isAccessibilityElement = NO;
-  }
 
   if (rowItemType == ItemTypeCardInfo) {
     cell.backgroundColor = [UIColor colorNamed:kGrey200Color];

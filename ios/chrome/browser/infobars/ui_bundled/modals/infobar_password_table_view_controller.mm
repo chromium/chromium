@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -42,7 +43,8 @@ const CGFloat kSymbolSize = 15;
 const CGFloat kTableViewSeparatorInsetHide = 10000;
 }  // namespace
 
-@interface InfobarPasswordTableViewController () <UITextFieldDelegate>
+@interface InfobarPasswordTableViewController () <UITextFieldDelegate,
+                                                  TableViewTextEditItemDelegate>
 // Properties backing InfobarPasswordModalConsumer interface.
 @property(nonatomic, copy) NSString* username;
 @property(nonatomic, copy) NSString* maskedPassword;
@@ -177,6 +179,7 @@ const CGFloat kTableViewSeparatorInsetHide = 10000;
   self.usernameItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
   self.usernameItem.textFieldValue = self.username;
+  self.usernameItem.textFieldDelegate = self;
   self.usernameItem.returnKeyType = UIReturnKeyDone;
   self.usernameItem.textFieldEnabled = !self.currentCredentialsSaved;
   self.usernameItem.autoCapitalizationType = UITextAutocapitalizationTypeNone;
@@ -258,24 +261,12 @@ const CGFloat kTableViewSeparatorInsetHide = 10000;
       break;
     }
     case ItemTypeUsername: {
-      TableViewTextEditCell* editCell =
-          base::apple::ObjCCast<TableViewTextEditCell>(cell);
-      [editCell.textField addTarget:self
-                             action:@selector(usernameEditDidBegin)
-                   forControlEvents:UIControlEventEditingDidBegin];
-      [editCell.textField addTarget:self
-                             action:@selector(updateSaveCredentialsButtonState)
-                   forControlEvents:UIControlEventEditingChanged];
-      editCell.selectionStyle = UITableViewCellSelectionStyleNone;
-      editCell.textField.delegate = self;
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
     }
     case ItemTypePassword: {
       TableViewTextEditCell* editCell =
           base::apple::ObjCCast<TableViewTextEditCell>(cell);
-      [editCell.textField addTarget:self
-                             action:@selector(updateSaveCredentialsButtonState)
-                   forControlEvents:UIControlEventEditingChanged];
       [editCell.identifyingIconButton addTarget:self
                                          action:@selector(togglePasswordMasking)
                                forControlEvents:UIControlEventTouchUpInside];
@@ -300,6 +291,30 @@ const CGFloat kTableViewSeparatorInsetHide = 10000;
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
   return 0;
+}
+
+#pragma mark - TableViewTextEditItemDelegate
+
+- (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)tableViewItem {
+  if (tableViewItem.type == ItemTypeUsername) {
+    [self usernameEditDidBegin];
+    return;
+  }
+}
+
+- (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
+  if (tableViewItem.type == ItemTypeUsername) {
+    [self updateSaveCredentialsButtonState];
+    return;
+  }
+  if (tableViewItem.type == ItemTypePassword) {
+    [self updateSaveCredentialsButtonState];
+    return;
+  }
+}
+
+- (void)tableViewItemDidEndEditing:(TableViewTextEditItem*)tableViewItem {
+  // No op.
 }
 
 #pragma mark - UITextFieldDelegate

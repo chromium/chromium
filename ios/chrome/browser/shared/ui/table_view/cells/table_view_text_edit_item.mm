@@ -129,12 +129,15 @@ const CGFloat kSymbolSize = 15;
   cell.textField.returnKeyType = self.returnKeyType;
   cell.textField.keyboardType = self.keyboardType;
   cell.textField.autocapitalizationType = self.autoCapitalizationType;
+  cell.textField.delegate = self.textFieldDelegate;
 
   [cell setIdentifyingIcon:self.identifyingIcon];
   cell.identifyingIconButton.enabled = self.identifyingIconEnabled;
   if ([self.identifyingIconAccessibilityLabel length]) {
     cell.identifyingIconButton.accessibilityLabel =
         self.identifyingIconAccessibilityLabel;
+  } else if (!self.identifyingIconEnabled) {
+    cell.identifyingIconButton.isAccessibilityElement = NO;
   }
 
   if ([self.cellAccessibilityLabel length]) {
@@ -402,6 +405,7 @@ const CGFloat kSymbolSize = 15;
               forControlEvents:UIControlEventAllEvents];
   [self setIdentifyingIcon:nil];
   self.identifyingIconButton.enabled = NO;
+  self.identifyingIconButton.isAccessibilityElement = YES;
   [self.identifyingIconButton removeTarget:nil
                                     action:nil
                           forControlEvents:UIControlEventAllEvents];
