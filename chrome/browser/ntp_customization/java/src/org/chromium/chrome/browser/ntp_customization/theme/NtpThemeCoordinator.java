@@ -25,6 +25,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetViewBinder;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator;
@@ -96,6 +97,8 @@ public class NtpThemeCoordinator {
                         profile,
                         mCallbackController.makeCancelable(
                                 () -> {
+                                    initializeBottomSheetContent(
+                                            BottomSheetType.SINGLE_THEME_COLLECTION);
                                     mMediator.updateTrailingIconVisibilityForSectionType(
                                             THEME_COLLECTION);
                                     mBottomSheetDelegate.onNewColorSelected(
@@ -156,14 +159,15 @@ public class NtpThemeCoordinator {
             }
 
             @Override
-            public void onThemeCollectionsClicked() {
+            public void onThemeCollectionsClicked(Runnable onDailyRefreshCancelledCallback) {
                 if (mNtpThemeCollectionsCoordinator == null) {
                     mNtpThemeCollectionsCoordinator =
                             new NtpThemeCollectionsCoordinator(
                                     mContext,
                                     mBottomSheetDelegate,
                                     mProfile,
-                                    mNtpThemeCollectionManager);
+                                    mNtpThemeCollectionManager,
+                                    onDailyRefreshCancelledCallback);
                 }
                 mBottomSheetDelegate.showBottomSheet(THEME_COLLECTIONS);
             }
@@ -184,6 +188,17 @@ public class NtpThemeCoordinator {
         }
         mNtpThemeCollectionManager.destroy();
         mCallbackController.destroy();
+    }
+
+    /**
+     * Initialize the bottom sheet content of the given bottom sheet type when it becomes visible.
+     *
+     * @param bottomSheetType The type of the bottom sheet to update.
+     */
+    public void initializeBottomSheetContent(@BottomSheetType int bottomSheetType) {
+        if (mNtpThemeCollectionsCoordinator != null) {
+            mNtpThemeCollectionsCoordinator.initializeBottomSheetContent(bottomSheetType);
+        }
     }
 
     @VisibleForTesting
@@ -212,5 +227,10 @@ public class NtpThemeCoordinator {
 
     NtpThemeDelegate getNtpThemeDelegateForTesting() {
         return mNtpThemeDelegate;
+    }
+
+    void setNtpThemeCollectionsCoordinatorForTesting(
+            NtpThemeCollectionsCoordinator ntpThemeCollectionsCoordinator) {
+        mNtpThemeCollectionsCoordinator = ntpThemeCollectionsCoordinator;
     }
 }

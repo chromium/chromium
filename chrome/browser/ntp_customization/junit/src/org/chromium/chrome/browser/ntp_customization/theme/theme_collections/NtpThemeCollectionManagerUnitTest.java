@@ -5,12 +5,10 @@
 package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -36,10 +33,13 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.List;
 
 /** Unit tests for {@link NtpThemeCollectionManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -51,7 +51,6 @@ public class NtpThemeCollectionManagerUnitTest {
     @Mock private NtpThemeCollectionBridge.Natives mNatives;
     @Mock private Runnable mOnThemeImageSelectedCallback;
     @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
-    @Mock private NtpThemeCollectionManager.ThemeCollectionSelectionListener mListener;
 
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
 
@@ -85,18 +84,20 @@ public class NtpThemeCollectionManagerUnitTest {
     public void testOnCustomBackgroundImageUpdated() {
         mNtpThemeCollectionManager =
                 new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
-        ArgumentCaptor<Callback<CustomBackgroundInfo>> callbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
-        verify(mNatives).init(eq(mProfile), any());
-
         GURL backgroundUrl = JUnitTestGURLs.URL_1;
         CustomBackgroundInfo info =
-                new CustomBackgroundInfo(backgroundUrl, "collectionId", false, false);
+                new CustomBackgroundInfo(backgroundUrl, "collectionId", false, true);
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 
-        mNtpThemeCollectionManager
-                .getNtpThemeCollectionBridgeForTesting()
-                .onCustomBackgroundImageUpdated();
-        verify(mNatives).getCustomBackgroundInfo(anyLong());
+        mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(info);
+
+        verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
+        mBitmapCallbackCaptor.getValue().onResult(bitmap);
+
+        verify(mOnThemeImageSelectedCallback).run();
+        verify(mNtpCustomizationConfigManager)
+                .onThemeCollectionImageSelected(
+                        eq(bitmap), eq(info), any(BackgroundImageInfo.class));
     }
 
     @Test
@@ -117,34 +118,41 @@ public class NtpThemeCollectionManagerUnitTest {
     }
 
     @Test
-    public void testThemeSelection() {
+    public void testResetCustomBackground() {
         mNtpThemeCollectionManager =
                 new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
-        // Initially, selection is null.
-        assertNull(mNtpThemeCollectionManager.getSelectedThemeCollectionId());
-        assertNull(mNtpThemeCollectionManager.getSelectedThemeCollectionImageUrl());
+        mNtpThemeCollectionManager.resetCustomBackground();
+        verify(mNatives).resetCustomBackground(anyLong());
+    }
 
-        // Add a listener.
-        mNtpThemeCollectionManager.addListener(mListener);
+    @Test
+    public void testSetThemeCollectionImage() {
+        mNtpThemeCollectionManager =
+                new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
+        CollectionImage image =
+                new CollectionImage(
+                        "collectionId",
+                        JUnitTestGURLs.URL_1,
+                        JUnitTestGURLs.URL_2,
+                        List.of("attr1", "attr2"),
+                        JUnitTestGURLs.URL_3);
+        mNtpThemeCollectionManager.setThemeCollectionImage(image);
+        verify(mNatives)
+                .setThemeCollectionImage(
+                        1L,
+                        "collectionId",
+                        JUnitTestGURLs.URL_1,
+                        JUnitTestGURLs.URL_2,
+                        "attr1",
+                        "attr2",
+                        JUnitTestGURLs.URL_3);
+    }
 
-        // Set a theme.
-        String collectionId = "test_id";
-        GURL imageUrl = JUnitTestGURLs.URL_1;
-        mNtpThemeCollectionManager.updateSelectedThemeCollection(collectionId, imageUrl);
-
-        // Verify getters and listener callback.
-        assertEquals(collectionId, mNtpThemeCollectionManager.getSelectedThemeCollectionId());
-        assertEquals(imageUrl, mNtpThemeCollectionManager.getSelectedThemeCollectionImageUrl());
-        verify(mListener).onThemeCollectionSelectionChanged(eq(collectionId), eq(imageUrl));
-
-        // Remove the listener.
-        mNtpThemeCollectionManager.removeListener(mListener);
-        Mockito.clearInvocations(mListener);
-
-        // Set a different theme.
-        mNtpThemeCollectionManager.updateSelectedThemeCollection("id2", JUnitTestGURLs.URL_2);
-
-        // Verify the listener was not called again.
-        verify(mListener, never()).onThemeCollectionSelectionChanged(any(), any());
+    @Test
+    public void testSelectLocalBackgroundImage() {
+        mNtpThemeCollectionManager =
+                new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
+        mNtpThemeCollectionManager.selectLocalBackgroundImage();
+        verify(mNatives).selectLocalBackgroundImage(1L);
     }
 }

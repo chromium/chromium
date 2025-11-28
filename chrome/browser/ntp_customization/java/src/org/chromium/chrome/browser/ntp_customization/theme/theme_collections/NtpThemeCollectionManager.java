@@ -4,17 +4,17 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
+
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
@@ -29,31 +29,12 @@ import java.util.List;
  */
 @NullMarked
 public class NtpThemeCollectionManager {
-    /** An interface to get theme collection updates. */
-    public interface ThemeCollectionSelectionListener {
-        /**
-         * Called when the user selects a new theme collection image.
-         *
-         * @param themeCollectionId The ID of the theme collection the image belongs to.
-         * @param themeCollectionImageUrl The URL of the selected theme collection image.
-         */
-        default void onThemeCollectionSelectionChanged(
-                @Nullable String themeCollectionId, @Nullable GURL themeCollectionImageUrl) {}
-    }
 
     private final NtpThemeCollectionBridge mNtpThemeCollectionBridge;
     private final Context mContext;
     private final NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     private final Runnable mOnThemeImageSelectedCallback;
-    private final ObserverList<ThemeCollectionSelectionListener> mThemeCollectionSelectionListeners;
     private final @Nullable ImageFetcher mImageFetcher;
-
-    // Whether the theme collection that the user has currently chosen is daily refresh enabled.
-    private boolean mIsDailyRefreshEnabled;
-    // The theme collection that the user has currently chosen.
-    private @Nullable String mSelectedThemeCollectionId;
-    // The theme collection image that the user has currently chosen.
-    private @Nullable GURL mSelectedThemeCollectionImageUrl;
 
     /**
      * Constructs a new NtpThemeCollectionManager.
@@ -67,23 +48,9 @@ public class NtpThemeCollectionManager {
         mContext = context;
         mNtpThemeCollectionBridge =
                 new NtpThemeCollectionBridge(profile, this::onCustomBackgroundImageUpdated);
-        mThemeCollectionSelectionListeners = new ObserverList<>();
         mOnThemeImageSelectedCallback = onThemeImageSelectedCallback;
         mImageFetcher = NtpCustomizationUtils.createImageFetcher(profile);
         mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
-
-        if (mNtpCustomizationConfigManager.getBackgroundImageType()
-                != NtpBackgroundImageType.THEME_COLLECTION) {
-            return;
-        }
-
-        CustomBackgroundInfo customBackgroundInfo =
-                mNtpCustomizationConfigManager.getCustomBackgroundInfo();
-        if (customBackgroundInfo != null) {
-            updateSelectedThemeCollection(
-                    customBackgroundInfo.collectionId, customBackgroundInfo.backgroundUrl);
-            mIsDailyRefreshEnabled = customBackgroundInfo.isDailyRefreshEnabled;
-        }
     }
 
     /** Cleans up the C++ side of {@link NtpThemeCollectionBridge}. */
@@ -112,49 +79,30 @@ public class NtpThemeCollectionManager {
     }
 
     public @Nullable String getSelectedThemeCollectionId() {
-        return mSelectedThemeCollectionId;
+        if (mNtpCustomizationConfigManager.getBackgroundImageType() != THEME_COLLECTION) {
+            return null;
+        }
+
+        CustomBackgroundInfo info = mNtpCustomizationConfigManager.getCustomBackgroundInfo();
+        return info != null ? info.collectionId : null;
     }
 
     public @Nullable GURL getSelectedThemeCollectionImageUrl() {
-        return mSelectedThemeCollectionImageUrl;
+        if (mNtpCustomizationConfigManager.getBackgroundImageType() != THEME_COLLECTION) {
+            return null;
+        }
+
+        CustomBackgroundInfo info = mNtpCustomizationConfigManager.getCustomBackgroundInfo();
+        return info != null ? info.backgroundUrl : null;
     }
 
     public boolean getIsDailyRefreshEnabled() {
-        return mIsDailyRefreshEnabled;
-    }
-
-    /**
-     * Updates the currently selected theme collection image in the theme collections bottom sheets.
-     *
-     * @param themeCollectionId The ID of the theme collection.
-     * @param themeCollectionImageUrl The URL of the theme collection image.
-     */
-    public void updateSelectedThemeCollection(
-            @Nullable String themeCollectionId, @Nullable GURL themeCollectionImageUrl) {
-        mSelectedThemeCollectionId = themeCollectionId;
-        mSelectedThemeCollectionImageUrl = themeCollectionImageUrl;
-
-        for (ThemeCollectionSelectionListener listener : mThemeCollectionSelectionListeners) {
-            listener.onThemeCollectionSelectionChanged(
-                    mSelectedThemeCollectionId, mSelectedThemeCollectionImageUrl);
+        if (mNtpCustomizationConfigManager.getBackgroundImageType() != THEME_COLLECTION) {
+            return false;
         }
-    }
 
-    /**
-     * Adds a {@link ThemeCollectionSelectionListener} to receive updates when the theme collection
-     * selection changes.
-     */
-    public void addListener(ThemeCollectionSelectionListener listener) {
-        mThemeCollectionSelectionListeners.addObserver(listener);
-    }
-
-    /**
-     * Removes the given listener from the selection listener list.
-     *
-     * @param listener The listener to remove.
-     */
-    public void removeListener(ThemeCollectionSelectionListener listener) {
-        mThemeCollectionSelectionListeners.removeObserver(listener);
+        CustomBackgroundInfo info = mNtpCustomizationConfigManager.getCustomBackgroundInfo();
+        return info != null && info.isDailyRefreshEnabled;
     }
 
     /**
@@ -191,14 +139,6 @@ public class NtpThemeCollectionManager {
             return;
         }
 
-        // TODO(crbug.com/423579377): Move the entire block of code to after the bitmap check, once
-        // the bitmap filter has been set in ntp_background_data.cc.
-        updateSelectedThemeCollection(info.collectionId, info.backgroundUrl);
-        // TODO(crbug.com/423579377): update(turn on or turn off) daily update button if the current
-        // page is that particular single theme collection bottom sheet.
-        mIsDailyRefreshEnabled = info.isDailyRefreshEnabled;
-        mOnThemeImageSelectedCallback.run();
-
         NtpCustomizationUtils.fetchThemeCollectionImage(
                 mImageFetcher,
                 info.backgroundUrl,
@@ -209,11 +149,17 @@ public class NtpThemeCollectionManager {
                                 info,
                                 NtpCustomizationUtils.calculateInitialThemeCollectionImageMatrices(
                                         mContext, bitmap));
+                        mOnThemeImageSelectedCallback.run();
                     }
                 });
     }
 
-    public NtpThemeCollectionBridge getNtpThemeCollectionBridgeForTesting() {
-        return mNtpThemeCollectionBridge;
+    /**
+     * Sets the New Tab Page background to a theme collection with daily refresh function enabled.
+     *
+     * @param themeCollectionId The id of the theme collection
+     */
+    public void setThemeCollectionDailyRefreshed(String themeCollectionId) {
+        // TODO(crbug.com/423579377): Add logic here.}
     }
 }

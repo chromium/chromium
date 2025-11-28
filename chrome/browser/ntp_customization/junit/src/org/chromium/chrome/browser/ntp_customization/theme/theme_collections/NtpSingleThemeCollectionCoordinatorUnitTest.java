@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,7 +47,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.R;
-import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager.ThemeCollectionSelectionListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
@@ -63,6 +63,7 @@ import java.util.List;
 public class NtpSingleThemeCollectionCoordinatorUnitTest {
 
     private static final String TEST_COLLECTION_ID = "Test Collection Id";
+    private static final GURL TEST_COLLECTION_URL = JUnitTestGURLs.URL_1;
     private static final String TEST_COLLECTION_TITLE = "Test Collection";
     private static final int TEST_COLLECTION_HASH_1 = 123; // Mock hash value for testing
     private static final String TEST_COLLECTION_TITLE_NEW = "Test Collection New";
@@ -76,8 +77,8 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
     @Mock private NtpThemeCollectionManager mNtpThemeCollectionManager;
     @Mock private ImageFetcher mImageFetcher;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Runnable mOnDailyUpdateCancelledCallback;
     @Captor private ArgumentCaptor<Callback<List<CollectionImage>>> mCallbackCaptor;
-    @Captor private ArgumentCaptor<ThemeCollectionSelectionListener> mListenerCaptor;
     @Captor private ArgumentCaptor<ComponentCallbacks> mComponentCallbacksCaptor;
 
     private NtpSingleThemeCollectionCoordinator mCoordinator;
@@ -104,7 +105,8 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
                         TEST_COLLECTION_ID,
                         TEST_COLLECTION_TITLE,
                         TEST_COLLECTION_HASH_1,
-                        SheetState.FULL);
+                        SheetState.FULL,
+                        mOnDailyUpdateCancelledCallback);
 
         ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
         verify(mBottomSheetDelegate)
@@ -119,7 +121,6 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         assertEquals(TEST_COLLECTION_TITLE, title.getText().toString());
         verify(mNtpThemeCollectionManager)
                 .getBackgroundImages(eq(TEST_COLLECTION_ID), mCallbackCaptor.capture());
-        verify(mNtpThemeCollectionManager).addListener(any());
 
         NtpThemeCollectionsAdapter adapter = mCoordinator.getNtpThemeCollectionsAdapterForTesting();
         NtpThemeCollectionsAdapter adapterSpy = spy(adapter);
@@ -190,7 +191,6 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         assertFalse(backButton.hasOnClickListeners());
         assertFalse(learnMoreButton.hasOnClickListeners());
         verify(adapterSpy).clearOnClickListeners();
-        verify(mNtpThemeCollectionManager).removeListener(any());
         verify(mContextSpy).unregisterComponentCallbacks(eq(componentCallbacks));
     }
 
@@ -298,22 +298,6 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
     }
 
     @Test
-    public void testOnThemeSelectionChanged() {
-        NtpThemeCollectionsAdapter adapter = mCoordinator.getNtpThemeCollectionsAdapterForTesting();
-        NtpThemeCollectionsAdapter adapterSpy = spy(adapter);
-        mCoordinator.setNtpThemeCollectionsAdapterForTesting(adapterSpy);
-
-        verify(mNtpThemeCollectionManager).addListener(mListenerCaptor.capture());
-        ThemeCollectionSelectionListener listener = mListenerCaptor.getValue();
-
-        String collectionId = "test_id";
-        GURL imageUrl = JUnitTestGURLs.URL_2;
-        listener.onThemeCollectionSelectionChanged(collectionId, imageUrl);
-
-        verify(adapterSpy).setSelection(eq(collectionId), eq(imageUrl));
-    }
-
-    @Test
     public void testConfigurationChanged() {
         verify(mContextSpy).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
         ComponentCallbacks componentCallbacks = mComponentCallbacksCaptor.getValue();
@@ -352,41 +336,47 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
     }
 
     @Test
-    public void testDailyUpdateSwitchState() {
+    public void testHandleDailyRefreshClick() {
+        MaterialSwitchWithText dailyUpdateSwitch =
+                mBottomSheetView.findViewById(R.id.daily_update_switch_button);
+
+        // Case 1: Toggle ON.
+        dailyUpdateSwitch.setChecked(true);
+        verify(mNtpThemeCollectionManager).setThemeCollectionDailyRefreshed(TEST_COLLECTION_ID);
+        verify(mOnDailyUpdateCancelledCallback, never()).run();
+
+        // Case 2: Toggle OFF.
+        dailyUpdateSwitch.setChecked(false);
+        verify(mOnDailyUpdateCancelledCallback).run();
+    }
+
+    @Test
+    public void testInitializeBottomSheetContent() {
+        NtpThemeCollectionsAdapter adapter = mCoordinator.getNtpThemeCollectionsAdapterForTesting();
+        NtpThemeCollectionsAdapter adapterSpy = spy(adapter);
+        mCoordinator.setNtpThemeCollectionsAdapterForTesting(adapterSpy);
+        MaterialSwitchWithText dailyUpdateSwitch =
+                mBottomSheetView.findViewById(R.id.daily_update_switch_button);
+
         // Case 1: Daily refresh is enabled for the current collection.
         when(mNtpThemeCollectionManager.getSelectedThemeCollectionId())
                 .thenReturn(TEST_COLLECTION_ID);
+        when(mNtpThemeCollectionManager.getSelectedThemeCollectionImageUrl())
+                .thenReturn(TEST_COLLECTION_URL);
         when(mNtpThemeCollectionManager.getIsDailyRefreshEnabled()).thenReturn(true);
-        mCoordinator.updateThemeCollection(
-                TEST_COLLECTION_ID,
-                TEST_COLLECTION_TITLE_NEW,
-                TEST_COLLECTION_HASH_1,
-                SheetState.FULL);
-        assertTrue(
-                ((MaterialSwitchWithText)
-                                mBottomSheetView.findViewById(R.id.daily_update_switch_button))
-                        .isChecked());
+        mCoordinator.initializeBottomSheetContent();
+        verify(adapterSpy).setSelection(eq(TEST_COLLECTION_ID), eq(TEST_COLLECTION_URL));
+        assertTrue(dailyUpdateSwitch.isChecked());
 
         // Case 2: Daily refresh is disabled for the current collection.
         when(mNtpThemeCollectionManager.getIsDailyRefreshEnabled()).thenReturn(false);
-        mCoordinator.updateThemeCollection(
-                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, TEST_COLLECTION_HASH_1, SheetState.FULL);
-        assertFalse(
-                ((MaterialSwitchWithText)
-                                mBottomSheetView.findViewById(R.id.daily_update_switch_button))
-                        .isChecked());
+        mCoordinator.initializeBottomSheetContent();
+        assertFalse(dailyUpdateSwitch.isChecked());
 
-        // Case 3: Another collection is selected.
+        // Case 3: Another collection is selected, so this one's switch should be off.
         when(mNtpThemeCollectionManager.getSelectedThemeCollectionId()).thenReturn("another_id");
         when(mNtpThemeCollectionManager.getIsDailyRefreshEnabled()).thenReturn(true);
-        mCoordinator.updateThemeCollection(
-                TEST_COLLECTION_ID,
-                TEST_COLLECTION_TITLE_NEW,
-                TEST_COLLECTION_HASH_1,
-                SheetState.FULL);
-        assertFalse(
-                ((MaterialSwitchWithText)
-                                mBottomSheetView.findViewById(R.id.daily_update_switch_button))
-                        .isChecked());
+        mCoordinator.initializeBottomSheetContent();
+        assertFalse(dailyUpdateSwitch.isChecked());
     }
 }

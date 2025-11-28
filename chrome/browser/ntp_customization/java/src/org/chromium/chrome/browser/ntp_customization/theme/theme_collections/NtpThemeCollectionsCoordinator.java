@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.launchUriActivity;
@@ -26,11 +27,9 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
-import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager.ThemeCollectionSelectionListener;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.image_fetcher.ImageFetcher;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,10 +51,10 @@ public class NtpThemeCollectionsCoordinator {
     private final RecyclerView mThemeCollectionsBottomSheetRecyclerView;
     private final NtpThemeCollectionManager mNtpThemeCollectionManager;
     private final ImageFetcher mImageFetcher;
-    private final ThemeCollectionSelectionListener mThemeCollectionSelectionListener;
     private final ComponentCallbacks mComponentCallbacks;
     private final int mItemMaxWidth;
     private final int mSpacing;
+    private final Runnable mOnDailyRefreshCancelledCallback;
     private NtpThemeCollectionsAdapter mNtpThemeCollectionsAdapter;
     private int mScreenWidth;
     private @Nullable NtpSingleThemeCollectionCoordinator mNtpSingleThemeCollectionCoordinator;
@@ -67,16 +66,20 @@ public class NtpThemeCollectionsCoordinator {
      * @param delegate The delegate to handle bottom sheet interactions.
      * @param profile The profile for which this coordinator is created.
      * @param ntpThemeCollectionManager The manager to fetch theme data.
+     * @param onDailyRefreshCancelledCallback The callback for daily refresh function being
+     *     cancelled.
      */
     public NtpThemeCollectionsCoordinator(
             Context context,
             BottomSheetDelegate delegate,
             Profile profile,
-            NtpThemeCollectionManager ntpThemeCollectionManager) {
+            NtpThemeCollectionManager ntpThemeCollectionManager,
+            Runnable onDailyRefreshCancelledCallback) {
         mContext = context;
         mBottomSheetDelegate = delegate;
         mImageFetcher = NtpCustomizationUtils.createImageFetcher(profile);
         mNtpThemeCollectionManager = ntpThemeCollectionManager;
+        mOnDailyRefreshCancelledCallback = onDailyRefreshCancelledCallback;
 
         mItemMaxWidth =
                 mContext.getResources()
@@ -152,20 +155,6 @@ public class NtpThemeCollectionsCoordinator {
                             mNtpThemeCollectionManager.getSelectedThemeCollectionId(),
                             mNtpThemeCollectionManager.getSelectedThemeCollectionImageUrl());
                 });
-
-        mThemeCollectionSelectionListener =
-                new ThemeCollectionSelectionListener() {
-                    @Override
-                    public void onThemeCollectionSelectionChanged(
-                            @Nullable String themeCollectionId,
-                            @Nullable GURL themeCollectionImageUrl) {
-                        if (mNtpThemeCollectionsAdapter != null) {
-                            mNtpThemeCollectionsAdapter.setSelection(
-                                    themeCollectionId, themeCollectionImageUrl);
-                        }
-                    }
-                };
-        mNtpThemeCollectionManager.addListener(mThemeCollectionSelectionListener);
     }
 
     public void destroy() {
@@ -185,8 +174,30 @@ public class NtpThemeCollectionsCoordinator {
         if (mNtpSingleThemeCollectionCoordinator != null) {
             mNtpSingleThemeCollectionCoordinator.destroy();
         }
+    }
 
-        mNtpThemeCollectionManager.removeListener(mThemeCollectionSelectionListener);
+    /**
+     * Initialize the bottom sheet content of the given bottom sheet type when it becomes visible.
+     *
+     * @param bottomSheetType The type of the bottom sheet to update.
+     */
+    public void initializeBottomSheetContent(@BottomSheetType int bottomSheetType) {
+        switch (bottomSheetType) {
+            case THEME_COLLECTIONS:
+                if (mNtpThemeCollectionsAdapter != null) {
+                    mNtpThemeCollectionsAdapter.setSelection(
+                            mNtpThemeCollectionManager.getSelectedThemeCollectionId(),
+                            mNtpThemeCollectionManager.getSelectedThemeCollectionImageUrl());
+                }
+                return;
+            case SINGLE_THEME_COLLECTION:
+                if (mNtpSingleThemeCollectionCoordinator != null) {
+                    mNtpSingleThemeCollectionCoordinator.initializeBottomSheetContent();
+                }
+                return;
+            default:
+                assert false : "Bottom sheet type not supported!";
+        }
     }
 
     /**
@@ -238,7 +249,8 @@ public class NtpThemeCollectionsCoordinator {
                             collectionId,
                             themeCollectionTitle,
                             themeCollectionHash,
-                            currentBottomSheetState);
+                            currentBottomSheetState,
+                            mOnDailyRefreshCancelledCallback);
         }
 
         mBottomSheetDelegate.showBottomSheet(BottomSheetType.SINGLE_THEME_COLLECTION);

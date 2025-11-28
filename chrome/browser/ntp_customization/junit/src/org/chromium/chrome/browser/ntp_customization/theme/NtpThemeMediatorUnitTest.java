@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -141,7 +140,7 @@ public class NtpThemeMediatorUnitTest {
 
         mMediator.handleThemeCollectionsSectionClick(mView);
 
-        verify(mNtpThemeDelegate).onThemeCollectionsClicked();
+        verify(mNtpThemeDelegate).onThemeCollectionsClicked(any(Runnable.class));
     }
 
     @Test
@@ -189,28 +188,6 @@ public class NtpThemeMediatorUnitTest {
 
         // Verify no visibility changes happened directly.
         verify(mThemePropertyModel, never()).set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), any());
-    }
-
-    @Test
-    public void testClearThemeCollectionSelection() {
-        createMediator(true);
-        clearInvocations(mNtpThemeCollectionManager);
-
-        // Action: Click default theme. This should clear the selection.
-        mMediator.handleChromeDefaultSectionClick(mView);
-        // Verification: Selection should be cleared.
-        verify(mNtpThemeCollectionManager).updateSelectedThemeCollection(eq(null), eq(null));
-        clearInvocations(mNtpThemeCollectionManager);
-
-        // Action: Click theme collections. This should NOT clear the selection.
-        mMediator.handleThemeCollectionsSectionClick(mView);
-        // Verification: clearThemeCollectionSelection should NOT be called again.
-        verify(mNtpThemeCollectionManager, never()).updateSelectedThemeCollection(any(), any());
-
-        // Action: Click upload image. This should clear the selection.
-        mMediator.onUploadImageResult(mUri);
-        verify(mNtpThemeCollectionManager).updateSelectedThemeCollection(eq(null), eq(null));
-        clearInvocations(mNtpThemeCollectionManager);
     }
 
     @Test

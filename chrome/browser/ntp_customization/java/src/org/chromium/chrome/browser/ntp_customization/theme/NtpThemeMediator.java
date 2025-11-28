@@ -134,10 +134,6 @@ public class NtpThemeMediator {
     void updateTrailingIconVisibilityForSectionType(@NtpBackgroundImageType int sectionType) {
         for (int i = 0; i < NtpBackgroundImageType.NUM_ENTRIES; i++) {
             if (i == THEME_COLLECTION) {
-                if (sectionType != THEME_COLLECTION) {
-                    mNtpThemeCollectionManager.updateSelectedThemeCollection(
-                            /* themeCollectionId= */ null, /* themeCollectionImageUrl= */ null);
-                }
                 continue;
             }
 
@@ -184,6 +180,16 @@ public class NtpThemeMediator {
 
     @VisibleForTesting
     void handleChromeDefaultSectionClick(View view) {
+        resetCustomizedTheme();
+
+        NtpCustomizationMetricsUtils.recordBottomSheetShown(BottomSheetType.CHROME_DEFAULT);
+    }
+
+    /**
+     * Handles clicks on the 'Chrome default' theme section or when the daily update feature is
+     * cancelled.
+     */
+    private void resetCustomizedTheme() {
         updateForChoosingDefaultOrChromeColorOption(DEFAULT);
 
         @NtpBackgroundImageType
@@ -194,8 +200,6 @@ public class NtpThemeMediator {
         }
         mNtpCustomizationConfigManager.onBackgroundColorChanged(
                 mContext, /* colorInfo= */ null, DEFAULT);
-
-        NtpCustomizationMetricsUtils.recordBottomSheetShown(BottomSheetType.CHROME_DEFAULT);
     }
 
     @VisibleForTesting
@@ -212,7 +216,7 @@ public class NtpThemeMediator {
 
     @VisibleForTesting
     void handleThemeCollectionsSectionClick(View view) {
-        mNtpThemeDelegate.onThemeCollectionsClicked();
+        mNtpThemeDelegate.onThemeCollectionsClicked(this::resetCustomizedTheme);
     }
 
     @VisibleForTesting
