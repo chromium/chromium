@@ -7557,6 +7557,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.JsInjection.RenderFrameCreatedTime" units="ms"
+    expires_after="2026-06-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>webview-team@google.com</owner>
+  <summary>
+    The time it takes to execute JsCommunicationHost::RenderFrameCreated.
+    Recorded whenever a render frame is created in a WebContents that has a
+    JsCommunicationHost attached (in other words, in Android WebView).
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.LoadUrl.FailureScheme" enum="WebViewUrlScheme"
     expires_after="2026-03-01">
   <owner>peconn@chromium.org</owner>
