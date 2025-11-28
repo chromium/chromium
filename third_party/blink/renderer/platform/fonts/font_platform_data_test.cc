@@ -33,7 +33,6 @@
 #include "base/test/task_environment.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -82,49 +81,6 @@ TEST_F(FontPlatformDataTest, AhemHasAliasing) {
   const FontPlatformData& platform_data = font->PrimaryFont()->PlatformData();
   SkFont sk_font = platform_data.CreateSkFont(/* FontDescription */ nullptr);
   EXPECT_EQ(sk_font.getEdging(), SkFont::Edging::kAlias);
-}
-
-// Two Font objects using the same underlying font (the "A" character extracted
-// from Robot-Regular) but different sizes should have the same digest.
-TEST_F(FontPlatformDataTest, TypefaceDigestForDifferentSizes_SameDigest) {
-  Font* size_16_font = CreateTestFont(
-      AtomicString("robot-a"), test::PlatformTestDataPath("roboto-a.ttf"), 16);
-  IdentifiableToken size_16_digest =
-      size_16_font->PrimaryFont()->PlatformData().ComputeTypefaceDigest();
-  Font* size_32_font = CreateTestFont(
-      AtomicString("robot-a"), test::PlatformTestDataPath("roboto-a.ttf"), 32);
-  IdentifiableToken size_32_digest =
-      size_32_font->PrimaryFont()->PlatformData().ComputeTypefaceDigest();
-  EXPECT_EQ(size_16_digest, size_32_digest);
-}
-
-// Two Font objects using different underlying fonts should have different
-// digests. The second font also has the "A" from Robot-Regular, but has the
-// format 12 part of the CMAP character to glyph mapping table removed.
-TEST_F(FontPlatformDataTest, TypefaceDigestForDifferentFonts_DifferentDigest) {
-  Font* font1 = CreateTestFont(AtomicString("robot-a"),
-                               test::PlatformTestDataPath("roboto-a.ttf"), 16);
-  IdentifiableToken digest1 =
-      font1->PrimaryFont()->PlatformData().ComputeTypefaceDigest();
-  Font* font2 = CreateTestFont(
-      AtomicString("robot-a"),
-      test::PlatformTestDataPath("roboto-a-different-cmap.ttf"), 16);
-  IdentifiableToken digest2 =
-      font2->PrimaryFont()->PlatformData().ComputeTypefaceDigest();
-  EXPECT_NE(digest1, digest2);
-}
-
-// A Font using the same underlying font should have the same digest on
-// different platforms.
-TEST_F(FontPlatformDataTest, TypefaceDigestCrossPlatform_SameDigest) {
-  Font* font = CreateTestFont(AtomicString("robot-a"),
-                              test::PlatformTestDataPath("roboto-a.ttf"), 16);
-  IdentifiableToken digest =
-      font->PrimaryFont()->PlatformData().ComputeTypefaceDigest();
-
-  // Calculated on Linux.
-  IdentifiableToken expected_digest(6864445319287375520);
-  EXPECT_EQ(digest, expected_digest);
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

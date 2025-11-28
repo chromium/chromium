@@ -57,7 +57,6 @@ typedef const struct __CTFont* CTFontRef;
 namespace blink {
 
 class HarfBuzzFace;
-class IdentifiableToken;
 
 class PLATFORM_EXPORT FontPlatformData
     : public GarbageCollected<FontPlatformData> {
@@ -138,16 +137,6 @@ class PLATFORM_EXPORT FontPlatformData
 #endif
 
   SkFont CreateSkFont(const FontDescription* = nullptr) const;
-
-  // Computes a digest from the typeface. The digest only depends on the
-  // underlying font itself, and does not vary by the style (size, weight,
-  // italics, etc). This is aimed at discovering the fingerprinting information
-  // a particular local font may provide websites.
-  //
-  // The digest algorithm is designed for fast computation, rather than to be
-  // robust against an attacker with control of local fonts looking to attack
-  // the fingerprinting algorithm.
-  IdentifiableToken ComputeTypefaceDigest() const;
 
   // Gets the postscript name from the typeface.
   String GetPostScriptName() const;
