@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file defines tests that implementations of MappableBuffer should
 // pass in order to be conformant.
 
@@ -18,6 +13,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -373,16 +369,17 @@ TYPED_TEST_P(MappableBufferTest, Map) {
       EXPECT_GT(row_size_in_bytes, 0u);
 
       auto data = base::HeapArray<char>::Uninit(row_size_in_bytes);
-      memset(data.data(), 0x2a + plane, row_size_in_bytes);
+      UNSAFE_TODO(memset(data.data(), 0x2a + plane, row_size_in_bytes));
 
       size_t height = format.GetPlaneSize(plane, kBufferSize).height();
       for (size_t y = 0; y < height; ++y) {
-        memcpy(static_cast<char*>(buffer->memory(plane)) +
-                   y * buffer->stride(plane),
-               data.data(), row_size_in_bytes);
-        EXPECT_EQ(0, memcmp(static_cast<char*>(buffer->memory(plane)) +
-                                y * buffer->stride(plane),
-                            data.data(), row_size_in_bytes));
+        UNSAFE_TODO(memcpy(static_cast<char*>(buffer->memory(plane)) +
+                               y * buffer->stride(plane),
+                           data.data(), row_size_in_bytes));
+        UNSAFE_TODO(
+            EXPECT_EQ(0, memcmp(static_cast<char*>(buffer->memory(plane)) +
+                                    y * buffer->stride(plane),
+                                data.data(), row_size_in_bytes)));
       }
     }
 
@@ -436,16 +433,17 @@ TYPED_TEST_P(MappableBufferTest, PersistentMap) {
       EXPECT_GT(row_size_in_bytes, 0u);
 
       auto data = base::HeapArray<char>::Uninit(row_size_in_bytes);
-      memset(data.data(), 0x2a + plane, row_size_in_bytes);
+      UNSAFE_TODO(memset(data.data(), 0x2a + plane, row_size_in_bytes));
 
       size_t height = format.GetPlaneSize(plane, kBufferSize).height();
       for (size_t y = 0; y < height; ++y) {
-        memcpy(static_cast<char*>(buffer->memory(plane)) +
-                   y * buffer->stride(plane),
-               data.data(), row_size_in_bytes);
-        EXPECT_EQ(0, memcmp(static_cast<char*>(buffer->memory(plane)) +
-                                y * buffer->stride(plane),
-                            data.data(), row_size_in_bytes));
+        UNSAFE_TODO(memcpy(static_cast<char*>(buffer->memory(plane)) +
+                               y * buffer->stride(plane),
+                           data.data(), row_size_in_bytes));
+        UNSAFE_TODO(
+            EXPECT_EQ(0, memcmp(static_cast<char*>(buffer->memory(plane)) +
+                                    y * buffer->stride(plane),
+                                data.data(), row_size_in_bytes)));
       }
     }
 
@@ -462,13 +460,14 @@ TYPED_TEST_P(MappableBufferTest, PersistentMap) {
       EXPECT_GT(row_size_in_bytes, 0u);
 
       auto data = base::HeapArray<char>::Uninit(row_size_in_bytes);
-      memset(data.data(), 0x2a + plane, row_size_in_bytes);
+      UNSAFE_TODO(memset(data.data(), 0x2a + plane, row_size_in_bytes));
 
       size_t height = format.GetPlaneSize(plane, kBufferSize).height();
       for (size_t y = 0; y < height; ++y) {
-        EXPECT_EQ(0, memcmp(static_cast<char*>(buffer->memory(plane)) +
-                                y * buffer->stride(plane),
-                            data.data(), row_size_in_bytes));
+        UNSAFE_TODO(
+            EXPECT_EQ(0, memcmp(static_cast<char*>(buffer->memory(plane)) +
+                                    y * buffer->stride(plane),
+                                data.data(), row_size_in_bytes)));
       }
     }
 

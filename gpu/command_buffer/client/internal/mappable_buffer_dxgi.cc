@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 #include "gpu/command_buffer/client/internal/mappable_buffer_dxgi.h"
 
 #include <d3d11.h>
@@ -13,6 +9,7 @@
 #include <wrl.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -229,8 +226,8 @@ void* MappableBufferDXGI::memory(size_t plane) {
                                   .data();
   // This is safe, since we already checked that the requested plane is
   // valid for current format.
-  plane_addr +=
-      viz::SharedMemoryOffsetForSharedImageFormat(format_, plane, size_);
+  UNSAFE_TODO(plane_addr += viz)::SharedMemoryOffsetForSharedImageFormat(
+      format_, plane, size_);
   return plane_addr;
 }
 

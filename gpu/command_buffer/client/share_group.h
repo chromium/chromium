@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef GPU_COMMAND_BUFFER_CLIENT_SHARE_GROUP_H_
 #define GPU_COMMAND_BUFFER_CLIENT_SHARE_GROUP_H_
 
@@ -16,6 +11,7 @@
 #include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
 #include "gles2_impl_export.h"
 #include "gpu/command_buffer/client/client_discardable_manager.h"
@@ -51,7 +47,7 @@ class ShareGroupContextData {
   };
 
   IdHandlerData* id_handler_data(int namespace_id) {
-    return &id_handler_data_[namespace_id];
+    return UNSAFE_TODO(&id_handler_data_[namespace_id]);
   }
 
  private:

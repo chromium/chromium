@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/client/share_group.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/stack.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
@@ -50,16 +46,16 @@ class StrictIdHandler : public IdHandlerInterface {
     for (GLsizei ii = 0; ii < n; ++ii) {
       if (!free_ids_.empty()) {
         // Allocate a previously freed Id.
-        ids[ii] = free_ids_.top();
+        UNSAFE_TODO(ids[ii]) = free_ids_.top();
         free_ids_.pop();
 
         // Record kIdInUse state.
-        DCHECK(id_states_[ids[ii] - 1] == kIdFree);
-        id_states_[ids[ii] - 1] = kIdInUse;
+        UNSAFE_TODO(DCHECK(id_states_[ids[ii] - 1] == kIdFree));
+        id_states_[UNSAFE_TODO(ids[ii]) - 1] = kIdInUse;
       } else {
         // Allocate a new Id.
         id_states_.push_back(kIdInUse);
-        ids[ii] = id_states_.size();
+        UNSAFE_TODO(ids[ii]) = id_states_.size();
       }
     }
   }
@@ -86,7 +82,7 @@ class StrictIdHandler : public IdHandlerInterface {
 
       GLuint max_valid_id = id_states_.size();
       for (GLsizei ii = 0; ii < n; ++ii) {
-        GLuint id = ids[ii];
+        GLuint id = UNSAFE_TODO(ids[ii]);
         if (id != 0) {
           if (id > max_valid_id) {
             // Caller will generate an error.
@@ -195,7 +191,7 @@ class NonReusedIdHandler : public IdHandlerInterface {
                GLuint* ids) override {
     base::AutoLock auto_lock(lock_);
     for (GLsizei ii = 0; ii < n; ++ii) {
-      ids[ii] = ++last_id_;
+      UNSAFE_TODO(ids[ii]) = ++last_id_;
     }
   }
 
