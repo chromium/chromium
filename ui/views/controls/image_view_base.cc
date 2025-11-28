@@ -48,7 +48,7 @@ void ImageViewBase::SetHorizontalAlignment(Alignment alignment) {
   if (alignment != horizontal_alignment_) {
     horizontal_alignment_ = alignment;
     UpdateImageOrigin();
-    OnPropertyChanged(&horizontal_alignment_, kPropertyEffectsPaint);
+    OnPropertyChanged(&horizontal_alignment_, PropertyEffects::kPaint);
   }
 }
 
@@ -60,7 +60,7 @@ void ImageViewBase::SetVerticalAlignment(Alignment alignment) {
   if (alignment != vertical_alignment_) {
     vertical_alignment_ = alignment;
     UpdateImageOrigin();
-    OnPropertyChanged(&horizontal_alignment_, kPropertyEffectsPaint);
+    OnPropertyChanged(&horizontal_alignment_, PropertyEffects::kPaint);
   }
 }
 

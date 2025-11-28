@@ -282,7 +282,7 @@ void StatusView::SetText(std::u16string_view text) {
   }
 
   text_->SetText(text);
-  OnPropertyChanged(&text_, views::kPropertyEffectsNone);
+  OnPropertyChanged(&text_, views::PropertyEffects::kNone);
 }
 
 void StatusView::AnimateForText(std::u16string_view text) {
@@ -300,7 +300,7 @@ void StatusView::SetStyle(BubbleStyle style) {
   }
 
   style_ = style;
-  OnPropertyChanged(&style_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&style_, views::PropertyEffects::kPaint);
 }
 
 void StatusView::ShowInstantly() {

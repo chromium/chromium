@@ -139,7 +139,7 @@ void ProgressBar::SetValue(double value) {
     indeterminate_bar_animation_->Start();
   } else {
     indeterminate_bar_animation_.reset();
-    OnPropertyChanged(&current_value_, kPropertyEffectsPaint);
+    OnPropertyChanged(&current_value_, PropertyEffects::kPaint);
   }
 
   MaybeNotifyAccessibilityValueChanged();
@@ -151,7 +151,7 @@ void ProgressBar::SetPaused(bool is_paused) {
   }
 
   is_paused_ = is_paused;
-  OnPropertyChanged(&is_paused_, kPropertyEffectsPaint);
+  OnPropertyChanged(&is_paused_, PropertyEffects::kPaint);
 }
 
 SkColor ProgressBar::GetForegroundColor() const {
@@ -170,7 +170,7 @@ void ProgressBar::SetForegroundColor(SkColor color) {
 
   foreground_color_ = color;
   foreground_color_id_ = std::nullopt;
-  OnPropertyChanged(&foreground_color_, kPropertyEffectsPaint);
+  OnPropertyChanged(&foreground_color_, PropertyEffects::kPaint);
 }
 
 std::optional<ui::ColorId> ProgressBar::GetForegroundColorId() const {
@@ -184,7 +184,7 @@ void ProgressBar::SetForegroundColorId(std::optional<ui::ColorId> color_id) {
 
   foreground_color_id_ = color_id;
   foreground_color_ = std::nullopt;
-  OnPropertyChanged(&foreground_color_id_, kPropertyEffectsPaint);
+  OnPropertyChanged(&foreground_color_id_, PropertyEffects::kPaint);
 }
 
 SkColor ProgressBar::GetBackgroundColor() const {
@@ -203,7 +203,7 @@ void ProgressBar::SetBackgroundColor(SkColor color) {
 
   background_color_ = color;
   background_color_id_ = std::nullopt;
-  OnPropertyChanged(&background_color_, kPropertyEffectsPaint);
+  OnPropertyChanged(&background_color_, PropertyEffects::kPaint);
 }
 
 std::optional<ui::ColorId> ProgressBar::GetBackgroundColorId() const {
@@ -217,7 +217,7 @@ void ProgressBar::SetBackgroundColorId(std::optional<ui::ColorId> color_id) {
 
   background_color_id_ = color_id;
   background_color_ = std::nullopt;
-  OnPropertyChanged(&background_color_id_, kPropertyEffectsPaint);
+  OnPropertyChanged(&background_color_id_, PropertyEffects::kPaint);
 }
 
 int ProgressBar::GetPreferredHeight() const {
@@ -229,7 +229,7 @@ void ProgressBar::SetPreferredHeight(int preferred_height) {
     return;
   }
   preferred_height_ = preferred_height;
-  OnPropertyChanged(&preferred_height_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&preferred_height_, PropertyEffects::kPreferredSizeChanged);
 }
 
 gfx::RoundedCornersF ProgressBar::GetPreferredCornerRadii() const {
@@ -252,7 +252,7 @@ void ProgressBar::SetPreferredCornerRadii(
     return;
   }
   preferred_corner_radii_ = preferred_corner_radii;
-  OnPropertyChanged(&preferred_corner_radii_, kPropertyEffectsPaint);
+  OnPropertyChanged(&preferred_corner_radii_, PropertyEffects::kPaint);
 }
 
 void ProgressBar::AnimationProgressed(const gfx::Animation* animation) {

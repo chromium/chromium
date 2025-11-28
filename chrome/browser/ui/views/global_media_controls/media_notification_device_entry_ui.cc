@@ -122,7 +122,7 @@ void AudioDeviceEntryView::SetHighlighted(bool highlighted) {
     SetHasInkDropActionOnClick(true);
     SetBackground(nullptr);
   }
-  OnPropertyChanged(&is_highlighted_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&is_highlighted_, views::PropertyEffects::kPaint);
 }
 
 bool AudioDeviceEntryView::GetHighlighted() const {

@@ -63,7 +63,7 @@ class TestView : public views::View {
  private:
   int int_param_ = 0;
   float float_param_ = 0.0;
-  views::PropertyEffects property_effects_ = views::kPropertyEffectsNone;
+  views::PropertyEffects property_effects_ = views::PropertyEffects::kNone;
 };
 
 BEGIN_VIEW_BUILDER(, TestView, views::View)
@@ -184,13 +184,13 @@ TEST_F(ViewFactoryTest, TestViewBuilderOwnerships) {
 TEST_F(ViewFactoryTest, TestViewBuilderArbitraryMethod) {
   auto view = views::Builder<internal::TestView>()
                   .SetEnabled(false)
-                  .ArbitraryMethod(10, 5.5, views::kPropertyEffectsLayout)
+                  .ArbitraryMethod(10, 5.5, views::PropertyEffects::kLayout)
                   .Build();
 
   EXPECT_FALSE(view->GetEnabled());
   EXPECT_EQ(view->get_int_param(), 10);
   EXPECT_EQ(view->get_float_param(), 5.5);
-  EXPECT_EQ(view->get_property_effects(), views::kPropertyEffectsLayout);
+  EXPECT_EQ(view->get_property_effects(), views::PropertyEffects::kLayout);
 }
 
 TEST_F(ViewFactoryTest, TestViewBuilderCustomConfigure) {

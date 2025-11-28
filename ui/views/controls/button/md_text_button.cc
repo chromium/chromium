@@ -111,7 +111,7 @@ void MdTextButton::SetBgColorIdOverride(
   }
   bg_color_id_override_ = color_id;
   UpdateColors();
-  OnPropertyChanged(&bg_color_id_override_, kPropertyEffectsNone);
+  OnPropertyChanged(&bg_color_id_override_, PropertyEffects::kNone);
 }
 
 void MdTextButton::SetBgColorOverrideDeprecated(
@@ -123,7 +123,7 @@ void MdTextButton::SetBgColorOverrideDeprecated(
   }
   bg_color_override_ = color;
   UpdateColors();
-  OnPropertyChanged(&bg_color_override_, kPropertyEffectsNone);
+  OnPropertyChanged(&bg_color_override_, PropertyEffects::kNone);
 }
 
 std::optional<SkColor> MdTextButton::GetBgColorOverrideDeprecated() const {
@@ -143,7 +143,7 @@ void MdTextButton::SetStrokeColorIdOverride(
   }
   stroke_color_id_override_ = color_id;
   UpdateColors();
-  OnPropertyChanged(&stroke_color_id_override_, kPropertyEffectsNone);
+  OnPropertyChanged(&stroke_color_id_override_, PropertyEffects::kNone);
 }
 
 void MdTextButton::SetStrokeColorOverrideDeprecated(
@@ -155,7 +155,7 @@ void MdTextButton::SetStrokeColorOverrideDeprecated(
   }
   stroke_color_override_ = color;
   UpdateColors();
-  OnPropertyChanged(&stroke_color_override_, kPropertyEffectsNone);
+  OnPropertyChanged(&stroke_color_override_, PropertyEffects::kNone);
 }
 
 std::optional<SkColor> MdTextButton::GetStrokeColorOverrideDeprecated() const {
@@ -172,7 +172,7 @@ void MdTextButton::SetCornerRadii(const gfx::RoundedCornersF& radii) {
   }
   radii_ = radii;
   OnCornerRadiusValueChanged();
-  OnPropertyChanged(&radii_, kPropertyEffectsPaint);
+  OnPropertyChanged(&radii_, PropertyEffects::kPaint);
 }
 
 void MdTextButton::SetCornerRadius(float radius) {
@@ -245,7 +245,7 @@ PropertyEffects MdTextButton::UpdateStyleToIndicateDefaultStatus() {
                ? ui::ButtonStyle::kProminent
                : ui::ButtonStyle::kDefault);
   UpdateColors();
-  return kPropertyEffectsNone;
+  return PropertyEffects::kNone;
 }
 
 void MdTextButton::UpdatePadding() {

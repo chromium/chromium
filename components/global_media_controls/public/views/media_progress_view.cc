@@ -134,12 +134,12 @@ MediaProgressView::~MediaProgressView() = default;
 void MediaProgressView::AnimationProgressed(const gfx::Animation* animation) {
   if (animation == &slide_animation_) {
     progress_amp_fraction_ = animation->GetCurrentValue();
-    OnPropertyChanged(&progress_amp_fraction_, views::kPropertyEffectsPaint);
+    OnPropertyChanged(&progress_amp_fraction_, views::PropertyEffects::kPaint);
   } else if (animation == &thickness_animation_) {
     straight_progress_stroke_width_ =
         animation->CurrentValueBetween(kStrokeWidth, kLargeStrokeWidth);
     OnPropertyChanged(&straight_progress_stroke_width_,
-                      views::kPropertyEffectsPaint);
+                      views::PropertyEffects::kPaint);
   }
 }
 
@@ -439,7 +439,7 @@ void MediaProgressView::UpdateProgress(
   if (new_value != current_value_) {
     current_value_ = new_value;
     MaybeNotifyAccessibilityValueChanged();
-    OnPropertyChanged(&current_value_, views::kPropertyEffectsPaint);
+    OnPropertyChanged(&current_value_, views::PropertyEffects::kPaint);
   }
 
   if (!is_paused_) {
@@ -449,7 +449,7 @@ void MediaProgressView::UpdateProgress(
           static_cast<int>(kProgressUpdateFrequency.InMillisecondsF() / 1000 *
                            kProgressPhaseSpeed);
       phase_offset_ %= kProgressWavelength;
-      OnPropertyChanged(&phase_offset_, views::kPropertyEffectsPaint);
+      OnPropertyChanged(&phase_offset_, views::PropertyEffects::kPaint);
     }
 
     update_progress_timer_->Start(

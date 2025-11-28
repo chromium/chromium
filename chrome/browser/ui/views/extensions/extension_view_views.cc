@@ -85,13 +85,13 @@ void ExtensionViewViews::SetMinimumSize(const gfx::Size& minimum_size) {
   }
   minimum_size_ = minimum_size;
   OnPropertyChanged(&minimum_size_,
-                    views::kPropertyEffectsPreferredSizeChanged);
+                    views::PropertyEffects::kPreferredSizeChanged);
 }
 
 void ExtensionViewViews::SetContainer(
     ExtensionViewViews::Container* container) {
   container_ = container;
-  OnPropertyChanged(&container_, views::kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&container_, views::PropertyEffects::kPreferredSizeChanged);
 }
 
 ExtensionViewViews::Container* ExtensionViewViews::GetContainer() const {

@@ -194,7 +194,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
       return;
     }
     fullscreen_ = value;
-    OnPropertyChanged(&fullscreen_, views::kPropertyEffectsLayout);
+    OnPropertyChanged(&fullscreen_, views::PropertyEffects::kLayout);
   }
   bool GetFullscreen() const { return fullscreen_; }
 
@@ -203,7 +203,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
       return;
     }
     has_shelf_ = value;
-    OnPropertyChanged(&has_shelf_, views::kPropertyEffectsLayout);
+    OnPropertyChanged(&has_shelf_, views::PropertyEffects::kLayout);
   }
   bool GetHasShelf() const { return has_shelf_; }
 

@@ -73,7 +73,7 @@ void WindowMiniViewBase::UpdateFocusState(bool focus) {
   is_focused_ = focus;
 
   // Notify all other subscriptions of the change.
-  OnPropertyChanged(&is_focused_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&is_focused_, views::PropertyEffects::kPaint);
 
   views::FocusRing::Get(this)->SchedulePaint();
 }

@@ -169,7 +169,7 @@ void SelectedKeywordView::SetKeyword(const std::u16string& keyword) {
     return;
   }
   keyword_ = keyword;
-  OnPropertyChanged(&keyword_, views::kPropertyEffectsNone);
+  OnPropertyChanged(&keyword_, views::PropertyEffects::kNone);
 
   const auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);

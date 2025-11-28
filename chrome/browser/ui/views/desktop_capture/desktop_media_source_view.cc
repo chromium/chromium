@@ -122,7 +122,7 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
                                                    gfx::Font::Weight::NORMAL));
   }
 
-  OnPropertyChanged(&selected_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&selected_, views::PropertyEffects::kPaint);
 }
 
 void DesktopMediaSourceView::SetStyle(DesktopMediaSourceViewStyle style) {

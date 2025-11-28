@@ -118,7 +118,7 @@ void Slider::SetEnableAccessibilityEvents(bool enabled) {
     return;
   }
   accessibility_events_enabled_ = enabled;
-  OnPropertyChanged(&accessibility_events_enabled_, kPropertyEffectsNone);
+  OnPropertyChanged(&accessibility_events_enabled_, PropertyEffects::kNone);
 }
 
 void Slider::SetRenderingStyle(RenderingStyle style) {
@@ -212,9 +212,9 @@ void Slider::SetValueInternal(float value, SliderChangeReason reason) {
       move_animation_->SetSlideDuration(base::Milliseconds(150));
       move_animation_->Show();
     }
-    OnPropertyChanged(&value_, kPropertyEffectsNone);
+    OnPropertyChanged(&value_, PropertyEffects::kNone);
   } else {
-    OnPropertyChanged(&value_, kPropertyEffectsPaint);
+    OnPropertyChanged(&value_, PropertyEffects::kPaint);
   }
 
   if (accessibility_events_enabled_) {

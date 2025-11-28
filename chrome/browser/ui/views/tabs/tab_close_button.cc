@@ -109,7 +109,7 @@ void TabCloseButton::SetColors(TabStyle::TabColors colors) {
 
   UpdateIcon();
 
-  OnPropertyChanged(&colors_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&colors_, views::PropertyEffects::kPaint);
 }
 
 views::View* TabCloseButton::GetTooltipHandlerForPoint(

@@ -163,20 +163,19 @@ struct VIEWS_EXPORT ViewHierarchyChangedDetails {
 
 using PropertyChangedCallback = ui::metadata::PropertyChangedCallback;
 
-// The elements in PropertyEffects represent bits which define what effect(s) a
-// changed Property has on the containing class. Additional elements should
-// use the next most significant bit.
-enum PropertyEffects {
-  kPropertyEffectsNone = 0,
+// The elements in PropertyEffects define what effect(s) a changed Property has
+// on the containing class.
+enum class PropertyEffects {
+  kNone,
   // Any changes to the property should cause the container to invalidate the
   // current layout state.
-  kPropertyEffectsLayout = 0x00000001,
+  kLayout,
   // Changes to the property should cause the container to schedule a painting
   // update.
-  kPropertyEffectsPaint = 0x00000002,
+  kPaint,
   // Changes to the property should cause the preferred size to change. This
-  // implies kPropertyEffectsLayout.
-  kPropertyEffectsPreferredSizeChanged = 0x00000004,
+  // implies kLayout.
+  kPreferredSizeChanged,
 };
 
 // When adding layers to the view, this indicates the region into which the
@@ -233,15 +232,14 @@ enum class ViewLayer {
 //
 //   In the SetXXXX method, after the value storage location has been updated,
 //   OnPropertyChanged() must be called using the address of the storage
-//   location as a key. Additionally, any combination of PropertyEffects are
-//   also passed in. This will ensure that any desired side effects are properly
-//   invoked.
+//   location as a key. Additionally, PropertyEffects are also passed in. This
+//   will ensure that any desired side effects are properly invoked.
 //
 //   void View::SetFrobble(bool is_frobble) {
 //     if (is_frobble == frobble_)
 //       return;
 //     frobble_ = is_frobble;
-//     OnPropertyChanged(&frobble_, kPropertyEffectsPaint);
+//     OnPropertyChanged(&frobble_, PropertyEffects::kPaint);
 //   }
 //
 //   Each property should also have a way to "listen" to changes by registering
@@ -2392,8 +2390,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Property support ----------------------------------------------------------
 
-  // Called from OnPropertyChanged with the given set of property effects. This
-  // function is NOT called if effects == kPropertyEffectsNone.
+  // Called from OnPropertyChanged with the given property effects. This
+  // function is NOT called if effects == PropertyEffects::kNone.
   void HandlePropertyChangeEffects(PropertyEffects effects);
 
   // The following methods are used by the property access system described in

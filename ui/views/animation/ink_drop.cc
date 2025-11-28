@@ -154,8 +154,7 @@ void InkDropContainerView::SetAutoMatchParentBounds(
     return;
   }
   auto_match_parent_bounds_ = auto_match_parent_bounds;
-  OnPropertyChanged(&auto_match_parent_bounds_,
-                    PropertyEffects::kPropertyEffectsNone);
+  OnPropertyChanged(&auto_match_parent_bounds_, PropertyEffects::kNone);
   if (parent()) {
     OnViewBoundsChanged(parent());
   }

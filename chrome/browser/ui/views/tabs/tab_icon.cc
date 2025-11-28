@@ -521,7 +521,7 @@ void TabIcon::SetCrashed(bool crashed) {
       }
     }
   }
-  OnPropertyChanged(&crashed_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&crashed_, views::PropertyEffects::kPaint);
 }
 
 bool TabIcon::GetCrashed() const {

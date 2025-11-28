@@ -39,7 +39,7 @@ void PageActionIconLoadingIndicatorView::SetAnimating(bool animating) {
     throbber_start_time_.reset();
     animation_.Reset();
   }
-  OnPropertyChanged(&throbber_start_time_, views::kPropertyEffectsNone);
+  OnPropertyChanged(&throbber_start_time_, views::PropertyEffects::kNone);
 }
 
 bool PageActionIconLoadingIndicatorView::GetAnimating() const {

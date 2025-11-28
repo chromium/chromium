@@ -413,7 +413,7 @@ void ParentPermissionDialogView::SetRepromptAfterIncorrectCredential(
   }
   reprompt_after_incorrect_credential_ = reprompt;
   OnPropertyChanged(&reprompt_after_incorrect_credential_,
-                    views::kPropertyEffectsNone);
+                    views::PropertyEffects::kNone);
 }
 
 bool ParentPermissionDialogView::GetRepromptAfterIncorrectCredential() const {
@@ -636,7 +636,7 @@ void ParentPermissionDialogView::SetSelectedParentPermissionEmail(
   }
   selected_parent_permission_email_ = email_address;
   OnPropertyChanged(&selected_parent_permission_email_,
-                    views::kPropertyEffectsNone);
+                    views::PropertyEffects::kNone);
 }
 
 std::u16string ParentPermissionDialogView::GetSelectedParentPermissionEmail()
@@ -651,7 +651,7 @@ void ParentPermissionDialogView::SetParentPermissionCredential(
   }
   parent_permission_credential_ = credential;
   OnPropertyChanged(&parent_permission_credential_,
-                    views::kPropertyEffectsNone);
+                    views::PropertyEffects::kNone);
 }
 
 std::u16string ParentPermissionDialogView::GetParentPermissionCredential()

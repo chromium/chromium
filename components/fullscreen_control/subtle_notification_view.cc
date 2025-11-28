@@ -154,7 +154,7 @@ void SubtleNotificationView::InstructionView::SetTextAndImages(
   }
 
   text_ = text;
-  OnPropertyChanged(&text_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&text_, views::PropertyEffects::kPaint);
 }
 
 void SubtleNotificationView::InstructionView::AddTextSegment(

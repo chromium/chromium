@@ -762,7 +762,7 @@ void BubbleFrameView::SetBubbleBorder(std::unique_ptr<BubbleBorder> border) {
 
 void BubbleFrameView::SetContentMargins(const gfx::Insets& content_margins) {
   content_margins_ = content_margins;
-  OnPropertyChanged(&content_margins_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&content_margins_, PropertyEffects::kPreferredSizeChanged);
 }
 
 gfx::Insets BubbleFrameView::GetContentMargins() const {
@@ -808,7 +808,7 @@ View* BubbleFrameView::GetFootnoteView() const {
 
 void BubbleFrameView::SetFootnoteMargins(const gfx::Insets& footnote_margins) {
   footnote_margins_ = footnote_margins;
-  OnPropertyChanged(&footnote_margins_, kPropertyEffectsLayout);
+  OnPropertyChanged(&footnote_margins_, PropertyEffects::kLayout);
 }
 
 gfx::Insets BubbleFrameView::GetFootnoteMargins() const {
@@ -823,7 +823,7 @@ void BubbleFrameView::SetPreferredArrowAdjustment(
 
   preferred_arrow_adjustment_ = adjustment;
   // Changing |preferred_arrow_adjustment| will affect window bounds.
-  OnPropertyChanged(&preferred_arrow_adjustment_, kPropertyEffectsLayout);
+  OnPropertyChanged(&preferred_arrow_adjustment_, PropertyEffects::kLayout);
 }
 
 BubbleFrameView::PreferredArrowAdjustment

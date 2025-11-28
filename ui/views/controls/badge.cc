@@ -21,7 +21,7 @@ const std::u16string& Badge::GetText() const {
 void Badge::SetText(const std::u16string& text) {
   text_ = text;
 
-  OnPropertyChanged(&text_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&text_, PropertyEffects::kPreferredSizeChanged);
 }
 
 gfx::Size Badge::CalculatePreferredSize(

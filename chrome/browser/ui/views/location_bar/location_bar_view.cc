@@ -662,7 +662,7 @@ void LocationBarView::SetOmniboxAdjacentText(views::Label* label,
   }
   label->SetText(text);
   label->SetVisible(!text.empty());
-  OnPropertyChanged(&label, views::kPropertyEffectsLayout);
+  OnPropertyChanged(&label, views::PropertyEffects::kLayout);
 }
 
 void LocationBarView::SelectAll() {

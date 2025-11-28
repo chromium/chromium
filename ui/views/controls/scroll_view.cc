@@ -440,7 +440,7 @@ void ScrollView::SetBackgroundColor(
   }
   background_color_ = color;
   UpdateBackground();
-  OnPropertyChanged(&background_color_, kPropertyEffectsPaint);
+  OnPropertyChanged(&background_color_, PropertyEffects::kPaint);
 }
 
 gfx::Rect ScrollView::GetVisibleRect() const {
@@ -458,7 +458,7 @@ void ScrollView::SetHorizontalScrollBarMode(
     return;
   }
   horizontal_scroll_bar_mode_ = horizontal_scroll_bar_mode;
-  OnPropertyChanged(&horizontal_scroll_bar_mode_, kPropertyEffectsPaint);
+  OnPropertyChanged(&horizontal_scroll_bar_mode_, PropertyEffects::kPaint);
 
   // "Ignored" removes the scrollbar from the accessibility tree.
   // "IsLeaf" removes their children (e.g. the buttons and thumb).
@@ -479,7 +479,7 @@ void ScrollView::SetVerticalScrollBarMode(
          vertical_scroll_bar_mode == ScrollBarMode::kDisabled);
 
   vertical_scroll_bar_mode_ = vertical_scroll_bar_mode;
-  OnPropertyChanged(&vertical_scroll_bar_mode_, kPropertyEffectsPaint);
+  OnPropertyChanged(&vertical_scroll_bar_mode_, PropertyEffects::kPaint);
 
   // "Ignored" removes the scrollbar from the accessibility tree.
   // "IsLeaf" removes their children (e.g. the buttons and thumb).
@@ -497,7 +497,7 @@ void ScrollView::SetTreatAllScrollEventsAsHorizontal(
   treat_all_scroll_events_as_horizontal_ =
       treat_all_scroll_events_as_horizontal;
   OnPropertyChanged(&treat_all_scroll_events_as_horizontal_,
-                    kPropertyEffectsNone);
+                    PropertyEffects::kNone);
 
   // Since this effectively disables vertical scrolling, don't show a
   // vertical scrollbar.
@@ -509,7 +509,7 @@ void ScrollView::SetAllowKeyboardScrolling(bool allow_keyboard_scrolling) {
     return;
   }
   allow_keyboard_scrolling_ = allow_keyboard_scrolling;
-  OnPropertyChanged(&allow_keyboard_scrolling_, kPropertyEffectsNone);
+  OnPropertyChanged(&allow_keyboard_scrolling_, PropertyEffects::kNone);
 }
 
 void ScrollView::SetDrawOverflowIndicator(bool draw_overflow_indicator) {
@@ -517,7 +517,7 @@ void ScrollView::SetDrawOverflowIndicator(bool draw_overflow_indicator) {
     return;
   }
   draw_overflow_indicator_ = draw_overflow_indicator;
-  OnPropertyChanged(&draw_overflow_indicator_, kPropertyEffectsPaint);
+  OnPropertyChanged(&draw_overflow_indicator_, PropertyEffects::kPaint);
 }
 
 View* ScrollView::SetCustomOverflowIndicator(OverflowIndicatorAlignment side,
@@ -609,7 +609,7 @@ void ScrollView::SetHasFocusIndicator(bool has_focus_indicator) {
 
   views::FocusRing::Get(this)->SchedulePaint();
   SchedulePaint();
-  OnPropertyChanged(&draw_focus_indicator_, kPropertyEffectsPaint);
+  OnPropertyChanged(&draw_focus_indicator_, PropertyEffects::kPaint);
 }
 
 base::CallbackListSubscription ScrollView::AddContentsScrolledCallback(

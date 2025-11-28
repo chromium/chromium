@@ -483,22 +483,22 @@ void View::SetBoundsRect(const gfx::Rect& bounds) {
   if (prev.x() != bounds_.x()) {
     OnPropertyChanged(
         ui::metadata::MakeUniquePropertyKey(&bounds_, kXChangedKey),
-        kPropertyEffectsNone);
+        PropertyEffects::kNone);
   }
   if (prev.y() != bounds_.y()) {
     OnPropertyChanged(
         ui::metadata::MakeUniquePropertyKey(&bounds_, kYChangedKey),
-        kPropertyEffectsNone);
+        PropertyEffects::kNone);
   }
   if (prev.width() != bounds_.width()) {
     OnPropertyChanged(
         ui::metadata::MakeUniquePropertyKey(&bounds_, kWidthChangedKey),
-        kPropertyEffectsNone);
+        PropertyEffects::kNone);
   }
   if (prev.height() != bounds_.height()) {
     OnPropertyChanged(
         ui::metadata::MakeUniquePropertyKey(&bounds_, kHeightChangedKey),
-        kPropertyEffectsNone);
+        PropertyEffects::kNone);
   }
 }
 
@@ -660,7 +660,7 @@ void View::SetVisible(bool visible) {
     UpdateLayerVisibility();
 
     // Notify all other subscriptions of the change.
-    OnPropertyChanged(&visible_, kPropertyEffectsPaint);
+    OnPropertyChanged(&visible_, PropertyEffects::kPaint);
 
     if (was_visible) {
       UpdateTooltip();
@@ -699,7 +699,7 @@ void View::SetEnabled(bool enabled) {
 
   enabled_ = enabled;
   UpdateEnabledInViewsSubtreeState();
-  OnPropertyChanged(&enabled_, kPropertyEffectsPaint);
+  OnPropertyChanged(&enabled_, PropertyEffects::kPaint);
 }
 
 base::CallbackListSubscription View::AddEnabledChangedCallback(
@@ -895,7 +895,7 @@ void View::SetClipLayerToVisibleBounds(bool clip_layer) {
 
   UpdateLayerClipForVisibleBounds(remove_layer_clip);
 
-  OnPropertyChanged(&clip_layer_to_visible_bounds_, kPropertyEffectsNone);
+  OnPropertyChanged(&clip_layer_to_visible_bounds_, PropertyEffects::kNone);
 }
 
 // RTL positioning -------------------------------------------------------------
@@ -1044,7 +1044,7 @@ void View::SetUseDefaultFillLayout(bool value) {
   } else {
     SetLayoutManager(nullptr);
   }
-  OnPropertyChanged(&use_default_fill_layout_, kPropertyEffectsLayout);
+  OnPropertyChanged(&use_default_fill_layout_, PropertyEffects::kLayout);
 }
 
 // Attributes ------------------------------------------------------------------
@@ -1074,7 +1074,7 @@ void View::SetID(int id) {
 
   id_ = id;
 
-  OnPropertyChanged(&id_, kPropertyEffectsNone);
+  OnPropertyChanged(&id_, PropertyEffects::kNone);
 }
 
 const View* View::GetViewByElementId(ui::ElementIdentifier element_id) const {
@@ -1107,7 +1107,7 @@ void View::SetGroup(int gid) {
   DCHECK(group_ == -1 || group_ == gid);
   if (group_ != gid) {
     group_ = gid;
-    OnPropertyChanged(&group_, kPropertyEffectsNone);
+    OnPropertyChanged(&group_, PropertyEffects::kNone);
   }
 }
 
@@ -1116,7 +1116,7 @@ void View::SetOwnedGroup(int group_id) {
   DCHECK(owned_group_ == -1 || owned_group_ == group_id);
   if (owned_group_ != group_id) {
     owned_group_ = group_id;
-    OnPropertyChanged(&owned_group_, kPropertyEffectsNone);
+    OnPropertyChanged(&owned_group_, PropertyEffects::kNone);
   }
 }
 
@@ -1562,7 +1562,7 @@ void View::SetFlipCanvasOnPaintForRTLUI(bool enable) {
   }
   flip_canvas_on_paint_for_rtl_ui_ = enable;
 
-  OnPropertyChanged(&flip_canvas_on_paint_for_rtl_ui_, kPropertyEffectsPaint);
+  OnPropertyChanged(&flip_canvas_on_paint_for_rtl_ui_, PropertyEffects::kPaint);
 }
 
 base::CallbackListSubscription
@@ -1578,7 +1578,7 @@ void View::SetMirrored(bool is_mirrored) {
   }
   is_mirrored_ = is_mirrored;
 
-  OnPropertyChanged(&is_mirrored_, kPropertyEffectsPaint);
+  OnPropertyChanged(&is_mirrored_, PropertyEffects::kPaint);
 }
 
 bool View::GetMirrored() const {
@@ -1604,7 +1604,8 @@ void View::SetCanProcessEventsWithinSubtree(bool can_process) {
     return;
   }
   can_process_events_within_subtree_ = can_process;
-  OnPropertyChanged(&can_process_events_within_subtree_, kPropertyEffectsNone);
+  OnPropertyChanged(&can_process_events_within_subtree_,
+                    PropertyEffects::kNone);
 }
 
 View* View::GetTooltipHandlerForPoint(const gfx::Point& point) {
@@ -2051,7 +2052,7 @@ void View::SetFocusBehavior(FocusBehavior focus_behavior) {
                                                           FocusBehavior::NEVER);
   AdvanceFocusIfNecessary();
 
-  OnPropertyChanged(&focus_behavior_, kPropertyEffectsNone);
+  OnPropertyChanged(&focus_behavior_, PropertyEffects::kNone);
 }
 
 bool View::IsFocusable() const {
@@ -2845,7 +2846,7 @@ void View::TooltipTextChanged() {
     widget->GetTooltipManager()->TooltipTextChanged(this);
   }
 
-  OnPropertyChanged(&cached_tooltip_text_, kPropertyEffectsNone);
+  OnPropertyChanged(&cached_tooltip_text_, PropertyEffects::kNone);
 }
 
 void View::UpdateTooltipForFocus() {
@@ -2897,15 +2898,21 @@ PaintInfo::ScaleType View::GetPaintScaleType() const {
 }
 
 void View::HandlePropertyChangeEffects(PropertyEffects effects) {
-  if (effects & kPropertyEffectsPreferredSizeChanged) {
-    PreferredSizeChanged();
+  switch (effects) {
+    case PropertyEffects::kPreferredSizeChanged:
+      // This calls InvalidateLayout() internally.
+      PreferredSizeChanged();
+      return;
+    case PropertyEffects::kLayout:
+      InvalidateLayout();
+      return;
+    case PropertyEffects::kPaint:
+      SchedulePaint();
+      return;
+    case PropertyEffects::kNone:
+      return;
   }
-  if (effects & kPropertyEffectsLayout) {
-    InvalidateLayout();
-  }
-  if (effects & kPropertyEffectsPaint) {
-    SchedulePaint();
-  }
+  NOTREACHED();
 }
 
 void View::AfterPropertyChange(const void* key, int64_t old_value) {
@@ -2929,7 +2936,7 @@ void View::AfterPropertyChange(const void* key, int64_t old_value) {
 
 void View::OnPropertyChanged(ui::metadata::PropertyKey property,
                              PropertyEffects property_effects) {
-  if (property_effects != kPropertyEffectsNone) {
+  if (property_effects != PropertyEffects::kNone) {
     HandlePropertyChangeEffects(property_effects);
   }
   TriggerChangedCallback(property);
@@ -3511,7 +3518,7 @@ void View::UpdateEnabledInViewsSubtreeState() {
   for (views::View* child : base::Reversed(children_)) {
     child->UpdateEnabledInViewsSubtreeState();
   }
-  OnPropertyChanged(&enabled_in_views_subtree_, kPropertyEffectsPaint);
+  OnPropertyChanged(&enabled_in_views_subtree_, PropertyEffects::kPaint);
 }
 
 void View::SetLayerBounds(const gfx::Size& size,

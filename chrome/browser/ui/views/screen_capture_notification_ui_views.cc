@@ -78,7 +78,7 @@ class NotificationBarClientView : public views::ClientView {
       return;
     }
     rect_ = rect;
-    OnPropertyChanged(&rect_, views::kPropertyEffectsNone);
+    OnPropertyChanged(&rect_, views::PropertyEffects::kNone);
   }
   gfx::Rect GetClientRect() const { return rect_; }
 

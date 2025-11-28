@@ -159,7 +159,7 @@ void Checkbox::SetChecked(bool checked) {
   }
   checked_ = checked;
   UpdateImage();
-  OnPropertyChanged(&checked_, kPropertyEffectsNone);
+  OnPropertyChanged(&checked_, PropertyEffects::kNone);
   NotifyViewControllerCallback();
   SetAndUpdateAccessibleDefaultActionVerb();
   UpdateAccessibleCheckedState();
@@ -181,7 +181,7 @@ void Checkbox::SetMultiLine(bool multi_line) {
   label()->SetMultiLine(multi_line);
   // TODO(pkasting): Remove this and forward callback subscriptions to the
   // underlying label property when Label is converted to properties.
-  OnPropertyChanged(this, kPropertyEffectsNone);
+  OnPropertyChanged(this, PropertyEffects::kNone);
 }
 
 bool Checkbox::GetMultiLine() const {

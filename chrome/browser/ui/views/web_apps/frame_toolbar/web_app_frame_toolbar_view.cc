@@ -193,7 +193,7 @@ void WebAppFrameToolbarView::SetPaintAsActive(bool active) {
   }
   paint_as_active_ = active;
   UpdateChildrenColor(/*color_changed=*/false);
-  OnPropertyChanged(&paint_as_active_, views::kPropertyEffectsNone);
+  OnPropertyChanged(&paint_as_active_, views::PropertyEffects::kNone);
 }
 
 bool WebAppFrameToolbarView::GetPaintAsActive() const {

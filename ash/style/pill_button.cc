@@ -267,7 +267,7 @@ void PillButton::UpdateBackgroundColor() {
 views::PropertyEffects PillButton::UpdateStyleToIndicateDefaultStatus() {
   // Override the method defined in LabelButton to avoid style changes when the
   // `is_default_` flag is updated.
-  return views::kPropertyEffectsNone;
+  return views::PropertyEffects::kNone;
 }
 
 void PillButton::SetText(std::u16string_view text) {

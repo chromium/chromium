@@ -320,7 +320,7 @@ void Textfield::SetReadOnly(bool read_only) {
   }
 
   UpdateDefaultBorder();
-  OnPropertyChanged(&read_only_, kPropertyEffectsPaint);
+  OnPropertyChanged(&read_only_, PropertyEffects::kPaint);
 }
 
 void Textfield::SetTextInputType(ui::TextInputType type) {
@@ -335,7 +335,7 @@ void Textfield::SetTextInputType(ui::TextInputType type) {
     GetInputMethod()->OnTextInputTypeChanged(this);
   }
   OnCaretBoundsChanged();
-  OnPropertyChanged(&text_input_type_, kPropertyEffectsPaint);
+  OnPropertyChanged(&text_input_type_, PropertyEffects::kPaint);
   UpdateAfterChange(TextChangeType::kInternal, false);
 }
 
@@ -345,7 +345,7 @@ void Textfield::SetTextInputFlags(int flags) {
   }
 
   text_input_flags_ = flags;
-  OnPropertyChanged(&text_input_flags_, kPropertyEffectsNone);
+  OnPropertyChanged(&text_input_flags_, PropertyEffects::kNone);
 }
 
 std::u16string_view Textfield::GetText() const {
@@ -492,7 +492,7 @@ void Textfield::SetCursorEnabled(bool enabled) {
   UpdateAfterChange(TextChangeType::kNone, true, false);
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldCursorEnabled),
-      kPropertyEffectsPaint);
+      PropertyEffects::kPaint);
 }
 
 const gfx::FontList& Textfield::GetFontList() const {
@@ -526,7 +526,7 @@ void Textfield::SetPlaceholderText(std::u16string_view text) {
 
   placeholder_text_ = std::u16string(text);
   GetViewAccessibility().SetPlaceholder(base::UTF16ToUTF8(text));
-  OnPropertyChanged(&placeholder_text_, kPropertyEffectsPaint);
+  OnPropertyChanged(&placeholder_text_, PropertyEffects::kPaint);
 }
 
 gfx::HorizontalAlignment Textfield::GetHorizontalAlignment() const {
@@ -538,7 +538,7 @@ void Textfield::SetHorizontalAlignment(gfx::HorizontalAlignment alignment) {
 
   OnPropertyChanged(ui::metadata::MakeUniquePropertyKey(
                         &model_, kTextfieldHorizontalAlignment),
-                    kPropertyEffectsNone);
+                    PropertyEffects::kNone);
 }
 
 void Textfield::ShowVirtualKeyboardIfEnabled() {
@@ -561,7 +561,7 @@ void Textfield::SetSelectedRange(const gfx::Range& range) {
   UpdateAfterChange(TextChangeType::kNone, true);
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldSelectedRange),
-      kPropertyEffectsPaint);
+      PropertyEffects::kPaint);
   UpdateAccessibleTextSelection();
 }
 
@@ -569,7 +569,7 @@ void Textfield::AddSecondarySelectedRange(const gfx::Range& range) {
   model_->SelectRange(range, false);
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldSelectedRange),
-      kPropertyEffectsPaint);
+      PropertyEffects::kPaint);
   UpdateAccessibleTextSelection();
 }
 
@@ -591,7 +591,7 @@ void Textfield::SetColor(SkColor value) {
   cursor_view_->layer()->SetColor(value);
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldTextColor),
-      kPropertyEffectsPaint);
+      PropertyEffects::kPaint);
 }
 
 void Textfield::ApplyColor(SkColor value, const gfx::Range& range) {
@@ -624,7 +624,7 @@ void Textfield::SetInvalid(bool invalid) {
   if (FocusRing::Get(this)) {
     FocusRing::Get(this)->SetInvalid(invalid);
   }
-  OnPropertyChanged(&invalid_, kPropertyEffectsNone);
+  OnPropertyChanged(&invalid_, PropertyEffects::kNone);
 }
 
 void Textfield::ClearEditHistory() {
@@ -1247,7 +1247,7 @@ void Textfield::OnCompositionTextConfirmedOrCleared() {
 void Textfield::OnTextChanged() {
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldText),
-      kPropertyEffectsPaint);
+      PropertyEffects::kPaint);
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -2730,7 +2730,7 @@ void Textfield::UpdateBackgroundColor() {
                                                      SK_AlphaOPAQUE);
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldBackgroundColor),
-      kPropertyEffectsPaint);
+      PropertyEffects::kPaint);
 }
 
 void Textfield::UpdateDefaultBorder() {
@@ -2772,7 +2772,7 @@ void Textfield::UpdateSelectionTextColor() {
   GetRenderText()->set_selection_color(GetSelectionTextColor());
   OnPropertyChanged(ui::metadata::MakeUniquePropertyKey(
                         &model_, kTextfieldSelectionTextColor),
-                    kPropertyEffectsPaint);
+                    PropertyEffects::kPaint);
 }
 
 void Textfield::UpdateSelectionBackgroundColor() {
@@ -2783,7 +2783,7 @@ void Textfield::UpdateSelectionBackgroundColor() {
       GetSelectionBackgroundColor());
   OnPropertyChanged(ui::metadata::MakeUniquePropertyKey(
                         &model_, kTextfieldSelectionBackgroundColor),
-                    kPropertyEffectsPaint);
+                    PropertyEffects::kPaint);
 }
 
 void Textfield::UpdateAccessibleTextSelection() {

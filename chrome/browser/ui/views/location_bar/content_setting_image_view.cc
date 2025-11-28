@@ -238,7 +238,7 @@ void ContentSettingImageView::SetIconColor(std::optional<SkColor> color) {
   if (content_setting_image_model_->is_visible()) {
     UpdateImage();
   }
-  OnPropertyChanged(&icon_color_, views::kPropertyEffectsNone);
+  OnPropertyChanged(&icon_color_, views::PropertyEffects::kNone);
 }
 
 std::optional<SkColor> ContentSettingImageView::GetIconColor() const {

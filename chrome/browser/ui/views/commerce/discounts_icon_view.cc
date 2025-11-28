@@ -52,7 +52,7 @@ views::BubbleDialogDelegate* DiscountsIconView::GetBubble() const {
 
 void DiscountsIconView::SetIsLabelExpanded(bool is_expanded) {
   is_label_expanded_ = is_expanded;
-  OnPropertyChanged(&is_label_expanded_, views::kPropertyEffectsNone);
+  OnPropertyChanged(&is_label_expanded_, views::PropertyEffects::kNone);
 }
 
 bool DiscountsIconView::GetIsLabelExpanded() const {

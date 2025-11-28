@@ -71,7 +71,7 @@ void Throbber::SetChecked(bool checked) {
   }
 
   checked_ = checked;
-  OnPropertyChanged(&checked_, kPropertyEffectsPaint);
+  OnPropertyChanged(&checked_, PropertyEffects::kPaint);
 }
 
 gfx::Size Throbber::CalculatePreferredSize(
@@ -149,7 +149,7 @@ void SmoothedThrobber::SetStartDelay(const base::TimeDelta& start_delay) {
     return;
   }
   start_delay_ = start_delay;
-  OnPropertyChanged(&start_delay_, kPropertyEffectsNone);
+  OnPropertyChanged(&start_delay_, PropertyEffects::kNone);
 }
 
 base::TimeDelta SmoothedThrobber::GetStopDelay() const {
@@ -161,7 +161,7 @@ void SmoothedThrobber::SetStopDelay(const base::TimeDelta& stop_delay) {
     return;
   }
   stop_delay_ = stop_delay;
-  OnPropertyChanged(&stop_delay_, kPropertyEffectsNone);
+  OnPropertyChanged(&stop_delay_, PropertyEffects::kNone);
 }
 
 void SmoothedThrobber::StopDelayOver() {

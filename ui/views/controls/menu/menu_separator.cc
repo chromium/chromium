@@ -114,7 +114,7 @@ void MenuSeparator::SetType(ui::MenuSeparatorType type) {
   }
 
   type_ = type;
-  OnPropertyChanged(&type_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&type_, PropertyEffects::kPreferredSizeChanged);
 }
 
 BEGIN_METADATA(MenuSeparator)

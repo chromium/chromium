@@ -308,7 +308,8 @@ void OmniboxPopupViewViews::SetSelectedIndex(size_t index) {
     OmniboxPopupSelection::LineState line_state = OmniboxPopupSelection::NORMAL;
     controller()->edit_model()->SetPopupSelection(
         OmniboxPopupSelection(index, line_state));
-    OnPropertyChanged(controller()->edit_model(), views::kPropertyEffectsNone);
+    OnPropertyChanged(controller()->edit_model(),
+                      views::PropertyEffects::kNone);
   }
 }
 

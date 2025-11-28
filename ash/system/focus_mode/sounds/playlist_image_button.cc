@@ -141,7 +141,7 @@ void PlaylistImageButton::SetIsSelected(bool is_selected) {
           : IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_PLAYLIST_UNSELECTED_ACCESSIBLE_DESCRIPTION));
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kStateChanged, true);
 
-  OnPropertyChanged(&is_selected_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&is_selected_, views::PropertyEffects::kPaint);
 }
 
 void PlaylistImageButton::UpdateContents(const gfx::ImageSkia& image) {

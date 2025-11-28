@@ -463,7 +463,7 @@ void BookmarkBarView::SetInfoBarVisible(bool infobar_visible) {
     return;
   }
   infobar_visible_ = infobar_visible;
-  OnPropertyChanged(&infobar_visible_, views::kPropertyEffectsLayout);
+  OnPropertyChanged(&infobar_visible_, views::PropertyEffects::kLayout);
 }
 
 bool BookmarkBarView::GetInfoBarVisible() const {

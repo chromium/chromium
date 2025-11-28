@@ -153,7 +153,7 @@ void FocusRing::SetColorId(std::optional<ui::ColorId> color_id) {
     return;
   }
   color_id_ = color_id;
-  OnPropertyChanged(&color_id_, PropertyEffects::kPropertyEffectsPaint);
+  OnPropertyChanged(&color_id_, PropertyEffects::kPaint);
 }
 
 float FocusRing::GetHaloThickness() const {
@@ -169,7 +169,7 @@ void FocusRing::SetHaloThickness(float halo_thickness) {
     return;
   }
   halo_thickness_ = halo_thickness;
-  OnPropertyChanged(&halo_thickness_, PropertyEffects::kPropertyEffectsPaint);
+  OnPropertyChanged(&halo_thickness_, PropertyEffects::kPaint);
 }
 
 void FocusRing::SetHaloInset(float halo_inset) {
@@ -177,7 +177,7 @@ void FocusRing::SetHaloInset(float halo_inset) {
     return;
   }
   halo_inset_ = halo_inset;
-  OnPropertyChanged(&halo_inset_, PropertyEffects::kPropertyEffectsPaint);
+  OnPropertyChanged(&halo_inset_, PropertyEffects::kPaint);
 }
 
 void FocusRing::SetOutsetFocusRingDisabled(bool disable) {

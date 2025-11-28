@@ -47,7 +47,7 @@ void ExpandableContainerView::DetailsView::SetExpanded(bool expanded) {
   }
   expanded_ = expanded;
   SetVisible(expanded_);
-  OnPropertyChanged(&expanded_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&expanded_, views::PropertyEffects::kPaint);
 }
 
 bool ExpandableContainerView::DetailsView::GetExpanded() const {

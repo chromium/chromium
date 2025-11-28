@@ -31,7 +31,7 @@ void Separator::SetColorId(ui::ColorId color_id) {
   }
 
   color_id_ = color_id;
-  OnPropertyChanged(&color_id_, kPropertyEffectsPaint);
+  OnPropertyChanged(&color_id_, PropertyEffects::kPaint);
 }
 
 int Separator::GetPreferredLength() const {
@@ -44,7 +44,7 @@ void Separator::SetPreferredLength(int length) {
   }
 
   preferred_length_ = length;
-  OnPropertyChanged(&preferred_length_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&preferred_length_, PropertyEffects::kPreferredSizeChanged);
 }
 
 Separator::Orientation Separator::GetOrientation() const {

@@ -50,7 +50,7 @@ TooltipIcon::~TooltipIcon() {
 
 void TooltipIcon::SetBubbleWidth(int preferred_width) {
   preferred_width_ = preferred_width;
-  OnPropertyChanged(&preferred_width_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&preferred_width_, PropertyEffects::kPreferredSizeChanged);
 }
 
 int TooltipIcon::GetBubbleWidth() const {
@@ -59,7 +59,7 @@ int TooltipIcon::GetBubbleWidth() const {
 
 void TooltipIcon::SetAnchorPointArrow(BubbleBorder::Arrow arrow) {
   anchor_point_arrow_ = arrow;
-  OnPropertyChanged(&anchor_point_arrow_, kPropertyEffectsPaint);
+  OnPropertyChanged(&anchor_point_arrow_, PropertyEffects::kPaint);
 }
 
 BubbleBorder::Arrow TooltipIcon::GetAnchorPointArrow() const {

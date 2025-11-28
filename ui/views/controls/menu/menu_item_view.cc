@@ -540,7 +540,7 @@ void MenuItemView::SetSelected(bool selected) {
   selected_ = selected;
   UpdateAccessibleSelection();
   UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
-  OnPropertyChanged(&selected_, kPropertyEffectsPaint);
+  OnPropertyChanged(&selected_, PropertyEffects::kPaint);
 }
 
 base::CallbackListSubscription MenuItemView::AddSelectedChangedCallback(

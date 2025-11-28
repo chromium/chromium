@@ -330,7 +330,7 @@ void TableView::SetTableType(TableType table_type) {
     return;
   }
   table_type_ = table_type;
-  OnPropertyChanged(&table_type_, PropertyEffects::kPropertyEffectsLayout);
+  OnPropertyChanged(&table_type_, PropertyEffects::kLayout);
 }
 
 TableType TableView::GetTableType() const {
@@ -342,7 +342,7 @@ void TableView::SetSingleSelection(bool single_selection) {
     return;
   }
   single_selection_ = single_selection;
-  OnPropertyChanged(&single_selection_, PropertyEffects::kPropertyEffectsPaint);
+  OnPropertyChanged(&single_selection_, PropertyEffects::kPaint);
 }
 
 bool TableView::GetSingleSelection() const {
@@ -514,7 +514,7 @@ void TableView::SetObserver(TableViewObserver* observer) {
     return;
   }
   observer_ = observer;
-  OnPropertyChanged(&observer_, PropertyEffects::kPropertyEffectsNone);
+  OnPropertyChanged(&observer_, PropertyEffects::kNone);
 }
 
 TableViewObserver* TableView::GetObserver() const {
@@ -599,7 +599,7 @@ void TableView::SetSelectOnRemove(bool select_on_remove) {
   }
 
   select_on_remove_ = select_on_remove;
-  OnPropertyChanged(&select_on_remove_, kPropertyEffectsNone);
+  OnPropertyChanged(&select_on_remove_, PropertyEffects::kNone);
 }
 
 bool TableView::GetSortOnPaint() const {
@@ -612,7 +612,7 @@ void TableView::SetSortOnPaint(bool sort_on_paint) {
   }
 
   sort_on_paint_ = sort_on_paint;
-  OnPropertyChanged(&sort_on_paint_, kPropertyEffectsNone);
+  OnPropertyChanged(&sort_on_paint_, PropertyEffects::kNone);
 }
 
 void TableView::SetAlternatingRowColorsEnabled(
@@ -1843,7 +1843,7 @@ void TableView::SetActiveVisibleColumnIndex(std::optional<size_t> index) {
   }
   UpdateFocusRings();
   ScheduleUpdateAccessibilityFocusIfNeeded();
-  OnPropertyChanged(&active_visible_column_index_, kPropertyEffectsNone);
+  OnPropertyChanged(&active_visible_column_index_, PropertyEffects::kNone);
 }
 
 void TableView::SelectByViewIndex(std::optional<size_t> view_index) {
