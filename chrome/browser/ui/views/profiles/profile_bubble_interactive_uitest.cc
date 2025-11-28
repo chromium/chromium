@@ -99,8 +99,11 @@ class ProfileBubbleInteractiveUiTest : public InProcessBrowserTest {
   }
 };
 
+// Flaky. See crbug.com/464411959.
+//
+// TODO(crbug.com/464411959): Reenable it.
 IN_PROC_BROWSER_TEST_F(ProfileBubbleInteractiveUiTest,
-                       InterceptionBubbleFocus) {
+                       DISABLED_InterceptionBubbleFocus) {
   // Create the inteerception bubble, owned by the view hierarchy.
   DiceWebSigninInterceptionBubbleView* bubble =
       new DiceWebSigninInterceptionBubbleView(browser(), GetAvatarButton(),
