@@ -91,8 +91,8 @@ struct Component {
   // Returns std::nullopt if the component is invalid.
   // TODO(crbug.com/350788890): This is unsafe. We should use MaybeAsViewOn().
   template <typename CharT>
-  std::optional<std::basic_string_view<CharT>> maybe_as_string_view_on(
-      const CharT* source) const {
+  UNSAFE_BUFFER_USAGE std::optional<std::basic_string_view<CharT>>
+  maybe_as_string_view_on(const CharT* source) const {
     if (!is_valid()) {
       return std::nullopt;
     }

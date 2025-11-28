@@ -1265,15 +1265,16 @@ TEST_F(URLCanonTest, UserInfo) {
   };
 
   for (const auto& user_info_case : user_info_cases) {
-    Parsed parsed = ParseStandardUrl(user_info_case.input);
+    std::string_view input_view(user_info_case.input);
+    Parsed parsed = ParseStandardUrl(input_view);
     Component out_user, out_pass;
     std::string out_str;
     StdStringCanonOutput output1(&out_str);
 
-    bool success = CanonicalizeUserInfo(
-        parsed.username.maybe_as_string_view_on(user_info_case.input),
-        parsed.password.maybe_as_string_view_on(user_info_case.input), &output1,
-        &out_user, &out_pass);
+    bool success =
+        CanonicalizeUserInfo(parsed.username.MaybeAsViewOn(input_view),
+                             parsed.password.MaybeAsViewOn(input_view),
+                             &output1, &out_user, &out_pass);
     output1.Complete();
 
     EXPECT_EQ(user_info_case.expected_success, success);
@@ -1645,14 +1646,11 @@ TEST_F(URLCanonTest, Ref) {
   for (const auto& ref_case : ref_cases) {
     // 8-bit input
     if (ref_case.input8) {
-      int len = static_cast<int>(strlen(ref_case.input8));
-      Component in_comp(0, len);
       Component out_comp;
 
       std::string out_str;
       StdStringCanonOutput output(&out_str);
-      CanonicalizeRef(in_comp.maybe_as_string_view_on(ref_case.input8), &output,
-                      &out_comp);
+      CanonicalizeRef(ref_case.input8, &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(ref_case.expected_component.begin, out_comp.begin);

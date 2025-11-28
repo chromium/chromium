@@ -692,7 +692,7 @@ void LockSchemeRegistries() {
 // transition is complete.
 bool IsStandard(const char* spec, const Component& scheme) {
   SchemeType unused_scheme_type;
-  return DoIsStandard(scheme.maybe_as_string_view_on(spec),
+  return DoIsStandard(UNSAFE_TODO(scheme.maybe_as_string_view_on(spec)),
                       &unused_scheme_type);
 }
 
