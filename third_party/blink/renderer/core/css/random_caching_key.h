@@ -5,13 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RANDOM_CACHING_KEY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RANDOM_CACHING_KEY_H_
 
-#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
+
+class RandomValueSharing;
 
 // RandomCachingKey serves as the key for random base value cache stored in the
 // StyleEngine.
