@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
@@ -157,6 +158,12 @@ class ToolbarCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:mock_contextual_panel_entrypoint_IPH_handler
                      forProtocol:@protocol(
                                      ContextualPanelEntrypointIPHCommands)];
+
+    id mock_browser_coordinator_commands =
+        OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_browser_coordinator_commands
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
     // FullscreenController depends on ToolbarsSizeBrowserAgent, so the agent
