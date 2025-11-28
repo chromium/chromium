@@ -101,23 +101,25 @@ public class TouchToFillIntegrationTest {
         sExampleUrl = new GURL("https://www.example.xyz");
         // TODO(crbug.com/40549331): Migrate Credential to GURL.
         sAna =
-                new Credential(
-                        "Ana",
-                        "S3cr3t",
-                        "Ana",
-                        sExampleUrl.getSpec(),
-                        "example.xyz",
-                        GetLoginMatchType.EXACT,
-                        0);
+                new Credential.Builder()
+                        .setUsername("Ana")
+                        .setPassword("S3cr3t")
+                        .setFormattedUsername("Ana")
+                        .setOriginUrl(sExampleUrl.getSpec())
+                        .setDisplayName("example.xyz")
+                        .setMatchType(GetLoginMatchType.EXACT)
+                        .setLastUsedMsSinceEpoch(0)
+                        .build();
         sBob =
-                new Credential(
-                        "Bob",
-                        "*****",
-                        "Bob",
-                        MOBILE_URL,
-                        "m.example.xyz",
-                        GetLoginMatchType.PSL,
-                        0);
+                new Credential.Builder()
+                        .setUsername("Bob")
+                        .setPassword("*****")
+                        .setFormattedUsername("Bob")
+                        .setOriginUrl(MOBILE_URL)
+                        .setDisplayName("m.example.xyz")
+                        .setMatchType(GetLoginMatchType.PSL)
+                        .setLastUsedMsSinceEpoch(0)
+                        .build();
         sCam =
                 new WebauthnCredential(
                         "example.net", new byte[] {1}, new byte[] {2}, "cam@example.net");

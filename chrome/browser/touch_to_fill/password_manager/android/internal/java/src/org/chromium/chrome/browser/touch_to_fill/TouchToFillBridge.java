@@ -82,19 +82,20 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
             boolean sharingNotificationDisplayed,
             boolean isBackupCredential) {
         credentials[index] =
-                new Credential(
-                        username,
-                        password,
-                        formattedUsername,
-                        originUrl,
-                        displayName,
-                        mMatchType,
-                        lastUsedMsSinceEpoch,
-                        isShared,
-                        senderName,
-                        senderProfileImageUrl,
-                        sharingNotificationDisplayed,
-                        isBackupCredential);
+                new Credential.Builder()
+                        .setUsername(username)
+                        .setPassword(password)
+                        .setFormattedUsername(formattedUsername)
+                        .setOriginUrl(originUrl)
+                        .setDisplayName(displayName)
+                        .setMatchType(mMatchType)
+                        .setLastUsedMsSinceEpoch(lastUsedMsSinceEpoch)
+                        .setIsShared(isShared)
+                        .setSenderName(senderName)
+                        .setSenderProfileImageUrl(senderProfileImageUrl)
+                        .setSharingNotificationDisplayed(sharingNotificationDisplayed)
+                        .setIsBackupCredential(isBackupCredential)
+                        .build();
     }
 
     @CalledByNative
