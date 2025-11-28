@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/functional/callback_internal.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 

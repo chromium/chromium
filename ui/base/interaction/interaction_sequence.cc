@@ -21,7 +21,7 @@
 #include "base/memory/weak_auto_reset.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/observer_list_internal.h"
+#include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"

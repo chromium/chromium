@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_number_conversions_internal.h"
 #include "components/reporting/proto/synced/status.pb.h"
 
 namespace reporting {

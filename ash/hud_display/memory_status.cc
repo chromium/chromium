@@ -10,7 +10,6 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/process/internal_linux.h"
 #include "base/process/process_iterator.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
