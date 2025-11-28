@@ -168,12 +168,6 @@ CanvasResourceProviderExternalBitmap::CanvasResourceProviderExternalBitmap(
                              /*context_provider_wrapper=*/nullptr,
                              /*delegate=*/nullptr) {}
 
-scoped_refptr<StaticBitmapImage> CanvasResourceProviderExternalBitmap::Snapshot(
-    ImageOrientation orientation) {
-  TRACE_EVENT0("blink", "CanvasResourceProviderExternalBitmap::Snapshot");
-  return UnacceleratedSnapshot(orientation);
-}
-
 scoped_refptr<StaticBitmapImage>
 CanvasResourceProviderExternalBitmap::DoExternalDrawAndSnapshot(
     base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,

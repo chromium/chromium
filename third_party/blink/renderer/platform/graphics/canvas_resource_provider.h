@@ -461,7 +461,9 @@ class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
   bool SupportsDirectCompositing() const override { return false; }
   bool IsSingleBuffered() const override { return false; }
   scoped_refptr<StaticBitmapImage> Snapshot(
-      ImageOrientation = ImageOrientationEnum::kDefault) override;
+      ImageOrientation = ImageOrientationEnum::kDefault) override {
+    NOTREACHED();
+  }
 
   void RasterRecord(cc::PaintRecord last_recording) override;
   bool WritePixels(const SkImageInfo& orig_info,
