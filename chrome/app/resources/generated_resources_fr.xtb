@@ -3210,7 +3210,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Cette appli est bloquée}one{Cette appli est bloquée}other{Certaines applis sont bloquées}}</translation>
 <translation id="3185454065699440434">Autoriser les extensions sur <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Mesure des annonces</translation>
-<translation id="3187556136478864255">Votre appareil Cast est-il visible dans l'<ph name="BEGIN_LINK" />application Google Home<ph name="END_LINK" /> ?</translation>
+<translation id="3187556136478864255">Votre appareil Cast est-il visible dans l’<ph name="BEGIN_LINK" />application Google Home<ph name="END_LINK" /> ?</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="3188465121994729530">Moyenne glissante</translation>
 <translation id="3189187154924005138">Grand curseur</translation>
@@ -5464,7 +5464,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4742334355511750246">Non autorisé à afficher des images</translation>
 <translation id="4742795653798179840">Données Chrome supprimées</translation>
 <translation id="4742970037960872810">Supprimer la surbrillance</translation>
-<translation id="4743990041512863976">Accordée – <ph name="PERMISSION_DETAILS" />. Activez l'<ph name="LINK_BEGIN" />accès au micro du système<ph name="LINK_END" />.</translation>
+<translation id="4743990041512863976">Accordée – <ph name="PERMISSION_DETAILS" />. Activez l’<ph name="LINK_BEGIN" />accès au micro du système<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Luminosité du rétroéclairage du clavier</translation>
 <translation id="4744268813103118742">Accéder au site</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -5608,7 +5608,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4841741146571978176">Une machine virtuelle requise n'existe pas. Veuillez essayer de configurer <ph name="VM_TYPE" /> pour continuer</translation>
 <translation id="4842976633412754305">Cette page tente de charger des scripts à partir de sources non authentifiées.</translation>
 <translation id="4844333629810439236">Autres claviers</translation>
-<translation id="4844347226195896707">Affichez vos mots de passe même lorsque vous n'utilisez pas Chrome ni Android en vous connectant sur &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4846628405149428620">Sélectionnez où ce site peut enregistrer des modifications</translation>
 <translation id="4846680374085650406">Vous suivez la recommandation de l'administrateur pour ce paramètre.</translation>
@@ -7588,7 +7587,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6238923052227198598">Conserver la dernière note sur l'écran de verrouillage</translation>
 <translation id="6238982280403036866">Autorisé à utiliser JavaScript</translation>
 <translation id="6239558157302047471">Actualiser le &amp;cadre</translation>
-<translation id="6240637845286751292">Accordée. Activez l'<ph name="LINK_BEGIN" />accès à la position du système<ph name="LINK_END" />.</translation>
+<translation id="6240637845286751292">Accordée. Activez l’<ph name="LINK_BEGIN" />accès à la position du système<ph name="LINK_END" />.</translation>
 <translation id="6240821072888636753">Toujours demander</translation>
 <translation id="6240964651812394252">Pour utiliser le Gestionnaire de mots de passe de Google avec votre système d'exploitation, relancez Chrome et autorisez l'accès au gestionnaire de mots de passe de votre ordinateur. Vos onglets s'ouvriront alors de nouveau.</translation>
 <translation id="6241530762627360640">Accéder aux informations relatives aux appareils Bluetooth associés à votre système et détecter les appareils Bluetooth à proximité</translation>
@@ -10221,7 +10220,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8052898407431791827">Copié dans le presse-papiers</translation>
 <translation id="8052944601017749068">Importer dans <ph name="CERT_GROUP" /></translation>
 <translation id="8053390638574070785">Actualiser cette page</translation>
-<translation id="8054500940978949009">Accordée. Activez l'<ph name="LINK_BEGIN" />accès au micro du système<ph name="LINK_END" />.</translation>
+<translation id="8054500940978949009">Accordée. Activez l’<ph name="LINK_BEGIN" />accès au micro du système<ph name="LINK_END" />.</translation>
 <translation id="8054517699425078995">Ce type de fichier peut endommager votre appareil. Voulez-vous vraiment conserver le fichier <ph name="FILE_NAME" /> ?</translation>
 <translation id="8054563304616131773">Veuillez indiquer une adresse e-mail valide.</translation>
 <translation id="8054609631325628928">Ces numéros peuvent servir à activer le service</translation>

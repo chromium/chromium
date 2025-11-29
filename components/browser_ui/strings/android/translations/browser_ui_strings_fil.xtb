@@ -115,6 +115,7 @@
 <translation id="2241587408274973373">Mga card ng page na bagong tab</translation>
 <translation id="2241634353105152135">Isang beses lang</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Alisin</translation>
+<translation id="2281098328019574668">Makatanggap ng mga notification para sa mga insight na nagpapaganda ng iyong experience sa Chrome</translation>
 <translation id="228293613124499805">Posibleng nagse-save ng data sa iyong device ang karamihan sa mga site na binibisita mo, kadalasan para mapaganda ang iyong experience sa pamamagitan ng pag-save ng mga preference mo o impormasyong shine-share mo sa site. Inirerekomenda naming panatilihing naka-on ang setting na ito.</translation>
 <translation id="2289270750774289114">Magtanong kapag gusto ng isang site na tumuklas ng mga Bluetooth device na nasa malapit (inirerekomenda)</translation>
 <translation id="2315043854645842844">Hindi sinusuportahan ng operating system ang pagpipilian ng certificate sa panig ng kliyente.</translation>
@@ -573,6 +574,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="7260727271532453612">Pinapayagan ang <ph name="PERMISSION_1" /> at <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga virtual reality device. Kapag naka-off, hindi makakagamit ang mga site ng mga virtual reality device.</translation>
 <translation id="728412880473384942">Mas mabilis ang mga site pero hindi gaanong secure</translation>
+<translation id="7324836168971967994">Mga tip na iniangkop para lang sa iyo</translation>
 <translation id="7366415735885268578">Magdagdag ng site</translation>
 <translation id="7368695150573390554">Made-delete ang anumang offline data</translation>
 <translation id="7369678931043226462">Binuksan nang kalahati ang bottom sheet ng pag-customize ng page ng bagong tab mo</translation>

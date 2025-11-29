@@ -273,6 +273,7 @@
 <translation id="4022972681110646219">स्क्रीनचे भाषांतर करा</translation>
 <translation id="4023601594785368013">मूळ भाषा: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">अपडेट लागू करण्यासाठी ChromeOS रीस्टार्ट करणे आवश्यक आहे.</translation>
+<translation id="4039097928859803404">AI मोड शॉर्टकट नेहमी दाखवा</translation>
 <translation id="4050175100176540509">नवीनतम आवृत्तीमध्‍ये महत्त्वाच्या सुरक्षितता सुधारणा आणि नवीन वैशिष्ट्ये उपलब्‍ध आहेत.</translation>
 <translation id="4053720452172726777">Google Chrome कस्टमाइझ करा आणि नियंत्रित करा</translation>
 <translation id="408393047846373801">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी, Chrome मध्ये साइन इन करा. तुम्ही साइन इन केल्यावर हा पासवर्ड तुमच्या Google खाते मध्ये सेव्ह केला जाईल.</translation>
@@ -354,6 +355,7 @@
 <translation id="4970880042055371251">ChromeOS ची आवृत्ती</translation>
 <translation id="4990567037958725628">Google Chrome कॅनरी</translation>
 <translation id="5003967926796347400">“Google Password Manager” वर क्लिक करा</translation>
+<translation id="5043786843026425788">Chrome मधील Google Lens वापरून शोधण्याविषयी अधिक जाणून घ्या</translation>
 <translation id="504867494566807945">कोणत्याही अ‍ॅपवरून Chrome मध्ये लिंक उघडा. तसेच, सहज अ‍ॅक्सेससाठी ते तुमच्या टास्कबारवर पिन केले जाते.</translation>
 <translation id="5114340746415930644">तुमच्या <ph name="USER_EMAIL" /> या खात्यामध्ये Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी तुमचा पासफ्रेझ एंटर करा</translation>
 <translation id="5120334927898581447">तुम्ही इतर Google सेवांमध्ये साइन इन करता, तेव्हा Chrome मध्ये साइन इन करा</translation>
@@ -526,6 +528,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="683440813066116847">mDNS रहदारीस अनुमती देण्यासाठी Google Chrome कॅनरी साठी अंतर्गामी नियम.</translation>
 <translation id="6841242485723266823">Chrome प्रोफाइल तुम्हाला तुमच्या जीवनातील विविध गोष्टी वेगवेगळ्या ठेवण्यात मदत करतात. आताच नवीन प्रोफाइल जोडा.</translation>
 <translation id="684888714667046800">इंटरनेटशी कनेक्ट करता आले नाही. तुम्ही फायरवॉल वापरल्यास, कृपया <ph name="PRODUCT_EXE_NAME" /> अनुमती सूचीमध्ये असल्याची खात्री करा.</translation>
+<translation id="6859580922007887573">पुढे सुरू ठेवण्यासाठी टॅब करा</translation>
 <translation id="6877155553248388166">शोध क्षेत्राच्या तळाशी उजवा कोपरा: उजवीकडे <ph name="RIGHT" />%, तळाशी <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chrome अपडेट करत आहे</translation>
 <translation id="6885412569789873916">Chrome बीटा ॲप</translation>
@@ -625,6 +628,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7849037457735762883">तुम्ही सोडले होते तिथून पुढे सुरू ठेवा: तुम्ही रीस्टार्ट करता, तेव्हा प्रत्येक वेळी Chrome तुमचे टॅब रिस्टोअर करू शकते. हे सुरू करण्यासाठी, यावर जा</translation>
 <translation id="7872446069773932638">डाउनलोड करत आहे... <ph name="SECONDS" /> सेकंद शिल्लक आहे(आहेत)</translation>
 <translation id="7886087451482920026">Google Lens वापरून मजकूर निवडा</translation>
+<translation id="7887929410013642057">AI मोड शॉर्टकट नेहमी दाखवा</translation>
 <translation id="7890208801193284374">तुम्ही कॉंप्युटर शेअर केल्यास, मित्र आणि कुटुंब स्वतंत्रपणे ब्राउझ करू शकतात आणि त्यांना पाहिजे तसे Chrome सेट अप करू शकतात.</translation>
 <translation id="7896673875602241923">कोणीतरी यापूर्वी <ph name="ACCOUNT_EMAIL_LAST" /> म्हणून या संंगणकावरील Chrome मध्ये साइन इन केले आहे. कृपया तुमची माहिती स्वतंत्र ठेवण्यासाठी एक नवीन Chrome वापरकर्ता तयार करा.</translation>
 <translation id="7904985524660297937">Google Chrome मधील Gemini वापरून पहा</translation>

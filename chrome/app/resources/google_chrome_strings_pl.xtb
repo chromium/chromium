@@ -270,6 +270,7 @@
 <translation id="4022972681110646219">Przetłumacz ekran</translation>
 <translation id="4023601594785368013">Język oryginału: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Aby system operacyjny Chrome mógł zastosować aktualizacje, musisz go ponownie uruchomić.</translation>
+<translation id="4039097928859803404">Zawsze pokazuj skróty do trybu AI</translation>
 <translation id="4050175100176540509">W najnowszej wersji zostały wprowadzone ważne poprawki bezpieczeństwa i nowe funkcje.</translation>
 <translation id="4053720452172726777">Dostosowywanie i kontrolowanie Google Chrome</translation>
 <translation id="408393047846373801">Aby mieć dostęp do haseł oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome. To hasło zostanie zapisane na Twoim koncie Google, gdy się zalogujesz.</translation>
@@ -351,6 +352,7 @@
 <translation id="4970880042055371251">Wersja Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliknij „Menedżer haseł Google”</translation>
+<translation id="5043786843026425788">Więcej informacji o wyszukiwaniu za pomocą Obiektywu Google w Chrome</translation>
 <translation id="504867494566807945">Otwieraj linki w Chrome z dowolnej aplikacji. Aby mieć łatwy dostęp do tej przeglądarki, możesz przypiąć ją do paska zadań.</translation>
 <translation id="5114340746415930644">Wpisz hasło, aby móc zapisywać dane z Chrome na koncie <ph name="USER_EMAIL" /> i ich używać</translation>
 <translation id="5120334927898581447">Loguj się w Chrome, gdy logujesz się w innych usługach Google</translation>
@@ -520,6 +522,7 @@
 <translation id="683440813066116847">Reguła dla ruchu przychodzącego w Google Chrome Canary zezwalająca na ruch mDNS.</translation>
 <translation id="6841242485723266823">Profile Chrome pomagają oddzielić różne aspekty Twojego życia. Dodaj nowy profil już teraz.</translation>
 <translation id="684888714667046800">Nie można połączyć się z internetem. Jeśli używasz zapory sieciowej, sprawdź, czy adres <ph name="PRODUCT_EXE_NAME" /> znajduje się na liście dozwolonych.</translation>
+<translation id="6859580922007887573">Kliknij, aby kontynuować</translation>
 <translation id="6877155553248388166">prawy dolny róg obszaru wyszukiwania: po prawej stronie <ph name="RIGHT" />%, u dołu <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Aktualizuję Chrome</translation>
 <translation id="6885412569789873916">Aplikacje do Chrome Beta</translation>
@@ -619,6 +622,7 @@
 <translation id="7849037457735762883">Wznawianie przeglądania od tego samego miejsca: Chrome może po każdym ponownym uruchomieniu przywracać karty. Aby włączyć tę funkcję, otwórz</translation>
 <translation id="7872446069773932638">Pobieram… Pozostało: <ph name="SECONDS" /> s.</translation>
 <translation id="7886087451482920026">Zaznacz tekst za pomocą Obiektywu Google</translation>
+<translation id="7887929410013642057">Zawsze pokazuj skróty do trybu AI</translation>
 <translation id="7890208801193284374">Jeśli dzielisz komputer ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i po swojemu skonfigurować Chrome.</translation>
 <translation id="7896673875602241923">Ktoś zalogował się wcześniej w Chrome na tym komputerze jako <ph name="ACCOUNT_EMAIL_LAST" />. Utwórz nowego użytkownika Chrome, by Twoje informacje były przechowywane oddzielnie.</translation>
 <translation id="7904985524660297937">Wypróbuj Gemini w Google Chrome</translation>

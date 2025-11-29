@@ -1354,6 +1354,7 @@
 <translation id="1907044622262489040">‏שימוש בהקלדה קולית. מקישים על מקש החיפוש + D ומתחילים לדבר.</translation>
 <translation id="1907659324308286326">‏לאביזרים מסוימים של Thunderbolt או USB4 דרושה גישה לזיכרון כדי לפעול באופן תקין.</translation>
 <translation id="1908591798274282246">פתיחה מחדש של קבוצה שנסגרה</translation>
+<translation id="1909677622563887527">‏Chrome מבוקר על ידי תוכנת בדיקה אוטומטית.</translation>
 <translation id="1909880997794698664">ברצונך באמת להשאיר מכשיר זה במצב קיוסק באופן קבוע?</translation>
 <translation id="1910721550319506122">ברוכים הבאים!</translation>
 <translation id="1910736334623230603">אי אפשר לחפש מספר תמונות. צריך להוסיף תמונה אחת בכל פעם.</translation>
@@ -1707,6 +1708,7 @@
 <translation id="2144536955299248197">מציג האישורים: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">‏פיתוח אפליקציות ל-Android ב-Linux</translation>
 <translation id="2145468727756963476">‏‫Gemini מתרענן…</translation>
+<translation id="2145688286532368277">‏האופטימיזציה של JavaScript מושבתת באתר הזה.</translation>
 <translation id="2145917706968602070">‏צריך לוודא שהטלפון נמצא בקרבת מקום ושהוא לא נעול. בנוסף, צריך לוודא שה-Bluetooth וה-Wi-Fi מופעלים</translation>
 <translation id="2146263598007866206">כדי לחסוך זמן, אתרים עשויים להוריד קבצים קשורים יחד, באופן אוטומטי</translation>
 <translation id="2147218225094845757">הסתרת החלונית הצדדית</translation>
@@ -4357,6 +4359,7 @@
 
 להפעיל את <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">אבחון</translation>
+<translation id="3942558231079086184">‏האופטימיזציה של JavaScript מושבתת באתר הזה. מומלץ להפעיל אותה כדי לשפר את הביצועים.</translation>
 <translation id="3943582379552582368">&amp;אחורה</translation>
 <translation id="3943857333388298514">הדבקה</translation>
 <translation id="3945513714196326460">יש לנסות שם קצר יותר</translation>
@@ -5623,7 +5626,6 @@
 <translation id="4841741146571978176">המכונה הווירטואלית הנדרשת לא קיימת. יש לנסות להגדיר מכונה מסוג <ph name="VM_TYPE" /> כדי להמשיך</translation>
 <translation id="4842976633412754305">דף זה מנסה לטעון סקריפטים ממקורות שאינם מאומתים.</translation>
 <translation id="4844333629810439236">מקלדות אחרות</translation>
-<translation id="4844347226195896707">‏כדי להציג את הסיסמאות גם כשלא משתמשים ב-Chrome או ב-Android, נכנסים לחשבון בכתובת &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;</translation>
 <translation id="484462545196658690">אוטומטי</translation>
 <translation id="4846628405149428620">בחירת המיקום לשמירת שינויים על ידי האתר הזה</translation>
 <translation id="4846680374085650406">הפעילות שלך נעשית בהתאם להמלצה של מנהל המערכת לגבי הגדרה זו.</translation>
@@ -10202,6 +10204,7 @@
 <translation id="8032569120109842252">במעקב</translation>
 <translation id="8033827949643255796">מסומן</translation>
 <translation id="8033958968890501070">הזמן שהוקצב תם</translation>
+<translation id="8034399942062051455">‏האופטימיזציה של V8 מושבתת</translation>
 <translation id="8034697324150621782">החלפה עם התצוגה העליונה</translation>
 <translation id="8035059678007243127">הדף האנונימי השמור במטמון לדף הקודם/הבא: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">עזרה בשיפור של המילוי האוטומטי</translation>

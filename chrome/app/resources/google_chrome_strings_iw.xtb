@@ -45,6 +45,7 @@
 <translation id="146866447420868597">‏להיכנס אל Chrome?</translation>
 <translation id="1476347941828409626">‏&amp;ניהול הפרופילים ב-Chrome</translation>
 <translation id="1492280395845991349">‏צריך להפעיל מחדש כדי לסיים את העדכון של Chrome</translation>
+<translation id="1496875977627931224">היי <ph name="USER_NAME" />,<ph name="LINE_BREAK" />איך אני יכול לעזור לך?</translation>
 <translation id="1497802159252041924">שגיאת התקנה: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">‏רוצה להתאים אישית את פרופיל Chrome?</translation>
 <translation id="1518627427551567882">הדף הזה מוגן</translation>
@@ -198,6 +199,7 @@
 <translation id="3112458742631356345">‏Chrome חסם את ההורדה הזאת כי לרוב לא מתבצעת הורדה של קבצים כאלה ויכול להיות שהקובץ מסוכן</translation>
 <translation id="3114643501466072395">‏כדי לבדוק אם הסיסמאות האחרות מוגנות מפני פרצות באבטחת מידע ובעיות אבטחה אחרות, <ph name="BEGIN_LINK" />יש להיכנס ל-Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">‏‫Chrome חסם את ההורדה הזו כי קובץ הארכיון כולל קבצים אחרים שעלולים להסתיר תוכנות זדוניות</translation>
+<translation id="3130333203120345554">חיפוש חדש</translation>
 <translation id="3135560418014806498">‏הוספת פרופיל Chrome</translation>
 <translation id="3137969841538672700">צריך לגרור כדי לחפש</translation>
 <translation id="3140883423282498090">‏השינויים ייכנסו לתוקף בפעם הבאה ש-Google Chrome יופעל מחדש.</translation>
@@ -361,6 +363,7 @@
 <translation id="5139423532931106058">‏התאמה אישית של פרופיל Chrome</translation>
 <translation id="5163087008893166964">‏ברוך בואך אל Chrome. נפתח חלון חדש בדפדפן</translation>
 <translation id="5166439563123238795">‏צריך לתת ל-Chrome הרשאה כדי לעקוב אחרי תנועות הידיים</translation>
+<translation id="5167819546851111585">איך אני יכול לעזור לך?</translation>
 <translation id="5170938038195470297">‏לא ניתן להשתמש בפרופיל שלך משום שהוא מגרסה חדשה יותר של Google Chrome. ייתכן שחלק מהתכונות לא יהיו זמינות. ציין ספריית פרופיל אחרת או השתמש בגרסה חדשה יותר של Chrome.</translation>
 <translation id="5174969993834422967">הבחירה שלך היא בדרך כלל לחסום התראות. כדי לאפשר לאתר הזה להציג התראות, יש ללחוץ על סמל ההתראה בפינה השמאלית של סרגל המיקום.</translation>
 <translation id="5174983315706567306">אין מספיק מקום בכונן.</translation>
@@ -636,6 +639,7 @@
 <translation id="8013993649590906847">‏אם אין לתמונה תיאור מועיל, Chrome ינסה לספק לך תיאור. כדי ליצור תיאורים, התמונות נשלחות אל Google.</translation>
 <translation id="8019103195866286235">‏הפרסום של התוסף הזה בוטל על ידי המפתח שלו, ויכול להיות שהתוסף לא בטוח. צריך להסיר אותו מ-Chrome כדי לא לאפשר לו יותר להציג ולשנות את הנתונים שלך באתרים שאליהם תתבצע כניסה, כולל הפרטים האישיים שלך.</translation>
 <translation id="8040768861829554732">‏תוסף מבקש ממך להיכנס ל-Chrome</translation>
+<translation id="8041795619940733262">‏אפשר לשאול את Google<ph name="LINE_BREAK" />לגבי הכרטיסייה הזו</translation>
 <translation id="80471789339884597">תודה שהתקנת. עליך להפעיל מחדש את כל הדפדפנים לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">‏פרופילים אחרים ב-Chrome</translation>

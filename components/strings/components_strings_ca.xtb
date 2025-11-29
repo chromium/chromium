@@ -2160,6 +2160,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" />.</translation>
 <translation id="4476953670630786061">Aquest formulari no és segur. S'ha desactivat l'emplenament automàtic.</translation>
 <translation id="4477350412780666475">Pista següent</translation>
+<translation id="4479915773139026885">Mode IA a la Cerca de Google</translation>
 <translation id="4480760608050410381">Vídeo MP4</translation>
 <translation id="448363931695049633">Pizzeries</translation>
 <translation id="4489023393592172404">Sobre Kaku 4</translation>
@@ -3156,6 +3157,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6124432979022149706">Connectors de Chrome Enterprise</translation>
 <translation id="6124996493718543728">La pantalla de progrés de Compra ara, paga després està oberta a alçada completa.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Més detalls<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Prem Retorn per fer preguntes al mode IA a la Cerca de Google.</translation>
 <translation id="6126565365696310362">Sobre xinès número 2</translation>
 <translation id="6131824478727057281">ubicació</translation>
 <translation id="6133320744616005677">Continua permetent</translation>
@@ -3892,6 +3894,7 @@ Detalls addicionals:
 <translation id="7337248890521463931">Mostra més línies</translation>
 <translation id="7337706099755338005">No està disponible a la teva plataforma.</translation>
 <translation id="733923710415886693">El certificat del servidor no s'ha divulgat mitjançant la Transparència de certificats.</translation>
+<translation id="73398226265793546">Botó del mode IA. Activa'l per fer preguntes al mode IA a la Cerca de Google.</translation>
 <translation id="7346048084945669753">Està afiliat:</translation>
 <translation id="7346062987309535530">Estris per menjar</translation>
 <translation id="7346081071264046066">"Respon afirmativament a aquesta invitació de casament amb entusiasme"</translation>

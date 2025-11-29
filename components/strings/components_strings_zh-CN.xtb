@@ -338,6 +338,7 @@
 <translation id="1549470594296187301">必须启用 JavaScript 才能使用此功能。</translation>
 <translation id="1553152622374372421">冬季运动</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
+<translation id="1555014818414775661">添加图片</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1555191101192706055">您尝试访问的网站上的攻击者可能会诱使您安装影响浏览体验的有害软件，例如，更改您的主页或在您访问的网站上展示额外的广告。</translation>
 <translation id="1559231233244409191">纸板（三层）</translation>
@@ -1216,6 +1217,7 @@
 <translation id="2979424420072875974">写作资源</translation>
 <translation id="2979639724566107830">在新窗口中打开</translation>
 <translation id="2980742331521553164">这张银行卡的验证码 (CVC) 将会经过加密并保存到您的 Google 账号，以便您更快捷地结账</translation>
+<translation id="2983311431122838216">在 Google 搜索中的 AI 模式下提问</translation>
 <translation id="2983666748527428214">打开无痕式标签页</translation>
 <translation id="2985306909656435243">启用后，Chromium 会将您的信用卡副本存储在此设备上，以加快表单填写速度。</translation>
 <translation id="2985398929374701810">请输入有效的送货地址</translation>
@@ -1392,6 +1394,7 @@
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 日历中快速创建新活动</translation>
 <translation id="3261488570342242926">详细了解虚拟卡</translation>
 <translation id="3262698603497362968">购买选项</translation>
+<translation id="3264315627780269177">无法分享此标签页</translation>
 <translation id="3266367459139339908">我们推出了新的方式来限制网站在向您展示个性化广告时可以了解关于您的哪些信息，例如：</translation>
 <translation id="3266793032086590337">值（冲突）</translation>
 <translation id="3268451620468152448">打开的标签页</translation>
@@ -1641,6 +1644,7 @@
 <translation id="3665100783276035932">大多数网站应该都会按预期运行</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />了解详情<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">卡号</translation>
+<translation id="3670159164851218963">AI 模式历史记录</translation>
 <translation id="3670229581627177274">开启蓝牙</translation>
 <translation id="3671540257457995106">允许调整大小？</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> 出错了：<ph name="ERROR_MESSAGE" /></translation>
@@ -1869,6 +1873,7 @@
 <translation id="4031179711345676612">已允许使用麦克风</translation>
 <translation id="4036753017940930924">地块与土地</translation>
 <translation id="4039506337798853114">若要显示光标，请按 |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045070493270310437">重新打开标签页</translation>
 <translation id="4045226534284799755">请登录您的 Microsoft 账号，然后重试</translation>
 <translation id="4045441967987592849">重新打开</translation>
 <translation id="4047351652147966654">18 x 24 英寸</translation>
@@ -2120,6 +2125,7 @@
 <translation id="4406896451731180161">搜索结果</translation>
 <translation id="4407758156081352648">为确保安全，您的组织不允许在 Chrome 中重复使用密码。Chrome 中的密码会加密，以保护用户隐私。</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" />Cookie</translation>
+<translation id="4409556632583862731">新建线程</translation>
 <translation id="4412074349188076601">该配置已被标记为可安装，但系统未为此架构提供任何映像，所以无法安装该配置。</translation>
 <translation id="4412377069090572315">其他用户的评价</translation>
 <translation id="4414452699610169758">使用 Google 密码管理工具和 Chrome 自动填充功能，保存及填充密码、支付方式和地址</translation>
@@ -2769,6 +2775,7 @@
     <ph name="LINE_BREAK" />
     请尝试与您的系统管理员联系。</translation>
 <translation id="5496804587179176046">保存安全码，目前未保存任何安全码</translation>
+<translation id="5499229993630251170">要继续此线程吗？</translation>
 <translation id="550365051221576010">填充所有字段</translation>
 <translation id="5506286895894263601">该列表未包含任何有效的快捷方式。</translation>
 <translation id="5508443345185481044">相机与摄像机</translation>
@@ -3079,6 +3086,7 @@
 <translation id="6018650639991193045">在 Chrome 的“设置”页面中删除浏览记录、Cookie、缓存内容及其他数据</translation>
 <translation id="6019118530636932154">Google Apps 脚本</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" />（已同步）</translation>
+<translation id="6025471531651464742">添加文件</translation>
 <translation id="6028591542479806248">管理移动应用和电子邮件通知</translation>
 <translation id="6028833024483927901">全球美食</translation>
 <translation id="603068602130820122">双钉（右侧）</translation>
@@ -3116,6 +3124,7 @@
 <translation id="6062405040252994646">工具</translation>
 <translation id="6062937464449575061">取消跟踪价格</translation>
 <translation id="6063415549109819824">住宅融资</translation>
+<translation id="6069343053547121389">在 AI 模式下询问与此标签页有关的问题</translation>
 <translation id="6070432475334343308">有一个或多个文件未上传到“<ph name="CLOUD_PROVIDER" />”上的“<ph name="FOLDER_NAME" />”</translation>
 <translation id="6071503852498277813">内容书签解析器服务</translation>
 <translation id="6078069862923723141">青色 2</translation>
@@ -3358,6 +3367,7 @@
 <translation id="6443406338865242315">您已安装的扩展程序和插件</translation>
 <translation id="6444329331928531170">退休与养老金</translation>
 <translation id="6445051938772793705">国家/地区</translation>
+<translation id="6446256167362544629">AI 侧边栏</translation>
 <translation id="6446608382365791566">添加更多信息</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6448371595882710519">详细了解数据控制</translation>
@@ -3449,6 +3459,7 @@
 <translation id="6597665340361269064">90 度</translation>
 <translation id="6598976221101665070">剧情片</translation>
 <translation id="6599642189720630047">跟踪的商品</translation>
+<translation id="6608426252530537984">最多只能添加 10 个标签页</translation>
 <translation id="6613742613135780554">手部跟踪</translation>
 <translation id="6613866251791999074">详细了解 Chrome 中的搜索引擎</translation>
 <translation id="6615297766614333076">堆叠出纸器 2</translation>
@@ -3570,6 +3581,7 @@
 <translation id="6799145206637008376">填写此虚拟卡的银行卡验证码 (CVC)</translation>
 <translation id="6805030849054648206">B6/C4 信封</translation>
 <translation id="6807791860691150411">教育</translation>
+<translation id="6808579246645021886">分享的标签页和文件</translation>
 <translation id="681021252041861472">必填字段</translation>
 <translation id="6810899417690483278">自定义 ID</translation>
 <translation id="6816109178681043245">体育用品</translation>
@@ -4987,6 +4999,7 @@
 <translation id="9133985615769429248">如果您与他人共用此设备，那么您每次使用已保存的密码时，都可使用屏幕解锁方式来验证身份</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />，虚拟卡</translation>
 <translation id="9138037198177304356">已授予通知权限</translation>
+<translation id="913846191326613072">分享标签页时，系统会将其内容和网址发送给 Google。</translation>
 <translation id="9139318394846604261">购物</translation>
 <translation id="9140198744651252040">Chrome 浏览器希望使用指纹来自动填充密码</translation>
 <translation id="9141013498910525015">管理地址</translation>
@@ -5077,6 +5090,7 @@
 <translation id="955429569736351433">允许使用 VR</translation>
 <translation id="955627189349169688">您可在 <ph name="BEGIN_LINK" />Chrome 同步设置<ph name="END_LINK" />中选择停用此政策。</translation>
 <translation id="95721182352849470">黄色 2</translation>
+<translation id="961372935451193190">标签页和文件</translation>
 <translation id="961663415146723894">装订（底部）</translation>
 <translation id="961856697154696964">删除浏览数据</translation>
 <translation id="961930410699694996">这次可以使用位置信息</translation>

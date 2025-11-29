@@ -265,6 +265,7 @@
 <translation id="4023601594785368013">Asl tili: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Istalgan ilovadagi havolalarni Chromiumda ochish. Shuningdek, uni vazifalar paneliga mahkamlab, tezkor ochish mumkin.</translation>
 <translation id="4036079820698952681">Chromium brauzerining <ph name="BEGIN_LINK" />joriy sozlamalari<ph name="END_LINK" /> asosida hisobot yuboring va brauzerning ishlashini yaxshilashga yordamlashing</translation>
+<translation id="4039097928859803404">AI rejimi tezkor tugmalari doim chiqarilsin</translation>
 <translation id="4050175100176540509">So‘nggi versiyada himoya devori yaxshilandi va yangi funksiyalar qo‘shildi.</translation>
 <translation id="4055805654398742145">Parollar menejeri</translation>
 <translation id="4061696872429826774">Kompyuterdagi boshqa dastur Chromium ishlashini oʻzgartirishi mumkin kengaytmani oʻrnatdi.
@@ -501,6 +502,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="6847869444787758381">Parollaringiz oshkor etilsa, Chromium bu haqida xabar qiladi</translation>
 <translation id="684888714667046800">Internetga ulanilmadi. Himoya devori ishlatsangiz, <ph name="PRODUCT_EXE_NAME" /> ruxsat etilgan roʻyxatda borligini tekshiring.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
+<translation id="6859580922007887573">Davom etish uchun tegining</translation>
 <translation id="6862030660799253820">Rasmli qidiruv orqali bu rasmni topish</translation>
 <translation id="6873893289264747459">Chromium “<ph name="EXTENSION_NAME" />” kengaytmasi tarkibida zararli dastur aniqladi</translation>
 <translation id="6877155553248388166">qidiruv hududining pastki oʻng burchagi: oʻng <ph name="RIGHT" />%, past <ph name="BOTTOM" />%</translation>
@@ -586,6 +588,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7872446069773932638">Yuklab olinmoqda... <ph name="SECONDS" /> soniya qoldi.</translation>
 <translation id="7873537467422636035">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
 <translation id="7877212753140190672">Bu rasm haqida savol berish</translation>
+<translation id="7887929410013642057">AI rejimi tezkor tugmalari doim chiqarilsin</translation>
 <translation id="7888981273428720788">Chromiumni asosiy brauzer etib belgilang</translation>
 <translation id="7934340546140346950">Chromium himoyasiz ulanishlarni imkon qadar HTTPS protokolga avtomatik yangilaydi</translation>
 <translation id="7937630085815544518">Avvallari siz Chromium‘ga <ph name="USER_EMAIL_ADDRESS" /> hisobidan kirgandingiz. O‘sha hisobdan foydalanib yana qaytadan kiring.</translation>
@@ -633,6 +636,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8416884904046428725">Ayrim maʼlumotlar Google hisobingizda saqlanishi va barcha qurilmalarda ishlatilishidan avval Chromium shaxsingizni tasdiqlashi kerak. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromiumni 1 kun ichida qayta ishga tushiring}other{Chromiumni # kun ichida qayta ishga tushiring}}</translation>
 <translation id="8438543370129609977">Rasm orqali qidiruv ishlatilganda sahifa sarlavhasi, URL manzili, kontenti, jumladan, PDF fayllar Google serverlariga yuboriladi. <ph name="LEARN_MORE" /></translation>
+<translation id="8447525028100794994">Chromium ichida Rasmli qidiruv haqida batafsil</translation>
 <translation id="8453117565092476964">O‘rnatish dasturi arxivi shikastlangan. Chromium‘ni qaytadan yuklab oling.</translation>
 <translation id="8458614432758743027">Chromium Windows 10 yoki undan yuqori versiyalarda ishlaydi.</translation>
 <translation id="8463672209299734063">Ixtiyoriy: Google serverlariga diagnostika va foydalanish statistikasi maʼlumotlarini yuborish orqali ChromiumOS tizimini takomillashtirishga yordam bering.</translation>

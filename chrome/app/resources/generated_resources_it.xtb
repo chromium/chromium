@@ -1345,6 +1345,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1907044622262489040">Digita con la tua voce. Utilizza il tasto per la ricerca + D, quindi inizia a parlare.</translation>
 <translation id="1907659324308286326">Alcuni accessori Thunderbolt o USB4 richiedono l'accesso alla memoria per funzionare correttamente.</translation>
 <translation id="1908591798274282246">Riapri gruppo chiuso</translation>
+<translation id="1909677622563887527">Chrome è controllato da software di test automatizzato</translation>
 <translation id="1909880997794698664">Vuoi mantenere definitivamente questo dispositivo in modalità kiosk?</translation>
 <translation id="1910721550319506122">Ti diamo il benvenuto</translation>
 <translation id="1910736334623230603">Impossibile cercare più immagini. Aggiungi un'immagine alla volta.</translation>
@@ -1698,6 +1699,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2144536955299248197">Visualizzatore certificati: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Sviluppo di app Android in Linux</translation>
 <translation id="2145468727756963476">Gemini si sta aggiornando…</translation>
+<translation id="2145688286532368277">L'ottimizzazione di JavaScript è disattivata per questo sito.</translation>
 <translation id="2145917706968602070">Assicurati che il tuo smartphone sia nelle vicinanze e sbloccato e che il Bluetooth e il Wi-Fi siano attivi</translation>
 <translation id="2146263598007866206">I siti potrebbero scaricare automaticamente file correlati per aiutarti a risparmiare tempo</translation>
 <translation id="2147218225094845757">Nascondi riquadro laterale</translation>
@@ -4345,6 +4347,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 
   Vuoi avviare <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostica</translation>
+<translation id="3942558231079086184">L'ottimizzazione di JavaScript è disattivata per questo sito. Attivala per prestazioni migliori.</translation>
 <translation id="3943582379552582368">&amp;Indietro</translation>
 <translation id="3943857333388298514">Incolla</translation>
 <translation id="3945513714196326460">Prova con un nome più corto</translation>
@@ -5609,7 +5612,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4841741146571978176">Non esiste una macchina virtuale obbligatoria. Prova a configurare <ph name="VM_TYPE" /> per continuare.</translation>
 <translation id="4842976633412754305">Questa pagina sta tentando di caricare script da fonti non autenticate.</translation>
 <translation id="4844333629810439236">Altre tastiere</translation>
-<translation id="4844347226195896707">Visualizza le tue password anche quando non utilizzi Chrome o Android accedendo a &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;</translation>
 <translation id="484462545196658690">Automatico</translation>
 <translation id="4846628405149428620">Seleziona la posizione in cui questo sito può salvare le modifiche</translation>
 <translation id="4846680374085650406">Stai seguendo il consiglio dell'amministratore per questa impostazione.</translation>
@@ -10181,6 +10183,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8032569120109842252">Stai seguendo</translation>
 <translation id="8033827949643255796">selezionati</translation>
 <translation id="8033958968890501070">Timeout</translation>
+<translation id="8034399942062051455">Ottimizzazione di V8 disattivata</translation>
 <translation id="8034697324150621782">Passa alla visualizzazione dall'alto</translation>
 <translation id="8035059678007243127">Pagina in incognito memorizzata nella cache back-forward: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Contribuisci a migliorare la compilazione automatica</translation>

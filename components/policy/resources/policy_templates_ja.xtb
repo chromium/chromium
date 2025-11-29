@@ -6162,11 +6162,6 @@ Protected Audience API のサポートを終了により、このポリシーは
       <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> プロパティが <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> リクエストで定義されている場合、ユーザーの明示的な許可なしに、すべてのスクリーン サーフェスが自動的にキャプチャされます。
       ポリシーを未設定のままにした場合、すべてのウェブ アプリケーションで <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> の使用が許可されません。
 プライバシー保護を強化するため、<ph name="PRODUCT_NAME" /> バージョン 116 以降、このポリシーで動的リフレッシュはサポートされなくなります。これにより、セッション開始時に許可しない限り、ログイン後に他のページでスクリーンがキャプチャされないようにすることができます。</translation>
-<translation id="5351946114524094311">このポリシーを設定した場合、指定したすべてのデータタイプが <ph name="CHROME_SYNC_NAME" /> とローミング プロファイルの同期から除外されます。これにより、ローミング プロファイルのサイズを抑えたり、<ph name="CHROME_SYNC_NAME" /> サーバーにアップロードされるデータのタイプを制限したりできます。
-
-      現在、このポリシーで指定できるデータタイプは次のとおりです: "apps"、"autofill"、"bookmarks"、"extensions"、"preferences"、"passwords"、"payments"、"productComparison"、"readingList"、"savedTabGroups"、"tabs"、"themes"、"typedUrls"、"wifiConfigurations"。データタイプの名前では大文字と小文字が区別されます。
-
-      注: 動的なポリシー更新は <ph name="PRODUCT_NAME" /> バージョン 123 以降でのみサポートされます。"autofill" を無効にすると、"payments" も無効になります。"typedUrls" はすべての閲覧履歴を指します。</translation>
 <translation id="5361167871898066799">物理キーボードの自動修正機能を制御する</translation>
 <translation id="5361708558735884308">このポリシーでは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> の例外としてアクセスを許可する URL のリストを指定できます。リストの指定形式については、このポリシーの説明をご覧ください。このポリシーは、たとえば <ph name="URL_BLOCKLIST_POLICY_NAME" /> で「*」と設定してすべてのリクエストをブロックし、限定された一部の URL のみアクセスを許可する場合に使用します。つまり、特定のスキームや、他のドメインのサブドメイン、ポート、具体的なパスについて例外を設定します。設定の際は、https://support.google.com/chrome/a?p=url_blocklist_filter_format で指定された形式を使用します。URL のブロックや許可は、最も具体的なフィルタによって決定されます。<ph name="URL_ALLOWLIST_POLICY_NAME" /> ポリシーは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> より優先されます。このポリシーで指定できる URL は最大 1,000 件です。
 

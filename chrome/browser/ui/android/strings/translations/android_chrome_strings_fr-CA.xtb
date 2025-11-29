@@ -1337,6 +1337,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="670498945988402717">Dernière vérification : hier</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="671481426037969117">Votre minuterie <ph name="FQDN" /> a expiré. Elle recommencera demain.</translation>
+<translation id="6716434912087331834">Pour restaurer une nouvelle fenêtre, réduisez le nombre total de fenêtres actives à <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou moins. Les fenêtres inactives sont supprimées après six mois.</translation>
 <translation id="6723740634201835758">Dans votre compte Google</translation>
 <translation id="6734310707649923383">Vous pouvez voir les pages que vous avez visitées ou les supprimer de votre historique</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé avec enregistrement en cours</translation>
@@ -1654,6 +1655,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> n'est pas à jour.</translation>
 <translation id="7944772052836377867">La synchronisation doit vérifier qu'il s'agit bien de vous</translation>
 <translation id="7951102827450076904">Toujours ouvrir les fichiers PDF téléchargés</translation>
+<translation id="7952479614398473176">Pour ouvrir une nouvelle fenêtre, réduisez le nombre total de fenêtres actives à <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou moins.</translation>
 <translation id="7957413488482743710">Une carte virtuelle masque votre carte réelle pour vous protéger de fraudes potentielles. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Onglets sur cet appareil</translation>
 <translation id="7961926449547174351">Vous avez désactivé l'accès à l'espace de stockage. Veuillez accéder au menu Paramètres pour l'activer.</translation>

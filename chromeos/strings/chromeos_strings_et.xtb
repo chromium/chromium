@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">apelsinid</translation>
 <translation id="1275718070701477396">Valitud</translation>
 <translation id="1290331692326790741">Nõrk signaal</translation>
+<translation id="1292474106138697109">Kursuse tööriistade kuva</translation>
 <translation id="1300115153046603471">APN-i tüüp on vaike-APN ja <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Teisenda</translation>
@@ -1046,6 +1047,7 @@
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5600027863942488546">Klahvi <ph name="KEY_NAME" /> on testitud</translation>
 <translation id="5606865426897221650">Tabulaator</translation>
+<translation id="5612205513582918357">Rakendus Kursuse tööriistad jagab teie ekraani rühmaga <ph name="RECEIVER_NAME" />.</translation>
 <translation id="5613201299517339763">Olete välja logitud</translation>
 <translation id="5620281292257375798">Ainult sisemine</translation>
 <translation id="5628106863521633649">Saadaolevad keeled</translation>

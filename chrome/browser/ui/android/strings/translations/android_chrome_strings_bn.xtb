@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">আজকের খবর পড়ুন <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">আরও বিবরণ</translation>
 <translation id="3123734510202723619">ঘোষণা</translation>
+<translation id="3134385238404760368">কোনও সাম্প্রতিক ট্যাব নেই</translation>
 <translation id="314939179385989105">Chrome-এর হোমপেজ</translation>
 <translation id="3158667104057012316">ম্যানুয়াল অর্ডার অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="3159335509547415276">ব্লক করা অ্যাকাউন্ট সম্পর্কে জানুন</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">A থেকে Z অনুসারে সাজান</translation>
 <translation id="4578289292431526768">শুরু করা যাক</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# মিনিট আগে}one{# মিনিট আগে}other{# মিনিট আগে}}</translation>
+<translation id="4585751637295612750">আপনার প্রশ্নে এটি যোগ করতে নতুন ট্যাব খুলুন</translation>
 <translation id="4587589328781138893">সাইট</translation>
 <translation id="4594952190837476234">এই অফলাইন পৃষ্ঠাটি <ph name="CREATION_TIME" />-এ তৈরি করা হয়েছিল এবং এটি অনলাইন ভার্সনের থেকে আলাদা হতে পারে।</translation>
 <translation id="4595237294768457124">নতুন ট্যাব পৃষ্ঠা খুলুন</translation>

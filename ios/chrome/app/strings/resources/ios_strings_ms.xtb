@@ -261,6 +261,7 @@
 <translation id="1962969542251276847">Kunci Skrin</translation>
 <translation id="1963976881984600709">Perlindungan standard</translation>
 <translation id="1964507856799750384">Ketik <ph name="BEGIN_BOLD" />Apl Penyemak Imbas<ph name="END_BOLD" /></translation>
+<translation id="1965633132497641148">Kod keselamatan tidak sah</translation>
 <translation id="1966313166384086081">data laman</translation>
 <translation id="1967461193809857427">{count,plural, =1{Sambung semula daripada tab tempat anda berhenti pada Android?}other{Sambung semula daripada tab tempat anda berhenti pada Android?}}</translation>
 <translation id="1972325230031091483">Anda akan menyemak imbas dengan lebih pantas kerana kandungan dimuatkan secara proaktif berdasarkan lawatan halaman web semasa anda</translation>
@@ -575,6 +576,7 @@
 <translation id="3186796054637504691">Kosongkan Data Sejarah dan Laman Web</translation>
 <translation id="3190736958609431397">Nyahjejak</translation>
 <translation id="3208260410153224535">Organisasi anda telah mematikan log masuk. Penanda halaman, kata laluan baharu dan banyak lagi akan disimpan pada peranti ini sahaja.</translation>
+<translation id="3211969308836412674">Nyahsematkan laman</translation>
 <translation id="3213807041830307252">Beli, terjemah dan kenal pasti perkara yang anda lihat menggunakan kamera dan galeri foto anda.</translation>
 <translation id="3214379938835224220">Anda telah dilog keluar sebagai sebahagian daripada tetapan semula iPad anda. Ketik teruskan di bawah untuk log masuk.</translation>
 <translation id="3218296450292600703">Tindakan log masuk dengan akaun terurus anda membantu anda meneruskan penyemakan imbas berkaitan dengan organisasi anda (termasuk tab, sejarah dan kata laluan) berasingan daripada penyemakan imbas anda yang lain</translation>
@@ -604,6 +606,7 @@
 <translation id="3324193307694657476">Alamat 2</translation>
 <translation id="3328801116991980348">Maklumat tapak</translation>
 <translation id="333229797575847124">Cara mendayakan ciri ini</translation>
+<translation id="3344233834747405775">Nama pemegang kad tidak sah</translation>
 <translation id="3344485292736684439">{count,plural, =1{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}other{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}}</translation>
 <translation id="334690320928261823">Tab Terbaharu</translation>
 <translation id="3349031117032695619">Sekat tetingkap timbul</translation>
@@ -1098,6 +1101,7 @@
 <translation id="5220945116117011963">Buat acara kalendar daripada tarikh</translation>
 <translation id="5222676887888702881">Log keluar</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Edit Laman</translation>
 <translation id="5233638681132016545">Tab baharu</translation>
 <translation id="5234094073825090254">{count,plural, =1{Penanda halaman disimpan dalam Google Account anda, {email}.}other{Penanda halaman disimpan dalam Google Account anda, {email}.}}</translation>
 <translation id="5234764350956374838">Ketepikan</translation>
@@ -1324,6 +1328,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6066301408025741299">Ketik untuk membatalkan.</translation>
 <translation id="6074656473835429958">Dapatkan pemberitahuan</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) tidak dapat dimuat naik</translation>
+<translation id="6076618233738284461">Sematkan laman</translation>
 <translation id="6077126322656614846">Akses Kamera dibenarkan</translation>
 <translation id="607730456154980869">Dapatkan jawapan dengan lebih cepat menggunakan Gemini dalam Chrome</translation>
 <translation id="6078236141387574983">Laraskan semula ketinggian helaian</translation>

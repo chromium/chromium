@@ -2167,6 +2167,7 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Овај образац није безбедан. Аутоматско попуњавање је искључено.</translation>
 <translation id="4477350412780666475">Следећа песма</translation>
+<translation id="4479915773139026885">AI режим у Google претрази</translation>
 <translation id="4480760608050410381">MP4 видео</translation>
 <translation id="448363931695049633">Пицерије</translation>
 <translation id="4489023393592172404">Коверта Kaku 4</translation>
@@ -3166,6 +3167,7 @@
 <translation id="6124432979022149706">Прикључци за Chrome за предузећа</translation>
 <translation id="6124996493718543728">Екран са напретком Купите одмах, платите касније отворен је на целом екрану.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Још детаља<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Enter да бисте питали режим вештачке интелигенције у Google претрази</translation>
 <translation id="6126565365696310362">Кинеска коверта бр. 2</translation>
 <translation id="6131824478727057281">локација</translation>
 <translation id="6133320744616005677">Не опозивај дозволу</translation>
@@ -3905,6 +3907,7 @@
 <translation id="7337248890521463931">Прикажи више редова</translation>
 <translation id="7337706099755338005">Није доступно на вашој платформи.</translation>
 <translation id="733923710415886693">Сертификат сервера није откривен помоћу Транспарентности сертификата.</translation>
+<translation id="73398226265793546">Дугме за режим вештачке интелигенције, активирајте да бисте упитали режим вештачке интелигенције у Google претрази</translation>
 <translation id="7346048084945669753">Повезан је:</translation>
 <translation id="7346062987309535530">Посуђе и прибор за обедовање</translation>
 <translation id="7346081071264046066">„узбуђено одговори са да на ову позивницу за венчање“</translation>

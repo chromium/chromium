@@ -261,6 +261,7 @@
 <translation id="1962969542251276847">Bloquear pantalla</translation>
 <translation id="1963976881984600709">Protección estándar</translation>
 <translation id="1964507856799750384">Toca <ph name="BEGIN_BOLD" />App de navegador<ph name="END_BOLD" /></translation>
+<translation id="1965633132497641148">Código de seguridad no válido</translation>
 <translation id="1966313166384086081">datos de sitios</translation>
 <translation id="1967461193809857427">{count,plural, =1{¿Quieres retomar la pestaña que dejaste en Android?}other{¿Quieres retomar las pestañas que dejaste en Android?}}</translation>
 <translation id="1972325230031091483">Navegarás más rápido porque el contenido se carga de forma proactiva en función de la página web en la que estás</translation>
@@ -575,6 +576,7 @@
 <translation id="3186796054637504691">Borrar historial y datos de sitios web</translation>
 <translation id="3190736958609431397">Dejar de seguir</translation>
 <translation id="3208260410153224535">Tu organización ha desactivado el inicio de sesión. Los marcadores, las contraseñas y otros elementos nuevos solo se guardarán en este dispositivo.</translation>
+<translation id="3211969308836412674">Desfijar sitio</translation>
 <translation id="3213807041830307252">Compra, traduce e identifica lo que ves con tu cámara y tu galería de fotos.</translation>
 <translation id="3214379938835224220">Se ha cerrado tu sesión al restablecer tu iPad. Toca Continuar abajo para iniciar sesión.</translation>
 <translation id="3218296450292600703">Iniciar sesión con tu cuenta gestionada te ayuda a mantener la navegación relacionada con tu organización (como las pestañas, el historial y las contraseñas) separada del resto de tu navegación</translation>
@@ -604,6 +606,7 @@
 <translation id="3324193307694657476">Dirección 2</translation>
 <translation id="3328801116991980348">Información del sitio</translation>
 <translation id="333229797575847124">Cómo habilitar esta función</translation>
+<translation id="3344233834747405775">Nombre del titular de la tarjeta no válido</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcador guardado en {title} de tu cuenta {email}}other{Marcadores guardados en {title} de tu cuenta {email}}}</translation>
 <translation id="334690320928261823">Pestañas recientes</translation>
 <translation id="3349031117032695619">Bloquear ventanas emergentes</translation>
@@ -1098,6 +1101,7 @@
 <translation id="5220945116117011963">Crea eventos del calendario a partir de fechas</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Editar sitio</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
 <translation id="5234094073825090254">{count,plural, =1{Marcador guardado en tu cuenta de Google: {email}.}other{Marcadores guardados en tu cuenta de Google: {email}.}}</translation>
 <translation id="5234764350956374838">Cerrar</translation>
@@ -1324,6 +1328,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6066301408025741299">Toca para cancelar.</translation>
 <translation id="6074656473835429958">Recibir notificaciones</translation>
 <translation id="607620096698446287">No se ha podido subir <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
+<translation id="6076618233738284461">Fijar sitio</translation>
 <translation id="6077126322656614846">Acceso a cámara permitido</translation>
 <translation id="607730456154980869">Obtén respuestas más rápido con Gemini en Chrome</translation>
 <translation id="6078236141387574983">Ajustar la altura de la hoja</translation>

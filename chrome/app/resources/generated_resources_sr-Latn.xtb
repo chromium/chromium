@@ -1345,6 +1345,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1907044622262489040">Unosite tekst glasom. Koristite taster za pretragu + D, pa počnite da govorite.</translation>
 <translation id="1907659324308286326">Nekoj Thunderbolt ili USB4 dodatnoj opremi treba pristup memoriji da bi ispravno radila.</translation>
 <translation id="1908591798274282246">Ponovo otvori zatvorenu grupu</translation>
+<translation id="1909677622563887527">Softver za automatizovano testiranje kontroliše Chrome</translation>
 <translation id="1909880997794698664">Da li stvarno želite da trajno zadržite ovaj uređaj u kiosk režimu?</translation>
 <translation id="1910721550319506122">Dobro došli!</translation>
 <translation id="1910736334623230603">Pretraživanje više slika nije moguće. Dodajte jednu po jednu sliku.</translation>
@@ -1698,6 +1699,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2144536955299248197">Prikazivač sertifikata: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Programiranje Android aplikacija za Linux</translation>
 <translation id="2145468727756963476">Gemini se osvežava…</translation>
+<translation id="2145688286532368277">Optimizacija JavaScript-a je isključena za ovaj sajt.</translation>
 <translation id="2145917706968602070">Uverite se da je telefon u blizini, da je otključan i da su Bluetooth i WiFi uključeni.</translation>
 <translation id="2146263598007866206">Sajtovi mogu automatski da preuzimaju srodne fajlove zajedno da bi vam štedeli vreme</translation>
 <translation id="2147218225094845757">Sakrij bočnu tablu</translation>
@@ -4323,6 +4325,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Veličina prikaza i teksta <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Šalje URL-ove u Bezbedno pregledanje na proveru. Šalje i mali uzorak stranica, preuzimanja, aktivnosti dodataka i informacija sistema da bi se otkrile nove pretnje. Privremeno povezuje te podatke sa Google nalogom kada ste prijavljeni da biste bili zaštićeni u svim Google aplikacijama.</translation>
+<translation id="3924788966103416622">Spoljna aplikacija želi potpunu kontrolu nad ovom Chrome sesijom da bi otklonila greške iz nje. To obuhvata pristup sačuvanim podacima, kolačićima i podacima o sajtovima, kao i mogućnost odlaska na bilo koji URL.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">I drugi korisnici na ovom uređaju mogu da koriste ovu mrežu</translation>
 <translation id="3926002189479431949">Telefon za Smart Lock je promenjen</translation>
@@ -4349,6 +4352,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 
   Želite li odmah da pokrenete <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Dijagnostika</translation>
+<translation id="3942558231079086184">Optimizacija JavaScript-a je isključena za ovaj sajt. Omogućite radi boljeg učinka.</translation>
 <translation id="3943582379552582368">&amp;Nazad</translation>
 <translation id="3943857333388298514">Nalepi</translation>
 <translation id="3945513714196326460">Probajte sa kraćim nazivom</translation>
@@ -4460,6 +4464,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4015250302257349679">Pritisnite <ph name="ACCELERATOR" /> da biste fokusirali ovaj oblačić, pa ponovo da biste fokusirali element na koji pokazuje.</translation>
 <translation id="4016762287427926315">Dozvole koje pružite za aplikaciju <ph name="APP_NAME" /> će važiti i za ovu aplikaciju. <ph name="BEGIN_LINK" />Upravljajte<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Napravi QR kôd za ovaj link</translation>
+<translation id="4018953474106733212">Ovu funkciju treba da uključuju samo veb-programeri i da je koriste samo sa pouzdanim aplikacijama.</translation>
 <translation id="4019983356493507433">Izmenite listu obeleživača</translation>
 <translation id="4020701737692625681">Administrator može da snima vaš ekran</translation>
 <translation id="4021279097213088397">-</translation>
@@ -5617,7 +5622,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4841741146571978176">Obavezna virtuelna mašina ne postoji. Probajte da podesite virtuelnu mašinu <ph name="VM_TYPE" /> da biste nastavili</translation>
 <translation id="4842976633412754305">Ova stranica pokušava da učitava skripte iz izvora čija autentičnost nije potvrđena.</translation>
 <translation id="4844333629810439236">Ostale tastature</translation>
-<translation id="4844347226195896707">Pregledajte lozinke čak i kada ne koristite Chrome ili Android tako što ćete se prijaviti na &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;</translation>
 <translation id="484462545196658690">Automatski</translation>
 <translation id="4846628405149428620">Izaberite gde ovaj sajt može da čuva izmene</translation>
 <translation id="4846680374085650406">Poštujete preporuku administratora za ovo podešavanje.</translation>
@@ -10200,6 +10204,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8032569120109842252">Pratite</translation>
 <translation id="8033827949643255796">izabrano</translation>
 <translation id="8033958968890501070">Vreme je isteklo</translation>
+<translation id="8034399942062051455">V8 optimizacija je isključena</translation>
 <translation id="8034697324150621782">Zameni gornjim prikazom</translation>
 <translation id="8035059678007243127">Cela keširana stranice bez arhiviranja: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Pomozite nam da poboljšamo automatsko popunjavanje</translation>

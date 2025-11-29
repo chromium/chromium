@@ -258,6 +258,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pertenece al escritorio <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Abriendo en <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema reciente de IA <ph name="INDEX" /> de <ph name="SUBJECT" />, en el estilo <ph name="STYLE" />, con el estado de ánimo <ph name="MOOD" />.</translation>
+<translation id="1168799042879144934">Preguntar a Google sobre la página anterior</translation>
 <translation id="116896278675803795">Cambiar automáticamente el idioma para que coincida con el contenido seleccionado</translation>
 <translation id="1169266963600477608">Controles de juegos</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> incluye datos sensibles o peligrosos. Tu administrador dice "<ph name="CUSTOM_MESSAGE" />".</translation>
@@ -1423,6 +1424,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1956167375087861299">No puede usar identificadores para reproducir contenido protegido.</translation>
 <translation id="1956390763342388273">Esta acción cargará todos los archivos de "<ph name="FOLDER_PATH" />". Hazlo únicamente si el sitio es de confianza.</translation>
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{Se revisó 1 extensión}other{Se revisaron {NUM_EXTENSIONS} extensiones}}</translation>
+<translation id="1957188536718247425">Preguntar a Google sobre la pestaña anterior</translation>
 <translation id="1957426642613794386">Tu información guardada</translation>
 <translation id="1959421829481337178">Ingresa el código de activación que te brinde tu proveedor.</translation>
 <translation id="1960211333621141174">Acantilado</translation>
@@ -2917,6 +2919,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2981033191524548279">Se produjo un error. Envía tus comentarios con el hashtag #bruschetta en la descripción. El código de error es <ph name="ERROR" />. Para solucionar el problema, prueba reiniciar el dispositivo y volver a intentarlo.</translation>
 <translation id="2981113813906970160">Mostrar cursor del mouse grande</translation>
 <translation id="2983102365694924129">Según tu actividad en un sitio. Esta configuración está desactivada.</translation>
+<translation id="2983311431122838216">Preguntarle al Modo IA en la Búsqueda de Google</translation>
 <translation id="2983373101216420412">Nivel de batería de la funda <ph name="PERCENTAGE" />%.</translation>
 <translation id="2983818520079887040">Configuración...</translation>
 <translation id="2984384421572259426">Borrar las pestañas sin usar</translation>
@@ -3499,6 +3502,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3402585168444815892">Inscripción al modo de demostración</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">No se guardó ninguna contraseña para este sitio</translation>
+<translation id="3405382848027996799">Tu hardware de Google Beam está listo para configurarse</translation>
 <translation id="3405664148539009465">Personalizar fuentes</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Puede usar datos y dispositivos de realidad virtual</translation>
@@ -5301,6 +5305,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4628762811416793313">No se completó la configuración del contenedor de Linux. Vuelve a intentarlo.</translation>
 <translation id="4629521233550547305">Abrir el perfil de <ph name="PROFILE_NAME" /></translation>
 <translation id="4629803160911640220">Confiable</translation>
+<translation id="4631637535315947773">Se quitaron los accesos directos a los sitios que más visitas porque no los usaste recientemente</translation>
 <translation id="4631955550884380853">Voz enfocada</translation>
 <translation id="4632655012900268062">Personalizar tarjetas</translation>
 <translation id="4633003931260532286">La extensión requiere "<ph name="IMPORT_NAME" />" con la versión "<ph name="IMPORT_VERSION" />" como mínimo, pero solo está instalada la versión "<ph name="INSTALLED_VERSION" />"</translation>
@@ -5607,7 +5612,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4841741146571978176">Una máquina virtual obligatoria no existe. Para continuar, configura <ph name="VM_TYPE" /></translation>
 <translation id="4842976633412754305">Esta página está tratando de cargar scripts de fuentes no autenticadas.</translation>
 <translation id="4844333629810439236">Otros teclados</translation>
-<translation id="4844347226195896707">Para ver tus contraseñas incluso cuando no estés usando Chrome o Android, accede a &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4846628405149428620">Selecciona dónde puede guardar los cambios este sitio</translation>
 <translation id="4846680374085650406">Estás siguiendo la recomendación del administrador para esta configuración.</translation>
@@ -5631,6 +5635,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4854603338816296098">Se quitó la dirección</translation>
 <translation id="485480310608090163">Más opciones de configuración y permisos</translation>
 <translation id="4857304314344645169">Consulta una explicación paso a paso de cualquier problema</translation>
+<translation id="4857506880242459832">Preguntar a Google sobre la página anterior: <ph name="PAGE_TITLE" /></translation>
 <translation id="485806788160414322">Reproducir o pausar contenido multimedia</translation>
 <translation id="4858913220355269194">Balón</translation>
 <translation id="486213875233855629">El administrador lo silenció</translation>
@@ -6375,6 +6380,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5390677308841849479">Rojo oscuro y naranja</translation>
 <translation id="5392192690789334093">Pueden enviar notificaciones</translation>
 <translation id="5393330235977997602">Opciones de PIN</translation>
+<translation id="5393474451146553463">Preguntar a Google sobre esta pestaña</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Vínculo}other{# vínculos}}</translation>
 <translation id="5394529681046491727">Wi-Fi directo</translation>
 <translation id="5395353843367783642">Guardando en tu cuenta…</translation>
@@ -8574,6 +8580,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6922763095098248079">Tu organización administra este dispositivo. Los administradores pueden acceder a los datos de cualquier perfil en este dispositivo.</translation>
 <translation id="6923633482430812883">Se produjo un error al activar el uso compartido. Asegúrate de que el servidor de archivos al que te estás conectando sea compatible con SMBv2 o versiones posteriores.</translation>
 <translation id="6924109527536857168">Es necesario activar la sincronización</translation>
+<translation id="6924940560840297548">Se quitaron las tarjetas porque no las usaste recientemente</translation>
 <translation id="6927200998271693557">Para volver rápidamente a los sitios que visitaste, sincroniza tu historial y tus pestañas con <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">Quita automáticamente los permisos de los sitios que no se usan</translation>
 <translation id="6929126689972602640">Las cuentas de instituciones educativas no admiten la función de controles parentales. Si quieres agregar una cuenta de institución educativa para acceder a Google Classroom y otros sitios web a fin de hacer tarea en el hogar, primero accede con la cuenta personal del niño. Puedes agregar la cuenta de institución educativa más tarde en la configuración.</translation>
@@ -8797,6 +8804,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7082850163410901674">Las notificaciones están desactivadas en la Configuración del Sistema de Mac</translation>
 <translation id="7083729794572207131">Por lo general, los sitios solicitan instalar apps web para mejorar tu experiencia en el sitio</translation>
 <translation id="7083774521940805477">Steam for Chromebook (beta) no está disponible en tu Chromebook.</translation>
+<translation id="7084095352418993433">Preguntar a Google acerca de esta página: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(no está configurada)</translation>
 <translation id="7086377898680121060">Aumentar brillo</translation>
 <translation id="7086672505018440886">Incluye los archivos de registro de Chrome en el archivo.</translation>
@@ -9014,6 +9022,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7246230585855757313">Reinserta tu llave de seguridad y vuelve a intentarlo</translation>
 <translation id="7249197363678284330">Puedes cambiar este parámetro de configuración desde la barra de direcciones.</translation>
 <translation id="7249764475759804559">Incluir esta app como opción cuando abres archivos</translation>
+<translation id="7249885578105575587">Pregúntale a Google sobre esta pestaña: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">El dispositivo con el que quieres compartir contenido no respondió. Vuelve a intentarlo.</translation>
 <translation id="725109152065019550">Tu administrador inhabilitó el almacenamiento externo en tu cuenta.</translation>
 <translation id="7251635775446614726">Tu administrador dice "<ph name="CUSTOM_MESSAGE" />".</translation>
@@ -10348,6 +10357,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8143442547342702591">La app no es válida</translation>
 <translation id="8144429778087524791">Marcar como completada y ocultar</translation>
 <translation id="8145170459658034418">Ahorro de memoria</translation>
+<translation id="8145219802299093106">Buscar esta página con Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">Si ya estás registrado en este dispositivo, puedes <ph name="LINK2_START" />acceder como un usuario existente<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Agrega tus idiomas preferidos y ordénalos. Los sitios web, cuando sea posible, se mostrarán en estos idiomas. Estas preferencias están sincronizadas con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Se produjo un error en el acceso. Comunícate con el administrador o vuelve a intentarlo.</translation>
@@ -11909,6 +11919,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9182556968660520230">No permitir que los sitios reproduzcan contenido protegido</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
+<translation id="9184211686591068713">Buscar esta pestaña con Google Lens: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />. No recibirás una notificación cuando comience la grabación.}=2{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" /> y <ph name="APP1_NAME" />. No recibirás una notificación cuando comience la grabación.}=3{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y 1 app más. No recibirás una notificación cuando comience la grabación.}other{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y # apps más. No recibirás una notificación cuando comience la grabación.}}</translation>
 <translation id="9186963452600581158">Acceder con la Cuenta de Google de un niño</translation>
 <translation id="9187967020623675250">Las teclas no coinciden. Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
@@ -12008,6 +12019,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="963000966785016697">Buscar imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">El administrador de TI inhabilitó los accesorios de Chrome para tu dispositivo.</translation>
 <translation id="964790508619473209">Disposición de la pantalla</translation>
+<translation id="964903383988132751">Preguntar a Google sobre la pestaña anterior: <ph name="TAB_TITLE" /></translation>
 <translation id="96535553604365597">Informar un problema con Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Revisa 1 sitio que envió muchas notificaciones recientemente}other{Revisa {NUM_SITES} sitios que enviaron muchas notificaciones recientemente}}</translation>
 <translation id="966588271015727539">Seleccionar una pantalla de braille mediante Bluetooth</translation>

@@ -261,6 +261,7 @@
 <translation id="1962969542251276847">נעילת מסך</translation>
 <translation id="1963976881984600709">הגנה רגילה</translation>
 <translation id="1964507856799750384">לוחצים על <ph name="BEGIN_BOLD" />דפדפן היישומים<ph name="END_BOLD" /></translation>
+<translation id="1965633132497641148">קוד האבטחה לא תקין</translation>
 <translation id="1966313166384086081">נתונים מאתרים</translation>
 <translation id="1967461193809857427">{count,plural, =1{‏רוצה לחזור לכרטיסייה האחרונה שבה גלשת ב-Android?}one{‏רוצה לחזור לכרטיסיות האחרונות שבהן גלשת ב-Android?}two{‏רוצה לחזור לכרטיסיות האחרונות שבהן גלשת ב-Android?}other{‏רוצה לחזור לכרטיסיות האחרונות שבהן גלשת ב-Android?}}</translation>
 <translation id="1972325230031091483">מהירות הגלישה תגבר כי התוכן ייטען באופן יזום, על סמך הביקור הנוכחי שלך בדף האינטרנט</translation>
@@ -575,6 +576,7 @@
 <translation id="3186796054637504691">מחיקת ההיסטוריה ונתוני האתר</translation>
 <translation id="3190736958609431397">ביטול המעקב</translation>
 <translation id="3208260410153224535">הכניסה הושבתה על ידי הארגון שלך. סימניות, סיסמאות ונתונים נוספים חדשים יישמרו רק במכשיר הזה.</translation>
+<translation id="3211969308836412674">ביטול ההצמדה של האתר</translation>
 <translation id="3213807041830307252">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה וגלריית התמונות.</translation>
 <translation id="3214379938835224220">‏יצאת מהחשבון במהלך האיפוס של iPad. כדי להיכנס אליו, יש ללחוץ על 'המשך' למטה.</translation>
 <translation id="3218296450292600703">כניסה באמצעות החשבון המנוהל שלך עוזרת לך להפריד בין נתוני הגלישה הקשורים לארגון שלך (כולל כרטיסיות, היסטוריה וסיסמאות) ונתוני הגלישה האחרים שלך</translation>
@@ -604,6 +606,7 @@
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
 <translation id="3328801116991980348">פרטי אתר</translation>
 <translation id="333229797575847124">איך מפעילים את התכונה הזו</translation>
+<translation id="3344233834747405775">שם בעל הכרטיס לא תקין</translation>
 <translation id="3344485292736684439">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘ בחשבון שלך, {email}}one{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}two{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}other{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}}</translation>
 <translation id="334690320928261823">כרטיסיות אחרונות</translation>
 <translation id="3349031117032695619">חסימת חלונות קופצים</translation>
@@ -1098,6 +1101,7 @@
 <translation id="5220945116117011963">יצירת אירועים ביומן דרך תאריכים</translation>
 <translation id="5222676887888702881">יציאה</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">עריכת האתר</translation>
 <translation id="5233638681132016545">כרטיסייה חדשה</translation>
 <translation id="5234094073825090254">{count,plural, =1{‏הסימנייה נשמרה בחשבון Google עם הכתובת {email}.}one{‏הסימניות נשמרו בחשבון Google עם הכתובת {email}.}two{‏הסימניות נשמרו בחשבון Google עם הכתובת {email}.}other{‏הסימניות נשמרו בחשבון Google עם הכתובת {email}.}}</translation>
 <translation id="5234764350956374838">סגירה</translation>
@@ -1324,6 +1328,7 @@
 <translation id="6066301408025741299">יש ללחוץ כדי לבטל.</translation>
 <translation id="6074656473835429958">קבלת התראות</translation>
 <translation id="607620096698446287">לא ניתן להעלות את <ph name="FILENAME" /> ‏(<ph name="FILESIZE" />)</translation>
+<translation id="6076618233738284461">הצמדת האתר</translation>
 <translation id="6077126322656614846">יש הרשאת גישה למצלמה</translation>
 <translation id="607730456154980869">‏מקבלים תשובות מהר יותר בעזרת Gemini ב-Chrome</translation>
 <translation id="6078236141387574983">שינוי של גובה הגיליון</translation>

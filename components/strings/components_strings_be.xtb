@@ -2060,6 +2060,7 @@
 <translation id="4299919199185766032">Перавышана максімальна дапушчальная колькасць сімвалаў у назве ярлыка (<ph name="MAX_LENGTH" />).</translation>
 <translation id="4300272766492248925">Адкрыць праграму</translation>
 <translation id="4300675098767811073">Некалькі дзірак справа</translation>
+<translation id="4300841966382281549">Паездка</translation>
 <translation id="4302514097724775343">Каб пачаць гульню, дакраніцеся да дыназаўра</translation>
 <translation id="4304049446746819918">{0,plural, =1{Палітыка адміністратара не рэкамендуе перамяшчаць гэты файл сюды: <ph name="DESTINATION_NAME" />}one{Палітыка адміністратара не рэкамендуе перамяшчаць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}few{Палітыка адміністратара не рэкамендуе перамяшчаць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}many{Палітыка адміністратара не рэкамендуе перамяшчаць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}other{Палітыка адміністратара не рэкамендуе перамяшчаць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Пачытайце ацэнкі кліентамі прадуктаў, паслуг і іх уражанні, каб больш абгрунтавана разглядаць водгукі.</translation>
@@ -3424,6 +3425,7 @@
 <translation id="6539092367496845964">Нешта пайшло не так. Паўтарыце спробу пазней.</translation>
 <translation id="6540488083026747005">Вы дазволілі староннія файлы cookie для гэтага сайта</translation>
 <translation id="6545864417968258051">Пошук прылад Bluetooth</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> – <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Дзве дзіркі злева</translation>
 <translation id="6549443526281184652">Касцюмы</translation>
 <translation id="6550245281449521513">Блакіроўка мышы не дазволена</translation>
@@ -4808,6 +4810,7 @@
 <translation id="8814547618907885931">Праглядзець усе табліцы параўнання</translation>
 <translation id="8814707942599948500">Канверт C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб абнавіць браўзер Chrome праз яго налады, націсніце Tab, затым Enter</translation>
+<translation id="8819855907485254989">Захавайце білет на транспарт у Кашальку</translation>
 <translation id="8820817407110198400">Закладкі</translation>
 <translation id="882338992931677877">Слот ручной падачы</translation>
 <translation id="8827067923357481311">Варыянты аплаты ў растэрміноўку</translation>

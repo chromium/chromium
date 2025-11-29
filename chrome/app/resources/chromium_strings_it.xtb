@@ -38,6 +38,7 @@
 <translation id="141901961143729572">Condividi le tue opinioni</translation>
 <translation id="1465192221147974788">Per condividere la finestra, consenti la Registrazione dello schermo per Chromium nelle Impostazioni di sistema.</translation>
 <translation id="1478370723027452770">Richiedi assistenza per Chrome for Testing</translation>
+<translation id="1496875977627931224">Ciao <ph name="USER_NAME" />,<ph name="LINE_BREAK" />a cosa stai pensando oggi?</translation>
 <translation id="1497802159252041924">Errore di installazione: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Questa pagina è protetta</translation>
 <translation id="1524282610922162960">Condividi una scheda di Chromium</translation>
@@ -191,6 +192,7 @@
 <translation id="3103660991484857065">Il programma di installazione non è riuscito a decomprimere l'archivio. Scarica di nuovo Chromium.</translation>
 <translation id="310459126943037700">Impossibile terminare le attività.</translation>
 <translation id="3130323860337406239">Chromium sta utilizzando il microfono.</translation>
+<translation id="3130333203120345554">Nuova ricerca</translation>
 <translation id="3137969841538672700">Trascina per cercare</translation>
 <translation id="3144188012276422546">Questa scheda utilizza risorse aggiuntive. Per migliorare le prestazioni, consenti a Chromium di renderla inattiva.</translation>
 <translation id="3149163023759831301">Per condividere lo schermo, consenti la Registrazione dello schermo per Chromium nelle Impostazioni di sistema</translation>
@@ -347,6 +349,7 @@
 <translation id="4994636714258228724">Aggiungiti a Chromium</translation>
 <translation id="5123973130450702873">Chromium deve avere l'autorizzazione per monitorare le tue mani</translation>
 <translation id="5141988424377517949">Non hai visitato il sito di recente. Chromium ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
+<translation id="5167819546851111585">A cosa stai pensando oggi?</translation>
 <translation id="5174969993834422967">Di solito blocchi le notifiche. Per ricevere notifiche da questo sito, fai clic sull'icona delle notifiche nell'angolo destro della barra degli indirizzi.</translation>
 <translation id="5174983315706567306">Spazio su disco insufficiente.</translation>
 <translation id="5187123684706427865">L'account Chromium richiede la ri-autenticazione</translation>
@@ -379,6 +382,7 @@
 <translation id="5496810170689441661">Chromium sta cercando di modificare le password. Per consentire la modifica, digita la tua password Windows.</translation>
 <translation id="5524890928877629608">angolo in alto a sinistra dell'area di ricerca: sinistra <ph name="LEFT" />%, in alto <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Apri PDF in Chromium</translation>
+<translation id="5536164441519929134">Chiedi<ph name="LINE_BREAK" />informazioni su questa scheda</translation>
 <translation id="5579324208890605088">Errore di avvio: esegui il programma di installazione come utente normale, non come amministratore.</translation>
 <translation id="5580770360767802657">Usa Chromium per impostazione predefinita e fissalo</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>

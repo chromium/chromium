@@ -258,6 +258,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1166596238782048887">Le tableau <ph name="TAB_TITLE" /> appartient au bureau <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Ouverture dans <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Thème d'IA <ph name="INDEX" /> de <ph name="SUBJECT" /> récent, dans le style <ph name="STYLE" />, avec l'ambiance <ph name="MOOD" />.</translation>
+<translation id="1168799042879144934">Poser une question à Google à propos de la page précédente</translation>
 <translation id="116896278675803795">Changer automatiquement la langue pour correspondre au contenu sélectionné</translation>
 <translation id="1169266963600477608">Commandes de jeu</translation>
 <translation id="1169435433292653700">Le fichier <ph name="FILE_NAME" /> comporte des données confidentielles ou dangereuses. Message de votre administrateur : « <ph name="CUSTOM_MESSAGE" /> »</translation>
@@ -1427,6 +1428,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1956167375087861299">Sites n'ayant pas l'autorisation d'utiliser des identifiants pour faire jouer du contenu protégé</translation>
 <translation id="1956390763342388273">Cette opération téléversera tous les fichiers à partir de « <ph name="FOLDER_PATH" /> ». Effectuez cette opération uniquement si vous faites confiance au site.</translation>
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 extension examinée}one{{NUM_EXTENSIONS} extension examinée}other{{NUM_EXTENSIONS} extensions examinées}}</translation>
+<translation id="1957188536718247425">Poser une question à Google à propos de l'onglet précédent</translation>
 <translation id="1957426642613794386">Vos données enregistrées</translation>
 <translation id="1959421829481337178">Veuillez entrer le code d'activation fourni par votre fournisseur de services.</translation>
 <translation id="1960211333621141174">Falaise</translation>
@@ -2923,6 +2925,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2981033191524548279">Malheureusement, un problème est survenu. Veuillez soumettre vos commentaires en indiquant #bruschetta dans la description. Le code d'erreur est <ph name="ERROR" />. Ce problème peut être résolu en redémarrant l'appareil et en réessayant.</translation>
 <translation id="2981113813906970160">Afficher le grand curseur</translation>
 <translation id="2983102365694924129">En fonction de votre activité sur un site. Ce paramètre est désactivé.</translation>
+<translation id="2983311431122838216">Mode Demander à l'IA dans Recherche Google</translation>
 <translation id="2983373101216420412">Niveau de la pile de l'étui : <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2983818520079887040">Paramètres...</translation>
 <translation id="2984384421572259426">Nettoyer les onglets inutilisés</translation>
@@ -3505,6 +3508,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3402585168444815892">Inscription au mode Démo en cours…</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Aucun mot de passe enregistré pour ce site</translation>
+<translation id="3405382848027996799">Votre accessoire Google Beam est prêt à être configuré</translation>
 <translation id="3405664148539009465">Personnaliser les polices</translation>
 <translation id="3405763860805964263">…</translation>
 <translation id="3406290648907941085">Autorisés à utiliser des appareils et des données de réalité virtuelle</translation>
@@ -5307,6 +5311,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="4628762811416793313">Échec de la configuration du conteneur Linux. Veuillez réessayer.</translation>
 <translation id="4629521233550547305">Ouvrir le profil <ph name="PROFILE_NAME" /></translation>
 <translation id="4629803160911640220">Fiable</translation>
+<translation id="4631637535315947773">Les raccourcis vers vos sites les plus visités ont été retirés parce que vous ne les avez pas utilisés récemment</translation>
 <translation id="4631955550884380853">Voix focalisée</translation>
 <translation id="4632655012900268062">Personnaliser les cartes</translation>
 <translation id="4633003931260532286">L'extension requiert « <ph name="IMPORT_NAME" /> » avec au moins une version « <ph name="IMPORT_VERSION" /> », mais seule la version « <ph name="INSTALLED_VERSION" /> » est installée</translation>
@@ -5612,7 +5617,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4841741146571978176">Une machine virtuelle requise n'existe pas. Veuillez essayer de configurer <ph name="VM_TYPE" /> pour continuer.</translation>
 <translation id="4842976633412754305">Cette page tente de charger des scripts provenant de sources non authentifiées.</translation>
 <translation id="4844333629810439236">Autres claviers</translation>
-<translation id="4844347226195896707">Affichez vos mots de passe même lorsque vous n'utilisez pas Chrome ni Android en vous connectant à &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4846628405149428620">Sélectionnez l'emplacement où ce site enregistrera les modifications</translation>
 <translation id="4846680374085650406">Vous suivez la recommandation de l'administrateur pour ce paramètre.</translation>
@@ -5636,6 +5640,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4854603338816296098">Adresse retirée</translation>
 <translation id="485480310608090163">Plus de paramètres et d'autorisations</translation>
 <translation id="4857304314344645169">Accédez à une explication étape par étape de n'importe quel problème</translation>
+<translation id="4857506880242459832">Poser une question à Google à propos de la page précédente : <ph name="PAGE_TITLE" /></translation>
 <translation id="485806788160414322">Faire jouer ou mettre en pause le contenu multimédia</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Mis en sourdine par votre administrateur</translation>
@@ -6379,6 +6384,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5390677308841849479">Rouge foncé et orange</translation>
 <translation id="5392192690789334093">Autorisés à envoyer des notifications</translation>
 <translation id="5393330235977997602">Options de NIP</translation>
+<translation id="5393474451146553463">Poser une question à Google à propos de cet onglet</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Lien}one{# lien}other{# liens}}</translation>
 <translation id="5394529681046491727">Wi-Fi direct</translation>
 <translation id="5395353843367783642">Enregistrement dans votre compte en cours…</translation>
@@ -8580,6 +8586,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6922763095098248079">Votre appareil est géré par votre organisation. Les administrateurs ont accès aux données de tous les profils enregistrés sur cet appareil.</translation>
 <translation id="6923633482430812883">Erreur lors de la configuration du partage. Veuillez vérifier que le serveur de fichiers auquel vous tentez de vous connecter prend en charge SMBv2 ou une version ultérieure.</translation>
 <translation id="6924109527536857168">La synchronisation est nécessaire</translation>
+<translation id="6924940560840297548">Cartes retirées parce que vous ne les avez pas utilisées récemment</translation>
 <translation id="6927200998271693557">Pour retrouver rapidement les sites que vous avez visités, synchronisez votre historique et vos onglets avec votre adresse <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">Retirer automatiquement les autorisations des sites inutilisés</translation>
 <translation id="6929126689972602640">Les contrôles parentaux ne sont pas pris en charge pour les comptes scolaires. Pour ajouter un compte scolaire afin d'accéder à Google Classroom et à d'autres sites Web permettant de faire des devoirs à la maison, connectez-vous d'abord avec le compte personnel de l'enfant. Vous pouvez ajouter le compte scolaire plus tard dans le menu de configuration.</translation>
@@ -8802,6 +8809,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7082850163410901674">Les notifications sont désactivées dans les réglages système Mac</translation>
 <translation id="7083729794572207131">Les sites demandent généralement d'installer des applis Web pour améliorer votre expérience sur le site</translation>
 <translation id="7083774521940805477">Steam pour Chromebook (Bêta) n'est pas offert sur votre Chromebook.</translation>
+<translation id="7084095352418993433">Poser des questions à Google à propos de cette page : <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(non configurée)</translation>
 <translation id="7086377898680121060">Augmenter la luminosité</translation>
 <translation id="7086672505018440886">Inclure les fichiers journaux de Chrome dans l'archive.</translation>
@@ -9019,6 +9027,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7246230585855757313">Réinsérez votre clé de sécurité, puis réessayez</translation>
 <translation id="7249197363678284330">Modifiez ce paramètre dans la barre d'adresse.</translation>
 <translation id="7249764475759804559">Inclure cette application comme option lors de l'ouverture de fichiers</translation>
+<translation id="7249885578105575587">Poser une question à Google à propos de cet onglet : <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">L'appareil avec lequel vous tentez de partager le fichier ne répond pas. Veuillez réessayer.</translation>
 <translation id="725109152065019550">Désolés, votre administrateur a désactivé le stockage externe pour votre compte.</translation>
 <translation id="7251635775446614726">Message de votre administrateur : « <ph name="CUSTOM_MESSAGE" /> »</translation>
@@ -10352,6 +10361,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8143442547342702591">Application non valide</translation>
 <translation id="8144429778087524791">Marquer comme terminé et masquer</translation>
 <translation id="8145170459658034418">Économiseur de mémoire</translation>
+<translation id="8145219802299093106">Rechercher cette page avec Lentille Google : <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">Si vous êtes déjà enregistré sur ​​cet appareil, vous pouvez <ph name="LINK2_START" />vous connecter à l'aide de votre compte<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Ajoutez et classez vos langues préférées. Les sites Web s'afficheront dans vos langues préférées lorsque cela est possible. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Échec de la connexion. Veuillez communiquer avec votre administrateur ou essayer de nouveau.</translation>
@@ -11913,6 +11923,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9182556968660520230">Ne pas autoriser les sites à faire jouer du contenu protégé</translation>
 <translation id="9183302530794969518">Google Documents</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Application}one{# application}other{# applications}}</translation>
+<translation id="9184211686591068713">Rechercher cet onglet avec Lentille Google : <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" />. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}=2{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" /> et <ph name="APP1_NAME" />. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}=3{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> et une autre appli. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}one{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> et # autre appli. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}other{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> et # autres applis. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}}</translation>
 <translation id="9186963452600581158">Se connecter avec un compte Google pour enfant</translation>
 <translation id="9187967020623675250">Les touches ne correspondent pas. Appuyez sur n'importe quelle touche pour <ph name="RESPONSE" />.</translation>
@@ -12012,6 +12023,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="963000966785016697">Rechercher une image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Votre administrateur informatique a désactivé les bonus Chrome pour votre appareil.</translation>
 <translation id="964790508619473209">Position des écrans</translation>
+<translation id="964903383988132751">Poser une question à Google à propos de l'onglet précédent : <ph name="TAB_TITLE" /></translation>
 <translation id="96535553604365597">Signaler un problème avec Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Examiner 1 site qui a envoyé beaucoup de notifications récemment}one{Examiner {NUM_SITES} site qui a envoyé de nombreuses notifications récemment}other{Examiner {NUM_SITES} sites qui a envoyé de nombreuses notifications récemment}}</translation>
 <translation id="966588271015727539">Sélectionnez un afficheur braille Bluetooth</translation>

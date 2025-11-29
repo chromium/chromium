@@ -267,6 +267,7 @@
 <translation id="4023601594785368013">زبان اصلی: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">‏پیوندها را از هر برنامه‌ای در Chromium باز کنید. همچنین برای دسترسی آسان، Chromium به نوار وظیفه شما سنجاق می‌شود.</translation>
 <translation id="4036079820698952681">‏با گزارش <ph name="BEGIN_LINK" />تنظیمات کنونی<ph name="END_LINK" />، به بهتر شدن Chromium کمک کنید</translation>
+<translation id="4039097928859803404">میان‌برهای «حالت هوش مصنوعی» همیشه نشان داده شوند</translation>
 <translation id="4050175100176540509">بهبودهای امنیتی مهم و ویژگی‌های جدید در جدیدترین نسخه در دسترس است.</translation>
 <translation id="4055805654398742145">مدیر گذرواژه</translation>
 <translation id="4061696872429826774">‏برنامه‌ای دیگر در رایانه شما یک افزونه اضافه کرده است که ممکن است نحوه کارکرد Chromium را تغییر دهد.
@@ -503,6 +504,7 @@
 <translation id="6847869444787758381">‏Chromium می‌تواند، اگر گذرواژه‌هایتان در معرض خطر باشد، مطلعتان کند</translation>
 <translation id="684888714667046800">نمی‌توان به اینترنت متصل شد. اگر از دیوار آتش استفاده می‌کنید، لطفاً مطمئن شوید <ph name="PRODUCT_EXE_NAME" /> در فهرست مجازها باشد.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
+<translation id="6859580922007887573">برای ادامه دادن، کلید «جهش» را فشار دهید</translation>
 <translation id="6862030660799253820">جستجوی این تصویر با «جستجوی تصویر»</translation>
 <translation id="6873893289264747459">‏Chromium متوجه شده است که «<ph name="EXTENSION_NAME" />» حاوی بدافزار است</translation>
 <translation id="6877155553248388166">‏گوشه پایین سمت چپ ناحیه جستجو: ‎٪<ph name="RIGHT" /> سمت چپ، ‎٪<ph name="BOTTOM" /> پایین</translation>
@@ -587,6 +589,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7872446069773932638">درحال بارگیری… <ph name="SECONDS" /> ثانیه باقی مانده است</translation>
 <translation id="7873537467422636035">‏اگر گذرعبارت را فراموش کرده‌اید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />داده‌های Chromium ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" /></translation>
 <translation id="7877212753140190672">پرسش درباره این تصویر</translation>
+<translation id="7887929410013642057">میان‌برهای «حالت هوش مصنوعی» همیشه نشان داده شوند</translation>
 <translation id="7888981273428720788">‏تنظیم Chromium به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="7934340546140346950">‏‫Chromium اتصال‌های ناامن را درصورت امکان به‌طور خودکار به HTTPS ارتقا می‌دهد</translation>
 <translation id="7937630085815544518">‏شما بعنوان <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم Chromium شده‌اید. لطفاً برای ورود به سیستم مجدد از همان حساب استفاده کنید.</translation>
@@ -634,6 +637,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8416884904046428725">‏قبل‌از اینکه بتوان برخی‌از داده‌ها را در «حساب Google» شما ذخیره کرد و در همه دستگاه‌هایتان استفاده کرد، Chromium باید هویت شما را تأیید کند. اگر اکنون از سیستم خارج شوید، این داده‌ها حذف خواهد شد.</translation>
 <translation id="8417404458978023919">{0,plural, =1{‏Chromium را ظرف یک روز راه‌اندازی مجدد کنید}one{‏Chromium را ظرف # روز راه‌اندازی مجدد کنید}other{‏Chromium را ظرف # روز راه‌اندازی مجدد کنید}}</translation>
 <translation id="8438543370129609977">‏وقتی از «جستجوی تصویر» استفاده می‌کنید، عنوان، نشانی وب، و محتوای صفحه (ازجمله فایل‌های PDF) به سرور ارسال می‌شود. <ph name="LEARN_MORE" /></translation>
+<translation id="8447525028100794994">‏درباره جستجو کردن با «جستجوی تصویر» در Chromium بیشتر بدانید</translation>
 <translation id="8453117565092476964">‏بایگانی نصب‌کننده خراب یا نامعتبر است. لطفاً Chromium را دوباره را بارگیری کنید.</translation>
 <translation id="8458614432758743027">‏Chromium به Windows 10 یا بالاتر نیاز دارد.</translation>
 <translation id="8463672209299734063">‏اختیاری: با ارسال خودکار داده‌های استفاده و عیب‌یابی به Google، به بهبود ویژگی‌ها و عملکرد ChromiumOS کمک کنید.</translation>

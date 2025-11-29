@@ -40,6 +40,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="141901961143729572">Geef je mening</translation>
 <translation id="1465192221147974788">Als je je venster wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen.</translation>
 <translation id="1478370723027452770">Hulp bij Chrome for Testing</translation>
+<translation id="1496875977627931224">Hallo <ph name="USER_NAME" />,<ph name="LINE_BREAK" />waar denk je vandaag aan?</translation>
 <translation id="1497802159252041924">Installatiefout: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Deze pagina wordt beschermd</translation>
 <translation id="1524282610922162960">Een Chromium-tabblad delen</translation>
@@ -193,6 +194,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="3103660991484857065">Het installatieprogramma kan het archief niet uitpakken. Download Chromium opnieuw.</translation>
 <translation id="310459126943037700">Kan taak/taken niet beëindigen.</translation>
 <translation id="3130323860337406239">Chromium gebruikt je microfoon.</translation>
+<translation id="3130333203120345554">Nieuwe zoekopdracht</translation>
 <translation id="3137969841538672700">Sleep om te zoeken</translation>
 <translation id="3144188012276422546">Dit tabblad gebruikt extra resources. Sta toe dat Chromium het inactief maakt om de prestaties te verbeteren.</translation>
 <translation id="3149163023759831301">Als je je scherm wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen</translation>
@@ -349,6 +351,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="4994636714258228724">Jezelf toevoegen aan Chromium</translation>
 <translation id="5123973130450702873">Chromium heeft rechten nodig om je handen te volgen</translation>
 <translation id="5141988424377517949">Je bent hier niet recent geweest. Chromium heeft <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en <ph name="PERMISSION_3" /> verwijderd.</translation>
+<translation id="5167819546851111585">Waar denk je vandaag aan?</translation>
 <translation id="5174969993834422967">Meestal blokkeer je meldingen. Klik op het meldingsicoon in de rechterhoek van de locatiebalk om toe te staan dat deze site meldingen stuurt.</translation>
 <translation id="5174983315706567306">Er is onvoldoende schijfruimte.</translation>
 <translation id="5187123684706427865">Chromium-account moet opnieuw worden geverifieerd</translation>
@@ -381,6 +384,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="5496810170689441661">Chromium probeert wachtwoorden te bewerken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="5524890928877629608">linkerbovenhoek van zoekgebied: links <ph name="LEFT" />%, boven <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Pdf's openen in Chromium</translation>
+<translation id="5536164441519929134">Stel vragen<ph name="LINE_BREAK" />over dit tabblad</translation>
 <translation id="5579324208890605088">Opstartfout: voer het installatieprogramma uit als normale gebruiker, niet als beheerder.</translation>
 <translation id="5580770360767802657">Chromium standaard gebruiken en vastzetten</translation>
 <translation id="5596627076506792578">Meer opties</translation>

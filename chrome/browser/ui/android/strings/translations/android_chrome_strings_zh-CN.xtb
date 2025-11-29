@@ -1337,6 +1337,7 @@
 <translation id="670498945988402717">昨天检查过</translation>
 <translation id="6710213216561001401">上一项</translation>
 <translation id="671481426037969117">您的 <ph name="FQDN" /> 计时器已结束计时。它将于明天重新开始。</translation>
+<translation id="6716434912087331834">如需恢复一个新窗口，请先将使用中的窗口总数减少到 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 个或更少。闲置窗口会在 6 个月后被删除。</translation>
 <translation id="6723740634201835758">在您的 Google 账号中</translation>
 <translation id="6734310707649923383">您可以查看自己访问过的网页，也可将网页从历史记录中删除</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />，已固定的无痕式标签页，正在录制内容</translation>
@@ -1652,6 +1653,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 不是最新版本。</translation>
 <translation id="7944772052836377867">同步功能需要验证您的身份</translation>
 <translation id="7951102827450076904">一律打开下载的 PDF</translation>
+<translation id="7952479614398473176">如需打开一个新窗口，请先将使用中的窗口总数减少到 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 个或更少。</translation>
 <translation id="7957413488482743710">使用虚拟卡可隐藏您的实体卡信息，保护您免遭潜在欺诈活动的威胁。<ph name="BEGIN_LINK1" />详细了解虚拟卡<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">此设备上的标签页</translation>
 <translation id="7961926449547174351">您已停用存储空间的访问权限，请转到“设置”启用该访问权限。</translation>

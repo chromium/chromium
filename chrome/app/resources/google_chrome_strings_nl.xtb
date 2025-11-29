@@ -47,6 +47,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="146866447420868597">Inloggen bij Chrome?</translation>
 <translation id="1476347941828409626">&amp;Chrome-profielen beheren</translation>
 <translation id="1492280395845991349">Herstarten om de Chrome-update af te ronden</translation>
+<translation id="1496875977627931224">Hallo <ph name="USER_NAME" />,<ph name="LINE_BREAK" />waar denk je vandaag aan?</translation>
 <translation id="1497802159252041924">Installatiefout: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Je nieuwe Chrome-profiel aanpassen</translation>
 <translation id="1518627427551567882">Deze pagina wordt beschermd</translation>
@@ -202,6 +203,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3112458742631356345">Chrome heeft deze download geblokkeerd, omdat het bestand niet vaak wordt gedownload en misschien gevaarlijk is</translation>
 <translation id="3114643501466072395">Als je wilt checken of je andere wachtwoorden zijn beveiligd tegen gegevenslekken en andere beveiligingsproblemen, <ph name="BEGIN_LINK" />log je in bij Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome heeft deze download geblokkeerd, omdat het archiefbestand andere bestanden bevat die misschien malware verbergen</translation>
+<translation id="3130333203120345554">Nieuwe zoekopdracht</translation>
 <translation id="3135560418014806498">Chrome-profiel toevoegen</translation>
 <translation id="3137969841538672700">Sleep om te zoeken</translation>
 <translation id="3140883423282498090">Je wijzigingen worden toegepast als je Google Chrome opnieuw start.</translation>
@@ -364,6 +366,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="5139423532931106058">Je Chrome-profiel aanpassen</translation>
 <translation id="5163087008893166964">Welkom bij Chrome, nieuw browservenster geopend</translation>
 <translation id="5166439563123238795">Chrome heeft rechten nodig om je handen te volgen</translation>
+<translation id="5167819546851111585">Waar denk je vandaag aan?</translation>
 <translation id="5170938038195470297">Je profiel kan niet worden gebruikt omdat dit afkomstig is van een nieuwere versie van Google Chrome.
 
 Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirectory op of gebruik een nieuwere versie van Chrome.</translation>
@@ -641,6 +644,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="8013993649590906847">Als een afbeelding geen nuttige beschrijving bevat, probeert Chrome je er een te geven. Afbeeldingen worden naar Google verzonden om beschrijvingen te maken.</translation>
 <translation id="8019103195866286235">De publicatie van deze extensie is ongedaan gemaakt door de ontwikkelaar en deze is mogelijk onveilig. Verwijder de extensie van Chrome zodat deze je gegevens (waaronder je persoonlijke informatie) niet meer kan bekijken en wijzigen op sites die je bezoekt.</translation>
 <translation id="8040768861829554732">Een extensie wil dat je inlogt bij Chrome</translation>
+<translation id="8041795619940733262">Google<ph name="LINE_BREAK" />vragen over dit tabblad</translation>
 <translation id="80471789339884597">Bedankt voor het installeren. Je moet alle browsers opnieuw opstarten voordat je <ph name="BUNDLE_NAME" /> kunt gebruiken.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">Andere Chrome-profielen</translation>

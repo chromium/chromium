@@ -266,6 +266,7 @@
 <translation id="4023601594785368013">Idioma original: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Abre vínculos en Chromium desde cualquier app. Además, para facilitar el acceso, se fija en la barra de tareas.</translation>
 <translation id="4036079820698952681">Informa tu <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para ayudarnos a mejorar Chromium</translation>
+<translation id="4039097928859803404">Mostrar siempre los accesos directos al Modo IA</translation>
 <translation id="4050175100176540509">La última versión proporciona importantes mejoras de seguridad y nuevas funciones.</translation>
 <translation id="4055805654398742145">Administrador de contraseñas</translation>
 <translation id="4061696872429826774">Otro programa en tu computadora agregó una extensión que puede cambiar el funcionamiento de Chromium.
@@ -500,6 +501,7 @@
 <translation id="6847869444787758381">Chromium te informará si tus contraseñas se ven comprometidas</translation>
 <translation id="684888714667046800">No se puede establecer la conexión a Internet. Si usas un firewall, asegúrate de que <ph name="PRODUCT_EXE_NAME" /> esté en la lista de elementos permitidos.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
+<translation id="6859580922007887573">Presiona Tab para continuar</translation>
 <translation id="6862030660799253820">Buscar esta imagen con la Búsqueda con imágenes</translation>
 <translation id="6873893289264747459">Chromium detectó que "<ph name="EXTENSION_NAME" />" contiene software malicioso.</translation>
 <translation id="6877155553248388166">esquina inferior derecha del área de búsqueda: derecha <ph name="RIGHT" />%, inferior <ph name="BOTTOM" />%</translation>
@@ -583,6 +585,7 @@
 <translation id="7872446069773932638">Descargando… Segundos restantes: <ph name="SECONDS" /></translation>
 <translation id="7873537467422636035">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="7877212753140190672">Preguntar acerca de esta imagen</translation>
+<translation id="7887929410013642057">Mostrar siempre los accesos directos al Modo IA</translation>
 <translation id="7888981273428720788">Establece Chromium como navegador predeterminado</translation>
 <translation id="7934340546140346950">Chromium actualiza automáticamente las conexiones no seguras a HTTPS cuando es posible</translation>
 <translation id="7937630085815544518">Accediste a Chromium con <ph name="USER_EMAIL_ADDRESS" />. Usa la misma cuenta para volver a acceder.</translation>
@@ -630,6 +633,7 @@
 <translation id="8416884904046428725">Chromium debe verificar tu identidad para guardar algunos datos en tu Cuenta de Google y que puedan usarse en todos tus dispositivos. Si sales ahora, se borrarán estos datos.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en el transcurso de un día}other{Reinicia Chromium en el transcurso de # días}}</translation>
 <translation id="8438543370129609977">Cuando usas la Búsqueda con imágenes, el título de la página, la URL y el contenido, incluidos los PDF, se envían al servidor. <ph name="LEARN_MORE" /></translation>
+<translation id="8447525028100794994">Más información para buscar con la Búsqueda con imágenes en Chromium</translation>
 <translation id="8453117565092476964">El instalador está dañado o no es válido. Descarga Chromium nuevamente.</translation>
 <translation id="8458614432758743027">Para usar Chromium, se requiere Windows 10 o versiones posteriores.</translation>
 <translation id="8463672209299734063">Opcional: Para ayudarnos a mejorar las funciones y el rendimiento de Chromium OS, envía automáticamente datos de uso y diagnóstico a Google.</translation>

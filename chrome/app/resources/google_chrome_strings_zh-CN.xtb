@@ -270,6 +270,7 @@
 <translation id="4022972681110646219">翻译屏幕</translation>
 <translation id="4023601594785368013">源语言：<ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">需要重新启动 Chrome 操作系统以应用更新。</translation>
+<translation id="4039097928859803404">总是显示 AI 模式快捷方式</translation>
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4053720452172726777">自定义及控制 Google Chrome</translation>
 <translation id="408393047846373801">如需将密码等信息同步到您的所有设备上，请登录 Chrome。登录后，这个密码将保存到您的 Google 账号。</translation>
@@ -351,6 +352,7 @@
 <translation id="4970880042055371251">Chrome 操作系统版本</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">点击“Google 密码管理工具”</translation>
+<translation id="5043786843026425788">详细了解如何在 Chrome 中使用 Google 智能镜头进行搜索</translation>
 <translation id="504867494566807945">在任意应用内通过 Chromium 打开链接。此外，为了方便使用，Chromium 会固定到任务栏。</translation>
 <translation id="5114340746415930644">请输入您的口令，以便将 Chrome 数据保存在您的账号 <ph name="USER_EMAIL" /> 中并使用这些数据</translation>
 <translation id="5120334927898581447">登录其他 Google 服务时登录 Chrome</translation>
@@ -520,6 +522,7 @@
 <translation id="683440813066116847">Google Chrome Canary版的入站规则，允许mDNS流量。</translation>
 <translation id="6841242485723266823">您可以根据不同的用途设置不同的 Chromium 资料。立即添加新的资料。</translation>
 <translation id="684888714667046800">无法连接到互联网。如果使用防火墙，请确保 <ph name="PRODUCT_EXE_NAME" /> 在许可名单中。</translation>
+<translation id="6859580922007887573">按 Tab 键即可继续</translation>
 <translation id="6877155553248388166">搜索区域的右下角：右侧 <ph name="RIGHT" />%，底部 <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">正在更新 Chrome</translation>
 <translation id="6885412569789873916">Chrome 测试版应用</translation>
@@ -619,6 +622,7 @@
 <translation id="7849037457735762883">从上次停下的地方继续：Chrome 可在您每次重启后恢复标签页。如需开启此功能，请前往</translation>
 <translation id="7872446069773932638">正在下载…还需 <ph name="SECONDS" /> 秒</translation>
 <translation id="7886087451482920026">选择要使用 Google 智能镜头搜索的文字</translation>
+<translation id="7887929410013642057">总是显示 AI 模式快捷方式</translation>
 <translation id="7890208801193284374">如果您与亲朋好友共用计算机，他们将能够使用单独的账号进行浏览，并可随心所欲地设置Chrome。</translation>
 <translation id="7896673875602241923">之前已有人在此计算机上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身份登录了 Chrome。请新建一个 Chrome 用户来单独保存您的信息。</translation>
 <translation id="7904985524660297937">试用 Google Chrome 中的 Gemini</translation>

@@ -47,6 +47,7 @@
 <translation id="146866447420868597">Ќе се најавите на Chrome?</translation>
 <translation id="1476347941828409626">Управувајте со профилите на Chrome</translation>
 <translation id="1492280395845991349">Рестартирање за довршување на ажурирањето на Chrome</translation>
+<translation id="1496875977627931224">Здраво <ph name="USER_NAME" />,<ph name="LINE_BREAK" />За што размислувате денес?</translation>
 <translation id="1497802159252041924">Грешка при инсталирање: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Приспособете го вашиот нов профил на Chrome</translation>
 <translation id="1518627427551567882">Страницава е заштитена</translation>
@@ -202,6 +203,7 @@
 <translation id="3112458742631356345">Chrome го блокираше преземањево затоа што датотеката не се презема често и можеби е опасна</translation>
 <translation id="3114643501466072395">За да проверите дали другите ваши лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome го блокираше преземањево бидејќи архивираната датотека содржи други датотеки што може да кријат злонамерен софтвер</translation>
+<translation id="3130333203120345554">Ново пребарување</translation>
 <translation id="3135560418014806498">Додајте профил на Chrome</translation>
 <translation id="3137969841538672700">Повлечете за да пребарате</translation>
 <translation id="3140883423282498090">Вашите промени ќе делуваат со следното рестартирање на Google Chrome.</translation>
@@ -275,6 +277,7 @@
 <translation id="4022972681110646219">Преведи го екранот</translation>
 <translation id="4023601594785368013">Изворен јазик: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS треба да се рестартира за да се примени ажурирањето.</translation>
+<translation id="4039097928859803404">Секогаш прикажувај ги кратенките за „AI-режим“</translation>
 <translation id="4050175100176540509">Во најновата верзија се достапни значајни безбедносни подобрувања и нови карактеристики.</translation>
 <translation id="4053720452172726777">Приспособи го и контролирај го Google Chrome</translation>
 <translation id="408393047846373801">За да ги добиете лозинките и друго на сите ваши уреди, најавете се на Chrome. Откако ќе се најавите, лозинкава ќе се зачува во вашата сметка на Google.</translation>
@@ -356,6 +359,7 @@
 <translation id="4970880042055371251">Верзија на Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Канари</translation>
 <translation id="5003967926796347400">Кликнете „Google Password Manager“</translation>
+<translation id="5043786843026425788">Дознајте повеќе за пребарувањето со Google Lens во Chrome</translation>
 <translation id="504867494566807945">Отворајте линкови во Chrome од која било апликација. Освен тоа, за лесен пристап, се закачува на „Лентата со задачи“.</translation>
 <translation id="5114340746415930644">Внесете ја вашата лозинка за да користите и зачувувате податоци од Chrome во вашата сметка <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Најавете се на Chrome при најавување на други услуги на Google</translation>
@@ -365,6 +369,7 @@
 <translation id="5139423532931106058">Приспособете го вашиот профил на Chrome</translation>
 <translation id="5163087008893166964">Добре дојдовте на Chrome; отворен е нов прозорец во прелистувачот</translation>
 <translation id="5166439563123238795">Chrome бара дозвола да ги следи вашите раце</translation>
+<translation id="5167819546851111585">За што размислувате денес?</translation>
 <translation id="5170938038195470297">Вашиот профил на може да се користи бидејќи е од поновата верзија на Google Chrome.
 
 Некои карактеристики можеби се недостапни. Наведете друг директориум на профили или користете понова верзија на Chrome.</translation>
@@ -529,6 +534,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="683440813066116847">Дојдовно правило за Google Chrome Canary за да овозможи сообраќај mDNS.</translation>
 <translation id="6841242485723266823">Профилите на Chrome ви помагаат да ги одвоите различните делови од вашиот живот. Додајте нов профил сега.</translation>
 <translation id="684888714667046800">Не може да се поврзе на интернет. Ако користите заштитен ѕид, погрижете се <ph name="PRODUCT_EXE_NAME" /> да биде во списокот со дозволени.</translation>
+<translation id="6859580922007887573">Притиснете Tab за да продолжите</translation>
 <translation id="6877155553248388166">долен десен агол на областа за пребарување: десно <ph name="RIGHT" /> %, долу <ph name="BOTTOM" /> %</translation>
 <translation id="6881299373831449287">Chrome се ажурира</translation>
 <translation id="6885412569789873916">Апликации на Chrome Beta</translation>
@@ -628,6 +634,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7849037457735762883">Продолжете каде што сте застанале: Chrome може да ги врати вашите картички секогаш кога ќе рестартирате. За да го вклучите ова, одете во</translation>
 <translation id="7872446069773932638">Се презема… Уште <ph name="SECONDS" /> сек.</translation>
 <translation id="7886087451482920026">Изберете текст со Google Lens</translation>
+<translation id="7887929410013642057">Секогаш прикажувај ги кратенките за „AI-режим“</translation>
 <translation id="7890208801193284374">Доколку споделувате компјутер, пријателите и семејството може да прелистуваат одделно и да го поставуваат Chrome токму онака како што сакаат.</translation>
 <translation id="7896673875602241923">Некој претходно се најави на Chrome од овој компјутер како <ph name="ACCOUNT_EMAIL_LAST" />. Создајте нов корисник на Chrome за да ги чувате информациите одделно.</translation>
 <translation id="7904985524660297937">Испробајте го Gemini во Google Chrome</translation>
@@ -644,6 +651,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8013993649590906847">Ако сликата нема корисен опис, Chrome ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google.</translation>
 <translation id="8019103195866286235">Програмерот го поништи објавувањето на екстензијава, па можеби не е безбедна. Отстранете ја од Chrome за да не може веќе да ги гледа и променува вашите податоци на сајтовите што ги отворате, што ги опфаќа и вашите лични податоци.</translation>
 <translation id="8040768861829554732">Дадена екстензија сака да се најавите на Chrome</translation>
+<translation id="8041795619940733262">Прашајте го Google<ph name="LINE_BREAK" />за оваа картичка</translation>
 <translation id="80471789339884597">Фала за инсталирањето. Мора да ги рестартирате сите ваши прелистувачи пред да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Други профили на Chrome</translation>

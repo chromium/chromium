@@ -2064,6 +2064,7 @@
 <translation id="4299919199185766032">Название ярлыка превышает допустимое количество символов (<ph name="MAX_LENGTH" />).</translation>
 <translation id="4300272766492248925">Открыть приложение</translation>
 <translation id="4300675098767811073">Несколько отверстий справа</translation>
+<translation id="4300841966382281549">Маршрут</translation>
 <translation id="4302514097724775343">Чтобы начать игру, нажмите на динозаврика.</translation>
 <translation id="4304049446746819918">{0,plural, =1{Администратор не рекомендует перемещать этот файл в место назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует перемещать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует перемещать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует перемещать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует перемещать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="4304485328308299773">Прочитать впечатления клиентов или их отзывы о продуктах или сервисах. Это поможет принять взвешенное решение.</translation>
@@ -2165,6 +2166,7 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" />.</translation>
 <translation id="4476953670630786061">Это незащищенная форма. Автозаполнение отключено.</translation>
 <translation id="4477350412780666475">Следующий трек</translation>
+<translation id="4479915773139026885">Режим ИИ в Google Поиске</translation>
 <translation id="4480760608050410381">Видео в формате MP4</translation>
 <translation id="448363931695049633">Пиццерии</translation>
 <translation id="4489023393592172404">Конверт Kaku 4</translation>
@@ -3164,6 +3166,7 @@
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6124996493718543728">Экран с демонстрацией прогресса покупки в рассрочку полностью открыт.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, нажмите Ввод, чтобы задать вопрос в режиме ИИ в Google Поиске</translation>
 <translation id="6126565365696310362">Конверт Chinese 2</translation>
 <translation id="6131824478727057281">местоположение</translation>
 <translation id="6133320744616005677">Оставить разрешение</translation>
@@ -3434,6 +3437,7 @@
 <translation id="6539092367496845964">Произошла ошибка. Повторите попытку позже.</translation>
 <translation id="6540488083026747005">Вы разрешили сторонние файлы cookie для этого сайта.</translation>
 <translation id="6545864417968258051">Поиск Bluetooth-устройств</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> – <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Два отверстия слева</translation>
 <translation id="6549443526281184652">Костюмы</translation>
 <translation id="6550245281449521513">Блокировка мыши запрещена</translation>
@@ -3903,6 +3907,7 @@
 <translation id="7337248890521463931">Показать больше строк</translation>
 <translation id="7337706099755338005">Недоступно на вашей платформе.</translation>
 <translation id="733923710415886693">Сертификат сервера не проходил проверку.</translation>
+<translation id="73398226265793546">Кнопка режима ИИ. Нажмите, чтобы задать вопрос в режиме ИИ в Google Поиске</translation>
 <translation id="7346048084945669753">Аффилированный пользователь:</translation>
 <translation id="7346062987309535530">Столовая посуда</translation>
 <translation id="7346081071264046066">"с энтузиазмом принять приглашение на свадьбу"</translation>
@@ -4820,6 +4825,7 @@
 <translation id="8814547618907885931">Посмотреть все сравнительные таблицы</translation>
 <translation id="8814707942599948500">Конверт C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы обновить Chrome.</translation>
+<translation id="8819855907485254989">Сохраните транспортный билет в Кошельке</translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="882338992931677877">Слот для ручной подачи</translation>
 <translation id="8827067923357481311">Варианты покупки в рассрочку</translation>

@@ -275,6 +275,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4022972681110646219">Isalin ang screen</translation>
 <translation id="4023601594785368013">Orihinal na wika: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Kailangang ma-restart ang ChromeOS para mailapat ang update.</translation>
+<translation id="4039097928859803404">Palaging ipakita ang mga shortcut ng AI Mode</translation>
 <translation id="4050175100176540509">May available na mahahalagang pagpapahusay sa seguridad at mga bagong feature sa pinakabagong bersyon.</translation>
 <translation id="4053720452172726777">I-customize at kontrolin ang Google Chrome</translation>
 <translation id="408393047846373801">Para makuha ang iyong mga password at higit pa sa lahat ng device mo, mag-sign in sa Chrome. Mase-save ang password na ito sa iyong Google Account pagkatapos mong mag-sign in.</translation>
@@ -356,6 +357,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4970880042055371251">Bersyon ng ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">I-click ang “Google Password Manager”</translation>
+<translation id="5043786843026425788">Matuto pa tungkol sa paghahanap gamit ang Google Lens sa Chrome</translation>
 <translation id="504867494566807945">Magbukas ng mga link sa Chrome mula sa anumang app. Para sa madaling pag-access, ipi-pin ito sa iyong taskbar.</translation>
 <translation id="5114340746415930644">Ilagay ang iyong passphrase para magamit at ma-save ang data sa Chrome sa account mong <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Mag-sign in sa Chrome kapag nag-sign in ka sa iba pang serbisyo ng Google</translation>
@@ -529,6 +531,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="683440813066116847">Inbound na panuntunan para sa Google Chrome Canary upang payagan ang trapiko ng mDNS.</translation>
 <translation id="6841242485723266823">Tinutulungan ka ng mga profile sa Chrome na paghiwa-hiwalayin ang iba't ibang bahagi ng iyong buhay. Magdagdag ng bagong profile ngayon.</translation>
 <translation id="684888714667046800">Hindi makakonekta sa Internet. Kung gumagamit ka ng firewall, tiyaking nasa allowlist ang <ph name="PRODUCT_EXE_NAME" />.</translation>
+<translation id="6859580922007887573">Pindutin ang tab para magpatuloy</translation>
 <translation id="6877155553248388166">kanang sulok sa ibaba ng lugar para sa paghahanap: kanan <ph name="RIGHT" />%, ibaba <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Ina-update ang Chrome</translation>
 <translation id="6885412569789873916">Mga Chrome Beta App</translation>
@@ -628,6 +631,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7849037457735762883">Magpatuloy kung saan ka huminto: Puwedeng i-restore ng Chrome ang iyong mga tab sa tuwing magre-restart ka. Para i-on ito, pumunta sa</translation>
 <translation id="7872446069773932638">Dina-download... <ph name="SECONDS" /> (na) segundo ang natitira</translation>
 <translation id="7886087451482920026">Pumili ng text gamit ang Google Lens</translation>
+<translation id="7887929410013642057">Palaging Ipakita ang Mga Shortcut ng AI Mode</translation>
 <translation id="7890208801193284374">Kung nagpapahiram ka ng computer, ang mga kaibigan at kapamilya ay maaaring mag-browse nang hiwalay at i-set up ang Chrome sa paraang gusto nila.</translation>
 <translation id="7896673875602241923">May nag-sign in dati sa Chrome sa computer na ito bilang <ph name="ACCOUNT_EMAIL_LAST" />. Mangyaring gumawa ng bagong user ng Chrome upang ihiwalay ang iyong impormasyon.</translation>
 <translation id="7904985524660297937">Subukan ang Gemini sa Google Chrome</translation>

@@ -45,6 +45,7 @@
 <translation id="146866447420868597">Vols iniciar la sessió a Chrome?</translation>
 <translation id="1476347941828409626">&amp;Gestiona els perfils de Chrome</translation>
 <translation id="1492280395845991349">Reinicia per finalitzar l'actualització de Chrome</translation>
+<translation id="1496875977627931224">Hola, <ph name="USER_NAME" />,<ph name="LINE_BREAK" />Què et passa pel cap avui?</translation>
 <translation id="1497802159252041924">Error d'instal·lació: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personalitza el teu perfil de Chrome nou</translation>
 <translation id="1518627427551567882">Aquesta pàgina està protegida</translation>
@@ -198,6 +199,7 @@
 <translation id="3112458742631356345">Chrome ha bloquejat aquesta baixada perquè el fitxer no se sol baixar i pot ser perillós</translation>
 <translation id="3114643501466072395">Per comprovar si les teves altres contrasenyes estan protegides contra violacions de les dades i contra altres problemes de seguretat, <ph name="BEGIN_LINK" />inicia la sessió a Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome ha bloquejat aquesta baixada perquè el fitxer d'arxiu inclou altres fitxers que poden amagar programari maliciós</translation>
+<translation id="3130333203120345554">Cerca nova</translation>
 <translation id="3135560418014806498">Afegeix un perfil de Chrome</translation>
 <translation id="3137969841538672700">Arrossega per cercar</translation>
 <translation id="3140883423282498090">Els canvis es faran efectius la propera vegada que reinicieu Google Chrome.</translation>
@@ -361,6 +363,7 @@
 <translation id="5139423532931106058">Personalitza el teu perfil de Chrome</translation>
 <translation id="5163087008893166964">Et donem la benvinguda a Chrome; s'ha obert una altra finestra del navegador</translation>
 <translation id="5166439563123238795">Chrome necessita permís per fer un seguiment de les teves mans</translation>
+<translation id="5167819546851111585">Què et passa pel cap avui?</translation>
 <translation id="5170938038195470297">El vostre perfil no es pot utilitzar perquè prové d'una versió més nova de Google Chrome. Pot ser que algunes funcions no estiguin disponibles. Especifiqueu un directori de perfil diferent o utilitzeu una versió més nova de Chrome.</translation>
 <translation id="5174969993834422967">Normalment bloqueges les notificacions. Per permetre que aquest lloc web et mostri notificacions, fes clic a la icona de notificacions que hi ha a l'extrem dret de la barra d'ubicacions.</translation>
 <translation id="5174983315706567306">No hi ha prou espai de disc.</translation>
@@ -636,6 +639,7 @@
 <translation id="8013993649590906847">Si una imatge no té una descripció útil, Chrome provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google.</translation>
 <translation id="8019103195866286235">El desenvolupador ha anul·lat la publicació d'aquesta extensió, cosa que podria fer-la poc segura. Suprimeix-la de Chrome perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la teva informació personal.</translation>
 <translation id="8040768861829554732">Una extensió vol que iniciïs la sessió a Chrome</translation>
+<translation id="8041795619940733262">Pregunta a Google<ph name="LINE_BREAK" />sobre aquesta pestanya</translation>
 <translation id="80471789339884597">T'agraïm la instal·lació. Has de reiniciar tots els navegadors abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Altres perfils de Chrome</translation>

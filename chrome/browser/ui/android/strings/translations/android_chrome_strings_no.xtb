@@ -1337,6 +1337,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="670498945988402717">Sjekket i går</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="671481426037969117">Tidtakeren for <ph name="FQDN" /> gikk ut. Den starter igjen i morgen.</translation>
+<translation id="6716434912087331834">For å gjenopprette et nytt vindu må du redusere det totale antallet aktive vinduer til <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eller færre. Inaktive vinduer slettes etter 6 måneder.</translation>
 <translation id="6723740634201835758">I Google-kontoen din</translation>
 <translation id="6734310707649923383">Du kan se sidene du har besøkt, eller slette dem fra loggen</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, festet inkognitofane for opptak</translation>
@@ -1654,6 +1655,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> er utdatert.</translation>
 <translation id="7944772052836377867">Synkronisering må bekrefte at det er deg</translation>
 <translation id="7951102827450076904">Åpne alltid nedlastede PDF-filer</translation>
+<translation id="7952479614398473176">For å åpne et nytt vindu må du redusere det totale antallet aktive vinduer til <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eller færre.</translation>
 <translation id="7957413488482743710">Et virtuelt kort skjuler det faktiske kortet ditt for å beskytte deg mot potensiell svindel. <ph name="BEGIN_LINK1" />Finn ut mer om virtuelle kort<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Faner på denne enheten</translation>
 <translation id="7961926449547174351">Du har slått av tilgang til Lagring. Gå til Innstillinger for å slå på tilgangen.</translation>

@@ -39,6 +39,7 @@
 <translation id="141901961143729572">Comparteix què penses</translation>
 <translation id="1465192221147974788">Per compartir la finestra, permet que Chromium gravi la pantalla a Configuració del sistema.</translation>
 <translation id="1478370723027452770">Obtén ajuda amb Chrome for Testing</translation>
+<translation id="1496875977627931224">Hola, <ph name="USER_NAME" />,<ph name="LINE_BREAK" />Què et passa pel cap avui?</translation>
 <translation id="1497802159252041924">Error d'instal·lació: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Aquesta pàgina està protegida</translation>
 <translation id="1524282610922162960">Comparteix una pestanya de Chromium</translation>
@@ -192,6 +193,7 @@
 <translation id="3103660991484857065">L'instal·lador no ha pogut descomprimir l'arxiu. Torneu a baixar Chromium.</translation>
 <translation id="310459126943037700">No s'han pogut finalitzar les tasques.</translation>
 <translation id="3130323860337406239">Chromium està utilitzant el micròfon.</translation>
+<translation id="3130333203120345554">Cerca nova</translation>
 <translation id="3137969841538672700">Arrossega per cercar</translation>
 <translation id="3144188012276422546">Aquesta pestanya utilitza recursos addicionals. Per millorar el rendiment, permet que Chromium la desactivi.</translation>
 <translation id="3149163023759831301">Per compartir la pantalla, permet que Chromium gravi la pantalla a Configuració del sistema</translation>
@@ -348,6 +350,7 @@
 <translation id="4994636714258228724">Afegeix-me a Chromium</translation>
 <translation id="5123973130450702873">Chromium necessita permís per fer un seguiment de les teves mans</translation>
 <translation id="5141988424377517949">No l'has visitat recentment. Chromium ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
+<translation id="5167819546851111585">Què et passa pel cap avui?</translation>
 <translation id="5174969993834422967">Normalment bloqueges les notificacions. Per permetre que aquest lloc web et mostri notificacions, fes clic a la icona de notificacions que hi ha a l'extrem dret de la barra d'ubicacions.</translation>
 <translation id="5174983315706567306">No hi ha prou espai de disc.</translation>
 <translation id="5187123684706427865">El compte de Chromium requereix una reautenticació</translation>
@@ -380,6 +383,7 @@
 <translation id="5496810170689441661">Chromium està provant d'editar les contrasenyes. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="5524890928877629608">extrem superior esquerre de l'àrea de cerca: <ph name="LEFT" /> % per l'esquerra i <ph name="TOP" /> % per dalt</translation>
 <translation id="5527463683072221100">Obre els fitxers PDF a Chromium</translation>
+<translation id="5536164441519929134">Pregunta<ph name="LINE_BREAK" />sobre aquesta pestanya</translation>
 <translation id="5579324208890605088">Error d'arrencada: executa l'instal·lador com a usuari normal, no com a administrador.</translation>
 <translation id="5580770360767802657">Utilitza Chromium de manera predeterminada i fixa'l</translation>
 <translation id="5596627076506792578">Més opcions</translation>

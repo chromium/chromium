@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">ส้ม</translation>
 <translation id="1275718070701477396">เลือกแล้ว</translation>
 <translation id="1290331692326790741">สัญญาณไม่ดี</translation>
+<translation id="1292474106138697109">จอแสดงผลเครื่องมือสำหรับชั้นเรียน</translation>
 <translation id="1300115153046603471">APN เป็นแบบ Default และ <ph name="ATTACH" /></translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">แปลง</translation>
@@ -1046,6 +1047,7 @@
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
 <translation id="5600027863942488546">ทดสอบปุ่ม <ph name="KEY_NAME" /> อยู่</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">เครื่องมือสำหรับชั้นเรียนกำลังแชร์หน้าจอของคุณกับ <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">คุณออกจากระบบแล้ว</translation>
 <translation id="5620281292257375798">ภายในเท่านั้น</translation>
 <translation id="5628106863521633649">ภาษาที่พร้อมให้บริการ</translation>

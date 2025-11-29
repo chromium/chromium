@@ -338,6 +338,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1549470594296187301">Denne funksjonen kan ikke brukes når JavaScript er slått av.</translation>
 <translation id="1553152622374372421">Vintersport</translation>
 <translation id="1553358976309200471">Oppdater Chrome</translation>
+<translation id="1555014818414775661">Legg til bilder</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1555191101192706055">Angripere på nettstedet du prøvde å besøke, kan lure deg til å installere skadelig programvare som påvirker måten du surfer på – for eksempel ved å endre startsiden eller vise deg ekstra annonser på nettstedene du besøker.</translation>
 <translation id="1559231233244409191">Kartong (trippelvegg)</translation>
@@ -1216,6 +1217,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2979424420072875974">Skriveressurser</translation>
 <translation id="2979639724566107830">Åpne i nytt vindu</translation>
 <translation id="2980742331521553164">Verifiseringskoden for dette kortet blir kryptert og lagret i Google-kontoen din for raskere betaling</translation>
+<translation id="2983311431122838216">Spør AI-modus i Google Søk</translation>
 <translation id="2983666748527428214">Åpne en inkognitofane</translation>
 <translation id="2985306909656435243">Hvis du slår på dette alternativet, lagrer Chromium en kopi av kortet ditt på denne enheten, slik at det går raskere å fylle ut skjemaer.</translation>
 <translation id="2985398929374701810">Angi en gyldig adresse</translation>
@@ -1394,6 +1396,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette en ny hendelse i Google Kalender raskt</translation>
 <translation id="3261488570342242926">Finn ut mer om virtuelle kort</translation>
 <translation id="3262698603497362968">Kjøpsalternativer</translation>
+<translation id="3264315627780269177">Denne fanen kan ikke deles</translation>
 <translation id="3266367459139339908">Vi lanserer nye måter å begrense hva nettsteder kan lære om deg på når de viser deg personlig tilpassede annonser, for eksempel</translation>
 <translation id="3266793032086590337">Verdi (konflikt)</translation>
 <translation id="3268451620468152448">Åpne faner</translation>
@@ -1645,6 +1648,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3665100783276035932">De fleste nettsteder skal fungere som forventet</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Finn ut mer<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Nummer</translation>
+<translation id="3670159164851218963">Logg for AI-modus</translation>
 <translation id="3670229581627177274">Slå på Bluetooth</translation>
 <translation id="3671540257457995106">Vil du tillate størrelsesendringer?</translation>
 <translation id="3672568546897166916">Feil i <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
@@ -1873,6 +1877,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4031179711345676612">Mikrofonen er tillatt</translation>
 <translation id="4036753017940930924">Tomter og landeiendommer</translation>
 <translation id="4039506337798853114">For å vise markøren, trykk på |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045070493270310437">Åpne faner på nytt</translation>
 <translation id="4045226534284799755">Logg på Microsoft-kontoen din før du prøver på nytt</translation>
 <translation id="4045441967987592849">Gjenåpne</translation>
 <translation id="4047351652147966654">18 x 24 tommer</translation>
@@ -2124,6 +2129,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4406896451731180161">søkeresultater</translation>
 <translation id="4407758156081352648">For å opprettholde sikkerheten tillater ikke organisasjonen din at passord gjenbrukes i Chrome. Passord i Chrome krypteres for å beskytte brukernes personvern.</translation>
 <translation id="4408413947728134509">Informasjonskapsler <ph name="NUM_COOKIES" /></translation>
+<translation id="4409556632583862731">Ny tråd</translation>
 <translation id="4412074349188076601">Denne konfigurasjonen er merket som installerbar, men det finnes ingen avbildning for denne arkitekturen, så den kan ikke installeres.</translation>
 <translation id="4412377069090572315">Dette sier andre</translation>
 <translation id="4414452699610169758">Bruk Google Passordlagring og Chrome Autofyll til å lagre og fylle ut passord, betalingsmåter og adresser</translation>
@@ -2773,6 +2779,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
     <ph name="LINE_BREAK" />
     Prøv å kontakte systemadministratoren din.</translation>
 <translation id="5496804587179176046">Lagre sikkerhetskoder – ingen sikkerhetskoder er lagret for øyeblikket</translation>
+<translation id="5499229993630251170">Vil du fortsette denne tråden?</translation>
 <translation id="550365051221576010">Fyll ut alt</translation>
 <translation id="5506286895894263601">Listen inneholder ingen gyldige snarveier.</translation>
 <translation id="5508443345185481044">Kameraer og videokameraer</translation>
@@ -3083,6 +3090,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6018650639991193045">Slett nettleserloggen, informasjonskapsler, bufferen med mer i Chrome-innstillingene</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" /> og <ph name="TYPE_3" /> (synkronisert)</translation>
+<translation id="6025471531651464742">Legg til filer</translation>
 <translation id="6028591542479806248">Administrer mobilvarsler og e-postvarsler</translation>
 <translation id="6028833024483927901">Internasjonal mat</translation>
 <translation id="603068602130820122">To stifter høyre</translation>
@@ -3120,6 +3128,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6062405040252994646">Verktøy</translation>
 <translation id="6062937464449575061">Slutt å spore pris</translation>
 <translation id="6063415549109819824">Boligfinansiering</translation>
+<translation id="6069343053547121389">Still spørsmål om denne fanen med AI-modus</translation>
 <translation id="6070432475334343308">En eller flere filer ble ikke lastet opp til <ph name="FOLDER_NAME" /> i <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="6071503852498277813">Tjeneste for parsing av innholdsbokmerker</translation>
 <translation id="6078069862923723141">Turkis 2</translation>
@@ -3363,6 +3372,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6443406338865242315">hvilke utvidelser og programtillegg du har installert</translation>
 <translation id="6444329331928531170">Pensjonering og pensjon</translation>
 <translation id="6445051938772793705">Land</translation>
+<translation id="6446256167362544629">AI-sidepanel</translation>
 <translation id="6446608382365791566">Legg til mer informasjon</translation>
 <translation id="6447842834002726250">Informasjonskapsler</translation>
 <translation id="6448371595882710519">Finn ut mer om datakontroller</translation>
@@ -3454,6 +3464,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6597665340361269064">90 grader</translation>
 <translation id="6598976221101665070">Dramafilmer</translation>
 <translation id="6599642189720630047">Sporede produkter</translation>
+<translation id="6608426252530537984">Legg til opptil 10 faner</translation>
 <translation id="6613742613135780554">håndsporing</translation>
 <translation id="6613866251791999074">Finn ut mer om søkemotoren din i Chrome</translation>
 <translation id="6615297766614333076">Hylle 2</translation>
@@ -3575,6 +3586,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6799145206637008376">Fyll ut verifiseringskoden for dette virtuelle kortet</translation>
 <translation id="6805030849054648206">B6-/C4-konvolutt</translation>
 <translation id="6807791860691150411">Utdanning</translation>
+<translation id="6808579246645021886">Delte faner og filer</translation>
 <translation id="681021252041861472">Obligatorisk felt</translation>
 <translation id="6810899417690483278">Tilpasnings-ID</translation>
 <translation id="6816109178681043245">Sportsartikler</translation>
@@ -4990,6 +5002,7 @@ Mer informasjon:
 <translation id="9133985615769429248">Hvis du deler denne enheten med andre, kan du bruke skjermlåsen til å bekrefte at det er deg, når du bruker lagrede passord</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, virtuelt kort</translation>
 <translation id="9138037198177304356">Varsler er tillatt</translation>
+<translation id="913846191326613072">Når faner deles, sendes innholdet og nettadressene til Google</translation>
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Chrome-nettleseren vil bruke fingeravtrykk til å autofylle passord</translation>
 <translation id="9141013498910525015">Administrer adresser</translation>
@@ -5081,6 +5094,7 @@ Mer informasjon:
 <translation id="955429569736351433">VR er tillatt</translation>
 <translation id="955627189349169688">Du kan velge bort denne regelen i <ph name="BEGIN_LINK" />innstillingene for Chrome-synkronisering<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Gul 2</translation>
+<translation id="961372935451193190">Faner og filer</translation>
 <translation id="961663415146723894">Innbinding bunn</translation>
 <translation id="961856697154696964">Slett nettlesingsdata</translation>
 <translation id="961930410699694996">Posisjon er tillatt denne gangen</translation>

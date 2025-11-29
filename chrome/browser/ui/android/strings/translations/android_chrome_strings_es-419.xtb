@@ -1337,6 +1337,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="670498945988402717">Se verificó ayer</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">Se agotó el temporizador de <ph name="FQDN" />. Volverá a empezar mañana.</translation>
+<translation id="6716434912087331834">Para restablecer una ventana nueva, reduce la cantidad total de ventanas activas a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o menos. Las ventanas inactivas se borran después de 6 meses.</translation>
 <translation id="6723740634201835758">En tu Cuenta de Google</translation>
 <translation id="6734310707649923383">Puedes ver las páginas que visitaste o borrarlas de tu historial</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, pestaña de incógnito con grabación fijada</translation>
@@ -1654,6 +1655,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> no está actualizado.</translation>
 <translation id="7944772052836377867">La Sincronización necesita verificar tu identidad</translation>
 <translation id="7951102827450076904">Abrir siempre los PDF descargados</translation>
+<translation id="7952479614398473176">Para abrir una ventana nueva, reduce la cantidad total de ventanas activas a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o menos.</translation>
 <translation id="7957413488482743710">La tarjeta virtual oculta tu tarjeta real para protegerte contra posibles fraudes. <ph name="BEGIN_LINK1" />Más información sobre las tarjetas virtuales<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Pestañas en este dispositivo</translation>
 <translation id="7961926449547174351">Inhabilitaste el acceso al almacenamiento. Ve a la Configuración para habilitarlo.</translation>

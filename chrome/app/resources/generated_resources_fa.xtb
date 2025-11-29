@@ -258,6 +258,7 @@
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> به میز کار <ph name="DESK_TITLE" /> تعلق دارد</translation>
 <translation id="1168020859489941584">باز کردن با <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">مضمون اخیر هوش مصنوعی <ph name="INDEX" /> از <ph name="SUBJECT" />، در سبک <ph name="STYLE" />، با حال‌وهوای <ph name="MOOD" />.</translation>
+<translation id="1168799042879144934">‏پرسیدن از Google درباره صفحه قبلی</translation>
 <translation id="116896278675803795">تغییر خودکار زبان برای مطابقت با محتوای انتخاب‌شده</translation>
 <translation id="1169266963600477608">کنترل‌های بازی</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> حاوی داده‌های حساس یا خطرناکی است. پیام سرپرست: «<ph name="CUSTOM_MESSAGE" />»</translation>
@@ -1433,6 +1434,7 @@
 <translation id="1956167375087861299">سایت‌هایی که مجاز نیستند از شناسه‌ها برای پخش محتوای محافظت‌شده استفاده کنند</translation>
 <translation id="1956390763342388273">با این کار همه فایل‌ها از «<ph name="FOLDER_PATH" />» بارگذاری خواهد شد. تنها درصورتی که به این سایت اعتماد دارید، این کار را انجام دهید.</translation>
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{‫۱ افزونه بررسی شد}one{‫{NUM_EXTENSIONS} افزونه بررسی شد}other{‫{NUM_EXTENSIONS} افزونه بررسی شد}}</translation>
+<translation id="1957188536718247425">‏پرسیدن از Google درباره زبانه قبلی</translation>
 <translation id="1957426642613794386">اطلاعات ذخیره‌شده شما</translation>
 <translation id="1959421829481337178">لطفاً کد فعال‌سازی ارائه‌شده توسط شرکت مخابراتی‌تان را وارد کنید.</translation>
 <translation id="1960211333621141174">صخره</translation>
@@ -2930,6 +2932,7 @@
 <translation id="2981033191524548279">‏متأسفیم، مشکلی پیش آمد. لطفاً بازخوردی با هشتگ ‎#bruschetta در توضیحات ارسال کنید. کد خطا <ph name="ERROR" /> است که ممکن است با بازراه‌اندازی و امتحان مجدد برطرف شود.</translation>
 <translation id="2981113813906970160">نمایش نشانگر موشواره بزرگ</translation>
 <translation id="2983102365694924129">براساس فعالیت شما در سایت. این تنظیم خاموش است.</translation>
+<translation id="2983311431122838216">‏پرسیدن از «حالت هوش مصنوعی» در «جستجوی Google»</translation>
 <translation id="2983373101216420412">سطح باتری قاب <ph name="PERCENTAGE" />٪.</translation>
 <translation id="2983818520079887040">تنظیمات...</translation>
 <translation id="2984384421572259426">پاک‌سازی کردن برگه‌های بدون استفاده</translation>
@@ -3512,6 +3515,7 @@
 <translation id="3402585168444815892">درحال ثبت‌نام کردن در «حالت نمایشی»</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />، <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">هیچ گذرواژه‌ای برای این سایت ذخیره نشده است</translation>
+<translation id="3405382848027996799">‏سخت‌افزار Google Beam شما آماده راه‌اندازی است</translation>
 <translation id="3405664148539009465">سفارشی کردن قلم‌ها</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">اجازه دارد از داده‌ها و دستگاه‌های واقعیت مجازی استفاده کند</translation>
@@ -3704,6 +3708,7 @@
 <translation id="3527085408025491307">پوشه</translation>
 <translation id="3528498924003805721">اهداف میان‌بر</translation>
 <translation id="3529851166527095708">&amp;نشانی‌ها و موارد دیگر</translation>
+<translation id="3530919970074558307">غیرمتمرکز کردن گروه</translation>
 <translation id="3531070080754387701">‏‫Microsoft 365 نمی‌تواند <ph name="FILE_NAMES" /> را از این پوشه باز کند</translation>
 <translation id="3531883061432162622">فهرست خواندن و نشانک‌هایتان را در «نشانک‌ها و فهرست‌ها» پیدا کنید</translation>
 <translation id="3532273508346491126">مدیریت همگام‌سازی</translation>
@@ -4057,6 +4062,7 @@
 <translation id="3757567010566591880">برداشتن سنجاق از «نوارابزار»</translation>
 <translation id="3757645900890881944">ابزارهای جستجو</translation>
 <translation id="3757733214359997190">سایتی یافت نشد</translation>
+<translation id="3757825964096339958">متمرکز کردن گروه</translation>
 <translation id="375841316537350618">در حال بارگیری اسکریپت پروکسی ...</translation>
 <translation id="3758887577462995665">نکته:</translation>
 <translation id="375962596908891207">ماه <ph name="DROPDOWN_NAME" /></translation>
@@ -4846,6 +4852,7 @@
 <translation id="4292613336957320546">شتاب</translation>
 <translation id="429312253194641664">سایتی درحال پخش رسانه است</translation>
 <translation id="4293219510510666933">سابقه مرورتان را بااستفاده از زبان روزمره جستجو کنید و سایت‌هایی را که بازدید کرده‌اید پیدا کنید. همچنین می‌توانید سؤال بپرسید و براساس سابقه مرورتان پاسخ دریافت کنید. این تنظیم روشن است.</translation>
+<translation id="429344752071832554">غیرمتمرکز کردن گروه</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> از سابقه بارگیری حذف شد، اما هنوز در دستگاهتان است</translation>
 <translation id="4295072614469448764">برنامه در «ترمینال» دردسترس است. ممکن است در «راه‌انداز» هم نمادی وجود داشته باشد.</translation>
 <translation id="4295979599050707005">‏لطفاً دوباره به سیستم وارد شوید تا تأیید کنید حساب شما (<ph name="USER_EMAIL" />) می‌تواند با وب‌سایت‌ها، برنامه‌ها، و افزونه‌های Chrome و Google Play استفاده شود. همچنین می‌توانید این حساب را بردارید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -5001,6 +5008,7 @@
 <translation id="4405224443901389797">انتقال به…</translation>
 <translation id="4405781821077215583">موارد روی صفحه‌نمایش (ازجمله نوشتار) را بزرگ‌تر یا کوچک‌تر می‌کند.</translation>
 <translation id="4406308048672435032">برای دیدن دوباره فهرست کامل، می‌توانید این زبانه را غیرفعال یا بازآوری کنید</translation>
+<translation id="4406881185911439342">متمرکز کردن گروه</translation>
 <translation id="4406883609789734330">زیرنویس زنده</translation>
 <translation id="4406963243402726564">داده‌های ذخیره‌نشده</translation>
 <translation id="4408599188496843485">را&amp;هنما</translation>
@@ -5314,6 +5322,7 @@
 <translation id="4628762811416793313">‏راه‌اندازی محتوی Linux تکمیل نشد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="4629521233550547305">باز کردن نمایه <ph name="PROFILE_NAME" /></translation>
 <translation id="4629803160911640220">قابل‌اعتماد</translation>
+<translation id="4631637535315947773">میان‌برهای سایت‌های پربازدیدتان برداشته شدند، زیرا اخیراً از آن‌ها استفاده نکرده‌اید</translation>
 <translation id="4631955550884380853">صدای متمرکز</translation>
 <translation id="4632655012900268062">سفارشی‌سازی کارت‌ها</translation>
 <translation id="4633003931260532286">افزونه به «<ph name="IMPORT_NAME" />» با نسخه حداقل «<ph name="IMPORT_VERSION" />» نیاز دارد اما تنها نسخه «<ph name="INSTALLED_VERSION" />» نصب شده است</translation>
@@ -5620,7 +5629,6 @@
 <translation id="4841741146571978176">یکی از ماشین‌های مجازی ضروری موجود نیست. برای ادامه، لطفاً <ph name="VM_TYPE" /> را راه‌اندازی کنید</translation>
 <translation id="4842976633412754305">این صفحه در تلاش است اسکریپت‌هایی از منابع تأیید نشده بارگیری کند.</translation>
 <translation id="4844333629810439236">صفحه‌کلیدهای دیگر</translation>
-<translation id="4844347226195896707">‏با وارد شدن به سیستم در &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;، گذرواژه‌هایتان را حتی زمانی‌که از Chrome یا Android استفاده نمی‌کنید ببینید.</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4846628405149428620">انتخاب جایی که این سایت می‌تواند تغییرات را ذخیره کند</translation>
 <translation id="4846680374085650406">شما از توصیه‌های سرپرست سیستم برای این تنظیم پیروی می‌کنید.</translation>
@@ -5644,6 +5652,7 @@
 <translation id="4854603338816296098">نشانی برداشته شد</translation>
 <translation id="485480310608090163">تنظیمات و اجازه‌های بیشتر</translation>
 <translation id="4857304314344645169">توضیح گام‌به‌گام هر مشکلی را ببینید</translation>
+<translation id="4857506880242459832">‏پرسیدن از Google درباره صفحه قبلی: <ph name="PAGE_TITLE" /></translation>
 <translation id="485806788160414322">پخش یا مکث رسانه</translation>
 <translation id="4858913220355269194">فوتبالی</translation>
 <translation id="486213875233855629">توسط سرپرست بی‌صدا شده است</translation>
@@ -6388,6 +6397,7 @@
 <translation id="5390677308841849479">قرمز تیره و نارنجی</translation>
 <translation id="5392192690789334093">اجازه دارد اعلان ارسال کند</translation>
 <translation id="5393330235977997602">گزینه‌های پین</translation>
+<translation id="5393474451146553463">‏پرسیدن از Google درباره این زبانه</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{پیوند}one{# پیوند}other{# پیوند}}</translation>
 <translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395353843367783642">درحال ذخیره کردن در حساب شما…</translation>
@@ -8589,6 +8599,7 @@
 <translation id="6922763095098248079">دستگاهتان را سازمانتان مدیریت می‌کند. سرپرستان می‌توانند به داده‌های موجود در همه نمایه‌های این دستگاه دسترسی داشته باشند.</translation>
 <translation id="6923633482430812883">‏هنگام نشاندن دستگاه ذخیره‌سازی متصل به شبکه خطایی روی داد. لطفاً مطمئن شوید سرور فایلی که می‌خواهید به آن متصل شوید از SMB نسخه v2 یا بالاتر پشتیبانی می‌کند.</translation>
 <translation id="6924109527536857168">همگام‌سازی لازم است</translation>
+<translation id="6924940560840297548">کارت‌ها برداشته شدند، زیرا اخیراً از آن‌ها استفاده نکرده‌اید</translation>
 <translation id="6927200998271693557">برای بازگشت سریع به سایت‌هایی که بازدید کرده‌اید، سابقه و زبانه‌ها را با <ph name="USER_EMAIL_ADDRESS" /> همگام‌سازی کنید</translation>
 <translation id="6928650056523249512">برداشتن خودکار اجازه‌ها از سایت‌های استفاده‌نشده</translation>
 <translation id="6929126689972602640">‏حساب‌های محل تحصیل از «کنترل‌های والدین» پشتیبانی نمی‌کنند. برای افزودن حساب محل تحصیل جهت دسترسی به Google Classroom و وب‌سایت‌های دیگر به‌منظور انجام تکالیف مدرسه در خانه، ابتدا با حساب شخصی فرزند به سیستم وارد شوید. می‌توانید حساب محل تحصیل را بعداً در راه‌اندازی اضافه کنید.</translation>
@@ -8812,6 +8823,7 @@
 <translation id="7082850163410901674">‏اعلان‌ها در «تنظیمات سیستم Mac» خاموش است</translation>
 <translation id="7083729794572207131">سایت‌ها معمولاً درخواست می‌کنند برنامه‌های وب نصب کنند تا تجربه‌تان را در سایت بهبود دهند</translation>
 <translation id="7083774521940805477">‏«Steam ویژه Chromebook» (بتا) در Chromebook شما دردسترس نیست.</translation>
+<translation id="7084095352418993433">‏پرسیدن از Google درباره این صفحه: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(پیکربندی نشده است)</translation>
 <translation id="7086377898680121060">زیاد کردن روشنایی</translation>
 <translation id="7086672505018440886">‏فایل‌های گزارش Chrome در بایگانی اضافه شود.</translation>
@@ -9029,6 +9041,7 @@
 <translation id="7246230585855757313">کلید امنیتی را مجدداً وارد کنید و دوباره امتحان کنید</translation>
 <translation id="7249197363678284330">این تنظیم را در نوار نشانی تغییر دهید.</translation>
 <translation id="7249764475759804559">هنگام باز کردن فایل‌ها این برنامه به‌عنوان یکی از گزینه‌ها ارائه شود</translation>
+<translation id="7249885578105575587">‏پرسیدن از Google درباره این زبانه: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">دستگاهی که درحال هم‌رسانی با آن هستید پاسخی نداد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="725109152065019550">متأسفیم، سرپرست سیستم، حافظه خارجی را برای حساب شما غیرفعال کرده است.</translation>
 <translation id="7251635775446614726">پیام سرپرست: «<ph name="CUSTOM_MESSAGE" />»</translation>
@@ -10363,6 +10376,7 @@
 <translation id="8143442547342702591">برنامه نامعتبر است</translation>
 <translation id="8144429778087524791">علامت‌گذاری به‌عنوان انجام‌شده و پنهان کردن</translation>
 <translation id="8145170459658034418">بهینه‌سازی حافظه</translation>
+<translation id="8145219802299093106">‏جستجوی این صفحه با «لنز Google»:‏ <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">اگر قبلاً در این دستگاه ثبت‌نام کردید، می‌توانید <ph name="LINK2_START" />به‌عنوان یک کاربر موجود، وارد شوید<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">زبان‌های برگزیده‌تان را اضافه و رتبه‌بندی کنید. درصورت امکان، وب‌سایت‌ها به زبان‌های برگزیده‌تان نشان داده می‌شوند. این اولویت‌ها با تنظیمات مرورگرتان همگام‌سازی می‌شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">ورود به سیستم انجام نشد. لطفاً با سرپرستتان تماس بگیرید یا دوباره امتحان کنید.</translation>
@@ -11925,6 +11939,7 @@
 <translation id="9182556968660520230">به سایت‌ها اجازه داده نشود محتوای محافظت‌شده را پخش کنند</translation>
 <translation id="9183302530794969518">‏سندنگار Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{برنامه}one{# برنامه}other{# برنامه}}</translation>
+<translation id="9184211686591068713">‏جستجوی این زبانه با «لنز Google»:‏ <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{سرپرستتان می‌تواند صفحه‌نمایش را با <ph name="APP0_NAME" /> ضبط کند. وقتی ضبط شروع شود به شما اطلاع داده نخواهد شد.}=2{سرپرستتان می‌تواند صفحه‌نمایش را با <ph name="APP0_NAME" /> و <ph name="APP1_NAME" /> ضبط کند. وقتی ضبط شروع شود به شما اطلاع داده نخواهد شد.}=3{سرپرستتان می‌تواند صفحه‌نمایش را با <ph name="APP0_NAME" />، <ph name="APP1_NAME" />، و ۱ برنامه دیگر ضبط کند. وقتی ضبط شروع شود به شما اطلاع داده نخواهد شد.}one{سرپرستتان می‌تواند صفحه‌نمایش را با <ph name="APP0_NAME" />، <ph name="APP1_NAME" />، و # برنامه دیگر ضبط کند. وقتی ضبط شروع شود به شما اطلاع داده نخواهد شد.}other{سرپرستتان می‌تواند صفحه‌نمایش را با <ph name="APP0_NAME" />، <ph name="APP1_NAME" />، و # برنامه دیگر ضبط کند. وقتی ضبط شروع شود به شما اطلاع داده نخواهد شد.}}</translation>
 <translation id="9186963452600581158">‏ورود به سیستم با «حساب Google» فرزند</translation>
 <translation id="9187967020623675250">کلیدها مطابقت ندارند. برای <ph name="RESPONSE" />، یکی از کلیدها را فشار دهید.</translation>
@@ -12024,6 +12039,7 @@
 <translation id="963000966785016697">جستجوی تصویر با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">‏سرپرست فناوری اطلاعات شما Chrome Goodies را برای دستگاهتان غیرفعال کرده است.</translation>
 <translation id="964790508619473209">تنظیم صفحه‌نمایش</translation>
+<translation id="964903383988132751">‏پرسیدن از Google درباره زبانه قبلی: <ph name="TAB_TITLE" /></translation>
 <translation id="96535553604365597">‏گزارش مشکل در Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{مرور سایتی که اخیراً تعداد زیادی اعلان ارسال کرده است}one{مرور {NUM_SITES} سایت که اخیراً تعداد زیادی اعلان ارسال کرده است}other{مرور {NUM_SITES} سایت که اخیراً تعداد زیادی اعلان ارسال کرده‌اند}}</translation>
 <translation id="966588271015727539">نمایشگر بریل انتخاب کنید</translation>

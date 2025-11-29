@@ -496,6 +496,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3114507951000454849">Llegeix les notícies d'avui <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Més detalls</translation>
 <translation id="3123734510202723619">Anuncis</translation>
+<translation id="3134385238404760368">No hi ha cap pestanya recent</translation>
 <translation id="314939179385989105">Pàgina d'inici de Chrome</translation>
 <translation id="3158667104057012316">S'ordena manualment</translation>
 <translation id="3159335509547415276">Informació sobre els comptes bloquejats</translation>
@@ -817,6 +818,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4577115723294378384">Ordena de la A a la Z</translation>
 <translation id="4578289292431526768">Som-hi</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{fa # minut}other{fa # minuts}}</translation>
+<translation id="4585751637295612750">Obre una pestanya nova per afegir-ho a la pregunta</translation>
 <translation id="4587589328781138893">Llocs web</translation>
 <translation id="4594952190837476234">Aquesta pàgina sense connexió és del dia <ph name="CREATION_TIME" /> i pot ser diferent de la versió en línia.</translation>
 <translation id="4595237294768457124">Obre una pàgina Pestanya nova</translation>

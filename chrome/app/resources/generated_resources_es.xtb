@@ -1345,6 +1345,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1907044622262489040">Escribe con la voz. Pulsa la tecla de búsqueda + D y empieza a hablar.</translation>
 <translation id="1907659324308286326">Algunos accesorios Thunderbolt o USB4 necesitan acceder a la memoria para funcionar correctamente.</translation>
 <translation id="1908591798274282246">Volver a abrir grupo cerrado</translation>
+<translation id="1909677622563887527">Un software automatizado de pruebas está controlando Chrome</translation>
 <translation id="1909880997794698664">¿Seguro que quieres que se utilice el modo de kiosco en este dispositivo de forma permanente?</translation>
 <translation id="1910721550319506122">¡Te damos la bienvenida!</translation>
 <translation id="1910736334623230603">No se pueden buscar varias imágenes a la vez. Añade las imágenes de una en una.</translation>
@@ -1698,6 +1699,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2144536955299248197">Visor de certificados: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Desarrollo de aplicaciones Android en Linux</translation>
 <translation id="2145468727756963476">Gemini se está actualizando...</translation>
+<translation id="2145688286532368277">La optimización de JavaScript está desactivada en este sitio.</translation>
 <translation id="2145917706968602070">Asegúrate de tener el teléfono cerca, que esté desbloqueado y que el Bluetooth y la Wi-Fi estén activados</translation>
 <translation id="2146263598007866206">Los sitios podrían descargar de forma automática varios archivos relacionados a la vez para ahorrar tiempo.</translation>
 <translation id="2147218225094845757">Ocultar panel lateral</translation>
@@ -4347,6 +4349,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 
 ¿Quieres iniciar <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
+<translation id="3942558231079086184">La optimización de JavaScript está desactivada en este sitio. Habilítalo para mejorar el rendimiento.</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3945513714196326460">Prueba un nombre más corto</translation>
@@ -5613,7 +5616,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4841741146571978176">La máquina virtual requerida no existe. Prueba a configurar <ph name="VM_TYPE" /> para continuar</translation>
 <translation id="4842976633412754305">Esta página está intentando cargar scripts de fuentes no autorizadas.</translation>
 <translation id="4844333629810439236">Otros teclados</translation>
-<translation id="4844347226195896707">Consulta tus contraseñas aunque no estés usando Chrome ni Android iniciando sesión en &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4846628405149428620">Selecciona dónde puede guardar los cambios este sitio</translation>
 <translation id="4846680374085650406">Estás siguiendo la recomendación del administrador para esta opción.</translation>
@@ -10187,6 +10189,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8032569120109842252">Siguiendo</translation>
 <translation id="8033827949643255796">seleccionados</translation>
 <translation id="8033958968890501070">Tiempo de espera agotado</translation>
+<translation id="8034399942062051455">La optimización de V8 está desactivada</translation>
 <translation id="8034697324150621782">Intercambiar con vista superior</translation>
 <translation id="8035059678007243127">Página de incógnito almacenada en la caché de páginas completas: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Ayuda a mejorar Autocompletar</translation>

@@ -1345,6 +1345,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1907044622262489040">Escriu amb la veu. Fes servir Cerca+D i, tot seguit, comença a parlar.</translation>
 <translation id="1907659324308286326">Alguns accessoris Thunderbolt o USB4 necessiten accés a la memòria per funcionar correctament.</translation>
 <translation id="1908591798274282246">Torna a obrir el grup tancat</translation>
+<translation id="1909677622563887527">Un programari de prova automatitzat està controlant Chrome</translation>
 <translation id="1909880997794698664">Confirmeu que voleu establir permanentment el mode de quiosc en aquest dispositiu?</translation>
 <translation id="1910721550319506122">Us donem la benvinguda</translation>
 <translation id="1910736334623230603">No es poden cercar diverses imatges. Afegeix una imatge cada cop.</translation>
@@ -1698,6 +1699,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2144536955299248197">Lector de certificats: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Desenvolupament d'aplicacions d'Android a Linux</translation>
 <translation id="2145468727756963476">Gemini s'està actualitzant...</translation>
+<translation id="2145688286532368277">L'optimització de JavaScript està desactivada per a aquest lloc web.</translation>
 <translation id="2145917706968602070">Comprova que el telèfon sigui a prop teu, que estigui desbloquejat i que tingui el Bluetooth i la Wi-Fi activats</translation>
 <translation id="2146263598007866206">És possible que els llocs web baixin automàticament fitxers relacionats en grup per estalviar-te temps</translation>
 <translation id="2147218225094845757">Amaga el tauler lateral</translation>
@@ -4342,6 +4344,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 
   Voleu iniciar <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnòstic</translation>
+<translation id="3942558231079086184">L'optimització de JavaScript està desactivada per a aquest lloc web. Activa-la per millorar el rendiment.</translation>
 <translation id="3943582379552582368">&amp;Enrere</translation>
 <translation id="3943857333388298514">Enganxa</translation>
 <translation id="3945513714196326460">Prova un nom més curt</translation>
@@ -5606,7 +5609,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4841741146571978176">La màquina virtual necessària no existeix. Prova de configurar <ph name="VM_TYPE" /> per continuar.</translation>
 <translation id="4842976633412754305">Aquesta pàgina està provant de carregar scripts de fonts no autenticades.</translation>
 <translation id="4844333629810439236">Altres teclats</translation>
-<translation id="4844347226195896707">Inicia la sessió a &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt; per veure les teves contrasenyes encara que no estiguis utilitzant Chrome o Android</translation>
 <translation id="484462545196658690">Automàtic</translation>
 <translation id="4846628405149428620">Selecciona on pot desar els canvis aquest lloc web</translation>
 <translation id="4846680374085650406">Esteu seguint la recomanació de l'administració per a aquesta configuració.</translation>
@@ -10179,6 +10181,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8032569120109842252">Seguint</translation>
 <translation id="8033827949643255796">seleccionats</translation>
 <translation id="8033958968890501070">Temps d'espera esgotat</translation>
+<translation id="8034399942062051455">L'optimització de V8 està desactivada</translation>
 <translation id="8034697324150621782">Canvia per la visualització superior</translation>
 <translation id="8035059678007243127">Pàgina d'incògnit desada a la memòria cau endavant/enrere: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Ajuda a millorar la funció Emplenament automàtic</translation>

@@ -261,6 +261,7 @@
 <translation id="1962969542251276847">Pantalla de bloqueig</translation>
 <translation id="1963976881984600709">Protecció estàndard</translation>
 <translation id="1964507856799750384">Toca <ph name="BEGIN_BOLD" />Navegador<ph name="END_BOLD" /></translation>
+<translation id="1965633132497641148">El codi de seguretat no és vàlid</translation>
 <translation id="1966313166384086081">les dades dels llocs web</translation>
 <translation id="1967461193809857427">{count,plural, =1{Vols continuar des de la pestanya on ho has deixat a Android?}other{Vols continuar des de les pestanyes on ho has deixat a Android?}}</translation>
 <translation id="1972325230031091483">Navegaràs més de pressa perquè el contingut es carrega de forma proactiva en funció de la pàgina web que estiguis visitant</translation>
@@ -575,6 +576,7 @@
 <translation id="3186796054637504691">Esborra l'historial i les dades del lloc web</translation>
 <translation id="3190736958609431397">Deixa de fer el seguiment</translation>
 <translation id="3208260410153224535">La teva organització ha desactivat l'inici de sessió. Les adreces d'interès noves, les contrasenyes i altres dades només es desaran en aquest dispositiu.</translation>
+<translation id="3211969308836412674">Deixa de fixar el lloc web</translation>
 <translation id="3213807041830307252">Compra, tradueix i identifica el que veus utilitzant la càmera i la galeria de fotos.</translation>
 <translation id="3214379938835224220">Se t'ha tancat la sessió com a part del restabliment de l'iPad. Per iniciar-la, toca Continua, més avall.</translation>
 <translation id="3218296450292600703">Si inicies la sessió amb el compte gestionat, podràs mantenir la navegació relacionada amb la teva organització (incloses les pestanyes, l'historial i les contrasenyes) separada de la teva altra activitat de navegació</translation>
@@ -604,6 +606,7 @@
 <translation id="3324193307694657476">Adreça 2</translation>
 <translation id="3328801116991980348">Informació del lloc web</translation>
 <translation id="333229797575847124">Com pots activar aquesta funció</translation>
+<translation id="3344233834747405775">El nom del titular de la targeta no és vàlid</translation>
 <translation id="3344485292736684439">{count,plural, =1{S'ha desat l'adreça d'interès a "{title}" al teu compte, {email}}other{S'han desat les adreces d'interès a "{title}" al teu compte, {email}}}</translation>
 <translation id="334690320928261823">Pestanyes recents</translation>
 <translation id="3349031117032695619">Bloqueja finestres emergents</translation>
@@ -1098,6 +1101,7 @@
 <translation id="5220945116117011963">Crea esdeveniments del calendari a partir de dates</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Edita el lloc web</translation>
 <translation id="5233638681132016545">Pestanya nova</translation>
 <translation id="5234094073825090254">{count,plural, =1{L'adreça d'interès s'ha desat al teu Compte de Google ({email}).}other{Les adreces d'interès s'han desat al teu Compte de Google ({email}).}}</translation>
 <translation id="5234764350956374838">Ignora</translation>
@@ -1324,6 +1328,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6066301408025741299">Toca per cancel·lar.</translation>
 <translation id="6074656473835429958">Rep notificacions</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) no s'ha pogut penjar</translation>
+<translation id="6076618233738284461">Fixa el lloc web</translation>
 <translation id="6077126322656614846">S'ha permès l'accés a la càmera</translation>
 <translation id="607730456154980869">Obtén respostes més ràpidament amb Gemini a Chrome</translation>
 <translation id="6078236141387574983">Reajusta l'alçada del full</translation>

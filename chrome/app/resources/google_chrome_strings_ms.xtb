@@ -45,6 +45,7 @@
 <translation id="146866447420868597">Log masuk ke Chrome?</translation>
 <translation id="1476347941828409626">&amp;Urus profil Chrome</translation>
 <translation id="1492280395845991349">Lancarkan semula untuk menyelesaikan pengemaskinian Chrome</translation>
+<translation id="1496875977627931224">Hai <ph name="USER_NAME" />,<ph name="LINE_BREAK" />apakah yang anda fikirkan hari ini?</translation>
 <translation id="1497802159252041924">Ralat pemasangan: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Sesuaikan profil Chrome baharu anda</translation>
 <translation id="1518627427551567882">Halaman ini dilindungi</translation>
@@ -198,6 +199,7 @@
 <translation id="3112458742631356345">Chrome menyekat muat turun ini kerana fail jarang dimuat turun dan mungkin berbahaya</translation>
 <translation id="3114643501466072395">Untuk menyemak sama ada kata laluan anda yang lain selamat daripada pelanggaran data dan isu keselamatan lain, <ph name="BEGIN_LINK" />log masuk ke Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome menyekat muat turun ini kerana fail arkib termasuk fail lain yang mungkin menyembunyikan perisian hasad</translation>
+<translation id="3130333203120345554">Carian baharu</translation>
 <translation id="3135560418014806498">Tambahkan Profil Chrome</translation>
 <translation id="3137969841538672700">Seret untuk mencari</translation>
 <translation id="3140883423282498090">Perubahan anda akan berkuat kuasa apabila anda melancarkan semula Google Chrome pada masa hadapan.</translation>
@@ -363,6 +365,7 @@
 <translation id="5139423532931106058">Sesuaikan profil Chrome anda</translation>
 <translation id="5163087008893166964">Selamat datang ke Chrome; tetingkap penyemak imbas baharu dibuka</translation>
 <translation id="5166439563123238795">Chrome memerlukan kebenaran untuk menjejaki tangan anda</translation>
+<translation id="5167819546851111585">Apakah yang anda fikirkan hari ini?</translation>
 <translation id="5170938038195470297">Profil anda tidak boleh digunakan kerana ia adalah dari versi Google Chrome yang lebih baharu. Beberapa ciri mungkin tidak tersedia. Sila tetapkan direktori profil lain atau gunakan versi Chrome yang lebih baharu.</translation>
 <translation id="5174969993834422967">Anda biasanya menyekat pemberitahuan. Untuk membenarkan laman ini memaklumi anda, klik ikon pemberitahuan pada penjuru kanan bar lokasi anda.</translation>
 <translation id="5174983315706567306">Ruang cakera tidak mencukupi.</translation>
@@ -640,6 +643,7 @@
 <translation id="8013993649590906847">Jika imej tiada perihalan yang berguna, Chrome akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google.</translation>
 <translation id="8019103195866286235">Sambungan ini telah dinyahterbitkan boleh pembangun dan mungkin tidak selamat. Alih keluar sambungan ini daripada Chrome supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi anda.</translation>
 <translation id="8040768861829554732">Sambungan mahu anda log masuk ke Chrome</translation>
+<translation id="8041795619940733262">Tanya Google<ph name="LINE_BREAK" />tentang tab ini</translation>
 <translation id="80471789339884597">Terima kasih kerana memasang. Anda perlu memulakan semula semua penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">Profil Chrome Lain</translation>

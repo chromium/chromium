@@ -338,6 +338,7 @@
 <translation id="1549470594296187301">இந்த அம்சத்தைப் பயன்படுத்த JavaScript இயக்கப்பட வேண்டும்.</translation>
 <translation id="1553152622374372421">குளிர்கால விளையாட்டுகள்</translation>
 <translation id="1553358976309200471">Chromeஐப் புதுப்பி</translation>
+<translation id="1555014818414775661">படங்களைச் சேர்</translation>
 <translation id="1555130319947370107">நீலம்</translation>
 <translation id="1555191101192706055">நீங்கள் பார்க்க முயன்ற தளத்தில் உள்ள ஹேக்கர்கள் உங்கள் முகப்புப்பக்கத்தை மாற்றுவதன் மூலமோ நீங்கள் பார்வையிடும் தளங்களில் கூடுதலாக விளம்பரங்களைக் காட்டுவதன் மூலமோ உங்களை ஏமாற்றி உங்கள் பிரவுசிங் அனுபவத்தைப் பாதிக்கக்கூடிய மென்பொருளை நிறுவ வைக்கலாம்.</translation>
 <translation id="1559231233244409191">ட்ரிப்பிள் வால் கார்டுபோர்டு</translation>
@@ -1216,6 +1217,7 @@
 <translation id="2979424420072875974">எழுத்தாளர்களுக்கான ஆதாரங்கள்</translation>
 <translation id="2979639724566107830">புதிய சாளரத்தில் திற</translation>
 <translation id="2980742331521553164">விரைவான செக்-அவுட்டிற்காக இந்தக் கார்டின் CVC என்க்ரிப்ஷன் செய்யப்பட்டு உங்கள் Google கணக்கில் சேமிக்கப்படும்</translation>
+<translation id="2983311431122838216">Google Searchசில் AI மோடில் கேட்கலாம்</translation>
 <translation id="2983666748527428214">மறைநிலைப் பக்கத்தைத் திற</translation>
 <translation id="2985306909656435243">இது இயக்கப்பட்டால், விரைவாகப் படிவத்தை நிரப்ப, உங்கள் கார்டின் நகலை Chromium இந்தச் சாதனத்தில் சேமிக்கும்.</translation>
 <translation id="2985398929374701810">சரியான முகவரியை உள்ளிடவும்</translation>
@@ -1391,6 +1393,7 @@
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendarரில் புதிய நிகழ்வை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="3261488570342242926">விர்ச்சுவல் கார்டுகள் குறித்து அறிக</translation>
 <translation id="3262698603497362968">வாங்குவதற்கான விருப்பங்கள்</translation>
+<translation id="3264315627780269177">இந்தப் பக்கத்தைப் பகிர முடியாது</translation>
 <translation id="3266367459139339908">பிரத்தியேக விளம்பரங்களை உங்களுக்குத் தளங்கள் காட்டும்போது அவை உங்களைப் பற்றி என்ன அறிந்துகொள்ளலாம் என்பதை நீங்கள் கட்டுப்படுத்தும் வகையில் புதிய வழிகளை அறிமுகப்படுத்துகிறோம். உதாரணத்திற்கு:</translation>
 <translation id="3266793032086590337">மதிப்பு (முரண்பாடு)</translation>
 <translation id="3268451620468152448">திறந்த தத்தல்கள்</translation>
@@ -1641,6 +1644,7 @@
 <translation id="3665100783276035932">பெரும்பாலான தளங்கள் எதிர்பார்த்தபடி செயல்படும்</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />மேலும் அறிக<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">எண்</translation>
+<translation id="3670159164851218963">AI மோட் பதிவுகள்</translation>
 <translation id="3670229581627177274">புளூடூத்தை இயக்கு</translation>
 <translation id="3671540257457995106">அளவை மாற்ற அனுமதிக்கவா?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> இல் பிழை: <ph name="ERROR_MESSAGE" /></translation>
@@ -1869,6 +1873,7 @@
 <translation id="4031179711345676612">மைக்ரோஃபோன் அனுமதிக்கப்பட்டது</translation>
 <translation id="4036753017940930924">பகுதியளவு நிலங்கள் மற்றும் நிலம்</translation>
 <translation id="4039506337798853114">கர்சரைக் காட்ட |<ph name="ACCELERATOR" />| பட்டனை அழுத்தவும்</translation>
+<translation id="4045070493270310437">பக்கங்களை மீண்டும் திற</translation>
 <translation id="4045226534284799755">மீண்டும் முயலும் முன்பு உங்கள் Microsoft கணக்கில் உள்நுழையவும்</translation>
 <translation id="4045441967987592849">மீண்டும் திற</translation>
 <translation id="4047351652147966654">18 x 24 இன்ச்</translation>
@@ -2121,6 +2126,7 @@
 <translation id="4406896451731180161">தேடல் முடிவுகள்</translation>
 <translation id="4407758156081352648">பாதுகாப்பிற்காக, Chromeமில் ஒரே கடவுச்சொல்லைப் பல கணக்குகளுக்குப் பயன்படுத்துவதை உங்கள் நிறுவனம் அனுமதிக்கவில்லை. உங்கள் தனியுரிமையைப் பாதுகாப்பதற்காக Chromeமில் உள்ள கடவுச்சொற்கள் என்கிரிப்ஷன் செய்யப்படுகின்றன.</translation>
 <translation id="4408413947728134509">குக்கீகள் (<ph name="NUM_COOKIES" />)</translation>
+<translation id="4409556632583862731">புதிய மெசேஜ் தொடர்</translation>
 <translation id="4412074349188076601">இந்த உள்ளமைவு நிறுவக்கூடியது எனக் குறிக்கப்பட்டுள்ளது. ஆனால் இந்த வடிவமைப்பிற்குப் படம் எதுவும் வழங்கப்படவில்லை என்பதால் இதை நிறுவ முடியாது.</translation>
 <translation id="4412377069090572315">பிறரின் கருத்துகள்</translation>
 <translation id="4414452699610169758">கடவுச்சொற்கள், பேமெண்ட் முறைகள், முகவரிகள் ஆகியவற்றைச் சேமித்துத் தானாக நிரப்ப Google Password Managerரையும் Chrome தன்னிரப்பியையும் பயன்படுத்தலாம்</translation>
@@ -2157,6 +2163,7 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">இந்தப் படிவம் பாதுகாப்பானதல்ல. ’தன்னிரப்பி’ அம்சம் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="4477350412780666475">அடுத்த டிராக்</translation>
+<translation id="4479915773139026885">Google Searchசில் AI மோட்</translation>
 <translation id="4480760608050410381">MP4 வீடியோ</translation>
 <translation id="448363931695049633">பீட்சா உணவகங்கள்</translation>
 <translation id="4489023393592172404">என்வெலப் காகு 4</translation>
@@ -2770,6 +2777,7 @@
     <ph name="LINE_BREAK" />
     உங்கள் சிஸ்டம் நிர்வாகியைத் தொடர்புகொள்ள முயலவும்.</translation>
 <translation id="5496804587179176046">பாதுகாப்புக் குறியீடுகளைச் சேமிக்கும், தற்போது பாதுகாப்புக் குறியீடுகள் எதுவும் சேமிக்கப்படவில்லை</translation>
+<translation id="5499229993630251170">இந்த மெசேஜ் தொடரைத் தொடரவா?</translation>
 <translation id="550365051221576010">அனைத்தையும் நிரப்பு</translation>
 <translation id="5506286895894263601">சரியான ஷார்ட்கட்கள் எதுவும் இந்தப் பட்டியலில் இல்லை.</translation>
 <translation id="5508443345185481044">கேமராக்கள் &amp; கேம்கார்டர்கள்</translation>
@@ -3080,6 +3088,7 @@
 <translation id="6018650639991193045">Chrome அமைப்புகளுக்குச் சென்று இதுவரை இணையத்தில் பார்த்தவை, குக்கீகள், தற்காலிகச் சேமிப்பு மற்றும் பலவற்றை நீக்கலாம்</translation>
 <translation id="6019118530636932154">Google ஆப்ஸ் ஸ்கிரிப்ட்</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (ஒத்திசைக்கப்பட்டன)</translation>
+<translation id="6025471531651464742">ஃபைல்களைச் சேர்</translation>
 <translation id="6028591542479806248">மொபைல் மற்றும் மின்னஞ்சல் அறிவிப்புகளை நிர்வகிக்கலாம்</translation>
 <translation id="6028833024483927901">சர்வதேச உணவு வகை</translation>
 <translation id="603068602130820122">டூயல் ஸ்டேப்பில் ரைட்</translation>
@@ -3117,6 +3126,7 @@
 <translation id="6062405040252994646">கருவி</translation>
 <translation id="6062937464449575061">விலையைக் கண்காணிப்பதை நிறுத்து</translation>
 <translation id="6063415549109819824">வீட்டுக் கடன்</translation>
+<translation id="6069343053547121389">AI மோட் மூலம் இந்தப் பக்கம் பற்றிய கேள்விகளைக் கேட்கலாம்</translation>
 <translation id="6070432475334343308">ஒன்று அல்லது அதற்கும் மேற்பட்ட ஃபைல்கள் <ph name="CLOUD_PROVIDER" /> இல் உள்ள <ph name="FOLDER_NAME" /> ஃபோல்டருக்குப் பதிவேற்றப்படவில்லை</translation>
 <translation id="6071503852498277813">உள்ளடக்க புக்மார்க்கைப் பாகுபடுத்தும் சேவை</translation>
 <translation id="6078069862923723141">சியான் 2</translation>
@@ -3153,6 +3163,7 @@
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6124996493718543728">‘இப்போது வாங்குங்கள், பிறகு பணம் செலுத்துங்கள்’ செயல்நிலையைக் காட்டும் திரை முழு அளவிற்குத் திறக்கப்பட்டுள்ளது.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />கூடுதல் விவரங்கள்<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Searchசில் AI மோடில் கேட்க Enter அழுத்தவும்</translation>
 <translation id="6126565365696310362">என்வெலப் சைனீஸ் #2</translation>
 <translation id="6131824478727057281">இருப்பிடம்</translation>
 <translation id="6133320744616005677">தொடர்ந்து அனுமதி</translation>
@@ -3359,6 +3370,7 @@
 <translation id="6443406338865242315">நீங்கள் நிறுவியுள்ள நீட்டிப்புகளும் செருகுநிரல்களும்</translation>
 <translation id="6444329331928531170">பணி ஓய்வு மற்றும் ஓய்வூதியம்</translation>
 <translation id="6445051938772793705">நாடு</translation>
+<translation id="6446256167362544629">AI பக்கவாட்டு பேனல்</translation>
 <translation id="6446608382365791566">மேலும் தகவலைச் சேர்க்கவும்</translation>
 <translation id="6447842834002726250">குக்கீகள்</translation>
 <translation id="6448371595882710519">தரவுக் கட்டுப்பாடுகள் குறித்து மேலும் தெரிந்துகொள்ளலாம்</translation>
@@ -3451,6 +3463,7 @@
 <translation id="6597665340361269064">90 டிகிரி</translation>
 <translation id="6598976221101665070">டிராமா திரைப்படங்கள்</translation>
 <translation id="6599642189720630047">கண்காணிக்கப்படும் தயாரிப்புகள்</translation>
+<translation id="6608426252530537984">10 பக்கங்கள் வரை சேர்க்கலாம்</translation>
 <translation id="6613742613135780554">கை அசைவை டிராக் செய்தல்</translation>
 <translation id="6613866251791999074">Chromeமில் உள்ள உங்கள் தேடல் இன்ஜின் குறித்து மேலும் அறிக</translation>
 <translation id="6615297766614333076">ஸ்டேக்கர் 2</translation>
@@ -3572,6 +3585,7 @@
 <translation id="6799145206637008376">இந்த விர்ச்சுவல் கார்டுக்கான CVCயை நிரப்பும்</translation>
 <translation id="6805030849054648206">என்வெலப் B6/C4</translation>
 <translation id="6807791860691150411">கல்வி</translation>
+<translation id="6808579246645021886">பகிர்ந்த பக்கங்களும் ஃபைல்களும்</translation>
 <translation id="681021252041861472">அவசியமானவை</translation>
 <translation id="6810899417690483278">தனிப்பயனாக்கல் ஐடி</translation>
 <translation id="6816109178681043245">விளையாட்டுப் பொருட்கள்</translation>
@@ -3889,6 +3903,7 @@
 <translation id="7337248890521463931">மேலும் வரிகளைக் காட்டும்</translation>
 <translation id="7337706099755338005">உங்கள் இயங்குதளத்தில் இல்லை.</translation>
 <translation id="733923710415886693">சான்றிதழ் வெளிப்படைத்தன்மை மூலம் சேவையகத்தின் சான்றிதழ் வெளியிடப்படவில்லை.</translation>
+<translation id="73398226265793546">AI மோட் பட்டன், Google Searchசில் AI மோடைப் பயன்படுத்த இதைச் செயல்படுத்தலாம்</translation>
 <translation id="7346048084945669753">இணைக்கப்பட்டுள்ளாரா?:</translation>
 <translation id="7346062987309535530">டைனிங் பொருட்கள்</translation>
 <translation id="7346081071264046066">"இந்தத் திருமண அழைப்பிதழுக்கு உற்சாகத்துடன் ஆம் என்று பதிலளியுங்கள்"</translation>
@@ -4990,6 +5005,7 @@
 <translation id="9133985615769429248">இந்தச் சாதனத்தைப் பிறருடன் பகிரும்போது சேமித்த கடவுச்சொல்லை நீங்கள்தான் பயன்படுத்துகிறீர்கள் என்பதைச் சரிபார்க்க உங்கள் திரைப்பூட்டைப் பயன்படுத்தலாம்</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, விர்ச்சுவல் கார்டு</translation>
 <translation id="9138037198177304356">அறிவிப்புகளுக்கான அனுமதி வழங்கப்பட்டது</translation>
+<translation id="913846191326613072">பக்கங்களைப் பகிரும்போது, அவற்றின் உள்ளடக்கமும் URLகளும் Googleளுக்கு அனுப்பப்படும்.</translation>
 <translation id="9139318394846604261">ஷாப்பிங்</translation>
 <translation id="9140198744651252040">கடவுச்சொற்களைத் தானாக நிரப்புவதற்குக் கைரேகையைப் பயன்படுத்த Chrome பிரவுசர் விரும்புகிறது</translation>
 <translation id="9141013498910525015">முகவரிகளை நிர்வகி</translation>
@@ -5081,6 +5097,7 @@
 <translation id="955429569736351433">VR அனுமதிக்கப்பட்டது</translation>
 <translation id="955627189349169688">இந்தக் கொள்கை வேண்டாம் என்று <ph name="BEGIN_LINK" />Chrome ஒத்திசைவு அமைப்புகளில்<ph name="END_LINK" /> தேர்வுசெய்யலாம்.</translation>
 <translation id="95721182352849470">மஞ்சள் 2</translation>
+<translation id="961372935451193190">பக்கங்களும் ஃபைல்களும்</translation>
 <translation id="961663415146723894">பைண்டு பாட்டம்</translation>
 <translation id="961856697154696964">உலாவிய தரவை நீக்கு</translation>
 <translation id="961930410699694996">இந்த முறை இருப்பிட அனுமதி வழங்கப்பட்டது</translation>

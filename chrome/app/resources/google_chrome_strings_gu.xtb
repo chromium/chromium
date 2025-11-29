@@ -47,6 +47,7 @@
 <translation id="146866447420868597">Chromeમાં સાઇન ઇન કરીએ?</translation>
 <translation id="1476347941828409626">Chrome પ્રોફાઇલ &amp;મેનેજ કરો</translation>
 <translation id="1492280395845991349">Chromeનું અપડેટ સમાપ્ત કરવા માટે ફરીથી લૉન્ચ કરો</translation>
+<translation id="1496875977627931224">નમસ્તે <ph name="USER_NAME" />,<ph name="LINE_BREAK" />આજે તમારા મનમાં શું છે?</translation>
 <translation id="1497802159252041924">ઇન્સ્ટૉલ કરવામાં ભૂલ: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">તમારી નવી Chrome પ્રોફાઇલ કસ્ટમાઇઝ કરો</translation>
 <translation id="1518627427551567882">આ પેજ સંરક્ષિત છે</translation>
@@ -201,6 +202,7 @@
 <translation id="3112458742631356345">Chrome દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું કારણ કે સામાન્ય રીતે આ ફાઇલ ડાઉનલોડ કરવામાં આવતી નથી અને તે જોખમી હોઈ શકે છે</translation>
 <translation id="3114643501466072395">ડેટા ઉલ્લંઘન અને અન્ય સુરક્ષાની સમસ્યાથી તમારા અન્ય પાસવર્ડ સુરક્ષિત છે કે નહીં તે ચેક કરવા માટે, <ph name="BEGIN_LINK" />Chromeમાં સાઇન ઇન કરો<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું છે, કારણ કે આર્કાઇવ ફાઇલમાં શામેલ અન્ય ફાઇલોમાં માલવેર છુપાવેલા હોઈ શકે છે</translation>
+<translation id="3130333203120345554">નવી શોધ</translation>
 <translation id="3135560418014806498">Chrome પ્રોફાઇલ ઉમેરો</translation>
 <translation id="3137969841538672700">શોધવા માટે ખેંચો</translation>
 <translation id="3140883423282498090">તમે આગલી વખત Google Chrome ને ફરીથી શરૂ કરશો ત્યારે તમારા ફેરફારો પ્રભાવી થશે.</translation>
@@ -274,6 +276,7 @@
 <translation id="4022972681110646219">સ્ક્રીનનો અનુવાદ કરો</translation>
 <translation id="4023601594785368013">મૂળ ભાષા: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">અપડેટ લાગુ કરવા માટે ChromeOSને ફરી શરૂ કરવાની જરૂર છે.</translation>
+<translation id="4039097928859803404">હંમેશાં AI મોડના શૉર્ટકટ બતાવો</translation>
 <translation id="4050175100176540509">નવીનતમ વર્ઝનમાં મહત્ત્વપૂર્ણ સુરક્ષા સુધારણાઓ અને નવી સુવિધાઓ ઉપલબ્ધ છે.</translation>
 <translation id="4053720452172726777">Google Chrome ને કસ્ટમાઇઝ કરો અને તેનું નિયંત્રણ કરો</translation>
 <translation id="408393047846373801">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ અને બીજું ઘણું મેળવવા માટે, Chromeમાં સાઇન ઇન કરો. તમે સાઇન ઇન કરો તે પછી આ પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે.</translation>
@@ -355,6 +358,7 @@
 <translation id="4970880042055371251">ChromeOSનું વર્ઝન</translation>
 <translation id="4990567037958725628">Google Chrome કૅનેરી</translation>
 <translation id="5003967926796347400">“Google Password Manager” પર ક્લિક કરો</translation>
+<translation id="5043786843026425788">Chromeમાં Google Lens વડે શોધવા વિશે વધુ જાણો</translation>
 <translation id="504867494566807945">કોઈપણ ઍપમાંથી લિંકને Chromeમાં ખોલો. વધુમાં, સરળ ઍક્સેસ માટે તે તમારા ટાસ્કબારમાં પિન કરવામાં આવે છે.</translation>
 <translation id="5114340746415930644">તમારા <ph name="USER_EMAIL" /> એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="5120334927898581447">જ્યારે તમે Googleની અન્ય સેવાઓમાં સાઇન ઇન કરશો, ત્યારે Chromeમાં સાઇન ઇન કરો</translation>
@@ -364,6 +368,7 @@
 <translation id="5139423532931106058">તમારી Chrome પ્રોફાઇલને કસ્ટમાઇઝ કરો</translation>
 <translation id="5163087008893166964">Chrome પર આપનું સ્વાગત છે; નવી બ્રાઉઝર વિન્ડો ખોલી છે</translation>
 <translation id="5166439563123238795">Chromeને તમારા હાથ ટ્રૅક કરવા માટે પરવાનગીની જરૂર છે</translation>
+<translation id="5167819546851111585">આજે તમારા મનમાં શું છે?</translation>
 <translation id="5170938038195470297">તમારી પ્રોફાઇલનો ઉપયોગ કરી શકાતો નથી કારણ કે તે Google Chromeના નવા વર્ઝન તરફથી છે.
 
 કેટલીક સુવિધાઓ ઉપલબ્ધ થઈ શકે છે. કૃપા કરીને અલગ પ્રોફાઇલ ડિરેક્ટરીનો ઉલ્લેખ કરો અથવા Chromeના નવા વર્ઝનનો ઉપયોગ કરો.</translation>
@@ -528,6 +533,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="683440813066116847">mDNS ટ્રાફિકને મંજૂરી આપવા માટે Google Chrome કૅનેરી માટે ઇનબાઉન્ડ નિયમ.</translation>
 <translation id="6841242485723266823">Chrome પ્રોફાઇલ તમને તમારા જીવનના વિવિધ ભાગોને અલગ-અલગ રાખવામાં મદદ કરે છે. હમણાં જ નવી પ્રોફાઇલ ઉમેરો.</translation>
 <translation id="684888714667046800">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. જો તમે કોઈ ફાયરવૉલનો ઉપયોગ કરતા હો, તો કૃપા કરીને ખાતરી કરો કે <ph name="PRODUCT_EXE_NAME" /> વ્હાઇટલિસ્ટમાં છે.</translation>
+<translation id="6859580922007887573">ચાલુ રાખવા માટે Tab કી દબાવો</translation>
 <translation id="6877155553248388166">શોધ વિસ્તારના સૌથી નીચે જમણા ખૂણે: જમણી બાજુ <ph name="RIGHT" />%, સૌથી નીચે <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chrome અપડેટ કરી રહ્યાં છીએ</translation>
 <translation id="6885412569789873916">Chrome બીટા ઍપ્લિકેશનો</translation>
@@ -627,6 +633,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7849037457735762883">તમે જ્યાંથી છોડ્યું હતું ત્યાંથી ચાલુ કરો: Chrome તમે જ્યારે ફરી શરૂ કરો છો ત્યારે દરેક વખતે તમારા ટૅબ રિસ્ટોર કરી શકે છે. આને ચાલુ કરવા માટે, આના પર જાઓ</translation>
 <translation id="7872446069773932638">ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="SECONDS" /> સેકન્ડ બાકી છે</translation>
 <translation id="7886087451482920026">Google Lens વડે ટેક્સ્ટ પસંદ કરો</translation>
+<translation id="7887929410013642057">હંમેશાં AI મોડના શૉર્ટકટ બતાવો</translation>
 <translation id="7890208801193284374">જો તમે કમ્પ્યુટરને શેર કરો છો, તો મિત્રો અને કુટુંબીજનો અલગ-અલગ બ્રાઉઝ કરી શકે છે અને તેમને જોઈએ તેમ Chrome ને સેટ કરી શકે છે.</translation>
 <translation id="7896673875602241923">કોઈએ આ કમ્પ્યુટર પર પહેલા <ph name="ACCOUNT_EMAIL_LAST" /> તરીકે Chromeમાં સાઇન ઇન કર્યું છે. તમારી માહિતી અલગ રાખવા માટે કૃપા કરીને નવો Chrome વપરાશકર્તા બનાવો.</translation>
 <translation id="7904985524660297937">Google Chromeમાં Gemini અજમાવો</translation>
@@ -643,6 +650,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8013993649590906847">જો છબીમાં ઉપયોગી વર્ણન ન હોય, તો Chrome તમને વર્ણન પૂરું પાડવાનો પ્રયાસ કરશે. વર્ણન બનાવવા માટે, Googleને છબીઓ મોકલવામાં આવે છે.</translation>
 <translation id="8019103195866286235">આ એક્સ્ટેન્શનને તેના ડેવલપર દ્વારા અનપબ્લિશ કરવામાં આવ્યું હતું અને તે અસુરક્ષિત હોઈ શકે છે. તેને Chromeમાંથી કાઢી નાખો જેથી હવેથી તે તમારી વ્યક્તિગત માહિતી સહિત તમે મુલાકાત લો તે સાઇટ પરનો તમારો ડેટા જોઈ કે બદલી શકે નહીં.</translation>
 <translation id="8040768861829554732">કોઈ એક્સ્ટેન્શન ઇચ્છે છે કે તમે Chromeમાં સાઇન ઇન કરો</translation>
+<translation id="8041795619940733262">આ ટૅબ વિશે<ph name="LINE_BREAK" />Googleને પૂછો</translation>
 <translation id="80471789339884597">ઇન્સ્ટૉલ કરવા બદલ આભાર. તમારે <ph name="BUNDLE_NAME" />નો ઉપયોગ કરતા પહેલાં તમારા બધા બ્રાઉઝર ફરી શરૂ કરવા આવશ્યક છે.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">અન્ય Chrome પ્રોફાઇલ</translation>

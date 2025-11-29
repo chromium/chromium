@@ -2057,6 +2057,7 @@
 <translation id="4299919199185766032">ସର୍ଟକଟର ନାମ ଅନୁମତି ଦିଆଯାଇଥିବା ସର୍ବାଧିକ <ph name="MAX_LENGTH" /> କେରେକ୍ଟର ଲମ୍ବକୁ ଅତିକ୍ରମ କରିଛି।</translation>
 <translation id="4300272766492248925">ଆପ ଖୋଲନ୍ତୁ</translation>
 <translation id="4300675098767811073">ଡାହାଣ ପଟରେ ଏକାଧିକ ପଞ୍ଚ୍</translation>
+<translation id="4300841966382281549">ଟ୍ରିପ</translation>
 <translation id="4302514097724775343">ଖେଳିବା ପାଇଁ ଡାଇନୋସରରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="4304049446746819918">{0,plural, =1{<ph name="DESTINATION_NAME" />କୁ ଏହି ଫାଇଲ ମୁଭ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}other{<ph name="DESTINATION_NAME" />କୁ ଏହି ଫାଇଲଗୁଡ଼ିକ ମୁଭ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}}</translation>
 <translation id="4304485328308299773">ସମୀକ୍ଷା ସହ ଆପଣଙ୍କ ନିଷ୍ପତ୍ତିର ସୂଚନା ଦେବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ପ୍ରଡକ୍ଟ, ସେବା ବା ଅନୁଭୂତି ସମ୍ପର୍କରେ ଗ୍ରାହକ ମୂଲ୍ୟାଙ୍କନ ପଢ଼ନ୍ତୁ।</translation>
@@ -3421,6 +3422,7 @@
 <translation id="6539092367496845964">କିଛି ଭୁଲ ହୋଇଗଲା। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6540488083026747005">ଏହି ସାଇଟରେ ଆପଣ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦେଇଛନ୍ତି</translation>
 <translation id="6545864417968258051">ବ୍ଲୁଟୁଥ୍ ସ୍କାନିଂ</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> - <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">ବାମ ପଟରେ ଦୁଇଟି ପଞ୍ଚ୍</translation>
 <translation id="6549443526281184652">ବେଶ ପୋଷାକ</translation>
 <translation id="6550245281449521513">ମାଉସ ଲକ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
@@ -4804,6 +4806,7 @@
 <translation id="8814547618907885931">ସମସ୍ତ କମ୍ପାରିଜନ ଟେବୁଲ ଦେଖନ୍ତୁ</translation>
 <translation id="8814707942599948500">ଏନଭେଲପ C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ Chrome ସେଟିଂସରୁ Chrome ଅପଡେଟ୍ କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
+<translation id="8819855907485254989">Walletରେ ଟ୍ରାନ୍ସପୋର୍ଟ ଟିକେଟ ସେଭ କରନ୍ତୁ</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="882338992931677877">ମାନୁଆଲ୍ ସ୍ଲଟ୍</translation>
 <translation id="8827067923357481311">ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ ବିକଳ୍ପ</translation>

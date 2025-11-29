@@ -261,6 +261,7 @@
 <translation id="1962969542251276847">Vergrendelscherm</translation>
 <translation id="1963976881984600709">Standaardbeveiliging</translation>
 <translation id="1964507856799750384">Tik op <ph name="BEGIN_BOLD" />Browser-app<ph name="END_BOLD" /></translation>
+<translation id="1965633132497641148">Ongeldige beveiligingscode</translation>
 <translation id="1966313166384086081">sitegegevens</translation>
 <translation id="1967461193809857427">{count,plural, =1{Wil je het tabblad ophalen dat je had achtergelaten op Android?}other{Wil je de tabbladen ophalen die je had achtergelaten op Android?}}</translation>
 <translation id="1972325230031091483">Je browst sneller, omdat content proactief wordt geladen op basis van je huidige webpagina</translation>
@@ -575,6 +576,7 @@
 <translation id="3186796054637504691">Geschiedenis en websitegegevens wissen</translation>
 <translation id="3190736958609431397">Niet meer volgen</translation>
 <translation id="3208260410153224535">Je organisatie heeft inloggen uitgezet. Items zoals nieuwe bookmarks en wachtwoorden worden alleen opgeslagen op dit apparaat.</translation>
+<translation id="3211969308836412674">Site losmaken</translation>
 <translation id="3213807041830307252">Winkel, vertaal en identificeer wat je ziet met je camera en fotogalerij.</translation>
 <translation id="3214379938835224220">Je bent uitgelogd omdat je iPad wordt gereset. Tik hieronder op Doorgaan om in te loggen.</translation>
 <translation id="3218296450292600703">Als je inlogt met je beheerde account, kun je browsen gerelateerd aan je organisatie (zoals tabbladen, geschiedenis en wachtwoorden) scheiden van je andere browse-activiteiten</translation>
@@ -604,6 +606,7 @@
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Site-informatie</translation>
 <translation id="333229797575847124">Deze functie aanzetten</translation>
+<translation id="3344233834747405775">Ongeldige naam van kaarthouder</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark opgeslagen in {title} in je account {email}}other{Bookmarks opgeslagen in {title} in je account {email}}}</translation>
 <translation id="334690320928261823">Recente tabbladen</translation>
 <translation id="3349031117032695619">Pop-ups blokkeren</translation>
@@ -1098,6 +1101,7 @@
 <translation id="5220945116117011963">Agenda-afspraken maken op basis van datums</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Site bewerken</translation>
 <translation id="5233638681132016545">Nieuw tabblad</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bookmark opgeslagen in je Google-account {email}.}other{Bookmarks opgeslagen in je Google-account {email}.}}</translation>
 <translation id="5234764350956374838">Sluiten</translation>
@@ -1324,6 +1328,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6066301408025741299">Tik om te annuleren.</translation>
 <translation id="6074656473835429958">Meldingen krijgen</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) kan niet worden geüpload</translation>
+<translation id="6076618233738284461">Site vastzetten</translation>
 <translation id="6077126322656614846">Cameratoegang toegestaan</translation>
 <translation id="607730456154980869">Krijg sneller antwoorden met Gemini in Chrome</translation>
 <translation id="6078236141387574983">De hoogte van het blad aanpassen</translation>

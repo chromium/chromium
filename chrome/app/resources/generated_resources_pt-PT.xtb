@@ -1346,6 +1346,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1907044622262489040">Escreva com a sua voz. Use Pesquisa + D e, em seguida, comece a falar.</translation>
 <translation id="1907659324308286326">Alguns acessórios Thunderbolt ou USB4 precisam de acesso à memória para funcionarem corretamente.</translation>
 <translation id="1908591798274282246">Voltar a abrir grupo fechado</translation>
+<translation id="1909677622563887527">O Chrome está a ser controlado pelo software de teste automatizado</translation>
 <translation id="1909880997794698664">Tem a certeza de que quer manter permanentemente este dispositivo no modo quiosque?</translation>
 <translation id="1910721550319506122">Bem-vindo!</translation>
 <translation id="1910736334623230603">Não é possível pesquisar várias imagens. Adicione uma imagem de cada vez.</translation>
@@ -1700,6 +1701,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2144536955299248197">Visualizador de certificados: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Programação de apps Android no Linux</translation>
 <translation id="2145468727756963476">O Gemini está a atualizar…</translation>
+<translation id="2145688286532368277">A otimização do JavaScript está desativada para este site.</translation>
 <translation id="2145917706968602070">Certifique-se de que o telemóvel está próximo, desbloqueado e com o Bluetooth e o Wi-Fi ativados</translation>
 <translation id="2146263598007866206">Os sites podem transferir automaticamente ficheiros relacionados em simultâneo para poupar tempo.</translation>
 <translation id="2147218225094845757">Oculte o painel lateral</translation>
@@ -4326,6 +4328,7 @@ Quer pará-lo?</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Tamanho do texto e visualização: <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Envia URLs para a Navegação segura para os verificar. Envia também um pequeno exemplo de páginas, transferências, atividade de extensões e informações do sistema para ajudar a detetar novas ameaças. Associa temporariamente estes dados à sua Conta Google quando tiver sessão iniciada, para garantir a sua proteção nas apps Google.</translation>
+<translation id="3924788966103416622">Uma app externa quer ter controlo total sobre esta sessão do Chrome para a depurar. Isto inclui o acesso aos seus dados guardados, cookies e dados de sites, e a capacidade de navegar para qualquer URL.</translation>
 <translation id="3925573269917483990">Câmara:</translation>
 <translation id="3925926055063465902">Os outros utilizadores deste dispositivo também podem usar esta rede</translation>
 <translation id="3926002189479431949">Telemóvel Smart Lock alterado</translation>
@@ -4352,6 +4355,7 @@ Quer pará-lo?</translation>
 
   Quer iniciar <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
+<translation id="3942558231079086184">A otimização do JavaScript está desativada para este site. Ative-a para um melhor desempenho.</translation>
 <translation id="3943582379552582368">&amp;Anterior</translation>
 <translation id="3943857333388298514">Colar</translation>
 <translation id="3945513714196326460">Tente utilizar um nome mais curto</translation>
@@ -4463,6 +4467,7 @@ Quer pará-lo?</translation>
 <translation id="4015250302257349679">Prima <ph name="ACCELERATOR" /> para focar este balão e, em seguida, focar o elemento para o qual está a apontar.</translation>
 <translation id="4016762287427926315">As autorizações que permitir para a app <ph name="APP_NAME" /> também vão ser permitidas para esta app. <ph name="BEGIN_LINK" />Faça a gestão<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Criar código QR para este link</translation>
+<translation id="4018953474106733212">Apenas os programadores Web devem ativar esta funcionalidade e usá-la apenas com apps fidedignas.</translation>
 <translation id="4019983356493507433">Editar lista de marcadores</translation>
 <translation id="4020701737692625681">O seu administrador pode gravar o ecrã</translation>
 <translation id="4021279097213088397">–</translation>
@@ -5620,7 +5625,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4841741146571978176">Uma máquina virtual necessária não existe. Experimente configurar o <ph name="VM_TYPE" /> para continuar</translation>
 <translation id="4842976633412754305">Esta página está a tentar carregar scripts de origens não autenticadas.</translation>
 <translation id="4844333629810439236">Outros teclados</translation>
-<translation id="4844347226195896707">Veja as suas palavras-passe, mesmo quando não estiver a usar o Chrome ou o Android, ao iniciar sessão em &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4846628405149428620">Selecione onde este site pode guardar alterações</translation>
 <translation id="4846680374085650406">Está a seguir a recomendação do gestor para esta definição.</translation>
@@ -10201,6 +10205,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8032569120109842252">A seguir</translation>
 <translation id="8033827949643255796">selecionado</translation>
 <translation id="8033958968890501070">Limite de tempo</translation>
+<translation id="8034399942062051455">A otimização do V8 está desativada</translation>
 <translation id="8034697324150621782">Trocar com vista superior</translation>
 <translation id="8035059678007243127">Página de Navegação anónima na cache para a frente/para trás: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Ajudar a melhorar o preenchimento automático</translation>

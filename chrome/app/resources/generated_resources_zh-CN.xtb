@@ -258,6 +258,7 @@
 <translation id="1166596238782048887">标签页“<ph name="TAB_TITLE" />”属于桌面“<ph name="DESK_TITLE" />”</translation>
 <translation id="1168020859489941584">即将在 <ph name="TIME_REMAINING" />后打开...</translation>
 <translation id="1168704243733734901">近期创建的<ph name="SUBJECT" /> AI 主题 <ph name="INDEX" />，样式是<ph name="STYLE" />，情感基调是<ph name="MOOD" />。</translation>
+<translation id="1168799042879144934">向 Google 询问与上一个页面有关的问题</translation>
 <translation id="116896278675803795">自动更改语言以匹配所选内容</translation>
 <translation id="1169266963600477608">游戏控件</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> 包含敏感或危险数据。您的管理员说：“<ph name="CUSTOM_MESSAGE" />”</translation>
@@ -1419,6 +1420,7 @@
 <translation id="1956167375087861299">不得使用标识符来播放受保护内容</translation>
 <translation id="1956390763342388273">此操作会上传“<ph name="FOLDER_PATH" />”下的所有文件。请仅在您信任该网站的情况下执行此操作。</translation>
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{已审核 1 个扩展程序}other{已审核 {NUM_EXTENSIONS} 个扩展程序}}</translation>
+<translation id="1957188536718247425">向 Google 询问与上一个标签页有关的问题</translation>
 <translation id="1957426642613794386">已保存的信息</translation>
 <translation id="1959421829481337178">请输入您的运营商提供的激活码。</translation>
 <translation id="1960211333621141174">悬崖</translation>
@@ -2912,6 +2914,7 @@
 <translation id="2981033191524548279">抱歉，出了点问题。请提交反馈并在说明中附上 #bruschetta。错误代码为 <ph name="ERROR" />，重新启动并重试或许可以解决此问题。</translation>
 <translation id="2981113813906970160">显示大号鼠标光标</translation>
 <translation id="2983102365694924129">根据您在网站上的活动。此设置已关闭。</translation>
+<translation id="2983311431122838216">在 Google 搜索中的 AI 模式下提问</translation>
 <translation id="2983373101216420412">保护套的电池电量为 <ph name="PERCENTAGE" />%。</translation>
 <translation id="2983818520079887040">设置...</translation>
 <translation id="2984384421572259426">清理未使用的标签页</translation>
@@ -3492,6 +3495,7 @@
 <translation id="3402585168444815892">正在注册演示模式</translation>
 <translation id="340282674066624">已下载 <ph name="DOWNLOAD_RECEIVED" />，还需 <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">未保存任何用于登录此网站的密码</translation>
+<translation id="3405382848027996799">现在可以设置您的 Google Beam 硬件了</translation>
 <translation id="3405664148539009465">自定义字体</translation>
 <translation id="3405763860805964263">…</translation>
 <translation id="3406290648907941085">允许使用虚拟现实设备和数据</translation>
@@ -5293,6 +5297,7 @@
 <translation id="4628762811416793313">未完成 Linux 容器设置。请重试。</translation>
 <translation id="4629521233550547305">打开“<ph name="PROFILE_NAME" />”个人资料</translation>
 <translation id="4629803160911640220">可信</translation>
+<translation id="4631637535315947773">与您最常访问的网站对应的快捷方式已被移除，因为您近期未使用它们</translation>
 <translation id="4631955550884380853">集中收音</translation>
 <translation id="4632655012900268062">自定义卡片</translation>
 <translation id="4633003931260532286">此扩展程序要求“<ph name="IMPORT_NAME" />”的版本不得低于“<ph name="IMPORT_VERSION" />”，但目前安装的版本只是“<ph name="INSTALLED_VERSION" />”</translation>
@@ -5598,7 +5603,6 @@
 <translation id="4841741146571978176">缺少一个必需的虚拟机。请尝试设置 <ph name="VM_TYPE" /> 以继续</translation>
 <translation id="4842976633412754305">此网页正试图从未经验证的来源加载脚本。</translation>
 <translation id="4844333629810439236">其他键盘布局</translation>
-<translation id="4844347226195896707">登录 &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;，即使在不使用 Chrome 或 Android 的情况下也能查看自己的密码</translation>
 <translation id="484462545196658690">自动</translation>
 <translation id="4846628405149428620">选择要让此网站将所做更改保存到何处</translation>
 <translation id="4846680374085650406">您目前所采用的是管理员的建议设置。</translation>
@@ -5622,6 +5626,7 @@
 <translation id="4854603338816296098">地址已移除</translation>
 <translation id="485480310608090163">更多设置和权限</translation>
 <translation id="4857304314344645169">查看任何题目的分步说明</translation>
+<translation id="4857506880242459832">向 Google 询问与上一个页面有关的问题：<ph name="PAGE_TITLE" /></translation>
 <translation id="485806788160414322">播放或暂停媒体</translation>
 <translation id="4858913220355269194">足球</translation>
 <translation id="486213875233855629">已被管理员静音</translation>
@@ -6365,6 +6370,7 @@
 <translation id="5390677308841849479">深红色和橙色</translation>
 <translation id="5392192690789334093">允许发送通知</translation>
 <translation id="5393330235977997602">PIN 码选项</translation>
+<translation id="5393474451146553463">向 Google 询问与此标签页有关的问题</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{链接}other{# 个链接}}</translation>
 <translation id="5394529681046491727">Wi-Fi 直连</translation>
 <translation id="5395353843367783642">正在保存到您的账号中…</translation>
@@ -8561,6 +8567,7 @@
 <translation id="6922763095098248079">您的设备由贵单位管理。管理员可访问此设备上任意个人资料中的数据。</translation>
 <translation id="6923633482430812883">装载共享时出错。请检查您要连接的文件服务器是否支持 SMBv2 或更高版本。</translation>
 <translation id="6924109527536857168">需要同步</translation>
+<translation id="6924940560840297548">卡片已被移除，因为您近期未使用它们</translation>
 <translation id="6927200998271693557">如需快速重新访问浏览过的网站，请将历史记录和标签页同步到 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">自动撤消未使用的网站的权限</translation>
 <translation id="6929126689972602640">学校账号不支持家长控制功能。如果您想添加学校账号，让孩子能够访问 Google 课堂及其他网站以在家中完成学校作业，请先使用孩子的个人账号登录。您可于需要时再在设置中添加学校账号。</translation>
@@ -8784,6 +8791,7 @@
 <translation id="7082850163410901674">通知在 Mac 系统设置中已关闭</translation>
 <translation id="7083729794572207131">网站通常会请求安装 Web 应用，以便提升您在该网站上的体验</translation>
 <translation id="7083774521940805477">您的 Chromebook 无法使用 Steam for Chromebook（Beta 版）。</translation>
+<translation id="7084095352418993433">向 Google 询问与此页面有关的问题：<ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">（未配置）</translation>
 <translation id="7086377898680121060">调高亮度</translation>
 <translation id="7086672505018440886">将 Chrome 日志文件添加到归档中。</translation>
@@ -9001,6 +9009,7 @@
 <translation id="7246230585855757313">请重新插入您的安全密钥，然后再试一次</translation>
 <translation id="7249197363678284330">在地址栏中更改此设置。</translation>
 <translation id="7249764475759804559">将此应用添加为文件打开方式选项</translation>
+<translation id="7249885578105575587">向 Google 询问与此标签页有关的问题：<ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">目标设备未响应您的文件分享请求。请重试。</translation>
 <translation id="725109152065019550">抱歉，您的管理员已停用了您账号上的外部存储功能。</translation>
 <translation id="7251635775446614726">您的管理员说：“<ph name="CUSTOM_MESSAGE" />”</translation>
@@ -10335,6 +10344,7 @@
 <translation id="8143442547342702591">无效的应用</translation>
 <translation id="8144429778087524791">标为已完成并隐藏</translation>
 <translation id="8145170459658034418">省内存模式</translation>
+<translation id="8145219802299093106">使用 Google 智能镜头搜索此页面：<ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">如果您已在此设备上注册，就能<ph name="LINK2_START" />以现有用户的身份登录<ph name="LINK2_END" />。</translation>
 <translation id="8146287226035613638">添加您的首选语言并为它们排序。网站会尽可能以您的首选语言显示。这些偏好设置会与您的浏览器设置同步。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">登录失败，请与管理员联系或重试。</translation>
@@ -11896,6 +11906,7 @@
 <translation id="9182556968660520230">不允许网站播放受保护内容</translation>
 <translation id="9183302530794969518">Google 文档</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{应用}other{# 个应用}}</translation>
+<translation id="9184211686591068713">使用 Google 智能镜头搜索此标签页：<ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{管理员可以使用“<ph name="APP0_NAME" />”录制您的屏幕。录制开始时，您不会收到通知。}=2{管理员可以使用“<ph name="APP0_NAME" />”和“<ph name="APP1_NAME" />”录制您的屏幕。录制开始时，您不会收到通知。}=3{管理员可以使用“<ph name="APP0_NAME" />”“<ph name="APP1_NAME" />”和另外 1 个应用录制您的屏幕。录制开始时，您不会收到通知。}other{管理员可以使用“<ph name="APP0_NAME" />”“<ph name="APP1_NAME" />”和另外 # 个应用录制您的屏幕。录制开始时，您不会收到通知。}}</translation>
 <translation id="9186963452600581158">使用孩子的 Google 账号登录</translation>
 <translation id="9187967020623675250">按的键不匹配。按任意键即可<ph name="RESPONSE" />。</translation>
@@ -11995,6 +12006,7 @@
 <translation id="963000966785016697">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
 <translation id="964286338916298286">您的 IT 管理员已禁止您的设备享用 Chrome 附赠的好礼。</translation>
 <translation id="964790508619473209">屏幕排列方式</translation>
+<translation id="964903383988132751">向 Google 询问与上一个标签页有关的问题：<ph name="TAB_TITLE" /></translation>
 <translation id="96535553604365597">报告与 Google Cast 有关的问题</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{查看最近发送了大量通知的 1 个网站}other{查看最近发送了大量通知的 {NUM_SITES} 个网站}}</translation>
 <translation id="966588271015727539">选择蓝牙盲文显示屏</translation>

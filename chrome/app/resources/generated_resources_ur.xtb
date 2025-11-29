@@ -5609,7 +5609,6 @@
 <translation id="4841741146571978176">مطلوبہ ورچوئل مشین موجود نہیں ہے۔ براہ کرم جاری رکھنے کیلئے <ph name="VM_TYPE" /> سیٹ اپ کرنے کی کوشش کریں</translation>
 <translation id="4842976633412754305">یہ صفحہ غیر توثیق کردہ ذرائع سے اسکرپٹس لوڈ کرنے کی کوشش کر رہا ہے۔</translation>
 <translation id="4844333629810439236">دوسرے کی بورڈز</translation>
-<translation id="4844347226195896707">‏آپ Chrome یا Android استعمال نہ کر رہے ہوں تب بھی &lt;a target='_blank' href=‘<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt; میں سائن ان کر کے اپنے پاس ورڈز دیکھیں</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4846628405149428620">منتخب کریں کہ یہ سائٹ تبدیلیاں کہاں محفوظ کر سکتی ہے</translation>
 <translation id="4846680374085650406">اس ترتیب کیلئے آپ منتظم کی تجویز کی پیروی کر رہے ہیں۔</translation>
@@ -6136,7 +6135,7 @@
 <translation id="5209513429611499188">‏<ph name="USAGE_PAGE" /> استعمال کے صفحے سے استعمال والے HID آلات</translation>
 <translation id="5210365745912300556">ٹیب بند کریں</translation>
 <translation id="5213114823401215820">بند گروپ دوبارہ کھولیں</translation>
-<translation id="5213481667492808996">آپ کی '<ph name="NAME" />' کی ڈیٹا سروس استعمال کیلئے تیار ہے</translation>
+<translation id="5213481667492808996">آپ کی ‘<ph name="NAME" />' کی ڈیٹا سروس استعمال کیلئے تیار ہے</translation>
 <translation id="5213891612754844763">پراکسی ترتیبات دکھائيں</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' بُک مارک بنایا گیا۔</translation>
 <translation id="5215450412607891876">توسیعی سیکیورٹی اپ ڈیٹس کو آن کریں</translation>

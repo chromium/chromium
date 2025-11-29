@@ -39,6 +39,7 @@
 <translation id="141901961143729572">Partilhe a sua opinião</translation>
 <translation id="1465192221147974788">Para partilhar a sua janela, permita a gravação de ecrã para o Chromium nas Definições do sistema.</translation>
 <translation id="1478370723027452770">Obter ajuda com o Chrome for Testing</translation>
+<translation id="1496875977627931224">Olá, <ph name="USER_NAME" />,<ph name="LINE_BREAK" />em que está a pensar hoje?</translation>
 <translation id="1497802159252041924">Erro ao instalar: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Esta página está protegida</translation>
 <translation id="1524282610922162960">Partilhe um separador do Chromium</translation>
@@ -192,6 +193,7 @@
 <translation id="3103660991484857065">Houve uma falha no programa de instalação ao descompactar o arquivo. Descarregue novamente o Chromium.</translation>
 <translation id="310459126943037700">Falha ao terminar as tarefas.</translation>
 <translation id="3130323860337406239">O Chromium está a utilizar o microfone.</translation>
+<translation id="3130333203120345554">Nova pesquisa</translation>
 <translation id="3137969841538672700">Arraste para pesquisar</translation>
 <translation id="3144188012276422546">Este separador está a usar recursos adicionais. Para melhorar o seu desempenho, permita que o Chromium o torne inativo.</translation>
 <translation id="3149163023759831301">Para partilhar o ecrã, permita a gravação de ecrã para o Chromium nas Definições do sistema</translation>
@@ -349,6 +351,7 @@
 <translation id="4994636714258228724">Adicionar-se ao Chromium</translation>
 <translation id="5123973130450702873">O Chromium precisa de autorização para monitorizar as suas mãos</translation>
 <translation id="5141988424377517949">Não visitou o site recentemente. O Chromium removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
+<translation id="5167819546851111585">Em que está a pensar hoje?</translation>
 <translation id="5174969993834422967">Normalmente, bloqueia as notificações. Para permitir que este site lhe apresente notificações, clique no ícone de notificação no canto direito da barra de localização.</translation>
 <translation id="5174983315706567306">Não existe espaço suficiente em disco.</translation>
 <translation id="5187123684706427865">A conta do Chromium requer a reautenticação</translation>
@@ -381,6 +384,7 @@
 <translation id="5496810170689441661">O Chromium está a tentar editar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="5524890928877629608">canto superior esquerdo da área de pesquisa: esquerda <ph name="LEFT" />%, parte superior <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Abrir PDFs no Chromium</translation>
+<translation id="5536164441519929134">Faça perguntas<ph name="LINE_BREAK" />sobre este separador</translation>
 <translation id="5579324208890605088">Erro de arranque: execute o instalador como um utilizador normal, não como administrador.</translation>
 <translation id="5580770360767802657">Use o Chromium por predefinição e afixe-o</translation>
 <translation id="5596627076506792578">Mais opções</translation>

@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">Прочитајте ги денешните вести <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Повеќе детали</translation>
 <translation id="3123734510202723619">Соопштенија</translation>
+<translation id="3134385238404760368">Нема неодамнешни картички</translation>
 <translation id="314939179385989105">Почетна страница на Chrome</translation>
 <translation id="3158667104057012316">Се подредува рачно</translation>
 <translation id="3159335509547415276">Дознајте повеќе за блокираните сметки</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">Подредување од А до Ш</translation>
 <translation id="4578289292431526768">Ајде</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Пред # минута}one{Пред # минута}other{Пред # минути}}</translation>
+<translation id="4585751637295612750">Отворете нова картичка за да ја додадете во вашето прашање</translation>
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4594952190837476234">Офлајн страницава е од <ph name="CREATION_TIME" /> и може да се разликува од онлајн верзијата.</translation>
 <translation id="4595237294768457124">Отворете страница во нова картичка</translation>
@@ -1337,6 +1339,7 @@
 <translation id="670498945988402717">Проверено вчера</translation>
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="671481426037969117">Тајмерот за <ph name="FQDN" /> истече. Ќе започне одново утре.</translation>
+<translation id="6716434912087331834">За да вратите нов прозорец, намалете го вкупниот број активни прозорци на <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> или помалку. Неактивните прозорци се бришат по 6 месеци.</translation>
 <translation id="6723740634201835758">Во вашата сметка на Google</translation>
 <translation id="6734310707649923383">Може да ги видите страниците што сте ги отвориле или да ги избришете од историјата</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, прикачена картичка „Инкогнито“ за снимање</translation>
@@ -1654,6 +1657,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> е застарен.</translation>
 <translation id="7944772052836377867">Синхронизацијата треба да потврди дека сте вие</translation>
 <translation id="7951102827450076904">Секогаш отворај ги преземените PDF-датотеки</translation>
+<translation id="7952479614398473176">За да отворите нов прозорец, намалете го вкупниот број активни прозорци на <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> или помалку.</translation>
 <translation id="7957413488482743710">Виртуелната картичка ја сокрива вашата актуелна картичка за да ја заштити од потенцијална измама. <ph name="BEGIN_LINK1" />Дознајте повеќе за виртуелните картички<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Картички на уредов</translation>
 <translation id="7961926449547174351">Сте го оневозможиле пристапот до „Капацитет“, одете во „Поставки“ за да го овозможите.</translation>

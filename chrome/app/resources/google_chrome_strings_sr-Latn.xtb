@@ -47,6 +47,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="146866447420868597">Želite li da se prijavite u Chrome?</translation>
 <translation id="1476347941828409626">Upravljaj Chrome profilima</translation>
 <translation id="1492280395845991349">Ponovo pokrenite da biste dovršili ažuriranje Chrome-a</translation>
+<translation id="1496875977627931224">Zdravo <ph name="USER_NAME" />,<ph name="LINE_BREAK" />o čemu razmišljate danas?</translation>
 <translation id="1497802159252041924">Greška pri instalaciji: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Prilagodite novi Chrome profil</translation>
 <translation id="1518627427551567882">Ova stranica je zaštićena</translation>
@@ -202,6 +203,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3112458742631356345">Chrome je blokirao ovo preuzimanje jer se ovaj fajl ne preuzima često i može da bude opasan</translation>
 <translation id="3114643501466072395">Da biste proverili da li su ostale lozinke bezbedne od upada u podatke i drugih bezbednosnih problema, <ph name="BEGIN_LINK" />prijavite se u Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome je blokirao ovo preuzimanje jer fajl arhive sadrži druge fajlove koji mogu da kriju malver</translation>
+<translation id="3130333203120345554">Nova pretraga</translation>
 <translation id="3135560418014806498">Dodaj Chrome profil</translation>
 <translation id="3137969841538672700">Prevucite da biste pretražili</translation>
 <translation id="3140883423282498090">Promene će stupiti na snagu kada sledeći put ponovo pokrenete Google Chrome.</translation>
@@ -367,6 +369,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="5139423532931106058">Prilagodite Chrome profil</translation>
 <translation id="5163087008893166964">Dobro došli u Chrome; otvoren je novi prozor pregledača</translation>
 <translation id="5166439563123238795">Chrome-u treba dozvola za praćenje ruku</translation>
+<translation id="5167819546851111585">O čemu razmišljate danas?</translation>
 <translation id="5170938038195470297">Profil ne može da se koristi jer je iz novije verzije Google Chrome-a.
 
 Neke funkcije su možda nedostupne. Navedite drugi direktorijum profila ili koristite noviju verziju Chrome-a.</translation>
@@ -648,6 +651,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8013993649590906847">Ako slika nema koristan opis, Chrome će probati da vam ga pruži. Slike se šalju Google-u radi pravljenja opisa.</translation>
 <translation id="8019103195866286235">Programer je objavio ovaj dodatak i on možda nije bezbedan. Uklonite ga iz Chrome-a da više ne bi mogao da vidi i menja podatke na sajtovima koje posećujete, uključujući lične podatke.</translation>
 <translation id="8040768861829554732">Dodatak želi da se prijavite u Chrome</translation>
+<translation id="8041795619940733262">Upitaj Google<ph name="LINE_BREAK" />o ovoj kartici</translation>
 <translation id="80471789339884597">Hvala vam na instalaciji. Morate da restartujete sve pregledače pre nego što počnete da koristite <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">Drugi Chrome profili</translation>

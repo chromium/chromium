@@ -1356,6 +1356,7 @@
 <translation id="1907044622262489040">আপনার ভয়েস ব্যবহার করে টাইপ করুন। 'Search + D' কী ব্যবহার করে, কথা বলা শুরু করুন।</translation>
 <translation id="1907659324308286326">কিছু Thunderbolt বা USB4 অ্যাক্সেসরিজের ক্ষেত্রে সঠিকভাবে কাজ করার জন্য মেমরি অ্যাক্সেস করার প্রয়োজন হতে পারে।</translation>
 <translation id="1908591798274282246">বন্ধ হওয়া গ্রুপ আবার খুলুন</translation>
+<translation id="1909677622563887527">Chrome, অটোমেটিক টেস্ট সফ্টওয়্যার দ্বারা নিয়ন্ত্রিত হচ্ছে</translation>
 <translation id="1909880997794698664">আপনি কি এই ডিভাইসটিকে কিয়স্ক মোডে স্থায়ীভাবে রাখার বিষয়ে নিশ্চিত?</translation>
 <translation id="1910721550319506122">স্বাগতম!</translation>
 <translation id="1910736334623230603">একাধিক ছবি সার্চ করা যাবে না। একবারে একটি ছবি যোগ করুন।</translation>
@@ -1709,6 +1710,7 @@
 <translation id="2144536955299248197">সার্টিফিকেট দর্শনকারী: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android অ্যাপ উন্নত করা</translation>
 <translation id="2145468727756963476">Gemini রিফ্রেশ হচ্ছে...</translation>
+<translation id="2145688286532368277">এই সাইটের জন্য জাভাস্ক্রিপ্ট অপ্টিমাইজেশনের সুবিধা বন্ধ করা আছে।</translation>
 <translation id="2145917706968602070">আপনার ফোন কাছাকাছি, আনলক অবস্থায় রয়েছে এবং তাতে ব্লুটুথ আর ওয়াই-ফাই চালু আছে কিনা তা ভালো করে দেখে নিন</translation>
 <translation id="2146263598007866206">আপনার সময় বাঁচাতে, সাইট এই সম্পর্কিত ফাইলগুলি অটোমেটিক ডাউনলোড করতে পারে</translation>
 <translation id="2147218225094845757">সাইড প্যানেল লুকান</translation>
@@ -3708,6 +3710,7 @@
 <translation id="3527085408025491307">ফোল্ডার</translation>
 <translation id="3528498924003805721">শর্টকাট লক্ষ্যগুলি</translation>
 <translation id="3529851166527095708">&amp;অ্যাড্রেস ও আরও</translation>
+<translation id="3530919970074558307">গ্রুপ আনফোকাস করুন</translation>
 <translation id="3531070080754387701">এই ফোল্ডার থেকে Microsoft 365 <ph name="FILE_NAMES" /> ফাইল খুলতে পারছে না</translation>
 <translation id="3531883061432162622">আপনার বুকমার্ক ও তালিকায় নিজের পড়ার তালিকা খুঁজুন</translation>
 <translation id="3532273508346491126">সিঙ্ক ম্যানেজমেন্ট</translation>
@@ -4061,6 +4064,7 @@
 <translation id="3757567010566591880">টুলবার থেকে আনপিন করুন</translation>
 <translation id="3757645900890881944">সার্চ টুল</translation>
 <translation id="3757733214359997190">কোনও সাইট পাওয়া যায়নি</translation>
+<translation id="3757825964096339958">গ্রুপ ফোকাস করুন</translation>
 <translation id="375841316537350618">প্রক্সি স্ক্রিপ্ট ডাউনলোড হচ্ছে...</translation>
 <translation id="3758887577462995665">পরামর্শ:</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> মাস</translation>
@@ -4358,6 +4362,7 @@
 
 আপনি কি <ph name="CONTROL_PANEL_APPLET_NAME" /> শুরু করতে চান?</translation>
 <translation id="3942420633017001071">ডায়গনিস্টিক</translation>
+<translation id="3942558231079086184">এই সাইটের জন্য জাভাস্ক্রিপ্ট অপ্টিমাইজেশনের সুবিধা বন্ধ করা আছে। আরও ভালো পারফর্ম্যান্সের জন্য চালু করুন।</translation>
 <translation id="3943582379552582368">&amp;ফিরুন</translation>
 <translation id="3943857333388298514">পেস্ট করুন</translation>
 <translation id="3945513714196326460">আরও ছোট নাম লিখে দেখুন</translation>
@@ -4850,6 +4855,7 @@
 <translation id="4292613336957320546">অ্যাক্সিলারেশন</translation>
 <translation id="429312253194641664">একটি সাইট মিডিয়া চালাচ্ছে</translation>
 <translation id="4293219510510666933">ব্রাউজিং ইতিহাস সার্চ করতে এবং আপনার দেখা সাইটগুলি খুঁজে পেতে দৈনন্দিন ভাষা ব্যবহার করুন। আপনার ব্রাউজিং ইতিহাসের উপর নির্ভর করে প্রশ্ন করতে ও উত্তর পেতেও পারবেন। এই সেটিংস চালু করা আছে।</translation>
+<translation id="429344752071832554">গ্রুপ আনফোকাস করুন</translation>
 <translation id="4294392694389031609">ডাউনলোড ইতিহাস থেকে <ph name="FILE_NAME" /> মুছে ফেলা হয়েছে, তবে এটি এখনও আপনার ডিভাইসে রয়েছে</translation>
 <translation id="4295072614469448764">অ্যাপ আপনার টার্মিনালে পাওয়া যায়। আপনার লঞ্চারে একটি আইকনও থাকতে পারে।</translation>
 <translation id="4295979599050707005">Chrome ও Google Play-তে ওয়েবসাইট, অ্যাপ ও এক্সটেনশনকে আপনার <ph name="USER_EMAIL" /> অ্যাকাউন্ট ব্যবহার করার অনুমতি দিতে আবার সাইন-ইন করুন। আপনি এই অ্যাকাউন্ট সরিয়েও দিতে পারেন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -5005,6 +5011,7 @@
 <translation id="4405224443901389797">এই ফোল্ডারে সরান…</translation>
 <translation id="4405781821077215583">ছোট অথবা বড় টেক্সট সহ আপনার স্ক্রিনের আইটেম তৈরি করুন</translation>
 <translation id="4406308048672435032">আপনি এই ট্যাব নিষ্ক্রিয় করতে বা আবার সম্পূর্ণ তালিকা দেখতে রিফ্রেশ করতে পারবেন</translation>
+<translation id="4406881185911439342">গ্রুপ ফোকাস করুন</translation>
 <translation id="4406883609789734330">লাইভ ক্যাপশন</translation>
 <translation id="4406963243402726564">সেভ না করা ডেটা</translation>
 <translation id="4408599188496843485">স&amp;হায়তা</translation>
@@ -5624,7 +5631,6 @@
 <translation id="4841741146571978176">প্রয়োজনীয় ভার্চুয়াল মেশিনটি নেই। চালিয়ে যেতে <ph name="VM_TYPE" /> সেট আপ করে দেখুন</translation>
 <translation id="4842976633412754305">এই পৃষ্ঠাটি প্রমাণীকৃত নয় এমন সূত্র থেকে স্ক্রিপ্ট লোড করার চেষ্টা করছে।</translation>
 <translation id="4844333629810439236">অন্য কীবোর্ডগুলি</translation>
-<translation id="4844347226195896707">&lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;-এ সাইন ইন করে Chrome বা Android ব্যবহার না করার সময়ও আপনার পাসওয়ার্ড দেখুন</translation>
 <translation id="484462545196658690">অটো</translation>
 <translation id="4846628405149428620">এই সাইটটি কোথায় পরিবর্তন সেভ করতে পারে তা বেছে নিন</translation>
 <translation id="4846680374085650406">আপনি এই সেটিংয়ের জন্য প্রশাসকের সুপারিশ অনুসরণ করছেন৷</translation>
@@ -10202,6 +10208,7 @@
 <translation id="8032569120109842252">ফলো করছেন</translation>
 <translation id="8033827949643255796">নির্বাচিত</translation>
 <translation id="8033958968890501070">সময় শেষ হয়ে গেছে</translation>
+<translation id="8034399942062051455">ভি৮ অপ্টিমাইজেশনের সুবিধা বন্ধ করা আছে</translation>
 <translation id="8034697324150621782">উপরের ভিউয়ের সাথে অদল বদল করুন</translation>
 <translation id="8035059678007243127">ব্যাক-ফরোয়ার্ড ক্যাশেতে স্টোর করা ছদ্মবেশী পেজ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">'অটোফিল' ফিচার উন্নত করতে সাহায্য করুন</translation>

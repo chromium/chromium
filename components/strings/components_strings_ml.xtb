@@ -2166,6 +2166,7 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ഈ ഫോം സുരക്ഷിതമല്ല. സ്വയമേവ പൂരിപ്പിക്കൽ ഓഫാക്കിയിരിക്കുന്നു.</translation>
 <translation id="4477350412780666475">അടുത്ത ട്രാക്ക്</translation>
+<translation id="4479915773139026885">Google Search-ലെ AI മോഡ്</translation>
 <translation id="4480760608050410381">MP4 വീഡിയോ</translation>
 <translation id="448363931695049633">പിസേറിയകൾ</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -3165,6 +3166,7 @@
 <translation id="6124432979022149706">Chrome എന്റർപ്രൈസ് കണക്റ്ററുകൾ</translation>
 <translation id="6124996493718543728">'ഇപ്പോൾ വാങ്ങി പിന്നീട് പണമടയ്ക്കുക' പുരോഗതി സ്‌ക്രീൻ മുഴുവനായും തുറന്നു.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />കൂടുതൽ വിശദാംശങ്ങൾ<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Search-ൽ AI മോഡിനോട് ചോദിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6131824478727057281">ലൊക്കേഷന്‍</translation>
 <translation id="6133320744616005677">അനുവദിക്കുന്നത് തുടരുക</translation>
@@ -3905,6 +3907,7 @@
 <translation id="7337248890521463931">കൂടുതൽ വരികൾ കാണിക്കുക</translation>
 <translation id="7337706099755338005">നിങ്ങളുടെ പ്ലാറ്റ്‌ഫോമിൽ ലഭ്യമല്ല.</translation>
 <translation id="733923710415886693">സർട്ടിഫിക്കറ്റ് സുതാര്യതയിലൂടെ സെർവറുടെ സർട്ടിഫിക്കറ്റ് വെളിപ്പെടുത്തിയിട്ടില്ല.</translation>
+<translation id="73398226265793546">AI മോഡ് ബട്ടൺ, Google Search-ൽ AI മോഡിനോട് ചോദിക്കാൻ സജീവമാക്കുക</translation>
 <translation id="7346048084945669753">അംഗമായി ഉള്‍പ്പെട്ടിട്ടുണ്ടോ:</translation>
 <translation id="7346062987309535530">ഡൈനിംഗ്‌വെയർ</translation>
 <translation id="7346081071264046066">"ഈ വിവാഹ ക്ഷണത്തിന് ആവേശത്തോടെ ഉവ്വ് എന്ന് മറുപടി നൽകുക"</translation>

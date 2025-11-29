@@ -213,7 +213,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Os sites que você visita
           <ph name="LIST_ITEM" />Seu empregador ou sua escola
-          <ph name="LIST_ITEM" />Seu provedor de acesso à Internet
+          <ph name="LIST_ITEM" />Seu provedor de acesso à internet
         <ph name="END_LIST" /></translation>
 <translation id="1337692097987160377">Compartilhar esta guia</translation>
 <translation id="1339601241726513588">Domínio de inscrição:</translation>

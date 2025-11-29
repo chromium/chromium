@@ -275,6 +275,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4022972681110646219">Prevedi ekran</translation>
 <translation id="4023601594785368013">Izvorni jezik: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ChromeOS se mora ponovo pokrenuti da se ažuriranje primijeni.</translation>
+<translation id="4039097928859803404">Uvijek prikazuj prečice AI načina rada</translation>
 <translation id="4050175100176540509">U najnovijoj verziji su dostupna važna poboljšanja sigurnosti i nove funkcije.</translation>
 <translation id="4053720452172726777">Prilagodite i kontrolirajte Google Chrome</translation>
 <translation id="408393047846373801">Da dobijate lozinke i drugo na svim svojim uređajima, prijavite se u Chrome. Ova lozinka će se sačuvati na Google račun nakon što se prijavite.</translation>
@@ -356,6 +357,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4970880042055371251">Verzija ChromeOS-a</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliknite na "Google upravitelj lozinki"</translation>
+<translation id="5043786843026425788">Više informacija o pretraživanju putem Google Objektiva u Chromeu</translation>
 <translation id="504867494566807945">Otvarajte linkove u Chromeu iz bilo koje aplikacije. Osim toga, zakačite ga na traku zadataka da mu lako pristupate.</translation>
 <translation id="5114340746415930644">Unesite pristupni izraz da koristite i sačuvate podatke Chromea na računu <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Prijava u Chrome prilikom prijave na druge Googleove usluge</translation>
@@ -529,6 +531,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="683440813066116847">Ulazno pravilo da Google Chrome Canary dozvoli mDNS saobraćaj.</translation>
 <translation id="6841242485723266823">Chrome profili vam pomažu da odvojite različite dijelove svog života. Dodajte novi profil sada.</translation>
 <translation id="684888714667046800">Nije moguće povezati se s internetom. Ako koristite zaštitni zid, vodite računa da <ph name="PRODUCT_EXE_NAME" /> bude na listi dozvoljenih.</translation>
+<translation id="6859580922007887573">Dodirnite da nastavite</translation>
 <translation id="6877155553248388166">donji desni ugao područja za pretraživanje: desno <ph name="RIGHT" />%, dolje <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Ažuriranje Chromea</translation>
 <translation id="6885412569789873916">Aplikacije za Chrome Beta</translation>
@@ -628,6 +631,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="7849037457735762883">Nastavite gdje ste stali: Chrome može vratiti kartice svaki put kada ga ponovo pokrenete. Da uključite ovo, idite u</translation>
 <translation id="7872446069773932638">Preuzimanje… Preostalo je <ph name="SECONDS" /> s</translation>
 <translation id="7886087451482920026">Odaberite tekst putem Google Objektiva</translation>
+<translation id="7887929410013642057">Uvijek prikazuj prečice AI načina rada</translation>
 <translation id="7890208801193284374">Ako dijelite računar, prijatelji i porodica mogu odvojeno pretraživati i postaviti Chrome na način koji njima odgovara.</translation>
 <translation id="7896673875602241923">Neko se prethodno prijavio u Chrome s ovog računara kao <ph name="ACCOUNT_EMAIL_LAST" />. Kreirajte novog korisnika Chromea da odvojite svoje informacije.</translation>
 <translation id="7904985524660297937">Isprobajte Gemini u Google Chromeu</translation>

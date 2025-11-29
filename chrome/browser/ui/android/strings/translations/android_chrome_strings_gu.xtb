@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">આજના સમાચાર વાંચો <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">વધુ વિગતો</translation>
 <translation id="3123734510202723619">ઘોષણાઓ</translation>
+<translation id="3134385238404760368">તાજેતરનું કોઈ ટૅબ નથી</translation>
 <translation id="314939179385989105">Chromeનું હોમપેજ</translation>
 <translation id="3158667104057012316">મેન્યુઅલ ક્રમ અનુસાર સૉર્ટ કરી રહ્યાં છીએ</translation>
 <translation id="3159335509547415276">બ્લૉક કરેલા એકાઉન્ટ વિશે જાણો</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">Aથી Z અનુસાર સૉર્ટ કરો</translation>
 <translation id="4578289292431526768">ચાલો, શરૂ કરીએ</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# મિનિટ પહેલાં}one{# મિનિટ પહેલાં}other{# મિનિટ પહેલાં}}</translation>
+<translation id="4585751637295612750">તેને તમારા પ્રશ્નમાં ઉમેરવા માટે નવું ટૅબ ખોલો</translation>
 <translation id="4587589328781138893">સાઇટ</translation>
 <translation id="4594952190837476234">આ ઑફલાઇન પેજ <ph name="CREATION_TIME" /> ના રોજનું છે અને તે ઑનલાઇન વર્ઝનથી અલગ હોઈ શકે છે.</translation>
 <translation id="4595237294768457124">'નવું ટૅબ' પેજ ખોલો</translation>
@@ -1337,6 +1339,7 @@
 <translation id="670498945988402717">ગઈકાલે ચેક કર્યું</translation>
 <translation id="6710213216561001401">પાછલી</translation>
 <translation id="671481426037969117">તમારું <ph name="FQDN" /> ટાઇમર સમાપ્ત થયું. તે આવતી કાલે ફરી શરૂ થશે.</translation>
+<translation id="6716434912087331834">નવી વિન્ડો રિસ્ટોર કરવા માટે, સક્રિય વિન્ડોની કુલ સંખ્યા ઘટાડીને <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> કે તેના કરતાં ઓછી રાખો. નિષ્ક્રિય વિન્ડોને 6 મહિના પછી ડિલીટ કરવામાં આવે છે.</translation>
 <translation id="6723740634201835758">તમારા Google એકાઉન્ટમાં</translation>
 <translation id="6734310707649923383">તમે જે પેજની મુલાકાત લીધી હોય તે પેજને તમારા ઇતિહાસમાં જોઈ શકો છો અથવા તેમાંથી તેને ડિલીટ કરી શકો છો</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, પિન કરેલું રેકોર્ડ કરતું છૂપું ટૅબ</translation>
@@ -1654,6 +1657,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> જૂનું થઈ ગયું છે.</translation>
 <translation id="7944772052836377867">સિંકને તમારી ઓળખની ચકાસણી કરવાની જરૂર પડે છે</translation>
 <translation id="7951102827450076904">હંમેશાં ડાઉનલોડ કરેલી PDFs ખોલો</translation>
+<translation id="7952479614398473176">નવી વિન્ડો ખોલવા માટે, સક્રિય વિન્ડોની કુલ સંખ્યા ઘટાડીને <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> કે તેના કરતાં ઓછી રાખો.</translation>
 <translation id="7957413488482743710">વર્ચ્યુઅલ કાર્ડ સંભવિત કપટથી તમારું સંરક્ષણ કરવા માટે, તમારા વાસ્તવિક કાર્ડની ઓળખ છુપાવે છે. <ph name="BEGIN_LINK1" />વર્ચ્યુઅલ કાર્ડ વિશે વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">આ ડિવાઇસ પરના ટૅબ</translation>
 <translation id="7961926449547174351">તમે સ્ટોરેજ ઍક્સેસની સુવિધા બંધ કરી છે, તેને ચાલુ કરવા માટે કૃપા કરીને સેટિંગમાં જાઓ.</translation>

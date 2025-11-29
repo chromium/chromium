@@ -39,6 +39,7 @@
 <translation id="141901961143729572">আপনার মতামত শেয়ার করুন</translation>
 <translation id="1465192221147974788">আপনার উইন্ডো শেয়ার করতে, সিস্টেম সেটিংস থেকে Chromium-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন।</translation>
 <translation id="1478370723027452770">Chrome for Testing ব্যবহার করে সহায়তা পান</translation>
+<translation id="1496875977627931224">হ্যালো <ph name="USER_NAME" />,<ph name="LINE_BREAK" />আজ আপনি কী ভাবছেন?</translation>
 <translation id="1497802159252041924">ইনস্টলেশন সংক্রান্ত সমস্যা: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">এই পৃষ্ঠাটি সুরক্ষিত</translation>
 <translation id="1524282610922162960">একটি Chromium ট্যাব শেয়ার করুন</translation>
@@ -192,6 +193,7 @@
 <translation id="3103660991484857065">ইনস্টলার আর্কাইভ আনকমপ্রেস করতে পারেনি৷ অনুগ্রহ করে Chromium আবার ডাউনলোড করুন৷</translation>
 <translation id="310459126943037700">টাস্ক শেষ করা যায়নি।</translation>
 <translation id="3130323860337406239">Chromium আপনার মাইক্রোফোন ব্যবহার করছে৷</translation>
+<translation id="3130333203120345554">নতুন সার্চ</translation>
 <translation id="3137969841538672700">সার্চ করতে টেনে আনুন</translation>
 <translation id="3144188012276422546">এই ট্যাব অতিরিক্ত রিসোর্ট ব্যবহার করছে। আপনার পারফর্ম্যান্স উন্নত করতে, Chromium-কে সেটি বন্ধ করতে দিন।</translation>
 <translation id="3149163023759831301">আপনার স্ক্রিন শেয়ার করতে, সিস্টেম সেটিংস থেকে Chromium-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন</translation>
@@ -348,6 +350,7 @@
 <translation id="4994636714258228724">Chromium এর সাথে নিজেকে যোগ করুন</translation>
 <translation id="5123973130450702873">আপনার হাত ট্র্যাক করতে Chromium-এর অনুমতি প্রয়োজন</translation>
 <translation id="5141988424377517949">আপনি সম্প্রতি ভিজিট করেননি। Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> সম্পর্কিত অনুমতি সরিয়ে দিয়েছে।</translation>
+<translation id="5167819546851111585">আজ আপনি কী ভাবছেন?</translation>
 <translation id="5174969993834422967">আপনি সাধারণত বিজ্ঞপ্তি ব্লক করেন। এই সাইট থেকে বিজ্ঞপ্তি পেতে, আপনার লোকেশন বারের ডানদিকের কোণায় বিজ্ঞপ্তির আইকনে ক্লিক করুন।</translation>
 <translation id="5174983315706567306">ডিস্ক স্টোরেজে যথেষ্ট খালি জায়গা নেই।</translation>
 <translation id="5187123684706427865">Chromium অ্যাকাউন্ট আবার যাচাই করতে হবে</translation>
@@ -380,6 +383,7 @@
 <translation id="5496810170689441661">Chromium আপনার পাসওয়ার্ড এডিট করার অনুমতি চাইছে। অনুমতি দিতে আপনার Windows পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="5524890928877629608">সার্চে উপরের বাঁদিকের কোণা: বাঁদিক থেকে <ph name="LEFT" />%, উপরের দিকে <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Chromium-এ পিডিএফ ফাইল খুলুন</translation>
+<translation id="5536164441519929134">এই ট্যাব সম্পর্কে<ph name="LINE_BREAK" />জিজ্ঞাসা করুন</translation>
 <translation id="5579324208890605088">স্টার্টআপ সম্পর্কিত এরর: নিয়মিত ব্যবহারকারী হিসেবে ইনস্টলার চালান, অ্যাডমিনিস্ট্রেটর হিসেবে নয়।</translation>
 <translation id="5580770360767802657">ডিফল্ট হিসেবে Chromium ব্যবহার করুন এবং এটি পিন করুন</translation>
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>

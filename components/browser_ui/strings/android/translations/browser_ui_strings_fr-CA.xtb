@@ -115,6 +115,7 @@
 <translation id="2241587408274973373">Cartes de la page Nouvel onglet</translation>
 <translation id="2241634353105152135">Une fois</translation>
 <translation id="2253414712144136228">Retirer l'élément suivant : <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="2281098328019574668">Recevez des notifications pour des statistiques qui améliorent votre expérience sur Chrome</translation>
 <translation id="228293613124499805">La plupart des sites que vous visitez peuvent enregistrer des données sur votre appareil, souvent pour améliorer votre expérience en enregistrant vos préférences ou en fonction de vos interactions avec le site. Nous vous recommandons de conserver ce paramètre activé.</translation>
 <translation id="2289270750774289114">Demander quand un site souhaite rechercher les appareils Bluetooth à proximité (recommandé)</translation>
 <translation id="2315043854645842844">La sélection du certificat client SSL n'est pas prise en charge par le système d'exploitation.</translation>
@@ -573,6 +574,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="7260727271532453612">Autorisations <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /> accordées</translation>
 <translation id="7276071417425470385">Lorsque cette option est activée, les sites peuvent demander à utiliser des appareils de réalité virtuelle. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser d'appareils de réalité virtuelle.</translation>
 <translation id="728412880473384942">Les sites sont plus rapides, mais moins sécurisés</translation>
+<translation id="7324836168971967994">Conseils personnalisés pour vous</translation>
 <translation id="7366415735885268578">Ajouter un site</translation>
 <translation id="7368695150573390554">Toutes les données hors ligne seront supprimées</translation>
 <translation id="7369678931043226462">Zone de contenu dans le bas de l'écran de Personnaliser votre page Nouvel onglet ouverte à mi-hauteur</translation>

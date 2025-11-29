@@ -274,6 +274,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4022972681110646219">Traduire le contenu à l'écran</translation>
 <translation id="4023601594785368013">Langue d'origine : <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS doit être redémarré pour appliquer la mise à jour.</translation>
+<translation id="4039097928859803404">Toujours afficher les raccourcis du mode IA</translation>
 <translation id="4050175100176540509">La dernière version propose d'importantes améliorations de la sécurité ainsi que de nouvelles fonctionnalités.</translation>
 <translation id="4053720452172726777">Personnaliser et gérer Google Chrome</translation>
 <translation id="408393047846373801">Pour obtenir vos mots de passe et bien plus encore sur tous vos appareils, connectez-vous à Chrome. Ce mot de passe sera enregistré dans votre compte Google après votre connexion.</translation>
@@ -355,6 +356,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4970880042055371251">Version de Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Cliquez sur « Gestionnaire de mots de passe Google »</translation>
+<translation id="5043786843026425788">En savoir plus sur la recherche avec Lentille Google dans Chrome</translation>
 <translation id="504867494566807945">Ouvrez des liens dans Chrome à partir de n'importe quelle appli. Il est en outre épinglé à votre barre des tâches pour un accès facile.</translation>
 <translation id="5114340746415930644">Entrez votre phrase de passe pour utiliser et enregistrer les données Chrome dans votre compte, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Vous connecter à Chrome lorsque vous vous connectez à d'autres services Google</translation>
@@ -527,6 +529,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="683440813066116847">Règle de trafic entrant pour Google Chrome Canary autorisant le trafic mDNS.</translation>
 <translation id="6841242485723266823">Les profils Chrome vous aident à séparer les différentes parties de votre vie. Ajoutez un nouveau profil maintenant.</translation>
 <translation id="684888714667046800">Impossible de se connecter à Internet. Si vous utilisez un pare-feu, assurez-vous que <ph name="PRODUCT_EXE_NAME" /> figure dans la liste verte.</translation>
+<translation id="6859580922007887573">Onglet pour continuer</translation>
 <translation id="6877155553248388166">Coin inférieur droit de la zone de recherche : droite <ph name="RIGHT" /> %, bas <ph name="BOTTOM" /> %</translation>
 <translation id="6881299373831449287">Mise à jour de Chrome</translation>
 <translation id="6885412569789873916">Applications Chrome bêta</translation>
@@ -626,6 +629,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="7849037457735762883">Reprenez là où vous en étiez : Chrome peut restaurer vos onglets à chaque redémarrage. Pour activer cette option, accédez à</translation>
 <translation id="7872446069773932638">Téléchargement en cours… <ph name="SECONDS" /> seconde(s) restante(s)</translation>
 <translation id="7886087451482920026">Sélectionnez du texte avec Lentille Google</translation>
+<translation id="7887929410013642057">Toujours afficher les raccourcis du mode IA</translation>
 <translation id="7890208801193284374">Si vous partagez un ordinateur avec vos proches, ceux-ci peuvent configurer Google Chrome comme bon leur semble et naviguer sur le Web à leur manière.</translation>
 <translation id="7896673875602241923">Un utilisateur s'est récemment connecté à Google Chrome sur cet ordinateur en tant que <ph name="ACCOUNT_EMAIL_LAST" />. Veuillez créer un autre utilisateur Google Chrome pour séparer vos données.</translation>
 <translation id="7904985524660297937">Essayer Gemini dans Google Chrome</translation>

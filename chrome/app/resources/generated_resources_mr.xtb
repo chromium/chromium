@@ -258,6 +258,7 @@
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> हा <ph name="DESK_TITLE" /> डेस्‍कशी कनेक्ट केलेला आहे</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> मध्ये उघडत आहे...</translation>
 <translation id="1168704243733734901"><ph name="STYLE" /> शैलीमध्ये, <ph name="MOOD" /> मूड असलेली <ph name="SUBJECT" /> पैकी <ph name="INDEX" /> अलीकडील AI थीम.</translation>
+<translation id="1168799042879144934">मागील पेजविषयी Google ला विचारा</translation>
 <translation id="116896278675803795">निवडलेल्या आशयाशी जुळण्यासाठी भाषा आपोआप बदला</translation>
 <translation id="1169266963600477608">गेम नियंत्रणे</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> मध्ये संवेदनशील किंवा धोकादायक डेटा आहे. तुमच्या अ‍ॅडमिनिस्ट्रेटरनुसार: "<ph name="CUSTOM_MESSAGE" />"</translation>
@@ -1436,6 +1437,7 @@
 <translation id="1956167375087861299">संरक्षित आशय प्ले करण्यासाठी आयडेंटिफायर वापरण्याची अनुमती नाही</translation>
 <translation id="1956390763342388273">हे "<ph name="FOLDER_PATH" />" वरील सर्व फाइल अपलोड करेल. जर तुमचा साइटवर विश्वास असेल तरच हे करा.</translation>
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{१ एक्स्टेंशनचे पुनरावलोकन केले आहे}other{{NUM_EXTENSIONS} एक्स्टेंशनचे पुनरावलोकन केले आहे}}</translation>
+<translation id="1957188536718247425">Google ला मागील टॅबविषयी विचारा</translation>
 <translation id="1957426642613794386">तुमची सेव्ह केलेली माहिती</translation>
 <translation id="1959421829481337178">कृपया तुमच्या वाहकाने दिलेला अ‍ॅक्टिव्हेशन कोड एंटर करा.</translation>
 <translation id="1960211333621141174">डोंगराचा कडा</translation>
@@ -2933,6 +2935,7 @@
 <translation id="2981033191524548279">सॉरी, काहीतरी चुकले. कृपया वर्णनामध्ये #bruschetta च्या समावेशासह फीडबॅक द्या. <ph name="ERROR" /> हा एरर कोड आहे, रीबूट करून आणि पुन्हा प्रयत्न करून याचे निराकरण केले जाऊ शकते.</translation>
 <translation id="2981113813906970160">मोठा माउस कर्सर दर्शवा</translation>
 <translation id="2983102365694924129">साइटवरील तुमच्या अ‍ॅक्टिव्हिटीवर आधारित. हे सेटिंग बंद आहे.</translation>
+<translation id="2983311431122838216">Google Search मध्ये AI मोड ला विचारा</translation>
 <translation id="2983373101216420412">केसची बॅटरी पातळी <ph name="PERCENTAGE" />%.</translation>
 <translation id="2983818520079887040">सेटिंग्ज...</translation>
 <translation id="2984384421572259426">न वापरलेले टॅब क्लीन अप करा</translation>
@@ -3515,6 +3518,7 @@
 <translation id="3402585168444815892">डेमो मोड मध्ये नोंदणी करत आहे</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">या साइटचे कोणतेही पासवर्ड सेव्ह केलेले नाहीत</translation>
+<translation id="3405382848027996799">तुमचे Google Beam हार्डवेअर सेट करण्यासाठी तयार आहे</translation>
 <translation id="3405664148539009465">फॉंट कस्टमाइझ करा</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">आभासी वास्तविकता डिव्हाइस आणि डेटा वापरण्याची अनुमती आहे</translation>
@@ -3707,6 +3711,7 @@
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3528498924003805721">शॉर्टकट लक्ष्ये</translation>
 <translation id="3529851166527095708">&amp;पत्ते आणि आणखी बरेच काही</translation>
+<translation id="3530919970074558307">गटावरील फोकस काढून टाका</translation>
 <translation id="3531070080754387701">Microsoft 365 हे या फोल्डरमधील <ph name="FILE_NAMES" /> उघडू शकत नाही</translation>
 <translation id="3531883061432162622">बुकमार्क आणि सूची येथे तुमची वाचन सूची व बुकमार्क मिळवा</translation>
 <translation id="3532273508346491126">सिंक व्यवस्थापन</translation>
@@ -4060,6 +4065,7 @@
 <translation id="3757567010566591880">टूलबारवरून अनपिन करा</translation>
 <translation id="3757645900890881944">शोध साधने</translation>
 <translation id="3757733214359997190">कोणत्याही साइट आढळल्या नाहीत</translation>
+<translation id="3757825964096339958">फोकस गट</translation>
 <translation id="375841316537350618">प्रॉक्सी स्क्रिप्ट डाउनलोड करत आहे...</translation>
 <translation id="3758887577462995665">टीप:</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> महिना</translation>
@@ -4847,6 +4853,7 @@
 <translation id="4292613336957320546">अ‍ॅक्सिलरेशन</translation>
 <translation id="429312253194641664">साइट मीडिया प्ले करत आहे</translation>
 <translation id="4293219510510666933">तुमचा ब्राउझिंग इतिहास शोधण्यासाठी आणि तुम्ही भेट दिलेल्या साइट शोधण्यासाठी दररोजची भाषा वापरा. तुम्ही तुमच्या ब्राउझिंग इतिहासावर आधारित प्रश्न विचारू शकता आणि उत्तरेदेखील मिळवू शकता. हे सेटिंग सुरू आहे.</translation>
+<translation id="429344752071832554">गट यावरील फोकस काढून टाका</translation>
 <translation id="4294392694389031609">डाउनलोड इतिहासामधून <ph name="FILE_NAME" /> हटवली, पण ती अजूनही तुमच्या डिव्हाइसवर आहे</translation>
 <translation id="4295072614469448764">तुमच्या टर्मिनलमध्ये अ‍ॅप उपलब्ध आहे. तुमच्या लाँचरमध्ये आयकन देखील असू शकतो.</translation>
 <translation id="4295979599050707005">तुमचे <ph name="USER_EMAIL" /> खाते Chrome आणि Google Play मध्ये वेबसाइट, अ‍ॅप्स व एक्स्टेंशनसह वापरले जाऊ शकते याची खात्री करण्यासाठी कृपया पुन्हा साइन इन करा. तुम्ही कदाचित हे खाते काढून देखील टाकू शकता. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -5002,6 +5009,7 @@
 <translation id="4405224443901389797">यामध्ये हलवा…</translation>
 <translation id="4405781821077215583">मजकुराच्या समावेशासह तुमच्या स्क्रीनवरील आयटम आणखी लहान किंवा मोठे करा</translation>
 <translation id="4406308048672435032">संपूर्ण सूची पुन्हा पाहण्यासाठी तुम्ही हा टॅब इनॅक्टिव्ह किंवा रिफ्रेश करू शकता</translation>
+<translation id="4406881185911439342">फोकस गट</translation>
 <translation id="4406883609789734330">लाइव्ह कॅप्शन</translation>
 <translation id="4406963243402726564">सेव्ह न केलेला डेटा</translation>
 <translation id="4408599188496843485">मदत</translation>
@@ -5315,6 +5323,7 @@
 <translation id="4628762811416793313">Linux कंटेनर सेटअप पूर्ण झाला नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> प्रोफाइल उघडा</translation>
 <translation id="4629803160911640220">विश्वसनीय</translation>
+<translation id="4631637535315947773">तुम्ही अलीकडे तुमच्या सर्वाधिक भेट दिलेल्या साइटसाठी शॉर्टकट वापरले नसल्यामुळे ते काढून टाकण्यात आले आहेत</translation>
 <translation id="4631955550884380853">फोकस केलेला आवाज</translation>
 <translation id="4632655012900268062">कार्ड कस्टमाइझ करा</translation>
 <translation id="4633003931260532286">एक्स्टेंशनला किमान आवृत्ती "<ph name="IMPORT_VERSION" />" सह "<ph name="IMPORT_NAME" />" ची गरज आहे, परंतु केवळ आवृत्ती "<ph name="INSTALLED_VERSION" />" इंस्टॉल केली गेली आहे</translation>
@@ -5621,7 +5630,6 @@
 <translation id="4841741146571978176">आवश्यक असलेली व्हर्च्युअल मशीन अस्तित्वात नाही. कृपया पुढे सुरू ठेवण्यासाठी, <ph name="VM_TYPE" /> सेट करण्याचा प्रयत्न करा</translation>
 <translation id="4842976633412754305">हे पेज ऑथेंटिकेट न केलेल्या स्रोतांवरून स्क्रिप्ट लोड करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="4844333629810439236">अन्य कीबोर्ड</translation>
-<translation id="4844347226195896707">तुम्ही Chrome किंवा Android वापरत नसतानाही &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt; मध्ये साइन इन करून तुमचे पासवर्ड पहा</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4846628405149428620">ही साइट बदल कुठे सेव्ह करू शकते ते निवडा</translation>
 <translation id="4846680374085650406">तुम्ही या सेटिंगसाठी ॲडमिनिस्ट्रेटरच्या शिफारसींना फॉलो करत आहात.</translation>
@@ -5645,6 +5653,7 @@
 <translation id="4854603338816296098">अ‍ॅड्रेस काढून टाकला</translation>
 <translation id="485480310608090163">आणखी सेटिंग्ज आणि परवानग्या</translation>
 <translation id="4857304314344645169">कोणत्याही समस्येचे स्टेप-बाय-स्टेप स्पष्टीकरण पहा</translation>
+<translation id="4857506880242459832">मागील पेजविषयी Google ला विचारा: <ph name="PAGE_TITLE" /></translation>
 <translation id="485806788160414322">मीडिया प्ले करा किंवा थांबवा</translation>
 <translation id="4858913220355269194">फ्रिटझ</translation>
 <translation id="486213875233855629">तुमच्या अ‍ॅडमिनिस्ट्रेटरने म्यूट केले आहे</translation>
@@ -6389,6 +6398,7 @@
 <translation id="5390677308841849479">गडद लाल आणि नारिंगी</translation>
 <translation id="5392192690789334093">सूचना पाठवण्याची अनुमती आहे</translation>
 <translation id="5393330235977997602">पिनसंबंधित पर्याय</translation>
+<translation id="5393474451146553463">Google ला या टॅबविषयी विचारा</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{लिंक}other{# लिंक}}</translation>
 <translation id="5394529681046491727">वायफाय डिरेक्ट</translation>
 <translation id="5395353843367783642">तुमच्या खात्यामध्ये सेव्ह करत आहे...</translation>
@@ -8591,6 +8601,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6922763095098248079">तुमचे डिव्हाइस तुमच्या संस्थेने व्यवस्थापित केलेले आहे. अ‍ॅडमिनिस्ट्रेटर या डिव्हाइसवरील कोणत्याही प्रोफाइलचा डेटा ॲक्सेस करू शकतो.</translation>
 <translation id="6923633482430812883">शेअर माउंट करताना एरर आली. कृपया तुम्ही कनेक्ट करत असलेला फाइल सर्व्हर SMBv2 किंवा त्यानंतरच्या आवृत्तीला सपोर्ट करतो की नाही हे तपासा.</translation>
 <translation id="6924109527536857168">सिंक करणे आवश्यक आहे</translation>
+<translation id="6924940560840297548">तुम्ही अलीकडे कार्ड वापरली नसल्यामुळे काढून टाकली आहेत</translation>
 <translation id="6927200998271693557">तुम्ही भेट दिलेल्या साइटवर झटपट परत जाण्यासाठी तुमचा इतिहास आणि टॅब<ph name="USER_EMAIL_ADDRESS" /> याच्याशी सिंक करा</translation>
 <translation id="6928650056523249512">न वापरलेल्या साइटवरून परवानग्या आपोआप काढून टाका</translation>
 <translation id="6929126689972602640">पालक नियंत्रणे शाळेच्या खात्यांना सपोर्ट करत नाहीत. घरी शाळेच्या कामासाठी Google Classroom आणि इतर वेबसाइट अ‍ॅक्सेस करण्याकरिता शाळेचे खाते जोडण्यासाठी सर्वप्रथम लहान मुलाचे वैयक्तिक खाते वापरून साइन इन करा. तुम्ही नंतर सेटअपमध्ये शाळेचे खाते जोडू शकता.</translation>
@@ -8814,6 +8825,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7082850163410901674">Mac सिस्टीम सेटिंग्जमध्ये नोटिफिकेशन बंद केली आहेत</translation>
 <translation id="7083729794572207131">साइटवरील तुमचा अनुभव वर्धित करण्यासाठी साइट सहसा वेब अ‍ॅप्स इंस्टॉल करण्याची विनंती करतात</translation>
 <translation id="7083774521940805477">तुमच्या Chromebook वर Chromebook (बीटा) साठी Steam उपलब्ध नाही.</translation>
+<translation id="7084095352418993433">Google ला या पेजविषयी विचारा: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(कॉन्फिगर केलेले नाही)</translation>
 <translation id="7086377898680121060">चकाकी वाढवा</translation>
 <translation id="7086672505018440886">संग्रहणामध्ये Chrome लॉग फाइलचा समावेश करा.</translation>
@@ -9031,6 +9043,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7246230585855757313">तुमची सिक्युरिटी की पुन्हा घाला आणि पुन्हा प्रयत्न करा</translation>
 <translation id="7249197363678284330">अ‍ॅड्रेस बारमध्ये हे सेटिंग बदला.</translation>
 <translation id="7249764475759804559">फाइल उघडताना या अ‍ॅपचा पर्याय म्हणून समावेश करा</translation>
+<translation id="7249885578105575587">Google ला या टॅबविषयी विचारा: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">तुम्ही ज्या डिव्हाइससह शेअर करत आहात त्याने प्रतिसाद दिला नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="725109152065019550">क्षमस्व, तुमच्या ॲडमिनिस्ट्रेटरने तुमच्या खात्यावरील बाह्य स्टोरेज अक्षम केले आहे.</translation>
 <translation id="7251635775446614726">तुमच्या अ‍ॅडमिनिस्ट्रेटरनुसार: "<ph name="CUSTOM_MESSAGE" />"</translation>
@@ -10365,6 +10378,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8143442547342702591">चुकीचे ॲप्लिकेशन</translation>
 <translation id="8144429778087524791">पूर्ण झाले म्हणून मार्क करा आणि लपवा</translation>
 <translation id="8145170459658034418">मेमरी सेव्हर</translation>
+<translation id="8145219802299093106">Google Lens वापरून हे पेज शोधा: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">तुम्ही या डिव्हाइसवर आधीपासूनच नोंदणीकृत असल्यास, तुम्ही <ph name="LINK2_START" />विद्यमान वापरकर्ता म्हणून साइन इन<ph name="LINK2_END" /> करु शकता.</translation>
 <translation id="8146287226035613638">तुमच्या प्राधान्य दिलेल्या भाषा जोडा आणि रँक करा. शक्य असेल तेव्हा, वेबसाइट या तुमच्या प्राधान्य दिलेल्या भाषांमध्ये दिसतील. ही प्राधान्ये तुमच्या ब्राउझर सेटिंग्जसह सिंक केली आहेत. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">साइन-इन अयशस्वी झाले. कृपया तुमच्या ॲडमिनिस्ट्रेटरशी संपर्क साधा किंवा पुन्हा प्रयत्न करा.</translation>
@@ -11927,6 +11941,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9182556968660520230">साइटना संरक्षित आशय प्ले करण्याची अनुमती देऊ नका</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{ॲप}other{# अ‍ॅप्स}}</translation>
+<translation id="9184211686591068713">Google Lens वापरून या टॅबमध्ये शोधा: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{तुमचा ॲडमिनिस्ट्रेटर <ph name="APP0_NAME" /> वापरून तुमची स्क्रीन रेकॉर्ड करू शकतो. रेकॉर्डिंग सुरू झाल्यावर तुम्हाला सूचित केले जाणार नाही.}=2{तुमचा ॲडमिनिस्ट्रेटर <ph name="APP0_NAME" /> आणि <ph name="APP1_NAME" /> वापरून तुमची स्क्रीन रेकॉर्ड करू शकतो. रेकॉर्डिंग सुरू झाल्यावर तुम्हाला सूचित केले जाणार नाही.}=3{तुमचा ॲडमिनिस्ट्रेटर <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> आणि इतर एक ॲप वापरून तुमची स्क्रीन रेकॉर्ड करू शकतो. रेकॉर्डिंग सुरू झाल्यावर तुम्हाला सूचित केले जाणार नाही.}other{तुमचा ॲडमिनिस्ट्रेटर <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> आणि इतर # ॲप्स वापरून तुमची स्क्रीन रेकॉर्ड करू शकतो. रेकॉर्डिंग सुरू झाल्यावर तुम्हाला सूचित केले जाणार नाही.}}</translation>
 <translation id="9186963452600581158">लहान मुलाचे Google खाते वापरून साइन इन करा</translation>
 <translation id="9187967020623675250">की जुळत नाही. <ph name="RESPONSE" /> साठी कोणतीही की प्रेस करा.</translation>
@@ -12026,6 +12041,7 @@ I feel - विटांची इमारत</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून इमेज शोधा</translation>
 <translation id="964286338916298286">तुमच्या IT ॲडमिनिस्ट्रेटरने तुमच्या डिव्हाइसाठी Chrome Goodies बंद केले आहे.</translation>
 <translation id="964790508619473209">स्क्रीन व्यवस्था</translation>
+<translation id="964903383988132751">Google ला मागील टॅबविषयी विचारा: <ph name="TAB_TITLE" /></translation>
 <translation id="96535553604365597">Google Cast शी संबंधित समस्येची तक्रार करा</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{अलीकडे खूप सूचना पाठवलेल्या एका साइटचे पुनरावलोकन करा}other{अलीकडे खूप सूचना पाठवलेल्या {NUM_SITES} साइटचे पुनरावलोकन करा}}</translation>
 <translation id="966588271015727539">ब्लूटूथ ब्रेल डिस्प्ले निवडा</translation>

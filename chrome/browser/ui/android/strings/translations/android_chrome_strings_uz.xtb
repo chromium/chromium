@@ -1337,6 +1337,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="670498945988402717">Kecha tekshirilgan</translation>
 <translation id="6710213216561001401">Avvalgi</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> taymeridagi vaqt tugadi. Ertaga qaytadan boshlanadi.</translation>
+<translation id="6716434912087331834">Yangi oynani tiklash uchun jami faol oynalar sonini <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> taga yoki undan ham kamaytiring. Nofaol oynalar 6 oydan keyin avtomatik oʻchiriladi.</translation>
 <translation id="6723740634201835758">Google hisobingizda</translation>
 <translation id="6734310707649923383">Tarix orqali ochilgan sahifalarni koʻrish yoki oʻchirish mumkin</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, kontenti yozib olinayotgan inkognito varaq mahkamlandi</translation>
@@ -1654,6 +1655,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> eskirgan.</translation>
 <translation id="7944772052836377867">Sinxronizatsiya uchun shaxsingizni tasdiqlang</translation>
 <translation id="7951102827450076904">Yuklab olingan PDF fayllar doim ochilsin</translation>
+<translation id="7952479614398473176">Yangi oyna ochish uchun jami faol oynalar sonini <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> taga yoki undan ham kamaytiring.</translation>
 <translation id="7957413488482743710">Virtual karta haqiqiy kartani ehtimoliy firibgarlikdan himoya qilish maqsadida berkitadi. <ph name="BEGIN_LINK1" />Virtual kartalar haqida batafsil<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Bu qurilmadagi varaqlar</translation>
 <translation id="7961926449547174351">Xotiraga kirishga ruxsat berilmagan. Ruxsat berish uchun sozlamalarga kiring.</translation>

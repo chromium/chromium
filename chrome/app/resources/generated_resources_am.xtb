@@ -3703,6 +3703,7 @@
 <translation id="3527085408025491307">አቃፊ</translation>
 <translation id="3528498924003805721">የአቋራጭ ዒላማዎች</translation>
 <translation id="3529851166527095708">&amp;አድራሻዎች እና ሌሎች</translation>
+<translation id="3530919970074558307">ትኩረት የሌለው ቡድን</translation>
 <translation id="3531070080754387701">Microsoft 365 ከዚህ አቃፊ <ph name="FILE_NAMES" />ን መክፈት አይችልም</translation>
 <translation id="3531883061432162622">የንባብ ዝርዝርዎን እና ዕልባቶችዎን ዕልባቶች እና ዝርዝሮች ውስጥ ያግኙ።</translation>
 <translation id="3532273508346491126">የስምረት አስተዳደር</translation>
@@ -4056,6 +4057,7 @@
 <translation id="3757567010566591880">ከመሣሪያ አሞሌ ንቀል</translation>
 <translation id="3757645900890881944">የፍለጋ መሣሪያዎች</translation>
 <translation id="3757733214359997190">ምንም ጣቢያዎች አልተገኙም</translation>
+<translation id="3757825964096339958">የትኩረት ቡድን</translation>
 <translation id="375841316537350618">ተኪ ስክሪፕትን በማውረድ ላይ...</translation>
 <translation id="3758887577462995665">ጠቃሚ ምክር፦</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> ወር</translation>
@@ -4843,6 +4845,7 @@
 <translation id="4292613336957320546">ማፍጠኛ</translation>
 <translation id="429312253194641664">አንድ ጣቢያ ሚዲያን በማጫወት ላይ ነው</translation>
 <translation id="4293219510510666933">የአሰሳ ታሪክዎን ለመፈለግ እና የጎበኟቸውን ጣቢያዎች ለማግኘት የዕለት ተዕለት ቋንቋ ይጠቀሙ። እንዲሁም በአሰሳ ታሪክዎ መሠረት ጥያቄዎችን መጠየቅ እና መልሶችን ማግኘት ይችላሉ። ይህ ቅንብር በርቷል።</translation>
+<translation id="429344752071832554">ትኩረት የሌለው ቡድን</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> ከአውርድ ታሪክ ተሰርዟል፣ ነገር ግን አሁንም በመሣሪያዎ ላይ ይገኛል</translation>
 <translation id="4295072614469448764">መተግበሪያ በእርስዎ መን There may also be an icon in your Launcher.</translation>
 <translation id="4295979599050707005">የእርስዎ መለያ <ph name="USER_EMAIL" /> በChrome እና በGoogle Play ውስጥ ከድር ጣቢያዎች፣ መተግበሪያዎች እና ቅጥያዎች ጋር አብሮ መስራት እንደሚችል ለማረጋገጥ እባክዎ እንደገና በመለያ ይግቡ። ይህን መለያ ማስወገድ ይችላሉ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
@@ -4998,6 +5001,7 @@
 <translation id="4405224443901389797">ውሰድ ወደ…</translation>
 <translation id="4405781821077215583">ጽሁፍን ጨምሮ በማያ ገፅዎ ላይ ያሉ ንጥሎችን ይበልጥ ትንሽ ወይም ትልቅ ያደርጋል</translation>
 <translation id="4406308048672435032">ሙሉ ዝርዝሩን እንደገና ለማየት ይህን ትር ማቦዘን ወይም ማደስ ይችላሉ</translation>
+<translation id="4406881185911439342">የትኩረት ቡድን</translation>
 <translation id="4406883609789734330">የቀጥታ ሥርጭት መግለጫ ጽሑፍ</translation>
 <translation id="4406963243402726564">ያልተቀመጠ ውሂብ</translation>
 <translation id="4408599188496843485">እ&amp;ገዛ</translation>
@@ -5617,7 +5621,6 @@
 <translation id="4841741146571978176">ተፈላጊ ምናባዊ ማሽን የለም። ለመቀጠል እባክዎ <ph name="VM_TYPE" />ን ለማቀናበር ይሞክሩ</translation>
 <translation id="4842976633412754305">ይህ ገፅ ፈቃድ ከሌላቸው ምንጮች የመጡ ጽሑፎችን ለመጫን እየሞከረ ነው።</translation>
 <translation id="4844333629810439236">ሌሎች የቁልፍ ሰሌዳዎች</translation>
-<translation id="4844347226195896707">ወደ &lt;a target='_blank' href="<ph name="LINK" />"&gt;passwords.google.com&lt;/a&gt; በመለያ በመግባት Chromeን ወይም Androidን እየተጠቀሙ ሳይሆንም እንኳን የይለፍ ቃላትዎን ይመልከቱ</translation>
 <translation id="484462545196658690">ራስ-ሰር</translation>
 <translation id="4846628405149428620">ይህ ጣቢያ ለውጦችን የት ማስቀመጥ እንደሚችል ይምረጡ</translation>
 <translation id="4846680374085650406">አስተዳዳሪው ለዚህ ቅንብር የሰጠውን ምክር ነው እየተከተሉ ያሉት።</translation>

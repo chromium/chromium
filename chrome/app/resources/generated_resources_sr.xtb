@@ -1345,6 +1345,7 @@
 <translation id="1907044622262489040">Уносите текст гласом. Користите тастер за претрагу + D, па почните да говорите.</translation>
 <translation id="1907659324308286326">Некој Thunderbolt или USB4 додатној опреми треба приступ меморији да би исправно радила.</translation>
 <translation id="1908591798274282246">Поново отвори затворену групу</translation>
+<translation id="1909677622563887527">Софтвер за аутоматизовано тестирање контролише Chrome</translation>
 <translation id="1909880997794698664">Да ли стварно желите да трајно задржите овај уређај у киоск режиму?</translation>
 <translation id="1910721550319506122">Добро дошли!</translation>
 <translation id="1910736334623230603">Претраживање више слика није могуће. Додајте једну по једну слику.</translation>
@@ -1698,6 +1699,7 @@
 <translation id="2144536955299248197">Приказивач сертификата: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Програмирање Android апликација за Linux</translation>
 <translation id="2145468727756963476">Gemini се освежава…</translation>
+<translation id="2145688286532368277">Оптимизација JavaScript-а је искључена за овај сајт.</translation>
 <translation id="2145917706968602070">Уверите се да је телефон у близини, да је откључан и да су Bluetooth и WiFi укључени.</translation>
 <translation id="2146263598007866206">Сајтови могу аутоматски да преузимају сродне фајлове заједно да би вам штедели време</translation>
 <translation id="2147218225094845757">Сакриј бочну таблу</translation>
@@ -4323,6 +4325,7 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Величина приказа и текста <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Шаље URL-ове у Безбедно прегледање на проверу. Шаље и мали узорак страница, преузимања, активности додатака и информација система да би се откриле нове претње. Привремено повезује те податке са Google налогом када сте пријављени да бисте били заштићени у свим Google апликацијама.</translation>
+<translation id="3924788966103416622">Спољна апликација жели потпуну контролу над овом Chrome сесијом да би отклонила грешке из ње. То обухвата приступ сачуваним подацима, колачићима и подацима о сајтовима, као и могућност одласка на било који URL.</translation>
 <translation id="3925573269917483990">Камера:</translation>
 <translation id="3925926055063465902">И други корисници на овом уређају могу да користе ову мрежу</translation>
 <translation id="3926002189479431949">Телефон за Smart Lock је промењен</translation>
@@ -4349,6 +4352,7 @@
 
   Желите ли одмах да покренете <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Дијагностика</translation>
+<translation id="3942558231079086184">Оптимизација JavaScript-а је искључена за овај сајт. Омогућите ради бољег учинка.</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Налепи</translation>
 <translation id="3945513714196326460">Пробајте са краћим називом</translation>
@@ -4460,6 +4464,7 @@
 <translation id="4015250302257349679">Притисните <ph name="ACCELERATOR" /> да бисте фокусирали овај облачић, па поново да бисте фокусирали елемент на који показује.</translation>
 <translation id="4016762287427926315">Дозволе које пружите за апликацију <ph name="APP_NAME" /> ће важити и за ову апликацију. <ph name="BEGIN_LINK" />Управљајте<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Направи QR кôд за овај линк</translation>
+<translation id="4018953474106733212">Ову функцију треба да укључују само веб-програмери и да је користе само са поузданим апликацијама.</translation>
 <translation id="4019983356493507433">Измените листу обележивача</translation>
 <translation id="4020701737692625681">Администратор може да снима ваш екран</translation>
 <translation id="4021279097213088397">-</translation>
@@ -5617,7 +5622,6 @@
 <translation id="4841741146571978176">Обавезна виртуелна машина не постоји. Пробајте да подесите виртуелну машину <ph name="VM_TYPE" /> да бисте наставили</translation>
 <translation id="4842976633412754305">Ова страница покушава да учитава скрипте из извора чија аутентичност није потврђена.</translation>
 <translation id="4844333629810439236">Остале тастатуре</translation>
-<translation id="4844347226195896707">Прегледајте лозинке чак и када не користите Chrome или Android тако што ћете се пријавити на &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;</translation>
 <translation id="484462545196658690">Аутоматски</translation>
 <translation id="4846628405149428620">Изаберите где овај сајт може да чува измене</translation>
 <translation id="4846680374085650406">Поштујете препоруку администратора за ово подешавање.</translation>
@@ -10200,6 +10204,7 @@
 <translation id="8032569120109842252">Пратите</translation>
 <translation id="8033827949643255796">изабрано</translation>
 <translation id="8033958968890501070">Време је истекло</translation>
+<translation id="8034399942062051455">V8 оптимизација је искључена</translation>
 <translation id="8034697324150621782">Замени горњим приказом</translation>
 <translation id="8035059678007243127">Цела кеширана странице без архивирања: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Помозите нам да побољшамо аутоматско попуњавање</translation>

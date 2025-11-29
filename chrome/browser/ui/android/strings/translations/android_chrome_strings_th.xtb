@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">อ่านข่าววันนี้ <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">รายละเอียดเพิ่มเติม</translation>
 <translation id="3123734510202723619">ประกาศ</translation>
+<translation id="3134385238404760368">ไม่มีแท็บล่าสุด</translation>
 <translation id="314939179385989105">หน้าแรกของ Chrome</translation>
 <translation id="3158667104057012316">จัดเรียงตามลำดับด้วยตนเอง</translation>
 <translation id="3159335509547415276">ดูข้อมูลเกี่ยวกับบัญชีที่ถูกบล็อก</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">จัดเรียงจาก ก ถึง ฮ</translation>
 <translation id="4578289292431526768">เริ่มเลย</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# นาทีที่ผ่านมา}other{# นาทีที่ผ่านมา}}</translation>
+<translation id="4585751637295612750">เปิดแท็บใหม่เพื่อเพิ่มลงในคำถาม</translation>
 <translation id="4587589328781138893">เว็บไซต์</translation>
 <translation id="4594952190837476234">หน้าเว็บออฟไลน์นี้สร้างเมื่อวันที่ <ph name="CREATION_TIME" /> และอาจแตกต่างไปจากเวอร์ชันออนไลน์</translation>
 <translation id="4595237294768457124">เปิดหน้าแท็บใหม่</translation>
@@ -1337,6 +1339,7 @@
 <translation id="670498945988402717">ตรวจสอบเมื่อวาน</translation>
 <translation id="6710213216561001401">ก่อนหน้า</translation>
 <translation id="671481426037969117">ตัวจับเวลา <ph name="FQDN" /> หมดเวลาแล้ว และจะเริ่มอีกครั้งพรุ่งนี้</translation>
+<translation id="6716434912087331834">หากต้องการคืนค่าหน้าต่างใหม่ ให้ลดจำนวนหน้าต่างที่ใช้งานอยู่ทั้งหมดเหลือ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> รายการหรือน้อยกว่านั้น ระบบจะลบหน้าต่างที่ไม่ได้ใช้งานออกหลังจาก 6 เดือน</translation>
 <translation id="6723740634201835758">ในบัญชี Google</translation>
 <translation id="6734310707649923383">คุณดูหน้าเว็บที่เคยเข้าชมหรือลบหน้าเว็บดังกล่าวออกจากประวัติการเข้าชมได้</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, แท็บการบันทึกเสียงที่ไม่ระบุตัวตนที่ปักหมุด</translation>
@@ -1654,6 +1657,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ล้าสมัย</translation>
 <translation id="7944772052836377867">การซิงค์จะต้องยืนยันว่าเป็นคุณ</translation>
 <translation id="7951102827450076904">เปิด PDF ที่ดาวน์โหลดมาเสมอ</translation>
+<translation id="7952479614398473176">หากต้องการเปิดหน้าต่างใหม่ ให้ลดจำนวนหน้าต่างที่ใช้งานอยู่ทั้งหมดเหลือ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> รายการหรือน้อยกว่านั้น</translation>
 <translation id="7957413488482743710">บัตรเสมือนจะซ่อนบัตรจริงไว้เพื่อช่วยปกป้องคุณจากการฉ้อโกงที่อาจเกิดขึ้น <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับบัตรเสมือน<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">แท็บในอุปกรณ์นี้</translation>
 <translation id="7961926449547174351">คุณปิดการเข้าถึงพื้นที่เก็บข้อมูลไว้ โปรดไปที่การตั้งค่าเพื่อเปิดการเข้าถึง</translation>

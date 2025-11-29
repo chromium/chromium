@@ -258,6 +258,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> należy do biurka <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Otworzę za <ph name="TIME_REMAINING" />…</translation>
 <translation id="1168704243733734901">Ostatni motyw AI: <ph name="INDEX" />, temat: <ph name="SUBJECT" />, styl: <ph name="STYLE" />, nastrój: <ph name="MOOD" />.</translation>
+<translation id="1168799042879144934">Zapytaj Google o poprzednią stronę</translation>
 <translation id="116896278675803795">Automatycznie zmieniaj język, aby pasował do wybranych treści</translation>
 <translation id="1169266963600477608">Sterowanie grą</translation>
 <translation id="1169435433292653700">Plik <ph name="FILE_NAME" /> zawiera dane poufne lub niebezpieczne. Wiadomość od Twojego administratora: „<ph name="CUSTOM_MESSAGE" />”</translation>
@@ -1428,6 +1429,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1956167375087861299">Nie mogą używać identyfikatorów do odtwarzania treści chronionych</translation>
 <translation id="1956390763342388273">Spowoduje to przesłanie wszystkich plików z folderu „<ph name="FOLDER_PATH" />”. Zdecyduj się na ten krok tylko, jeśli ufasz witrynie.</translation>
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{Sprawdzono 1 rozszerzenie}few{Sprawdzono {NUM_EXTENSIONS} rozszerzenia}many{Sprawdzono {NUM_EXTENSIONS} rozszerzeń}other{Sprawdzono {NUM_EXTENSIONS} rozszerzenia}}</translation>
+<translation id="1957188536718247425">Zapytaj Google o poprzednią kartę</translation>
 <translation id="1957426642613794386">Twoje zapisane dane</translation>
 <translation id="1959421829481337178">Wpisz kod aktywacyjny podany przez operatora.</translation>
 <translation id="1960211333621141174">Klif</translation>
@@ -2906,6 +2908,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2981033191524548279">Coś poszło nie tak. Prześlij opinię z hashtagiem #bruschetta w opisie. Kod błędu: <ph name="ERROR" />. Zrestartuj urządzenie i spróbuj jeszcze raz – to może rozwiązać problem.</translation>
 <translation id="2981113813906970160">Pokaż duży kursor myszy</translation>
 <translation id="2983102365694924129">Na podstawie Twojej aktywności w witrynie. To ustawienie jest wyłączone.</translation>
+<translation id="2983311431122838216">Zapytaj w trybie AI w wyszukiwarce Google</translation>
 <translation id="2983373101216420412">Poziom naładowania baterii obudowy to <ph name="PERCENTAGE" />%.</translation>
 <translation id="2983818520079887040">Ustawienia</translation>
 <translation id="2984384421572259426">Usuń nieużywane karty</translation>
@@ -3484,6 +3487,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3402585168444815892">Rejestruję w trybie demonstracyjnym</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Nie zapisano żadnych haseł do tej strony</translation>
+<translation id="3405382848027996799">Sprzęt Google Beam jest gotowy do skonfigurowania</translation>
 <translation id="3405664148539009465">Dostosuj czcionki</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Zezwolono na używanie urządzeń i danych rzeczywistości wirtualnej</translation>
@@ -5284,6 +5288,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4628762811416793313">Konfiguracja kontenera Linuxa nie została ukończona. Spróbuj ponownie.</translation>
 <translation id="4629521233550547305">Otwórz profil <ph name="PROFILE_NAME" /></translation>
 <translation id="4629803160911640220">Zaufany</translation>
+<translation id="4631637535315947773">Skróty do najczęściej odwiedzanych witryn zostały usunięte, ponieważ nie były ostatnio używane</translation>
 <translation id="4631955550884380853">Skupiony głos</translation>
 <translation id="4632655012900268062">Dostosuj karty</translation>
 <translation id="4633003931260532286">Rozszerzenie wymaga: „<ph name="IMPORT_NAME" />” przynajmniej w wersji „<ph name="IMPORT_VERSION" />”, ale zainstalowana jest tylko wersja „<ph name="INSTALLED_VERSION" />”</translation>
@@ -5589,7 +5594,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4841741146571978176">Wymagana maszyna wirtualna nie istnieje. Aby przejść dalej, spróbuj skonfigurować maszynę wirtualną typu <ph name="VM_TYPE" /></translation>
 <translation id="4842976633412754305">Ta strona próbuje wczytać skrypty z nieuwierzytelnionych źródeł.</translation>
 <translation id="4844333629810439236">Inne klawiatury</translation>
-<translation id="4844347226195896707">Zaloguj się na &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;, aby wyświetlić swoje hasła, nawet jeśli nie korzystasz z Chrome ani Androida</translation>
 <translation id="484462545196658690">Automatycznie</translation>
 <translation id="4846628405149428620">Wybierz, gdzie ta witryna będzie mogła zapisywać zmiany</translation>
 <translation id="4846680374085650406">Przestrzegasz zaleceń administratora dotyczących tego ustawienia.</translation>
@@ -5613,6 +5617,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4854603338816296098">Adres został usunięty</translation>
 <translation id="485480310608090163">Więcej ustawień i uprawnień</translation>
 <translation id="4857304314344645169">Zobacz szczegółowe wyjaśnienie każdego problemu</translation>
+<translation id="4857506880242459832">Zapytaj Google o poprzednią stronę: <ph name="PAGE_TITLE" /></translation>
 <translation id="485806788160414322">Odtwórz lub wstrzymaj multimedia</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Wyciszony przez administratora</translation>
@@ -6356,6 +6361,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5390677308841849479">Ciemnoczerwono-pomarańczowy</translation>
 <translation id="5392192690789334093">Zezwolono na wysyłanie powiadomień</translation>
 <translation id="5393330235977997602">Opcje kodu PIN</translation>
+<translation id="5393474451146553463">Zapytaj Google o tę kartę</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}few{# linki}many{# linków}other{# linku}}</translation>
 <translation id="5394529681046491727">Wi‑Fi Direct</translation>
 <translation id="5395353843367783642">Zapisuję na Twoim koncie…</translation>
@@ -8556,6 +8562,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6922763095098248079">Twoim urządzeniem zarządza organizacja. Dostęp do danych każdego profilu na nim mają administratorzy.</translation>
 <translation id="6923633482430812883">Błąd podczas podłączania udziału. Sprawdź, czy serwer plików, z którym się łączysz, obsługuje SMB w wersji 2 lub nowszej.</translation>
 <translation id="6924109527536857168">Wymagana jest synchronizacja</translation>
+<translation id="6924940560840297548">Karty zostały usunięte, ponieważ nie były ostatnio używane</translation>
 <translation id="6927200998271693557">Aby szybko wracać do odwiedzonych stron, zsynchronizuj historię i karty z kontem <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">Automatycznie usuwaj uprawnienia nieużywanych witryn</translation>
 <translation id="6929126689972602640">Kontrola rodzicielska nie działa z kontami szkolnymi. Aby dodać konto szkolne do korzystania z Google Classroom i innych stron przydatnych w nauce w domu, najpierw zaloguj się na osobiste konto dziecka. Konto szkolne możesz dodać na późniejszym etapie konfiguracji.</translation>
@@ -8779,6 +8786,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7082850163410901674">Powiadomienia zostały wyłączone w ustawieniach systemowych Maca</translation>
 <translation id="7083729794572207131">Witryny zwykle proszą o instalację aplikacji internetowych, aby poprawić wygodę swoich użytkowników</translation>
 <translation id="7083774521940805477">Aplikacja Steam na Chromebooka (beta) jest niedostępna na Twoim Chromebooku.</translation>
+<translation id="7084095352418993433">Zapytaj Google o tę stronę: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(nie skonfigurowano)</translation>
 <translation id="7086377898680121060">Zwiększ jasność</translation>
 <translation id="7086672505018440886">Uwzględnij pliki dzienników Chrome w archiwum.</translation>
@@ -8996,6 +9004,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7246230585855757313">Ponownie włóż klucz bezpieczeństwa i spróbuj jeszcze raz</translation>
 <translation id="7249197363678284330">Sprawdź to ustawienie w pasku adresu.</translation>
 <translation id="7249764475759804559">Uwzględniaj tę aplikację jako jedną z opcji otwierania plików</translation>
+<translation id="7249885578105575587">Zapytaj Google o tę kartę: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">Urządzenie, któremu udostępniasz plik, nie odpowiada. Spróbuj ponownie.</translation>
 <translation id="725109152065019550">Na Twoim koncie administrator wyłączył pamięć zewnętrzną.</translation>
 <translation id="7251635775446614726">Wiadomość od Twojego administratora: „<ph name="CUSTOM_MESSAGE" />”</translation>
@@ -10329,6 +10338,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8143442547342702591">Nieprawidłowa aplikacja</translation>
 <translation id="8144429778087524791">Oznacz jako gotowe i ukryj</translation>
 <translation id="8145170459658034418">Oszczędzanie pamięci</translation>
+<translation id="8145219802299093106">Wyszukaj na tej stronie za pomocą Obiektywu Google: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">Jeśli zarejestrowałeś się już na tym urządzeniu, możesz <ph name="LINK2_START" />zalogować się jako istniejący użytkownik<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Dodaj preferowane języki i ustal ich kolejność. Gdy będzie to możliwe, strony internetowe będą się wyświetlać w wybranych językach. Te ustawienia są zsynchronizowane z ustawieniami przeglądarki. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Nie udało się zalogować. Skontaktuj się z administratorem lub spróbuj ponownie.</translation>
@@ -11885,6 +11895,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9182556968660520230">Nie zezwalaj witrynom na odtwarzanie chronionych treści</translation>
 <translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacja}few{# aplikacje}many{# aplikacji}other{# aplikacji}}</translation>
+<translation id="9184211686591068713">Wyszukaj na tej karcie za pomocą Obiektywu Google: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}=2{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}=3{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze 1. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}few{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}many{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}other{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}}</translation>
 <translation id="9186963452600581158">Zaloguj się na konto Google dziecka</translation>
 <translation id="9187967020623675250">Klawisze są niezgodne. Naciśnij dowolny klawisz, aby <ph name="RESPONSE" />.</translation>
@@ -11984,6 +11995,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="963000966785016697">Wyszukaj obraz za pomocą: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Twój administrator IT wyłączył możliwość korzystania z bonusów Chrome na tym urządzeniu.</translation>
 <translation id="964790508619473209">Rozmieszczanie ekranów</translation>
+<translation id="964903383988132751">Zapytaj Google o poprzednią kartę: <ph name="TAB_TITLE" /></translation>
 <translation id="96535553604365597">Zgłoś problem z Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Sprawdź 1 witrynę, która ostatnio wysłała wiele powiadomień}few{Sprawdź {NUM_SITES} witryny, które ostatnio wysłały wiele powiadomień}many{Sprawdź {NUM_SITES} witryn, które ostatnio wysłały wiele powiadomień}other{Sprawdź {NUM_SITES} witryny, która ostatnio wysłała wiele powiadomień}}</translation>
 <translation id="966588271015727539">Wybierz monitor brajlowski Bluetooth</translation>

@@ -2059,6 +2059,7 @@
 <translation id="4299919199185766032">የአቋራጭ ስም ከሚፈቀደው ከፍተኛ የ<ph name="MAX_LENGTH" /> ቁምፊዎች ርዝመት ይበልጣል።</translation>
 <translation id="4300272766492248925">መተግበሪያ ክፈት</translation>
 <translation id="4300675098767811073">በርካታ ብስ ቀኝ</translation>
+<translation id="4300841966382281549">ጉዞ</translation>
 <translation id="4302514097724775343">ለማጫወት ዲኖውን መታ ያድርጉ</translation>
 <translation id="4304049446746819918">{0,plural, =1{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> ማንቀሳቀስን አይመክርም}one{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> ማንቀሳቀስን አይመክርም}other{የአስተዳዳሪ መመሪያ እነዚህን ፋይሎች ወደ <ph name="DESTINATION_NAME" /> ማንቀሳቀስን አይመክርም}}</translation>
 <translation id="4304485328308299773">ውሳኔዎችዎን በግምገማዎች ለማሳወቅ እንዲያግዝ የምርቶችን፣ የአገልግሎቶችን ወይም የተሞክሮዎችን የደንበኛ ምዘናዎች ያንብቡ።</translation>
@@ -3424,6 +3425,7 @@
 <translation id="6539092367496845964">የሆነ ችግር ተፈጥሯል። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="6540488083026747005">በዚህ ጣቢያ ላይ የሦስተኛ ወገን ኩኪዎችን ፈቅደዋል</translation>
 <translation id="6545864417968258051">የብሉቱዝ ቅኝት</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" />፣ <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">በግራ በኩል ብሳ</translation>
 <translation id="6549443526281184652">ልዩ ልብሶች</translation>
 <translation id="6550245281449521513">የመዳፊት መቆለፊያ አይፈቀድም</translation>
@@ -4809,6 +4811,7 @@
 <translation id="8814547618907885931">ሁሉንም የንጽጽር ሠንጠረዦች ይመልከቱ</translation>
 <translation id="8814707942599948500">ሲ8 ፖስታ</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ትርን ይጫኑ እና ከእርስዎ Chrome ቅንብሮች Chromeን ለማዘመን አስገባን ይጫኑ</translation>
+<translation id="8819855907485254989">የመጓጓዣ ቲኬትን ወደ Wallet ያስቀምጡ</translation>
 <translation id="8820817407110198400">ዕልባቶች</translation>
 <translation id="882338992931677877">ራስዎ የሚያስገቡበት ክፍተት</translation>
 <translation id="8827067923357481311">የበኋላ መክፈል አማራጮች</translation>

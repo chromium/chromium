@@ -1337,6 +1337,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="670498945988402717">Nagsuri kahapon</translation>
 <translation id="6710213216561001401">Nauna</translation>
 <translation id="671481426037969117">Natapos na ang iyong timer ng <ph name="FQDN" />. Magsisimula itong muli bukas.</translation>
+<translation id="6716434912087331834">Para mag-restore ng bagong window, bawasan ang kabuuang bilang ng mga aktibong window sa <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o mas kaunti. Dine-delete ang mga hindi aktibong window pagkalipas ng 6 na buwan.</translation>
 <translation id="6723740634201835758">Sa iyong Google Account</translation>
 <translation id="6734310707649923383">Makikita mo ang mga page na binisita mo o made-delete mo ang mga ito sa iyong history</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, Naka-pin at Nagre-record na Tab na Incognito</translation>
@@ -1654,6 +1655,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7942131818088350342">Luma na ang <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7944772052836377867">Kailangang ma-verify ng pag-sync na ikaw ito</translation>
 <translation id="7951102827450076904">Palaging buksan ang mga na-download na PDF</translation>
+<translation id="7952479614398473176">Para magbukas ng bagong window, bawasan ang kabuuang bilang ng mga aktibong window sa <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o mas kaunti.</translation>
 <translation id="7957413488482743710">Itinatago ng virtual card ang iyong aktwal na card para makatulong na protektahan ka laban sa potensyal na panloloko. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa mga virtual na card<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Mga tab sa device na ito</translation>
 <translation id="7961926449547174351">Na-disable mo ang access sa Storage, pumunta sa Mga Setting para i-enable ito.</translation>

@@ -267,6 +267,7 @@
 <translation id="4023601594785368013">源语言：<ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">在任意应用内通过 Chromium 打开链接。此外，为了方便使用，Chromium 会固定到任务栏。</translation>
 <translation id="4036079820698952681">报告<ph name="BEGIN_LINK" />当前设置<ph name="END_LINK" />，协助我们改进 Chromium</translation>
+<translation id="4039097928859803404">总是显示 AI 模式快捷方式</translation>
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4055805654398742145">密码管理工具(&amp;A)</translation>
 <translation id="4061696872429826774">计算机上的其他程序添加了一个扩展程序，该扩展程序可能会改变 Chromium 的工作方式。
@@ -503,6 +504,7 @@
 <translation id="6847869444787758381">Chromium 会让您知道您的密码是否曾被泄露</translation>
 <translation id="684888714667046800">无法连接到互联网。如果使用防火墙，请确保 <ph name="PRODUCT_EXE_NAME" /> 在许可名单中。</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
+<translation id="6859580922007887573">按 Tab 键即可继续</translation>
 <translation id="6862030660799253820">使用图片搜索功能搜索此图片</translation>
 <translation id="6873893289264747459">Chromium 发现“<ph name="EXTENSION_NAME" />”包含恶意软件</translation>
 <translation id="6877155553248388166">搜索区域的右下角：右侧 <ph name="RIGHT" />%，底部 <ph name="BOTTOM" />%</translation>
@@ -588,6 +590,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7872446069773932638">正在下载…还需 <ph name="SECONDS" /> 秒</translation>
 <translation id="7873537467422636035">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chromium 数据<ph name="END_LINK" /></translation>
 <translation id="7877212753140190672">询问此图片</translation>
+<translation id="7887929410013642057">总是显示 AI 模式快捷方式</translation>
 <translation id="7888981273428720788">将 Chromium 设为默认浏览器</translation>
 <translation id="7934340546140346950">Chromium 会尽可能将不安全的连接自动升级为 HTTPS</translation>
 <translation id="7937630085815544518">您之前登录 Chromium 时使用的账号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一账号再次登录。</translation>
@@ -635,6 +638,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8416884904046428725">Chromium 需要先验证您的身份，然后才能将某些数据保存到您的 Google 账号中，供您在所有设备上使用。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="8417404458978023919">{0,plural, =1{请于 1 天内重新启动 Chromium}other{请于 # 天内重新启动 Chromium}}</translation>
 <translation id="8438543370129609977">当您使用图片搜索功能时，系统会将相关网页的标题、网址和内容（包括 PDF 文件）发送给服务器。<ph name="LEARN_MORE" /></translation>
+<translation id="8447525028100794994">详细了解如何在 Chromium 中使用图片搜索功能进行搜索</translation>
 <translation id="8453117565092476964">安装程序归档损坏或无效。请重新下载 Chromium。</translation>
 <translation id="8458614432758743027">Chromium 仅支持 Windows 10 或更高版本的操作系统。</translation>
 <translation id="8463672209299734063">可选：自动向 Google 发送诊断数据和使用情况数据，协助改进 Chromium 操作系统的功能和性能。</translation>

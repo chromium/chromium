@@ -2054,6 +2054,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4299919199185766032">De naam van de snelkoppeling overschrijdt de maximaal toegestane lengte van <ph name="MAX_LENGTH" /> tekens.</translation>
 <translation id="4300272766492248925">App openen</translation>
 <translation id="4300675098767811073">Meerdere perforaties rechts</translation>
+<translation id="4300841966382281549">Reis</translation>
 <translation id="4302514097724775343">Tik op de dino om te spelen</translation>
 <translation id="4304049446746819918">{0,plural, =1{Op basis van het beheerdersbeleid wordt afgeraden dit bestand te verplaatsen naar <ph name="DESTINATION_NAME" />}other{Op basis van het beheerdersbeleid wordt afgeraden deze bestanden te verplaatsen naar <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Lees klantevaluaties van producten, services of gebruikerservaringen voor hulp bij je beslissingen.</translation>
@@ -2154,6 +2155,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" />.</translation>
 <translation id="4476953670630786061">Dit formulier is niet beveiligd. Automatisch invullen is uitgezet.</translation>
 <translation id="4477350412780666475">Volgend nummer</translation>
+<translation id="4479915773139026885">AI-modus in Google Zoeken</translation>
 <translation id="4480760608050410381">MP4-video</translation>
 <translation id="448363931695049633">Pizzeria's</translation>
 <translation id="4489023393592172404">Envelop Kaku 4</translation>
@@ -3150,6 +3152,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6124432979022149706">Chrome Enterprise-connectors</translation>
 <translation id="6124996493718543728">Voortgangsscherm voor Koop nu, betaal later is op volledige hoogte geopend.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Enter om de AI-modus in Google Zoeken te vragen</translation>
 <translation id="6126565365696310362">Envelop Chinees #2</translation>
 <translation id="6131824478727057281">locatie</translation>
 <translation id="6133320744616005677">Blijven toestaan</translation>
@@ -3418,6 +3421,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6539092367496845964">Er is iets misgegaan. Probeer het later opnieuw.</translation>
 <translation id="6540488083026747005">Je hebt cookies van derden toegestaan voor deze site</translation>
 <translation id="6545864417968258051">Bluetooth-scannen</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> - <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Twee perforaties links</translation>
 <translation id="6549443526281184652">Kostuums</translation>
 <translation id="6550245281449521513">Muisvergrendeling niet toegestaan</translation>
@@ -3885,6 +3889,7 @@ Aanvullende informatie:
 <translation id="7337248890521463931">Meer regels bekijken</translation>
 <translation id="7337706099755338005">Niet beschikbaar op je platform.</translation>
 <translation id="733923710415886693">Het certificaat van de server is niet bekendgemaakt via Certificaattransparantie.</translation>
+<translation id="73398226265793546">Knop voor AI-modus, activeer om de AI-modus in Google Zoeken te vragen</translation>
 <translation id="7346048084945669753">Is gelieerd:</translation>
 <translation id="7346062987309535530">Servies</translation>
 <translation id="7346081071264046066">'antwoord vol enthousiasme ja op deze huwelijksuitnodiging'</translation>
@@ -4802,6 +4807,7 @@ Aanvullende informatie:
 <translation id="8814547618907885931">Alle vergelijkingstabellen bekijken</translation>
 <translation id="8814707942599948500">Envelop C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om Chrome te updaten via je Chrome-instellingen</translation>
+<translation id="8819855907485254989">Vervoerbewijs opslaan in Wallet</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="882338992931677877">Handmatige sleuf</translation>
 <translation id="8827067923357481311">Opties voor later betalen</translation>

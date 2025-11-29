@@ -38,6 +38,7 @@
 <translation id="141901961143729572">Поделитесь мнением.</translation>
 <translation id="1465192221147974788">Чтобы запустить демонстрацию окна, в системных настройках разрешите Chromium записывать видео с экрана.</translation>
 <translation id="1478370723027452770">Справка о Chrome для тестирования</translation>
+<translation id="1496875977627931224">Здравствуйте, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />О чем вы хотите спросить?</translation>
 <translation id="1497802159252041924">Ошибка установки: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="1518627427551567882">Эта страница защищена.</translation>
 <translation id="1524282610922162960">Откройте доступ к вкладке Chromium</translation>
@@ -191,6 +192,7 @@
 <translation id="3103660991484857065">Установка прервана на этапе распаковки архива. Скачайте Chromium ещё раз.</translation>
 <translation id="310459126943037700">Не удалось прервать одну или несколько задач.</translation>
 <translation id="3130323860337406239">Chromium использует микрофон.</translation>
+<translation id="3130333203120345554">Новый поиск</translation>
 <translation id="3137969841538672700">Перетащите область для поиска</translation>
 <translation id="3144188012276422546">Для работы этой вкладки используются дополнительные ресурсы. Разрешите Chromium сделать ее неактивной, и производительность повысится.</translation>
 <translation id="3149163023759831301">Чтобы запустить демонстрацию экрана, в системных настройках разрешите Chromium записывать с него видео.</translation>
@@ -346,6 +348,7 @@
 <translation id="4994636714258228724">Добавить пользователя Chromium</translation>
 <translation id="5123973130450702873">Chromium необходимо разрешение на отслеживание рук</translation>
 <translation id="5141988424377517949">Вы давно не посещали этот сайт. Браузер Chromium отозвал разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" и "<ph name="PERMISSION_3" />".</translation>
+<translation id="5167819546851111585">О чем вы хотите узнать?</translation>
 <translation id="5174969993834422967">Обычно вы блокируете уведомления. Чтобы получать их с этого сайта, нажмите на значок оповещений в правом верхнем углу адресной строки.</translation>
 <translation id="5174983315706567306">Недостаточно места на диске.</translation>
 <translation id="5187123684706427865">Необходимо снова войти в аккаунт Chromium</translation>
@@ -378,6 +381,7 @@
 <translation id="5496810170689441661">Chromium пытается изменить пароли. Чтобы разрешить это действие, введите свой пароль Windows.</translation>
 <translation id="5524890928877629608">левый верхний угол области поиска: <ph name="LEFT" /> % слева, <ph name="TOP" /> % сверху</translation>
 <translation id="5527463683072221100">Открывать PDF-файлы в Chromium</translation>
+<translation id="5536164441519929134">Задать<ph name="LINE_BREAK" />вопрос об этой вкладке</translation>
 <translation id="5579324208890605088">Ошибка. Запустите установщик от имени обычного пользователя, а не администратора.</translation>
 <translation id="5580770360767802657">Сделайте Chromium браузером по умолчанию и закрепите его на панели задач</translation>
 <translation id="5596627076506792578">Ещё</translation>

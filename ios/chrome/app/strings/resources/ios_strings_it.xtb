@@ -261,6 +261,7 @@
 <translation id="1962969542251276847">Blocco schermo</translation>
 <translation id="1963976881984600709">Protezione standard</translation>
 <translation id="1964507856799750384">Tocca <ph name="BEGIN_BOLD" />App browser<ph name="END_BOLD" /></translation>
+<translation id="1965633132497641148">Codice di sicurezza non valido</translation>
 <translation id="1966313166384086081">dati dei siti</translation>
 <translation id="1967461193809857427">{count,plural, =1{Vuoi riprendere la scheda che avevi lasciato su Android?}other{Vuoi riprendere le schede che avevi lasciato su Android?}}</translation>
 <translation id="1972325230031091483">Navigherai più velocemente perché i contenuti vengono caricati in modo proattivo in base alla pagina web che stai visitando</translation>
@@ -575,6 +576,7 @@
 <translation id="3186796054637504691">Cancella dati siti web e cronologia</translation>
 <translation id="3190736958609431397">Annulla monitoraggio</translation>
 <translation id="3208260410153224535">La tua organizzazione ha disattivato l'accesso. I nuovi preferiti, le nuove password e altri dati verranno salvati solo su questo dispositivo.</translation>
+<translation id="3211969308836412674">Stacca sito</translation>
 <translation id="3213807041830307252">Acquista, traduci e identifica ciò che vedi usando la fotocamera e la galleria fotografica.</translation>
 <translation id="3214379938835224220">Il tuo account è stato disconnesso durante il ripristino dell'iPad. Tocca Continua sotto per accedere.</translation>
 <translation id="3218296450292600703">L'accesso con l'account gestito ti aiuta a mantenere separata la navigazione relativa alla tua organizzazione (tra cui schede, cronologia e password) dall'altra navigazione</translation>
@@ -604,6 +606,7 @@
 <translation id="3324193307694657476">Indirizzo 2</translation>
 <translation id="3328801116991980348">Informazioni sito</translation>
 <translation id="333229797575847124">Come attivare questa funzionalità</translation>
+<translation id="3344233834747405775">Nome del titolare della carta non valido</translation>
 <translation id="3344485292736684439">{count,plural, =1{Preferito salvato nella cartella "{title}" nel tuo account {email}}other{Preferiti salvati nella cartella "{title}" nel tuo account {email}}}</translation>
 <translation id="334690320928261823">Schede recenti</translation>
 <translation id="3349031117032695619">Blocca popup</translation>
@@ -1098,6 +1101,7 @@
 <translation id="5220945116117011963">Crea eventi nel calendario dalle date</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Modifica sito</translation>
 <translation id="5233638681132016545">Nuova scheda</translation>
 <translation id="5234094073825090254">{count,plural, =1{Preferito salvato nel tuo Account Google {email}.}other{Preferiti salvati nel tuo Account Google {email}.}}</translation>
 <translation id="5234764350956374838">Ignora</translation>
@@ -1324,6 +1328,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6066301408025741299">Tocca per annullare.</translation>
 <translation id="6074656473835429958">Ricevi notifiche</translation>
 <translation id="607620096698446287">Impossibile caricare <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
+<translation id="6076618233738284461">Fissa sito</translation>
 <translation id="6077126322656614846">Accesso alla fotocamera consentito</translation>
 <translation id="607730456154980869">Ottieni risposte più velocemente con Gemini in Chrome</translation>
 <translation id="6078236141387574983">Modifica l'altezza del foglio</translation>

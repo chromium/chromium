@@ -338,6 +338,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1549470594296187301">JavaScript debe estar habilitado para usar esta función.</translation>
 <translation id="1553152622374372421">Deportes de invierno</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
+<translation id="1555014818414775661">Agregar imágenes</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1555191101192706055">Los atacantes del sitio que intentaste visitar podrían engañarte para que instales software dañino que afecta la manera en la que navegas. Por ejemplo, pueden cambiar la página principal o mostrarte anuncios adicionales en los sitios que visitas.</translation>
 <translation id="1559231233244409191">Cartón (corrugado triple)</translation>
@@ -1216,6 +1217,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2979424420072875974">Recursos para escritores</translation>
 <translation id="2979639724566107830">Abrir en una ventana nueva</translation>
 <translation id="2980742331521553164">Se encriptará el CVC de esta tarjeta y se guardará en tu Cuenta de Google para agilizar las confirmaciones de compras</translation>
+<translation id="2983311431122838216">Preguntarle al Modo IA en la Búsqueda de Google</translation>
 <translation id="2983666748527428214">Abrir una pestaña de incógnito</translation>
 <translation id="2985306909656435243">Si se habilita esta opción, Chromium almacenará una copia de la tarjeta en el dispositivo para completar más rápidamente los formularios.</translation>
 <translation id="2985398929374701810">Ingresa una dirección válida</translation>
@@ -1395,6 +1397,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab, luego, Intro para crear un evento nuevo en el Calendario de Google rápidamente</translation>
 <translation id="3261488570342242926">Obtén más información sobre las tarjetas virtuales</translation>
 <translation id="3262698603497362968">Opciones de compra</translation>
+<translation id="3264315627780269177">No se puede compartir esta pestaña</translation>
 <translation id="3266367459139339908">Chrome lanzará nuevas formas de limitar lo que los sitios pueden aprender sobre ti cuando te muestran anuncios personalizados, por ejemplo:</translation>
 <translation id="3266793032086590337">Valor (en conflicto)</translation>
 <translation id="3268451620468152448">Pestañas abiertas</translation>
@@ -1646,6 +1649,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3665100783276035932">La mayoría de los sitios deberían funcionar según lo previsto</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Más información<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Número</translation>
+<translation id="3670159164851218963">Historial del Modo IA</translation>
 <translation id="3670229581627177274">Activar Bluetooth</translation>
 <translation id="3671540257457995106">¿Deseas permitir el cambio de tamaño?</translation>
 <translation id="3672568546897166916">Error en <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
@@ -1874,6 +1878,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4031179711345676612">Micrófono permitido</translation>
 <translation id="4036753017940930924">Lotes y terrenos</translation>
 <translation id="4039506337798853114">Para mostrar el cursor, presiona |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045070493270310437">Volver a abrir pestañas</translation>
 <translation id="4045226534284799755">Accede a tu cuenta de Microsoft antes de volver a intentarlo</translation>
 <translation id="4045441967987592849">Volver a abrir</translation>
 <translation id="4047351652147966654">45.72 × 60.96 cm</translation>
@@ -2125,6 +2130,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4406896451731180161">resultados de búsqueda</translation>
 <translation id="4407758156081352648">Para mantener la seguridad, tu organización no permite que se reutilicen las contraseñas en Chrome. Las contraseñas en Chrome se encriptan para proteger la privacidad del usuario.</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
+<translation id="4409556632583862731">Nueva conversación</translation>
 <translation id="4412074349188076601">Esta configuración está marcada como instalable, pero no se proporciona ninguna imagen para esta arquitectura, por lo que no se puede instalar.</translation>
 <translation id="4412377069090572315">Qué dicen las personas</translation>
 <translation id="4414452699610169758">Usa el Administrador de contraseñas de Google y la función Autocompletar de Chrome para guardar y completar contraseñas, formas de pago y direcciones</translation>
@@ -2774,6 +2780,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
     <ph name="LINE_BREAK" />
     Intenta contactar al administrador de tu sistema.</translation>
 <translation id="5496804587179176046">Guardar códigos de seguridad; actualmente no hay códigos de seguridad guardados</translation>
+<translation id="5499229993630251170">¿Quieres continuar esta conversación?</translation>
 <translation id="550365051221576010">Completar todo</translation>
 <translation id="5506286895894263601">La lista no contiene accesos directos válidos.</translation>
 <translation id="5508443345185481044">Cámaras y videocámaras</translation>
@@ -3084,6 +3091,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6018650639991193045">Borrar tu historial de navegación, cookies, memoria caché y mucho más en la configuración de Chrome</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizados)</translation>
+<translation id="6025471531651464742">Agregar archivos</translation>
 <translation id="6028591542479806248">Administra las notificaciones por correo electrónico y en dispositivos móviles.</translation>
 <translation id="6028833024483927901">Cocina internacional</translation>
 <translation id="603068602130820122">Grapas dobles a la derecha</translation>
@@ -3121,6 +3129,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6062405040252994646">Herramienta</translation>
 <translation id="6062937464449575061">Dejar de realizar el seguimiento de precios</translation>
 <translation id="6063415549109819824">Financiación de la vivienda</translation>
+<translation id="6069343053547121389">Haz preguntas sobre esta pestaña con el Modo IA</translation>
 <translation id="6070432475334343308">No se subieron uno o más archivos a <ph name="FOLDER_NAME" /> en <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="6071503852498277813">Servicio del analizador de contenido de favoritos</translation>
 <translation id="6078069862923723141">Cian 2</translation>
@@ -3364,6 +3373,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6443406338865242315">Las extensiones y complementos que instalaste</translation>
 <translation id="6444329331928531170">Jubilación y pensión</translation>
 <translation id="6445051938772793705">País</translation>
+<translation id="6446256167362544629">Panel lateral de IA</translation>
 <translation id="6446608382365791566">Agregar más información</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6448371595882710519">Más información sobre los controles de datos</translation>
@@ -3455,6 +3465,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6597665340361269064">90 grados</translation>
 <translation id="6598976221101665070">Películas de drama</translation>
 <translation id="6599642189720630047">Productos con seguimiento</translation>
+<translation id="6608426252530537984">Agrega hasta 10 pestañas</translation>
 <translation id="6613742613135780554">seguimiento de manos</translation>
 <translation id="6613866251791999074">Más información sobre tu motor de búsqueda en Chrome</translation>
 <translation id="6615297766614333076">Apilador 2</translation>
@@ -3576,6 +3587,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6799145206637008376">Completa el CVC de esta tarjeta virtual</translation>
 <translation id="6805030849054648206">Sobre B6/C4</translation>
 <translation id="6807791860691150411">Educación</translation>
+<translation id="6808579246645021886">Pestañas y archivos compartidos</translation>
 <translation id="681021252041861472">Campo obligatorio</translation>
 <translation id="6810899417690483278">ID de personalización</translation>
 <translation id="6816109178681043245">Productos deportivos</translation>
@@ -4993,6 +5005,7 @@ Detalles adicionales:
 <translation id="9133985615769429248">Si compartes este dispositivo con otras personas, puedes usar tu bloqueo de pantalla para verificar tu identidad cada vez que uses una contraseña guardada</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, tarjeta virtual</translation>
 <translation id="9138037198177304356">Se permiten las notificaciones</translation>
+<translation id="913846191326613072">Cuando se comparten pestañas, se envían a Google las URLs y el contenido de las páginas</translation>
 <translation id="9139318394846604261">Compras</translation>
 <translation id="9140198744651252040">El navegador Chrome quiere usar la huella dactilar para autocompletar contraseñas</translation>
 <translation id="9141013498910525015">Administrar direcciones</translation>
@@ -5084,6 +5097,7 @@ Detalles adicionales:
 <translation id="955429569736351433">Se permite la RV</translation>
 <translation id="955627189349169688">Puedes inhabilitar esta política en la <ph name="BEGIN_LINK" />configuración de la Sincronización de Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Amarillo 2</translation>
+<translation id="961372935451193190">Pestañas y archivos</translation>
 <translation id="961663415146723894">Encuadernado en la parte inferior</translation>
 <translation id="961856697154696964">Borrar datos de navegación</translation>
 <translation id="961930410699694996">Se permite la ubicación esta vez</translation>

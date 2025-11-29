@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">апельсины</translation>
 <translation id="1275718070701477396">Выбрано</translation>
 <translation id="1290331692326790741">слабый сигнал</translation>
+<translation id="1292474106138697109">Экран приложения "Инструменты для уроков"</translation>
 <translation id="1300115153046603471">Тип точки доступа – <ph name="ATTACH" />, используется по умолчанию.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Конвертирование</translation>
@@ -1046,6 +1047,7 @@
 <translation id="5596627076506792578">Ещё</translation>
 <translation id="5600027863942488546">Клавиша <ph name="KEY_NAME" /> протестирована</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Приложение "Инструменты для уроков" демонстрирует ваш экран на экране "<ph name="RECEIVER_NAME" />".</translation>
 <translation id="5613201299517339763">Вы вышли из системы</translation>
 <translation id="5620281292257375798">Конфиденциально</translation>
 <translation id="5628106863521633649">Доступные языки</translation>

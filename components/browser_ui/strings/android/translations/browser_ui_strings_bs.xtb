@@ -115,6 +115,7 @@
 <translation id="2241587408274973373">Kartice na stranici nove kartice</translation>
 <translation id="2241634353105152135">Samo ovaj put</translation>
 <translation id="2253414712144136228">Uklanjanje stavke <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="2281098328019574668">Primajte obavještenja o uvidima koji poboljšavaju vaše iskustvo u Chromeu</translation>
 <translation id="228293613124499805">Većina web lokacija koje posjetite vjerovatno pohranjuje podatke na vaš uređaj, često radi poboljšavanja vašeg iskustva pohranjivanjem vaših postavki ili informacija koje dijelite s web lokacijom. Preporučujemo vam da ovu postavku ostavite uključenom.</translation>
 <translation id="2289270750774289114">Pitaj kada web lokacija želi otkriti Bluetooth uređaje u blizini (preporučeno)</translation>
 <translation id="2315043854645842844">Operativni sistem ne podržava odabir potvrde na strani klijenta.</translation>
@@ -573,6 +574,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="7260727271532453612">Dozvoljeno: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Kada je postavka uključena, web lokacije mogu zatražiti da koriste uređaje virtuelne realnosti. Kada je postavka isključena, web lokacije ne mogu koristiti uređaje virtuelne realnosti.</translation>
 <translation id="728412880473384942">Web lokacije su brže, ali su manje sigurne</translation>
+<translation id="7324836168971967994">Savjeti prilagođeni samo za vas</translation>
 <translation id="7366415735885268578">Dodajte web lokaciju</translation>
 <translation id="7368695150573390554">Svi offline podaci će se izbrisati</translation>
 <translation id="7369678931043226462">Donja tabela prilagođavanja stranice Nova kartica je otvorena na pola visine</translation>

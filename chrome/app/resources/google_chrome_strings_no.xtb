@@ -271,6 +271,7 @@
 <translation id="4022972681110646219">Oversett skjermen</translation>
 <translation id="4023601594785368013">Originalspråk: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ChromeOS må startes på nytt for at oppdateringen skal tas i bruk.</translation>
+<translation id="4039097928859803404">Vis alltid snarveier til AI-modus</translation>
 <translation id="4050175100176540509">Viktige sikkerhetsforbedringer og nye funksjoner er tilgjengelige i den nyeste versjonen.</translation>
 <translation id="4053720452172726777">Tilpass og kontroller Google Chrome</translation>
 <translation id="408393047846373801">For å få passordene dine med mer på alle enhetene dine, logg på Chrome. Dette passordet blir lagret i Google-kontoen din når du logger på.</translation>
@@ -352,6 +353,7 @@
 <translation id="4970880042055371251">ChromeOS-versjon</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klikk på «Google Passordlagring»</translation>
+<translation id="5043786843026425788">Finn ut mer om å søke med Google Lens i Chrome</translation>
 <translation id="504867494566807945">Åpne linker i Chrome fra alle apper. For å få enkel tilgang, festes Chrome på oppgavelinjen.</translation>
 <translation id="5114340746415930644">Skriv inn passordfrasen din for å bruke og lagre Chrome-data i kontoen din, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Logg på Chrome når du logger på andre Google-tjenester</translation>
@@ -521,6 +523,7 @@
 <translation id="683440813066116847">Regel om innkommende trafikk for Google Chrome Canary for å tillate mDNS-trafikk.</translation>
 <translation id="6841242485723266823">Med Chrome-profiler kan du holde forskjellige deler av livet ditt atskilt. Legg til en ny profil nå.</translation>
 <translation id="684888714667046800">Kan ikke koble til internett. Hvis du bruker en brannmur, må du sørge for at <ph name="PRODUCT_EXE_NAME" /> står på godkjenningslisten.</translation>
+<translation id="6859580922007887573">Trykk på Tab for å fortsette</translation>
 <translation id="6877155553248388166">nederst til høyre i søkefeltet: høyre <ph name="RIGHT" /> %, nederst <ph name="BOTTOM" /> %</translation>
 <translation id="6881299373831449287">Oppdaterer Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta-apper</translation>
@@ -620,6 +623,7 @@
 <translation id="7849037457735762883">Fortsett der du avsluttet: Chrome kan gjenopprette fanene dine hver gang du starter på nytt. For å slå på dette, gå til</translation>
 <translation id="7872446069773932638">Laster ned … <ph name="SECONDS" /> sekund(er) igjen</translation>
 <translation id="7886087451482920026">Marker tekst med Google Lens</translation>
+<translation id="7887929410013642057">Vis alltid snarveier til AI-modus</translation>
 <translation id="7890208801193284374">Hvis du deler en datamaskin med andre, kan venner og familie surfe hver for seg og konfigurere Chrome akkurat slik de vil.</translation>
 <translation id="7896673875602241923">Noen har tidligere logget på Chrome på denne datamaskinen som <ph name="ACCOUNT_EMAIL_LAST" />. Opprett en ny Chrome-bruker for å holde informasjonen din atskilt.</translation>
 <translation id="7904985524660297937">Prøv Gemini i Google Chrome</translation>

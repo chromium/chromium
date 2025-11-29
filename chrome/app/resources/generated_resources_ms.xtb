@@ -1356,6 +1356,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1907044622262489040">Menaip menggunakan suara anda. Gunakan Cari + D, kemudian mula bercakap.</translation>
 <translation id="1907659324308286326">Sesetengah aksesori Thunderbolt atau USB4 memerlukan akses memori untuk berfungsi dengan teratur.</translation>
 <translation id="1908591798274282246">Buka Semula Kumpulan yang Ditutup</translation>
+<translation id="1909677622563887527">Chrome sedang dikawal oleh perisian ujian automatik</translation>
 <translation id="1909880997794698664">Adakah anda pasti mahu peranti ini menggunakan mod kios secara kekal?</translation>
 <translation id="1910721550319506122">Selamat datang!</translation>
 <translation id="1910736334623230603">Tidak dapat mencari berbilang imej. Tambahkan satu imej pada satu masa.</translation>
@@ -1710,6 +1711,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2144536955299248197">Pemapar Sijil: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Pembangunan apl Android Linux</translation>
 <translation id="2145468727756963476">Gemini sedang disegarkan semula...</translation>
+<translation id="2145688286532368277">Pengoptimuman JavaScript dimatikan untuk laman ini.</translation>
 <translation id="2145917706968602070">Pastikan telefon anda berada berdekatan, dibuka kunci dan Bluetooth serta Wi-Fi dihidupkan</translation>
 <translation id="2146263598007866206">Tapak mungkin memuat turun beberapa fail yang berkaitan bersama-sama secara automatik untuk menjimatkan masa anda</translation>
 <translation id="2147218225094845757">Sembunyikan panel sisi</translation>
@@ -4364,6 +4366,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 
   Adakah anda ingin memulakan <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
+<translation id="3942558231079086184">Pengoptimuman JavaScript dimatikan untuk laman ini. Dayakan untuk mendapatkan prestasi yang lebih baik.</translation>
 <translation id="3943582379552582368">&amp;Kembali</translation>
 <translation id="3943857333388298514">Tampal</translation>
 <translation id="3945513714196326460">Cuba nama yang lebih pendek</translation>
@@ -5632,7 +5635,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4841741146571978176">Mesin maya yang diperlukan tidak wujud. Sila cuba sediakan <ph name="VM_TYPE" /> untuk meneruskan</translation>
 <translation id="4842976633412754305">Halaman ini sedang cuba memuatkan skrip dari sumber yang tidak disahkan.</translation>
 <translation id="4844333629810439236">Papan kekunci lain</translation>
-<translation id="4844347226195896707">Lihat kata laluan anda walaupun ketika anda tidak menggunakan Chrome atau Android dengan log masuk ke &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4846628405149428620">Pilih tempat laman ini boleh menyimpan perubahan</translation>
 <translation id="4846680374085650406">Anda sedang mengikut cadangan pentadbir untuk tetapan ini.</translation>
@@ -10212,6 +10214,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8032569120109842252">Mengikut</translation>
 <translation id="8033827949643255796">dipilih</translation>
 <translation id="8033958968890501070">Tamat masa</translation>
+<translation id="8034399942062051455">Pengoptimuman V8 dimatikan</translation>
 <translation id="8034697324150621782">Tukar dengan Paparan Atas</translation>
 <translation id="8035059678007243127">Halaman Dicache Kembali/Maju Inkognito: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Bantu Kami Tingkatkan Autolengkap</translation>

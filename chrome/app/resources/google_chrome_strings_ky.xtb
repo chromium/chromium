@@ -275,6 +275,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4022972681110646219">Экрандагы нерсени которуу</translation>
 <translation id="4023601594785368013">Баштапкы тил: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Жаңыртууну колдонуу үчүн ChromeOS өчүрүлүп күйгүзүлүшү керек.</translation>
+<translation id="4039097928859803404">ЖИ режиминин ыкчам баскычтары ар дайым көрсөтүлсүн</translation>
 <translation id="4050175100176540509">Эң акыркы версияда коопсуздукту бекемдөө каражаттары менен жаңы мүмкүнчүлүктөр камтылган.</translation>
 <translation id="4053720452172726777">Google Chrome'ду өзгөчөлөштүрүү жана көзөмөлдөө</translation>
 <translation id="408393047846373801">Бардык түзмөктөрүңүздө сырсөздөрдү жана башка нерселерди алуу үчүн Chrome'го кириңиз. Киргенден кийин бул сырсөз Google аккаунтуңузда сакталат.</translation>
@@ -356,6 +357,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4970880042055371251">ChromeOS версиясы</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">“Сырсөздөрдү башкаргычты” чыкылдатыңыз</translation>
+<translation id="5043786843026425788">Chrome'до Google Lens аркылуу издөө жөнүндө кеңири маалымат</translation>
 <translation id="504867494566807945">Бардык колдонмолордогу шилтемелерди Chrome'до ачыңыз. Буга кошумча, оңой колдонуу үчүн ал тапшырмалар панелине кадалат.</translation>
 <translation id="5114340746415930644">Аккаунтуңузга (<ph name="USER_EMAIL" />) Chrome маалыматын сактоо жана колдонуу үчүн сыр сүйлөмдү киргизиңиз</translation>
 <translation id="5120334927898581447">Башка Google кызматтарына киргениңизде Chrome'го кириңиз</translation>
@@ -529,6 +531,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="683440813066116847">mDNS трафигине мүмкүндүк берүү үчүн Google Chrome Canary'нин кайрылуу эрежеси.</translation>
 <translation id="6841242485723266823">Chrome профилдери жашооңуздун ар кандай бөлүктөрүн бөлүп турууга жардам берет. Жаңы профилди азыр кошуңуз.</translation>
 <translation id="684888714667046800">Интернетке туташуу мүмкүн болбой жатат. Эгер тармактык коргоону колдонсоңуз, <ph name="PRODUCT_EXE_NAME" /> уруксат берилгендердин тизмесинде болушу керек.</translation>
+<translation id="6859580922007887573">Улантуу үчүн басыңыз</translation>
 <translation id="6877155553248388166">издөө аймагынын төмөнкү оң бурчу: оң жагы <ph name="RIGHT" />%, төмөн жагы <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chrome жаңыртылууда</translation>
 <translation id="6885412569789873916">Chrome Бета Колдонмолору</translation>
@@ -628,6 +631,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="7849037457735762883">Токтогон жерден улантыңыз: Chrome өчүрүп күйгүзгөн сайын өтмөктөрдү калыбына келтире алат. Муну күйгүзүү үчүн төмөнкүгө өтүңүз:</translation>
 <translation id="7872446069773932638">Жүктөлүп алынууда... <ph name="SECONDS" /> секунд калды</translation>
 <translation id="7886087451482920026">Google Lens менен текстти тандаңыз</translation>
+<translation id="7887929410013642057">ЖИ режиминин ыкчам баскычтары ар дайым көрсөтүлсүн</translation>
 <translation id="7890208801193284374">Компьютерди бөлүшсөңүз, жакындарыңыз өзүнчө серептеп, Chrome'ду өзүлөрүнө ылайыктап жөндөп алышат.</translation>
 <translation id="7896673875602241923">Буга чейин кимдир бирөө бул компьютерден Chrome'го <ph name="ACCOUNT_EMAIL_LAST" /> аккаунту менен кирген. Жеке маалыматыңызды өзүнчө сактоо үчүн жаңы Chrome колдонуучусун түзүңүз.</translation>
 <translation id="7904985524660297937">Google Chrome'догу Gemini'ды колдонуп көрүү</translation>

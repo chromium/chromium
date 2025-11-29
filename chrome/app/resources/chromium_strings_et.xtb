@@ -39,6 +39,7 @@
 <translation id="141901961143729572">Jagage oma mõtteid</translation>
 <translation id="1465192221147974788">Oma akna jagamiseks lubage menüüs System Settings Chromiumi puhul ekraani salvestamine.</translation>
 <translation id="1478370723027452770">Hankige abi seoses brauseriga Chrome for Testing</translation>
+<translation id="1496875977627931224">Tere, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />Mis teil täna meeles mõlgub?</translation>
 <translation id="1497802159252041924">Installimisviga: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">See leht on kaitstud</translation>
 <translation id="1524282610922162960">Chromiumi vahekaardi jagamine</translation>
@@ -192,6 +193,7 @@
 <translation id="3103660991484857065">Installeril ei õnnestunud arhiivi lahti pakkida. Laadige Chromium uuesti alla.</translation>
 <translation id="310459126943037700">Ülesande (ülesannete) lõpetamine ebaõnnestus.</translation>
 <translation id="3130323860337406239">Chromium kasutab teie mikrofoni.</translation>
+<translation id="3130333203120345554">Uus otsing</translation>
 <translation id="3137969841538672700">Lohistage otsimiseks</translation>
 <translation id="3144188012276422546">See vaheleht kasutab lisaressursse. Laske Chromiumil see toimivuse täiustamiseks interaktiivseks teha.</translation>
 <translation id="3149163023759831301">Oma ekraani jagamiseks lubage menüüs System Settings Chromiumi puhul ekraani salvestamine.</translation>
@@ -348,6 +350,7 @@
 <translation id="4994636714258228724">Lisa Chromiumi</translation>
 <translation id="5123973130450702873">Chromium vajab teie käeliigutuste jälgimiseks luba</translation>
 <translation id="5141988424377517949">Te pole hiljuti külastanud. Chromium eemaldas load <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
+<translation id="5167819546851111585">Mis teil täna meeles mõlgub?</translation>
 <translation id="5174969993834422967">Tavaliselt blokeerite märguanded. Kui soovite lubada sellel saidil endale märguandeid saata, klõpsake oma asukoha lüliti paremas nurgas märguande ikoonil.</translation>
 <translation id="5174983315706567306">Pole piisavalt kettaruumi.</translation>
 <translation id="5187123684706427865">Chromiumi konto vajab uuesti autentimist</translation>
@@ -380,6 +383,7 @@
 <translation id="5496810170689441661">Chromium püüab paroole muuta. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="5524890928877629608">otsinguala vasak ülanurk: <ph name="LEFT" />% vasakul, <ph name="TOP" />% üleval</translation>
 <translation id="5527463683072221100">Ava PDF-id Chromiumis</translation>
+<translation id="5536164441519929134">Küsige<ph name="LINE_BREAK" />selle vahelehe kohta</translation>
 <translation id="5579324208890605088">Käivitamisel ilmnes viga: käitage installiprogrammi tavakasutajana, mitte administraatorina.</translation>
 <translation id="5580770360767802657">Kasutage vaikimisi Chromiumit ja laske see kinnitada</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>

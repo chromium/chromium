@@ -496,6 +496,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3114507951000454849">Leggi le notizie di oggi <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Altri dettagli</translation>
 <translation id="3123734510202723619">Annunci</translation>
+<translation id="3134385238404760368">Nessuna scheda recente</translation>
 <translation id="314939179385989105">Pagina iniziale di Chrome</translation>
 <translation id="3158667104057012316">Ordinamento manuale</translation>
 <translation id="3159335509547415276">Scopri di più sugli account bloccati</translation>
@@ -817,6 +818,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4577115723294378384">Ordina dalla A alla Z</translation>
 <translation id="4578289292431526768">Inizia</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuto fa}other{# minuti fa}}</translation>
+<translation id="4585751637295612750">Apri una nuova scheda per aggiungerla alla tua domanda</translation>
 <translation id="4587589328781138893">Siti</translation>
 <translation id="4594952190837476234">Questa pagina offline risale al giorno <ph name="CREATION_TIME" /> e potrebbe essere diversa dalla versione online.</translation>
 <translation id="4595237294768457124">Apri una Pagina Nuova scheda</translation>

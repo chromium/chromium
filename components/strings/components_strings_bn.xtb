@@ -2061,6 +2061,7 @@
 <translation id="4299919199185766032">শর্টকাটের নাম <ph name="MAX_LENGTH" />টি সংখ্যার অনুমোদিত দৈর্ঘ্যের সর্বাধিক সীমা ছাড়িয়ে গেছে।</translation>
 <translation id="4300272766492248925">অ্যাপ্লিকেশান খুলুন</translation>
 <translation id="4300675098767811073">ডানদিকে মাল্টিপল পাঞ্চ</translation>
+<translation id="4300841966382281549">ট্রিপ</translation>
 <translation id="4302514097724775343">ডাইনোসর গেম খেলতে, ট্যাপ করুন</translation>
 <translation id="4304049446746819918">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল সরানো যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল সরানো যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল সরানো যাবে না}}</translation>
 <translation id="4304485328308299773">রিভিউ সহ আপনার সিদ্ধান্ত জানানোর ব্যাপারে সহায়তা পেতে প্রোডাক্ট, পরিষেবা অথবা অভিজ্ঞতার ব্যাপারে গ্রাহকদের মূল্যায়ন পড়ুন।</translation>
@@ -2161,6 +2162,7 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />। <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">এই ফর্ম নিরাপদ নয়। অটোফিল বন্ধ করে দেওয়া হয়েছে।</translation>
 <translation id="4477350412780666475">পরের ট্র্যাক চালান</translation>
+<translation id="4479915773139026885">Google Search-এ AI মোড</translation>
 <translation id="4480760608050410381">MP4 ভিডিও</translation>
 <translation id="448363931695049633">পিৎজার রেস্তোরাঁ</translation>
 <translation id="4489023393592172404">এনভেলপ কাকু ৪</translation>
@@ -3157,6 +3159,7 @@
 <translation id="6124432979022149706">Chrome Enterprise কানেক্টর</translation>
 <translation id="6124996493718543728">'এখন কিনুন, পরে পেমেন্ট করুন' পেমেন্ট পদ্ধতির প্রোগ্রেস স্ক্রিন সম্পূর্ণ স্ক্রিন জুড়ে খোলা আছে।</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />আরও বিবরণ<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Search-এ AI মোডকে জিজ্ঞাসা করতে Enter বোতাম প্রেস করুন</translation>
 <translation id="6126565365696310362">এনভেলপ চিনা #২</translation>
 <translation id="6131824478727057281">লোকেশন</translation>
 <translation id="6133320744616005677">অনুমতি দেওয়া চালিয়ে যান</translation>
@@ -3425,6 +3428,7 @@
 <translation id="6539092367496845964">কোনও সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।</translation>
 <translation id="6540488083026747005">এই সাইটে আপনি থার্ড-পার্টি কুকিকে অনুমতি দিয়েছেন</translation>
 <translation id="6545864417968258051">ব্লুটুথ স্ক্যানিং</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> - <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">বাঁদিকে ডুয়াল পাঞ্চ</translation>
 <translation id="6549443526281184652">পরিধান</translation>
 <translation id="6550245281449521513">মাউস লক ব্যবহার করা অনুমতি নেই</translation>
@@ -3892,6 +3896,7 @@
 <translation id="7337248890521463931">বেশি লাইন দেখুন</translation>
 <translation id="7337706099755338005">আপনার প্ল্যাটফর্মে উপলভ্য নেই।</translation>
 <translation id="733923710415886693">সার্ভারের সার্টিফিকেটটি সার্টিফিকেটের স্বচ্ছতার মাধ্যমে প্রকাশ করা হয়নি।</translation>
+<translation id="73398226265793546">AI মোড বোতাম, Google Search-এ AI মোডকে প্রশ্ন করার জন্য চালু করুন</translation>
 <translation id="7346048084945669753">অ্যাফিলিয়েট কিনা:</translation>
 <translation id="7346062987309535530">খাওয়া দাওয়ার সরঞ্জাম</translation>
 <translation id="7346081071264046066">"উৎসাহের সাথে বিবাহের এই আমন্ত্রণের উত্তরে হ্যাঁ বলুন"</translation>
@@ -4809,6 +4814,7 @@
 <translation id="8814547618907885931">তুলনার সব সারণী দেখুন</translation>
 <translation id="8814707942599948500">এনভেলপ C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Chrome সেটিংসে Chrome আপডেট করতে, প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
+<translation id="8819855907485254989">Wallet-এ ট্রান্সপোর্ট টিকিট সেভ করুন</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="882338992931677877">ম্যানুয়াল স্লট</translation>
 <translation id="8827067923357481311">পরে পেমেন্ট করার বিকল্প</translation>

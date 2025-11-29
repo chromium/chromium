@@ -1345,6 +1345,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1907044622262489040">Typ met je stem. Gebruik Zoeken + D en begin met praten.</translation>
 <translation id="1907659324308286326">Sommige Thunderbolt- of USB4-accessoires hebben toegang tot het geheugen nodig om goed te kunnen werken.</translation>
 <translation id="1908591798274282246">Gesloten groep heropenen</translation>
+<translation id="1909677622563887527">Chrome wordt beheerd door geautomatiseerde testsoftware.</translation>
 <translation id="1909880997794698664">Weet je zeker dat je dit apparaat permanent in de kioskmodus wilt houden?</translation>
 <translation id="1910721550319506122">Welkom!</translation>
 <translation id="1910736334623230603">Kan niet naar meerdere afbeeldingen zoeken. Voeg 1 afbeelding tegelijk toe.</translation>
@@ -1698,6 +1699,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2144536955299248197">Certificaatweergave: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Android-app-ontwikkeling voor Linux</translation>
 <translation id="2145468727756963476">Gemini wordt vernieuwd...</translation>
+<translation id="2145688286532368277">JavaScript-optimalisatie staat uit voor deze site.</translation>
 <translation id="2145917706968602070">Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="2146263598007866206">Sites kunnen gerelateerde bestanden automatisch samen downloaden om tijd te besparen</translation>
 <translation id="2147218225094845757">Zijvenster verbergen</translation>
@@ -3692,6 +3694,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3527085408025491307">Map</translation>
 <translation id="3528498924003805721">Snelkoppelingsdoelen</translation>
 <translation id="3529851166527095708">&amp;Adressen en meer</translation>
+<translation id="3530919970074558307">Focus van groep verwijderen</translation>
 <translation id="3531070080754387701">Microsoft 365 kan <ph name="FILE_NAMES" /> niet openen vanuit deze map</translation>
 <translation id="3531883061432162622">Check je leeslijst en bookmarks in Bookmarks en lijsten</translation>
 <translation id="3532273508346491126">Synchronisatiebeheer</translation>
@@ -4045,6 +4048,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3757567010566591880">Losmaken van werkbalk</translation>
 <translation id="3757645900890881944">Zoekhulpmiddelen</translation>
 <translation id="3757733214359997190">Geen sites gevonden</translation>
+<translation id="3757825964096339958">Focus op groep plaatsen</translation>
 <translation id="375841316537350618">Proxyscript downloaden...</translation>
 <translation id="3758887577462995665">Tip:</translation>
 <translation id="375962596908891207">Maand voor <ph name="DROPDOWN_NAME" /></translation>
@@ -4343,6 +4347,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 
   Wil je <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3942420633017001071">Diagnose</translation>
+<translation id="3942558231079086184">JavaScript-optimalisatie staat uit voor deze site. Zet dit aan voor betere prestaties.</translation>
 <translation id="3943582379552582368">&amp;Vorige</translation>
 <translation id="3943857333388298514">Plakken</translation>
 <translation id="3945513714196326460">Probeer een kortere naam</translation>
@@ -4833,6 +4838,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4292613336957320546">Versnelling</translation>
 <translation id="429312253194641664">Een site speelt media af</translation>
 <translation id="4293219510510666933">Gebruik alledaagse taal om in je browsegeschiedenis te zoeken en sites te vinden die je hebt bezocht. Je kunt ook vragen stellen en antwoorden krijgen op basis van je browsegeschiedenis. Deze instelling staat aan.</translation>
+<translation id="429344752071832554">Focus van groep verwijderen</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> is verwijderd uit de downloadgeschiedenis, maar staat nog steeds op je apparaat</translation>
 <translation id="4295072614469448764">De app is beschikbaar in je terminal. Mogelijk staat er ook een icoon van de app in de Launcher.</translation>
 <translation id="4295979599050707005">Log opnieuw in om te bevestigen dat je account <ph name="USER_EMAIL" /> mag worden gebruikt met websites, apps en extensies in Chrome en Google Play. Je kunt dit account ook verwijderen. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -4988,6 +4994,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4405224443901389797">Verplaatsen naar…</translation>
 <translation id="4405781821077215583">Maak items op je scherm, waaronder tekst, kleiner of groter</translation>
 <translation id="4406308048672435032">Je kunt dit tabblad inactief maken of vernieuwen om de hele lijst weer te zien</translation>
+<translation id="4406881185911439342">Focus op groep plaatsen</translation>
 <translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4406963243402726564">Niet-opgeslagen gegevens</translation>
 <translation id="4408599188496843485">H&amp;elp</translation>
@@ -5606,7 +5613,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4841741146571978176">Een vereiste virtuele machine bestaat niet. Stel <ph name="VM_TYPE" /> in om door te gaan.</translation>
 <translation id="4842976633412754305">Deze pagina probeert scripts van niet-geverifieerde bronnen te laden.</translation>
 <translation id="4844333629810439236">Andere toetsenborden</translation>
-<translation id="4844347226195896707">Check je wachtwoorden ook als je Chrome of Android niet gebruikt door in te loggen op &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4846628405149428620">Selecteer waar deze site wijzigingen kan opslaan</translation>
 <translation id="4846680374085650406">Je volgt de aanbeveling van de beheerder voor deze instelling.</translation>
@@ -10176,6 +10182,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8032569120109842252">Je volgt</translation>
 <translation id="8033827949643255796">geselecteerd</translation>
 <translation id="8033958968890501070">Time-out</translation>
+<translation id="8034399942062051455">V8-optimalisatie staat uit</translation>
 <translation id="8034697324150621782">Wisselen met weergave bovenaan</translation>
 <translation id="8035059678007243127">Incognitopagina in Back-Forward Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Help Automatisch invullen te verbeteren</translation>

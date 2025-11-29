@@ -115,6 +115,7 @@
 <translation id="2241587408274973373">Karty na stránke na novej karte</translation>
 <translation id="2241634353105152135">Iba raz</translation>
 <translation id="2253414712144136228">Odobrať osobu alebo odstrániť položku <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="2281098328019574668">Dostávajte upozornenia na štatistiky, ktoré zlepšia vaše prostredie v Chrome</translation>
 <translation id="228293613124499805">Väčšina webov, ktoré navštevujete, pravdepodobne ukladá dáta vo vašom zariadení. Často ukladajú vaše predvoľby alebo informácie, ktoré s nimi zdieľate, čím zlepšujú vaše prostredie. Toto nastavenie odporúčame nechať zapnuté.</translation>
 <translation id="2289270750774289114">Opýtať sa, keď chce web objavovať zariadenia Bluetooth v okolí (odporúčané)</translation>
 <translation id="2315043854645842844">Operačný systém nepodporuje výber certifikátu na strane klienta.</translation>
@@ -573,6 +574,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="7260727271532453612">Povolené: <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Keď je táto možnosť zapnutá, weby môžu žiadať o používanie zariadení virtuálnej reality. Keď je táto možnosť vypnutá, weby nemôžu používať zariadenia virtuálnej reality.</translation>
 <translation id="728412880473384942">Weby budú rýchlejšie, ale menej zabezpečené</translation>
+<translation id="7324836168971967994">Tipy prispôsobené vám na mieru</translation>
 <translation id="7366415735885268578">Pridanie webu</translation>
 <translation id="7368695150573390554">Všetky offline dáta budú odstránené</translation>
 <translation id="7369678931043226462">Dolný hárok úprav stránky na novej karte je otvorený na polovičnú výšku</translation>

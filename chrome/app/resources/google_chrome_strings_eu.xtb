@@ -274,6 +274,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4022972681110646219">Itzuli pantaila</translation>
 <translation id="4023601594785368013">Jatorrizko hizkuntza: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Eguneratzea aplikatzeko, berrabiarazi egin behar da Chrome OS.</translation>
+<translation id="4039097928859803404">Erakutsi beti AA moduaren lasterbideak</translation>
 <translation id="4050175100176540509">Segurtasun-hobekuntza garrantzitsuak eta eginbide berriak dituzu erabilgarri azken bertsioan.</translation>
 <translation id="4053720452172726777">Pertsonalizatu eta kontrolatu Google Chrome</translation>
 <translation id="408393047846373801">Pasahitzak eta bestelako datuak zure gailu guztietan gordeta edukitzeko, hasi saioa Chrome-n. Saioa hasi ondoren, pasahitz hau zure Google-ko kontuan gordeko da.</translation>
@@ -355,6 +356,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4970880042055371251">Chrome OS-ren bertsioa</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Sakatu Google-ren Pasahitz-kudeatzailea</translation>
+<translation id="5043786843026425788">Lortu Chrome-n Google Lens-ekin bilatzeari buruzko informazio gehiago</translation>
 <translation id="504867494566807945">Ireki estekak Chrome-ren edozein aplikaziotatik. Gainera, errazago atzitzeko, zereginen barran ainguratuko da.</translation>
 <translation id="5114340746415930644">Chrome-ko datuak zure kontuan (<ph name="USER_EMAIL" />) erabiltzeko eta gordetzeko, idatzi pasaesaldia</translation>
 <translation id="5120334927898581447">Hasi saioa Chrome-n Google-ren beste zerbitzuetan saioa hasten duzunean</translation>
@@ -528,6 +530,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="683440813066116847">Google Chrome Canary kanalean mDNS trafikoa baimentzeko sarrera-araua.</translation>
 <translation id="6841242485723266823">Chrome-ko profilekin, bizitzako alderdi desberdinak bereiz ditzakezu. Gehitu beste profil bat.</translation>
 <translation id="684888714667046800">Ezin da konektatu Internetera. Suebaki bat erabiltzen baduzu, ziurtatu <ph name="PRODUCT_EXE_NAME" /> baimendutakoen zerrendan dagoela.</translation>
+<translation id="6859580922007887573">Aurrera egiteko, sakatu tabuladorea</translation>
 <translation id="6877155553248388166">bilaketa-eremuaren beheko eskuineko ertza: % <ph name="RIGHT" /> eskuinean, % <ph name="BOTTOM" /> behean</translation>
 <translation id="6881299373831449287">Chrome eguneratzen</translation>
 <translation id="6885412569789873916">Chrome Beta aplikazioak</translation>
@@ -627,6 +630,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7849037457735762883">Jarraitu utzi zenuen tokitik: Chrome-k fitxak lehenera ditzake berrabiarazten duzun bakoitzean. Aukera hori aktibatzeko, joan hona:</translation>
 <translation id="7872446069773932638">Deskargatzen… <ph name="SECONDS" /> segundo geratzen dira.</translation>
 <translation id="7886087451482920026">Hautatu testua Google Lens-ekin</translation>
+<translation id="7887929410013642057">Erakutsi beti AA moduaren lasterbideak</translation>
 <translation id="7890208801193284374">Ordenagailua partekatzen baduzu, lagunek eta familiako kideek euren kontuak erabilita ibil daitezke Interneten, nahi duten moduan.</translation>
 <translation id="7896673875602241923">Norbaitek <ph name="ACCOUNT_EMAIL_LAST" /> gisa hasi du saioa Chrome-n ordenagailu hau erabilita. Zure informazioa bereizita izateko, sortu beste Chrome erabiltzaile bat.</translation>
 <translation id="7904985524660297937">Probatu Google Chrome-ko Gemini</translation>

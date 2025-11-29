@@ -496,6 +496,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3114507951000454849">Čitajte današnje vesti <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Još detalja</translation>
 <translation id="3123734510202723619">Saopštenja</translation>
+<translation id="3134385238404760368">Nema nedavnih kartica</translation>
 <translation id="314939179385989105">Chrome početna stranica</translation>
 <translation id="3158667104057012316">Sortira se po ručnom redosledu</translation>
 <translation id="3159335509547415276">Saznajte više o blokiranim nalozima</translation>
@@ -817,6 +818,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4577115723294378384">Sortiraj od A do Z</translation>
 <translation id="4578289292431526768">Idemo</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Pre # minuta}one{Pre # minuta}few{Pre # minuta}other{Pre # minuta}}</translation>
+<translation id="4585751637295612750">Otvorite novu karticu da biste je dodali u pitanje</translation>
 <translation id="4587589328781138893">Sajtovi</translation>
 <translation id="4594952190837476234">Ova oflajn stranica je od <ph name="CREATION_TIME" /> i može da se razlikuje od onlajn verzije.</translation>
 <translation id="4595237294768457124">Otvorite stranicu nove kartice</translation>

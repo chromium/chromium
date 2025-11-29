@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">Будьте в курсе новостей <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Подробнее</translation>
 <translation id="3123734510202723619">Оповещения</translation>
+<translation id="3134385238404760368">Нет недавних вкладок</translation>
 <translation id="314939179385989105">Главная страница Chrome</translation>
 <translation id="3158667104057012316">Сортировка вручную</translation>
 <translation id="3159335509547415276">О заблокированных аккаунтах</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">По алфавиту (от А до Я)</translation>
 <translation id="4578289292431526768">Начать</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# минуту назад}one{# минуту назад}few{# минуты назад}many{# минут назад}other{# минуты назад}}</translation>
+<translation id="4585751637295612750">Откройте новую вкладку и добавьте ее к вопросу</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4594952190837476234">Офлайн-версия страницы сохранена <ph name="CREATION_TIME" />. Она может отличаться от онлайн-версии.</translation>
 <translation id="4595237294768457124">Откройте новую вкладку.</translation>

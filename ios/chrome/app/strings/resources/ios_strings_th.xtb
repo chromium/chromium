@@ -261,6 +261,7 @@
 <translation id="1962969542251276847">หน้าจอล็อก</translation>
 <translation id="1963976881984600709">การปกป้องแบบมาตรฐาน</translation>
 <translation id="1964507856799750384">แตะ<ph name="BEGIN_BOLD" />แอปเบราว์เซอร์<ph name="END_BOLD" /></translation>
+<translation id="1965633132497641148">รหัสความปลอดภัยไม่ถูกต้อง</translation>
 <translation id="1966313166384086081">ข้อมูลเว็บไซต์</translation>
 <translation id="1967461193809857427">{count,plural, =1{ดูแท็บที่ค้างไว้จาก Android ต่อไหม}other{ดูแท็บที่ค้างไว้จาก Android ต่อไหม}}</translation>
 <translation id="1972325230031091483">คุณจะท่องเว็บได้เร็วขึ้นเนื่องจากมีการโหลดเนื้อหาโดยอิงจากหน้าเว็บที่กำลังเข้าชมโดยที่คุณไม่ต้องขอ</translation>
@@ -575,6 +576,7 @@
 <translation id="3186796054637504691">ล้างประวัติการเข้าชมและข้อมูลเว็บไซต์</translation>
 <translation id="3190736958609431397">ยกเลิกการติดตาม</translation>
 <translation id="3208260410153224535">องค์กรปิดการลงชื่อเข้าใช้ไว้ บุ๊กมาร์ก รหัสผ่านใหม่ และข้อมูลอื่นๆ จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น</translation>
+<translation id="3211969308836412674">เลิกปักหมุดเว็บไซต์</translation>
 <translation id="3213807041830307252">เลือกซื้อ แปล และระบุสิ่งที่คุณเห็นโดยใช้กล้องและแกลเลอรีรูปภาพ</translation>
 <translation id="3214379938835224220">คุณออกจากระบบในขั้นตอนการรีเซ็ต iPad แตะ "ต่อไป" ด้านล่างเพื่อลงชื่อเข้าใช้</translation>
 <translation id="3218296450292600703">การลงชื่อเข้าใช้ด้วยบัญชีที่จัดการจะช่วยแยกการท่องเว็บที่เกี่ยวข้องกับองค์กรของคุณ (รวมถึงแท็บ ประวัติการเข้าชม และรหัสผ่าน) ออกจากการท่องเว็บอื่นๆ</translation>
@@ -604,6 +606,7 @@
 <translation id="3324193307694657476">ที่อยู่ 2</translation>
 <translation id="3328801116991980348">ข้อมูลไซต์</translation>
 <translation id="333229797575847124">วิธีเปิดใช้ฟีเจอร์นี้</translation>
+<translation id="3344233834747405775">ชื่อผู้ถือบัตรไม่ถูกต้อง</translation>
 <translation id="3344485292736684439">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}}</translation>
 <translation id="334690320928261823">แท็บล่าสุด</translation>
 <translation id="3349031117032695619">บล็อกป๊อปอัป</translation>
@@ -1098,6 +1101,7 @@
 <translation id="5220945116117011963">สร้างกิจกรรมในปฏิทินจากวันที่</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">แก้ไขเว็บไซต์</translation>
 <translation id="5233638681132016545">แท็บใหม่</translation>
 <translation id="5234094073825090254">{count,plural, =1{บันทึกบุ๊กมาร์กไว้ในบัญชี Google {email} แล้ว}other{บันทึกบุ๊กมาร์กไว้ในบัญชี Google {email} แล้ว}}</translation>
 <translation id="5234764350956374838">ปิด</translation>
@@ -1324,6 +1328,7 @@
 <translation id="6066301408025741299">แตะเพื่อยกเลิก</translation>
 <translation id="6074656473835429958">รับการแจ้งเตือน</translation>
 <translation id="607620096698446287">อัปโหลด <ph name="FILENAME" /> (<ph name="FILESIZE" />) ไม่ได้</translation>
+<translation id="6076618233738284461">ปักหมุดเว็บไซต์</translation>
 <translation id="6077126322656614846">อนุญาตให้เข้าถึงกล้อง</translation>
 <translation id="607730456154980869">ค้นหาคำตอบได้เร็วขึ้นด้วย Gemini ใน Chrome</translation>
 <translation id="6078236141387574983">ปรับความสูงของชีตใหม่</translation>
@@ -1539,6 +1544,7 @@
 <translation id="6761393919622941301">เสียง</translation>
 <translation id="6770452996697898492">[จองแล้ว]</translation>
 <translation id="6779455296366983087">ข้อมูลการท่องเว็บจะถูกลบ</translation>
+<translation id="6782531425936234573">ส่งออกข้อมูล</translation>
 <translation id="6791425686608802741">แตะ "เพิ่มแท็บไปยังกลุ่มใหม่"</translation>
 <translation id="6794476726485507147">เลือกวันที่และเวลาที่จะรับการแจ้งเตือนเกี่ยวกับการช่วยเตือนให้กลับมาดูหน้านี้</translation>
 <translation id="6795481620482106033">ข้อมูลไม่ถูกต้อง</translation>

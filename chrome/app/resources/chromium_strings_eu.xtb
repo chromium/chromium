@@ -269,6 +269,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4023601594785368013">Jatorrizko hizkuntza: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Ireki estekak Chromium-en edozein aplikaziotatik. Gainera, errazago atzitzeko, zereginen barran ainguratuko da.</translation>
 <translation id="4036079820698952681">Lagundu Chromium hobetzen <ph name="BEGIN_LINK" />oraingo ezarpenen<ph name="END_LINK" /> berri emanda</translation>
+<translation id="4039097928859803404">Erakutsi beti AA moduaren lasterbideak</translation>
 <translation id="4050175100176540509">Segurtasun-hobekuntza garrantzitsuak eta eginbide berriak dituzu erabilgarri azken bertsioan.</translation>
 <translation id="4055805654398742145">Pasahitz-kudeatzailea</translation>
 <translation id="4061696872429826774">Ordenagailuko beste programa batek Chromium-en funtzionamenduari agian eragingo dion luzapen bat gehitu du.
@@ -505,6 +506,7 @@ Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio
 <translation id="6847869444787758381">Chromium-ek abisatu egingo dizu pasahitzak inoiz arriskuan badaude</translation>
 <translation id="684888714667046800">Ezin da konektatu Internetera. Suebaki bat erabiltzen baduzu, ziurtatu <ph name="PRODUCT_EXE_NAME" /> baimendutakoen zerrendan dagoela.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
+<translation id="6859580922007887573">Aurrera egiteko, sakatu tabuladorea</translation>
 <translation id="6862030660799253820">Egin bilaketak irudi honetan irudi-bilaketarekin</translation>
 <translation id="6873893289264747459">"<ph name="EXTENSION_NAME" />" elementuak malwarea duela hauteman du Chromium-ek</translation>
 <translation id="6877155553248388166">bilaketa-eremuaren beheko eskuineko ertza: % <ph name="RIGHT" /> eskuinean, % <ph name="BOTTOM" /> behean</translation>
@@ -590,6 +592,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7872446069773932638">Deskargatzen… <ph name="SECONDS" /> segundo geratzen dira.</translation>
 <translation id="7873537467422636035">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko datuak<ph name="END_LINK" /></translation>
 <translation id="7877212753140190672">Egin irudi honi buruzko galdera bat</translation>
+<translation id="7887929410013642057">Erakutsi beti AA moduaren lasterbideak</translation>
 <translation id="7888981273428720788">Ezarri Chromium arakatzaile lehenetsi gisa</translation>
 <translation id="7934340546140346950">Chromium-ek konexio ez-seguruen maila HTTPSra igotzen du automatikoki posible denean</translation>
 <translation id="7937630085815544518">Chromium-en <ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu saioa. Saioa berriro hasteko, erabili hasiera batean erabilitako kontu bera.</translation>
@@ -637,6 +640,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8416884904046428725">Chromium-ek zeu zarela egiaztatu behar du datu batzuk zure Google-ko kontuan gorde eta gailu guztietan erabili baino lehen. Orain amaitzen baduzu saioa, ezabatu egingo dira datuak.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Exekutatu Chromium berriro egun bateko epean}other{Exekutatu Chromium berriro # eguneko epean}}</translation>
 <translation id="8438543370129609977">Irudi-bilaketa erabiltzen duzunean, orriaren izena, URLa eta edukia, PDFak barne, zerbitzariari bidaltzen zaizkio. <ph name="LEARN_MORE" /></translation>
+<translation id="8447525028100794994">Lortu Chromium-en irudi-bilaketa erabiltzeari buruzko informazio gehiago</translation>
 <translation id="8453117565092476964">Instalatzailearen artxiboa hondatuta dago edo baliogabea da. Deskargatu Chromium berriro.</translation>
 <translation id="8458614432758743027">Windows 10 edo sistema berriagoa behar da Chromium erabiltzeko.</translation>
 <translation id="8463672209299734063">Aukerakoa: lagundu Chromium OS-ren eginbideak eta errendimendua hobetzen Google-ri diagnostiko- eta erabilera-datuak automatikoki bidalita.</translation>

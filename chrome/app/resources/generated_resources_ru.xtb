@@ -1348,6 +1348,7 @@
 <translation id="1907044622262489040">Использовать голосовой ввод. Нажмите Поиск + D и продиктуйте текст.</translation>
 <translation id="1907659324308286326">Некоторым устройствам Thunderbolt и USB4 для корректной работы требуется доступ к памяти</translation>
 <translation id="1908591798274282246">Восстановить закрытую группу</translation>
+<translation id="1909677622563887527">Браузером Chrome управляет автоматизированное тестовое ПО.</translation>
 <translation id="1909880997794698664">Всегда запускать устройство в режиме киоска?</translation>
 <translation id="1910721550319506122">Добро пожаловать!</translation>
 <translation id="1910736334623230603">Поиск по нескольким изображениям невозможен. Добавляйте файлы по одному.</translation>
@@ -1702,6 +1703,7 @@
 <translation id="2144536955299248197">Инструмент просмотра сертификатов: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Разработка приложений для Android в Linux</translation>
 <translation id="2145468727756963476">Gemini обновляется…</translation>
+<translation id="2145688286532368277">Оптимизация JavaScript для этого сайта отключена.</translation>
 <translation id="2145917706968602070">Убедитесь, что телефон находится рядом, он разблокирован и на нем включены Bluetooth и Wi-Fi.</translation>
 <translation id="2146263598007866206">Сайты могут автоматически скачивать сразу несколько связанных файлов. Это позволяет вам экономить время.</translation>
 <translation id="2147218225094845757">Скрыть боковую панель</translation>
@@ -3700,6 +3702,7 @@
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3528498924003805721">Ярлыки</translation>
 <translation id="3529851166527095708">Адреса и другие данные</translation>
+<translation id="3530919970074558307">Отменить выбор группы</translation>
 <translation id="3531070080754387701">Microsoft 365 не может открыть файл "<ph name="FILE_NAMES" />" из этой папки</translation>
 <translation id="3531883061432162622">Посмотреть список для чтения и закладки можно в меню "Закладки и списки".</translation>
 <translation id="3532273508346491126">Управление синхронизацией</translation>
@@ -4053,6 +4056,7 @@
 <translation id="3757567010566591880">Открепить от панели инструментов</translation>
 <translation id="3757645900890881944">Инструменты поиска</translation>
 <translation id="3757733214359997190">Ничего не найдено.</translation>
+<translation id="3757825964096339958">Выбрать группу</translation>
 <translation id="375841316537350618">Скрипт прокси-сервера скачивается…</translation>
 <translation id="3758887577462995665">Совет.</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" />: месяц</translation>
@@ -4351,6 +4355,7 @@
 
   Запустить компонент "<ph name="CONTROL_PANEL_APPLET_NAME" />"?</translation>
 <translation id="3942420633017001071">Диагностика</translation>
+<translation id="3942558231079086184">Оптимизация JavaScript для этого сайта отключена. Включите эту функцию, чтобы повысить скорость работы.</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Вставить</translation>
 <translation id="3945513714196326460">Сократите название.</translation>
@@ -4842,6 +4847,7 @@
 <translation id="4292613336957320546">Ускорение</translation>
 <translation id="429312253194641664">На сайте воспроизводятся медиафайлы</translation>
 <translation id="4293219510510666933">Находите посещенные сайты в истории браузера, формулируя запросы простыми словами. Вы также можете задавать вопросы и получать ответы, основанные на этой истории. Параметр включен.</translation>
+<translation id="429344752071832554">Отменить выбор группы</translation>
 <translation id="4294392694389031609">Файл "<ph name="FILE_NAME" />" удален из истории скачиваний, но он по-прежнему доступен на вашем устройстве.</translation>
 <translation id="4295072614469448764">Приложение доступно в терминале. Кроме того, на панель запуска мог быть добавлен значок.</translation>
 <translation id="4295979599050707005">Если вы разрешаете сайтам, приложениям и расширениям в Chrome и Google Play использовать данные аккаунта <ph name="USER_EMAIL" />, войдите ещё раз. Вы также можете удалить этот аккаунт. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -4997,6 +5003,7 @@
 <translation id="4405224443901389797">Переместить в…</translation>
 <translation id="4405781821077215583">Увеличивайте или уменьшайте размер текста и элементов на экране</translation>
 <translation id="4406308048672435032">Вы можете сделать вкладку неактивной или обновить ее, чтобы снова увидеть полный список</translation>
+<translation id="4406881185911439342">Выбрать группу</translation>
 <translation id="4406883609789734330">Автоматические субтитры</translation>
 <translation id="4406963243402726564">Несохраненные данные</translation>
 <translation id="4408599188496843485">&amp;Справка</translation>
@@ -5616,7 +5623,6 @@
 <translation id="4841741146571978176">Нет обязательной виртуальной машины. Чтобы продолжить, установите ВМ "<ph name="VM_TYPE" />".</translation>
 <translation id="4842976633412754305">Страница пытается загрузить скрипты из непроверенных источников.</translation>
 <translation id="4844333629810439236">Другие раскладки</translation>
-<translation id="4844347226195896707">Просматривайте пароли, даже если не используете Chrome или Android. Для этого войдите в систему на сайте &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;.</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4846628405149428620">Укажите, где этот сайт может сохранять изменения</translation>
 <translation id="4846680374085650406">Параметр настроен в соответствии с рекомендациями администратора.</translation>
@@ -10201,6 +10207,7 @@
 <translation id="8032569120109842252">Вы подписаны</translation>
 <translation id="8033827949643255796">Выделено.</translation>
 <translation id="8033958968890501070">Время истекло</translation>
+<translation id="8034399942062051455">Оптимизация V8 отключена</translation>
 <translation id="8034697324150621782">Поменять местами с верхним окном</translation>
 <translation id="8035059678007243127">Страница возвратного кеша в режиме инкогнито: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Помочь в улучшении автозаполнения</translation>

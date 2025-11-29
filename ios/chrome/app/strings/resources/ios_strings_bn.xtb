@@ -261,6 +261,7 @@
 <translation id="1962969542251276847">স্ক্রিন লক করুন</translation>
 <translation id="1963976881984600709">স্ট্যান্ডার্ড সুরক্ষা</translation>
 <translation id="1964507856799750384"><ph name="BEGIN_BOLD" />Browser অ্যাপ<ph name="END_BOLD" /> বিকল্পে ট্যাপ করুন</translation>
+<translation id="1965633132497641148">ভুল নিরাপত্তা কোড</translation>
 <translation id="1966313166384086081">সাইট ডেটা</translation>
 <translation id="1967461193809857427">{count,plural, =1{Android-এ আপনি যে ট্যাব ইতিমধ্যে ব্যবহার করেছেন সেগুলি দেখবেন?}one{Android-এ আপনি যে ট্যাব ইতিমধ্যে ব্যবহার করেছেন সেগুলি দেখবেন?}other{Android-এ আপনি যে ট্যাব ইতিমধ্যে ব্যবহার করেছেন সেগুলি দেখবেন?}}</translation>
 <translation id="1972325230031091483">আপনি আরও দ্রুত ব্রাউজ করবেন কারণ, আপনার বর্তমান ওয়েবপেজ দেখার উপরে ভিত্তি করে কন্টেন্ট নিজে থেকে লোড হয়</translation>
@@ -575,6 +576,7 @@
 <translation id="3186796054637504691">ইতিহাস ও ওয়েবসাইটের ডেটা মুছুন</translation>
 <translation id="3190736958609431397">ট্র্যাক করার বিকল্প বন্ধ করুন</translation>
 <translation id="3208260410153224535">আপনার প্রতিষ্ঠান সাইন-ইন করার সুবিধা বন্ধ করে দিয়েছে। নতুন বুকমার্ক, পাসওয়ার্ড ও আরও অনেক কিছু শুধুমাত্র এই ডিভাইসে সেভ হবে।</translation>
+<translation id="3211969308836412674">সাইট আনপিন করুন</translation>
 <translation id="3213807041830307252">আপনার ক্যামেরা ও ফটো গ্যালারি ব্যবহার করে যা দেখেন তা কিনুন, অনুবাদ ও শনাক্ত করুন।</translation>
 <translation id="3214379938835224220">আপনার iPad রিসেটের অংশ হিসেবে আপনি সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য নিচে 'চালিয়ে যান' বোতামে ট্যাপ করুন।</translation>
 <translation id="3218296450292600703">আপনার ম্যানেজ করা অ্যাকাউন্ট দিয়ে সাইন-ইন করলে এটি আপনার প্রতিষ্ঠানের সাথে সম্পর্কিত ব্রাউজিং (ট্যাব, ইতিহাস ও পাসওয়ার্ড সহ) অন্য ব্রাউজিং থেকে আলাদা রাখতে সাহায্য করে</translation>
@@ -604,6 +606,7 @@
 <translation id="3324193307694657476">ঠিকানা ২</translation>
 <translation id="3328801116991980348">সাইট তথ্য</translation>
 <translation id="333229797575847124">কীভাবে এই ফিচার চালু করতে হয়</translation>
+<translation id="3344233834747405775">কার্ডহোল্ডারের নাম ভুল আছে</translation>
 <translation id="3344485292736684439">{count,plural, =1{আপনার অ্যাকাউন্ট {email}-এর মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}one{আপনার অ্যাকাউন্ট {email}-এর মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}other{আপনার অ্যাকাউন্ট {email}-এর মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}}</translation>
 <translation id="334690320928261823">সাম্প্রতিক ট্যাব</translation>
 <translation id="3349031117032695619">পপ-আপ ব্লক করুন</translation>
@@ -1098,6 +1101,7 @@
 <translation id="5220945116117011963">তারিখ থেকে ক্যালেন্ডার ইভেন্ট তৈরি করুন</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">সাইট এডিট করুন</translation>
 <translation id="5233638681132016545">নতুন ট্যাব</translation>
 <translation id="5234094073825090254">{count,plural, =1{আপনার Google অ্যাকাউন্ট {email}-এ যে বুকমার্ক সেভ করা আছে।}one{আপনার Google অ্যাকাউন্ট {email}-এ যেসব বুকমার্ক সেভ করা আছে।}other{আপনার Google অ্যাকাউন্ট {email}-এ যেসব বুকমার্ক সেভ করা আছে।}}</translation>
 <translation id="5234764350956374838">খারিজ</translation>
@@ -1325,6 +1329,7 @@
 <translation id="6066301408025741299">বাতিল করতে আলতো চাপুন৷</translation>
 <translation id="6074656473835429958">বিজ্ঞপ্তি পান</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) আপলোড করা যায়নি</translation>
+<translation id="6076618233738284461">সাইট পিন করুন</translation>
 <translation id="6077126322656614846">ক্যামেরা অ্যাক্সেসের অনুমতি আছে</translation>
 <translation id="607730456154980869">Chrome-এ Gemini ব্যবহার করে আরও দ্রুত উত্তর পান</translation>
 <translation id="6078236141387574983">শিটের উচ্চতা আবার অ্যাডজাস্ট করুন</translation>

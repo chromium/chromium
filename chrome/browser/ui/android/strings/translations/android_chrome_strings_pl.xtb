@@ -1337,6 +1337,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="670498945988402717">Sprawdzano wczoraj</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
 <translation id="671481426037969117">Licznik czasu w aplikacji <ph name="FQDN" /> dobiegł końca. Jutro zacznie działać od nowa.</translation>
+<translation id="6716434912087331834">Aby przywrócić nowe okno, zmniejsz łączną liczbę aktywnych okien do maksymalnie <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Nieaktywne okna są usuwane po 6 miesiącach.</translation>
 <translation id="6723740634201835758">Na Twoim koncie Google</translation>
 <translation id="6734310707649923383">Możesz przejrzeć odwiedzone strony lub usunąć je z historii</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, przypięta karta incognito nagrywania</translation>
@@ -1654,6 +1655,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7942131818088350342">Przeglądarka <ph name="PRODUCT_NAME" /> jest nieaktualna.</translation>
 <translation id="7944772052836377867">Synchronizacja musi potwierdzić Twoją tożsamość</translation>
 <translation id="7951102827450076904">Zawsze otwieraj pobrane pliki PDF</translation>
+<translation id="7952479614398473176">Aby otworzyć nowe okno, zmniejsz łączną liczbę aktywnych okien do maksymalnie <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7957413488482743710">Karta wirtualna ukrywa Twoją prawdziwą kartę, aby chronić Cię przed oszustwami. <ph name="BEGIN_LINK1" />Więcej informacji o kartach wirtualnych<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Karty na tym urządzeniu</translation>
 <translation id="7961926449547174351">Został wyłączony dostęp do pamięci. Otwórz ustawienia i włącz go.</translation>

@@ -496,6 +496,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3114507951000454849">Skaitykite šiandienos naujienas <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Daugiau išsamios informacijos</translation>
 <translation id="3123734510202723619">Pranešimai</translation>
+<translation id="3134385238404760368">Nėra naujausių skirtukų</translation>
 <translation id="314939179385989105">Pagrindinis „Chrome“ puslapis</translation>
 <translation id="3158667104057012316">Rūšiuojama neautomatiškai</translation>
 <translation id="3159335509547415276">Sužinokite apie užblokuotas paskyras</translation>
@@ -817,6 +818,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4577115723294378384">Rūšiuoti nuo A iki Ž</translation>
 <translation id="4578289292431526768">Pirmyn</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Prieš 1 minutę}one{Prieš # minutę}few{Prieš # minutes}many{Prieš # minutės}other{Prieš # minučių}}</translation>
+<translation id="4585751637295612750">Atidarykite naują skirtuką, kad pridėtumėte prie klausimo</translation>
 <translation id="4587589328781138893">Svetainės</translation>
 <translation id="4594952190837476234">Šis neprisijungus naudojamas puslapis sukurtas <ph name="CREATION_TIME" />, todėl gali skirtis nuo prisijungus pateiktos versijos.</translation>
 <translation id="4595237294768457124">Atidarykite naujo skirtuko puslapį</translation>
@@ -1337,6 +1339,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="670498945988402717">Tikrinta vakar</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> laikmatis sustojo. Jis vėl bus paleistas rytoj.</translation>
+<translation id="6716434912087331834">Jei norite atkurti naują langą, sumažinkite bendrą aktyvių langų skaičių iki <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ar mažiau. Neaktyvūs langai ištrinami po šešių mėnesių.</translation>
 <translation id="6723740634201835758">„Google“ paskyroje</translation>
 <translation id="6734310707649923383">Galite peržiūrėti puslapius, kuriuose lankėtės, arba ištrinti juos iš istorijos</translation>
 <translation id="6737429434215739253">„<ph name="TAB_TITLE" />“, prisegtas įrašantis inkognito skirtukas</translation>
@@ -1654,6 +1657,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7942131818088350342">„<ph name="PRODUCT_NAME" />“ pasenęs.</translation>
 <translation id="7944772052836377867">Sinchronizuojant reikia patvirtinti jūsų tapatybę</translation>
 <translation id="7951102827450076904">Visada atidaryti atsisiųstus PDF failus</translation>
+<translation id="7952479614398473176">Jei norite atidaryti naują langą, sumažinkite bendrą aktyvių langų skaičių iki <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ar mažiau.</translation>
 <translation id="7957413488482743710">Virtualioji kortelė slepia tikrąją kortelę, kad padėtų apsaugoti jus nuo galimų apgaulių. <ph name="BEGIN_LINK1" />Sužinokite daugiau apie virtualiąsias korteles<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Skirtukai šiame įrenginyje</translation>
 <translation id="7961926449547174351">Išjungėte prieigą prie saugyklos. Eikite į „Nustatymų“ skiltį ir ją įgalinkite.</translation>

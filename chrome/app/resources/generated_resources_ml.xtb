@@ -1343,6 +1343,7 @@
 <translation id="1907044622262489040">നിങ്ങളുടെ ശബ്ദം ഉപയോഗിച്ച് ടൈപ്പ് ചെയ്യുക. Search + D അമർത്തിയ ശേഷം സംസാരിച്ച് തുടങ്ങുക.</translation>
 <translation id="1907659324308286326">ചില Thunderbolt അല്ലെങ്കിൽ USB4 ആക്സസറികൾക്ക് ശരിയായി പ്രവർത്തിക്കാൻ മെമ്മറി ആക്സസ് ആവശ്യമാണ്.</translation>
 <translation id="1908591798274282246">അടച്ച ഗ്രൂപ്പ് വീണ്ടും തുറക്കുക</translation>
+<translation id="1909677622563887527">ഓട്ടോമേറ്റ് ചെയ്ത ടെസ്റ്റ് സോഫ്റ്റ്‌വെയറാണ് Chrome-നെ നിയന്ത്രിക്കുന്നത്</translation>
 <translation id="1909880997794698664">കിയോസ്‌ക് മോഡിൽ ഈ ഉപകരണം ശാശ്വതമായി നിലനിർത്തണമെന്ന് ഉറപ്പാണോ?</translation>
 <translation id="1910721550319506122">സ്വാഗതം!</translation>
 <translation id="1910736334623230603">ഒന്നിലധികം ചിത്രങ്ങൾ തിരയാനാകില്ല. ഒരു സമയം ഒരു ചിത്രം ചേർക്കുക.</translation>
@@ -1697,6 +1698,7 @@
 <translation id="2144536955299248197">സര്‍‌ട്ടിഫിക്കറ്റ് കാഴ്ച്ചക്കാരന്‍: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android ആപ്പ് വികസിപ്പിക്കൽ</translation>
 <translation id="2145468727756963476">Gemini റീഫ്രഷ് ചെയ്യുന്നു...</translation>
+<translation id="2145688286532368277">ഈ സൈറ്റിന് JavaScript ഒപ്റ്റിമൈസേഷൻ ഓഫാണ്.</translation>
 <translation id="2145917706968602070">നിങ്ങളുടെ ഫോൺ സമീപത്തുണ്ടെന്നും അൺലോക്ക് ചെയ്തിട്ടുണ്ടെന്നും Bluetooth-ഉം വൈഫൈയും ഓണാക്കിയിട്ടുണ്ടെന്നും ഉറപ്പാക്കുക.</translation>
 <translation id="2146263598007866206">നിങ്ങളുടെ സമയം ലാഭിക്കാൻ, സൈറ്റുകൾ ബന്ധപ്പെട്ട ഫയലുകൾ ഒന്നിച്ച് സ്വയമേവ ഡൗൺലോഡ് ചെയ്‌തേക്കാം</translation>
 <translation id="2147218225094845757">സൈഡ് പാനൽ മറയ്‌ക്കുക</translation>
@@ -4347,6 +4349,7 @@
 
   <ph name="CONTROL_PANEL_APPLET_NAME" />, ആരംഭിക്കണോ?</translation>
 <translation id="3942420633017001071">പ്രശ്‌നനിർണ്ണയം</translation>
+<translation id="3942558231079086184">ഈ സൈറ്റിന് JavaScript ഒപ്റ്റിമൈസേഷൻ ഓഫാണ്. കൂടുതൽ മികച്ച പ്രകടനത്തിനായി പ്രവർത്തനക്ഷമമാക്കുക.</translation>
 <translation id="3943582379552582368">&amp;പിന്നോട്ട്</translation>
 <translation id="3943857333388298514">ഒട്ടിക്കുക</translation>
 <translation id="3945513714196326460">ചെറിയ പേര് പരീക്ഷിക്കുക</translation>
@@ -5615,7 +5618,6 @@
 <translation id="4841741146571978176">ആവശ്യമായ വെർച്വൽ മെഷീൻ നിലവിലില്ല. തുടരുന്നതിന് <ph name="VM_TYPE" /> സജ്ജീകരിച്ച് നോക്കുക</translation>
 <translation id="4842976633412754305">ഈ പേജ്, പരിശോധിച്ചുറപ്പി ഉറവിടങ്ങളിൽ നിന്ന് സ്‌ക്രിപ്‌റ്റുകൾ ലോഡ് ചെയ്യാൻ ശ്രമിക്കുന്നു.</translation>
 <translation id="4844333629810439236">മറ്റ് കീബോർഡുകൾ</translation>
-<translation id="4844347226195896707">&lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt; -ലേക്ക് സൈൻ ഇൻ ചെയ്‌ത് നിങ്ങൾ Chrome അല്ലെങ്കിൽ Android ഉപയോഗിക്കാത്തപ്പോൾ പോലും നിങ്ങളുടെ പാസ്‌വേഡുകൾ കാണുക</translation>
 <translation id="484462545196658690">സ്വയമേവ</translation>
 <translation id="4846628405149428620">ഈ സൈറ്റിന് മാറ്റങ്ങൾ എവിടെ സംരക്ഷിക്കാനാകുമെന്നത് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4846680374085650406">നിങ്ങൾ ഈ ക്രമീകരണത്തിനായി അഡ്‌മിനിസ്‌ട്രേറ്ററുടെ ശുപാർശ പാലിക്കുന്നു.</translation>
@@ -10194,6 +10196,7 @@
 <translation id="8032569120109842252">ഫോളോയിംഗ്</translation>
 <translation id="8033827949643255796">തിരഞ്ഞെടുത്തു</translation>
 <translation id="8033958968890501070">കാലഹരണപ്പെട്ടു</translation>
+<translation id="8034399942062051455">V8 ഒപ്റ്റിമൈസേഷൻ ഓഫാണ്</translation>
 <translation id="8034697324150621782">മുകളിലെ കാഴ്‌ച ഉപയോഗിച്ച് സ്വാപ്പ് ചെയ്യുക</translation>
 <translation id="8035059678007243127">അദൃശ്യ ബാക്ക്-ഫോർവേഡ് കാഷെ പേജ്: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">സ്വയമേവ പൂരിപ്പിക്കൽ മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>

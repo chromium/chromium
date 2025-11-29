@@ -271,6 +271,7 @@
 <translation id="4022972681110646219">Traducir pantalla</translation>
 <translation id="4023601594785368013">Idioma original: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ChromeOS debe reiniciarse para que se aplique la actualización.</translation>
+<translation id="4039097928859803404">Mostrar siempre los accesos directos al Modo IA</translation>
 <translation id="4050175100176540509">La última versión proporciona importantes mejoras de seguridad y nuevas funciones.</translation>
 <translation id="4053720452172726777">Personalizar y controlar Google Chrome</translation>
 <translation id="408393047846373801">Para acceder a tus contraseñas y más en todos tus dispositivos, accede a Chrome. Esta contraseña se guardará en tu Cuenta de Google después de que accedas.</translation>
@@ -352,6 +353,7 @@
 <translation id="4970880042055371251">Versión de ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Haz clic en "Administrador de contraseñas de Google"</translation>
+<translation id="5043786843026425788">Más información para realizar búsquedas con Google Lens en Chrome</translation>
 <translation id="504867494566807945">Abre vínculos en Chrome desde cualquier app. Además, para facilitar el acceso, se fija en la barra de tareas.</translation>
 <translation id="5114340746415930644">Ingresa tu frase de contraseña para usar y guardar datos de Chrome en tu cuenta, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Ingresa a Chrome cuando accedas a otros servicios de Google</translation>
@@ -521,6 +523,7 @@
 <translation id="683440813066116847">Regla de entrada para que Google Chrome Canary permita el tráfico mDNS.</translation>
 <translation id="6841242485723266823">Los perfiles de Chrome te ayudan a separar diferentes aspectos de tu vida. Agrega un perfil nuevo ahora.</translation>
 <translation id="684888714667046800">No se puede establecer la conexión a Internet. Si usas un firewall, asegúrate de que <ph name="PRODUCT_EXE_NAME" /> esté en la lista de elementos permitidos.</translation>
+<translation id="6859580922007887573">Presiona Tab para continuar</translation>
 <translation id="6877155553248388166">esquina inferior derecha del área de búsqueda: derecha <ph name="RIGHT" />%, inferior <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Actualizando Chrome</translation>
 <translation id="6885412569789873916">Apps de Chrome Beta</translation>
@@ -620,6 +623,7 @@
 <translation id="7849037457735762883">Retoma tu actividad desde donde la dejaste: Chrome puede restablecer tus pestañas cada vez que reinicias. Para activar esta opción, ve a</translation>
 <translation id="7872446069773932638">Descargando… Segundos restantes: <ph name="SECONDS" /></translation>
 <translation id="7886087451482920026">Selecciona texto con Google Lens</translation>
+<translation id="7887929410013642057">Mostrar siempre los accesos directos al Modo IA</translation>
 <translation id="7890208801193284374">Si compartes una computadora, tus amigos y familiares pueden navegar de forma independiente y configurar Chrome según los gustos individuales.</translation>
 <translation id="7896673875602241923">Alguien accedió anteriormente a Google Chrome en esta computadora como <ph name="ACCOUNT_EMAIL_LAST" />. Crea un usuario de Chrome nuevo para mantener tu información por separado.</translation>
 <translation id="7904985524660297937">Prueba Gemini en Google Chrome</translation>

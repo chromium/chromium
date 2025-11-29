@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">קראת חדשות היום? <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">פרטים נוספים</translation>
 <translation id="3123734510202723619">הודעות</translation>
+<translation id="3134385238404760368">אין לך כרטיסיות מהזמן האחרון</translation>
 <translation id="314939179385989105">‏דף הבית של Chrome</translation>
 <translation id="3158667104057012316">בתהליך מיון לפי סדר ידני</translation>
 <translation id="3159335509547415276">מידע על חשבונות חסומים</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">מיון בסדר אלפביתי עולה</translation>
 <translation id="4578289292431526768">קדימה, נתחיל</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{לפני דקה}one{לפני # דקות}two{לפני # דקות}other{לפני # דקות}}</translation>
+<translation id="4585751637295612750">אפשר לפתוח כרטיסייה חדשה כדי להוסיף אותה לשאלה</translation>
 <translation id="4587589328781138893">אתרים</translation>
 <translation id="4594952190837476234">הדף האופליין הזה נוצר ב-<ph name="CREATION_TIME" /> ויכול להיות שהגרסה המקוונת שלו שונה.</translation>
 <translation id="4595237294768457124">פותחים את הדף "כרטיסייה חדשה"</translation>

@@ -115,6 +115,7 @@
 <translation id="2241587408274973373">Tarjetas de pestañas nuevas</translation>
 <translation id="2241634353105152135">Solo esta vez</translation>
 <translation id="2253414712144136228">Quitar <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="2281098328019574668">Recibe notificaciones sobre estadísticas que mejoran tu experiencia en Chrome</translation>
 <translation id="228293613124499805">Es probable que la mayoría de los sitios que visitas guarden datos en tu dispositivo, a menudo para mejorar tu experiencia, ya que guardan tus preferencias o la información que compartes con ellos. Te recomendamos que mantengas esta configuración activada.</translation>
 <translation id="2289270750774289114">Preguntarme cuando un sitio intente conectarse a dispositivos Bluetooth cercanos (recomendado)</translation>
 <translation id="2315043854645842844">El sistema operativo no admite la selección de certificados del lado del cliente.</translation>
@@ -573,6 +574,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="7260727271532453612">Permitidos: <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos de realidad virtual. Cuando está desactivada, los sitios no pueden usar dispositivos de realidad virtual.</translation>
 <translation id="728412880473384942">Los sitios son más rápidos, pero menos seguros</translation>
+<translation id="7324836168971967994">Sugerencias personalizadas para ti</translation>
 <translation id="7366415735885268578">Agregar un sitio</translation>
 <translation id="7368695150573390554">Se borrarán los datos sin conexión</translation>
 <translation id="7369678931043226462">La hoja inferior de personalización de la página Nueva pestaña está abierta a media altura</translation>

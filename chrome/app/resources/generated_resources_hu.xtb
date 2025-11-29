@@ -5625,7 +5625,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4841741146571978176">A kötelező virtuális gép nem létezik. Próbáljon meg beállítani <ph name="VM_TYPE" /> típusú VM-et a folytatáshoz.</translation>
 <translation id="4842976633412754305">Az oldal nem hiteles forrásokból próbál szkripteket betölteni.</translation>
 <translation id="4844333629810439236">Egyéb billentyűzetek</translation>
-<translation id="4844347226195896707">Jelszavait akkor is megtekintheti, ha nem Chrome-ot vagy Androidot használ. Ehhez jelentkezzen be a &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt; webhelyen.</translation>
 <translation id="484462545196658690">Automatikus</translation>
 <translation id="4846628405149428620">Válassza ki, hogy hova menthet módosításokat ez a webhely</translation>
 <translation id="4846680374085650406">A rendszergazda javaslatát fogadja el ennél a beállításnál.</translation>

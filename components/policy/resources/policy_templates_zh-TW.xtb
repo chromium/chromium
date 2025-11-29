@@ -6262,11 +6262,6 @@ Protected Audience API 已淘汰，因此這項政策也已在 <ph name="PRODUCT
       如果在 <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> 要求中定義了 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 屬性，系統會自動擷取所有螢幕的畫面，不必獲得使用者明確授權。
       如果不設定這項政策，則 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 不適用於任何網頁應用程式。
 為進一步保護隱私權，自 <ph name="PRODUCT_NAME" /> 116 版起，這項政策不再支援動態重新整理。因此，使用者可以確定如果在工作階段開始時沒有獲得許可，則在登入後也沒有其他網頁能擷取畫面。</translation>
-<translation id="5351946114524094311">如果設定這項政策，所有的指定資料類型都會從同步處理作業中排除 (包含 <ph name="CHROME_SYNC_NAME" />和漫遊設定檔的同步處理作業)。這有助於縮減漫遊設定檔的大小，或限制上傳到 <ph name="CHROME_SYNC_NAME" />伺服器的資料類型。
-
-      這項政策目前的資料類型為：「apps」、「autofill」、「bookmarks」、「extensions」、「preferences」、「passwords」、「payments」、「productComparison」、「readingList」、「savedTabGroups」、「tabs」、「themes」、「typedUrls」和「wifiConfigurations」。這些名稱有大小寫之分！
-
-      注意：動態政策重新整理功能僅適用於 <ph name="PRODUCT_NAME" /> 123 以上版本。停用「autofill」也會一併停用「payments」。「typedUrls」是指所有的瀏覽記錄。</translation>
 <translation id="5361167871898066799">控制實體鍵盤自動更正功能</translation>
 <translation id="5361708558735884308">如果設定這項政策，使用者可以存取許可清單中的網址，這些網址是 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外項目。請參閱該項政策的說明，瞭解這份清單採用的項目格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://support.google.com/chrome/a?p=url_blocklist_filter_format 網頁中指定的格式，透過這項政策將特定的網路協定、其他網域的子網域、通訊埠或特定路徑設為例外。如要判定是否封鎖某個網址，系統會以條件最精確的篩選器做為判定依據。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的優先順序高於 <ph name="URL_BLOCKLIST_POLICY_NAME" />。這項政策最多只能輸入 1,000 個項目。
 

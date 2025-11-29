@@ -1929,6 +1929,10 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
       Als je het beleid niet toepast, is deze functie niet beschikbaar.</translation>
 <translation id="2342066287156668839">Permanent quotum aanzetten.</translation>
+<translation id="2343774133209251840">Als dit beleid wordt toegepast, retourneren de API's voor opslagquotum een statische waarde die gelijk is aan gebruik + min (10 GiB, schijf afgerond naar boven naar de dichtstbijzijnde 1 GiB).
+Als het beleid niet wordt toegepast, retourneren de API's voor opslagquotum meestal een dynamische waarde die evenredig is aan de totale beschikbare ruimte op het apparaat, ongeacht het gebruik.
+Als het beleid niet is ingesteld, bepalen de lancering van de functie voor voorspelbaar gerapporteerd opslagquotum of de bijbehorende flags het gedrag.
+Deze instelling heeft geen invloed op sites met rechten voor onbeperkte opslag. Dit heeft ook geen invloed op het afgedwongen quotum.</translation>
 <translation id="2344033063256716138">Stel beleid in om te bepalen of gebruikers toegang hebben tot gedeelde gegevens en functies.</translation>
 <translation id="2345547870894930157">DNS-over-HTTPS zonder onbeveiligde fallback aanzetten</translation>
 <translation id="2347695338560092641">Printerstuurprogramma's buiten het proces toegestaan</translation>
@@ -3120,6 +3124,7 @@ Als je het beleid moet gebruiken om het wissen van window.name uit te zetten bij
 <translation id="3169872426103732947">De standaard-URL tonen, toestaan dat gebruikers overschakelen naar de volledige URL</translation>
 <translation id="3171369832001535378">Template voor hostnaam van apparaat in netwerk</translation>
 <translation id="3173844121395372156">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan het beleid <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />.</translation>
+<translation id="3175063338945713984">API's voor opslagquotum retourneren waarden op basis van het lanceringsproces voor de functie.</translation>
 <translation id="3177537290334203187">Gebruik standaardgedrag om te bepalen of websites verzoeken naar netwerkeindpunten kunnen sturen.</translation>
 <translation id="3177802893484440532">Online OCSP/CRL-controles voor lokale vertrouwensinstanties vereisen</translation>
 <translation id="3179533009079100620">Profielkiezer tonen</translation>
@@ -3265,6 +3270,7 @@ De kaart Microsoft Outlook vereist extra beheerdersconfiguratie. Ga naar https:/
 
 Als <ph name="NTPCARDSVISIBLE" /> niet wordt toegepast, wordt de kaart Outlook niet getoond. Als <ph name="NTPCARDSVISIBLE" /> wordt toegepast, wordt de kaart Outlook getoond als dit beleid ook wordt toegepast en er gegevens zijn om te tonen. Als <ph name="NTPCARDSVISIBLE" /> niet is ingesteld, wordt de kaart Outlook getoond als dit beleid ook wordt toegepast, de gebruiker de kaart heeft aangezet in Chrome aanpassen en er gegevens zijn om te tonen.</translation>
 <translation id="3261592499545947104">Aantal seconden vóór het verlopen van een certificaat wanneer de verlenging moet worden geactiveerd</translation>
+<translation id="326182244921429468">API's voor opslagquotum retourneren dynamische waarden.</translation>
 <translation id="3262080895269946462">Toestaan dat WebSQL in contexten van derden standaard wordt uitgezet.</translation>
 <translation id="326341982850521928">Kleurcorrectie aanzetten</translation>
 <translation id="3263892501786842604">Toestaan dat de <ph name="GOOGLE_LENS_PRODUCT_NAME" />-knop wordt getoond in het zoekvak op de pagina Nieuw tabblad, als dit wordt ondersteund.</translation>
@@ -6356,11 +6362,6 @@ Beheerde accounts kunnen geen lid te worden van een gezinsgroep of er zelf een m
       Als de property <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> is gedefinieerd in een <ph name="GET_DISPLAY_MEDIA_SET_NAME" />-verzoek, worden alle schermen automatisch vastgelegd zonder dat hiervoor expliciete gebruikerstoestemming is vereist.
       Als het beleid niet is ingesteld, is <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> niet beschikbaar voor web-apps.
 Omdat we de privacy willen verbeteren, ondersteunt dit beleid vanaf <ph name="PRODUCT_NAME" /> versie 116 geen dynamische vernieuwing meer. Daarom kan de gebruiker er zeker van zijn dat er geen extra pagina's zijn die de schermen kunnen vastleggen na het inloggen (als dit nog niet was toegestaan tijdens de start van de sessie).</translation>
-<translation id="5351946114524094311">Als je het beleid instelt, worden alle verstrekte gegevenstypen uitgesloten van synchronisatie voor zowel <ph name="CHROME_SYNC_NAME" /> als synchronisatie van roamingprofielen. Dit kan handig zijn om het roamingprofiel te verkleinen of het type gegevens te beperken dat wordt geüpload naar de <ph name="CHROME_SYNC_NAME" />-servers.
-
-      De huidige gegevenstypen voor dit beleid zijn: 'apps', 'autofill', 'bookmarks', 'extensions', 'preferences', 'passwords', 'payments', 'productComparison', 'readingList', 'savedTabGroups', 'tabs', 'themes', 'typedUrls', 'wifiConfigurations'. Die namen zijn hoofdlettergevoelig.
-
-      Opmerkingen: Beleid dynamisch vernieuwen wordt alleen ondersteund in <ph name="PRODUCT_NAME" /> versie 123 en hoger. Als je 'autofill' uitzet, wordt 'payments' ook uitgezet. 'typedUrls' verwijst naar de hele browsegeschiedenis.</translation>
 <translation id="5361167871898066799">De functie voor autocorrectie op het fysieke toetsenbord beheren</translation>
 <translation id="5361708558735884308">Als je dit beleid instelt, wordt toegang geboden tot de vermelde URL's, als uitzonderingen op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Zie de beschrijving van dat beleid voor de indeling van items in deze lijst. Als je <ph name="URL_BLOCKLIST_POLICY_NAME" /> bijvoorbeeld instelt op *, worden alle verzoeken geblokkeerd en kun je dit beleid gebruiken om toegang tot een beperkte lijst met URL's toe te staan. Je kunt dit beleid gebruiken om uitzonderingen voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden op te geven met de indeling die wordt gespecificeerd op (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Het meest specifieke filter bepaalt of een URL wordt geblokkeerd of toegestaan. Het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" /> krijgt voorrang op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Dit beleid is beperkt tot 1000 items.
 
@@ -10682,6 +10683,7 @@ Zie RFC 8828 artikel 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) 
       Als je het beleid niet instelt, is <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, indien ingesteld, van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. Vanaf M85 worden patronen met de jokertekens '*' en '[*.]' in de host niet meer ondersteund voor dit beleid.</translation>
+<translation id="8251975082850036657">API's voor opslagquotum retourneren statische waarden.</translation>
 <translation id="82530263956734297">Extensie-ID's die zijn vrijgesteld van de blokkeringslijst</translation>
 <translation id="8254749125469750814">Niet valideren of een extensie wel of niet kan worden geïnstalleerd met een cloudservice.</translation>
 <translation id="8256006033157034334">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
@@ -11774,6 +11776,7 @@ Zie https://support.google.com/chrome/a/answer/9301891 voor meer informatie.</tr
       Dit beleid wordt alleen gebruikt voor Family Link-gebruikers.</translation>
 <translation id="8947415621777543415">Apparaatlocatie rapporteren</translation>
 <translation id="8948062138228904066">Toelatingslijst voor verificatieserver</translation>
+<translation id="8951145747995737852">Bepalen of API's voor opslagquotum statische waarden retourneren</translation>
 <translation id="8951350807133946005">Directory voor schijfcache instellen</translation>
 <translation id="8952611478149810182">De verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren wordt gewijzigd in Chromium om de compatibiliteit met andere browsers en de functionaliteit voor ontwikkelaars te verbeteren.
 
