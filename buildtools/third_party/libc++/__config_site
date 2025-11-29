@@ -72,6 +72,9 @@
 #define _LIBCPP_ASSERTION_SEMANTIC_DEFAULT \
     _LIBCPP_ASSERTION_SEMANTIC_HARDENING_DEPENDENT
 
+#define _LIBCPP_LIBC_PICOLIBC 0
+#define _LIBCPP_LIBC_NEWLIB 0
+
 // Settings below aren't part of __config_site upstream.
 // We set them here since we want them to take effect everywhere,
 // unconditionally.
