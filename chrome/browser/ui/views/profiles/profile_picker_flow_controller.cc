@@ -681,12 +681,14 @@ void ProfilePickerFlowController::PickProfile(
       profile_path, /*always_create=*/false,
       base::BindOnce(&ProfilePickerFlowController::OnSwitchToProfileComplete,
                      weak_ptr_factory_.GetWeakPtr(), args.open_settings,
+                     args.exit_flow_after_profile_picked,
                      std::move(pick_profile_complete_callback)),
       open_command_line_urls);
 }
 
 void ProfilePickerFlowController::OnSwitchToProfileComplete(
     bool open_settings,
+    bool exit_flow_after_profile_picked,
     base::OnceCallback<void(bool)> pick_profile_complete_callback,
     Browser* browser) {
   if (!browser || browser->is_delete_scheduled()) {
@@ -754,7 +756,7 @@ void ProfilePickerFlowController::OnSwitchToProfileComplete(
   // TODO(crbug.com/389887233): Investigate further how often this happens to
   // consider having a better architecture to avoid those issues with multiple
   // flow-exiting calls being executed at the same time.
-  if (!HasFlowExited()) {
+  if (!HasFlowExited() && exit_flow_after_profile_picked) {
     ExitFlow();
   }
 }

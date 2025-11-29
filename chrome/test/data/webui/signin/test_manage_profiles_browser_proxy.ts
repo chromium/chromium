@@ -17,6 +17,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       'launchGuestProfile',
       'openManageProfileSettingsSubPage',
       'launchSelectedProfile',
+      'launchAllProfiles',
       'askOnStartupChanged',
       'getNewProfileSuggestedThemeInfo',
       'getProfileThemeInfo',
@@ -85,6 +86,10 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
 
   launchSelectedProfile(profilePath: string) {
     this.methodCalled('launchSelectedProfile', profilePath);
+  }
+
+  launchAllProfiles() {
+    this.methodCalled('launchAllProfiles');
   }
 
   askOnStartupChanged(shouldShow: boolean) {

@@ -688,18 +688,25 @@ class ProfilePickerCreationFlowBrowserTest
     profile_picker_handler()->HandleLaunchGuestProfile(args);
   }
 
+  // Simulates a click on "Open all profiles".
+  void OpenAllProfilesFromPicker() {
+    base::Value::List args;
+    for (const base::Value& profile :
+         profile_picker_handler()->GetProfilesList()) {
+      const std::optional<base::FilePath> profile_path =
+          base::ValueToFilePath(profile.GetDict().Find("profilePath"));
+      args.Append(base::FilePathToValue(*profile_path));
+    }
+
+    profile_picker_handler()->HandleLaunchAllProfiles(args);
+  }
+
   // Creates a new profile without opening a browser.
   base::FilePath CreateNewProfileWithoutBrowser() {
     // Create a second profile.
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     base::FilePath path = profile_manager->GenerateNextProfileDirectoryPath();
-    base::RunLoop run_loop;
-    profile_manager->CreateProfileAsync(
-        path, base::BindLambdaForTesting([&run_loop](Profile* profile) {
-          ASSERT_TRUE(profile);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    profiles::testing::CreateProfileSync(profile_manager, path);
     return path;
   }
 
@@ -4185,4 +4192,43 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(2u, g_browser_process->profile_manager()
                     ->GetProfileAttributesStorage()
                     .GetNumberOfProfiles());
+}
+
+class ProfilePickerOpenAllProfilesButtonExperimentBrowserTest
+    : public ProfilePickerCreationFlowBrowserTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      switches::kOpenAllProfilesFromProfilePickerExperiment};
+};
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerOpenAllProfilesButtonExperimentBrowserTest,
+                       OpenAllProfilesAfterSimulatingButtonClick) {
+  base::FilePath profile_path1 = browser()->profile()->GetPath();
+  base::FilePath profile_path2 = CreateNewProfileWithoutBrowser();
+  base::FilePath profile_path3 = CreateNewProfileWithoutBrowser();
+
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(3u, g_browser_process->profile_manager()
+                    ->GetProfileAttributesStorage()
+                    .GetNumberOfProfiles());
+
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  WaitForLoadStop(GURL{"chrome://profile-picker"});
+
+  BrowserAddedWaiter waiter2 = BrowserAddedWaiter(2u);
+  BrowserAddedWaiter waiter3 = BrowserAddedWaiter(3u);
+
+  OpenAllProfilesFromPicker();
+
+  BrowserWindowInterface* const new_browser2 = waiter2.Wait();
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+  BrowserWindowInterface* const new_browser3 = waiter3.Wait();
+
+  // Profile Picker should be closed only after last profile is opened.
+  WaitForPickerClosed();
+
+  EXPECT_EQ(new_browser2->GetProfile()->GetPath(), profile_path2);
+  EXPECT_EQ(new_browser3->GetProfile()->GetPath(), profile_path3);
+  ASSERT_EQ(3u, chrome::GetTotalBrowserCount());
 }

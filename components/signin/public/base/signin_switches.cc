@@ -359,6 +359,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kOpenAllProfilesFromProfilePickerExperiment,
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int>
+    kMaxProfilesCountToShowOpenAllButtonInProfilePicker{
+        &kOpenAllProfilesFromProfilePickerExperiment,
+        "max_profiles_count_to_show_open_all_button_in_profile_picker", 5};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

@@ -142,10 +142,20 @@ cr-icon[icon='profiles:add'] {
   padding: 8px 16px;
 }
 
+.footer > #openAllProfilesButton:not([hidden]) + #browseAsGuestButton {
+  margin-inline-start: 0px;
+}
+
 #browseAsGuestButton > cr-icon {
   margin-inline-end: 0;
   --iron-icon-height: 20px;
   --iron-icon-width: 20px;
+}
+
+#openAllProfilesButton {
+  margin-inline-end: 8px;
+  margin-inline-start: var(--footer-spacing);
+  padding: 8px 16px;
 }
 
 cr-checkbox {

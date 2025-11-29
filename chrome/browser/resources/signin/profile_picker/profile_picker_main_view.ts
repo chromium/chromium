@@ -39,6 +39,7 @@ export interface ProfilePickerMainViewElement {
     askOnStartup: CrCheckboxElement,
     'picker-logo': HTMLElement,
     browseAsGuestButton: HTMLElement,
+    openAllProfilesButton: HTMLElement,
     profilesContainer: HTMLElement,
     profilesWrapper: HTMLElement,
     forceSigninErrorDialog: CrDialogElement,
@@ -78,7 +79,7 @@ export class ProfilePickerMainViewElement extends
       forceSigninErrorDialogBody_: {type: String},
       forceSigninErrorProfilePath_: {type: String},
       shouldShownSigninButton_: {type: Boolean},
-
+      shouldShowOpenAllProfilesButton_: {type: Boolean},
       // Exposed to CSS as 'is-glic_'.
       isGlic_: {type: Boolean, reflect: true},
     };
@@ -113,6 +114,12 @@ export class ProfilePickerMainViewElement extends
   protected accessor forceSigninErrorDialogBody_: string = '';
   private accessor forceSigninErrorProfilePath_: string = '';
   protected accessor shouldShownSigninButton_: boolean = false;
+
+  private isOpenAllProfilesButtonExperimentEnabled_: boolean =
+      loadTimeData.getBoolean('isOpenAllProfilesButtonExperimentEnabled');
+  private maxProfilesCountToShowOpenAllProfilesButton_: number =
+      loadTimeData.getInteger('maxProfilesCountToShowOpenAllProfilesButton');
+  protected accessor shouldShowOpenAllProfilesButton_: boolean = false;
 
   private showProfilePickerToAllUsersExperiment_: boolean =
       loadTimeData.getBoolean('showProfilePickerToAllUsersExperiment');
@@ -166,6 +173,7 @@ export class ProfilePickerMainViewElement extends
       // The strings containing the link may appear dynamically, so we need to
       // update their `click` events accordingly.
       this.updateLearnMoreLinkEvents_();
+      this.computeShouldShowOpenAllProfilesButton_();
     }
   }
 
@@ -283,6 +291,22 @@ export class ProfilePickerMainViewElement extends
     this.manageProfilesBrowserProxy_.launchGuestProfile();
   }
 
+  protected onOpenAllProfilesClick_() {
+    chrome.metricsPrivate.recordUserAction(
+        'ProfilePicker_OpenAllProfilesClicked');
+    this.disableAllPickerButtons_();
+    this.manageProfilesBrowserProxy_.launchAllProfiles(
+        this.profilesList_.map(profile => profile.profilePath));
+  }
+
+  private computeShouldShowOpenAllProfilesButton_() {
+    this.shouldShowOpenAllProfilesButton_ =
+        this.isOpenAllProfilesButtonExperimentEnabled_ &&
+        1 < this.profilesList_.length &&
+        this.profilesList_.length <=
+            this.maxProfilesCountToShowOpenAllProfilesButton_;
+  }
+
   private maybeUpdateGuestMode_(enableGuestMode: boolean) {
     if (enableGuestMode === this.guestModeEnabled_) {
       return;
@@ -301,6 +325,7 @@ export class ProfilePickerMainViewElement extends
     assert(index !== -1);
     this.profilesList_.splice(index, 1);
     this.requestUpdate();
+    this.computeShouldShowOpenAllProfilesButton_();
   }
 
   private computeHideAskOnStartup_(): boolean {

@@ -54,6 +54,13 @@ ${function() {
 </if>
 </div>
 <div class="footer">
+  <cr-button id="openAllProfilesButton"
+      class="action-button"
+      @click="${this.onOpenAllProfilesClick_}"
+      ?hidden="${!this.shouldShowOpenAllProfilesButton_}"
+      ?disabled="${this.pickerButtonsDisabled_}">
+    $i18n{openAllProfilesButtonText}
+  </cr-button>
   <cr-button id="browseAsGuestButton"
       @click="${this.onLaunchGuestProfileClick_}"
       ?hidden="${!this.guestModeEnabled_}"

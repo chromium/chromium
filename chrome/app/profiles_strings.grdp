@@ -931,6 +931,9 @@
     <message name="IDS_PROFILE_PICKER_ASK_ON_STARTUP" desc="Text for the checkbox on the profile picker main view">
       Show on startup
     </message>
+    <message name="IDS_PROFILE_PICKER_OPEN_ALL_PROFILES_BUTTON" desc="Text for the button on the profile picker main view that opens all profiles.">
+      Open all profiles
+    </message>
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE_TITLE" desc="Title of the remove warning message shown for local profiles, shown when the user selects remove from the 3 dotted menu.">
       Delete this profile and its data?
     </message>

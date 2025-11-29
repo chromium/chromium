@@ -171,6 +171,8 @@ void AddStrings(content::WebUIDataSource* html_source, bool is_glic_version) {
   constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"addSpaceButton", IDS_PROFILE_PICKER_ADD_SPACE_BUTTON},
       {"askOnStartupCheckboxText", IDS_PROFILE_PICKER_ASK_ON_STARTUP},
+      {"openAllProfilesButtonText",
+       IDS_PROFILE_PICKER_OPEN_ALL_PROFILES_BUTTON},
       {"browseAsGuestButton", IDS_PROFILE_PICKER_BROWSE_AS_GUEST_BUTTON},
       {"controlledSettingPolicy", IDS_MANAGED},
       {"needsSigninPrompt",
@@ -269,6 +271,8 @@ void AddFlags(content::WebUIDataSource* html_source, bool is_glic_version) {
     html_source->AddBoolean("isProfileCreationAllowed", false);
     html_source->AddBoolean("showProfilePickerToAllUsersExperiment", false);
     html_source->AddBoolean("isProfilePickerTextVariationsEnabled", false);
+    html_source->AddBoolean("isOpenAllProfilesButtonExperimentEnabled", false);
+    html_source->AddInteger("maxProfilesCountToShowOpenAllProfilesButton", 0);
     return;
   }
 
@@ -301,6 +305,13 @@ void AddFlags(content::WebUIDataSource* html_source, bool is_glic_version) {
   html_source->AddBoolean(
       "isProfilePickerTextVariationsEnabled",
       base::FeatureList::IsEnabled(switches::kProfilePickerTextVariations));
+  html_source->AddBoolean(
+      "isOpenAllProfilesButtonExperimentEnabled",
+      base::FeatureList::IsEnabled(
+          switches::kOpenAllProfilesFromProfilePickerExperiment));
+  html_source->AddInteger(
+      "maxProfilesCountToShowOpenAllProfilesButton",
+      switches::kMaxProfilesCountToShowOpenAllButtonInProfilePicker.Get());
 }
 
 void AddResourcePaths(content::WebUIDataSource* html_source,

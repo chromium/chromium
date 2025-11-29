@@ -37304,6 +37304,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ProfilePicker_OpenAllProfilesClicked">
+  <owner>kbajkiewicz@google.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user clicked the open all profiles button in chrome://profile-picker.
+  </description>
+</action>
+
 <action name="ProfilePicker_RemoveOptionClicked">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

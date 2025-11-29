@@ -98,6 +98,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleLaunchSelectedProfile(bool open_settings,
                                    const base::Value::List& args);
   void HandleLaunchGuestProfile(const base::Value::List& args);
+  void HandleLaunchAllProfiles(const base::Value::List& args);
   void HandleAskOnStartupChanged(const base::Value::List& args);
   void HandleRemoveProfile(const base::Value::List& args);
   void HandleGetProfileStatistics(const base::Value::List& args);
