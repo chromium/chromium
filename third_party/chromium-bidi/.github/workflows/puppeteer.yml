@@ -4,6 +4,9 @@ name: Puppeteer CI
 permissions: read-all
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     types:
       # These are the defaults. See
@@ -24,7 +27,8 @@ jobs:
   puppeteer-test:
     name: Run Puppeteer tests (${{ matrix.shard }})
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'puppeteer')
+    # Run on manual dispatch, push to main, or if the PR has the 'puppeteer' label.
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'puppeteer') }}
     strategy:
       fail-fast: false
       matrix:
