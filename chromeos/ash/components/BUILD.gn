@@ -51,6 +51,7 @@ group("unit_tests") {
     "//chromeos/ash/components/nearby/presence:unit_tests",
     "//chromeos/ash/components/network:unit_tests",
     "//chromeos/ash/components/osauth/impl:unit_tests",
+    "//chromeos/ash/components/osauth/public:unit_tests",
     "//chromeos/ash/components/pcie_peripheral:unit_tests",
     "//chromeos/ash/components/peripheral_notification:unit_tests",
     "//chromeos/ash/components/phonehub:unit_tests",

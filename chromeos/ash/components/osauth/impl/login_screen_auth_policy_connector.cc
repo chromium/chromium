@@ -50,6 +50,13 @@ LoginScreenAuthPolicyConnector::GetLocalAuthFactorsComplexity(
   return std::nullopt;
 }
 
+std::optional<AuthFactorsSet>
+LoginScreenAuthPolicyConnector::AllowedLocalAuthFactors(
+    const AccountId& account) {
+  NOTIMPLEMENTED();
+  return {};
+}
+
 bool LoginScreenAuthPolicyConnector::IsAuthFactorManaged(
     const AccountId& account,
     AshAuthFactor auth_factor) {

@@ -33,6 +33,8 @@ class ProfilePrefsAuthPolicyConnector : public KeyedService,
       const AccountId& account) override;
   std::optional<LocalAuthFactorsComplexity> GetLocalAuthFactorsComplexity(
       const AccountId& account) override;
+  std::optional<AuthFactorsSet> AllowedLocalAuthFactors(
+      const AccountId& account) override;
 
   bool IsAuthFactorManaged(const AccountId& account,
                            AshAuthFactor auth_factor) override;

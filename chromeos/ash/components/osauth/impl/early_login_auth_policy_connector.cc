@@ -12,6 +12,7 @@
 #include "base/notimplemented.h"
 #include "chromeos/ash/components/early_prefs/early_prefs_reader.h"
 #include "chromeos/ash/components/osauth/public/auth_policy_connector.h"
+#include "chromeos/ash/components/osauth/public/auth_policy_utils.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/account_id/account_id.h"
 
@@ -60,6 +61,18 @@ EarlyLoginAuthPolicyConnector::GetLocalAuthFactorsComplexity(
   int val =
       early_prefs_->GetValue(prefs::kLocalAuthFactorsComplexity)->GetInt();
   return static_cast<LocalAuthFactorsComplexity>(val);
+}
+
+std::optional<AuthFactorsSet>
+EarlyLoginAuthPolicyConnector::AllowedLocalAuthFactors(
+    const AccountId& account) {
+  if (!early_prefs_->HasPref(prefs::kLocalAuthFactors)) {
+    return std::nullopt;
+  }
+
+  const base::Value::List* allowed_auth_factors =
+      &early_prefs_->GetValue(prefs::kLocalAuthFactors)->GetList();
+  return GetAuthFactorsSetFromPolicyList(allowed_auth_factors);
 }
 
 bool EarlyLoginAuthPolicyConnector::IsAuthFactorManaged(
