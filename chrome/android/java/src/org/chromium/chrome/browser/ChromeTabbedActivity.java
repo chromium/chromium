@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator.INVALID_TIPS_NOTIFICATION_FEATURE_TYPE;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
@@ -3329,7 +3330,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             mMultiInstanceManager.initialize(assignedIndex, taskId);
         }
 
-        mTabModelSelector = mTabModelOrchestrator.getTabModelSelector();
+        mTabModelSelector = assertNonNull(mTabModelOrchestrator.getTabModelSelector());
         mTabModelSelectorObserver =
                 new TabModelSelectorObserver() {
                     @Override
@@ -4013,8 +4014,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 getSnackbarManager(),
                 getLayoutManager(),
                 mTabModelSelector,
-                ArchivedTabModelOrchestrator.getForProfile(mTabModelProfileSupplier.get())
-                        .getTabModelSelector());
+                assertNonNull(
+                        ArchivedTabModelOrchestrator.getForProfile(mTabModelProfileSupplier.get())
+                                .getTabModelSelector()));
     }
 
     private boolean isTabNtp(Tab tab) {

@@ -148,6 +148,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.theme.AdjustedTopUiThemeColorProvider;
@@ -1721,6 +1722,11 @@ public class RootUiCoordinator
                             },
                             // Open Quick Delete Dialog callback:
                             () -> {
+                                TabModelSelectorBase tabModelSelector =
+                                        ArchivedTabModelOrchestrator.getForProfile(
+                                                        mProfileSupplier.get())
+                                                .getTabModelSelector();
+                                assert tabModelSelector != null;
                                 QuickDeleteController quickDeleteController =
                                         new QuickDeleteController(
                                                 mActivity,
@@ -1730,9 +1736,7 @@ public class RootUiCoordinator
                                                 mSnackbarManagerSupplier.get(),
                                                 mLayoutManager,
                                                 mTabModelSelectorSupplier.get(),
-                                                ArchivedTabModelOrchestrator.getForProfile(
-                                                                mProfileSupplier.get())
-                                                        .getTabModelSelector());
+                                                tabModelSelector);
                                 quickDeleteController.showDialog();
                             },
                             TabWindowManagerSingleton::getInstance,

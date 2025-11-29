@@ -56,7 +56,9 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -129,6 +131,8 @@ public class ArchivedTabModelOrchestratorTest {
     private TabCreator mRegularTabCreator;
     private TabArchiveSettings mTabArchiveSettings;
     private WebPageStation mPage;
+    private final TabPersistencePolicy mTabPersistencePolicy =
+            new TabbedModeTabPersistencePolicy(0, false, false);
 
     @Before
     public void setUp() throws Exception {
@@ -212,8 +216,14 @@ public class ArchivedTabModelOrchestratorTest {
                                             .getActivity()
                                             .getTabModelOrchestratorSupplier()
                                             .get();
-                    normalOrchestrator.setTabPersistentStoreForTesting(mNormalTabPersistentStore);
-                    mOrchestrator.setTabPersistentStoreForTesting(mArchivedTabPersistentStore);
+                    normalOrchestrator.initForTesting(
+                            normalOrchestrator.getTabModelSelector(),
+                            mNormalTabPersistentStore,
+                            mTabPersistencePolicy);
+                    mOrchestrator.initForTesting(
+                            mOrchestrator.getTabModelSelector(),
+                            mArchivedTabPersistentStore,
+                            mTabPersistencePolicy);
                     mOrchestrator.doDeclutterPass(normalOrchestrator);
                 });
 
@@ -333,8 +343,14 @@ public class ArchivedTabModelOrchestratorTest {
                                             .getActivity()
                                             .getTabModelOrchestratorSupplier()
                                             .get();
-                    normalOrchestrator.setTabPersistentStoreForTesting(mNormalTabPersistentStore);
-                    mOrchestrator.setTabPersistentStoreForTesting(mArchivedTabPersistentStore);
+                    normalOrchestrator.initForTesting(
+                            normalOrchestrator.getTabModelSelector(),
+                            mNormalTabPersistentStore,
+                            mTabPersistencePolicy);
+                    mOrchestrator.initForTesting(
+                            mOrchestrator.getTabModelSelector(),
+                            mArchivedTabPersistentStore,
+                            mTabPersistencePolicy);
 
                     mOrchestrator.resetRescueArchivedTabsForTesting();
                     mOrchestrator.resetRescueArchivedTabGroupsForTesting();

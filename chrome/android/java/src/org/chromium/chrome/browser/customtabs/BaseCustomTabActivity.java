@@ -8,6 +8,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.HANDLED_BY_OS;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.USER_NAVIGATION;
 
@@ -996,7 +997,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         if (browserWindowType != null) {
             initializeChromeAndroidTask(
                     browserWindowType,
-                    tabModelOrchestrator.getTabModelSelector().getCurrentModel(),
+                    assumeNonNull(tabModelOrchestrator.getTabModelSelector()).getCurrentModel(),
                     /* multiInstanceManager= */ null);
         }
     }

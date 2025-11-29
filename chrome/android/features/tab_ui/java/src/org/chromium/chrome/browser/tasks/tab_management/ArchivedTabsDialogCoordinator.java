@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -485,14 +486,13 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mDesktopWindowStateManager = desktopWindowStateManager;
 
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
-        mArchivedTabModel =
-                mArchivedTabModelOrchestrator
-                        .getTabModelSelector()
-                        .getModel(/* incognito= */ false);
+        TabModelSelectorBase tabModelSelector = mArchivedTabModelOrchestrator.getTabModelSelector();
+        assumeNonNull(tabModelSelector);
+        mArchivedTabModel = tabModelSelector.getModel(/* incognito= */ false);
         mUndoBarController =
                 new SavedTabGroupUndoBarController(
                         mActivity,
-                        mArchivedTabModelOrchestrator.getTabModelSelector(),
+                        tabModelSelector,
                         /* snackbarManageable= */ this,
                         tabGroupSyncService);
         mTabSwitcherView = tabSwitcherView;
@@ -793,8 +793,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         mRootView,
                         /* parentView= */ mDialogView.findViewById(R.id.tab_list_editor_container),
                         mBrowserControlsStateProvider,
-                        mArchivedTabModelOrchestrator
-                                .getTabModelSelector()
+                        assumeNonNull(mArchivedTabModelOrchestrator.getTabModelSelector())
                                 .getTabGroupModelFilterProvider()
                                 .getCurrentTabGroupModelFilterSupplier(),
                         mTabContentManager,
