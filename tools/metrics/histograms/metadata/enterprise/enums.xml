@@ -2797,6 +2797,7 @@ chromium-metrics-reviews@google.com.
 <enum name="SecurityReportTrigger">
   <int value="0" label="Signals-only report triggered by timer"/>
   <int value="1" label="Signals-only report triggered by cookie change"/>
+  <int value="2" label="Signals-only report triggered by policy change"/>
 </enum>
 
 <enum name="SecuritySignalsMode">

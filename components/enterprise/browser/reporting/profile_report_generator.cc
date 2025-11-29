@@ -46,6 +46,7 @@ void ProfileReportGenerator::SetExtensionsEnabledCallback(
 void ProfileReportGenerator::MaybeGenerate(
     const base::FilePath& path,
     ReportType report_type,
+    SecuritySignalsMode signals_mode,
     base::OnceCallback<void(std::unique_ptr<em::ChromeUserProfileInfo>)>
         callback) {
   if (!delegate_->Init(path)) {
@@ -82,15 +83,17 @@ void ProfileReportGenerator::MaybeGenerate(
   delegate_->GetSigninUserInfo(report_.get());
   delegate_->GetProfileName(report_.get());
 
-  if (extensions_enabled_ &&
+  if (signals_mode != SecuritySignalsMode::kSignalsOnly &&
+      extensions_enabled_ &&
       (!extensions_enabled_callback_ || extensions_enabled_callback_.Run())) {
     delegate_->GetExtensionInfo(report_.get());
   }
 
-  if (is_machine_scope_) {
+  if (signals_mode != SecuritySignalsMode::kSignalsOnly && is_machine_scope_) {
     delegate_->GetExtensionRequest(report_.get());
-    // For profile reporting, the profile id is already in the &reportid= query
-    // param. Only set the proto field for browser reports.
+
+    // For profile reporting, the profile id is already in the &reportid=
+    // query param. Only set the proto field for browser reports.
     delegate_->GetProfileId(report_.get());
   }
 

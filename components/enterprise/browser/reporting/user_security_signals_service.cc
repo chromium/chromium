@@ -11,6 +11,9 @@
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -20,13 +23,19 @@ namespace enterprise_reporting {
 
 UserSecuritySignalsService::UserSecuritySignalsService(
     PrefService* profile_prefs,
-    Delegate* delegate)
-    : profile_prefs_(profile_prefs), delegate_(delegate) {
+    Delegate* delegate,
+    policy::PolicyService* policy_service)
+    : profile_prefs_(profile_prefs),
+      delegate_(delegate),
+      policy_service_(policy_service) {
   CHECK(profile_prefs_);
   CHECK(delegate_);
+  CHECK(policy_service_);
 }
 
-UserSecuritySignalsService::~UserSecuritySignalsService() = default;
+UserSecuritySignalsService::~UserSecuritySignalsService() {
+  StopPolicyObservation();
+}
 
 base::TimeDelta UserSecuritySignalsService::GetSecurityUploadCadence() {
   return enterprise_signals::features::kProfileSignalsReportingInterval.Get();
@@ -107,6 +116,17 @@ void UserSecuritySignalsService::OnCookieListenerConnectionError() {
   InitCookieListener();
 }
 
+void UserSecuritySignalsService::OnPolicyUpdated(
+    const policy::PolicyNamespace& ns,
+    const policy::PolicyMap& previous,
+    const policy::PolicyMap& current) {
+  if (!enterprise_signals::features::IsPolicyDataCollectionEnabled()) {
+    return;
+  }
+
+  TriggerReport(SecurityReportTrigger::kPolicyChange);
+}
+
 void UserSecuritySignalsService::OnStatePolicyValueChanged() {
   if (!IsSecuritySignalsReportingEnabled()) {
     timer_.Stop();
@@ -116,6 +136,9 @@ void UserSecuritySignalsService::OnStatePolicyValueChanged() {
   if (timer_.IsRunning()) {
     return;
   }
+
+  // Make sure that we are observing the policy service.
+  StartPolicyObservation();
 
   // Make sure that cookie observation is properly set-up, as needed.
   OnCookiePolicyValueChanged();
@@ -142,6 +165,19 @@ void UserSecuritySignalsService::TriggerReport(SecurityReportTrigger trigger) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&Delegate::OnReportEventTriggered,
                                 base::Unretained(delegate_), trigger));
+}
+
+void UserSecuritySignalsService::StartPolicyObservation() {
+  if (enterprise_signals::features::IsPolicyDataCollectionEnabled()) {
+    policy_service_->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
+  }
+}
+
+void UserSecuritySignalsService::StopPolicyObservation() {
+  if (policy_service_ &&
+      enterprise_signals::features::IsPolicyDataCollectionEnabled()) {
+    policy_service_->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
+  }
 }
 
 }  // namespace enterprise_reporting

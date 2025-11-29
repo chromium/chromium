@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "components/enterprise/browser/reporting/report_generation_config.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -89,6 +90,7 @@ class ProfileReportGenerator {
   void MaybeGenerate(
       const base::FilePath& path,
       ReportType report_type,
+      SecuritySignalsMode signals_mode,
       base::OnceCallback<
           void(std::unique_ptr<enterprise_management::ChromeUserProfileInfo>)>
           callback);
