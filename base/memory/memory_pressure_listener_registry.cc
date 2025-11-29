@@ -96,8 +96,12 @@ void MemoryPressureListenerRegistry::DoNotifyMemoryPressure(
       !SingleThreadTaskRunner::HasMainThreadDefault() ||
       SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
   // Don't repeat MEMORY_PRESSURE_LEVEL_NONE notifications.
-  CHECK(memory_pressure_level != base::MEMORY_PRESSURE_LEVEL_NONE ||
-        last_memory_pressure_level_ != memory_pressure_level);
+  // TODO(464120006): Turn into a CHECK when this can no longer happen.
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE &&
+      last_memory_pressure_level_ == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
   last_memory_pressure_level_ = memory_pressure_level;
   if (base::FeatureList::IsEnabled(kSuppressMemoryListeners)) {
     auto mask = kSuppressMemoryListenersMask.Get();
