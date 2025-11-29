@@ -514,6 +514,7 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
         // start when the locale file cannot be loaded. Crash early and gather some
         // data.
         // The local contained in prefs; provided by the caller.
+        LOG(ERROR) << "Failed to load locale " << app_locale;
         SCOPED_CRASH_KEY_STRING32("LoadLocaleResources", "pref_locale",
                                   pref_locale);
         // The app locale resolved from the pref value.
