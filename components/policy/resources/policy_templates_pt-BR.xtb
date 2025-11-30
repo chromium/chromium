@@ -553,7 +553,7 @@ Se definida como PromptInTab, quando a autenticação do usuário expirar, uma n
 <translation id="1395988776118675626">Ativar o recurso "Lembrar senha" para o Kerberos</translation>
 <translation id="1396119629372155901">O recurso ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes está desativado</translation>
 <translation id="1397855852561539316">URL sugerido do provedor de pesquisa padrão</translation>
-<translation id="140076409387986842">Permitir o recurso Quero ajuda para escrever sem melhorar os modelos de IA.</translation>
+<translation id="140076409387986842">Permitir o recurso Me ajude a escrever sem melhorar os modelos de IA.</translation>
 <translation id="1401249111997036083">Se a política for definida como falsa, os apps Android poderão capturar links compatíveis por padrão.
 Se ela for definida como verdadeira, todos os links serão abertos no navegador Chrome por padrão.
 Se ela for deixada sem definição, os links serão abertos por padrão em apps Android para usuários gerenciados e no navegador para consumidores.</translation>
@@ -3941,7 +3941,7 @@ Essa é uma política temporária que será removida no futuro.</translation>
 <translation id="3625900437628963632">Indica se o valor da senha do Kerberos definido neste item de política deve ser lembrado. Se o valor não for definido ou for definido como verdadeiro, a senha será lembrada. Se for definido como falso, a senha não será lembrada. Ela será ignorada se o campo de senha não for especificado para a conta. Há suporte para este campo desde a versão 116 do ChromeOS.</translation>
 <translation id="3627678165642179114">Ativar ou desativar serviço da web de verificação ortográfica</translation>
 <translation id="3628480121685794414">Ativar impressão simplex</translation>
-<translation id="36319015509487508">Não permitir o recurso Quero ajuda para ler.</translation>
+<translation id="36319015509487508">Não permitir o recurso Me ajude a ler.</translation>
 <translation id="3634125384445314047">Permitir que fotos e vídeos recentes capturados no smartphone sejam acessados usando o recurso Seu smartphone.</translation>
 <translation id="3637063789824963261">Se a política for ativada, os dispositivos registrados vão informar os contadores de tempo de execução do dispositivo (apenas da 14ª geração em diante do Intel vPro).
 
@@ -5204,7 +5204,7 @@ Esta política não vai ter efeito se for ativada, deixada vazia ou não for def
 <translation id="4512407512989846472">Permite bloquear cópias para a área de transferência em URLs específicas</translation>
 <translation id="4513691822411041977">Não forçar o uso do SafeSearch na Pesquisa Google nem o Modo restrito do YouTube</translation>
 <translation id="4515404363392014383">Ativar a Navegação segura para fontes confiáveis</translation>
-<translation id="4517327050150780380">Configurações do recurso Quero ajuda para ler</translation>
+<translation id="4517327050150780380">Configurações do recurso Me ajude a ler</translation>
 <translation id="4518251772179446575">Perguntar sempre que um site quiser rastrear a localização física dos usuários</translation>
 <translation id="4521193243799782295">Durante o login, o <ph name="PRODUCT_OS_NAME" /> pode fazer autenticação em um servidor (on-line) ou usando uma senha armazenada em cache (off-line).
 
@@ -5536,7 +5536,7 @@ Após a configuração inicial, os usuários poderão ativar ou desativar os Ser
 <translation id="4674542060943819878">Ativar a opção de dispensar alertas de senha comprometida</translation>
 <translation id="4674871290487541952">Permite algoritmos inseguros em verificações de integridade nas atualizações e instalações de extensão</translation>
 <translation id="4680961954980851756">Ativar Preenchimento automático</translation>
-<translation id="46845898956959634">Permitir o recurso Quero ajuda para escrever e melhorar os modelos de IA.</translation>
+<translation id="46845898956959634">Permitir o recurso Me ajude a escrever e melhorar os modelos de IA.</translation>
 <translation id="4685721728282448265">CECPQ2 de acordo de chave pós-quântico ativado para TLS</translation>
 <translation id="468822697351680932">Usar a política de lista de sites do Internet Explorer como fonte de regras</translation>
 <translation id="4693190628432874457">Ativar relatórios de localização do dispositivo</translation>
@@ -6039,7 +6039,7 @@ Quando a política é desativada, o recurso também é.</translation>
 <translation id="499654521603185442">Relatórios de telemetria do site</translation>
 <translation id="4997074784107449343">Não usar "Imprimir como imagem" como padrão na visualização da impressão de documentos PDF quando a opção estiver disponível.</translation>
 <translation id="500149597848135831">Permitir todas as variações</translation>
-<translation id="5006222080181284191">Controlar a ativação do recurso "Quero ajuda para escrever" do ChromeOS</translation>
+<translation id="5006222080181284191">Controlar a ativação do recurso "Me ajude a escrever" do ChromeOS</translation>
 <translation id="5017157692744444035">Esta política controla a permissão de fornecimento de informações que podem ser usadas para identificar máquinas, como o nome da máquina e o endereço da rede.
 
 Quando a <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> não for definida ou for desativada, esta política será ignorada.
@@ -6135,7 +6135,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="5073609397321802133">Se a política for definida como falsa, a página "Nova guia" não permitirá que os usuários personalizem o plano de fundo. Qualquer plano de fundo personalizado já existente será removido permanentemente, mesmo que a política seja definida como verdadeira mais tarde.
 
       Se a política for definida como "verdadeira" ou não for definida, os usuários poderão personalizar o plano de fundo da página "Nova guia".</translation>
-<translation id="5073788301065423829">Esta política ativa ou desativa o recurso "Quero ajuda para escrever" no ChromeOS.
+<translation id="5073788301065423829">Esta política ativa ou desativa o recurso "Me ajude a escrever" no ChromeOS.
 
 Se a política for ativada, o recurso ficará ativado.
 
@@ -6871,7 +6871,7 @@ A remoção foi feita na versão M112.</translation>
 <translation id="55057839818162162">Permitir a pesquisa assistida pela câmera do <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="55057971769693300">Desativar destaque do sinal de interpolação</translation>
 <translation id="5508307164752647432">Ativar funcionalidade do Kerberos</translation>
-<translation id="5511266910976210617">Não permitir o recurso Quero ajuda para escrever.</translation>
+<translation id="5511266910976210617">Não permitir o recurso Me ajude a escrever.</translation>
 <translation id="5511702823008968136">Ativar a barra de favoritos</translation>
 <translation id="5512418063782665071">URL da página inicial</translation>
 <translation id="5512785896190859782">Essa política controla a visibilidade do card de arquivos do SharePoint e do OneDrive na página "Nova guia". O card só vai aparecer na página "Nova guia" se a política estiver ativada e sua organização tiver autorizado o uso dos dados de arquivos do SharePoint e do OneDrive no navegador.
@@ -8005,7 +8005,7 @@ Na versão 114 e mais recentes, esta política é opcional quando a <ph name="DO
           Esta política não afeta a ativação do teclado virtual de toque. Por exemplo, o teclado virtual de toque ainda será mostrado em um tablet, mesmo se esta política for definida como "false".</translation>
 <translation id="6254498834449523938">Não permitir que o usuário ignore o aviso do recurso Navegação segura</translation>
 <translation id="625580680776945310">O modo de alta eficiência vai ser ativado.</translation>
-<translation id="6258314216623064461">Configurações do recurso "Quero ajuda para escrever"</translation>
+<translation id="6258314216623064461">Configurações do recurso "Me ajude a escrever"</translation>
 <translation id="6258502079038650092">Controla se os usuários podem usar o Chrome for Testing.
 
       Se esta política for ativada ou deixada sem definição, os usuários poderão instalar e executar o Chrome for Testing.
@@ -8591,7 +8591,7 @@ Observação: as senhas podem ser mais velhas do que o número especificado de d
 
       Se a política não for definida, os usuários vão receber notificações sobre dispositivos USB conectados.</translation>
 <translation id="6536600139108165863">Reinicialização automática no desligamento do dispositivo</translation>
-<translation id="6538355612742474835">Permitir o recurso Quero ajuda para ler e melhorar os modelos de IA.</translation>
+<translation id="6538355612742474835">Permitir o recurso Me ajude a ler e melhorar os modelos de IA.</translation>
 <translation id="6538653424603921690">Sempre desativar a tela de privacidade na tela de login</translation>
 <translation id="6539246272469751178">Esta política não tem nenhum efeito sobre apps Android. Os apps Android sempre usam o diretório de downloads padrão e não podem acessar nenhum arquivo baixado pelo <ph name="PRODUCT_OS_NAME" /> para um diretório de downloads não padrão.</translation>
 <translation id="6541383786427998658">Ativar a geração de registros do sistema de extensões empresariais</translation>
@@ -8895,7 +8895,7 @@ Essa política se aplica apenas a novas tentativas de conexão e não invalida a
       Se ela estiver desativada, as Respostas rápidas ficarão desativadas.
       Se a política for deixada sem definição, os usuários poderão ativar ou desativar as Respostas rápidas.</translation>
 <translation id="670675748066383347">Configurações do Organizador de guias</translation>
-<translation id="6710714905661200515">Documentos Google (compatível desde a versão 135)</translation>
+<translation id="6710714905661200515">Google Docs (compatível desde a versão 135)</translation>
 <translation id="6712624291905573620">Esta política controla os relatórios de nuvem do <ph name="PRODUCT_NAME" />, que faz upload de informações sobre a operação do navegador para o <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
 Quando a política é deixada sem definição ou é desativada, os dados não são coletados nem enviados por upload.
@@ -11374,7 +11374,7 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
 <translation id="8465065632133292531">Parâmetros para URL de instantâneos que usa POST</translation>
 <translation id="8466326735698755782">Permitir o uso da Tabela de comparação sem melhorar os modelos de IA.</translation>
 <translation id="8467267413626499807">Ativar serviço de SSO flutuante</translation>
-<translation id="8467463980805035993">Permitir o recurso Quero ajuda para ler sem melhorar os modelos de IA.</translation>
+<translation id="8467463980805035993">Permitir o recurso Me ajude a ler sem melhorar os modelos de IA.</translation>
 <translation id="846994437739309080">Se ativado (ou não definido), os certificados TLS adicionados pelo usuário de repositórios de confiança da plataforma serão usados na criação de caminhos para a autenticação do servidor TLS.
 
 Se desativado, os certificados TLS adicionados pelo usuário de repositórios de confiança da plataforma não serão usados na criação de caminhos para a autenticação do servidor TLS.</translation>
@@ -11490,7 +11490,7 @@ Não há suporte à reversão para o <ph name="PRODUCT_OS_NAME" /> 106 ou versã
 
       Esta política substitui <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> e as preferências do usuário.</translation>
 <translation id="8528951285051082869">Não permitir que nenhum app da Web acesse tipos de arquivo pela API File Handling</translation>
-<translation id="8529958869261780079">Esta política controla as configurações do recurso Quero ajuda para ler do <ph name="PRODUCT_OS_NAME" />.
+<translation id="8529958869261780079">Esta política controla as configurações do recurso Me ajude a ler do <ph name="PRODUCT_OS_NAME" />.
 
 Se ela for definida como 0, o recurso será habilitado e os dados relevantes poderão ser usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de origem e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
 
@@ -11533,7 +11533,7 @@ Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou d
 A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.</translation>
 <translation id="8559221882677768248">Desativar o recurso Selecionar para Ouvir na tela de login</translation>
 <translation id="8561512522781085002">As configurações PageUp/Page Down usam o atalho que contém a tecla modificadora de pesquisa</translation>
-<translation id="8562398722263115493">O recurso Quero ajuda para escrever é um assistente de escrita baseado em IA para conteúdos curtos na Web. As sugestões são baseadas nos comandos inseridos pelo usuário e no conteúdo da página da Web.
+<translation id="8562398722263115493">O recurso Me ajude a escrever é um assistente de escrita baseado em IA para conteúdos curtos na Web. As sugestões são baseadas nos comandos inseridos pelo usuário e no conteúdo da página da Web.
 
 Se ela for definida como 0, o recurso será habilitado e os dados relevantes poderão ser usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de origem e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
 

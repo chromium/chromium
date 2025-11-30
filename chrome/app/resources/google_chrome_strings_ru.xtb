@@ -100,7 +100,7 @@
 <translation id="2121284319307530122">Перезапустить для обновления &amp;Chrome</translation>
 <translation id="2123055963409958220">Отправьте отчет о <ph name="BEGIN_LINK" />текущих настройках Chrome<ph name="END_LINK" />, чтобы помочь нам улучшить браузер</translation>
 <translation id="2126108037660393668">Не удалось выполнить проверку скачанного файла.</translation>
-<translation id="2128411189117340671">Управлять профилями Chrome</translation>
+<translation id="2128411189117340671">Настроить профили Chrome</translation>
 <translation id="2137162749895930932">Закрыть экран перевода</translation>
 <translation id="2139300032719313227">Перезапустите Chrome OS</translation>
 <translation id="2151406531797534936">Перезапустите Chrome</translation>
@@ -152,8 +152,8 @@
 <translation id="2765403129283291972">Для этого сайта Chrome запрашивает доступ к микрофону.</translation>
 <translation id="2770231113462710648">Назначить браузером по умолчанию:</translation>
 <translation id="2775140325783767197">Не удается запустить проверку паролей в Chrome. Проверьте подключение к Интернету.</translation>
-<translation id="2797864378188255696">Когда вы будете использовать аккаунт <ph name="USER_EMAIL" /> для входа в сервисы Google, такие как Gmail или YouTube, вы сможете автоматически входить с ним в Chrome.</translation>
-<translation id="2799162042226656283">Настройки Chrome</translation>
+<translation id="2797864378188255696">Когда вы будете использовать аккаунт <ph name="USER_EMAIL" /> для входа в сервисы Google, такие как Gmail или YouTube, вы сможете автоматически входить с ним в Chrome</translation>
+<translation id="2799162042226656283">Ваш Chrome</translation>
 <translation id="2799223571221894425">Перезапустить</translation>
 <translation id="2818684386420968393">Отключить фоновый режим для приложений в Chrome</translation>
 <translation id="2825024317344269723">Опасный сайт. Браузер Chrome отозвал разрешение на показ уведомлений.</translation>
@@ -296,7 +296,7 @@
 <translation id="4334294535648607276">Скачивание завершено.</translation>
 <translation id="4337324600316876133">На вашем устройстве используется macOS 11. Чтобы получать обновления Google Chrome, установите macOS 12 или более поздней версии.</translation>
 <translation id="4343195214584226067">Расширение "<ph name="EXTENSION_NAME" />" установлено</translation>
-<translation id="4348548358339558429">Чтобы настроить персонализацию, добавьте Chrome в историю приложений и веб-поиска</translation>
+<translation id="4348548358339558429">Чтобы сервисы персонализировались для вас, добавьте Chrome в историю приложений и веб-поиска</translation>
 <translation id="436060642166082913">Chrome заблокировал скачивание, поскольку этот файл может представлять опасность для ваших личных аккаунтов и аккаунтов в социальных сетях.</translation>
 <translation id="4367027658822022112">Для быстрого доступа к Google Объективу нажмите кнопку "Закрепить" в верхней части боковой панели</translation>
 <translation id="4389991535395284064">При работе в режиме инкогнито Chrome будет предупреждать вас о переходе на сайт с незащищенным соединением</translation>
@@ -525,7 +525,7 @@
 <translation id="7025800014283535195">Здесь можно переключиться на другой профиль Chrome</translation>
 <translation id="7047386856539490735">Эти результаты для вас полезны?</translation>
 <translation id="7051685429025310665">Вы давно не посещали этот сайт. Браузер Chrome отозвал разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" и "<ph name="PERMISSION_3" />".</translation>
-<translation id="7059914902409643750">Войдите в Chrome</translation>
+<translation id="7059914902409643750">Настройте Chrome для себя</translation>
 <translation id="7060643578009939353">Найти это видео через Google Объектив</translation>
 <translation id="7071827361006050863">Данные о работе в Chrome скоро будут удалены</translation>
 <translation id="7085332316435785646">Укажите, нужно ли использовать историю Chrome для персонализации сервисов Google</translation>
@@ -609,7 +609,7 @@
 <translation id="7917876797003313048">В этом разделе можно управлять аккаунтами Google, в которые вы вошли. Они используются в Google Play, Gmail, браузере Chrome и других сервисах. Чтобы указать аккаунт участника семейной группы или кого-нибудь ещё, добавьте на устройство <ph name="DEVICE_TYPE" /> нового пользователя. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome заблокировал скачивание, поскольку файл поддельный. Он может внести неожиданные изменения на вашем устройстве.</translation>
 <translation id="7951272445806340501">Чтобы установить обновление, перезапустите Chrome OS Flex.</translation>
-<translation id="7959172989483770734">Управлять профилями Chrome</translation>
+<translation id="7959172989483770734">Настроить профили Chrome</translation>
 <translation id="7962410387636238736">Google Chrome больше не будет обновляться на этом компьютере, так как поддержка Windows XP и Windows Vista прекращена.</translation>
 <translation id="8004582292198964060">Браузер</translation>
 <translation id="8005666035647241369">В Google Менеджере паролей на этом устройстве</translation>
@@ -671,7 +671,7 @@
 <translation id="8679801911857917785">Кроме того, расширение изменило стартовую страницу Chrome.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8712767363896337380">Почти готово! Чтобы завершить обновление, перезапустите Chrome.</translation>
-<translation id="8718062187489036808">Выйти из аккаунта Chrome</translation>
+<translation id="8718062187489036808">Выйти из Chrome</translation>
 <translation id="8725440680697264016">Спросить Google об этом видео</translation>
 <translation id="873133009373065397">Google Chrome не удалось определить или задать браузер по умолчанию</translation>
 <translation id="8747073452963259673">левый нижний угол области поиска: <ph name="LEFT" /> % слева, <ph name="BOTTOM" /> % снизу</translation>

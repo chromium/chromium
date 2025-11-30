@@ -646,7 +646,7 @@
 <translation id="3519792890877853853">此卡片会显示您打开的标签页中商品的评价</translation>
 <translation id="3519905498307021260">{count,plural, =1{打开标签页}other{打开 {count} 个标签页}}</translation>
 <translation id="3523513363815970085">隐藏“您最常访问的网站”</translation>
-<translation id="3523789730715594198">您可以随时在“设置”中停止同步。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
+<translation id="3523789730715594198">您可以随时在设置中停止同步。Google 可能会根据您的历史记录，在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="3527085408025491307">文件夹</translation>
 <translation id="3529024052484145543">不安全</translation>
 <translation id="3530024057633834563">您没有任何已保存的密码或通行密钥，但可以删除您选择一律不保存登录信息的网站和应用列表。您为网站或应用创建的任何账号都不会被删除。</translation>
@@ -886,7 +886,7 @@
 <translation id="4474494258097106883">专为 iPhone 打造</translation>
 <translation id="4488754974567924717">如果您的密码遭泄露，我们会通知您</translation>
 <translation id="4489536976005181779">{count,plural, =1{网页已添加到您的以下账户的阅读清单中：{email}}other{网页已添加到您的以下账户的阅读清单中：{email}}}</translation>
-<translation id="4493604894403585654">您目前登录的账号是 <ph name="USER_EMAIL" />。您可以随时在“设置”中停止同步。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
+<translation id="4493604894403585654">您目前登录的账号是 <ph name="USER_EMAIL" />。您可以随时在设置中停止同步。Google 可能会根据您的历史记录，在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="4502423230170890588">从此设备中移除</translation>
 <translation id="4508750114462689118">关闭登录推广元素</translation>
 <translation id="4509345063551561634">位置：</translation>
@@ -1417,7 +1417,7 @@
 <translation id="6429213933892582367">打开“密码选项”</translation>
 <translation id="6434591244308415567">发生错误，请稍后重试。</translation>
 <translation id="6435236283694032571">添加到阅读清单</translation>
-<translation id="6435307030888827407">保持退出账号状态</translation>
+<translation id="6435307030888827407">保持未登录状态</translation>
 <translation id="6436318499800111867">与我分享的日期：<ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442697326824312960">取消固定标签页</translation>
 <translation id="6443118737398455446">过期日期无效</translation>
@@ -1488,7 +1488,7 @@
 <translation id="6663529247339810546">无法保存图片</translation>
 <translation id="6668619169535738264">修改书签</translation>
 <translation id="6671294218820966278">标为已读</translation>
-<translation id="6672697278890207089">请输入密码</translation>
+<translation id="6672697278890207089">请输入口令</translation>
 <translation id="6674917187596384849">您可以轻松地在账号之间切换</translation>
 <translation id="6676349090816247042">登录方式。</translation>
 <translation id="667999046851023355">文档</translation>
@@ -2001,7 +2001,7 @@
 <translation id="8625706492572042370">修改主屏幕</translation>
 <translation id="8631370184731241854">锁定无痕式标签页</translation>
 <translation id="8633025649649592204">近期活动</translation>
-<translation id="8636825310635137004">要访问您在其他设备上的标签页，请开启同步功能。</translation>
+<translation id="8636825310635137004">要访问您从其他设备打开的标签页，请开启同步功能。</translation>
 <translation id="8637431369725868556">保护您免受危险网站的侵害。</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{没有任何已泄露的密码}=1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>
 <translation id="8643403533759285912">删除分组</translation>

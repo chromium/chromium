@@ -65,7 +65,7 @@ Aspetos a considerar:
 <translation id="2427791862912929107">O Chrome inclui funcionalidades que ajudam a gerir os seus dados de Internet e a velocidade com que as páginas Web são carregadas.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />.</translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Isto acontece quando o Chrome não é usado durante {THRESHOLD} minuto. Estas informações podem incluir o histórico e o preenchimento automático.}other{Isto acontece quando o Chrome não é usado durante {THRESHOLD} minutos. Estas informações podem incluir o histórico e o preenchimento automático.}}</translation>
-<translation id="2561231791489583059">Utilize o Chrome como o navegador predefinido para obter proteção contra sites perigosos e manter as suas palavras-passe protegidas</translation>
+<translation id="2561231791489583059">Use o Chrome como o navegador predefinido para estar protegido contra sites perigosos e manter as suas palavras-passe protegidas</translation>
 <translation id="2574249610672786438">Para ver os seus separadores onde quer que esteja a utilizar o Chrome, inicie sessão em todos os seus dispositivos.</translation>
 <translation id="2576431527583832481">O Chrome ficou ainda melhor! Está disponível uma nova versão.</translation>
 <translation id="257708665678654955">Quer que o Google Chrome se ofereça para traduzir as páginas em <ph name="LANGUAGE_NAME" /> deste site da próxima vez?</translation>
@@ -264,7 +264,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="7581063337314642333">Visite a grelha de separadores no Chrome</translation>
 <translation id="7599894504325210080">Vista expandida do preenchimento automático do Chrome</translation>
 <translation id="7617512710641355143">O Chrome é gerido</translation>
-<translation id="7626032353295482388">Bem-vindo ao Chrome</translation>
+<translation id="7626032353295482388">Damos-lhe as boas-vindas ao Chrome</translation>
 <translation id="7641448682796883218">Dica do Chrome: Navegação segura melhorada</translation>
 <translation id="7642373780953416937">Receba alertas sobre quaisquer problemas de privacidade ou segurança detetados automaticamente pelo Chrome.</translation>
 <translation id="7660356333829433649">Volte aqui mais tarde para ver mais sugestões úteis e tirar o máximo partido do Chrome.</translation>
