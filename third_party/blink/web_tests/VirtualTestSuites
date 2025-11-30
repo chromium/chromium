@@ -4146,7 +4146,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=LCPTimingPredictorPrerender2,Prerender2CrossOriginIframes"
+      "--enable-features=Prerender2CrossOriginIframes"
     ],
     "owners": [
       "nhiroki@chromium.org",
