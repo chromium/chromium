@@ -3738,9 +3738,7 @@ void LocalFrame::RequestVideoFrameAtWithBoundsHint(
     int max_area,
     base::OnceCallback<void(const SkBitmap&, const gfx::Rect&)> callback) {
   HitTestResult result = HitTestResultForVisualViewportPos(viewport_position);
-  Node* node = result.InnerNode();
-  auto* video = DynamicTo<HTMLVideoElement>(node);
-
+  auto* video = DynamicTo<HTMLVideoElement>(result.InnerNode());
   if (!video) {
     std::move(callback).Run(SkBitmap(), gfx::Rect());
     return;
@@ -3784,9 +3782,7 @@ void LocalFrame::RequestVideoFrameAtWithBoundsHint(
   }
 
   // Get the bounds of the video element.
-  WebNode web_node(node);
-  WebElement web_element = web_node.To<WebElement>();
-  auto bounds = web_element.BoundsInWidget();
+  gfx::Rect bounds = video->BoundsInWidget();
 
   std::move(callback).Run(converted_bitmap, bounds);
 }
