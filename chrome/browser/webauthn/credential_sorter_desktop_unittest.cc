@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/credential_sorter_desktop.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"

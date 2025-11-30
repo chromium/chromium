@@ -17,6 +17,7 @@
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_mach_msg_destroy.h"

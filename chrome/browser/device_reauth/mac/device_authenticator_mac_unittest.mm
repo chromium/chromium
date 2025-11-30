@@ -5,6 +5,7 @@
 #include "chrome/browser/device_reauth/mac/device_authenticator_mac.h"
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"

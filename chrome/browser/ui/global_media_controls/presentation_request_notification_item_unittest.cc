@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_item.h"
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/global_media_controls/public/test/mock_device_service.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"

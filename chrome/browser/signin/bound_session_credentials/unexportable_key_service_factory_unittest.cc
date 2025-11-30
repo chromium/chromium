@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
