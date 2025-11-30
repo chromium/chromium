@@ -27,6 +27,7 @@
 
 #include <algorithm>
 
+#include "base/functional/callback_helpers.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"

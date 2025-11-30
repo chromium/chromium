@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/token.h"
 #include "base/types/expected.h"

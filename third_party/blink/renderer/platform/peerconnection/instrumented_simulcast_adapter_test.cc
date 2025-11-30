@@ -6,6 +6,7 @@
 
 #include <queue>
 
+#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/base/mock_filters.h"

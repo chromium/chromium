@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/android/font_unique_name_lookup_android.h"
 
 #include "base/files/file.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"

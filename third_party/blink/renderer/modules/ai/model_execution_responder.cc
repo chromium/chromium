@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"

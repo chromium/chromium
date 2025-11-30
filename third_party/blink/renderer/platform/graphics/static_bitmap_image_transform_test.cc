@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/viz/test/test_context_provider.h"

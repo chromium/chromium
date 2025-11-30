@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/uuid.h"
 #include "build/build_config.h"

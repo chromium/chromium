@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
 
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
