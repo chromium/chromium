@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">閱讀今天的新聞 <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">更多詳情</translation>
 <translation id="3123734510202723619">公告</translation>
+<translation id="3134385238404760368">最近沒有開啟分頁</translation>
 <translation id="314939179385989105">Chrome 首頁</translation>
 <translation id="3158667104057012316">根據手動次序排序</translation>
 <translation id="3159335509547415276">瞭解被封鎖的帳戶</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">由 A 到 Z 排序</translation>
 <translation id="4578289292431526768">開始設定</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分鐘前}other{# 分鐘前}}</translation>
+<translation id="4585751637295612750">開啟新分頁以加入查詢</translation>
 <translation id="4587589328781138893">網站</translation>
 <translation id="4594952190837476234">此離線網頁在 <ph name="CREATION_TIME" />建立，且可能與網上版本不同。</translation>
 <translation id="4595237294768457124">開啟新分頁</translation>
@@ -1337,6 +1339,7 @@
 <translation id="670498945988402717">曾在昨天檢查</translation>
 <translation id="6710213216561001401">上一個</translation>
 <translation id="671481426037969117">「<ph name="FQDN" />」計時器已結束計時，將於明天重新開始。</translation>
+<translation id="6716434912087331834">如要還原新視窗，請將使用中視窗的總數減至 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 個或以下。閒置視窗會在 6 個月後刪除。</translation>
 <translation id="6723740634201835758">在您的 Google 帳戶中</translation>
 <translation id="6734310707649923383">你可查看瀏覽過的網頁，或從記錄刪除網頁</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />，錄緊媒體嘅固定無痕式分頁</translation>
@@ -1654,6 +1657,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 版本過舊。</translation>
 <translation id="7944772052836377867">同步功能需要驗證您的身分</translation>
 <translation id="7951102827450076904">一律開啟已下載的 PDF</translation>
+<translation id="7952479614398473176">如要開啟新視窗，請將使用中視窗的總數減至 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 個或以下。</translation>
 <translation id="7957413488482743710">虛擬卡會隱藏您的實體卡，保護您免受潛在欺詐行為的威脅。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">此裝置上的分頁</translation>
 <translation id="7961926449547174351">您已停用儲存空間存取權，請前往「設定」頁面啟用該權限。</translation>

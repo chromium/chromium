@@ -270,6 +270,7 @@
 <translation id="4023601594785368013">মূল ভাষা: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">যিকোনো এপৰ পৰা Chromiumত লিংক খোলক। লগতে সহজে এক্সেছ পাবলৈ, এইটো আপোনাৰ টাস্কবাৰত পিন কৰি থোৱা থাকে।</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />বর্তমানৰ ছেটিংসমূহ<ph name="END_LINK" />ৰ সম্পর্কে প্ৰতিবেদন দি Chromiumক উন্নত কৰাত সহায় কৰক</translation>
+<translation id="4039097928859803404">সদায় AI ম’ডৰ শ্বৰ্টকাট দেখুৱাওক</translation>
 <translation id="4050175100176540509">শেহতীয়া সংস্কৰণত কিছুমান গুৰুত্বপূর্ণ উন্নত সুৰক্ষাৰ ব্যৱস্থা আৰু নতুন সুবিধা উপলব্ধ।</translation>
 <translation id="4055805654398742145">পা&amp;ছৱৰ্ড পৰিচালক</translation>
 <translation id="4061696872429826774">আপোনাৰ কম্পিউটাৰৰ অন্য কোনো প্ৰ’গ্ৰামে এটা এক্সটেনশ্বন যোগ কৰিছে যিয়ে Chromium কাৰ্যপ্ৰণালী সলনি কৰিব পাৰে।
@@ -506,6 +507,7 @@
 <translation id="6847869444787758381">Chromiumএ আপোনাৰ পাছৱৰ্ডসমূহ কেতিয়াবা হেক কৰা হৈছিল নেকি আপোনাক জানিবলৈ দিয়ে</translation>
 <translation id="684888714667046800">ইণ্টাৰনেটৰ লগত সংযোগ কৰিব পৰা নাই। আপুনি যদি কোনো ফায়াৰৱাল ব্যৱহাৰ কৰে, অনুগ্ৰহ কৰি অনুমতি দিয়া সূচীখনত <ph name="PRODUCT_EXE_NAME" /> থকাটো নিশ্চিত কৰক।</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
+<translation id="6859580922007887573">অব্যাহত ৰাখিবলৈ টেব</translation>
 <translation id="6862030660799253820">প্ৰতিচ্ছবিৰ সন্ধানৰ জৰিয়তে এই প্ৰতিচ্ছবি সন্ধান কৰক</translation>
 <translation id="6873893289264747459">Chromiumএ "<ph name="EXTENSION_NAME" />"ত মালৱেৰ থকাটো পাইছে</translation>
 <translation id="6877155553248388166">সন্ধান এলেকাৰ তলৰ সোঁফালৰ কোণ: <ph name="RIGHT" />% সোঁফালে, <ph name="BOTTOM" />% তললৈ</translation>
@@ -591,6 +593,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="7872446069773932638">ডাউনল’ড হৈ আছে... <ph name="SECONDS" /> ছেকেণ্ড বাকী আছে</translation>
 <translation id="7873537467422636035">আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰে অথবা এই ছেটিংটো সলাব বিচাৰে, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromiumৰ ডেটা মচক<ph name="END_LINK" /></translation>
 <translation id="7877212753140190672">এই প্ৰতিচ্ছবিৰ বিষয়ে সোধক</translation>
+<translation id="7887929410013642057">সদায় AI ম’ডৰ শ্বৰ্টকাট দেখুৱাওক</translation>
 <translation id="7888981273428720788">Chromiumক আপোনাৰ ডিফ’ল্ট হিচাপে ছেট কৰক</translation>
 <translation id="7934340546140346950">সম্ভৱ হ’লে Chromiumএ অসুৰক্ষিত সংযোগসমূহ স্বয়ংক্ৰিয়ভাৱে HTTPSলৈ আপগ্ৰে’ড কৰে</translation>
 <translation id="7937630085815544518">আপুনি Chromiumত <ph name="USER_EMAIL_ADDRESS" /> হিচাপে ছাইন ইন হৈ আছিল। আকৌ ছাইন ইন কৰিবলৈ অনুগ্ৰহ কৰি সেই একেটা একাউণ্ট ব্যৱহাৰ কৰক।</translation>
@@ -638,6 +641,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8416884904046428725">আপোনাৰ Google একাউণ্টত কিছুমান ডেটা ছেভ কৰা আৰু আপোনাৰ আটাইবোৰ ডিভাইচত ব্যৱহাৰ কৰাৰ আগতে Chromiumএ এয়া আপুনিয়েই বুলি সত্যাপন কৰিব লাগিব। যদি আপুনি এতিয়াই ছাইন আউট কৰে, এই ডেটা মচি পেলোৱা হ’ব।</translation>
 <translation id="8417404458978023919">{0,plural, =1{এদিনৰ ভিতৰত Chromium পুনৰ লঞ্চ কৰক}one{# দিনৰ ভিতৰত Chromium পুনৰ লঞ্চ কৰক}other{# দিনৰ ভিতৰত Chromium পুনৰ লঞ্চ কৰক}}</translation>
 <translation id="8438543370129609977">আপুনি প্ৰতিচ্ছবিৰ সন্ধান ব্যৱহাৰ কৰিলে, PDF সমূহকে ধৰি পৃষ্ঠাখনৰ শিৰোনাম, URL আৰু সমল ছাৰ্ভাৰলৈ পঠিওৱা হয়। <ph name="LEARN_MORE" /></translation>
+<translation id="8447525028100794994">Chromiumত প্ৰতিচ্ছবি সন্ধানৰ জৰিয়তে সন্ধান কৰাৰ বিষয়ে অধিক জানক</translation>
 <translation id="8453117565092476964">ইনষ্টলাৰ আৰ্কাইভটো ব্যৱহাৰযোগ্য নহয় বা অমান্য। অনুগ্ৰহ কৰি Chromium আকৌ ডাউনল’ড কৰক।</translation>
 <translation id="8458614432758743027">Chromiumৰ বাবে Windows 10 অথবা তাৰ পাছৰ সংস্কৰণৰ আৱশ্যক।</translation>
 <translation id="8463672209299734063">ঐচ্ছিক: Googleলৈ স্বয়ংক্ৰিয়ভাৱে ডায়েগন’ষ্টিক আৰু ব্যৱহাৰৰ ডেটা পঠিয়াই ChromiumOSৰ সুবিধাসমূহ আৰু কাৰ্যক্ষমতা উন্নত কৰাত সহায় কৰক।</translation>

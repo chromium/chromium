@@ -2061,6 +2061,7 @@
 <translation id="4299919199185766032">Товчлолын нэр <ph name="MAX_LENGTH" /> тэмдэгтийн зөвшөөрөгдсөн хязгаараас хэтэрсэн байна.</translation>
 <translation id="4300272766492248925">Апп нээх</translation>
 <translation id="4300675098767811073">Баруун ирмэг дагуу олон нүх цоолох</translation>
+<translation id="4300841966382281549">Аялал</translation>
 <translation id="4302514097724775343">Тоглохын тулд диног товшино уу</translation>
 <translation id="4304049446746819918">{0,plural, =1{Администраторын бодлого нь энэ файлыг <ph name="DESTINATION_NAME" /> руу зөөхийг санал болгодоггүй}other{Администраторын бодлого нь эдгээр файлыг <ph name="DESTINATION_NAME" /> руу зөөхийг санал болгодоггүй}}</translation>
 <translation id="4304485328308299773">Шүүмжийн тусламжтайгаар мэдээлэлтэй шийдвэр гаргахдаа туслахын тулд бүтээгдэхүүн, үйлчилгээ эсвэл туршлагуудын харилцагчийн үнэлгээг уншаарай.</translation>
@@ -3425,6 +3426,7 @@
 <translation id="6539092367496845964">Алдаа гарлаа. Дараа дахин оролдоно уу.</translation>
 <translation id="6540488083026747005">Та энэ сайтад гуравдагч талын күүкинүүдийг зөвшөөрсөн</translation>
 <translation id="6545864417968258051">Bluetooth скан хийх</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> - <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Зүүн ирмэг дагуу хоёр нүх цоолох</translation>
 <translation id="6549443526281184652">Хувцас</translation>
 <translation id="6550245281449521513">Хулганын түгжээг зөвшөөрөөгүй</translation>
@@ -4808,6 +4810,7 @@
 <translation id="8814547618907885931">Харьцуулалтын бүх хүснэгтийг харах</translation>
 <translation id="8814707942599948500">Дугтуй C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н тохиргооноосоо Chrome-г шинэчлэхийн тулд эхлээд Таб дээр, дараа нь Enter дарна уу</translation>
+<translation id="8819855907485254989">Тээврийн тасалбарыг Wallet-д хадгалах</translation>
 <translation id="8820817407110198400">Хавчуургууд</translation>
 <translation id="882338992931677877">Гараар оруулах оролт</translation>
 <translation id="8827067923357481311">Дараа төлөх сонголтууд</translation>

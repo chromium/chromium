@@ -273,6 +273,7 @@
 <translation id="4022972681110646219">תרגום המסך</translation>
 <translation id="4023601594785368013">שפה מקורית: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">‏יש להפעיל מחדש את ChromeOS כדי להחיל את העדכון.</translation>
+<translation id="4039097928859803404">‏תמיד להציג את קיצורי הדרך למצב AI</translation>
 <translation id="4050175100176540509">הגרסה החדשה כוללת שיפורי בטיחות חשובים ותכונות חדשות.</translation>
 <translation id="4053720452172726777">‏פעולות נוספות ב-Google Chrome</translation>
 <translation id="408393047846373801">‏כדי לקבל גישה לסיסמאות ולנתונים נוספים בכל המכשירים שלך, כדאי להיכנס ל-Chrome. לאחר הכניסה, הסיסמה הזו תישמר בחשבון שלך ב-Google.</translation>
@@ -354,6 +355,7 @@
 <translation id="4970880042055371251">‏גרסת ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">‏לוחצים על 'מנהל הסיסמאות של Google'</translation>
+<translation id="5043786843026425788">‏מידע נוסף על חיפוש באמצעות Google Lens ב-Chrome</translation>
 <translation id="504867494566807945">‏אפשר לפתוח קישורים ב-Chrome מכל אפליקציה. בנוסף Chrome מוצמד לשורת המשימות לגישה נוחה.</translation>
 <translation id="5114340746415930644">‏כדי להשתמש בנתונים של Chrome ולשמור אותם בחשבון <ph name="USER_EMAIL" />, צריך להזין את ביטוי הסיסמה</translation>
 <translation id="5120334927898581447">‏כניסה אל Chrome כשנכנסים לשירותי Google אחרים</translation>
@@ -524,6 +526,7 @@
 <translation id="683440813066116847">‏כלל נכנס עבור הגרסה הניסיונית של Google Chrome על מנת לאפשר תנועת mDNS.</translation>
 <translation id="6841242485723266823">‏פרופילים ב-Chrome עוזרים להפריד בין חלקים שונים בחיים שלך. אפשר להוסיף פרופיל חדש עכשיו.</translation>
 <translation id="684888714667046800">לא ניתן להתחבר לאינטרנט. אם משתמשים בחומת אש, צריך לוודא ש-<ph name="PRODUCT_EXE_NAME" /> ברשימת ההיתרים.</translation>
+<translation id="6859580922007887573">צריך ללחוץ כדי להמשיך</translation>
 <translation id="6877155553248388166">‏הפינה הימנית התחתונה של אזור החיפוש: ‎<ph name="RIGHT" />%‎ מימין, ‎<ph name="BOTTOM" />%‎ מלמטה</translation>
 <translation id="6881299373831449287">‏מתבצע עדכון של Chrome</translation>
 <translation id="6885412569789873916">‏אפליקציות לגרסת הבטא של Chrome</translation>
@@ -623,6 +626,7 @@
 <translation id="7849037457735762883">‏רוצה להמשיך מהמקום שבו הפסקת? Chrome יכול לשחזר את הכרטיסיות שלך בכל הפעלה מחדש. כדי להפעיל את האפשרות הזו, צריך לעבור אל</translation>
 <translation id="7872446069773932638">מתבצעת הורדה… יש עוד <ph name="SECONDS" /> שנ'</translation>
 <translation id="7886087451482920026">‏בחירה של טקסט באמצעות Google Lens</translation>
+<translation id="7887929410013642057">‏תמיד להציג את קיצורי הדרך למצב AI</translation>
 <translation id="7890208801193284374">‏כשמשתפים מחשב, חברים ובני משפחה יכולים לגלוש בנפרד ולהגדיר את Chrome בדיוק כפי שהם רוצים.</translation>
 <translation id="7896673875602241923">‏מישהו נכנס בעבר ל-Chrome מהמחשב הזה כ-<ph name="ACCOUNT_EMAIL_LAST" />. יש ליצור משתמש חדש ל-Chrome כדי לשמור על הפרדת המידע שלך.</translation>
 <translation id="7904985524660297937">‏רוצה לנסות את Gemini ב-Google Chrome?</translation>

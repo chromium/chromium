@@ -115,6 +115,7 @@
 <translation id="2241587408274973373">新分頁資訊卡</translation>
 <translation id="2241634353105152135">只此一次</translation>
 <translation id="2253414712144136228">移除<ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="2281098328019574668">接收可改善 Chrome 使用體驗的分析資料通知</translation>
 <translation id="228293613124499805">您瀏覽的大多數網站可能會在裝置上儲存資料，通常是透過儲存您的偏好設定或您與網站分享的資料，從而改善使用體驗。建議您將此設定保持開啟。</translation>
 <translation id="2289270750774289114">在網站要探索附近的藍牙裝置時詢問您 (建議)</translation>
 <translation id="2315043854645842844">作業系統不支援由客戶端選取憑證。</translation>
@@ -244,6 +245,7 @@
 <translation id="3611658447322220736">最近關閉的網站可完成傳送和接受資料</translation>
 <translation id="3619294456800709762">網站可自動進入畫中畫</translation>
 <translation id="3628308229821498208">建議搜尋</translation>
+<translation id="3632460243282703117">訂閱</translation>
 <translation id="363748948745453283">使用概略位置</translation>
 <translation id="3641456520301071208">網站可要求取得您的位置</translation>
 <translation id="3658847490588580244">預設瀏覽器頁底面板</translation>
@@ -573,6 +575,7 @@
 <translation id="7260727271532453612">已允許「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="7276071417425470385">開咗之後，網站可以要求使用虛擬實境裝置。閂咗之後，網站唔可以使用虛擬實境裝置。</translation>
 <translation id="728412880473384942">網站更快，但安全性較低</translation>
+<translation id="7324836168971967994">為你度身訂造的貼士</translation>
 <translation id="7366415735885268578">新增網站</translation>
 <translation id="7368695150573390554">系統將刪除所有離線資料</translation>
 <translation id="7369678931043226462">自訂新分頁頁底面板宜家顯示喺畫面下半部</translation>
@@ -631,6 +634,7 @@
 <translation id="7990211076305263060">開咗之後，網站可以要求使用麥克風。閂咗之後，網站唔可以使用麥克風。</translation>
 <translation id="8007176423574883786">已為這部裝置關閉</translation>
 <translation id="802154636333426148">下載失敗</translation>
+<translation id="8033047164036749181">訂閱呢個網站嘅通知</translation>
 <translation id="8042586301629853791">排序方式：</translation>
 <translation id="8051193500142930381">需要攝錄機的功能將無法運作</translation>
 <translation id="8056330801132235235">Chrome 預設值</translation>

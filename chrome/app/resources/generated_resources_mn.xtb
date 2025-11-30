@@ -3704,6 +3704,7 @@
 <translation id="3527085408025491307">Хавтас</translation>
 <translation id="3528498924003805721">Shortcut targets</translation>
 <translation id="3529851166527095708">&amp;Хаяг болон бусад</translation>
+<translation id="3530919970074558307">Бүлгийн сонголтыг болиулах</translation>
 <translation id="3531070080754387701">Microsoft 365 энэ фолдероос <ph name="FILE_NAMES" />-г нээх боломжгүй</translation>
 <translation id="3531883061432162622">Хавчуурга болон жагсаалтуудаас унших жагсаалт ба хавчуургаа олно уу</translation>
 <translation id="3532273508346491126">Синк хийх удирдлага</translation>
@@ -4057,6 +4058,7 @@
 <translation id="3757567010566591880">Самбарт бэхэлснийг болиулах</translation>
 <translation id="3757645900890881944">Хайлтын хэрэгсэл</translation>
 <translation id="3757733214359997190">Сайт олдсонгүй</translation>
+<translation id="3757825964096339958">Бүлэг сонгох</translation>
 <translation id="375841316537350618">Прокси бичвэрийг татаж авч байна...</translation>
 <translation id="3758887577462995665">Зөвлөгөө:</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> сар</translation>
@@ -4845,6 +4847,7 @@
 <translation id="4292613336957320546">Хурдасгуур</translation>
 <translation id="429312253194641664">Сайт медиа тоглуулж байна</translation>
 <translation id="4293219510510666933">Хөтчийн түүхээсээ хайх, зочилсон сайтуудаа олоход өдөр тутмын хэрэглээний хэл ашиглаарай. Та мөн асуулт асууж, хөтчийн түүхдээ тулгуурласан хариулт авах боломжтой. Энэ тохиргоо асаалттай байна.</translation>
+<translation id="429344752071832554">Бүлгийн сонголтыг болиулах</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" />-г таталтын түүхээс устгасан хэдий ч энэ нь таны төхөөрөмжид байсаар байна</translation>
 <translation id="4295072614469448764">Апп таны терминалд боломжтой боллоо. Түүнчлэн, таны Эхлүүлэгчид дүрс тэмдэг харагдаж болзошгүй.</translation>
 <translation id="4295979599050707005">Chrome болон Google Play-н вебсайт, апп болон өргөтгөл дээр таны <ph name="USER_EMAIL" /> бүртгэлийг ашиглах боломжтой болохыг баталгаажуулахын тулд дахин нэвтэрнэ үү. Мөн та энэ бүртгэлийг устгаж болно. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -5000,6 +5003,7 @@
 <translation id="4405224443901389797">руу зөөх…</translation>
 <translation id="4405781821077215583">Текстийг оруулаад дэлгэцийнхээ зүйлсийг жижгэрүүлэх эсвэл томруулаарай</translation>
 <translation id="4406308048672435032">Та энэ табыг идэвхгүй болгож эсвэл бүрэн жагсаалтыг дахин үзэхийн тулд сэргээж болно</translation>
+<translation id="4406881185911439342">Бүлэг сонгох</translation>
 <translation id="4406883609789734330">Шууд тайлбар</translation>
 <translation id="4406963243402726564">Хадгалаагүй өгөгдөл</translation>
 <translation id="4408599188496843485">Тусламж</translation>

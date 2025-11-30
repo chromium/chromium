@@ -7,6 +7,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> 年前建立}other{<ph name="NUM_YEARS_MANY" /> 年前建立}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{閒置的分頁和群組將於 1 個月後關閉}other{閒置的分頁和群組將於 <ph name="MONTH_COUNT_MANY" /> 個月後關閉}}</translation>
 <translation id="1173894706177603556">重新命名</translation>
+<translation id="1203747227183434426">儲存緊媒體</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{打開有 <ph name="TAB_COUNT2" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」}other{打開有 <ph name="TAB_COUNT2" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" />分頁群組選項</translation>
 <translation id="1300188005269437765">選擇何時將分頁和分頁群組自動移到閒置部分。</translation>
@@ -21,6 +22,7 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個閒置項目}other{<ph name="TABS_COUNT_MANY" /> 個閒置項目}}</translation>
 <translation id="1645759014353344461">已將 <ph name="TABS_COUNT_MANY" /> 個分頁加入群組</translation>
 <translation id="1657719826150349398">下移分頁</translation>
+<translation id="1670942869417022142">靜咗音</translation>
 <translation id="1697284962337958118">新增至</translation>
 <translation id="1713541401465507417">關閉所有分頁和群組</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> 個分頁群組已無法使用}other{<ph name="TAB_GROUPS_COUNT_MANY" /> 個分頁群組已無法使用}}</translation>
@@ -111,6 +113,7 @@
 <translation id="4871719318659334896">關閉群組</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{還原並打開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />。}other{還原並打開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
 <translation id="4881695831933465202">開啟</translation>
+<translation id="4894777338623123366">分享緊分頁畫面</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{關閉分頁}other{關閉分頁}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> 已儲存群組 (將關閉分頁並刪除群組)</translation>
 <translation id="492284538114688557">有商品降價</translation>
@@ -143,6 +146,7 @@
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{將群組移至新視窗}other{將群組移至另一個視窗}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{將分頁向右移}other{將多個分頁向右移}}</translation>
 <translation id="6228793724645064692">(商店評分)</translation>
+<translation id="6251046978189636310">播緊音訊</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{從群組移除單一分頁}other{從群組移除多個分頁}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{將分頁加入新群組}other{將分頁加入新群組}}</translation>
 <translation id="6333260925957816943">此商店的資料</translation>
@@ -219,6 +223,7 @@
 <translation id="8428213095426709021">設定</translation>
 <translation id="855081842937141170">固定分頁</translation>
 <translation id="8633025649649592204">近期活動</translation>
+<translation id="8635822281281406185">最多可加入 10 個檔案、分頁或圖片</translation>
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="8714939927607906138">較低價格</translation>
 <translation id="8730621377337864115">完成</translation>

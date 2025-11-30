@@ -47,6 +47,7 @@
 <translation id="146866447420868597">要登入 Chrome 嗎？</translation>
 <translation id="1476347941828409626">管理 Chrome 設定檔(&amp;M)</translation>
 <translation id="1492280395845991349">重新啟動即可完成 Chrome 更新</translation>
+<translation id="1496875977627931224"><ph name="USER_NAME" />，你好：<ph name="LINE_BREAK" />你今天有什麼想法？</translation>
 <translation id="1497802159252041924">安裝錯誤：<ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">自訂您的新 Chrome 設定檔</translation>
 <translation id="1518627427551567882">此為受保護頁面</translation>
@@ -202,6 +203,7 @@
 <translation id="3112458742631356345">由於此檔案不是常見的下載項目，可能含有危險內容，因此 Chrome 已禁止下載</translation>
 <translation id="3114643501466072395">如要檢查其他密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chrome<ph name="END_LINK" />。</translation>
 <translation id="3119573284443908657">此封存檔案包含可能隱藏惡意軟件的其他檔案，因此 Chrome 已禁止下載</translation>
+<translation id="3130333203120345554">新搜尋</translation>
 <translation id="3135560418014806498">新增 Chrome 設定檔</translation>
 <translation id="3137969841538672700">拖曳即可搜尋</translation>
 <translation id="3140883423282498090">您的變更將於下次重新啟動 Google Chrome 時生效。</translation>
@@ -274,6 +276,7 @@
 <translation id="4022972681110646219">翻譯畫面</translation>
 <translation id="4023601594785368013">原文語言：<ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">必須重新啟動 Chrome OS，才能套用更新。</translation>
+<translation id="4039097928859803404">一律顯示「AI 模式」捷徑</translation>
 <translation id="4050175100176540509">最新版本提供重大保安改良和新功能。</translation>
 <translation id="4053720452172726777">自訂及控制 Google Chrome</translation>
 <translation id="408393047846373801">如要在你的所有裝置上存取密碼和其他資料，請登入 Chrome。登入後，此密碼會儲存至你的 Google 帳戶。</translation>
@@ -355,6 +358,7 @@
 <translation id="4970880042055371251">Chrome OS 版本</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">按一下 [Google 密碼管理工具]</translation>
+<translation id="5043786843026425788">進一步了解點樣喺 Chrome 用「Google 智能鏡頭」搜尋</translation>
 <translation id="504867494566807945">Chrome 將開啟任何應用程式的連結。此外，Chrome 會固定在工作列，方便你隨時使用。</translation>
 <translation id="5114340746415930644">輸入用於在帳戶 <ph name="USER_EMAIL" /> 中使用及儲存 Chrome 資料的密碼短語</translation>
 <translation id="5120334927898581447">在登入其他 Google 服務時登入 Chrome</translation>
@@ -364,6 +368,7 @@
 <translation id="5139423532931106058">自訂您的 Chrome 設定檔</translation>
 <translation id="5163087008893166964">歡迎使用 Chrome；開咗新瀏覽器視窗</translation>
 <translation id="5166439563123238795">Chrome 需要相關權限才能追蹤手勢</translation>
+<translation id="5167819546851111585">你今天有什麼想法？</translation>
 <translation id="5170938038195470297">由於您的設定檔是來自較新版本的 Google Chrome，所以系統無法使用該檔案。
 
 這表示您可能無法使用部分功能。請指定另一個設定檔目錄，或使用較新版本的 Chrome。</translation>
@@ -528,6 +533,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="683440813066116847">允許 mDNS 流量的 Google Chrome Canary 輸入規則。</translation>
 <translation id="6841242485723266823">Chrome 設定檔可助你將生活不同部分分開。立即新增設定檔。</translation>
 <translation id="684888714667046800">無法連線至互聯網。如果你使用防火牆，請確保已將 <ph name="PRODUCT_EXE_NAME" /> 加入許可名單。</translation>
+<translation id="6859580922007887573">按 Tab 鍵繼續</translation>
 <translation id="6877155553248388166">搜尋區域嘅右下角：距右側 <ph name="RIGHT" />%，距底部 <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">正在更新 Chrome</translation>
 <translation id="6885412569789873916">Chrome 測試版應用程式</translation>
@@ -627,6 +633,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7849037457735762883">開啟上次瀏覽的內容：Chrome 可以在每次重新啟動後還原分頁。如要開啟此功能，請前往</translation>
 <translation id="7872446069773932638">正在下載… 剩餘 <ph name="SECONDS" /> 秒</translation>
 <translation id="7886087451482920026">使用「Google 智能鏡頭」選取文字</translation>
+<translation id="7887929410013642057">一律顯示「AI 模式」捷徑</translation>
 <translation id="7890208801193284374">如果您與親朋好友共用電腦，每個人均可享有獨立的瀏覽空間，按照自己的偏好設定 Chrome。</translation>
 <translation id="7896673875602241923">先前已有其他人在這部電腦上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身分登入 Chrome。請建立新的 Chrome 使用者以個別保存您的資料。</translation>
 <translation id="7904985524660297937">試用 Google Chrome 版 Gemini</translation>
@@ -643,6 +650,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8013993649590906847">如果圖片並無有用的說明，Chrome 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。</translation>
 <translation id="8019103195866286235">此擴充程式已由開發人員取消發佈，且可能不安全。請從 Chrome 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
 <translation id="8040768861829554732">擴充程式需要你登入 Chrome</translation>
+<translation id="8041795619940733262">問 Google<ph name="LINE_BREAK" />有關此分頁的問題</translation>
 <translation id="80471789339884597">多謝安裝。您必須先重新啟動所有瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>
