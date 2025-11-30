@@ -1064,6 +1064,9 @@ class Converter {
     popup_window->set_opener_common_ancestor_dom_node_id(
         mojom_popup.opener_dom_node_id);
 
+    ConvertRect(mojom_popup.visible_bounding_box,
+                popup_window->mutable_visible_bounding_box());
+
     return base::ok();
   }
 

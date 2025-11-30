@@ -100,6 +100,7 @@ class WebFrameWidget : public WebWidget {
   virtual gfx::RectF BlinkSpaceToDIPs(const gfx::RectF&) = 0;
   virtual gfx::Rect BlinkSpaceToEnclosedDIPs(const gfx::Rect&) = 0;
   virtual gfx::PointF DIPsToBlinkSpace(const gfx::PointF&) = 0;
+  virtual gfx::RectF DIPsToBlinkSpace(const gfx::RectF& rect) = 0;
 
   // Current instance of the active WebInputMethodController, that is, the
   // WebInputMethodController corresponding to (and owned by) the focused

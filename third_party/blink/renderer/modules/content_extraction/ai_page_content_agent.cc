@@ -1856,12 +1856,15 @@ void AIPageContentAgent::ContentBuilder::MaybeAddPopupData(
   WalkChildren(*web_popup_layout_view, *web_popup_root_node,
                *web_popup_layout_view->Style());
 
-  // Offset the geometry relative to the main frame.
-  gfx::Rect main_frame_view_rect_dips = options_->main_frame_view_rect_in_dips;
+  // Currently the geometry for popup nodes is relative to the popup, offset to
+  // relative to the main frame.
+  gfx::Rect main_frame_view_rect_in_dips =
+      options_->main_frame_view_rect_in_dips;
   gfx::Rect popup_view_rect_in_dips =
       static_cast<WebPagePopup*>(web_popup)->ViewRect();
-  gfx::Vector2d offset_in_dips = popup_view_rect_in_dips.OffsetFromOrigin() -
-                                 main_frame_view_rect_dips.OffsetFromOrigin();
+  gfx::Vector2d offset_in_dips =
+      popup_view_rect_in_dips.OffsetFromOrigin() -
+      main_frame_view_rect_in_dips.OffsetFromOrigin();
 
   FrameWidget* local_frame_widget = frame.GetWidgetForLocalRoot();
   CHECK(local_frame_widget);
@@ -1869,6 +1872,16 @@ void AIPageContentAgent::ContentBuilder::MaybeAddPopupData(
       gfx::ToFlooredPoint(local_frame_widget->DIPsToBlinkSpace(
           gfx::PointF(gfx::Point() + offset_in_dips)));
   OffsetNodeGeometry(*web_popup_root_node, offset_in_pixels.OffsetFromOrigin());
+
+  // The view_rect is relative to the screen while geometry in APC is relative
+  // to the web content's viewport, i.e, the origin where the main frame's
+  // content starts rendering. Therefore offsetting to be relative to the main
+  // frame.
+  popup_view_rect_in_dips.Offset(
+      -main_frame_view_rect_in_dips.OffsetFromOrigin());
+  mojom_popup->visible_bounding_box =
+      ToEnclosingRect(local_frame_widget->DIPsToBlinkSpace(
+          gfx::RectF(popup_view_rect_in_dips)));
 
   mojom_popup->root_node = std::move(web_popup_root_node);
 

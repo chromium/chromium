@@ -1281,6 +1281,11 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
             select_node_geometry.visible_bounding_box().x());
   EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().y(),
             select_node_geometry.visible_bounding_box().y() + 10);
+
+  EXPECT_EQ(popup_window.visible_bounding_box().x(),
+            select_node_geometry.visible_bounding_box().x());
+  EXPECT_EQ(popup_window.visible_bounding_box().y(),
+            select_node_geometry.visible_bounding_box().y() + 10);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) &&
         // !BUILDFLAG(IS_FUCHSIA)
@@ -1371,6 +1376,11 @@ IN_PROC_BROWSER_TEST_F(ScaledPageContentProtoProviderBrowserTest,
             select_node_geometry.visible_bounding_box().x());
   EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().y(),
             select_node_geometry.visible_bounding_box().y() + 10 * 2);
+
+  EXPECT_EQ(page_content().popup_window().visible_bounding_box().x(),
+            select_node_geometry.outer_bounding_box().x());
+  EXPECT_EQ(page_content().popup_window().visible_bounding_box().y(),
+            select_node_geometry.outer_bounding_box().y() + 10 * 2);
 }
 #endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) &&
         //  !BUILDFLAG(IS_FUCHSIA)
@@ -2031,6 +2041,11 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
             select_node_geometry.visible_bounding_box().x());
   EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().y(),
             select_node_geometry.visible_bounding_box().y() + 10);
+
+  EXPECT_EQ(popup_window.visible_bounding_box().x(),
+            select_node_geometry.outer_bounding_box().x());
+  EXPECT_EQ(popup_window.visible_bounding_box().y(),
+            select_node_geometry.outer_bounding_box().y() + 10);
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
@@ -2098,6 +2113,11 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
             select_node_geometry.visible_bounding_box().x());
   EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().y(),
             select_node_geometry.visible_bounding_box().y() + 10);
+
+  EXPECT_EQ(popup_window.visible_bounding_box().x(),
+            select_node_geometry.outer_bounding_box().x());
+  EXPECT_EQ(popup_window.visible_bounding_box().y(),
+            select_node_geometry.outer_bounding_box().y() + 10);
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
@@ -2159,6 +2179,11 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
             select_node_geometry.visible_bounding_box().x());
   EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().y(),
             select_node_geometry.visible_bounding_box().y() + 10);
+
+  EXPECT_EQ(popup_window.visible_bounding_box().x(),
+            select_node_geometry.outer_bounding_box().x());
+  EXPECT_EQ(popup_window.visible_bounding_box().y(),
+            select_node_geometry.outer_bounding_box().y() + 10);
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 

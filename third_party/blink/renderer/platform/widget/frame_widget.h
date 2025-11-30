@@ -248,6 +248,7 @@ class PLATFORM_EXPORT FrameWidget {
   virtual gfx::PointF DIPsToBlinkSpace(const gfx::PointF& point) = 0;
   virtual gfx::Point DIPsToRoundedBlinkSpace(const gfx::Point& point) = 0;
   virtual float DIPsToBlinkSpace(float scalar) = 0;
+  virtual gfx::RectF DIPsToBlinkSpace(const gfx::RectF& rect) = 0;
 
   virtual void RequestMouseLock(
       bool has_transient_user_activation,

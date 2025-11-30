@@ -926,6 +926,10 @@ float WebFrameWidgetImpl::DIPsToBlinkSpace(float scalar) {
   return widget_base_->DIPsToBlinkSpace(scalar);
 }
 
+gfx::RectF WebFrameWidgetImpl::DIPsToBlinkSpace(const gfx::RectF& rect) {
+  return widget_base_->DIPsToBlinkSpace(rect);
+}
+
 gfx::Size WebFrameWidgetImpl::DIPsToCeiledBlinkSpace(const gfx::Size& size) {
   return widget_base_->DIPsToCeiledBlinkSpace(size);
 }

@@ -530,6 +530,11 @@ struct AIPageContentPopup {
 
   // Unique identifier for the DOM node in the frame which opened this popup.
   int32 opener_dom_node_id;
+
+  // The bounding box of the popup window relative to the viewport. The popup
+  // is not clipped by any ancestor except the viewport clipping the
+  // screenshot.
+  gfx.mojom.Rect visible_bounding_box;
 };
 
 // Represents the parsed content of a page. This captures data for a local root.
