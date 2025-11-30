@@ -237,9 +237,8 @@ cr-button#entrypoint.ai-mode-button {
     --color-composebox-context-entrypoint-text-disabled
   );
   --cr-button-text-color: var(--color-composebox-file-chip-text);
-  --cr-hover-background-color: var(
-    --color-composebox-context-entrypoint-hover-background
-  );
+  --cr-hover-background-color:
+      var(--cr-icon-button-hover-background-color);
   --cr-icon-button-margin-start: 6px;
   --icon-block-padding-small: 10px;
   border: initial;
@@ -257,6 +256,11 @@ cr-button#entrypoint.ai-mode-button {
     --composebox-context-menu-entrypoint-button-color,
     --cr-button-text-color
   );
+}
+
+#entrypoint.menu-open {
+  --cr-hover-background-color: var(--cr-icon-button-hover-background-color);
+  background-color: var(--cr-icon-button-hover-background-color);
 }
 
 #description {

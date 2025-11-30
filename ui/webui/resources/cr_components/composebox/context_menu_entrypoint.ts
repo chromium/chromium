@@ -278,10 +278,18 @@ export class ContextMenuEntrypointElement extends
     }
   }
 
+  protected onMenuClose_() {
+    const entrypoint =
+        this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
+    assert(entrypoint);
+    entrypoint.classList.remove('menu-open');
+  }
+
   private showMenuAtEntrypoint_() {
     const entrypoint =
         this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
     assert(entrypoint);
+    entrypoint?.classList.add('menu-open');
     this.$.menu.showAt(entrypoint, {
       top: entrypoint.getBoundingClientRect().bottom,
       width: MENU_WIDTH_PX,

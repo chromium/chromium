@@ -13,7 +13,8 @@ export function getHtml(this: ContextMenuEntrypointElement) {
         class="ai-mode-button"
         @click="${this.onEntrypointClick_}"
         ?disabled="${this.inputsDisabled}"
-        title="${this.i18n('addContextTitle')}">
+        title="${this.i18n('addContextTitle')}"
+        noink>
       <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
       <span id="description"
         @animationend="${(e: AnimationEvent) => {
@@ -28,7 +29,8 @@ export function getHtml(this: ContextMenuEntrypointElement) {
         iron-icon="cr:add"
         @click="${this.onEntrypointClick_}"
         ?disabled="${this.inputsDisabled}"
-        title="${this.i18n('addContextTitle')}">
+        title="${this.i18n('addContextTitle')}"
+        noink>
     </cr-icon-button>`;
   return html`<!--_html_template_start_-->
     ${this.glifAnimationState !== GlifAnimationState.INELIGIBLE ? html`
@@ -46,7 +48,8 @@ export function getHtml(this: ContextMenuEntrypointElement) {
     </div>
     ` : entrypointButton}
 
-  <cr-action-menu id="menu" role-description="${this.i18n('menu')}">
+  <cr-action-menu id="menu" role-description="${this.i18n('menu')}"
+      @close="${this.onMenuClose_}">
     ${this.tabSuggestions?.length > 0 ? html`
       <h4 id="tabHeader">${this.i18n('addTab')}</h4>
       ${this.tabSuggestions.map((tab, index) => html`
