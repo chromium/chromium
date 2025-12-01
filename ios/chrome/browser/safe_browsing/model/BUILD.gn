@@ -119,7 +119,10 @@ source_set("infobar_delegate") {
 
   deps = [
     "//components/infobars/core",
+    "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
+    "//ui/base",
   ]
 }
 

@@ -6016,6 +6016,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SAFETY_CHECK_TITLE_UPDATE_CHROME" desc="Tag label title displayed for the Safety Check module in the Magic Stack when the Update Chrome check finds an issue. [iOS only]">
         Update your Browser
       </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_OFF_INFOBAR_TITLE" desc="The title to display in an infobar when Enhanced protection is disabled by sync.">
+        Enhanced protection is off
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_ON_INFOBAR_TITLE" desc="The title to display in an infobar when Enhanced protection is enabled by sync.">
+        Enhanced protection is on
+      </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_ACCOUNT_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection account icon.">
         When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increasing protection in Gmail after a security incident.
       </message>
@@ -6038,7 +6044,9 @@ Handoff must also be enabled in the General section of Settings, and your device
         When you're signed in, protects you across Google services.
       </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_INFOBAR_BUTTON_TEXT" desc="The Enhanced Safe Browsing infobar promo button's text. When the button is clicked, the user is navigated to the Safe Browsing settings page.">Turn on…</message>
-      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_INFOBAR_TITLE" desc="The Enhanced Safe Browsing infobar promo's title.">Get more security</message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_INFOBAR_TITLE" desc="The Enhanced Safe Browsing infobar promo's title.">
+        Get more security
+      </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_INLINE_PROMO_BUTTON_TEXT" desc="The Enhanced Safe Browsing inline promo button's text. When the button is clicked, the user isnavigated to the Safe Browsing settings page.">
         Turn on Enhanced Protection…
       </message>
