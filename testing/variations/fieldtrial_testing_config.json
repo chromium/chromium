@@ -13045,6 +13045,21 @@
             ]
         }
     ],
+    "IOSAutoOpenRemoteTabGroupsSettings": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSAutoOpenRemoteTabGroupsSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillAcrossIframesV2": [
         {
             "platforms": [
