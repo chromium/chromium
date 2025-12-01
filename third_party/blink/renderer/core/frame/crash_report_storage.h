@@ -33,8 +33,15 @@ class CORE_EXPORT CrashReportStorage final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
-  void OnCreateCrashReportStorage(
-      ScriptPromiseResolver<IDLUndefined>* resolver);
+  void OnCreateCrashReportStorage(ScriptPromiseResolver<IDLUndefined>* resolver,
+                                  uint64_t length);
+  // This method can throw exceptions, if, for example, the developer attempts
+  // to store a key/value combination that is too large. When the write fails
+  // and it throws an exception, this method returns false so that the caller
+  // can take action, if needed.
+  bool CheckSizeAndWriteKey(const String& key,
+                            const String& value,
+                            ExceptionState& exception_state);
 
   Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   // Ths member is a one-way boolean; it starts as false, and only gets set to
@@ -48,6 +55,13 @@ class CORE_EXPORT CrashReportStorage final : public ScriptWrappable,
   // Chromium may take advantage of this with shared memory, as is being
   // explored in https://crrev.com/c/6788146.
   bool initialization_complete_ = false;
+  // This member is set a single time, exactly once, when
+  // `initialization_complete_` is set. It tracks the requested length, so that
+  // we can compare the size of `storage_` with the requested length in each
+  // `set()` call.
+  uint64_t length_ = 0;
+
+  HashMap<String, String> storage_;
 };
 
 }  // namespace blink
