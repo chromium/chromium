@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -98,6 +99,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private WebContents mWebContents;
+    @Mock private RenderWidgetHostView mRenderWidgetHostView;
     @Mock private Function<Tab, @Nullable Bitmap> mTabFaviconFactory;
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
     @Mock private SnackbarManager mSnackbarManager;
@@ -307,6 +309,8 @@ public class FuseboxMediatorUnitTest {
         doReturn(true).when(mTab1).isInitialized();
         doReturn(100L).when(mTab1).getTimestampMillis();
         doReturn(mWebContents).when(mTab1).getWebContents();
+        doReturn(false).when(mWebContents).isLoading();
+        doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
 
         doReturn("Title3").when(mTab2).getTitle();
         doReturn(new GURL("chrome://flags")).when(mTab2).getUrl();
@@ -421,6 +425,8 @@ public class FuseboxMediatorUnitTest {
         doReturn(true).when(mTab1).isInitialized();
         doReturn(100L).when(mTab1).getTimestampMillis();
         doReturn(mWebContents).when(mTab1).getWebContents();
+        doReturn(false).when(mWebContents).isLoading();
+        doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
 
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         ShadowLooper.idleMainLooper();
@@ -654,6 +660,8 @@ public class FuseboxMediatorUnitTest {
         doReturn(false).when(mTab1).isFrozen();
         doReturn(100L).when(mTab1).getTimestampMillis();
         doReturn(mWebContents).when(mTab1).getWebContents();
+        doReturn(false).when(mWebContents).isLoading();
+        doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
 
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));

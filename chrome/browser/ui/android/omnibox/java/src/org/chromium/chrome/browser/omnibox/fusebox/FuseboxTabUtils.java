@@ -35,6 +35,8 @@ public class FuseboxTabUtils {
         return tab != null
                 && tab.isInitialized()
                 && !tab.isFrozen()
-                && tab.getWebContents() != null;
+                && tab.getWebContents() != null
+                && !tab.getWebContents().isLoading()
+                && tab.getWebContents().getRenderWidgetHostView() != null;
     }
 }

@@ -5742,6 +5742,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabItemPicker.SelectableTabs.Count" units="count"
+    expires_after="2026-05-01">
+  <owner>haileywang@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    The number of selectable tabs available to the user in the tab item picker.
+    Recorded when the tab picker UI is shown.
+  </summary>
+</histogram>
+
+<histogram name="Android.TabItemPicker.SelectedTabs.Count" units="count"
+    expires_after="2026-05-01">
+  <owner>haileywang@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    The number of tabs selected by the user in the tab item picker. Recorded
+    when the user confirms their selection.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabletDeterminationMismatch" enum="Boolean"
     expires_after="2026-05-01">
   <owner>skavuluru@google.com</owner>

@@ -93,7 +93,7 @@ public final class FuseboxAttachment extends ListItem {
         assert !hasToken() : "Attachment should not have a token when uploaded";
 
         if (type == FuseboxAttachmentType.ATTACHMENT_TAB) {
-            if (assumeNonNull(tab).getWebContents() != null) {
+            if (FuseboxTabUtils.isTabActive(assumeNonNull(tab))) {
                 mToken = bridge.addTabContext(tab);
             } else {
                 mToken = bridge.addTabContextFromCache(assumeNonNull(tab).getId());

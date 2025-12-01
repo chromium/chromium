@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -208,6 +209,9 @@ public class TabItemPickerCoordinator {
 
         TabListEditorController controller = mTabListEditorCoordinator.getController();
 
+        RecordHistogram.recordCount100Histogram(
+                "Android.TabItemPicker.SelectableTabs.Count", tabs.size());
+
         if (mActivity instanceof ComponentActivity componentActivity) {
             // Add the callback to the Dispatcher
             componentActivity
@@ -278,6 +282,8 @@ public class TabItemPickerCoordinator {
 
         @Override
         public void finishSelection(List<TabListEditorItemSelectionId> selectedItems) {
+            RecordHistogram.recordCount100Histogram(
+                    "Android.TabItemPicker.SelectedTabs.Count", selectedItems.size());
             mController.hideByAction();
 
             // Route the result to the Activity's success handler.

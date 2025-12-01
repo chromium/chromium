@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelectionId;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -83,6 +84,7 @@ public class TabItemPickerCoordinatorUnitTest {
     @Mock private WindowManager mWindowManager;
     @Mock private TabModel mRegularTabModel;
     @Mock private PageContentExtractionService mPageContentExtractionService;
+    @Mock private WebContents mWebContents;
 
     @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegateMock;
     @Mock private ObservableSupplier<Boolean> mBackPressChangedSupplierMock;
@@ -211,7 +213,10 @@ public class TabItemPickerCoordinatorUnitTest {
         GURL testUrl = JUnitTestGURLs.URL_1;
         Tab tab1WithWebContents = Mockito.mock(Tab.class);
         when(tab1WithWebContents.getId()).thenReturn(101);
-        when(tab1WithWebContents.getWebContents()).thenReturn(Mockito.mock(WebContents.class));
+        when(tab1WithWebContents.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.isLoading()).thenReturn(false);
+        when(mWebContents.getRenderWidgetHostView())
+                .thenReturn(Mockito.mock(RenderWidgetHostView.class));
         when(tab1WithWebContents.isInitialized()).thenReturn(true);
         when(tab1WithWebContents.isFrozen()).thenReturn(false);
         when(tab1WithWebContents.getUrl()).thenReturn(testUrl);
