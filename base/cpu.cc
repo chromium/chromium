@@ -43,6 +43,10 @@
 #endif
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace base {
 
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -151,6 +155,10 @@ DEFINE_PROTECTED_DATA base::ProtectedMemory<CPU> g_cpu_instance;
 }  // namespace
 
 void CPU::Initialize() {
+#if BUILDFLAG(IS_MAC)
+  is_running_in_vm_ = mac::IsVirtualMachine();
+#endif
+
 #if defined(ARCH_CPU_X86_FAMILY)
   int cpu_info[4] = {-1, 0, 0, 0};
 
@@ -204,7 +212,9 @@ void CPU::Initialize() {
     // This is checking for any hypervisor. Hypervisors may choose not to
     // announce themselves. Hypervisors trap CPUID and sometimes return
     // different results to underlying hardware.
+#if !BUILDFLAG(IS_MAC)
     is_running_in_vm_ = (static_cast<uint32_t>(cpu_info[2]) & 0x80000000) != 0;
+#endif
 
     // AVX instructions will generate an illegal instruction exception unless
     //   a) they are supported by the CPU,
