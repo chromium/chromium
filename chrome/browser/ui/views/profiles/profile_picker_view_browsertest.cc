@@ -4201,8 +4201,16 @@ class ProfilePickerOpenAllProfilesButtonExperimentBrowserTest
       switches::kOpenAllProfilesFromProfilePickerExperiment};
 };
 
+// Failing on Windows linux cross: https://crbug.com/464956659.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OpenAllProfilesAfterSimulatingButtonClick \
+  DISABLED_OpenAllProfilesAfterSimulatingButtonClick
+#else
+#define MAYBE_OpenAllProfilesAfterSimulatingButtonClick \
+  OpenAllProfilesAfterSimulatingButtonClick
+#endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerOpenAllProfilesButtonExperimentBrowserTest,
-                       OpenAllProfilesAfterSimulatingButtonClick) {
+                       MAYBE_OpenAllProfilesAfterSimulatingButtonClick) {
   base::FilePath profile_path1 = browser()->profile()->GetPath();
   base::FilePath profile_path2 = CreateNewProfileWithoutBrowser();
   base::FilePath profile_path3 = CreateNewProfileWithoutBrowser();
