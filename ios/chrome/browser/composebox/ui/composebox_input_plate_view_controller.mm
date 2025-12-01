@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_cell.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_view.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_mutator.h"
-#import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -376,18 +375,6 @@ UIImage* SendButtonImage(BOOL highlighted) {
   _sendButton.hidden = hidden;
 }
 
-- (void)setAIModeEnabled:(BOOL)AIModeEnabled {
-  if (AIModeEnabled == _AIModeEnabled) {
-    return;
-  }
-  _AIModeEnabled = AIModeEnabled;
-  [self updatePlaceholderText];
-  [self updateAIMButtonAppearance];
-  [self updatePlusButtonItems];
-  [self.mutator setAIModeEnabled:_AIModeEnabled];
-  [self triggerGlowEffect];
-}
-
 - (void)setCompact:(BOOL)compact {
   if (_compact == compact) {
     return;
@@ -399,6 +386,17 @@ UIImage* SendButtonImage(BOOL highlighted) {
   }
 
   [self updateInputPlateStackViewAnimated:YES];
+}
+
+- (void)setAIModeEnabled:(BOOL)enabled {
+  if (_AIModeEnabled == enabled) {
+    return;
+  }
+  _AIModeEnabled = enabled;
+  [self updatePlaceholderText];
+  [self updateAIMButtonAppearance];
+  [self updatePlusButtonItems];
+  [self triggerGlowEffect];
 }
 
 - (void)setCurrentTabFavicon:(UIImage*)favicon {
@@ -473,11 +471,10 @@ UIImage* SendButtonImage(BOOL highlighted) {
 }
 
 - (void)aimButtonTapped {
-  self.AIModeEnabled = !self.AIModeEnabled;
-  if (self.AIModeEnabled) {
-    [self.metricsRecorder
-        recordAiModeActivationSource:AiModeActivationSource::kDedicatedButton];
-  }
+  [self.delegate
+      composeboxViewControllerDidTapAIMButton:self
+                             activationSource:AiModeActivationSource::
+                                                  kDedicatedButton];
 }
 
 - (void)plusButtonTouchDown {
@@ -580,11 +577,9 @@ UIImage* SendButtonImage(BOOL highlighted) {
 }
 
 - (void)handleAIMTappedFromToolMenu {
-  self.AIModeEnabled = !self.AIModeEnabled;
-  if (self.AIModeEnabled) {
-    [self.metricsRecorder
-        recordAiModeActivationSource:AiModeActivationSource::kToolMenu];
-  }
+  [self.delegate composeboxViewControllerDidTapAIMButton:self
+                                        activationSource:
+                                            AiModeActivationSource::kToolMenu];
 }
 
 /// Updates the visibility of the leading/trailing fade views for the carousel.

@@ -137,10 +137,8 @@ CreateInputDataFromAnnotatedPageContent(
   std::unique_ptr<ComposeboxQueryControllerIOS> _composeboxQueryController;
   // The observer bridge for file upload status.
   std::unique_ptr<ComposeboxFileUploadObserverBridge> _composeboxObserverBridge;
-  // Whether AI mode is enabled.
-  BOOL _AIModeEnabled;
-  // Whether image generation feature is enabled.
-  BOOL _isImageGenerationEnabled;
+  // The different modes for the composebox.
+  ComposeboxModeHolder* _modeHolder;
   // The web state list.
   raw_ptr<WebStateList> _webStateList;
   // The favicon loader.
@@ -175,7 +173,8 @@ CreateInputDataFromAnnotatedPageContent(
                         faviconLoader:(FaviconLoader*)faviconLoader
                persistTabContextAgent:
                    (PersistTabContextBrowserAgent*)persistTabContextAgent
-                          isIncognito:(BOOL)isIncognito {
+                          isIncognito:(BOOL)isIncognito
+                           modeHolder:(ComposeboxModeHolder*)modeHolder {
   self = [super init];
   if (self) {
     _items = [NSMutableArray array];
@@ -189,12 +188,16 @@ CreateInputDataFromAnnotatedPageContent(
     _webStateDeferredExecutor = [[WebStateDeferredExecutor alloc] init];
     _persistTabContextAgent = persistTabContextAgent;
     _isIncognito = isIncognito;
+    _modeHolder = modeHolder;
+    [_modeHolder addObserver:self];
   }
   return self;
 }
 
 - (void)disconnect {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [_modeHolder removeObserver:self];
+  _modeHolder = nil;
   _faviconLoader = nullptr;
   _webStateDeferredExecutor = nil;
   _persistTabContextAgent = nullptr;
@@ -333,7 +336,7 @@ CreateInputDataFromAnnotatedPageContent(
 
   if (base::FeatureList::IsEnabled(kComposeboxAutoattachTab) &&
       _items.count == 0) {
-    [self.consumer setAIModeEnabled:NO];
+    _modeHolder.mode = ComposeboxMode::kRegularSearch;
   }
 
   [self updateConsumerItems];
@@ -346,7 +349,7 @@ CreateInputDataFromAnnotatedPageContent(
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
   search_url_request_info->query_text = base::SysNSStringToUTF8(text);
   search_url_request_info->query_start_time = base::Time::Now();
-  if (_isImageGenerationEnabled) {
+  if (_modeHolder.mode == ComposeboxMode::kImageGeneration) {
     search_url_request_info->additional_params["imgn"] = "1";
   }
   // Read the list of tokens from the fileinfo list in the contextual search
@@ -360,7 +363,7 @@ CreateInputDataFromAnnotatedPageContent(
   GURL URL = _composeboxQueryController->CreateSearchUrl(
       std::move(search_url_request_info));
   // TODO(crbug.com/40280872): Handle AIM enabled in the query controller.
-  if (!_AIModeEnabled) {
+  if ([_modeHolder isRegularSearch]) {
     URL = net::AppendOrReplaceQueryParameter(URL, "udm", "24");
   }
 
@@ -372,22 +375,28 @@ CreateInputDataFromAnnotatedPageContent(
   [self.URLLoader loadURLParams:params];
 }
 
-- (void)setAIModeEnabled:(BOOL)enabled {
+#pragma mark - ComposeboxModeObserver
+
+- (void)composeboxModeDidChange:(ComposeboxMode)mode {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_AIModeEnabled == enabled) {
-    return;
-  }
-  _AIModeEnabled = enabled;
   if (base::FeatureList::IsEnabled(
           omnibox::kComposeboxUsesChromeComposeClient)) {
     [self.delegate reloadAutocompleteSuggestions];
   }
-  if (!_AIModeEnabled) {
-    if (_composeboxQueryController) {
-      _composeboxQueryController->ClearFiles();
-    }
-    [_items removeAllObjects];
-    [self updateConsumerItems];
+
+  [self.consumer setAIModeEnabled:mode == ComposeboxMode::kAIM];
+
+  switch (mode) {
+    case ComposeboxMode::kRegularSearch:
+      if (_composeboxQueryController) {
+        _composeboxQueryController->ClearFiles();
+      }
+      [_items removeAllObjects];
+      [self.consumer setItems:_items];
+      break;
+    case ComposeboxMode::kAIM:
+    case ComposeboxMode::kImageGeneration:
+      break;
   }
   [self updateCompactModeIfNeeded];
 }
@@ -925,28 +934,29 @@ CreateInputDataFromAnnotatedPageContent(
   return *_composeboxQueryController->CreateSuggestInputs(tokens);
 }
 
-- (BOOL)isAIModeEnabled {
-  return _AIModeEnabled;
-}
-
 - (void)omniboxDidAcceptText:(const std::u16string&)text
               destinationURL:(const GURL&)destinationURL
                URLLoadParams:(const UrlLoadParams&)URLLoadParams
                 isSearchType:(BOOL)isSearchType {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_AIModeEnabled) {
-    if (IsAimURL(destinationURL)) {
-      [self.consumer setAIModeEnabled:YES];
-    }
-    AutocompleteRequestType requestType =
-        _AIModeEnabled ? AutocompleteRequestType::kAIMode
-                       : AutocompleteRequestType::kSearch;
-    [self.metricsRecorder
-        recordAutocompleteRequestTypeAtNavigation:requestType];
-
-    [self sendText:[NSString cr_fromString16:text]];
-  } else {
-    [self.URLLoader loadURLParams:URLLoadParams];
+  // If omnibox proposes an AIM suggestion, switch to AI mode.
+  if (IsAimURL(destinationURL) && [_modeHolder isRegularSearch]) {
+    _modeHolder.mode = ComposeboxMode::kAIM;
+  }
+  switch (_modeHolder.mode) {
+    case ComposeboxMode::kRegularSearch:
+      [self.URLLoader loadURLParams:URLLoadParams];
+      break;
+    case ComposeboxMode::kAIM:
+      [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
+                                AutocompleteRequestType::kAIMode];
+      [self sendText:[NSString cr_fromString16:text]];
+      break;
+    case ComposeboxMode::kImageGeneration:
+      [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
+                                AutocompleteRequestType::kImageGeneration];
+      [self sendText:[NSString cr_fromString16:text]];
+      break;
   }
 }
 
@@ -957,6 +967,10 @@ CreateInputDataFromAnnotatedPageContent(
   // Update send, lens and mic button visibility.
   [self.consumer hideLensAndMicButton:text.length()];
   [self.consumer hideSendButton:!text.length()];
+}
+
+- (ComposeboxMode)composeboxMode {
+  return _modeHolder.mode;
 }
 
 #pragma mark - Private helpers
@@ -1005,18 +1019,20 @@ CreateInputDataFromAnnotatedPageContent(
   [self updateConsumerActionsState];
 
   if (_items.count > 0) {
-    if (!_AIModeEnabled) {
+    if ([_modeHolder isRegularSearch]) {
       // AI mode is implicitly enabled by items attachment.
       [self.metricsRecorder
           recordAiModeActivationSource:AiModeActivationSource::kImplicit];
     }
-    [self.consumer setAIModeEnabled:YES];
+    _modeHolder.mode = ComposeboxMode::kAIM;
   }
 }
 
 - (void)updateCompactModeIfNeeded {
   BOOL compactModeAllowed = IsComposeboxCompactModeEnabled();
-  BOOL requiresExpansion = _isMultiline || _AIModeEnabled;
+  BOOL requiresExpansion = _isMultiline ||
+                           _modeHolder.mode == ComposeboxMode::kAIM ||
+                           _modeHolder.mode == ComposeboxMode::kImageGeneration;
   BOOL compact = !requiresExpansion && compactModeAllowed;
   [self.consumer setCompact:compact];
 }

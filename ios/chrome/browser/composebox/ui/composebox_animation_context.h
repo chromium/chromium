@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
+
 // Defines the set of views and functional hooks required when presenting and
 // dismissing the composebox.
 @protocol ComposeboxAnimationContext
@@ -20,8 +22,8 @@
 // The suggestions popup to be animated.
 @property(nonatomic, readonly) UIView* popupViewForAnimation;
 
-// Sets whether AI mode is enabled.
-- (void)setAIModeEnabled:(BOOL)AIModeEnabled;
+// Informs the composebox to update its visual mode to the given `mode`.
+- (void)setComposeboxMode:(ComposeboxMode)mode;
 
 // Requests the input plate to expand beyond to full width when dismissing.
 - (void)expandInputPlateForDismissal;

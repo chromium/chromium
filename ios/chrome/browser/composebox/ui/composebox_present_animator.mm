@@ -141,7 +141,8 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
                             relativeDuration:0.8
                                   animations:^{
                                     if (toggleOnAIM) {
-                                      [context setAIModeEnabled:YES];
+                                      [context setComposeboxMode:
+                                                   ComposeboxMode::kAIM];
                                     }
                                   }];
       }
@@ -191,7 +192,8 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
                             relativeDuration:0.8
                                   animations:^{
                                     if (toggleOnAIM) {
-                                      [context setAIModeEnabled:YES];
+                                      [context setComposeboxMode:
+                                                   ComposeboxMode::kAIM];
                                     }
                                   }];
       }

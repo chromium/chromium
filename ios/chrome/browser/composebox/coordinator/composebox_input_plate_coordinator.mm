@@ -14,6 +14,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_mediator.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_omnibox_client.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_coordinator.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
@@ -96,6 +97,7 @@ const CGFloat kSnackbarBottomMargin = 10;
   ComposeboxTabPickerCoordinator* _tabPickerCoordinator;
   ComposeboxTheme* _theme;
   ComposeboxMetricsRecorder* _metricsRecorder;
+  ComposeboxModeHolder* _modeHolder;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -103,7 +105,8 @@ const CGFloat kSnackbarBottomMargin = 10;
                                 entrypoint:(ComposeboxEntrypoint)entrypoint
                                      query:(NSString*)query
                                  URLLoader:(id<ComposeboxURLLoader>)URLLoader
-                                     theme:(ComposeboxTheme*)theme {
+                                     theme:(ComposeboxTheme*)theme
+                                modeHolder:(ComposeboxModeHolder*)modeHolder {
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _entrypoint = entrypoint;
@@ -111,6 +114,7 @@ const CGFloat kSnackbarBottomMargin = 10;
     _URLLoader = URLLoader;
     _theme = theme;
     _metricsRecorder = [[ComposeboxMetricsRecorder alloc] init];
+    _modeHolder = modeHolder;
   }
   return self;
 }
@@ -119,7 +123,6 @@ const CGFloat kSnackbarBottomMargin = 10;
   _viewController =
       [[ComposeboxInputPlateViewController alloc] initWithTheme:_theme];
   _viewController.delegate = self;
-  _viewController.metricsRecorder = _metricsRecorder;
 
   if (_entrypoint == ComposeboxEntrypoint::kNTPAIMButton) {
     [_metricsRecorder
@@ -156,7 +159,8 @@ const CGFloat kSnackbarBottomMargin = 10;
                           faviconLoader:faviconLoader
                  persistTabContextAgent:PersistTabContextBrowserAgent::
                                             FromBrowser(self.browser)
-                            isIncognito:self.isOffTheRecord];
+                            isIncognito:self.isOffTheRecord
+                             modeHolder:_modeHolder];
   _mediator.URLLoader = _URLLoader;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
@@ -336,6 +340,18 @@ const CGFloat kSnackbarBottomMargin = 10;
     return;
   }
   [self showComposeboxTabPicker];
+}
+
+- (void)composeboxViewControllerDidTapAIMButton:
+            (ComposeboxInputPlateViewController*)viewController
+                               activationSource:
+                                   (AiModeActivationSource)activationSource {
+  if (_modeHolder.mode == ComposeboxMode::kAIM) {
+    _modeHolder.mode = ComposeboxMode::kRegularSearch;
+  } else {
+    _modeHolder.mode = ComposeboxMode::kAIM;
+    [_metricsRecorder recordAiModeActivationSource:activationSource];
+  }
 }
 
 - (void)composeboxViewController:

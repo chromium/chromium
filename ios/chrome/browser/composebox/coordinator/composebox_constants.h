@@ -7,6 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+// The different modes for the composebox.
+enum class ComposeboxMode {
+  kRegularSearch,
+  kAIM,
+  kImageGeneration,
+};
+
 // The maximum number of attachments that can be added to a prompt.
 extern const NSUInteger kAttachmentLimit;
 // The maximum allowed size for PDF file uploads.

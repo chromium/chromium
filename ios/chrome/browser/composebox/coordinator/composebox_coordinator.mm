@@ -8,6 +8,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_coordinator.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_navigation_mediator.h"
 #import "ios/chrome/browser/composebox/public/composebox_animation_base.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_position.h"
@@ -52,6 +53,8 @@
   ComposeboxViewController* _viewController;
   // The base of the composebox animations.
   __weak id<ComposeboxAnimationBase> _animationBase;
+  // The holder for the composebox mode.
+  ComposeboxModeHolder* _modeHolder;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -65,6 +68,7 @@
     _entrypoint = entrypoint;
     _query = query;
     _animationBase = animationBase;
+    _modeHolder = [[ComposeboxModeHolder alloc] init];
   }
   return self;
 }
@@ -95,7 +99,8 @@
                       entrypoint:_entrypoint
                            query:_query
                        URLLoader:_navigationMediator
-                           theme:[self createTheme]];
+                           theme:[self createTheme]
+                      modeHolder:_modeHolder];
   _aimComposeboxCoordinator.omniboxPopupPresenterDelegate = _viewController;
   [_aimComposeboxCoordinator start];
 
@@ -227,9 +232,8 @@
   return _viewController.omniboxPopupContainer;
 }
 
-- (void)setAIModeEnabled:(BOOL)AIModeEnabled {
-  [_aimComposeboxCoordinator.inputViewController
-      setAIModeEnabled:AIModeEnabled];
+- (void)setComposeboxMode:(ComposeboxMode)mode {
+  _modeHolder.mode = mode;
 }
 
 - (void)expandInputPlateForDismissal {

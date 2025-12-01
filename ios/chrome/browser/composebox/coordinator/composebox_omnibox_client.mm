@@ -156,7 +156,7 @@ GURL ComposeboxOmniboxClient::GetNavigationEntryURL() const {
 
 metrics::OmniboxEventProto::PageClassification
 ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
-  if ([delegate_ isAIModeEnabled] &&
+  if ([delegate_ composeboxMode] == ComposeboxMode::kAIM &&
       base::FeatureList::IsEnabled(
           omnibox::kComposeboxUsesChromeComposeClient)) {
     return metrics::OmniboxEventProto::NTP_COMPOSEBOX;

@@ -26,7 +26,7 @@
 - (void)hideSendButton:(BOOL)hidden;
 
 // Sets whether AI mode is enabled.
-- (void)setAIModeEnabled:(BOOL)AIModeEnabled;
+- (void)setAIModeEnabled:(BOOL)enabled;
 
 // Whether to present in compact (single line) mode.
 - (void)setCompact:(BOOL)compact;

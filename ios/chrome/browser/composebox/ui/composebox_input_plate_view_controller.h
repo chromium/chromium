@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_animation_context.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_mutator.h"
+#import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
 
 @protocol ComposeboxInputPlateMutator;
 @class ComposeboxMetricsRecorder;
@@ -42,6 +43,11 @@
 /// Informs the delegate that a user did tap on the attach tabs button.
 - (void)composeboxViewControllerDidTapAttachTabsButton:
     (ComposeboxInputPlateViewController*)composeboxViewController;
+/// Informs the delegate that a user did tap on the AI button.
+- (void)composeboxViewControllerDidTapAIMButton:
+            (ComposeboxInputPlateViewController*)composeboxViewController
+                               activationSource:
+                                   (AiModeActivationSource)activationSource;
 /// Informs the delegate that a user did tap on the lens button.
 - (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)composeboxViewController
@@ -63,9 +69,6 @@
 // The input plate view to be used in animations.
 @property(nonatomic, readonly) UIView* inputPlateViewForAnimation;
 
-// The metrics recorder of the composebox.
-@property(nonatomic, weak) ComposeboxMetricsRecorder* metricsRecorder;
-
 // Whether the UI is in compact (single line) mode.
 @property(nonatomic, readonly, getter=isCompact) BOOL compact;
 
@@ -74,9 +77,6 @@
 
 /// Sets the omnibox edit view.
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView;
-
-// Sets whether AI mode is enabled.
-- (void)setAIModeEnabled:(BOOL)AIModeEnabled;
 
 @end
 

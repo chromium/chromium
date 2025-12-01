@@ -10,6 +10,7 @@
 
 @class ComposeboxInputPlateViewController;
 enum class ComposeboxEntrypoint;
+@class ComposeboxModeHolder;
 @class ComposeboxTheme;
 @protocol ComposeboxURLLoader;
 class Browser;
@@ -35,6 +36,7 @@ class Browser;
                                      query:(NSString*)query
                                  URLLoader:(id<ComposeboxURLLoader>)URLLoader
                                      theme:(ComposeboxTheme*)theme
+                                modeHolder:(ComposeboxModeHolder*)modeHolder
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

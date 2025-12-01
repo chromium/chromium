@@ -16,10 +16,7 @@
 /// Sends `text` to start a query.
 - (void)sendText:(NSString*)text;
 
-/// Sets `enabled` state for AIM.
-- (void)setAIModeEnabled:(BOOL)enabled;
-
-// Attaches the current tab's content to the context.
+/// Attaches the current tab's content to the context.
 - (void)attachCurrentTabContent;
 
 @end

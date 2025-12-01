@@ -10,6 +10,7 @@
 #include <memory>
 
 #import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_omnibox_client_delegate.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_coordinator.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
@@ -40,6 +41,7 @@ class WebStateList;
     : NSObject <ComposeboxOmniboxClientDelegate,
                 ComposeboxInputPlateMutator,
                 ComposeboxFileUploadObserver,
+                ComposeboxModeObserver,
                 ComposeboxTabPickerSelectionDelegate,
                 LoadQueryCommands,
                 TextFieldViewContainingHeightDelegate>
@@ -58,7 +60,8 @@ class WebStateList;
                         faviconLoader:(FaviconLoader*)faviconLoader
                persistTabContextAgent:
                    (PersistTabContextBrowserAgent*)persistTabContextAgent
-                          isIncognito:(BOOL)isIncognito;
+                          isIncognito:(BOOL)isIncognito
+                           modeHolder:(ComposeboxModeHolder*)modeHolder;
 
 - (void)disconnect;
 
