@@ -1496,7 +1496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceMixer.OvertimeCount" units="count"
-    expires_after="2025-11-17">
+    expires_after="2026-05-11">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
@@ -1505,7 +1505,8 @@ chromium-metrics-reviews@google.com.
     Number of times over a sampling interval (1000 callbacks) when the mixing
     callback took longer than the playback buffer duration to finish. Capped at
     100 (1/10 of all callbacks). Not logged if the mixer was called less than
-    1000 times.
+    1000 times. Warning: this histogram was expired from 2025-11-17 to
+    2025-12-01; data may be missing.
   </summary>
 </histogram>
 

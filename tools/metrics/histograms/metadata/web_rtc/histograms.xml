@@ -695,7 +695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.AudioInputChannelLayout" enum="ChannelLayout"
-    expires_after="2025-11-30">
+    expires_after="2026-05-11">
   <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -721,7 +721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.AudioInputSampleRateUnexpected" units="Hz"
-    expires_after="2025-07-25">
+    expires_after="2026-05-11">
   <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -729,7 +729,8 @@ chromium-metrics-reviews@google.com.
     Audio input sample rate for WebRTC (atypical values, in Hz). Logged when a
     processed audio input source is started, roughly once per successful
     getUserMedia call with some effect enabled. Warning: this histogram was
-    expired from 2021-04-30 to 2022-04-11; data may be missing.
+    expired from 2021-04-30 to 2022-04-11 and from 2025-07-25 to 2025-12-01;
+    data may be missing.
   </summary>
 </histogram>
 
@@ -745,14 +746,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.AudioOutputSampleRateUnexpected" units="Hz"
-    expires_after="2025-07-25">
+    expires_after="2026-05-11">
   <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Audio output sample rate for WebRTC (atypical values, in Hz). Logged when a
     WebRTC MediaStream is connected to an audio output device. Warning: this
-    histogram was expired from 2021-04-30 to 2022-12-07; data may be missing.
+    histogram was expired from 2021-04-30 to 2022-12-07 and from 2025-07-25 to
+    2025-12-01; data may be missing.
   </summary>
 </histogram>
 
@@ -960,7 +962,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.TimeReceivingAudioRtpPacketsInSeconds" units="s"
-    expires_after="2025-07-25">
+    expires_after="2026-05-11">
   <owner>saza@chromium.org</owner>
   <owner>hlundin@chromium.org</owner>
   <summary>
@@ -968,12 +970,13 @@ chromium-metrics-reviews@google.com.
     packets to pass through a Call object. This is logged when the Call object
     is destroyed. This is only logged if audio RTP packets are at some point in
     time received, and is a way to omit temporary objects that do not send any
-    actual media.
+    actual media. Warning: this histogram was expired from 2021-04-30 to
+    2022-12-07 and from 2025-07-25 to 2025-12-01; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="WebRTC.Call.TimeReceivingVideoRtpPacketsInSeconds" units="s"
-    expires_after="2025-07-25">
+    expires_after="2026-05-11">
   <owner>saza@chromium.org</owner>
   <owner>hlundin@chromium.org</owner>
   <summary>
@@ -981,7 +984,8 @@ chromium-metrics-reviews@google.com.
     packets to pass through a Call object. This is logged when the Call object
     is destroyed. This is only logged if video RTP packets are at some point in
     time received, and is a way to omit temporary objects that do not send any
-    actual media.
+    actual media. Warning: this histogram was expired from 2021-04-30 to
+    2022-12-07 and from 2025-07-25 to 2025-12-01; data may be missing.
   </summary>
 </histogram>
 
