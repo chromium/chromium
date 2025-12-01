@@ -2096,34 +2096,6 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
   }
 }
 
-void AutofillAgent::OnProvisionallySaveForm(
-    const WebFormElement& form_element,
-    const WebFormControlElement& element,
-    FormTracker::SaveFormReason source) {
-  DCHECK(form_util::MaybeWasOwnedByFrame(form_element, unsafe_render_frame()));
-  DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
-
-  WebDocument document = GetDocument();
-  if (!document) {
-    return;
-  }
-
-  switch (source) {
-    case FormTracker::SaveFormReason::kTextFieldChanged:
-      OnTextFieldValueChanged(
-          element,
-          SynchronousFormCache(form_util::GetFormRendererId(form_element),
-                               provisionally_saved_form()));
-      break;
-    case FormTracker::SaveFormReason::kSelectChanged:
-      OnSelectControlSelectionChanged(
-          element,
-          SynchronousFormCache(form_util::GetFormRendererId(form_element),
-                               provisionally_saved_form()));
-      break;
-  }
-}
-
 void AutofillAgent::OnFormSubmission(
     mojom::SubmissionSource source,
     std::optional<blink::WebFormElement> submitted_form_element) {

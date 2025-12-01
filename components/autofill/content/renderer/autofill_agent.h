@@ -207,14 +207,6 @@ class AutofillAgent : public content::RenderFrameObserver,
       FieldRendererId field_id,
       const std::string& presentation_token) override;
 
-  // Called after updating the last interacted element in FormTracker because of
-  // `reason`. It is always the case that `form` or `element` are non-null. If
-  // `form_element` is non-null, then `element` (if non-null) is owned by
-  // `form_element`, otherwise `element` is unowned and is surely non-null.
-  // TODO(crbug.com/40281981): Remove.
-  void OnProvisionallySaveForm(const blink::WebFormElement& form,
-                               const blink::WebFormControlElement& element,
-                               FormTracker::SaveFormReason reason);
   void OnFormSubmission(
       mojom::SubmissionSource source,
       std::optional<blink::WebFormElement> submitted_form_element);
@@ -230,6 +222,13 @@ class AutofillAgent : public content::RenderFrameObserver,
   void UpdateStateForTextChange(const blink::WebFormControlElement& element,
                                 FieldPropertiesFlags flag,
                                 const SynchronousFormCache& form_cache);
+
+  // TODO(crbug.com/376628389): Remove.
+  void OnTextFieldValueChanged(const blink::WebFormControlElement& element,
+                               const SynchronousFormCache& form_cache);
+  void OnSelectControlSelectionChanged(
+      const blink::WebFormControlElement& element,
+      const SynchronousFormCache& form_cache);
 
   bool IsPrerendering() const;
 
@@ -355,13 +354,6 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   void HandleFocusChangeComplete(bool focused_node_was_last_clicked,
                                  const SynchronousFormCache& form_cache);
-
-  // TODO(crbug.com/376628389): Remove.
-  void OnTextFieldValueChanged(const blink::WebFormControlElement& element,
-                               const SynchronousFormCache& form_cache);
-  void OnSelectControlSelectionChanged(
-      const blink::WebFormControlElement& element,
-      const SynchronousFormCache& form_cache);
 
   void DidChangeScrollOffsetImpl(FieldRendererId element_id);
 

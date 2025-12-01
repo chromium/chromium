@@ -73,12 +73,12 @@ class FieldRef {
 // notifies observers of form's change and submission.
 class FormTracker : public content::RenderFrameObserver,
                     public blink::WebLocalFrameObserver {
- public:
   enum class SaveFormReason {
     kTextFieldChanged,
     kSelectChanged,
   };
 
+ public:
   using UserGestureRequired =
       base::StrongAlias<class UserGestureRequiredTag, bool>;
   explicit FormTracker(content::RenderFrame* render_frame,

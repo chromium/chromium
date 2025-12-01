@@ -306,8 +306,20 @@ void FormTracker::FormControlDidChangeImpl(FieldRendererId element_id,
   } else {
     UpdateLastInteractedElement(form_util::GetFieldRendererId(element));
   }
-  autofill_agent_->OnProvisionallySaveForm(form_element, element,
-                                           change_source);
+  switch (change_source) {
+    case SaveFormReason::kTextFieldChanged:
+      autofill_agent_->OnTextFieldValueChanged(
+          element,
+          SynchronousFormCache(form_util::GetFormRendererId(form_element),
+                               provisionally_saved_form()));
+      break;
+    case SaveFormReason::kSelectChanged:
+      autofill_agent_->OnSelectControlSelectionChanged(
+          element,
+          SynchronousFormCache(form_util::GetFormRendererId(form_element),
+                               provisionally_saved_form()));
+      break;
+  }
 }
 
 void FormTracker::DidCommitProvisionalLoad(ui::PageTransition transition) {
