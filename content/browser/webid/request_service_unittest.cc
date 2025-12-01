@@ -8465,4 +8465,27 @@ TEST_F(RequestServiceTest, NonPrimaryPageMetrics) {
       LifecycleStateFailureReason::kInBackForwardCache, 1);
 }
 
+// Test that if there are multiple IdPs, the UI should not be suppressed even if
+// configuration.suppressed_by_segmentation_platform is set to true.
+TEST_F(RequestServiceTest, SuppressedBySegmentationPlatformButMultipleIdps) {
+  // Use IdpNetworkRequestManagerParamChecker to validate passed-in parameters
+  // to IdpNetworkRequestManager methods.
+  std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
+      std::make_unique<IdpNetworkRequestManagerParamChecker>();
+  SetNetworkRequestManager(std::move(checker));
+
+  RequestExpectations expectations = kExpectationSuccess;
+  // Since the first IDP does not set the login state of the account but the
+  // second IDP has one with state set to SignIn, selecting the first account
+  // means that the second IDP is the one that is selected.
+  expectations.selected_idp_config_url = kProviderTwoUrlFull;
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.suppressed_by_segmentation_platform = true;
+  RunAuthTest(kDefaultMultiIdpRequestParameters, expectations, config);
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.DidShowUI", true, 1);
+  ExpectUkmValueInEntry("DidShowUI", FedCmEntry::kEntryName, true);
+}
+
 }  // namespace content::webid

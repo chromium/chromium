@@ -578,7 +578,7 @@ void RequestService::RequestToken(
   fedcm_metrics_->RecordIdentityProvidersCount(idp_order_.size());
 
   CHECK(!unique_idps.empty());
-  if (rp_mode_ == RpMode::kPassive) {
+  if (rp_mode_ == RpMode::kPassive && idp_order_.size() == 1u) {
     request_dialog_controller_->ShouldShowAccountsPassiveDialog(
         base::BindOnce(&RequestService::OnShouldShowAccountsPassiveDialogResult,
                        weak_ptr_factory_.GetWeakPtr(), std::move(unique_idps)));
