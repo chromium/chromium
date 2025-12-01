@@ -133,8 +133,8 @@ enum class Result {
   kRemoveEntityInstance_Failure = 301,
   kRemoveEntityInstancesModifiedBetween_Success = 310,
   kRemoveEntityInstancesModifiedBetween_Failure = 311,
-  kCleanupForCrbug411681430_Success = 312,
-  kCleanupForCrbug411681430_Failure = 313,
+  kClearLocalCvcsUpToMay2025_Success = 312,
+  kClearLocalCvcsUpToMay2025_Failure = 313,
   kCleanupForCrbug445879524_Success = 314,
   kCleanupForCrbug445879524_Failure = 315,
   kMaxValue = kCleanupForCrbug445879524_Failure,
@@ -976,14 +976,14 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearLocalCvcs(WebDatabase* db) {
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
-WebDatabase::State AutofillWebDataBackendImpl::CleanupForCrbug411681430(
+WebDatabase::State AutofillWebDataBackendImpl::ClearLocalCvcsUpToMay2025(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (PaymentsAutofillTable::FromWebDatabase(db)->CleanupForCrbug411681430()) {
-    ReportResult(Result::kCleanupForCrbug411681430_Success);
+  if (PaymentsAutofillTable::FromWebDatabase(db)->ClearLocalCvcsUpToMay2025()) {
+    ReportResult(Result::kClearLocalCvcsUpToMay2025_Success);
     return WebDatabase::COMMIT_NEEDED;
   }
-  ReportResult(Result::kCleanupForCrbug411681430_Failure);
+  ReportResult(Result::kClearLocalCvcsUpToMay2025_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 

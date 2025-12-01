@@ -268,7 +268,7 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
 class PaymentsDataManagerTest : public PaymentsDataManagerHelper,
                                 public testing::Test {
  public:
-  long kCleanupForCrbug411681430LongTimestamp = 1747828800;
+  long kClearTimestampForLocalCvcs = 1747828800;  // May 21, 2025.
 
   PaymentsDataManagerTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -739,8 +739,8 @@ TEST_F(PaymentsDataManagerTest, UpdateLocalCvc) {
 }
 
 #if !BUILDFLAG(IS_IOS)
-// Test that clean up for crbug.com/411681430 is working as expected.
-TEST_F(PaymentsDataManagerTest, CleanupForCrbug411681430Test) {
+// Test that cleanup for crbug.com/411681430 is working as expected.
+TEST_F(PaymentsDataManagerTest, ClearLocalCvcsUpToMay2025) {
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
 
@@ -754,11 +754,11 @@ TEST_F(PaymentsDataManagerTest, CleanupForCrbug411681430Test) {
   payments_data_manager().AddCreditCard(credit_card_1);
   WaitForOnPaymentsDataChanged();
 
-  AdvanceClock((base::Time::FromSecondsSinceUnixEpoch(
-                   kCleanupForCrbug411681430LongTimestamp + 1)) -
-               base::Time::Now());
+  AdvanceClock(
+      (base::Time::FromSecondsSinceUnixEpoch(kClearTimestampForLocalCvcs + 1)) -
+      base::Time::Now());
   // Add another credit card with timestamp later than
-  // `kCleanupForCrbug411681430` timestamp to the database.
+  // `kClearTimestampForLocalCvcs` timestamp to the database.
   CreditCard credit_card_2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                            test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card_2, "John Doe",

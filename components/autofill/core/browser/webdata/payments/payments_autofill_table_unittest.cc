@@ -68,7 +68,7 @@ class PaymentsAutofillTableTest : public testing::Test {
  public:
   PaymentsAutofillTableTest() = default;
 
-  long kCleanupForCrbug411681430LongTimestamp = 1747828800;
+  long kClearTimestampForLocalCvcs = 1747828800;  // May 21, 2025.
 
  protected:
   void SetUp() override {
@@ -512,7 +512,7 @@ TEST_F(PaymentsAutofillTableTest, LocalCvcs_ClearAll) {
   EXPECT_FALSE(cvc_statement.Step());
 }
 
-TEST_F(PaymentsAutofillTableTest, CleanupForCrbug411681430_Test) {
+TEST_F(PaymentsAutofillTableTest, ClearLocalCvcsUpToMay2025_Test) {
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
   CreditCard card_1 = test::WithCvc(test::GetCreditCard());
@@ -532,13 +532,13 @@ TEST_F(PaymentsAutofillTableTest, CleanupForCrbug411681430_Test) {
           "UPDATE local_stored_cvc SET last_updated_timestamp = ? "
           "WHERE guid=?"));
   update_cvc_statement.BindString(
-      0, std::string_view(
-             base::NumberToString(kCleanupForCrbug411681430LongTimestamp + 1)));
+      0,
+      std::string_view(base::NumberToString(kClearTimestampForLocalCvcs + 1)));
   update_cvc_statement.BindString(1, card_2.guid());
   ASSERT_TRUE(update_cvc_statement.is_valid());
   EXPECT_TRUE(update_cvc_statement.Run());
 
-  table_->CleanupForCrbug411681430();
+  table_->ClearLocalCvcsUpToMay2025();
 
   sql::Statement cvc_statement(db_->GetSQLConnection()->GetUniqueStatement(
       "SELECT guid FROM local_stored_cvc WHERE guid=?"));

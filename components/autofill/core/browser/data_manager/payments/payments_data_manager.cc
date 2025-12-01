@@ -269,7 +269,7 @@ PaymentsDataManager::PaymentsDataManager(
 #if !BUILDFLAG(IS_IOS)
     // Clean up for crbug.com/411681430.
     if (!IsPaymentCvcStorageEnabled()) {
-      CleanupForCrbug411681430();
+      ClearLocalCvcsUpToMay2025();
     }
 #endif
   }
@@ -1589,12 +1589,12 @@ void PaymentsDataManager::ClearLocalCvcs() {
   Refresh();
 }
 
-void PaymentsDataManager::CleanupForCrbug411681430() {
+void PaymentsDataManager::ClearLocalCvcsUpToMay2025() {
   if (!GetLocalDatabase()) {
     return;
   }
 
-  GetLocalDatabase()->CleanupForCrbug411681430();
+  GetLocalDatabase()->ClearLocalCvcsUpToMay2025();
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
