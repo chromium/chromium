@@ -78,7 +78,7 @@ BASE_EXPORT bool SetBooleanValueForPropertyStore(
 BASE_EXPORT bool SetStringValueForPropertyStore(
     IPropertyStore* property_store,
     const PROPERTYKEY& property_key,
-    const wchar_t* property_string_value);
+    base::wcstring_view property_string_value);
 
 // Sets the CLSID value for a given key in a given IPropertyStore.
 BASE_EXPORT bool SetClsidForPropertyStore(IPropertyStore* property_store,
@@ -88,7 +88,7 @@ BASE_EXPORT bool SetClsidForPropertyStore(IPropertyStore* property_store,
 // Sets the application id in given IPropertyStore. The function is used to tag
 // application/Chrome shortcuts, and set app details for Chrome windows.
 BASE_EXPORT bool SetAppIdForPropertyStore(IPropertyStore* property_store,
-                                          const wchar_t* app_id);
+                                          base::wcstring_view app_id);
 
 // Adds the specified |command| using the specified |name| to the AutoRun key.
 // |root_key| could be HKCU or HKLM or the root of any user hive.

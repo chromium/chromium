@@ -173,8 +173,8 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
       return false;
     }
 
-    if (has_app_id && !SetAppIdForPropertyStore(property_store.Get(),
-                                                properties.app_id.c_str())) {
+    if (has_app_id &&
+        !SetAppIdForPropertyStore(property_store.Get(), properties.app_id)) {
       return false;
     }
     if (has_toast_activator_clsid &&
