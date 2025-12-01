@@ -65,8 +65,6 @@ polymorphic.launcher(
         "ci/android-15-tablet-x64-rel",
         "ci/android-15-tablet-landscape-x64-rel",
         "ci/android-16-x64-rel",
-        "ci/android-16-x64-dbg-tests",
-        "ci/android-desktop-x64-rel-15-tests",
     ],
 )
 
@@ -109,13 +107,42 @@ polymorphic.launcher(
             dimensions = dimensions.dimensions(
                 builderless = "",
                 cores = "",
-                os = "Ubuntu-22.04",
+                os = os.LINUX_DEFAULT,
                 ssd = "",
                 free_space = "",
                 builder = "Android x64 Builder (dbg)",
             ),
             testers = [
                 "ci/android-12l-x64-dbg-tests",
+                "ci/android-16-x64-dbg-tests",
+            ],
+        ),
+    ],
+)
+
+polymorphic.launcher(
+    name = "android-desktop-x64-launcher",
+    description_html = "Reviver launcher for Android Desktop on x64",
+    # To avoid peak hours, we run it at 2 AM, 5 AM, 8 AM, 11AM, 2 PM UTC.
+    schedule = "0 2,5,8,11,14 * * *",
+    pool = ci_constants.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    contact_team_email = "clank-engprod@google.com",
+    runner = "reviver/runner",
+    target_builders = [
+        polymorphic.target_builder(
+            builder = "ci/android-desktop-x64-compile-rel",
+            dimensions = dimensions.dimensions(
+                builderless = "",
+                cores = "",
+                os = os.LINUX_DEFAULT,
+                ssd = "",
+                free_space = "",
+                builder = "android-desktop-x64-compile-rel",
+            ),
+            testers = [
+                "ci/android-desktop-x64-rel-15-tests",
             ],
         ),
     ],

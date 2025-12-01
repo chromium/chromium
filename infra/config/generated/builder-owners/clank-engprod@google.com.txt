@@ -52,6 +52,7 @@ ci/android-desktop-x64-official
 ci/android-desktop-x64-rel-15-tests
 ci/android-official
 ci/android-x86-code-coverage
+reviver/android-desktop-x64-launcher
 try/3pp-mac-arm64-packager
 try/android-10-arm64-rel
 try/android-10-x86-fyi-rel
