@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chrome/browser/tab/storage_id.h"
+#include "chrome/browser/tab/storage_update_units.h"
 #include "chrome/browser/tab/tab_storage_package.h"
 #include "chrome/browser/tab/tab_storage_type.h"
 
