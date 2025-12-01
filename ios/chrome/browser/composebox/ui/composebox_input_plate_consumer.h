@@ -28,6 +28,9 @@
 // Sets whether AI mode is enabled.
 - (void)setAIModeEnabled:(BOOL)enabled;
 
+// Sets whether Image Generation mode is enabled.
+- (void)setImageGenerationEnabled:(BOOL)enabled;
+
 // Whether to present in compact (single line) mode.
 - (void)setCompact:(BOOL)compact;
 

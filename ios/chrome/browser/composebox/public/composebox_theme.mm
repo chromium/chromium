@@ -64,4 +64,16 @@
   }
 }
 
+- (UIColor*)imageGenerationButtonBackgroundColor {
+  if (self.isTopInputPlate) {
+    return [UIColor colorNamed:kAimComposeboxButtonBackgroundColor];
+  } else {
+    return [UIColor colorNamed:kSecondaryBackgroundColor];
+  }
+}
+
+- (UIColor*)imageGenerationButtonTextColor {
+  return [UIColor colorNamed:kTextPrimaryColor];
+}
+
 @end

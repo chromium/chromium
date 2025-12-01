@@ -354,6 +354,15 @@ const CGFloat kSnackbarBottomMargin = 10;
   }
 }
 
+- (void)composeboxViewControllerDidTapImageGenerationButton:
+    (ComposeboxInputPlateViewController*)composeboxViewController {
+  if (_modeHolder.mode == ComposeboxMode::kImageGeneration) {
+    _modeHolder.mode = ComposeboxMode::kRegularSearch;
+  } else {
+    _modeHolder.mode = ComposeboxMode::kImageGeneration;
+  }
+}
+
 - (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)composeboxViewController
                 didTapSendButton:(UIButton*)button {

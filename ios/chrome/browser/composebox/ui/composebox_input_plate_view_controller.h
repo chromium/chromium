@@ -48,6 +48,9 @@
             (ComposeboxInputPlateViewController*)composeboxViewController
                                activationSource:
                                    (AiModeActivationSource)activationSource;
+/// Informs the delegate that a user did tap on the image generation button.
+- (void)composeboxViewControllerDidTapImageGenerationButton:
+    (ComposeboxInputPlateViewController*)composeboxViewController;
 /// Informs the delegate that a user did tap on the lens button.
 - (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)composeboxViewController
@@ -71,6 +74,12 @@
 
 // Whether the UI is in compact (single line) mode.
 @property(nonatomic, readonly, getter=isCompact) BOOL compact;
+
+/// The button to toggle AI mode.
+@property(nonatomic, strong) UIButton* aimButton;
+
+/// The button to toggle Image Generation mode.
+@property(nonatomic, strong) UIButton* imageGenerationButton;
 
 // Initializes a new instance with a given theme.
 - (instancetype)initWithTheme:(ComposeboxTheme*)theme;

@@ -385,6 +385,8 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   [self.consumer setAIModeEnabled:mode == ComposeboxMode::kAIM];
+  [self.consumer
+      setImageGenerationEnabled:mode == ComposeboxMode::kImageGeneration];
 
   switch (mode) {
     case ComposeboxMode::kRegularSearch:

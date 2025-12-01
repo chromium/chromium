@@ -87,6 +87,8 @@ const CGFloat kCompactModeAnimationDuration = 0.1;
 const CGFloat kSendButtonDisabledOpacity = 0.5;
 /// The fade view width.
 const CGFloat kFadeViewWidth = 30.0f;
+/// The margin for the close mode button.
+const CGFloat kCloseModeButtonMargin = 6;
 
 /// The size of the close icon in the context indicator buttons.
 const CGFloat kCloseIndicatorSize = 10.0f;
@@ -149,6 +151,8 @@ UIImage* SendButtonImage(BOOL highlighted) {
   /// The button to toggle AI mode.
   UIButton* _aimButton;
   UIImageView* _aimButtonXIndicator;
+  /// The button to toggle Image Generation mode.
+  UIButton* _imageGenerationButton;
   /// The glow effect around the input plate container.
   UIView<GlowEffect>* _glowEffectView;
   /// The plus button.
@@ -189,6 +193,9 @@ UIImage* SendButtonImage(BOOL highlighted) {
   // Constraints for the dynamic padding of the input plate stack view.
   NSLayoutConstraint* _topPaddingConstraint;
   NSLayoutConstraint* _bottomPaddingConstraint;
+
+  /// Whether the image generation mode is enabled.
+  BOOL _imageGenerationEnabled;
 }
 
 /// ComposeboxAnimationContext
@@ -399,6 +406,17 @@ UIImage* SendButtonImage(BOOL highlighted) {
   [self triggerGlowEffect];
 }
 
+- (void)setImageGenerationEnabled:(BOOL)enabled {
+  if (_imageGenerationEnabled == enabled) {
+    return;
+  }
+  _imageGenerationEnabled = enabled;
+  [self updatePlaceholderText];
+  [self updateImageGenerationButtonAppearance];
+  [self updatePlusButtonItems];
+  [self triggerGlowEffect];
+}
+
 - (void)setCurrentTabFavicon:(UIImage*)favicon {
   _currentTabFavicon = favicon;
   [self updatePlusButtonItems];
@@ -475,6 +493,10 @@ UIImage* SendButtonImage(BOOL highlighted) {
       composeboxViewControllerDidTapAIMButton:self
                              activationSource:AiModeActivationSource::
                                                   kDedicatedButton];
+}
+
+- (void)imageGenerationButtonTapped {
+  [self.delegate composeboxViewControllerDidTapImageGenerationButton:self];
 }
 
 - (void)plusButtonTouchDown {
@@ -576,10 +598,16 @@ UIImage* SendButtonImage(BOOL highlighted) {
   [self.delegate composeboxViewControllerDidTapAttachTabsButton:self];
 }
 
+/// Notifies the delegate to handle AIM tapped from the tool menu.
 - (void)handleAIMTappedFromToolMenu {
   [self.delegate composeboxViewControllerDidTapAIMButton:self
                                         activationSource:
                                             AiModeActivationSource::kToolMenu];
+}
+
+/// Notifies the delegate to handle image generation tapped from the tool menu.
+- (void)handleImageGenTappedFromToolMenu {
+  [self.delegate composeboxViewControllerDidTapImageGenerationButton:self];
 }
 
 /// Updates the visibility of the leading/trailing fade views for the carousel.
@@ -602,7 +630,7 @@ UIImage* SendButtonImage(BOOL highlighted) {
   // Cancel any previously scheduled updates.
   _updateGlowCallback.Cancel();
 
-  if (_AIModeEnabled) {
+  if (_AIModeEnabled || _imageGenerationEnabled) {
     // When turning on, ensure the glow is started. The view's state machine
     // will prevent it from restarting if it's already active.
     [_glowEffectView startGlow];
@@ -711,6 +739,10 @@ UIImage* SendButtonImage(BOOL highlighted) {
   }
 }
 
+- (void)updateImageGenerationButtonAppearance {
+  _imageGenerationButton.hidden = !_imageGenerationEnabled;
+}
+
 // Updates the placeholder text based on the current operating mode of the
 // composebox.
 - (void)updatePlaceholderText {
@@ -718,6 +750,10 @@ UIImage* SendButtonImage(BOOL highlighted) {
     [_editView
         setCustomPlaceholderText:
             l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ENABLED_PLACEHOLDER)];
+  } else if (_imageGenerationEnabled) {
+    [_editView
+        setCustomPlaceholderText:l10n_util::GetNSString(
+                                     IDS_IOS_COMPOSEBOX_IMAGE_GEN_PLACEHOLDER)];
   } else {
     [_editView setCustomPlaceholderText:nil];
   }
@@ -740,7 +776,7 @@ UIImage* SendButtonImage(BOOL highlighted) {
   [NSLayoutConstraint activateConstraints:@[
     [_aimButton.titleLabel.trailingAnchor
         constraintEqualToAnchor:_aimButtonXIndicator.leadingAnchor
-                       constant:-6],
+                       constant:-kCloseModeButtonMargin],
     [_aimButton.titleLabel.centerYAnchor
         constraintEqualToAnchor:_aimButtonXIndicator.centerYAnchor],
   ]];
@@ -854,14 +890,16 @@ UIImage* SendButtonImage(BOOL highlighted) {
       [_aimButton.widthAnchor constraintEqualToConstant:kAIMButtonWidth];
   self.aimButtonWidthConstraint.active = YES;
 
+  [self createImageGenerationButton];
+
   // Horizontal stack view for buttons
   UIView* spacerView = [[UIView alloc] init];
   [spacerView setContentHuggingPriority:UILayoutPriorityFittingSizeLevel
                                 forAxis:UILayoutConstraintAxisHorizontal];
   UIStackView* buttonsStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[
-        _plusButton, _aimButton, spacerView, _sendButton, _micButton,
-        _lensButton
+        _plusButton, _aimButton, _imageGenerationButton, spacerView,
+        _sendButton, _micButton, _lensButton
       ]];
   buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [buttonsStackView setCustomSpacing:kShortcutsSpacing afterView:_micButton];
@@ -951,13 +989,19 @@ UIImage* SendButtonImage(BOOL highlighted) {
                                     IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION)
                           image:[self bananaIcon]
                      identifier:nil
-                        handler:^(UIAction* action){
+                        handler:^(UIAction* action) {
+                          [weakSelf handleImageGenTappedFromToolMenu];
                         }];
+
+  if (_imageGenerationEnabled) {
+    [createImageAction setState:UIMenuElementStateOn];
+  }
 
   UIMenuElementAttributes attachTabAttributes = 0;
   if (_attachTabActionsHidden) {
     attachTabAttributes |= UIMenuElementAttributesHidden;
   }
+
   if (_attachTabActionsDisabled) {
     attachTabAttributes |= UIMenuElementAttributesDisabled;
   }
@@ -1200,6 +1244,61 @@ UIImage* SendButtonImage(BOOL highlighted) {
       }];
 
   return image;
+}
+
+- (void)createImageGenerationButton {
+  _imageGenerationButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  _imageGenerationButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [_imageGenerationButton addTarget:self
+                             action:@selector(imageGenerationButtonTapped)
+                   forControlEvents:UIControlEventTouchUpInside];
+
+  UIButtonConfiguration* config =
+      [UIButtonConfiguration plainButtonConfiguration];
+
+  config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  config.image = [self bananaIcon];
+
+  UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
+                                   weight:UIFontWeightMedium];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+      initWithString:l10n_util::GetNSString(
+                         IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION)
+          attributes:attributes];
+  config.attributedTitle = attributedTitle;
+
+  config.imagePadding = 5;
+  _imageGenerationButton.layer.borderWidth = 0;
+
+  config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 28);
+  config.background.backgroundColor =
+      [_theme imageGenerationButtonBackgroundColor];
+  config.baseForegroundColor = [_theme imageGenerationButtonTextColor];
+  _imageGenerationButton.tintColor = [_theme imageGenerationButtonTextColor];
+
+  _imageGenerationButton.configuration = config;
+
+  UIImageView* xMarkImageView = [[UIImageView alloc] init];
+  xMarkImageView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kCloseIndicatorSize
+                          weight:UIImageSymbolWeightBold
+                           scale:UIImageSymbolScaleMedium];
+  xMarkImageView.image =
+      DefaultSymbolWithConfiguration(kXMarkSymbol, configuration);
+  [_imageGenerationButton addSubview:xMarkImageView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_imageGenerationButton.titleLabel.trailingAnchor
+        constraintEqualToAnchor:xMarkImageView.leadingAnchor
+                       constant:-kCloseModeButtonMargin],
+    [_imageGenerationButton.titleLabel.centerYAnchor
+        constraintEqualToAnchor:xMarkImageView.centerYAnchor],
+  ]];
+
+  [self updateImageGenerationButtonAppearance];
 }
 
 @end

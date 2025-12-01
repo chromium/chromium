@@ -33,6 +33,12 @@
 // The background color of the AIM button when enabled.
 - (UIColor*)aimButtonBackgroundColorWithAIMEnabled:(BOOL)AIMEnabled;
 
+// The color of the text in the image generation button.
+- (UIColor*)imageGenerationButtonTextColor;
+
+// The background color of the image generation button.
+- (UIColor*)imageGenerationButtonBackgroundColor;
+
 // Creates a newc instance with the given configuration
 - (instancetype)initWithInputPlatePosition:
     (ComposeboxInputPlatePosition)position;
