@@ -39,7 +39,6 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
-enum class BufferFormat : uint8_t;
 class NativePixmap;
 class NativePixmapDmaBuf;
 class Rect;
@@ -645,19 +644,10 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Notes:
   //
   // - For VA_FOURCC_IMC3, the format of the returned NativePixmapDmaBuf is
-  //   gfx::BufferFormat::YVU_420 because we don't have a YUV_420 format. The
+  //   viz::MultiPlaneFormat::kYV12 because we don't have a YUV_420 format. The
   //   planes are flipped accordingly, i.e.,
   //   gfx::NativePixmapDmaBuf::GetDmaBufOffset(1) refers to the V plane.
   //   TODO(andrescj): revisit once crrev.com/c/1573718 lands.
-  //
-  // - For VA_FOURCC_NV12, the format of the returned NativePixmapDmaBuf is
-  //   gfx::BufferFormat::YUV_420_BIPLANAR.
-  //
-  // - For VA_FOURCC_P010, the format of the returned NativePixmapDmaBuf is
-  //   gfx::BufferFormat::P010.
-  //
-  // - For VA_FOURCC_ARGB, the format of the returned NativePixmapDmaBuf is
-  //   gfx::BufferFormat::BGRA_8888.
   //
   // Returns nullptr on failure, or if the exported surface can't contain
   // |va_surface_size|.

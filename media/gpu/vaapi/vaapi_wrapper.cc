@@ -2658,8 +2658,8 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
 
   if (descriptor.fourcc == VA_FOURCC_IMC3) {
     // Recall that for VA_FOURCC_IMC3, we will return a format of
-    // gfx::BufferFormat::YVU_420, so we need to swap the U and V planes to keep
-    // the semantics.
+    // viz::MultiPlaneFormat::kYV12, so we need to swap the U and V planes to
+    // keep the semantics.
     DCHECK_EQ(3u, handle.planes.size());
     std::swap(handle.planes[1], handle.planes[2]);
   }
