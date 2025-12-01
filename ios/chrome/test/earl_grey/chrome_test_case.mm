@@ -41,7 +41,7 @@ namespace {
 // case.
 bool gExecutedSetUpForTestCase = false;
 
-bool gIsMockAuthenticationDisabled = false;
+BOOL gIsMockAuthenticationDisabled = NO;
 
 // YES the test is for startup.
 bool gStartupTest = false;
@@ -236,8 +236,6 @@ void ResetAuthentication() {
 
   [self resetAppState];
 
-  ResetAuthentication();
-
   // Reset any remaining sign-in state from previous tests.
   if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey killWebKitNetworkProcess];
@@ -248,7 +246,9 @@ void ResetAuthentication() {
   }
   _executedTestMethodSetUp = YES;
 
-  [ChromeTestCaseAppInterface blockSigninIPH];
+  if (![[self class] loadMinimalAppUI]) {
+    [ChromeTestCaseAppInterface blockSigninIPH];
+  }
 }
 
 - (void)tearDownHelper {
@@ -293,7 +293,9 @@ void ResetAuthentication() {
       [ChromeEarlGreyUI dismissContextMenuIfPresent];
       [[self class] removeAnyOpenMenusAndInfoBars];
     }
-    [[self class] closeAllTabs];
+    if (![[self class] loadMinimalAppUI]) {
+      [[self class] closeAllTabs];
+    }
 
     // Clear testing policies to make sure they don't change the browser's
     // behavior in follow-up tests.
@@ -476,12 +478,14 @@ void ResetAuthentication() {
 // Resets the application state.
 // Called at the start of a test and when the app is relaunched.
 - (void)resetAppState {
-  [[self class] disableMockAuthentication];
-  [[self class] enableMockAuthentication];
+  if (![[self class] loadMinimalAppUI]) {
+    [[self class] disableMockAuthentication];
+    [[self class] enableMockAuthentication];
+    ResetAuthentication();
 
-  [ChromeEarlGrey resetDesktopContentSetting];
+    [ChromeEarlGrey resetDesktopContentSetting];
+  }
 
-  gIsMockAuthenticationDisabled = NO;
   _tearDownHandler = nil;
   _originalOrientation = [ChromeEarlGrey interfaceOrientation];
 }
@@ -524,8 +528,6 @@ void ResetAuthentication() {
     // method starts.
     if (_executedTestMethodSetUp) {
       [self resetAppState];
-
-      ResetAuthentication();
 
       if (![ChromeTestCase forceRestartAndWipe]) {
         // Reset any remaining sign-in state from previous tests.

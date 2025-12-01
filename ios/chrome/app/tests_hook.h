@@ -130,6 +130,10 @@ bool DelayAppLaunchPromos();
 // of identifiers that contains identifiers of UIScene that are active.
 bool NeverPurgeDiscardedSessionsData();
 
+// Returns true if the UI should be minimal for testing (after loading a
+// simple UILabel into the first UIWindow).
+bool LoadMinimalAppUI();
+
 // Returns a policy provider that should be installed as the platform policy
 // provider when testing. May return nullptr.
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider();

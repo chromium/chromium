@@ -36,6 +36,9 @@ extern const char kEnableIPH[];
 // Switch used to install a mock ShoppingService.
 extern const char kMockShoppingService[];
 
+// Switch used to indicate that the test will run with minimal UI.
+extern const char kLoadMinimalAppUI[];
+
 }  // namespace test_switches
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_TEST_SWITCHES_H_

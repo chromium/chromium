@@ -21,20 +21,6 @@ NSString* const kTestSubtitle = @"Test Subtitle";
 NSString* const kTestSecondarySubtitle = @"Test Secondary Subtitle";
 NSString* const kButtonTitle = @"Button Title";
 
-// Dismisses the currently visible snackbar by tapping it and waiting for it
-// to disappear. Does nothing if no snackbar is visible.
-void DismissSnackbar() {
-  NSError* error = nil;
-  // Check if the snackbar is visible before trying to interact with it.
-  [[EarlGrey selectElementWithMatcher:SnackbarViewMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()
-                  error:&error];
-  if (error == nil) {
-    [[EarlGrey selectElementWithMatcher:SnackbarViewMatcher()]
-        performAction:grey_tap()];
-  }
-}
-
 // Returns a matcher for a snackbar element with the given `accessibility_id`.
 id<GREYMatcher> SnackBarViewMatcherForAccessibilityId(
     NSString* accessibility_id) {
@@ -102,13 +88,16 @@ void VerifySnackbarUI(NSString* title,
 
 @implementation SnackbarViewTestCase
 
++ (BOOL)loadMinimalAppUI {
+  return YES;
+}
+
 - (void)setUp {
   [super setUp];
   [ChromeCoordinatorAppInterface startSnackbarCoordinator];
 }
 
 - (void)tearDownHelper {
-  DismissSnackbar();
   [SnackbarViewTestAppInterface removeDummyTextField];
   [super tearDownHelper];
   [ChromeCoordinatorAppInterface reset];

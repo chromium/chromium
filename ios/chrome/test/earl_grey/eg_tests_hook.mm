@@ -8,6 +8,7 @@
 
 #import <string_view>
 
+#import "base/apple/foundation_util.h"
 #import "base/command_line.h"
 #import "base/containers/contains.h"
 #import "base/files/file_path.h"
@@ -63,6 +64,27 @@
 #import "ios/chrome/test/providers/signin/fake_trusted_vault_client_backend.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
+
+namespace {
+
+// Loads a very simple UILabel with a teapot emoji in it as the main
+// UI for the given window.
+void LoadMinimalAppUIInWindow(UIWindow* window) {
+  UIViewController* viewController = [[UIViewController alloc] init];
+  UILabel* label =
+      [[UILabel alloc] initWithFrame:window.windowScene.screen.bounds];
+  label.text = @"🫖";
+  label.textAlignment = NSTextAlignmentCenter;
+  label.textColor = [UIColor whiteColor];
+  label.backgroundColor = [UIColor darkGrayColor];
+  label.font = [UIFont boldSystemFontOfSize:80];
+  viewController.view = label;
+  window.rootViewController = viewController;
+  [window addSubview:viewController.view];
+  [window makeKeyAndVisible];
+}
+
+}  // namespace
 
 namespace tests_hook {
 
@@ -146,6 +168,29 @@ bool DelayAppLaunchPromos() {
 }
 
 bool NeverPurgeDiscardedSessionsData() {
+  return true;
+}
+
+bool LoadMinimalAppUI() {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          test_switches::kLoadMinimalAppUI)) {
+    return false;
+  }
+  static bool minimal_ui_loaded = false;
+  if (!minimal_ui_loaded) {
+    NSSet<UIScene*>* scenes = UIApplication.sharedApplication.connectedScenes;
+    for (UIScene* scene in scenes) {
+      UIWindowScene* window_scene =
+          base::apple::ObjCCastStrict<UIWindowScene>(scene);
+      for (UIWindow* window in window_scene.windows) {
+        if (window.canBecomeKeyWindow) {
+          LoadMinimalAppUIInWindow(window);
+          minimal_ui_loaded = true;
+          return true;
+        };
+      }
+    }
+  };
   return true;
 }
 

@@ -580,18 +580,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
   // Add agents. They may depend on the ProfileState, so they need to be
   // created after it has been connected to the SceneState.
-  [_sceneState addAgent:[[UIBlockerSceneAgent alloc] init]];
-  [_sceneState addAgent:[[IncognitoBlockerSceneAgent alloc] init]];
-  [_sceneState
-      addAgent:[[IncognitoReauthSceneAgent alloc]
-                         initWithReauthModule:[[ReauthenticationModule alloc]
-                                                  init]
-                   applicationCommandsHandler:self]];
-  [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
-  [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
-  [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
-  [_sceneState addAgent:[[TabGridSceneAgent alloc] init]];
-  [_sceneState addAgent:[[ShareExtensionSceneAgent alloc] init]];
+  [self addProfileStateDependentAgents];
 
   // Start observing the ProfileState. This needs to happen after the agents
   // as this may result in creation of the UI which can access to the agents.
@@ -1315,7 +1304,9 @@ void RecordIfNeededSigninFullscreenPromoEvent(
     return;
   }
 
-  [self startUpChromeUI];
+  if (!tests_hook::LoadMinimalAppUI()) {
+    [self startUpChromeUI];
+  }
   self.sceneState.UIEnabled = YES;
 }
 
@@ -1798,6 +1789,10 @@ void RecordIfNeededSigninFullscreenPromoEvent(
     }
   }
 
+  if (tests_hook::LoadMinimalAppUI()) {
+    return NO;
+  }
+
   return YES;
 }
 
@@ -1872,6 +1867,27 @@ void RecordIfNeededSigninFullscreenPromoEvent(
       }
     }
   }];
+}
+
+// Adds agents that may depend on profileState. Called after a profileState has
+// been connected to the sceneState.
+- (void)addProfileStateDependentAgents {
+  if (tests_hook::LoadMinimalAppUI()) {
+    return;
+  }
+
+  [_sceneState addAgent:[[UIBlockerSceneAgent alloc] init]];
+  [_sceneState addAgent:[[IncognitoBlockerSceneAgent alloc] init]];
+  [_sceneState
+      addAgent:[[IncognitoReauthSceneAgent alloc]
+                         initWithReauthModule:[[ReauthenticationModule alloc]
+                                                  init]
+                   applicationCommandsHandler:self]];
+  [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
+  [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
+  [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
+  [_sceneState addAgent:[[TabGridSceneAgent alloc] init]];
+  [_sceneState addAgent:[[ShareExtensionSceneAgent alloc] init]];
 }
 
 #pragma mark - ApplicationCommands

@@ -60,6 +60,11 @@ bool DelayAppLaunchPromos() {
 bool NeverPurgeDiscardedSessionsData() {
   return false;
 }
+
+bool LoadMinimalAppUI() {
+  return false;
+}
+
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   return nullptr;
 }

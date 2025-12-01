@@ -27,6 +27,10 @@ bool g_needs_set_up_for_test_case = true;
 
 @implementation BaseEarlGreyTestCase
 
++ (BOOL)loadMinimalAppUI {
+  return NO;
+}
+
 + (BOOL)forceRestartAndWipe {
   return YES;
 }
@@ -69,6 +73,10 @@ bool g_needs_set_up_for_test_case = true;
   if ([BaseEarlGreyTestCase forceRestartAndWipe]) {
     config.relaunch_policy = RelaunchPolicy::ForceRelaunchByKilling;
     config.additional_args.push_back(std::string("-EGTestWipeProfile"));
+  }
+
+  if ([[self class] loadMinimalAppUI]) {
+    config.additional_args.push_back(std::string("-load-minimal-app-ui"));
   }
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];

@@ -67,6 +67,10 @@ bool NeverPurgeDiscardedSessionsData() {
   return true;
 }
 
+bool LoadMinimalAppUI() {
+  return false;
+}
+
 std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
     PrefService* user_prefs,
     std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate) {

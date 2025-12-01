@@ -29,4 +29,7 @@ const char kEnableIPH[] = "enable-iph";
 // Installs a mock ShoppingService.
 const char kMockShoppingService[] = "mock-shopping-service";
 
+// Indicates that the test will run with minimal UI.
+const char kLoadMinimalAppUI[] = "load-minimal-app-ui";
+
 }  // namespace test_switches
