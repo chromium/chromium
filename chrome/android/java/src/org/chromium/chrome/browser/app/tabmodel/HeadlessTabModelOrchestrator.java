@@ -97,7 +97,7 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
             TabCollectionMigrationUtil.setTabCollectionsActiveForMetadataFile(
                     policy.getMetadataFileName());
         }
-        mTabPersistentStore.restoreTabs(/* setActiveTab= */ false);
+        mTabPersistentStore.restoreTabs(/* setActiveTab= */ true);
 
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         assumeNonNull(tabGroupSyncService);
