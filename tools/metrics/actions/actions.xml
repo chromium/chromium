@@ -14466,7 +14466,7 @@ should be able to be added at any place in this file.
 <action name="Glic.Instance.WebUiStateChanged.Unresponsive">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
-  <description>The GLic instance WebUI is unresponsive.</description>
+  <description>The Glic instance WebUI is unresponsive.</description>
 </action>
 
 <action name="Glic.Pinned">
@@ -14474,6 +14474,23 @@ should be able to be added at any place in this file.
   <owner>erikchen@chromium.org</owner>
   <description>
     Logged anytime glic is pinned to the tabstrip, regardless of source.
+  </description>
+</action>
+
+<action name="Glic.PinnedTab.OriginChanged">
+  <owner>wry@chromium.org</owner>
+  <owner>perrier@chromium.org</owner>
+  <description>
+    Logged anytime a pinned tab is navigated to a new origin.
+  </description>
+</action>
+
+<action name="Glic.PinnedTab.OriginChanged.Unpinned">
+  <owner>wry@chromium.org</owner>
+  <owner>perrier@chromium.org</owner>
+  <description>
+    Logged anytime a pinned tab is navigated to a new origin and the tab is
+    unpinned as a result.
   </description>
 </action>
 

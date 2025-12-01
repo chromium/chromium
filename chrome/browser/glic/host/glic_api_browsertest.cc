@@ -2383,7 +2383,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsThatNavigateInBackground) {
       // is hidden, it will be unpinned.
       NavigateWebContents(kSecondTab,
                           embedded_https_test_server().GetURL(
-                              "b.com", "/test_data/page.html?changedTwo")),
+                              "b.com", "/test_data/page.html?changedTwo")));
+  EXPECT_EQ(1,
+            user_action_tester->GetActionCount("Glic.PinnedTab.OriginChanged"));
+  EXPECT_EQ(1, user_action_tester->GetActionCount(
+                   "Glic.PinnedTab.OriginChanged.Unpinned"));
+
+  RunTestSequence(
       // Navigate to the same origin, this tab should not be unpinned.
       NavigateWebContents(kFirstTab,
                           embedded_https_test_server().GetURL(
@@ -2394,6 +2400,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsThatNavigateInBackground) {
       NavigateWebContents(kFirstTab,
                           embedded_https_test_server().GetURL(
                               "b.com", "/test_data/page.html?changedOne")));
+  EXPECT_EQ(2,
+            user_action_tester->GetActionCount("Glic.PinnedTab.OriginChanged"));
+  EXPECT_EQ(1, user_action_tester->GetActionCount(
+                   "Glic.PinnedTab.OriginChanged.Unpinned"));
+
   ContinueJsTest();
 }
 

@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -139,6 +140,7 @@ class GlicPinnedTabManager::PinnedTabObserver
       return;
     }
     last_origin_ = new_origin;
+    base::RecordAction(base::UserMetricsAction("Glic.PinnedTab.OriginChanged"));
     // May delete this.
     pinned_tab_manager_->OnTabChangedOrigin(tab_->GetHandle());
   }
@@ -562,6 +564,8 @@ void GlicPinnedTabManager::OnTabChangedOrigin(tabs::TabHandle tab_handle) {
   if ((!GlicEnabling::IsMultiInstanceEnabled() ||
        base::FeatureList::IsEnabled(kGlicAutoUnpinOnTabChangedOrigin)) &&
       !IsGlicWindowShowing()) {
+    base::RecordAction(
+        base::UserMetricsAction("Glic.PinnedTab.OriginChanged.Unpinned"));
     UnpinTabs({tab_handle});
   }
 }
