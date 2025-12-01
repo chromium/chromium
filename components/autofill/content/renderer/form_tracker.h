@@ -112,6 +112,8 @@ class FormTracker : public content::RenderFrameObserver,
       const base::flat_map<FieldRendererId, FormRendererId>&
           filled_fields_and_forms);
 
+  // A form_id means that the user last interacted with a FormElement.
+  // A field_id means that the user last interacted with a formless control.
   void UpdateLastInteractedElement(
       std::variant<FormRendererId, FieldRendererId> element_id);
   void ResetLastInteractedElements();
@@ -129,6 +131,16 @@ class FormTracker : public content::RenderFrameObserver,
   }
 
   bool IsTracking() const;
+
+  // TODO(crbug.com/40281981): Remove.
+  base::flat_map<FormRendererId, DenseSet<mojom::SubmissionSource>>&
+  submitted_forms() {
+    return submitted_forms_;
+  }
+
+  // Called when current form is no longer submittable, submitted_forms_ is
+  // cleared in this method.
+  void OnFormNoLongerSubmittable() { submitted_forms_.clear(); }
 
  private:
   friend class FormTrackerTestApi;
@@ -210,6 +222,12 @@ class FormTracker : public content::RenderFrameObserver,
     bool finished_same_document_navigation = false;
     bool xhr_succeeded = false;
   } submission_triggering_events_;
+
+  // For each form, identified by its renderer ID, keeps track of the sources of
+  // observed submissions, so that we avoid firing duplicate submission signals
+  // to the driver. See `AutofillAgent::FireHostSubmitEvent` for more details.
+  base::flat_map<FormRendererId, DenseSet<mojom::SubmissionSource>>
+      submitted_forms_;
 
   // The respective agents for Autofill and PasswordManager.
   raw_ref<AutofillAgent> autofill_agent_;

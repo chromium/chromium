@@ -23,10 +23,6 @@ class AutofillAgentTestApi {
     agent_->form_tracker_ = std::move(form_tracker);
   }
 
-  std::optional<FormData> provisionally_saved_form() {
-    return agent_->provisionally_saved_form();
-  }
-
   void FocusedElementChanged(blink::WebElement new_focused_element) {
     agent_->FocusedElementChanged(new_focused_element);
   }
@@ -45,8 +41,6 @@ class AutofillAgentTestApi {
       AutofillSuggestionTriggerSource trigger_source) {
     agent_->ShowSuggestionsForContentEditable(element, trigger_source);
   }
-
-  void OnFormNoLongerSubmittable() { agent_->OnFormNoLongerSubmittable(); }
 
   const FormCache& form_cache() { return agent_->form_cache_; }
 

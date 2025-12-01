@@ -427,33 +427,11 @@ class AutofillAgent : public content::RenderFrameObserver,
       mojom::SubmissionSource source,
       std::optional<blink::WebFormElement> submitted_form_element);
 
-  void ResetLastInteractedElements();
-  // A form_id means that the user last interacted with a FormElement.
-  // A field_id means that the user last interacted with a formless control.
-  void UpdateLastInteractedElement(
-      std::variant<FormRendererId, FieldRendererId> element_id);
-
-  // Called when current form is no longer submittable, submitted_forms_ is
-  // cleared in this method.
-  void OnFormNoLongerSubmittable();
-
   // Helpers for SelectFieldOptionsChanged() and
   // DataListOptionsChanged(), which get called after a timer that is restarted
   // when another event of the same type started.
   void BatchSelectOptionChange(FieldRendererId element_id);
   void BatchDataListOptionChange(FieldRendererId element_id);
-
-  FormRef last_interacted_form() const {
-    return form_tracker_->last_interacted_form();
-  }
-
-  // TODO(crbug.com/40281981): Remove.
-  std::optional<FormData>& provisionally_saved_form() {
-    return form_tracker_->provisionally_saved_form();
-  }
-  const std::optional<FormData>& provisionally_saved_form() const {
-    return form_tracker_->provisionally_saved_form();
-  }
 
   // Stores immutable configuration this agent was created with. It contains
   // features and settings that are specific to the client using this agent.
@@ -472,12 +450,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // autofill state before the preview.
   std::vector<std::pair<FieldRendererId, blink::WebAutofillState>>
       previewed_elements_;
-
-  // For each form, identified by its renderer ID, keeps track of the sources of
-  // observed submissions, so that we avoid firing duplicate submission signals
-  // to the driver. See `AutofillAgent::FireHostSubmitEvent` for more details.
-  base::flat_map<FormRendererId, DenseSet<mojom::SubmissionSource>>
-      submitted_forms_;
 
   // Whether the Autofill popup is possibly visible.  This is tracked as a
   // performance improvement, so that the IPC channel isn't flooded with

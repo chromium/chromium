@@ -567,8 +567,8 @@ void AutofillAgent::Reset() {
   process_forms_after_dynamic_change_timer_.Stop();
   process_forms_form_extraction_timer_.Stop();
   process_forms_form_extraction_with_response_timer_.Stop();
-  ResetLastInteractedElements();
-  OnFormNoLongerSubmittable();
+  form_tracker_->ResetLastInteractedElements();
+  form_tracker_->OnFormNoLongerSubmittable();
   timing_ = {};
 }
 
@@ -799,7 +799,7 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
     return;
   }
   DenseSet<mojom::SubmissionSource>& sources =
-      submitted_forms_[form_data.renderer_id()];
+      form_tracker_->submitted_forms()[form_data.renderer_id()];
   if (!sources.insert(source).second) {
     // The form (identified by its renderer id) was already submitted with the
     // same submission source. This should not be reported multiple times.
@@ -846,8 +846,9 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
     }
   }
   // Bound the size of `submitted_forms_` to avoid possible memory leaks.
-  if (submitted_forms_.size() > 200) {
-    submitted_forms_.erase(--submitted_forms_.end());
+  if (form_tracker_->submitted_forms().size() > 200) {
+    form_tracker_->submitted_forms().erase(
+        --form_tracker_->submitted_forms().end());
   }
 }
 
@@ -1328,10 +1329,10 @@ void AutofillAgent::ApplyFieldAction(
         if (form_control) {
           if (WebFormElement form_element =
                   form_control.GetOwningFormForAutofill()) {
-            UpdateLastInteractedElement(
+            form_tracker_->UpdateLastInteractedElement(
                 form_util::GetFormRendererId(form_element));
           } else {
-            UpdateLastInteractedElement(
+            form_tracker_->UpdateLastInteractedElement(
                 form_util::GetFieldRendererId(form_control));
           }
         }
@@ -2050,13 +2051,13 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
   // should not be changed to another form, so that only the user can set the
   // tracked form and not JS. This call here is meant to keep the tracked form
   // up to date with the form's most recent version.
-  if (provisionally_saved_form() &&
+  if (form_tracker_->provisionally_saved_form() &&
       form_util::GetFormRendererId(element.GetOwningFormForAutofill()) ==
-          last_interacted_form().GetId()) {
+          form_tracker_->last_interacted_form().GetId()) {
     // Ideally, we re-extract the form at this moment, but to avoid performance
     // regression, we just update what JS updated on the Blink side.
     std::vector<FormFieldData> fields =
-        provisionally_saved_form()->ExtractFields();
+        form_tracker_->provisionally_saved_form()->ExtractFields();
     if (auto it =
             std::ranges::find(fields, form_util::GetFieldRendererId(element),
                               &FormFieldData::renderer_id);
@@ -2066,7 +2067,7 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
       form_util::MaybeUpdateUserInput(
           *it, form_util::GetFieldRendererId(element), field_data_manager());
     }
-    provisionally_saved_form()->set_fields(std::move(fields));
+    form_tracker_->provisionally_saved_form()->set_fields(std::move(fields));
   }
 
   const auto input_element = element.DynamicTo<WebInputElement>();
@@ -2120,19 +2121,19 @@ void AutofillAgent::OnFormSubmission(
       if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
         // TODO(crbug.com/40281981): Figure out if this is still needed, and
         // document the reason, otherwise remove.
-        ResetLastInteractedElements();
+        form_tracker_->ResetLastInteractedElements();
       }
       // TODO(crbug.com/40281981): Figure out if this is still needed, and
       // document the reason, otherwise remove.
-      OnFormNoLongerSubmittable();
+      form_tracker_->OnFormNoLongerSubmittable();
       break;
     case mojom::SubmissionSource::FRAME_DETACHED:
     case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
     case mojom::SubmissionSource::XHR_SUCCEEDED:
       // TODO(crbug.com/40281981): Figure out if those two lines are still
       // needed, and document the reason, otherwise remove.
-      ResetLastInteractedElements();
-      OnFormNoLongerSubmittable();
+      form_tracker_->ResetLastInteractedElements();
+      form_tracker_->OnFormNoLongerSubmittable();
       break;
     // This source is only used as a default value to variables.
     case mojom::SubmissionSource::NONE:
@@ -2164,7 +2165,8 @@ void AutofillAgent::UpdateStateForTextChange(
 std::optional<FormData> AutofillAgent::GetSubmittedForm(
     mojom::SubmissionSource source,
     std::optional<WebFormElement> submitted_form_element) {
-  std::optional<FormData> cached_form = provisionally_saved_form();
+  std::optional<FormData> cached_form =
+      form_tracker_->provisionally_saved_form();
   const bool cache_matches_submitted_form_element =
       !submitted_form_element.has_value() || !cached_form ||
       cached_form->renderer_id() ==
@@ -2194,8 +2196,9 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm(
   WebDocument document = GetDocument();
   std::optional<FormData> extracted_form = form_util::ExtractFormData(
       document,
-      submitted_form_element.has_value() ? *submitted_form_element
-                                         : last_interacted_form().GetForm(),
+      submitted_form_element.has_value()
+          ? *submitted_form_element
+          : form_tracker_->last_interacted_form().GetForm(),
       field_data_manager(), GetCallTimerState(kGetSubmittedForm),
       button_titles_cache());
 
@@ -2211,19 +2214,6 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm(
   LogSubmittedFormMetric(source, extracted_form ? SubmittedFormType::kExtracted
                                                 : SubmittedFormType::kNull);
   return extracted_form;
-}
-
-void AutofillAgent::ResetLastInteractedElements() {
-  form_tracker_->ResetLastInteractedElements();
-}
-
-void AutofillAgent::UpdateLastInteractedElement(
-    std::variant<FormRendererId, FieldRendererId> element_id) {
-  form_tracker_->UpdateLastInteractedElement(element_id);
-}
-
-void AutofillAgent::OnFormNoLongerSubmittable() {
-  submitted_forms_.clear();
 }
 
 mojom::AutofillDriver* AutofillAgent::unsafe_autofill_driver() {

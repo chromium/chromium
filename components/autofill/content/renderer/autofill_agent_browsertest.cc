@@ -953,14 +953,17 @@ TEST_P(AutofillAgentSubmissionTest,
   ExecuteJavaScriptForTests(
       R"(document.forms[0].elements[0].value = 'js_set_value';)");
   std::optional<FormData> provisionally_saved_form =
-      AutofillAgentTestApi(&autofill_agent()).provisionally_saved_form();
+      AutofillAgentTestApi(&autofill_agent())
+          .form_tracker()
+          .provisionally_saved_form();
   // Since we do not have a tracked form yet, the JS call should not update (in
   // this case set) the last interacted form.
   ASSERT_FALSE(provisionally_saved_form.has_value());
 
   SimulateUserInputChangeForElementById("text_id", "user_set_value");
-  provisionally_saved_form =
-      AutofillAgentTestApi(&autofill_agent()).provisionally_saved_form();
+  provisionally_saved_form = AutofillAgentTestApi(&autofill_agent())
+                                 .form_tracker()
+                                 .provisionally_saved_form();
   ASSERT_TRUE(provisionally_saved_form.has_value());
   EXPECT_EQ(provisionally_saved_form->renderer_id(), form_id);
   ASSERT_EQ(1u, provisionally_saved_form->fields().size());
@@ -968,8 +971,9 @@ TEST_P(AutofillAgentSubmissionTest,
 
   ExecuteJavaScriptForTests(
       R"(document.forms[0].elements[0].value = 'js_set_value';)");
-  provisionally_saved_form =
-      AutofillAgentTestApi(&autofill_agent()).provisionally_saved_form();
+  provisionally_saved_form = AutofillAgentTestApi(&autofill_agent())
+                                 .form_tracker()
+                                 .provisionally_saved_form();
   // Since we now have a tracked form and JS modified the same form, we should
   // see the JS modification reflected in the last interacted saved form.
   ASSERT_TRUE(provisionally_saved_form.has_value());
@@ -1010,7 +1014,9 @@ TEST_P(AutofillAgentSubmissionTest,
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kAutofilled);
 
   std::optional<FormData> provisionally_saved_form =
-      AutofillAgentTestApi(&autofill_agent()).provisionally_saved_form();
+      AutofillAgentTestApi(&autofill_agent())
+          .form_tracker()
+          .provisionally_saved_form();
   ASSERT_TRUE(provisionally_saved_form.has_value());
   ASSERT_EQ(1u, provisionally_saved_form->fields().size());
   EXPECT_EQ(u"autofilled", provisionally_saved_form->fields()[0].value());
@@ -1050,7 +1056,9 @@ TEST_P(AutofillAgentSubmissionTest,
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kAutofilled);
 
   std::optional<FormData> provisionally_saved_form =
-      AutofillAgentTestApi(&autofill_agent()).provisionally_saved_form();
+      AutofillAgentTestApi(&autofill_agent())
+          .form_tracker()
+          .provisionally_saved_form();
   ASSERT_TRUE(provisionally_saved_form.has_value());
   ASSERT_EQ(1u, provisionally_saved_form->fields().size());
   EXPECT_EQ(u"autofilled", provisionally_saved_form->fields()[0].value());

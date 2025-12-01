@@ -3341,7 +3341,7 @@ TEST_F(PasswordAutofillAgentTest,
   EXPECT_FALSE(password_element.ShouldRevealPassword());
   EXPECT_TRUE(password_element.IsAutofilled());
 
-  test_api(*autofill_agent_).OnFormNoLongerSubmittable();
+  test_api(*autofill_agent_).form_tracker().OnFormNoLongerSubmittable();
   SaveAndSubmitForm();
 
   ExpectFormSubmittedWithUsernameAndPasswords(
