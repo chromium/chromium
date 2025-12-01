@@ -62,6 +62,17 @@ void BrowserManagerService::DeleteBrowser(Browser* removed_browser) {
   }
 }
 
+BrowserCollection::BrowserVector BrowserManagerService::GetBrowsers(
+    Order order) {
+  CHECK_EQ(order, Order::kCreation);
+  BrowserCollection::BrowserVector browsers;
+  browsers.reserve(browsers_and_subscriptions_.size());
+  std::ranges::transform(browsers_and_subscriptions_,
+                         std::back_inserter(browsers),
+                         [](const auto& pair) { return pair.first.get(); });
+  return browsers;
+}
+
 void BrowserManagerService::OnBrowserActivated(
     BrowserWindowInterface* browser) {
   for (BrowserCollectionObserver& observer : observers()) {

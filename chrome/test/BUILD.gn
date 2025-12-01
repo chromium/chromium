@@ -8049,6 +8049,10 @@ test("unit_tests") {
       deps += [ "//chrome/browser/android/extensions:android" ]
     }
 
+    if (!is_android || is_desktop_android) {
+      deps += [ "//chrome/browser/ui/browser_window/internal:unit_tests" ]
+    }
+
     if (is_desktop_android) {
       deps += [
         # Unit test targets for //chrome/browser/ui/browser_window/internal.
@@ -8057,7 +8061,6 @@ test("unit_tests") {
         # Java test support classes must be a *direct* dependency of the
         # `test()` target. Otherwise, the Java classes can't be found by the
         # test as they won't be compiled into the test APK.
-        "//chrome/browser/ui/browser_window/internal:unit_tests",
         "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
 
         # Unit test targets for //chrome/browser/ui/android/extensions/windowing/internal.

@@ -18,6 +18,12 @@ GlobalBrowserCollection::GlobalBrowserCollection() = default;
 
 GlobalBrowserCollection::~GlobalBrowserCollection() = default;
 
+BrowserCollection::BrowserVector GlobalBrowserCollection::GetBrowsers(
+    Order order) {
+  CHECK_EQ(order, Order::kCreation);
+  return browsers_creation_order_;
+}
+
 void GlobalBrowserCollection::OnBrowserCreated(
     BrowserWindowInterface* browser) {
   browsers_creation_order_.push_back(browser);

@@ -31,6 +31,10 @@ class GlobalBrowserCollection final : public BrowserCollection,
 
   static GlobalBrowserCollection* GetInstance();
 
+ protected:
+  // BrowserCollection:
+  BrowserVector GetBrowsers(Order order) override;
+
  private:
   friend base::ScopedObservationTraits<GlobalBrowserCollection,
                                        BrowserCollectionObserver>;

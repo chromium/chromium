@@ -147,6 +147,12 @@ source_set("unit_tests") {
       "//content/test:test_support",
       "//ui/base",
     ]
+  } else {
+    sources += [ "browser_collection_unittest.cc" ]
+    deps += [
+      "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui/browser_window",
+    ]
   }
 }
 

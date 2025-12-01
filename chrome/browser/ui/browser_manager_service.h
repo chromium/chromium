@@ -38,6 +38,10 @@ class BrowserManagerService : public KeyedService,
   // Destroys `browser` if owned and managed by the service.
   void DeleteBrowser(Browser* browser);
 
+ protected:
+  // ProfileBrowserCollection:
+  BrowserVector GetBrowsers(Order order) override;
+
  private:
   // Called when a browser in this profile became active.
   void OnBrowserActivated(BrowserWindowInterface* browser);
@@ -49,7 +53,7 @@ class BrowserManagerService : public KeyedService,
   const raw_ptr<Profile> profile_;
 
   // We need to hold 2 subscriptions for each Browser: one for DidBecomeActive
-  // and one for DidBecomeInactive.
+  // and one for DidBecomeInactive. Stores Browsers in creation order.
   using BrowserAndSubscriptions =
       std::pair<std::unique_ptr<Browser>,
                 std::pair<base::CallbackListSubscription,
