@@ -194,6 +194,10 @@ public class LocationBarLayout extends ConstraintLayout {
         ImageViewCompat.setImageTintList(mInstallButton, colorStateList);
     }
 
+    /* package */ void setZoomButtonTint(ColorStateList colorStateList) {
+        ImageViewCompat.setImageTintList(mZoomButton, colorStateList);
+    }
+
     @Override
     protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
         // Don't restore the state of the location bar, it can lead to all kind of bad states with

@@ -2090,6 +2090,7 @@ class LocationBarMediator
         mLocationBarLayout.setMicButtonTint(tint);
         mLocationBarLayout.setLensButtonTint(tint);
         mLocationBarLayout.setInstallButtonTint(tint);
+        mLocationBarLayout.setZoomButtonTint(tint);
         if (mIsComposeplateEnabled && !mIsComposeplateV2Enabled) {
             mLocationBarLayout.setComposeplateButtonTint(tint);
         }
