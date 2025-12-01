@@ -35,7 +35,8 @@ class MemoryCache;
 // initialized are copied into it on initialization.
 class GPU_GLES2_EXPORT GpuPersistentCache
     : public dawn::platform::CachingInterface,
-      public GrContextOptions::PersistentCache {
+      public GrContextOptions::PersistentCache,
+      public base::RefCountedThreadSafe<GpuPersistentCache> {
  public:
   struct GPU_GLES2_EXPORT AsyncDiskWriteOpts {
     AsyncDiskWriteOpts();
@@ -59,7 +60,6 @@ class GPU_GLES2_EXPORT GpuPersistentCache
   explicit GpuPersistentCache(std::string_view cache_prefix,
                               scoped_refptr<MemoryCache> memory_cache,
                               AsyncDiskWriteOpts async_write_options = {});
-  ~GpuPersistentCache() override;
 
   GpuPersistentCache(const GpuPersistentCache&) = delete;
   GpuPersistentCache& operator=(const GpuPersistentCache&) = delete;
@@ -101,6 +101,10 @@ class GPU_GLES2_EXPORT GpuPersistentCache
   const persistent_cache::PersistentCache& GetPersistentCacheForTesting() const;
 
  private:
+  friend class base::RefCountedThreadSafe<GpuPersistentCache>;
+
+  ~GpuPersistentCache() override;
+
   struct DiskCache;
 
   // Values are mirrored in tools/metrics/histograms/metadata/gpu/enums.xml

@@ -29,7 +29,7 @@ DawnCachingInterface::DawnCachingInterface(scoped_refptr<MemoryCache> backend,
 
 DawnCachingInterface::DawnCachingInterface(
     scoped_refptr<MemoryCache> backend,
-    std::unique_ptr<GpuPersistentCache> persistent_cache)
+    scoped_refptr<GpuPersistentCache> persistent_cache)
     : memory_cache_backend_(std::move(backend)),
       persistent_cache_(std::move(persistent_cache)) {}
 
@@ -123,7 +123,7 @@ DawnCachingInterfaceFactory::CreateInstance(
 std::unique_ptr<DawnCachingInterface>
 DawnCachingInterfaceFactory::CreateInstance(
     const gpu::GpuDiskCacheHandle& handle,
-    std::unique_ptr<GpuPersistentCache> persistent_cache) {
+    scoped_refptr<GpuPersistentCache> persistent_cache) {
   return base::WrapUnique(new DawnCachingInterface(
       GetOrCreateMemoryCache(handle), std::move(persistent_cache)));
 }

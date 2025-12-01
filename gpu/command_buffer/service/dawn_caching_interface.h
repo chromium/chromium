@@ -70,7 +70,7 @@ class GPU_GLES2_EXPORT DawnCachingInterface
                                 CacheBlobCallback callback = {});
   explicit DawnCachingInterface(
       scoped_refptr<MemoryCache> backend,
-      std::unique_ptr<GpuPersistentCache> persistent_cache);
+      scoped_refptr<GpuPersistentCache> persistent_cache);
 
   // Caching interface owns a reference to the backend.
   scoped_refptr<MemoryCache> memory_cache_backend_ = nullptr;
@@ -82,7 +82,7 @@ class GPU_GLES2_EXPORT DawnCachingInterface
   // to/from disk.
   // TODO(crbug.com/399642827): Remove the above callback once we migrate
   // everything to use GpuPersistentCache API.
-  std::unique_ptr<GpuPersistentCache> persistent_cache_;
+  scoped_refptr<GpuPersistentCache> persistent_cache_;
 };
 
 // Factory class for producing and managing DawnCachingInterfaces.
@@ -108,7 +108,7 @@ class GPU_GLES2_EXPORT DawnCachingInterfaceFactory
 
   std::unique_ptr<DawnCachingInterface> CreateInstance(
       const gpu::GpuDiskCacheHandle& handle,
-      std::unique_ptr<GpuPersistentCache> persistent_cache);
+      scoped_refptr<GpuPersistentCache> persistent_cache);
 
   // Returns a pointer to a DawnCachingInterface that owns the in memory
   // backend. This is used for incognito cases where the cache should not be

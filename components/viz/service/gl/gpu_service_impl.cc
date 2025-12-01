@@ -235,9 +235,9 @@ GpuServiceImpl::GpuServiceImpl(
             gpu::GetDefaultGpuDiskCacheSize();
         caching_interface = dawn_caching_interface_factory_->CreateInstance(
             gpu::kGraphiteDawnGpuDiskCacheHandle,
-            std::make_unique<gpu::GpuPersistentCache>("GraphiteDawn",
-                                                      std::move(memory_cache),
-                                                      std::move(async_opts)));
+            base::MakeRefCounted<gpu::GpuPersistentCache>(
+                "GraphiteDawn", std::move(memory_cache),
+                std::move(async_opts)));
       } else {
         auto cache_blob_callback = base::BindRepeating(
             [](GpuServiceImpl* self, const std::string& key,
