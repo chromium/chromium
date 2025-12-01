@@ -7,6 +7,8 @@ package org.chromium.base.test;
 import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestTimedOutException;
 
+import org.chromium.base.test.util.TimeoutTimer;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,7 +36,10 @@ public class BaseTimeLimitedStatement extends Statement {
                 new Thread(
                         () -> {
                             try {
-                                Thread.sleep(mTimeoutMs);
+                                TimeoutTimer timeoutTimer = new TimeoutTimer(mTimeoutMs);
+                                while (!timeoutTimer.isTimedOut()) {
+                                    Thread.sleep(timeoutTimer.getRemainingMs());
+                                }
                                 mInterruptedStackTrace = testThread.getStackTrace();
                                 testThread.interrupt();
                             } catch (InterruptedException e) {
