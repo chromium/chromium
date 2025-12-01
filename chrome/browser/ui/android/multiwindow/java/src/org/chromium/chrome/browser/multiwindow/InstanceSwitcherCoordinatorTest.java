@@ -1119,6 +1119,9 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Check that the input text field is updated.
         onView(withId(R.id.title_input_text)).inRoot(isDialog()).check(matches(withText(newName)));
+
+        // Check that the rename callback was called.
+        assertEquals(renameCallbackCount + 1, renameCallbackHelper.getCallCount());
     }
 
     @Test
@@ -1187,6 +1190,7 @@ public class InstanceSwitcherCoordinatorTest {
                 createPersistedInstances(
                         /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
         final CallbackHelper renameCallbackHelper = new CallbackHelper();
+        final int renameCallbackCount = renameCallbackHelper.getCallCount();
         Callback<Pair<Integer, String>> renameCallback =
                 (result) -> {
                     renameCallbackHelper.notifyCalled();
@@ -1225,21 +1229,26 @@ public class InstanceSwitcherCoordinatorTest {
         onView(withId(R.id.title_input_text)).inRoot(isDialog()).perform(replaceText(""));
         onView(withText(R.string.save)).inRoot(isDialog()).perform(click());
 
-        // Check that the error message is shown.
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        onView(withText(R.string.instance_switcher_name_window_missing_title))
-                                .inRoot(isDialog())
-                                .check(matches(isDisplayed()));
-                        return true;
-                    } catch (AssertionError e) {
-                        return false;
-                    }
-                });
+        // Check that the rename callback was called.
+        assertEquals(renameCallbackCount + 1, renameCallbackHelper.getCallCount());
 
-        // Check that the rename callback was not called.
-        assertEquals(0, renameCallbackHelper.getCallCount());
+        // Check that the instance title is updated to the default name in the list.
+        String defaultName = instances[1].title;
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .check(matches(atPosition(1, hasDescendant(withText(defaultName)))));
+
+        // Reopen the name window dialog.
+        clickMoreButtonAtPosition(1, defaultName);
+        onView(withText(R.string.instance_switcher_name_window))
+                .inRoot(withDecorView(withClassName(containsString("Popup"))))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Check that the input text field is updated.
+        onView(withId(R.id.title_input_text))
+                .inRoot(isDialog())
+                .check(matches(withText(defaultName)));
     }
 
     @Test

@@ -27,23 +27,16 @@ found in the LICENSE file.
             android:paddingTop="@dimen/dialog_padding_sides"
             android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/new_window_title"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/title_input_text"
+            android:contentDescription="@string/instance_switcher_name_window_confirm_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            android:layout_marginVertical="@dimen/rename_window_dialog_input_text_vertical_margin">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/title_input_text"
-                android:contentDescription="@string/instance_switcher_name_window_confirm_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="flagNoExtractUi"
-                android:inputType="textCapSentences|textAutoCorrect"
-                android:selectAllOnFocus="true" />
-        </com.google.android.material.textfield.TextInputLayout>
-
+            android:layout_marginVertical="@dimen/rename_window_dialog_input_text_vertical_margin"
+            android:imeOptions="flagNoExtractUi"
+            android:inputType="textCapSentences|textAutoCorrect"
+            android:selectAllOnFocus="true" />
 
         <org.chromium.components.browser_ui.widget.DualControlLayout
             android:id="@+id/button_bar"

@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -787,13 +788,19 @@ public class InstanceSwitcherCoordinator {
 
         Callback<String> nameChangedCallback =
                 newTitle -> {
+                    String customTitle = newTitle;
+                    if (TextUtils.isEmpty(customTitle)) {
+                        // Default to active tab title if custom title is cleared.
+                        newTitle = item.title;
+                    }
+
                     listItem.model.set(InstanceSwitcherItemProperties.TITLE, newTitle);
                     listItem.model.set(
                             InstanceSwitcherItemProperties.MORE_MENU_CONTENT_DESCRIPTION,
                             mContext.getString(
                                     R.string.instance_switcher_item_more_menu_content_description,
                                     newTitle));
-                    mRenameWindowCallback.onResult(new Pair<>(item.instanceId, newTitle));
+                    mRenameWindowCallback.onResult(new Pair<>(item.instanceId, customTitle));
                 };
 
         UiUtils.showNameWindowDialog(
