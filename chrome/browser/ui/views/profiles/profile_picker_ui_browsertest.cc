@@ -30,7 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 // Tests for the chrome://profile-picker/ WebUI page. They live here
 // and not in the webui directory because they manipulate views.
@@ -284,8 +284,8 @@ class ProfilePickerUIPixelTest
           prefs::kBrowserAddPersonEnabled, false);
     }
 
-    ui::ScopedAnimationDurationScaleMode disable_animation(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode disable_animation(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
     GURL profile_picker_main_view_url = GURL(chrome::kChromeUIProfilePickerUrl);
     // Since we override the FlowController, we need to give in the full Url

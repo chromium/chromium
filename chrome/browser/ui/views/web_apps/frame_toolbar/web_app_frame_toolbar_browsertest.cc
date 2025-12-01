@@ -109,8 +109,8 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ozone_buildflags.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
@@ -2850,8 +2850,8 @@ class WebAppFrameToolbarBrowserTest_OriginText
   }
 
  private:
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode_{
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION};
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode_{
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION};
 };
 
 // TODO(crbug.com/381106937): Re-enable this test on linux and ChromeOS.
@@ -3117,8 +3117,8 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
   raw_ptr<webapps::TestWebAppOriginAssociationFetcher>
       test_origin_association_fetcher_ = nullptr;
 
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode_{
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION};
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode_{
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION};
 };
 
 // TODO(crbug.com/371923523): Reenable ExtendedScope* tests when they are more

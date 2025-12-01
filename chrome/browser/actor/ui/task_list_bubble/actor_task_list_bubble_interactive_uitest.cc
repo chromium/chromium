@@ -24,8 +24,8 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_utils.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
 #if BUILDFLAG(ENABLE_GLIC)
@@ -60,8 +60,8 @@ class ActorTaskListBubbleInteractiveUiTest
 #if BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
                        ShowBubbleWithTask) {
-  ui::ScopedAnimationDurationScaleMode disable_animations(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode disable_animations(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   const char kFirstTaskItem[] = "FirstTaskItem";
   StartActingOnTab();
@@ -82,8 +82,8 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
                        ClickingOnTaskInBubbleActuatesTab) {
-  ui::ScopedAnimationDurationScaleMode disable_animations(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode disable_animations(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   auto* tab_one = browser()->GetActiveTabInterface();
   StartActingOnTab();

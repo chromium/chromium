@@ -19,8 +19,8 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/test/browser_test.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -67,8 +67,8 @@ class WindowSizerTest : public InProcessBrowserTest {
                                     "800x600,801+0-800x600");
   }
 
-  ui::ScopedAnimationDurationScaleMode zero_duration_{
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION};
+  gfx::ScopedAnimationDurationScaleMode zero_duration_{
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION};
 };
 
 // TODO(crbug.com/40113148): Test is flaky on sanitizers.

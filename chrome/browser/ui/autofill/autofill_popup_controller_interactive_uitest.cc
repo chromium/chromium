@@ -29,10 +29,10 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace autofill {
 
@@ -69,8 +69,9 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
         .SetExternalDelegate(std::make_unique<TestAutofillExternalDelegate>(
             &autofill_manager()));
 
-    disable_animation_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    disable_animation_ =
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   }
 
  protected:
@@ -100,7 +101,7 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animation_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> disable_animation_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,

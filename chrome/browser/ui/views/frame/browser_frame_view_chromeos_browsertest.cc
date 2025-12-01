@@ -127,13 +127,13 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/pointer/touch_ui_controller.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
@@ -1256,8 +1256,8 @@ using FloatBrowserFrameViewChromeOSTest =
 
 IN_PROC_BROWSER_TEST_P(FloatBrowserFrameViewChromeOSTest,
                        TabletModeMultitaskMenu) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   EnterTabletMode();
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());

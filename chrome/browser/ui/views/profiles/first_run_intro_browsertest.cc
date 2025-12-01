@@ -4,6 +4,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -14,12 +15,11 @@
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 // Tests for the chrome://intro WebUI page. They live here and not in the webui
 // directory because they manipulate views.
@@ -84,8 +84,8 @@ class FirstRunIntroPixelTest
   }
 
   void ShowUi(const std::string& name) override {
-    ui::ScopedAnimationDurationScaleMode disable_animation(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode disable_animation(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     policy::ScopedManagementServiceOverrideForTesting browser_management(
         policy::ManagementServiceFactory::GetForPlatform(),
         policy::EnterpriseManagementAuthority::NONE);

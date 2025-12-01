@@ -44,7 +44,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/interactive_test.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 #if ENABLE_GLIC_INTERNAL_TESTS
 #include "chrome/browser/glic/e2e_test/internal/constants.h"
@@ -123,8 +123,8 @@ void GlicE2ETest::SetUp() {
   }
 
   // Always disable animation for stability.
-  ui::ScopedAnimationDurationScaleMode disable_animation(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode disable_animation(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   LiveTest::SetUp();
 }
 

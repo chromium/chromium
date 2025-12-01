@@ -13,8 +13,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -56,8 +56,8 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
         anchor_view_widget_->SetContentsView(std::make_unique<views::View>());
 
     animation_duration_ =
-        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-            ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
     setting_overlay_ =
         widget_->SetContentsView(std::make_unique<AutoPipSettingOverlayView>(
@@ -115,7 +115,7 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
   const GURL origin_{"https://example.com"};
 
   // Used to force a non-zero animation duration.
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> animation_duration_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> animation_duration_;
 };
 
 TEST_F(AutoPipSettingOverlayViewTest, TestViewInitialization) {

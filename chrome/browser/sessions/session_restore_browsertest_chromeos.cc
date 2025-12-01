@@ -38,7 +38,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/wm_core_switches.h"
 
 namespace {
@@ -73,7 +73,7 @@ class SessionRestoreTestChromeOS : public InProcessBrowserTest {
  public:
   SessionRestoreTestChromeOS()
       : faster_animations_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
   ~SessionRestoreTestChromeOS() override = default;
 
  protected:
@@ -113,7 +113,7 @@ class SessionRestoreTestChromeOS : public InProcessBrowserTest {
   Profile* profile() { return browser()->profile(); }
 
  private:
-  ui::ScopedAnimationDurationScaleMode faster_animations_;
+  gfx::ScopedAnimationDurationScaleMode faster_animations_;
 };
 
 // Thse tests are in pairs. The PRE_ test creates some browser windows and

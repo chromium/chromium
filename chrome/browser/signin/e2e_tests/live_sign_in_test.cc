@@ -50,7 +50,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/webview/webview.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -71,8 +71,8 @@ class LiveSignInTest : public signin::test::LiveTest {
   void SetUp() override {
     LiveTest::SetUp();
     // Always disable animation for stability.
-    ui::ScopedAnimationDurationScaleMode disable_animation(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode disable_animation(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   }
 
   signin::IdentityManager* identity_manager() {
