@@ -6,19 +6,16 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/html/canvas/resources/canvas-tests.js"></script>
 <link rel="stylesheet" href="/html/canvas/resources/canvas-tests.css">
-<body class="show_output">
 
 <h1>2d.state.saverestore.lineJoin</h1>
-<p class="desc">save()/restore() works for lineJoin</p>
 
-
-<p class="output">Actual output:</p>
-<canvas id="c" class="output" width="100" height="50"><p class="fallback">FAIL (fallback content)</p></canvas>
-
-<ul id="d"></ul>
 <script>
-var t = async_test("save()/restore() works for lineJoin");
-_addTest(function(canvas, ctx) {
+
+test(t => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 300;
+  canvas.height = 150;
+  const ctx = canvas.getContext('2d');
 
   // Test that restore() undoes any modifications
   var old = ctx.lineJoin;
@@ -35,7 +32,29 @@ _addTest(function(canvas, ctx) {
   ctx.save();
   _assertSame(ctx.lineJoin, old, "ctx.lineJoin", "old");
   ctx.restore();
+}, "save()/restore() works for lineJoin, with a canvas size of (300, 150)");
 
-});
+test(t => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 0;
+  canvas.height = 0;
+  const ctx = canvas.getContext('2d');
+
+  // Test that restore() undoes any modifications
+  var old = ctx.lineJoin;
+  ctx.save();
+  ctx.lineJoin = "round";
+  ctx.restore();
+  _assertSame(ctx.lineJoin, old, "ctx.lineJoin", "old");
+
+  // Also test that save() doesn't modify the values
+  ctx.lineJoin = "round";
+  old = ctx.lineJoin;
+      // we're not interested in failures caused by get(set(x)) != x (e.g.
+      // from rounding), so compare against 'old' instead of against "round"
+  ctx.save();
+  _assertSame(ctx.lineJoin, old, "ctx.lineJoin", "old");
+  ctx.restore();
+}, "save()/restore() works for lineJoin, with a canvas size of (0, 0)");
+
 </script>
-

@@ -550,10 +550,9 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
                       ExceptionState* exception_state);
   void AddLayerFilterUserCount(const V8CanvasFilterInput*);
 
-  // Pops from the top of the state stack, inverts transform, restores the
-  // PaintCanvas, and validates the state stack. Helper for Restore and
-  // EndLayer.
-  void PopAndRestore(cc::PaintCanvas& canvas);
+  // Pops from the top of the state stack, inverts transform, and validates the
+  // state stack. Helper for Restore and EndLayer.
+  void PopStateStack();
 
   void ValidateStateStackImpl(const cc::PaintCanvas* canvas = nullptr) const;
 

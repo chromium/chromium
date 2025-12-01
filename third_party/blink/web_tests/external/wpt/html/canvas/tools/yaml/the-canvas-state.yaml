@@ -104,24 +104,30 @@
     @assert ctx.lineWidth === 0.5;
 
 - name: 2d.state.saverestore
-  desc: save()/restore() works for {{ variant_names[0] }}
+  desc: save()/restore() works for {{ variant_names[1] }}, with a canvas size of
+        {{ size }}
   code: |
     // Test that restore() undoes any modifications
-    var old = ctx.{{ variant_names[0] }};
+    var old = ctx.{{ variant_names[1] }};
     ctx.save();
-    ctx.{{ variant_names[0] }} = {{ value }};
+    ctx.{{ variant_names[1] }} = {{ value }};
     ctx.restore();
-    _assertSame(ctx.{{ variant_names[0] }}, old, "ctx.{{ variant_names[0] }}", "old");
+    _assertSame(ctx.{{ variant_names[1] }}, old, "ctx.{{ variant_names[1] }}", "old");
 
     // Also test that save() doesn't modify the values
-    ctx.{{ variant_names[0] }} = {{ value }};
-    old = ctx.{{ variant_names[0] }};
+    ctx.{{ variant_names[1] }} = {{ value }};
+    old = ctx.{{ variant_names[1] }};
         // we're not interested in failures caused by get(set(x)) != x (e.g.
         // from rounding), so compare against 'old' instead of against {{ value }}
     ctx.save();
-    _assertSame(ctx.{{ variant_names[0] }}, old, "ctx.{{ variant_names[0] }}", "old");
+    _assertSame(ctx.{{ variant_names[1] }}, old, "ctx.{{ variant_names[1] }}", "old");
     ctx.restore();
+  variants_layout: [single_file, multi_files]
   variants:
+  - non-zero-size:
+      size: [300, 150]
+    zero-size:
+      size: [0, 0]
   - &2d_state_test_cases
     strokeStyle:
       value: '"#ff0000"'

@@ -441,12 +441,11 @@ void Canvas2DRecorderContext::restore(ExceptionState& exception_state) {
     return;
   }
 
-  cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
-  if (!canvas) {
-    return;
+  if (cc::PaintCanvas* canvas = GetOrCreatePaintCanvas()) {
+    canvas->restore();
   }
 
-  PopAndRestore(*canvas);
+  PopStateStack();
   ValidateStateStack();
 }
 
@@ -704,7 +703,12 @@ void Canvas2DRecorderContext::endLayer(ExceptionState& exception_state) {
   }
 
   cc::PaintCanvas& layer_canvas = recorder->getRecordingCanvas();
-  PopAndRestore(layer_canvas);
+  for (int i = 0, to_restore = state_stack_.back()->LayerSaveCount();
+       i < to_restore; ++i) {
+    layer_canvas.restore();
+  }
+
+  PopStateStack();
 
   --layer_count_;
   if (layer_count_ == 0) {
@@ -724,17 +728,11 @@ void Canvas2DRecorderContext::endLayer(ExceptionState& exception_state) {
   ValidateStateStack();
 }
 
-void Canvas2DRecorderContext::PopAndRestore(cc::PaintCanvas& canvas) {
+void Canvas2DRecorderContext::PopStateStack() {
   if (IsTransformInvertible() && !GetState().GetTransform().IsIdentity()) {
     GetModifiablePath().Transform(GetState().GetTransform());
   }
 
-  for (int i = 0, to_restore = state_stack_.back()->LayerSaveCount() - 1;
-       i < to_restore; ++i) {
-    canvas.restore();
-  }
-
-  canvas.restore();
   state_stack_.pop_back();
   CanvasRenderingContext2DState& state = GetState();
   state.ClearResolvedFilter();
