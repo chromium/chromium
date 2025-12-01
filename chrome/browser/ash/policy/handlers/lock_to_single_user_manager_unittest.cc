@@ -45,7 +45,9 @@
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace policy {
@@ -149,6 +151,10 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         profile()->GetProfileUserName(), GaiaId("1234567890")));
     fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
+    session_manager::SessionManager::Get()->CreateSession(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
+        /*new_user=*/false,
+        /*has_active_session=*/false);
     fake_user_manager_->LoginUser(account_id);
     // This step should be part of LoginUser(). There's a TODO to add it there,
     // but it breaks many tests.

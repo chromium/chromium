@@ -62,26 +62,6 @@ namespace {
 // The time delta between clicks in which clicks to launch V2 apps are ignored.
 const int kClickSuppressionInMS = 1000;
 
-bool IsAppBrowser(const ash::BrowserDelegate& browser) {
-  auto type = browser.GetType();
-  return type == ash::BrowserType::kApp || type == ash::BrowserType::kAppPopup;
-}
-
-const AccountId& GetActiveAccountId() {
-  const session_manager::Session& active_session =
-      CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession());
-  return active_session.account_id();
-}
-
-void ShowAndActivateBrowser(bool move_to_current_desktop,
-                            ash::BrowserDelegate* browser) {
-  if (move_to_current_desktop) {
-    multi_user_util::MoveWindowToCurrentDesktop(browser->GetNativeWindow());
-  }
-  browser->Show();
-  browser->Activate();
-}
-
 // Activate the browser with the given |content| and show the associated tab,
 // or minimize the browser if it is already active. Returns the action
 // performed by activating the content.

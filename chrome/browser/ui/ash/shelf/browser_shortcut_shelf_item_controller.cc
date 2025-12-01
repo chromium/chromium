@@ -77,9 +77,8 @@ class BrowserShortcutShelfItemController::ShelfItemBrowsers
   std::vector<BrowserWindowInterface*> GetFilteredBrowsers() const {
     std::vector<BrowserWindowInterface*> result;
     for (ash::BrowserDelegate* delegate : ordered_browsers_) {
-      BrowserWindowInterface* browser = &delegate->GetBrowser();
-      if (IsBrowserRepresentedInBrowserList(browser, shelf_model_)) {
-        result.push_back(browser);
+      if (IsBrowserRepresentedInBrowserList(delegate, shelf_model_)) {
+        result.push_back(&delegate->GetBrowser());
       }
     }
     return result;
@@ -127,7 +126,7 @@ std::vector<Browser*> GetListOfActiveBrowsers(const ash::ShelfModel* model) {
             ash::desks_util::BelongsToActiveDesk(native_window)) {
           return ash::BrowserController::kContinueIteration;
         }
-        if (!IsBrowserRepresentedInBrowserList(browser, model) &&
+        if (!IsBrowserRepresentedInBrowserList(&delegate, model) &&
             !browser->is_type_normal()) {
           return ash::BrowserController::kContinueIteration;
         }
@@ -139,7 +138,9 @@ std::vector<Browser*> GetListOfActiveBrowsers(const ash::ShelfModel* model) {
 
 bool ShouldRecordLaunchTime(Browser* browser, const ash::ShelfModel* model) {
   return !browser->profile()->IsOffTheRecord() &&
-         IsBrowserRepresentedInBrowserList(browser, model);
+         IsBrowserRepresentedInBrowserList(
+             ash::BrowserController::GetInstance()->GetDelegate(browser),
+             model);
 }
 
 }  // namespace
@@ -428,7 +429,9 @@ BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
       browser = chrome::FindTabbedBrowser(
           ChromeShelfController::instance()->profile(), true);
       if (!browser ||
-          !IsBrowserRepresentedInBrowserList(browser, shelf_model_)) {
+          !IsBrowserRepresentedInBrowserList(
+              ash::BrowserController::GetInstance()->GetDelegate(browser),
+              shelf_model_)) {
         browser = browsers[0];
       }
     }
