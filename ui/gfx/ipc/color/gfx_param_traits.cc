@@ -41,29 +41,6 @@ bool ParamTraits<gfx::ColorSpace>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<gfx::DisplayColorSpaces>::Write(
-    base::Pickle* m,
-    const gfx::DisplayColorSpaces& p) {
-  WriteParam(m, p.color_spaces_);
-  WriteParam(m, p.buffer_formats_);
-  WriteParam(m, p.sdr_max_luminance_nits_);
-  WriteParam(m, p.hdr_max_luminance_relative_);
-}
-
-bool ParamTraits<gfx::DisplayColorSpaces>::Read(const base::Pickle* m,
-                                                base::PickleIterator* iter,
-                                                gfx::DisplayColorSpaces* r) {
-  if (!ReadParam(m, iter, &r->color_spaces_))
-    return false;
-  if (!ReadParam(m, iter, &r->buffer_formats_))
-    return false;
-  if (!ReadParam(m, iter, &r->sdr_max_luminance_nits_))
-    return false;
-  if (!ReadParam(m, iter, &r->hdr_max_luminance_relative_))
-    return false;
-  return true;
-}
-
 }  // namespace IPC
 
 // Generate param traits write methods.
