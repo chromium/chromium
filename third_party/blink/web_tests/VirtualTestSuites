@@ -149,7 +149,7 @@
     "args": [
       "--enable-features=BackfaceVisibilityInterop"
     ],
-    "expires": "Nov 15, 2025"
+    "expires": "Nov 15, 2026"
   },
   {
     "prefix": "blur-on-remove",
