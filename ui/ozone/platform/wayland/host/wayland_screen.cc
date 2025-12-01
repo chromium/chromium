@@ -91,16 +91,16 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
 
     // RGBA_8888 is the preferred format.
     if (format == gfx::BufferFormat::RGBA_8888)
-      image_format_alpha_ = gfx::BufferFormat::RGBA_8888;
+      image_format_alpha_ = viz::SinglePlaneFormat::kRGBA_8888;
 
     if (format == gfx::BufferFormat::RGBA_F16)
-      image_format_hdr_ = format;
+      image_format_hdr_ = viz::SinglePlaneFormat::kRGBA_F16;
 
     if (!image_format_hdr_ && format == gfx::BufferFormat::RGBA_1010102)
-      image_format_hdr_ = format;
+      image_format_hdr_ = viz::SinglePlaneFormat::kRGBA_1010102;
 
     if (!image_format_alpha_ && format == gfx::BufferFormat::BGRA_8888)
-      image_format_alpha_ = gfx::BufferFormat::BGRA_8888;
+      image_format_alpha_ = viz::SinglePlaneFormat::kBGRA_8888;
 
     if (image_format_alpha_ && image_format_hdr_) {
       break;
@@ -112,7 +112,7 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
   // RGBA_8888 is used by default. On Wayland, that seems to be the most
   // supported.
   if (!image_format_alpha_)
-    image_format_alpha_ = gfx::BufferFormat::RGBA_8888;
+    image_format_alpha_ = viz::SinglePlaneFormat::kRGBA_8888;
 
   // TODO(crbug.com/40719968): |image_format_no_alpha_| should use RGBX_8888
   // when it's available, but for some reason Chromium gets broken when it's
@@ -239,9 +239,8 @@ void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
       }
     }
   }
-  color_spaces.SetOutputFormats(
-      viz::GetSharedImageFormat(image_format_no_alpha_.value()),
-      viz::GetSharedImageFormat(image_format_alpha_.value()));
+  color_spaces.SetOutputFormats(image_format_no_alpha_.value(),
+                                image_format_alpha_.value());
   changed_display.SetColorSpaces(std::move(color_spaces));
 
   // There are 2 cases where |changed_display| must be set as primary:

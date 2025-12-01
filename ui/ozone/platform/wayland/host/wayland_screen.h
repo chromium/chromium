@@ -128,9 +128,9 @@ class WaylandScreen : public PlatformScreen, public DeviceScaleFactorObserver {
   base::flat_map<WaylandOutput::Id, int64_t> display_id_map_;
   display::DisplayList display_list_;
 
-  std::optional<gfx::BufferFormat> image_format_alpha_;
-  std::optional<gfx::BufferFormat> image_format_no_alpha_;
-  std::optional<gfx::BufferFormat> image_format_hdr_;
+  std::optional<viz::SharedImageFormat> image_format_alpha_;
+  std::optional<viz::SharedImageFormat> image_format_no_alpha_;
+  std::optional<viz::SharedImageFormat> image_format_hdr_;
 
 #if BUILDFLAG(USE_DBUS)
   mutable std::unique_ptr<OrgGnomeMutterIdleMonitor>
