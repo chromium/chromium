@@ -58,6 +58,7 @@ class PumaServiceTest : public testing::Test {
   TestMetricsServiceClient client_;
   TestingPrefServiceSimple prefs_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
 
   std::unique_ptr<PumaService> puma_service_;
 
@@ -170,6 +171,11 @@ TEST_F(PumaServiceRcTest, RcClientId_UpdatesPref) {
 TEST_F(PumaServiceRcTest, RcBuildReport_DoesNotCreateReportWithoutEvents) {
   auto report = puma_service_->BuildPrivateMetricRcReport();
   EXPECT_FALSE(report.has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      kHistogramPumaReportBuildingOutcomeRc,
+      PumaService::ReportBuildingOutcome::kNotBuiltNoData, 1);
+  histogram_tester_.ExpectTotalCount(kHistogramPumaReportBuildingOutcomeRc, 1);
 }
 
 TEST_F(PumaServiceRcTest, RcBuildReport_DoesCreateReportWithEvents) {
@@ -178,6 +184,11 @@ TEST_F(PumaServiceRcTest, RcBuildReport_DoesCreateReportWithEvents) {
 
   auto report = puma_service_->BuildPrivateMetricRcReport();
   EXPECT_TRUE(report.has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      kHistogramPumaReportBuildingOutcomeRc,
+      PumaService::ReportBuildingOutcome::kBuilt, 1);
+  histogram_tester_.ExpectTotalCount(kHistogramPumaReportBuildingOutcomeRc, 1);
 }
 
 TEST_F(PumaServiceTest, RcBuildReport_DoesNotCreateReportWithFeatureDisabled) {
@@ -186,6 +197,11 @@ TEST_F(PumaServiceTest, RcBuildReport_DoesNotCreateReportWithFeatureDisabled) {
 
   auto report = puma_service_->BuildPrivateMetricRcReport();
   EXPECT_FALSE(report.has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      kHistogramPumaReportBuildingOutcomeRc,
+      PumaService::ReportBuildingOutcome::kNotBuiltFeatureDisabled, 1);
+  histogram_tester_.ExpectTotalCount(kHistogramPumaReportBuildingOutcomeRc, 1);
 }
 
 TEST_F(PumaServiceRcTest, RcBuildReport_PayloadProperlyFilled) {
@@ -218,6 +234,25 @@ TEST_F(PumaServiceRcTest, RcBuildReportAndStore_DoesCreateAndStoreReport) {
       metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
 
   EXPECT_EQ(GetUnsentLogCount(), 1u);
+
+  histogram_tester_.ExpectBucketCount(
+      kHistogramPumaReportStoringOutcomeRc,
+      PumaService::ReportStoringOutcome::kStored, 1);
+  histogram_tester_.ExpectTotalCount(kHistogramPumaReportStoringOutcomeRc, 1);
+}
+
+TEST_F(PumaServiceRcTest, RcBuildReportAndStore_DoesNotStoreReportWithNoData) {
+  EXPECT_EQ(GetUnsentLogCount(), 0u);
+
+  puma_service_->BuildPrivateMetricRcReportAndStoreLog(
+      metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
+
+  EXPECT_EQ(GetUnsentLogCount(), 0u);
+
+  histogram_tester_.ExpectBucketCount(
+      kHistogramPumaReportStoringOutcomeRc,
+      PumaService::ReportStoringOutcome::kNotStoredNoReport, 1);
+  histogram_tester_.ExpectTotalCount(kHistogramPumaReportStoringOutcomeRc, 1);
 }
 
 TEST_F(PumaServiceRcTest, RcLogsArePersistedAfterFlush) {
@@ -304,8 +339,15 @@ TEST_F(PumaServiceRcTest, UploadUnsentLogs) {
   EXPECT_EQ(GetUnsentLogCount(), 0u);
   EXPECT_EQ(GetPersistedLogCount(), 0u);
 
+  histogram_tester_.ExpectTotalCount(kHistogramPumaLogRotationOutcome, 0);
+
   base::TimeDelta upload_interval = client_.GetUploadInterval();
   task_environment_.FastForwardBy(upload_interval);
+
+  histogram_tester_.ExpectBucketCount(
+      kHistogramPumaLogRotationOutcome,
+      PumaService::LogRotationOutcome::kLogRotationPerformed, 1);
+  histogram_tester_.ExpectTotalCount(kHistogramPumaLogRotationOutcome, 1);
 
   EXPECT_EQ(GetUnsentLogCount(), 1u);
   EXPECT_EQ(GetPersistedLogCount(), 0u);
@@ -342,8 +384,15 @@ TEST_F(PumaServiceRcTest, UploadPersistedLogs) {
 
   puma_service_->EnableReporting();
 
+  histogram_tester_.ExpectTotalCount(kHistogramPumaLogRotationOutcome, 0);
+
   base::TimeDelta upload_interval = client_.GetUploadInterval();
   task_environment_.FastForwardBy(upload_interval);
+
+  histogram_tester_.ExpectBucketCount(
+      kHistogramPumaLogRotationOutcome,
+      PumaService::LogRotationOutcome::kLogRotationSkipped, 1);
+  histogram_tester_.ExpectTotalCount(kHistogramPumaLogRotationOutcome, 1);
 
   EXPECT_EQ(GetUnsentLogCount(), 1u);
   EXPECT_EQ(GetPersistedLogCount(), 1u);
@@ -369,8 +418,15 @@ TEST_F(PumaServiceRcTest, LogsUploadedPeriodically) {
 
   EXPECT_EQ(GetUnsentLogCount(), 0u);
 
+  histogram_tester_.ExpectTotalCount(kHistogramPumaLogRotationOutcome, 0);
+
   base::TimeDelta upload_interval = client_.GetUploadInterval();
   task_environment_.FastForwardBy(upload_interval);
+
+  histogram_tester_.ExpectBucketCount(
+      kHistogramPumaLogRotationOutcome,
+      PumaService::LogRotationOutcome::kLogRotationPerformed, 1);
+  histogram_tester_.ExpectTotalCount(kHistogramPumaLogRotationOutcome, 1);
 
   EXPECT_EQ(GetUnsentLogCount(), 1u);
 
@@ -382,7 +438,14 @@ TEST_F(PumaServiceRcTest, LogsUploadedPeriodically) {
   base::PumaHistogramBoolean(base::PumaType::kRc,
                              "PUMA.PumaServiceTestHistogram.Boolean12", true);
 
+  histogram_tester_.ExpectTotalCount(kHistogramPumaLogRotationOutcome, 1);
+
   task_environment_.FastForwardBy(upload_interval);
+
+  histogram_tester_.ExpectBucketCount(
+      kHistogramPumaLogRotationOutcome,
+      PumaService::LogRotationOutcome::kLogRotationPerformed, 2);
+  histogram_tester_.ExpectTotalCount(kHistogramPumaLogRotationOutcome, 2);
 
   EXPECT_EQ(GetUnsentLogCount(), 1u);
 

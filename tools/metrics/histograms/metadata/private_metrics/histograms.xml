@@ -81,6 +81,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PrivateMetrics.PUMA.LogRotationOutcome"
+    enum="PumaLogRotationOutcome" expires_after="2026-05-29">
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The outcome of a PUMA log rotation. Logged for each triggered rotation.
+  </summary>
+</histogram>
+
+<histogram name="PrivateMetrics.PUMA.ReportBuildingOutcome.Rc"
+    enum="PumaReportBuildingOutcome" expires_after="2026-05-29">
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The outcome of building a report for PUMA for Regional Capabilities. Logged
+    for each triggered report build.
+  </summary>
+</histogram>
+
+<histogram name="PrivateMetrics.PUMA.ReportStoringOutcome.Rc"
+    enum="PumaReportStoringOutcome" expires_after="2026-05-29">
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The outcome of storing a report for PUMA for Regional Capabilities. Logged
+    for each triggered report store request.
+  </summary>
+</histogram>
+
 <histogram name="PrivateMetrics.UnsentLogs.DroppedSize" units="bytes"
     expires_after="2026-03-01">
   <owner>zhouzj@google.com</owner>

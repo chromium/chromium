@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/puma_histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/version.h"
@@ -177,8 +178,16 @@ std::optional<uint64_t> PumaService::GetPumaRcClientId() {
 void PumaService::RotateLog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!reporting_service_.unsent_log_store()->has_unsent_logs()) {
+    base::UmaHistogramEnumeration(
+        kHistogramPumaLogRotationOutcome,
+        PumaService::LogRotationOutcome::kLogRotationPerformed);
+
     BuildPrivateMetricRcReportAndStoreLog(
         metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
+  } else {
+    base::UmaHistogramEnumeration(
+        kHistogramPumaLogRotationOutcome,
+        PumaService::LogRotationOutcome::kLogRotationSkipped);
   }
   reporting_service_.Start();
   scheduler_->RotationFinished();
@@ -199,6 +208,9 @@ PumaService::BuildPrivateMetricRcReport() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!base::FeatureList::IsEnabled(kPrivateMetricsPumaRc)) {
+    base::UmaHistogramEnumeration(
+        kHistogramPumaReportBuildingOutcomeRc,
+        PumaService::ReportBuildingOutcome::kNotBuiltFeatureDisabled);
     return std::nullopt;
   }
 
@@ -207,16 +219,24 @@ PumaService::BuildPrivateMetricRcReport() {
 
   if (report.histogram_events_size() == 0) {
     // No histograms to report.
+    base::UmaHistogramEnumeration(
+        kHistogramPumaReportBuildingOutcomeRc,
+        PumaService::ReportBuildingOutcome::kNotBuiltNoData);
     return std::nullopt;
   }
 
   std::optional<uint64_t> client_id = GetPumaRcClientId();
   if (!client_id.has_value()) {
+    base::UmaHistogramEnumeration(
+        kHistogramPumaReportBuildingOutcomeRc,
+        PumaService::ReportBuildingOutcome::kNotBuiltNoClientId);
     return std::nullopt;
   }
   report.set_client_id(client_id.value());
   RecordRcProfile(report.mutable_rc_profile());
 
+  base::UmaHistogramEnumeration(kHistogramPumaReportBuildingOutcomeRc,
+                                PumaService::ReportBuildingOutcome::kBuilt);
   return std::move(report);
 }
 
@@ -227,6 +247,9 @@ void PumaService::BuildPrivateMetricRcReportAndStoreLog(
 
   if (!report) {
     // No report to store.
+    base::UmaHistogramEnumeration(
+        kHistogramPumaReportStoringOutcomeRc,
+        PumaService::ReportStoringOutcome::kNotStoredNoReport);
     return;
   }
 
@@ -235,13 +258,18 @@ void PumaService::BuildPrivateMetricRcReportAndStoreLog(
   std::string serialized_log;
   if (!payload.SerializeToString(&serialized_log)) {
     // Drop the report in case serialization fails.
-    // TODO(b/463571627): Add a histogram
+    base::UmaHistogramEnumeration(
+        kHistogramPumaReportStoringOutcomeRc,
+        PumaService::ReportStoringOutcome::kNotStoredSerializationFailed);
     return;
   }
 
   LogMetadata metadata;
   reporting_service_.unsent_log_store()->StoreLog(serialized_log, metadata,
                                                   reason);
+
+  base::UmaHistogramEnumeration(kHistogramPumaReportStoringOutcomeRc,
+                                PumaService::ReportStoringOutcome::kStored);
 }
 
 }  // namespace metrics::private_metrics

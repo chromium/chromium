@@ -17,9 +17,44 @@ class RcCoarseSystemProfile;
 
 namespace metrics::private_metrics {
 
+inline constexpr const char* kHistogramPumaLogRotationOutcome =
+    "PrivateMetrics.PUMA.LogRotationOutcome";
+
+inline constexpr const char* kHistogramPumaReportBuildingOutcomeRc =
+    "PrivateMetrics.PUMA.ReportBuildingOutcome.Rc";
+inline constexpr const char* kHistogramPumaReportStoringOutcomeRc =
+    "PrivateMetrics.PUMA.ReportStoringOutcome.Rc";
+
 // PumaService is responsible for uploading Private UMA histograms.
 class PumaService {
  public:
+  // LINT.IfChange(PumaReportBuildingOutcome)
+  enum class ReportBuildingOutcome {
+    kBuilt = 0,
+    kNotBuiltFeatureDisabled = 1,
+    kNotBuiltNoData = 2,
+    kNotBuiltNoClientId = 3,
+    kMaxValue = kNotBuiltNoClientId,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/private_metrics/enums.xml:PumaReportBuildingOutcome)
+
+  // LINT.IfChange(PumaReportStoringOutcome)
+  enum class ReportStoringOutcome {
+    kStored = 0,
+    kNotStoredNoReport = 1,
+    kNotStoredSerializationFailed = 1,
+    kMaxValue = kNotStoredSerializationFailed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/private_metrics/enums.xml:PumaReportStoringOutcome)
+
+  // LINT.IfChange(PumaLogRotationOutcome)
+  enum class LogRotationOutcome {
+    kLogRotationPerformed = 0,
+    kLogRotationSkipped = 1,
+    kMaxValue = kLogRotationSkipped,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/private_metrics/enums.xml:PumaLogRotationOutcome)
+
   PumaService(MetricsServiceClient* client, PrefService* pref_service);
   PumaService(const PumaService&) = delete;
   PumaService& operator=(const PumaService&) = delete;
@@ -42,6 +77,8 @@ class PumaService {
  private:
   FRIEND_TEST_ALL_PREFIXES(PumaServiceRcTest,
                            RcBuildReportAndStore_DoesCreateAndStoreReport);
+  FRIEND_TEST_ALL_PREFIXES(PumaServiceRcTest,
+                           RcBuildReportAndStore_DoesNotStoreReportWithNoData);
   FRIEND_TEST_ALL_PREFIXES(PumaServiceRcTest,
                            RcBuildReport_DoesCreateReportWithEvents);
   FRIEND_TEST_ALL_PREFIXES(PumaServiceRcTest,
