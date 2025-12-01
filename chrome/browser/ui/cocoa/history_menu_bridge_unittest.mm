@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
 
 #import <Cocoa/Cocoa.h>
@@ -234,10 +229,10 @@ class HistoryMenuBridgeLifetimeTest : public testing::Test {
 void CheckMenuItemVisibility(HistoryMenuBridgeTest* test, bool is_incognito) {
   // Make sure the items belong to both original and incognito mode are visible.
   NSInteger always_visible_items[] = {IDC_HOME, IDC_BACK, IDC_FORWARD};
-  for (size_t i = 0; i < std::size(always_visible_items); i++) {
+  for (NSInteger tag : always_visible_items) {
     // Create a fake item with tag.
     NSMenuItem* item = [[NSMenuItem alloc] init];
-    item.tag = always_visible_items[i];
+    item.tag = tag;
     EXPECT_TRUE(test->ShouldMenuItemBeVisible(item));
   }
 
@@ -250,10 +245,10 @@ void CheckMenuItemVisibility(HistoryMenuBridgeTest* test, bool is_incognito) {
       HistoryMenuBridge::kVisitedTitle,
       HistoryMenuBridge::kShowFullSeparator,
       IDC_SHOW_HISTORY};
-  for (size_t i = 0; i < std::size(regular_visible_items); i++) {
+  for (NSInteger tag : regular_visible_items) {
     // Create a fake item with tag.
     NSMenuItem* item = [[NSMenuItem alloc] init];
-    item.tag = regular_visible_items[i];
+    item.tag = tag;
     EXPECT_EQ(!is_incognito, test->ShouldMenuItemBeVisible(item));
   }
 }
