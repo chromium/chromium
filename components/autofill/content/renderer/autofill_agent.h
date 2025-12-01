@@ -211,10 +211,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   void FireHostSubmitEvents(const FormData& form_data,
                             mojom::SubmissionSource source);
 
-  void OnFormSubmission(
-      mojom::SubmissionSource source,
-      std::optional<blink::WebFormElement> submitted_form_element);
-
   // Instructs `form_tracker_` to track the autofilled `element`.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
 

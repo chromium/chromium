@@ -438,9 +438,6 @@ void FormTracker::DidStartNavigation(
     const GURL& url,
     std::optional<blink::WebNavigationType> navigation_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  if (!unsafe_render_frame()) {
-    return;
-  }
   // Ony handle primary main frame.
   if (!unsafe_render_frame() ||
       !unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
@@ -539,9 +536,35 @@ void FormTracker::FireFormSubmission(
     return;
   }
   base::UmaHistogramEnumeration(kFormTrackerSubmissionSourceHistogram, source);
-  autofill_agent_->OnFormSubmission(source, submitted_form_element);
+
+  if (source == mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL) {
+    // TODO(crbug.com/40281981): Investigate removing this and relying on the
+    // call conditioned on the submitted form.
+    password_autofill_agent_->FireHostSubmitEvent(
+        FormRendererId(), /*submitted_form=*/std::nullopt, source);
+  }
+  if (std::optional<FormData> form_data =
+          GetSubmittedForm(source, submitted_form_element)) {
+    FireHostSubmitEvents(*form_data, source);
+  }
+
   if (reset_last_interacted_elements) {
     ResetLastInteractedElements();
+  }
+  switch (source) {
+    case mojom::SubmissionSource::FORM_SUBMISSION:
+    case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
+      break;
+    case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
+    case mojom::SubmissionSource::XHR_SUCCEEDED:
+    case mojom::SubmissionSource::FRAME_DETACHED:
+    case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
+      // TODO(crbug.com/40281981): Figure out if this is still needed, and
+      // document the reason, otherwise remove.
+      OnFormNoLongerSubmittable();
+      break;
+    case mojom::SubmissionSource::NONE:
+      NOTREACHED();
   }
 }
 

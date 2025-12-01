@@ -1951,50 +1951,6 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
   }
 }
 
-void AutofillAgent::OnFormSubmission(
-    mojom::SubmissionSource source,
-    std::optional<blink::WebFormElement> submitted_form_element) {
-  if (!unsafe_render_frame()) {
-    return;
-  }
-  if (source == mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL) {
-    // TODO(crbug.com/40281981): Investigate removing this and relying on the
-    // call conditioned on the submitted form.
-    password_autofill_agent_->FireHostSubmitEvent(
-        FormRendererId(), /*submitted_form=*/std::nullopt, source);
-  }
-  if (std::optional<FormData> form_data =
-          form_tracker_->GetSubmittedForm(source, submitted_form_element)) {
-    form_tracker_->FireHostSubmitEvents(*form_data, source);
-  }
-  switch (source) {
-    case mojom::SubmissionSource::FORM_SUBMISSION:
-    case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
-      break;
-    case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
-      if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
-        // TODO(crbug.com/40281981): Figure out if this is still needed, and
-        // document the reason, otherwise remove.
-        form_tracker_->ResetLastInteractedElements();
-      }
-      // TODO(crbug.com/40281981): Figure out if this is still needed, and
-      // document the reason, otherwise remove.
-      form_tracker_->OnFormNoLongerSubmittable();
-      break;
-    case mojom::SubmissionSource::FRAME_DETACHED:
-    case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
-    case mojom::SubmissionSource::XHR_SUCCEEDED:
-      // TODO(crbug.com/40281981): Figure out if those two lines are still
-      // needed, and document the reason, otherwise remove.
-      form_tracker_->ResetLastInteractedElements();
-      form_tracker_->OnFormNoLongerSubmittable();
-      break;
-    // This source is only used as a default value to variables.
-    case mojom::SubmissionSource::NONE:
-      NOTREACHED();
-  }
-}
-
 void AutofillAgent::TrackAutofilledElement(
     const WebFormControlElement& element) {
   form_tracker_->TrackAutofilledElement(element);
