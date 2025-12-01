@@ -9,7 +9,7 @@
 #include <string>
 #include <variant>
 
-#include "components/wallet/core/browser/wallet_barcode.h"
+#include "components/wallet/core/browser/data_models/wallet_barcode.h"
 
 namespace optimization_guide::proto {
 class EventPass;

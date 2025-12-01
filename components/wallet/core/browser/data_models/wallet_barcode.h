@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WALLET_CORE_BROWSER_WALLET_BARCODE_H_
-#define COMPONENTS_WALLET_CORE_BROWSER_WALLET_BARCODE_H_
+#ifndef COMPONENTS_WALLET_CORE_BROWSER_DATA_MODELS_WALLET_BARCODE_H_
+#define COMPONENTS_WALLET_CORE_BROWSER_DATA_MODELS_WALLET_BARCODE_H_
 
 #include <string>
 
@@ -38,4 +38,4 @@ struct WalletBarcode {
 
 }  // namespace wallet
 
-#endif  // COMPONENTS_WALLET_CORE_BROWSER_WALLET_BARCODE_H_
+#endif  // COMPONENTS_WALLET_CORE_BROWSER_DATA_MODELS_WALLET_BARCODE_H_

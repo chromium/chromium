@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "components/wallet/core/browser/wallet_barcode.h"
+#include "components/wallet/core/browser/data_models/wallet_barcode.h"
 #include "content/public/browser/web_contents.h"
 
 namespace wallet {

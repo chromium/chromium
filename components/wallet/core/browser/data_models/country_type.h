@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WALLET_CORE_BROWSER_COUNTRY_TYPE_H_
-#define COMPONENTS_WALLET_CORE_BROWSER_COUNTRY_TYPE_H_
+#ifndef COMPONENTS_WALLET_CORE_BROWSER_DATA_MODELS_COUNTRY_TYPE_H_
+#define COMPONENTS_WALLET_CORE_BROWSER_DATA_MODELS_COUNTRY_TYPE_H_
 
 #include <string>
 
@@ -19,4 +19,4 @@ using GeoIpCountryCode =
 
 }  // namespace wallet
 
-#endif  // COMPONENTS_WALLET_CORE_BROWSER_COUNTRY_TYPE_H_
+#endif  // COMPONENTS_WALLET_CORE_BROWSER_DATA_MODELS_COUNTRY_TYPE_H_

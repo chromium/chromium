@@ -8,7 +8,7 @@
 #include "base/test/task_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/wallet/core/browser/country_type.h"
+#include "components/wallet/core/browser/data_models/country_type.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "components/wallet/core/common/wallet_prefs.h"
 #include "testing/gtest/include/gtest/gtest.h"

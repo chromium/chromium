@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
-#include "components/wallet/core/browser/country_type.h"
+#include "components/wallet/core/browser/data_models/country_type.h"
 
 class PrefService;
 

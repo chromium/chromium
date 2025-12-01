@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PERMISSION_UTILS_H_
 #define COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PERMISSION_UTILS_H_
 
-#include "components/wallet/core/browser/country_type.h"
+#include "components/wallet/core/browser/data_models/country_type.h"
 
 class PrefService;
 

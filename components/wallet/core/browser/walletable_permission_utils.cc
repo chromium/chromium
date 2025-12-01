@@ -19,7 +19,7 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/account_pref_utils.h"
-#include "components/wallet/core/browser/country_type.h"
+#include "components/wallet/core/browser/data_models/country_type.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "components/wallet/core/common/wallet_prefs.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
