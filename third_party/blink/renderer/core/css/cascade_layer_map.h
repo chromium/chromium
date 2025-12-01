@@ -36,20 +36,9 @@ class CORE_EXPORT CascadeLayerMap : public GarbageCollected<CascadeLayerMap> {
     return kImplicitOuterLayerOrder;
   }
 
-  // Compare the layer orders of two CascadeLayer objects, possibly from
-  // different sheets. Callers may pass nullptr to represent the implicit outer
-  // layer.
-  //
-  // TODO(crbug.com/463698792): Return std::weak_ordering.
-  int CompareLayerOrder(const CascadeLayer* lhs,
-                        const CascadeLayer* rhs) const {
-    std::weak_ordering ordering = CompareLayerOrderInternal(lhs, rhs);
-    if (ordering == 0) {
-      return 0;
-    }
-    return ordering < 0 ? -1 : 1;
-  }
-
+  // Compare the layer orders of two layered objects. The layers may originate
+  // from different sheets, and one or both of them may be nullptr (indicating
+  // the implicit root layer).
   template <typename T>
   static std::weak_ordering CompareLayerOrder(const CascadeLayerMap* layer_map,
                                               const CascadeLayered<T>& lhs,
@@ -60,7 +49,7 @@ class CORE_EXPORT CascadeLayerMap : public GarbageCollected<CascadeLayerMap> {
       return std::weak_ordering::equivalent;
     }
     CHECK(layer_map);
-    return layer_map->CompareLayerOrderInternal(lhs.layer, rhs.layer);
+    return layer_map->CompareLayerOrder(lhs.layer, rhs.layer);
   }
 
   void Trace(blink::Visitor*) const;
@@ -68,8 +57,8 @@ class CORE_EXPORT CascadeLayerMap : public GarbageCollected<CascadeLayerMap> {
   const CascadeLayer* GetRootLayer() const;
 
  private:
-  std::weak_ordering CompareLayerOrderInternal(const CascadeLayer* lhs,
-                                               const CascadeLayer* rhs) const;
+  std::weak_ordering CompareLayerOrder(const CascadeLayer* lhs,
+                                       const CascadeLayer* rhs) const;
 
   Member<const CascadeLayer> canonical_root_layer_;
   HeapHashMap<Member<const CascadeLayer>, uint16_t> layer_order_map_;

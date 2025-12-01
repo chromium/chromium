@@ -182,8 +182,8 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   const StyleRuleFontFace* GetStyleRule() const {
     return style_rule_.value.Get();
   }
-  const CascadeLayer* GetCascadeLayer() const {
-    return style_rule_.layer.Get();
+  const CascadeLayered<const StyleRuleFontFace>& GetLayeredStyleRule() const {
+    return style_rule_;
   }
   bool IsUserStyle() const { return is_user_style_; }
 

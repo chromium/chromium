@@ -81,7 +81,7 @@ CascadeLayerMap::CascadeLayerMap(const ActiveStyleSheetVector& sheets) {
   }
 }
 
-std::weak_ordering CascadeLayerMap::CompareLayerOrderInternal(
+std::weak_ordering CascadeLayerMap::CompareLayerOrder(
     const CascadeLayer* lhs,
     const CascadeLayer* rhs) const {
   uint16_t lhs_order = lhs ? GetLayerOrder(*lhs) : kImplicitOuterLayerOrder;
