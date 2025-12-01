@@ -260,14 +260,15 @@ static const String UniqueSimpleSelectorAmongSiblings(Element* element) {
                  ")"});
 }
 
-// Computes a selector that uniquely identifies |anchor_node|. This is done
+// Computes a selector that uniquely identifies |anchor_object|. This is done
 // by computing a selector that uniquely identifies each ancestor among its
 // sibling elements, terminating at a definitively unique ancestor. The
 // definitively unique ancestor is either the first ancestor with an id or
 // the root of the document. The computed selectors are chained together with
 // the child combinator(>) to produce a compound selector that is
-// effectively a path through the DOM tree to |anchor_node|.
-static const String ComputeUniqueSelector(Node* anchor_node) {
+// effectively a path through the DOM tree to the node of |anchor_object|.
+static const String ComputeUniqueSelector(LayoutObject* anchor_object) {
+  Node* anchor_node = anchor_object->GetNode();
   DCHECK(anchor_node);
   // The scroll anchor can be a pseudo-element, but pseudo-elements aren't part
   // of the DOM and can't be used as part of a selector. We fail in this case;
@@ -826,16 +827,11 @@ const SerializedAnchor ScrollAnchor::GetSerializedAnchor() {
     scroller_box->GetDocument().GetStyleEngine().UpdateActiveStyle();
   }
 
-  // It's safe to return saved_selector_ before checking anchor_object_, since
-  // clearing anchor_object_ also clears saved_selector_.
-  if (!saved_selector_.empty()) {
-    DCHECK(anchor_object_);
-    return SerializedAnchor(
-        saved_selector_,
-        ComputeRelativeOffset(anchor_object_, scroller_, corner_));
-  }
-
   if (!anchor_object_) {
+    // If there's no anchor_object_, there should also be no saved_selector_,
+    // because those are cleared together.
+    DCHECK(saved_selector_.empty());
+
     FindAnchor();
     if (!anchor_object_)
       return SerializedAnchor();
@@ -843,10 +839,10 @@ const SerializedAnchor ScrollAnchor::GetSerializedAnchor() {
 
   DCHECK(anchor_object_->GetNode());
   SerializedAnchor new_anchor(
-      ComputeUniqueSelector(anchor_object_->GetNode()),
+      saved_selector_ ? saved_selector_ : ComputeUniqueSelector(anchor_object_),
       ComputeRelativeOffset(anchor_object_, scroller_, corner_));
 
-  if (new_anchor.IsValid()) {
+  if (saved_selector_.empty() && new_anchor.IsValid()) {
     saved_selector_ = new_anchor.selector;
   }
 
