@@ -271,7 +271,7 @@ public class SettingsSearchCoordinator {
         // Allow providers to make runtime modifications (e.g., hide preferences). Sometimes we also
         // need to update the title of a pref.
         for (SearchIndexProvider provider : providers) {
-            provider.updateDynamicPreferences(mActivity, mIndexData);
+            provider.updateDynamicPreferences(mActivity, mIndexData, mProfile);
         }
 
         // Resolve headers and remove any orphaned entries.

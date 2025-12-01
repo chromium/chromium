@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
@@ -19,6 +20,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.settings.search.BaseSearchIndexProvider;
+import org.chromium.chrome.browser.settings.search.SettingsIndexData;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -48,6 +51,9 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     private static final String DISABLED_FLEDGE_PREFERENCE = "fledge_disabled";
     private static final String ALL_SITES_PREFERENCE = "fledge_all_sites";
     private static final String FOOTER_PREFERENCE = "fledge_page_footer";
+    private static final String FLEDGE_HEADING_PREFERENCE = "flegde_heading";
+    private static final String FLEDGE_BLOCKED_SITES_PREFERENCE = "fledge_blocked_sites";
+    private static final String FLEDGE_PAGE_DISCLAIMER_PREFERENCE = "fledge_page_disclaimer";
 
     private ChromeSwitchPreference mFledgeTogglePreference;
     private TextMessagePreference mFledgeDescriptionPreference;
@@ -211,6 +217,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
             getPrivacySandboxBridge()
                     .setFledgeJoiningAllowed(((FledgePreference) preference).getSite(), false);
             mCurrentSitesCategory.removePreference(preference);
+
             updatePreferenceVisibility();
 
             showSnackbar(
@@ -285,4 +292,22 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
     }
+
+    public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new BaseSearchIndexProvider(FledgeFragment.class.getName(), R.xml.fledge_preference) {
+                @Override
+                public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
+                    // We do not remove FLEDGE_TOGGLE_PREFERENCE. This is the "Site-suggested ads"
+                    // toggle.
+                    indexData.removeEntry(getUniqueId(FLEDGE_DESCRIPTION_PREFERENCE));
+                    indexData.removeEntry(getUniqueId(CURRENT_SITES_PREFERENCE));
+                    indexData.removeEntry(getUniqueId(EMPTY_FLEDGE_PREFERENCE));
+                    indexData.removeEntry(getUniqueId(DISABLED_FLEDGE_PREFERENCE));
+                    indexData.removeEntry(getUniqueId(ALL_SITES_PREFERENCE));
+                    indexData.removeEntry(getUniqueId(FOOTER_PREFERENCE));
+                    indexData.removeEntry(getUniqueId(FLEDGE_HEADING_PREFERENCE));
+                    indexData.removeEntry(getUniqueId(FLEDGE_BLOCKED_SITES_PREFERENCE));
+                    indexData.removeEntry(getUniqueId(FLEDGE_PAGE_DISCLAIMER_PREFERENCE));
+                }
+            };
 }

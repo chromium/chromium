@@ -47,5 +47,23 @@ public final class SearchIndexProviderRegistry {
                     org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.tasks.tab_management.TabArchiveSettingsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.privacy_sandbox.FledgeAllSitesFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.privacy_sandbox.FledgeFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.privacy_sandbox.FledgeLearnMoreFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.privacy_sandbox.FledgeBlockedSitesFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.privacy_sandbox.TopicsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.privacy_sandbox.TopicsBlockedFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.privacy_sandbox.TopicsManageFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment
                             .SEARCH_INDEX_DATA_PROVIDER);
 }

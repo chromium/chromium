@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.settings.search;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Map;
 import java.util.Set;
@@ -45,10 +46,23 @@ public interface SearchIndexProvider {
 
     /**
      * Update the search index with the preference information provided dynamically or
-     * programmatically.
+     * programmatically. This is for fragments not relying on the current profile.
      *
      * @param context The {@link Context} used to access application resources.
      * @param indexData The central {@link SettingsIndexData} object to be populated.
      */
     default void updateDynamicPreferences(Context context, SettingsIndexData indexData) {}
+
+    /**
+     * Similar to {@link #updateDynamicPreferences(Context, SettingsIndexData)} but takes in the
+     * profile. This is for fragments that rely on the profile.
+     *
+     * @param context The {@link Context} used to access application resources.
+     * @param indexData The central {@link SettingsIndexData} object to be populated.
+     * @param profile The current {@link Profile}.
+     */
+    default void updateDynamicPreferences(
+            Context context, SettingsIndexData indexData, Profile profile) {
+        updateDynamicPreferences(context, indexData);
+    }
 }
