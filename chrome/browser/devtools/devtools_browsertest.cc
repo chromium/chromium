@@ -2156,8 +2156,16 @@ class DevToolsExtensionFileAccessTest : public DevToolsExtensionTest {
   }
 };
 
+// This test is flaky on Linux MSAN.
+// TODO(htt ps://crbug.com/463490299): Enable the test.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_CanGetFileResourceWithFileAccess \
+  DISABLED_CanGetFileResourceWithFileAccess
+#else
+#define MAYBE_CanGetFileResourceWithFileAccess CanGetFileResourceWithFileAccess
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
-                       CanGetFileResourceWithFileAccess) {
+                       MAYBE_CanGetFileResourceWithFileAccess) {
   Run(true, "file:///");
 }
 
