@@ -12,9 +12,6 @@
  * the main confirm dialog is shown.
  */
 
-// TODO(crbug.com/40613129): Add logic to show only some of the passwords
-// fields if some of the passwords were successfully scraped.
-
 import 'chrome://confirm-password-change/strings.m.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
