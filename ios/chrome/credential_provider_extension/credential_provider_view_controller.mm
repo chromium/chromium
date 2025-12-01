@@ -575,7 +575,7 @@ enum class PasskeyUserVerificationStatus {
 - (void)confirmationAlertDismissAction {
   // Finish the extension. There is no recovery from the stale credentials
   // state.
-  [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+  [self dismissExtension];
 }
 
 - (void)confirmationAlertPrimaryAction {
@@ -753,6 +753,11 @@ enum class PasskeyUserVerificationStatus {
 }
 
 #pragma mark - Private
+
+// Finishes the extension.
+- (void)dismissExtension {
+  [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+}
 
 // Returns a PasskeyRequestDetails object created from ASCredentialRequest if
 // possible. May return nil.
@@ -1080,7 +1085,7 @@ enum class PasskeyUserVerificationStatus {
 - (void)showSavingDisabledByEnterpriseAlert {
   // TODO(crbug.com/362719658): Check whether it's possible to make the whole
   // VC a half sheet.
-  PasskeyErrorAlertViewController* savingEnterpriseDisabledViewController =
+  UIViewController* savingEnterpriseDisabledViewController =
       [self createPasskeyErrorAlertForErrorType:
                 ErrorType::kEnterpriseDisabledSavingCredentials];
   [self presentViewController:savingEnterpriseDisabledViewController
@@ -1091,7 +1096,7 @@ enum class PasskeyUserVerificationStatus {
 // Displays sheet with information that the user is signed out and needs to sign
 // in to Chrome.
 - (void)showSignedOutUserAlert {
-  PasskeyErrorAlertViewController* signedOutUserViewController =
+  UIViewController* signedOutUserViewController =
       [self createPasskeyErrorAlertForErrorType:ErrorType::kSignedOut];
   [self presentViewController:signedOutUserViewController
                      animated:NO
@@ -1101,7 +1106,7 @@ enum class PasskeyUserVerificationStatus {
 // Displays sheet with information that credential saving has been manually
 // disabled in Password Settings by the user.
 - (void)showSavingManuallyDisabledAlert {
-  PasskeyErrorAlertViewController* savingDisabledInSettingsViewController =
+  UIViewController* savingDisabledInSettingsViewController =
       [self createPasskeyErrorAlertForErrorType:
                 ErrorType::kUserDisabledSavingCredentialsInPasswordSettings];
   [self presentViewController:savingDisabledInSettingsViewController
@@ -1112,7 +1117,7 @@ enum class PasskeyUserVerificationStatus {
 // Displays sheet with information that credential saving to account (sync) is
 // disabled.
 - (void)showSavingToAccountDisabledAlert {
-  PasskeyErrorAlertViewController* savingToAccountDisabledViewController =
+  UIViewController* savingToAccountDisabledViewController =
       [self createPasskeyErrorAlertForErrorType:
                 ErrorType::kUserDisabledSavingCredentialsToAccount];
   [self presentViewController:savingToAccountDisabledViewController
@@ -1300,14 +1305,21 @@ enum class PasskeyUserVerificationStatus {
 
 // Creates and configures a PasskeyErrorAlertViewController for the given
 // `errorType`.
-- (PasskeyErrorAlertViewController*)createPasskeyErrorAlertForErrorType:
-    (ErrorType)errorType {
+- (UIViewController*)createPasskeyErrorAlertForErrorType:(ErrorType)errorType {
   PasskeyErrorAlertViewController* passkeyErrorAlertViewController =
       [[PasskeyErrorAlertViewController alloc] initForErrorType:errorType];
   passkeyErrorAlertViewController.actionHandler = self;
-  passkeyErrorAlertViewController.presentationController.delegate = self;
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:passkeyErrorAlertViewController];
+  navigationController.presentationController.delegate = self;
 
-  return passkeyErrorAlertViewController;
+  passkeyErrorAlertViewController.navigationItem.rightBarButtonItem =
+      [[UIBarButtonItem alloc]
+          initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                               target:self
+                               action:@selector(dismissExtension)];
+
+  return navigationController;
 }
 
 // Creates and presents a PasskeyWelcomeScreenViewController.
