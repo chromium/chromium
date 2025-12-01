@@ -133,6 +133,8 @@ public class Snackbar {
     public static final int UMA_SIGN_IN = 76;
     public static final int UMA_TAB_PICKER_LIMIT_REACHED = 77;
     public static final int UMA_FUSEBOX_MAX_ATTACHMENTS = 78;
+    public static final int UMA_FUSEBOX_UPLOAD_FAILED = 79;
+
     private final @Nullable SnackbarController mController;
     private final CharSequence mText;
     private @Nullable String mTemplateText;

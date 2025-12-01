@@ -441,6 +441,7 @@ chromium-metrics-reviews@google.com.
   <int value="76" label="UMA_SIGN_IN"/>
   <int value="77" label="UMA_TAB_PICKER_LIMIT_REACHED"/>
   <int value="78" label="UMA_FUSEBOX_MAX_ATTACHMENTS"/>
+  <int value="79" label="UMA_FUSEBOX_UPLOAD_FAILED"/>
 </enum>
 
 <enum name="WebUIPreloadReason">

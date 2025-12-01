@@ -87,6 +87,7 @@ public class FuseboxMediator {
     private boolean mUseCompactUi;
     private final SnackbarManager mSnackbarManager;
     private final Snackbar mAttachmentLimitSnackbar;
+    private final Snackbar mAttachmentUploadFailedSnackbar;
 
     FuseboxMediator(
             Context context,
@@ -116,13 +117,20 @@ public class FuseboxMediator {
 
         mAutocompleteRequestTypeSupplier.addObserver(mOnAutocompleteRequestTypeChanged);
 
-        CharSequence snackbarText = context.getText(R.string.fusebox_max_attachments);
+        CharSequence snackbarLimitText = context.getText(R.string.fusebox_max_attachments);
         mAttachmentLimitSnackbar =
                 Snackbar.make(
-                        snackbarText,
+                        snackbarLimitText,
                         null,
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_FUSEBOX_MAX_ATTACHMENTS);
+        CharSequence snackbarUploadFailedText = context.getText(R.string.fusebox_upload_failed);
+        mAttachmentUploadFailedSnackbar =
+                Snackbar.make(
+                        snackbarUploadFailedText,
+                        null,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_FUSEBOX_UPLOAD_FAILED);
 
         mModel.set(FuseboxProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
         mModel.set(FuseboxProperties.POPUP_CAMERA_CLICKED, this::onCameraClicked);
@@ -353,6 +361,10 @@ public class FuseboxMediator {
         if (mModelList.size() != 0) {
             maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
         }
+    }
+
+    void onAttachmentUploadFailed() {
+        mSnackbarManager.showSnackbar(mAttachmentUploadFailedSnackbar);
     }
 
     /**

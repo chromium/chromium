@@ -26,6 +26,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.contextual_search.FileUploadStatus;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxAttachmentModelListUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -329,7 +331,9 @@ public class FuseboxAttachmentModelListUnitTest {
 
         FuseboxAttachment preTokenizedAttachment = createTestAttachment("pretokenized");
         FuseboxAttachment uploadedAttachment = createTestAttachment("uploaded");
-
+        AtomicBoolean uploadFailedNotified = new AtomicBoolean(false);
+        mFuseboxAttachmentModelList.setAttachmentUploadFailedListener(
+                () -> uploadFailedNotified.set(true));
         mFuseboxAttachmentModelList.add(preTokenizedAttachment);
         mFuseboxAttachmentModelList.add(uploadedAttachment);
         assertEquals(2, mFuseboxAttachmentModelList.size());
@@ -352,6 +356,7 @@ public class FuseboxAttachmentModelListUnitTest {
                 "pretokenized-token", FileUploadStatus.UPLOAD_SUCCESSFUL);
         mFuseboxAttachmentModelList.onFileUploadStatusChanged(
                 "uploaded-token", FileUploadStatus.UPLOAD_FAILED);
+        assertTrue(uploadFailedNotified.get());
 
         assertTrue(preTokenizedAttachment.isUploadComplete());
         assertTrue(uploadedAttachment.isUploadComplete());

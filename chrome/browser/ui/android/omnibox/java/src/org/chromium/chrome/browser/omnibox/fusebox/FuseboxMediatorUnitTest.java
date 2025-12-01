@@ -798,4 +798,10 @@ public class FuseboxMediatorUnitTest {
         // AI Mode is NOT activated and AutocompleteRequestType remains SEARCH.
         assertEquals(AutocompleteRequestType.SEARCH, (int) mAutocompleteRequestTypeSupplier.get());
     }
+
+    @Test
+    public void testFailedUpload() {
+        mMediator.onAttachmentUploadFailed();
+        verify(mSnackbarManager).showSnackbar(any());
+    }
 }

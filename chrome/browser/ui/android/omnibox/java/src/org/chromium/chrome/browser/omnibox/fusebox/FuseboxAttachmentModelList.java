@@ -31,6 +31,7 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
     static final int MAX_ATTACHMENTS = 10;
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private @BrandedColorScheme int mBrandedColorScheme;
+    private @Nullable Runnable mAttachmentUploadFailedListener;
 
     /**
      * @param composeBoxQueryControllerBridge The bridge to use for backend operations
@@ -48,9 +49,15 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
         }
     }
 
+    public void setAttachmentUploadFailedListener(
+            @Nullable Runnable attachmentUploadFailedListener) {
+        mAttachmentUploadFailedListener = attachmentUploadFailedListener;
+    }
+
     /** Release all resources and mark this instance ready for recycling. */
     void destroy() {
         setComposeBoxQueryControllerBridge(null);
+        mAttachmentUploadFailedListener = null;
     }
 
     /**
@@ -190,6 +197,7 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
             case FileUploadStatus.VALIDATION_FAILED:
             case FileUploadStatus.UPLOAD_FAILED:
             case FileUploadStatus.UPLOAD_EXPIRED:
+                notifyAttachmentUploadFailed();
                 pendingAttachment.setUploadIsComplete();
                 remove(pendingAttachment);
                 break;
@@ -212,5 +220,11 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
 
     private int getRemainingAttachments() {
         return MAX_ATTACHMENTS - size();
+    }
+
+    private void notifyAttachmentUploadFailed() {
+        if (mAttachmentUploadFailedListener != null) {
+            mAttachmentUploadFailedListener.run();
+        }
     }
 }

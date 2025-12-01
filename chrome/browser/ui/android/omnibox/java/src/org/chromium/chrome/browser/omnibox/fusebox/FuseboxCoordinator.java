@@ -173,6 +173,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
         if (mLastBrandedColorScheme != null) {
             mMediator.updateVisualsForState(mLastBrandedColorScheme);
         }
+        mModelList.setAttachmentUploadFailedListener(mMediator::onAttachmentUploadFailed);
     }
 
     public void destroy() {
