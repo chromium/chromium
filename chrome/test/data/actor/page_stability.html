@@ -63,8 +63,10 @@
           doBusyWork(10000);
         };
 
+        let paint_count = 0;
         paint_button.onclick = () => {
-          output.innerText = 'PAINT';
+          paint_count++;
+          output.innerText = 'PAINT ' + paint_count;
         };
 
         // Add a handler for new same-document navigations. This will cause a

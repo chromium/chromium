@@ -92,7 +92,29 @@ using ::content::ExecJs;
 
 }  // namespace
 
-class PageStabilityMetricsTest : public PageStabilityTest {
+class PageStabilityMetricsTestBase : public PageStabilityTest {
+ public:
+  PageStabilityMetricsTestBase() = default;
+
+  PageStabilityMetricsTestBase(const PageStabilityMetricsTestBase&) = delete;
+  PageStabilityMetricsTestBase& operator=(const PageStabilityMetricsTestBase&) =
+      delete;
+
+  ~PageStabilityMetricsTestBase() override = default;
+
+  void WaitForFrameReady() {
+    content::MainThreadFrameObserver frame_observer(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+    frame_observer.Wait();
+  }
+
+  void ClickAndWaitForFrameReady(std::string_view element_id) {
+    content::SimulateMouseClickOrTapElementWithId(web_contents(), element_id);
+    WaitForFrameReady();
+  }
+};
+
+class PageStabilityMetricsTest : public PageStabilityMetricsTestBase {
  public:
   PageStabilityMetricsTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -161,7 +183,8 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, NetworkAndMainThreadIdle) {
       kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
       0);
 
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+  ClickAndWaitForFrameReady("btnPaint");
+
   ASSERT_TRUE(EnsureHistogramsRecorded(
       histogram_tester,
       {kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
@@ -196,10 +219,12 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
   ASSERT_EQ(GetOutputText(), "INITIAL");
   EXPECT_FALSE(result.IsReady());
 
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+  WaitForFrameReady();
+
+  ClickAndWaitForFrameReady("btnPaint");
 
   ASSERT_TRUE(result.Wait());
-  ASSERT_EQ(GetOutputText(), "PAINT");
+  ASSERT_EQ(GetOutputText(), "PAINT 1");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -240,11 +265,13 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
 
   // Verify that the metrics for subsequent interaction contentful paints were
   // still recorded after paint stability.
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+  ClickAndWaitForFrameReady("btnPaint");
+  ASSERT_EQ(GetOutputText(), "PAINT 2");
 
-  // Wait until timeout to flush the metrics.
-  Sleep(features::kGlicActorPageStabilityTimeout.Get());
+  ClickAndWaitForFrameReady("btnPaint");
+  ASSERT_EQ(GetOutputText(), "PAINT 3");
+
+  // The metrics will be flushed on timeout.
 
   ASSERT_TRUE(EnsureHistogramsRecorded(
       histogram_tester,
@@ -300,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Timeout) {
   // Verify that paint stability and network/main thread metrics were not
   // recorded when the stabilicy check completed after callback invocation due
   // to timeout.
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+  ClickAndWaitForFrameReady("btnPaint");
   Respond("NETWORK DONE");
 
   ASSERT_TRUE(EnsureHistogramsNotRecorded(
@@ -416,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnected) {
 
   // Verify that paint stability and network/main thread metrics were still
   // recorded when the stabilicy check completed after mojo disconnection.
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+  ClickAndWaitForFrameReady("btnPaint");
   Respond("NETWORK DONE");
 
   ASSERT_TRUE(EnsureHistogramsRecorded(
@@ -478,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnectedAndTimeout) {
 
   // Verify that paint stability and network/main thread metrics were not
   // recorded after timeout.
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+  ClickAndWaitForFrameReady("btnPaint");
   Respond("NETWORK DONE");
 
   ASSERT_TRUE(EnsureHistogramsNotRecorded(
@@ -497,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnectedAndTimeout) {
       0);
 }
 
-class PageStabilityMetricsMinWaitTest : public PageStabilityTest {
+class PageStabilityMetricsMinWaitTest : public PageStabilityMetricsTestBase {
  public:
   PageStabilityMetricsMinWaitTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -549,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest,
 
   // Verify that paint stability metric was still recorded when paint stability
   // was reached while waiting for minimum wait.
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+  ClickAndWaitForFrameReady("btnPaint");
 
   ASSERT_TRUE(result.Wait());
 
@@ -592,7 +619,9 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest, PaintDelayed) {
   ASSERT_EQ(GetOutputText(), "INITIAL");
   EXPECT_FALSE(result.IsReady());
 
-  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+  WaitForFrameReady();
+
+  ClickAndWaitForFrameReady("btnPaint");
 
   ASSERT_TRUE(EnsureHistogramsRecorded(
       histogram_tester,
@@ -602,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest, PaintDelayed) {
       1);
   ASSERT_FALSE(result.IsReady());
 
-  // Verify tht the network/main thread metric was still recorded when the
+  // Verify that the network/main thread metric was still recorded when the
   // network/main thread became idle while waiting for minimum wait.
   Respond("NETWORK DONE");
 
