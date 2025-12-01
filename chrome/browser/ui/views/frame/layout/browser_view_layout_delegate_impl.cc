@@ -61,14 +61,15 @@ bool BrowserViewLayoutDelegateImpl::GetBorderlessModeEnabled() const {
   return browser_view_->IsBorderlessModeEnabled();
 }
 
-BrowserLayoutParams BrowserViewLayoutDelegateImpl::GetBrowserLayoutParams()
-    const {
+BrowserLayoutParams BrowserViewLayoutDelegateImpl::GetBrowserLayoutParams(
+    bool use_browser_bounds) const {
   const auto params = GetFrameView()->GetBrowserLayoutParams();
   if (params.IsEmpty()) {
     // This can happen sometimes right after a browser is created.
     return params;
   }
-  return params.InLocalCoordinates(browser_view_->bounds());
+  return params.InLocalCoordinates(
+      use_browser_bounds ? browser_view_->bounds() : params.visual_client_area);
 }
 
 int BrowserViewLayoutDelegateImpl::GetTopInsetInBrowserView() const {

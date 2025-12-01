@@ -34,7 +34,8 @@ class BrowserViewLayoutDelegate {
   virtual gfx::Rect GetBoundsForTabStripRegionInBrowserView() const = 0;
   virtual gfx::Rect GetBoundsForToolbarInVerticalTabBrowserView() const = 0;
   virtual gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const = 0;
-  virtual BrowserLayoutParams GetBrowserLayoutParams() const = 0;
+  virtual BrowserLayoutParams GetBrowserLayoutParams(
+      bool use_browser_bounds) const = 0;
   virtual void LayoutWebAppWindowTitle(
       const gfx::Rect& available_space,
       views::Label& window_title_label) const = 0;

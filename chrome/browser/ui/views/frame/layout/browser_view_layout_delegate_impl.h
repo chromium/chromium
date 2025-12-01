@@ -28,7 +28,8 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   gfx::Rect GetBoundsForTabStripRegionInBrowserView() const override;
   gfx::Rect GetBoundsForToolbarInVerticalTabBrowserView() const override;
   gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const override;
-  BrowserLayoutParams GetBrowserLayoutParams() const override;
+  BrowserLayoutParams GetBrowserLayoutParams(
+      bool use_browser_bounds) const override;
   int GetTopInsetInBrowserView() const override;
   void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
                                views::Label& window_title_label) const override;

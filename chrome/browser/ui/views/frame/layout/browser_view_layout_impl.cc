@@ -182,7 +182,8 @@ int BrowserViewLayoutImpl::GetMinWebContentsWidthForTesting() const {
 // Layout logic.
 
 void BrowserViewLayoutImpl::Layout(views::View* host) {
-  const auto params = delegate().GetBrowserLayoutParams();
+  const auto params =
+      delegate().GetBrowserLayoutParams(/*use_browser_bounds=*/true);
   if (params.IsEmpty()) {
     return;
   }
@@ -271,7 +272,8 @@ int BrowserViewLayoutImpl::GetDialogBottom(const ProposedLayout& layout) const {
 
 gfx::Point BrowserViewLayoutImpl::GetDialogPosition(
     const gfx::Size& dialog_size) const {
-  const auto params = delegate().GetBrowserLayoutParams();
+  const auto params =
+      delegate().GetBrowserLayoutParams(/*use_browser_bounds=*/false);
   if (params.IsEmpty()) {
     return gfx::Point();
   }
@@ -293,7 +295,8 @@ gfx::Point BrowserViewLayoutImpl::GetDialogPosition(
 }
 
 gfx::Size BrowserViewLayoutImpl::GetMaximumDialogSize() const {
-  const auto params = delegate().GetBrowserLayoutParams();
+  const auto params =
+      delegate().GetBrowserLayoutParams(/*use_browser_bounds=*/false);
   if (params.IsEmpty()) {
     return gfx::Size();
   }

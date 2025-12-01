@@ -28,7 +28,8 @@ gfx::Size BrowserViewPopupLayoutImpl::GetMinimumSize(
     return gfx::Size(1, 1);
   }
 
-  const auto params = delegate().GetBrowserLayoutParams();
+  const auto params =
+      delegate().GetBrowserLayoutParams(/*use_browser_bounds=*/false);
   const auto leading = params.leading_exclusion.ContentWithPadding();
   const auto trailing = params.trailing_exclusion.ContentWithPadding();
   const gfx::Size caption_size(

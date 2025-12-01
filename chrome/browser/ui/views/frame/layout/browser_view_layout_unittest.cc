@@ -76,7 +76,8 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const override {
     return gfx::Rect();
   }
-  BrowserLayoutParams GetBrowserLayoutParams() const override {
+  BrowserLayoutParams GetBrowserLayoutParams(
+      bool use_browser_bounds) const override {
     return BrowserLayoutParams();
   }
   void LayoutWebAppWindowTitle(
