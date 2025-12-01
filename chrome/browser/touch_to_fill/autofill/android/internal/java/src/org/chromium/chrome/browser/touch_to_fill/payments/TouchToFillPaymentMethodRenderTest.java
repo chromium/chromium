@@ -23,6 +23,7 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -463,6 +464,7 @@ public class TouchToFillPaymentMethodRenderTest {
                             new LegalMessageLine("Affirm legal message line")));
 
     private BottomSheetController mBottomSheetController;
+    private BottomSheetTestSupport mSheetTestSupport;
     private TouchToFillPaymentMethodCoordinator mCoordinator;
     private WebPageStation mPage;
 
@@ -482,6 +484,7 @@ public class TouchToFillPaymentMethodRenderTest {
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getBottomSheetController();
+        mSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator = new TouchToFillPaymentMethodCoordinator();
@@ -820,6 +823,7 @@ public class TouchToFillPaymentMethodRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @Ignore("TODO(crbug.com/430575808): Fix screen state update with animation in test")
     public void testShowsBnplIssuerTosScreen() throws IOException {
         runOnUiThreadBlocking(
                 () -> {

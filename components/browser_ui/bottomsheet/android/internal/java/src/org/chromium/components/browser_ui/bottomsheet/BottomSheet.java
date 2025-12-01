@@ -658,7 +658,7 @@ class BottomSheet extends FrameLayout
     }
 
     /** Cancels and nulls the height animation if it exists. */
-    private void cancelAnimation() {
+    void cancelAnimation() {
         if (mSettleAnimator == null) return;
         mSettleAnimator.cancel();
         mSettleAnimator = null;
@@ -666,10 +666,11 @@ class BottomSheet extends FrameLayout
 
     /**
      * Creates the sheet's animation to a target state.
+     *
      * @param targetState The target state.
      * @param reason The reason the sheet started animation.
      */
-    private void createSettleAnimation(
+    void createSettleAnimation(
             @SheetState final int targetState, @StateChangeReason final int reason) {
         mTargetState = targetState;
         mSettleAnimator =
@@ -817,8 +818,10 @@ class BottomSheet extends FrameLayout
         return mSheetContent != null && mSheetContent.getPeekHeight() != HeightMode.DISABLED;
     }
 
-    /** @return Whether the half-height of the sheet is enabled. */
-    private boolean isHalfStateEnabled() {
+    /**
+     * @return Whether the half-height of the sheet is enabled.
+     */
+    boolean isHalfStateEnabled() {
         if (mSheetContent == null) return false;
 
         // Half state is invalid on small screens, when wrapping content at full height, and when
