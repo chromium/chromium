@@ -1217,7 +1217,7 @@
       "--test-third-party-cookie-phaseout",
       "--use-related-website-set={\"primary\":\"https://firstparty.test\",\"associatedSites\":[\"https://cookie.test\"]}"
     ],
-    "expires": "Dec 1, 2025",
+    "expires": "Jun 1, 2026",
     "owners": [
       "chrome-first-party-sets@chromium.org"
     ]
