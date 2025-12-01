@@ -4,9 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-// <if expr="is_chromeos">
 import './printer_setup_info_cros.js';
-// </if>
 import './print_preview_vars.css.js';
 import '/strings.m.js';
 
@@ -18,12 +16,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DarkModeMixin} from '../dark_mode_mixin.js';
 import {Coordinate2d} from '../data/coordinate2d.js';
-// <if expr="not is_chromeos">
-import type {Destination} from '../data/destination.js';
-// </if>
-// <if expr="is_chromeos">
+
 import type {Destination} from '../data/destination_cros.js';
-// </if>
 import type {Margins, MarginsSetting} from '../data/margins.js';
 import {CustomMarginsOrientation, MarginsType} from '../data/margins.js';
 import type {MeasurementSystem} from '../data/measurement_system.js';
@@ -41,9 +35,7 @@ import {MARGIN_KEY_MAP} from './margin_control_container.js';
 import type {PluginProxy} from './plugin_proxy.js';
 import {PluginProxyImpl} from './plugin_proxy.js';
 import {getTemplate} from './preview_area.html.js';
-// <if expr="is_chromeos">
 import {PrinterSetupInfoInitiator, PrinterSetupInfoMessageType} from './printer_setup_info_cros.js';
-// </if>
 import {SettingsMixin} from './settings_mixin.js';
 
 export type PreviewTicket = Ticket&{
@@ -66,12 +58,10 @@ export interface PrintPreviewPreviewAreaElement {
   $: {marginControlContainer: PrintPreviewMarginControlContainerElement};
 }
 
-// <if expr="is_chromeos">
 export function shouldShowCrosPrinterSetupError(
     state: State, error: Error): boolean {
   return state === State.ERROR && error === Error.INVALID_PRINTER;
 }
-// </if>
 
 const PrintPreviewPreviewAreaElementBase =
     WebUiListenerMixin(I18nMixin(SettingsMixin(DarkModeMixin(PolymerElement))));
@@ -127,7 +117,6 @@ export class PrintPreviewPreviewAreaElement extends
         computed: 'computePreviewLoaded_(documentReady_, pluginLoadComplete_)',
       },
 
-      // <if expr="is_chromeos">
       printerSetupInfoMessageTypeEnum_: {
         type: Number,
         value: PrinterSetupInfoMessageType,
@@ -139,7 +128,6 @@ export class PrintPreviewPreviewAreaElement extends
         value: PrinterSetupInfoInitiator,
         readOnly: true,
       },
-      // </if>
 
       showCrosPrinterSetupInfo_: {
         type: Boolean,
@@ -288,11 +276,6 @@ export class PrintPreviewPreviewAreaElement extends
         return this.i18nAdvanced('loading');
       case PreviewAreaState.DISPLAY_PREVIEW:
         return window.trustedTypes!.emptyHTML;
-      // <if expr="is_macosx">
-      case PreviewAreaState.OPEN_IN_PREVIEW_LOADING:
-      case PreviewAreaState.OPEN_IN_PREVIEW_LOADED:
-        return this.i18nAdvanced('openingPDFInPreview');
-      // </if>
       case PreviewAreaState.ERROR:
         // The preview area is responsible for displaying all errors except
         // print failed.
@@ -331,15 +314,6 @@ export class PrintPreviewPreviewAreaElement extends
           }
         });
   }
-
-  // <if expr="is_macosx">
-  /** Set the preview state to display the "opening in preview" message. */
-  setOpeningPdfInPreview() {
-    this.previewState = this.previewState === PreviewAreaState.LOADING ?
-        PreviewAreaState.OPEN_IN_PREVIEW_LOADING :
-        PreviewAreaState.OPEN_IN_PREVIEW_LOADED;
-  }
-  // </if>
 
   /**
    * @param previewUid The unique identifier of the preview.
@@ -811,10 +785,8 @@ export class PrintPreviewPreviewAreaElement extends
           substitutions: [],
           tags: ['BR'],
         });
-      // <if expr="is_chromeos">
       case Error.NO_DESTINATIONS:
         return this.i18nAdvanced('noDestinationsMessage');
-      // </if>
       case Error.PREVIEW_FAILED:
         return this.i18nAdvanced('previewFailed');
       default:
@@ -829,12 +801,7 @@ export class PrintPreviewPreviewAreaElement extends
    * `computeShowCrosPrinterSetupInfo` will return false.
    */
   private computeShowCrosPrinterSetupInfo(): boolean {
-    // <if expr="is_chromeos">
     return shouldShowCrosPrinterSetupError(this.state, this.error);
-    // </if>
-    // <if expr="not is_chromeos">
-    return false;
-    // </if>
   }
 }
 

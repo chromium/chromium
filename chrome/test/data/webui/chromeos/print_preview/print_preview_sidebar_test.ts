@@ -7,9 +7,7 @@ import {NativeLayerImpl} from 'chrome://print/print_preview.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
-// <if expr="is_chromeos">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate, toggleMoreSettings} from './print_preview_test_utils.js';
@@ -26,9 +24,7 @@ suite('PrintPreviewSidebarTest', function() {
     // Stub out the native layer.
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
     setNativeLayerCrosInstance();
-    // </if>
     nativeLayer.setLocalDestinationCapabilities(getCddTemplate('FooDevice'));
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

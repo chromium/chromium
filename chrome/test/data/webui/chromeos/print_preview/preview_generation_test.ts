@@ -7,9 +7,7 @@ import {ColorMode, CustomMarginsOrientation, Destination, DestinationOrigin, Des
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-// <if expr="is_chromeos">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate, getDefaultInitialSettings} from './print_preview_test_utils.js';
@@ -34,9 +32,7 @@ suite('PreviewGenerationTest', function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
     setNativeLayerCrosInstance();
-    // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 

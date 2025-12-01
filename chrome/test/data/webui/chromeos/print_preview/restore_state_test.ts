@@ -6,9 +6,7 @@ import type {NativeInitialSettings, PrintPreviewAppElement, SerializedSettings, 
 import {getInstance, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-// <if expr="is_chromeos">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplateWithAdvancedSettings, getDefaultInitialSettings} from './print_preview_test_utils.js';
@@ -23,9 +21,7 @@ suite('RestoreStateTest', function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
     setNativeLayerCrosInstance();
-    // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
@@ -100,87 +96,81 @@ suite('RestoreStateTest', function() {
    * Tests state restoration with all boolean settings set to true, scaling =
    * 90, dpi = 100, custom square paper, and custom margins.
    */
-  test(
-      'RestoreTrueValues', async function() {
-        const stickySettings: SerializedSettings = {
-          version: 2,
-          recentDestinations: [],
-          dpi: {horizontal_dpi: 100, vertical_dpi: 100},
-          mediaSize: {
-            name: 'CUSTOM',
-            width_microns: 215900,
-            height_microns: 215900,
-            custom_display_name: 'CUSTOM_SQUARE',
-            has_borderless_variant: true,
-          },
-          customMargins: {
-            marginTop: 74,
-            marginRight: 74,
-            marginBottom: 74,
-            marginLeft: 74,
-          },
-          vendorOptions: {
-            paperType: 1,
-            printArea: 6,
-          },
-          marginsType: 3, /* custom */
-          scaling: '90',
-          scalingType: ScalingType.CUSTOM,
-          scalingTypePdf: ScalingType.FIT_TO_PAGE,
-          isHeaderFooterEnabled: true,
-          isCssBackgroundEnabled: true,
-          isCollateEnabled: true,
-          isDuplexEnabled: true,
-          isDuplexShortEdge: true,
-          isLandscapeEnabled: true,
-          isColorEnabled: true,
-          // <if expr="is_chromeos">
-          isPinEnabled: true,
-          pinValue: '0000',
-          // </if>
-        };
-        await testInitializeWithStickySettings(stickySettings);
-      });
+  test('RestoreTrueValues', async function() {
+    const stickySettings: SerializedSettings = {
+      version: 2,
+      recentDestinations: [],
+      dpi: {horizontal_dpi: 100, vertical_dpi: 100},
+      mediaSize: {
+        name: 'CUSTOM',
+        width_microns: 215900,
+        height_microns: 215900,
+        custom_display_name: 'CUSTOM_SQUARE',
+        has_borderless_variant: true,
+      },
+      customMargins: {
+        marginTop: 74,
+        marginRight: 74,
+        marginBottom: 74,
+        marginLeft: 74,
+      },
+      vendorOptions: {
+        paperType: 1,
+        printArea: 6,
+      },
+      marginsType: 3, /* custom */
+      scaling: '90',
+      scalingType: ScalingType.CUSTOM,
+      scalingTypePdf: ScalingType.FIT_TO_PAGE,
+      isHeaderFooterEnabled: true,
+      isCssBackgroundEnabled: true,
+      isCollateEnabled: true,
+      isDuplexEnabled: true,
+      isDuplexShortEdge: true,
+      isLandscapeEnabled: true,
+      isColorEnabled: true,
+      isPinEnabled: true,
+      pinValue: '0000',
+    };
+    await testInitializeWithStickySettings(stickySettings);
+  });
 
   /**
    * Tests state restoration with all boolean settings set to false, scaling =
    * 120, dpi = 200, letter paper and default margins.
    */
-  test(
-      'RestoreFalseValues', async function() {
-        const stickySettings: SerializedSettings = {
-          version: 2,
-          recentDestinations: [],
-          dpi: {horizontal_dpi: 200, vertical_dpi: 200},
-          mediaSize: {
-            name: 'NA_LETTER',
-            width_microns: 215900,
-            height_microns: 279400,
-            is_default: true,
-            custom_display_name: 'Letter',
-          },
-          vendorOptions: {
-            paperType: 0,
-            printArea: 4,
-          },
-          marginsType: 0, /* default */
-          scaling: '120',
-          scalingType: ScalingType.DEFAULT,
-          scalingTypePdf: ScalingType.DEFAULT,
-          isHeaderFooterEnabled: false,
-          isCssBackgroundEnabled: false,
-          isCollateEnabled: false,
-          isDuplexEnabled: false,
-          isDuplexShortEdge: false,
-          isLandscapeEnabled: false,
-          isColorEnabled: false,
-          // <if expr="is_chromeos">
-          isPinEnabled: false,
-          pinValue: '',
-          // </if>
-        };
-        await testInitializeWithStickySettings(stickySettings);
-      });
+  test('RestoreFalseValues', async function() {
+    const stickySettings: SerializedSettings = {
+      version: 2,
+      recentDestinations: [],
+      dpi: {horizontal_dpi: 200, vertical_dpi: 200},
+      mediaSize: {
+        name: 'NA_LETTER',
+        width_microns: 215900,
+        height_microns: 279400,
+        is_default: true,
+        custom_display_name: 'Letter',
+      },
+      vendorOptions: {
+        paperType: 0,
+        printArea: 4,
+      },
+      marginsType: 0, /* default */
+      scaling: '120',
+      scalingType: ScalingType.DEFAULT,
+      scalingTypePdf: ScalingType.DEFAULT,
+      isHeaderFooterEnabled: false,
+      isCssBackgroundEnabled: false,
+      isCollateEnabled: false,
+      isDuplexEnabled: false,
+      isDuplexShortEdge: false,
+      isLandscapeEnabled: false,
+      isColorEnabled: false,
+      isPinEnabled: false,
+      pinValue: '',
+    };
+    await testInitializeWithStickySettings(stickySettings);
+  });
 
   /**
    * Tests that setting the settings values results in the correct serialized
@@ -292,7 +282,6 @@ suite('RestoreStateTest', function() {
           printArea: 6,
         },
       },
-      // <if expr="is_chromeos">
       {
         section: 'print-preview-pin-settings',
         settingName: 'pin',
@@ -305,7 +294,6 @@ suite('RestoreStateTest', function() {
         key: 'pinValue',
         value: '0000',
       },
-      // </if>
     ];
 
     // Setup

@@ -4,18 +4,14 @@
 
 import type {CrCheckboxElement, NativeInitialSettings, PolicyObjectEntry, PrintPreviewAppElement, SerializedSettings} from 'chrome://print/print_preview.js';
 import {BackgroundGraphicsModeRestriction, NativeLayerImpl, PluginProxyImpl} from 'chrome://print/print_preview.js';
-// <if expr="is_chromeos">
 import type {CrButtonElement} from 'chrome://print/print_preview.js';
 import {ColorModeRestriction, DuplexMode, DuplexModeRestriction, PinModeRestriction, PrintPreviewPluralStringProxyImpl} from 'chrome://print/print_preview.js';
-// </if>
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
-// <if expr="is_chromeos">
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getDefaultInitialSettings, toggleMoreSettings} from './print_preview_test_utils.js';
@@ -29,7 +25,6 @@ interface AllowedDefaultModePolicySetup {
   defaultMode: any;
 }
 
-// <if expr="is_chromeos">
 class PolicyTestPluralStringProxy extends TestPluralStringProxy {
   override text: string = '';
 
@@ -40,7 +35,6 @@ class PolicyTestPluralStringProxy extends TestPluralStringProxy {
     return Promise.resolve(this.text);
   }
 }
-// </if>
 
 suite('PolicyTest', function() {
   let page: PrintPreviewAppElement;
@@ -58,9 +52,7 @@ suite('PolicyTest', function() {
         [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
     nativeLayer.setPageCount(3);
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
     setNativeLayerCrosInstance();
-    // </if>
     const pluginProxy = new TestPluginProxy();
     PluginProxyImpl.setInstance(pluginProxy);
 
@@ -121,7 +113,6 @@ suite('PolicyTest', function() {
     return loadInitialSettings(initialSettings);
   }
 
-  // <if expr="is_chromeos">
   /**
    * Sets up the Print Preview app, and loads initial settings with the
    * given policy.
@@ -137,7 +128,6 @@ suite('PolicyTest', function() {
     }
     return loadInitialSettings(initialSettings);
   }
-  // </if>
 
   function getCheckbox(settingName: string): CrCheckboxElement {
     return page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
@@ -294,7 +284,6 @@ suite('PolicyTest', function() {
     }
   });
 
-  // <if expr="is_chromeos">
   test('SheetsPolicy', async () => {
     const pluralString = new PolicyTestPluralStringProxy();
     PrintPreviewPluralStringProxyImpl.setInstance(pluralString);
@@ -694,69 +683,6 @@ suite('PolicyTest', function() {
       assertEquals(subtestParams.expectedInputDisabled, input.disabled);
     }
   });
-  // </if>
-
-  // <if expr="is_win or is_macosx">
-  // Tests different scenarios of PDF print as image option policy.
-  // Should be available only for PDF when the policy explicitly allows print
-  // as image, and hidden the rest of the cases.
-  test('PrintPdfAsImageAvailability', async () => {
-    const tests = [
-      {
-        // No policies with modifiable content.
-        allowedMode: undefined,
-        isPdf: false,
-        expectedHidden: true,
-      },
-      {
-        // No policies with PDF content.
-        allowedMode: undefined,
-        isPdf: true,
-        expectedHidden: true,
-      },
-      {
-        // Explicitly restrict "Print as image" option for modifiable content.
-        allowedMode: false,
-        isPdf: false,
-        expectedHidden: true,
-      },
-      {
-        // Explicitly restrict "Print as image" option for PDF content.
-        allowedMode: false,
-        isPdf: true,
-        expectedHidden: true,
-      },
-      {
-        // Explicitly enable "Print as image" option for modifiable content.
-        allowedMode: true,
-        isPdf: false,
-        expectedHidden: true,
-      },
-      {
-        // Explicitly enable "Print as image" option for PDF content.
-        allowedMode: true,
-        isPdf: true,
-        expectedHidden: false,
-      },
-    ];
-    for (const subtestParams of tests) {
-      await doAllowedDefaultModePoliciesSetup(
-          [{
-            settingName: 'printPdfAsImageAvailability',
-            serializedSettingName: 'isRasterizeEnabled',
-            allowedMode: subtestParams.allowedMode,
-            defaultMode: undefined,
-          }],
-          /*isPdf=*/ subtestParams.isPdf);
-      toggleMoreSettings(
-          page.shadowRoot!.querySelector('print-preview-sidebar')!);
-      const checkbox = getCheckbox('rasterize');
-      assertEquals(
-          subtestParams.expectedHidden,
-          (checkbox.parentNode!.parentNode! as HTMLElement).hidden);
-    }
-  });
-  // </if>
 
   // Tests different scenarios of PDF "Print as image" option default policy.
   // Default only has an effect when the "Print as image" option is available.
@@ -765,7 +691,6 @@ suite('PolicyTest', function() {
   // but is always available for Linux and ChromeOS.
   test('PrintPdfAsImageDefault', async () => {
     const tests = [
-      // <if expr="is_linux or is_chromeos">
       {
         // `availableAllowedMode` is irrelevant, option is always present.
         // No policy for default of "Print as image" option.
@@ -787,7 +712,6 @@ suite('PolicyTest', function() {
         selectedDefaultMode: true,
         expectedChecked: true,
       },
-      // </if>
       {
         // Explicitly enable "Print as image" option for PDF content.
         // No policy for default of "Print as image" option.

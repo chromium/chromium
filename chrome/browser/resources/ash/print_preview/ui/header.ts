@@ -12,14 +12,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="not is_chromeos">
-import type {Destination} from '../data/destination.js';
-import {PrinterType} from '../data/destination.js';
-// </if>
-// <if expr="is_chromeos">
+
 import type {Destination} from '../data/destination_cros.js';
 import {PrinterType} from '../data/destination_cros.js';
-// </if>
 import {Error, State} from '../data/state.js';
 
 import {getTemplate} from './header.html.js';

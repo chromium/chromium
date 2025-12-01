@@ -23,33 +23,22 @@
     margin-inline-end: 0;
   }
 
-<if expr="is_chromeos">
   .error-message {
     color: red;
     margin: 16px 16px 0;
     text-align: start;
   }
-</if>
 </style>
-<if expr="is_chromeos">
 <div class="error-message"
     hidden="[[!showSheetsError_(destination.id, maxSheets, sheetCount)]]">
   [[errorMessage_]]
 </div>
-</if>
 <div class="controls">
-<if expr="not is_win">
   <cr-button class="cancel-button" on-click="onCancelClick_">
     $i18n{cancel}
   </cr-button>
-</if>
   <cr-button class="action-button" on-click="onPrintClick_"
       disabled$="[[!printButtonEnabled_]]">
     [[printButtonLabel_]]
   </cr-button>
-<if expr="is_win">
-  <cr-button class="cancel-button" on-click="onCancelClick_">
-    $i18n{cancel}
-  </cr-button>
-</if>
 </div>

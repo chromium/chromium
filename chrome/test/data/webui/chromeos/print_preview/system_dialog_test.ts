@@ -21,13 +21,6 @@ suite('SystemDialogTest', function() {
 
   let link: HTMLElement;
 
-  // <if expr="is_win">
-  let printTicketKey: string = 'showSystemDialog';
-  // </if>
-  // <if expr="is_macosx">
-  let printTicketKey: string = 'openPDFInPreview';
-  // </if>
-
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
@@ -61,12 +54,6 @@ suite('SystemDialogTest', function() {
               sidebar.shadowRoot!
                   .querySelector(
                       'print-preview-destination-settings')!.destination!.id);
-          // <if expr="is_win">
-          link = linkContainer.$.systemDialogLink;
-          // </if>
-          // <if expr="is_macosx">
-          link = linkContainer.$.openPdfInPreviewLink;
-          // </if>
         });
   });
 

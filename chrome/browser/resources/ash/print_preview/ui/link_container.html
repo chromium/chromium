@@ -3,11 +3,9 @@
     display: block;
   }
 
-  <if expr="not is_macosx">
-    :host(:not([should-show-system-dialog-link_])) {
-      display: none;
-    }
-  </if>
+  :host(:not([should-show-system-dialog-link_])) {
+    display: none;
+  }
 
   :host cr-icon-button {
     --cr-icon-button-icon-size: 16px;
@@ -57,14 +55,3 @@
   <div id="systemDialogThrobber" hidden$="[[!openingSystemDialog_]]"
       class="throbber"></div>
 </div>
-<if expr="is_macosx">
-<div class="link" id="openPdfInPreviewLink" actionable$="[[!disabled]]"
-    on-click="onOpenInPreviewClick_">
-  <div class="label">$i18n{openPdfInPreviewOption}</div>
-  <cr-icon-button class="icon-external"
-      hidden$="[[openingInPreview_]]" disabled="[[disabled]]"
-      aria-label="$i18n{openPdfInPreviewOption}"></cr-icon-button>
-  <div id="openPdfInPreviewThrobber" hidden$="[[!openingInPreview_]]"
-      class="throbber"></div>
-</div>
-</if>

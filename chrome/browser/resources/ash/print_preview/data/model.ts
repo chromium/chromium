@@ -10,27 +10,18 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {Policies} from '../native_layer.js';
 import {BackgroundGraphicsModeRestriction} from '../native_layer.js';
 
-// <if expr="is_chromeos">
 import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from '../native_layer.js';
-// </if>
 
 import type {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption, MediaTypeOption} from './cdd.js';
 import {DuplexType} from './cdd.js';
-// <if expr="not is_chromeos">
-import type {Destination, RecentDestination} from './destination.js';
-import {DestinationOrigin, GooglePromotedDestinationId, PrinterType} from './destination.js';
-// </if>
-// <if expr="is_chromeos">
+
 import type {Destination, RecentDestination} from './destination_cros.js';
 import {DestinationOrigin, GooglePromotedDestinationId, PrinterType} from './destination_cros.js';
-// </if>
 import type {DocumentSettings} from './document_info.js';
 import type {Margins, MarginsSetting} from './margins.js';
 import {CustomMarginsOrientation, MarginsType} from './margins.js';
-// <if expr="is_chromeos">
 import {IPP_PRINT_QUALITY, managedPrintOptionsDuplexToCdd, managedPrintOptionsQualityToIpp} from './managed_print_options_cros.js';
 import {PrinterStatusReason} from './printer_status_cros.js';
-// </if>
 
 import {ScalingType} from './scaling.js';
 import type {Size} from './size.js';
@@ -86,10 +77,8 @@ export interface Settings {
   otherOptions: Setting;
   ranges: Setting;
   pagesPerSheet: Setting;
-  // <if expr="is_chromeos">
   pin: Setting;
   pinValue: Setting;
-  // </if>
   recentDestinations: Setting;
 }
 
@@ -113,10 +102,8 @@ export interface SerializedSettings {
   scalingType?: ScalingType;
   scalingTypePdf?: ScalingType;
   vendorOptions?: object;
-  // <if expr="is_chromeos">
   isPinEnabled?: boolean;
   pinValue?: string;
-  // </if>
 }
 
 export interface PolicyEntry {
@@ -204,14 +191,10 @@ export type PrintTicket = Ticket&{
   pageCount: number,
   pageHeight: number,
   pageWidth: number,
-  // <if expr="is_chromeos">
   printerManuallySelected: boolean,
   printToGoogleDrive: boolean,
-  // </if>
   showSystemDialog: boolean,
-  // <if expr="is_chromeos">
   printerStatusReason?: PrinterStatusReason,
-  // </if>
 };
 
 /**
@@ -260,9 +243,7 @@ const STICKY_SETTING_NAMES: Array<keyof Settings> = [
   'scalingTypePdf',
   'vendorItems',
 ];
-// <if expr="is_chromeos">
 STICKY_SETTING_NAMES.push('pin', 'pinValue');
-// </if>
 
 /**
  * Minimum height of page in microns to allow headers and footers. Should
@@ -271,7 +252,6 @@ STICKY_SETTING_NAMES.push('pin', 'pinValue');
  */
 const MINIMUM_HEIGHT_MICRONS: number = 25400;
 
-// <if expr="is_chromeos">
 /**
  * Helper function for configurePolicySetting_(). Calculates default duplex
  * value based on allowed and default policies. Return undefined when both
@@ -302,7 +282,6 @@ function getDuplexDefaultValue(
   // allowedMode. Note that "DUPLEX" is not a single mode, but a group of modes.
   return DuplexModeRestriction.DUPLEX;
 }
-// </if>
 
 function createSettings(): Settings {
   return {
@@ -592,7 +571,6 @@ function createSettings(): Settings {
       key: 'recentDestinations',
       updatesPreview: false,
     },
-    // <if expr="is_chromeos">
     pin: {
       value: false,
       unavailableValue: false,
@@ -615,7 +593,6 @@ function createSettings(): Settings {
       key: 'pinValue',
       updatesPreview: false,
     },
-    // </if>
   };
 }
 
@@ -822,7 +799,6 @@ export class PrintPreviewModelElement extends PolymerElement {
    * @param duplexShortEdgePolicyDefault DuplexShortEdge value policy default.
    * @param caps Capabilities of a printing destination.
    */
-  // <if expr="is_chromeos">
   private getDuplexPolicyDefaultValueAvailable_(
       duplexPolicyDefault: boolean|undefined,
       duplexShortEdgePolicyDefault: boolean|undefined): boolean {
@@ -844,7 +820,6 @@ export class PrintPreviewModelElement extends PolymerElement {
 
     return this.destination.supportsDuplex(defaultPolicyDuplexType);
   }
-  // </if>
 
   /**
    * Updates the availability of the settings sections and values of various
@@ -896,12 +871,10 @@ export class PrintPreviewModelElement extends PolymerElement {
     this.setSettingPath_(
         'vendorItems.available', !!caps && !!caps.vendor_capability);
 
-    // <if expr="is_chromeos">
     const pinSupported = !!caps && !!caps.pin && !!caps.pin.supported &&
         loadTimeData.getBoolean('isEnterpriseManaged');
     this.set('settings.pin.available', pinSupported);
     this.set('settings.pinValue.available', pinSupported);
-    // </if>
 
     if (this.documentSettings) {
       this.updateSettingsAvailabilityFromDestinationAndDocumentSettings_();
@@ -1037,19 +1010,7 @@ export class PrintPreviewModelElement extends PolymerElement {
   private isRasterizeAvailable_(): boolean {
     // Only a possibility for PDFs.  Always available for PDFs on Linux and
     // ChromeOS.  crbug.com/675798
-    let available =
-        !!this.documentSettings && !this.documentSettings.isModifiable;
-
-    // <if expr="is_win or is_macosx">
-    // Availability on Windows or macOS depends upon policy.
-    if (!available || !this.policySettings_) {
-      return false;
-    }
-    const policy = this.policySettings_['printPdfAsImageAvailability'];
-    available = policy !== undefined && policy.value;
-    // </if>
-
-    return available;
+    return !!this.documentSettings && !this.documentSettings.isModifiable;
   }
 
   private isLayoutAvailable_(caps: CddCapabilities|null): boolean {
@@ -1167,15 +1128,11 @@ export class PrintPreviewModelElement extends PolymerElement {
 
     // Duplex policy is available on ChromeOS only. Therefore, we don't need to
     // check printing destinations' duplex availability on other platforms.
-    // <if expr="is_chromeos">
     const duplexPolicyDefaultValueAvailable =
         this.getDuplexPolicyDefaultValueAvailable_(
             this.getSetting('duplex').policyDefaultValue,
             this.getSetting('duplexShortEdge').policyDefaultValue);
-    // </if>
-    // <if expr="not is_chromeos">
-    const duplexPolicyDefaultValueAvailable = false;
-    // </if>
+
     if (!this.settings.duplex.setFromUi && this.settings.duplex.available &&
         !duplexPolicyDefaultValueAvailable) {
       const defaultOption = caps.duplex!.option.find(o => !!o.is_default);
@@ -1309,9 +1266,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     // to free up these spots for supported printers.
     const unsupportedOrigins: DestinationOrigin[] = [
       DestinationOrigin.COOKIES,
-      // <if expr="is_chromeos">
       DestinationOrigin.DEVICE,
-      // </if>
       DestinationOrigin.PRIVET,
     ];
     recentDestinations = recentDestinations.filter((d: RecentDestination) => {
@@ -1381,7 +1336,6 @@ export class PrintPreviewModelElement extends PolymerElement {
         }
         break;
       }
-      // <if expr="is_chromeos">
       case 'color': {
         const value = allowedMode ? allowedMode : defaultMode;
         if (value !== undefined) {
@@ -1409,18 +1363,6 @@ export class PrintPreviewModelElement extends PolymerElement {
         }
         break;
       }
-      // </if>
-      // <if expr="is_win or is_macosx">
-      case 'printPdfAsImageAvailability': {
-        const value = allowedMode !== undefined ? allowedMode : defaultMode;
-        if (value !== undefined) {
-          this.setPolicySetting_(
-              settingName, value, /*managed=*/ false,
-              /*applyOnDestinationUpdate=*/ false);
-        }
-        break;
-      }
-      // </if>
       case 'printPdfAsImage': {
         if (defaultMode !== undefined) {
           this.setPolicySetting_(
@@ -1451,7 +1393,6 @@ export class PrintPreviewModelElement extends PolymerElement {
       const allowedMode = policiesObject[settingName].allowedMode;
       this.configurePolicySetting_(settingName, allowedMode, defaultMode);
     });
-    // <if expr="is_chromeos">
     if (policiesObject['sheets']) {
       if (!this.policySettings_) {
         this.policySettings_ = {};
@@ -1470,17 +1411,6 @@ export class PrintPreviewModelElement extends PolymerElement {
       const allowedMode = policiesObject[settingName].allowedMode;
       this.configurePolicySetting_(settingName, allowedMode, defaultMode);
     });
-    // </if>
-    // <if expr="is_win or is_macosx">
-    if (policies['printPdfAsImageAvailability']) {
-      if (!this.policySettings_) {
-        this.policySettings_ = {};
-      }
-      const allowedMode = policies['printPdfAsImageAvailability'].allowedMode;
-      this.configurePolicySetting_(
-          'printPdfAsImageAvailability', allowedMode, /*defaultMode=*/ false);
-    }
-    // </if>
     if (policies['printPdfAsImage']) {
       if (!this.policySettings_) {
         this.policySettings_ = {};
@@ -1546,7 +1476,6 @@ export class PrintPreviewModelElement extends PolymerElement {
       for (const [settingName, policy] of Object.entries(
                this.policySettings_)) {
         const policyEntry = policy as PolicyEntry;
-        // <if expr="is_chromeos">
         if (settingName === 'sheets') {
           this.maxSheets = policyEntry.value;
           continue;
@@ -1595,17 +1524,6 @@ export class PrintPreviewModelElement extends PolymerElement {
           this.set('settings.pin.setByGlobalPolicy', policyEntry.managed);
           continue;
         }
-        // </if>
-        // <if expr="is_win or is_macosx">
-        if (settingName === 'printPdfAsImageAvailability') {
-          this.updateRasterizeAvailable_();
-          if (this.settings.rasterize.available) {
-            // If rasterize is available then otherOptions must be available.
-            this.setSettingPath_('otherOptions.available', true);
-          }
-          continue;
-        }
-        // </if>
         if (settingName === 'printPdfAsImage') {
           if (policyEntry.value) {
             this.setSetting('rasterize', policyEntry.value, true);
@@ -1888,13 +1806,11 @@ export class PrintPreviewModelElement extends PolymerElement {
       }
     }
 
-    // <if expr="is_chromeos">
     if (loadTimeData.getBoolean(
             'isUseManagedPrintJobOptionsInPrintPreviewEnabled')) {
       this.applyDestinationManagedJobOptionsDefaults_();
       this.updateSetByDestinationPolicyProperties_();
     }
-    // </if>
 
     this.updateManaged_();
   }
@@ -1902,21 +1818,17 @@ export class PrintPreviewModelElement extends PolymerElement {
   private updateManaged_() {
     let managedSettings: Array<keyof Settings> =
         ['cssBackground', 'headerFooter'];
-    // <if expr="is_chromeos">
     managedSettings =
         managedSettings.concat(['color', 'duplex', 'duplexShortEdge', 'pin']);
-    // </if>
     this.settingsManaged = managedSettings.some(settingName => {
       const setting = this.getSetting(settingName);
       return setting.available && setting.setByGlobalPolicy;
     });
 
-    // <if expr="is_chromeos">
     if (this.destination) {
       this.settingsManaged = this.settingsManaged ||
           this.destination.allowedManagedPrintOptionsAppliedForAnySetting();
     }
-    // </if>
   }
 
   initialized(): boolean {
@@ -2004,11 +1916,9 @@ export class PrintPreviewModelElement extends PolymerElement {
       pageWidth: this.pageSize.width,
       pageHeight: this.pageSize.height,
       showSystemDialog: showSystemDialog,
-      // <if expr="is_chromeos">
       printToGoogleDrive:
           destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS,
       printerManuallySelected: destination.printerManuallySelected,
-      // </if>
     };
 
     if (openPdfInPreview) {
@@ -2026,7 +1936,6 @@ export class PrintPreviewModelElement extends PolymerElement {
       ticket['capabilities'] = JSON.stringify(destination.capabilities);
     }
 
-    // <if expr="is_chromeos">
     if (this.getSettingValue('pin')) {
       ticket['pinValue'] = this.getSettingValue('pinValue');
     }
@@ -2035,7 +1944,6 @@ export class PrintPreviewModelElement extends PolymerElement {
       ticket['printerStatusReason'] =
           destination.printerStatusReason || PrinterStatusReason.UNKNOWN_REASON;
     }
-    // </if>
 
     return JSON.stringify(ticket);
   }

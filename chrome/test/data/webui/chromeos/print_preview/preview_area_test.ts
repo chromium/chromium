@@ -4,19 +4,15 @@
 
 import type {PrintPreviewPreviewAreaElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, Error, Margins, MeasurementSystem, MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, PreviewAreaState, Size, State} from 'chrome://print/print_preview.js';
-// <if expr="is_chromeos">
 // clang-format off
 import {PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
 // clang-format on
-// </if>
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
-// <if expr="is_chromeos">
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import type {NativeLayerCrosStub} from './native_layer_cros_stub.js';
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate} from './print_preview_test_utils.js';
@@ -29,9 +25,7 @@ suite('PreviewAreaTest', function() {
 
   let pluginProxy: TestPluginProxy;
 
-  // <if expr="is_chromeos">
   let nativeLayerCros: NativeLayerCrosStub;
-  // </if>
 
   setup(function() {
     nativeLayer = new NativeLayerStub();
@@ -39,9 +33,7 @@ suite('PreviewAreaTest', function() {
     nativeLayer.setPageCount(3);
     pluginProxy = new TestPluginProxy();
     PluginProxyImpl.setInstance(pluginProxy);
-    // <if expr="is_chromeos">
     nativeLayerCros = setNativeLayerCrosInstance();
-    // </if>
 
     setupPreviewElement();
   });
@@ -111,7 +103,6 @@ suite('PreviewAreaTest', function() {
     });
   });
 
-  // <if expr="is_chromeos">
   /**
    * Validate some preview area state transitions work as expected on CrOS with
    * Printer Setup Assistance flag enabled.
@@ -202,7 +193,6 @@ suite('PreviewAreaTest', function() {
           assertEquals(0, call[1]);
         });
   });
-  // </if>
 
   /** Validate preview area sets tabindex correctly based on viewport size. */
   test('ViewportSizeChanges', function() {

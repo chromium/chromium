@@ -20,9 +20,7 @@ suite('ButtonStripTest', function() {
     buttonStrip.state = State.READY;
     // No max sheets limit is specified.
     buttonStrip.maxSheets = 0;
-    // <if expr="is_chromeos">
     buttonStrip.isPinValid = true;
-    // </if>
     document.body.appendChild(buttonStrip);
   });
 
@@ -64,15 +62,8 @@ suite('ButtonStripTest', function() {
     const cancelButton =
         buttonStrip.shadowRoot!.querySelector('cr-button.cancel-button');
 
-    // <if expr="is_win">
-    // On Windows, the print button is on the left.
-    assertEquals(firstButton, printButton);
-    assertEquals(lastButton, cancelButton);
-    // </if>
-    // <if expr="not is_win">
     assertEquals(firstButton, cancelButton);
     assertEquals(lastButton, printButton);
-    // </if>
   });
 
   // Tests that the button strip fires print-requested and cancel-requested
@@ -93,7 +84,6 @@ suite('ButtonStripTest', function() {
     });
   });
 
-  // <if expr="is_chromeos">
   // Tests having an invalid pin disable the print button
   test('InvalidPinDisablesPrint', function() {
     const printButton = buttonStrip.shadowRoot!.querySelector<CrButtonElement>(
@@ -103,5 +93,4 @@ suite('ButtonStripTest', function() {
     buttonStrip.isPinValid = false;
     assertTrue(printButton.disabled);
   });
-  // </if>
 });

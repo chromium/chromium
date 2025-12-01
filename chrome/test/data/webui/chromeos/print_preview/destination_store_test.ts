@@ -3,28 +3,13 @@
 // found in the LICENSE file.
 
 import type {DestinationStore, LocalDestinationInfo, NativeInitialSettings} from 'chrome://print/print_preview.js';
-import {Destination, DestinationErrorType, DestinationOrigin, DestinationStoreEventType, GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl,
-        // <if expr="is_chromeos">
-        PrinterStatusReason, PrinterStatusSeverity,
-        // </if>
-        PrinterType} from 'chrome://print/print_preview.js';
-// <if expr="not is_chromeos">
-import type {RecentDestination} from 'chrome://print/print_preview.js';
-// </if>
-
-// <if expr="is_chromeos">
+import {Destination, DestinationErrorType, DestinationOrigin, DestinationStoreEventType, GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl, PrinterStatusReason, PrinterStatusSeverity, PrinterType} from 'chrome://print/print_preview.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-// </if>
-// <if expr="not is_chromeos">
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// </if>
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-// <if expr="is_chromeos">
 import type {NativeLayerCrosStub} from './native_layer_cros_stub.js';
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getCddTemplate, getDefaultInitialSettings, getDestinations, getSaveAsPdfDestination, setupTestListenerElement} from './print_preview_test_utils.js';
 
@@ -33,9 +18,7 @@ suite('DestinationStoreTest', function() {
 
   let nativeLayer: NativeLayerStub;
 
-  // <if expr="is_chromeos">
   let nativeLayerCros: NativeLayerCrosStub;
-  // </if>
 
   let initialSettings: NativeInitialSettings;
 
@@ -53,9 +36,7 @@ suite('DestinationStoreTest', function() {
 
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
     nativeLayerCros = setNativeLayerCrosInstance();
-    // </if>
 
     initialSettings = getDefaultInitialSettings();
     localDestinations = [];
@@ -201,13 +182,7 @@ suite('DestinationStoreTest', function() {
           // The other local destinations should be in the store, but only one
           // should have been selected so there was only one preview request.
           const reportedPrinters = destinationStore.destinations();
-          const expectedPrinters =
-              // <if expr="is_chromeos">
-              7;
-          // </if>
-          // <if expr="not is_chromeos">
-          6;
-          // </if>
+          const expectedPrinters = 7;
           assertEquals(expectedPrinters, reportedPrinters.length);
           destinations.forEach(destination => {
             assertTrue(reportedPrinters.some(p => p.id === destination.id));
@@ -234,45 +209,6 @@ suite('DestinationStoreTest', function() {
           assertEquals('ID4', destinationStore.selectedDestination!.id);
         });
       });
-
-  // <if expr="not is_chromeos">
-  /**
-   * Tests that if the system default printer policy is enabled the system
-   * default printer is automatically selected even if the user has recent
-   * destinations.
-   */
-  test(
-      'SystemDefaultPrinterPolicy', function() {
-        // Set the policy in loadTimeData.
-        loadTimeData.overrideValues({useSystemDefaultPrinter: true});
-
-        // Setup some recent destinations to ensure they are not selected.
-        const recentDestinations: RecentDestination[] = [];
-        destinations.slice(0, 3).forEach(destination => {
-          recentDestinations.push(makeRecentDestination(destination));
-        });
-
-        initialSettings.serializedAppStateStr = JSON.stringify({
-          version: 2,
-          recentDestinations: recentDestinations,
-        });
-
-        return Promise
-            .all([
-              setInitialSettings(false),
-              eventToPromise(
-                  DestinationStoreEventType
-                      .SELECTED_DESTINATION_CAPABILITIES_READY,
-                  destinationStore),
-            ])
-            .then(() => {
-              // Need to load FooDevice as the printer, since it is the system
-              // default.
-              assertEquals(
-                  'FooDevice', destinationStore.selectedDestination!.id);
-            });
-      });
-  // </if>
 
   /**
    * Tests that if there is no system default destination, the default
@@ -425,17 +361,14 @@ suite('DestinationStoreTest', function() {
       destinationStore.selectDestination(printer1);
       assertEquals(2, numPrintersSelected);
 
-      // <if expr="is_chromeos">
       // Selecting that same destination on CrOS with the `refreshDestination`
       // parameter triggers a selection.
       destinationStore.selectDestination(
           printer1, /*refreshDestination=*/ true);
       assertEquals(3, numPrintersSelected);
-      // </if>
     });
   });
 
-  // <if expr="is_chromeos">
   /** Tests that the SAVE_TO_DRIVE_CROS destination is loaded on Chrome OS. */
   test(
       'LoadSaveToDriveCros', function() {
@@ -649,5 +582,4 @@ suite('DestinationStoreTest', function() {
           assertFalse(e.detail.nowOnline);
         });
   });
-  // </if>
 });

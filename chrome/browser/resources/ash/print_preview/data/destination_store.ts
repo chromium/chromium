@@ -8,30 +8,21 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {CapabilitiesResponse, NativeLayer} from '../native_layer.js';
 import {NativeLayerImpl} from '../native_layer.js';
-// <if expr="is_chromeos">
 import type {NativeLayerCros, PrinterSetupResponse} from '../native_layer_cros.js';
 import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 
-// </if>
 import type {Cdd, MediaSizeOption} from './cdd.js';
 
-// <if expr="not is_chromeos">
-import type {RecentDestination} from './destination.js';
-import {createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, isPdfPrinter, PDF_DESTINATION_KEY, PrinterType} from './destination.js';
-// </if>
-// <if expr="is_chromeos">
+
 import type {RecentDestination} from './destination_cros.js';
 import {createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, DestinationProvisionalType, GooglePromotedDestinationId, isPdfPrinter, PDF_DESTINATION_KEY, PrinterType} from './destination_cros.js';
-// </if>
 
 import {DestinationMatch} from './destination_match.js';
 import type {ExtensionDestinationInfo, LocalDestinationInfo} from './local_parsers.js';
 import {parseDestination} from './local_parsers.js';
 
-// <if expr="is_chromeos">
 import {parseExtensionDestination} from './local_parsers.js';
 import {getStatusReasonFromPrinterStatus, PrinterStatusReason} from './printer_status_cros.js';
-// </if>
 
 /**
  * Printer search statuses used by the destination store.
@@ -162,11 +153,9 @@ export enum DestinationStoreEventType {
   ERROR = 'DestinationStore.ERROR',
   SELECTED_DESTINATION_CAPABILITIES_READY = 'DestinationStore' +
       '.SELECTED_DESTINATION_CAPABILITIES_READY',
-  // <if expr="is_chromeos">
   DESTINATION_EULA_READY = 'DestinationStore.DESTINATION_EULA_READY',
   DESTINATION_PRINTER_STATUS_UPDATE =
       'DestinationStore.DESTINATION_PRINTER_STATUS_UPDATE',
-  // </if>
 }
 
 export class DestinationStore extends EventTarget {
@@ -200,12 +189,10 @@ export class DestinationStore extends EventTarget {
    */
   private nativeLayer_: NativeLayer = NativeLayerImpl.getInstance();
 
-  // <if expr="is_chromeos">
   /**
    * Used to fetch information about Chrome OS local print destinations.
    */
   private nativeLayerCros_: NativeLayerCros = NativeLayerCrosImpl.getInstance();
-  // </if>
 
   /**
    * Whether PDF printer is enabled. It's disabled, for example, in App
@@ -266,12 +253,10 @@ export class DestinationStore extends EventTarget {
          printers: LocalDestinationInfo[]|ExtensionDestinationInfo[]) =>
             this.onPrintersAdded_(type, printers));
 
-    // <if expr="is_chromeos">
     addListenerCallback(
         'local-printers-updated',
         (printers: LocalDestinationInfo[]) =>
             this.onLocalPrintersUpdated_(printers));
-    // </if>
   }
 
   /**
@@ -327,12 +312,7 @@ export class DestinationStore extends EventTarget {
    */
   init(
       pdfPrinterDisabled: boolean,
-      // <if expr="is_chromeos">
       saveToDriveDisabled: boolean,
-      // </if>
-      // <if expr="not is_chromeos">
-      _saveToDriveDisabled: boolean,
-      // </if>
       systemDefaultDestinationId: string,
       serializedDefaultDestinationSelectionRulesStr: string|null,
       recentDestinations: RecentDestination[]) {
@@ -341,14 +321,10 @@ export class DestinationStore extends EventTarget {
       const systemDefaultType = systemDefaultVirtual ?
           PrinterType.PDF_PRINTER :
           PrinterType.LOCAL_PRINTER;
-      // <if expr="not is_chromeos">
-      const systemDefaultOrigin = DestinationOrigin.LOCAL;
-      // </if>
-      // <if expr="is_chromeos">
+
       const systemDefaultOrigin = systemDefaultVirtual ?
           DestinationOrigin.LOCAL :
           DestinationOrigin.CROS;
-      // </if>
       this.systemDefaultDestinationKey_ =
           createDestinationKey(systemDefaultDestinationId, systemDefaultOrigin);
       this.typesToSearch_.add(systemDefaultType);
@@ -369,21 +345,17 @@ export class DestinationStore extends EventTarget {
 
     this.pdfPrinterEnabled_ = !pdfPrinterDisabled;
     this.createLocalPdfPrintDestination_();
-    // <if expr="is_chromeos">
     if (!saveToDriveDisabled) {
       this.createLocalDrivePrintDestination_();
     }
-    // </if>
 
     // Nothing recent, no system default ==> try to get a fallback printer as
     // destinationsInserted_ may never be called.
     if (this.typesToSearch_.size === 0) {
       this.tryToSelectInitialDestination_();
-      // <if expr="is_chromeos">
       // Start observing local printers if there is no attempt to load
       // destinations.
       this.observeLocalPrinters_();
-      // </if>
       return;
     }
 
@@ -512,7 +484,6 @@ export class DestinationStore extends EventTarget {
     this.tracker_.removeAll();
   }
 
-  // <if expr="is_chromeos">
   /**
    * Attempts to find the EULA URL of the the destination ID.
    */
@@ -535,7 +506,6 @@ export class DestinationStore extends EventTarget {
   reloadLocalPrinters(): Promise<void> {
     return this.nativeLayer_.getPrinters(PrinterType.LOCAL_PRINTER);
   }
-  // </if>
 
   /**
    * @return Creates rules matching previously selected destination.
@@ -591,12 +561,10 @@ export class DestinationStore extends EventTarget {
   selectDestinationByKey(key: string) {
     const success = this.tryToSelectDestinationByKey_(key);
     assert(success);
-    // <if expr="is_chromeos">
     if (success && this.selectedDestination_ &&
         this.selectedDestination_.type !== PrinterType.PDF_PRINTER) {
       this.selectedDestination_.printerManuallySelected = true;
     }
-    // </if>
   }
 
   /**
@@ -606,19 +574,11 @@ export class DestinationStore extends EventTarget {
    */
   selectDestination(
       destination: Destination, refreshDestination: boolean = false) {
-    // <if expr="not is_chromeos">
-    assert(!refreshDestination, 'refreshDestination for CrOS only');
-    if (destination === this.selectedDestination_) {
-      return;
-    }
-    // </if>
-    // <if expr="is_chromeos">
     // Do not re-select the same destination unless explicitly requesting it to
     // refetch the capabilities and reload the preview.
     if (destination === this.selectedDestination_ && !refreshDestination) {
       return;
     }
-    // </if>
 
     if (destination === null) {
       this.selectedDestination_ = null;
@@ -627,10 +587,8 @@ export class DestinationStore extends EventTarget {
       return;
     }
 
-    // <if expr="is_chromeos">
     assert(
         !destination.isProvisional, 'Unable to select provisonal destinations');
-    // </if>
 
     // Update and persist selected destination.
     this.selectedDestination_ = destination;
@@ -651,7 +609,6 @@ export class DestinationStore extends EventTarget {
     }
   }
 
-  // <if expr="is_chromeos">
   /**
    * Attempt to resolve the capabilities for a Chrome OS printer.
    */
@@ -694,7 +651,6 @@ export class DestinationStore extends EventTarget {
               return null;
             });
   }
-  // </if>
 
   /**
    * Selects the Save as PDF fallback if it is available. If not, selects the
@@ -757,7 +713,6 @@ export class DestinationStore extends EventTarget {
     return this.destinationMap_.get(key);
   }
 
-  // <if expr="is_chromeos">
   /**
    * Removes the provisional destination with ID |provisionalId| from
    * |destinationMap_| and |destinations_|.
@@ -771,7 +726,6 @@ export class DestinationStore extends EventTarget {
       return true;
     });
   }
-  // </if>
 
   /**
    * Inserts {@code destination} to the data store and dispatches a
@@ -880,7 +834,6 @@ export class DestinationStore extends EventTarget {
     }
   }
 
-  // <if expr="is_chromeos">
   /**
    * Creates a local Drive print destination.
    */
@@ -889,7 +842,6 @@ export class DestinationStore extends EventTarget {
         GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS, DestinationOrigin.LOCAL,
         loadTimeData.getString('printToGoogleDrive')));
   }
-  // </if>
 
   /**
    * Called when destination search is complete for some type of printer.
@@ -907,9 +859,7 @@ export class DestinationStore extends EventTarget {
       this.tryToSelectInitialDestination_();
     }
 
-    // <if expr="is_chromeos">
     this.observeLocalPrinters_();
-    // </if>
   }
 
   /**
@@ -951,10 +901,8 @@ export class DestinationStore extends EventTarget {
       }
       dest.capabilities = settingsInfo.capabilities;
       this.updateDestination_(dest);
-      // <if expr="is_chromeos">
       // Start the fetch for the PPD EULA URL.
       this.fetchEulaUrl(dest.id);
-      // </if>
     }
   }
 
@@ -991,7 +939,6 @@ export class DestinationStore extends EventTarget {
             parseDestination(type, printer)));
   }
 
-  // <if expr="is_chromeos">
   private observeLocalPrinters_() {
     this.nativeLayerCros_.observeLocalPrinters().then(
         (printers: LocalDestinationInfo[]) =>
@@ -1053,7 +1000,6 @@ export class DestinationStore extends EventTarget {
           },
         }));
   }
-  // </if>
 }
 
 /**

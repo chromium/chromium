@@ -35,7 +35,6 @@ export enum DuplexType {
   SHORT_EDGE = 'SHORT_EDGE',
 }
 
-// <if expr="is_chromeos">
 /**
  * Print quality values matching registered IPP values.
  */
@@ -44,7 +43,6 @@ export enum QualityIppValue {
   NORMAL = '4',
   HIGH = '5',
 }
-// </if>
 
 interface SelectCapability {
   option?: VendorCapabilitySelectOption[];
@@ -148,11 +146,9 @@ export type DpiCapability = {
   option: DpiOption[],
 }&CapabilityWithReset;
 
-// <if expr="is_chromeos">
 interface PinCapability {
   supported?: boolean;
 }
-// </if>
 
 
 /**
@@ -170,9 +166,7 @@ export interface CddCapabilities {
   media_size?: MediaSizeCapability;
   media_type?: MediaTypeCapability;
   dpi?: DpiCapability;
-  // <if expr="is_chromeos">
   pin?: PinCapability;
-  // </if>
 }
 
 /**

@@ -7,24 +7,15 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '/strings.m.js';
 
-// <if expr="is_chromeos">
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-// </if>
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// <if expr="is_chromeos">
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-// </if>
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="not is_chromeos">
-import type {Destination} from '../data/destination.js';
-import {PrinterType} from '../data/destination.js';
-// </if>
-// <if expr="is_chromeos">
+
 import type {Destination} from '../data/destination_cros.js';
 import {PrinterType} from '../data/destination_cros.js';
-// </if>
 import {State} from '../data/state.js';
 
 import {getTemplate} from './button_strip.html.js';
@@ -63,14 +54,12 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
         },
       },
 
-      // <if expr="is_chromeos">
       errorMessage_: {
         type: String,
         observer: 'errorMessageChanged_',
       },
 
       isPinValid: Boolean,
-      // </if>
     };
   }
 
@@ -78,10 +67,8 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     return [
       'updatePrintButtonLabel_(destination.id)',
       'updatePrintButtonEnabled_(state, destination.id, maxSheets, sheetCount)',
-      // <if expr="is_chromeos">
       'updatePrintButtonEnabled_(isPinValid)',
       'updateErrorMessage_(state, destination.id, maxSheets, sheetCount)',
-      // </if>
 
     ];
   }
@@ -91,14 +78,10 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
   maxSheets: number;
   sheetCount: number;
   state: State;
-  // <if expr="is_chromeos">
   isPinValid: boolean;
-  // </if>
   private printButtonEnabled_: boolean;
   private printButtonLabel_: string;
-  // <if expr="is_chromeos">
   private errorMessage_: string;
-  // </if>
 
   private lastState_: State = State.NOT_READY;
 
@@ -131,12 +114,8 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
         this.printButtonEnabled_ = false;
         break;
       case (State.READY):
-        // <if expr="is_chromeos">
         this.printButtonEnabled_ = !this.printButtonDisabled_();
-        // </if>
-        // <if expr="not is_chromeos">
-        this.printButtonEnabled_ = true;
-        // </if>
+
         if (this.firstLoad || this.lastState_ === State.PRINTING) {
           this.shadowRoot!
               .querySelector<CrButtonElement>(
@@ -151,7 +130,6 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     this.lastState_ = this.state;
   }
 
-  // <if expr="is_chromeos">
 
   /**
    * This disables the print button if the sheets limit policy is violated or
@@ -201,7 +179,6 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
       getAnnouncerInstance().announce(this.errorMessage_);
     }
   }
-  // </if>
 }
 
 declare global {
