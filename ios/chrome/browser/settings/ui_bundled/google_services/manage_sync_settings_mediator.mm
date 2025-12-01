@@ -794,7 +794,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       break;
     case syncer::UserSelectableType::kPayments:
       itemType = PaymentsDataTypeItemType;
-      textStringID = IDS_SYNC_DATATYPE_PAYMENTS;
+      textStringID = IDS_SYNC_DATATYPE_PAYMENTS_AND_INFO;
       accessibilityIdentifier = kSyncPaymentsIdentifier;
       break;
     case syncer::UserSelectableType::kPreferences:

@@ -2011,12 +2011,8 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
       {"syncData", IDS_SETTINGS_SYNC_DATA},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-  html_source->AddLocalizedString(
-      "paymentsCheckboxLabel",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableLoyaltyCardsFilling)
-          ? IDS_SYNC_DATATYPE_PAYMENTS_AND_INFO
-          : IDS_SYNC_DATATYPE_PAYMENTS);
+  html_source->AddLocalizedString("paymentsCheckboxLabel",
+                                  IDS_SYNC_DATATYPE_PAYMENTS_AND_INFO);
 }
 
 void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
