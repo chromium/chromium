@@ -115,6 +115,11 @@
     "expiry_milestone": 139
   },
   {
+    "name": "aim-eligibility-refresh-ntp-modules",
+    "owners": [ "christianxu@chromium.org", "bling-search@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "aim-multiline-omnibox",
     "owners": ["christianxu@chromium.com", "stkhapugin@chromium.org"],
     "expiry_milestone": 145
@@ -153,6 +158,11 @@
     "name": "aim-server-eligibility-en",
     "owners": ["ameurhosni@google.com", "mahmadi@chromium.org"],
     "expiry_milestone": 145
+  },
+  {
+    "name": "aimntp-entrypoint-tablet",
+    "owners": [ "christianxu@chromium.org", "bling-search@google.com" ],
+    "expiry_milestone": 149
   },
   {
     "name": "align-wakeups",

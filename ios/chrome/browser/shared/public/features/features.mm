@@ -1237,3 +1237,16 @@ bool ShouldShowKeyboardAccessoryFeatures() {
       kDisableKeyboardAccessory, kDisableKeyboardAccessoryParam);
   return feature_param == kDisableKeyboardAccessoryOnlyFeatures;
 }
+
+BASE_FEATURE(kAIMNTPEntrypointTablet, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAIMNTPEntrypointTabletEnabled() {
+  return base::FeatureList::IsEnabled(kAIMNTPEntrypointTablet);
+}
+
+BASE_FEATURE(kAIMEligibilityRefreshNTPModules,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsAIMEligibilityRefreshNTPModulesEnabled() {
+  return base::FeatureList::IsEnabled(kAIMEligibilityRefreshNTPModules);
+}

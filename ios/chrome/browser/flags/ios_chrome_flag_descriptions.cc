@@ -15,6 +15,15 @@ const char kAIHubNewBadgeName[] = "AI Hub New Badge";
 const char kAIHubNewBadgeDescription[] =
     "Enables showing a new badge on the AI Hub button in the toolbar.";
 
+const char kAIMEligibilityRefreshNTPModulesName[] =
+    "AIMEligibilityRefreshNTPModules";
+const char kAIMEligibilityRefreshNTPModulesDescription[] =
+    "Enables the AIMEligibilityRefreshNTPModules feature.";
+
+const char kAIMNTPEntrypointTabletName[] = "AIMNTPEntrypointTablet";
+const char kAIMNTPEntrypointTabletDescription[] =
+    "Enables the AIMNTPEntrypointTablet feature.";
+
 const char kAIMPrototypeAutoattachTabName[] =
     "Automatically attach current tab within the AIM prototype";
 const char kAIMPrototypeAutoattachTabDescription[] =

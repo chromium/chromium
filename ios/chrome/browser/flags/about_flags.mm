@@ -2931,6 +2931,13 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kDisableKeyboardAccessory,
                                     kDisableKeyboardAccessoryVariations,
                                     "DisableKeyboardAccessoryVariations")},
+    {"aimntp-entrypoint-tablet", flag_descriptions::kAIMNTPEntrypointTabletName,
+     flag_descriptions::kAIMNTPEntrypointTabletDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAIMNTPEntrypointTablet)},
+    {"aim-eligibility-refresh-ntp-modules",
+     flag_descriptions::kAIMEligibilityRefreshNTPModulesName,
+     flag_descriptions::kAIMEligibilityRefreshNTPModulesDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAIMEligibilityRefreshNTPModules)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

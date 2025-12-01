@@ -1163,4 +1163,16 @@ bool ShouldShowKeyboardAccessorySymbols();
 // Returns true if lens and voice search can be shown in the keyboard accessory.
 bool ShouldShowKeyboardAccessoryFeatures();
 
+// Enables the AIMNTPEntrypointTablet feature.
+BASE_DECLARE_FEATURE(kAIMNTPEntrypointTablet);
+
+// Returns true if the AIMNTPEntrypointTablet feature is enabled.
+bool IsAIMNTPEntrypointTabletEnabled();
+
+// Enables the AIMEligibilityRefreshNTPModules feature.
+BASE_DECLARE_FEATURE(kAIMEligibilityRefreshNTPModules);
+
+// Returns true if the AIMEligibilityRefreshNTPModules feature is enabled.
+bool IsAIMEligibilityRefreshNTPModulesEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

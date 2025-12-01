@@ -22,6 +22,7 @@
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/image_fetcher/core/request_metadata.h"
 #import "components/ntp_tiles/pref_names.h"
+#import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -89,6 +90,7 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
 #import "skia/ext/skia_utils_ios.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -178,8 +180,12 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 @end
 
 @implementation NewTabPageMediator {
-  // The profile.
-  raw_ptr<ProfileIOS> _profile;
+  // AIM eligibility service.
+  raw_ptr<AimEligibilityService> _aimEligibilityService;
+  // AIM eligibility subscription.
+  base::CallbackListSubscription _aimEligibilitySubscription;
+  // Whether AIM is currently allowed.
+  BOOL _isAIMAllowed;
   // Listen for default search engine changes.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   // Observes changes in identity and updates the Identity Disc.
@@ -225,6 +231,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   raw_ptr<feature_engagement::Tracker, DanglingUntriaged> _tracker;
   // Tracks whether the NTP was ever in landscape.
   BOOL _wasNTPInLandscape;
+  // Whether the mediator has been set up.
+  BOOL _mediatorSetUp;
 }
 
 // Synthesized from NewTabPageMutator.
@@ -257,7 +265,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     discoverFeedVisibilityBrowserAgent:
         (DiscoverFeedVisibilityBrowserAgent*)discoverFeedVisibilityBrowserAgent
               featureEngagementTracker:(feature_engagement::Tracker*)tracker
-                               profile:(ProfileIOS*)profile {
+                 aimEligibilityService:
+                     (AimEligibilityService*)aimEligibilityService {
   self = [super init];
   if (self) {
     CHECK(identityManager);
@@ -292,7 +301,15 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     _signedInIdentity =
         _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
     _tracker = tracker;
-    _profile = profile;
+    _aimEligibilityService = aimEligibilityService;
+    if (_aimEligibilityService) {
+      __weak __typeof(self) weakSelf = self;
+      _aimEligibilitySubscription =
+          _aimEligibilityService->RegisterEligibilityChangedCallback(
+              base::BindRepeating(^(void) {
+                [weakSelf updateAIMAvailability];
+              }));
+    }
   }
   return self;
 }
@@ -375,9 +392,11 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             _backgroundCustomizationService, self);
   }
   [self updateAIMAvailability];
+  _mediatorSetUp = YES;
 }
 
 - (void)shutdown {
+  _mediatorSetUp = NO;
   _browserViewVisibilityNotifierBrowserAgent->RemoveObserver(
       _browserViewVisibilityObserverBridge.get());
   _discoverFeedVisibilityBrowserAgent->RemoveObserver(
@@ -394,7 +413,9 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   _syncService = nullptr;
   _regionalCapabilitiesService = nullptr;
   _identityManager = nullptr;
-  _profile = nullptr;
+  _aimEligibilitySubscription = {};
+  _aimEligibilityService = nullptr;
+  _isAIMAllowed = NO;
   self.feedControlDelegate = nil;
   _backgroundCustomizationServiceObserverBridge = nullptr;
   _backgroundCustomizationService = nullptr;
@@ -545,9 +566,25 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 #pragma mark - Private
 
 - (void)updateAIMAvailability {
-  BOOL aimAllowed = IsAIMAvailable(_profile);
+  BOOL aimAllowed = NO;
+  if (_aimEligibilityService) {
+    aimAllowed = _aimEligibilityService->IsAimEligible();
+  }
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+    aimAllowed = aimAllowed && IsAIMNTPEntrypointTabletEnabled();
+  }
+
   [self.consumer setAIMAllowed:aimAllowed];
   [self.headerConsumer setAIMAllowed:aimAllowed];
+
+  if (aimAllowed == _isAIMAllowed) {
+    return;
+  }
+  _isAIMAllowed = aimAllowed;
+  // Only update the modules if the mediator has already been set up.
+  if (IsAIMEligibilityRefreshNTPModulesEnabled() && _mediatorSetUp) {
+    [self.NTPContentDelegate updateModuleVisibility];
+  }
 }
 
 // Fetches and update user's avatar on NTP, or use default avatar if user is
