@@ -9,14 +9,20 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/files/file.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
+#import "base/functional/callback_helpers.h"
+#import "base/ios/block_types.h"
+#import "base/location.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/uuid.h"
+#import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_media_item.h"
+#import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_picker_result_loader.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_controller.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_controller_observer_bridge.h"
@@ -132,6 +138,8 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
   NSSet<NSString*>* _acceptedMediaTypes;
   NSArray<NSString*>* _acceptedMediaTypesAvailableForCamera;
   NSArray<UTType*>* _acceptedDocumentTypes;
+  web::WebStateID _webStateID;
+  std::unique_ptr<FileUploadPanelPickerResultLoader> _pickerResultLoader;
 }
 
 #pragma mark - Initialization
@@ -148,6 +156,8 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
         _chooseFileControllerObserverBridge.get());
     _chooseFileControllerObservation->Observe(controller);
     _eventCaptureType = _chooseFileController->GetChooseFileEvent().capture;
+    _webStateID = _chooseFileController->GetChooseFileEvent()
+                      .web_state->GetUniqueIdentifier();
   }
   return self;
 }
@@ -295,16 +305,10 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
   CHECK_NE(nil, image)
       << "FileUploadPanelMediator: Image should have image data.";
 
-  web::WebState* webState = self.event.web_state.get();
-  if (!webState) {
-    [self cancelFileSelection];
-    return;
-  }
-  web::WebStateID webStateID = webState->GetUniqueIdentifier();
   __weak __typeof(self) weakSelf = self;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(WriteImageToTemporaryLocationForTab, image, webStateID),
+      base::BindOnce(WriteImageToTemporaryLocationForTab, image, _webStateID),
       base::BindOnce(^(std::optional<base::FilePath> imageFilePath) {
         [weakSelf submitFileSelectionWithImageFilePath:imageFilePath];
       }));
@@ -312,7 +316,7 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
 
 - (void)submitFileSelectionWithPickerResults:
     (NSArray<PHPickerResult*>*)results {
-  // TODO(crbug.com/441659098): Load and transcode picker results.
+  [self loadAndTranscodeAndSubmitPickerResults:results];
 }
 
 - (void)submitFileSelection:(NSArray<NSURL*>*)fileURLs {
@@ -331,6 +335,7 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
   // If the controller still exists when the UI is being disconnect, cancel the
   // selection.
   [self cancelFileSelection];
+  _pickerResultLoader.reset();
 }
 
 #pragma mark - ChooseFileControllerObserving
@@ -361,6 +366,30 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
   } else {
     [self cancelFileSelection];
   }
+}
+
+// Asynchronously loads, transcodes and submits picker results.
+- (void)loadAndTranscodeAndSubmitPickerResults:
+    (NSArray<PHPickerResult*>*)results {
+  __weak __typeof(self) weakSelf = self;
+  _pickerResultLoader =
+      std::make_unique<FileUploadPanelPickerResultLoader>(results, _webStateID);
+  _pickerResultLoader->Load(
+      base::BindOnce(^(NSArray<FileUploadPanelMediaItem*>* loadedItems) {
+        [weakSelf handlePickerResultLoaderOutput:loadedItems];
+      }));
+}
+
+// Submits the file selection for a list of transcoded items, if any.
+// Cancels file selection if `loadedItems` is nil.
+- (void)handlePickerResultLoaderOutput:
+    (NSArray<FileUploadPanelMediaItem*>*)loadedItems {
+  const auto loader = std::move(_pickerResultLoader);
+  if (!loadedItems) {
+    [self cancelFileSelection];
+    return;
+  }
+  // TODO(crbug.com/441659098): Transcode and submit media items.
 }
 
 @end
