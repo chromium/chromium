@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_GLOBAL_BROWSER_COLLECTION_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_GLOBAL_BROWSER_COLLECTION_H_
 
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation_traits.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
@@ -37,6 +40,9 @@ class GlobalBrowserCollection final : public BrowserCollection,
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
   void OnBrowserDeactivated(BrowserWindowInterface* browser) override;
+
+  // References to the global set of browsers in creation order.
+  std::vector<raw_ptr<BrowserWindowInterface>> browsers_creation_order_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_GLOBAL_BROWSER_COLLECTION_H_

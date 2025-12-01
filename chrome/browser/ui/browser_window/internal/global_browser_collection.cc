@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
+#include <algorithm>
+
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 
@@ -18,6 +20,7 @@ GlobalBrowserCollection::~GlobalBrowserCollection() = default;
 
 void GlobalBrowserCollection::OnBrowserCreated(
     BrowserWindowInterface* browser) {
+  browsers_creation_order_.push_back(browser);
   for (BrowserCollectionObserver& observer : observers()) {
     observer.OnBrowserCreated(browser);
   }
@@ -27,6 +30,7 @@ void GlobalBrowserCollection::OnBrowserClosed(BrowserWindowInterface* browser) {
   for (BrowserCollectionObserver& observer : observers()) {
     observer.OnBrowserClosed(browser);
   }
+  std::erase(browsers_creation_order_, browser);
 }
 
 void GlobalBrowserCollection::OnBrowserActivated(

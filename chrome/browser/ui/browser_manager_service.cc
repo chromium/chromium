@@ -43,15 +43,17 @@ void BrowserManagerService::DeleteBrowser(Browser* removed_browser) {
   // Extract the Browser from `browsers_and_subscriptions_` before deleting to
   // avoid UAF risk in the case of re-entrancy.
   std::optional<BrowserAndSubscriptions> target_browser_and_subscriptions;
-  for (BrowserAndSubscriptions& browser_and_subscriptions :
-       browsers_and_subscriptions_) {
-    if (browser_and_subscriptions.first.get() == removed_browser) {
-      target_browser_and_subscriptions = std::move(browser_and_subscriptions);
-      break;
-    }
-  }
-
-  if (!target_browser_and_subscriptions) {
+  auto it = std::ranges::find_if(
+      browsers_and_subscriptions_,
+      [&removed_browser](
+          const BrowserAndSubscriptions& browser_and_subscriptions) {
+        return browser_and_subscriptions.first.get() == removed_browser;
+      });
+  if (it != browsers_and_subscriptions_.end()) {
+    target_browser_and_subscriptions = std::move(*it);
+    browsers_and_subscriptions_.erase(it);
+  } else {
+    // `removed_browser` not present in `browsers_and_subscriptions_`.
     return;
   }
 
