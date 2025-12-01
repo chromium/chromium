@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 
 #include <cstdlib>
@@ -128,9 +123,9 @@ TEST(PartitionAllocAsMalloc, Calloc) {
   EXPECT_TRUE(data);
 
   char* zeroes[alloc_size];
-  memset(zeroes, 0, alloc_size);
+  PA_UNSAFE_TODO(memset(zeroes, 0, alloc_size));
 
-  EXPECT_EQ(0, memcmp(zeroes, data, alloc_size));
+  EXPECT_EQ(0, PA_UNSAFE_TODO(memcmp(zeroes, data, alloc_size)));
   PartitionAllocFunctions::Free(data, nullptr);
 }
 
@@ -140,9 +135,9 @@ TEST(PartitionAllocAsMalloc, CallocUnchecked) {
   EXPECT_TRUE(data);
 
   char* zeroes[alloc_size];
-  memset(zeroes, 0, alloc_size);
+  PA_UNSAFE_TODO(memset(zeroes, 0, alloc_size));
 
-  EXPECT_EQ(0, memcmp(zeroes, data, alloc_size));
+  EXPECT_EQ(0, PA_UNSAFE_TODO(memcmp(zeroes, data, alloc_size)));
   PartitionAllocFunctions::Free(data, nullptr);
 }
 

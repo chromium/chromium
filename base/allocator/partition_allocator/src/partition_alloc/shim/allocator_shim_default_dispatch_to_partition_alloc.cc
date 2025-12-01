@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 
 #include <atomic>
@@ -318,7 +313,7 @@ void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
   if (address) {
     size_t usage = partition_alloc::PartitionRoot::GetUsableSize(address);
     size_t copy_size = usage > size ? size : usage;
-    memcpy(new_ptr, address, copy_size);
+    PA_UNSAFE_TODO(memcpy(new_ptr, address, copy_size));
 
     partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
         address);
@@ -356,7 +351,7 @@ void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
   if (address) {
     size_t usage = partition_alloc::PartitionRoot::GetUsableSize(address);
     size_t copy_size = usage > size ? size : usage;
-    memcpy(new_ptr, address, copy_size);
+    PA_UNSAFE_TODO(memcpy(new_ptr, address, copy_size));
 
     partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
         address);
@@ -587,7 +582,7 @@ PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::BatchMalloc(
   // simple for now.
   for (unsigned i = 0; i < num_requested; i++) {
     // No need to check the results, we crash if it fails.
-    results[i] = Malloc(size, nullptr);
+    PA_UNSAFE_TODO(results[i]) = Malloc(size, nullptr);
   }
 
   // Either all succeeded, or we crashed.
@@ -602,7 +597,7 @@ void PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
   // No real batching: we could only acquire the lock once for instance, keep it
   // simple for now.
   for (unsigned i = 0; i < num_to_be_freed; i++) {
-    Free(to_be_freed[i], nullptr);
+    Free(PA_UNSAFE_TODO(to_be_freed[i]), nullptr);
   }
 }
 

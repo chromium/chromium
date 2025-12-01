@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // This empty.cc is built when use_allocator_shim is false to avoid
 // the situation: no object files are linked to build allocator_shim.dll.
 // If allocator_shim target's sources has only header files, no object

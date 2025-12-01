@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifdef PARTITION_ALLOC_SHIM_SHIM_ALLOC_FUNCTIONS_H_
 #error This header is meant to be included only once by allocator_shim*.cc
 #endif
