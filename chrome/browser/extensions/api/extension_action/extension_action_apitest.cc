@@ -1587,8 +1587,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, IsEnabled) {
 }
 
 // Tests that isEnabled correctly ignores declarativeContent rules for enable.
-// TODO(crbug.com/417786079): Enable this test on desktop Android when the
-// declarativeContent API is ported.
 IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, IsEnabledIgnoreDeclarative) {
   constexpr char kManifestTemplate[] =
       R"({
