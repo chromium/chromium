@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h"
 
+#import <PhotosUI/PhotosUI.h>
 #import <UIKit/UIKit.h>
 
 #import "base/metrics/histogram_functions.h"
@@ -25,6 +26,7 @@
     UIContextMenuInteractionDelegate,
     UINavigationControllerDelegate,
     UIDocumentPickerDelegate,
+    PHPickerViewControllerDelegate,
     UIImagePickerControllerDelegate,
     UIAdaptivePresentationControllerDelegate>
 
@@ -35,6 +37,7 @@
   ContextMenuPresenter* _contextMenuPresenter;
   UIImagePickerController* _cameraPicker;
   UIDocumentPickerViewController* _filePicker;
+  PHPickerViewController* _photoPicker;
 }
 
 #pragma mark - ChromeCoordinator
@@ -80,6 +83,7 @@
   [_mediator disconnect];
   _mediator = nil;
   [self hideFilePicker];
+  [self hidePhotoPicker];
   [self hideCamera];
   [self hideContextMenu];
 }
@@ -184,7 +188,7 @@
 
 - (void)doContextMenuInteractionEndAnimationCompletion {
   [self hideContextMenu];
-  if (!_cameraPicker && !_filePicker) {
+  if (!_cameraPicker && !_filePicker && !_photoPicker) {
     [_mediator cancelFileSelection];
   }
 }
@@ -267,8 +271,45 @@
 
 // Shows a photo picker to select one or several photos/videos on the device.
 - (void)showPhotoPicker {
-  // TODO(crbug.com/441659098): Show a photo picker.
-  [_mediator cancelFileSelection];
+  PHPickerConfiguration* configuration = [[PHPickerConfiguration alloc] init];
+  configuration.selectionLimit = _mediator.allowsMultipleSelection ? 0 : 1;
+  configuration.preferredAssetRepresentationMode =
+      PHPickerConfigurationAssetRepresentationModeCurrent;
+  if (_mediator.allowsImageSelection && !_mediator.allowsVideoSelection) {
+    configuration.filter = PHPickerFilter.imagesFilter;
+  } else if (_mediator.allowsVideoSelection &&
+             !_mediator.allowsImageSelection) {
+    configuration.filter = PHPickerFilter.videosFilter;
+  }
+
+  _photoPicker =
+      [[PHPickerViewController alloc] initWithConfiguration:configuration];
+  _photoPicker.delegate = self;
+  _photoPicker.presentationController.delegate = self;
+  [self.baseViewController presentViewController:_photoPicker
+                                        animated:YES
+                                      completion:nil];
+}
+
+- (void)hidePhotoPicker {
+  [_photoPicker.presentingViewController dismissViewControllerAnimated:YES
+                                                            completion:nil];
+  _photoPicker = nil;
+}
+
+#pragma mark - PHPickerViewControllerDelegate
+
+- (void)picker:(PHPickerViewController*)picker
+    didFinishPicking:(NSArray<PHPickerResult*>*)results {
+  base::UmaHistogramBoolean("IOS.FileUploadPanel.PhotoPicker.Result",
+                            results.count > 0);
+  if (results.count == 0) {
+    [_mediator cancelFileSelection];
+  } else {
+    base::UmaHistogramCounts100("IOS.FileUploadPanel.PhotoPicker.FileCount",
+                                results.count);
+    [_mediator submitFileSelectionWithPickerResults:results];
+  }
 }
 
 #pragma mark - Private (Camera)

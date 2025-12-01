@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_FILE_UPLOAD_PANEL_COORDINATOR_FILE_UPLOAD_PANEL_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
+#import <PhotosUI/PhotosUI.h>
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/web/model/choose_file/choose_file_util.h"
@@ -62,6 +63,8 @@ API_AVAILABLE(ios(18.4))
 // Submit a file selection according to media info from the camera.
 - (void)submitFileSelectionWithMediaInfo:
     (NSDictionary<UIImagePickerControllerInfoKey, id>*)info;
+// Submit a file selection according to picker results.
+- (void)submitFileSelectionWithPickerResults:(NSArray<PHPickerResult*>*)results;
 // Submit a list of file URLs as selection.
 - (void)submitFileSelection:(NSArray<NSURL*>*)fileURLs;
 // Cancels file selection.

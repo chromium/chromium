@@ -1097,4 +1097,52 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   chrome_test_util::GREYAssertErrorNil(error);
 }
 
+// Tests that cancelling the photo picker logs the correct metric.
+- (void)testPhotoPickerCancel {
+  // The file upload panel is only available on iOS 18.4+.
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
+  }
+
+  [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
+
+  // Tap the "Photo Library" action.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_FILE_UPLOAD_PANEL_PHOTO_LIBRARY_ACTION_LABEL)]
+      performAction:grey_tap()];
+
+  // Test context menu action variant histogram.
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       FileUploadPanelContextMenuActionVariant::kPhotoPicker)
+      forHistogram:@"IOS.FileUploadPanel.ContextMenuActionVariant"];
+  chrome_test_util::GREYAssertErrorNil(error);
+
+  // Interact with the out-of-process photo picker.
+  XCUIApplication* serviceApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.mobileslideshow.photospicker"];
+  GREYAssertTrue([serviceApp waitForState:XCUIApplicationStateRunningForeground
+                                  timeout:30],
+                 @"Photo picker did not launch");
+
+  [self forceTap:serviceApp.buttons[@"Cancel"].firstMatch];
+
+  // Check histograms.
+  [self waitForSubmittedFileCount:0];
+
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:0  // 0 for false (cancelled)
+      forHistogram:@"IOS.FileUploadPanel.PhotoPicker.Result"];
+  chrome_test_util::GREYAssertErrorNil(error);
+
+  // The file count histogram should not be recorded.
+  error = [MetricsAppInterface
+      expectTotalCount:0
+          forHistogram:@"IOS.FileUploadPanel.PhotoPicker.FileCount"];
+  chrome_test_util::GREYAssertErrorNil(error);
+}
+
 @end

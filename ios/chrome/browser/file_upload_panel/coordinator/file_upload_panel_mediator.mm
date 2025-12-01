@@ -332,6 +332,11 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
       }));
 }
 
+- (void)submitFileSelectionWithPickerResults:
+    (NSArray<PHPickerResult*>*)results {
+  // TODO(crbug.com/441659098): Load and transcode picker results.
+}
+
 - (void)submitFileSelection:(NSArray<NSURL*>*)fileURLs {
   if (_chooseFileController) {
     base::UmaHistogramCounts100("IOS.FileUploadPanel.SubmittedFileCount",
