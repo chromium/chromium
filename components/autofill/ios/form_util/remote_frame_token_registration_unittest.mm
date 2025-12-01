@@ -66,9 +66,10 @@ class RemoteFrameTokenRegistrationTest : public web::WebTestWithWebState {
     NewFrameCatcher* catcher_ptr = new_frame_catcher.get();
     EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
         kWaitForJSCompletionTimeout, ^bool {
-          return catcher_ptr->latest_new_frame() != nullptr;
+          return catcher_ptr->latest_new_frame_id().has_value();
         }));
-    return new_frame_catcher->latest_new_frame();
+    return web_frames_manager()->GetFrameWithId(
+        new_frame_catcher->latest_new_frame_id().value_or(""));
   }
 
   // Reads the remote frame token stored in the DOM of `frame`;

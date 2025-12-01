@@ -458,9 +458,10 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     NewFrameCatcher* catcher_ptr = &catcher;
     EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
         kWaitForJSCompletionTimeout, ^bool {
-          return !!catcher_ptr->latest_new_frame();
+          return !!catcher_ptr->latest_new_frame_id();
         }));
-    return catcher_ptr->latest_new_frame();
+    return web_frames_manager()->GetFrameWithId(
+        catcher.latest_new_frame_id().value_or(""));
   }
 
   // Wait for the browser form to be considered as completed (fully constructed)

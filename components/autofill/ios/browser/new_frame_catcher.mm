@@ -15,7 +15,7 @@ NewFrameCatcher::~NewFrameCatcher() = default;
 void NewFrameCatcher::WebFrameBecameAvailable(
     web::WebFramesManager* web_frames_manager,
     web::WebFrame* web_frame) {
-  latest_new_frame_ = web_frame;
+  latest_new_frame_id_ = web_frame->GetFrameId();
 }
 
 }  // namespace autofill::test
