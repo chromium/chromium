@@ -372,7 +372,7 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
 
     // Track result in chrome://webrtc-internals/.
     if (tracker && handler_) {
-      StringBuilder value;
+      StringBuilder result;
       if (action_ ==
           PeerConnectionTracker::kActionSetLocalDescriptionImplicit) {
         webrtc::SessionDescriptionInterface* created_session_description =
@@ -390,14 +390,17 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
         RTC_DCHECK(created_session_description);
         std::string sdp;
         created_session_description->ToString(&sdp);
-        value.Append("type: ");
-        value.Append(
-            webrtc::SdpTypeToString(created_session_description->GetType()));
-        value.Append(", sdp: ");
-        value.Append(sdp.c_str());
+
+        auto json = std::make_unique<JSONObject>();
+        json->SetString("type",
+                        String::FromUTF8(created_session_description->type()));
+        if (!sdp.empty()) {
+          json->SetString("sdp", String::FromUTF8(sdp));
+        }
+        json->WriteJSON(&result);
       }
       tracker->TrackSessionDescriptionCallback(handler_.get(), action_,
-                                               "OnSuccess", value.ToString());
+                                               "OnSuccess", result.ToString());
       handler_->TrackSignalingChange(signaling_state);
     }
 

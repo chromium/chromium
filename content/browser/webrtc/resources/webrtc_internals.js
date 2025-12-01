@@ -285,10 +285,18 @@ function addPeerConnectionUpdate(peerConnectionElement, update) {
   peerConnectionUpdateTable.addPeerConnectionUpdate(
       peerConnectionElement, update);
   peerConnectionDataStore[peerConnectionElement.id].addUpdate(update);
+  let value = undefined;
+  if (update.value.length) {
+    if (update.value[0] === '{') {
+      value = JSON.parse(update.value);
+    } else {
+      value = update.value;
+    }
+  }
   addRtcStatsEvent(
     update.type,
     getPeerConnectionId(update),
-    update.value.length > 0 ? JSON.parse(update.value) : undefined,
+    value,
     update.timestamp
   );
 }
