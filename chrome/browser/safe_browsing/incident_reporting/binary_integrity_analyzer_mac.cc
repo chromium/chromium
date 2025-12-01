@@ -131,4 +131,4 @@ void VerifyBinaryIntegrity(
   }
 }
 
-}  // namespace
+}  // namespace safe_browsing
