@@ -14,6 +14,7 @@
 #include "base/check_deref.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
 #include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
@@ -113,31 +114,22 @@ void PasskeyBrowserBinder::UnboundKey::MarkKeyBoundAndReset() {
   browser_bound_key_id_.clear();
 }
 
-std::optional<PasskeyBrowserBinder::UnboundKey>
-PasskeyBrowserBinder::CreateUnboundKey(
-    const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms) {
+void PasskeyBrowserBinder::CreateUnboundKey(
+    const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms,
+    base::OnceCallback<void(std::optional<UnboundKey>)> callback) {
   // Creates a new random identifier when new browser bound keys are
   // constructed. The returned value is used as the identifier for the browser
   // bound key to be created. The identifier is expected to be sufficiently
   // random to avoid collisions on chrome profile on one device.
-  std::vector<uint8_t> browser_bound_key_id =
-      random_bytes_as_vector_callback_.Run(kBrowserBoundKeyIdLength);
-  std::unique_ptr<BrowserBoundKey> browser_bound_key =
-      key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
-          browser_bound_key_id, allowed_algorithms);
-  RecordCreationOrRetrieval(
-      /*is_creation=*/true,
-      /*did_succeed=*/!!browser_bound_key);
-  if (!browser_bound_key) {
-    return std::nullopt;
-  }
-
-  // The BBK ID might be different from the requested one so update to the
-  // ID from the returned BBK as it will be the source of truth.
-  browser_bound_key_id = browser_bound_key->GetIdentifier();
-
-  return PasskeyBrowserBinder::UnboundKey(
-      browser_bound_key_id, std::move(browser_bound_key), key_store_);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+      base::BindOnce(
+          &BrowserBoundKeyStore::GetOrCreateBrowserBoundKeyForCredentialId,
+          key_store_,
+          random_bytes_as_vector_callback_.Run(kBrowserBoundKeyIdLength),
+          allowed_algorithms),
+      base::BindOnce(&PasskeyBrowserBinder::OnCreateUnboundKey,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PasskeyBrowserBinder::BindKey(UnboundKey key,
@@ -246,11 +238,22 @@ void PasskeyBrowserBinder::GetBrowserBoundKey(
     std::move(callback).Run(nullptr);
     return;
   }
-  // The BBK is only retrieved: With an empty `allowed_algorithms` no BBK will
+
+  // The BBK is only retrieved: With an empty `CredentialInfoList` no BBK will
   // be created.
-  std::unique_ptr<BrowserBoundKey> browser_bound_key =
-      key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
-          existing_browser_bound_key_id, /*allowed_algorithms=*/{});
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+      base::BindOnce(
+          &BrowserBoundKeyStore::GetOrCreateBrowserBoundKeyForCredentialId,
+          key_store_, existing_browser_bound_key_id,
+          BrowserBoundKeyStore::CredentialInfoList{}),
+      base::BindOnce(&PasskeyBrowserBinder::OnGetBrowserBoundKey,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void PasskeyBrowserBinder::OnGetBrowserBoundKey(
+    base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback,
+    std::unique_ptr<BrowserBoundKey> browser_bound_key) {
   RecordCreationOrRetrieval(
       /*is_creation=*/false,
       /*did_succeed=*/!!browser_bound_key);
@@ -269,9 +272,26 @@ void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
     browser_bound_key_id =
         random_bytes_as_vector_callback_.Run(kBrowserBoundKeyIdLength);
   }
-  std::unique_ptr<BrowserBoundKey> browser_bound_key =
-      key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
-          browser_bound_key_id, allowed_algorithms);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+      base::BindOnce(
+          &BrowserBoundKeyStore::GetOrCreateBrowserBoundKeyForCredentialId,
+          key_store_, browser_bound_key_id, allowed_algorithms),
+      base::BindOnce(&PasskeyBrowserBinder::OnGetOrCreateBrowserBoundKey,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(needs_to_be_created), std::move(credential_id),
+                     std::move(relying_party), std::move(last_used),
+                     std::move(callback)));
+}
+
+void PasskeyBrowserBinder::OnGetOrCreateBrowserBoundKey(
+    bool needs_to_be_created,
+    std::vector<uint8_t> credential_id,
+    std::string relying_party,
+    std::optional<base::Time> last_used,
+    base::OnceCallback<void(bool, std::unique_ptr<BrowserBoundKey>)> callback,
+    std::unique_ptr<BrowserBoundKey> browser_bound_key) {
   if (needs_to_be_created && browser_bound_key) {
     BindKey(UnboundKey(browser_bound_key->GetIdentifier(),
                        /*browser_bound_key=*/{}, key_store_),
@@ -282,6 +302,22 @@ void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
                             /*did_succeed=*/!!browser_bound_key);
   std::move(callback).Run(/*is_new=*/needs_to_be_created,
                           std::move(browser_bound_key));
+}
+
+void PasskeyBrowserBinder::OnCreateUnboundKey(
+    base::OnceCallback<void(std::optional<UnboundKey>)> callback,
+    std::unique_ptr<BrowserBoundKey> browser_bound_key) {
+  RecordCreationOrRetrieval(
+      /*is_creation=*/true,
+      /*did_succeed=*/!!browser_bound_key);
+  if (browser_bound_key) {
+    // Copy the BBK ID to avoid any use after move errors.
+    auto bbk_id = browser_bound_key->GetIdentifier();
+    std::move(callback).Run(PasskeyBrowserBinder::UnboundKey(
+        std::move(bbk_id), std::move(browser_bound_key), key_store_));
+  } else {
+    std::move(callback).Run(std::nullopt);
+  }
 }
 
 void PasskeyBrowserBinder::RecordCreationOrRetrieval(bool is_creation,

@@ -399,6 +399,10 @@ void SecurePaymentConfirmationApp::OnGetBrowserBoundKey(
       std::move(options),
       base::BindOnce(&SecurePaymentConfirmationApp::OnGetAssertion,
                      weak_ptr_factory_.GetWeakPtr(), delegate));
+
+  if (wait_for_get_bbk_for_tests_) {
+    std::move(wait_for_get_bbk_for_tests_).Run();
+  }
 }
 
 void SecurePaymentConfirmationApp::OnGetAssertion(

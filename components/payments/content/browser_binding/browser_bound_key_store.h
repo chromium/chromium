@@ -17,7 +17,8 @@ namespace payments {
 class BrowserBoundKey;
 
 // An interface for creating storing and retrieving browser bound keys.
-class BrowserBoundKeyStore : public base::RefCounted<BrowserBoundKeyStore> {
+class BrowserBoundKeyStore
+    : public base::RefCountedThreadSafe<BrowserBoundKeyStore> {
  public:
   using CredentialInfoList =
       std::vector<device::PublicKeyCredentialParams::CredentialInfo>;
@@ -56,7 +57,7 @@ class BrowserBoundKeyStore : public base::RefCounted<BrowserBoundKeyStore> {
   virtual ~BrowserBoundKeyStore() = default;
 
  private:
-  friend base::RefCounted<BrowserBoundKeyStore>;
+  friend base::RefCountedThreadSafe<BrowserBoundKeyStore>;
 };
 
 // Get a platform specific instance of the BrowserBoundKeyStore. This function

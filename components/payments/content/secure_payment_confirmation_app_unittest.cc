@@ -341,6 +341,7 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
   context_.set_is_off_the_record(GetParam().is_off_the_record);
   web_contents_ = web_contents_factory_.CreateWebContents(&context_);
   base::HistogramTester histograms;
+  base::RunLoop run_loop;
   base::test::ScopedFeatureList features(
       blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
   auto authenticator =
@@ -368,6 +369,7 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(GetParam().credential_parameters), std::move(authenticator),
       /*payment_entities_logos=*/{});
+  app.SetWaitForGetBrowserBoundKeyForTesting(run_loop.QuitClosure());
   browser_bound_key_store_->PutFakeKey(FakeBrowserBoundKey(
       browser_bound_key_id, public_key_as_cose_key, signature,
       GetParam().algorithm_identifier, client_data_json,
@@ -426,6 +428,9 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
                                                : browser_bound_key_id);
   std::move(web_data_service_callback)
       .Run(web_data_service_handle, std::move(metadata_result));
+
+  // Wait for the Get BBK operation to complete.
+  run_loop.Run();
 
   ASSERT_TRUE(on_instrument_details_ready_called_);
   mojom::PaymentResponsePtr payment_response =

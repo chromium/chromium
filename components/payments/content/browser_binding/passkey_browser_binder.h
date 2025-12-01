@@ -137,8 +137,9 @@ class PasskeyBrowserBinder {
   // Creates a browser bound key that is not yet associated to a passkey. The
   // UnboundKey should be bound using BindKey() after the credential id has
   // been created.
-  std::optional<UnboundKey> CreateUnboundKey(
-      const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms);
+  void CreateUnboundKey(
+      const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms,
+      base::OnceCallback<void(std::optional<UnboundKey>)> callback);
 
   // Gets a browser bound key for the given `credential_id` and `relying_party`
   // only if a browser bound key already exists for the credential.
@@ -196,16 +197,20 @@ class PasskeyBrowserBinder {
 
  private:
   // Called after retrieving the possibly empty `existing_browser_bound_key_id`
-  // to retrieve the matching browser bound key. Runs `callback` with nullptr if
-  // there is no matching browser bound key.
+  // to retrieve the matching browser bound key.
   void GetBrowserBoundKey(
       base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback,
       std::vector<uint8_t> existing_browser_bound_key_id);
 
+  // Called after getting the browser bound key from the store. Runs `callback`
+  // with nullptr if there is no matching browser bound key.
+  void OnGetBrowserBoundKey(
+      base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback,
+      std::unique_ptr<BrowserBoundKey> browser_bound_key);
+
   // Called after retrieving the possibly empty `existing_browser_bound_key_id`
   // to retrieve the matching browser bound key. Otherwise creates a new browser
-  // bound key and saves its id. The browser bound key is returned by running
-  // `callback` with a boolean indicating whether the browser bound key is new.
+  // bound key and saves its id.
   void GetOrCreateBrowserBoundKey(
       std::vector<uint8_t> credential_id,
       std::string relying_party,
@@ -214,6 +219,24 @@ class PasskeyBrowserBinder {
       base::OnceCallback<void(bool is_new, std::unique_ptr<BrowserBoundKey>)>
           callback,
       std::vector<uint8_t> existing_browser_bound_key_id);
+
+  // Called after getting or creating the browser bound key from the store. The
+  // browser bound key is returned by running `callback` with a boolean
+  // indicating whether the browser bound key is new.
+  void OnGetOrCreateBrowserBoundKey(
+      bool needs_to_be_created,
+      std::vector<uint8_t> credential_id,
+      std::string relying_party,
+      std::optional<base::Time> last_used,
+      base::OnceCallback<void(bool is_new, std::unique_ptr<BrowserBoundKey>)>
+          callback,
+      std::unique_ptr<BrowserBoundKey> browser_bound_key);
+
+  // Called after creating an unbound browser bound key from the store. The
+  // browser bound key is returned by running `callback`.
+  void OnCreateUnboundKey(
+      base::OnceCallback<void(std::optional<UnboundKey>)> callback,
+      std::unique_ptr<BrowserBoundKey> browser_bound_key);
 
   // Records a creation or retrieval metric.
   void RecordCreationOrRetrieval(bool is_creation, bool did_succeed);

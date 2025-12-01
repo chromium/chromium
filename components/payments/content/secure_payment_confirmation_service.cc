@@ -4,8 +4,11 @@
 
 #include "components/payments/content/secure_payment_confirmation_service.h"
 
+#include <optional>
+
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
@@ -142,7 +145,6 @@ void SecurePaymentConfirmationService::MakePaymentCredential(
     MakePaymentCredentialCallback callback) {
 #if !BUILDFLAG(IS_IOS)
   std::string relying_party_id;
-  std::optional<PasskeyBrowserBinder::UnboundKey> browser_bound_key;
   if (options &&
       base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
@@ -165,27 +167,28 @@ void SecurePaymentConfirmationService::MakePaymentCredential(
       // if a browser bound key with the same identifier already exists.
       // TODO(crbug.com/377278827): Provide the browser bound public key
       // credential parameters from the payment extensions to the key store.
-      browser_bound_key = passkey_browser_binder_->CreateUnboundKey(
+      BrowserBoundKeyStore::CredentialInfoList allowed_algorithms =
           options->payment_browser_bound_key_parameters.value_or(
-              options->public_key_parameters));
+              options->public_key_parameters);
+      passkey_browser_binder_->CreateUnboundKey(
+          allowed_algorithms,
+          base::BindOnce(&SecurePaymentConfirmationService::OnCreateUnboundKey,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(relying_party_id), std::move(options),
+                         std::move(callback)));
+    } else {
+      OnCreateUnboundKey(std::move(relying_party_id), std::move(options),
+                         std::move(callback),
+                         /*unbound_key=*/std::nullopt);
     }
-    auto payment_options = ::blink::mojom::PaymentOptions::New();
-    payment_options->total = mojom::PaymentCurrencyAmount::New();
-    payment_options->instrument =
-        ::blink::mojom::PaymentCredentialInstrument::New();
-    if (browser_bound_key) {
-      payment_options->browser_bound_public_key =
-          browser_bound_key->Get().GetPublicKeyAsCoseKey();
-    }
-    authenticator_->SetPaymentOptions(std::move(payment_options));
+  } else {
+    authenticator_->MakeCredential(
+        std::move(options),
+        base::BindOnce(
+            &SecurePaymentConfirmationService::OnAuthenticatorMakeCredential,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            std::move(relying_party_id), /*browser_bound_key=*/std::nullopt));
   }
-
-  authenticator_->MakeCredential(
-      std::move(options),
-      base::BindOnce(
-          &SecurePaymentConfirmationService::OnAuthenticatorMakeCredential,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-          std::move(relying_party_id), std::move(browser_bound_key)));
 #endif  // !BUILDFLAG(IS_IOS)
 }
 
@@ -246,6 +249,29 @@ void SecurePaymentConfirmationService::OnAuthenticatorMakeCredential(
 
   std::move(callback).Run(authenticator_status, std::move(response),
                           std::move(maybe_exception_details));
+}
+
+void SecurePaymentConfirmationService::OnCreateUnboundKey(
+    std::string relying_party_id,
+    blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
+    MakePaymentCredentialCallback callback,
+    std::optional<PasskeyBrowserBinder::UnboundKey> unbound_key) {
+  auto payment_options = ::blink::mojom::PaymentOptions::New();
+  payment_options->total = mojom::PaymentCurrencyAmount::New();
+  payment_options->instrument =
+      ::blink::mojom::PaymentCredentialInstrument::New();
+  if (unbound_key) {
+    payment_options->browser_bound_public_key =
+        unbound_key->Get().GetPublicKeyAsCoseKey();
+  }
+  authenticator_->SetPaymentOptions(std::move(payment_options));
+
+  authenticator_->MakeCredential(
+      std::move(options),
+      base::BindOnce(
+          &SecurePaymentConfirmationService::OnAuthenticatorMakeCredential,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          std::move(relying_party_id), std::move(unbound_key)));
 }
 
 bool SecurePaymentConfirmationService::IsCurrentStateValid() const {

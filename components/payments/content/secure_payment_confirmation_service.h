@@ -103,6 +103,13 @@ class SecurePaymentConfirmationService
       ::blink::mojom::MakeCredentialAuthenticatorResponsePtr response,
       ::blink::mojom::WebAuthnDOMExceptionDetailsPtr maybe_exception_details);
 
+  // Called after creating an unbound browser bound key from the store in
+  // MakePaymentCredential.
+  void OnCreateUnboundKey(
+      std::string relying_party_id,
+      blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
+      MakePaymentCredentialCallback callback,
+      std::optional<PasskeyBrowserBinder::UnboundKey> unbound_key);
   bool IsCurrentStateValid() const;
   void RecordFirstSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult result);
