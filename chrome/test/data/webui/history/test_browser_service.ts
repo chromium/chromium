@@ -56,6 +56,13 @@ export class TestBrowserService extends TestBrowserProxy implements
         accountImageSrc: {url: 'http://example.com/image.png'},
       },
     }));
+
+    // <if expr="not is_chromeos">
+    this.handler.setResultFor(
+        'shouldShowHistoryPageHistorySyncPromo', Promise.resolve({
+          shouldShow: false,
+        }));
+    // </if>
   }
 
 

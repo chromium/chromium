@@ -75,7 +75,7 @@ export function getHtml(this: HistoryAppElement) {
           <div id="tabsScrollContainer" class="cr-scrollable">
             <div class="cr-scrollable-top-shadow" ?hidden="${this.showTabs_}"></div>
             <if expr="not is_chromeos">
-              ${this.shouldShowHistorySyncPromo_() ? html`
+              ${this.shouldShowHistoryPageHistorySyncPromo_() ? html`
                 <div class="history-cards">
                   <history-sync-promo></history-sync-promo>
                 </div>` : ''}

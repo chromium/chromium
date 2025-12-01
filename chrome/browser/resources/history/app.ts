@@ -135,6 +135,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       },
       // <if expr="not is_chromeos">
       unoPhase2FollowUpEnabled_: {type: Boolean},
+      shouldShowHistorySyncPromo_: {type: Boolean},
       // </if>
       contentPage_: {type: String},
       tabsContentPage_: {type: String},
@@ -189,6 +190,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   // <if expr="not is_chromeos">
   protected accessor unoPhase2FollowUpEnabled_: boolean =
       loadTimeData.getBoolean('unoPhase2FollowUp');
+  protected accessor shouldShowHistorySyncPromo_: boolean = false;
   // </if>
   protected accessor hasDrawer_: boolean;
   protected accessor historyClustersEnabled_: boolean =
@@ -277,6 +279,14 @@ export class HistoryAppElement extends HistoryAppElementBase {
         this.callbackRouter_.onHasOtherFormsChanged.addListener(
             (hasOtherForms: boolean) =>
                 this.onHasOtherFormsChanged_(hasOtherForms));
+    // <if expr="not is_chromeos">
+    BrowserServiceImpl.getInstance()
+        .handler.shouldShowHistoryPageHistorySyncPromo()
+        .then(
+            ({shouldShow}) =>
+                this.handleShouldShowHistoryPageHistorySyncPromoChanged_(
+                    shouldShow));
+    // </if>
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
@@ -738,10 +748,14 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   // <if expr="not is_chromeos">
-  // TODO(https://crbug.com/418144407): add more conditions e.g. prefs, sync
-  // disabled etc.
-  protected shouldShowHistorySyncPromo_(): boolean {
-    return this.unoPhase2FollowUpEnabled_;
+  // TODO(https://crbug.com/418144407): add more conditions e.g. sync disabled
+  protected shouldShowHistoryPageHistorySyncPromo_(): boolean {
+    return this.unoPhase2FollowUpEnabled_ && this.shouldShowHistorySyncPromo_;
+  }
+
+  private handleShouldShowHistoryPageHistorySyncPromoChanged_(
+      shouldShowHistorySyncPromo: boolean) {
+    this.shouldShowHistorySyncPromo_ = shouldShowHistorySyncPromo;
   }
   // </if>
 

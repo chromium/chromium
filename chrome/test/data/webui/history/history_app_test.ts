@@ -10,9 +10,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
-// <if expr="not is_chromeos">
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
-// </if>
 
 import {TestBrowserService} from './test_browser_service.js';
 
@@ -378,15 +375,36 @@ suite('HistoryAppTest', function() {
 
   // <if expr="not is_chromeos">
   // history sync promo is not shown for ChromeOS.
-  test('ShowsRelevantHistorySyncPromoElementsWhenSignedOut', async () => {
-    loadTimeData.overrideValues({unoPhase2FollowUp: true});
+  test('ShowsHistorySyncPromoElementWhenDataIsTrue', async () => {
+    browserService.handler.setResultFor(
+        'shouldShowHistoryPageHistorySyncPromo',
+        Promise.resolve({shouldShow: true}));
+    loadTimeData.overrideValues({
+      unoPhase2FollowUp: true,
+    });
+    // Re-create the element to pick up the new loadTimeData.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    element = document.createElement('history-app');
+    document.body.appendChild(element);
+    await microtasksFinished();
+
+    const historySyncPromo =
+        element.shadowRoot.querySelector('history-sync-promo');
+    assertTrue(!!historySyncPromo, 'Promo should be shown');
+  });
+
+  test('HidesHistorySyncPromoElementWhenDataIsFalse', async () => {
+    browserService.handler.setResultFor(
+        'shouldShowHistoryPageHistorySyncPromo',
+        Promise.resolve({shouldShow: false}));
+    // Re-create the element to pick up the new loadTimeData.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('history-app');
     document.body.appendChild(element);
     await microtasksFinished();
     const historySyncPromo =
         element.shadowRoot.querySelector('history-sync-promo');
-    assertTrue(!!historySyncPromo);
-    assertTrue(isChildVisible(historySyncPromo, '#signed-out-description'));
+    assertFalse(!!historySyncPromo, 'Promo should not be shown');
   });
   // </if>
 });

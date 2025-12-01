@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {BrowserServiceImpl} from './browser_service.js';
 
 import {getCss} from './history_sync_promo.css.js';
 import {getHtml} from './history_sync_promo.html.js';
@@ -34,6 +35,8 @@ export class HistorySyncPromoElement extends CrLitElement {
 
   protected onCloseClick_() {
     this.shown_ = false;
+    BrowserServiceImpl.getInstance()
+        .handler.incrementHistoryPageHistorySyncPromoShownCount();
   }
 }
 
