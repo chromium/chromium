@@ -13,6 +13,7 @@ source_set("batch_upload_promo") {
   ]
 
   deps = [
+    "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/batch_upload",
     "//chrome/browser/sync",
