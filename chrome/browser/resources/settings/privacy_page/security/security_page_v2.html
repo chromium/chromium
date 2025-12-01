@@ -57,6 +57,10 @@
     border-end-start-radius: var(--cr-card-border-radius);
     border-end-end-radius: var(--cr-card-border-radius);
   }
+
+  settings-toggle-button {
+    border-radius: var(--cr-card-border-radius);
+  }
 </style>
 <settings-subpage page-title="$i18n{securityPageTitle}"
     learn-more-url="$i18n{safeBrowsingHelpCenterURL}"
@@ -166,4 +170,13 @@
       </settings-radio-group>
     </div>
   </security-page-feature-row>
+  <h2 class="section-header cr-secondary-text">
+    $i18n{securityAccountAndNetworkSectionTitle}
+  </h2>
+  <settings-toggle-button id="passwordsLeakToggle"
+      pref="{{prefs.generated.password_leak_detection}}"
+      label="$i18n{securityPasswordsLeakDetectionTitle}"
+      sub-label="$i18n{securityPasswordsLeakDetectionDesc}"
+      class="box">
+  </settings-toggle-button>
 </settings-subpage>

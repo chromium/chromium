@@ -2385,7 +2385,13 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       {"securityFeatureRowStateStandard",
        IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_STANDARD},
       {"securityFeatureRowStateOff",
-       IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_OFF}};
+       IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_OFF},
+      {"securityAccountAndNetworkSectionTitle",
+       IDS_SETTINGS_SECURITY_ACCOUNT_AND_NETWORK_SECTION_TITLE},
+      {"securityPasswordsLeakDetectionTitle",
+       IDS_SETTINGS_SECURITY_PASSWORDS_LEAK_DETECTION_TITLE},
+      {"securityPasswordsLeakDetectionDesc",
+       IDS_SETTINGS_SECURITY_PASSWORDS_LEAK_DETECTION_DESC}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("cookiesSettingsHelpCenterURL",

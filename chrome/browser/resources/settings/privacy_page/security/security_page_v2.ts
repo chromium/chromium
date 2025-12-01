@@ -9,6 +9,7 @@ import '/shared/settings/prefs/prefs.js';
 import '../../controls/controlled_radio_button.js';
 import '../../controls/settings_radio_group.js';
 import '../../icons.html.js';
+import '../../controls/settings_toggle_button.js';
 import '../../settings_page/settings_subpage.js';
 import './security_page_feature_row.js';
 
@@ -21,13 +22,14 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {ControlledRadioButtonElement} from '../../controls/controlled_radio_button.js';
 import type {SettingsRadioGroupElement} from '../../controls/settings_radio_group.js';
-import type {HatsBrowserProxy} from '../hats_browser_proxy.js';
-import {HatsBrowserProxyImpl, SecurityPageV2Interaction} from '../hats_browser_proxy.js';
+import type {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import {routes} from '../../route.js';
 import type {Route} from '../../router.js';
 import {RouteObserverMixin} from '../../router.js';
 import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
+import type {HatsBrowserProxy} from '../hats_browser_proxy.js';
+import {HatsBrowserProxyImpl, SecurityPageV2Interaction} from '../hats_browser_proxy.js';
 import {SafeBrowsingSetting} from '../safe_browsing_types.js';
 
 import type {SecurityPageFeatureRowElement} from './security_page_feature_row.js';
@@ -44,6 +46,7 @@ export enum SecuritySettingsBundleSetting {
 export interface SettingsSecurityPageV2Element {
   $: {
     bundlesRadioGroup: SettingsRadioGroupElement,
+    passwordsLeakToggle: SettingsToggleButtonElement,
     resetEnhancedBundleToDefaultsButton: CrButtonElement,
     resetStandardBundleToDefaultsButton: CrButtonElement,
     securitySettingsBundleEnhanced: ControlledRadioButtonElement,

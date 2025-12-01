@@ -2017,6 +2017,12 @@
   <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_OFF" desc="The state text denoting that a security feature is in the off state.">
     Off
   </message>
+  <message name="IDS_SETTINGS_SECURITY_ACCOUNT_AND_NETWORK_SECTION_TITLE" desc="Name of the security page's 'account and network protection' section.">
+    Account and network protection
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_PASSWORDS_LEAK_DETECTION_TITLE" desc="Label for a toggle that allows users to choose whether chrome should check if credentials have been part of a leak.">
+    Compromised password detection
+  </message>
 
   <!-- Secure Connections -->
   <message name="IDS_SETTINGS_SECURE_CONNECTIONS_SECTION_TITLE" desc="Title of the Secure Connections section in Security settings">

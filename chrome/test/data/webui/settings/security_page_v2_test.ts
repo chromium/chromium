@@ -10,9 +10,10 @@ import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import type {ControlledRadioButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, Router, routes, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 
 // clang-format on
 
@@ -133,6 +134,56 @@ suite('Main', function() {
         SafeBrowsingSetting.ENHANCED,
         page.getPref('generated.safe_browsing').value);
     assertFalse(isVisible(page.$.resetEnhancedBundleToDefaultsButton));
+  });
+
+  test('PasswordsLeakDetectionClickTogglesSetting', async function() {
+    page.setPrefValue('generated.password_leak_detection', true);
+
+    page.$.passwordsLeakToggle.click();
+    await flushTasks();
+    assertFalse(page.getPref('generated.password_leak_detection').value);
+
+    page.$.passwordsLeakToggle.click();
+    await flushTasks();
+    assertTrue(page.getPref('generated.password_leak_detection').value);
+  });
+
+  test('noValueChangePasswordLeakSwitchBundle', async () => {
+    // Ensure password leak detection is initially disabled.
+    page.setPrefValue('generated.password_leak_detection', false);
+
+    // Ensure bundle is initially set to Standard.
+    page.setPrefValue(
+        'generated.security_settings_bundle',
+        SecuritySettingsBundleSetting.STANDARD);
+
+    // Click on Enhanced bundle.
+    page.$.securitySettingsBundleEnhanced.click();
+    await flushTasks();
+    assertEquals(
+        SecuritySettingsBundleSetting.ENHANCED,
+        page.getPref('generated.security_settings_bundle').value,
+        'Enhanced bundle should be selected');
+
+    // Password leak detection value is unchanged.
+    assertFalse(
+        page.getPref('generated.password_leak_detection').value,
+        `Password leak detection should not be changed by switching to
+         Enhanced bundle`);
+
+    // Click on Standard bundle.
+    page.$.securitySettingsBundleStandard.click();
+    await flushTasks();
+    assertEquals(
+        SecuritySettingsBundleSetting.STANDARD,
+        page.getPref('generated.security_settings_bundle').value,
+        'Standard bundle should be selected');
+
+    // Password leak detection value is unchanged.
+    assertFalse(
+        page.getPref('generated.password_leak_detection').value,
+        `Password leak detection should not be changed by switching to
+         Standard bundle`);
   });
 });
 

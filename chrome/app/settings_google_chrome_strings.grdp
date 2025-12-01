@@ -455,6 +455,11 @@ Chrome understands forms better and can autofill them faster for you. This setti
     Dangerous site. Chrome removed notifications.
   </message>
 
+  <!-- Bundled Security Settings (chrome://settings/security) -->
+  <message name="IDS_SETTINGS_SECURITY_PASSWORDS_LEAK_DETECTION_DESC" desc="Text that briefly describes the 'Password Leak Detection' feature.">
+    Get warned if Chrome finds one of your passwords in a public data breach
+  </message>
+
   <!-- Secure connections -->
   <message name="IDS_SETTINGS_SECURE_CONNECTIONS_SECTION_DESCRIPTION" desc="Description for the Secure Connections section in Security settings, explaining the baseline behavior of the browser even if the 'Always use secure connections' toggle is disabled.">
     Chrome upgrades insecure connections to HTTPS automatically when possible
