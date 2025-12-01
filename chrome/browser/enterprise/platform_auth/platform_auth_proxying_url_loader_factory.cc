@@ -67,6 +67,10 @@ void ProxyingURLLoaderFactory::OnProxyDisconnect() {
   }
 }
 
-ProxyingURLLoaderFactory::~ProxyingURLLoaderFactory() = default;
+ProxyingURLLoaderFactory::~ProxyingURLLoaderFactory() {
+  if (destruction_callback_) {
+    std::move(destruction_callback_).Run();
+  }
+}
 
 }  // namespace enterprise_auth

@@ -14,6 +14,8 @@
 
 namespace enterprise_auth {
 
+class PlatformAuthProxyingURLLoaderFactoryTest;
+
 // This class intercepts outgoing url requests, if the request should be handled
 // by a credential sso extension it is executed using URLSessionURLLoader.
 // Otherwise, the request is propagated unmodified down the chain.
@@ -52,6 +54,15 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   void OnTargetFactoryDisconnect();
 
   void OnProxyDisconnect();
+
+  inline void SetDestructionCallbackForTesting(
+      base::OnceCallback<void()> callback) {
+    destruction_callback_ = std::move(callback);
+  }
+  friend class PlatformAuthProxyingURLLoaderFactoryTest;
+
+  // Only for testing purposes.
+  base::OnceCallback<void()> destruction_callback_;
 
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
