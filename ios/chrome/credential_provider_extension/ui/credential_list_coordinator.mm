@@ -119,12 +119,19 @@
 - (void)showEmptyCredentials {
   EmptyCredentialsViewController* emptyCredentialsViewController =
       [[EmptyCredentialsViewController alloc] init];
-  emptyCredentialsViewController.modalPresentationStyle =
-      UIModalPresentationOverCurrentContext;
   emptyCredentialsViewController.actionHandler = self;
-  [self.viewController presentViewController:emptyCredentialsViewController
-                                    animated:YES
-                                  completion:nil];
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:emptyCredentialsViewController];
+  navigationController.modalPresentationStyle =
+      UIModalPresentationOverCurrentContext;
+  emptyCredentialsViewController.navigationItem.rightBarButtonItem =
+      [[UIBarButtonItem alloc]
+          initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                               target:self
+                               action:@selector(dismissEmptyState)];
+  [self.baseViewController presentViewController:navigationController
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)userSelectedCredential:(id<Credential>)credential {
@@ -198,13 +205,6 @@
 
 #pragma mark - ConfirmationAlertActionHandler
 
-- (void)confirmationAlertDismissAction {
-  // Finish the extension. There is no recovery from the empty credentials
-  // state.
-  [self.credentialResponseHandler
-      userCancelledRequestWithErrorCode:ASExtensionErrorCodeUserCanceled];
-}
-
 - (void)confirmationAlertPrimaryAction {
   // No-op.
 }
@@ -218,6 +218,13 @@
 }
 
 #pragma mark - Private
+
+// Finish the extension. There is no recovery from the empty credentials
+// state.
+- (void)dismissEmptyState {
+  [self.credentialResponseHandler
+      userCancelledRequestWithErrorCode:ASExtensionErrorCodeUserCanceled];
+}
 
 // Asks user for hardware reauthentication if needed. `forPasskeys` indicates
 // whether the reauthentication is guarding an access to passkeys (when `YES`)
