@@ -552,8 +552,10 @@ void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
   }
 
   Close(key);
-  // Avoid dangling raw_ptr.
-  host_.SetDelegate(&empty_embedder_delegate_);
+  // Deactivate if this was the active embedder. This ensures predictable state
+  // for the other embedders and also cleans up the host delegate reference to
+  // avoid a dangling raw_ptr.
+  MaybeDeactivateEmbedder(key);
   embedders_.erase(key);
 
   // Remove the instance if all embedders are gone.
