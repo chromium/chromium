@@ -98,7 +98,7 @@ import java.util.List;
 
 /** Unit tests for the context menu logic of Chrome. */
 @RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@Batch(Batch.PER_CLASS)
 public class ChromeContextMenuPopulatorTest {
     private static final String DATA_URL = "data:encodedstringblahblah";
     private static final String PAGE_URL = "http://www.blah.com/page_url";
@@ -396,7 +396,8 @@ public class ChromeContextMenuPopulatorTest {
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
         int[] expected3 = {
-            R.id.contextmenu_open_in_browser_id,
+            R.id.contextmenu_open_in_new_chrome_tab,
+            R.id.contextmenu_open_in_chrome_incognito_tab,
             R.id.contextmenu_open_in_ephemeral_tab,
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_copy_link_text,
@@ -515,7 +516,8 @@ public class ChromeContextMenuPopulatorTest {
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
         int[] expected3 = {
-            R.id.contextmenu_open_in_browser_id,
+            R.id.contextmenu_open_in_new_chrome_tab,
+            R.id.contextmenu_open_in_chrome_incognito_tab,
             R.id.contextmenu_open_in_ephemeral_tab,
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_copy_link_text,
@@ -592,7 +594,8 @@ public class ChromeContextMenuPopulatorTest {
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
         int[] expected2 = {
-            R.id.contextmenu_open_in_browser_id,
+            R.id.contextmenu_open_in_new_chrome_tab,
+            R.id.contextmenu_open_in_chrome_incognito_tab,
             R.id.contextmenu_open_in_ephemeral_tab,
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_copy_link_text,
@@ -925,7 +928,8 @@ public class ChromeContextMenuPopulatorTest {
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
         int[] expected3Tab1 = {
-            R.id.contextmenu_open_in_browser_id,
+            R.id.contextmenu_open_in_new_chrome_tab,
+            R.id.contextmenu_open_in_chrome_incognito_tab,
             R.id.contextmenu_open_in_ephemeral_tab,
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_copy_link_text,
@@ -1025,7 +1029,8 @@ public class ChromeContextMenuPopulatorTest {
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
         int[] expected3Tab1 = {
-            R.id.contextmenu_open_in_browser_id,
+            R.id.contextmenu_open_in_new_chrome_tab,
+            R.id.contextmenu_open_in_chrome_incognito_tab,
             R.id.contextmenu_open_in_ephemeral_tab,
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_copy_link_text,
@@ -1180,7 +1185,8 @@ public class ChromeContextMenuPopulatorTest {
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
         int[] expected3 = {
-            R.id.contextmenu_open_in_browser_id,
+            R.id.contextmenu_open_in_new_chrome_tab,
+            R.id.contextmenu_open_in_chrome_incognito_tab,
             R.id.contextmenu_open_image,
             R.id.contextmenu_open_image_in_ephemeral_tab,
             R.id.contextmenu_copy_image,
@@ -1287,7 +1293,8 @@ public class ChromeContextMenuPopulatorTest {
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
         int[] expected3Tab1 = {
-            R.id.contextmenu_open_in_browser_id,
+            R.id.contextmenu_open_in_new_chrome_tab,
+            R.id.contextmenu_open_in_chrome_incognito_tab,
             R.id.contextmenu_open_in_ephemeral_tab,
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_save_link_as,
@@ -1446,7 +1453,8 @@ public class ChromeContextMenuPopulatorTest {
         // Custom tab should include read later.
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
         int[] expected2 = {
-            R.id.contextmenu_open_in_browser_id,
+            R.id.contextmenu_open_in_new_chrome_tab,
+            R.id.contextmenu_open_in_chrome_incognito_tab,
             R.id.contextmenu_open_in_ephemeral_tab,
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_copy_link_text,
@@ -1768,7 +1776,8 @@ public class ChromeContextMenuPopulatorTest {
                         /* additionalNavigationParams= */ null);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, linkParams);
         int[] linkExpected = {
-            R.id.contextmenu_open_in_browser_id,
+            R.id.contextmenu_open_in_new_chrome_tab,
+            R.id.contextmenu_open_in_chrome_incognito_tab,
             R.id.contextmenu_open_in_ephemeral_tab,
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_copy_link_text,
@@ -1810,7 +1819,8 @@ public class ChromeContextMenuPopulatorTest {
                         /* additionalNavigationParams= */ null);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, imageParams);
         int[] imageExpected = {
-            R.id.contextmenu_open_in_browser_id,
+            R.id.contextmenu_open_in_new_chrome_tab,
+            R.id.contextmenu_open_in_chrome_incognito_tab,
             R.id.contextmenu_open_image,
             R.id.contextmenu_open_image_in_ephemeral_tab,
             R.id.contextmenu_copy_image,
