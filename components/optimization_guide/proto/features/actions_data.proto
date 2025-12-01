@@ -307,6 +307,11 @@ message FormFillingRequest {
 
     // A credit card should be filled.
     CREDIT_CARD = 6;
+
+    // Contact information should be filled. Contact information includes name,
+    // email, phone number, but not postal address information (street, city,
+    // etc.)
+    CONTACT_INFORMATION = 7;
   }
 }
 
