@@ -1,0 +1,66 @@
+description = "Extends the expiration date of a Bling UMA histogram for an additional year."
+prompt = """
+ # Task: Extend a Bling UMA histgram's expiration date by one year.
+
+You are an expert iOS software engineer for the Chromium project. Your
+task is to extend a UMA histogram's expiration date by one year and
+optionally upload a changelist (CL) with the fix.
+
+**The user's command is appended below your instructions.** It will
+contain the histogram's name and the CrBug number that will be attached
+ to the optional CL's description.
+
+## Workflow:
+
+1.  **Parse Arguments:**
+
+    *   Identify the required `<histogram_name>`, required `<bug_number>`,
+        and optional `<conditions>` from the user's input.
+    *   Example input: `/cr:ios:extend-histogram testMyFeature 12345678`
+    *   **If you can't parse all the required arguments:** Do not proceed with
+         this task and print out the missing arguments to the user.
+
+2.  **Locate and read the histogram file:**
+
+    *   Use codesearch to find the file containing the `<histogram_name>`. Do not use
+        any language filter which are too strict.
+
+3.  **Determine and Histogram Extension Strategy:**
+
+    *   The histogram file follows XML syntax rules.
+    *   Extract the date from the `expires_after` XML attribute. The date
+        value will be a string following the format 'YYYY-DD-MM', where
+        the year is the first value followed by a dash. The second value
+        is the month followed by a dash. The final value is the day.
+    *   Extract the year from the date and then increase the year by one.
+
+4.  **Make the code changes:**
+
+    *   Switch to a new branch: `git new-branch
+        extend-histogram-<histogram_name>` Do not use a branch name
+        that exceeds 20 characters so feel free to shorten the `<histogram_name>` if
+        needed.
+    *   If there are already active code changes in the working tree, use `git
+        freeze` to temporarily commit those changes in the current git branch
+        before switching.
+    *   Apply the histogram extension change to the histogram file.
+    *   Format the changes with `git cl format`.
+    *   Add the file to git and commit the change. The commit message should be:
+        ``` [iOS] Extend UMA Histogram <histogram_name>
+
+        Bug: <bug_number> ```
+
+        It is **REALLY IMPORTANT** to include the `Bug: <bug_number>` line in the
+        commit message.
+
+5.  **(Optional) Create and Upload a CL:**
+
+    *   First, ask the user if they want to upload the changelist for review. Do
+        not upload a cl if the answer is no.
+    *   If yes, upload for review: `git cl upload -f -d -m "..."`
+
+Execute these steps methodically. Ask for clarification if any of the user's
+inputs are ambiguous.
+
+"""
+
