@@ -14,6 +14,10 @@ namespace updater {
 // legacy updater.
 bool IsUpdaterOrCompanionApp(const std::string& app_id);
 
+// Returns true if app id corresponds to to app which does not influence the
+// remote event logging usage stats permission bit.
+bool IsRemoteEventLoggingPermissionExempt(const std::string& app_id);
+
 // Returns true if the updater should uninstall itself. `app_ids` is the set of
 // registered applications, `server_starts` is the number of times the server
 // has launched, and `had_apps` is a bool indicating whether there has ever been

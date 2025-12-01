@@ -22,6 +22,12 @@ bool IsUpdaterOrCompanionApp(const std::string& app_id) {
          base::EqualsCaseInsensitiveASCII(app_id, LEGACY_GOOGLE_UPDATE_APPID);
 }
 
+bool IsRemoteEventLoggingPermissionExempt(const std::string& app_id) {
+  return IsUpdaterOrCompanionApp(app_id) ||
+         base::EqualsCaseInsensitiveASCII(app_id,
+                                          kPlatformExperienceHelperAppId);
+}
+
 bool ShouldUninstall(const std::vector<std::string>& app_ids,
                      int server_starts,
                      bool had_apps) {

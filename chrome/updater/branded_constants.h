@@ -12,6 +12,8 @@ namespace updater {
 // App ids.
 inline constexpr char kUpdaterAppId[] = UPDATER_APPID;
 inline constexpr char kQualificationAppId[] = QUALIFICATION_APPID;
+inline constexpr char kPlatformExperienceHelperAppId[] =
+    PLATFORM_EXPERIENCE_HELPER_APPID;
 
 // Environment variables.
 inline constexpr char kUsageStatsEnabled[] =
