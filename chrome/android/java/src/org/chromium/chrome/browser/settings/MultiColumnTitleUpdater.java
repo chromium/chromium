@@ -82,6 +82,9 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     /** Delegates the title settings to the callback. */
     private final Callback<String> mMainTitleSetter;
 
+    /** Callback invoked when a title text is tapped. */
+    private final Callback<@Nullable String> mTitleTapCallback;
+
     private boolean mMainMenuShown;
 
     /**
@@ -105,11 +108,13 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             MultiColumnSettings multiColumnSettings,
             Context context,
             LinearLayout container,
-            Callback<String> mainTitleSetter) {
+            Callback<String> mainTitleSetter,
+            Callback<@Nullable String> titleTapCallback) {
         mMultiColumnSettings = multiColumnSettings;
         mContext = context;
         mContainer = container;
         mMainTitleSetter = mainTitleSetter;
+        mTitleTapCallback = titleTapCallback;
     }
 
     @Override
@@ -206,8 +211,8 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                                     .popBackStack(
                                             entry.getId(),
                                             FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                            mTitleTapCallback.onResult(entry.getName());
                         }
-                        // TODO(crbug.com/462459895): Update search UI state.
                     });
             mContainer.addView(view);
         }

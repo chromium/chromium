@@ -571,6 +571,11 @@ public class SettingsSearchCoordinator {
                 });
     }
 
+    public void onTitleTapped(@Nullable String entryName) {
+        // Tap on the title 'Search results' should set the state to 'SEARCH'.
+        if (FRAGMENT_TAG_RESULT.equals(entryName)) mFragmentState = FS_SEARCH;
+    }
+
     /**
      * Performs search by sending the query to search backend.
      *

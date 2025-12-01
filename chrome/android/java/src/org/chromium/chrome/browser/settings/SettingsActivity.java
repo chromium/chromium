@@ -373,7 +373,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         mMultiColumnSettings,
                         titleContainer.getContext(),
                         titleContainer,
-                        this::setTitle);
+                        this::setTitle,
+                        this::onTitleTapped);
         mMultiColumnSettings.addObserver(mMultiColumnTitleUpdater);
     }
 
@@ -392,6 +393,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         mProfile,
                         updateFirstVisibleTitle);
         mSearchCoordinator.initializeSearchUi();
+    }
+
+    private void onTitleTapped(@Nullable String entryName) {
+        if (mSearchCoordinator != null) mSearchCoordinator.onTitleTapped(entryName);
     }
 
     /**
