@@ -12,7 +12,6 @@
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/wm/window_animations.h"
-#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -29,7 +28,6 @@
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -245,16 +243,10 @@ class AppMatcher {
 AppShortcutShelfItemController::AppShortcutShelfItemController(
     const ash::ShelfID& shelf_id)
     : ash::ShelfItemDelegate(shelf_id) {
-  BrowserList::AddObserver(this);
+  CHECK(!app_id().empty());
 
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [this](BrowserWindowInterface* browser) {
-        browser_close_subscriptions_[browser] =
-            browser->RegisterBrowserDidClose(base::BindRepeating(
-                &AppShortcutShelfItemController::OnBrowserDidClose,
-                base::Unretained(this)));
-        return true;  // Continue iterating through all browsers
-      });
+  browser_controller_observation_.Observe(
+      ash::BrowserController::GetInstance());
 
   // To detect V1 applications we use their domain and match them against the
   // used URL. This will also work with applications like Google Drive.
@@ -267,9 +259,7 @@ AppShortcutShelfItemController::AppShortcutShelfItemController(
   }
 }
 
-AppShortcutShelfItemController::~AppShortcutShelfItemController() {
-  BrowserList::RemoveObserver(this);
-}
+AppShortcutShelfItemController::~AppShortcutShelfItemController() = default;
 
 // This function is responsible for handling mouse and key events that are
 // triggered when Ash is the Chrome browser and when an SWA or PWA icon on
@@ -492,23 +482,13 @@ void AppShortcutShelfItemController::Close() {
   }
 }
 
-void AppShortcutShelfItemController::OnBrowserAdded(Browser* browser) {
-  browser_close_subscriptions_[browser] = browser->RegisterBrowserDidClose(
-      base::BindRepeating(&AppShortcutShelfItemController::OnBrowserDidClose,
-                          base::Unretained(this)));
-}
-
-void AppShortcutShelfItemController::OnBrowserDidClose(
-    BrowserWindowInterface* browser_window_interface) {
-  browser_close_subscriptions_.erase(browser_window_interface);
-
-  if (!app_menu_cached_by_browsers_) {
-    return;
-  }
+void AppShortcutShelfItemController::OnBrowserClosed(
+    ash::BrowserDelegate* browser) {
   // Reset pointers to the closed browser, but leave menu indices intact.
-  auto it = std::ranges::find(app_menu_browsers_, browser_window_interface);
-  if (it != app_menu_browsers_.end()) {
-    *it = nullptr;
+  for (auto& it : app_menu_browsers_) {
+    if (it == &browser->GetBrowser()) {
+      it = nullptr;
+    }
   }
 }
 

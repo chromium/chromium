@@ -10,20 +10,22 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ash {
 class ShelfModel;
 }
 
-class BrowserWindowInterface;
+class Browser;
 class ShelfContextMenu;
 
 // Shelf item delegate for a browser shortcut; only one such item should exist.
 // This item shows an application menu that lists open browser windows or tabs.
-class BrowserShortcutShelfItemController : public ash::ShelfItemDelegate,
-                                           public BrowserListObserver {
+class BrowserShortcutShelfItemController
+    : public ash::ShelfItemDelegate,
+      public ash::BrowserController::Observer {
  public:
   explicit BrowserShortcutShelfItemController(ash::ShelfModel* shelf_model);
 
@@ -57,16 +59,18 @@ class BrowserShortcutShelfItemController : public ash::ShelfItemDelegate,
  private:
   class ShelfItemBrowsers;
 
+  // ash::BrowserController::Observer:
+  void OnBrowserCreated(ash::BrowserDelegate* browser) override;
+  void OnBrowserClosed(ash::BrowserDelegate* browser) override;
+
   // Activate a browser - or advance to the next one on the list.
   // Returns the action performed. Should be one of SHELF_ACTION_NONE,
   // SHELF_ACTION_WINDOW_ACTIVATED, or SHELF_ACTION_NEW_WINDOW_CREATED.
   ash::ShelfAction ActivateOrAdvanceToNextBrowser();
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-
-  // Callback for browser closed events.
-  void OnBrowserDidClose(BrowserWindowInterface* browser_window_interface);
+  base::ScopedObservation<ash::BrowserController,
+                          ash::BrowserController::Observer>
+      browser_controller_observation_{this};
 
   raw_ptr<ash::ShelfModel> shelf_model_;
 
@@ -75,11 +79,6 @@ class BrowserShortcutShelfItemController : public ash::ShelfItemDelegate,
 
   // The cached browser windows and tab indices shown in an application menu.
   std::vector<std::pair<Browser*, size_t>> app_menu_items_;
-
-  // Map to track browser close callback subscriptions.
-  absl::flat_hash_map<raw_ptr<BrowserWindowInterface>,
-                      base::CallbackListSubscription>
-      browser_close_subscriptions_;
 
   std::unique_ptr<ShelfContextMenu> context_menu_;
 };

@@ -13,9 +13,9 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/browser_list_observer.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -27,7 +27,6 @@ class WebContents;
 }
 
 class Browser;
-class BrowserWindowInterface;
 class ShelfContextMenu;
 
 // Item controller for an app shortcut.
@@ -39,7 +38,7 @@ class ShelfContextMenu;
 // Non-platform app types do not use AppWindows. This delegate is not replaced
 // when browser windows are opened for those app types.
 class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
-                                       public BrowserListObserver {
+                                       public ash::BrowserController::Observer {
  public:
   explicit AppShortcutShelfItemController(const ash::ShelfID& shelf_id);
 
@@ -76,11 +75,8 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
   bool HasRunningApplications();
 
  private:
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-
-  // Callback for browser closed events.
-  void OnBrowserDidClose(BrowserWindowInterface* browser_window_interface);
+  // ash::BrowserController::Observer:
+  void OnBrowserClosed(ash::BrowserDelegate* browser) override;
 
   // |filter_predicate| is used to filter out the app webcontents and app
   // browsers results based on their corresponding windows.
@@ -108,6 +104,10 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
   size_t AppMenuSize();
   void ClearAppMenu();
 
+  base::ScopedObservation<ash::BrowserController,
+                          ash::BrowserController::Observer>
+      browser_controller_observation_{this};
+
   GURL refocus_url_;
 
   // Since V2 applications can be undetectable after launching, this timer is
@@ -121,11 +121,6 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
       app_menu_web_contents_;
   std::vector<raw_ptr<Browser, VectorExperimental>> app_menu_browsers_;
   bool app_menu_cached_by_browsers_ = false;
-
-  // Map to track browser close callback subscriptions.
-  absl::flat_hash_map<raw_ptr<BrowserWindowInterface>,
-                      base::CallbackListSubscription>
-      browser_close_subscriptions_;
 
   std::unique_ptr<ShelfContextMenu> context_menu_;
 };

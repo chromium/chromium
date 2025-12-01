@@ -150,21 +150,12 @@ BrowserShortcutShelfItemController::BrowserShortcutShelfItemController(
     : ash::ShelfItemDelegate(ash::ShelfID(app_constants::kChromeAppId)),
       shelf_model_(shelf_model),
       shelf_browsers_(std::make_unique<ShelfItemBrowsers>(shelf_model)) {
-  BrowserList::AddObserver(this);
-
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [this](BrowserWindowInterface* browser) {
-        browser_close_subscriptions_[browser] =
-            browser->RegisterBrowserDidClose(base::BindRepeating(
-                &BrowserShortcutShelfItemController::OnBrowserDidClose,
-                base::Unretained(this)));
-        return true;  // Continue iterating through all browsers
-      });
+  browser_controller_observation_.Observe(
+      ash::BrowserController::GetInstance());
 }
 
-BrowserShortcutShelfItemController::~BrowserShortcutShelfItemController() {
-  BrowserList::RemoveObserver(this);
-}
+BrowserShortcutShelfItemController::~BrowserShortcutShelfItemController() =
+    default;
 
 // This function is responsible for handling mouse and key events that are
 // triggered when Ash is the Chrome browser and when the browser icon on the
@@ -442,25 +433,18 @@ BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
   return ash::SHELF_ACTION_WINDOW_ACTIVATED;
 }
 
-void BrowserShortcutShelfItemController::OnBrowserAdded(Browser* browser) {
-  browser_close_subscriptions_[browser] =
-      browser->RegisterBrowserDidClose(base::BindRepeating(
-          &BrowserShortcutShelfItemController::OnBrowserDidClose,
-          base::Unretained(this)));
-
-  if (!ShouldRecordLaunchTime(browser, shelf_model_)) {
+void BrowserShortcutShelfItemController::OnBrowserCreated(
+    ash::BrowserDelegate* browser) {
+  if (!ShouldRecordLaunchTime(&browser->GetBrowser(), shelf_model_)) {
     return;
   }
 
   bool browser_found = false;
   ash::BrowserController::GetInstance()->ForEachBrowser(
       ash::BrowserController::BrowserOrder::kAscendingCreationTime,
-      [&](ash::BrowserDelegate& delegate) {
-        Browser* b = &delegate.GetBrowser();
-        if (b == browser) {
-          return ash::BrowserController::kContinueIteration;
-        }
-        if (ShouldRecordLaunchTime(b, shelf_model_)) {
+      [&](ash::BrowserDelegate& b) {
+        if (&b != browser &&
+            ShouldRecordLaunchTime(&b.GetBrowser(), shelf_model_)) {
           browser_found = true;
           return ash::BrowserController::kBreakIteration;
         }
@@ -468,18 +452,16 @@ void BrowserShortcutShelfItemController::OnBrowserAdded(Browser* browser) {
       });
 
   if (!browser_found) {
-    extensions::ExtensionPrefs::Get(browser->profile())
+    extensions::ExtensionPrefs::Get(browser->GetBrowser().profile())
         ->SetLastLaunchTime(shelf_id().app_id, base::Time::Now());
   }
 }
 
-void BrowserShortcutShelfItemController::OnBrowserDidClose(
-    BrowserWindowInterface* browser_window_interface) {
-  browser_close_subscriptions_.erase(browser_window_interface);
-
+void BrowserShortcutShelfItemController::OnBrowserClosed(
+    ash::BrowserDelegate* browser) {
   // Reset pointers to the closed browser, but leave menu indices intact.
   for (auto& it : app_menu_items_) {
-    if (it.first == browser_window_interface) {
+    if (it.first == &browser->GetBrowser()) {
       it.first = nullptr;
     }
   }
