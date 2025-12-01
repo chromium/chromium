@@ -22,6 +22,8 @@ enum class SchedulerLoopQuarantineBranchType {
   kThreadLocalDefault,
   // Specialized configuration for the main thread of a process.
   kMain,
+  // Specialized configuration for the IO thread of a process.
+  kIO,
   // One for `ADVANCED_MEMORY_SAFETY_CHECKS()` objects.
   kAdvancedMemorySafetyChecks,
 };

@@ -14,6 +14,7 @@
 #include <string>
 
 #include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/scheduler_loop_quarantine_config.h"
 #include "base/base_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -48,6 +49,11 @@ BASE_EXPORT void InstallUnretainedDanglingRawPtrChecks();
 // is not active.
 // Does nothing if allocator shim support is not built.
 BASE_EXPORT void MakeFreeNoOp();
+
+// Apply specialized configuration to the quarantine branch for the current
+// thread.
+BASE_EXPORT void ReconfigureSchedulerLoopQuarantineBranch(
+    SchedulerLoopQuarantineBranchType branch_type);
 
 // Allows to re-configure PartitionAlloc at run-time.
 class BASE_EXPORT PartitionAllocSupport {

@@ -22,6 +22,7 @@
 #include "base/allocator/scheduler_loop_quarantine_config.h"
 #include "base/at_exit.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/cpu.h"
 #include "base/debug/dump_without_crashing.h"
@@ -130,9 +131,15 @@ constexpr base::TimeDelta kFirstPAPurgeOrReclaimDelay = base::Minutes(1);
 // This is defined in content/public/common/content_switches.h, which is not
 // accessible in ::base. They must be kept in sync.
 namespace switches {
+constexpr char kProcessType[] = "type";
 [[maybe_unused]] constexpr char kRendererProcess[] = "renderer";
 constexpr char kZygoteProcess[] = "zygote";
 }  // namespace switches
+
+[[maybe_unused]] std::string GetProcessType() {
+  const CommandLine* command_line = CommandLine::ForCurrentProcess();
+  return command_line->GetSwitchValueASCII(switches::kProcessType);
+}
 
 class LockMetricsRecorderSupport
     : public partition_alloc::internal::LockMetricsRecorderInterface {
@@ -846,6 +853,23 @@ void MakeFreeNoOp() {
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
+// Apply specialized configuration to the quarantine branch for the current
+// thread.
+void ReconfigureSchedulerLoopQuarantineBranch(
+    SchedulerLoopQuarantineBranchType branch_type) {
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  if (!base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocSchedulerLoopQuarantine)) {
+    return;
+  }
+  std::string process_type = GetProcessType();
+  partition_alloc::internal::SchedulerLoopQuarantineConfig config =
+      GetSchedulerLoopQuarantineConfiguration(process_type, branch_type);
+  allocator_shim::internal::PartitionAllocMalloc::Allocator()
+      ->ReconfigureSchedulerLoopQuarantineForCurrentThread(config);
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+}
+
 PartitionAllocSupport* PartitionAllocSupport::Get() {
   static auto* singleton = new PartitionAllocSupport();
   return singleton;
@@ -1013,6 +1037,11 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     const std::string& process_type,
     bool configure_dangling_pointer_detector,
     bool is_in_death_test_child) {
+#if !BUILDFLAG(IS_WIN)
+  // TODO(mikt): Fix failure on `DelayloadsTest.ChromeElfDllLoadSanityTest`.
+  CHECK(process_type == GetProcessType());
+#endif  // !BUILDFLAG(IS_WIN)
+
   // In Death Tests, `FeatureList` is never initialized. Even in these cases
   // we call this method to finalize the allocator configuration.
   // TODO(https://crbug.com/432019338): Remove this param once fixed.
@@ -1246,16 +1275,9 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         ->EnableLargeEmptySlotSpanRing();
   }
 
-  if (process_type == "" &&
-      base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocSchedulerLoopQuarantine)) {
-    // `ReconfigureAfterTaskRunnerInit()` is called on the Main thread.
-    partition_alloc::internal::SchedulerLoopQuarantineConfig quarantine_config =
-        GetSchedulerLoopQuarantineConfiguration(
-            process_type, SchedulerLoopQuarantineBranchType::kMain);
-    allocator_shim::internal::PartitionAllocMalloc::Allocator()
-        ->ReconfigureSchedulerLoopQuarantineForCurrentThread(quarantine_config);
-  }
+  // `ReconfigureAfterTaskRunnerInit()` is called on the Main thread.
+  ReconfigureSchedulerLoopQuarantineBranch(
+      SchedulerLoopQuarantineBranchType::kMain);
 
 #if PA_BUILDFLAG( \
     ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)

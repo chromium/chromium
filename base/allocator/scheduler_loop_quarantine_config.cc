@@ -24,6 +24,7 @@ constexpr char kProcessTypeWildcardStr[] = "*";
 constexpr char kBranchTypeGlobalStr[] = "global";
 constexpr char kBranchTypeThreadLocalDefaultStr[] = "*";
 constexpr char kBranchTypeMainStr[] = "main";
+constexpr char kBranchTypeIOStr[] = "io";
 constexpr char kBranchTypeAdvancedMemorySafetyChecksStr[] = "amsc";
 
 constexpr std::string_view GetSchedulerLoopQuarantineBranchTypeStr(
@@ -35,6 +36,8 @@ constexpr std::string_view GetSchedulerLoopQuarantineBranchTypeStr(
       return kBranchTypeThreadLocalDefaultStr;
     case SchedulerLoopQuarantineBranchType::kMain:
       return kBranchTypeMainStr;
+    case SchedulerLoopQuarantineBranchType::kIO:
+      return kBranchTypeIOStr;
     case SchedulerLoopQuarantineBranchType::kAdvancedMemorySafetyChecks:
       return kBranchTypeAdvancedMemorySafetyChecksStr;
   }
