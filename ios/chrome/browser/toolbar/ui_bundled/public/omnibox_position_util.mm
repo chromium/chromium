@@ -56,7 +56,8 @@ bool IsSafariSwitcher(
 }
 
 bool ShouldFocusedOmniboxFollowSteadyStatePosition() {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE ||
+      IsComposeboxIOSEnabled()) {
     return NO;
   }
 
@@ -67,7 +68,8 @@ bool ShouldFocusedOmniboxFollowSteadyStatePosition() {
 }
 
 bool ForceBottomOmniboxInEditState() {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE ||
+      IsComposeboxIOSEnabled()) {
     return NO;
   }
 

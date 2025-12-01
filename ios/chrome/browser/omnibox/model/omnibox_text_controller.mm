@@ -149,8 +149,11 @@ const char kOmniboxFocusResultedInNavigation[] =
   // Exiting pre edit also shows the selections handle when animating the
   // defocus (crbug.com/458055336).
   BOOL skipExitPreEdit =
-      IsMultilineBrowserOmniboxEnabled() &&
-      _presentationContext == OmniboxPresentationContext::kLocationBar;
+      (IsMultilineBrowserOmniboxEnabled() &&
+       _presentationContext == OmniboxPresentationContext::kLocationBar) ||
+      (IsComposeboxIOSEnabled() &&
+       _presentationContext == OmniboxPresentationContext::kComposebox);
+  ;
   if (!skipExitPreEdit) {
     [self.textInput exitPreEditState];
   }
@@ -159,10 +162,13 @@ const char kOmniboxFocusResultedInNavigation[] =
   // OnKillFocus() must come after exiting pre-edit.
   [self.focusDelegate omniboxDidResignFirstResponder];
 
-  // Blow away any in-progress edits.
-  [self revertAll];
-
-  DCHECK(![self.textInput hasAutocompleteText]);
+  // Composebox is destroyed on endEditing, skip revert to avoid resizing on
+  // revert.
+  if (_presentationContext != OmniboxPresentationContext::kComposebox) {
+    // Blow away any in-progress edits.
+    [self revertAll];
+    DCHECK(![self.textInput hasAutocompleteText]);
+  }
   _suggestionsListScrolled = NO;
 }
 
@@ -427,7 +433,9 @@ const char kOmniboxFocusResultedInNavigation[] =
     // Calling `setText:` does not trigger `textDidChange:` so it must be called
     // explicitly.
     [textInput clearAutocompleteText];
+    textInput.clearingPreEditText = YES;
     [textInput exitPreEditState];
+    textInput.clearingPreEditText = NO;
     [textInput setText:@""];
     [self textDidChangeWithUserEvent:YES];
   }
@@ -450,7 +458,10 @@ const char kOmniboxFocusResultedInNavigation[] =
                                   timestamp:base::TimeTicks()];
   }
 
-  [self revertAll];
+  // Composebox UI is destroyed on accept, skip revert to avoid UI resizing.
+  if (_presentationContext != OmniboxPresentationContext::kComposebox) {
+    [self revertAll];
+  }
 }
 
 - (void)prepareForScribble {
