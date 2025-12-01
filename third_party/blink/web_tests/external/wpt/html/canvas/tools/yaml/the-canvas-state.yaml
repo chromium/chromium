@@ -107,18 +107,18 @@
   desc: save()/restore() works for {{ variant_names[1] }}, with a canvas size of
         {{ size }}
   code: |
-    // Test that restore() undoes any modifications
+    // Test that restore() undoes any modifications.
     var old = ctx.{{ variant_names[1] }};
     ctx.save();
     ctx.{{ variant_names[1] }} = {{ value }};
     ctx.restore();
     _assertSame(ctx.{{ variant_names[1] }}, old, "ctx.{{ variant_names[1] }}", "old");
 
-    // Also test that save() doesn't modify the values
+    // Also test that save() doesn't modify the values.
     ctx.{{ variant_names[1] }} = {{ value }};
     old = ctx.{{ variant_names[1] }};
-        // we're not interested in failures caused by get(set(x)) != x (e.g.
-        // from rounding), so compare against 'old' instead of against {{ value }}
+    // We're not interested in failures caused by get(set(x)) != x (e.g.
+    // from rounding), so compare against `old` instead of against {{ value }}.
     ctx.save();
     _assertSame(ctx.{{ variant_names[1] }}, old, "ctx.{{ variant_names[1] }}", "old");
     ctx.restore();

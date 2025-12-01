@@ -10,18 +10,18 @@ test(t => {
   const canvas = new OffscreenCanvas(300, 150);
   const ctx = canvas.getContext('2d');
 
-  // Test that restore() undoes any modifications
+  // Test that restore() undoes any modifications.
   var old = ctx.globalCompositeOperation;
   ctx.save();
   ctx.globalCompositeOperation = "copy";
   ctx.restore();
   _assertSame(ctx.globalCompositeOperation, old, "ctx.globalCompositeOperation", "old");
 
-  // Also test that save() doesn't modify the values
+  // Also test that save() doesn't modify the values.
   ctx.globalCompositeOperation = "copy";
   old = ctx.globalCompositeOperation;
-      // we're not interested in failures caused by get(set(x)) != x (e.g.
-      // from rounding), so compare against 'old' instead of against "copy"
+  // We're not interested in failures caused by get(set(x)) != x (e.g.
+  // from rounding), so compare against 'old' instead of against "copy".
   ctx.save();
   _assertSame(ctx.globalCompositeOperation, old, "ctx.globalCompositeOperation", "old");
   ctx.restore();
@@ -31,18 +31,18 @@ test(t => {
   const canvas = new OffscreenCanvas(0, 0);
   const ctx = canvas.getContext('2d');
 
-  // Test that restore() undoes any modifications
+  // Test that restore() undoes any modifications.
   var old = ctx.globalCompositeOperation;
   ctx.save();
   ctx.globalCompositeOperation = "copy";
   ctx.restore();
   _assertSame(ctx.globalCompositeOperation, old, "ctx.globalCompositeOperation", "old");
 
-  // Also test that save() doesn't modify the values
+  // Also test that save() doesn't modify the values.
   ctx.globalCompositeOperation = "copy";
   old = ctx.globalCompositeOperation;
-      // we're not interested in failures caused by get(set(x)) != x (e.g.
-      // from rounding), so compare against 'old' instead of against "copy"
+  // We're not interested in failures caused by get(set(x)) != x (e.g.
+  // from rounding), so compare against 'old' instead of against "copy".
   ctx.save();
   _assertSame(ctx.globalCompositeOperation, old, "ctx.globalCompositeOperation", "old");
   ctx.restore();

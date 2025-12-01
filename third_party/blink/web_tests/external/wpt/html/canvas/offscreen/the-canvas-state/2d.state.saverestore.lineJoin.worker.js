@@ -10,18 +10,18 @@ test(t => {
   const canvas = new OffscreenCanvas(300, 150);
   const ctx = canvas.getContext('2d');
 
-  // Test that restore() undoes any modifications
+  // Test that restore() undoes any modifications.
   var old = ctx.lineJoin;
   ctx.save();
   ctx.lineJoin = "round";
   ctx.restore();
   _assertSame(ctx.lineJoin, old, "ctx.lineJoin", "old");
 
-  // Also test that save() doesn't modify the values
+  // Also test that save() doesn't modify the values.
   ctx.lineJoin = "round";
   old = ctx.lineJoin;
-      // we're not interested in failures caused by get(set(x)) != x (e.g.
-      // from rounding), so compare against 'old' instead of against "round"
+  // We're not interested in failures caused by get(set(x)) != x (e.g.
+  // from rounding), so compare against 'old' instead of against "round".
   ctx.save();
   _assertSame(ctx.lineJoin, old, "ctx.lineJoin", "old");
   ctx.restore();
@@ -31,18 +31,18 @@ test(t => {
   const canvas = new OffscreenCanvas(0, 0);
   const ctx = canvas.getContext('2d');
 
-  // Test that restore() undoes any modifications
+  // Test that restore() undoes any modifications.
   var old = ctx.lineJoin;
   ctx.save();
   ctx.lineJoin = "round";
   ctx.restore();
   _assertSame(ctx.lineJoin, old, "ctx.lineJoin", "old");
 
-  // Also test that save() doesn't modify the values
+  // Also test that save() doesn't modify the values.
   ctx.lineJoin = "round";
   old = ctx.lineJoin;
-      // we're not interested in failures caused by get(set(x)) != x (e.g.
-      // from rounding), so compare against 'old' instead of against "round"
+  // We're not interested in failures caused by get(set(x)) != x (e.g.
+  // from rounding), so compare against 'old' instead of against "round".
   ctx.save();
   _assertSame(ctx.lineJoin, old, "ctx.lineJoin", "old");
   ctx.restore();

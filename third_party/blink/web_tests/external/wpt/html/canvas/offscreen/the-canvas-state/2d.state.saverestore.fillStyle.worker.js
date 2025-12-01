@@ -10,18 +10,18 @@ test(t => {
   const canvas = new OffscreenCanvas(300, 150);
   const ctx = canvas.getContext('2d');
 
-  // Test that restore() undoes any modifications
+  // Test that restore() undoes any modifications.
   var old = ctx.fillStyle;
   ctx.save();
   ctx.fillStyle = "#ff0000";
   ctx.restore();
   _assertSame(ctx.fillStyle, old, "ctx.fillStyle", "old");
 
-  // Also test that save() doesn't modify the values
+  // Also test that save() doesn't modify the values.
   ctx.fillStyle = "#ff0000";
   old = ctx.fillStyle;
-      // we're not interested in failures caused by get(set(x)) != x (e.g.
-      // from rounding), so compare against 'old' instead of against "#ff0000"
+  // We're not interested in failures caused by get(set(x)) != x (e.g.
+  // from rounding), so compare against 'old' instead of against "#ff0000".
   ctx.save();
   _assertSame(ctx.fillStyle, old, "ctx.fillStyle", "old");
   ctx.restore();
@@ -31,18 +31,18 @@ test(t => {
   const canvas = new OffscreenCanvas(0, 0);
   const ctx = canvas.getContext('2d');
 
-  // Test that restore() undoes any modifications
+  // Test that restore() undoes any modifications.
   var old = ctx.fillStyle;
   ctx.save();
   ctx.fillStyle = "#ff0000";
   ctx.restore();
   _assertSame(ctx.fillStyle, old, "ctx.fillStyle", "old");
 
-  // Also test that save() doesn't modify the values
+  // Also test that save() doesn't modify the values.
   ctx.fillStyle = "#ff0000";
   old = ctx.fillStyle;
-      // we're not interested in failures caused by get(set(x)) != x (e.g.
-      // from rounding), so compare against 'old' instead of against "#ff0000"
+  // We're not interested in failures caused by get(set(x)) != x (e.g.
+  // from rounding), so compare against 'old' instead of against "#ff0000".
   ctx.save();
   _assertSame(ctx.fillStyle, old, "ctx.fillStyle", "old");
   ctx.restore();
