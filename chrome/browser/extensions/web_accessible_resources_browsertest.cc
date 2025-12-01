@@ -592,9 +592,6 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest, DNRRedirect) {
   EXPECT_EQ("dnr redirect success", result.ExtractString());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-
-// TODO(crbug.com/425708956): Enable this test for desktop Android.
 class WebAccessibleResourcesServiceWorkerBrowserTest
     : public WebAccessibleResourcesBrowserTest {
  public:
@@ -661,9 +658,6 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesServiceWorkerBrowserTest,
       << expected_content << " not found in " << result.ExtractString();
 }
 
-// TODO(crbug.com/390687767): Port to desktop Android. Currently the redirect
-// doesn't happen.
-
 // Test server redirect to a web accessible or extension resource.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
                        BrowserProcessRedirect) {
@@ -689,7 +683,9 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
               extension->GetResourceURL(resource).spec().c_str()));
       auto* web_contents = GetActiveWebContents();
       content::TestNavigationObserver observer(web_contents);
-      EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+      // Some test cases force a net error, so NavigateToURL() may return
+      // either true or false. Discard its return value.
+      (void)NavigateToURL(web_contents, gurl);
       observer.WaitForNavigationFinished();
       EXPECT_EQ(extension->GetResourceURL(resource),
                 observer.last_navigation_url());
@@ -704,6 +700,8 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
     server_redirect(net::ERR_BLOCKED_BY_CLIENT, "resource.html", false);
   };
 
+  // Android only supports manifest V3.
+#if !BUILDFLAG(IS_ANDROID)
   auto TestBrowserRedirectMV2 = [&]() {
     TestBrowserRedirect(
         R"({
@@ -714,6 +712,8 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
         })",
         "Extensions.WAR.XOriginWebAccessible.MV2");
   };
+  TestBrowserRedirectMV2();
+#endif  // BUILDFLAG(IS_ANDROID)
 
   auto TestBrowserRedirectMV3 = [&]() {
     TestBrowserRedirect(
@@ -730,8 +730,6 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
         })",
         "Extensions.WAR.XOriginWebAccessible.MV3");
   };
-
-  TestBrowserRedirectMV2();
   TestBrowserRedirectMV3();
 }
 
@@ -827,7 +825,9 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
     GURL gurl = embedded_test_server()->GetURL("a.example.com", "/empty.html");
     auto* web_contents = GetActiveWebContents();
     content::TestNavigationObserver observer(web_contents);
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+    // A network error is expected and this version of NavigateToURL() returns
+    // false on navigation errors, similar to content::NavigateToURL().
+    EXPECT_FALSE(NavigateToURL(web_contents, gurl));
     observer.WaitForNavigationFinished();
     EXPECT_EQ(expect_net_error == net::OK,
               observer.last_navigation_succeeded());
@@ -880,7 +880,10 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
   };
 
   TestBrowserRedirect(MV3);
+  // Android only supports manifest V3.
+#if !BUILDFLAG(IS_ANDROID)
   TestBrowserRedirect(MV2);
+#endif
 }
 
 // Test dynamic origins in web accessible resources.
@@ -930,8 +933,8 @@ IN_PROC_BROWSER_TEST_F(DynamicOriginBrowserTest, DynamicUrl) {
 
   // Resource and extension origin should match.
   {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), extension->GetResourceURL("ok.html")));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                              extension->GetResourceURL("ok.html")));
     ASSERT_EQ(extension->origin(),
               GetPrimaryMainFrame()->GetLastCommittedOrigin());
   }
@@ -941,7 +944,7 @@ IN_PROC_BROWSER_TEST_F(DynamicOriginBrowserTest, DynamicUrl) {
     GURL static_url = extension->url().Resolve("ok.html");
     GURL dynamic_url = extension->dynamic_url().Resolve("ok.html");
     ASSERT_NE(static_url, dynamic_url);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), dynamic_url));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), dynamic_url));
     EXPECT_EQ(static_url, GetPrimaryMainFrame()->GetLastCommittedURL());
     EXPECT_EQ(extension->origin(),
               GetPrimaryMainFrame()->GetLastCommittedOrigin());
@@ -985,8 +988,8 @@ IN_PROC_BROWSER_TEST_F(DynamicOriginBrowserTest, FetchGuidFromFrame) {
                                     << ": frame_url = " << frame_url
                                     << "; fetch_url = " << fetch_url);
     // Fetch and test resource.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), frame_url));
     content::WebContents* web_contents = GetActiveWebContents();
+    ASSERT_TRUE(NavigateToURL(web_contents, frame_url));
     EXPECT_EQ(expected_frame_url,
               web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 
@@ -1033,8 +1036,6 @@ IN_PROC_BROWSER_TEST_F(DynamicOriginBrowserTest, FetchGuidFromFrame) {
                           test_case.expected_fetch_url_contents);
   }
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Fetch web accessible resources directly from a file:// page.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
@@ -1115,11 +1116,8 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
   ASSERT_TRUE(content::EvalJs(web_contents, script).ExtractBool());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Test loading of subresources using an initiator coming from a file:// scheme,
 // and, notably, from within a content script context.
-// TODO(crbug.com/391921606): Port to desktop Android when the chrome.scripting
-// API is ported.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
                        FileSchemeInitiators_ContentScript) {
   // Load extension.
@@ -1206,7 +1204,6 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
       profile(), extension->id(), base::StringPrintf(kScript, tab_id));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Useful for testing web accessible resources loaded from a content script.
 class WebAccessibleResourcesDynamicUrlScriptingBrowserTest
@@ -1328,10 +1325,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlScriptingBrowserTest,
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Load dynamic web accessible resources via chrome.scripting.executeScript().
-// TODO(crbug.com/391921606): Port to desktop Android when the chrome.scripting
-// API is ported.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlScriptingBrowserTest,
                        ExecuteScript) {
   // Load extension.
@@ -1358,7 +1352,6 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlScriptingBrowserTest,
       profile(), extension->id(), base::StringPrintf(kScript, tab_id));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace extensions
