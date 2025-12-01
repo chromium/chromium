@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="PrefValueType">
+  <variant name="Binary" summary="binary"/>
+  <variant name="Boolean" summary="boolean"/>
+  <variant name="Dictionary" summary="dictionary"/>
+  <variant name="Double" summary="double"/>
+  <variant name="Integer" summary="integer"/>
+  <variant name="List" summary="list"/>
+  <variant name="None" summary="none"/>
+  <variant name="String" summary="string"/>
+</variants>
+
 <!-- Each profile on a client is assigned a unique bucket, see go/profile-metrics.
 Regular profiles start at bucket 1. Incognito profiles count towards the original profile. -->
 
@@ -1567,6 +1578,20 @@ useful for Chirp alerts (go/crca-alerts). -->
     not available causing the verification to fallback to HMAC-based
     verification.
   </summary>
+</histogram>
+
+<histogram
+    name="Settings.TrackedPreferences.TypeMismatch.Combination.{RegisteredType}To{LoadedType}"
+    enum="TrackedPreference" expires_after="2026-11-26">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the TrackedPreference ID of a preference that had a type mismatch
+    between the registered type ({RegisteredType}) and the loaded type
+    ({LoadedType}).
+  </summary>
+  <token key="RegisteredType" variants="PrefValueType"/>
+  <token key="LoadedType" variants="PrefValueType"/>
 </histogram>
 
 <histogram

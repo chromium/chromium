@@ -41,6 +41,7 @@ class TrackedAtomicPreference : public TrackedPreference {
 
   // TrackedPreference implementation.
   TrackedPreferenceType GetType() const override;
+  size_t GetReportingId() const override;
   void OnNewValue(const base::Value* value,
                   PrefHashStoreTransaction* transaction,
                   const os_crypt_async::Encryptor* encryptor) const override;

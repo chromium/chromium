@@ -32,6 +32,10 @@ TrackedPreferenceType TrackedAtomicPreference::GetType() const {
   return TrackedPreferenceType::ATOMIC;
 }
 
+size_t TrackedAtomicPreference::GetReportingId() const {
+  return helper_.GetReportingId();
+}
+
 void TrackedAtomicPreference::OnNewValue(
     const base::Value* value,
     PrefHashStoreTransaction* transaction,

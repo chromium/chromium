@@ -37,6 +37,10 @@ TrackedPreferenceType TrackedSplitPreference::GetType() const {
   return TrackedPreferenceType::SPLIT;
 }
 
+size_t TrackedSplitPreference::GetReportingId() const {
+  return helper_.GetReportingId();
+}
+
 void TrackedSplitPreference::OnNewValue(
     const base::Value* value,
     PrefHashStoreTransaction* transaction,

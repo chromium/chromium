@@ -13,10 +13,13 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -72,6 +75,29 @@ void CleanupDeprecatedTrackedPreferences(
   }
 }
 
+const char* GetValueTypeString(base::Value::Type type) {
+  using Type = base::Value::Type;
+  switch (type) {
+    case Type::NONE:
+      return "None";
+    case Type::BOOLEAN:
+      return "Boolean";
+    case Type::INTEGER:
+      return "Integer";
+    case Type::DOUBLE:
+      return "Double";
+    case Type::STRING:
+      return "String";
+    case Type::BINARY:
+      return "Binary";
+    case Type::DICT:
+      return "Dictionary";
+    case Type::LIST:
+      return "List";
+  }
+  return "Unknown";
+}
+
 }  // namespace
 
 using PrefTrackingStrategy =
@@ -97,6 +123,7 @@ PrefHashFilter::PrefHashFilter(
               : std::nullopt),
       reset_on_load_observer_(std::move(reset_on_load_observer)),
       delegate_(std::move(delegate)),
+      reporting_ids_count_(reporting_ids_count),
       deferred_task_runner_(
           base::MakeRefCounted<base::DeferredSequencedTaskRunner>(
               base::SequencedTaskRunner::GetCurrentDefault())),
@@ -406,26 +433,37 @@ void PrefHashFilter::DeferredEncryptorRevalidation(
     if (already_reset_paths.count(path)) {
       continue;
     }
-    if (!pref_service_->FindPreference(path)) {
+    const PrefService::Preference* pref = pref_service_->FindPreference(path);
+    if (!pref) {
       continue;
     }
 
     const base::Value* value_at_load =
         pref_store_contents_at_load.FindByDottedPath(path);
-    const base::Value* current_value = pref_service_->GetUserPrefValue(path);
-
-    // Compare the current value from pref service and the value from the copy
-    // of the loaded store. If the pref has been modified, we skip the
-    // encryption hash check.
-    if (current_value && value_at_load) {
-      // Both values exist. Check if they are different.
-      if (*current_value != *value_at_load) {
-        continue;
-      }
-    } else if (current_value != value_at_load) {
+    if (value_at_load && value_at_load->type() != pref->GetType()) {
+      const std::string histogram_name =
+          base::StrCat({"Settings.TrackedPreferences.TypeMismatch.Combination.",
+                        GetValueTypeString(pref->GetType()), "To",
+                        GetValueTypeString(value_at_load->type())});
+      base::UmaHistogramExactLinear(
+          histogram_name, preference->GetReportingId(), reporting_ids_count_);
       continue;
-    }  // If we fall through eventually, this means both values are valid and
-       // equal.
+    } else {
+      const base::Value* current_value = pref_service_->GetUserPrefValue(path);
+
+      // Compare the current value from pref service and the value from the copy
+      // of the loaded store. If the pref has been modified, we skip the
+      // encryption hash check.
+      if (current_value && value_at_load) {
+        // Both values exist. Check if they are different.
+        if (*current_value != *value_at_load) {
+          continue;
+        }
+      } else if (current_value != value_at_load) {
+        continue;
+      }  // If we fall through eventually, this means both values are valid and
+         // equal.
+    }
 
     if (preference->EnforceAndReport(pref_store_contents_at_load,
                                      transaction.get(),

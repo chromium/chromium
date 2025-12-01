@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -83,6 +84,91 @@ const prefs::TrackedPreferenceMetadata kTestTrackedPrefs[] = {
     {6, kAtomicPref4, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 };
+
+// Defines a test case for a tracked preference type mismatch.
+struct TypeMismatchTestCase {
+  size_t reporting_id;
+  const char* pref_name;
+  PrefTrackingStrategy strategy;
+  base::Value::Type registered_type;
+  base::Value::Type mismatch_type;
+  const char* mismatch_string_value = nullptr;
+};
+
+// A helper function to return the test cases for type mismatch tests.
+std::vector<TypeMismatchTestCase> GetTypeMismatchTestCases() {
+  return {
+      {0, "browser.show_home_button", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::BOOLEAN, base::Value::Type::DICT},
+      {1, "homepage_is_newtabpage", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::BOOLEAN, base::Value::Type::DICT},
+      {2, "homepage", PrefTrackingStrategy::ATOMIC, base::Value::Type::STRING,
+       base::Value::Type::DICT},
+      {3, "session.restore_on_startup", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::INTEGER, base::Value::Type::DICT},
+      {4, "session.startup_urls", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::LIST, base::Value::Type::DICT},
+      {6, "google.services.last_syncing_username", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::STRING, base::Value::Type::DICT},
+      {7, "search_provider_overrides", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::LIST, base::Value::Type::DICT},
+      {11, "pinned_tabs", PrefTrackingStrategy::ATOMIC, base::Value::Type::LIST,
+       base::Value::Type::DICT},
+      {14, "default_search_provider_data.template_url_data",
+       PrefTrackingStrategy::ATOMIC, base::Value::Type::DICT,
+       base::Value::Type::LIST},
+      {15, "profile.preference_reset_time", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::STRING, base::Value::Type::DICT},
+      {18, "safebrowsing.incidents_sent", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::DICT, base::Value::Type::LIST},
+      {23, "google.services.account_id", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::STRING, base::Value::Type::DICT},
+      {29, "media.storage_id_salt", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::STRING, base::Value::Type::DICT},
+      {32, "media.cdm.origin_data", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::DICT, base::Value::Type::LIST},
+      {33, "google.services.last_signed_in_username",
+       PrefTrackingStrategy::ATOMIC, base::Value::Type::STRING,
+       base::Value::Type::DICT},
+      {34, "enterprise_signin.policy_recovery_token",
+       PrefTrackingStrategy::ATOMIC, base::Value::Type::STRING,
+       base::Value::Type::DICT},
+      {35, "extensions.ui.developer_mode", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::BOOLEAN, base::Value::Type::DICT},
+      {36, "preference_reset_schedule_to_flush_to_disk",
+       PrefTrackingStrategy::ATOMIC, base::Value::Type::STRING,
+       base::Value::Type::DICT},
+      {37, "extensions.install.init_list", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::LIST, base::Value::Type::DICT},
+      {38, "extensions.install.init_provider_name",
+       PrefTrackingStrategy::ATOMIC, base::Value::Type::STRING,
+       base::Value::Type::DICT},
+  };
+}
+
+// Helper to duplicate the logic in pref_hash_filter.cc for test verification
+const char* GetValueTypeStringForTest(base::Value::Type type) {
+  using Type = base::Value::Type;
+  switch (type) {
+    case Type::NONE:
+      return "None";
+    case Type::BOOLEAN:
+      return "Boolean";
+    case Type::INTEGER:
+      return "Integer";
+    case Type::DOUBLE:
+      return "Double";
+    case Type::STRING:
+      return "String";
+    case Type::BINARY:
+      return "Binary";
+    case Type::DICT:
+      return "Dictionary";
+    case Type::LIST:
+      return "List";
+  }
+  return "Unknown";
+}
 
 }  // namespace
 
@@ -785,6 +871,54 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
             std::move(temp_mock_external_validation_hash_store_contents)),
         std::move(configuration), std::move(reset_on_load_observer),
         std::move(validation_delegate_remote_ref), std::size(kTestTrackedPrefs),
+        os_crypt);
+  }
+
+  // Initializes |pref_hash_filter_| with a PrefHashFilter that uses a
+  // MockPrefHashStore. The raw pointer to the MockPrefHashStore (owned by the
+  // PrefHashFilter) is stored in |mock_pref_hash_store_|. The configuration is
+  // built from |custom_metadata|. This function is a helper function similar to
+  // the one above.
+  void InitializePrefHashFilterWithCustomConfig(
+      const std::vector<prefs::TrackedPreferenceMetadata>& custom_metadata,
+      os_crypt_async::OSCryptAsync* os_crypt) {
+    auto configuration = prefs::ConstructTrackedConfiguration(custom_metadata);
+
+    auto temp_mock_pref_hash_store = std::make_unique<MockPrefHashStore>();
+    auto temp_mock_external_validation_pref_hash_store =
+        std::make_unique<MockPrefHashStore>();
+    auto temp_mock_external_validation_hash_store_contents =
+        std::make_unique<MockHashStoreContents>();
+    mock_pref_hash_store_ = temp_mock_pref_hash_store.get();
+    mock_external_validation_pref_hash_store_ =
+        temp_mock_external_validation_pref_hash_store.get();
+    mock_external_validation_hash_store_contents_ =
+        temp_mock_external_validation_hash_store_contents.get();
+
+    validation_delegate_receiver_.reset();
+    reset_on_load_observer_receivers_.Clear();
+
+    mojo::PendingRemote<prefs::mojom::ResetOnLoadObserver>
+        reset_on_load_observer;
+    reset_on_load_observer_receivers_.Add(
+        this, reset_on_load_observer.InitWithNewPipeAndPassReceiver());
+
+    mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>
+        validation_delegate_remote(
+            validation_delegate_receiver_.BindNewPipeAndPassRemote());
+    auto validation_delegate_remote_ref =
+        base::MakeRefCounted<base::RefCountedData<
+            mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>>>(
+            std::move(validation_delegate_remote));
+
+    // Initialize the filter with the CUSTOM configuration and size.
+    pref_hash_filter_ = std::make_unique<PrefHashFilter>(
+        std::move(temp_mock_pref_hash_store),
+        PrefHashFilter::StoreContentsPair(
+            std::move(temp_mock_external_validation_pref_hash_store),
+            std::move(temp_mock_external_validation_hash_store_contents)),
+        std::move(configuration), std::move(reset_on_load_observer),
+        std::move(validation_delegate_remote_ref), custom_metadata.size(),
         os_crypt);
   }
 
@@ -2058,6 +2192,161 @@ TEST_P(PrefHashFilterEncryptedTest, ResetSplitPrefThenDeferredValidation) {
       pref_store_contents_.FindDict(kSplitPref);
   ASSERT_TRUE(dict_after_async_pass);
   EXPECT_TRUE(dict_after_async_pass->empty());
+}
+
+TEST_P(PrefHashFilterEncryptedTest, DeferredValidation_TypeMismatch) {
+  // This test is only relevant when enforcement is on.
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+
+  InitializeAsyncOSCrypt();
+  ResetImpl(true, test_os_crypt_async_.get());
+  std::vector<prefs::TrackedPreferenceMetadata> custom_prefs = {
+      {0, kAtomicPref, EnforcementLevel::ENFORCE_ON_LOAD,
+       PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL}};
+
+  InitializePrefHashFilterWithCustomConfig(custom_prefs,
+                                           test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  // Register kAtomicPref as an integer.
+  mock_pref_service_->registry()->RegisterIntegerPref(kAtomicPref, 0);
+  // Register other prefs.
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  // Set kAtomicPref as a string in the pref store contents, creating a
+  // type mismatch
+  pref_store_contents_.Set(kAtomicPref, "invalid_type");
+
+  // Configure the mock for the synchronous pass.
+  // The HMACs are all valid, so the initial check is UNCHANGED.
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::UNCHANGED);
+
+  base::HistogramTester histogram_tester;
+
+  // Run the synchronous load. This should schedule the deferred task.
+  pref_hash_filter_->FilterOnLoad(
+      base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
+                     false /* expected_altered */),
+      std::move(pref_store_contents_));
+
+  base::RunLoop revalidation_run_loop;
+  pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(
+      revalidation_run_loop.QuitClosure());
+  mock_pref_hash_store_->ClearTestState();
+  revalidation_run_loop.Run();
+  EXPECT_EQ(0u, mock_pref_hash_store_->checked_paths_count());
+  histogram_tester.ExpectUniqueSample(
+      "Settings.TrackedPreferences.TypeMismatch.Combination.IntegerToString", 0,
+      1);
+}
+
+TEST_P(PrefHashFilterEncryptedTest, DetectsAndLogsMismatch_AllPrefs) {
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+  InitializeAsyncOSCrypt();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(tracked::kEncryptedPrefHashing);
+
+  // We loop over all test cases defined in GetTypeMismatchTestCases to simulate
+  // the real world scenarios.
+  for (const auto& param : GetTypeMismatchTestCases()) {
+    base::HistogramTester histogram_tester;
+
+    std::vector<prefs::TrackedPreferenceMetadata> custom_metadata = {
+        {param.reporting_id, param.pref_name, EnforcementLevel::ENFORCE_ON_LOAD,
+         param.strategy, ValueType::IMPERSONAL}};
+
+    InitializePrefHashFilterWithCustomConfig(custom_metadata,
+                                             test_os_crypt_async_.get());
+    // Simulate registering the pref in PrefService.
+    mock_pref_service_ = std::make_unique<MockPrefService>();
+    switch (param.registered_type) {
+      case base::Value::Type::BOOLEAN:
+        mock_pref_service_->registry()->RegisterBooleanPref(param.pref_name,
+                                                            false);
+        break;
+      case base::Value::Type::INTEGER:
+        mock_pref_service_->registry()->RegisterIntegerPref(param.pref_name, 0);
+        break;
+      case base::Value::Type::STRING:
+        mock_pref_service_->registry()->RegisterStringPref(param.pref_name, "");
+        break;
+      case base::Value::Type::LIST:
+        mock_pref_service_->registry()->RegisterListPref(param.pref_name);
+        break;
+      case base::Value::Type::DICT:
+        mock_pref_service_->registry()->RegisterDictionaryPref(param.pref_name);
+        break;
+      default:
+        FAIL() << "Unsupported registered preference type";
+    }
+    mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                       "0");
+    mock_pref_service_->registry()->RegisterStringPref(
+        user_prefs::kPreferenceResetTime, "0");
+    mock_pref_service_->registry()->RegisterListPref(
+        user_prefs::kTrackedPreferencesReset);
+    pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+    base::Value mismatch_value;
+    if (param.mismatch_string_value) {
+      mismatch_value = base::Value(param.mismatch_string_value);
+    } else {
+      switch (param.mismatch_type) {
+        case base::Value::Type::DICT:
+          mismatch_value = base::Value(base::Value::Dict());
+          break;
+        case base::Value::Type::LIST:
+          mismatch_value = base::Value(base::Value::List());
+          break;
+        default:
+          mismatch_value = base::Value("default_mismatch");
+          break;
+      }
+    }
+    pref_store_contents_.SetByDottedPath(param.pref_name,
+                                         mismatch_value.Clone());
+    mock_pref_hash_store_->SetCheckResult(param.pref_name,
+                                          ValueState::UNCHANGED);
+    pref_hash_filter_->FilterOnLoad(
+        base::BindOnce(&PrefHashFilterTest::GetPrefsBack,
+                       base::Unretained(this), false),
+        pref_store_contents_.Clone());
+
+    mock_pref_hash_store_->ClearTestState();
+
+    base::RunLoop revalidation_run_loop;
+    bool callback_ran = false;
+    pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(
+        base::BindOnce(
+            &PrefHashFilterEncryptedTest::OnDeferredRevalidationComplete,
+            base::Unretained(this), &callback_ran,
+            revalidation_run_loop.QuitClosure()));
+
+    revalidation_run_loop.Run();
+    ASSERT_TRUE(callback_ran);
+
+    // Verify that CheckValue was never called as the type mismatch should skip
+    // validation.
+    EXPECT_EQ(0u, mock_pref_hash_store_->checked_paths_count());
+
+    std::string combo_name =
+        base::StrCat({"Settings.TrackedPreferences.TypeMismatch.Combination.",
+                      GetValueTypeStringForTest(param.registered_type), "To",
+                      GetValueTypeStringForTest(mismatch_value.type())});
+    histogram_tester.ExpectUniqueSample(combo_name, param.reporting_id, 1);
+    pref_hash_filter_->SetPrefService(nullptr);
+    pref_store_contents_.clear();
+  }
 }
 INSTANTIATE_TEST_SUITE_P(PrefHashFilterTestInstance,
                          PrefHashFilterEncryptedTest,
