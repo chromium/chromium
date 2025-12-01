@@ -844,7 +844,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.SentVerboseDebugReportType4"
-    enum="ConversionVerboseDebugReportType" expires_after="2025-11-21">
+    enum="ConversionVerboseDebugReportType" expires_after="2026-06-01">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
