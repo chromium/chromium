@@ -362,6 +362,15 @@ class AutocompleteInput {
     lens_overlay_suggest_inputs_ = lens_overlay_suggest_inputs;
   }
 
+  // Variant of the set_lens_overlay_suggest_inputs that doesn't make copies
+  // and is better aligned with the value returned by ComposeboxQueryController.
+  void set_lens_overlay_suggest_inputs(
+      std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
+          lens_overlay_suggest_inputs) {
+    lens_overlay_suggest_inputs_.emplace(
+        std::move(*lens_overlay_suggest_inputs.release()));
+  }
+
   omnibox::ChromeAimToolsAndModels aim_tool_mode() const {
     return aim_tool_mode_;
   }

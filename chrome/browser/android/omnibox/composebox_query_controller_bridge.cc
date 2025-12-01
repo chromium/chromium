@@ -249,8 +249,8 @@ bool ComposeboxQueryControllerBridge::IsCreateImagesEligible(JNIEnv* env) {
   return aim_service && aim_service->IsCreateImagesEligible();
 }
 
-lens::proto::LensOverlaySuggestInputs
-ComposeboxQueryControllerBridge::GetLensOverlaySuggestInputs() const {
+std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
+ComposeboxQueryControllerBridge::CreateLensOverlaySuggestInputs() const {
   auto tokens = std::vector<base::UnguessableToken>();
   // Read the list of tokens from the fileinfo list in the contextual search
   // controller.
@@ -260,7 +260,7 @@ ComposeboxQueryControllerBridge::GetLensOverlaySuggestInputs() const {
        query_controller_->GetFileInfoList()) {
     tokens.push_back(file_info->file_token);
   }
-  return *query_controller_->CreateSuggestInputs(tokens);
+  return query_controller_->CreateSuggestInputs(tokens);
 }
 
 void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(

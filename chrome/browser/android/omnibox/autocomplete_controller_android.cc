@@ -184,9 +184,10 @@ void AutocompleteControllerAndroid::Start(
 
   auto* bridge = composebox_query_controller_bridge_.get();
   if (bridge) {
-    const auto& inputs = bridge->GetLensOverlaySuggestInputs();
-    if (AreLensSuggestInputsReady(inputs)) {
-      input_.set_lens_overlay_suggest_inputs(inputs);
+    std::unique_ptr<lens::proto::LensOverlaySuggestInputs> inputs =
+        bridge->CreateLensOverlaySuggestInputs();
+    if (AreLensSuggestInputsReady(*inputs)) {
+      input_.set_lens_overlay_suggest_inputs(std::move(inputs));
     }
     input_.set_aim_tool_mode(tool_mode);
   }
@@ -307,9 +308,10 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   // Apply any AI Modes and Tools.
   auto* bridge = composebox_query_controller_bridge_.get();
   if (bridge) {
-    const auto& inputs = bridge->GetLensOverlaySuggestInputs();
-    if (AreLensSuggestInputsReady(inputs)) {
-      input_.set_lens_overlay_suggest_inputs(inputs);
+    std::unique_ptr<lens::proto::LensOverlaySuggestInputs> inputs =
+        bridge->CreateLensOverlaySuggestInputs();
+    if (AreLensSuggestInputsReady(*inputs)) {
+      input_.set_lens_overlay_suggest_inputs(std::move(inputs));
     }
     input_.set_aim_tool_mode(tool_mode);
   }
@@ -589,7 +591,7 @@ void AutocompleteControllerAndroid::OnLensSignalsReady() {
     // Fresh ZPS can only be served once we ensure the Lens signals are
     // correctly applied to the suggest request.
     input_.set_lens_overlay_suggest_inputs(
-        composebox_query_controller_bridge_->GetLensOverlaySuggestInputs());
+        composebox_query_controller_bridge_->CreateLensOverlaySuggestInputs());
     autocomplete_controller_->Start(input_);
   }
 }
