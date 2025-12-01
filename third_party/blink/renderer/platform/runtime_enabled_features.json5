@@ -2832,9 +2832,8 @@
       status: "stable",
     },
     {
-      // Moved from status stable to test due to https://crbug.com/456164629.
+      // Removed status stable due to https://crbug.com/456164629.
       name: "HitTestBorderRadiusForStackingContext",
-      status: "test",
     },
     {
       name: "HrefTranslate",
