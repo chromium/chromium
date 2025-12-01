@@ -18,6 +18,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
@@ -661,6 +662,11 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
             observer.last_page_content_annotations_result_->GetType());
   EXPECT_NE(-1.0, observer.last_page_content_annotations_result_
                       ->GetContentVisibilityScore());
+  EXPECT_TRUE(
+      PageContentAnnotationsWebContentsObserver::GetOrCreateForWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents())
+          ->content_visibility_score()
+          .has_value());
 }
 
 class PageContentAnnotationsServiceRemoteMetadataBrowserTest
