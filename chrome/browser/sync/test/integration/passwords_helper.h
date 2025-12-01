@@ -44,7 +44,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> GetAllLogins(
 // finished on the background thread.
 void RemoveLogins(password_manager::PasswordStoreInterface* store);
 
-// Gets the password store of the profile with index |index|.
+// Gets the profile password store of the profile with index |index|.
 password_manager::PasswordStoreInterface* GetProfilePasswordStoreInterface(
     int index);
 
@@ -75,50 +75,37 @@ password_manager::PasswordStoreInterface* GetVerifierPasswordStoreInterface(
 // forms as the verifier profile.
 bool ProfileContainsSamePasswordFormsAsVerifier(
     int index,
-    password_manager::PasswordForm::Store store =
-        password_manager::PasswordForm::Store::kProfileStore);
+    password_manager::PasswordForm::Store store);
 
 // Returns true iff the profile with index |index_a| contains the same
 // password forms as the profile with index |index_b|.
 bool ProfilesContainSamePasswordForms(
     int index_a,
     int index_b,
-    password_manager::PasswordForm::Store store =
-        password_manager::PasswordForm::Store::kProfileStore);
+    password_manager::PasswordForm::Store store);
 
 // Returns true iff all profiles contain the same password forms as the
 // verifier profile.
 bool AllProfilesContainSamePasswordFormsAsVerifier(
-    password_manager::PasswordForm::Store store =
-        password_manager::PasswordForm::Store::kProfileStore);
+    password_manager::PasswordForm::Store store);
 
 // Returns true iff all profiles contain the same password forms.
 bool AllProfilesContainSamePasswordForms(
-    password_manager::PasswordForm::Store store =
-        password_manager::PasswordForm::Store::kProfileStore);
-
-bool AwaitProfileContainsSamePasswordFormsAsVerifier(int index);
+    password_manager::PasswordForm::Store store);
 
 // Returns the number of forms in the password store of the profile with index
 // |index|.
-// TODO(crbug.com/353425612): Remove the default value for `store`.
-int GetPasswordCount(int index,
-                     password_manager::PasswordForm::Store store =
-                         password_manager::PasswordForm::Store::kProfileStore);
+int GetPasswordCount(int index, password_manager::PasswordForm::Store store);
 
 // Returns the number of forms in the password store of the verifier profile.
-// TODO(crbug.com/353425612): Remove the default value for `store`.
-int GetVerifierPasswordCount(
-    password_manager::PasswordForm::Store store =
-        password_manager::PasswordForm::Store::kProfileStore);
+int GetVerifierPasswordCount(password_manager::PasswordForm::Store store);
 
 // Creates a test password form with a well known fake signon realm based on
 // |index|.
 // TODO(crbug.com/353425612): Remove the default value for `store`.
 password_manager::PasswordForm CreateTestPasswordForm(
     int index,
-    password_manager::PasswordForm::Store store =
-        password_manager::PasswordForm::Store::kProfileStore);
+    password_manager::PasswordForm::Store store);
 
 // Injects the password entity based on given |form| and encrypted with key
 // derived from |key_derivation_params| into |fake_server|.
@@ -172,8 +159,7 @@ class PasswordSyncInactiveChecker : public SingleClientStatusChangeChecker {
 class SamePasswordFormsChecker : public MultiClientStatusChangeChecker {
  public:
   explicit SamePasswordFormsChecker(
-      password_manager::PasswordForm::Store store =
-          password_manager::PasswordForm::Store::kProfileStore);
+      password_manager::PasswordForm::Store store);
   ~SamePasswordFormsChecker() override;
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;
@@ -191,8 +177,7 @@ class SamePasswordFormsAsVerifierChecker
  public:
   explicit SamePasswordFormsAsVerifierChecker(
       int index,
-      password_manager::PasswordForm::Store store =
-          password_manager::PasswordForm::Store::kProfileStore);
+      password_manager::PasswordForm::Store store);
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;

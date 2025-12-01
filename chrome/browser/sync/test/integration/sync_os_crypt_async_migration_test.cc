@@ -16,16 +16,14 @@
 
 namespace {
 
-using passwords_helper::CreateTestPasswordForm;
 using passwords_helper::GetAccountPasswordStoreInterface;
 using passwords_helper::GetPasswordCount;
 using passwords_helper::GetProfilePasswordStoreInterface;
 
-// This test simulates a migration scenario for the kSyncUseOsCryptAsync feature.
-// It is structured as a PRE_PRE_ / PRE_ / regular test to check that passwords
-// synced with different states of the feature flag can be correctly decrypted
-// and read by the client.
-// The sequence is:
+// This test simulates a migration scenario for the kSyncUseOsCryptAsync
+// feature. It is structured as a PRE_PRE_ / PRE_ / regular test to check that
+// passwords synced with different states of the feature flag can be correctly
+// decrypted and read by the client. The sequence is:
 // 1. PRE_PRE_Migrate: kSyncUseOsCryptAsync disabled. A password is added.
 // 2. PRE_Migrate: kSyncUseOsCryptAsync enabled. Another password is added.
 // 3. Migrate: kSyncUseOsCryptAsync disabled again. Verifies that both
@@ -65,21 +63,24 @@ class SyncOSCryptAsyncMigrationTest
     SyncTest::SetUpInProcessBrowserTestFixture();
   }
 
-  password_manager::PasswordStoreInterface* GetPasswordStore() {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      return GetAccountPasswordStoreInterface(0);
+  password_manager::PasswordForm::Store GetStoreType() const {
+    switch (GetSetupSyncMode()) {
+      case SetupSyncMode::kSyncTransportOnly:
+        return password_manager::PasswordForm::Store::kAccountStore;
+      case SetupSyncMode::kSyncTheFeature:
+        return password_manager::PasswordForm::Store::kProfileStore;
     }
-    return GetProfilePasswordStoreInterface(0);
   }
 
-  int GetPasswordStoreCount() {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      return GetPasswordCount(
-          0, password_manager::PasswordForm::Store::kAccountStore);
-    }
-    return GetPasswordCount(
-        0, password_manager::PasswordForm::Store::kProfileStore);
+  password_manager::PasswordForm CreateTestPasswordForm(int index) {
+    return passwords_helper::CreateTestPasswordForm(index, GetStoreType());
   }
+
+  password_manager::PasswordStoreInterface* GetPasswordStore() {
+    return passwords_helper::GetPasswordStoreInterface(0, GetStoreType());
+  }
+
+  int GetPasswordStoreCount() { return GetPasswordCount(0, GetStoreType()); }
 
   std::vector<password_manager::PasswordForm> GetAllPasswords() {
     std::vector<std::unique_ptr<password_manager::PasswordForm>> logins =
@@ -91,6 +92,7 @@ class SyncOSCryptAsyncMigrationTest
     return passwords;
   }
 
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
