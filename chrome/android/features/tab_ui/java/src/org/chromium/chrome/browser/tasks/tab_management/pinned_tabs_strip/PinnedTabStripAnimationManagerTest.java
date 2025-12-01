@@ -47,12 +47,6 @@ public class PinnedTabStripAnimationManagerTest {
     private PinnedTabStripAnimationManager mAnimationManager;
     private ObservableSupplierImpl<Boolean> mAnimationRunningSupplier;
 
-    // From PinnedTabStripAnimationManager
-    private static final float SELECTED_ITEM_SCALE = 0.8f;
-    private static final float UNSELECTED_ITEM_SCALE = 1.0f;
-    private static final float SELECTED_ITEM_ALPHA = 0.8f;
-    private static final float UNSELECTED_ITEM_ALPHA = 1.0f;
-
     @Before
     public void setUp() {
         mAnimationManager = new PinnedTabStripAnimationManager(mRecyclerView, mAnimationHandler);
