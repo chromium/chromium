@@ -438,6 +438,10 @@ source_set("browser_tests") {
     "//ui/base:ozone_buildflags",
     "//ui/events:test_support",
   ]
+  if (is_chromeos) {
+    deps += [ "//components/account_id:test_support" ]
+  }
+
   data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
 
   # TODO(crbug.com/432285114): Fix code that adds exit-time destructors and

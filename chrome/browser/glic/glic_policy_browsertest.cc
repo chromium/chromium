@@ -52,6 +52,17 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"  // nogncheck
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/test_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using glic::prefs::GlicActuationOnWebPolicyState;
 using glic::prefs::kGlicActuationOnWeb;
 using glic::prefs::SettingsPolicyState;
@@ -145,11 +156,28 @@ class GlicPolicyTest : public PolicyTest {
 
   ~GlicPolicyTest() override = default;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    PolicyTest::SetUpLocalStatePrefService(local_state);
+
+    // Register two users.
+    user_manager::TestHelper::RegisterPersistedUser(*local_state, kAccountId1);
+    user_manager::TestHelper::RegisterPersistedUser(*local_state, kAccountId2);
+  }
+#endif
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PolicyTest::SetUpCommandLine(command_line);
 
     // Load blank page in glic guest view
     command_line->AppendSwitchASCII(::switches::kGlicGuestURL, "about:blank");
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // Log-in with the first user.
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
+                                    kAccountId1.GetUserEmail());
+    command_line->AppendSwitch(ash::switches::kAllowFailedPolicyFetchForTest);
+#endif
   }
 
   void SetUpOnMainThread() override {
@@ -163,9 +191,6 @@ class GlicPolicyTest : public PolicyTest {
 
     // "policy_for_profile_1_" is provider_, setup in PolicyTest.
     // Creating multi-profiles in a single user session is prohibited.
-    // TODO(crbug.com/460348211): Re-design some of the tests that need multi
-    // profiles to make it work for ChromeOS, too.
-#if !BUILDFLAG(IS_CHROMEOS)
     {
       // The policy configuration here causes signin::WaitForRefreshTokensLoaded
       // to hang when run from GlicTestEnvironmentFactory, so disable it here
@@ -178,14 +203,37 @@ class GlicPolicyTest : public PolicyTest {
       policy::PushProfilePolicyConnectorProviderForTesting(
           &policy_for_profile_2_);
 
+#if BUILDFLAG(IS_CHROMEOS)
+      // ChromeOS does not support multi profile, but multi-user signin.
+      // I.e., we cannot create multiple Profile instances within a user
+      // session.
+      // Here we create another user session corresponding to another Profile.
+      // The tests below with multi profiles make sense for multi-user
+      // cases in ChromeOS conceptually, too.
+      const std::string userhash2 =
+          user_manager::TestHelper::GetFakeUsernameHash(kAccountId2);
+      session_manager::SessionManager::Get()->CreateSession(
+          kAccountId2, userhash2,
+          /*new_user=*/false,
+          /*has_active_session=*/false);
+
+      // Set up the secondary profile.
+      base::FilePath user_data_directory;
+      base::PathService::Get(chrome::DIR_USER_DATA, &user_data_directory);
+      base::FilePath profile_dir = user_data_directory.AppendASCII(
+          ash::BrowserContextHelper::GetUserBrowserContextDirName(userhash2));
+      profile_2_ =
+          g_browser_process->profile_manager()->GetProfile(profile_dir);
+      ASSERT_EQ(kAccountId2, *ash::AnnotatedAccountId::Get(profile_2_.get()));
+#else
       ProfileManager* profile_manager = g_browser_process->profile_manager();
       base::FilePath new_path =
           profile_manager->GenerateNextProfileDirectoryPath();
       profile_2_ =
           &profiles::testing::CreateProfileSync(profile_manager, new_path);
+#endif  // BUILDFLAG(IS_CHROMEOS)
       ForceSigninAndModelExecutionCapability(profile_2_);
     }
-#endif
   }
 
   void TearDownOnMainThread() override {
@@ -313,6 +361,15 @@ class GlicPolicyTest : public PolicyTest {
       static_cast<int>(SettingsPolicyState::kDisabled);
 
  private:
+#if BUILDFLAG(IS_CHROMEOS)
+  static constexpr auto kAccountId1 =
+      AccountId::Literal::FromUserEmailGaiaId("test1@test",
+                                              GaiaId::Literal("123456789"));
+  static constexpr auto kAccountId2 =
+      AccountId::Literal::FromUserEmailGaiaId("test2@test",
+                                              GaiaId::Literal("987654321"));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   GlicTestEnvironment glic_test_environment_;
 
   GlicInstanceTracker instance_tracker_;
@@ -323,16 +380,7 @@ class GlicPolicyTest : public PolicyTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Currently, the test uses multi-profile, which is disallowed in ChromeOS.
-// TODO(crbug.com/460348211): Re-design some of the tests that need multi
-// profiles to make it work for ChromeOS, too.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE(test_name) DISABLED_##test_name
-#else
-#define MAYBE(test_name) test_name
-#endif
-
-IN_PROC_BROWSER_TEST_F(GlicPolicyTest, MAYBE(PrefDefaultsToEnabled)) {
+IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PrefDefaultsToEnabled) {
   // The pref defaults to enabled.
   EXPECT_EQ(kEnabledValue, profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
   EXPECT_EQ(kEnabledValue, profile_2_->GetPrefs()->GetInteger(kGeminiSettings));
@@ -356,8 +404,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PrefDisabledByPolicy) {
 
 // Ensure that when policy disables Glic, a browser window doesn't show the Glic
 // button.
-IN_PROC_BROWSER_TEST_F(GlicPolicyTest,
-                       MAYBE(PolicyAffectsGlicButtonInNewWindows)) {
+IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyAffectsGlicButtonInNewWindows) {
   ASSERT_EQ(browser()->profile(), profile_1_);
   ASSERT_NE(profile_1_, profile_2_);
 
@@ -391,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest,
 
 // Ensure that when policy disables Glic, a browser window doesn't show the Glic
 // button.
-IN_PROC_BROWSER_TEST_F(GlicPolicyTest, MAYBE(GlicButtonInExistingWindows)) {
+IN_PROC_BROWSER_TEST_F(GlicPolicyTest, GlicButtonInExistingWindows) {
   ASSERT_EQ(browser()->profile(), profile_1_);
   ASSERT_NE(profile_1_, profile_2_);
 
@@ -439,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, MAYBE(GlicButtonInExistingWindows)) {
 
 // Ensure that background mode is entered if and only if a profile with the
 // policy enabled is loaded.
-IN_PROC_BROWSER_TEST_F(GlicPolicyTest, MAYBE(PolicyDisablesBackgroundMode)) {
+IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesBackgroundMode) {
   ASSERT_EQ(browser()->profile(), profile_1_);
   ASSERT_NE(profile_1_, profile_2_);
 
