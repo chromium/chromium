@@ -8399,6 +8399,11 @@
     "expiry_milestone": 137
   },
   {
+    "name": "popup-browser-use-new-layout",
+    "owners": [ "dfried@chromium.org", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "power-bookmark-backend",
     "owners": [ "wylieb@google.com", "skym@chromium.org" ],
     "expiry_milestone": 125

@@ -17496,6 +17496,7 @@ from previous Chrome versions.
   <int value="1139226452" label="enable-nacl-debug"/>
   <int value="1139313302" label="BatchTabRestore:disabled"/>
   <int value="1139363314" label="disable-supervised-user-blacklist"/>
+  <int value="1139491208" label="PopupBrowserUseNewLayout:disabled"/>
   <int value="1139756271" label="WebOTPCrossDevice:enabled"/>
   <int value="1140016513" label="UseLegacyDHCPCD:enabled"/>
   <int value="1140375528" label="CrabbyAvif:enabled"/>
@@ -19941,6 +19942,7 @@ from previous Chrome versions.
   <int value="1976644015" label="enable-forbid-sync-xhr-in-page-dismissal"/>
   <int value="1976800418" label="SubmenusInAppMenu:disabled"/>
   <int value="1976885976" label="DefaultChatWebApp:disabled"/>
+  <int value="1977922166" label="PopupBrowserUseNewLayout:enabled"/>
   <int value="1978453875"
       label="DisableFacilitatedPaymentsMerchantAllowlist:enabled"/>
   <int value="1978548617" label="FilesZipMount:enabled"/>

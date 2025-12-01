@@ -3868,6 +3868,13 @@ inline constexpr char kAppBrowserUseNewLayoutName[] =
 inline constexpr char kAppBrowserUseNewLayoutDescription[] =
     "Use the new App Browser Layout. Visually nothing should change.";
 
+inline constexpr char kPopupBrowserUseNewLayoutId[] =
+    "popup-browser-use-new-layout";
+inline constexpr char kPopupBrowserUseNewLayoutName[] =
+    "Popup Browser Use New Layout";
+inline constexpr char kPopupBrowserUseNewLayoutDescription[] =
+    "Use the new Popup Browser Layout. Visually nothing should change.";
+
 inline constexpr char kTabbedBrowserUseNewLayoutId[] =
     "tabbed-browser-use-new-layout";
 inline constexpr char kTabbedBrowserUseNewLayoutName[] =

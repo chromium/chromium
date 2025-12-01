@@ -221,8 +221,6 @@ bool IsSideBySideKeyboardShortcutEnabled();
 
 BASE_DECLARE_FEATURE(kSideBySideFocusClearing);
 
-BASE_DECLARE_FEATURE(kAppBrowserUseNewLayout);
-
 enum class SidePanelRelativeAlignment {
   // Shows the toolbar and content height side panels on the same side.
   kShowPanelsOnSameSide,
@@ -231,6 +229,10 @@ enum class SidePanelRelativeAlignment {
 };
 BASE_DECLARE_FEATURE_PARAM(SidePanelRelativeAlignment,
                            kSidePanelRelativeAlignment);
+
+BASE_DECLARE_FEATURE(kAppBrowserUseNewLayout);
+
+BASE_DECLARE_FEATURE(kPopupBrowserUseNewLayout);
 
 BASE_DECLARE_FEATURE(kTabbedBrowserUseNewLayout);
 

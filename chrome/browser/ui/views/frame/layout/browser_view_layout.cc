@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/layout/browser_view_app_layout_impl.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl_old.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_popup_layout_impl.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_tabbed_layout_impl.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -140,6 +141,11 @@ std::unique_ptr<BrowserViewLayout> BrowserViewLayout::CreateLayout(
         browser->is_type_app() && browser->app_controller() &&
         base::FeatureList::IsEnabled(features::kAppBrowserUseNewLayout)) {
       return std::make_unique<BrowserViewAppLayoutImpl>(
+          std::move(delegate), browser, std::move(views));
+    } else if ((browser->is_type_popup() || browser->is_type_devtools()) &&
+               base::FeatureList::IsEnabled(
+                   features::kPopupBrowserUseNewLayout)) {
+      return std::make_unique<BrowserViewPopupLayoutImpl>(
           std::move(delegate), browser, std::move(views));
     }
   }

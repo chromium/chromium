@@ -11,9 +11,11 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view.h"
 
-// Represents common functionality between browser layouts when flags such as
-// `features::kTabbedBrowserUseNewLayout` and
-// `features::kAppBrowserUseNewLayout` are enabled.
+// Represents common functionality between browser layouts when one or more of
+// the following flags are enabled:
+//  - `features::kAppBrowserUseNewLayout`
+//  - `features::kPopupBrowserUseNewLayout`
+//  - `features::kTabbedBrowserUseNewLayout`
 //
 // Contains a number of common layout and utility methods, as well as constants
 // and structures used across these layouts.
