@@ -102,6 +102,34 @@ class FakeUnexportableKeyServiceProxy : public mojom::UnexportableKeyService {
     }
   }
 
+  void GetAllSigningKeysForGarbageCollection(
+      BackgroundTaskPriority priority,
+      GetAllSigningKeysForGarbageCollectionCallback callback) override {
+    if (get_all_keys_response_) {
+      std::move(callback).Run(std::move(get_all_keys_response_.value()));
+      get_all_keys_response_.reset();
+    } else {
+      std::move(callback).Run(base::ok(std::vector<UnexportableKeyId>()));
+    }
+  }
+
+  void DeleteKey(const UnexportableKeyId& key_id,
+                 BackgroundTaskPriority priority,
+                 DeleteKeyCallback callback) override {
+    if (delete_key_response_) {
+      std::move(callback).Run(std::move(delete_key_response_.value()));
+      delete_key_response_.reset();
+    } else {
+      std::move(callback).Run(std::nullopt);
+    }
+  }
+
+  void DeleteAllKeys(BackgroundTaskPriority priority,
+                     DeleteAllKeysCallback callback) override {
+    std::move(callback).Run(std::move(delete_all_keys_response_.value()));
+    delete_all_keys_response_.reset();
+  }
+
   void SetGenerateResponse(
       base::expected<mojom::NewKeyDataPtr, ServiceError> response) {
     generate_response_ = std::move(response);
@@ -117,6 +145,20 @@ class FakeUnexportableKeyServiceProxy : public mojom::UnexportableKeyService {
     sign_response_ = std::move(response);
   }
 
+  void SetGetAllSigningKeysForGarbageCollectionResponse(
+      base::expected<std::vector<UnexportableKeyId>, ServiceError> response) {
+    get_all_keys_response_ = std::move(response);
+  }
+
+  void SetDeleteKeyResponse(std::optional<ServiceError> response) {
+    delete_key_response_ = std::move(response);
+  }
+
+  void SetDeleteAllKeysResponse(
+      base::expected<uint64_t, ServiceError> response) {
+    delete_all_keys_response_ = std::move(response);
+  }
+
  private:
   std::optional<base::expected<mojom::NewKeyDataPtr, ServiceError>>
       generate_response_;
@@ -124,6 +166,11 @@ class FakeUnexportableKeyServiceProxy : public mojom::UnexportableKeyService {
       from_wrapped_response_;
   std::optional<base::expected<std::vector<uint8_t>, ServiceError>>
       sign_response_;
+  std::optional<base::expected<std::vector<UnexportableKeyId>, ServiceError>>
+      get_all_keys_response_;
+  std::optional<std::optional<ServiceError>> delete_key_response_;
+  std::optional<base::expected<uint64_t, ServiceError>>
+      delete_all_keys_response_;
 };
 
 class UnexportableKeyServiceProxiedTest : public ::testing::Test {

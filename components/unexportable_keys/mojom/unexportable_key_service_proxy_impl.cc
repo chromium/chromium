@@ -3,12 +3,17 @@
 // found in the LICENSE file.
 #include "components/unexportable_keys/mojom/unexportable_key_service_proxy_impl.h"
 
+#include <cstdint>
+
 #include "base/check_deref.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom-data-view.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
+#include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
@@ -54,6 +59,20 @@ base::expected<mojom::NewKeyDataPtr, ServiceError> PopulateNewKeyData(
 
   return new_key_data;
 }
+
+std::optional<ServiceError> AdaptErrorOrVoid(
+    const ServiceErrorOr<void> result) {
+  if (result.has_value()) {
+    return std::nullopt;
+  } else {
+    return result.error();
+  }
+}
+
+ServiceErrorOr<uint64_t> AdaptSizeType(ServiceErrorOr<size_t> result) {
+  return result.transform(
+      [](size_t r) { return base::strict_cast<uint64_t>(r); });
+}
 }  // namespace
 
 UnexportableKeyServiceProxyImpl::UnexportableKeyServiceProxyImpl(
@@ -96,6 +115,30 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::Sign(
     SignCallback callback) {
   unexportable_key_service_->SignSlowlyAsync(key_id, data, priority,
                                              std::move(callback));
+}
+
+void unexportable_keys::UnexportableKeyServiceProxyImpl::
+    GetAllSigningKeysForGarbageCollection(
+        BackgroundTaskPriority priority,
+        GetAllSigningKeysForGarbageCollectionCallback callback) {
+  unexportable_key_service_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      priority, std::move(callback));
+}
+
+void unexportable_keys::UnexportableKeyServiceProxyImpl::DeleteKey(
+    const UnexportableKeyId& key_id,
+    BackgroundTaskPriority priority,
+    DeleteKeyCallback callback) {
+  unexportable_key_service_->DeleteKeySlowlyAsync(
+      key_id, priority,
+      base::BindOnce(&AdaptErrorOrVoid).Then(std::move(callback)));
+}
+
+void unexportable_keys::UnexportableKeyServiceProxyImpl::DeleteAllKeys(
+    BackgroundTaskPriority priority,
+    DeleteAllKeysCallback callback) {
+  unexportable_key_service_->DeleteAllKeysSlowlyAsync(
+      priority, base::BindOnce(&AdaptSizeType).Then(std::move(callback)));
 }
 
 }  // namespace unexportable_keys

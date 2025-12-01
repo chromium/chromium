@@ -57,6 +57,17 @@ class UnexportableKeyServiceProxyImpl : public mojom::UnexportableKeyService {
             BackgroundTaskPriority priority,
             SignCallback callback) override;
 
+  void GetAllSigningKeysForGarbageCollection(
+      BackgroundTaskPriority priorty,
+      GetAllSigningKeysForGarbageCollectionCallback callback) override;
+
+  void DeleteKey(const UnexportableKeyId& key_id,
+                 BackgroundTaskPriority priority,
+                 DeleteKeyCallback result) override;
+
+  void DeleteAllKeys(BackgroundTaskPriority priority,
+                     DeleteAllKeysCallback result) override;
+
  private:
   mojo::Receiver<mojom::UnexportableKeyService> receiver_{this};
   // The underlying UnexportableKeyService instance. Not owned.
