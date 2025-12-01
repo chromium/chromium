@@ -180,27 +180,16 @@ public class TabStateStore implements TabPersistentStore {
         mTabModelSelector = tabModelSelector;
         mWindowTag = windowTag;
         mTabCreatorManager = tabCreatorManager;
+
+        tabModelSelector.getModel(false).addObserver(mTabModelObserver);
+        tabModelSelector.getModel(true).addObserver(mTabModelObserver);
     }
 
     @Override
     public void onNativeLibraryReady() {
-        mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
-        mTabModelSelector.getModel(true).addObserver(mTabModelObserver);
-        if (ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
-            catchUpAndBeginTracking();
-        }
-    }
-
-    private void catchUpAndBeginTracking() {
-        assert mTabRegistrationObserver == null;
-        mTabRegistrationObserver = new TabModelSelectorTabRegistrationObserver(mTabModelSelector);
-        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
-                new InnerRegistrationObserver());
-
-        // TODO(https://crbug.com/451614469): Watch for incognito as well eventually. But before
-        // things are fully functional, do not write any incognito data to avoid regressing on
-        // privacy.
-        initVisualDataTracking(false);
+        // Native is already initialized in the constructor as the TabStateStorageService requires
+        // native. This method is never called.
+        assert false;
     }
 
     @Override
@@ -402,12 +391,25 @@ public class TabStateStore implements TabPersistentStore {
         if (ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
             TabGroupVisualDataStore.cacheGroups(data.getGroupsData());
             initRestoreOrchestrator(data);
+            beginTracking();
         }
 
         // TODO(ckitagawa): Change back to assert if the `mIsDestroyed` check is sufficient.
         if (mTabRestorer != null) {
             mTabRestorer.onDataLoaded(data);
         }
+    }
+
+    private void beginTracking() {
+        assert mTabRegistrationObserver == null;
+        mTabRegistrationObserver = new TabModelSelectorTabRegistrationObserver(mTabModelSelector);
+        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
+                new InnerRegistrationObserver());
+
+        // TODO(https://crbug.com/451614469): Watch for incognito as well eventually. But before
+        // things are fully functional, do not write any incognito data to avoid regressing on
+        // privacy.
+        initVisualDataTracking(false);
     }
 
     private void onFinishedCreatingAllTabs() {
@@ -424,7 +426,7 @@ public class TabStateStore implements TabPersistentStore {
         }
 
         if (!ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
-            catchUpAndBeginTracking();
+            beginTracking();
         }
     }
 
