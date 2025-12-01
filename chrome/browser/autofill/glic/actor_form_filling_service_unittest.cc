@@ -100,6 +100,13 @@ FillRequest CreditCardFillRequest(std::vector<FieldGlobalId> field_ids) {
           std::move(field_ids)};
 }
 
+FillRequest ContactInformationFillRequest(
+    std::vector<FieldGlobalId> field_ids) {
+  return {ActorFormFillingRequest::RequestedData::
+              FormFillingRequest_RequestedData_CONTACT_INFORMATION,
+          std::move(field_ids)};
+}
+
 // Returns the value that `group` would fill into a field with a certain `type`.
 std::u16string GetFillValue(const FormGroup& group, FieldType type) {
   return group.GetInfo(AutofillType(FieldTypeSet({type})), "en-us");
@@ -354,6 +361,81 @@ TEST_F(ActorFormFillingServiceTest, SimpleAddressForm) {
   ExpectFillSuggestionsOutcome(/*is_payments_fill=*/false,
                                kActorFormFillingSuccessForMetrics,
                                histogram_tester);
+}
+
+// Tests that a suggestion is returned when invoking on a contact form and
+// that the suggestion can be used for filling.
+TEST_F(ActorFormFillingServiceTest, ContactInformationForm) {
+  base::HistogramTester histogram_tester;
+  FormData form =
+      SeeForm({.fields = {{.server_type = NAME_FULL},
+                          {.server_type = EMAIL_ADDRESS},
+                          {.server_type = PHONE_HOME_WHOLE_NUMBER}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {ContactInformationFillRequest({form.fields()[0].global_id()})},
+      future.GetCallback());
+  EXPECT_THAT(future.Get(),
+              ValueIs(ElementsAre(IsActorFormFillingRequest(
+                  ActorFormFillingRequest::RequestedData::
+                      FormFillingRequest_RequestedData_CONTACT_INFORMATION))));
+
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), HasValue());
+  EXPECT_THAT(
+      driver().last_filled_values(),
+      IsSupersetOf({std::pair(form.fields()[0].global_id(),
+                              GetFillValue(GetProfile1(), NAME_FULL)),
+                    std::pair(form.fields()[1].global_id(),
+                              GetFillValue(GetProfile1(), EMAIL_ADDRESS))}));
+
+  ExpectGetSuggestionsOutcome(kActorFormFillingSuccessForMetrics,
+                              histogram_tester);
+  ExpectFillSuggestionsOutcome(/*is_payments_fill=*/false,
+                               kActorFormFillingSuccessForMetrics,
+                               histogram_tester);
+}
+
+// Tests that a `CONTACT_INFORMATION` request on a mixed form still fills all
+// address-related fields.
+TEST_F(ActorFormFillingServiceTest, ContactInformationRequestOnMixedForm) {
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = EMAIL_ADDRESS},
+                                      {.server_type = ADDRESS_HOME_LINE1},
+                                      {.server_type = ADDRESS_HOME_CITY}}});
+
+  GetSuggestionsFuture future;
+  // Trigger the request from a contact-specific field.
+  service().GetSuggestions(
+      tab(), {ContactInformationFillRequest({form.fields()[1].global_id()})},
+      future.GetCallback());
+  EXPECT_THAT(future.Get(),
+              ValueIs(ElementsAre(IsActorFormFillingRequest(
+                  ActorFormFillingRequest::RequestedData::
+                      FormFillingRequest_RequestedData_CONTACT_INFORMATION))));
+
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), HasValue());
+
+  // Expect that all fields, including address fields, are filled.
+  EXPECT_THAT(
+      driver().last_filled_values(),
+      IsSupersetOf(
+          {std::pair(form.fields()[0].global_id(),
+                     GetFillValue(GetProfile1(), NAME_FULL)),
+           std::pair(form.fields()[1].global_id(),
+                     GetFillValue(GetProfile1(), EMAIL_ADDRESS)),
+           std::pair(form.fields()[2].global_id(),
+                     GetFillValue(GetProfile1(), ADDRESS_HOME_LINE1))}));
 }
 
 // Tests that filling an "actor form" that is split across two Autofill forms

@@ -50,6 +50,11 @@ class AttemptFormFillingToolRequest : public TabToolRequest {
 
     // A credit card should be filled.
     kCreditCard = 6,
+
+    // Contact information should be filled. Contact information includes name,
+    // email, phone number, but not postal address information (street, city,
+    // etc.)
+    kContactInformation = 7,
   };
 
   struct FormFillingRequest {

@@ -475,6 +475,10 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
               EqFormFillingRequest(
                   optimization_guide::proto::
                       FormFillingRequest_RequestedData_CREDIT_CARD,
+                  std::vector<autofill::FieldGlobalId>{expected_field_id}),
+              EqFormFillingRequest(
+                  optimization_guide::proto::
+                      FormFillingRequest_RequestedData_CONTACT_INFORMATION,
                   std::vector<autofill::FieldGlobalId>{expected_field_id})),
           _))
       .WillOnce(RunOnceCallback<2>(
@@ -492,6 +496,12 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
       AttemptFormFillingToolRequest::RequestedData::kCreditCard;
   request2.trigger_fields = {PageTarget(*address_home_line1)};
   requests.push_back(std::move(request2));
+
+  AttemptFormFillingToolRequest::FormFillingRequest request3;
+  request3.requested_data =
+      AttemptFormFillingToolRequest::RequestedData::kContactInformation;
+  request3.trigger_fields = {PageTarget(*address_home_line1)};
+  requests.push_back(std::move(request3));
 
   auto action = std::make_unique<AttemptFormFillingToolRequest>(
       active_tab()->GetHandle(), std::move(requests));

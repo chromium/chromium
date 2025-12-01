@@ -84,6 +84,10 @@ ConvertRequestedDataToProtoEnum(
     case actor::AttemptFormFillingToolRequest::RequestedData::kCreditCard:
       return optimization_guide::proto::
           FormFillingRequest_RequestedData_CREDIT_CARD;
+    case actor::AttemptFormFillingToolRequest::RequestedData::
+        kContactInformation:
+      return optimization_guide::proto::
+          FormFillingRequest_RequestedData_CONTACT_INFORMATION;
   }
 }
 

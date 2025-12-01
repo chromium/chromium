@@ -476,7 +476,8 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       case FormFillingRequest_RequestedData_SHIPPING_ADDRESS:
       case FormFillingRequest_RequestedData_BILLING_ADDRESS:
       case FormFillingRequest_RequestedData_HOME_ADDRESS:
-      case FormFillingRequest_RequestedData_WORK_ADDRESS: {
+      case FormFillingRequest_RequestedData_WORK_ADDRESS:
+      case FormFillingRequest_RequestedData_CONTACT_INFORMATION: {
         if (!base::FeatureList::IsEnabled(
                 ::features::kActorFormFillingServiceEnableAddress)) {
           LOG_AF(log_manager) << LoggingScope::kAutofillActor

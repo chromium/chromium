@@ -490,6 +490,10 @@ std::unique_ptr<ToolRequest> CreateAttemptFormFillingRequest(
       case optimization_guide::proto::
           FormFillingRequest_RequestedData_CREDIT_CARD:
         return AttemptFormFillingToolRequest::RequestedData::kCreditCard;
+      case optimization_guide::proto::
+          FormFillingRequest_RequestedData_CONTACT_INFORMATION:
+        return AttemptFormFillingToolRequest::RequestedData::
+            kContactInformation;
       default:
         // A default is needed:
         // 1. To ease importing the actions_data.proto from an external
