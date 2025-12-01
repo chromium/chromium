@@ -405,6 +405,7 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     if (selector.empty() || failed_parsing_ ||
         !AtEndOfComplexSelector(stream)) {
       output_.resize(subpos);  // Drop what we parsed so far.
+      stream.EnsureLookAhead();
       stream.Restore(state);
       AddPlaceholderSelectorIfNeeded(
           stream);  // Forwards until the end of the argument (i.e. to comma or
@@ -944,7 +945,6 @@ CSSSelector::PseudoType CSSSelectorParser::ParsePseudoType(
 
   return CSSSelector::PseudoType::kPseudoUnknown;
 }
-
 
 // static
 PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
