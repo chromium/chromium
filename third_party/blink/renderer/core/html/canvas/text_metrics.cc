@@ -370,9 +370,9 @@ DOMRectReadOnly* TextMetrics::getActualBoundingBox(
 
 namespace {
 float getTextAlignDelta(float width,
-                        const V8CanvasTextAlign& text_align,
+                        const V8CanvasTextAlign::Enum text_align,
                         const TextDirection& direction) {
-  switch (text_align.AsEnum()) {
+  switch (text_align) {
     case V8CanvasTextAlign::Enum::kRight:
       return width;
     case V8CanvasTextAlign::Enum::kCenter:
@@ -439,13 +439,15 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
     return clusters_for_range;
   }
 
-  V8CanvasTextAlign cluster_text_align(ctx_text_align_);
-  V8CanvasTextBaseline cluster_text_baseline(ctx_text_baseline_);
-  if (options != nullptr && options->hasAlign()) {
-    cluster_text_align = options->align();
-  }
-  if (options != nullptr && options->hasBaseline()) {
-    cluster_text_baseline = options->baseline();
+  V8CanvasTextAlign::Enum cluster_text_align(ctx_text_align_);
+  V8CanvasTextBaseline::Enum cluster_text_baseline(ctx_text_baseline_);
+  if (options) {
+    if (options->hasAlign()) {
+      cluster_text_align = options->align().AsEnum();
+    }
+    if (options->hasBaseline()) {
+      cluster_text_baseline = options->baseline().AsEnum();
+    }
   }
 
   for (const auto& run_with_offset : runs_with_offset_) {
@@ -489,7 +491,7 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
       text_cluster->OffsetPosition(
           getTextAlignDelta(clusters_for_run[i].width_, cluster_text_align,
                             direction_),
-          getTextBaselineDelta(baseline_y, cluster_text_baseline.AsEnum(),
+          getTextBaselineDelta(baseline_y, cluster_text_baseline,
                                *font_->PrimaryFont()));
       text_cluster->OffsetPosition(-text_align_dx_, 0);
       minimal_clusters.push_back(text_cluster);
