@@ -385,7 +385,9 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     public void launchClearBrowsingDataDialog(Activity currentActivity) {
         SettingsNavigationFactory.createSettingsNavigation()
                 .startSettings(
-                        currentActivity, SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA);
+                        currentActivity,
+                        SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA,
+                        /* addToBackStack= */ true);
     }
 
     @Override

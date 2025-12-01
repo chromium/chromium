@@ -39,6 +39,12 @@ public class SettingsNavigationImpl implements SettingsNavigation {
 
     @Override
     public void startSettings(Context context, @SettingsFragment int settingsFragment) {
+        startSettings(context, settingsFragment, /* addToBackStack= */ false);
+    }
+
+    @Override
+    public void startSettings(
+            Context context, @SettingsFragment int settingsFragment, boolean addToBackStack) {
         Bundle fragmentArgs = null;
         switch (settingsFragment) {
             case SettingsFragment.CLEAR_BROWSING_DATA:
@@ -56,7 +62,8 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             case SettingsFragment.NON_CARD_PAYMENT_METHODS:
                 break;
         }
-        startSettings(context, getFragmentClassFromEnum(settingsFragment), fragmentArgs);
+        startSettings(
+                context, getFragmentClassFromEnum(settingsFragment), fragmentArgs, addToBackStack);
     }
 
     @Override

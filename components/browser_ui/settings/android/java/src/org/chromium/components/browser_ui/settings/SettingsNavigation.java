@@ -75,6 +75,23 @@ public interface SettingsNavigation {
     void startSettings(Context context, @SettingsFragment int settingsFragment);
 
     /**
+     * Starts a specific settings fragment. This can be used by code that does not supply its own
+     * settings page, but instead needs to redirect the user to an appropriate page that is out of
+     * reach.
+     * This takes additional {@code addToBackStack} param to control fragment stack.
+     * Note: unlike {@code Class<?> fragment} variations, this does not support {@code
+     * fragmentArgs}, because it is (sometimes) automatically derived from {@code context} and
+     * {@code settingsFragment}
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     * @param settingsFragment The {@link SettingsFragment} to run.
+     * @param addToBackStack If true, the fragment will be stack on the backstack of the fragment
+     *     manager.
+     */
+    void startSettings(
+            Context context, @SettingsFragment int settingsFragment, boolean addToBackStack);
+
+    /**
      * Starts settings with the specified fragment.
      *
      * @param context The current Activity, or an application context if no Activity is available.
