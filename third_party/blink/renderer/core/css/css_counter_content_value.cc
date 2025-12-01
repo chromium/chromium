@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/css_counter_value.h"
+#include "third_party/blink/renderer/core/css/css_counter_content_value.h"
 
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -11,7 +11,7 @@ namespace blink {
 
 namespace cssvalue {
 
-String CSSCounterValue::CustomCSSText() const {
+String CSSCounterContentValue::CustomCSSText() const {
   StringBuilder result;
   if (Separator().empty()) {
     result.Append("counter(");
@@ -34,16 +34,16 @@ String CSSCounterValue::CustomCSSText() const {
   return result.ReleaseString();
 }
 
-const CSSCounterValue& CSSCounterValue::PopulateWithTreeScope(
+const CSSCounterContentValue& CSSCounterContentValue::PopulateWithTreeScope(
     const TreeScope* tree_scope) const {
   DCHECK(!IsScopedValue());
-  return *MakeGarbageCollected<CSSCounterValue>(
+  return *MakeGarbageCollected<CSSCounterContentValue>(
       &To<CSSCustomIdentValue>(identifier_->EnsureScopedValue(tree_scope)),
       &To<CSSCustomIdentValue>(list_style_->EnsureScopedValue(tree_scope)),
       separator_);
 }
 
-void CSSCounterValue::TraceAfterDispatch(blink::Visitor* visitor) const {
+void CSSCounterContentValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(identifier_);
   visitor->Trace(list_style_);
   visitor->Trace(separator_);

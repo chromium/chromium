@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COUNTER_VALUE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COUNTER_VALUE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COUNTER_CONTENT_VALUE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COUNTER_CONTENT_VALUE_H_
 
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -31,12 +31,12 @@ namespace blink {
 
 namespace cssvalue {
 
-class CSSCounterValue : public CSSValue {
+class CSSCounterContentValue : public CSSValue {
  public:
-  CSSCounterValue(const CSSCustomIdentValue* identifier,
-                  const CSSCustomIdentValue* list_style,
-                  const CSSStringValue* separator)
-      : CSSValue(kCounterClass),
+  CSSCounterContentValue(const CSSCustomIdentValue* identifier,
+                         const CSSCustomIdentValue* list_style,
+                         const CSSStringValue* separator)
+      : CSSValue(kCounterContentClass),
         identifier_(identifier),
         list_style_(list_style),
         separator_(separator) {
@@ -52,7 +52,7 @@ class CSSCounterValue : public CSSValue {
   const String& Separator() const { return separator_->Value(); }
   const TreeScope* GetTreeScope() const { return list_style_->GetTreeScope(); }
 
-  bool Equals(const CSSCounterValue& other) const {
+  bool Equals(const CSSCounterContentValue& other) const {
     return Identifier() == other.Identifier() &&
            ListStyle() == other.ListStyle() &&
            Separator() == other.Separator() &&
@@ -60,7 +60,7 @@ class CSSCounterValue : public CSSValue {
            GetTreeScope() == other.GetTreeScope();
   }
 
-  const CSSCounterValue& PopulateWithTreeScope(const TreeScope*) const;
+  const CSSCounterContentValue& PopulateWithTreeScope(const TreeScope*) const;
 
   String CustomCSSText() const;
 
@@ -75,12 +75,12 @@ class CSSCounterValue : public CSSValue {
 }  // namespace cssvalue
 
 template <>
-struct DowncastTraits<cssvalue::CSSCounterValue> {
+struct DowncastTraits<cssvalue::CSSCounterContentValue> {
   static bool AllowFrom(const CSSValue& value) {
-    return value.IsCounterValue();
+    return value.IsCounterContentValue();
   }
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COUNTER_VALUE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COUNTER_CONTENT_VALUE_H_

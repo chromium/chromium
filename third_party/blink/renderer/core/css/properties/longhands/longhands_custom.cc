@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
-#include "third_party/blink/renderer/core/css/css_counter_value.h"
+#include "third_party/blink/renderer/core/css/css_counter_content_value.h"
 #include "third_party/blink/renderer/core/css/css_cursor_image_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_dynamic_range_limit_mix_value.h"
@@ -3287,8 +3287,8 @@ CSSValue* ConsumeCounterContent(CSSParserTokenStream& stream,
     guard.Release();
   }
   stream.ConsumeWhitespace();
-  return MakeGarbageCollected<cssvalue::CSSCounterValue>(identifier, list_style,
-                                                         separator);
+  return MakeGarbageCollected<cssvalue::CSSCounterContentValue>(
+      identifier, list_style, separator);
 }
 
 const CSSValue* ParseContentValue(CSSParserTokenStream& stream,
@@ -3445,7 +3445,7 @@ void Content::ApplyValue(StyleResolverState& state,
       next_content = MakeGarbageCollected<ImageContentData>(
           state.GetStyleImage(CSSPropertyID::kContent, *item));
     } else if (const auto* counter_value =
-                   DynamicTo<cssvalue::CSSCounterValue>(item.Get())) {
+                   DynamicTo<cssvalue::CSSCounterContentValue>(item.Get())) {
       next_content = MakeGarbageCollected<CounterContentData>(
           AtomicString(counter_value->Identifier()), counter_value->ListStyle(),
           AtomicString(counter_value->Separator()),
@@ -3495,7 +3495,7 @@ void Content::ApplyValue(StyleResolverState& state,
     for (auto& item : To<CSSValueList>(outer_list.Item(1))) {
       ContentData* alt_content = nullptr;
       if (const auto* counter_value =
-              DynamicTo<cssvalue::CSSCounterValue>(item.Get())) {
+              DynamicTo<cssvalue::CSSCounterContentValue>(item.Get())) {
         alt_content = MakeGarbageCollected<AltCounterContentData>(
             AtomicString(counter_value->Identifier()),
             counter_value->ListStyle(),
