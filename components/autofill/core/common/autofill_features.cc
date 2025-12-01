@@ -387,13 +387,6 @@ BASE_FEATURE(kAutofillAndroidKeyboardAccessoryDynamicPositioning,
 BASE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, forms that are only identified through server predictions
-// are considered for key and funnel metric logging. Without this feature, due
-// to a bug, only forms identified by parsing are considered.
-// TODO(crbug.com/436171158): Clean up when launched.
-BASE_FEATURE(kAutofillConsiderServerOnlyFormsInKeyMetrics,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Same as `kAutofillAddressUserPerceptionSurvey` but for credit card forms.
 BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);

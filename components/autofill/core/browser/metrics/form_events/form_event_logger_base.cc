@@ -109,10 +109,6 @@ void FormEventLoggerBase::OnDidIdentifyForm(
       RecordParseForm();
       break;
     case FormIdentificationTime::kAfterServerPredictions:
-      if (!base::FeatureList::IsEnabled(
-              features::kAutofillConsiderServerOnlyFormsInKeyMetrics)) {
-        return;
-      }
       identified_form_types_.insert_all(form_types);
       break;
   }
