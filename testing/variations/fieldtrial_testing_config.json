@@ -11834,6 +11834,23 @@
             ]
         }
     ],
+    "GlicSidePanelChromeOS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicMultiInstance",
+                        "GlicMultiTab",
+                        "GlicMultitabUnderlines"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicTieredRollout": [
         {
             "platforms": [
