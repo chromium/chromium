@@ -1152,7 +1152,9 @@ void CanvasResourceProviderSharedImage::OnDestroyRecyclableCanvasResource(
 
 void CanvasResourceProviderSharedImage::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
-  CanvasResourceProvider::OnFlushForImage(content_id);
+  if (Canvas().IsCachingImage(content_id)) {
+    FlushCanvas();
+  }
   if (cached_snapshot_ &&
       cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(0) ==
           content_id) {
@@ -1680,12 +1682,6 @@ void CanvasResourceProvider::RecordingCleared() {
 
 MemoryManagedPaintCanvas& CanvasResourceProvider::Canvas() {
   return recorder_->getRecordingCanvas();
-}
-
-void CanvasResourceProvider::OnFlushForImage(PaintImage::ContentId content_id) {
-  if (Canvas().IsCachingImage(content_id)) {
-    FlushCanvas();
-  }
 }
 
 void CanvasResourceProvider::ReleaseLockedImages() {

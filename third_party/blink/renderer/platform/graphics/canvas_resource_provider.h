@@ -316,7 +316,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   mutable sk_sp<SkSurface> surface_;  // mutable for lazy init
   SkSurface::ContentChangeMode mode_ = SkSurface::kRetain_ContentChangeMode;
 
-  virtual void OnFlushForImage(cc::PaintImage::ContentId content_id);
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
 
   HighEntropyCanvasOpType GetRecorderHighEntropyCanvasOpTypes() const;
@@ -586,7 +585,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       ImageOrientation orientation) final;
   void RasterRecord(cc::PaintRecord last_recording) override;
   sk_sp<SkSurface> CreateSkSurface() const override;
-  void OnFlushForImage(cc::PaintImage::ContentId content_id) final;
+  void OnFlushForImage(cc::PaintImage::ContentId content_id);
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) final;
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
