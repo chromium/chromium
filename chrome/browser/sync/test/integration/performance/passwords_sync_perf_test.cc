@@ -13,9 +13,10 @@
 #include "content/public/test/browser_test.h"
 #include "testing/perf/perf_result_reporter.h"
 
+using password_manager::PasswordForm;
 using passwords_helper::CreateTestPasswordForm;
+using passwords_helper::GetAccountPasswordStoreInterface;
 using passwords_helper::GetPasswordCount;
-using passwords_helper::GetProfilePasswordStoreInterface;
 using sync_timing_helper::TimeUntilQuiescence;
 
 static const int kNumPasswords = 150;
@@ -44,6 +45,10 @@ class PasswordsSyncPerfTest : public SyncTest {
   PasswordsSyncPerfTest(const PasswordsSyncPerfTest&) = delete;
   PasswordsSyncPerfTest& operator=(const PasswordsSyncPerfTest&) = delete;
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTransportOnly;
+  }
+
   // Adds |num_logins| new unique passwords to |profile|.
   void AddLogins(int profile, int num_logins);
 
@@ -55,7 +60,7 @@ class PasswordsSyncPerfTest : public SyncTest {
 
  private:
   // Returns a new unique login.
-  password_manager::PasswordForm NextLogin();
+  PasswordForm NextLogin();
 
   // Returns a new unique password value.
   std::string NextPassword();
@@ -65,34 +70,35 @@ class PasswordsSyncPerfTest : public SyncTest {
 
 void PasswordsSyncPerfTest::AddLogins(int profile, int num_logins) {
   for (int i = 0; i < num_logins; ++i) {
-    GetProfilePasswordStoreInterface(profile)->AddLogin(NextLogin());
+    GetAccountPasswordStoreInterface(profile)->AddLogin(NextLogin());
   }
   // Don't proceed before all additions happen on the background thread.
   // Call GetPasswordCount() because it blocks on the background thread.
-  GetPasswordCount(profile);
+  GetPasswordCount(profile, PasswordForm::Store::kAccountStore);
 }
 
 void PasswordsSyncPerfTest::UpdateLogins(int profile) {
-  std::vector<std::unique_ptr<password_manager::PasswordForm>> logins =
-      passwords_helper::GetLogins(GetProfilePasswordStoreInterface(profile));
-  for (std::unique_ptr<password_manager::PasswordForm>& login : logins) {
+  std::vector<std::unique_ptr<PasswordForm>> logins =
+      passwords_helper::GetLogins(GetAccountPasswordStoreInterface(profile));
+  for (std::unique_ptr<PasswordForm>& login : logins) {
     login->password_value = base::ASCIIToUTF16(NextPassword());
-    GetProfilePasswordStoreInterface(profile)->UpdateLogin(*login);
+    GetAccountPasswordStoreInterface(profile)->UpdateLogin(*login);
   }
   // Don't proceed before all updates happen on the background thread.
   // Call GetPasswordCount() because it blocks on the background thread.
-  GetPasswordCount(profile);
+  GetPasswordCount(profile, PasswordForm::Store::kAccountStore);
 }
 
 void PasswordsSyncPerfTest::RemoveLogins(int profile) {
-  passwords_helper::RemoveLogins(GetProfilePasswordStoreInterface(profile));
+  passwords_helper::RemoveLogins(GetAccountPasswordStoreInterface(profile));
   // Don't proceed before all removals happen on the background thread.
   // Call GetPasswordCount() because it blocks on the background thread.
-  GetPasswordCount(profile);
+  GetPasswordCount(profile, PasswordForm::Store::kAccountStore);
 }
 
-password_manager::PasswordForm PasswordsSyncPerfTest::NextLogin() {
-  return CreateTestPasswordForm(password_number_++);
+PasswordForm PasswordsSyncPerfTest::NextLogin() {
+  return CreateTestPasswordForm(password_number_++,
+                                PasswordForm::Store::kAccountStore);
 }
 
 std::string PasswordsSyncPerfTest::NextPassword() {
@@ -106,16 +112,18 @@ IN_PROC_BROWSER_TEST_F(PasswordsSyncPerfTest, P0) {
       SetUpReporter(base::NumberToString(kNumPasswords) + "_passwords");
   AddLogins(0, kNumPasswords);
   base::TimeDelta dt = TimeUntilQuiescence(GetSyncClients());
-  ASSERT_EQ(kNumPasswords, GetPasswordCount(1));
+  ASSERT_EQ(kNumPasswords,
+            GetPasswordCount(1, PasswordForm::Store::kAccountStore));
   reporter.AddResult(kMetricAddPasswordsSyncTime, dt);
 
   UpdateLogins(0);
   dt = TimeUntilQuiescence(GetSyncClients());
-  ASSERT_EQ(kNumPasswords, GetPasswordCount(1));
+  ASSERT_EQ(kNumPasswords,
+            GetPasswordCount(1, PasswordForm::Store::kAccountStore));
   reporter.AddResult(kMetricUpdatePasswordsSyncTime, dt);
 
   RemoveLogins(0);
   dt = TimeUntilQuiescence(GetSyncClients());
-  ASSERT_EQ(0, GetPasswordCount(1));
+  ASSERT_EQ(0, GetPasswordCount(1, PasswordForm::Store::kAccountStore));
   reporter.AddResult(kMetricDeletePasswordsSyncTime, dt);
 }
