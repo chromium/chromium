@@ -2697,6 +2697,10 @@ void StyleResolver::InvalidateMatchedPropertiesCache() {
   matched_properties_cache_.Clear();
 }
 
+void StyleResolver::InvalidateMatchedPropertiesCacheForViewportUnits() {
+  matched_properties_cache_.ClearViewportDependent();
+}
+
 void StyleResolver::SetResizedForViewportUnits() {
   was_viewport_resized_ = true;
   GetDocument().GetStyleEngine().UpdateActiveStyle();

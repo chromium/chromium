@@ -211,6 +211,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   // FIXME: Rename to reflect the purpose, like didChangeFontSize or something.
   void InvalidateMatchedPropertiesCache();
+  void InvalidateMatchedPropertiesCacheForViewportUnits();
 
   void SetResizedForViewportUnits();
   void ClearResizedForViewportUnits();

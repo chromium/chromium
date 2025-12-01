@@ -5265,12 +5265,6 @@ StyleRecalcChange Element::RecalcOwnStyle(
   }
   SetComputedStyle(new_style);
 
-  if (new_style && (GetDocument().documentElement() == this) &&
-      GetDocument().GetLayoutView()->SetScrollbarSizesForViewportUnits(
-          new_style->UnconditionalScrollbarSize())) {
-    GetDocument().GetStyleEngine().UpdateViewportSize();
-  }
-
   if ((!old_style && new_style && new_style->GetCounterDirectives()) ||
       (old_style && new_style &&
        !old_style->CounterDirectivesEqual(*new_style)) ||
@@ -5367,6 +5361,17 @@ StyleRecalcChange Element::RecalcOwnStyle(
         // keep track of which elements depend on root font units like we do for
         // viewport styles, but we assume root font size changes are rare and
         // just recalculate everything.
+        child_change =
+            child_change.EnsureAtLeast(StyleRecalcChange::kRecalcDescendants);
+      }
+
+      if (new_style &&
+          GetDocument().GetLayoutView()->SetScrollbarSizesForViewportUnits(
+              new_style->UnconditionalScrollbarSize())) {
+        GetDocument().GetStyleEngine().UpdateViewportSize();
+        GetDocument()
+            .GetStyleResolver()
+            .InvalidateMatchedPropertiesCacheForViewportUnits();
         child_change =
             child_change.EnsureAtLeast(StyleRecalcChange::kRecalcDescendants);
       }

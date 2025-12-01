@@ -2548,7 +2548,6 @@ crbug.com/1110401 external/wpt/css/css-pseudo/active-selection-045.html [ Failur
 crbug.com/1024156 external/wpt/css/css-pseudo/active-selection-027.html [ Failure ]
 
 crbug.com/354751900 external/wpt/css/css-values/viewport-units-scrollbars-auto-vhw-001.html [ Failure ]
-crbug.com/354751900 external/wpt/css/css-values/viewport-units-scrollbars-dynamic-001.html [ Failure ]
 
 crbug.com/27659 external/wpt/css/css-ruby/block-ruby-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/empty-ruby-base-container.html [ Failure ]
