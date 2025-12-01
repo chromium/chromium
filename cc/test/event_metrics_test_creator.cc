@@ -130,8 +130,7 @@ EventMetricsTestCreator::CreateScrollUpdateEventMetrics(
       is_inertial, scroll_update_type, params.delta, params.timestamp,
       /* arrived_in_browser_main_timestamp= */ params.timestamp +
           base::Nanoseconds(1),
-      &test_tick_clock_,
-      /* trace_id= */ std::nullopt);
+      &test_tick_clock_, params.trace_id);
   if (params.predicted_delta.has_value()) {
     event->set_predicted_delta(*params.predicted_delta);
   }
@@ -140,6 +139,9 @@ EventMetricsTestCreator::CreateScrollUpdateEventMetrics(
   }
   if (params.did_scroll.has_value()) {
     event->set_did_scroll(*params.did_scroll);
+  }
+  if (params.is_synthetic.has_value()) {
+    event->set_is_synthetic(*params.is_synthetic);
   }
   if (params.begin_frame_args.has_value()) {
     event->set_begin_frame_args(*params.begin_frame_args);

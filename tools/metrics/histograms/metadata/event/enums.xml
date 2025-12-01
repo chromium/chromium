@@ -324,6 +324,14 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Multiple issues">
     The frame suffered from more than one of the issues above.
   </int>
+  <int value="10" label="Scroll start then updates">
+    The frame contained one scroll start followed by one or more scroll updates.
+  </int>
+  <int value="11" label="Scroll start then updates then end">
+    The frame contained one scroll start, one or more scroll updates and then
+    one scroll end (in this order). It's strange to have a scroll that starts
+    and ends within the same frame, but it's technically not an issue.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//cc/metrics/scroll_jank_v4_frame_stage.h:FrameStageCalculationResult) -->

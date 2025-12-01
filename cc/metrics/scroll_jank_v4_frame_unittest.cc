@@ -8,7 +8,6 @@
 #include <memory>
 #include <sstream>
 
-#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame_stage.h"
@@ -29,7 +28,9 @@ using ScrollDamage = ScrollJankV4Frame::ScrollDamage;
 using DamagingFrame = ScrollJankV4Frame::DamagingFrame;
 using NonDamagingFrame = ScrollJankV4Frame::NonDamagingFrame;
 using ScrollUpdates = ScrollJankV4FrameStage::ScrollUpdates;
+using ScrollStart = ScrollJankV4FrameStage::ScrollStart;
 using ScrollEnd = ScrollJankV4FrameStage::ScrollEnd;
+using Real = ScrollUpdates::Real;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 
@@ -136,15 +137,16 @@ TEST_F(ScrollJankV4FrameTest, OneNonDamagingFrame) {
           BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(111),
                                       .interval = kVsyncInterval},
           NonDamagingFrame{},
-          {ScrollJankV4FrameStage{ScrollUpdates{
-              .is_scroll_start = false,
-              .earliest_event = base::raw_ref(
-                  static_cast<ScrollUpdateEventMetrics&>(*events_metrics[0])),
-              .last_input_generation_ts = MillisecondsTicks(13),
-              .has_inertial_input = true,
-              .total_raw_delta_pixels = 10.0f,
-              .max_abs_inertial_raw_delta_pixels = 4.0f,
-          }}})));
+          {ScrollJankV4FrameStage{ScrollUpdates(
+              static_cast<ScrollUpdateEventMetrics*>(events_metrics[0].get()),
+              Real{
+                  .first_input_generation_ts = MillisecondsTicks(10),
+                  .last_input_generation_ts = MillisecondsTicks(13),
+                  .has_inertial_input = true,
+                  .abs_total_raw_delta_pixels = 10.0f,
+                  .max_abs_inertial_raw_delta_pixels = 4.0f,
+              },
+              /* synthetic= */ std::nullopt)}})));
 }
 
 TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFrames) {
@@ -204,44 +206,48 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFrames) {
               BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(111),
                                           .interval = kVsyncInterval},
               NonDamagingFrame{},
-              {ScrollJankV4FrameStage{ScrollUpdates{
-                  .is_scroll_start = true,
-                  .earliest_event =
-                      base::raw_ref(static_cast<ScrollUpdateEventMetrics&>(
-                          *events_metrics[0])),
-                  .last_input_generation_ts = MillisecondsTicks(11),
-                  .has_inertial_input = false,
-                  .total_raw_delta_pixels = 3.0f,
-                  .max_abs_inertial_raw_delta_pixels = 0.0f,
-              }}}),
+              {ScrollJankV4FrameStage{ScrollStart{}},
+               ScrollJankV4FrameStage{ScrollUpdates(
+                   static_cast<ScrollUpdateEventMetrics*>(
+                       events_metrics[0].get()),
+                   Real{
+                       .first_input_generation_ts = MillisecondsTicks(10),
+                       .last_input_generation_ts = MillisecondsTicks(11),
+                       .has_inertial_input = false,
+                       .abs_total_raw_delta_pixels = 3.0f,
+                       .max_abs_inertial_raw_delta_pixels = 0.0f,
+                   },
+                   /* synthetic= */ std::nullopt)}}),
           ScrollJankV4Frame(
               BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(222),
                                           .interval = kVsyncInterval},
               NonDamagingFrame{},
-              {ScrollJankV4FrameStage{ScrollUpdates{
-                  .is_scroll_start = false,
-                  .earliest_event =
-                      base::raw_ref(static_cast<ScrollUpdateEventMetrics&>(
-                          *events_metrics[2])),
-                  .last_input_generation_ts = MillisecondsTicks(13),
-                  .has_inertial_input = false,
-                  .total_raw_delta_pixels = 30.0f,
-                  .max_abs_inertial_raw_delta_pixels = 0.0f,
-              }}}),
+              {ScrollJankV4FrameStage{ScrollUpdates(
+                  static_cast<ScrollUpdateEventMetrics*>(
+                      events_metrics[2].get()),
+                  Real{
+                      .first_input_generation_ts = MillisecondsTicks(12),
+                      .last_input_generation_ts = MillisecondsTicks(13),
+                      .has_inertial_input = false,
+                      .abs_total_raw_delta_pixels = 30.0f,
+                      .max_abs_inertial_raw_delta_pixels = 0.0f,
+                  },
+                  /* synthetic= */ std::nullopt)}}),
           ScrollJankV4Frame(
               BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(333),
                                           .interval = kVsyncInterval},
               NonDamagingFrame{},
-              {ScrollJankV4FrameStage{ScrollUpdates{
-                  .is_scroll_start = false,
-                  .earliest_event =
-                      base::raw_ref(static_cast<ScrollUpdateEventMetrics&>(
-                          *events_metrics[4])),
-                  .last_input_generation_ts = MillisecondsTicks(15),
-                  .has_inertial_input = true,
-                  .total_raw_delta_pixels = 300.0f,
-                  .max_abs_inertial_raw_delta_pixels = 200.0f,
-              }}})));
+              {ScrollJankV4FrameStage{ScrollUpdates(
+                  static_cast<ScrollUpdateEventMetrics*>(
+                      events_metrics[4].get()),
+                  Real{
+                      .first_input_generation_ts = MillisecondsTicks(14),
+                      .last_input_generation_ts = MillisecondsTicks(15),
+                      .has_inertial_input = true,
+                      .abs_total_raw_delta_pixels = 300.0f,
+                      .max_abs_inertial_raw_delta_pixels = 200.0f,
+                  },
+                  /* synthetic= */ std::nullopt)}})));
 }
 
 TEST_F(ScrollJankV4FrameTest, OneDamagingFrame) {
@@ -303,15 +309,17 @@ TEST_F(ScrollJankV4FrameTest, OneDamagingFrame) {
                                       .interval = kVsyncInterval},
 
           DamagingFrame{.presentation_ts = MillisecondsTicks(777)},
-          {ScrollJankV4FrameStage{ScrollUpdates{
-              .is_scroll_start = true,
-              .earliest_event = base::raw_ref(
-                  static_cast<ScrollUpdateEventMetrics&>(*events_metrics[0])),
-              .last_input_generation_ts = MillisecondsTicks(15),
-              .has_inertial_input = true,
-              .total_raw_delta_pixels = 333.0f,
-              .max_abs_inertial_raw_delta_pixels = 200.0f,
-          }}})));
+          {ScrollJankV4FrameStage{ScrollStart{}},
+           ScrollJankV4FrameStage{ScrollUpdates(
+               static_cast<ScrollUpdateEventMetrics*>(events_metrics[0].get()),
+               Real{
+                   .first_input_generation_ts = MillisecondsTicks(10),
+                   .last_input_generation_ts = MillisecondsTicks(15),
+                   .has_inertial_input = true,
+                   .abs_total_raw_delta_pixels = 333.0f,
+                   .max_abs_inertial_raw_delta_pixels = 200.0f,
+               },
+               /* synthetic= */ std::nullopt)}})));
 }
 
 // Example from `ScrollJankV4Frame::Timeline CalculateTimeline()`'s
@@ -407,16 +415,18 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFramesAndOneDamagingFrame) {
               BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(111),
                                           .interval = kVsyncInterval},
               NonDamagingFrame{},
-              {ScrollJankV4FrameStage{ScrollUpdates{
-                  .is_scroll_start = true,
-                  .earliest_event =
-                      base::raw_ref(static_cast<ScrollUpdateEventMetrics&>(
-                          *events_metrics[1])),
-                  .last_input_generation_ts = MillisecondsTicks(12),
-                  .has_inertial_input = false,
-                  .total_raw_delta_pixels = 3.0f,
-                  .max_abs_inertial_raw_delta_pixels = 0.0f,
-              }}}),
+              {ScrollJankV4FrameStage{ScrollStart{}},
+               ScrollJankV4FrameStage{ScrollUpdates(
+                   static_cast<ScrollUpdateEventMetrics*>(
+                       events_metrics[1].get()),
+                   Real{
+                       .first_input_generation_ts = MillisecondsTicks(11),
+                       .last_input_generation_ts = MillisecondsTicks(12),
+                       .has_inertial_input = false,
+                       .abs_total_raw_delta_pixels = 3.0f,
+                       .max_abs_inertial_raw_delta_pixels = 0.0f,
+                   },
+                   /* synthetic= */ std::nullopt)}}),
           ScrollJankV4Frame(
               BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(222),
                                           .interval = kVsyncInterval},
@@ -426,16 +436,17 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFramesAndOneDamagingFrame) {
                                           .interval = kVsyncInterval},
 
               DamagingFrame{.presentation_ts = MillisecondsTicks(777)},
-              {ScrollJankV4FrameStage{ScrollUpdates{
-                  .is_scroll_start = false,
-                  .earliest_event =
-                      base::raw_ref(static_cast<ScrollUpdateEventMetrics&>(
-                          *events_metrics[4])),
-                  .last_input_generation_ts = MillisecondsTicks(19),
-                  .has_inertial_input = true,
-                  .total_raw_delta_pixels = 3330.0f,
-                  .max_abs_inertial_raw_delta_pixels = 2000.0f,
-              }}})));
+              {ScrollJankV4FrameStage{ScrollUpdates(
+                  static_cast<ScrollUpdateEventMetrics*>(
+                      events_metrics[4].get()),
+                  Real{
+                      .first_input_generation_ts = MillisecondsTicks(14),
+                      .last_input_generation_ts = MillisecondsTicks(19),
+                      .has_inertial_input = true,
+                      .abs_total_raw_delta_pixels = 3330.0f,
+                      .max_abs_inertial_raw_delta_pixels = 2000.0f,
+                  },
+                  /* synthetic= */ std::nullopt)}})));
 }
 
 TEST_F(ScrollJankV4FrameTest, BeginFrameArgsForScrollJankToOstream) {

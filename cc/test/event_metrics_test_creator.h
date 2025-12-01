@@ -48,6 +48,8 @@ class EventMetricsTestCreator {
     std::optional<float> predicted_delta = std::nullopt;
     std::optional<bool> caused_frame_update = std::nullopt;
     std::optional<bool> did_scroll = std::nullopt;
+    std::optional<bool> is_synthetic = std::nullopt;
+    std::optional<EventMetrics::TraceId> trace_id = std::nullopt;
     std::optional<std::reference_wrapper<const viz::BeginFrameArgs>>
         begin_frame_args = std::nullopt;
   };

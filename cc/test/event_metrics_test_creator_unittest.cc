@@ -265,6 +265,24 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, CausedFrameUpdateParam) {
   EXPECT_TRUE(event2->caused_frame_update());
 }
 
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, IsSyntheticParam) {
+  std::unique_ptr<ScrollUpdateEventMetrics> event1 =
+      CreateEvent({.is_synthetic = false});
+  EXPECT_EQ(event1->type(), GetParam().expected_type);
+  EXPECT_FALSE(event1->is_synthetic());
+  std::unique_ptr<ScrollUpdateEventMetrics> event2 =
+      CreateEvent({.is_synthetic = true});
+  EXPECT_EQ(event2->type(), GetParam().expected_type);
+  EXPECT_TRUE(event2->is_synthetic());
+}
+
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, TraceIdParam) {
+  std::unique_ptr<ScrollUpdateEventMetrics> event =
+      CreateEvent({.trace_id = EventMetrics::TraceId(123)});
+  EXPECT_EQ(event->type(), GetParam().expected_type);
+  EXPECT_EQ(event->trace_id()->value(), 123);
+}
+
 TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, BeginFrameArgsParam) {
   viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
       BEGINFRAME_FROM_HERE, /* source_id= */ 123, /* sequence_number= */ 456,
@@ -291,6 +309,8 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, AllParams) {
                    .predicted_delta = -7.0f,
                    .caused_frame_update = true,
                    .did_scroll = false,
+                   .is_synthetic = true,
+                   .trace_id = EventMetrics::TraceId(456),
                    .begin_frame_args = args});
   EXPECT_EQ(event->type(), GetParam().expected_type);
   EXPECT_EQ(
@@ -300,6 +320,8 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, AllParams) {
   EXPECT_EQ(event->predicted_delta(), -7.0f);
   EXPECT_TRUE(event->caused_frame_update());
   EXPECT_FALSE(event->did_scroll());
+  EXPECT_TRUE(event->is_synthetic());
+  EXPECT_EQ(event->trace_id()->value(), 456);
   EXPECT_EQ(event->begin_frame_args().frame_id, viz::BeginFrameId(123, 456));
 }
 

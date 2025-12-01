@@ -68,10 +68,10 @@ void ScrollJankV4Processor::HandleFrame(
     bool counts_towards_histogram_frame_count) {
   for (ScrollJankV4FrameStage& stage : stages) {
     std::visit(absl::Overload{
+                   [&](ScrollJankV4FrameStage::ScrollStart& end) {
+                     HandleScrollStarted();
+                   },
                    [&](ScrollJankV4FrameStage::ScrollUpdates& updates) {
-                     if (updates.is_scroll_start) {
-                       HandleScrollStarted();
-                     }
                      HandleFrameWithScrollUpdates(
                          updates, damage, args,
                          counts_towards_histogram_frame_count);
@@ -89,16 +89,18 @@ void ScrollJankV4Processor::HandleFrameWithScrollUpdates(
     const ScrollDamage& damage,
     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
     bool counts_towards_histogram_frame_count) {
-  ScrollUpdateEventMetrics& earliest_event = *updates.earliest_event;
-  base::TimeTicks first_input_generation_ts =
-      earliest_event.GetDispatchStageTimestamp(
-          EventMetrics::DispatchStage::kGenerated);
+  // TODO(crbug.com/456180776): Handle synthetic inputs.
+  CHECK(updates.real().has_value());
+  CHECK(!updates.synthetic().has_value());
+  const ScrollJankV4FrameStage::ScrollUpdates::Real& real_updates =
+      *updates.real();
   std::optional<ScrollUpdateEventMetrics::ScrollJankV4Result> result =
       decider_.DecideJankForFrameWithScrollUpdates(
-          first_input_generation_ts, updates.last_input_generation_ts, damage,
-          args, updates.has_inertial_input,
-          std::abs(updates.total_raw_delta_pixels),
-          updates.max_abs_inertial_raw_delta_pixels);
+          real_updates.first_input_generation_ts,
+          real_updates.last_input_generation_ts, damage, args,
+          real_updates.has_inertial_input,
+          real_updates.abs_total_raw_delta_pixels,
+          real_updates.max_abs_inertial_raw_delta_pixels);
   if (!result.has_value()) {
     return;
   }
@@ -106,8 +108,10 @@ void ScrollJankV4Processor::HandleFrameWithScrollUpdates(
   histogram_emitter_.OnFrameWithScrollUpdates(
       result->missed_vsyncs_per_reason, counts_towards_histogram_frame_count);
 
-  CHECK(!earliest_event.scroll_jank_v4().has_value());
-  earliest_event.set_scroll_jank_v4(std::move(result));
+  if (ScrollUpdateEventMetrics* earliest_event = updates.earliest_event()) {
+    CHECK(!earliest_event->scroll_jank_v4().has_value());
+    earliest_event->set_scroll_jank_v4(std::move(result));
+  }
 }
 
 void ScrollJankV4Processor::HandleScrollStarted() {

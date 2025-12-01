@@ -163,10 +163,8 @@ struct CC_EXPORT ScrollJankV4Frame {
   // cares about GSUs and GSEs, so it will ignore the initial GSB (1).
   //
   // This method does NOT require that `events_metrics` is sorted. It will not
-  // modify `events_metrics` in any way. All `base::raw_ref` references in the
-  // result point to events in `events_metrics`, fields thereof and/or
-  // `presented_args`. So `events_metrics`' and `presented_args`' lifetime must
-  // be longer than the returned timeline's lifetime.
+  // modify `events_metrics` in any way. All pointers in the result point to
+  // events in `events_metrics`.
   static ScrollJankV4Frame::Timeline CalculateTimeline(
       const EventMetrics::List& events_metrics,
       const viz::BeginFrameArgs& presented_args,
