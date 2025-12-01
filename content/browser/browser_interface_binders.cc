@@ -1122,7 +1122,7 @@ void PopulateBinderMapWithContext(
   if (BrowserMainLoop::GetInstance()) {
     map->Add<midi::mojom::MidiSessionProvider>(
         base::BindRepeating(&MidiHost::BindReceiver,
-                            host->GetProcess()->GetDeprecatedID(),
+                            host->GetProcess()->GetID(),
                             BrowserMainLoop::GetInstance()->midi_service()),
         GetIOThreadTaskRunner({}));
   }

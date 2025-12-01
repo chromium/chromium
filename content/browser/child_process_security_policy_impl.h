@@ -26,6 +26,7 @@
 #include "content/browser/isolation_context.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/common/bindings_policy.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -509,10 +510,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                           int policy);
 
   // Returns true if sending MIDI messages is allowed.
-  bool CanSendMidiMessage(int child_id);
+  bool CanSendMidiMessage(ChildProcessId child_id);
 
   // Returns true if sending system exclusive (SysEx) MIDI messages is allowed.
-  bool CanSendMidiSysExMessage(int child_id);
+  bool CanSendMidiSysExMessage(ChildProcessId child_id);
 
   // Remove all isolated origins associated with |browser_context| and clear any
   // pointers that may reference |browser_context|.  This is

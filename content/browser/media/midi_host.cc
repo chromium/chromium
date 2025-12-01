@@ -44,7 +44,8 @@ using midi::kSysExByte;
 using midi::mojom::PortState;
 using midi::mojom::Result;
 
-MidiHost::MidiHost(int renderer_process_id, midi::MidiService* midi_service)
+MidiHost::MidiHost(ChildProcessId renderer_process_id,
+                   midi::MidiService* midi_service)
     : renderer_process_id_(renderer_process_id),
       has_midi_permission_(false),
       has_midi_sysex_permission_(false),
@@ -64,7 +65,7 @@ MidiHost::~MidiHost() {
 
 // static
 void MidiHost::BindReceiver(
-    int render_process_id,
+    ChildProcessId render_process_id,
     midi::MidiService* midi_service,
     RenderFrameHost*,  // Required for the BinderMapWithContext interface.
     mojo::PendingReceiver<midi::mojom::MidiSessionProvider> receiver) {

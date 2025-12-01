@@ -2541,10 +2541,11 @@ void ChildProcessSecurityPolicyImpl::RegisterFileSystemPermissionPolicy(
   file_system_policy_map_[type] = policy;
 }
 
-bool ChildProcessSecurityPolicyImpl::CanSendMidiMessage(int child_id) {
+bool ChildProcessSecurityPolicyImpl::CanSendMidiMessage(
+    ChildProcessId child_id) {
   base::AutoLock lock(lock_);
 
-  auto state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id.GetUnsafeValue());
   if (state == security_state_.end()) {
     return false;
   }
@@ -2552,10 +2553,11 @@ bool ChildProcessSecurityPolicyImpl::CanSendMidiMessage(int child_id) {
   return state->second->CanSendMidi();
 }
 
-bool ChildProcessSecurityPolicyImpl::CanSendMidiSysExMessage(int child_id) {
+bool ChildProcessSecurityPolicyImpl::CanSendMidiSysExMessage(
+    ChildProcessId child_id) {
   base::AutoLock lock(lock_);
 
-  auto state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id.GetUnsafeValue());
   if (state == security_state_.end()) {
     return false;
   }
