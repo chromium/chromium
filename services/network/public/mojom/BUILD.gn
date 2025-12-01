@@ -1789,7 +1789,6 @@ mojom("mojom") {
     ":url_loader_base",
     ":websocket_mojom",
     "//components/content_settings/core/common:mojo_bindings",
-    "//components/ip_protection/mojom",
     "//components/os_crypt/async/common:common_mojom",
     "//components/unexportable_keys/mojom",
     "//mojo/public/mojom/base",

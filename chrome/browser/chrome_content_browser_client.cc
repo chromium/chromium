@@ -8527,12 +8527,6 @@ void ChromeContentBrowserClient::PreferenceRankVideoDeviceInfos(
   media_prefs::PreferenceRankVideoDeviceInfos(*prefs, infos);
 }
 
-network::mojom::IpProtectionProxyBypassPolicy
-ChromeContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
-  return network::mojom::IpProtectionProxyBypassPolicy::
-      kFirstPartyToTopLevelFrame;
-}
-
 void ChromeContentBrowserClient::MaybePrewarmHttpDiskCache(
     content::BrowserContext& browser_context,
     const std::optional<url::Origin>& initiator_origin,

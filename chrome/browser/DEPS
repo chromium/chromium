@@ -177,7 +177,6 @@ include_rules = [
   "+components/input",
   "+components/installedapp",
   "+components/invalidation",
-  "+components/ip_protection",
   "+components/javascript_dialogs",
   "+components/keep_alive_registry",
   "+components/keyed_service/content",

@@ -2554,16 +2554,6 @@ inline constexpr char kInstantHotspotOnNearbyDescription[] =
     "Switches Instant Hotspot to use Nearby Presence for device discovery, as "
     "well as Nearby Connections for device communication.";
 
-inline constexpr char kIpProtectionProxyOptOutName[] =
-    "Disable IP Protection Proxy";
-inline constexpr char kIpProtectionProxyOptOutDescription[] =
-    "When disabled, prevents use of the IP Protection proxy. This is intended "
-    "to help with diagnosing any issues that could be caused by the feature "
-    "being enabled. For the current status of this feature, see: "
-    "https://chromestatus.com/feature/5111460239245312";
-inline constexpr char kIpProtectionProxyOptOutChoiceDefault[] = "Default";
-inline constexpr char kIpProtectionProxyOptOutChoiceOptOut[] = "Disabled";
-
 inline constexpr char
     kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionName[] =
         "Invalidate search engine choice after the install detects it has been "

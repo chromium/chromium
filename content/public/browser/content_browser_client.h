@@ -3156,15 +3156,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* browser_context,
       blink::WebMediaDeviceInfoArray& infos);
 
-  // Allows the embedder to override the proxy bypass policy used for IP
-  // Protection.
-  // Even if a domain is part of the masked domain list and is
-  // eligible for IP Protection, the embedder can use a certain policy to bypass
-  // certain network requests from IP Protection.
-  // By default, there is no bypass policy used.
-  virtual network::mojom::IpProtectionProxyBypassPolicy
-  GetIpProtectionProxyBypassPolicy();
-
   // Prewarms the HTTP disk cache entries for the given URL and the
   // subresources if possible.
   // `initiator_origin` is the origin that triggers the prewarm request,

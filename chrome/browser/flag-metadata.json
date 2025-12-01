@@ -6420,11 +6420,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "ip-protection-proxy-opt-out",
-    "owners": [ "awillia@chromium.org", "//chrome/browser/ip_protection/OWNERS" ],
-    "expiry_milestone": 148
-  },
-  {
     "name": "iph-autofill-credit-card-benefit-feature",
     "owners": [ "viplavkadam@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145

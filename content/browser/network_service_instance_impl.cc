@@ -429,8 +429,6 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
   }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
-  network_service_params->ip_protection_proxy_bypass_policy =
-      GetContentClient()->browser()->GetIpProtectionProxyBypassPolicy();
   return network_service_params;
 }
 

@@ -26,7 +26,6 @@
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "components/ip_protection/common/ip_protection_core.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -213,10 +212,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   CookieManager* cookie_manager() { return cookie_manager_.get(); }
 
-  ip_protection::IpProtectionCore* ip_protection_core() {
-    return ip_protection_core_.get();
-  }
-
   const base::flat_set<std::string>* cors_exempt_header_list() const {
     return &cors_exempt_header_list_;
   }
@@ -283,8 +278,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const url::Origin& issuer,
       DeleteStoredTrustTokensCallback callback) override;
   void SetBlockTrustTokens(bool block) override;
-  void SetTrackingProtectionContentSetting(
-      const ContentSettingsForOneType& settings) override;
   void ClearNetworkingHistoryBetween(
       base::Time start_time,
       base::Time end_time,
@@ -870,11 +863,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   mojo::Remote<mojom::NetworkContextClient> client_;
 
   std::unique_ptr<ResourceScheduler> resource_scheduler_;
-
-  // The IpProtectionCore for this context, used to coordinate proxying
-  // protected requests. `url_request_context_owner_` indirectly holds
-  // a pointer to and must be defined after `ip_protection_core_`.
-  std::unique_ptr<ip_protection::IpProtectionCore> ip_protection_core_;
 
   // Used only when network::features::kCompressionDictionaryTransport is
   // enabled.

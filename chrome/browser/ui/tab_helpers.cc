@@ -175,7 +175,6 @@
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "components/facilitated_payments/core/features/features.h"
-#include "components/ip_protection/common/ip_protection_status.h"
 #include "components/page_load_metrics/browser/features.h"
 #include "components/sensitive_content/android/android_sensitive_content_client.h"
 #include "components/sensitive_content/features.h"
@@ -363,10 +362,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
         web_contents, "SensitiveContent.Chrome.");
   }
 
-  // Only create the IpProtectionStatus if the User Bypass feature is enabled.
-  if (net::features::kIpPrivacyEnableUserBypass.Get()) {
-    ip_protection::IpProtectionStatus::CreateForWebContents(web_contents);
-  }
   // Create the HttpAuthCacheStatus to start observing resource load
   // completions.
   HttpAuthCacheStatus::HttpAuthCacheStatus::CreateForWebContents(web_contents);

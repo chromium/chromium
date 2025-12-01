@@ -42,7 +42,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/flag_descriptions.h"
-#include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
@@ -1018,12 +1017,6 @@ const FeatureEntry::Choice kForceTextDirectionChoices[] = {
      switches::kForceDirectionLTR},
     {flag_descriptions::kForceDirectionRtl, switches::kForceTextDirection,
      switches::kForceDirectionRTL},
-};
-
-const FeatureEntry::Choice kIpProtectionProxyOptOutChoices[] = {
-    {flag_descriptions::kIpProtectionProxyOptOutChoiceDefault, "", ""},
-    {flag_descriptions::kIpProtectionProxyOptOutChoiceOptOut,
-     switches::kDisableIpProtectionProxy, ""},
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -10627,11 +10620,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "PwaNavigationCapturing")},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS)
-
-    {"ip-protection-proxy-opt-out",
-     flag_descriptions::kIpProtectionProxyOptOutName,
-     flag_descriptions::kIpProtectionProxyOptOutDescription, kOsAll,
-     MULTI_VALUE_TYPE(kIpProtectionProxyOptOutChoices)},
 
     {"protected-audience-debug-token",
      flag_descriptions::kProtectedAudiencesConsentedDebugTokenName,

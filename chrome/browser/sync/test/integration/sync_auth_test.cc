@@ -30,7 +30,6 @@
 #include "google_apis/gaia/fake_oauth2_token_response.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_response.h"
-#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 
@@ -135,26 +134,6 @@ class SyncAuthTest
 
 INSTANTIATE_TEST_SUITE_P(,
                          SyncAuthTest,
-                         GetSyncTestModes(),
-                         testing::PrintToStringParamName());
-
-class SyncAuthTestOAuthTokens : public SyncAuthTest {
- public:
-  SyncAuthTestOAuthTokens() {
-    // This test suite intercepts OAuth token requests, and IP Protection also
-    // requests OAuth tokens. Those requests race with the requests from the
-    // sync service, resulting in intermittent failures. Disabling IP Protection
-    // prevents these races.
-    feature_list_.InitAndDisableFeature(
-        net::features::kEnableIpProtectionProxy);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         SyncAuthTestOAuthTokens,
                          GetSyncTestModes(),
                          testing::PrintToStringParamName());
 
@@ -390,7 +369,7 @@ IN_PROC_BROWSER_TEST_P(SyncAuthTest, RetryInitialSetupWithTransientError) {
 }
 
 // Verify that SyncServiceImpl fetches a new token when an old token expires.
-IN_PROC_BROWSER_TEST_P(SyncAuthTestOAuthTokens, TokenExpiry) {
+IN_PROC_BROWSER_TEST_P(SyncAuthTest, TokenExpiry) {
   // Initial sync succeeds with a short lived OAuth2 Token.
   ASSERT_TRUE(SetupClients());
   GetFakeServer()->ClearHttpError();

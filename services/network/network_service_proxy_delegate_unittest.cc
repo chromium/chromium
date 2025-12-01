@@ -14,7 +14,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
-#include "components/ip_protection/mojom/data_types.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"
@@ -91,10 +90,6 @@ class NetworkServiceProxyDelegateTest : public testing::Test {
 
   void SetUp() override {
     context_ = net::CreateTestURLRequestContextBuilder()->Build();
-    scoped_feature_list_.InitWithFeatures(
-        {net::features::kEnableIpProtectionProxy,
-         network::features::kMaskedDomainList},
-        {});
   }
 
  protected:
@@ -124,13 +119,6 @@ class NetworkServiceProxyDelegateTest : public testing::Test {
     base::RunLoop loop;
     client_->OnCustomProxyConfigUpdated(std::move(config), loop.QuitClosure());
     loop.Run();
-  }
-
-  ip_protection::mojom::BlindSignedAuthTokenPtr MakeAuthToken(
-      std::string content) {
-    auto token = ip_protection::mojom::BlindSignedAuthToken::New();
-    token->token = std::move(content);
-    return token;
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }

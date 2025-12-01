@@ -62,24 +62,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          GetSyncTestModes(),
                          testing::PrintToStringParamName());
 
-// Some tests are flaky on Chromeos when run with IP Protection enabled.
-// TODO(crbug.com/40935754): Fix flakes.
-class SingleClientPollingSyncTestNoIpProt : public SingleClientPollingSyncTest {
- public:
-  SingleClientPollingSyncTestNoIpProt() {
-    feature_list_.InitAndDisableFeature(
-        net::features::kEnableIpProtectionProxy);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         SingleClientPollingSyncTestNoIpProt,
-                         GetSyncTestModes(),
-                         testing::PrintToStringParamName());
-
 // This test verifies that the poll interval in prefs gets initialized if no
 // data is available yet.
 IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest, ShouldInitializePollPrefs) {
@@ -98,7 +80,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest, ShouldInitializePollPrefs) {
 // This test verifies that updates of the poll interval get persisted
 // That's important make sure clients with short live times will eventually poll
 // (e.g. Android).
-IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTestNoIpProt,
+IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest,
                        PRE_ShouldUsePollIntervalFromPrefs) {
   ASSERT_TRUE(SetupSync());
 
@@ -121,7 +103,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTestNoIpProt,
   EXPECT_THAT(transport_data_prefs.GetPollInterval().InSeconds(), Eq(67));
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTestNoIpProt,
+IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest,
                        ShouldUsePollIntervalFromPrefs) {
   // Execute a sync cycle and verify this cycle used that interval.
   // This test assumes the SyncScheduler reads the actual interval from the

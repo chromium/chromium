@@ -83,6 +83,7 @@ source_set("ip_protection_core_impl_unittest") {
   sources = [ "ip_protection_core_impl_unittest.cc" ]
   deps = [
     ":ip_protection_core_impl",
+    ":ip_protection_data_types",
     ":ip_protection_proxy_config_manager_impl",
     "//base",
     "//base/test:test_support",
@@ -106,6 +107,7 @@ source_set("ip_protection_core_impl_mojo") {
   ]
   deps = [
     ":ip_protection_core_host_remote",
+    ":ip_protection_data_types",
     ":ip_protection_proxy_config_manager_impl",
     ":ip_protection_proxy_config_mojo_fetcher",
     ":ip_protection_token_manager_impl",
@@ -135,8 +137,8 @@ source_set("ip_protection_data_types") {
     "ip_protection_data_types.cc",
     "ip_protection_data_types.h",
   ]
-  public_deps = [
-    "//base",
+  public_deps = [ "//base" ]
+  deps = [
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
   ]
 }
@@ -198,6 +200,7 @@ source_set("ip_protection_proxy_config_mojo_fetcher") {
   ]
   deps = [
     ":ip_protection_core_host_remote",
+    ":ip_protection_data_types",
     "//components/ip_protection/mojom",
     "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",
@@ -517,15 +520,15 @@ source_set("masked_domain_list_manager") {
     "masked_domain_list_manager.h",
   ]
   public_deps = [
+    ":ip_protection_data_types",
     ":masked_domain_list",
     "//base",
-    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
     "//net",
     "//services/network/public/mojom",
   ]
   deps = [
-    ":ip_protection_data_types",
     ":ip_protection_telemetry",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
     "//services/network/public/cpp",
   ]
 }
@@ -534,6 +537,7 @@ source_set("masked_domain_list_manager_unittest") {
   testonly = true
   sources = [ "masked_domain_list_manager_unittest.cc" ]
   deps = [
+    ":ip_protection_data_types",
     ":masked_domain_list_manager",
     "//base",
     "//base/test:test_support",
@@ -547,18 +551,18 @@ source_set("masked_domain_list_manager_unittest") {
   ]
 }
 
+
 source_set("masked_domain_list") {
   sources = [
     "masked_domain_list.cc",
     "masked_domain_list.h",
   ]
-  public_deps = [
-    "//components/ip_protection/common/flat:masked_domain_list",
-    "//third_party/flatbuffers",
-  ]
+  public_deps = [ "//third_party/flatbuffers" ]
   deps = [
     ":ip_protection_data_types",
     "//base",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
+    "//components/ip_protection/common/flat:masked_domain_list",
   ]
 }
 

@@ -137,11 +137,6 @@ struct NetworkServiceParams {
   // A SystemDnsResolver to provide out-of-process system DNS resolution, in
   // case the system DNS resolver cannot always run sandboxed.
   pending_remote<SystemDnsResolver>? system_dns_resolver;
-
-  // The policy used for bypassing requests that are eligible for IP Protection.
-  // Even if a domain is part of the masked domain list, the bypass policy can
-  // be used to bypass certain network requests from IP Protection.
-  IpProtectionProxyBypassPolicy ip_protection_proxy_bypass_policy;
 };
 
 // Configuration settings for SCT Auditing.
@@ -388,23 +383,6 @@ interface NetworkService {
   // Sets the list of ports which will be permitted even if they normally would
   // be restricted.
   SetExplicitlyAllowedPorts(array<uint16> ports);
-
-  // Updates the Masked Domain List data used to generate custom proxy configs
-  // for the Privacy Proxy, with files pointing to flatbuffer files. Any
-  // existing NetworkContexts that are using the custom proxy configs will have
-  // their configs updated. This is not compatible with MDL policies that
-  // require exclusion list.
-  //
-  // These files are opened read-only, but are also deleted. Per comments in
-  // the mojom traits for `ReadOnlyFile`, the underlying file must not be
-  // deleted, so we use `File` here.
-  //
-  // File sizes must be included here, as otherwise `MemoryMappedFile` cannot
-  // tell how much memory to map.
-  UpdateMaskedDomainList(mojo_base.mojom.File default_file,
-                         uint64 default_file_size,
-                         mojo_base.mojom.File regular_browsing_file,
-                         uint64 regular_browsing_file_size);
 
   // Parses response headers and returns a structured version to the caller.
   // This call originates from the browser process. Used for navigations when

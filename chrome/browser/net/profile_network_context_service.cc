@@ -40,8 +40,6 @@
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
-#include "chrome/browser/ip_protection/ip_protection_core_host.h"
-#include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
@@ -256,17 +254,6 @@ bool IsContentSettingsTypeEnabled(ContentSettingsType type) {
   }
 }
 
-void UpdateTrackingProtectionSettings(Profile* profile) {
-  auto settings =
-      HostContentSettingsMapFactory::GetForProfile(profile)
-          ->GetSettingsForOneType(ContentSettingsType::TRACKING_PROTECTION);
-  profile->ForEachLoadedStoragePartition(
-      [&](content::StoragePartition* storage_partition) {
-        storage_partition->GetNetworkContext()
-            ->SetTrackingProtectionContentSetting(settings);
-      });
-}
-
 void UpdateCookieSettings(Profile* profile, ContentSettingsType type) {
   if (!IsContentSettingsTypeEnabled(type)) {
     return;
@@ -418,17 +405,6 @@ bool MaybeAddCertWithConstraints(
   return true;
 }
 #endif
-
-// Returns true if IP Protection is needed.
-// Returns false if any of the following:
-//   1. ipp_core_host == nullptr. A nullptr implies the profile does not
-//      participate in IPP.
-//   2. kIpPrivacyIncognitoMode is enabled and the profile in not incognito.
-bool NeedsIpProtection(const IpProtectionCoreHost* ipp_core_host,
-                       const Profile& profile) {
-  return ipp_core_host && (profile.IsIncognitoProfile() ||
-                           !net::features::kIpPrivacyOnlyInIncognito.Get());
-}
 
 constexpr std::string_view kDiskCacheExperimentNameSeparator = " ";
 constexpr std::string_view kDiskCacheExperimentNameNone = "None";
@@ -1601,31 +1577,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       profile_->GetPrefs()->GetBoolean(
           prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant);
 
-  IpProtectionCoreHost* ipp_core_host =
-      IpProtectionCoreHostFactory::GetForProfile(profile_);
-  if (NeedsIpProtection(ipp_core_host, *profile_)) {
-    ipp_core_host->AddNetworkService(
-        network_context_params->ip_protection_core_host
-            .InitWithNewPipeAndPassReceiver(),
-        network_context_params->ip_protection_control
-            .InitWithNewPipeAndPassRemote());
-    network_context_params->enable_ip_protection =
-        ipp_core_host->IsIpProtectionEnabled();
-    network_context_params->ip_protection_incognito =
-        profile_->IsIncognitoProfile();
-    if (profile_->IsIncognitoProfile()) {
-      network_context_params->initial_ip_protection_tokens =
-          ipp_core_host->TakeRecycledTokens();
-    }
-
-    ContentSettingsForOneType tracking_protection_content_settings =
-        HostContentSettingsMapFactory::GetForProfile(profile_)
-            ->GetSettingsForOneType(ContentSettingsType::TRACKING_PROTECTION);
-
-    network_context_params->tracking_protection_content_settings =
-        std::move(tracking_protection_content_settings);
-  }
-
   network_context_params->device_bound_sessions_enabled =
       base::FeatureList::IsEnabled(net::features::kDeviceBoundSessions);
 
@@ -1681,9 +1632,6 @@ void ProfileNetworkContextService::OnContentSettingChanged(
   switch (content_type) {
     case ContentSettingsType::ANTI_ABUSE:
       UpdateAntiAbuseSettings(profile_);
-      break;
-    case ContentSettingsType::TRACKING_PROTECTION:
-      UpdateTrackingProtectionSettings(profile_);
       break;
     case ContentSettingsType::DEFAULT:
       UpdateAntiAbuseSettings(profile_);

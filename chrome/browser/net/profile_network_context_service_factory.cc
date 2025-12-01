@@ -9,7 +9,6 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
-#include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
@@ -88,7 +87,6 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
   DependsOn(
       first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance());
   DependsOn(SCTReportingServiceFactory::GetInstance());
-  DependsOn(IpProtectionCoreHostFactory::GetInstance());
 }
 
 ProfileNetworkContextServiceFactory::~ProfileNetworkContextServiceFactory() =

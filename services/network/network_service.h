@@ -25,8 +25,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "components/ip_protection/common/masked_domain_list_manager.h"
-#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -223,12 +221,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void UpdateKeyPinsList(mojom::PinListPtr pin_list,
                          base::Time update_time) override;
 
-  void UpdateMaskedDomainList(
-      base::File default_file,
-      uint64_t default_file_size,
-      base::File regular_browsing_file,
-      uint64_t regular_browsing_file_size) override;
-
 #if BUILDFLAG(IS_ANDROID)
   void DumpWithoutCrashing(base::Time dump_request_time) override;
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -320,10 +312,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   network::tpcd::metadata::Manager* tpcd_metadata_manager() const {
     return tpcd_metadata_manager_.get();
-  }
-
-  ip_protection::MaskedDomainListManager* masked_domain_list_manager() const {
-    return masked_domain_list_manager_.get();
   }
 
   void set_host_resolver_factory_for_testing(
@@ -489,9 +477,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // TODO(mmenke): Once the NetworkService always owns NetworkContexts, merge
   // this with |owned_network_contexts_|.
   std::set<raw_ptr<NetworkContext, SetExperimental>> network_contexts_;
-
-  std::unique_ptr<ip_protection::MaskedDomainListManager>
-      masked_domain_list_manager_;
 
   // A per-process_id map of origins that are white-listed to allow
   // them to request raw headers for resources they request.

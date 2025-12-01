@@ -1108,8 +1108,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void PreferenceRankVideoDeviceInfos(
       content::BrowserContext* browser_context,
       blink::WebMediaDeviceInfoArray& infos) override;
-  network::mojom::IpProtectionProxyBypassPolicy
-  GetIpProtectionProxyBypassPolicy() override;
   void MaybePrewarmHttpDiskCache(
       content::BrowserContext& browser_context,
       const std::optional<url::Origin>& initiator_origin,

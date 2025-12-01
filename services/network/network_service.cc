@@ -41,10 +41,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "components/ip_protection/common/ip_protection_telemetry.h"
-#include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "components/os_crypt/sync/os_crypt.h"
-#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
@@ -497,10 +494,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
       std::make_unique<FirstPartySetsManager>(params->first_party_sets_enabled);
 
   tpcd_metadata_manager_ = std::make_unique<network::tpcd::metadata::Manager>();
-
-  masked_domain_list_manager_ =
-      std::make_unique<ip_protection::MaskedDomainListManager>(
-          params->ip_protection_proxy_bypass_policy);
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
   constexpr size_t kMaxSCTAuditingCacheEntries = 1024;
@@ -987,16 +980,6 @@ void NetworkService::UpdateKeyPinsList(mojom::PinListPtr pin_list,
       state->UpdatePinList(pinsets_, host_pins_, pins_list_update_time_);
     }
   }
-}
-
-void NetworkService::UpdateMaskedDomainList(
-    base::File default_file,
-    uint64_t default_file_size,
-    base::File regular_browsing_file,
-    uint64_t regular_browsing_file_size) {
-  masked_domain_list_manager_->UpdateMaskedDomainList(
-      std::move(default_file), default_file_size,
-      std::move(regular_browsing_file), regular_browsing_file_size);
 }
 
 #if BUILDFLAG(IS_ANDROID)

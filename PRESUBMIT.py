@@ -947,7 +947,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
 
             # Needed to use QUICHE API.
             r'android_webview/browser/ip_protection/.*',
-            r'chrome/browser/ip_protection/.*',
             r'components/ip_protection/.*',
             r'net/third_party/quiche/overrides/quiche_platform_impl/quiche_stack_trace_impl\.*',
             r'services/network/web_transport\.cc',
@@ -969,7 +968,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
 
             # Needed to use QUICHE API.
             r'android_webview/browser/ip_protection/.*',
-            r'chrome/browser/ip_protection/.*',
             r'components/ip_protection/.*',
             r'net/quic/dedicated_web_transport_http3_client\.cc',
 
@@ -1001,7 +999,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         [
             # Needed to use QUICHE API.
             r'android_webview/browser/ip_protection/.*',
-            r'chrome/browser/ip_protection/.*',
             r'components/ip_protection/.*',
 
             # Needed to integrate with //third_party/nearby
