@@ -893,12 +893,16 @@ struct URLComponentSource {
 //
 // The string passed to Set* functions DOES NOT GET COPIED AND MUST BE KEPT
 // IN SCOPE BY THE CALLER for as long as this object exists!
+// In order to make it harder to misuse the API the setters do not accept rvalue
+// references to std::strings and std::u16strings.
+// Note: Extra const CHAR* overloads are necessary to break ambiguities that
+// would otherwise exist for string literals.
 //
 // Prefer the 8-bit replacement version if possible since it is more efficient.
 template <typename CHAR>
 class Replacements {
- protected:
   using StringViewT = std::basic_string_view<CHAR>;
+  using StringT = std::basic_string<CHAR>;
 
  public:
   // Creates an empty `Replacements` instance, which indicates that no
@@ -917,6 +921,8 @@ class Replacements {
     components_.scheme = comp;
   }
   void SetSchemeStr(StringViewT str) { SetScheme(str, Component(str)); }
+  void SetSchemeStr(const CHAR* str) { SetSchemeStr(StringViewT(str)); }
+  void SetSchemeStr(const StringT&&) = delete;
   // Note: we don't have a ClearScheme since this doesn't make any sense.
 
   // Indicates the scheme part won't be replaced.
@@ -937,6 +943,8 @@ class Replacements {
     components_.username = comp;
   }
   void SetUsernameStr(StringViewT str) { SetUsername(str, Component(str)); }
+  void SetUsernameStr(const CHAR* str) { SetUsernameStr(StringViewT(str)); }
+  void SetUsernameStr(const StringT&&) = delete;
   void ClearUsername() {
     sources_.username = Placeholder();
     components_.username = Component();
@@ -954,6 +962,8 @@ class Replacements {
     components_.password = comp;
   }
   void SetPasswordStr(StringViewT str) { SetPassword(str, Component(str)); }
+  void SetPasswordStr(const CHAR* str) { SetPasswordStr(StringViewT(str)); }
+  void SetPasswordStr(const StringT&&) = delete;
   void ClearPassword() {
     sources_.password = Placeholder();
     components_.password = Component();
@@ -971,6 +981,8 @@ class Replacements {
     components_.host = comp;
   }
   void SetHostStr(StringViewT str) { SetHost(str, Component(str)); }
+  void SetHostStr(const CHAR* str) { SetHostStr(StringViewT(str)); }
+  void SetHostStr(const StringT&&) = delete;
   void ClearHost() {
     sources_.host = Placeholder();
     components_.host = Component();
@@ -996,6 +1008,8 @@ class Replacements {
     components_.port = comp;
   }
   void SetPortStr(StringViewT str) { SetPort(str, Component(str)); }
+  void SetPortStr(const CHAR* str) { SetPortStr(StringViewT(str)); }
+  void SetPortStr(const StringT&&) = delete;
   void ClearPort() {
     sources_.port = Placeholder();
     components_.port = Component();
@@ -1012,6 +1026,8 @@ class Replacements {
     components_.path = comp;
   }
   void SetPathStr(StringViewT str) { SetPath(str, Component(str)); }
+  void SetPathStr(const CHAR* str) { SetPathStr(StringViewT(str)); }
+  void SetPathStr(const StringT&&) = delete;
   void ClearPath() {
     sources_.path = Placeholder();
     components_.path = Component();
@@ -1028,6 +1044,8 @@ class Replacements {
     components_.query = comp;
   }
   void SetQueryStr(StringViewT str) { SetQuery(str, Component(str)); }
+  void SetQueryStr(const CHAR* str) { SetQueryStr(StringViewT(str)); }
+  void SetQueryStr(const StringT&&) = delete;
   void ClearQuery() {
     sources_.query = Placeholder();
     components_.query = Component();
@@ -1045,6 +1063,8 @@ class Replacements {
     components_.ref = comp;
   }
   void SetRefStr(StringViewT str) { SetRef(str, Component(str)); }
+  void SetRefStr(const CHAR* str) { SetRefStr(StringViewT(str)); }
+  void SetRefStr(const StringT&&) = delete;
   void ClearRef() {
     sources_.ref = Placeholder();
     components_.ref = Component();

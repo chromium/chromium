@@ -49,8 +49,8 @@
 // See url::mojom::kMaxURLChars for more details.
 class COMPONENT_EXPORT(URL) GURL {
  public:
-  using Replacements = url::StringViewReplacements<char>;
-  using ReplacementsW = url::StringViewReplacements<char16_t>;
+  using Replacements = url::Replacements<char>;
+  using ReplacementsW = url::Replacements<char16_t>;
 
   // Creates an empty, invalid URL.
   GURL();
