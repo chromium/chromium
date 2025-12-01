@@ -194,6 +194,9 @@ void Client::SendGenerateContentRequest(
   request_proto.set_request_id(request_id);
   *request_proto.mutable_generate_content_request() = request;
 
+  base::UmaHistogramSparse("Legion.Client.FeatureName",
+                           static_cast<int>(feature_name));
+
   std::string serialized_request;
   request_proto.SerializeToString(&serialized_request);
   BinaryEncodedProtoRequest binary_encoded_proto_request(
@@ -282,7 +285,7 @@ void Client::OnRequestCompleted(
   if (result.has_value()) {
     // Records the response size in bytes. The max value is 1M bytes.
     base::UmaHistogramCounts1M("Legion.Client.ResponseSize.Success",
-                                  result->size());
+                               result->size());
     base::UmaHistogramMediumTimes("Legion.Client.RequestLatency.Success",
                                   latency);
   } else if (result.error() == ErrorCode::kTimeout) {

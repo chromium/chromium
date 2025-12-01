@@ -160,6 +160,9 @@ TEST_F(ClientTest, SendTextRequestSuccess) {
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestErrorCode", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestSize", 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.ResponseSize.Success", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Legion.Client.FeatureName", proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+      1);
 }
 
 // Test that SendRequest fails if SecureChannel::Write fails.
@@ -181,6 +184,9 @@ TEST_F(ClientTest, SendTextRequestWriteFails) {
                                        ErrorCode::kError, 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestSize", 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.ResponseSize.Success", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Legion.Client.FeatureName", proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+      1);
 }
 
 // Test that a response with an unknown request_id is ignored.
@@ -220,6 +226,9 @@ TEST_F(ClientTest, IgnoresResponseWithUnknownRequestId) {
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestErrorCode", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Legion.Client.FeatureName", proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+      1);
 }
 
 // Test that the secure channel is recreated after a permanent failure.
@@ -281,6 +290,9 @@ TEST_F(ClientTest, SecureChannelRecreation) {
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestSize", 2);
   histogram_tester_.ExpectTotalCount("Legion.Client.ResponseSize.Success", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Legion.Client.FeatureName", proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+      2);
 }
 
 // Test that a request times out correctly.
@@ -310,6 +322,9 @@ TEST_F(ClientTest, SendTextRequestTimeout) {
                                        ErrorCode::kTimeout, 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestSize", 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.ResponseSize.Success", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Legion.Client.FeatureName", proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+      1);
 }
 
 // Test that a response received after a timeout is ignored.
@@ -361,6 +376,9 @@ TEST_F(ClientTest, SendTextRequestResponseAfterTimeout) {
                                        ErrorCode::kTimeout, 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestSize", 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.ResponseSize.Success", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Legion.Client.FeatureName", proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+      1);
 }
 
 // Test fixture for error conditions in SendTextRequest where the
@@ -389,10 +407,13 @@ TEST_P(ClientSendTextRequestSecureChannelErrorTest, SendTextRequestError) {
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 1);
-  histogram_tester_.ExpectUniqueSample("Legion.Client.RequestErrorCode", error_code,
-                                       1);
+  histogram_tester_.ExpectUniqueSample("Legion.Client.RequestErrorCode",
+                                       error_code, 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestSize", 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.ResponseSize.Success", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Legion.Client.FeatureName", proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+      1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -435,6 +456,9 @@ TEST_P(ClientSendTextRequestResponseErrorTest, SendTextRequestError) {
   }
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestSize", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Legion.Client.FeatureName", proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+      1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -504,11 +528,14 @@ TEST_P(ClientSendGenerateContentRequestErrorTest,
                                        0);
     histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 1);
     histogram_tester_.ExpectUniqueSample("Legion.Client.RequestErrorCode",
-                                       param.expected_error, 1);
+                                         param.expected_error, 1);
     histogram_tester_.ExpectTotalCount("Legion.Client.ResponseSize.Success", 0);
   }
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestSize", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Legion.Client.FeatureName", proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+      1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -554,7 +581,7 @@ TEST_F(ClientTest, EstablishSessionFailureFailsPendingRequests) {
 
   // Send a request that will get queued.
   base::test::TestFuture<base::expected<std::string, ErrorCode>> text_future;
-  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT,
                            "some text", text_future.GetCallback());
 
   // Attempt to establish the session, which will fail.
@@ -573,6 +600,10 @@ TEST_F(ClientTest, EstablishSessionFailureFailsPendingRequests) {
 
   // A new channel should have been created.
   EXPECT_NE(first_channel, factory_.secure_channel_.get());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Legion.Client.FeatureName", proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT,
+      1);
 }
 
 }  // namespace legion

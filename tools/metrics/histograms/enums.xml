@@ -7576,6 +7576,17 @@ shown properly on the user-facing crash UI.
 
 <!-- LINT.ThenChange(//components/legion/error_code.h:ErrorCode) -->
 
+<!-- LINT.IfChange(LegionFeatureName) -->
+
+<enum name="LegionFeatureName">
+  <summary>The Legion feature name.</summary>
+  <int value="0" label="FEATURE_NAME_UNSPECIFIED"/>
+  <int value="3" label="FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT"/>
+  <int value="700" label="FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/legion/proto/legion.proto:FeatureName) -->
+
 <enum name="LensClassifyResultState">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success: shoppy image"/>

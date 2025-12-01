@@ -19,6 +19,19 @@ reviewer.
 
 <histograms>
 
+<histogram name="Legion.Client.FeatureName" enum="LegionFeatureName"
+    expires_after="2026-12-01">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the Legion feature name for each request sent. Recorded for every
+    request.
+  </summary>
+</histogram>
+
 <histogram name="Legion.Client.RequestErrorCode" enum="LegionErrorCode"
     expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>
