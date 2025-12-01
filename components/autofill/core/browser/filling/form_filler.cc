@@ -863,10 +863,6 @@ void FormFiller::FillOrPreviewForm(
       continue;
     }
 
-    if (could_attempt_refill) {
-      refill_context->type_groups_originally_filled.insert_all(
-          autofill_field.Type().GetGroups());
-    }
     std::string failure_to_fill;  // Reason for failing to fill.
     const std::map<FieldGlobalId, ValueAndType>& forced_fill_values =
         refill_context ? refill_context->forced_fill_values
@@ -896,6 +892,9 @@ void FormFiller::FillOrPreviewForm(
     } else if (!is_newly_autofilled_or_emptied) {
       skip_reasons[form.fields()[i].global_id()].insert(
           FieldFillingSkipReason::kNoValueToFill);
+    } else if (could_attempt_refill) {
+      refill_context->type_groups_originally_filled.insert_all(
+          autofill_field.Type().GetGroups());
     }
 
     if (filled_field_type) {
