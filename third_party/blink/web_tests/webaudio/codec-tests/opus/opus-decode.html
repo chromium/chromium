@@ -5,90 +5,23 @@
   <title>
     Test OPUS Decoding
   </title>
-  <script src="../../resources/audio-codec-test.js"></script>
   <script src="../../../resources/testharness.js"></script>
   <script src="../../../resources/testharnessreport.js"></script>
   <script src="../../resources/audit-util.js"></script>
-  <script src="../../resources/buffer-loader.js"></script>
   <script src="../../resources/audio-file-utils.js"></script>
+  <script src="../../resources/buffer-loader.js"></script>
+  <script src="../resources/codec-tests.js"></script>
 </head>
 
 <body>
-  <script id="layout-test-code">
-    // Minimum acceptable signal-to-noise ratio (SNR) in decibels for each
-    // channel. The current value of 100dB is chosen as an absolute upper limit
-    // of what is audible by the human ear in professional audio applications.
-    // This value is permissive enough to allow for inconsequential changes in
-    // the actual waveform to occur due to things like the decoder implementation
-    // changing, but strict enough that it should not result in any meaningful
-    // changes to the output audio.
-    const kMinSnrDb = 100.0;
-
-    // Epsilon / absolute tolerance for sample-level comparison. While the most
-    // important part of the the test is the strict SNR analysis, sample-level
-    // comparison is a very useful tool for determining what types of problems
-    // may be causing issues with potential SNR failures. The current tolerance
-    // has been chosen experimentally to align with `kMinSnrDb`, meaning that
-    // you are quite unlikely to pass the SNR analysis but then get a
-    // sample-level failure.
-    const kAbsTolerance = 5e-5;
-
-    // Use 48 kHz to avoid resampling in decodeAudioData.
-    const kSampleRate = 48000;
-
-    function compareAudioBuffers(expectedBuffer, decodedBuffer) {
-      assert_equals(
-        decodedBuffer.numberOfChannels,
-        expectedBuffer.numberOfChannels,
-        'Channel count should match');
-      assert_equals(
-        decodedBuffer.length,
-        expectedBuffer.length,
-        'Frame count should match'
-      );
-
-      for (let channel = 0;
-        channel < expectedBuffer.numberOfChannels; ++channel) {
-        const reference = expectedBuffer.getChannelData(channel);
-        const actual = decodedBuffer.getChannelData(channel);
-
-        // Ensure the SNR meets the minimum requirement.
-        assert_greater_than_equal(
-          computeSnrInDecibels(actual, reference),
-          kMinSnrDb,
-          `SNR for channel ${channel} should meet the minimum requirement`
-        );
-
-        // Sample-wise comparison with absolute tolerance.
-        for (let i = 0; i < reference.length; ++i) {
-          assert_approx_equals(
-            actual[i], reference[i], kAbsTolerance,
-            `Channel ${channel}, sample ${i} should be approximately equal`);
-        }
-      }
-    }
-
-    promise_test(async t => {
-      const context = new AudioContext({
-        sampleRate: kSampleRate
-      });
-      assert_equals(context.sampleRate, kSampleRate, 'AudioContext sampleRate');
-
-      const [expectedBuffer, decodedBuffer] = await loadBuffers(
-        context,
-        [
-          'resources/opus-decode-expected.wav',
-          'opus-test.opus',
-        ]);
-
-      // Optionally save the decoded output for manual inspection.
-      const filename = 'opus-decode-actual.wav';
-      if (downloadAudioBuffer(decodedBuffer, filename, true)) {
-        assert_true(true, `Saved reference file: ${filename}`);
-      }
-
-      compareAudioBuffers(expectedBuffer, decodedBuffer);
-    }, 'Decoded Opus matches reference WAV within tolerance');
+  <script>
+    runCodecTest({
+      encodedFileName: 'opus-test.opus',
+      // Use 48 kHz to avoid resampling in decodeAudioData.
+      sampleRate: 48000,
+      description: 'Decoded Opus matches reference WAV within tolerance',
+    });
   </script>
 </body>
+
 </html>

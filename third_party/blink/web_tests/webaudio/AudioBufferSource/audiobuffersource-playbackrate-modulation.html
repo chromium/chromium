@@ -22,20 +22,11 @@
         const context =
             new OfflineAudioContext(1, sampleRate * duration, sampleRate);
 
-        // Load the reference file asynchronously.
-        const referenceBuffer = await new Promise((resolve) => {
-          const loader = new BufferLoader(
-              context,
-              [
-                'resources/' +
-                'audiobuffersource-playbackrate-modulation-expected.wav'
-              ],
-              (bufferList) => {
-                assert_true(true, 'Loaded reference file');
-                resolve(bufferList[0]);
-              });
-          loader.load();
-        });
+        const [referenceBuffer] = await loadBuffers(context, [
+          'resources/' +
+              'audiobuffersource-playbackrate-modulation-expected.wav'
+        ]);
+        assert_true(true, 'Loaded reference file');
 
         // With this setting, the playback rate will be changing continuously
         // and repeatedly within the range of [0, 200] around 100Hz, based on

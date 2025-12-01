@@ -20,17 +20,10 @@
           new OfflineAudioContext(1, sampleRate * duration, sampleRate);
       let referenceBuffer;
 
-      promise_test(() => {
-        return new Promise((resolve, reject) => {
-          const loader = new BufferLoader(
-              context,
-              ['resources/audiobuffersource-detune-modulation-expected.wav'],
-              function(bufferList) {
-                referenceBuffer = bufferList[0];
-                resolve();
-              });
-          loader.load();
-        });
+      promise_test(async () => {
+        [referenceBuffer] = await loadBuffers(context, [
+          'resources/audiobuffersource-detune-modulation-expected.wav'
+        ]);
       }, 'load-reference');
 
       promise_test(async () => {

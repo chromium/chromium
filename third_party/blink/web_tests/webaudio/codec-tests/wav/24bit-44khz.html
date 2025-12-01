@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>
-      24bit-44khz.html
-    </title>
-    <script src="../../resources/audio-codec-test.js"></script>
-    <script src="../../resources/audit-util.js"></script>
-    <script src="../../resources/buffer-loader.js"></script>
-    <script src="../../resources/audio-file-utils.js"></script>
-  </head>
-  <body>
-    <script id="layout-test-code">
-      let url = '../../resources/media/24bit-44khz.wav';
 
-      window.onload = function() {
-        runDecodingTest(url)
-      };
-    </script>
-  </body>
+<head>
+  <title>
+    Test WAV Decoding (24bit, 44kHz)
+  </title>
+  <script src="../../../resources/testharness.js"></script>
+  <script src="../../../resources/testharnessreport.js"></script>
+  <script src="../../resources/audit-util.js"></script>
+  <script src="../../resources/audio-file-utils.js"></script>
+  <script src="../../resources/buffer-loader.js"></script>
+  <script src="../resources/codec-tests.js"></script>
+</head>
+
+<body>
+  <script>
+    runCodecTest({
+      encodedFileName: '../../resources/media/24bit-44khz.wav',
+      // TODO(crbug.com/452432472): regenerate baseline file, bump value to 100.
+      minSnrDb: 93,
+      sampleRate: 44100,
+      description: 'Decoded WAV (24bit, 44kHz) matches reference WAV',
+    });
+  </script>
+</body>
+
 </html>

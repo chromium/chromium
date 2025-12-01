@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>
-      Test FLAC Decoding
-    </title>
-    <script src="../../resources/audio-codec-test.js"></script>
-    <script src="../../resources/audit-util.js"></script>
-    <script src="../../resources/buffer-loader.js"></script>
-    <script src="../../resources/audio-file-utils.js"></script>
-  </head>
-  <body>
-    <script id="layout-test-code">
-      let url = 'flac-test.flac';
 
-      window.onload = function() {
-        runDecodingTest(url)
-      };
-    </script>
-  </body>
+<head>
+  <title>
+    Test FLAC Decoding
+  </title>
+  <script src="../../../resources/testharness.js"></script>
+  <script src="../../../resources/testharnessreport.js"></script>
+  <script src="../../resources/audit-util.js"></script>
+  <script src="../../resources/audio-file-utils.js"></script>
+  <script src="../../resources/buffer-loader.js"></script>
+  <script src="../resources/codec-tests.js"></script>
+</head>
+
+<body>
+  <script>
+    runCodecTest({
+      encodedFileName: 'flac-test.flac',
+      sampleRate: 44100,
+      description: 'Decoded FLAC matches reference WAV',
+    });
+  </script>
+</body>
+
 </html>
