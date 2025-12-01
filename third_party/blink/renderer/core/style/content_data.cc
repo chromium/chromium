@@ -23,6 +23,8 @@
 #include "third_party/blink/renderer/core/style/content_data.h"
 
 #include <memory>
+
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"

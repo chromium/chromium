@@ -354,6 +354,12 @@ void DisplayLockContext::DidStyleChildren() {
   element_->MarkAncestorsWithChildNeedsReattachLayoutTree();
 }
 
+bool DisplayLockContext::ShouldActivateForScreenReader() const {
+  return document_->GetStyleEngine().SkippedContainerRecalc() &&
+         IsActivatable(DisplayLockActivationReason::kAccessibility) &&
+         IsScreenReaderActive();
+}
+
 void DisplayLockContext::DidLayoutChildren() {
   // Since we did layout on children already, we'll clear this.
   child_layout_was_blocked_ = false;

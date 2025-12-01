@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -123,10 +122,10 @@ class CORE_EXPORT DisplayLockContext final
            (IsActivatable(DisplayLockActivationReason::kAny) &&
             ActivatableDisplayLocksForced()) ||
            (IsAuto() && HasScrollerWithScrollMarkerGroup()) ||
-           (document_->GetStyleEngine().SkippedContainerRecalc() &&
-            IsActivatable(DisplayLockActivationReason::kAccessibility) &&
-            IsScreenReaderActive());
+           ShouldActivateForScreenReader();
   }
+
+  bool ShouldActivateForScreenReader() const;
   void DidLayoutChildren();
   ALWAYS_INLINE bool ShouldPrePaintChildren() const {
     return !is_locked_ || forced_info_.is_forced(ForcedPhase::kPrePaint) ||

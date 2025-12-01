@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
