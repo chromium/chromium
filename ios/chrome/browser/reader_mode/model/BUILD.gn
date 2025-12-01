@@ -53,6 +53,7 @@ source_set("model") {
     "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/language/core/browser",
+    "//components/language/ios/browser",
     "//components/optimization_guide/core",
     "//components/prefs",
     "//components/strings",

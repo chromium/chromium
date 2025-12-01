@@ -318,6 +318,7 @@ void TestResponseProvider::GetLanguageResponse(
       [self isRunningTest:@selector(testTranslateAfterReaderMode)] ||
       [self isRunningTest:@selector(testTranslatePriorToReaderMode)] ||
       [self isRunningTest:@selector(testNoAutotranslateInReaderMode)] ||
+      [self isRunningTest:@selector(testTranslateBadgeInReaderMode)] ||
       [self isRunningTest:@selector(testTranslateInClosedReaderMode)]) {
     config.features_enabled.push_back(kEnableReaderMode);
     config.features_enabled.push_back(kEnableReaderModeInUS);
@@ -1228,6 +1229,19 @@ void TestResponseProvider::GetLanguageResponse(
 
 #pragma mark - Utility methods
 
+- (BOOL)isTranslateBadgeVisible {
+  bool badgeShown = WaitUntilConditionOrTimeout(kWaitForUIElement3xTimeout, ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(kBadgeButtonTranslateAccessibilityIdentifier)]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return error == nil;
+  });
+  return badgeShown;
+}
+
 - (BOOL)isBeforeTranslateBannerVisible {
   BOOL bannerShown = WaitUntilConditionOrTimeout(kWaitForUIElement3xTimeout, ^{
     NSError* error = nil;
@@ -1597,6 +1611,49 @@ void TestResponseProvider::GetLanguageResponse(
 
   // Verify page is not translated.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Translated"];
+}
+
+// Tests that opening and closing reader mode does not impact the state of the
+// translate badge.
+- (void)testTranslateBadgeInReaderMode {
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
+  }
+#endif
+  // Set up server with a French page.
+  std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
+  web::test::SetUpHttpServer(std::move(provider));
+
+  GURL URL = web::test::HttpServer::MakeUrl(
+      base::StringPrintf("http://%s", kFrenchPageDistillablePath));
+
+  // Load URL.
+  [ChromeEarlGrey loadURL:URL];
+
+  // Check Translate banner is presented.
+  GREYAssertTrue([self isBeforeTranslateBannerVisible],
+                 @"Before Translate banner was not found");
+
+  // Open and close Reader Mode.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded.");
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [ChromeEarlGrey hideReaderMode];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+
+  // Verify badge is visible and not accepted.
+  GREYAssertTrue([self isTranslateBadgeVisible],
+                 @"Translate badge was not visible");
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBadgeButtonTranslateAcceptedAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that for a tab where translation was applied in Reading Mode, deletion

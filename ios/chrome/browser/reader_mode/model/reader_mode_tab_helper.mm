@@ -10,6 +10,7 @@
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/language/core/browser/language_model_manager.h"
+#import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/translate/core/browser/translate_download_manager.h"
 #import "components/translate/core/browser/translate_infobar_delegate.h"
 #import "components/translate/core/browser/translate_manager.h"
@@ -69,7 +70,13 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client,
 
 // Removes the translate infobar from the list of tracked infobars to ensure
 // that this is not reused when closing Reading Mode web state.
-void RemoveTranslateInfobarIfExists(infobars::InfoBarManager* infobar_manager) {
+void RemoveTranslateInfobarIfExists(web::WebState* web_state) {
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+  if (!infobar_manager) {
+    return;
+  }
+
   infobars::InfoBar* old_infobar = NULL;
   translate::TranslateInfoBarDelegate* old_delegate = NULL;
   for (infobars::InfoBar* infobar : infobar_manager->infobars()) {
@@ -82,6 +89,12 @@ void RemoveTranslateInfobarIfExists(infobars::InfoBarManager* infobar_manager) {
   if (old_delegate) {
     infobar_manager->RemoveInfoBar(old_infobar);
   }
+  InfobarOverlayRequestInserter::FromWebState(web_state)
+      ->SuppressNextInfobarOfType(InfobarType::kInfobarTypeTranslate);
+  // Ensure that the translate badge is present if the original page is
+  // translatable.
+  language::IOSLanguageDetectionTabHelper::FromWebState(web_state)
+      ->StartLanguageDetection();
 }
 
 }  // namespace
@@ -418,11 +431,7 @@ void ReaderModeTabHelper::DestroyReaderModeContent(
 
   // Ensure that any infobars created in Reading Mode state are removed prior
   // to creating new ones attached to the original web page.
-  infobars::InfoBarManager* manager =
-      InfoBarManagerImpl::FromWebState(web_state_.get());
-  if (manager) {
-    RemoveTranslateInfobarIfExists(manager);
-  }
+  RemoveTranslateInfobarIfExists(web_state_.get());
 
   // Display translation badge if a translation was applied before or
   // during Reading Mode activation for active tabs.
