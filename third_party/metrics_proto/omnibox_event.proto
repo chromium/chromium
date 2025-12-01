@@ -238,6 +238,9 @@ message OmniboxEventProto {
     // The omnibox composebox on Web.
     OTHER_OMNIBOX_COMPOSEBOX = 35;
 
+    // Co-browsing composebox
+    CO_BROWSING_COMPOSEBOX = 36;
+
     // When adding new classifications, please update the `OmniboxPageContext`
     // variants listed in chromium's
     // tools/metrics/histograms/metadata/omnibox/histograms.xml and also

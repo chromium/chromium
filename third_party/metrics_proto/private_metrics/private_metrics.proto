@@ -33,7 +33,7 @@ message PrivateMetricReportHeader {
 // of user experience without compromising privacy. This proto will be stored
 // in Sawmill post upload to the UMA frontend, and will be subsequently
 // processed up by the k-anonymity pipeline in a trusted execution environment.
-// Next tag: 5
+// Next tag: 7
 message EncryptedPrivateMetricReport {
   // HPKE-encrypted and proto-serialized report, with associated data.
   // Associated data is the unencrypted non-sensitive header portion in
@@ -68,6 +68,16 @@ message EncryptedPrivateMetricReport {
   }
 
   optional ReportType report_type = 4;
+
+  // The symmetric key used to encrypt the ciphertext, encrypted using HPKE.
+  // The key is encoded as a COSE_Key struct (RFC 9052); at least the
+  // following algorithms should be supported:
+  //   -65538: AEAD_AES_128_GCM_SIV (fixed nonce)
+  optional bytes encrypted_symmetric_key = 5;
+
+  // The ephemeral Diffie-Hellman key needed to derive the symmetric key used
+  // to encrypt `encrypted_secret_key`.
+  optional bytes encapsulated_public_key = 6;
 }
 
 // A report containing unencrypted private metrics data. The unencrypted report

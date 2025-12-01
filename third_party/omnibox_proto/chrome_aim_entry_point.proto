@@ -46,4 +46,10 @@ enum ChromeAimEntryPoint {
 
   // AIM is entered from the composebox in Omnibox on Web.
   DESKTOP_CHROME_OTHER_OMNIBOX_COMPOSEBOX_ENTRY_POINT = 111;
+
+  // AIM is entered from the co-browsing composebox.
+  DESKTOP_CHROME_CO_BROWSING_COMPOSEBOX_ENTRY_POINT = 116;
+
+  // AIM is entered from the lens contextual searchbox.
+  DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT = 117;
 }
