@@ -479,6 +479,11 @@ TEST_F(SecureChannelImplTest, TransportErrorAfterSessionEstablished) {
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
+
+  histogram_tester_.ExpectTotalCount("Legion.SecureChannel.SessionDuration", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Legion.SecureChannel.RequestsPerSession", /*sample=*/1,
+      /*expected_bucket_count=*/1);
 }
 
 // Tests a failure in generating the initial attestation request.

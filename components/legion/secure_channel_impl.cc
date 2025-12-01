@@ -39,7 +39,10 @@ SecureChannelImpl::SecureChannelImpl(
       &SecureChannelImpl::OnResponseReceived, weak_factory_.GetWeakPtr()));
 }
 
-SecureChannelImpl::~SecureChannelImpl() = default;
+SecureChannelImpl::~SecureChannelImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RecordSessionDurationMetrics();
+}
 
 void SecureChannelImpl::SetResponseCallback(ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -79,6 +82,7 @@ bool SecureChannelImpl::Write(const Request& request) {
     return false;
   }
 
+  requests_in_session_count_++;
   pending_encryption_requests_.push_back(request);
 
   switch (state_) {
@@ -207,6 +211,17 @@ void SecureChannelImpl::OnHandshakeMessageReady(
   Send(request);
 }
 
+void SecureChannelImpl::RecordSessionDurationMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ == State::kEstablished) {
+    base::UmaHistogramMediumTimes(
+        "Legion.SecureChannel.SessionDuration",
+        base::TimeTicks::Now() - state_entry_times_[State::kEstablished]);
+    base::UmaHistogramCounts1000("Legion.SecureChannel.RequestsPerSession",
+                                 requests_in_session_count_);
+  }
+}
+
 void SecureChannelImpl::OnHandshakeResponse(
     const oak::session::v1::HandshakeResponse& response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -242,6 +257,7 @@ void SecureChannelImpl::OnHandshakeVerification(bool handshake_verified) {
       base::TimeTicks::Now() - state_entry_times_[State::kPerformingHandshake]);
 
   state_ = State::kEstablished;
+  state_entry_times_[state_] = base::TimeTicks::Now();
 
   auto callbacks = std::move(pending_establishment_callbacks_);
   pending_establishment_callbacks_.clear();
@@ -316,6 +332,9 @@ void SecureChannelImpl::FailAllRequestsAndClose(ErrorCode error_code) {
   if (state_ == State::kClosed) {
     return;
   }
+
+  RecordSessionDurationMetrics();
+
   state_ = State::kClosed;
 
   auto establishment_callbacks = std::move(pending_establishment_callbacks_);

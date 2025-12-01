@@ -115,6 +115,19 @@ reviewer.
   </token>
 </histogram>
 
+<histogram name="Legion.SecureChannel.RequestsPerSession" units="requests"
+    expires_after="2026-11-28">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the number of requests sent in a single secure channel session.
+    Recorded when a session is closed.
+  </summary>
+</histogram>
+
 <histogram name="Legion.SecureChannel.SendAttestationRequestLatency.{Status}"
     units="ms" expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>
@@ -153,6 +166,20 @@ reviewer.
         summary="The handshake request failed with an error."/>
     <variant name="Success" summary="The handshake was successful."/>
   </token>
+</histogram>
+
+<histogram name="Legion.SecureChannel.SessionDuration" units="ms"
+    expires_after="2026-11-28">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the duration of a secure channel session. This is the time from when
+    the session is established to when it is closed. Recorded when a session is
+    closed.
+  </summary>
 </histogram>
 
 </histograms>

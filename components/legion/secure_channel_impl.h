@@ -60,6 +60,7 @@ class SecureChannelImpl : public SecureChannel {
   void ProcessPendingEncryptionRequests();
   void OnRequestEncrypted(
       std::optional<oak::session::v1::EncryptedMessage> encrypted_request);
+  void RecordSessionDurationMetrics();
 
   // Helpers to send and receive data that is converted to proto messages.
   void Send(const oak::session::v1::SessionRequest& request);
@@ -94,6 +95,7 @@ class SecureChannelImpl : public SecureChannel {
 
   std::map<State, base::TimeTicks> state_entry_times_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  uint32_t requests_in_session_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   base::WeakPtrFactory<SecureChannelImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
