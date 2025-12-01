@@ -440,7 +440,13 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
   if (!tab) {
     return;
   }
-  auto* instance = GetOrCreateGlicInstanceImplForTab(tab);
+  GlicInstanceImpl* instance = nullptr;
+  if (source == glic::mojom::InvocationSource::kSharedImage) {
+    // kSharedImage currently requires a new instance.
+    instance = CreateGlicInstance();
+  } else {
+    instance = GetOrCreateGlicInstanceImplForTab(tab);
+  }
   instance->Toggle(ShowOptions::ForSidePanel(*tab), prevent_close, source);
 }
 
