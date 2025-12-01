@@ -139,6 +139,8 @@ CreateInputDataFromAnnotatedPageContent(
   std::unique_ptr<ComposeboxFileUploadObserverBridge> _composeboxObserverBridge;
   // Whether AI mode is enabled.
   BOOL _AIModeEnabled;
+  // Whether image generation feature is enabled.
+  BOOL _isImageGenerationEnabled;
   // The web state list.
   raw_ptr<WebStateList> _webStateList;
   // The favicon loader.
@@ -344,6 +346,9 @@ CreateInputDataFromAnnotatedPageContent(
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
   search_url_request_info->query_text = base::SysNSStringToUTF8(text);
   search_url_request_info->query_start_time = base::Time::Now();
+  if (_isImageGenerationEnabled) {
+    search_url_request_info->additional_params["imgn"] = "1";
+  }
   // Read the list of tokens from the fileinfo list in the contextual search
   // controller.
   // TODO(crbug.com/455843962): Rely on the contextual search session handle
