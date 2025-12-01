@@ -70,11 +70,6 @@ void RecordKioskExtensionInstallError(
   }
 }
 
-void RecordKioskExtensionInstallDuration(base::TimeDelta time_delta) {
-  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Kiosk.Extensions.InstallDuration",
-                                        time_delta);
-}
-
 void RecordKioskExtensionInstallTimedOut(bool timeout) {
   UMA_HISTOGRAM_BOOLEAN("Kiosk.Extensions.InstallTimedOut", timeout);
 }
@@ -117,15 +112,11 @@ void ForceInstallObserver::StartTimerToWaitForExtensions() {
 void ForceInstallObserver::OnExtensionWaitTimeOut() {
   SYSLOG(WARNING) << "Timed out waiting for extensions to install";
 
-  RecordKioskExtensionInstallDuration(base::Time::Now() -
-                                      installation_start_time_);
   RecordKioskExtensionInstallTimedOut(true);
   ReportTimeout();
 }
 
 void ForceInstallObserver::OnForceInstalledExtensionsReady() {
-  RecordKioskExtensionInstallDuration(base::Time::Now() -
-                                      installation_start_time_);
   RecordKioskExtensionInstallTimedOut(false);
   ReportDone();
 }

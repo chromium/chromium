@@ -148,16 +148,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Kiosk.Extensions.InstallDuration" units="ms"
-    expires_after="2025-06-15">
-  <owner>yixie@chromium.org</owner>
-  <owner>chromeos-kiosk-eng@google.com</owner>
-  <summary>
-    Records the duration for Kiosk launcher to wait for forced extensions to
-    install.
-  </summary>
-</histogram>
-
 <histogram name="Kiosk.Extensions.InstallError.{InstallSource}"
     enum="ExtensionInstallationFailureReason" expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
