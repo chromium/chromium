@@ -52,6 +52,7 @@ if (!is_android) {
     sources = [
       "internal/create_browser_window_browsertest.cc",
       "internal/global_browser_collection_browsertest.cc",
+      "internal/profile_browser_collection_browsertest.cc",
       "public/browser_window_interface_iterator_browsertest.cc",
     ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
