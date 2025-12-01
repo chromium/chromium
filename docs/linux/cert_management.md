@@ -39,7 +39,7 @@ certutil -d sql:$HOME/.pki/nssdb -A -t <TRUSTARGS> -n <certificate nickname> \
 The TRUSTARGS are three strings of zero or more alphabetic characters, separated
 by commas. They define how the certificate should be trusted for SSL, email, and
 object signing, and are explained in the
-[certutil docs](https://firefox-source-docs.mozilla.org/security/nss/legacy/tools/nss_tools_certutil/index.html)
+[certutil docs](https://nss-crypto.org/reference/security/nss/legacy/tools/nss_tools_certutil/index.html)
 or
 [Meena's blog post on trust flags](https://web.archive.org/web/20131212024426/https://blogs.oracle.com/meena/entry/notes_about_trust_flags).
 
