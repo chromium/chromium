@@ -4133,16 +4133,14 @@
     "expires": "Dec 1, 2025"
   },
   {
-    "prefix": "speculation-rules-prerender-target-hint",
+    "prefix": "speculation-rules-prerender-cross-origin-iframes",
     "platforms": [
       "Linux",
       "Mac",
       "Win"
     ],
     "bases": [
-      "external/wpt/speculation-rules/prerender",
-      "http/tests/inspector-protocol/prerender/prerender-failure-status-update-with-target-hint.js",
-      "http/tests/inspector-protocol/prerender/prerender-status-update-with-target-hint.js"
+      "external/wpt/speculation-rules/prerender/cross-origin-iframe-prerender.https.html"
     ],
     "exclusive_tests": "ALL",
     "args": [
