@@ -214,13 +214,8 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
     spacingAfterImage = kCustomSpacingAfterImageWithoutAnimation;
   }
 
-  CGFloat spacingBeforeImage = 0;
-
-  if (![self isAnyNavigationBarVisible]) {
-    spacingBeforeImage = kCustomSpacingAtTopIfNoNavigationBar;
-  }
-
-  _alertScreen.customSpacingBeforeImageIfNoNavigationBar = spacingBeforeImage;
+  _alertScreen.customSpacingBeforeImageIfNoNavigationBar =
+      kCustomSpacingAtTopIfNoNavigationBar;
   _alertScreen.customSpacingAfterImage = spacingAfterImage;
 
   [self addChildViewController:_alertScreen];

@@ -219,7 +219,7 @@ NSString* const kInvalidPasswordUsername = @"Superman";
     [[EarlGrey selectElementWithMatcher:
                    grey_accessibilityID(
                        kConfirmationAlertUnderTitleViewAccessibilityIdentifier)]
-        assertWithMatcher:grey_sufficientlyVisible()];
+        assertWithMatcher:grey_minimumVisiblePercent(0.5f)];
     /// Dismiss by tapping the "Cancel" button on the top right.
     id<GREYMatcher> buttonInNavBar = grey_allOf(
         grey_kindOfClass([UIButton class]),
