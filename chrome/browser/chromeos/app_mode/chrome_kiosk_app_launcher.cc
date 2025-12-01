@@ -24,14 +24,6 @@
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
 
-namespace {
-
-void RecordKioskSecondaryAppsInstallResult(bool success) {
-  base::UmaHistogramBoolean("Kiosk.SecondaryApps.InstallSuccessful", success);
-}
-
-}  // namespace
-
 namespace chromeos {
 
 ChromeKioskAppLauncher::ChromeKioskAppLauncher(Profile* profile,
@@ -68,13 +60,7 @@ ChromeKioskAppLauncher::PerformPreLaunchChecks() {
   }
 
   if (!AreSecondaryAppsInstalled()) {
-    RecordKioskSecondaryAppsInstallResult(false);
     return base::unexpected(PreLaunchError::kSecondaryAppsMissing);
-  }
-
-  extensions::KioskModeInfo* info = extensions::KioskModeInfo::Get(primary_app);
-  if (!info->secondary_apps.empty()) {
-    RecordKioskSecondaryAppsInstallResult(true);
   }
 
   const bool offline_enabled =
