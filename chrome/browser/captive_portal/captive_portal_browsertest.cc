@@ -3455,7 +3455,8 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 // completes with a secure DNS error, which triggers another captive portal
 // check that should succeed.
 // TODO(crbug.com/339524384) Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/463028193) Flaky on Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_SlowLoadSecureDnsErrorAfterLogin \
   DISABLED_SlowLoadSecureDnsErrorAfterLogin
 #else
@@ -3492,8 +3493,8 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   navigation_observer.WaitForNavigations(1);
   WebContents* tab = browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_EQ(1, navigation_observer.NumNavigationsForTab(tab));
-  EXPECT_TRUE(tab->GetController().GetLastCommittedEntry()->GetPageType() ==
-              content::PAGE_TYPE_NORMAL);
+  EXPECT_EQ(tab->GetController().GetLastCommittedEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(2, NumTabs());
 }
