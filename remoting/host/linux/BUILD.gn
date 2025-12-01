@@ -206,6 +206,8 @@ source_set("platform_impls") {
     "portal_desktop_resizer.h",
     "portal_display_info_loader.cc",
     "portal_display_info_loader.h",
+    "portal_remote_desktop_session.cc",
+    "portal_remote_desktop_session.h",
     "portal_utils.cc",
     "portal_utils.h",
     "scoped_portal_request.cc",
