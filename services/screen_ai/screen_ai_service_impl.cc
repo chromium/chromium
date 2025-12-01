@@ -203,6 +203,8 @@ class ModelDataHolder {
   static void CopyData(const char* relative_file_path,
                        uint32_t buffer_size,
                        char* buffer) {
+    base::span<uint8_t> buffer_span =
+        UNSAFE_TODO(base::as_writable_bytes(base::span(buffer, buffer_size)));
     CHECK(g_model_data_holder_instance);
     base::File* model_file =
         g_model_data_holder_instance->GetModelFile(relative_file_path);
@@ -210,7 +212,8 @@ class ModelDataHolder {
 
     int64_t length = model_file->GetLength();
     CHECK_GE(buffer_size, length);
-    CHECK_EQ(UNSAFE_TODO(model_file->Read(0, buffer, length)), length);
+    CHECK_EQ(model_file->Read(0, buffer_span).value_or(-1),
+             base::checked_cast<size_t>(length));
   }
 
   void AddModelFiles(base::flat_map<base::FilePath, base::File> model_files) {
