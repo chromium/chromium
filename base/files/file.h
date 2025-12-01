@@ -233,12 +233,7 @@ class BASE_EXPORT File {
 
   // Reads the given number of bytes (or until EOF is reached) starting with the
   // given offset, but does not make any effort to read all data on all
-  // platforms. Returns the number of bytes read, or -1/std::nullopt on error.
-  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
-  // least `size` valid bytes.
-  UNSAFE_BUFFER_USAGE int ReadNoBestEffort(int64_t offset,
-                                           char* data,
-                                           int size);
+  // platforms. Returns the number of bytes read, or std::nullopt on error.
   std::optional<size_t> ReadNoBestEffort(int64_t offset,
                                          base::span<uint8_t> data);
 
