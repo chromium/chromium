@@ -14589,6 +14589,24 @@
             ]
         }
     ],
+    "InfobarPrioritization": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InfobarPrioritization"
+                    ]
+                }
+            ]
+        }
+    ],
     "InfobarRefresh": [
         {
             "platforms": [
