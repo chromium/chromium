@@ -769,7 +769,7 @@ void DesktopCaptureAccessHandler::OnDlpRestrictionChecked(
   if (!is_dlp_allowed) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::PERMISSION_DENIED,
+             MediaStreamRequestResult::DLP_PERMISSION_DENIED,
              /*ui=*/nullptr);
     return;
   }

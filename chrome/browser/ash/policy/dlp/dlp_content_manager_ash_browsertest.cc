@@ -1084,7 +1084,7 @@ class DlpContentManagerAshScreenShareBrowserTest
         received_result,
         (expect_allowed
              ? blink::mojom::MediaStreamRequestResult::OK
-             : blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED));
+             : blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED));
 
     // Simulate starting screen sharing.
     // Calls DlpContentManager::OnScreenShareStarted().

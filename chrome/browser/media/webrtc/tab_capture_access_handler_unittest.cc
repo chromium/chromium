@@ -164,7 +164,8 @@ TEST_F(TabCaptureAccessHandlerTest, DlpRestricted) {
   blink::mojom::StreamDevices devices;
   ProcessRequest(source, &result, &devices);
 
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED,
+            result);
   EXPECT_FALSE(devices.video_device.has_value());
   EXPECT_FALSE(devices.audio_device.has_value());
 }

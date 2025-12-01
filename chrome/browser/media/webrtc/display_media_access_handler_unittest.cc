@@ -465,7 +465,8 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpRestricted) {
   blink::mojom::StreamDevices devices;
   ProcessRequest(media_id, &result, devices, /*request_audio=*/false);
 
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED,
+            result);
   EXPECT_EQ(0u, blink::CountDevices(devices));
 }
 
@@ -829,7 +830,7 @@ TEST_F(DisplayMediaAccessHandlerTest, ChangeSourceDlpRestricted) {
   ChangeSourceRequestTest(
       /*with_audio=*/false,
       /*expected_result=*/
-      blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+      blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED,
       /*expected_number_of_devices=*/0u);
 }
 

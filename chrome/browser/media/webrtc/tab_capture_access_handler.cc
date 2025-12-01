@@ -251,7 +251,7 @@ void TabCaptureAccessHandler::OnDlpRestrictionChecked(
   } else {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+             blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED,
              /*ui=*/nullptr);
   }
 }
