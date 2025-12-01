@@ -228,20 +228,9 @@ CGFloat const kChromeLogoHeight = 22;
 
 #pragma mark - UITextViewDelegate
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  // A link in legal message was clicked.
-  [self.delegate didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
-  return NO;
-}
-#endif
-
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
-               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+               defaultAction:(UIAction*)defaultAction {
   // A link in legal message was clicked.
   __weak __typeof__(self) weakSelf = self;
   return [UIAction actionWithHandler:^(UIAction* action) {

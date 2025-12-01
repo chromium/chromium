@@ -306,32 +306,9 @@ CGFloat const kCreditCardCellHeight = 64;
 
 #pragma mark - UITextViewDelegate
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  if (textView == _explanatoryMessageView) {
-    // The learn more link was clicked.
-    [self.delegate
-        didTapLinkURL:[[CrURL alloc]
-                          initWithGURL:autofill::payments::
-                                           GetVirtualCardEnrollmentSupportUrl()]
-                 text:[textView.text substringWithRange:characterRange]];
-    return NO;
-  } else {
-    // A link in a legal message was clicked.
-    [self.delegate
-        didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]
-                 text:[textView.text substringWithRange:characterRange]];
-    return NO;
-  }
-}
-#endif
-
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
-               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+               defaultAction:(UIAction*)defaultAction {
   CrURL* URL = nil;
   if (textView == _explanatoryMessageView) {
     URL = [[CrURL alloc]
