@@ -15,8 +15,6 @@ source_set("identity_manager") {
     "account_fetcher_service.h",
     "account_info_fetcher.cc",
     "account_info_fetcher.h",
-    "account_info_serializer.cc",
-    "account_info_serializer.h",
     "account_info_util.cc",
     "account_info_util.h",
     "account_tracker_service.cc",
@@ -157,7 +155,6 @@ source_set("unit_tests") {
 
   sources = [
     "account_capabilities_fetcher_unittest.cc",
-    "account_info_serializer_unittest.cc",
     "account_info_util_unittest.cc",
     "account_tracker_service_unittest.cc",
     "gaia_cookie_manager_service_unittest.cc",
@@ -259,7 +256,7 @@ static_library("test_support") {
   ]
 
   if (is_android) {
-    sources += [ "account_info_serializer_jni.cc" ]
+    sources += [ "account_info_serializer.cc" ]
     deps = [ "//components/signin/public/android:test_support_jni_headers" ]
   }
 

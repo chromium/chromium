@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
+#include "components/signin/internal/identity_manager/account_info_util.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
@@ -244,7 +245,8 @@ class AccountInfo::Builder {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AccountInfoTest, CreateWithPossiblyEmptyGaiaId);
-  friend class signin::AccountInfoSerializer;
+  friend std::optional<AccountInfo> signin::DeserializeAccountInfo(
+      const base::Value::Dict& dict);
   // Default constructor is only available to support ongoing migrations.
   // TODO(crbug.com/40268200): remove this after the migration is done.
   Builder();

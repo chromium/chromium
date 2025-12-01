@@ -34,7 +34,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
-#include "components/signin/internal/identity_manager/account_info_serializer.h"
 #include "components/signin/internal/identity_manager/account_info_util.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -275,7 +274,7 @@ void AccountTrackerService::SetAccountInfoFromUserInfo(
   base::UmaHistogramEnumeration("Signin.AccountInPref.State", state);
 
   std::optional<AccountInfo> maybe_account_info =
-      AccountInfoFromUserInfo(user_info);
+      signin::AccountInfoFromUserInfo(user_info);
   if (maybe_account_info) {
     DCHECK(!maybe_account_info->gaia.empty());
     DCHECK(!maybe_account_info->email.empty());
@@ -618,7 +617,7 @@ void AccountTrackerService::LoadFromPrefs() {
     StartTrackingAccount(account_id);
     AccountInfo& account_info = accounts_[account_id];
     std::optional<AccountInfo> deserialized_account_info =
-        signin::AccountInfoSerializer::FromValue(*dict);
+        signin::DeserializeAccountInfo(*dict);
     if (deserialized_account_info) {
       account_info = std::move(*deserialized_account_info);
     }
@@ -688,7 +687,7 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
   base::Value::Dict* dict =
       FindOrCreateDictForAccount(update, account_info.account_id);
-  dict->Merge(signin::AccountInfoSerializer::ToValue(account_info));
+  dict->Merge(signin::SerializeAccountInfo(account_info));
 }
 
 void AccountTrackerService::RemoveFromPrefs(const AccountInfo& account_info) {

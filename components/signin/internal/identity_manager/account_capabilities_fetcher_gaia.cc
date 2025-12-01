@@ -119,7 +119,7 @@ void AccountCapabilitiesFetcherGaia::OnGetAccountCapabilitiesResponse(
       "AccountFetcherService",
       /* GetAccountCapabilities */ perfetto::Track::FromPointer(this));
   std::optional<AccountCapabilities> parsed_capabilities =
-      AccountCapabilitiesFromValue(account_capabilities);
+      signin::AccountCapabilitiesFromServerResponse(account_capabilities);
   FetchResult result = FetchResult::kSuccess;
   if (!parsed_capabilities) {
     VLOG(1) << "Failed to parse account capabilities for " << account_id()

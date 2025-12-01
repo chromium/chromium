@@ -4,13 +4,12 @@
 
 package org.chromium.components.signin.test.util;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.AccountInfo;
 
 /** A utility class to serialize AccountInfo objects to and from JSON strings. */
@@ -39,6 +38,10 @@ final class AccountInfoSerializer {
         return AccountInfoSerializerJni.get().jsonStringToAccountInfo(jsonString);
     }
 
+    /**
+     * Native methods are implemented in
+     * components/signin/internal/identity_manager/account_info_serializer.cc.
+     */
     @NativeMethods
     interface Natives {
         @Nullable
