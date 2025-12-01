@@ -836,7 +836,7 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, SolidColorDrawQuads) {
     const auto& quads = render_pass->quad_list;
     ASSERT_EQ(1u, quads.size());
     EXPECT_EQ(viz::DrawQuad::Material::kSolidColor, quads.front()->material);
-    EXPECT_EQ(gfx::Rect(8, 0, 19, 3), quads.front()->rect);
+    EXPECT_EQ(gfx::Rect(8, 0, 20, 3), quads.front()->rect);
   }
 
   // We shouldn't attempt div-by-zero when the maximum is zero.
@@ -1171,17 +1171,17 @@ TEST_F(ScrollbarLayerSolidColorThumbTest, SolidColorThumbPosition) {
   horizontal_scrollbar_layer_->SetClipLayerLength(12.f);
   horizontal_scrollbar_layer_->SetScrollLayerLength(112.f);
   EXPECT_EQ(0, horizontal_scrollbar_layer_->ComputeThumbQuadRect().x());
-  EXPECT_EQ(10, horizontal_scrollbar_layer_->ComputeThumbQuadRect().width());
+  EXPECT_EQ(11, horizontal_scrollbar_layer_->ComputeThumbQuadRect().width());
 
   horizontal_scrollbar_layer_->SetCurrentPos(100);
-  // The thumb is 10px long and the track is 100px, so the maximum thumb
-  // position is 90px.
-  EXPECT_EQ(90, horizontal_scrollbar_layer_->ComputeThumbQuadRect().x());
+  // The thumb is 11px long and the track is 100px, so the maximum thumb
+  // position is 89px.
+  EXPECT_EQ(89, horizontal_scrollbar_layer_->ComputeThumbQuadRect().x());
 
   horizontal_scrollbar_layer_->SetCurrentPos(80);
   // The scroll position is 80% of the maximum, so the thumb's position should
-  // be at 80% of its maximum or 72px.
-  EXPECT_EQ(72, horizontal_scrollbar_layer_->ComputeThumbQuadRect().x());
+  // be at 80% of its maximum or 71px.
+  EXPECT_EQ(71, horizontal_scrollbar_layer_->ComputeThumbQuadRect().x());
 }
 
 TEST_F(ScrollbarLayerSolidColorThumbTest, SolidColorThumbVerticalAdjust) {

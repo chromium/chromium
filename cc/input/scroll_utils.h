@@ -42,6 +42,16 @@ class CC_EXPORT ScrollUtils {
   static int CalculateMinPageSnap(int length);
   static int CalculateMaxPageSnap(int length);
   static int CalculatePageStep(int length);
+
+  // Calculates the length of the scrollbar thumb.
+  // |total_size| is the total size of the scrolled contents.
+  // |visible_size| is the visible size of the contents.
+  // |track_length| is the visible length of the scrollbar.
+  // |minimum_thumb_length| specifies the lower limit of the return value.
+  static int CalculateScrollbarThumbLength(int total_size,
+                                           int visible_size,
+                                           int track_length,
+                                           int minimum_thumb_length);
 };
 
 }  // namespace cc
