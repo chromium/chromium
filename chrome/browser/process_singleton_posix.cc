@@ -905,7 +905,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
 
   // Read ACK message from the other process. It might be blocked for a certain
   // timeout, to make sure the other process has enough time to return ACK.
-  std::array<char, kACKToken.length()> buf;
+  std::array<char, std::max(kACKToken.size(), kShutdownToken.size())> buf;
   ssize_t len = ReadFromSocketWithTimeout(socket.fd(), buf, timeout);
 
   // Failed to read ACK, the other process might have been frozen.
@@ -918,12 +918,12 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
 
   std::string_view buf_string_view = base::as_string_view(
       base::span(buf).first(base::checked_cast<size_t>(len)));
-  if (base::StartsWith(buf_string_view, kShutdownToken)) {
+  if (buf_string_view == kShutdownToken) {
     // The other process is shutting down, it's safe to start a new process.
     internal::SendRemoteProcessInteractionResultHistogram(
         REMOTE_PROCESS_SHUTTING_DOWN);
     return PROCESS_NONE;
-  } else if (base::StartsWith(buf_string_view, kACKToken)) {
+  } else if (buf_string_view == kACKToken) {
     // Assume the other process is handling the request.
     return PROCESS_NOTIFIED;
   }
