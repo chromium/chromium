@@ -246,6 +246,9 @@ enum ActionResultCode {
   // Navigation to external protocol was blocked
   kExternalProtocolNavigationBlocked = 38,
 
+  // The renderer process crashed.
+  kRendererCrashed = 39,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
     ASSERT_FALSE(crashed->GetView());
   }
 
-  ExpectErrorResult(result, mojom::ActionResultCode::kFrameWentAway);
+  ExpectErrorResult(result, mojom::ActionResultCode::kRendererCrashed);
 
   // Finish the callback from ToolController. No crashes.
   {

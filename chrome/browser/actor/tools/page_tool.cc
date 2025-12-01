@@ -167,7 +167,8 @@ class RenderFrameChangeObserver : public WebContentsObserver {
     }
 
     if (old_host && old_host->GetGlobalId() == rfh_id_) {
-      std::move(on_frame_navigated_callback_).Run();
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(on_frame_navigated_callback_));
     }
   }
   void RenderFrameDeleted(RenderFrameHost* rfh) override {
@@ -177,7 +178,8 @@ class RenderFrameChangeObserver : public WebContentsObserver {
     // the crashed frame because the screenshot does not include the sad tab
     // WebUI.
     if (rfh->GetGlobalId() == rfh_id_) {
-      std::move(on_frame_process_gone_callback_).Run();
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(on_frame_process_gone_callback_));
     }
   }
 
@@ -405,7 +407,15 @@ void PageTool::OnRenderFrameHostChanged() {
 }
 
 void PageTool::OnRenderFrameGone() {
-  FinishInvoke(MakeResult(mojom::ActionResultCode::kFrameWentAway));
+  auto* tab_interface = request_->GetTabHandle().Get();
+
+  mojom::ActionResultCode result_code = mojom::ActionResultCode::kFrameWentAway;
+  if (!tab_interface || tab_interface->GetContents()->IsBeingDestroyed()) {
+    result_code = mojom::ActionResultCode::kTabWentAway;
+  } else if (tab_interface->GetContents()->IsCrashed()) {
+    result_code = mojom::ActionResultCode::kRendererCrashed;
+  }
+  FinishInvoke(MakeResult(result_code));
 }
 
 void PageTool::OnTimeout() {

@@ -57,6 +57,7 @@ chromium-metrics-reviews@google.com.
   <int value="36" label="kFilePickerCancelled"/>
   <int value="37" label="ExecutionEngineExistingAction"/>
   <int value="38" label="ExternalProtocolNavigationBlocked"/>
+  <int value="39" label="RendererCrashed"/>
   <int value="100" label="NavigateInvalidUrl"/>
   <int value="101" label="NavigateFailedToStart"/>
   <int value="200" label="ClickSuppressed"/>
