@@ -4098,7 +4098,7 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> افزونه</translation>
 <translation id="3794792524918736965">‏روشن کردن Windows Hello</translation>
 <translation id="379509625511193653">خاموش</translation>
-<translation id="3795436270513738622">باز کردن پیوند در نمای تقسیم‌شده</translation>
+<translation id="3795436270513738622">باز کردن پیوند در «نمای دونیمه»</translation>
 <translation id="3796215473395753611">دگرساز + بالابر</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />، برای پیش‌دید کردن صدا از کلید راست‌بَر استفاده کنید</translation>
 <translation id="3796648294839530037">شبکه‌های دلخواه:</translation>
@@ -8431,7 +8431,7 @@
 <translation id="6841186874966388268">خطاها</translation>
 <translation id="6842135459748401207">فقط دستگاه‌های واردشده به سیستم <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">برای اینکه مطمئن شوید همیشه می‌توانید به گذرواژه‌های ذخیره‌شده دسترسی داشته باشید، هویتتان را درستی‌سنجی کنید</translation>
-<translation id="6842670680297285750">نمای تقسیم‌شده جدید با زبانه فعلی</translation>
+<translation id="6842670680297285750">«نمای دونیمه» جدید با زبانه فعلی</translation>
 <translation id="6842749380892715807">‏فهرست سایت‌های XML آخرین بار در تاریخ <ph name="LAST_DATE_DOWNLOAD" /> بارگیری شد.</translation>
 <translation id="6842868554183332230">سایت‌ها معمولاً برای تنظیم دردسترس بودن شما در برنامه‌های گپ، زمان‌هایی را که به‌طور فعال از دستگاه استفاده می‌کنید شناسایی می‌کنند</translation>
 <translation id="6843264316370513305">اشکال‌زدایی شبکه</translation>
@@ -9478,7 +9478,7 @@
 <translation id="7586498138629385861">‏وقتی برنامه‌های Chrome باز هستند، Chrome همچنان اجرا می‌شود.</translation>
 <translation id="7587806318633605613">سابقه پیشنهاد</translation>
 <translation id="7588381637439911806">گروه جدید ایجاد شود</translation>
-<translation id="7589448773774086276">نمای تقسیم‌شده جدید با زبانه فعلی</translation>
+<translation id="7589448773774086276">«نمای دونیمه» جدید با زبانه فعلی</translation>
 <translation id="7589461650300748890">اینجا ایست. مراقب باشید.</translation>
 <translation id="7590883480672980941">تنظیمات ورودی</translation>
 <translation id="7592060599656252486">برخی</translation>
@@ -10442,7 +10442,7 @@
 <translation id="8230134520748321204">گذرواژه <ph name="ORIGIN" /> ذخیره شود؟</translation>
 <translation id="8230326817897075865">حذف <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">به سایت‌ها اجازه داده نشود تصاویر را نشان دهند</translation>
-<translation id="8231438895476693774">افزودن زبانه به نمای تقسیم‌شده جدید</translation>
+<translation id="8231438895476693774">افزودن زبانه به «نمای دونیمه» جدید</translation>
 <translation id="823226567613548870">داده‌های <ph name="BRAND" /> شما را حذف کند</translation>
 <translation id="8233028084277069927">اکنون باز کردن</translation>
 <translation id="8234795456569844941">لطفاً در رفع این مشکل به مهندسان ما کمک کنید. بگویید درست قبل از اینکه پیام خطای نمایه را دریافت کنید، چه اتفاقی افتاد.</translation>
@@ -10455,7 +10455,7 @@
 <translation id="8239932336306009582">اجازه ندارد اعلان ارسال کند</translation>
 <translation id="8241040075392580210">سایه</translation>
 <translation id="8241338426526905580">گواهینامه‌ای وجود ندارد</translation>
-<translation id="8241650983304689286">افزودن زبانه به نمای تقسیم‌شده جدید</translation>
+<translation id="8241650983304689286">افزودن زبانه به «نمای دونیمه» جدید</translation>
 <translation id="8241806945692107836">تعیین پیکربندی دستگاه...</translation>
 <translation id="8241868517363889229">خواندن و تغییر نشانک‌هایتان</translation>
 <translation id="8242273718576931540">دستگاه شما نمی‌تواند به این شبکه متصل شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -10961,7 +10961,7 @@
 <translation id="859246725979739260">دسترسی این سایت به مکان شما مسدود شده است.</translation>
 <translation id="8593450223647418235">‏تا وقتی راه‌اندازی تکمیل نشود، نمی‌توانید فایل‌ها را در Microsoft 365 باز کنید.</translation>
 <translation id="8593686980889923154"><ph name="APP_NAME" /> در <ph name="DEVICE_TYPE" /> مسدود شده است</translation>
-<translation id="8594912907680633924">باز کردن پیوند در نمای تقسیم‌شده</translation>
+<translation id="8594912907680633924">باز کردن پیوند در «نمای دونیمه»</translation>
 <translation id="8596400097994526901">کنش‌های بیشتر برای <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">فایل‌های سفارشی</translation>
 <translation id="8597845839771543242">قالب محصول:</translation>
