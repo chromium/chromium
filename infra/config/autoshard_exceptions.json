@@ -102,7 +102,7 @@
     "chromium.fuchsia": {
         "fuchsia-x64-cast-receiver-rel": {
             "blink_unittests": {
-                "shards": 3,
+                "shards": 2,
                 "try_builder": "fuchsia-x64-cast-receiver-rel"
             },
             "blink_unittests_v2": {
@@ -186,7 +186,7 @@
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "interactive_ui_tests": {
-                "shards": 101,
+                "shards": 94,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "sync_integration_tests": {
@@ -232,7 +232,7 @@
     "chromium.win": {
         "Win10 Tests x64": {
             "browser_tests": {
-                "shards": 61,
+                "shards": 67,
                 "try_builder": "win-rel"
             },
             "content_browsertests": {
