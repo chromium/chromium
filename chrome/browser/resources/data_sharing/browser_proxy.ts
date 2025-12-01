@@ -72,8 +72,6 @@ export class BrowserProxyImpl implements BrowserProxy {
       const previews: DataSharingSdkSitePreview[] = [];
       this.handler.getTabGroupPreview(groupId, tokenSecret).then((res) => {
         if (res.groupPreview.statusCode !== AbslStatusCode.kOk) {
-          // TODO(crbug.com/368634445): Ask Chrome to handle different
-          // errors in addition to closing the WebUI.
           this.handler.closeUI(Code.UNKNOWN);
         }
 
