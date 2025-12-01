@@ -43,7 +43,6 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
@@ -53,6 +52,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/selection_bound.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -2662,12 +2662,12 @@ int Textfield::GetViewWidth() const {
 }
 
 int Textfield::GetDragSelectionDelay() const {
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
     // NON_ZERO_DURATION is 1/20 by default, but we want 1/100 here.
     return 1;
   }
-  return ui::ScopedAnimationDurationScaleMode::duration_multiplier() * 100;
+  return gfx::ScopedAnimationDurationScaleMode::duration_multiplier() * 100;
 }
 
 void Textfield::OnBeforePointerAction() {

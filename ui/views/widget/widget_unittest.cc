@@ -38,7 +38,6 @@
 #include "ui/color/color_recipe.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/events/event_observer.h"
@@ -47,6 +46,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -3957,8 +3957,8 @@ TEST_F(WidgetTest, CloseWidgetWhileAnimating) {
   {
     // Normal animations for tests have ZERO_DURATION, make sure we are actually
     // animating the movement.
-    ui::ScopedAnimationDurationScaleMode animation_scale_mode(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode animation_scale_mode(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     ui::ScopedLayerAnimationSettings animation_settings(
         widget->GetLayer()->GetAnimator());
     animation_settings.AddObserver(&animation_observer);

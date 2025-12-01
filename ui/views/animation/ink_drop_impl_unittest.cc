@@ -11,9 +11,9 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop.h"
@@ -264,8 +264,8 @@ TEST_F(InkDropImplTest, SuccessfulAnimationEndedDuringDestruction) {
   {
     // Start another ripple animation with zero duration that would be queued
     // until the previous one is finished/aborted.
-    ui::ScopedAnimationDurationScaleMode duration_mode(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     ink_drop()->AnimateToState(InkDropState::ACTION_TRIGGERED);
   }
   // Abort the first animation, so that the queued animation is started (and

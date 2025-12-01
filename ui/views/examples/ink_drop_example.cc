@@ -12,12 +12,12 @@
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_state.h"
@@ -149,8 +149,8 @@ void InkDropExample::SetInkDropState(InkDropState state) {
       ui::EventType::kMousePressed,
       gfx::PointF(ink_drop_view_->GetLocalBounds().CenterPoint()),
       gfx::PointF(ink_drop_view_->origin()), base::TimeTicks(), 0, 0);
-  ui::ScopedAnimationDurationScaleMode scale(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scale(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   InkDrop::Get(ink_drop_view_)->AnimateToState(state, &event);
 }
 

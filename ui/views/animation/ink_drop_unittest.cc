@@ -10,8 +10,8 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/timer/timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_state.h"
@@ -49,7 +49,7 @@ class InkDropTest : public testing::TestWithParam<testing::tuple<InkDropType>> {
   // Extracts and returns the InkDropType from the test parameters.
   InkDropType GetInkDropType() const;
 
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 
   // Required by base::Timer's.
   std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
@@ -57,8 +57,8 @@ class InkDropTest : public testing::TestWithParam<testing::tuple<InkDropType>> {
 };
 
 InkDropTest::InkDropTest() : ink_drop_(nullptr) {
-  zero_duration_mode_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  zero_duration_mode_ = std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   switch (GetInkDropType()) {
     case INK_DROP_STUB:
