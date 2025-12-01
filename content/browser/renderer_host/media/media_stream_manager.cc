@@ -342,6 +342,8 @@ const char* RequestResultToString(
       return "PERMISSION_DENIED_BY_EMBEDDER_CONTEXT";
     case blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED:
       return "DLP_PERMISSION_DENIED";
+    case blink::mojom::MediaStreamRequestResult::REGISTRY_REQUEST_UNVERIFIED:
+      return "REGISTRY_REQUEST_UNVERIFIED";
     case blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;  // Not a valid enum value.
   }

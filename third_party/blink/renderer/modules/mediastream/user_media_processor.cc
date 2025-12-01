@@ -181,6 +181,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "PERMISSION_DENIED_BY_EMBEDDER_CONTEXT";
     case MediaStreamRequestResult::DLP_PERMISSION_DENIED:
       return "DLP_PERMISSION_DENIED";
+    case MediaStreamRequestResult::REGISTRY_REQUEST_UNVERIFIED:
+      return "REGISTRY_REQUEST_UNVERIFIED";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;
   }
@@ -346,6 +348,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
       return "Permission dismissed";
     case MediaStreamRequestResult::INVALID_STATE:
     case MediaStreamRequestResult::INVALID_VIDEO_DEVICE_ID:
+    case MediaStreamRequestResult::REGISTRY_REQUEST_UNVERIFIED:
       return "Invalid state";
     case MediaStreamRequestResult::NO_HARDWARE:
       return "Requested device not found";

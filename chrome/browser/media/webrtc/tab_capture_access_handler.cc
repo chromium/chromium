@@ -157,7 +157,8 @@ void TabCaptureAccessHandler::HandleRequest(
           request.render_process_id, request.render_frame_id, extension_id)) {
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::INVALID_STATE, /*ui=*/nullptr);
+        blink::mojom::MediaStreamRequestResult::REGISTRY_REQUEST_UNVERIFIED,
+        /*ui=*/nullptr);
     return;
   }
 
