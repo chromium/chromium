@@ -86,7 +86,6 @@ UrlCheckerDelegateImpl::UrlCheckerDelegateImpl(
     : database_manager_(std::move(database_manager)),
       ui_manager_(std::move(ui_manager)),
       threat_types_(CreateSBThreatTypeSet({
-// TODO(crbug.com/41385006): Enable on Android when list is available.
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
           safe_browsing::SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE,
 #endif
