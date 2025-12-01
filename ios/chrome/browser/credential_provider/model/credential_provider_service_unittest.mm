@@ -707,13 +707,7 @@ TEST_F(
   histogram_tester.ExpectTotalCount(kSyncStoreHistogramName, 0);
 }
 
-// TODO:(crbug.com/464505576): Re-enable this test on devices.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_AddPasskeys AddPasskeys
-#else
-#define MAYBE_AddPasskeys FLAKY_AddPasskeys
-#endif
-TEST_F(CredentialProviderServiceTest, MAYBE_AddPasskeys) {
+TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   CreateCredentialProviderService(/*with_account_store=*/true);
 
   ASSERT_EQ(credential_store_.credentials.count, 0u);
@@ -746,7 +740,7 @@ TEST_F(CredentialProviderServiceTest, MAYBE_AddPasskeys) {
   test_passkey_model_->AddNewPasskeyForTesting(hidden_passkey);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 3u);
+  ASSERT_TRUE(WaitForCredentialCount(3u));
 
   // Add 2nd passkey with valid URL to store.
   EXPECT_CALL(favicon_loader_, FaviconForPageUrl).Times(1);
