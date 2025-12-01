@@ -23,7 +23,7 @@ feature kZeroStateSuggestionsV2 {
 
 feature kGlicAppendModelQualityClientId {
   const string name = "GlicAppendModelQualityClientId";
-  const bool default_state = false;
+  const bool default_state = true;
 };
 
 // Allows actor code to activate a tab.
