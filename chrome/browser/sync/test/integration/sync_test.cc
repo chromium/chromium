@@ -1213,8 +1213,10 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    allowed_types.Put(syncer::EXTENSIONS);
-    allowed_types.Put(syncer::EXTENSION_SETTINGS);
+    if (switches::IsExtensionsExplicitBrowserSigninEnabled()) {
+      allowed_types.Put(syncer::EXTENSIONS);
+      allowed_types.Put(syncer::EXTENSION_SETTINGS);
+    }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
