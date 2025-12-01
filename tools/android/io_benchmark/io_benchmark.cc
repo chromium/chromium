@@ -147,19 +147,21 @@ void RandomlyReadWrite(std::atomic<bool>* should_stop,
     // O_DIRECT has special requirements on read/write buffers alignment,
     // which are unspecified in "man open(2)". However a page-aligned buffer
     // works with linux filesystems (512 bytes is usually enough).
-    std::unique_ptr<char, base::AlignedFreeDeleter> page_buffer(
-        static_cast<char*>(base::AlignedAlloc(kPageSize, kPageSize)));
+    base::AlignedHeapArray<uint8_t> page_buffer =
+        base::AlignedUninit<uint8_t>(kPageSize, kPageSize);
 
     while (!should_stop->load()) {
       int random = dist(engine);
       int offset = random * kPageSize;
-      int size_read = f.Read(offset, page_buffer.get(), kPageSize);
-      CHECK_EQ(size_read, kPageSize);
+      const std::optional<size_t> bytes_read =
+          f.Read(offset, page_buffer.as_span());
+      CHECK(bytes_read.has_value());
+      CHECK_EQ(bytes_read.value(), static_cast<size_t>(kPageSize));
 
       std::vector<uint8_t> random_page = RandomData(kPageSize, &engine);
-      int written =
-          f.Write(offset, reinterpret_cast<char*>(&random_page[0]), kPageSize);
-      CHECK_EQ(written, kPageSize);
+      const std::optional<size_t> bytes_written = f.Write(offset, random_page);
+      CHECK(bytes_written.has_value());
+      CHECK_EQ(bytes_written.value(), static_cast<size_t>(kPageSize));
     }
   }
 
