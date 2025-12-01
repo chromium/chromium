@@ -45,6 +45,7 @@ namespace {
 using ::base::test::ErrorIs;
 using ::base::test::HasValue;
 using ::base::test::ValueIs;
+using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AnyOf;
 using ::testing::Contains;
@@ -57,6 +58,7 @@ using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
 using ::testing::Matcher;
 using ::testing::Not;
+using ::testing::Pair;
 using ::testing::Return;
 using ::testing::SizeIs;
 
@@ -642,6 +644,39 @@ TEST_F(ActorFormFillingServiceTest, FillButFormIsGone) {
   ExpectFillSuggestionsOutcome(/*is_payments_fill=*/false,
                                ActorFormFillingError::kNoForm,
                                histogram_tester);
+}
+
+// Tests that suggestions are generated and filled if the trigger field is a
+// select field.
+TEST_F(ActorFormFillingServiceTest, TriggerOnSelect) {
+  FormData form = SeeForm(
+      {.fields = {{.server_type = ADDRESS_HOME_COUNTRY,
+                   .form_control_type = FormControlType::kSelectOne,
+                   .select_options =
+                       {SelectOption{.value = u"US", .text = u"United States"},
+                        SelectOption{.value = u"CA", .text = u"Canada"},
+                        SelectOption{.value = u"DE", .text = u"Germany"}}},
+                  {.server_type = ADDRESS_HOME_LINE1},
+                  {.server_type = ADDRESS_HOME_CITY}}});
+
+  GetSuggestionsFuture request_future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           request_future.GetCallback());
+  EXPECT_THAT(request_future.Get(),
+              ValueIs(ElementsAre(IsActorFormFillingRequest(
+                  ActorFormFillingRequest::RequestedData::
+                      FormFillingRequest_RequestedData_ADDRESS))));
+
+  std::vector<ActorFormFillingRequest> requests = request_future.Take().value();
+  ASSERT_THAT(requests, Not(IsEmpty()));
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), HasValue());
+  EXPECT_THAT(driver().last_filled_values(),
+              Contains(Pair(form.fields()[0].global_id(), u"US")));
 }
 
 // Tests that `kAutofillNotAvailable` is returned if the tab has no web
