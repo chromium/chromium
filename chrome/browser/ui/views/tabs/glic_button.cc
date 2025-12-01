@@ -76,6 +76,8 @@ constexpr int kIconSize = 16;
 constexpr gfx::Tween::Type kSlidingTextTween =
     gfx::Tween::Type::ACCEL_20_DECEL_100;
 
+constexpr int kMinTargetWidthForAnimatingText = 41;
+
 bool EntrypointVariationsEnabled() {
   return base::FeatureList::IsEnabled(features::kGlicEntrypointVariations);
 }
@@ -271,6 +273,8 @@ void GlicButton::SuppressLabel() {
     return;
   }
 
+  is_animating_text_ = true;
+
   StartSlidingTextAnimation(/*show=*/false);
 
   label()->SetPaintToLayer();
@@ -345,9 +349,8 @@ gfx::Size GlicButton::CalculatePreferredSize(
           .height();
 
   if (is_animating_text_) {
-    const int min_target_width = 41;
-    const int width =
-        std::lerp(min_target_width, default_label_width_, GetWidthFactor());
+    const int width = std::lerp(kMinTargetWidthForAnimatingText,
+                                default_label_width_, GetWidthFactor());
     return gfx::Size(width, height);
   }
 
@@ -474,7 +477,14 @@ void GlicButton::AnimationEnded(const gfx::Animation* animation) {
 
     expansion_animation_done_callback_.Run();
   }
-  is_animating_text_ = false;
+  if (is_animating_text_) {
+    is_animating_text_ = false;
+
+    // Makes sure the transition of the frames from is_animating_text_ to
+    // !is_animating_text_ in CalculatePreferredSize() is smooth.
+    initial_width_ = kMinTargetWidthForAnimatingText;
+    expanded_width_ = CalculateExpandedWidth();
+  }
 }
 
 void GlicButton::AnimationCanceled(const gfx::Animation* animation) {
@@ -739,8 +749,13 @@ void GlicButton::StartExpansionAnimations(
   }
   expansion_animation_->SetSlideDuration(overall_duration);
   if (show) {
+    // Makes sure the animation value always goes from 0 to 1 for show and 1 to
+    // 0 for hide.
+    SetWidthFactor(0.f);
+    expansion_animation_->Reset(0);
     expansion_animation_->Show();
   } else {
+    SetWidthFactor(1.f);
     expansion_animation_->Reset(1);
     expansion_animation_->Hide();
   }

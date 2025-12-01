@@ -149,6 +149,7 @@ class TabStripActionContainer : public views::View,
   bool GetIsShowingGlicActorTaskIconNudge();
 #if BUILDFLAG(ENABLE_GLIC)
   void TriggerGlicActorNudge(const std::u16string nudge_text);
+  void ShowGlicActorNudge(const std::u16string nudge_text);
 #endif
 
   // UI controls for updating buttons based on the floaty view state:

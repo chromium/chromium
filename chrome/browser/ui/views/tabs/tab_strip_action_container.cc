@@ -719,8 +719,17 @@ void TabStripActionContainer::TriggerGlicActorNudge(
     const std::u16string nudge_text) {
   CHECK(glic_actor_task_icon_);
   if (GetIsShowingGlicNudge()) {
+    // If the glic button is showing, start the hide animation in parallel to
+    // the show actor nudge animation.
     HideTabStripNudge(glic_button_);
+    OnGlicButtonAnimationEnded();
   }
+  ShowGlicActorNudge(nudge_text);
+}
+
+void TabStripActionContainer::ShowGlicActorNudge(
+    const std::u16string nudge_text) {
+  CHECK(glic_actor_task_icon_);
   // Start animation for clearing text on the glic button.
   glic_button_->SuppressLabel();
   ShowGlicActorTaskIcon();
