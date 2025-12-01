@@ -48,7 +48,8 @@ using AccessStreamSet = base::EnumSet<SharedImageAccessStream,
 // backing. The real GPU backing must implement `UploadFromMemory()` and not
 // have its own shared memory segment.
 // TODO(crbug.com/40213543): Support multiple GPU backings.
-class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
+class GPU_GLES2_EXPORT CompoundImageBacking
+    : public ClearTrackingSharedImageBacking {
  public:
   using CreateBackingCallback =
       base::OnceCallback<void(std::unique_ptr<SharedImageBacking>&)>;
@@ -113,6 +114,24 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   void CopyToGpuMemoryBufferAsync(
       base::OnceCallback<void(bool)> callback) override;
   gfx::Rect ClearedRect() const override;
+
+  // CompoundImageBacking now supports partial clear for upcoming use
+  // cases as it evolves. The cleared rect is now tracked on the compound
+  // backing as well as its underlying backings.
+  // Some important things to note that is :
+  // 1. When a CompoundImageBacking is backed by a single gpu backing, clear
+  // rect of CompoundImageBacking will track and reflect clear rect of the
+  // underlying backing.
+  // 2. When CompoundImageBacking contains more than 1 gpu backing, clear rect
+  // of the CompoundImageBacking will track and reflect clear rect of the
+  // most recently written backing. Note that when a read is performed from a
+  // stale backing, the latest backing content as well as its clear rect will
+  // be copied into it.
+  // 3. Anytime a copy is performend between backings, the src backing's cleared
+  // rect will be xfered to the dst backing.
+  // 4. If there is a shm backing, entire CompoundImageBacking as well all the
+  // created gpu backings will be marked as cleared always.
+
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   void OnAddSecondaryReference() override;
 
@@ -305,6 +324,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   base::OnceCallback<void(bool)> pending_copy_to_gmb_callback_;
 
   scoped_refptr<SharedImageCopyManager> copy_manager_;
+
+  bool has_shm_backing_ = false;
 };
 
 }  // namespace gpu

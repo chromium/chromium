@@ -594,17 +594,17 @@ CompoundImageBacking::CompoundImageBacking(
     base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
     scoped_refptr<SharedImageCopyManager> copy_manager,
     std::optional<gfx::BufferUsage> buffer_usage)
-    : SharedImageBacking(mailbox,
-                         format,
-                         size,
-                         color_space,
-                         surface_origin,
-                         alpha_type,
-                         usage,
-                         debug_label,
-                         shm_backing->GetEstimatedSize(),
-                         /*is_thread_safe=*/false,
-                         std::move(buffer_usage)),
+    : ClearTrackingSharedImageBacking(mailbox,
+                                      format,
+                                      size,
+                                      color_space,
+                                      surface_origin,
+                                      alpha_type,
+                                      usage,
+                                      debug_label,
+                                      shm_backing->GetEstimatedSize(),
+                                      /*is_thread_safe=*/false,
+                                      std::move(buffer_usage)),
       shared_image_factory_(std::move(shared_image_factory)),
       copy_manager_(std::move(copy_manager)) {
   DCHECK(shm_backing);
@@ -618,7 +618,12 @@ CompoundImageBacking::CompoundImageBacking(
   }
   shm_element.content_id_ = latest_content_id_;
   shm_element.backing = std::move(shm_backing);
+  has_shm_backing_ = true;
   elements_.push_back(std::move(shm_element));
+
+  // Whenever CompoundImageBacking is created with a shm backing, mark it as
+  // fully cleared.
+  SetClearedRect(gfx::Rect(size));
 
   // Create placeholder for GPU-backed element (streams = all except kMemory).
   ElementHolder gpu_element;
@@ -667,6 +672,12 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
           /*src_backing=*/latest_content_element->GetBacking(),
           /*dst_backing=*/access_element->GetBacking())) {
     updated_backing = true;
+
+    // Propagate the clear rect from the source backing.
+    const gfx::Rect src_cleared_rect =
+        latest_content_element->GetBacking()->ClearedRect();
+    access_element->GetBacking()->SetClearedRect(src_cleared_rect);
+    SetClearedRect(src_cleared_rect);
   } else {
     LOG(ERROR)
         << "Failed to copy between backings. Backing can be using stale data";
@@ -757,11 +768,14 @@ void CompoundImageBacking::OnCopyToGpuMemoryBufferComplete(bool success) {
 }
 
 gfx::Rect CompoundImageBacking::ClearedRect() const {
-  // Copy on access will always ensure backing is cleared by first access.
-  return gfx::Rect(size());
+  // If we have a shm_backing, we always copy on access and mark entire backing
+  // as cleared.
+  return ClearTrackingSharedImageBacking::ClearedRect();
 }
 
-void CompoundImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {}
+void CompoundImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
+  ClearTrackingSharedImageBacking::SetClearedRect(cleared_rect);
+}
 
 void CompoundImageBacking::MarkForDestruction() {
   for (const auto& element : elements_) {
@@ -1046,7 +1060,17 @@ void CompoundImageBacking::CreateBackingFromBackingFactory(
   UMA_HISTOGRAM_ENUMERATION("GPU.SharedImage.BackingType", backing->GetType());
 
   backing->SetNotRefCounted();
-  backing->SetCleared();
+
+  // When a CompoundImageBacking is created with a shared memory backing, it's
+  // considered logically cleared from the start, as the shared memory provides
+  // the initial content. For consistency, any newly created GPU backings also
+  // need to reflect this cleared state, even if their physical memory isn't
+  // yet initialized. The system ensures a copy from the shared memory backing
+  // to the GPU backing will occur on first access, synchronizing the physical
+  // content.
+  if (has_shm_backing_) {
+    backing->SetCleared();
+  }
 
   // Update peak GPU memory tracking with the new estimated size.
   size_t estimated_size = 0;
