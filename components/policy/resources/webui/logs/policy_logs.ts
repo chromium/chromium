@@ -45,9 +45,16 @@ function displayList() {
   }
   logs.forEach(log => {
     const logMessage = document.createElement('li');
+
+    // Use en-CA locale to get a format of YYYY-MM-DD, HH:MM:SS.
+    const timestamp = new Date(log.timestamp).toLocaleString('en-CA', {
+      timeZoneName: 'short',
+      hour12: false,
+    });
+
     // `log.message` is already escaped on the C++ side with EscapeForHTML().
     logMessage.innerHTML =
-        sanitizeInnerHtml(`[${log.logSeverity}] ${log.message}`);
+        sanitizeInnerHtml(`[${log.logSeverity}][${timestamp}] ${log.message}`);
     logMessageContainer.appendChild(logMessage);
   });
 }
