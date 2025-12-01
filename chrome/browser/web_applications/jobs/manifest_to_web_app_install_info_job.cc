@@ -461,10 +461,10 @@ ManifestToWebAppInstallInfoJob::CreateAndStart(
   return job;
 }
 
-base::Value::Dict
+base::Value
 ManifestToWebAppInstallInfoJob::GetManifestToWebAppInfoGenerationErrors() {
   if (!install_error_log_entry_.HasErrorDict()) {
-    return base::Value::Dict();
+    return base::Value();
   }
   return install_error_log_entry_.TakeErrorDict();
 }

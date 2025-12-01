@@ -331,8 +331,6 @@ source_set("web_applications") {
     "web_app_install_params.h",
     "web_app_install_utils.cc",
     "web_app_install_utils.h",
-    "web_app_internals_utils.cc",
-    "web_app_internals_utils.h",
     "web_app_launch_queue_delegate_impl.cc",
     "web_app_launch_queue_delegate_impl.h",
     "web_app_logging.cc",

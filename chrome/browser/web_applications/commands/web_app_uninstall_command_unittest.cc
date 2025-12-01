@@ -52,9 +52,12 @@ class WebAppUninstallCommandTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    file_utils_wrapper_ =
-        base::MakeRefCounted<testing::StrictMock<MockFileUtilsWrapper>>();
+    file_utils_wrapper_ = base::MakeRefCounted<MockFileUtilsWrapper>();
     fake_provider().SetFileUtils(file_utils_wrapper_);
+    ON_CALL(*file_utils_wrapper_,
+            DeleteFileRecursively(
+                GetWebAppsRootDirectory(profile()).AppendASCII("Logs")))
+        .WillByDefault(testing::Return(true));
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -65,7 +68,7 @@ class WebAppUninstallCommandTest : public WebAppTest {
 
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
-  scoped_refptr<testing::StrictMock<MockFileUtilsWrapper>> file_utils_wrapper_;
+  scoped_refptr<MockFileUtilsWrapper> file_utils_wrapper_;
 };
 
 TEST_F(WebAppUninstallCommandTest, SimpleUninstallInternal) {

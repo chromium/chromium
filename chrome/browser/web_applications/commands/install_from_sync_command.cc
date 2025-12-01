@@ -371,10 +371,10 @@ void InstallFromSyncCommand::ReportResultAndDestroy(
   }
 
   if (manifest_to_install_info_job_) {
-    base::Value::Dict install_info_job_error_dict =
+    base::Value install_info_job_error_dict =
         manifest_to_install_info_job_
             ->GetManifestToWebAppInfoGenerationErrors();
-    if (!install_info_job_error_dict.empty()) {
+    if (!install_info_job_error_dict.is_none()) {
       command_manager()->LogToInstallManager(
           std::move(install_info_job_error_dict));
     }

@@ -729,10 +729,10 @@ void FetchManifestAndInstallCommand::OnInstallCompleted(
       command_manager()->LogToInstallManager(
           install_error_log_entry_.TakeErrorDict());
     }
-    base::Value::Dict install_info_dict =
+    base::Value install_info_dict =
         manifest_to_install_info_job_
             ->GetManifestToWebAppInfoGenerationErrors();
-    if (!install_info_dict.empty()) {
+    if (!install_info_dict.is_none()) {
       command_manager()->LogToInstallManager(std::move(install_info_dict));
     }
   }

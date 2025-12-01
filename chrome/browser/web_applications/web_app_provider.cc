@@ -434,6 +434,7 @@ void WebAppProvider::ConnectSubsystems() {
 
   base::PassKey<WebAppProvider> pass_key;
   sync_bridge_->SetProvider(pass_key, *this);
+  install_manager_->SetProvider(pass_key, *this);
   icon_manager_->SetProvider(pass_key, *this);
   install_finalizer_->SetProvider(pass_key, *this);
   manifest_update_manager_->SetProvider(pass_key, *this);

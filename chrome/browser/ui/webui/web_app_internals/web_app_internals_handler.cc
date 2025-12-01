@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -240,7 +241,7 @@ base::Value::Dict BuildInstallProcessErrorLogJson(
     web_app::WebAppProvider& provider) {
   base::Value::Dict root;
 
-  const web_app::WebAppInstallManager::ErrorLog* error_log =
+  const web_app::PersistableLog* error_log =
       provider.install_manager().error_log();
 
   if (!error_log) {
@@ -249,7 +250,7 @@ base::Value::Dict BuildInstallProcessErrorLogJson(
   }
 
   root.Set(kInstallationProcessErrorLog,
-           base::ToValueList(*error_log, &base::Value::Clone));
+           base::ToValueList(error_log->GetEntries(), &base::Value::Clone));
 
   return root;
 }

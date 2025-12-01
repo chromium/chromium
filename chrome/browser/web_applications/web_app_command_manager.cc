@@ -28,8 +28,10 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_app_profile_deletion_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
@@ -39,6 +41,7 @@ namespace web_app {
 
 WebAppCommandManager::WebAppCommandManager(Profile* profile)
     : profile_(profile) {}
+
 WebAppCommandManager::~WebAppCommandManager() {
   // Make sure that unittests & browsertests correctly shut down the manager.
   // This ensures that all tests also cover shutdown.
@@ -54,6 +57,10 @@ void WebAppCommandManager::SetProvider(base::PassKey<WebAppProvider>,
 
 void WebAppCommandManager::Start() {
   started_ = true;
+  log_ = std::make_unique<PersistableLog>(
+      PersistableLog::GetLogPath(profile_, "CommandManager.log"),
+      PersistableLog::GetMode(), PersistableLog::GetMaxInMemoryLogEntries(),
+      provider_->file_utils());
   std::vector<std::pair<std::unique_ptr<internal::CommandBase>, base::Location>>
       to_schedule;
   std::swap(commands_waiting_for_start_, to_schedule);
@@ -165,8 +172,10 @@ void WebAppCommandManager::Shutdown() {
 
 base::Value WebAppCommandManager::ToDebugValue() {
   base::Value::List command_log;
-  for (const auto& command_value : command_debug_log_) {
-    command_log.Append(command_value.Clone());
+  if (log_) {
+    for (const auto& command_value : log_->GetEntries()) {
+      command_log.Append(command_value.Clone());
+    }
   }
 
   base::Value::List queued;
@@ -183,7 +192,12 @@ base::Value WebAppCommandManager::ToDebugValue() {
   return base::Value(std::move(state));
 }
 
-void WebAppCommandManager::LogToInstallManager(base::Value::Dict log) {
+const PersistableLog& WebAppCommandManager::log() const {
+  CHECK(log_);
+  return *log_;
+}
+
+void WebAppCommandManager::LogToInstallManager(base::Value log) {
 #if DCHECK_IS_ON()
   // This is wrapped with DCHECK_IS_ON() to prevent calling DebugString() in
   // production builds.
@@ -303,17 +317,8 @@ void WebAppCommandManager::AddCommandToLog(
 
 void WebAppCommandManager::AddValueToLog(base::Value value) {
   DCHECK(!value.is_none());
-#if DCHECK_IS_ON()
-  // This is wrapped with DCHECK_IS_ON() to prevent calling DebugString() in
-  // production builds.
-  DVLOG(1) << value.DebugString();
-#endif
-  static const size_t kMaxLogLength =
-      base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo) ? 1000
-                                                                     : 20;
-  command_debug_log_.push_front(std::move(value));
-  if (command_debug_log_.size() > kMaxLogLength) {
-    command_debug_log_.resize(kMaxLogLength);
+  if (log_) {
+    log_->Append(std::move(value));
   }
 }
 

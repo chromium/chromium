@@ -12,72 +12,66 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
-#include "base/values.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
+namespace base {
+class Value;
+}
+
 namespace web_app {
 
+class PersistableLog;
 class WebAppCommandManager;
 class WebAppInstallManagerObserver;
+class WebAppProvider;
 
 class WebAppInstallManager {
  public:
   explicit WebAppInstallManager(Profile* profile);
   WebAppInstallManager(const WebAppInstallManager&) = delete;
   WebAppInstallManager& operator=(const WebAppInstallManager&) = delete;
-  virtual ~WebAppInstallManager();
+  ~WebAppInstallManager();
 
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Start();
   void Shutdown();
 
-  virtual void AddObserver(WebAppInstallManagerObserver* observer);
-  virtual void RemoveObserver(WebAppInstallManagerObserver* observer);
+  void AddObserver(WebAppInstallManagerObserver* observer);
+  void RemoveObserver(WebAppInstallManagerObserver* observer);
 
-  virtual void NotifyWebAppInstalled(const webapps::AppId& app_id);
-  virtual void NotifyWebAppInstalledWithOsHooks(const webapps::AppId& app_id);
-  virtual void NotifyWebAppSourceRemoved(const webapps::AppId& app_id);
-  virtual void NotifyWebAppUninstalled(
-      const webapps::AppId& app_id,
-      webapps::WebappUninstallSource uninstall_source);
-  virtual void NotifyWebAppManifestUpdated(const webapps::AppId& app_id);
-  virtual void NotifyWebAppWillBeUninstalled(const webapps::AppId& app_id);
-  virtual void NotifyWebAppInstallManagerDestroyed();
+  void NotifyWebAppInstalled(const webapps::AppId& app_id);
+  void NotifyWebAppInstalledWithOsHooks(const webapps::AppId& app_id);
+  void NotifyWebAppSourceRemoved(const webapps::AppId& app_id);
+  void NotifyWebAppUninstalled(const webapps::AppId& app_id,
+                               webapps::WebappUninstallSource uninstall_source);
+  void NotifyWebAppManifestUpdated(const webapps::AppId& app_id);
+  void NotifyWebAppWillBeUninstalled(const webapps::AppId& app_id);
+  void NotifyWebAppInstallManagerDestroyed();
 
-  // If the |kRecordWebAppDebugInfo| feature flag is enabled, this class will
-  // collect error logs from web app commands. The logs are stored in memory and
-  // also persisted to a file in the user's profile directory. This log is used
-  // to display debug information on the chrome://web-app-internals page.
+  // Install manager error log, which is only populated if the user has enabled
+  // extra logging via chrome://flags/#record-web-app-debug-info. Otherwise this
+  // returns a nullptr.
   //
-  // The process works as follows:
-  // 1. `WebAppCommandManager` calls `TakeCommandErrorLog` to pass a command's
-  //    error log.
-  // 2. The log is appended to an in-memory `ErrorLog`.
-  // 3. `MaybeWriteErrorLog` is called to schedule a write to disk. To avoid
-  //    performance issues, writes are coalesced.
-  // 4. On startup, the persisted error log is read from disk.
-  using ErrorLog = base::Value::List;
-  const ErrorLog* error_log() const { return error_log_.get(); }
+  // The logs are stored in memory and also persisted to a file in the user's
+  // profile directory. This log is used to display debug information on the
+  // chrome://web-app-internals page.
+  PersistableLog* error_log() const;
 
-  // TODO(crbug.com/40224498): migrate loggign to WebAppCommandManager after all
-  // tasks are migrated to the command system.
+  // TODO(crbug.com/40224498): Migrate logging to WebAppCommandManager after all
+  // tasks are migrated to the command system, and then remove this.
   void TakeCommandErrorLog(base::PassKey<WebAppCommandManager>,
-                           base::Value::Dict log);
+                           base::Value log);
 
  private:
-  void MaybeWriteErrorLog();
-  void OnWriteErrorLog(Result result);
-  void OnReadErrorLog(Result result, base::Value error_log);
-
-  void LogErrorObject(base::Value::Dict object);
-
   const raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
-  std::unique_ptr<ErrorLog> error_log_;
-  bool error_log_updated_ = false;
-  bool error_log_writing_in_progress_ = false;
+  // TODO(crbug.com/40224498): Remove this after install logging is fully
+  // migrated to command logging.
+  std::unique_ptr<PersistableLog> error_log_;
 
   base::ObserverList<WebAppInstallManagerObserver, /*check_empty=*/true>
       observers_;
