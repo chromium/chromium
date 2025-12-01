@@ -150,9 +150,10 @@ declare_args() {
                              use_custom_libcxx && !is_component_build
 
   # Enable C++14 sized global deallocation functions.
-  # Disabled by default because of binary size increase.
+  # Enable only on ASan or platforms without strict binary size requirements
+  # because of binary size increase.
   # TODO(crbug.com/345541122): investigate the fuchsia binary size increase.
-  use_sized_deallocation = is_clang && is_asan
+  use_sized_deallocation = is_clang && (is_asan || !optimize_for_size)
 }
 
 # To try out this combination, delete this assert.
@@ -165,8 +166,10 @@ assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
 assert(!enable_profiling || !is_component_build,
        "Cannot profile component builds (crbug.com/1199271).")
 
-assert(!is_win || is_asan == use_sized_deallocation,
-       "ASan and sized deallocation must be enabled together on Windows.")
+# The Abseil .def lists for Windows component builds are created expecting sized
+# deallocation. Disabling it leads to symbol mismatches and build failures.
+assert(!is_win || !is_component_build || use_sized_deallocation,
+       "Sized deallocation must be enabled in component builds on Windows.")
 assert(is_clang || !use_sized_deallocation,
        "Sized deallocation is supported on clang.")
 
