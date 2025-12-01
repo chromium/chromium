@@ -62,6 +62,19 @@ class PasskeyTabHelper : public web::WebStateObserver,
   bool HasCredential(const std::string& rp_id,
                      const std::string& credential_id) const;
 
+  // Requests a passkey to be created given the provided params.
+  // Fetches the shared keys list and calls the CompletePasskeyCreation
+  // callback.
+  // TODO(crbug.com/460485333): Test passkey creation flow.
+  void StartPasskeyCreation(std::string request_id);
+
+  // Requests that the provided passkey be used for passkey assertion given the
+  // provided params. Fetches the shared keys list and calls the
+  // CompletePasskeyAssertion callback.
+  // TODO(crbug.com/460485333): Test passkey assertion flow.
+  void StartPasskeyAssertion(std::string request_id,
+                             sync_pb::WebauthnCredentialSpecifics passkey);
+
  private:
   friend class web::WebStateUserData<PasskeyTabHelper>;
   friend class PasskeyTabHelperTest;
@@ -78,12 +91,6 @@ class PasskeyTabHelper : public web::WebStateObserver,
   std::vector<sync_pb::WebauthnCredentialSpecifics> GetFilteredPasskeys(
       const AssertionRequestParams& params) const;
 
-  // Requests a passkey to be created given the provided params.
-  // Fetches the shared keys list and calls the CompletePasskeyCreation
-  // callback.
-  // TODO(crbug.com/460485333): Test passkey creation flow.
-  void StartPasskeyCreation(std::string request_id);
-
   // Callback which creates a passkey given the provided shared keys list and
   // params. The newly created passkey is added to the passkey model and the
   // parameters required to resolve the PublicKeyCredential request are sent to
@@ -91,13 +98,6 @@ class PasskeyTabHelper : public web::WebStateObserver,
   void CompletePasskeyCreation(RegistrationRequestParams params,
                                std::string client_data_json,
                                const SharedKeyList& shared_key_list);
-
-  // Requests that the provided passkey be used for passkey assertion given the
-  // provided params. Fetches the shared keys list and calls the
-  // CompletePasskeyAssertion callback.
-  // TODO(crbug.com/460485333): Test passkey assertion flow.
-  void StartPasskeyAssertion(std::string request_id,
-                             sync_pb::WebauthnCredentialSpecifics passkey);
 
   // Callback which uses the provided passkey for assertion given the provided
   // shared keys list and params. The parameters required to resolve the

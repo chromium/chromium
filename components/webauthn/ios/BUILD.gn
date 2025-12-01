@@ -7,6 +7,7 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 source_set("ios") {
   sources = [
     "ios_passkey_client.h",
+    "ios_passkey_client.mm",
     "ios_webauthn_credentials_delegate.h",
     "ios_webauthn_credentials_delegate.mm",
     "ios_webauthn_credentials_delegate_factory.h",

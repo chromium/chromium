@@ -8,6 +8,7 @@
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/webauthn/ios/features.h"
+#import "components/webauthn/ios/passkey_tab_helper.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -38,13 +39,36 @@ void IOSChromePasskeyClient::FetchKeys(webauthn::ReauthenticatePurpose purpose,
   std::move(callback).Run({});
 }
 
-void IOSChromePasskeyClient::ShowSuggestionBottomSheet(std::string request_id) {
+void IOSChromePasskeyClient::ShowSuggestionBottomSheet(
+    RequestInfo request_info) {
   // TODO(crbug.com/460485496): Open the suggestion bottom sheet.
   // See CredentialSuggestionBottomSheet* classes.
+  // TODO(crbug.com/460485496): remove the code below and related dependencies
+  // once the bottom sheet is implemented.
+  webauthn::PasskeyTabHelper* passkey_tab_helper =
+      webauthn::PasskeyTabHelper::FromWebState(web_state_.get());
+  if (!passkey_tab_helper) {
+    return;
+  }
+
+  // TODO(crbug.com/460485496): Use an empty passkey for now.
+  // The real passkey will come from WebAuthnCredentialsDelegate.
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey_tab_helper->StartPasskeyAssertion(request_info.request_id,
+                                            std::move(passkey));
 }
 
-void IOSChromePasskeyClient::ShowCreationBottomSheet(std::string request_id) {
+void IOSChromePasskeyClient::ShowCreationBottomSheet(RequestInfo request_info) {
   // TODO(crbug.com/460486095): Open the creation confirmation bottom sheet.
+  // TODO(crbug.com/460485496): remove the code below and related dependencies
+  // once the bottom sheet is implemented.
+  webauthn::PasskeyTabHelper* passkey_tab_helper =
+      webauthn::PasskeyTabHelper::FromWebState(web_state_.get());
+  if (!passkey_tab_helper) {
+    return;
+  }
+
+  passkey_tab_helper->StartPasskeyCreation(request_info.request_id);
 }
 
 void IOSChromePasskeyClient::AllowPasskeyCreationInfobar(bool allowed) {

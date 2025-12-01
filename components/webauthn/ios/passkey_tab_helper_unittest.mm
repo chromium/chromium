@@ -103,8 +103,8 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
       std::move(callback).Run({});
     }
   }
-  void ShowSuggestionBottomSheet(std::string request_id) override {}
-  void ShowCreationBottomSheet(std::string request_id) override {}
+  void ShowSuggestionBottomSheet(RequestInfo request_info) override {}
+  void ShowCreationBottomSheet(RequestInfo request_info) override {}
   void AllowPasskeyCreationInfobar(bool allowed) override {}
   password_manager::WebAuthnCredentialsDelegate*
   GetWebAuthnCredentialsDelegateForDriver(

@@ -181,7 +181,7 @@ void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
   // presented in it and will be selectable by the user.
   std::string request_id = params.RequestId();
   assertion_requests_.emplace(request_id, std::move(params));
-  client_->ShowSuggestionBottomSheet(std::move(request_id));
+  client_->ShowSuggestionBottomSheet({std::move(request_id), params.FrameId()});
 }
 
 void PasskeyTabHelper::HandleCreateRequestedEvent(
@@ -208,7 +208,7 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
   // the user.
   std::string request_id = params.RequestId();
   registration_requests_.emplace(request_id, std::move(params));
-  client_->ShowCreationBottomSheet(std::move(request_id));
+  client_->ShowCreationBottomSheet({std::move(request_id), params.FrameId()});
 }
 
 bool PasskeyTabHelper::HasCredential(const std::string& rp_id,
