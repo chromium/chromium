@@ -4,7 +4,7 @@
 
 import("//components/optimization_guide/features.gni")
 
-if (!is_fuchsia) {
+if (!is_fuchsia && build_with_tflite_lib) {
   source_set("bert_safety_op_resolver") {
     sources = [
       "bert_safety_op_resolver.cc",

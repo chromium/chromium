@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/language_detection/core/language_detection_provider.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
@@ -26,7 +27,7 @@
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "services/on_device_model/safety/safety_util.h"
 
-#if !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "services/on_device_model/safety/bert_safety_model.h"
 #endif
 
@@ -98,6 +99,7 @@ std::unique_ptr<TsModel> TsModel::Create(
 
 bool TsModel::InitLanguageDetection(mojom::LanguageModelAssetsPtr assets) {
   TRACE_EVENT("optimization_guide", "TsModel::InitLanguageDetection");
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   auto tflite_model =
       std::make_unique<language_detection::LanguageDetectionModel>();
   tflite_model->UpdateWithFile(std::move(assets->model));
@@ -105,6 +107,9 @@ bool TsModel::InitLanguageDetection(mojom::LanguageModelAssetsPtr assets) {
   language_detector_ = std::make_unique<translate::LanguageDetectionModel>(
       std::move(tflite_model));
   return language_detector_->IsAvailable();
+#else
+  return false;
+#endif
 }
 
 DISABLE_CFI_DLSYM
@@ -178,10 +183,14 @@ mojom::LanguageDetectionResultPtr TsModel::DetectLanguage(
   if (!language_detector_) {
     return nullptr;
   }
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   language_detection::Prediction prediction = on_device_model::PredictLanguage(
       language_detector_->tflite_model(), text);
   return mojom::LanguageDetectionResult::New(prediction.language,
                                              prediction.score);
+#else
+  return nullptr;
+#endif
 }
 
 TsHolder::TsHolder(raw_ref<const ChromeML> chrome_ml) : chrome_ml_(chrome_ml) {}
@@ -198,7 +207,7 @@ void TsHolder::Reset(mojom::TextSafetyModelParamsPtr params,
                      mojo::PendingReceiver<mojom::TextSafetyModel> model) {
   model_.Clear();
 
-#if !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!params->safety_assets || params->safety_assets->which() ==
                                     mojom::SafetyModelAssets::Tag::kTsAssets) {
     auto impl = TsModel::Create(*chrome_ml_, std::move(params));
