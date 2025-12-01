@@ -161,7 +161,6 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
       &features::kAssistMultiWord,
       &features::kAutocorrectParamsTuning,
       &features::kImeDownloaderExperiment,
-      &features::kImeUsEnglishExperimentalModel,
       &features::kImeUsEnglishModelUpdate,
       &features::kAutocorrectByDefault,
       &features::kImeSwitchCheckConnectionStatus};
