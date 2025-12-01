@@ -601,6 +601,22 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
   }
 }
 
+int GetShownCountOfAvatarButtonPromoType(
+    ProfileMenuAvatarButtonPromoInfo::Type promo_type,
+    PrefService& prefs,
+    GaiaId gaia_id) {
+  SigninPrefs signin_prefs(prefs);
+  if (promo_type == ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
+    CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
+    return signin_prefs.GetSyncPromoIdentityPillShownCount(gaia_id);
+  }
+
+  base::DictValue& promo_counts =
+      signin_prefs.GetOrCreateAvatarButtonPromoCountDictionary(gaia_id);
+  return promo_counts.FindInt(GetAvatarButtonPromoShownKey(promo_type))
+      .value_or(0);
+}
+
 void ComputeProfileMenuAvatarButtonPromoInfo(
     Profile& profile,
     base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>

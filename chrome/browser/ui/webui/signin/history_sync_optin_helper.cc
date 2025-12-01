@@ -20,6 +20,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -37,6 +39,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace {
 constexpr char kHistorySyncOptIntAccessPointHistogramPrefix[] =
@@ -45,6 +48,8 @@ constexpr char kHistorySyncOptIntAccessPointActionPrefix[] =
     "Signin_HistorySync_";
 constexpr char kOtherManagedProfileCreationHistogramName[] =
     "Signin.ManagedUserProfileCreationConflict";
+constexpr char kAvatarPillPromoAcceptedAtShownCountForHistorySyncHistogram[] =
+    "Signin.AvatarPillPromo.AcceptedAtShownCount.HistorySync";
 
 // LINT.IfChange(FlowEventToString)
 std::string_view GetHistorySyncSkipReasonMetricName(
@@ -85,6 +90,55 @@ std::string_view UserChoiceToStringMetric(
   NOTREACHED();
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/histograms.xml:Signin.HistorySyncOptIn)
+
+void RecordMetricsForHistorySyncUserChoice(
+    HistorySyncOptinHelper::ScreenChoiceResult user_choice,
+    Profile* profile,
+    signin_metrics::AccessPoint access_point) {
+  auto user_choice_str = UserChoiceToStringMetric(user_choice);
+  auto histogram_name = base::StrCat(
+      {kHistorySyncOptIntAccessPointHistogramPrefix, user_choice_str});
+  auto action_name = base::StrCat(
+      {kHistorySyncOptIntAccessPointActionPrefix, user_choice_str});
+
+  base::RecordAction(base::UserMetricsAction(action_name.c_str()));
+  base::UmaHistogramEnumeration(histogram_name, access_point);
+
+  // Record successfully enabling history sync when originating from the
+  // AvatarPill promo.
+  if (user_choice == HistorySyncOptinHelper::ScreenChoiceResult::kAccepted &&
+      access_point == signin_metrics::AccessPoint::
+                          kHistorySyncOptinExpansionPillOnStartup) {
+    GaiaId primary_gaia =
+        IdentityManagerFactory::GetForProfile(profile)
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .gaia;
+    int shown_count = signin::GetShownCountOfAvatarButtonPromoType(
+        signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
+        *profile->GetPrefs(), primary_gaia);
+
+    base::UmaHistogramExactLinear(
+        kAvatarPillPromoAcceptedAtShownCountForHistorySyncHistogram,
+        shown_count,
+        // Arbitrary number that is higher than the possible show count that
+        // the promo can reach
+        // (`user_education::features::GetNewBadgeShowCount()`: 10).
+        /*exclusive_max=*/30);
+  }
+}
+
+void RecordMetricsForSkippedHistoryScreen(
+    HistorySyncOptinHelper::HistorySyncSkipReason skip_reason,
+    signin_metrics::AccessPoint access_point) {
+  auto skip_reason_str = GetHistorySyncSkipReasonMetricName(skip_reason);
+  auto histogram_name = base::StrCat(
+      {kHistorySyncOptIntAccessPointHistogramPrefix, skip_reason_str});
+  auto action_name = base::StrCat(
+      {kHistorySyncOptIntAccessPointActionPrefix, skip_reason_str});
+
+  base::RecordAction(base::UserMetricsAction(action_name.c_str()));
+  base::UmaHistogramEnumeration(histogram_name, access_point);
+}
 
 bool AccountMayHaveCloudPolicies(Profile* profile, const std::string& email) {
   return signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
@@ -208,34 +262,6 @@ std::unique_ptr<HistorySyncOptinHelper> HistorySyncOptinHelper::Create(
   }
 }
 
-// static
-void HistorySyncOptinHelper::RecordMetricsForHistorySyncUserChoice(
-    ScreenChoiceResult user_choice,
-    signin_metrics::AccessPoint access_point) {
-  auto user_choice_str = UserChoiceToStringMetric(user_choice);
-  auto histogram_name = base::StrCat(
-      {kHistorySyncOptIntAccessPointHistogramPrefix, user_choice_str});
-  auto action_name = base::StrCat(
-      {kHistorySyncOptIntAccessPointActionPrefix, user_choice_str});
-
-  base::RecordAction(base::UserMetricsAction(action_name.c_str()));
-  base::UmaHistogramEnumeration(histogram_name, access_point);
-}
-
-// static
-void HistorySyncOptinHelper::RecordMetricsForSkippedHistoryScreen(
-    HistorySyncSkipReason skip_reason,
-    signin_metrics::AccessPoint access_point) {
-  auto skip_reason_str = GetHistorySyncSkipReasonMetricName(skip_reason);
-  auto histogram_name = base::StrCat(
-      {kHistorySyncOptIntAccessPointHistogramPrefix, skip_reason_str});
-  auto action_name = base::StrCat(
-      {kHistorySyncOptIntAccessPointActionPrefix, skip_reason_str});
-
-  base::RecordAction(base::UserMetricsAction(action_name.c_str()));
-  base::UmaHistogramEnumeration(histogram_name, access_point);
-}
-
 HistorySyncOptinHelper::HistorySyncOptinHelper(
     signin::IdentityManager* identity_manager,
     Profile* profile,
@@ -277,7 +303,8 @@ void HistorySyncOptinHelper::NotifyFlowFinishedWithHistorySyncScreenAttempted(
   is_history_sync_step_complete_ = true;
 
   if (user_choice != ScreenChoiceResult::kScreenSkipped) {
-    RecordMetricsForHistorySyncUserChoice(user_choice, access_point());
+    RecordMetricsForHistorySyncUserChoice(user_choice, profile_,
+                                          access_point());
   }
 
   for (Observer& observer : observers_) {

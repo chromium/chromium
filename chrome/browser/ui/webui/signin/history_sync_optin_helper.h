@@ -168,14 +168,6 @@ class HistorySyncOptinHelper {
       LaunchContext launch_context,
       signin_metrics::AccessPoint access_point);
 
-  // Record metrics for the outcome of the flow.
-  static void RecordMetricsForHistorySyncUserChoice(
-      ScreenChoiceResult user_choice,
-      signin_metrics::AccessPoint access_point);
-  static void RecordMetricsForSkippedHistoryScreen(
-      HistorySyncSkipReason skip_reason,
-      signin_metrics::AccessPoint access_point);
-
   virtual ~HistorySyncOptinHelper();
 
   void AddObserver(Observer* observer);

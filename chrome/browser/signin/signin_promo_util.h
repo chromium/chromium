@@ -97,6 +97,12 @@ struct ProfileMenuAvatarButtonPromoInfo {
       default;
 };
 
+// Returns the total number of times `promo_type` was shown for `gaia_id`.
+int GetShownCountOfAvatarButtonPromoType(
+    ProfileMenuAvatarButtonPromoInfo::Type promo_type,
+    PrefService& prefs,
+    GaiaId gaia_id);
+
 // Based on the `profile` current state, compute the data to be shown for the
 // promos, if any, based on the promo priority and the profile state. The promo
 // between the ProfileMenu and the AvatarButton should always be aligned.
