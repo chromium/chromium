@@ -76,9 +76,6 @@ void PollingDesktopDisplayInfoMonitor::AddCallback(
     base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Adding callbacks is not supported after displays have been loaded.
-  DCHECK(!desktop_display_info_.has_value());
-
   callback_list_.AddUnsafe(std::move(callback));
 }
 
