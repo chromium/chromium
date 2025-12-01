@@ -124,7 +124,9 @@ void ActorTaskListBubbleController::GetOnTaskRowClickCallback(
   // Regardless of tab navigation, remove the row and close the bubble when
   // done.
   icon_manager->RemoveRowFromTaskListBubble(task_id);
-  bubble_widget_->Close();
+  if (bubble_widget_) {
+    bubble_widget_->Close();
+  }
 #endif
 }
 
