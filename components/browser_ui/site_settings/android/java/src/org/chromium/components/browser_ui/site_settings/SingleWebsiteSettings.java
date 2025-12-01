@@ -74,8 +74,11 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         /** Notifies the observer that a permission was changed. */
         void onPermissionChanged();
 
-        /** Notifies the observer that the location permission subpage was clicked. */
+        /** Notifies the observer that the location permission subpage button was clicked. */
         void onLocationPermissionSubpageClicked();
+
+        /** Notifies the observer that the notification subscribe button was clicked. */
+        void onNotificationSubscribeClicked();
     }
 
     // SingleWebsiteSettings expects either EXTRA_SITE (a Website) or
@@ -85,11 +88,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     // permissions for that website address and display those.
     public static final String EXTRA_SITE = "org.chromium.chrome.preferences.site";
     public static final String EXTRA_SITE_ADDRESS = "org.chromium.chrome.preferences.site_address";
-
-    // A boolean to configure whether the requested notifications permission should be shown.
-    // Defaults to false.
-    public static final String EXTRA_SHOW_REQUESTED_NOTIFICATIONS_PERMISSION =
-            "org.chromium.chrome.preferences.show_requested_notifications_permission";
 
     // A boolean to configure whether the sound setting should be shown. Defaults to true.
     public static final String EXTRA_SHOW_SOUND = "org.chromium.chrome.preferences.show_sound";
@@ -268,6 +266,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     // Stores whether the location permission was initially approximate to ensure we toggle between
     // permissions consistently.
     private boolean mHasApproximateLocationGrant;
+
+    // A boolean to configure whether the requested notifications permission should be shown.
+    private boolean mHasRequestedNotificationsPermission;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -458,7 +459,12 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         mHideNonPermissionPreferences = hide;
     }
 
-    public void setWebsiteSettingsObserver(Observer observer) {
+    public void setHasRequestedNotificationsPermission(
+            boolean hasRequestedNotificationsPermission) {
+        mHasRequestedNotificationsPermission = hasRequestedNotificationsPermission;
+    }
+
+    public void setWebsiteSettingsObserver(@Nullable Observer observer) {
         mWebsiteSettingsObserver = observer;
     }
 
@@ -586,6 +592,13 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             @ContentSetting @Nullable Integer value) {
         return ContentSettingsResources.getContentSettingsIcon(
                 getContext(), contentSettingsType, value);
+    }
+
+    /**
+     * @return The website this page is displaying details about.
+     */
+    public @Nullable Website getSite() {
+        return mSite;
     }
 
     /**
@@ -819,34 +832,50 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     @RequiresNonNull({"mSite"})
     private void setUpNotificationsPreference(Preference preference, boolean isEmbargoed) {
         @ContentSettingsType.EnumType int notificationType = ContentSettingsType.NOTIFICATIONS;
-        boolean isBeingRequested =
-                getArguments().getBoolean(EXTRA_SHOW_REQUESTED_NOTIFICATIONS_PERMISSION, false);
-
         final @ContentSetting @Nullable Integer value =
                 mSite.getContentSetting(getBrowserContextHandle(), notificationType);
-        if (setupAppDelegatePreference(
-                preference, R.string.website_notification_settings, notificationType, value)) {
+        // If `mHasRequestedNotificationsPermission`is true, this means the user clicked on the
+        // "Manage" button in the notification permission prompt, and we should display the
+        // permission request UI in PageInfo. `setupAppDelegatePreference` should not be called if
+        // there is an active permission request.
+        if (!mHasRequestedNotificationsPermission
+                && setupAppDelegatePreference(
+                        preference,
+                        R.string.website_notification_settings,
+                        notificationType,
+                        value)) {
             return;
         }
 
+        // TODO(crbug.com/458351800): Android O is deprecated, so this check can be removed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // `isBeingRequested` indicates that the notification permission is currently being
-            // requested, as it is not technically allowed yet, we should display the "BLOCK" state.
-            // Because the requested permissoin's state is ASK, `mSite` will not contain a value for
-            // this permission.
-            if (isBeingRequested) {
+            // `mHasRequestedNotificationsPermission` indicates that the notification permission is
+            // currently being requested, as it is not technically allowed yet, we should display
+            // the "BLOCK" state. Because the requested permission's state is ASK, `mSite` will not
+            // contain a value for this permission.
+            if (mHasRequestedNotificationsPermission) {
                 String overrideSummary =
                         getString(
                                 ContentSettingsResources.getCategorySummary(
                                         ContentSetting.BLOCK, isOneTime(notificationType)));
                 ChromeButtonPreference buttonPreference =
-                        replaceWithReadOnlyButtonPreference(preference, overrideSummary, value);
+                        replaceWithReadOnlyButtonPreference(
+                                preference, overrideSummary, ContentSetting.BLOCK);
                 buttonPreference.setButton(
                         R.string.notifications_permission_subscribe,
                         R.string.notifications_permission_subscribe_a11y,
                         view -> {
-                            // TODO(crbug.com/458351800): Resolve the permission request as
-                            // granted.
+                            if (mWebsiteSettingsObserver != null) {
+                                mWebsiteSettingsObserver.onNotificationSubscribeClicked();
+                            }
+
+                            // Reset the requested permission state to false, as the permission has
+                            // been granted and is not longer in request.
+                            mHasRequestedNotificationsPermission = false;
+
+                            if (mSite != null) {
+                                displaySitePermissions();
+                            }
                         });
                 return;
             }
@@ -1306,11 +1335,20 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             @ContentSetting @Nullable Integer value,
             boolean isEmbargoed,
             boolean isOneTime) {
+        @ContentSettingsType.EnumType
+        int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
+        if (contentType == ContentSettingsType.NOTIFICATIONS
+                && mHasRequestedNotificationsPermission) {
+            // `mHasRequestedNotificationsPermission` indicates that the notification permission is
+            // currently being requested, as it is not technically allowed yet, we should display
+            // the "BLOCK" state. Because the requested permission's state is ASK, `mSite` will not
+            // contain a value for this permission.
+            value = ContentSetting.BLOCK;
+        }
+
         if (value == null) return;
         setUpPreferenceCommon(preference, value);
         preference.setOnPreferenceChangeListener(this);
-        @ContentSettingsType.EnumType
-        int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
 
         String summary;
         if (isEmbargoed) {
@@ -1688,8 +1726,14 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         } else {
             mSite.setContentSetting(browserContextHandle, type, permission);
         }
-        LocationCategory locationCategory =
-                new LocationCategory(getBrowserContextHandle(), !mHasApproximateLocationGrant);
+
+        boolean hasPreciseOnlyBlockedWarning = false;
+        if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+            LocationCategory locationCategory =
+                    new LocationCategory(getBrowserContextHandle(), !mHasApproximateLocationGrant);
+            hasPreciseOnlyBlockedWarning =
+                    locationCategory.hasPreciseOnlyBlockedWarning(getContext());
+        }
 
         // In Clank, one time grants are only possible via prompt, not via page
         // info.
@@ -1700,7 +1744,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                                 permission,
                                 false,
                                 mHasApproximateLocationGrant,
-                                locationCategory.hasPreciseOnlyBlockedWarning(getContext()))));
+                                hasPreciseOnlyBlockedWarning)));
         preference.setIcon(getContentSettingsIcon(type, permission));
 
         if (mWebsiteSettingsObserver != null) {

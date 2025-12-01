@@ -579,6 +579,52 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.ClapperLoud.MessageUI.Dismiss" enum="Boolean"
+    expires_after="2026-05-03">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the dismiss action whenever a loud notification permission prompt in
+    the form of the message UI is dismissed by the user. This action is
+    processed as the deny action, hence this histogram is used to track the
+    dismiss action.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.ClapperLoud.MessageUI.Manage" enum="Boolean"
+    expires_after="2026-05-03">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records when the user clicks on the Manage action in the message UI for the
+    loud notification permission prompt. This action redirects the user to the
+    PageInfo Permissions subpage where the user can grant or deny the permission
+    prompt.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.ClapperLoud.PageInfo.Closed" enum="Boolean"
+    expires_after="2026-05-03">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the close action whenever the user closes the PageInfo Permissions
+    subpage after having seen the notification permission prompt. This action is
+    processed as the deny action, hence this histogram is used to track the
+    close action.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.ClapperLoud.PageInfo.Subscribed" enum="Boolean"
+    expires_after="2026-05-03">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the accept action whenever the user taps on the subscrube button in
+    the notification permission row from the PageInfo Permissions subpage.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.CPSS.SiteSettingsChanged.{Flavor}"
     enum="ContentType" expires_after="2026-05-10">
   <owner>lyf@chromium.org</owner>

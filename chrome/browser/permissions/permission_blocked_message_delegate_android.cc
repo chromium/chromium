@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/permission_blocked_message_delegate_android.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
@@ -222,8 +223,9 @@ void PermissionBlockedMessageDelegate::HandleLoudPrimaryActionClick() {
     dialog_controller_ = std::make_unique<PermissionBlockedDialogController>(
         this, web_contents_);
   }
-  // TODO(crbug.com/458351800): PageInfo is empty. I need to propagate
-  // Notifications permission in the PageInfo because it is not there.
+
+  base::UmaHistogramBoolean("Permissions.ClapperLoud.MessageUI.Manage", true);
+
   dialog_controller_->ShowPageInfo();
   messages::MessageDispatcherBridge::Get()->DismissMessage(
       message_.get(), messages::DismissReason::PRIMARY_ACTION);
@@ -231,7 +233,31 @@ void PermissionBlockedMessageDelegate::HandleLoudPrimaryActionClick() {
 
 void PermissionBlockedMessageDelegate::HandleLoudDismissCallback(
     messages::DismissReason reason) {
-  // TODO(crbug.com/458351800): Add logic for dismiss.
+  message_.reset();
+
+  // There is no secondary action for the message UI for loud prompts.
+  // There is only the primary "Manage" action.
+  if (reason == messages::DismissReason::SECONDARY_ACTION) {
+    NOTREACHED();
+  }
+
+  dialog_controller_.reset();
+
+  if (reason == messages::DismissReason::GESTURE) {
+    // TODO(crbug.com/458351800): Add tests for the loud prompts via the
+    // message UI.
+
+    // If the use has intentionally dismissed the dialog, it is processed as the
+    // deny action. Hence the separate histogram is needed to differentiate
+    // between deny and dismiss actions.
+    base::UmaHistogramBoolean("Permissions.ClapperLoud.MessageUI.Dismiss",
+                              true);
+
+    delegate_->Deny();
+  }
+
+  // Other un-tracked actions will be recorded as "Ignored" by
+  // |permission_prompt_|.
 }
 
 void PermissionBlockedMessageDelegate::DismissInternal() {

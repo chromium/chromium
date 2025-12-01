@@ -6,16 +6,20 @@
 
 #include "base/android/jni_array.h"
 #include "base/auto_reset.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/location/android/location_settings_impl.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/permissions/android/core_jni/PermissionUtil_jni.h"
 #include "components/permissions/android/jni_headers/AndroidPermissionRequester_jni.h"
+#include "components/permissions/android/jni_headers/PermissionUtil_jni.h"
 
 namespace permissions {
 
@@ -210,6 +214,43 @@ base::AutoReset<bool> EnableSystemLocationSettingForTesting() {
 }
 
 }  // namespace permissions
+
+static void JNI_PermissionUtil_ResolvePermissionRequest(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jweb_contents,
+    jint content_settings_type,
+    jint content_setting) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  ContentSetting setting = static_cast<ContentSetting>(content_setting);
+
+  if (!permission_request_manager) {
+    return;
+  }
+  if (permission_request_manager->IsRequestInProgress() &&
+      permission_request_manager->Requests().size() > 0 &&
+      permission_request_manager->Requests()[0]->GetContentSettingsType() ==
+          static_cast<ContentSettingsType>(content_settings_type)) {
+    if (setting == CONTENT_SETTING_ALLOW) {
+      base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Subscribed",
+                                true);
+      permission_request_manager->Accept();
+    } else if (setting == CONTENT_SETTING_BLOCK) {
+      // There are multiple ways to deny the permission request. This histogram
+      // will track the number of times the user denied the permission request
+      // by closing the PageInfo.
+      base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Closed",
+                                true);
+      permission_request_manager->Deny();
+    } else {
+      // Currently, only ALLOW and BLOCK are supported. In case other actions
+      // are added in the future, this should be updated.
+      NOTREACHED();
+    }
+  }
+}
 
 DEFINE_JNI(PermissionUtil)
 DEFINE_JNI(AndroidPermissionRequester)

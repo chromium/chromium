@@ -290,6 +290,7 @@ public class PageInfoController
                         this,
                         mView.getPermissionsRowView(),
                         mDelegate,
+                        mWebContents,
                         pageInfoHighlight.getHighlightedPermission());
         mSubpageControllers.add(mPermissionsController);
         mCookiesController =

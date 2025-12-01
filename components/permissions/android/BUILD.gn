@@ -13,6 +13,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/permissions/BluetoothScanningPermissionDialog.java",
     "java/src/org/chromium/components/permissions/PermissionDialogController.java",
     "java/src/org/chromium/components/permissions/PermissionDialogDelegate.java",
+    "java/src/org/chromium/components/permissions/PermissionUtil.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelSetting.java",
   ]
 }
@@ -186,6 +187,7 @@ android_library("java") {
     "java/src/org/chromium/components/permissions/PermissionDialogDelegate.java",
     "java/src/org/chromium/components/permissions/PermissionDialogMediator.java",
     "java/src/org/chromium/components/permissions/PermissionDialogModelFactory.java",
+    "java/src/org/chromium/components/permissions/PermissionUtil.java",
     "java/src/org/chromium/components/permissions/PermissionVerticalButtonsDialogCustomViewBinder.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelPrompt.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelSetting.java",
@@ -207,7 +209,9 @@ android_library("java") {
     "//components/content_settings/android:content_settings_enums_java",
     "//components/location/android:location_java",
     "//components/omnibox/browser:scheme_classifier_java",
+    "//components/webxr/android:features_java",
     "//content/public/android:content_java",
+    "//device/vr/public:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -219,10 +223,7 @@ android_library("java") {
 }
 
 generate_jni("core_jni") {
-  sources = [
-    "java/src/org/chromium/components/permissions/PermissionUtil.java",
-    "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureMap.java",
-  ]
+  sources = [ "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureMap.java" ]
 }
 
 # Contains sources that do no depend on //content.
@@ -230,7 +231,6 @@ android_library("core_java") {
   srcjar_deps = [ ":core_jni" ]
   sources = [
     "java/src/org/chromium/components/permissions/ApproximateGeolocationPromptArm.java",
-    "java/src/org/chromium/components/permissions/PermissionUtil.java",
     "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureList.java",
     "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureMap.java",
   ]
