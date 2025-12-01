@@ -38,6 +38,8 @@ class GnomeRemoteDesktopSession {
   using InitCallbackSignature = void(base::expected<void, std::string>);
   using InitCallback = base::OnceCallback<InitCallbackSignature>;
 
+  static bool IsRunningUnderGnome();
+
   // Returns the singleton instance of GnomeRemoteDesktopSession.
   static GnomeRemoteDesktopSession* GetInstance();
 

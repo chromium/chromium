@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -72,6 +73,14 @@ GnomeRemoteDesktopSession::~GnomeRemoteDesktopSession() {
   }
 }
 
+// static
+bool GnomeRemoteDesktopSession::IsRunningUnderGnome() {
+  const char* xdg_current_desktop = getenv("XDG_CURRENT_DESKTOP");
+  return xdg_current_desktop &&
+         std::string_view{xdg_current_desktop} == "GNOME";
+}
+
+// static
 GnomeRemoteDesktopSession* GnomeRemoteDesktopSession::GetInstance() {
   static base::NoDestructor<GnomeRemoteDesktopSession> instance;
   return instance.get();

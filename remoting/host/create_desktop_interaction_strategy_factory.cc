@@ -14,6 +14,8 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "remoting/host/linux/gnome_interaction_strategy.h"
+#include "remoting/host/linux/gnome_remote_desktop_session.h"
+#include "remoting/host/linux/portal_interaction_strategy.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
@@ -27,7 +29,11 @@ CreateDesktopInteractionStrategyFactory(
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner) {
 #if BUILDFLAG(IS_LINUX)
   if (webrtc::DesktopCapturer::IsRunningUnderWayland()) {
-    return std::make_unique<GnomeInteractionStrategyFactory>(ui_task_runner);
+    if (GnomeRemoteDesktopSession::IsRunningUnderGnome()) {
+      return std::make_unique<GnomeInteractionStrategyFactory>(ui_task_runner);
+    } else {
+      return std::make_unique<PortalInteractionStrategyFactory>();
+    }
   }
 #endif  // BUILDFLAG(IS_LINUX)
 

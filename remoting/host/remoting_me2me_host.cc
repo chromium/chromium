@@ -145,6 +145,7 @@
 #include <gtk/gtk.h>
 
 #include "remoting/host/linux/gnome_remote_desktop_session.h"
+#include "remoting/host/linux/portal_remote_desktop_session.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xlib_support.h"
@@ -1831,16 +1832,31 @@ void HostProcess::StartHost() {
 
 #if BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
   if (webrtc::DesktopCapturer::IsRunningUnderWayland()) {
-    GnomeRemoteDesktopSession::GetInstance()->Init(
-        base::BindOnce([](base::expected<void, std::string> result) {
-          if (result.has_value()) {
-            LOG(INFO)
-                << "Gnome remote desktop session initialization succeeded.";
-          } else {
-            LOG(ERROR) << "Gnome remote desktop session initialization failed: "
-                       << result.error();
-          }
-        }));
+    if (GnomeRemoteDesktopSession::IsRunningUnderGnome()) {
+      GnomeRemoteDesktopSession::GetInstance()->Init(
+          base::BindOnce([](base::expected<void, std::string> result) {
+            if (result.has_value()) {
+              LOG(INFO)
+                  << "Gnome remote desktop session initialization succeeded.";
+            } else {
+              LOG(ERROR)
+                  << "Gnome remote desktop session initialization failed: "
+                  << result.error();
+            }
+          }));
+    } else {
+      PortalRemoteDesktopSession::GetInstance()->Init(
+          base::BindOnce([](base::expected<void, std::string> result) {
+            if (result.has_value()) {
+              LOG(INFO)
+                  << "Portal remote desktop session initialization succeeded.";
+            } else {
+              LOG(ERROR)
+                  << "Portal remote desktop session initialization failed: "
+                  << result.error();
+            }
+          }));
+    }
   }
 #endif
 
