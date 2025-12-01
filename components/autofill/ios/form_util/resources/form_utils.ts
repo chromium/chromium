@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {RENDERER_ID_NOT_SET} from '//components/autofill/ios/form_util/resources/fill_constants.js';
+import {isFormControlElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
+import {getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -14,18 +17,6 @@ const kNamelessFormIDPrefix = 'gChrome~form~';
  * are included in a form.
  */
 const kNamelessFieldIDPrefix = 'gChrome~field~';
-
-
-/**
- * Based on Element::isFormControlElement() (WebKit)
- * @param element A DOM element.
- * @return true if the `element` is a form control element.
- */
-export function isFormControlElement(element: Element): boolean {
-  const tagName = element.tagName;
-  return (
-      tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA');
-}
 
 /**
  * Returns the form's `name` attribute if non-empty; otherwise the form's `id`
@@ -224,4 +215,23 @@ export function getFieldIdentifier(element: Element|null): string {
   }
 
   return '';
+}
+
+/**
+ * Returns the form element from an form renderer id.
+ *
+ * @param identifier An ID string obtained via getFormIdentifier.
+ * @return The original form element, if it can be determined.
+ */
+export function getFormElementFromRendererId(identifier: number):
+    HTMLFormElement|null {
+  if (identifier.toString() === RENDERER_ID_NOT_SET) {
+    return null;
+  }
+  for (const form of document.forms) {
+    if (identifier.toString() === getUniqueID(form)) {
+      return form;
+    }
+  }
+  return null;
 }

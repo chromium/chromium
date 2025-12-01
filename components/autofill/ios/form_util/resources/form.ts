@@ -6,8 +6,7 @@
  * @fileoverview Contains method needed to access the forms and their elements.
  */
 
-import {RENDERER_ID_NOT_SET} from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import {getRemoteFrameToken, getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {getRemoteFrameToken} from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {getFormIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
@@ -198,25 +197,6 @@ function getFieldName(element: Element|null): string {
 }
 
 /**
- * Returns the form element from an form renderer id.
- *
- * @param identifier An ID string obtained via getFormIdentifier.
- * @return The original form element, if it can be determined.
- */
-function getFormElementFromRendererId(identifier: number): HTMLFormElement|
-    null {
-  if (identifier.toString() === RENDERER_ID_NOT_SET) {
-    return null;
-  }
-  for (const form of document.forms) {
-    if (identifier.toString() === getUniqueID(form)) {
-      return form;
-    }
-  }
-  return null;
-}
-
-/**
  * Returns whether the last `input` or `change` event on `element` was
  * triggered by a user action (was "trusted"). Returns true by default if the
  * feature to fix the user edited bit isn't enabled which is the status quo.
@@ -358,7 +338,6 @@ function reportDetectedFormSubmission(
 gCrWebLegacy.form = {
   wasEditedByUser,
   getFieldName,
-  getFormElementFromRendererId,
   fieldWasEditedByUser,
   formSubmitted,
   reportFormSubmissionError,

@@ -5,7 +5,7 @@
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
-import {getFormControlElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import {getFormControlElements, getFormElementFromRendererId} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {CrWebApi, gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -131,13 +131,12 @@ function getFormInputElements(form: HTMLFormElement): HTMLInputElement[] {
 function getPasswordFormDataAsString(identifier: number): string {
   const hasFormTag =
       identifier.toString() !== fillConstants.RENDERER_ID_NOT_SET;
-  const form =
-      hasFormTag ? gCrWebLegacy.form.getFormElementFromRendererId(identifier) : null;
+  const form = hasFormTag ? getFormElementFromRendererId(identifier) : null;
   if (!form && hasFormTag) {
     return '{}';
   }
-  const formData = hasFormTag ? getPasswordFormData(form) :
-                                getPasswordFormDataFromUnownedElements();
+  const formData = form ? getPasswordFormData(form) :
+                          getPasswordFormDataFromUnownedElements();
   if (!formData) {
     return '{}';
   }
@@ -156,10 +155,12 @@ function getPasswordFormDataAsString(identifier: number): string {
  * @param password The password to fill.
  * @return {FillResult} The result of filling the password fields.
  */
+
+// TODO(crbug.com/454044167): Cleanup autofill TS type casting.
 function fillPasswordForm(
     formData: fillUtil.AutofillFormData, username: string,
     password: string): FillResult {
-  const form = gCrWebLegacy.form.getFormElementFromRendererId(formData.renderer_id);
+  const form = getFormElementFromRendererId(Number(formData.renderer_id));
   if (form) {
     const inputs = getFormInputElements(form);
     return fillUsernameAndPassword(inputs, formData, username, password);
@@ -218,13 +219,13 @@ function fillGeneratedPassword(
     formIdentifier: number, newPasswordIdentifier: number,
     confirmPasswordIdentifier: number, password: string,
     hasFormTag: boolean): boolean {
-  const form = gCrWebLegacy.form.getFormElementFromRendererId(formIdentifier);
+  const form = getFormElementFromRendererId(formIdentifier);
   if (!form && hasFormTag) {
     return false;
   }
   // TODO(crbug.com/454044167): Cleanup autofill TS type casting.
   const inputs = hasFormTag ?
-      getFormInputElements(form) :
+      getFormInputElements(form as HTMLFormElement) :
       fillUtil.getUnownedAutofillableFormFieldElements(
           Array.from(document.all) as fillConstants.FormControlElement[], []) as
           HTMLInputElement[];
