@@ -37,7 +37,7 @@
 			<key>PrimaryAction</key>
 			<integer>8</integer>
 			<key>LearnMoreUrlString</key>
-			<string>https://support.google.com/chrome/answer/2364824?hl=en&amp;co=GENIE.Platform%3DiOS </string>
+			<string>https://support.google.com/chrome?p=add_profile_ios</string>
 		</dict>
 	</array>
 	<key>ChromeTips</key>
