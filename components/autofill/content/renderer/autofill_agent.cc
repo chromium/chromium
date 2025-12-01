@@ -106,14 +106,6 @@ namespace {
 
 using enum CallTimerState::CallSite;
 
-// Used for metrics. Do not renumber.
-// This enum is supposed to identify what is being returned by
-// `AutofillAgent::GetSubmittedForm`: Either no form (null) which means that
-// fetching the submitted form failed, or a form that was extracted at the time
-// of calling the function, or a form that was extracted before and cached until
-// submission time.
-enum class SubmittedFormType { kNull = 0, kExtracted = 1, kCached = 2 };
-
 constexpr char kSubmissionSourceHistogram[] =
     "Autofill.SubmissionDetectionSource.AutofillAgent";
 
@@ -129,55 +121,6 @@ void LogRendererExtractLabeledTextNodeValueLatency(base::TimeDelta latency,
       base::StrCat({"Autofill.RendererLabeledAmountExtractionLatency.",
                     is_successful ? "Success" : "Failure"}),
       latency);
-}
-
-void LogSubmittedFormMetric(mojom::SubmissionSource source,
-                            SubmittedFormType type) {
-  // Used for metrics. Do not renumber.
-  enum class SubmittedFormTypeBySource {
-    kNone_Null = 0,
-    kNone_Extracted = 1,
-    kNone_Cached = 2,
-    kSameDocumentNavigation_Null = 3,
-    kSameDocumentNavigation_Extracted = 4,
-    kSameDocumentNavigation_Cached = 5,
-    kXhrSucceeded_Null = 6,
-    kXhrSucceeded_Extracted = 7,
-    kXhrSucceeded_Cached = 8,
-    kFrameDetached_Null = 9,
-    kFrameDetached_Extracted = 10,
-    kFrameDetached_Cached = 11,
-    kProbableFormSubmission_Null = 12,
-    kProbableFormSubmission_Extracted = 13,
-    kProbableFormSubmission_Cached = 14,
-    kFormSubmission_Null = 15,
-    kFormSubmission_Extracted = 16,
-    kFormSubmission_Cached = 17,
-    kDomMutationAfterAutofill_Null = 18,
-    kDomMutationAfterAutofill_Extracted = 19,
-    kDomMutationAfterAutofill_Cached = 20,
-    kTotal_Null = 21,
-    kTotal_Extracted = 22,
-    kTotal_Cached = 23,
-    kMaxValue = kTotal_Cached
-  };
-  static_assert(
-      base::to_underlying(SubmittedFormTypeBySource::kMaxValue) + 1 ==
-          3 * (base::to_underlying(mojom::SubmissionSource::kMaxValue) + 2),
-      "SubmittedFormTypeBySource should have three values for each value of "
-      "SubmissionSource in addition to three `Total` values");
-
-  using underlying_type = std::underlying_type_t<SubmittedFormTypeBySource>;
-  underlying_type source_bucket = base::to_underlying(source) * 3;
-  underlying_type total_bucket =
-      base::to_underlying(SubmittedFormTypeBySource::kTotal_Null);
-  underlying_type offset = base::to_underlying(type);
-  base::UmaHistogramEnumeration(
-      "Autofill.SubmissionDetection.SubmittedFormType",
-      static_cast<SubmittedFormTypeBySource>(source_bucket + offset));
-  base::UmaHistogramEnumeration(
-      "Autofill.SubmissionDetection.SubmittedFormType",
-      static_cast<SubmittedFormTypeBySource>(total_bucket + offset));
 }
 
 // For each field in the |form| sets the title to include the field's heuristic
@@ -2078,7 +2021,7 @@ void AutofillAgent::OnFormSubmission(
         FormRendererId(), /*submitted_form=*/std::nullopt, source);
   }
   if (std::optional<FormData> form_data =
-          GetSubmittedForm(source, submitted_form_element)) {
+          form_tracker_->GetSubmittedForm(source, submitted_form_element)) {
     FireHostSubmitEvents(*form_data, source);
   }
   switch (source) {
@@ -2128,60 +2071,6 @@ void AutofillAgent::UpdateStateForTextChange(
 
   password_autofill_agent_->UpdatePasswordStateForTextChange(input_element,
                                                              form_cache);
-}
-
-std::optional<FormData> AutofillAgent::GetSubmittedForm(
-    mojom::SubmissionSource source,
-    std::optional<WebFormElement> submitted_form_element) {
-  std::optional<FormData> cached_form =
-      form_tracker_->provisionally_saved_form();
-  const bool cache_matches_submitted_form_element =
-      !submitted_form_element.has_value() || !cached_form ||
-      cached_form->renderer_id() ==
-          form_util::GetFormRendererId(*submitted_form_element);
-
-  // Behavior when `AutofillReplaceFormElementObserver` is enabled:
-  // - Never try to extract and unconditionally look at the provisionally saved
-  //   form. The reason is that some form extraction could happen during style
-  //   recalc, meaning that querying field focusability would crash.
-  if (replace_form_element_observer_) {
-    LogSubmittedFormMetric(source, cached_form ? SubmittedFormType::kCached
-                                               : SubmittedFormType::kNull);
-    return cached_form;
-  }
-
-  // Behavior when the submission is a result of a detached iframe:
-  // - Look at the cached form and don't try extracting the form from the frame
-  //   since the frame became disconnected.
-  // TODO(crbug.com/40281981): Investigate following the default behavior for
-  // this source (i.e. trying to extract anyways).
-  if (source == mojom::SubmissionSource::FRAME_DETACHED) {
-    LogSubmittedFormMetric(source, cached_form ? SubmittedFormType::kCached
-                                               : SubmittedFormType::kNull);
-    return cached_form;
-  }
-
-  WebDocument document = GetDocument();
-  std::optional<FormData> extracted_form = form_util::ExtractFormData(
-      document,
-      submitted_form_element.has_value()
-          ? *submitted_form_element
-          : form_tracker_->last_interacted_form().GetForm(),
-      field_data_manager(), GetCallTimerState(kGetSubmittedForm),
-      button_titles_cache());
-
-  // - Return null if there was no interaction so far and no `form_element` is
-  //   provided.
-  // - Primarily look at the provisionally saved form.
-  // - In case there isn't one try extracting the form (either
-  //   `last_interacted_form()` or `form_element` if provided).
-  if (cached_form && cache_matches_submitted_form_element) {
-    LogSubmittedFormMetric(source, SubmittedFormType::kCached);
-    return cached_form;
-  }
-  LogSubmittedFormMetric(source, extracted_form ? SubmittedFormType::kExtracted
-                                                : SubmittedFormType::kNull);
-  return extracted_form;
 }
 
 mojom::AutofillDriver* AutofillAgent::unsafe_autofill_driver() {

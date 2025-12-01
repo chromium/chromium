@@ -141,6 +141,22 @@ class FormTracker : public content::RenderFrameObserver,
     return submitted_forms_;
   }
 
+  // Returns an approximation of the submitted form. The candidates are:
+  // - `provisionally_saved_form_` , because it may be the last-known complete
+  //   state of the form (i.e., the form or some fields in the form may have
+  //   been removed afterwards).
+  // - `last_interacted_form_`'s current `FormData`, because this corresponds to
+  //   the last form element the user interacted with.
+  // - `submitted_form_element`'s current `FormData`, because the caller
+  //    specified that this is the form element that was submitted, regardless
+  //    of autofill's tracking.
+  // When `submitted_form_element` is provided the function makes sure
+  // that the returned form corresponds to that DOM element.
+  // `source` is the type of submission requesting the submitted form.
+  std::optional<FormData> GetSubmittedForm(
+      mojom::SubmissionSource source,
+      std::optional<blink::WebFormElement> submitted_form_element);
+
   // Called when current form is no longer submittable, submitted_forms_ is
   // cleared in this method.
   void OnFormNoLongerSubmittable() { submitted_forms_.clear(); }
@@ -204,6 +220,8 @@ class FormTracker : public content::RenderFrameObserver,
   // to be inferred in case this function is called.
   // TODO(crbug.com/40281981): Remove.
   void ElementWasHiddenOrRemoved(mojom::SubmissionSource source);
+
+  blink::WebDocument GetDocument() const;
 
   // Whether a user gesture is required to pass on text field change events.
   UserGestureRequired user_gesture_required_ = UserGestureRequired(true);

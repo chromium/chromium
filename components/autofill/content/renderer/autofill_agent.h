@@ -411,22 +411,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Hides any currently showing Autofill popup.
   void HidePopup();
 
-  // Returns an approximation of the submitted form. The candidates are:
-  // - `provisionally_saved_form_` , because it may be the last-known complete
-  //   state of the form (i.e., the form or some fields in the form may have
-  //   been removed afterwards).
-  // - `last_interacted_form_`'s current `FormData`, because this corresponds to
-  //   the last form element the user interacted with.
-  // - `submitted_form_element`'s current `FormData`, because the caller
-  //    specified that this is the form element that was submitted, regardless
-  //    of autofill's tracking.
-  // When `submitted_form_element` is provided the function makes sure
-  // that the returned form corresponds to that DOM element.
-  // `source` is the type of submission requesting the submitted form.
-  std::optional<FormData> GetSubmittedForm(
-      mojom::SubmissionSource source,
-      std::optional<blink::WebFormElement> submitted_form_element);
-
   // Helpers for SelectFieldOptionsChanged() and
   // DataListOptionsChanged(), which get called after a timer that is restarted
   // when another event of the same type started.
