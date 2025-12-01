@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
 
 #include <windows.h>
 
 #include <psapi.h>
 
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/process/process_handle.h"
@@ -33,7 +29,7 @@ void PrintStackTraceInternal(const void** trace, size_t count) {
   count = std::max(count, kMaxTraces);
   bool is_output_trace[kMaxTraces];
   for (size_t i = 0; i < count; ++i) {
-    is_output_trace[i] = false;
+    PA_UNSAFE_TODO(is_output_trace[i]) = false;
   }
   DWORD bytes_required = 0;
   if (EnumProcessModules(process_handle, nullptr, 0, &bytes_required)) {
@@ -50,21 +46,23 @@ void PrintStackTraceInternal(const void** trace, size_t count) {
                                &bytes_required)) {
           for (unsigned i = 0; i < module_count; ++i) {
             MODULEINFO info;
-            if (GetModuleInformation(process_handle, module_array[i], &info,
+            if (GetModuleInformation(process_handle,
+                                     PA_UNSAFE_TODO(module_array[i]), &info,
                                      sizeof(info))) {
               char module_name[MAX_PATH + 1];
               bool module_name_checked = false;
               for (unsigned j = 0; j < count; j++) {
                 uintptr_t base_of_dll =
                     reinterpret_cast<uintptr_t>(info.lpBaseOfDll);
-                uintptr_t address = reinterpret_cast<uintptr_t>(trace[j]);
+                uintptr_t address =
+                    reinterpret_cast<uintptr_t>(PA_UNSAFE_TODO(trace[j]));
                 if (base_of_dll <= address &&
                     address < base_of_dll + info.SizeOfImage) {
                   if (!module_name_checked) {
                     size_t module_name_length = GetModuleFileNameExA(
-                        process_handle, module_array[i], module_name,
-                        sizeof(module_name) - 1);
-                    module_name[module_name_length] = '\0';
+                        process_handle, PA_UNSAFE_TODO(module_array[i]),
+                        module_name, sizeof(module_name) - 1);
+                    PA_UNSAFE_TODO(module_name[module_name_length]) = '\0';
                     module_name_checked = true;
                   }
                   // llvm-symbolizer needs --relative-address to symbolize the
@@ -74,7 +72,7 @@ void PrintStackTraceInternal(const void** trace, size_t count) {
                                        address, module_name,
                                        address - base_of_dll);
                   PA_RAW_LOG(INFO, buffer);
-                  is_output_trace[j] = true;
+                  PA_UNSAFE_TODO(is_output_trace[j]) = true;
                 }
               }
             }
@@ -86,12 +84,12 @@ void PrintStackTraceInternal(const void** trace, size_t count) {
   }
 
   for (size_t i = 0; i < count; ++i) {
-    if (is_output_trace[i]) {
+    if (PA_UNSAFE_TODO(is_output_trace[i])) {
       continue;
     }
     char buffer[256];
     strings::SafeSPrintf(buffer, "#%d 0x%x <unknown>\n", i,
-                         reinterpret_cast<uintptr_t>(trace[i]));
+                         reinterpret_cast<uintptr_t>(PA_UNSAFE_TODO(trace[i])));
     PA_RAW_LOG(INFO, buffer);
   }
 
