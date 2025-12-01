@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_opus_application.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_opus_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_opus_signal.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
