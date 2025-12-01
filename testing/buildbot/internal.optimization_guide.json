@@ -1713,32 +1713,6 @@
       },
       {
         "args": [
-          "--benchmark_binary_dir=./",
-          "--backends=gpu",
-          "--use_submodel"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
-        "name": "ondevice_model_benchmark_tests_gpu_submodel",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15",
-            "pool": "chrome.tests"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ondevice_model_benchmark_tests",
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_model_benchmark_tests/"
-      },
-      {
-        "args": [
           "--chromedriver",
           "chromedriver",
           "--binary",
@@ -1925,32 +1899,6 @@
         },
         "test": "model_validation_tests_light",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests_light/"
-      },
-      {
-        "args": [
-          "--benchmark_binary_dir=./",
-          "--backends=gpu",
-          "--use_submodel"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
-        "name": "ondevice_model_benchmark_tests_gpu_submodel",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-15",
-            "pool": "chrome.tests"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ondevice_model_benchmark_tests",
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_model_benchmark_tests/"
       },
       {
         "args": [
