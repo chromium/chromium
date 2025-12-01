@@ -801,17 +801,7 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
 
   set_language_code(profile.language_code());
 
-  // Update the use-count to be the max of the two merge-counts. Alternatively,
-  // we could have summed the two merge-counts. We don't sum because it skews
-  // the ranking score value on merge and double counts usage on profile reuse.
-  // Profile reuse is accounted for on RecordUseOf() on selection of a profile
-  // in the autofill drop-down; we don't need to account for that here. Further,
-  // a similar, fully-typed submission that merges to an existing profile should
-  // not be counted as a re-use of that profile.
-  usage_history_information_.set_use_count(
-      std::max(profile.usage_history_information_.use_count(),
-               usage_history_information_.use_count()));
-  usage_history_information_.MergeUseDates(profile.usage_history());
+  usage_history_information_.MergeUsageHistories(profile.usage_history());
 
   // Update the fields which need to be modified, if any. Note: that we're
   // comparing the fields for representational equality below (i.e., are the

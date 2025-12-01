@@ -56,8 +56,17 @@ double UsageHistoryInformation::GetRankingScore(base::Time current_time) const {
          log(static_cast<double>(use_count) + 1);
 }
 
-void UsageHistoryInformation::MergeUseDates(
+void UsageHistoryInformation::MergeUsageHistories(
     const UsageHistoryInformation& other) {
+  // Update the use-count to be the max of the two merge-counts. Alternatively,
+  // we could have summed the two merge-counts. We don't sum because it skews
+  // the ranking score value on merge and double counts usage on profile reuse.
+  // Profile reuse is accounted for on RecordUseOf() on selection of a profile
+  // in the autofill drop-down; we don't need to account for that here. Further,
+  // a similar, fully-typed submission that merges to an existing profile should
+  // not be counted as a reuse of that profile.
+  set_use_count(std::max(use_count(), other.use_count()));
+
   // Take the `usage_history_size()` latest use dates (nullopts go last).
   use_dates_.insert(use_dates_.end(), other.use_dates_.begin(),
                     other.use_dates_.end());

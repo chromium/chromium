@@ -104,18 +104,22 @@ INSTANTIATE_TEST_SUITE_P(
                                                now - base::Days(1), LESS}));
 
 // Tests that when merging two models, the use dates are merged correctly.
-struct UseDateMergeTestCase {
+struct UsageHistoryMergeTestCase {
   // Describes how long ago the last, second last and third last uses occurred,
   // respectively. Nullopt indicate that the model hasn't been used this often.
   using UsageHistory = std::array<std::optional<base::TimeDelta>, 3>;
   const UsageHistory usage_history_a;
   const UsageHistory usage_history_b;
   const UsageHistory expected_merged_use_history;
+  const size_t use_count_a;
+  const size_t use_count_b;
+  const size_t expected_use_count;
 };
-class UseDateMergeTest : public testing::TestWithParam<UseDateMergeTestCase> {
+class UseDateMergeTest
+    : public testing::TestWithParam<UsageHistoryMergeTestCase> {
  public:
   UsageHistoryInformation ModelFromUsageHistory(
-      const UseDateMergeTestCase::UsageHistory& usage_history) {
+      const UsageHistoryMergeTestCase::UsageHistory& usage_history) {
     UsageHistoryInformation model(/*usage_history_size=*/3);
     for (int i = 0; i < 3; i++) {
       if (usage_history[i]) {
@@ -130,18 +134,21 @@ class UseDateMergeTest : public testing::TestWithParam<UseDateMergeTestCase> {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_P(UseDateMergeTest, MergeUseDates) {
-  const UseDateMergeTestCase& test = GetParam();
+TEST_P(UseDateMergeTest, MergeUsageHistories) {
+  const UsageHistoryMergeTestCase& test = GetParam();
   UsageHistoryInformation a = ModelFromUsageHistory(test.usage_history_a);
-  const UsageHistoryInformation b = ModelFromUsageHistory(test.usage_history_b);
-  const UsageHistoryInformation expected_merged_profile =
+  UsageHistoryInformation b = ModelFromUsageHistory(test.usage_history_b);
+  a.set_use_count(test.use_count_a);
+  b.set_use_count(test.use_count_b);
+  const UsageHistoryInformation expected_merged_use_history =
       ModelFromUsageHistory(test.expected_merged_use_history);
 
   ASSERT_EQ(a.usage_history_size(), 3u);
-  a.MergeUseDates(b);
-  EXPECT_EQ(a.use_date(1), expected_merged_profile.use_date(1));
-  EXPECT_EQ(a.use_date(2), expected_merged_profile.use_date(2));
-  EXPECT_EQ(a.use_date(3), expected_merged_profile.use_date(3));
+  a.MergeUsageHistories(b);
+  EXPECT_EQ(a.use_date(1), expected_merged_use_history.use_date(1));
+  EXPECT_EQ(a.use_date(2), expected_merged_use_history.use_date(2));
+  EXPECT_EQ(a.use_date(3), expected_merged_use_history.use_date(3));
+  EXPECT_EQ(a.use_count(), test.expected_use_count);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -150,17 +157,26 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         // No second/third use date set: Expect that the more recent use date
         // becomes the use date and the other use date the second use date.
-        UseDateMergeTestCase{{base::Days(1)},
-                             {base::Days(2)},
-                             {base::Days(1), base::Days(2)}},
-        UseDateMergeTestCase{{base::Days(2)},
-                             {base::Days(1)},
-                             {base::Days(1), base::Days(2)}},
+        UsageHistoryMergeTestCase{{base::Days(1)},
+                                  {base::Days(2)},
+                                  {base::Days(1), base::Days(2)},
+                                  /*use_count_a=*/1,
+                                  /*use_count_b=*/1,
+                                  /*expected_use_count=*/1},
+        UsageHistoryMergeTestCase{{base::Days(2)},
+                                  {base::Days(1)},
+                                  {base::Days(1), base::Days(2)},
+                                  /*use_count_a=*/1,
+                                  /*use_count_b=*/5,
+                                  /*expected_use_count=*/5},
         // At least three use dates are set: Expect that the second and third
         // use date of the merged profile are populated.
-        UseDateMergeTestCase{{base::Days(1), base::Days(3), base::Days(5)},
-                             {base::Days(2), base::Days(4), base::Days(6)},
-                             {base::Days(1), base::Days(2), base::Days(3)}}));
+        UsageHistoryMergeTestCase{{base::Days(1), base::Days(3), base::Days(5)},
+                                  {base::Days(2), base::Days(4), base::Days(6)},
+                                  {base::Days(1), base::Days(2), base::Days(3)},
+                                  /*use_count_a=*/3,
+                                  /*use_count_b=*/1,
+                                  /*expected_use_count=*/3}));
 
 }  // namespace
 
