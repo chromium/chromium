@@ -117,20 +117,9 @@ NSAttributedString* GetAttributedMessage(NSString* message) {
 
 #pragma mark - UITextViewDelegate
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  [self.delegate tableViewIllustratedEmptyView:self didTapSubtitleLink:URL];
-
-  return NO;
-}
-#endif
-
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
-               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+               defaultAction:(UIAction*)defaultAction {
   __weak __typeof(self) weakSelf = self;
   NSURL* URL = textItem.link;
   return [UIAction actionWithHandler:^(UIAction* action) {
