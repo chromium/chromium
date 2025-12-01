@@ -81,15 +81,20 @@ public class ExtensionInstallDialogBridgeTest {
         mExtensionInstallDialogBridge =
                 new ExtensionInstallDialogBridge(
                         NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, mActivity, mModalDialogManager);
-        mExtensionInstallDialogBridge.withTitleAndButtons(
+    }
+
+    /** Helper method to build and show the dialog with standard test data. */
+    private void buildAndShowDialog() {
+        mExtensionInstallDialogBridge.buildDialog(
                 TITLE, ICON, ACCEPT_BUTTON_LABEL, CANCEL_BUTTON_LABEL);
+        mExtensionInstallDialogBridge.showDialog();
     }
 
     /** Tests that the basic dialog only contains the title and buttons */
     @Test
     @SmallTest
     public void testBasicDialog() throws Exception {
-        mExtensionInstallDialogBridge.showDialog();
+        buildAndShowDialog();
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
 
         Assert.assertEquals(
@@ -117,13 +122,9 @@ public class ExtensionInstallDialogBridgeTest {
     @Test
     @SmallTest
     public void testDialogWithPermissions() throws Exception {
-        mExtensionInstallDialogBridge.withCustomView(
-                PERMISSIONS_HEADING,
-                PERMISSIONS_TEXT,
-                PERMISSIONS_DETAILS,
-                /* justificationHeading= */ "",
-                /* justificationPlaceholderText= */ "");
-        mExtensionInstallDialogBridge.showDialog();
+        mExtensionInstallDialogBridge.withPermissions(
+                PERMISSIONS_HEADING, PERMISSIONS_TEXT, PERMISSIONS_DETAILS);
+        buildAndShowDialog();
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
 
         View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
@@ -152,14 +153,9 @@ public class ExtensionInstallDialogBridgeTest {
     @Test
     @SmallTest
     public void testDialogWithJustificationAndAcceptsText() throws Exception {
-        // Setup the dialog with justification but no permissions.
-        mExtensionInstallDialogBridge.withCustomView(
-                /* permissionsHeading= */ "",
-                /* permissionsText= */ new String[0],
-                /* permissionsDetails= */ new String[0],
-                JUSTIFICATION_HEADING,
-                JUSTIFICATION_PLACEHOLDER);
-        mExtensionInstallDialogBridge.showDialog();
+        mExtensionInstallDialogBridge.withJustification(
+                JUSTIFICATION_HEADING, JUSTIFICATION_PLACEHOLDER);
+        buildAndShowDialog();
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
         View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
 
@@ -193,14 +189,9 @@ public class ExtensionInstallDialogBridgeTest {
     @Test
     @SmallTest
     public void testPositiveButtonDisabledWhenJustificationTextIsTooLong() throws Exception {
-        // Setup the dialog with justification.
-        mExtensionInstallDialogBridge.withCustomView(
-                /* permissionsHeading= */ "",
-                /* permissionsText= */ new String[0],
-                /* permissionsDetails= */ new String[0],
-                JUSTIFICATION_HEADING,
-                JUSTIFICATION_PLACEHOLDER);
-        mExtensionInstallDialogBridge.showDialog();
+        mExtensionInstallDialogBridge.withJustification(
+                JUSTIFICATION_HEADING, JUSTIFICATION_PLACEHOLDER);
+        buildAndShowDialog();
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
         View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
 
@@ -244,7 +235,7 @@ public class ExtensionInstallDialogBridgeTest {
     @Test
     @SmallTest
     public void testOnAcceptButtonClicked() throws Exception {
-        mExtensionInstallDialogBridge.showDialog();
+        buildAndShowDialog();
 
         mModalDialogManager.clickPositiveButton();
 
@@ -261,7 +252,7 @@ public class ExtensionInstallDialogBridgeTest {
     @Test
     @SmallTest
     public void testOnCancelButtonClicked() throws Exception {
-        mExtensionInstallDialogBridge.showDialog();
+        buildAndShowDialog();
 
         mModalDialogManager.clickNegativeButton();
 
@@ -276,7 +267,7 @@ public class ExtensionInstallDialogBridgeTest {
     @Test
     @SmallTest
     public void testOnDialogDismissed() throws Exception {
-        mExtensionInstallDialogBridge.showDialog();
+        buildAndShowDialog();
 
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         Assert.assertNotNull(model);

@@ -44,6 +44,7 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
     private final Context mContext;
     private final PropertyModel.Builder mPropertyModelBuilder;
     private @Nullable PropertyModel mDialogModel;
+    private @Nullable View mContentView;
     private @Nullable TextInputEditText mJustificationInputText;
 
     @VisibleForTesting
@@ -78,7 +79,7 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
     }
 
     /**
-     * Adds title and buttons to the dialog's property model.
+     * Finalizes the dialog construction.
      *
      * @param title Text for the title.
      * @param iconBitmap Icon for the title.
@@ -86,7 +87,7 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
      * @param cancelButtonLabel Label for the negative button which acts as the cancel button.
      */
     @CalledByNative
-    public void withTitleAndButtons(
+    public void buildDialog(
             String title, Bitmap iconBitmap, String acceptButtonLabel, String cancelButtonLabel) {
         Drawable iconDrawable = new BitmapDrawable(mContext.getResources(), iconBitmap);
         mPropertyModelBuilder
@@ -94,86 +95,89 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
                 .with(ModalDialogProperties.TITLE_ICON, iconDrawable)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, acceptButtonLabel)
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, cancelButtonLabel);
+
+        if (mContentView != null) {
+            mPropertyModelBuilder
+                    .with(ModalDialogProperties.CUSTOM_VIEW, mContentView)
+                    .with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true);
+        }
     }
 
     /**
-     * Adds the custom view container with permissions and/or justifications to the dialog's
-     * property model.
+     * Populates the permissions section of the dialog.
      *
-     * @param heading Optional text for the permissions heading
-     * @param permissionsText List of permissions information.
-     * @param permissionsDetails List of permissions details, which may be empty.
-     * @param heading Optional text for the justifications heading.
-     * @param placeholderText Optional text for the justifications text area placeholder.
+     * @param permissionsHeading The heading text for the permissions section.
+     * @param permissionsText An array of strings describing the specific permissions requested.
+     * @param permissionsDetails An array of strings providing optional details for each permission.
      */
     @CalledByNative
-    public void withCustomView(
-            String permissionsHeading,
-            String[] permissionsText,
-            String[] permissionsDetails,
-            String justificationHeading,
-            String justificationPlaceholderText) {
-        View contentView =
-                LayoutInflater.from(mContext).inflate(R.layout.extension_install_dialog, null);
+    public void withPermissions(
+            String permissionsHeading, String[] permissionsText, String[] permissionsDetails) {
+        View contentView = getContentView();
         LinearLayout scrollViewContainer = contentView.findViewById(R.id.scroll_view_container);
 
-        if (permissionsHeading.length() > 0) {
-            LinearLayout permissionsContainer =
-                    scrollViewContainer.findViewById(R.id.permissions_container);
-            TextView permissionsHeadingView =
-                    permissionsContainer.findViewById(R.id.permissions_heading);
-            permissionsHeadingView.setText(permissionsHeading);
+        LinearLayout permissionsContainer =
+                scrollViewContainer.findViewById(R.id.permissions_container);
+        permissionsContainer.setVisibility(View.VISIBLE);
 
-            LayoutInflater inflater = LayoutInflater.from(mContext);
-            for (String permissionText : permissionsText) {
-                TextViewWithLeading permissionTextView =
-                        (TextViewWithLeading)
-                                inflater.inflate(
-                                        R.layout.modal_dialog_paragraph_view,
-                                        permissionsContainer,
-                                        false);
-                permissionTextView.setText(permissionText);
-                permissionsContainer.addView(permissionTextView);
-                // TODO(crbug.com/424010795): Add permissionsDetails as a collapsible view, if
-                // existent.
-            }
+        TextView permissionsHeadingView =
+                permissionsContainer.findViewById(R.id.permissions_heading);
+        permissionsHeadingView.setText(permissionsHeading);
 
-            permissionsContainer.setVisibility(View.VISIBLE);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        for (String permissionText : permissionsText) {
+            TextViewWithLeading permissionTextView =
+                    (TextViewWithLeading)
+                            inflater.inflate(
+                                    R.layout.modal_dialog_paragraph_view,
+                                    permissionsContainer,
+                                    false);
+            permissionTextView.setText(permissionText);
+            permissionsContainer.addView(permissionTextView);
+            // TODO(crbug.com/424010795): Add permissionsDetails as a collapsible view, if
+            // existent.
         }
+    }
 
-        if (justificationHeading.length() > 0) {
-            LinearLayout justificationContainer =
-                    scrollViewContainer.findViewById(R.id.justification_container);
-            TextView justificationHeadingView =
-                    justificationContainer.findViewById(R.id.justification_heading);
-            justificationHeadingView.setText(justificationHeading);
+    /**
+     * Populates the justification request section of the dialog.
+     *
+     * @param justificationHeading The heading text for the justification section.
+     * @param justificationPlaceholderText The hint text displayed inside the input field.
+     */
+    @CalledByNative
+    public void withJustification(
+            String justificationHeading, String justificationPlaceholderText) {
+        View contentView = getContentView();
+        LinearLayout scrollViewContainer = contentView.findViewById(R.id.scroll_view_container);
 
-            TextInputLayout justificationInputLayout =
-                    justificationContainer.findViewById(R.id.justification_input_layout);
-            justificationInputLayout.setHint(justificationPlaceholderText);
+        LinearLayout justificationContainer =
+                scrollViewContainer.findViewById(R.id.justification_container);
+        justificationContainer.setVisibility(View.VISIBLE);
 
-            mJustificationInputText =
-                    justificationContainer.findViewById(R.id.justification_input_text);
-            mJustificationInputText.addTextChangedListener(
-                    new EmptyTextWatcher() {
-                        @Override
-                        public void afterTextChanged(Editable s) {
-                            int maxInputLength =
-                                    mContext.getResources()
-                                            .getInteger(
-                                                    R.integer
-                                                            .extension_install_dialog_justification_max_input);
-                            boolean isTextTooLong = s.length() > maxInputLength;
-                            setPositiveButtonDisabled(isTextTooLong);
-                        }
-                    });
+        TextView justificationHeadingView =
+                justificationContainer.findViewById(R.id.justification_heading);
+        justificationHeadingView.setText(justificationHeading);
 
-            justificationContainer.setVisibility(View.VISIBLE);
-        }
+        TextInputLayout justificationInputLayout =
+                justificationContainer.findViewById(R.id.justification_input_layout);
+        justificationInputLayout.setHint(justificationPlaceholderText);
 
-        mPropertyModelBuilder
-                .with(ModalDialogProperties.CUSTOM_VIEW, contentView)
-                .with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true);
+        mJustificationInputText =
+                justificationContainer.findViewById(R.id.justification_input_text);
+        mJustificationInputText.addTextChangedListener(
+                new EmptyTextWatcher() {
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        int maxInputLength =
+                                mContext.getResources()
+                                        .getInteger(
+                                                R.integer
+                                                        .extension_install_dialog_justification_max_input);
+                        boolean isTextTooLong = s.length() > maxInputLength;
+                        setPositiveButtonDisabled(isTextTooLong);
+                    }
+                });
     }
 
     /** Shows the extension install dialog. */
@@ -226,6 +230,15 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
         if (mDialogModel == null) return;
 
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, disabled);
+    }
+
+    /** Returns the content view for the dialog, inflating it if necessary. */
+    private View getContentView() {
+        if (mContentView == null) {
+            mContentView =
+                    LayoutInflater.from(mContext).inflate(R.layout.extension_install_dialog, null);
+        }
+        return mContentView;
     }
 
     @NativeMethods

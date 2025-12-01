@@ -110,59 +110,53 @@ void ExtensionInstallDialogViewAndroid::Destroy(JNIEnv* env) {
 void ExtensionInstallDialogViewAndroid::BuildPropertyModel() {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  Java_ExtensionInstallDialogBridge_withTitleAndButtons(
-      env, java_object_,
-      ConvertUTF16ToJavaString(env, prompt_->GetDialogTitle()),
-      gfx::ConvertToJavaBitmap(prompt_->icon().AsBitmap()),
-      ConvertUTF16ToJavaString(env, prompt_->GetAcceptButtonLabel()),
-      ConvertUTF16ToJavaString(env, prompt_->GetAbortButtonLabel()));
-
   bool has_permissions = prompt_->GetPermissionCount() > 0;
-  bool requires_justification =
-      prompt_->type() ==
-      ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT;
-
-  // Dialog doesn't have a custom view if there are no permissions or doesn't
-  // require justification.
-  if (!has_permissions && !requires_justification) {
-    return;
-  }
-
-  std::u16string permissions_heading = std::u16string();
-  std::vector<std::u16string> permissions_text;
-  std::vector<std::u16string> permissions_details;
   if (has_permissions) {
-    permissions_heading = prompt_->GetPermissionsHeading();
+    std::u16string permissions_heading = prompt_->GetPermissionsHeading();
+    std::vector<std::u16string> permissions_text;
+    std::vector<std::u16string> permissions_details;
+
     auto permissions = prompt_->GetPermissions();
     for (size_t i = 0; i < permissions.permissions.size(); ++i) {
       permissions_text.push_back(permissions.permissions[i]);
       permissions_details.push_back(permissions.details[i]);
     }
+
+    ScopedJavaLocalRef<jstring> java_permissions_heading =
+        ConvertUTF16ToJavaString(env, permissions_heading);
+    ScopedJavaLocalRef<jobjectArray> java_permissions_text_array =
+        base::android::ToJavaArrayOfStrings(env, permissions_text);
+    ScopedJavaLocalRef<jobjectArray> java_permissions_details_array =
+        base::android::ToJavaArrayOfStrings(env, permissions_details);
+    Java_ExtensionInstallDialogBridge_withPermissions(
+        env, java_object_, java_permissions_heading,
+        java_permissions_text_array, java_permissions_details_array);
   }
 
-  std::u16string justification_heading = std::u16string();
-  std::u16string justification_placeholder = std::u16string();
+  bool requires_justification =
+      prompt_->type() ==
+      ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT;
   if (requires_justification) {
-    justification_heading = l10n_util::GetStringUTF16(
+    std::u16string justification_heading = l10n_util::GetStringUTF16(
         IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION);
-    justification_placeholder = l10n_util::GetStringUTF16(
+    std::u16string justification_placeholder = l10n_util::GetStringUTF16(
         IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION_PLACEHOLDER);
+
+    ScopedJavaLocalRef<jstring> java_justification_heading =
+        ConvertUTF16ToJavaString(env, justification_heading);
+    ScopedJavaLocalRef<jstring> java_justification_placeholder =
+        ConvertUTF16ToJavaString(env, justification_placeholder);
+    Java_ExtensionInstallDialogBridge_withJustification(
+        env, java_object_, java_justification_heading,
+        java_justification_placeholder);
   }
 
-  ScopedJavaLocalRef<jstring> java_permissions_heading =
-      ConvertUTF16ToJavaString(env, permissions_heading);
-  ScopedJavaLocalRef<jobjectArray> java_permissions_text_array =
-      base::android::ToJavaArrayOfStrings(env, permissions_text);
-  ScopedJavaLocalRef<jobjectArray> java_permissions_details_array =
-      base::android::ToJavaArrayOfStrings(env, permissions_details);
-  ScopedJavaLocalRef<jstring> java_justification_heading =
-      ConvertUTF16ToJavaString(env, justification_heading);
-  ScopedJavaLocalRef<jstring> java_justification_placeholder =
-      ConvertUTF16ToJavaString(env, justification_placeholder);
-  Java_ExtensionInstallDialogBridge_withCustomView(
-      env, java_object_, java_permissions_heading, java_permissions_text_array,
-      java_permissions_details_array, java_justification_heading,
-      java_justification_placeholder);
+  Java_ExtensionInstallDialogBridge_buildDialog(
+      env, java_object_,
+      ConvertUTF16ToJavaString(env, prompt_->GetDialogTitle()),
+      gfx::ConvertToJavaBitmap(prompt_->icon().AsBitmap()),
+      ConvertUTF16ToJavaString(env, prompt_->GetAcceptButtonLabel()),
+      ConvertUTF16ToJavaString(env, prompt_->GetAbortButtonLabel()));
 }
 
 }  // namespace extensions
