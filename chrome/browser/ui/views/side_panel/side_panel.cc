@@ -398,17 +398,19 @@ SidePanel::SidePanel(BrowserView* browser_view,
 
   animation_coordinator_ =
       std::make_unique<SidePanelAnimationCoordinator>(this);
-  animation_coordinator_->AddObserver(kSidePanelBoundsAnimation, this);
   animation_coordinator_->AddObserver(
       SidePanelAnimationCoordinator::AnimationType::kOpen, this);
   animation_coordinator_->AddObserver(
       SidePanelAnimationCoordinator::AnimationType::kClose, this);
-  animation_coordinator_->AddObserver(kSidePanelContentOpacityAnimation, this);
-  animation_coordinator_->AddObserver(kSidePanelContentCornerRadiusAnimation,
-                                      this);
   animation_coordinator_->AddObserver(
       SidePanelAnimationCoordinator::AnimationType::kOpenWithContentTransition,
       this);
+
+  animation_coordinator_->AddObserver(kSidePanelBoundsAnimation, this);
+
+  animation_coordinator_->AddObserver(kSidePanelContentOpacityAnimation, this);
+  animation_coordinator_->AddObserver(kSidePanelContentCornerRadiusAnimation,
+                                      this);
 
   SetVisible(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -425,22 +427,20 @@ SidePanel::SidePanel(BrowserView* browser_view,
 }
 
 SidePanel::~SidePanel() {
-  animation_coordinator_->RemoveObserver(kSidePanelBoundsAnimation, this);
   animation_coordinator_->RemoveObserver(
       SidePanelAnimationCoordinator::AnimationType::kOpen, this);
   animation_coordinator_->RemoveObserver(
       SidePanelAnimationCoordinator::AnimationType::kClose, this);
+  animation_coordinator_->RemoveObserver(
+      SidePanelAnimationCoordinator::AnimationType::kOpenWithContentTransition,
+      this);
 
-  if (type_ == SidePanelEntry::PanelType::kToolbar) {
-    animation_coordinator_->RemoveObserver(kSidePanelContentOpacityAnimation,
-                                           this);
-    animation_coordinator_->RemoveObserver(
-        kSidePanelContentCornerRadiusAnimation, this);
-    animation_coordinator_->RemoveObserver(
-        SidePanelAnimationCoordinator::AnimationType::
-            kOpenWithContentTransition,
-        this);
-  }
+  animation_coordinator_->RemoveObserver(kSidePanelBoundsAnimation, this);
+
+  animation_coordinator_->RemoveObserver(kSidePanelContentOpacityAnimation,
+                                         this);
+  animation_coordinator_->RemoveObserver(kSidePanelContentCornerRadiusAnimation,
+                                         this);
 }
 
 void SidePanel::SetPanelWidth(int width) {
