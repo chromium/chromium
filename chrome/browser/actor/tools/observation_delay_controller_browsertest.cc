@@ -17,7 +17,6 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,11 +57,6 @@ class ObservationDelayControllerTest : public ObservationDelayTest {
 // moves the controller to wait on the load.
 IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
                        NavigateDuringPageStabilization) {
-  // TODO(b/447664500): Remove when fixed.
-  content::DisableBackForwardCacheForTesting(
-      web_contents(), content::BackForwardCache::DisableForTestingReason::
-                          TEST_REQUIRES_NO_CACHING);
-
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
@@ -126,11 +120,6 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
 
 // Test waiting on a new document load after waiting for the page to stabilize.
 IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest, LoadAfterStability) {
-  // TODO(b/447664500): Remove when fixed.
-  content::DisableBackForwardCacheForTesting(
-      web_contents(), content::BackForwardCache::DisableForTestingReason::
-                          TEST_REQUIRES_NO_CACHING);
-
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
