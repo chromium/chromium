@@ -260,6 +260,13 @@ void ModulesInitializer::InstallSupplements(LocalFrame& frame) const {
   InspectorAccessibilityAgent::ProvideTo(&frame);
   ImageDownloaderImpl::ProvideTo(frame);
   AudioRendererSinkCache::InstallWindowObserver(*frame.DomWindow());
+#if DCHECK_IS_ON()
+  if (frame.IsLocalRoot() &&
+      RuntimeEnabledFeatures::AIPageContentBuildOnLoadForTestingEnabled()) {
+    AIPageContentAgent::EnableAutomaticActionableExtractionOnPageLoadForTesting(
+        frame);
+  }
+#endif
 }
 
 MediaControls* ModulesInitializer::CreateMediaControls(
