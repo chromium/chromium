@@ -90,6 +90,9 @@ class WalletablePassIngestionController {
 
  private:
   friend class WalletablePassIngestionControllerTestApi;
+  void MaybeStartExtraction(
+      const GURL& url,
+      optimization_guide::proto::PassCategory pass_category);
 
   // Callback for when the annotated page content is available.
   void OnGetAnnotatedPageContent(

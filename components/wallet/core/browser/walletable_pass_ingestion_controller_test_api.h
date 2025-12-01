@@ -55,6 +55,12 @@ class WalletablePassIngestionControllerTestApi {
     controller_->ShowSaveBubble(url, std::move(walletable_pass));
   }
 
+  void MaybeStartExtraction(
+      const GURL& url,
+      optimization_guide::proto::PassCategory pass_category) {
+    controller_->MaybeStartExtraction(url, pass_category);
+  }
+
  private:
   const raw_ref<WalletablePassIngestionController> controller_;
 };

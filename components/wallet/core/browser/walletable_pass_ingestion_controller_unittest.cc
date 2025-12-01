@@ -492,18 +492,21 @@ TEST_F(WalletablePassIngestionControllerTest,
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
-       ShowSaveBubble_StrikesExceed_BubbleNotShown) {
+       MaybeStartExtraction_StrikesExceed_ExtractionNotStarted) {
   GURL url("https://example.com");
-  WalletablePass walletable_pass = CreateLoyaltyCard();
   test_strike_database().SetStrikeData(
       "WalletablePassSaveByHost__LoyaltyCard;example.com", 3);
 
-  EXPECT_CALL(mock_client(),
-              ShowWalletablePassSaveBubble(EqualsProto(walletable_pass), _))
-      .Times(0);
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent).Times(0);
 
-  test_api(controller())
-      .ShowSaveBubble(url, std::make_unique<WalletablePass>(walletable_pass));
+  test_api(controller()).MaybeStartExtraction(url, PASS_CATEGORY_LOYALTY_CARD);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       MaybeStartExtraction_NoStrikes_ExtractionStarted) {
+  GURL url("https://example.com");
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent);
+  test_api(controller()).MaybeStartExtraction(url, PASS_CATEGORY_LOYALTY_CARD);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,

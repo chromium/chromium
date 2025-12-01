@@ -22,19 +22,37 @@ using optimization_guide::proto::WalletablePass;
 using enum WalletablePassClient::WalletablePassBubbleResult;
 using enum optimization_guide::proto::PassCategory;
 
-std::string GetWalletablePassCategory(const WalletablePass& walletable_pass) {
+PassCategory GetPassCategory(const WalletablePass& walletable_pass) {
   switch (walletable_pass.pass_case()) {
     case WalletablePass::kLoyaltyCard:
-      return "LoyaltyCard";
+      return PASS_CATEGORY_LOYALTY_CARD;
     case WalletablePass::kEventPass:
-      return "EventPass";
+      return PASS_CATEGORY_EVENT_PASS;
     case WalletablePass::kTransitTicket:
-      return "TransitTicket";
+      return PASS_CATEGORY_TRANSIT_TICKET;
     case WalletablePass::PASS_NOT_SET:
     default:
       // Should be handled by the caller before this function is invoked.
       NOTREACHED();
   }
+}
+
+std::string GetPassCategoryString(PassCategory pass_category) {
+  switch (pass_category) {
+    case PASS_CATEGORY_LOYALTY_CARD:
+      return "LoyaltyCard";
+    case PASS_CATEGORY_EVENT_PASS:
+      return "EventPass";
+    case PASS_CATEGORY_TRANSIT_TICKET:
+      return "TransitTicket";
+    case PASS_CATEGORY_UNSPECIFIED:
+    default:
+      NOTREACHED();
+  }
+}
+
+std::string GetPassCategoryString(const WalletablePass& walletable_pass) {
+  return GetPassCategoryString(GetPassCategory(walletable_pass));
 }
 
 }  // namespace
@@ -71,9 +89,7 @@ void WalletablePassIngestionController::StartWalletablePassDetectionFlow(
 
   if (GetWalletablePassDetectionOptInStatus(client_->GetPrefService(),
                                             client_->GetIdentityManager())) {
-    GetAnnotatedPageContent(base::BindOnce(
-        &WalletablePassIngestionController::OnGetAnnotatedPageContent,
-        weak_ptr_factory_.GetWeakPtr(), url, *pass_category));
+    MaybeStartExtraction(url, *pass_category);
     return;
   }
 
@@ -124,9 +140,7 @@ void WalletablePassIngestionController::OnGetConsentBubbleResult(
                                             client_->GetIdentityManager(),
                                             /*opt_in_status=*/true);
       consent_strike_db_->ClearStrikes();
-      GetAnnotatedPageContent(base::BindOnce(
-          &WalletablePassIngestionController::OnGetAnnotatedPageContent,
-          weak_ptr_factory_.GetWeakPtr(), url, pass_category));
+      MaybeStartExtraction(url, pass_category);
       break;
     case kDeclined:
     case kClosed:
@@ -142,6 +156,20 @@ void WalletablePassIngestionController::OnGetConsentBubbleResult(
       // TODO(crbug.com/452779539): Report other outcomes to UMA.
       break;
   }
+}
+
+void WalletablePassIngestionController::MaybeStartExtraction(
+    const GURL& url,
+    PassCategory pass_category) {
+  if (save_strike_db_->ShouldBlockFeature(
+          WalletablePassSaveStrikeDatabaseByHost::GetId(
+              GetPassCategoryString(pass_category), url.GetHost()))) {
+    // TODO(crbug.com/452779539): Report save bubble blocked to UMA
+    return;
+  }
+  GetAnnotatedPageContent(base::BindOnce(
+      &WalletablePassIngestionController::OnGetAnnotatedPageContent,
+      weak_ptr_factory_.GetWeakPtr(), url, pass_category));
 }
 
 void WalletablePassIngestionController::OnGetAnnotatedPageContent(
@@ -217,13 +245,7 @@ void WalletablePassIngestionController::OnExtractWalletablePass(
 void WalletablePassIngestionController::ShowSaveBubble(
     const GURL& url,
     std::unique_ptr<WalletablePass> walletable_pass) {
-  const std::string category = GetWalletablePassCategory(*walletable_pass);
-  if (save_strike_db_->ShouldBlockFeature(
-          WalletablePassSaveStrikeDatabaseByHost::GetId(category,
-                                                        url.GetHost()))) {
-    // TODO(crbug.com/452779539): Report save bubble blocked to UMA
-    return;
-  }
+  const std::string category = GetPassCategoryString(*walletable_pass);
 
   WalletablePass* pass_ptr = walletable_pass.get();
   client_->ShowWalletablePassSaveBubble(
@@ -237,7 +259,7 @@ void WalletablePassIngestionController::OnGetSaveBubbleResult(
     const GURL& url,
     std::unique_ptr<WalletablePass> walletable_pass,
     WalletablePassClient::WalletablePassBubbleResult result) {
-  const std::string category = GetWalletablePassCategory(*walletable_pass);
+  const std::string category = GetPassCategoryString(*walletable_pass);
   switch (result) {
     case kAccepted:
       // TODO(crbug.com/452579752): Save pass to Wallet.
