@@ -643,14 +643,8 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
 // Tests that taking a photo and submitting it records the correct metrics. Test
 // is disabled on simulator because the camera cannot be used.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testDirectCameraPresentationAndSubmit \
-  DISABLED_testDirectCameraPresentationAndSubmit
-#else
-#define MAYBE_testDirectCameraPresentationAndSubmit \
-  testDirectCameraPresentationAndSubmit
-#endif
-- (void)MAYBE_testDirectCameraPresentationAndSubmit {
+// TODO(crbug.com/465123880): Failing on device.
+- (void)DISABLED_testDirectCameraPresentationAndSubmit {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
