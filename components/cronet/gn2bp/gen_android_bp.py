@@ -306,14 +306,6 @@ cflag_allowlist = [
     "-fno-unwind-tables",
 ]
 
-# Linker flags which are passed through to the blueprint.
-ldflag_allowlist = [
-    # flags to reduce binary size
-    "-Wl,--as-needed",
-    "-Wl,--gc-sections",
-    "-Wl,--icf=all",
-]
-
 
 def get_linker_script_ldflag(script_path):
   return f'-Wl,--script,{tree_path}/{script_path}'
@@ -2698,13 +2690,74 @@ def _get_cpp_std(cflags: List[str]) -> Union[str, None]:
   return None
 
 
-def configure_cc_module(module, cflags, defines, ldflags, libs, main_module):
+def _extract_linker_script(ldflags):
+  new_ldflags = set()
+  linker_script = None
+  for flag in ldflags:
+    if flag.startswith("-Wl,--version-script="):
+      # Everything after the = is the path and delete all leading ../
+      linker_path = re.sub('^(\.\./)+', '', flag.split("=", maxsplit=2)[1])
+      assert linker_script is None, f"Found two different linker script for a single target! First script: {linker_script}, Second script: {linker_path}"
+      linker_script = linker_path
+    else:
+      new_ldflags.add(flag)
+  return new_ldflags, linker_script
+
+
+def _create_linker_script_filegroup(linker_script_path):
+  filegroup_name = linker_script_path.replace('/', '_').replace('.', '_')
+  filegroup_module = Module("filegroup", f"{filegroup_name}_filegroup",
+                            f"Created to reference {linker_script_path}")
+  filegroup_module.srcs = [linker_script_path]
+  # TODO(aymanm): Change the default for build_file_path to be top-level.
+  filegroup_module.build_file_path = ""
+  return filegroup_module
+
+
+def _is_allowed_ldflag(flag):
+  return all(not flag.startswith(denied_prefix) for denied_prefix in [
+      # Already applied by Soong according to module's attributes.
+      "--sysroot=",
+      # Already applied by Soong.
+      "--target=",
+      # Throws an error for some unknown reason?
+      "--unwindlib=",
+      # Tries to write to disk which is disallowed by Soong. It also
+      # simply controls the caching behaviour of thinLTO which is
+      # not essential.
+      "-Wl,--thinlto-cache-dir=",
+      # Controls the caching behaviour of thinLTO which is
+      # not essential.
+      "-Wl,--thinlto-cache-policy=",
+      # Controls the threading behaviour of thinLTO which is
+      # not essential.
+      "-Wl,--thinlto-jobs=",
+      # Applied by Soong by default
+      "-flto=",
+      # Throws an error currently because GNU_PROPERTY_AARCH64_FEATURE_1_BTI is
+      # not defined in some object files. This requires further investigation
+      # to enable. It's fine to disable for now as it has never been enabled in
+      # HttpEngine.
+      "-Wl,-z,force-bti",
+      # Soong handles this automatically based on the lunch options.
+      "-Wl,-z,max-page-size=",
+      # Let Soong handle the stripping of debug library according to the
+      # lunch configuration.
+      "-Wl,--strip-debug"
+  ])
+
+
+def configure_cc_module(module, cflags, defines, ldflags, libs, main_module,
+                        blueprint):
   module.cflags.extend(_get_cflags(cflags, defines))
-  module.ldflags.update({
-      flag
-      for flag in ldflags
-      if flag in ldflag_allowlist or flag.startswith("-Wl,-wrap,")
-  })
+  ldflags, linker_script = _extract_linker_script(ldflags)
+  module.ldflags.update({flag for flag in ldflags if _is_allowed_ldflag(flag)})
+  if linker_script:
+    # Unfortunately, Soong does not allow accessing linker scripts from parent
+    # path. So create a filegroup at the top-level Android.bp and reference it instead.
+    filegroup_module = _create_linker_script_filegroup(linker_script)
+    blueprint.add_module(filegroup_module)
+    module.version_script = f":{filegroup_module.name}"
   _set_linker_script(module, libs)
   for lib in libs:
     # Generally library names should be mangled as 'libXXX', unless they
@@ -2959,13 +3012,13 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
 
     if target.type in gn_utils.LINKER_UNIT_TYPES:
       configure_cc_module(module, target.cflags, target.defines, target.ldflags,
-                          target.libs, module)
+                          target.libs, module, blueprint)
       set_module_include_dirs(module, target.cflags, target.include_dirs)
       # TODO: set_module_xxx is confusing, apply similar function to module and target in better way.
       for arch_name, arch in target.get_archs().items():
         # TODO(aymanm): Make libs arch-specific.
         configure_cc_module(module.target[arch_name], arch.cflags, arch.defines,
-                            arch.ldflags, arch.libs, module)
+                            arch.ldflags, arch.libs, module, blueprint)
         # -Xclang -target-feature -Xclang +mte are used to enable MTE (Memory Tagging Extensions).
         # Flags which does not start with '-' could not be in the cflags so enabling MTE by
         # -march and -mcpu Feature Modifiers. MTE is only available on arm64. This is needed for
