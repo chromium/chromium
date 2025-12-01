@@ -75,6 +75,20 @@ public class IncognitoColors {
         return ColorUtils.setAlphaComponentWithFloat(colorOnSurface, /* alpha= */ 0.16f);
     }
 
+    /** {@see SemanticColorUtils#getDividerLineBgColor} */
+    public static @ColorInt int getDividerLineBgColor(Context context, boolean isIncognito) {
+        return isIncognito
+                ? context.getColor(R.color.divider_line_bg_color_light)
+                : SemanticColorUtils.getDividerLineBgColor(context);
+    }
+
+    /** Returns the correct text appearance style res for primary colored medium text. */
+    public static @StyleRes int getTextMediumPrimary(boolean isIncognito) {
+        return isIncognito
+                ? R.style.TextAppearance_TextMedium_Primary_Baseline_Light
+                : R.style.TextAppearance_TextMedium_Primary;
+    }
+
     /** Returns the correct text appearance style res for primary colored small text. */
     public static @StyleRes int getTextSmallPrimary(boolean isIncognito) {
         return isIncognito

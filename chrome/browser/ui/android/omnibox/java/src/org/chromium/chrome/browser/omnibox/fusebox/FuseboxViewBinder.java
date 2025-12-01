@@ -50,6 +50,11 @@ class FuseboxViewBinder {
             updateToolDrawables(model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE), view);
         } else if (propertyKey == FuseboxProperties.COLOR_SCHEME) {
             updateButtonsVisibilityAndStyling(model, view);
+            Context context = view.parentView.getContext();
+            @BrandedColorScheme int brandedColorScheme = model.get(FuseboxProperties.COLOR_SCHEME);
+            Drawable background =
+                    OmniboxResourceProvider.getPopupBackgroundDrawable(context, brandedColorScheme);
+            view.popup.mPopupWindow.setBackgroundDrawable(background);
         } else if (propertyKey == FuseboxProperties.COMPACT_UI) {
             reanchorViewsForCompactFusebox(model, view);
         } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
@@ -228,8 +233,7 @@ class FuseboxViewBinder {
                 startDrawable = context.getDrawable(R.drawable.create_image_24dp);
                 endDrawable = assumeNonNull(context.getDrawable(R.drawable.btn_close)).mutate();
                 endDrawable.setTint(
-                        OmniboxResourceProvider.getImageGenIconTintColor(
-                                context, brandedColorScheme));
+                        OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme));
             } else if (showTryAiModeHintInDedicatedModeButton) {
                 text = res.getString(R.string.ai_mode_entrypoint_hint);
                 description = text;
@@ -285,6 +289,24 @@ class FuseboxViewBinder {
         views.popup.mRequestTypeDivider.setVisibility(
                 isAiModeButtonVisible || isCreateImageButtonVisible ? View.VISIBLE : View.GONE);
         views.popup.mFileButton.setEnabled(!isImageGenerationUsed);
+
+        @StyleRes
+        int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
+        ColorStateList iconTint =
+                ColorStateList.valueOf(
+                        OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme));
+        for (Button button : views.popup.mButtons) {
+            button.setTextAppearance(textAppearance);
+            // Tints directly applied to drawables will take precedence over this tint.
+            button.setCompoundDrawableTintList(iconTint);
+        }
+
+        @ColorInt
+        int dividerLineColor =
+                OmniboxResourceProvider.getPopupDividerLineColor(context, brandedColorScheme);
+        for (View divider : views.popup.mDividers) {
+            divider.setBackgroundColor(dividerLineColor);
+        }
     }
 
     static void reanchorViewsForCompactFusebox(PropertyModel model, FuseboxViewHolder views) {

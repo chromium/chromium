@@ -1031,6 +1031,11 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         mAllowNonTouchableSize = allowNonTouchableSize;
     }
 
+    /** Changes the background at runtime. */
+    public void setBackgroundDrawable(Drawable background) {
+        mPopupWindow.setBackgroundDrawable(background);
+    }
+
     // RectProvider.Observer implementation.
     @Override
     public void onRectChanged() {

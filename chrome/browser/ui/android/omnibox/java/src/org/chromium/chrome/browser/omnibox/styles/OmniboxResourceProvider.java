@@ -688,7 +688,7 @@ public class OmniboxResourceProvider {
     }
 
     /** Resolves the icon tint to be used for secondary image gen icons, not the banana. */
-    public static @ColorInt int getImageGenIconTintColor(
+    public static @ColorInt int getDefaultIconColor(
             Context context, @BrandedColorScheme int brandedColorScheme) {
         boolean isIncognito =
                 convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
@@ -719,6 +719,14 @@ public class OmniboxResourceProvider {
         return ChromeColors.getPrimaryIconTint(context, isIncognito);
     }
 
+    /** Resolves the icon tint color for the icons that should be vivid, such as the + button. */
+    public static @ColorInt int getPopupDividerLineColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getDividerLineBgColor(context, isIncognito);
+    }
+
     /** Resolves the text appearance for the image gen chip. */
     public static @StyleRes int getImageGenButtonTextRes(
             @BrandedColorScheme int brandedColorScheme) {
@@ -741,6 +749,13 @@ public class OmniboxResourceProvider {
         return IncognitoColors.getTextSmallSecondary(isIncognito);
     }
 
+    /** Resolves the text appearance for menu items in the popup. */
+    public static @StyleRes int getPopupButtonTextRes(@BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getTextMediumPrimary(isIncognito);
+    }
+
     /** Returns the drawable that is to go behind the + button in the search box. */
     public static Drawable getSearchBoxIconBackground(
             Context context, @BrandedColorScheme int brandedColorScheme) {
@@ -751,6 +766,16 @@ public class OmniboxResourceProvider {
                 isIncognito
                         ? R.drawable.search_box_icon_background_opaque_incognito
                         : R.drawable.search_box_icon_background_opaque;
+        return getDrawable(context, resId);
+    }
+
+    /** Returns the drawable for the popup menu that shows menu items for context and tools. */
+    public static Drawable getPopupBackgroundDrawable(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        @DrawableRes
+        int resId = isIncognito ? R.drawable.menu_bg_tinted_on_dark_bg : R.drawable.menu_bg_tinted;
         return getDrawable(context, resId);
     }
 
