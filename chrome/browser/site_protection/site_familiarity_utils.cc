@@ -40,6 +40,12 @@ content_settings::JavascriptOptimizerSetting
 ComputeDefaultJavascriptOptimizerSetting(Profile* profile) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
+  if (!host_content_settings_map) {
+    // If there is no HostContentSettingsMap, assume that this is being called
+    // during the startup sequence for the profile picker. Return that
+    // JavaScript optimizers are allowed.
+    return content_settings::JavascriptOptimizerSetting::kAllowed;
+  }
   content_settings::ProviderType content_setting_provider;
   const auto default_content_setting =
       host_content_settings_map->GetDefaultContentSetting(

@@ -734,7 +734,7 @@ BASE_FEATURE(kPrivacySandboxAdsAPIsOverride, base::FEATURE_DISABLED_BY_DEFAULT);
 // the embedder to provide conditions that may delay the final process selection
 // until the conditions have their results.
 BASE_FEATURE(kProcessSelectionDeferringConditions,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables origin-keyed processes by default, unless origins opt out using
 // Origin-Agent-Cluster: ?0. This feature only takes effect if the Blink feature
