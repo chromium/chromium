@@ -153,11 +153,11 @@ bool ProcStatFile::IsValid() const {
 }
 
 bool ProcStatFile::IsPidAlive() {
-  char buf;
   // Reading procfs is not blocking.
   base::ScopedAllowBlocking allow_blocking;
   // If the process/thread dies, read(2)ing stat file fails as ESRCH.
-  return file_.IsValid() && file_.Read(0, &buf, 1) == 1;
+  std::array<uint8_t, 1> dummy;
+  return file_.IsValid() && file_.Read(0, dummy) == 1;
 }
 
 }  // namespace system
