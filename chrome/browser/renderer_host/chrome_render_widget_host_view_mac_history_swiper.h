@@ -9,13 +9,14 @@
 
 namespace blink {
 class WebGestureEvent;
-}
+}  // namespace blink
 
 namespace ui {
 struct DidOverscrollParams;
-}
+}  // namespace ui
 
 namespace history_swiper {
+
 enum NavigationDirection {
   kBackwards = 0,
   kForwards,
@@ -47,7 +48,8 @@ enum RecognitionState {
   // Events are forwarded to the renderer.
   kCancelled,
 };
-} // history_swiper
+
+}  // namespace history_swiper
 
 @protocol HistorySwiperDelegate
 // Return NO from this method if the view/render_widget_host should not
