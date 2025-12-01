@@ -74,6 +74,12 @@ bool IsCallbackFunctionRunnableInternal(
          incumbent_execution_context->CanExecuteScripts(kAboutToExecuteScript);
 }
 
+String FormatInvalidEnumValueMessage(StringView value,
+                                     const char* enum_type_name) {
+  return StrCat({"The provided value '", value,
+                 "' is not a valid enum value of type ", enum_type_name, "."});
+}
+
 }  // namespace
 
 bool IsCallbackFunctionRunnable(
@@ -217,8 +223,7 @@ std::optional<size_t> FindIndexInEnumStringTable(
 
   if (!index.has_value()) [[unlikely]] {
     exception_state.ThrowTypeError(
-        StrCat({"The provided value '", str_value,
-                "' is not a valid enum value of type ", enum_type_name, "."}));
+        FormatInvalidEnumValueMessage(str_value, enum_type_name));
   }
   return index;
 }
@@ -237,18 +242,14 @@ std::optional<size_t> FindIndexInEnumStringTable(
 
 void ReportInvalidEnumSetToAttribute(v8::Isolate* isolate,
                                      const String& value,
-                                     const String& enum_type_name,
+                                     const char* enum_type_name,
                                      ExceptionState& exception_state) {
   ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
-
-  String message =
-      StrCat({"The provided value '", value,
-              "' is not a valid enum value of type ", enum_type_name, "."});
-
   execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,
-      mojom::blink::ConsoleMessageLevel::kWarning, message,
+      mojom::blink::ConsoleMessageLevel::kWarning,
+      FormatInvalidEnumValueMessage(value, enum_type_name),
       CaptureSourceLocation(execution_context)));
 }
 
