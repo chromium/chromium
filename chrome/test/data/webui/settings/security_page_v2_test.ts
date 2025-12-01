@@ -11,7 +11,7 @@ import type {ControlledRadioButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, Router, routes, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 
@@ -49,7 +49,7 @@ suite('Main', function() {
 
     // Click on Enhanced bundle.
     page.$.securitySettingsBundleEnhanced.click();
-    await microtasksFinished();
+    await flushTasks();
     assertEquals(
         SecuritySettingsBundleSetting.ENHANCED,
         page.prefs.generated.security_settings_bundle.value);
@@ -66,13 +66,13 @@ suite('Main', function() {
     // Click on the expand button, expands content and we can see the radio
     // group.
     expandButton.click();
-    await microtasksFinished();
+    await flushTasks();
     assertTrue(isChildVisible(page, '#safeBrowsingRadioGroup'));
 
     // Click on the expand button, collapses content and we can't see the radio
     // group.
     expandButton.click();
-    await microtasksFinished();
+    await flushTasks();
     assertFalse(isChildVisible(page, '#safeBrowsingRadioGroup', true));
   });
 
@@ -276,7 +276,6 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
             '#expandButton')!;
     expandButton.click();
     await flushTasks();
-    await microtasksFinished();
 
     const radioGroup =
         page.shadowRoot!.querySelector<HTMLElement>('#safeBrowsingRadioGroup');
