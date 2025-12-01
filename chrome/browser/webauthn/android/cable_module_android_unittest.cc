@@ -39,7 +39,7 @@ constexpr uint8_t kCBOR[] = {
     0x20, 0x36, 0x61, 0x19, 0x03, 0xe7, 0xf5,
 };
 
-}
+}  // namespace
 
 TEST(CableModuleAndroidTest, PaaskInfoFromCBOR) {
   // This CBOR was captured from Play Services.
