@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Retaining window.name on history traversal
-  assert_equals: expected 2 but got 1
-Harness: the test ran to completion.
-

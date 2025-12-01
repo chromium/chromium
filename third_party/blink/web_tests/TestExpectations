@@ -66,7 +66,7 @@ crbug.com/447125474 virtual/content-extraction/css3/filters/nested-filter.html [
 crbug.com/447125474 virtual/content-extraction/fast/dom/HTMLObjectElement/update-data.html [ Crash Timeout ]
 crbug.com/447125474 virtual/content-extraction/fast/dynamic/position-change-to-absolute-with-positioned-child-crash.html [ Crash Timeout ]
 crbug.com/447125474 virtual/content-extraction/fast/events/touch/touch-rect-assert-first-layer-special.html [ Crash Timeout ]
-crbug.com/447125474 virtual/content-extraction/fast/forms/datalist/input-appearance-range-with-transform.html [ Crash Timeout Failure Pass ]
+crbug.com/447125474 virtual/content-extraction/fast/forms/datalist/input-appearance-range-with-transform.html [ Crash Failure Pass Timeout ]
 crbug.com/447125474 virtual/content-extraction/fast/sub-pixel/sub-pixel-accumulates-to-layers.html [ Crash Timeout ]
 crbug.com/447125474 virtual/content-extraction/fast/sub-pixel/transformed-iframe-copy-on-scroll.html [ Crash Timeout ]
 crbug.com/447125474 virtual/content-extraction/paint/invalidation/compositing/subpixel-offset-scaled-will-change-transform.html [ Crash Timeout ]
@@ -9953,7 +9953,7 @@ crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsap
 crbug.com/463661453 [ Mac ] virtual/threaded/wpt_internal/scheduler/integration_tests/rendering-starvation.html [ Failure Pass ]
 
 # Gardener 2025-11-27
-crbug.com/464191951 [ Mac ] http/tests/devtools/elements/inspect-pointer-events-none.js [ Timeout Pass ]
+crbug.com/464191951 [ Mac ] http/tests/devtools/elements/inspect-pointer-events-none.js [ Pass Timeout ]
 crbug.com/464220937 [ Mac ] http/tests/devtools/elements/inspect-pseudo-element.js [ Failure Pass ]
 
 # Gardener 2025-11-28

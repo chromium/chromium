@@ -3,7 +3,17 @@ This is a testharness.js-based test.
   assert_equals: expected (string) "" but got (undefined) undefined
 [FAIL] Serializing a ShadowRoot with a null registry
   assert_equals: expected "<div><template shadowrootmode=\\"open\\" shadowrootserializable=\\"\\" shadowrootcustomelementregistry=\\"\\"></template></div>" but got "<div><template shadowrootmode=\\"open\\" shadowrootserializable=\\"\\"></template></div>"
-[FAIL] Serializing a ShadowRoot with a registry that differs from its host
+[FAIL] Serializing a ShadowRoot with a global registry
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] Serializing a ShadowRoot with a registry that differs from its host document
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Serializing a ShadowRoot with a null registry with a null registry host document
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Serializing a ShadowRoot with a registry with a null registry host document
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Serializing a ShadowRoot with a null registry with a scoped registry host document
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] A declarative shadow root gets its default registry from its node document
   Failed to construct 'CustomElementRegistry': Illegal constructor
 Harness: the test ran to completion.
 
