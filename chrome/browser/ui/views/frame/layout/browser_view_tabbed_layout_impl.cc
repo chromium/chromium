@@ -156,7 +156,7 @@ bool BrowserViewTabbedLayoutImpl::ShadowOverlayVisible() const {
   if (!views().toolbar_height_side_panel) {
     return false;
   }
-  return views().toolbar_height_side_panel->GetAnimationValue() > 0.0;
+  return views().toolbar_height_side_panel->GetVisible();
 }
 
 gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumSize(
