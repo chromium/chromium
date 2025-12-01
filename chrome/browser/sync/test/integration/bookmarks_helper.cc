@@ -35,6 +35,7 @@
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -474,13 +475,13 @@ void TriggerAllFaviconLoading(BookmarkModel* model) {
 
 std::unique_ptr<sync_bookmarks::BookmarkModelView> CreateBookmarkModelView(
     bookmarks::BookmarkModel* model,
-    syncer::SyncServiceImpl* service) {
-  if (service->HasSyncConsent()) {
-    return std::make_unique<
-        sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(model);
+    StoreType store_type) {
+  if (store_type == StoreType::kAccountStore) {
+    return std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
+        model);
   }
-  return std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
-      model);
+  return std::make_unique<
+      sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(model);
 }
 
 }  // namespace
@@ -495,12 +496,16 @@ BookmarkModel* GetBookmarkModel(int index) {
       sync_datatype_helper::test()->GetProfile(index));
 }
 
-const BookmarkNode* GetBookmarkBarNode(int index) {
-  return GetBookmarkModel(index)->bookmark_bar_node();
+const BookmarkNode* GetBookmarkBarNode(int index, StoreType store_type) {
+  return (store_type == StoreType::kAccountStore)
+             ? GetBookmarkModel(index)->account_bookmark_bar_node()
+             : GetBookmarkModel(index)->bookmark_bar_node();
 }
 
-const BookmarkNode* GetOtherNode(int index) {
-  return GetBookmarkModel(index)->other_node();
+const BookmarkNode* GetOtherNode(int index, StoreType store_type) {
+  return (store_type == StoreType::kAccountStore)
+             ? GetBookmarkModel(index)->account_other_node()
+             : GetBookmarkModel(index)->other_node();
 }
 
 const BookmarkNode* GetSyncedBookmarksNode(int index) {
@@ -515,15 +520,19 @@ const BookmarkNode* GetManagedNode(int index) {
 
 const BookmarkNode* AddURL(int profile,
                            const std::u16string& title,
-                           const GURL& url) {
-  return AddURL(profile, GetBookmarkBarNode(profile), 0, title, url);
+                           const GURL& url,
+                           StoreType store_type) {
+  return AddURL(profile, GetBookmarkBarNode(profile, store_type), 0, title,
+                url);
 }
 
 const BookmarkNode* AddURL(int profile,
                            size_t index,
                            const std::u16string& title,
-                           const GURL& url) {
-  return AddURL(profile, GetBookmarkBarNode(profile), index, title, url);
+                           const GURL& url,
+                           StoreType store_type) {
+  return AddURL(profile, GetBookmarkBarNode(profile, store_type), index, title,
+                url);
 }
 
 const BookmarkNode* AddURL(int profile,
@@ -1109,10 +1118,11 @@ BookmarksUuidChecker::~BookmarksUuidChecker() = default;
 BookmarkModelMatchesFakeServerChecker::BookmarkModelMatchesFakeServerChecker(
     bookmarks::BookmarkModel* model,
     syncer::SyncServiceImpl* service,
-    fake_server::FakeServer* fake_server)
+    fake_server::FakeServer* fake_server,
+    StoreType store_type)
     : SingleClientStatusChangeChecker(service),
       fake_server_(fake_server),
-      model_view_(CreateBookmarkModelView(model, service)) {}
+      model_view_(CreateBookmarkModelView(model, store_type)) {}
 
 BookmarkModelMatchesFakeServerChecker::
     ~BookmarkModelMatchesFakeServerChecker() = default;
