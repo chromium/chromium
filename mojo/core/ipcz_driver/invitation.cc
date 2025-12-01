@@ -304,6 +304,8 @@ MojoResult Invitation::Send(
   }
 
   if (num_attachments_ == 0 || max_attachment_index_ != num_attachments_ - 1) {
+    // The transport was created above but will not be used. Ensure it's closed.
+    ObjectBase::TakeFromHandle(transport);
     return MOJO_RESULT_FAILED_PRECONDITION;
   }
 

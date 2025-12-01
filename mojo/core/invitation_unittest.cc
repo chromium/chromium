@@ -30,6 +30,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
+#include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -55,6 +56,10 @@
 
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #include "base/apple/mach_port_rendezvous.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
 #endif
 
 namespace mojo {
@@ -1101,6 +1106,57 @@ DEFINE_TEST_CLIENT(MultiBrokerNetworkClient) {
   MojoClose(test_runner);
   MojoClose(secondary_broker);
 }
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
+TEST_F(MAYBE_InvitationTest, NoLeakOnFailedSend) {
+  if (!mojo::core::IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "This test is specific to the MojoIpcz driver.";
+  }
+
+  // Helper lambda to retrieve the number of open handles.
+  auto get_open_handle_count = []() {
+#if BUILDFLAG(IS_WIN)
+    DWORD handle_count = 0;
+    ::GetProcessHandleCount(::GetCurrentProcess(), &handle_count);
+    return static_cast<int>(handle_count);
+#else  // BUILDFLAG(IS_POSIX)
+    return base::ProcessMetrics::CreateCurrentProcessMetrics()
+        ->GetOpenFdCount();
+#endif
+  };
+
+  const int initial_count = get_open_handle_count();
+  const int iterations = 100;
+
+  for (int i = 0; i < iterations; i++) {
+    PlatformChannel channel;
+    MojoPlatformHandle endpoint_handle;
+    endpoint_handle.struct_size = sizeof(endpoint_handle);
+    PlatformHandle::ToMojoPlatformHandle(
+        channel.TakeLocalEndpoint().TakePlatformHandle(), &endpoint_handle);
+
+    MojoInvitationTransportEndpoint endpoint;
+    endpoint.struct_size = sizeof(endpoint);
+    endpoint.type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL;
+    endpoint.num_platform_handles = 1;
+    endpoint.platform_handles = &endpoint_handle;
+
+    MojoHandle invitation;
+    EXPECT_EQ(MOJO_RESULT_OK, MojoCreateInvitation(nullptr, &invitation));
+
+    // Send without attaching any pipes. This should fail.
+    EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
+              MojoSendInvitation(invitation, nullptr, &endpoint, nullptr, 0,
+                                 nullptr));
+    MojoClose(invitation);
+  }
+
+  // Check that we haven't leaked a handle for every iteration.
+  // We allow some margin for other threads / noise.
+  const int final_count = get_open_handle_count();
+  EXPECT_LT(final_count, initial_count + iterations / 2);
+}
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 
 }  // namespace
 }  // namespace core
