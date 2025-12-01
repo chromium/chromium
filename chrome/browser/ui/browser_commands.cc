@@ -573,11 +573,23 @@ void ReloadInternal(BrowserWindowInterface* browser,
                     WindowOpenDisposition disposition,
                     bool bypass_cache) {
   TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+  tabs::TabInterface* const active_tab = tab_strip_model->GetActiveTab();
   WebContents* const active_contents = tab_strip_model->GetActiveWebContents();
 
   std::vector<WebContents*> tabs_to_reload;
 
-  if (base::FeatureList::IsEnabled(features::kReloadSelectionModel)) {
+  // When using split view, both tabs composing the split view are considered
+  // selected by the `selection_model` and `selection_model().size()` returns 2;
+  // even though visually, both tabs are represented by a single UI tab in the
+  // tab strip. To detect whether the user has selected multiple UI tabs,
+  // compare the number of model selected tabs wither either 2 or 1 depending on
+  // whether the active tab is split.
+  bool multiple_ui_tabs_selected =
+      active_tab && tab_strip_model->selection_model().size() >
+                        (active_tab->IsSplit() ? 2 : 1);
+
+  if (base::FeatureList::IsEnabled(features::kReloadSelectionModel) &&
+      !multiple_ui_tabs_selected) {
     tabs_to_reload.push_back(active_contents);
   } else {
     // Reloading a tab may change the selection (see crbug.com/339061099), so
