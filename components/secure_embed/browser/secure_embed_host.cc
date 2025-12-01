@@ -76,29 +76,12 @@ void SecureEmbedHost::Attach(int64_t content_id) {
     return;
   }
 
-  if (!web_contents_to_attach->GetSecureEmbedConnector()) {
-    LOG(ERROR) << "WebContents doesn't have a SecureEmbedConnector";
-    return;
-  }
-
-  if (web_contents_to_attach->GetSecureEmbedConnector()->GetDelegate()) {
-    LOG(ERROR) << "WebContents already embedded by someone";
-    return;
-  }
-
-  if (!web_contents_to_attach->GetSecureEmbedConnector()
-           ->IsConfiguredToBeEmbeddedIn(
-               content::WebContents::FromRenderFrameHost(ParentFrame()))) {
-    LOG(ERROR) << "WebContents not configured to embed here";
-    return;
-  }
-
-  // TODO(secure-embed): Use web_contents_to_attach to complete the attachment.
-  LOG(INFO) << "Successfully retrieved WebContents for content_id: "
-            << content_id;
 
   know_have_focus_ = false;
   guest_contents_ = web_contents_to_attach->GetWeakPtr();
+  content::SecureEmbedConnector::Attach(
+      content::WebContents::FromRenderFrameHost(ParentFrame()),
+      web_contents_to_attach);
   auto* connector = GetConnector();
   connector->SetDelegate(this);
   if (web_contents_to_attach->IsCrashed()) {
@@ -106,6 +89,7 @@ void SecureEmbedHost::Attach(int64_t content_id) {
     // got chance to attach it.
     secure_embed_->ChildProcessGone();
   } else {
+    CHECK(connector->GetFrameSinkId().is_valid());
     secure_embed_->SetFrameSinkId(connector->GetFrameSinkId());
   }
 }

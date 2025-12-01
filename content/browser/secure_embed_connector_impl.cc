@@ -48,6 +48,18 @@ class SecureEmbedConnectorImpl::WCObserver : public WebContentsObserver {
   raw_ptr<SecureEmbedConnectorImpl> guest_frame_;
 };
 
+// static
+void SecureEmbedConnector::Attach(WebContents* parent_web_contents,
+                                  WebContents* child_web_contents) {
+  auto connector = std::make_unique<SecureEmbedConnectorImpl>(
+      static_cast<WebContentsImpl*>(parent_web_contents),
+      static_cast<WebContentsImpl*>(child_web_contents));
+  auto* connector_ptr = connector.get();
+  static_cast<WebContentsImpl*>(child_web_contents)
+      ->SetSecureEmbedConnector(std::move(connector));
+  connector_ptr->UpdateViewForCurrentRenderFrameHost();
+}
+
 SecureEmbedConnectorImpl::SecureEmbedConnectorImpl(
     WebContentsImpl* embedder_web_contents,
     WebContentsImpl* embedded_web_contents)
@@ -133,11 +145,6 @@ void SecureEmbedConnectorImpl::ClearFocusOnInnerWebContents() {
   static_cast<WebContentsImpl*>(
       embedder_web_contents_->GetOutermostWebContents())
       ->SetAsFocusedWebContentsIfNecessary();
-}
-
-bool SecureEmbedConnectorImpl::IsConfiguredToBeEmbeddedIn(
-    WebContents* web_contents) {
-  return embedder_web_contents_.get() == web_contents;
 }
 
 void SecureEmbedConnectorImpl::SetDelegate(

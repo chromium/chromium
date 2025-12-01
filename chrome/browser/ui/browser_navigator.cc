@@ -532,11 +532,6 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
     create_params.initially_hidden = true;
   }
 
-#if BUILDFLAG(ENABLE_SECURE_EMBED)
-  create_params.secure_embed_embedder =
-      params.browser->window()->GetSecureEmbedEmbedder();
-#endif
-
 #if defined(USE_AURA)
   if (params.browser->window() && params.browser->window()->GetNativeWindow()) {
     create_params.context = params.browser->window()->GetNativeWindow();

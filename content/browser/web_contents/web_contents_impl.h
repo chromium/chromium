@@ -1628,6 +1628,9 @@ class CONTENT_EXPORT WebContentsImpl
   // PassKey requirements.
   GURL GetPartitionedPopinEmbedderOriginForTesting() const;
 
+  void SetSecureEmbedConnector(
+      std::unique_ptr<content::SecureEmbedConnectorImpl> connector);
+
  private:
   using FrameTreeIterationCallback = base::FunctionRef<void(FrameTree&)>;
   using RenderViewHostIterationCallback =

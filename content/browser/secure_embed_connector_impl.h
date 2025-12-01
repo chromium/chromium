@@ -57,7 +57,6 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   void ClearFocusOnInnerWebContents();
 
   // SecureEmbedConnector:
-  bool IsConfiguredToBeEmbeddedIn(WebContents* web_contents) override;
   void SetDelegate(SecureEmbedConnector::Delegate* delegate) override;
   SecureEmbedConnector::Delegate* GetDelegate() override;
 
@@ -134,6 +133,10 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   input::RenderWidgetHostViewInput* GetParentViewInput() override;
   input::RenderWidgetHostViewInput* GetRootViewInput() override;
 
+  // Updates the `view_` member to track the current RenderWidgetHostView
+  // associated with the guest WebContents.
+  void UpdateViewForCurrentRenderFrameHost();
+
   void OnRenderViewReady();
 
  private:
@@ -148,10 +151,6 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   void UpdateViewportIntersectionInternal(
       const blink::mojom::ViewportIntersectionState& intersection_state,
       bool include_visual_properties);
-
-  // Updates the view_ member to track the current RenderWidgetHostView
-  // associated with the guest WebContents.
-  void UpdateViewForCurrentRenderFrameHost();
 
   // Get the RenderFrameHost for the embedded WebContents. This is similar to
   // the CrossProcessFrameConnectorBase::current_child_frame_host(), but adapted

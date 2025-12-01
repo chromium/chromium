@@ -98,6 +98,8 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
   DCHECK_EQ(1u, frame_count);
 #endif
 
+  // TODO(secure-embed): remove this. there is no SecureEmbedConnector
+  // at TabHelpers installation time.
   if (content::SecureEmbedConnector* connector =
           web_contents->GetSecureEmbedConnector()) {
     connector->AddObserver(this);

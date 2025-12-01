@@ -61,18 +61,15 @@ class CONTENT_EXPORT SecureEmbedConnector {
                                        WebContents* child_web_contents) = 0;
   };
 
+  // Attach a WebContents to a parent WebContents. This creates a
+  // SecureEmbedConnector owned by the child WebContents.
+  static void Attach(WebContents* parent_web_contents,
+                     WebContents* child_web_contents);
+
   virtual ~SecureEmbedConnector() = default;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
-
-  // Returns true if the WebContents this is owned by is configured to be
-  // embedded in `web_contents`.
-  //
-  // TODO(secure-embed): There needs to be a way of updating this for when
-  // tabs are moved between windows (including potentially an in-between
-  // windows detached tab state).
-  virtual bool IsConfiguredToBeEmbeddedIn(WebContents* web_contents) = 0;
 
   // Set by the embedder side to help communicate back to it.
   // This can switch between a value and null, but not two delegates.

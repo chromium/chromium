@@ -936,6 +936,81 @@ GURL WebContentsImpl::GetPartitionedPopinEmbedderOriginForTesting() const {
   return GetPartitionedPopinEmbedderOriginImpl();
 }
 
+void WebContentsImpl::SetSecureEmbedConnector(
+    std::unique_ptr<SecureEmbedConnectorImpl> connector) {
+  DCHECK(!node_.outer_web_contents());
+  secure_embed_connector_ = std::move(connector);
+
+  RenderFrameHostManager* inner_render_manager = GetRenderManager();
+  RenderFrameHostImpl* inner_main_frame =
+      inner_render_manager->current_frame_host();
+  RenderViewHostImpl* inner_render_view_host =
+      inner_main_frame->render_view_host();
+  RenderFrameHostImpl* inner_speculative_frame =
+      inner_render_manager->speculative_frame_host();
+  RenderViewHostImpl* inner_speculative_render_view_host =
+      inner_speculative_frame ? inner_speculative_frame->render_view_host()
+                              : nullptr;
+
+  // When attaching a WebContents as an inner WebContents, we need to replace
+  // the Webcontents' view with a WebContentsViewChildFrame.
+  view_ = std::make_unique<WebContentsViewChildFrame>(
+      this, GetContentClient()->browser()->GetWebContentsViewDelegate(this),
+      &render_view_host_delegate_view_);
+  // On platforms where destroying the WebContents' view does not also destroy
+  // the platform RenderWidgetHostView, we need to destroy it if it exists.
+  // TODO(mcnee): Should all platforms' WebContentsView destroy the platform
+  // RWHV?
+  if (RenderWidgetHostViewBase* prev_rwhv =
+          inner_render_manager->GetRenderWidgetHostView()) {
+    if (!prev_rwhv->IsRenderWidgetHostViewChildFrame()) {
+      prev_rwhv->Destroy();
+    }
+  }
+  // Do the same for speculative render frame host's view.
+  if (inner_speculative_frame) {
+    RenderWidgetHostViewBase* prev_speculative_rwhv =
+        static_cast<RenderWidgetHostViewBase*>(
+            inner_speculative_frame->GetView());
+    if (prev_speculative_rwhv &&
+        !prev_speculative_rwhv->IsRenderWidgetHostViewChildFrame()) {
+      prev_speculative_rwhv->Destroy();
+    }
+  }
+
+  // When the WebContents being initialized has not already navigated, the
+  // browser side Render{View,Frame}Host must be initialized and the
+  // RenderWidgetHostView created. This is needed because the usual
+  // initialization happens during the first navigation, but not all guest types
+  // navigate before attaching. If the browser side is already initialized, the
+  // calls below will just early return.
+  inner_render_manager->InitRenderView(
+      inner_main_frame->GetSiteInstance()->group(), inner_render_view_host,
+      /*proxy=*/nullptr, /*navigation_metrics_token=*/std::nullopt);
+  if (!inner_render_manager->GetRenderWidgetHostView()) {
+    CreateRenderWidgetHostViewForRenderManager(inner_render_view_host);
+  }
+  // Do the same for speculative render frame host.
+  if (inner_speculative_render_view_host) {
+    // TODO(secure-embed): do we need to call RegisterFrameSinkId() for the
+    // speculative frame's view as well? GuestContents does not seem to
+    // need it.
+    inner_render_manager->InitRenderView(
+        inner_speculative_frame->GetSiteInstance()->group(),
+        inner_speculative_render_view_host,
+        /*proxy=*/nullptr, /*navigation_metrics_token=*/std::nullopt);
+    RenderWidgetHostViewBase* speculative_rwhv =
+        static_cast<RenderWidgetHostViewBase*>(
+            inner_speculative_frame->GetView());
+    if (!speculative_rwhv) {
+      CreateRenderWidgetHostViewForRenderManager(
+          inner_speculative_render_view_host);
+    }
+  }
+
+  RecursivelyRegisterRenderWidgetHostViews();
+}
+
 GURL WebContentsImpl::GetPartitionedPopinEmbedderOriginImpl() const {
   // This should only be checked for popins.
   CHECK(IsPartitionedPopin());
@@ -3322,8 +3397,8 @@ void WebContentsImpl::AttachInnerWebContentsImpl(
   render_frame_host_impl->set_inner_tree_main_frame_tree_node_id(
       inner_main_frame->frame_tree_node()->frame_tree_node_id());
 
-  // When attaching a WebContents as an inner WebContents, we need to replace
-  // the Webcontents' view with a WebContentsViewChildFrame.
+  // When attaching a WebContents as an secure-embed child WebContents, we need
+  // to replace the Webcontents' view with a WebContentsViewChildFrame.
   inner_web_contents_impl->view_ = std::make_unique<WebContentsViewChildFrame>(
       inner_web_contents_impl,
       GetContentClient()->browser()->GetWebContentsViewDelegate(
@@ -4203,13 +4278,7 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   std::unique_ptr<WebContentsViewDelegate> delegate =
       GetContentClient()->browser()->GetWebContentsViewDelegate(this);
 
-  if (params.secure_embed_embedder) {
-    secure_embed_connector_ = std::make_unique<SecureEmbedConnectorImpl>(
-        static_cast<WebContentsImpl*>(params.secure_embed_embedder.get()),
-        this);
-  }
-
-  if (browser_plugin_guest_ || secure_embed_connector_) {
+  if (browser_plugin_guest_) {
     view_ = std::make_unique<WebContentsViewChildFrame>(
         this, std::move(delegate), &render_view_host_delegate_view_);
   } else {

@@ -135,15 +135,12 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
     ASSERT_TRUE(NavigateToURL(web_contents(), harness_url));
   }
 
-  // Create a guest WebContents configured for secure embed.
   std::unique_ptr<content::WebContents> CreateGuestWebContents() {
     content::WebContents::CreateParams create_params(
         shell()->web_contents()->GetBrowserContext());
-    create_params.secure_embed_embedder = shell()->web_contents();
     std::unique_ptr<content::WebContents> guest_contents =
         content::WebContents::Create(create_params);
     EXPECT_NE(guest_contents, nullptr);
-    EXPECT_NE(guest_contents->GetSecureEmbedConnector(), nullptr);
     return guest_contents;
   }
 
@@ -166,6 +163,7 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
         "createEmbed(" + base::NumberToString(guest_handle->id()) + ");";
     ASSERT_TRUE(content::ExecJs(web_contents(), script));
     ASSERT_TRUE(WaitForHostCreation(expected_host_count));
+    EXPECT_NE(guest_contents->GetSecureEmbedConnector(), nullptr);
   }
 
   // Get the guest handle for the provided guest WebContents.
@@ -402,6 +400,27 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, DisplayNoneSwapGuest) {
       web_contents(),
       "document.querySelector('embed').style.display = 'block';"));
   VerifyBoxRendering(SK_ColorBLUE);
+}
+
+// Create 2 <embed>s that use the same content id. The 2nd <embed> should show
+// and the 1st <embed> should be blank.
+// TODO(secure-embed): currently, the 1st <embed>'s rendering will stall on the
+// last frame before the 2nd <embed>'s installation.
+IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, DISABLED_TwoEmbedSameContentId) {
+  NavigateToAttachHarness();
+
+  // Create and load both guests.
+  auto guest_contents_red = CreateGuestWebContents();
+  NavigateGuestToUrl(guest_contents_red.get(), "/secure_embed/red_box.html");
+
+  // Attach the red guest first.
+  AttachGuestToEmbed(guest_contents_red.get());
+  VerifyBoxRendering(SK_ColorRED);
+
+  // Add a 2nd <embed> that uses the same content id.
+  AttachGuestToEmbed(guest_contents_red.get());
+  // This verify the color of the 1st <embed>, which should become blank.
+  VerifyBoxRendering(SK_ColorWHITE);
 }
 
 IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, ReattachSameGuestToNewEmbed) {
