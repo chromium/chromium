@@ -106,9 +106,6 @@ namespace {
 
 using enum CallTimerState::CallSite;
 
-constexpr char kSubmissionSourceHistogram[] =
-    "Autofill.SubmissionDetectionSource.AutofillAgent";
-
 // Time to wait in ms to ensure that only a single select or datalist change
 // will be acted upon, instead of multiple in close succession (debounce time).
 constexpr base::TimeDelta kWaitTimeForOptionsChanges = base::Milliseconds(50);
@@ -736,62 +733,8 @@ void AutofillAgent::AccessibilityModeChanged(const ui::AXMode& mode) {
 
 void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
                                          mojom::SubmissionSource source) {
-  if (source == mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
-    return;
-  }
-  DenseSet<mojom::SubmissionSource>& sources =
-      form_tracker_->submitted_forms()[form_data.renderer_id()];
-  if (!sources.insert(source).second) {
-    // The form (identified by its renderer id) was already submitted with the
-    // same submission source. This should not be reported multiple times.
-    return;
-  }
-  // This is the first time the form was submitted with the given source. It is
-  // still possible, however, that another submission with another source was
-  // recorded, making this one obsolete. (More details below)
-
-  // This checks whether another source, that is relevant for Autofill, already
-  // reported the submission of `form_data`.
-  const bool is_duplicate_submission_for_autofill = [&] {
-    DenseSet<mojom::SubmissionSource> af_sources = sources;
-    // Autofill ignores DOM_MUTATION_AFTER_AUTOFILL on non-WebView platforms.
-    // For this reason, the presence of DOM_MUTATION_AFTER_AUTOFILL in the
-    // submission history is not sufficient to skip reporting `source`. On
-    // WebView, no duplicate filtering is required since the provider is reset
-    // on submission, meaning that subsequent submission signals will just be
-    // ignored.
-    af_sources.erase(mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
-    return af_sources.size() > 1;
-  }();
-
-  // This checks whether another source, that is relevant for PasswordManager,
-  // already reported the submission of `form_data`.
-  const bool is_duplicate_submission_for_password_manager = [&] {
-    DenseSet<mojom::SubmissionSource> pwm_sources = sources;
-    // PasswordManager doesn't consider FORM_SUBMISSION as a sufficient
-    // condition for "successful" submission.
-    pwm_sources.erase(mojom::SubmissionSource::FORM_SUBMISSION);
-    // PasswordManager completely ignores PROBABLY_FORM_SUBMITTED.
-    pwm_sources.erase(mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED);
-    return pwm_sources.size() > 1;
-  }();
-
-  if (!is_duplicate_submission_for_password_manager) {
-    password_autofill_agent_->FireHostSubmitEvent(form_data.renderer_id(),
-                                                  form_data, source);
-  }
-  if (!is_duplicate_submission_for_autofill) {
-    if (auto* autofill_driver = unsafe_autofill_driver()) {
-      base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
-      autofill_driver->FormSubmitted(form_data, source);
-    }
-  }
-  // Bound the size of `submitted_forms_` to avoid possible memory leaks.
-  if (form_tracker_->submitted_forms().size() > 200) {
-    form_tracker_->submitted_forms().erase(
-        --form_tracker_->submitted_forms().end());
+  if (auto* autofill_driver = unsafe_autofill_driver()) {
+    autofill_driver->FormSubmitted(form_data, source);
   }
 }
 
@@ -2022,7 +1965,7 @@ void AutofillAgent::OnFormSubmission(
   }
   if (std::optional<FormData> form_data =
           form_tracker_->GetSubmittedForm(source, submitted_form_element)) {
-    FireHostSubmitEvents(*form_data, source);
+    form_tracker_->FireHostSubmitEvents(*form_data, source);
   }
   switch (source) {
     case mojom::SubmissionSource::FORM_SUBMISSION:

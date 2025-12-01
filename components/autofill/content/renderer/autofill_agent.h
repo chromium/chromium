@@ -207,6 +207,10 @@ class AutofillAgent : public content::RenderFrameObserver,
       FieldRendererId field_id,
       const std::string& presentation_token) override;
 
+  // Fires Mojo messages for a given form submission.
+  void FireHostSubmitEvents(const FormData& form_data,
+                            mojom::SubmissionSource source);
+
   void OnFormSubmission(
       mojom::SubmissionSource source,
       std::optional<blink::WebFormElement> submitted_form_element);
@@ -296,10 +300,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // To be called when all forms are irretrievably gone, e.g., when a new
   // document is loaded.
   void Reset();
-
-  // Fires Mojo messages for a given form submission.
-  void FireHostSubmitEvents(const FormData& form_data,
-                            mojom::SubmissionSource source);
 
   // Tries to show the given `passwords_request` for the given fields and update
   // `is_popup_possibly_visible` accordingly. Returns true if the password agent

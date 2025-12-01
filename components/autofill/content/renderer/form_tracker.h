@@ -141,6 +141,10 @@ class FormTracker : public content::RenderFrameObserver,
     return submitted_forms_;
   }
 
+  // Notifies agents of the submission of `form_data`.
+  void FireHostSubmitEvents(const FormData& form_data,
+                            mojom::SubmissionSource source);
+
   // Returns an approximation of the submitted form. The candidates are:
   // - `provisionally_saved_form_` , because it may be the last-known complete
   //   state of the form (i.e., the form or some fields in the form may have
