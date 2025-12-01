@@ -217,11 +217,6 @@ void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
     using enum AutofillAiOptInStatus;
     base::UmaHistogramEnumeration("Autofill.Ai.OptIn.Status.Submission",
                                   opt_in_status ? kOptedIn : kOptedOut);
-    // TODO(crbug.com/408380915): Remove after M142.
-    base::UmaHistogramEnumeration("Autofill.Ai.OptIn.Status",
-                                  opt_in_status ? kOptedIn : kOptedOut);
-    // TODO(crbug.com/408380915): Remove after M141.
-    base::UmaHistogramBoolean("Autofill.Ai.OptInStatus", opt_in_status);
 
     for (const auto& [entity_type, states] : funnel_states) {
       FunnelState combined_state = CombineStates(states);

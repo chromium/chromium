@@ -28,8 +28,6 @@ constexpr std::string_view kNumberOfEntitiesDedupedHistogramName =
 
 void LogOptInFunnelEvent(AutofillAiOptInFunnelEvents event) {
   base::UmaHistogramEnumeration("Autofill.Ai.OptIn.Funnel", event);
-  // TODO(crbug.com/408380915): Remove after M141.
-  base::UmaHistogramEnumeration("Autofill.Ai.OptInFunnel", event);
 }
 
 void LogLocalEntitiesDeduplicationMetrics(
