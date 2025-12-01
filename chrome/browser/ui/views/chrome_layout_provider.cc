@@ -161,8 +161,10 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_INFOBAR_HEIGHT:
       // Spec says height of button should be 36dp, vertical padding on both
       // top and bottom should be 8dp.
+      // The new refreshed button height is 20 + (2 * 6) = 32dp.
+      // Therefore, the total infobar height is 32dp + 2 * 12.
       return base::FeatureList::IsEnabled(features::kInfobarRefresh)
-                 ? 36 + 2 * 12
+                 ? 32 + 2 * 12
                  : 36 + 2 * 8;
     case DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING:
       return 8;
