@@ -25,6 +25,11 @@ class FilePath;
 std::optional<base::FilePath> GetTabChooseFileDirectory(
     web::WebStateID web_state_id);
 
+// Creates a subdirectory in the temporary file selection directory associated
+// with the tab identified by `web_state_id`.
+std::optional<base::FilePath> CreateTabChooseFileSubdirectory(
+    web::WebStateID web_state_id);
+
 // Schedule the deletion of the temporary directory for the tab.
 void DeleteTempChooseFileDirectoryForTab(web::WebStateID web_state_id);
 

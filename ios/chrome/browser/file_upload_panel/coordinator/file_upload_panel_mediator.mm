@@ -59,19 +59,6 @@ NSSet<NSString*>* MediaTypeIdentifiersForMIMETypes(
   return type_identifiers;
 }
 
-// Returns whether `type_identifiers` contains a type conforming to
-// `target_type`.
-BOOL SetContainsTypeThatConformsToTarget(NSSet<NSString*>* type_identifiers,
-                                         UTType* target_type) {
-  for (NSString* type_identifier in type_identifiers) {
-    UTType* type = [UTType typeWithIdentifier:type_identifier];
-    if ([type conformsToType:target_type]) {
-      return YES;
-    }
-  }
-  return NO;
-}
-
 // Returns all media types available for the camera for which at least one
 // element in `accepted_types` conforms to that type. If `accepted_types` is
 // empty then returns all media types available for the camera.
@@ -92,7 +79,7 @@ NSArray<NSString*>* CameraTypesAcceptedBySet(NSSet<NSString*>* accepted_types) {
         // conforms to it.
         UTType* camera_type =
             [UTType typeWithIdentifier:camera_type_identifier];
-        if (SetContainsTypeThatConformsToTarget(accepted_types, camera_type)) {
+        if (FindTypeConformingToTarget(accepted_types, camera_type)) {
           [accepted_camera_types addObject:camera_type_identifier];
         }
       }
@@ -115,20 +102,13 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
   if (!jpeg_representation) {
     return std::nullopt;
   }
-  std::optional<base::FilePath> web_state_directory =
-      GetTabChooseFileDirectory(web_state_id);
-  if (!web_state_directory) {
-    return std::nullopt;
-  }
-  const std::string image_parent_directory_name =
-      base::Uuid::GenerateRandomV4().AsLowercaseString();
-  const base::FilePath image_parent_directory =
-      web_state_directory->Append(base::FilePath(image_parent_directory_name));
-  if (!CreateDirectory(image_parent_directory)) {
+  std::optional<base::FilePath> directory =
+      CreateTabChooseFileSubdirectory(web_state_id);
+  if (!directory) {
     return std::nullopt;
   }
   const base::FilePath image_file_path =
-      image_parent_directory.Append(kCameraImageFileName);
+      directory->Append(kCameraImageFileName);
   if (base::WriteFile(image_file_path,
                       base::apple::NSDataToSpan(jpeg_representation))) {
     return image_file_path;
@@ -256,14 +236,12 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
 
 - (BOOL)allowsImageSelection {
   return self.acceptedMediaTypes.count == 0 ||
-         SetContainsTypeThatConformsToTarget(self.acceptedMediaTypes,
-                                             UTTypeImage);
+         FindTypeConformingToTarget(self.acceptedMediaTypes, UTTypeImage);
 }
 
 - (BOOL)allowsVideoSelection {
   return self.acceptedMediaTypes.count == 0 ||
-         SetContainsTypeThatConformsToTarget(self.acceptedMediaTypes,
-                                             UTTypeMovie);
+         FindTypeConformingToTarget(self.acceptedMediaTypes, UTTypeMovie);
 }
 
 - (BOOL)allowsMediaSelection {

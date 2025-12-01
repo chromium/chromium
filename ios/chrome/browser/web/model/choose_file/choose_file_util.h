@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_CHOOSE_FILE_CHOOSE_FILE_UTIL_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_CHOOSE_FILE_CHOOSE_FILE_UTIL_H_
 
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
 #import <string_view>
 #import <vector>
 
@@ -44,5 +46,19 @@ std::vector<std::string> ParseAcceptAttributeMimeTypes(
 // Returns the list of file extensions contained in `accept_attribute`.
 std::vector<std::string> ParseAcceptAttributeFileExtensions(
     std::string_view accept_attribute);
+
+// Returns whether `type_identifiers` contains a type conforming to
+// `target_type`.
+template <typename TypeIdentifiers>
+UTType* FindTypeConformingToTarget(TypeIdentifiers type_identifiers,
+                                   UTType* target_type) {
+  for (NSString* type_identifier in type_identifiers) {
+    UTType* type = [UTType typeWithIdentifier:type_identifier];
+    if ([type conformsToType:target_type]) {
+      return type;
+    }
+  }
+  return nil;
+}
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_CHOOSE_FILE_CHOOSE_FILE_UTIL_H_

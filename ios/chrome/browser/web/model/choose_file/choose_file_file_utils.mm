@@ -14,6 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
+#import "base/uuid.h"
 
 namespace {
 
@@ -77,6 +78,25 @@ std::optional<base::FilePath> GetTabChooseFileDirectory(
   }
   return (*session_directory)
       .Append(base::NumberToString(web_state_id.identifier()));
+}
+
+// Creates a temporary directory associated with the tab identified by
+// `web_state_id`.
+std::optional<base::FilePath> CreateTabChooseFileSubdirectory(
+    web::WebStateID web_state_id) {
+  std::optional<base::FilePath> web_state_directory =
+      GetTabChooseFileDirectory(web_state_id);
+  if (!web_state_directory) {
+    return std::nullopt;
+  }
+  const std::string directory_name =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const base::FilePath directory =
+      web_state_directory->Append(base::FilePath(directory_name));
+  if (!CreateDirectory(directory)) {
+    return std::nullopt;
+  }
+  return directory;
 }
 
 void DeleteTempChooseFileDirectoryForTab(web::WebStateID web_state_id) {
