@@ -667,24 +667,24 @@ String BaseRenderingContext2D::wordSpacing() const {
 }
 
 V8CanvasTextRendering BaseRenderingContext2D::textRendering() const {
-  return GetState().GetTextRendering();
+  return V8CanvasTextRendering(GetState().GetTextRendering());
 }
 
 V8CanvasTextAlign BaseRenderingContext2D::textAlign() const {
-  return GetState().GetTextAlign();
+  return V8CanvasTextAlign(GetState().GetTextAlign());
 }
 
 void BaseRenderingContext2D::setTextAlign(const V8CanvasTextAlign align) {
-  GetState().SetTextAlign(align);
+  GetState().SetTextAlign(align.AsEnum());
 }
 
 V8CanvasTextBaseline BaseRenderingContext2D::textBaseline() const {
-  return GetState().GetTextBaseline();
+  return V8CanvasTextBaseline(GetState().GetTextBaseline());
 }
 
 void BaseRenderingContext2D::setTextBaseline(
     const V8CanvasTextBaseline baseline) {
-  GetState().SetTextBaseline(baseline);
+  GetState().SetTextBaseline(baseline.AsEnum());
 }
 
 V8CanvasFontKerning BaseRenderingContext2D::fontKerning() const {
@@ -699,7 +699,7 @@ V8CanvasFontKerning BaseRenderingContext2D::fontKerning() const {
 }
 
 V8CanvasFontStretch BaseRenderingContext2D::fontStretch() const {
-  return GetState().GetFontStretch();
+  return V8CanvasFontStretch(GetState().GetFontStretch());
 }
 
 V8CanvasFontVariantCaps BaseRenderingContext2D::fontVariantCaps() const {
@@ -838,10 +838,10 @@ void BaseRenderingContext2D::setFont(const String& new_font) {
 }
 
 static inline TextDirection ToTextDirection(
-    V8CanvasDirection direction,
+    V8CanvasDirection::Enum direction,
     CanvasRenderingContextHost* host,
     const ComputedStyle* style = nullptr) {
-  switch (direction.AsEnum()) {
+  switch (direction) {
     case V8CanvasDirection::Enum::kInherit:
       return host ? host->GetTextDirection(style) : TextDirection::kLtr;
     case V8CanvasDirection::Enum::kRtl:
@@ -877,7 +877,7 @@ void BaseRenderingContext2D::setDirection(const V8CanvasDirection direction) {
   }
 
   CanvasRenderingContext2DState& state = GetState();
-  state.SetDirection(direction);
+  state.SetDirection(direction.AsEnum());
 }
 
 void BaseRenderingContext2D::fillText(const String& text, double x, double y) {
@@ -909,8 +909,9 @@ void BaseRenderingContext2D::fillTextCluster(
     double y,
     const TextClusterOptions* cluster_options) {
   DCHECK(text_cluster);
-  V8CanvasTextAlign cluster_align = text_cluster->align();
-  V8CanvasTextBaseline cluster_baseline = text_cluster->baseline();
+  V8CanvasTextAlign::Enum cluster_align = text_cluster->align().AsEnum();
+  V8CanvasTextBaseline::Enum cluster_baseline =
+      text_cluster->baseline().AsEnum();
   double cluster_x = text_cluster->x();
   double cluster_y = text_cluster->y();
   if (cluster_options != nullptr) {
@@ -921,10 +922,10 @@ void BaseRenderingContext2D::fillTextCluster(
       cluster_y = cluster_options->y();
     }
     if (cluster_options->hasAlign()) {
-      cluster_align = cluster_options->align();
+      cluster_align = cluster_options->align().AsEnum();
     }
     if (cluster_options->hasBaseline()) {
-      cluster_baseline = cluster_options->baseline();
+      cluster_baseline = cluster_options->baseline().AsEnum();
     }
   }
   DrawTextInternal(text_cluster->text(), cluster_x + x, cluster_y + y,
@@ -964,8 +965,9 @@ void BaseRenderingContext2D::strokeTextCluster(
     double y,
     const TextClusterOptions* cluster_options) {
   DCHECK(text_cluster);
-  V8CanvasTextAlign cluster_align = text_cluster->align();
-  V8CanvasTextBaseline cluster_baseline = text_cluster->baseline();
+  V8CanvasTextAlign::Enum cluster_align = text_cluster->align().AsEnum();
+  V8CanvasTextBaseline::Enum cluster_baseline =
+      text_cluster->baseline().AsEnum();
   double cluster_x = text_cluster->x();
   double cluster_y = text_cluster->y();
   if (cluster_options != nullptr) {
@@ -976,10 +978,10 @@ void BaseRenderingContext2D::strokeTextCluster(
       cluster_y = cluster_options->y();
     }
     if (cluster_options->hasAlign()) {
-      cluster_align = cluster_options->align();
+      cluster_align = cluster_options->align().AsEnum();
     }
     if (cluster_options->hasBaseline()) {
-      cluster_baseline = cluster_options->baseline();
+      cluster_baseline = cluster_options->baseline().AsEnum();
     }
   }
   DrawTextInternal(text_cluster->text(), cluster_x + x, cluster_y + y,
@@ -994,8 +996,8 @@ void BaseRenderingContext2D::DrawTextInternal(
     double x,
     double y,
     CanvasRenderingContext2DState::PaintType paint_type,
-    V8CanvasTextAlign align,
-    V8CanvasTextBaseline baseline,
+    V8CanvasTextAlign::Enum align,
+    V8CanvasTextBaseline::Enum baseline,
     unsigned run_start,
     unsigned run_end,
     double* max_width,
@@ -1065,26 +1067,27 @@ void BaseRenderingContext2D::DrawTextInternal(
   double width = use_max_width ? *max_width : font_width;
 
   if (align == V8CanvasTextAlign::Enum::kStart) {
-    align = is_rtl ? V8CanvasTextAlign(V8CanvasTextAlign::Enum::kRight)
-                   : V8CanvasTextAlign(V8CanvasTextAlign::Enum::kLeft);
+    align = is_rtl ? V8CanvasTextAlign::Enum::kRight
+                   : V8CanvasTextAlign::Enum::kLeft;
   } else if (align == V8CanvasTextAlign::Enum::kEnd) {
-    align = is_rtl ? V8CanvasTextAlign(V8CanvasTextAlign::Enum::kLeft)
-                   : V8CanvasTextAlign(V8CanvasTextAlign::Enum::kRight);
+    align = is_rtl ? V8CanvasTextAlign::Enum::kLeft
+                   : V8CanvasTextAlign::Enum::kRight;
   }
 
-  switch (align.AsEnum()) {
+  switch (align) {
     case V8CanvasTextAlign::Enum::kCenter:
       location.set_x(location.x() - width / 2);
       break;
     case V8CanvasTextAlign::Enum::kRight:
       location.set_x(location.x() - width);
       break;
-    default:
+    case V8CanvasTextAlign::Enum::kEnd:
+    case V8CanvasTextAlign::Enum::kLeft:
+    case V8CanvasTextAlign::Enum::kStart:
       break;
   }
 
-  location.Offset(0,
-                  TextMetrics::GetFontBaseline(baseline.AsEnum(), *font_data));
+  location.Offset(0, TextMetrics::GetFontBaseline(baseline, *font_data));
 
   bounds.Offset(location.x(), location.y());
   if (paint_type == CanvasRenderingContext2DState::kStrokePaintType) {
@@ -1168,8 +1171,8 @@ TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
       ToTextDirection(state.GetDirection(), host, computed_style);
 
   return MakeGarbageCollected<TextMetrics>(
-      font, direction, state.GetTextBaseline().AsEnum(),
-      state.GetTextAlign().AsEnum(), text, host->GetPlainTextPainter());
+      font, direction, state.GetTextBaseline(), state.GetTextAlign(), text,
+      host->GetPlainTextPainter());
 }
 
 String BaseRenderingContext2D::lang() const {
@@ -1236,7 +1239,7 @@ void BaseRenderingContext2D::setTextRendering(
   if (state.GetTextRendering() == text_rendering) {
     return;
   }
-  state.SetTextRendering(text_rendering, GetFontSelector());
+  state.SetTextRendering(text_rendering.AsEnum(), GetFontSelector());
 }
 
 void BaseRenderingContext2D::setFontKerning(
@@ -1275,7 +1278,7 @@ void BaseRenderingContext2D::setFontStretch(
   if (state.GetFontStretch() == font_stretch) {
     return;
   }
-  state.SetFontStretch(font_stretch, GetFontSelector());
+  state.SetFontStretch(font_stretch.AsEnum(), GetFontSelector());
 }
 
 void BaseRenderingContext2D::setFontVariantCaps(

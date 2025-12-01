@@ -234,16 +234,18 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void SetLang(const String& lang);
   String GetLang() const { return lang_; }
 
-  void SetDirection(V8CanvasDirection direction) { direction_ = direction; }
-  V8CanvasDirection GetDirection() const { return direction_; }
+  void SetDirection(V8CanvasDirection::Enum direction) {
+    direction_ = direction;
+  }
+  V8CanvasDirection::Enum GetDirection() const { return direction_; }
 
-  void SetTextAlign(V8CanvasTextAlign align) { text_align_ = align; }
-  V8CanvasTextAlign GetTextAlign() const { return text_align_; }
+  void SetTextAlign(V8CanvasTextAlign::Enum align) { text_align_ = align; }
+  V8CanvasTextAlign::Enum GetTextAlign() const { return text_align_; }
 
-  void SetTextBaseline(V8CanvasTextBaseline baseline) {
+  void SetTextBaseline(V8CanvasTextBaseline::Enum baseline) {
     text_baseline_ = baseline;
   }
-  V8CanvasTextBaseline GetTextBaseline() const { return text_baseline_; }
+  V8CanvasTextBaseline::Enum GetTextBaseline() const { return text_baseline_; }
 
   void SetLetterSpacing(const String& letter_spacing,
                         UniqueFontSelector* selector);
@@ -252,9 +254,9 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void SetWordSpacing(const String& word_spacing, UniqueFontSelector* selector);
   String GetWordSpacing() const { return parsed_word_spacing_; }
 
-  void SetTextRendering(V8CanvasTextRendering text_rendering,
+  void SetTextRendering(V8CanvasTextRendering::Enum text_rendering,
                         UniqueFontSelector* selector);
-  V8CanvasTextRendering GetTextRendering() const {
+  V8CanvasTextRendering::Enum GetTextRendering() const {
     return text_rendering_mode_;
   }
 
@@ -262,9 +264,9 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
                       UniqueFontSelector* selector);
   FontDescription::Kerning GetFontKerning() const { return font_kerning_; }
 
-  void SetFontStretch(V8CanvasFontStretch font_stretch,
+  void SetFontStretch(V8CanvasFontStretch::Enum font_stretch,
                       UniqueFontSelector* selector);
-  V8CanvasFontStretch GetFontStretch() const { return font_stretch_; }
+  V8CanvasFontStretch::Enum GetFontStretch() const { return font_stretch_; }
 
   void SetFontVariantCaps(FontDescription::FontVariantCaps font_kerning,
                           UniqueFontSelector* selector);
@@ -432,9 +434,10 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
 
   // Text state.
   String lang_ = "inherit";
-  V8CanvasTextAlign text_align_{V8CanvasTextAlign::Enum::kStart};
-  V8CanvasTextBaseline text_baseline_{V8CanvasTextBaseline::Enum::kAlphabetic};
-  V8CanvasDirection direction_{V8CanvasDirection::Enum::kInherit};
+  V8CanvasTextAlign::Enum text_align_{V8CanvasTextAlign::Enum::kStart};
+  V8CanvasTextBaseline::Enum text_baseline_{
+      V8CanvasTextBaseline::Enum::kAlphabetic};
+  V8CanvasDirection::Enum direction_{V8CanvasDirection::Enum::kInherit};
   float letter_spacing_{0};
   CSSPrimitiveValue::UnitType letter_spacing_unit_{
       CSSPrimitiveValue::UnitType::kPixels};
@@ -444,10 +447,10 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   CSSPrimitiveValue::UnitType word_spacing_unit_{
       CSSPrimitiveValue::UnitType::kPixels};
   String parsed_word_spacing_;
-  V8CanvasTextRendering text_rendering_mode_{
+  V8CanvasTextRendering::Enum text_rendering_mode_{
       V8CanvasTextRendering::Enum::kAuto};
   FontDescription::Kerning font_kerning_{FontDescription::kAutoKerning};
-  V8CanvasFontStretch font_stretch_{V8CanvasFontStretch::Enum::kNormal};
+  V8CanvasFontStretch::Enum font_stretch_{V8CanvasFontStretch::Enum::kNormal};
   FontDescription::FontVariantCaps font_variant_caps_{
       FontDescription::kCapsNormal};
 

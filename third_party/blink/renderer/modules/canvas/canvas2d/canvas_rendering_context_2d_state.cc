@@ -73,6 +73,8 @@ static const char defaultSpacing[] = "0px";
 
 namespace blink {
 
+namespace {
+
 // Convert CSS Length String to a number with unit, ex: "2em" to
 // |number_spacing| = 2 and |unit| = CSSPrimitiveValue::UnitType::kEm. It
 // returns true if the conversion succeeded; false otherwise.
@@ -100,63 +102,46 @@ bool StringToNumWithUnit(String spacing,
 }
 
 FontSelectionValue CanvasFontStretchToSelectionValue(
-    V8CanvasFontStretch font_stretch) {
-  FontSelectionValue stretch_value;
-  switch (font_stretch.AsEnum()) {
+    V8CanvasFontStretch::Enum font_stretch) {
+  switch (font_stretch) {
     case (V8CanvasFontStretch::Enum::kUltraCondensed):
-      stretch_value = kUltraCondensedWidthValue;
-      break;
+      return kUltraCondensedWidthValue;
     case (V8CanvasFontStretch::Enum::kExtraCondensed):
-      stretch_value = kExtraCondensedWidthValue;
-      break;
+      return kExtraCondensedWidthValue;
     case (V8CanvasFontStretch::Enum::kCondensed):
-      stretch_value = kCondensedWidthValue;
-      break;
+      return kCondensedWidthValue;
     case (V8CanvasFontStretch::Enum::kSemiCondensed):
-      stretch_value = kSemiCondensedWidthValue;
-      break;
+      return kSemiCondensedWidthValue;
     case (V8CanvasFontStretch::Enum::kNormal):
-      stretch_value = kNormalWidthValue;
-      break;
+      return kNormalWidthValue;
     case (V8CanvasFontStretch::Enum::kUltraExpanded):
-      stretch_value = kUltraExpandedWidthValue;
-      break;
+      return kUltraExpandedWidthValue;
     case (V8CanvasFontStretch::Enum::kExtraExpanded):
-      stretch_value = kExtraExpandedWidthValue;
-      break;
+      return kExtraExpandedWidthValue;
     case (V8CanvasFontStretch::Enum::kExpanded):
-      stretch_value = kExpandedWidthValue;
-      break;
+      return kExpandedWidthValue;
     case (V8CanvasFontStretch::Enum::kSemiExpanded):
-      stretch_value = kSemiExpandedWidthValue;
-      break;
-    default:
-      NOTREACHED();
+      return kSemiExpandedWidthValue;
   }
-  return stretch_value;
+  NOTREACHED();
 }
 
 TextRenderingMode CanvasTextRenderingToTextRenderingMode(
-    V8CanvasTextRendering text_rendering) {
-  TextRenderingMode text_rendering_mode;
-  switch (text_rendering.AsEnum()) {
+    V8CanvasTextRendering::Enum text_rendering) {
+  switch (text_rendering) {
     case (V8CanvasTextRendering::Enum::kAuto):
-      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
-      break;
+      return TextRenderingMode::kAutoTextRendering;
     case (V8CanvasTextRendering::Enum::kOptimizeSpeed):
-      text_rendering_mode = TextRenderingMode::kOptimizeSpeed;
-      break;
+      return TextRenderingMode::kOptimizeSpeed;
     case (V8CanvasTextRendering::Enum::kOptimizeLegibility):
-      text_rendering_mode = TextRenderingMode::kOptimizeLegibility;
-      break;
+      return TextRenderingMode::kOptimizeLegibility;
     case (V8CanvasTextRendering::Enum::kGeometricPrecision):
-      text_rendering_mode = TextRenderingMode::kGeometricPrecision;
-      break;
-    default:
-      NOTREACHED();
+      return TextRenderingMode::kGeometricPrecision;
   }
-  return text_rendering_mode;
+  NOTREACHED();
 }
+
+}  // namespace
 
 CanvasRenderingContext2DState::CanvasRenderingContext2DState()
     : shadow_blur_(0.0),
@@ -416,11 +401,10 @@ void CanvasRenderingContext2DState::SetFont(
   font_description.SetTextRendering(
       CanvasTextRenderingToTextRenderingMode(text_rendering_mode_));
   font_variant_caps_ = font_description.VariantCaps();
-  std::optional<blink::V8CanvasFontStretch> font_value =
-      V8CanvasFontStretch::Create(
-          FontDescription::ToString(font_description.Stretch()).LowerASCII());
+  std::optional<V8CanvasFontStretch> font_value = V8CanvasFontStretch::Create(
+      FontDescription::ToString(font_description.Stretch()).LowerASCII());
   if (font_value.has_value()) {
-    font_stretch_ = *font_value;
+    font_stretch_ = font_value->AsEnum();
   } else {
     NOTREACHED();
   }
@@ -469,7 +453,7 @@ void CanvasRenderingContext2DState::SetFontKerning(
 }
 
 void CanvasRenderingContext2DState::SetFontStretch(
-    V8CanvasFontStretch font_stretch,
+    V8CanvasFontStretch::Enum font_stretch,
     UniqueFontSelector* selector) {
   DCHECK(realized_font_);
   FontSelectionValue stretch_value =
@@ -960,7 +944,7 @@ void CanvasRenderingContext2DState::SetWordSpacing(
 }
 
 void CanvasRenderingContext2DState::SetTextRendering(
-    V8CanvasTextRendering text_rendering,
+    V8CanvasTextRendering::Enum text_rendering,
     UniqueFontSelector* selector) {
   DCHECK(realized_font_);
   TextRenderingMode text_rendering_mode =
