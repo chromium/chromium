@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_CONTAINERS_FLAT_TREE_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_CONTAINERS_FLAT_TREE_H_
 
@@ -802,7 +797,7 @@ void flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::insert(
 
   // Loop over the input range while appending new values and overwriting
   // existing ones, if applicable. Keep track of the first insertion point.
-  for (; first != last; ++first) {
+  for (; first != last; PA_UNSAFE_TODO(++first)) {
     std::pair<iterator, bool> result = append_unique(begin(), middle(), *first);
     if (result.second) {
       pos_first_new =
