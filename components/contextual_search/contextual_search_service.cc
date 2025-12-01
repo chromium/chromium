@@ -58,16 +58,25 @@ void ContextualSearchService::RegisterProfilePrefs(
       static_cast<int>(kSearchContentSharingAllowedDefault));
 }
 
+std::unique_ptr<ContextualSearchContextController>
+ContextualSearchService::CreateComposeboxQueryController(
+    std::unique_ptr<ContextualSearchContextController::ConfigParams>
+        query_controller_config_params) {
+  return std::make_unique<ComposeboxQueryController>(
+      identity_manager_, url_loader_factory_, channel_, locale_,
+      template_url_service_, variations_client_,
+      std::move(query_controller_config_params));
+}
+
 std::unique_ptr<ContextualSearchSessionHandle>
 ContextualSearchService::CreateSession(
     std::unique_ptr<ContextualSearchContextController::ConfigParams>
         query_controller_config_params,
     ContextualSearchSource source) {
   base::UnguessableToken session_id = base::UnguessableToken::Create();
-  auto controller = std::make_unique<ComposeboxQueryController>(
-      identity_manager_, url_loader_factory_, channel_, locale_,
-      template_url_service_, variations_client_,
-      std::move(query_controller_config_params));
+  std::unique_ptr<ContextualSearchContextController> controller =
+      CreateComposeboxQueryController(
+          std::move(query_controller_config_params));
   auto recorder = std::make_unique<ContextualSearchMetricsRecorder>(source);
   sessions_.emplace(
       session_id,

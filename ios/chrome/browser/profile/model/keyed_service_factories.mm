@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
@@ -281,6 +282,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   ConsentAuditorFactory::GetInstance();
   ContentNotificationServiceFactory::GetInstance();
   ContextualPanelModelServiceFactory::GetInstance();
+  ContextualSearchServiceFactory::GetInstance();
   CredentialsCleanerRunnerFactory::GetInstance();
   CrossDevicePrefTrackerFactory::GetInstance();
   CrossPlatformPromosServiceFactory::GetInstance();

@@ -150,6 +150,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/collaboration/model/messaging",
     "//ios/chrome/browser/commerce/model:session_proto_db",
     "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/composebox/model",
     "//ios/chrome/browser/consent_auditor/model",
     "//ios/chrome/browser/content_notification/model:content_notification_service_factory",
     "//ios/chrome/browser/content_settings/model",

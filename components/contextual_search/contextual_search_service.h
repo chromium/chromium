@@ -66,6 +66,12 @@ class ContextualSearchService : public KeyedService {
  protected:
   friend class ContextualSearchSessionHandle;
 
+  // Creates and returns a ContextualSearchContextController.
+  virtual std::unique_ptr<ContextualSearchContextController>
+  CreateComposeboxQueryController(
+      std::unique_ptr<ContextualSearchContextController::ConfigParams>
+          query_controller_config_params);
+
   // Called by SessionHandle to retrieve a reference to the session controller.
   ContextualSearchContextController* GetSessionController(
       const SessionId& session_id);
