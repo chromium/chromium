@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -20,18 +21,22 @@
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/grit/branded_strings.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/switches.h"
+#include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::DesktopMediaID;
 using extensions::api::desktop_capture::ChooseDesktopMedia::Results::Options;
@@ -101,14 +106,26 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   // be null. We are going to make the picker modal to the current browser
   // window.
   if (!parent_window) {
-    Browser* target_browser = chrome::FindLastActiveWithProfile(
-        Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-
-    if (target_browser)
-      parent_window = target_browser->window()->GetNativeWindow();
+    auto* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    // Find the last active browser window with a matching profile.
+    BrowserWindowInterface* browser = nullptr;
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [profile, &browser](BrowserWindowInterface* bwi) {
+          if (bwi->GetProfile() == profile) {
+            browser = bwi;
+            return false;  // Stop iterating.
+          }
+          return true;  // Keep iterating.
+        });
+    if (browser) {
+      parent_window = browser->GetWindow()->GetNativeWindow();
+    }
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   bool request_audio = false;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   std::vector<DesktopMediaList::Type> media_types;
   for (auto source_type : sources) {
     switch (source_type) {
@@ -128,7 +145,9 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
         break;
       }
       case api::desktop_capture::DesktopCaptureSourceType::kAudio: {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
         request_audio = true;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
         break;
       }
     }
@@ -146,6 +165,7 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
         std::move(includable_web_contents_filter), web_contents);
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   DesktopMediaPickerController::DoneCallback callback = base::BindOnce(
       &DesktopCaptureChooseDesktopMediaFunctionBase::OnPickerDialogResults,
       this, origin, render_frame_host->GetGlobalId());
@@ -167,6 +187,10 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   picker_controller_->Show(picker_params, std::move(media_types),
                            includable_web_contents_filter, std::move(callback));
   return RespondLater();
+#else
+  NOTIMPLEMENTED() << "Media picker not implemented on Android";
+  return RespondNow(Error("Media picker not implemented on Android"));
+#endif
 }
 
 std::string DesktopCaptureChooseDesktopMediaFunctionBase::GetCallerDisplayName()
@@ -261,8 +285,9 @@ void DesktopCaptureRequestsRegistry::RemoveRequest(int process_id,
 void DesktopCaptureRequestsRegistry::CancelRequest(int process_id,
                                                    int request_id) {
   auto it = requests_.find(RequestId(process_id, request_id));
-  if (it != requests_.end())
+  if (it != requests_.end()) {
     it->second->Cancel();
+  }
 }
 
 }  // namespace extensions

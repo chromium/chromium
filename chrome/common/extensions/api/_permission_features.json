@@ -247,9 +247,7 @@
   },
   "desktopCapture": {
     "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    // "desktop_android" is not supported.
-    "platforms": ["chromeos", "linux", "mac", "win"]
+    "extension_types": ["extension", "platform_app"]
   },
   "documentScan": {
     "channel": "stable",
