@@ -3,9 +3,10 @@
 # found in the LICENSE file.
 import("//tools/metrics/private_metrics/gen_private_metrics_builders.gni")
 
-source_set("private_metrics_features") {
+component("private_metrics_features") {
   sources = [ "private_metrics_features.cc" ]
   public = [ "private_metrics_features.h" ]
+  defines = [ "IS_PRIVATE_METRICS_FEATURES_IMPL" ]
   deps = [ "//base" ]
 }
 

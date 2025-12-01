@@ -14,6 +14,7 @@ namespace metrics::private_metrics {
 // Enables Private Metrics reporting. This flag enables the flow for reporting
 // `PrivateMetricReport` protocol buffer as described in
 // go/chrome-trusted-private-metrics and go/etld-plus-one-metrics.
+COMPONENT_EXPORT(PRIVATE_METRICS_FEATURES)
 BASE_DECLARE_FEATURE(kPrivateMetricsFeature);
 
 // Enables Private UMA service. When enabled, PUMA histograms will be reported
@@ -21,16 +22,21 @@ BASE_DECLARE_FEATURE(kPrivateMetricsFeature);
 //
 // Note: it's likely this is not the only feature you want to enable, as a
 // specific PUMA type can also be implemented behind a feature.
+COMPONENT_EXPORT(PRIVATE_METRICS_FEATURES)
 BASE_DECLARE_FEATURE(kPrivateMetricsPuma);
 
 // The following feature params are used to parameterize unsent log store
 // limits for PUMA. See UnsentLogStoreLimits.
+COMPONENT_EXPORT(PRIVATE_METRICS_FEATURES)
 extern const base::FeatureParam<size_t> kPrivateMetricsPumaMinLogQueueCount;
+COMPONENT_EXPORT(PRIVATE_METRICS_FEATURES)
 extern const base::FeatureParam<size_t> kPrivateMetricsPumaMinLogQueueSizeBytes;
+COMPONENT_EXPORT(PRIVATE_METRICS_FEATURES)
 extern const base::FeatureParam<size_t> kPrivateMetricsPumaMaxLogSizeBytes;
 
 // Enables Private UMA for Regional Capabilities. Enabling this feature will
 // collect and uploads logs of this type of PUMA.
+COMPONENT_EXPORT(PRIVATE_METRICS_FEATURES)
 BASE_DECLARE_FEATURE(kPrivateMetricsPumaRc);
 
 }  // namespace metrics::private_metrics
