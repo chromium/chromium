@@ -75,9 +75,8 @@ void FirstPartySetsNavigationThrottle::MaybeCreateAndAdd(
   Profile* profile = Profile::FromBrowserContext(
       navigation_handle.GetWebContents()->GetBrowserContext());
   // The `service` might be null for some irregular profiles.
-  // TODO(crbug.com/40233408): regular profiles and guest sessions
-  // aren't mutually exclusive on ChromeOS.
-  if (!profile->IsRegularProfile() || profile->IsGuestSession()) {
+
+  if (!profile->IsRegularProfile()) {
     return;
   }
 
