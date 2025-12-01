@@ -301,6 +301,11 @@ inline constexpr char kBrowsingHistoryActorIntegrationM1Name[] =
 inline constexpr char kBrowsingHistoryActorIntegrationM1Description[] =
     "Enables the browsing history glic actor integration M1";
 
+inline constexpr char kBrowsingHistoryActorIntegrationM2Name[] =
+    "Browsing History Actor Integration M2";
+inline constexpr char kBrowsingHistoryActorIntegrationM2Description[] =
+    "Enables the browsing history glic actor integration M2";
+
 inline constexpr char kBundledSecuritySettingsName[] =
     "Bundled Security Settings";
 inline constexpr char kBundledSecuritySettingsDescription[] =

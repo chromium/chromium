@@ -12943,6 +12943,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          browsing_data::features::kBrowsingHistoryActorIntegrationM1)},
+
+    {"browsing-history-actor-integration-M2",
+     flag_descriptions::kBrowsingHistoryActorIntegrationM2Name,
+     flag_descriptions::kBrowsingHistoryActorIntegrationM2Description,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(history::kBrowsingHistoryActorIntegrationM2)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"autofill-manual-testing-data",
