@@ -11625,6 +11625,12 @@
             ],
             "experiments": [
                 {
+                    "name": "Control_MultiArm",
+                    "disable_features": [
+                        "GlicEntrypointVariations"
+                    ]
+                },
+                {
                     "name": "Arm2_LabelOnly",
                     "params": {
                         "glic-entrypoint-variations-alt-icon": "false",
