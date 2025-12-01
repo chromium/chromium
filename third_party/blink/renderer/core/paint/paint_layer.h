@@ -610,7 +610,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       double* z_offset_for_descendants,
       double* z_offset,
       HitTestingTransformState* local_transform_state,
-      bool depth_sort_descendants);
+      bool depth_sort_descendants,
+      bool transition_pseudo_pass = false);
 
   HitTestingTransformState CreateLocalTransformState(
       const PaintLayer& transform_container,
