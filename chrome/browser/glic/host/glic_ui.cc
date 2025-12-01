@@ -136,10 +136,6 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   if (allowed_origins.empty()) {
     allowed_origins = features::kGlicAllowedOriginsOverride.Get();
   }
-  if (allowed_origins.empty()) {
-    // TODO(crbug.com/396147389): Replace with the correct default.
-    allowed_origins = "https://*.google.com/";
-  }
 
   // Allow corp origins for @google accounts.
   signin::IdentityManager* identity_manager =

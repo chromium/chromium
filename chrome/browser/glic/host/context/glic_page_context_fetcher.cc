@@ -77,8 +77,8 @@ void HandleFetchPageResult(
             page_context.inner_text_result->truncated));
   }
 
-  // TODO(crbug.com/446700005): This path is used for both actor and non-actor
-  // context but includes bits specific to actor.
+  // TODO(b/446700005): This path is used for both actor and non-actor context
+  // fetching, but includes bits specific to actor.
   actor::AggregatedJournal* journal = nullptr;
   actor::TaskId task_id;
   if (journal_entry) {
@@ -97,8 +97,7 @@ void HandleFetchPageResult(
         page_context.screenshot_result->dimensions.height(),
         std::move(page_context.screenshot_result->screenshot_data),
         page_context.screenshot_result->mime_type,
-        // TODO(b/380495633): Finalize and implement image
-        // annotations.
+        // Implement image annotations (see b/380495633).
         glic::mojom::ImageOriginAnnotations::New());
   }
 
