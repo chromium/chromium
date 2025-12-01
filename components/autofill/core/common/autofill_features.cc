@@ -806,14 +806,6 @@ BASE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion,
 BASE_FEATURE(kAutofillPopupZOrderSecuritySurface,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
-// for tracking the disappearance of forms as well as other submission
-// triggering events. See `AutofillAgent::GetSubmittedForm()` for more
-// documentation.
-// TODO(crbug.com/40281981): Remove when launched.
-BASE_FEATURE(kAutofillPreferSavedFormAsSubmittedForm,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allows the import of an Autofill profile if duplicate fields were present
 // with identical field values.
 // TODO(crbug.com/395855125): Remove when launched.
@@ -955,12 +947,6 @@ BASE_FEATURE(kAutofillUseNegativePatternForAllAttributes,
 // For Queries still only the secondary (alternative) signature is used.
 // TODO(crbug.com/431737839): Clean up when roll out finishes successfully.
 BASE_FEATURE(kAutofillUseStructuralSignatureInsteadOfSecondary,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Uses AutofillAgent::GetSubmittedForm() in HTML submissions.
-// See `AutofillAgent::GetSubmittedForm()` for more documentation.
-// TODO(crbug.com/40281981): Remove when launched.
-BASE_FEATURE(kAutofillUseSubmittedFormInHtmlSubmission,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the field classification model uses runtime caching to not run

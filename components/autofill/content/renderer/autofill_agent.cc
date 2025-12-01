@@ -1139,10 +1139,6 @@ void AutofillAgent::ApplyFieldsAction(
 
     form_tracker_->TrackAutofilledElement(filled_fields_and_forms);
 
-    formless_elements_were_autofilled_ |= std::ranges::any_of(
-        filled_fields_and_forms,
-        std::not_fn(&std::pair<FieldRendererId, FormRendererId>::second));
-
     base::flat_set<FormRendererId> extracted_form_ids;
     std::vector<FormData> filled_forms;
     for (const auto& [filled_field_id, filled_form_id] :
@@ -2054,9 +2050,7 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
   // up to date with the form's most recent version.
   if (provisionally_saved_form() &&
       form_util::GetFormRendererId(element.GetOwningFormForAutofill()) ==
-          last_interacted_form().GetId() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillPreferSavedFormAsSubmittedForm)) {
+          last_interacted_form().GetId()) {
     // Ideally, we re-extract the form at this moment, but to avoid performance
     // regression, we just update what JS updated on the Blink side.
     std::vector<FormFieldData> fields =
@@ -2112,23 +2106,6 @@ void AutofillAgent::OnProvisionallySaveForm(
     return;
   }
 
-  // Updates cached data needed for submission so that we only cache the latest
-  // version of the to-be-submitted form.
-  auto update_submission_data_on_user_edit = [&] {
-    if (form_element) {
-      return;
-    }
-    CHECK(element);
-    std::erase_if(
-        formless_elements_user_edited_, [](const FieldRendererId field_id) {
-          WebFormControlElement field =
-              form_util::GetFormControlByRendererId(field_id);
-          return field && field.IsFocusable();
-        });
-    formless_elements_user_edited_.insert(
-        form_util::GetFieldRendererId(element));
-  };
-
   switch (source) {
     case FormTracker::SaveFormReason::kWillSendSubmitEvent:
       // TODO(crbug.com/40281981): Figure out if this is still needed, and
@@ -2145,14 +2122,12 @@ void AutofillAgent::OnProvisionallySaveForm(
       OnFormSubmission(mojom::SubmissionSource::FORM_SUBMISSION, form_element);
       break;
     case FormTracker::SaveFormReason::kTextFieldChanged:
-      update_submission_data_on_user_edit();
       OnTextFieldValueChanged(
           element,
           SynchronousFormCache(form_util::GetFormRendererId(form_element),
                                provisionally_saved_form()));
       break;
     case FormTracker::SaveFormReason::kSelectChanged:
-      update_submission_data_on_user_edit();
       OnSelectControlSelectionChanged(
           element,
           SynchronousFormCache(form_util::GetFormRendererId(form_element),
@@ -2264,95 +2239,22 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm(
       field_data_manager(), GetCallTimerState(kGetSubmittedForm),
       button_titles_cache());
 
-  // Behavior when `AutofillPreferSavedFormAsSubmittedForm` is enabled
-  // (and the feature above is disabled):
   // - Return null if there was no interaction so far and no `form_element` is
   //   provided.
   // - Primarily look at the provisionally saved form.
   // - In case there isn't one try extracting the form (either
   //   `last_interacted_form()` or `form_element` if provided).
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillPreferSavedFormAsSubmittedForm)) {
-    if (cached_form && cache_matches_submitted_form_element) {
-      LogSubmittedFormMetric(source, SubmittedFormType::kCached);
-      return cached_form;
-    }
-    LogSubmittedFormMetric(source, extracted_form
-                                       ? SubmittedFormType::kExtracted
-                                       : SubmittedFormType::kNull);
-    return extracted_form;
-  }
-
-  // Behavior when `AutofillUseSubmittedFormInHtmlSubmission` is enabled
-  // (and the features above are disabled):
-  // - If `form_element` isn't provided, fallback to the default behavior.
-  // - Primarily try to extract the form represented by `form_element`.
-  // - In case of failure, fallback to the provisionally saved form, only if it
-  //   has the same FormRendererId as `form_element`.
-  if (submitted_form_element.has_value() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillUseSubmittedFormInHtmlSubmission)) {
-    if (extracted_form) {
-      LogSubmittedFormMetric(source, SubmittedFormType::kExtracted);
-      return extracted_form;
-    }
-    if (cached_form && cache_matches_submitted_form_element) {
-      LogSubmittedFormMetric(source, SubmittedFormType::kCached);
-      return cached_form;
-    }
-    LogSubmittedFormMetric(source, SubmittedFormType::kNull);
-    return std::nullopt;
-  }
-
-  // Behavior of HTML Submissions (when none of the features above are enabled):
-  // - Only try extracting the form provided via `form_element`.
-  if (source == mojom::SubmissionSource::FORM_SUBMISSION &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillUseSubmittedFormInHtmlSubmission)) {
-    CHECK(submitted_form_element);
-    LogSubmittedFormMetric(source, extracted_form
-                                       ? SubmittedFormType::kExtracted
-                                       : SubmittedFormType::kNull);
-    return extracted_form;
-  }
-
-  auto has_been_user_edited = [this](const FormFieldData& field) {
-    return formless_elements_user_edited_.contains(field.renderer_id());
-  };
-  // The three cases handled by this function:
-  bool user_autofilled_or_edited_owned_form = !!last_interacted_form().GetId();
-  bool user_autofilled_unowned_form = formless_elements_were_autofilled_;
-  bool user_edited_unowned_form = !user_autofilled_or_edited_owned_form &&
-                                  !user_autofilled_unowned_form &&
-                                  !formless_elements_user_edited_.empty();
-  if ((!user_autofilled_or_edited_owned_form && !user_autofilled_unowned_form &&
-       !user_edited_unowned_form) ||
-      !document) {
-    LogSubmittedFormMetric(source, SubmittedFormType::kNull);
-    return std::nullopt;
-  }
-
-  // Try extracting the corresponding form.
-  if (extracted_form &&
-      (!user_edited_unowned_form ||
-       !std::ranges::none_of(extracted_form->fields(), has_been_user_edited))) {
-    LogSubmittedFormMetric(source, SubmittedFormType::kExtracted);
-    return extracted_form;
-  }
-
-  // If extraction fails, fallback to the provisionally saved form.
-  if (cached_form) {
+  if (cached_form && cache_matches_submitted_form_element) {
     LogSubmittedFormMetric(source, SubmittedFormType::kCached);
     return cached_form;
   }
-  LogSubmittedFormMetric(source, SubmittedFormType::kNull);
-  return std::nullopt;
+  LogSubmittedFormMetric(source, extracted_form ? SubmittedFormType::kExtracted
+                                                : SubmittedFormType::kNull);
+  return extracted_form;
 }
 
 void AutofillAgent::ResetLastInteractedElements() {
   form_tracker_->ResetLastInteractedElements();
-  formless_elements_user_edited_.clear();
-  formless_elements_were_autofilled_ = false;
 }
 
 void AutofillAgent::UpdateLastInteractedElement(

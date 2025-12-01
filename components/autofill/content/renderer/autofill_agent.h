@@ -481,13 +481,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   std::vector<std::pair<FieldRendererId, blink::WebAutofillState>>
       previewed_elements_;
 
-  // When dealing with an unowned form, we keep track of the unowned fields
-  // the user has modified so we can determine when submission occurs.
-  // An additional sufficient condition for the form submission detection is
-  // that the form has been autofilled.
-  std::set<FieldRendererId> formless_elements_user_edited_;
-  bool formless_elements_were_autofilled_ = false;
-
   // For each form, identified by its renderer ID, keeps track of the sources of
   // observed submissions, so that we avoid firing duplicate submission signals
   // to the driver. See `AutofillAgent::FireHostSubmitEvent` for more details.

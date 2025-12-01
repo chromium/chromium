@@ -915,10 +915,8 @@ class AutofillAgentSubmissionTest : public AutofillAgentTest,
                                     public testing::WithParamInterface<int> {
  public:
   AutofillAgentSubmissionTest() {
-    EXPECT_LE(GetParam(), 5);
+    EXPECT_LE(GetParam(), 3);
     std::vector<base::test::FeatureRef> features = {
-        features::kAutofillUseSubmittedFormInHtmlSubmission,
-        features::kAutofillPreferSavedFormAsSubmittedForm,
         features::kAutofillFixFormTracking,
         features::kAutofillReplaceCachedWebElementsByRendererIds,
         features::kAutofillReplaceFormElementObserver};
@@ -930,18 +928,13 @@ class AutofillAgentSubmissionTest : public AutofillAgentTest,
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  bool prefer_saved_form() {
-    return base::FeatureList::IsEnabled(
-        features::kAutofillPreferSavedFormAsSubmittedForm);
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
                          AutofillAgentSubmissionTest,
-                         ::testing::Values(0, 1, 2, 3, 4, 5));
+                         ::testing::Values(0, 1, 2, 3));
 
 // Test that AutofillAgent::JavaScriptChangedValue updates the
 // last interacted saved state.
@@ -1223,19 +1216,12 @@ TEST_P(AutofillAgentSubmissionTest,
   SimulateUserInputChangeForElementById("name", "Ariel");
   SimulateUserInputChangeForElementById("address", "Atlantica");
 
-  if (prefer_saved_form()) {
-    EXPECT_CALL(autofill_driver(),
-                FormSubmitted(AllOf(FieldsAre(HasFieldIdAttribute(u"name"),
-                                              HasFieldIdAttribute(u"address")),
-                                    FieldsAre(HasValue(u"Ariel"),
-                                              HasValue(u"Atlantica"))),
-                              _));
-  } else {
-    EXPECT_CALL(autofill_driver(),
-                FormSubmitted(AllOf(FieldsAre(HasFieldIdAttribute(u"address")),
-                                    FieldsAre(HasValue(u"Atlantica"))),
-                              _));
-  }
+  EXPECT_CALL(autofill_driver(),
+              FormSubmitted(
+                  AllOf(FieldsAre(HasFieldIdAttribute(u"name"),
+                                  HasFieldIdAttribute(u"address")),
+                        FieldsAre(HasValue(u"Ariel"), HasValue(u"Atlantica"))),
+                  _));
 
   // Remove element that the user did not interact with last.
   ExecuteJavaScriptForTests(R"(document.getElementById('name').remove();)");
