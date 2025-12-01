@@ -222,14 +222,17 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
   }
 
   // RtpReceiverObserverInterface implementation.
-  // Note: unregistering from the event is not necessary.
   void OnFirstPacketReceived(webrtc::MediaType media_type) override {
+    // No-op.
+  }
+  void OnFirstPacketReceivedAfterReceptiveChange(
+      webrtc::MediaType media_type) override {
     DCHECK(webrtc_receiver_);
     if (!main_task_runner_->BelongsToCurrentThread()) {
       main_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&RTCRtpReceiverImpl::RTCRtpReceiverInternal::
-                             OnFirstPacketReceived,
+                             OnFirstPacketReceivedAfterReceptiveChange,
                          this, media_type));
       return;
     }
