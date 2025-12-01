@@ -2745,13 +2745,13 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
 
 #if !BUILDFLAG(IS_ANDROID)
 // Asserts RenderProcessHosts are configured to reflect the embedder's policy
-// defined by `ContentBrowserClient::IsInitialWebUIScheme()`.
+// defined by `ContentBrowserClient::IsInitialWebUIURL()`.
 IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForInitialWebUIAppliedToHosts) {
   class ForInitialWebUIContentBrowserClient
       : public ContentBrowserTestContentBrowserClient {
    public:
     // ContentBrowserTestContentBrowserClient:
-    bool IsInitialWebUIScheme(const GURL& url) override {
+    bool IsInitialWebUIURL(const GURL& url) override {
       return url == GURL("chrome://initial-webui-test-scheme");
     }
   };

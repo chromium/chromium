@@ -796,7 +796,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 #if !BUILDFLAG(IS_ANDROID)
   // Returns true if the given |url| is for the initial WebUI scheme used
   // by features like the WebUI reload button.
-  virtual bool IsInitialWebUIScheme(const GURL& url);
+  virtual bool IsInitialWebUIURL(const GURL& url);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Allows the embedder to enable access to Isolated Context Web APIs for the

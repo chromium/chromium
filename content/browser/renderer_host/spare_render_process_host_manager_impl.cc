@@ -646,7 +646,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       site_instance->HasProcess() ||
       !site_instance->CanAssociateWithSpareProcess() || site_instance->IsGuest()
 #if !BUILDFLAG(IS_ANDROID)
-      || GetContentClient()->browser()->IsInitialWebUIScheme(
+      || GetContentClient()->browser()->IsInitialWebUIURL(
              site_instance->GetSiteURL())
 #endif
   ) {

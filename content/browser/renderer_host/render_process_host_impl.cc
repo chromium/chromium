@@ -1578,7 +1578,7 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
 #if !BUILDFLAG(IS_ANDROID)
   if (site_instance) {
     const GURL& site_url = site_instance->GetSiteURL();
-    if (GetContentClient()->browser()->IsInitialWebUIScheme(site_url)) {
+    if (GetContentClient()->browser()->IsInitialWebUIURL(site_url)) {
       flags |= RenderProcessFlags::kForInitialWebUI;
     }
   }

@@ -415,7 +415,7 @@ bool ContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-bool ContentBrowserClient::IsInitialWebUIScheme(const GURL& url) {
+bool ContentBrowserClient::IsInitialWebUIURL(const GURL& url) {
   return false;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
