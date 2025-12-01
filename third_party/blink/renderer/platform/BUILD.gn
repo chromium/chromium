@@ -2161,6 +2161,7 @@ if (enable_nocompile_tests) {
   nocompile_source_set("blink_platform_nocompile_tests") {
     sources = [
       "heap/test/heap_bind_nocompile.nc",
+      "wtf/cross_thread_functional_nocompile.nc",
       "wtf/functional_nocompile.nc",
       "wtf/text/string_view_nocompile.nc",
     ]
