@@ -11,7 +11,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
 #include "chrome/browser/tab/tab_state_storage_updater.h"
 
@@ -27,6 +28,11 @@ class TabStateStorageBackend {
   ~TabStateStorageBackend();
 
   void Initialize();
+
+  // Boosts the priority of the database operations to USER_BLOCKING until all
+  // current pending operations are complete. This should be used when it is
+  // critical to save user data.
+  void BoostPriority();
 
   void WaitForAllPendingOperations(base::OnceClosure on_idle);
 
@@ -48,8 +54,15 @@ class TabStateStorageBackend {
   void OnDBReady(bool success);
   void OnWrite(bool success);
 
+  void IncrementBoostCounter();
+  void DecrementBoostCounter();
+  void OnLoadDone(OnStorageLoadedData on_storage_loaded_data,
+                  std::unique_ptr<StorageLoadedData> storage_loaded_data);
+
   const base::FilePath profile_path_;
-  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
+  scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner_;
+  int boosted_priority_count_{0};
+
   // Use unique_ptr to allow for delayed destruction, as we want all pending
   // tasks to complete before destroying the object.
   std::unique_ptr<TabStateStorageDatabase> database_;

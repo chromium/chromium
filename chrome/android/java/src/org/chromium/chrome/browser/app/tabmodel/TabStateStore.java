@@ -212,14 +212,18 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void saveState() {
-        // TODO(https://crbug.com/448151052): Because the db is only accessible on the background
-        // thread this either needs to do a blocking wait or be inherently a no-op. The legacy
-        // implementation: 1) saves the tab state list (i.e. collection tree), 2) saves the current
-        // tab in both the regular and incognito models, 3) saves any remaining tabs that are in
-        // the save queue. For our implementation all operations on the collection tree should
-        // already be queued to the DB tree so no work for that should be needed. We should queue
-        // saves for the current tabs in both models and then consider a blocking wait to flush
-        // the DB queue.
+        // All mutations to the collection tree should already be queue to the DB thread so no
+        // additional work is required for that.
+
+        // TODO(https://crbug.com/458335579): also save the current incognito tab.
+        saveTabIfNotClean(mTabModelSelector.getModel(false).getCurrentTabSupplier().get());
+
+        // If Chrome fully controlled its own lifecycle on Android we would block shutdown until the
+        // DB task runner is flushed. The DB thread already has the BLOCK_SHUTDOWN trait, that does
+        // not guarantee anything on Android; see https://crbug.com/40256943. A blocking wait
+        // won't improve the background thread's chances of finishing and it would block other
+        // shutdown work. The best we can do is manually boost the DB thread priority.
+        mTabStateStorageService.boostPriority();
     }
 
     @Override
@@ -339,6 +343,16 @@ public class TabStateStore implements TabPersistentStore {
 
     private void onTabStateDirtinessChanged(Tab tab, @DirtinessState int dirtiness) {
         if (dirtiness == DirtinessState.DIRTY && !tab.isDestroyed()) {
+            saveTab(tab);
+        }
+    }
+
+    private void saveTabIfNotClean(@Nullable Tab tab) {
+        if (tab == null) return;
+
+        TabStateAttributes attributes = TabStateAttributes.from(tab);
+        assumeNonNull(attributes);
+        if (attributes.getDirtinessState() != DirtinessState.CLEAN) {
             saveTab(tab);
         }
     }

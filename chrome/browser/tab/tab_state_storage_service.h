@@ -53,6 +53,11 @@ class TabStateStorageService : public KeyedService,
                          RestoreEntityTrackerFactory builder_factory);
   ~TabStateStorageService() override;
 
+  // Boosts the priority of the database operations to USER_BLOCKING until all
+  // current pending operations are complete. This should be used when it is
+  // critical to save user data.
+  void BoostPriority();
+
   // StorageIdMapping:
   StorageId GetStorageId(const TabCollection* collection) override;
   StorageId GetStorageId(const TabInterface* tab) override;

@@ -95,6 +95,10 @@ TabStateStorageService::TabStateStorageService(
 
 TabStateStorageService::~TabStateStorageService() = default;
 
+void TabStateStorageService::BoostPriority() {
+  tab_backend_.BoostPriority();
+}
+
 StorageId TabStateStorageService::GetStorageId(
     const TabCollection* collection) {
   return ::tabs::GetOrCreateStorageId(collection,
