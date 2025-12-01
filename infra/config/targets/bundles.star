@@ -933,6 +933,7 @@ targets.bundle(
         "android_browsertests",
         "android_sync_integration_tests",
         "android_webview_unittests",
+        "base_unittests_android_death_tests",
         "content_shell_test_apk",
         "mojo_test_apk",
         "ui_android_unittests",

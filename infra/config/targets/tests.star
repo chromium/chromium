@@ -248,6 +248,10 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "base_unittests_android_death_tests",
+)
+
+targets.tests.gtest_test(
     name = "bf_cache_android_browsertests",
     args = [
         "--disable-features=BackForwardCache",

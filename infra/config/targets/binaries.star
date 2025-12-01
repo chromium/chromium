@@ -248,6 +248,13 @@ targets.binaries.console_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
+    name = "base_unittests_android_death_tests",
+    label = "//base:base_unittests_android_death_tests",
+    module_scheme = "gtest",
+    skip_usage_check = True,
+)
+
+targets.binaries.console_test_launcher(
     name = "blink_common_unittests",
     label = "//third_party/blink/common:blink_common_unittests",
     module_scheme = "gtest",
