@@ -27,6 +27,9 @@
 // The background color for the input item.
 @property(nonatomic, readonly) UIColor* inputItemBackgroundColor;
 
+// The background color for the close button.
+@property(nonatomic, readonly) UIColor* closeButtonBackgroundColor;
+
 // The color of the text in AIM button.
 - (UIColor*)aimButtonTextColorWithAIMEnabled:(BOOL)AIMEnabled;
 

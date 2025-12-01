@@ -88,10 +88,10 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   self.view.backgroundColor = _theme.composeboxBackgroundColor;
 
   // Close button.
-  UIColor* closeButtonbackgroundColor = _theme.inputPlateBackgroundColor;
+  UIColor* closeButtonBackgroundColor = _theme.closeButtonBackgroundColor;
   UIButtonConfiguration* config =
       [UIButtonConfiguration plainButtonConfiguration];
-  config.image = CloseButtonImage(closeButtonbackgroundColor, NO);
+  config.image = CloseButtonImage(closeButtonBackgroundColor, NO);
   config.contentInsets = NSDirectionalEdgeInsetsZero;
   _closeButton = [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -100,7 +100,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
     UIButtonConfiguration* updatedConfig = button.configuration;
     BOOL isHighlighted = button.state == UIControlStateHighlighted;
     updatedConfig.image =
-        CloseButtonImage(closeButtonbackgroundColor, isHighlighted);
+        CloseButtonImage(closeButtonBackgroundColor, isHighlighted);
     button.configuration = updatedConfig;
     CGFloat scale = isHighlighted ? 0.95 : 1.0;
     [UIView animateWithDuration:0.1

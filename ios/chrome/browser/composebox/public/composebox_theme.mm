@@ -44,6 +44,10 @@
   return [UIColor colorNamed:kPrimaryBackgroundColor];
 }
 
+- (UIColor*)closeButtonBackgroundColor {
+  return [UIColor colorNamed:kTextfieldBackgroundColor];
+}
+
 - (UIColor*)aimButtonTextColorWithAIMEnabled:(BOOL)AIMEnabled {
   if (AIMEnabled) {
     return [UIColor colorNamed:kBlue600Color];
