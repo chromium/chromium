@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.notifications.tips;
 
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ScrollView;
@@ -53,8 +55,22 @@ public class TipsOptInCoordinator {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/notifications/enums.xml:TipsNotificationsOptInPromoEventType)
 
+    private final ComponentCallbacks mComponentCallbacks =
+            new ComponentCallbacks() {
+                @Override
+                public void onConfigurationChanged(Configuration configuration) {
+                    TipsUtils.scaleBottomSheetImageLogoByWidth(
+                            mContext, configuration, mContentView, R.id.opt_in_logo);
+                }
+
+                @Override
+                public void onLowMemory() {}
+            };
+
+    private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final TipsOptInSheetContent mSheetContent;
+    private final View mContentView;
 
     /**
      * Constructor.
@@ -63,31 +79,38 @@ public class TipsOptInCoordinator {
      * @param bottomSheetController The system {@link BottomSheetController}.
      */
     public TipsOptInCoordinator(Context context, BottomSheetController bottomSheetController) {
+        mContext = context;
         mBottomSheetController = bottomSheetController;
 
-        View contentView =
-                LayoutInflater.from(context)
+        mContentView =
+                LayoutInflater.from(mContext)
                         .inflate(R.layout.tips_opt_in_bottom_sheet, /* root= */ null);
-        mSheetContent = new TipsOptInSheetContent(contentView, bottomSheetController);
+        mSheetContent = new TipsOptInSheetContent(mContentView, bottomSheetController);
 
-        ButtonCompat positiveButtonView = contentView.findViewById(R.id.opt_in_positive_button);
+        ButtonCompat positiveButtonView = mContentView.findViewById(R.id.opt_in_positive_button);
         positiveButtonView.setOnClickListener(
                 (view) -> {
-                    TipsUtils.launchTipsNotificationsSettings(context);
+                    TipsUtils.launchTipsNotificationsSettings(mContext);
                     mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
                     recordOptInPromoEventType(OptInPromoEventType.ACCEPTED);
                 });
 
-        ButtonCompat negativeButtonView = contentView.findViewById(R.id.opt_in_negative_button);
+        ButtonCompat negativeButtonView = mContentView.findViewById(R.id.opt_in_negative_button);
         negativeButtonView.setOnClickListener(
                 (view) -> {
                     mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
                     recordOptInPromoEventType(OptInPromoEventType.IGNORED);
                 });
+
+        // Fire an event for the original setup.
+        mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());
+        mContext.registerComponentCallbacks(mComponentCallbacks);
     }
 
     /** Cleans up resources. */
-    public void destroy() {}
+    public void destroy() {
+        mContext.unregisterComponentCallbacks(mComponentCallbacks);
+    }
 
     /** Shows the promo. The caller is responsible for all eligibility checks. */
     public void showBottomSheet() {
@@ -229,5 +252,13 @@ public class TipsOptInCoordinator {
 
     TipsOptInSheetContent getBottomSheetContentForTesting() {
         return mSheetContent;
+    }
+
+    View getViewForTesting() {
+        return mContentView;
+    }
+
+    void triggerConfigurationChangeForTesting(Configuration configuration) {
+        mComponentCallbacks.onConfigurationChanged(configuration);
     }
 }

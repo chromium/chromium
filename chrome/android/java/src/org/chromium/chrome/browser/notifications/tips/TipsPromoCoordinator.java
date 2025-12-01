@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.notifications.tips;
 
+import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -77,6 +79,18 @@ public class TipsPromoCoordinator {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/notifications/enums.xml:TipsNotificationsFeatureTipPromoEventType)
 
+    private final ComponentCallbacks mComponentCallbacks =
+            new ComponentCallbacks() {
+                @Override
+                public void onConfigurationChanged(Configuration configuration) {
+                    TipsUtils.scaleBottomSheetImageLogoByWidth(
+                            mContext, configuration, mContentView, R.id.main_page_logo);
+                }
+
+                @Override
+                public void onLowMemory() {}
+            };
+
     public static final int INVALID_TIPS_NOTIFICATION_FEATURE_TYPE = -1;
 
     private final Context mContext;
@@ -138,11 +152,16 @@ public class TipsPromoCoordinator {
                                 mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
                     }
                 });
+
+        // Fire an event for the original setup.
+        mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());
+        mContext.registerComponentCallbacks(mComponentCallbacks);
     }
 
     /** Cleans up resources. */
     public void destroy() {
         mChangeProcessor.destroy();
+        mContext.unregisterComponentCallbacks(mComponentCallbacks);
     }
 
     /** Shows the promo. The caller is responsible for all eligibility checks. */
@@ -461,5 +480,9 @@ public class TipsPromoCoordinator {
 
     void setLensControllerForTesting(LensController lensController) {
         mLensController = lensController;
+    }
+
+    void triggerConfigurationChangeForTesting(Configuration configuration) {
+        mComponentCallbacks.onConfigurationChanged(configuration);
     }
 }

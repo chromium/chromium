@@ -7,11 +7,17 @@ package org.chromium.chrome.browser.notifications.tips;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.provider.Settings;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -36,6 +42,7 @@ import org.chromium.components.browser_ui.notifications.BaseNotificationManagerP
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
@@ -45,6 +52,8 @@ import java.util.concurrent.TimeUnit;
 /** Static utilities for Tips Notifications. */
 @NullMarked
 public class TipsUtils {
+    @VisibleForTesting public static final float LOGO_IMAGE_MAX_WIDTH_RATIO = 0.45f;
+
     // LINT.IfChange(TipsShownPrefs)
     public static final String ENHANCED_SAFE_BROWSING_SHOWN =
             "android.tips.notifications.esb_shown";
@@ -306,5 +315,33 @@ public class TipsUtils {
         UserPrefs.get(profile).setBoolean(QUICK_DELETE_SHOWN, false);
         UserPrefs.get(profile).setBoolean(GOOGLE_LENS_SHOWN, false);
         UserPrefs.get(profile).setBoolean(BOTTOM_OMNIBOX_SHOWN, false);
+    }
+
+    /**
+     * Scale the image logo for the bottom sheet by width based on orientation. The bottom sheet
+     * logo images are designed for portrait mode to match parent width and when scaled for
+     * landscape mode/split screen are too large. A ratio is applied based on the screen width to
+     * scale it down to a reasonable size.
+     *
+     * @param context The current context.
+     * @param configuration The current configuration of the device.
+     * @param contentView The content view of the bottom sheet that holds the image.
+     * @param logoRes The resource id of the image logo to be scaled.
+     */
+    public static void scaleBottomSheetImageLogoByWidth(
+            Context context, Configuration configuration, View contentView, @IdRes int logoRes) {
+        // While the logic does not need to be applied to LFFs, detection for tablets is
+        // dependent on minimum width which is the same as the detection for landscape
+        // mode and exclusion would nullify the effects, so this applies to all devices.
+        int screenWidthDp = configuration.screenWidthDp;
+        int screenWidthPixels = ViewUtils.dpToPx(context, screenWidthDp);
+        ImageView logoView = contentView.findViewById(logoRes);
+        ViewGroup.LayoutParams layoutParams = logoView.getLayoutParams();
+
+        layoutParams.width =
+                configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                        ? Math.round(screenWidthPixels * LOGO_IMAGE_MAX_WIDTH_RATIO)
+                        : ViewGroup.LayoutParams.MATCH_PARENT;
+        logoView.setLayoutParams(layoutParams);
     }
 }

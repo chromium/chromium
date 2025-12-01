@@ -11,9 +11,13 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.notifications.tips.TipsUtils.LOGO_IMAGE_MAX_WIDTH_RATIO;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.test.filters.SmallTest;
 
@@ -29,6 +33,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -43,6 +48,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -50,6 +57,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TipsPromoCoordinatorUnitTest {
+    private static final int NARROW_SCREEN_WIDTH_DP = 300;
+    private static final int WIDE_SCREEN_WIDTH_DP = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private QuickDeleteController mQuickDeleteController;
@@ -338,6 +348,48 @@ public class TipsPromoCoordinatorUnitTest {
         verify(mBottomSheetController).removeObserver(eq(observer));
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testConfigurationChangeScalesImageLogo() {
+        // Set up a scenario where context configuration and parameter configuration differ
+        // to verify that the parameter configuration is used.
+
+        // Default context configuration should be narrow screen (phone).
+        // Assert that the width is match parent for portrait phones.
+        assertEquals(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                mView.findViewById(R.id.main_page_logo).getLayoutParams().width);
+
+        // Create a configuration parameter with wide screen (tablet)
+        Configuration tabletConfig = new Configuration();
+        tabletConfig.screenWidthDp = WIDE_SCREEN_WIDTH_DP;
+        tabletConfig.orientation = Configuration.ORIENTATION_LANDSCAPE;
+
+        // Simulate configuration change with tablet config parameter
+        // while context still has phone config.
+        mTipsPromoCoordinator.triggerConfigurationChangeForTesting(tabletConfig);
+
+        // Should now scale (tablet behavior) - proving it uses parameter config.
+        assertEquals(
+                Math.round(
+                        ViewUtils.dpToPx(mActivity, WIDE_SCREEN_WIDTH_DP)
+                                * LOGO_IMAGE_MAX_WIDTH_RATIO),
+                mView.findViewById(R.id.main_page_logo).getLayoutParams().width,
+                MathUtils.EPSILON);
+
+        // Create another configuration parameter with narrow screen (phone).
+        Configuration phoneConfig = new Configuration();
+        phoneConfig.screenWidthDp = NARROW_SCREEN_WIDTH_DP;
+        phoneConfig.orientation = Configuration.ORIENTATION_PORTRAIT;
+
+        // Simulate configuration change back to phone config.
+        mTipsPromoCoordinator.triggerConfigurationChangeForTesting(phoneConfig);
+
+        // Should now be match parent (phone behavior).
+        assertEquals(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                mView.findViewById(R.id.main_page_logo).getLayoutParams().width);
     }
 
     private void setUpTipsPromoCoordinator(@TipsNotificationsFeatureType int featureType) {
