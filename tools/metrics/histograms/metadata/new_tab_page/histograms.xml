@@ -1152,6 +1152,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.LogoShowniOS.GoogleDSE"
+    enum="NewTabPageLogoShowniOSGoogleDSEEnum" expires_after="2026-04-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records whenever the Google default search engine logo is displayed in the
+    NTP. This metric is recorded only when a NTP is created and it is the only
+    NTP open at that moment. If any other NTPs are already open, the metric is
+    not recorded. Only measured on iOS.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.LogoShowniOS.ThirdPartyDSE"
+    enum="NewTabPageLogoShowniOSThirdPartyDSEEnum" expires_after="2026-04-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records whenever the 3rd party default search engine logo is displayed in
+    the NTP. This metric is recorded only when a NTP is created and it is the
+    only NTP open at that moment. If any other NTPs are already open, the metric
+    is not recorded. Only measured on iOS.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.LogoShownTime2" units="ms"
     expires_after="2025-12-28">
   <owner>romanarora@chromium.org</owner>

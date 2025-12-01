@@ -6,6 +6,7 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
@@ -68,6 +69,67 @@ enum ClickedLogoType {
   CLICKED_LOGO_TYPE_ANIMATING,
   CLICKED_LOGO_TYPE_COUNT
 };
+
+const char kLogoShownGoogleDSE[] = "NewTabPage.LogoShowniOS.GoogleDSE";
+// LINT.IfChange(NewTabPageLogoShowniOSGoogleDSEEnum)
+enum class NewTabPageLogoShowniOSGoogleDSEEnum : int {
+  // Embedded logo from Chrome app. This is always record before
+  // kDownloadedLogo, kStaticImageDoodle or kCTADoodle.
+  kEmbeddedLogo,
+  // Logo downloaded. This not possible for Google search engine.
+  kDownloadedLogo,
+  // Doogle with a static image.
+  kStaticImageDoodle,
+  // Call to action doodle (animated doodle).
+  kCTADoodle,
+  kMaxValue = kCTADoodle,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NewTabPageLogoShowniOSGoogleDSEEnum)
+
+const char kLogoShownThirdPartyDSE[] = "NewTabPage.LogoShowniOS.ThirdPartyDSE";
+// LINT.IfChange(NewTabPageLogoShowniOSThirdPartyDSEEnum)
+enum class NewTabPageLogoShowniOSThirdPartyDSEEnum : int {
+  // No logo is displayed. This is always record before kDownloadedLogo,
+  // kStaticImageDoodle or kCTADoodle.
+  kNoLogo,
+  // Logo downloaded. This not possible for Google search engine.
+  kDownloadedLogo,
+  // Doogle with a static image.
+  kStaticImageDoodle,
+  // Call to action doodle (animated doodle).
+  kCTADoodle,
+  kMaxValue = kCTADoodle,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NewTabPageLogoShowniOSThirdPartyDSEEnum)
+
+// Records either Google DSE or 3rd party metric for a downloaded logo.
+void RecordDownloadedLogoMetric(bool is_google_dse) {
+  if (is_google_dse) {
+    base::UmaHistogramEnumeration(
+        kLogoShownGoogleDSE,
+        NewTabPageLogoShowniOSGoogleDSEEnum::kDownloadedLogo);
+  } else {
+    base::UmaHistogramEnumeration(
+        kLogoShownThirdPartyDSE,
+        NewTabPageLogoShowniOSThirdPartyDSEEnum::kDownloadedLogo);
+  }
+}
+
+// Records either Google DSE or 3rd party metric for a doodle (image or cta).
+void RecordDoodleMetric(bool is_google_dse, bool is_cta_doodle) {
+  if (is_google_dse) {
+    NewTabPageLogoShowniOSGoogleDSEEnum value =
+        is_cta_doodle ? NewTabPageLogoShowniOSGoogleDSEEnum::kCTADoodle
+                      : NewTabPageLogoShowniOSGoogleDSEEnum::kStaticImageDoodle;
+    base::UmaHistogramEnumeration(kLogoShownGoogleDSE, value);
+  } else {
+    NewTabPageLogoShowniOSThirdPartyDSEEnum value =
+        is_cta_doodle
+            ? NewTabPageLogoShowniOSThirdPartyDSEEnum::kCTADoodle
+            : NewTabPageLogoShowniOSThirdPartyDSEEnum::kStaticImageDoodle;
+    base::UmaHistogramEnumeration(kLogoShownThirdPartyDSE, value);
+  }
+}
 
 // Called when logo has been fetched.
 void OnLogoAvailable(SearchEngineLogoMediator* mediator,
@@ -238,8 +300,14 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     // For legacy reason, the Google logo should be displayed with aspect fill.
     self.containerView.shrunkLogoView.contentMode =
         UIViewContentModeScaleAspectFill;
+    base::UmaHistogramEnumeration(
+        kLogoShownGoogleDSE,
+        NewTabPageLogoShowniOSGoogleDSEEnum::kEmbeddedLogo);
   } else {
     self.logoState = SearchEngineLogoState::kNone;
+    base::UmaHistogramEnumeration(
+        kLogoShownThirdPartyDSE,
+        NewTabPageLogoShowniOSThirdPartyDSEEnum::kNoLogo);
   }
   self.containerView.shrunkLogoView.image = [self offlineGoogleLogoImage];
   if (_defaultSearchProvider) {
@@ -385,6 +453,8 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   }
   if (self.logoState == SearchEngineLogoState::kLogo &&
       base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV3)) {
+    RecordDownloadedLogoMetric(
+        search::DefaultSearchProviderIsGoogle(_templateURLService));
     // For 3rd party search engine, the logo needs to fit the image view.
     self.containerView.shrunkLogoView.contentMode =
         UIViewContentModeScaleAspectFit;
@@ -416,10 +486,13 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
       base::SysUTF8ToNSString(logo->metadata.alt_text);
 
   // Report the UMA metric.
+  bool hasAnimatedURL = _animatedUrl.is_valid();
   UMA_HISTOGRAM_ENUMERATION(
       kUMANewTabPageLogoShown,
-      _animatedUrl.is_valid() ? SHOWN_LOGO_TYPE_CTA : SHOWN_LOGO_TYPE_STATIC,
+      hasAnimatedURL ? SHOWN_LOGO_TYPE_CTA : SHOWN_LOGO_TYPE_STATIC,
       SHOWN_LOGO_TYPE_COUNT);
+  RecordDoodleMetric(search::DefaultSearchProviderIsGoogle(_templateURLService),
+                     /*is_cta_doodle=*/hasAnimatedURL);
 
   [self.containerView setLogoState:self.logoState animated:animate];
 }

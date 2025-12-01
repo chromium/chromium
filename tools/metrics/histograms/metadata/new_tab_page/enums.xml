@@ -211,6 +211,28 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="CTA image shown"/>
 </enum>
 
+<!-- LINT.IfChange(NewTabPageLogoShowniOSGoogleDSEEnum) -->
+
+<enum name="NewTabPageLogoShowniOSGoogleDSEEnum">
+  <int value="0" label="Embedded logo shown"/>
+  <int value="1" label="Downloaded logo shown"/>
+  <int value="2" label="Static image doodle shown"/>
+  <int value="3" label="CTA doodle shown"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.mm:NewTabPageLogoShowniOSGoogleDSEEnum) -->
+
+<!-- LINT.IfChange(NewTabPageLogoShowniOSThirdPartyDSEEnum) -->
+
+<enum name="NewTabPageLogoShowniOSThirdPartyDSEEnum">
+  <int value="0" label="No logo shown"/>
+  <int value="1" label="Downloaded logo shown"/>
+  <int value="2" label="Static image doodle shown"/>
+  <int value="3" label="CTA doodle shown"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.mm:NewTabPageLogoShowniOSThirdPartyDSEEnum) -->
+
 <enum name="NewTabPageVoiceAction">
   <int value="0" label="Activated by clicking on the fakebox icon"/>
   <int value="1" label="Activated by keyboard shortcut"/>
