@@ -242,10 +242,12 @@ class HistoryBrowserTest : public InProcessBrowserTest {
 
     base::RunLoop run_loop;
     base::CancelableTaskTracker tracker;
+    history::QueryOptions options;
+    options.include_actor_visits = true;
     HistoryServiceFactory::GetForProfile(browser()->profile(),
                                          ServiceAccessType::EXPLICIT_ACCESS)
         ->QueryHistory(
-            std::u16string(), history::QueryOptions(),
+            std::u16string(), options,
             base::BindLambdaForTesting([&](history::QueryResults results) {
               query_results = std::move(results);
               run_loop.Quit();
