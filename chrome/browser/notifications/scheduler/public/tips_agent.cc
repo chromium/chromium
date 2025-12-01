@@ -4,8 +4,6 @@
 
 #include "chrome/browser/notifications/scheduler/public/tips_agent.h"
 
-#include "base/notimplemented.h"
-
 namespace notifications {
 
 // Default implementation of TipsAgent.
@@ -17,9 +15,7 @@ class TipsAgentDefault : public TipsAgent {
   ~TipsAgentDefault() override = default;
 
  private:
-  void ShowTipsPromo(TipsNotificationsFeatureType feature_type) override {
-    NOTIMPLEMENTED();
-  }
+  void ShowTipsPromo(TipsNotificationsFeatureType feature_type) override {}
 };
 
 // static
