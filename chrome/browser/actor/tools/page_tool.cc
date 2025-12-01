@@ -230,20 +230,15 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
   std::optional<TargetNodeInfo> observed_target_node_info;
   if (std::holds_alternative<gfx::Point>(request_->GetTarget())) {
     gfx::Point hit_test_target;
-    if (base::FeatureList::IsEnabled(
-            features::kGlicActorTransformCoordinates)) {
-      // Convert target coordinate from DIPs to screen pixels.
-      display::Screen* screen = display::Screen::Get();
-      float scale_factor =
-          screen
-              ->GetPreferredScaleFactorForWindow(
-                  tab->GetContents()->GetTopLevelNativeWindow())
-              .value();
-      hit_test_target = gfx::ScaleToRoundedPoint(
-          std::get<gfx::Point>(request_->GetTarget()), scale_factor);
-    } else {
-      hit_test_target = std::get<gfx::Point>(request_->GetTarget());
-    }
+
+    // Convert target coordinate from DIPs to screen pixels.
+    display::Screen* screen = display::Screen::Get();
+    float scale_factor = screen
+                             ->GetPreferredScaleFactorForWindow(
+                                 tab->GetContents()->GetTopLevelNativeWindow())
+                             .value();
+    hit_test_target = gfx::ScaleToRoundedPoint(
+        std::get<gfx::Point>(request_->GetTarget()), scale_factor);
 
     // TODO(crbug.com/426021822): FindNodeAtPoint does not handle corner cases
     // like clip paths. Need more checks to ensure we don't drop actions

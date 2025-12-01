@@ -28,7 +28,6 @@ class GlicActorPopupUiTest : public GlicActorUiTest,
         {
             features::kGlicActorInternalPopups,
             blink::features::kAIPageContentIncludePopupWindows,
-            features::kGlicActorTransformCoordinates,
         },
         /*disabled_features=*/{});
     if (GetParam()) {

@@ -410,9 +410,6 @@ const base::FeatureParam<size_t>
 const base::FeatureParam<base::TimeDelta> kGlicActorTypeToolEnterDelay{
     &kGlicActor, "glic-actor-type-tool-enter-delay", base::Milliseconds(600)};
 
-const base::FeatureParam<bool> kGlicActorScrollTargetIntoView{
-    &kGlicActor, "scroll-target-into-view", true};
-
 constexpr base::FeatureParam<GlicActorEnterprisePrefDefault>::Option
     kGlicActorEnterprisePrefDefaultOptions[] = {
         {GlicActorEnterprisePrefDefault::kEnabledByDefault,
@@ -438,12 +435,6 @@ BASE_FEATURE(kGlicActorToctouValidation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicActorInternalPopups, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicActorCoordinateScrollTool, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether the browser interprets scroll distances from the server as
-// DIPs (enavled) or physical pixels (disabled).
-BASE_FEATURE(kGlicActorScrollToolDIP, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the actor framework searches for an interaction point when
 // when the center of the target element is obscured.
 BASE_FEATURE(kGlicActorIterativeInteractionPointDiscovery,
@@ -454,20 +445,6 @@ const base::FeatureParam<size_t>
     kGlicActorInterationPointDiscoveryMaxIterations{
         &kGlicActorIterativeInteractionPointDiscovery,
         "interaction-discovery-max-iterations", 0};
-
-// Whether to use modifiers to mouse actions during the drag and release tool.
-BASE_FEATURE(kGlicActorUseDragModifiers, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Whether to project the actuation target from display independent coordinates
-// to pixel coordinates when performing browser-side TOCTOU checks.
-BASE_FEATURE(kGlicActorTransformCoordinates, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Call CancelPagePopup to dismiss the page popup instead of calling blur.
-BASE_FEATURE(kGlicActorSelectCancelsPopup, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Whether to add a small delay between mouse actions during the drag and
-// release tool
-BASE_FEATURE(kGlicActorSplitDragAndRelease, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to trigger mouse move events with each click.
 BASE_FEATURE(kGlicActorMoveBeforeClick, base::FEATURE_ENABLED_BY_DEFAULT);

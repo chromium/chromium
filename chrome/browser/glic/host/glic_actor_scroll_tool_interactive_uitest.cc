@@ -346,23 +346,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ZeroIdTargetsViewport) {
       CheckJsResult(kNewActorTabId, "() => window.scrollY", kScrollOffsetY));
 }
 
-// This is testing flag-guard code and to remove the test suite once the change
-// lands safely.
-class GlicActorCoordinateScrollToolUiTest : public GlicActorScrollToolUiTest {
- public:
-  GlicActorCoordinateScrollToolUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kGlicActorCoordinateScrollTool);
-  }
-  ~GlicActorCoordinateScrollToolUiTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Test targeting a subscroller for scrolling using a coordinate.
-IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
-                       ScrollElementWithCoordinate) {
+IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ScrollElementWithCoordinate) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kScrollerId = "scroller";
   const GURL task_url =
@@ -412,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
 
 // Test scrolling in a non-scrollable element on the page with coordinate.
 // This will result scrolling the root page scroller.
-IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest,
                        ScrollNonScrollableElementWithCoordinate) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kNonScrollerId = "nonscroll";
@@ -443,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
 }
 
 // Test scrolling on the page with invalid coordinate.
-IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest,
                        ScrollInvalidCoordinateFails) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
@@ -462,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
 // Test scrolling a scroller that's currently offscreen with coordinate.
 // This is expected to fail because offscreen actuation supports only DOMNodeId
 // targeting.
-IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest,
                        OffscreenScrollableWithCoordinate) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kOffScreenScrollerId = "offscreenscroller";
@@ -494,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
 }
 
 // Test scrolling in a non-scrollable element on the page with coordinate.
-IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest,
                        ScrollNonScrollableElementAndPageWithCoordinate) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kNonScrollerId = "nonscroll";
@@ -533,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
 // overlapping its center area. Because scroll tool with coordinate does not use
 // toctou check, this test case will still succeed and will not throw a
 // kObservedTargetElementDestroyed error.
-IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest,
                        ScrollBubblesFromNonScrollingElement) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kButtonId = "button";
@@ -581,50 +566,6 @@ IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
           kNewActorTabId,
           "() => document.getElementById('buttonscroller').scrollLeft",
           kScrollOffsetX));
-}
-
-// This is testing flag-guard disabled code and to remove the test once the flag
-// lands safely.
-class GlicActorCoordinateDisabledScrollToolUiTest
-    : public GlicActorScrollToolUiTest {
- public:
-  GlicActorCoordinateDisabledScrollToolUiTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kGlicActorCoordinateScrollTool);
-  }
-  ~GlicActorCoordinateDisabledScrollToolUiTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(GlicActorCoordinateDisabledScrollToolUiTest,
-                       ScrollWithCoordinateExpectToFail) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  constexpr std::string_view kScrollerId = "scroller";
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
-  gfx::Rect scroller_bound;
-  const int kScrollOffsetY = 50;
-
-  auto scroller_y_provider =
-      base::BindLambdaForTesting([&scroller_bound, this]() {
-        gfx::Point coordinate = scroller_bound.CenterPoint();
-        content::RenderFrameHost* frame =
-            tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
-        apc::Actions action = actor::MakeScroll(
-            *frame, coordinate, /*scroll_offset_x=*/0, kScrollOffsetY);
-
-        action.set_task_id(task_id_.value());
-        return EncodeActionProto(action);
-      });
-
-  RunTestSequence(InitializeWithOpenGlicWindow(),
-                  StartActorTaskInNewTab(task_url, kNewActorTabId),
-                  GetPageContextForActorTab(),
-                  GetClientRect(kNewActorTabId, kScrollerId, scroller_bound),
-                  ExecuteAction(std::move(scroller_y_provider),
-                                actor::mojom::ActionResultCode::kError));
 }
 
 }  // namespace

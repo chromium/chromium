@@ -150,10 +150,8 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
       NOTREACHED();
   }
 
-  if (features::kGlicActorScrollTargetIntoView.Get()) {
-    if (tool_->EnsureTargetInView()) {
-      performed_scroll_into_view_ = true;
-    }
+  if (tool_->EnsureTargetInView()) {
+    performed_scroll_into_view_ = true;
   }
 
   execute_journal_entry_ = journal_->CreatePendingAsyncEntry(

@@ -109,43 +109,6 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kGlicActorSplitDragAndRelease)) {
-    // Use the old code.
-    widget = from_target.GetWidget(*this);
-    if (!widget) {
-      std::move(callback).Run(
-          MakeResult(mojom::ActionResultCode::kFrameWentAway));
-      return;
-    }
-
-    // Move and release the mouse on the to_point.
-    if (!InjectMouseEvent(*widget, to_target.widget_point,
-                          EventType::kMouseMove,
-                          WebMouseEvent::Button::kLeft)) {
-      std::move(callback).Run(
-          MakeResult(mojom::ActionResultCode::kDragAndReleaseToMoveSuppressed,
-                     /*requires_page_stabilization=*/true));
-      return;
-    }
-
-    widget = from_target.GetWidget(*this);
-    if (!widget) {
-      std::move(callback).Run(
-          MakeResult(mojom::ActionResultCode::kFrameWentAway));
-      return;
-    }
-
-    if (!InjectMouseEvent(*widget, to_target.widget_point, EventType::kMouseUp,
-                          WebMouseEvent::Button::kLeft)) {
-      std::move(callback).Run(
-          MakeResult(mojom::ActionResultCode::kDragAndReleaseUpSuppressed,
-                     /*requires_page_stabilization=*/true));
-      return;
-    }
-
-    std::move(callback).Run(MakeOkResult());
-    return;
-  }
   // We need a time delay between the click and first move for some pages.
   task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   task_runner_->PostDelayedTask(
@@ -286,18 +249,16 @@ bool DragAndReleaseTool::InjectMouseEvent(WebWidget& widget,
     mouse_event.click_count = 1;
   }
 
-  if (base::FeatureList::IsEnabled(features::kGlicActorUseDragModifiers)) {
-    mouse_event.UpdateEventModifiersToMatchButton();
-    if (type == WebInputEvent::Type::kMouseMove) {
-      switch (button) {
-        case blink::WebMouseEvent::Button::kNoButton:
-          break;
-        case blink::WebMouseEvent::Button::kLeft:
-          mouse_event.SetModifiers(WebInputEvent::Modifiers::kLeftButtonDown);
-          break;
-        default:
-          NOTREACHED();
-      }
+  mouse_event.UpdateEventModifiersToMatchButton();
+  if (type == WebInputEvent::Type::kMouseMove) {
+    switch (button) {
+      case blink::WebMouseEvent::Button::kNoButton:
+        break;
+      case blink::WebMouseEvent::Button::kLeft:
+        mouse_event.SetModifiers(WebInputEvent::Modifiers::kLeftButtonDown);
+        break;
+      default:
+        NOTREACHED();
     }
   }
 

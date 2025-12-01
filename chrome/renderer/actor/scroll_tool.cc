@@ -130,46 +130,8 @@ ScrollTool::ValidatedResult ScrollTool::Validate() const {
   // No matter what frame the scroll element is on, it must be on the same
   // physical screen, so the device scale factor will be the same.
   const float dsf =
-      base::FeatureList::IsEnabled(features::kGlicActorScrollToolDIP)
-          ? web_frame->FrameWidget()->GetScreenInfo().device_scale_factor
-          : 1.0;
+      web_frame->FrameWidget()->GetScreenInfo().device_scale_factor;
   gfx::Vector2dF offset_physical = gfx::ScaleVector2d(offset_dips, dsf);
-
-  // This is the existing code path when `kGlicActorCoordinateScrollTool` is
-  // disabled and can be removed once the flag lands safely.
-  if (!base::FeatureList::IsEnabled(features::kGlicActorCoordinateScrollTool)) {
-    if (target_->is_coordinate_dip()) {
-      NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
-      return base::unexpected(MakeErrorResult());
-    }
-
-    WebElement scrolling_element;
-    int32_t dom_node_id = target_->get_dom_node_id();
-    if (dom_node_id == kRootElementDomNodeId) {
-      scrolling_element = web_frame->GetDocument().ScrollingElement();
-      if (scrolling_element.IsNull()) {
-        return base::unexpected(
-            MakeResult(mojom::ActionResultCode::kScrollNoScrollingElement));
-      }
-    } else {
-      auto resolved_target = ValidateAndResolveTarget();
-      if (!resolved_target.has_value()) {
-        return base::unexpected(std::move(resolved_target.error()));
-      }
-      scrolling_element = resolved_target->node.DynamicTo<WebElement>();
-    }
-
-    if ((offset_dips.x() && !scrolling_element.IsUserScrollableX()) ||
-        (offset_dips.y() && !scrolling_element.IsUserScrollableY())) {
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kScrollTargetNotUserScrollable,
-                     /*requires_page_stabilization=*/false,
-                     absl::StrFormat("ScrollingElement [%s]",
-                                     base::ToString(scrolling_element))));
-    }
-    return ScrollerAndDistance{scrolling_element, offset_physical};
-  }
-
 
   WebElement scrolling_element;
   if (target_->is_coordinate_dip()) {

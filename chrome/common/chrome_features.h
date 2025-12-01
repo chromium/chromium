@@ -281,9 +281,6 @@ extern const base::FeatureParam<base::TimeDelta>(kActorObservationDelayLcp);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorObservationDelayExcludeAdFrameLoading);
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool> kGlicActorScrollTargetIntoView;
-
 // Specifies the default pref value for `glic:prefs::kGlicActuationOnWeb` for
 // enterprise users. Does not affect non-enterprise users.
 enum class GlicActorEnterprisePrefDefault {
@@ -329,28 +326,11 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorInternalPopups);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicActorCoordinateScrollTool);
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicActorScrollToolDIP);
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorIterativeInteractionPointDiscovery);
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<size_t>
     kGlicActorInterationPointDiscoveryMaxIterations;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicActorUseDragModifiers);
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicActorTransformCoordinates);
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicActorSelectCancelsPopup);
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicActorSplitDragAndRelease);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorMoveBeforeClick);
