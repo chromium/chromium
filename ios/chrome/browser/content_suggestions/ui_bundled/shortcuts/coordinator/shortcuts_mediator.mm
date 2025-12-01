@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/coordinator/shortcuts_mediator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/crb_protocol_observers.h"
@@ -11,15 +11,16 @@
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_tile_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_commands.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_config.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_consumer.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/coordinator/shortcuts_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_action_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_commands.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_config.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_consumer.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_consumer_source.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_tile_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -41,7 +42,7 @@
   std::unique_ptr<ReadingListModelBridge> _readingListModelBridge;
   // Item for the reading list action item.  Reference is used to update the
   // reading list count.
-  ContentSuggestionsShortcutItem* _readingListItem;
+  ShortcutsActionItem* _readingListItem;
   // Indicates if reading list model is loaded. Readlist cannot be triggered
   // until it is.
   BOOL _readingListModelIsLoaded;
@@ -80,21 +81,21 @@
   _identityManager = nil;
 }
 
-- (NSArray<ContentSuggestionsShortcutItem*>*)shortcutItems {
-  _readingListItem = [[ContentSuggestionsShortcutItem alloc]
+- (NSArray<ShortcutsActionItem*>*)shortcutItems {
+  _readingListItem = [[ShortcutsActionItem alloc]
       initWithCollectionShortcutType:NTPCollectionShortcutTypeReadingList];
   _readingListItem.count = _readingListUnreadCount;
   _readingListItem.disabled = !_readingListModelIsLoaded;
-  NSArray<ContentSuggestionsShortcutItem*>* shortcuts = @[
+  NSArray<ShortcutsActionItem*>* shortcuts = @[
     [self shouldShowWhatsNewActionItem]
-        ? [[ContentSuggestionsShortcutItem alloc]
+        ? [[ShortcutsActionItem alloc]
               initWithCollectionShortcutType:NTPCollectionShortcutTypeWhatsNew]
-        : [[ContentSuggestionsShortcutItem alloc]
+        : [[ShortcutsActionItem alloc]
               initWithCollectionShortcutType:NTPCollectionShortcutTypeBookmark],
     _readingListItem,
-    [[ContentSuggestionsShortcutItem alloc]
+    [[ShortcutsActionItem alloc]
         initWithCollectionShortcutType:NTPCollectionShortcutTypeRecentTabs],
-    [[ContentSuggestionsShortcutItem alloc]
+    [[ShortcutsActionItem alloc]
         initWithCollectionShortcutType:NTPCollectionShortcutTypeHistory]
   ];
   return shortcuts;
@@ -118,9 +119,8 @@
   ContentSuggestionsShortcutTileView* shortcutView =
       static_cast<ContentSuggestionsShortcutTileView*>(sender.view);
 
-  ContentSuggestionsShortcutItem* shortcutsItem =
-      base::apple::ObjCCastStrict<ContentSuggestionsShortcutItem>(
-          shortcutView.config);
+  ShortcutsActionItem* shortcutsItem =
+      base::apple::ObjCCastStrict<ShortcutsActionItem>(shortcutView.config);
   if (shortcutsItem.disabled) {
     return;
   }

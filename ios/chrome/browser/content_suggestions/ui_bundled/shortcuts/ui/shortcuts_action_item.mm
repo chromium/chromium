@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_action_item.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_constants.h"
 
-@implementation ContentSuggestionsShortcutItem
+@implementation ShortcutsActionItem
 
 - (instancetype)initWithCollectionShortcutType:(NTPCollectionShortcutType)type {
   self = [super init];

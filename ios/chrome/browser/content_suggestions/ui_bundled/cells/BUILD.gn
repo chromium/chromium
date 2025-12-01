@@ -4,16 +4,6 @@
 
 import("//ios/build/chrome_build.gni")
 
-source_set("public") {
-  sources = [
-    "shortcuts_commands.h",
-    "shortcuts_consumer.h",
-    "shortcuts_consumer_source.h",
-  ]
-  deps = []
-  frameworks = [ "UIKit.framework" ]
-}
-
 source_set("cells") {
   sources = [
     "content_suggestions_most_visited_constants.h",
@@ -131,37 +121,6 @@ source_set("most_visited_tiles") {
   }
 }
 
-source_set("shortcuts") {
-  sources = [
-    "content_suggestions_shortcut_item.h",
-    "content_suggestions_shortcut_item.mm",
-    "content_suggestions_shortcut_tile_view.h",
-    "content_suggestions_shortcut_tile_view.mm",
-    "shortcuts_config.h",
-    "shortcuts_config.mm",
-    "shortcuts_mediator.h",
-    "shortcuts_mediator.mm",
-  ]
-  deps = [
-    ":constants",
-    ":most_visited_action",
-    ":public",
-    "//components/feature_engagement/public",
-    "//components/reading_list/core",
-    "//components/reading_list/ios",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:metrics",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:ui_util",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
-    "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/ntp/ui_bundled",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/whats_new/coordinator:util",
-  ]
-}
-
 source_set("most_visited_action") {
   sources = [
     "content_suggestions_most_visited_action_item.h",
@@ -172,7 +131,6 @@ source_set("most_visited_action") {
   deps = [
     ":cells",
     ":constants",
-    ":public",
     "//ios/chrome/browser/ntp/ui_bundled:theme",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -205,13 +163,11 @@ source_set("unit_tests") {
   sources = [
     "content_suggestions_tile_saver_unittest.mm",
     "most_visited_tiles_mediator_unittest.mm",
-    "shortcuts_mediator_unittest.mm",
   ]
   deps = [
     ":cells",
     ":constants",
     ":most_visited_tiles",
-    ":shortcuts",
     "//base",
     "//base/test:test_support",
     "//components/feature_engagement/test:test_support",

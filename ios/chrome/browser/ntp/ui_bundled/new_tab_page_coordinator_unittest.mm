@@ -12,10 +12,10 @@
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_action_item.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_observer.h"
@@ -451,8 +451,7 @@ TEST_F(NewTabPageCoordinatorTest, ShortcutsStartMetricLogging) {
   histogram_tester_->ExpectTotalCount(kStartTimeSpentHistogram, 0);
   histogram_tester_->ExpectTotalCount(kStartImpressionHistogram, 1);
 
-  ContentSuggestionsShortcutItem* item =
-      [[ContentSuggestionsShortcutItem alloc] init];
+  ShortcutsActionItem* item = [[ShortcutsActionItem alloc] init];
   item.title = @"Bookmarks 0";
   [coordinator_ shortcutTileOpened];
   // Force the URL load callback to simulate the NavigationManager receiving the

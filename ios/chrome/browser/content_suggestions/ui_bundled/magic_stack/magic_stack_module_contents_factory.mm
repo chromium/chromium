@@ -7,15 +7,10 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/app_bundle_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/app_bundle_promo_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_stack_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/multi_row_container_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_commands.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_config.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/ui/default_browser_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/ui/default_browser_view.h"
@@ -39,6 +34,11 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_price_tracking_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_action_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_commands.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_config.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_consumer_source.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/standalone_module_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui/tab_resumption_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui/tab_resumption_item.h"
@@ -134,7 +134,7 @@
 - (UIView*)shortcutsStackViewForConfig:(ShortcutsConfig*)shortcutsConfig
                            tileSpacing:(CGFloat)spacing {
   NSMutableArray* shortcutsViews = [NSMutableArray array];
-  for (ContentSuggestionsShortcutItem* item in shortcutsConfig.shortcutItems) {
+  for (ShortcutsActionItem* item in shortcutsConfig.shortcutItems) {
     ContentSuggestionsShortcutTileView* view =
         [[ContentSuggestionsShortcutTileView alloc] initWithConfiguration:item];
     [shortcutsConfig.consumerSource addConsumer:view];

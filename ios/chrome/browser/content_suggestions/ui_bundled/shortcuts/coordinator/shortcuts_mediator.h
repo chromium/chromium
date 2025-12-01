@@ -2,39 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_SHORTCUTS_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_SHORTCUTS_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHORTCUTS_COORDINATOR_SHORTCUTS_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHORTCUTS_COORDINATOR_SHORTCUTS_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_commands.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_commands.h"
 
 namespace feature_engagement {
 class Tracker;
-}
+}  // namespace feature_engagement
 
 namespace signin {
 class IdentityManager;
-}
+}  // namespace signin
 
 @protocol ApplicationCommands;
 @protocol BrowserCoordinatorCommands;
 @protocol ContentSuggestionsConsumer;
 @class ContentSuggestionsMetricsRecorder;
-enum class ContentSuggestionsModuleType;
 @protocol NewTabPageActionsDelegate;
 class ReadingListModel;
 @class ShortcutsConfig;
+@protocol ShortcutsMediatorDelegate;
 @protocol WhatsNewCommands;
-
-// Delegate used to communicate events back to the owner of
-// ShortcutsMediator.
-@protocol ShortcutsMediatorDelegate
-
-// Logs a user Magic Stack engagement for module `type`.
-- (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;
-
-@end
 
 // Mediator for managing the state of the Shortcuts Magic Stack module
 @interface ShortcutsMediator : NSObject <ShortcutsCommands>
@@ -66,10 +57,12 @@ class ReadingListModel;
                          identityManager:
                              (signin::IdentityManager*)identityManager
     NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)init NS_UNAVAILABLE;
 
+// Disconnects this mediator.
 - (void)disconnect;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_SHORTCUTS_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHORTCUTS_COORDINATOR_SHORTCUTS_MEDIATOR_H_

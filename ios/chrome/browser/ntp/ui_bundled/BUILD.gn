@@ -383,7 +383,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/content_suggestions/ui_bundled:coordinator",
     "//ios/chrome/browser/content_suggestions/ui_bundled:ui",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:shortcuts",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui",
     "//ios/chrome/browser/discover_feed/model",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/discover_feed/model:discover_feed_visibility_browser_agent",

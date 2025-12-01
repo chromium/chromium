@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_SHORTCUTS_CONFIG_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_SHORTCUTS_CONFIG_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHORTCUTS_UI_SHORTCUTS_CONFIG_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHORTCUTS_UI_SHORTCUTS_CONFIG_H_
 
 #import <UIKit/UIKit.h>
 
 @protocol ShortcutsCommands;
 @protocol ShortcutsConsumerSource;
-@class ContentSuggestionsShortcutItem;
+@class ShortcutsActionItem;
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module.h"
 
@@ -17,8 +17,7 @@
 @interface ShortcutsConfig : MagicStackModule
 
 // List of Shortcuts to show in module.
-@property(nonatomic, strong)
-    NSArray<ContentSuggestionsShortcutItem*>* shortcutItems;
+@property(nonatomic, strong) NSArray<ShortcutsActionItem*>* shortcutItems;
 
 // Shortcuts model.
 @property(nonatomic, weak) id<ShortcutsConsumerSource> consumerSource;
@@ -28,4 +27,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_SHORTCUTS_CONFIG_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHORTCUTS_UI_SHORTCUTS_CONFIG_H_

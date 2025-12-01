@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/coordinator/shortcuts_mediator.h"
 
 #import "base/time/default_clock.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/reading_list/core/fake_reading_list_model_storage.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/coordinator/shortcuts_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_action_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_tile_view.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
@@ -85,9 +86,8 @@ TEST_F(ShortcutsMediatorTest, TestOpenReadingList) {
       logMagicStackEngagementForType:ContentSuggestionsModuleType::kShortcuts]);
 
   // Action.
-  ContentSuggestionsShortcutItem* readingList =
-      [[ContentSuggestionsShortcutItem alloc]
-          initWithCollectionShortcutType:NTPCollectionShortcutTypeReadingList];
+  ShortcutsActionItem* readingList = [[ShortcutsActionItem alloc]
+      initWithCollectionShortcutType:NTPCollectionShortcutTypeReadingList];
   ContentSuggestionsShortcutTileView* shortcutView =
       [[ContentSuggestionsShortcutTileView alloc]
           initWithConfiguration:readingList];
@@ -109,9 +109,8 @@ TEST_F(ShortcutsMediatorTest, TestOpenWhatsNew) {
       logMagicStackEngagementForType:ContentSuggestionsModuleType::kShortcuts]);
 
   // Action.
-  ContentSuggestionsShortcutItem* whatsNew =
-      [[ContentSuggestionsShortcutItem alloc]
-          initWithCollectionShortcutType:NTPCollectionShortcutTypeWhatsNew];
+  ShortcutsActionItem* whatsNew = [[ShortcutsActionItem alloc]
+      initWithCollectionShortcutType:NTPCollectionShortcutTypeWhatsNew];
   ContentSuggestionsShortcutTileView* shortcutView =
       [[ContentSuggestionsShortcutTileView alloc]
           initWithConfiguration:whatsNew];
