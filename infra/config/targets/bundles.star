@@ -6875,6 +6875,12 @@ targets.bundle(
     ],
     per_test_modifications = {
         "updater_tests": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                    hard_timeout_sec = 7200,
+                ),
+            ),
             "integrity_high",
             "updater-default-pool",
         ],
