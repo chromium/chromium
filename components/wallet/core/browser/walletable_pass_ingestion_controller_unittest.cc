@@ -31,7 +31,6 @@ using optimization_guide::ModelBasedCapabilityKey::kWalletablePassExtraction;
 using optimization_guide::OptimizationGuideDecision::kFalse;
 using optimization_guide::OptimizationGuideDecision::kTrue;
 using optimization_guide::proto::WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST;
-using optimization_guide::proto::WalletablePass;
 using testing::_;
 using testing::Eq;
 using testing::Return;
@@ -60,7 +59,7 @@ class MockWalletablePassClient : public WalletablePassClient {
   MOCK_METHOD(
       void,
       ShowWalletablePassSaveBubble,
-      (const optimization_guide::proto::WalletablePass& pass,
+      (WalletablePass pass,
        WalletablePassClient::WalletablePassBubbleResultCallback callback),
       (override));
   MOCK_METHOD(strike_database::StrikeDatabaseBase*,
@@ -136,9 +135,11 @@ class WalletablePassIngestionControllerTest : public testing::Test {
   }
 
   WalletablePass CreateLoyaltyCard(
-      const std::string& memeber_id = "test_member_id") {
+      const std::string& member_id = "test_member_id") {
     WalletablePass walletable_pass;
-    walletable_pass.mutable_loyalty_card()->set_member_id(memeber_id);
+    LoyaltyCard loyalty_card;
+    loyalty_card.member_id = member_id;
+    walletable_pass.pass_data = std::move(loyalty_card);
     return walletable_pass;
   }
 
@@ -146,7 +147,7 @@ class WalletablePassIngestionControllerTest : public testing::Test {
       const WalletablePass& expected_pass,
       WalletablePassClient::WalletablePassBubbleResultCallback* out_callback) {
     EXPECT_CALL(mock_client(),
-                ShowWalletablePassSaveBubble(EqualsProto(expected_pass), _))
+                ShowWalletablePassSaveBubble(Eq(expected_pass), _))
         .WillOnce(WithArgs<1>(
             [out_callback](
                 WalletablePassClient::WalletablePassBubbleResultCallback
@@ -310,7 +311,7 @@ TEST_F(WalletablePassIngestionControllerTest,
   test_api(controller()).StartWalletablePassDetectionFlow(url);
 }
 TEST_F(WalletablePassIngestionControllerTest,
-       StartWalletablePassDetectionFlow_NotEligible_UrlNotAollowlisted) {
+       StartWalletablePassDetectionFlow_NotEligible_UrlNotAllowlisted) {
   test_identity_environment().MakePrimaryAccountAvailable(
       "test@gmail.com", signin::ConsentLevel::kSignin);
   GURL url("https://example.com");
@@ -519,8 +520,7 @@ TEST_F(WalletablePassIngestionControllerTest,
   WalletablePassClient::WalletablePassBubbleResultCallback bubble_callback;
   ExpectSaveBubbleOnClient(walletable_pass, &bubble_callback);
 
-  test_api(controller())
-      .ShowSaveBubble(url, std::make_unique<WalletablePass>(walletable_pass));
+  test_api(controller()).ShowSaveBubble(url, walletable_pass);
 
   // Simulate accepting the bubble.
   std::move(bubble_callback)
@@ -542,8 +542,7 @@ TEST_F(WalletablePassIngestionControllerTest,
   WalletablePassClient::WalletablePassBubbleResultCallback bubble_callback;
   ExpectSaveBubbleOnClient(walletable_pass, &bubble_callback);
 
-  test_api(controller())
-      .ShowSaveBubble(url, std::make_unique<WalletablePass>(walletable_pass));
+  test_api(controller()).ShowSaveBubble(url, walletable_pass);
 
   // Simulate declining the bubble.
   std::move(bubble_callback)
@@ -565,8 +564,7 @@ TEST_F(WalletablePassIngestionControllerTest,
   WalletablePassClient::WalletablePassBubbleResultCallback bubble_callback;
   ExpectSaveBubbleOnClient(walletable_pass, &bubble_callback);
 
-  test_api(controller())
-      .ShowSaveBubble(url, std::make_unique<WalletablePass>(walletable_pass));
+  test_api(controller()).ShowSaveBubble(url, walletable_pass);
 
   // Simulate lost focus.
   std::move(bubble_callback)

@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "components/wallet/core/browser/data_models/country_type.h"
+#include "components/wallet/core/browser/data_models/walletable_pass.h"
 
 class PrefService;
 
@@ -72,7 +73,7 @@ class WalletablePassClient {
       WalletablePassBubbleResultCallback callback) = 0;
 
   virtual void ShowWalletablePassSaveBubble(
-      const optimization_guide::proto::WalletablePass& pass,
+      WalletablePass pass,
       WalletablePassBubbleResultCallback callback) = 0;
 };
 

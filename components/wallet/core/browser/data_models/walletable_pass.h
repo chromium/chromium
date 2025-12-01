@@ -27,6 +27,8 @@ struct LoyaltyCard {
       std::optional<WalletBarcode> barcode);
 
   LoyaltyCard();
+  LoyaltyCard(const LoyaltyCard&);
+  LoyaltyCard& operator=(const LoyaltyCard&);
   LoyaltyCard(LoyaltyCard&&);
   LoyaltyCard& operator=(LoyaltyCard&&);
   ~LoyaltyCard();
@@ -47,6 +49,8 @@ struct EventPass {
                              std::optional<WalletBarcode> barcode);
 
   EventPass();
+  EventPass(const EventPass&);
+  EventPass& operator=(const EventPass&);
   EventPass(EventPass&&);
   EventPass& operator=(EventPass&&);
   ~EventPass();
@@ -75,6 +79,8 @@ struct BoardingPass {
   static std::optional<BoardingPass> FromBCBP(const WalletBarcode& barcode);
 
   BoardingPass();
+  BoardingPass(const BoardingPass&);
+  BoardingPass& operator=(const BoardingPass&);
   BoardingPass(BoardingPass&&);
   BoardingPass& operator=(BoardingPass&&);
   ~BoardingPass();
@@ -98,6 +104,8 @@ struct TransitTicket {
       std::optional<WalletBarcode> barcode);
 
   TransitTicket();
+  TransitTicket(const TransitTicket&);
+  TransitTicket& operator=(const TransitTicket&);
   TransitTicket(TransitTicket&&);
   TransitTicket& operator=(TransitTicket&&);
   ~TransitTicket();
@@ -135,6 +143,8 @@ struct WalletablePass {
       const WalletBarcode& barcode);
 
   WalletablePass();
+  WalletablePass(const WalletablePass&);
+  WalletablePass& operator=(const WalletablePass&);
   WalletablePass(WalletablePass&&);
   WalletablePass& operator=(WalletablePass&&);
   ~WalletablePass();

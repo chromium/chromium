@@ -10,31 +10,30 @@
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/strike_database/strike_database_base.h"
+#include "components/wallet/core/browser/data_models/walletable_pass.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 #include "components/wallet/core/browser/walletable_permission_utils.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 namespace wallet {
 namespace {
 
 using optimization_guide::proto::PassCategory;
-using optimization_guide::proto::WalletablePass;
 using enum WalletablePassClient::WalletablePassBubbleResult;
 using enum optimization_guide::proto::PassCategory;
 
 PassCategory GetPassCategory(const WalletablePass& walletable_pass) {
-  switch (walletable_pass.pass_case()) {
-    case WalletablePass::kLoyaltyCard:
-      return PASS_CATEGORY_LOYALTY_CARD;
-    case WalletablePass::kEventPass:
-      return PASS_CATEGORY_EVENT_PASS;
-    case WalletablePass::kTransitTicket:
-      return PASS_CATEGORY_TRANSIT_TICKET;
-    case WalletablePass::PASS_NOT_SET:
-    default:
-      // Should be handled by the caller before this function is invoked.
-      NOTREACHED();
-  }
+  return std::visit(
+      absl::Overload(
+          [](const LoyaltyCard&) { return PASS_CATEGORY_LOYALTY_CARD; },
+          [](const EventPass&) { return PASS_CATEGORY_EVENT_PASS; },
+          [](const TransitTicket&) { return PASS_CATEGORY_TRANSIT_TICKET; },
+          [](const BoardingPass&) {
+            // TODO(crbug.com/463515055): Create enum for boarding pass.
+            return PASS_CATEGORY_UNSPECIFIED;
+          }),
+      walletable_pass.pass_data);
 }
 
 std::string GetPassCategoryString(PassCategory pass_category) {
@@ -232,34 +231,39 @@ void WalletablePassIngestionController::OnExtractWalletablePass(
   }
 
   if (parsed_response->walletable_pass(0).pass_case() ==
-      WalletablePass::PASS_NOT_SET) {
+      optimization_guide::proto::WalletablePass::PASS_NOT_SET) {
     // TODO(crbug.com/441892746): Report invalid walletable pass found to UMA
     return;
   }
 
-  auto walletable_pass =
-      std::make_unique<WalletablePass>(parsed_response->walletable_pass(0));
-  ShowSaveBubble(url, std::move(walletable_pass));
+  std::optional<WalletablePass> walletable_pass =
+      WalletablePass::FromProto(parsed_response->walletable_pass(0));
+  if (!walletable_pass) {
+    return;
+  }
+  ShowSaveBubble(url, std::move(*walletable_pass));
 }
 
 void WalletablePassIngestionController::ShowSaveBubble(
     const GURL& url,
-    std::unique_ptr<WalletablePass> walletable_pass) {
-  const std::string category = GetPassCategoryString(*walletable_pass);
+    WalletablePass walletable_pass) {
+  const std::string category = GetPassCategoryString(walletable_pass);
 
-  WalletablePass* pass_ptr = walletable_pass.get();
+  // Create a copy of walletable_pass for the callback to avoid use-after-move.
+  WalletablePass walletable_pass_for_callback = walletable_pass;
+
   client_->ShowWalletablePassSaveBubble(
-      *pass_ptr,
+      std::move(walletable_pass),
       base::BindOnce(&WalletablePassIngestionController::OnGetSaveBubbleResult,
                      weak_ptr_factory_.GetWeakPtr(), url,
-                     std::move(walletable_pass)));
+                     std::move(walletable_pass_for_callback)));
 }
 
 void WalletablePassIngestionController::OnGetSaveBubbleResult(
     const GURL& url,
-    std::unique_ptr<WalletablePass> walletable_pass,
+    WalletablePass walletable_pass,
     WalletablePassClient::WalletablePassBubbleResult result) {
-  const std::string category = GetPassCategoryString(*walletable_pass);
+  const std::string category = GetPassCategoryString(walletable_pass);
   switch (result) {
     case kAccepted:
       // TODO(crbug.com/452579752): Save pass to Wallet.

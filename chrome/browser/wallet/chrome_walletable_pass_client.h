@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "components/wallet/content/browser/content_walletable_pass_ingestion_controller.h"
+#include "components/wallet/core/browser/data_models/walletable_pass.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 
 namespace optimization_guide {
@@ -60,7 +61,7 @@ class ChromeWalletablePassClient : public WalletablePassClient {
       optimization_guide::proto::PassCategory pass_category,
       WalletablePassBubbleResultCallback callback) override;
   void ShowWalletablePassSaveBubble(
-      const optimization_guide::proto::WalletablePass& pass,
+      WalletablePass pass,
       WalletablePassBubbleResultCallback callback) override;
 
  private:

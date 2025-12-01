@@ -124,36 +124,39 @@ class WalletablePassSaveBubbleViewBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(WalletablePassSaveBubbleViewBrowserTest, LoyaltyCard) {
-  optimization_guide::proto::WalletablePass pass;
-  auto* loyalty_card = pass.mutable_loyalty_card();
-  loyalty_card->set_plan_name("Walgreens Rewards");
-  loyalty_card->set_issuer_name("Walgreens");
-  loyalty_card->set_member_id("123456789");
+  wallet::WalletablePass pass;
+  wallet::LoyaltyCard loyalty_card;
+  loyalty_card.plan_name = "Walgreens Rewards";
+  loyalty_card.issuer_name = "Walgreens";
+  loyalty_card.member_id = "123456789";
+  pass.pass_data = std::move(loyalty_card);
 
   mock_controller()->SetUpAndShowSaveBubble(pass, base::DoNothing());
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(WalletablePassSaveBubbleViewBrowserTest, EventTicket) {
-  optimization_guide::proto::WalletablePass pass;
-  auto* event_pass = pass.mutable_event_pass();
-  event_pass->set_event_name("LA Dodgers at SF Giants");
-  event_pass->set_event_start_date("2020-01-01");
-  event_pass->set_issuer_name("MLB");
-  event_pass->set_venue("AT&T Park");
-  event_pass->set_issuer_name("Ticketmaster");
+  wallet::WalletablePass pass;
+  wallet::EventPass event_pass;
+  event_pass.event_name = "LA Dodgers at SF Giants";
+  event_pass.event_start_date = "2020-01-01";
+  event_pass.issuer_name = "MLB";
+  event_pass.venue = "AT&T Park";
+  event_pass.issuer_name = "Ticketmaster";
+  pass.pass_data = std::move(event_pass);
 
   mock_controller()->SetUpAndShowSaveBubble(pass, base::DoNothing());
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(WalletablePassSaveBubbleViewBrowserTest, TransitTicket) {
-  optimization_guide::proto::WalletablePass pass;
-  auto* transit_ticket = pass.mutable_transit_ticket();
-  transit_ticket->set_agency_name("Metro Transit");
-  transit_ticket->set_origin("KGX");
-  transit_ticket->set_destination("YRK");
-  transit_ticket->set_date_of_travel("2025-12-25");
+  wallet::WalletablePass pass;
+  wallet::TransitTicket transit_ticket;
+  transit_ticket.agency_name = "Metro Transit";
+  transit_ticket.origin = "KGX";
+  transit_ticket.destination = "YRK";
+  transit_ticket.date_of_travel = "2025-12-25";
+  pass.pass_data = std::move(transit_ticket);
 
   mock_controller()->SetUpAndShowSaveBubble(pass, base::DoNothing());
   ShowAndVerifyUi();

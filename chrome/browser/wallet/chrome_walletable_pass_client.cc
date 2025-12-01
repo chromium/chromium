@@ -82,13 +82,14 @@ void ChromeWalletablePassClient::ShowWalletablePassConsentBubble(
 }
 
 void ChromeWalletablePassClient::ShowWalletablePassSaveBubble(
-    const optimization_guide::proto::WalletablePass& pass,
+    WalletablePass pass,
     WalletablePassBubbleResultCallback callback) {
   if (!save_bubble_controller_) {
     save_bubble_controller_ =
         std::make_unique<WalletablePassSaveBubbleController>(&tab_.get());
   }
-  save_bubble_controller_->SetUpAndShowSaveBubble(pass, std::move(callback));
+  save_bubble_controller_->SetUpAndShowSaveBubble(std::move(pass),
+                                                  std::move(callback));
 }
 
 }  // namespace wallet

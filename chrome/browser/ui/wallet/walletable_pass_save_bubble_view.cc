@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_view.h"
 
+#include <variant>
+
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_controller.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/wallet/core/browser/data_models/walletable_pass.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -23,11 +27,6 @@
 
 namespace wallet {
 namespace {
-
-using enum optimization_guide::proto::WalletablePass::PassCase;
-using optimization_guide::proto::EventPass;
-using optimization_guide::proto::LoyaltyCard;
-using optimization_guide::proto::TransitTicket;
 
 std::unique_ptr<views::BoxLayoutView> GetAttributesContainer() {
   return views::Builder<views::BoxLayoutView>()
@@ -79,98 +78,102 @@ WalletablePassSaveBubbleView::~WalletablePassSaveBubbleView() = default;
 
 std::unique_ptr<views::BoxLayoutView>
 WalletablePassSaveBubbleView::GetAttributesView() {
-  switch (controller_->pass().pass_case()) {
-    case kLoyaltyCard:
-      return GetLoyaltyCardAttributesView();
-    case kEventPass:
-      return GetEventPassAttributesView();
-    case kTransitTicket:
-      return GetTransitTicketAttributesView();
-    case PASS_NOT_SET:
-    default:
-      NOTREACHED() << "Not supported walletable pass type: "
-                   << controller_->pass().pass_case();
-  }
+  return std::visit(absl::Overload(
+                        [&](const LoyaltyCard& loyalty_card) {
+                          return GetLoyaltyCardAttributesView(loyalty_card);
+                        },
+                        [&](const EventPass& event_pass) {
+                          return GetEventPassAttributesView(event_pass);
+                        },
+                        [&](const TransitTicket& transit_ticket) {
+                          return GetTransitTicketAttributesView(transit_ticket);
+                        },
+                        [&](const BoardingPass& boarding_pass) {
+                          // TODO(crbug.com/464993127): Implement BoardingPass
+                          // UI.
+                          return std::make_unique<views::BoxLayoutView>();
+                        }),
+                    controller_->pass().pass_data);
 }
 
 std::unique_ptr<views::BoxLayoutView>
-WalletablePassSaveBubbleView::GetLoyaltyCardAttributesView() {
+WalletablePassSaveBubbleView::GetLoyaltyCardAttributesView(
+    const LoyaltyCard& loyalty_card) {
   std::unique_ptr<views::BoxLayoutView> container = GetAttributesContainer();
-  LoyaltyCard loyalty_card = controller_->pass().loyalty_card();
 
-  if (loyalty_card.has_issuer_name()) {
+  if (!loyalty_card.issuer_name.empty()) {
     container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
         l10n_util::GetStringUTF16(
             IDS_WALLET_WALLETABLE_PASS_LOYALTY_CARD_ISSUER_ATTRIBUTE_NAME),
-        base::UTF8ToUTF16(loyalty_card.issuer_name())));
+        base::UTF8ToUTF16(loyalty_card.issuer_name)));
   }
-  if (loyalty_card.has_member_id()) {
+  if (!loyalty_card.member_id.empty()) {
     container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
         l10n_util::GetStringUTF16(
             IDS_WALLET_WALLETABLE_PASS_LOYALTY_CARD_MEMBER_ID_ATTRIBUTE_NAME),
-        base::UTF8ToUTF16(loyalty_card.member_id())));
+        base::UTF8ToUTF16(loyalty_card.member_id)));
   }
   return container;
 }
 
 std::unique_ptr<views::BoxLayoutView>
-WalletablePassSaveBubbleView::GetEventPassAttributesView() {
+WalletablePassSaveBubbleView::GetEventPassAttributesView(
+    const EventPass& event_pass) {
   std::unique_ptr<views::BoxLayoutView> container = GetAttributesContainer();
-  EventPass event_pass = controller_->pass().event_pass();
 
-  if (event_pass.has_event_name()) {
+  if (!event_pass.event_name.empty()) {
     container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
         l10n_util::GetStringUTF16(
             IDS_WALLET_WALLETABLE_PASS_EVENT_PASS_EVENT_NAME_ATTRIBUTE_NAME),
-        base::UTF8ToUTF16(event_pass.event_name())));
+        base::UTF8ToUTF16(event_pass.event_name)));
   }
-  if (event_pass.has_issuer_name()) {
+  if (!event_pass.issuer_name.empty()) {
     container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
         l10n_util::GetStringUTF16(
             IDS_WALLET_WALLETABLE_PASS_EVENT_PASS_ISSUER_ATTRIBUTE_NAME),
-        base::UTF8ToUTF16(event_pass.issuer_name())));
+        base::UTF8ToUTF16(event_pass.issuer_name)));
   }
-  if (event_pass.has_venue()) {
+  if (!event_pass.venue.empty()) {
     container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
         l10n_util::GetStringUTF16(
             IDS_WALLET_WALLETABLE_PASS_EVENT_PASS_VENUE_ATTRIBUTE_NAME),
-        base::UTF8ToUTF16(event_pass.venue())));
+        base::UTF8ToUTF16(event_pass.venue)));
   }
-  if (event_pass.has_event_start_date()) {
+  if (!event_pass.event_start_date.empty()) {
     container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
         l10n_util::GetStringUTF16(
             IDS_WALLET_WALLETABLE_PASS_EVENT_PASS_DATE_ATTRIBUTE_NAME),
-        base::UTF8ToUTF16(event_pass.event_start_date())));
+        base::UTF8ToUTF16(event_pass.event_start_date)));
   }
   return container;
 }
 
 std::unique_ptr<views::BoxLayoutView>
-WalletablePassSaveBubbleView::GetTransitTicketAttributesView() {
+WalletablePassSaveBubbleView::GetTransitTicketAttributesView(
+    const TransitTicket& transit_ticket) {
   std::unique_ptr<views::BoxLayoutView> container = GetAttributesContainer();
-  TransitTicket transit_ticket = controller_->pass().transit_ticket();
 
-  if (transit_ticket.has_agency_name()) {
+  if (!transit_ticket.agency_name.empty()) {
     container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
         l10n_util::GetStringUTF16(
             IDS_WALLET_WALLETABLE_PASS_TRANSPORT_TICKET_OPERATOR_ATTRIBUTE_NAME),
-        base::UTF8ToUTF16(transit_ticket.agency_name())));
+        base::UTF8ToUTF16(transit_ticket.agency_name)));
   }
-  if (transit_ticket.has_origin() && transit_ticket.has_destination()) {
+  if (!transit_ticket.origin.empty() && !transit_ticket.destination.empty()) {
     container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
         l10n_util::GetStringUTF16(
             IDS_WALLET_WALLETABLE_PASS_TRANSPORT_TICKET_TRIP_ATTRIBUTE_NAME),
         l10n_util::GetStringFUTF16(
             IDS_WALLET_WALLETABLE_PASS_TRANSPORT_TICKET_TRIP_VALUE,
-            base::UTF8ToUTF16(transit_ticket.origin()),
-            base::UTF8ToUTF16(transit_ticket.destination()))));
+            base::UTF8ToUTF16(transit_ticket.origin),
+            base::UTF8ToUTF16(transit_ticket.destination))));
   }
 
-  if (transit_ticket.has_date_of_travel()) {
+  if (!transit_ticket.date_of_travel.empty()) {
     container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
         l10n_util::GetStringUTF16(
             IDS_WALLET_WALLETABLE_PASS_TRANSPORT_TICKET_DATE_ATTRIBUTE_NAME),
-        base::UTF8ToUTF16(transit_ticket.date_of_travel())));
+        base::UTF8ToUTF16(transit_ticket.date_of_travel)));
   }
   return container;
 }
@@ -218,33 +221,39 @@ WalletablePassSaveBubbleView::GetSubtitleLabel(
 }
 
 int WalletablePassSaveBubbleView::GetDialogTitleResourceId() const {
-  switch (controller_->pass().pass_case()) {
-    case kLoyaltyCard:
-      return IDS_WALLET_WALLETABLE_PASS_SAVE_LOYALTY_CARD_DIALOG_TITLE;
-    case kEventPass:
-      return IDS_WALLET_WALLETABLE_PASS_SAVE_EVENT_TICKET_DIALOG_TITLE;
-    case kTransitTicket:
-      return IDS_WALLET_WALLETABLE_PASS_SAVE_TRANSPORT_TICKET_DIALOG_TITLE;
-    case PASS_NOT_SET:
-    default:
-      NOTREACHED() << "Not supported walletable pass type: "
-                   << controller_->pass().pass_case();
-  }
+  return std::visit(
+      absl::Overload(
+          [](const LoyaltyCard& loyalty_card) {
+            return IDS_WALLET_WALLETABLE_PASS_SAVE_LOYALTY_CARD_DIALOG_TITLE;
+          },
+          [](const EventPass& event_pass) {
+            return IDS_WALLET_WALLETABLE_PASS_SAVE_EVENT_TICKET_DIALOG_TITLE;
+          },
+          [](const TransitTicket& transit_ticket) {
+            return IDS_WALLET_WALLETABLE_PASS_SAVE_TRANSPORT_TICKET_DIALOG_TITLE;
+          },
+          [](const BoardingPass& boarding_pass) -> int {
+            // TODO(crbug.com/464993127): Implement BoardingPass UI.
+            return IDS_WALLET_WALLETABLE_PASS_SAVE_TRANSPORT_TICKET_DIALOG_TITLE;
+          }),
+      controller_->pass().pass_data);
 }
 
 int WalletablePassSaveBubbleView::GetHeaderImageResourceId() const {
-  switch (controller_->pass().pass_case()) {
-    case kLoyaltyCard:
-      return IDR_WALLET_PASS_SAVE_LOYALTY_CARD_LOTTIE;
-    case kEventPass:
-      return IDR_WALLET_PASS_SAVE_EVENT_TICKET_LOTTIE;
-    case kTransitTicket:
-      return IDR_WALLET_PASS_SAVE_TRANSPORT_TICKET_LOTTIE;
-    case PASS_NOT_SET:
-    default:
-      NOTREACHED() << "Not supported walletable pass type: "
-                   << controller_->pass().pass_case();
-  }
+  return std::visit(absl::Overload(
+                        [](const LoyaltyCard& loyalty_card) {
+                          return IDR_WALLET_PASS_SAVE_LOYALTY_CARD_LOTTIE;
+                        },
+                        [](const EventPass& event_pass) {
+                          return IDR_WALLET_PASS_SAVE_EVENT_TICKET_LOTTIE;
+                        },
+                        [](const TransitTicket& transit_ticket) {
+                          return IDR_WALLET_PASS_SAVE_TRANSPORT_TICKET_LOTTIE;
+                        },
+                        [](const BoardingPass& boarding_pass) {
+                          return IDR_WALLET_PASS_SAVE_BOARDING_PASS_LOTTIE;
+                        }),
+                    controller_->pass().pass_data);
 }
 
 BEGIN_METADATA(WalletablePassSaveBubbleView)

@@ -38,15 +38,14 @@ void WalletablePassSaveBubbleController::ShowBubble() {
 }
 
 void WalletablePassSaveBubbleController::SetUpAndShowSaveBubble(
-    const optimization_guide::proto::WalletablePass& pass,
+    WalletablePass pass,
     WalletablePassClient::WalletablePassBubbleResultCallback callback) {
-  pass_ = pass;
+  pass_ = std::move(pass);
   SetCallback(std::move(callback));
   QueueOrShowBubble();
 }
 
-const optimization_guide::proto::WalletablePass&
-WalletablePassSaveBubbleController::pass() const {
+const WalletablePass& WalletablePassSaveBubbleController::pass() const {
   CHECK(pass_.has_value());
   return *pass_;
 }

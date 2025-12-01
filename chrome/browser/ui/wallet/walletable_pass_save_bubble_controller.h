@@ -38,10 +38,10 @@ class WalletablePassSaveBubbleController
   // Shows the save bubble. `callback` will be run when the user makes a
   // decision.
   void SetUpAndShowSaveBubble(
-      const optimization_guide::proto::WalletablePass& pass,
+      WalletablePass pass,
       WalletablePassClient::WalletablePassBubbleResultCallback callback);
 
-  const optimization_guide::proto::WalletablePass& pass() const;
+  const WalletablePass& pass() const;
 
   // Returns the primary account email of the user.
   std::u16string GetPrimaryAccountEmail();
@@ -54,7 +54,7 @@ class WalletablePassSaveBubbleController
   void ShowBubble() override;
 
  private:
-  std::optional<optimization_guide::proto::WalletablePass> pass_;
+  std::optional<WalletablePass> pass_;
 
   base::WeakPtrFactory<WalletablePassSaveBubbleController> weak_ptr_factory_{
       this};

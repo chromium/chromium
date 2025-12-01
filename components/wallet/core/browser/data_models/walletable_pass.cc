@@ -21,6 +21,8 @@ LoyaltyCard LoyaltyCard::FromProto(
 }
 
 LoyaltyCard::LoyaltyCard() = default;
+LoyaltyCard::LoyaltyCard(const LoyaltyCard&) = default;
+LoyaltyCard& LoyaltyCard::operator=(const LoyaltyCard&) = default;
 LoyaltyCard::LoyaltyCard(LoyaltyCard&&) = default;
 LoyaltyCard& LoyaltyCard::operator=(LoyaltyCard&&) = default;
 LoyaltyCard::~LoyaltyCard() = default;
@@ -47,6 +49,8 @@ EventPass EventPass::FromProto(
 }
 
 EventPass::EventPass() = default;
+EventPass::EventPass(const EventPass&) = default;
+EventPass& EventPass::operator=(const EventPass&) = default;
 EventPass::EventPass(EventPass&&) = default;
 EventPass& EventPass::operator=(EventPass&&) = default;
 EventPass::~EventPass() = default;
@@ -78,6 +82,8 @@ TransitTicket TransitTicket::FromProto(
 }
 
 TransitTicket::TransitTicket() = default;
+TransitTicket::TransitTicket(const TransitTicket&) = default;
+TransitTicket& TransitTicket::operator=(const TransitTicket&) = default;
 TransitTicket::TransitTicket(TransitTicket&&) = default;
 TransitTicket& TransitTicket::operator=(TransitTicket&&) = default;
 TransitTicket::~TransitTicket() = default;
@@ -90,6 +96,8 @@ std::optional<BoardingPass> BoardingPass::FromBCBP(
 }
 
 BoardingPass::BoardingPass() = default;
+BoardingPass::BoardingPass(const BoardingPass&) = default;
+BoardingPass& BoardingPass::operator=(const BoardingPass&) = default;
 BoardingPass::BoardingPass(BoardingPass&&) = default;
 BoardingPass& BoardingPass::operator=(BoardingPass&&) = default;
 BoardingPass::~BoardingPass() = default;
@@ -133,6 +141,8 @@ std::optional<WalletablePass> WalletablePass::CreateBoardingPass(
 }
 
 WalletablePass::WalletablePass() = default;
+WalletablePass::WalletablePass(const WalletablePass&) = default;
+WalletablePass& WalletablePass::operator=(const WalletablePass&) = default;
 WalletablePass::WalletablePass(WalletablePass&&) = default;
 WalletablePass& WalletablePass::operator=(WalletablePass&&) = default;
 WalletablePass::~WalletablePass() = default;
