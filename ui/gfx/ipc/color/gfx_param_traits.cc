@@ -6,42 +6,9 @@
 
 #include "ipc/param_traits_macros.h"
 #include "ipc/param_traits_utils.h"
-#include "ui/gfx/color_space.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/ipc/buffer_types/gfx_ipc_export.h"
 #include "ui/gfx/ipc/buffer_types/gfx_param_traits_macros.h"
-
-namespace IPC {
-
-void ParamTraits<gfx::ColorSpace>::Write(base::Pickle* m,
-                                         const gfx::ColorSpace& p) {
-  WriteParam(m, p.primaries_);
-  WriteParam(m, p.transfer_);
-  WriteParam(m, p.matrix_);
-  WriteParam(m, p.range_);
-  WriteParam(m, p.custom_primary_matrix_);
-  WriteParam(m, p.transfer_params_);
-}
-
-bool ParamTraits<gfx::ColorSpace>::Read(const base::Pickle* m,
-                                        base::PickleIterator* iter,
-                                        gfx::ColorSpace* r) {
-  if (!ReadParam(m, iter, &r->primaries_))
-    return false;
-  if (!ReadParam(m, iter, &r->transfer_))
-    return false;
-  if (!ReadParam(m, iter, &r->matrix_))
-    return false;
-  if (!ReadParam(m, iter, &r->range_))
-    return false;
-  if (!ReadParam(m, iter, &r->custom_primary_matrix_))
-    return false;
-  if (!ReadParam(m, iter, &r->transfer_params_))
-    return false;
-  return true;
-}
-
-}  // namespace IPC
 
 // Generate param traits write methods.
 #include "ipc/param_traits_write_macros.h"

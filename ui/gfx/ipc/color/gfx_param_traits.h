@@ -6,25 +6,7 @@
 #define UI_GFX_IPC_COLOR_GFX_PARAM_TRAITS_H_
 
 #include "ipc/param_traits.h"
-#include "ui/gfx/color_space.h"
 #include "ui/gfx/ipc/color/gfx_ipc_color_export.h"
 #include "ui/gfx/ipc/color/gfx_param_traits_macros.h"
-
-namespace gfx {
-class ColorSpace;
-}
-
-namespace IPC {
-
-template <>
-struct GFX_IPC_COLOR_EXPORT ParamTraits<gfx::ColorSpace> {
-  typedef gfx::ColorSpace param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-};
-
-}  // namespace IPC
 
 #endif  // UI_GFX_IPC_COLOR_GFX_PARAM_TRAITS_H_

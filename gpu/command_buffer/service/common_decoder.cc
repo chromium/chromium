@@ -409,32 +409,4 @@ error::Error CommonDecoder::HandleInsertFenceSync(
   return error::kNoError;
 }
 
-bool CommonDecoder::ReadColorSpace(uint32_t shm_id,
-                                   uint32_t shm_offset,
-                                   uint32_t color_space_size,
-                                   gfx::ColorSpace* color_space) {
-  // Use the default (invalid) color space if no space was serialized.
-  if (!shm_id && !shm_offset && !color_space_size) {
-    *color_space = gfx::ColorSpace();
-    return true;
-  }
-
-  const uint8_t* data = static_cast<const uint8_t*>(
-      GetAddressAndCheckSize(shm_id, shm_offset, color_space_size));
-  if (!data) {
-    return false;
-  }
-
-  base::span<const uint8_t> UNSAFE_TODO(
-      color_space_data(data, data + color_space_size));
-  base::Pickle color_space_pickle =
-      base::Pickle::WithUnownedBuffer(color_space_data);
-  base::PickleIterator iterator(color_space_pickle);
-  if (!IPC::ParamTraits<gfx::ColorSpace>::Read(&color_space_pickle, &iterator,
-                                               color_space)) {
-    return false;
-  }
-  return true;
-}
-
 }  // namespace gpu
