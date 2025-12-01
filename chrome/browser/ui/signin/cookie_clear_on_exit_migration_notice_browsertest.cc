@@ -14,7 +14,6 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
@@ -29,7 +28,6 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/service/sync_user_settings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -219,13 +217,6 @@ IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticeBrowserTest,
   SetGaiaCookieClearedOnExit(/*cleared=*/true);
   SetPrimaryAccount(signin::ConsentLevel::kSync,
                     /*is_explicit_signin=*/false);
-  // TODO(crbug.com/464457988): Mark sync setup as complete by default in the
-  // sign-in helper method.
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(GetProfile());
-  sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-  ASSERT_TRUE(sync_service->IsSyncFeatureEnabled());
   GetProfile()->GetPrefs()->ClearPref(
       prefs::kCookieClearOnExitMigrationNoticeComplete);
 }

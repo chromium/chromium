@@ -1651,13 +1651,8 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest,
       builder.AsPrimary(signin::ConsentLevel::kSync)
           .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
           .Build(kMainGmailEmail));
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-  // TODO(crbug.com/464457988): Mark sync setup as complete by default in the
-  // sign-in helper method.
-  sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-  ASSERT_TRUE(sync_service->IsSyncFeatureEnabled());
+  ASSERT_EQ(signin::GetPrimaryAccountConsentLevel(GetIdentityManager()),
+            signin::ConsentLevel::kSync);
 
   ASSERT_FALSE(profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
