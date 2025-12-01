@@ -26,6 +26,7 @@ class TestIwaClient : public IwaClient {
       base::OnceCallback<void(
           base::expected<IwaSourceWithModeOrGeneratedResponse, std::string>)>
           callback) override;
+  IwaRuntimeDataProvider* GetRuntimeDataProvider() override;
 };
 
 class MockIwaClient : public TestIwaClient {

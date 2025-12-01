@@ -23,6 +23,8 @@ class BrowserContext;
 
 namespace web_app {
 
+class IwaRuntimeDataProvider;
+
 // This singleton acts as a bridge between the browser-independent IWA layer and
 // the embedder layer (i.e. Chrome).
 class IwaClient {
@@ -61,6 +63,8 @@ class IwaClient {
       base::OnceCallback<void(
           base::expected<IwaSourceWithModeOrGeneratedResponse, std::string>)>
           callback) = 0;
+
+  virtual IwaRuntimeDataProvider* GetRuntimeDataProvider() = 0;
 
  protected:
   IwaClient();

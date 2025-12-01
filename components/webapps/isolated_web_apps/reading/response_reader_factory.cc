@@ -19,9 +19,10 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
+#include "components/webapps/isolated_web_apps/client.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
-#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
 #include "components/webapps/isolated_web_apps/reading/validator.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
@@ -57,13 +58,17 @@ void IsolatedWebAppResponseReaderFactory::CreateResponseReader(
     const web_package::SignedWebBundleId& web_bundle_id,
     Flags flags,
     Callback callback) {
-  IwaKeyDistributionInfoProvider::GetInstance()
-      .OnMaybeDownloadedComponentDataReady()
-      .Post(FROM_HERE,
-            base::BindOnce(
-                &IsolatedWebAppResponseReaderFactory::CreateResponseReaderImpl,
-                weak_ptr_factory_.GetWeakPtr(), web_bundle_path, web_bundle_id,
-                flags, std::move(callback)));
+  if (auto* provider = IwaClient::GetInstance()->GetRuntimeDataProvider()) {
+    provider->OnBestEffortRuntimeDataReady().Post(
+        FROM_HERE,
+        base::BindOnce(
+            &IsolatedWebAppResponseReaderFactory::CreateResponseReaderImpl,
+            weak_ptr_factory_.GetWeakPtr(), web_bundle_path, web_bundle_id,
+            flags, std::move(callback)));
+    return;
+  }
+  CreateResponseReaderImpl(web_bundle_path, web_bundle_id, flags,
+                           std::move(callback));
 }
 
 // static

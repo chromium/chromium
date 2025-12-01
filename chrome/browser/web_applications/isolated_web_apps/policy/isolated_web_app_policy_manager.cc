@@ -165,7 +165,7 @@ void OnComponentDataReady(PrefService* prefs, base::OnceClosure callback) {
   }
 
   IwaKeyDistributionInfoProvider::GetInstance()
-      .OnMaybeDownloadedComponentDataReady()
+      .OnBestEffortRuntimeDataReady()
       .Post(FROM_HERE, std::move(callback));
 }
 

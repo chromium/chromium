@@ -24,7 +24,6 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/client.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
-#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
@@ -243,8 +242,9 @@ IsolatedWebAppReaderRegistry::IsolatedWebAppReaderRegistry(
     : browser_context_(*browser_context),
       reader_factory_(std::move(reader_factory)),
       cache_(std::make_unique<Cache>()) {
-  key_distribution_info_observation_.Observe(
-      &IwaKeyDistributionInfoProvider::GetInstance());
+  if (auto* provider = IwaClient::GetInstance()->GetRuntimeDataProvider()) {
+    key_provider_observation_.Observe(provider);
+  }
 }
 
 IsolatedWebAppReaderRegistry::~IsolatedWebAppReaderRegistry() {
@@ -319,15 +319,10 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
                      base::Unretained(this), web_bundle_path, web_bundle_id));
 }
 
-// Processes a component update event and queues close requests for readers
+// Processes a key data change event and queues close requests for readers
 // corresponding to bundles that might be affected by key rotation. These
 // requests will be fulfilled once the app closes.
-void IsolatedWebAppReaderRegistry::OnComponentUpdateSuccess(
-    bool is_preloaded) {
-  if (is_preloaded) {
-    return;
-  }
-
+void IsolatedWebAppReaderRegistry::OnRuntimeDataChanged() {
   std::vector<std::pair<base::FilePath, web_package::SignedWebBundleId>>
       affected_ready_readers;
   for (auto& [path, entry] : *cache_) {

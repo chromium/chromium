@@ -26,6 +26,10 @@ void TestIwaClient::GetIwaSourceForRequest(
   NOTREACHED();
 }
 
+IwaRuntimeDataProvider* TestIwaClient::GetRuntimeDataProvider() {
+  return nullptr;
+}
+
 MockIwaClient::MockIwaClient() = default;
 MockIwaClient::~MockIwaClient() = default;
 

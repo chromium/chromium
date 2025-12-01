@@ -46,7 +46,7 @@ IsolatedWebAppThrottle::WillStartRequest() {
   WebAppProvider& provider =
       CHECK_DEREF(WebAppProvider::GetForWebApps(profile()));
   if (provider.is_registry_ready() &&
-      key_distribution_info_provider.OnMaybeDownloadedComponentDataReady()
+      key_distribution_info_provider.OnBestEffortRuntimeDataReady()
           .is_signaled()) {
     return PROCEED;
   }
@@ -55,7 +55,7 @@ IsolatedWebAppThrottle::WillStartRequest() {
       base::BarrierClosure(2u, base::BindOnce(&IsolatedWebAppThrottle::Resume,
                                               weak_ptr_factory_.GetWeakPtr()));
   provider.on_registry_ready().Post(FROM_HERE, initialized_components_barrier);
-  key_distribution_info_provider.OnMaybeDownloadedComponentDataReady().Post(
+  key_distribution_info_provider.OnBestEffortRuntimeDataReady().Post(
       FROM_HERE, initialized_components_barrier);
   return DEFER;
 }

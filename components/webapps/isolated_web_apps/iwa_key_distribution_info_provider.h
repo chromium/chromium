@@ -24,6 +24,7 @@
 #include "base/version.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_histograms.h"
 #include "components/webapps/isolated_web_apps/proto/key_distribution.pb.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
 namespace base {
 class FilePath;
@@ -35,27 +36,18 @@ class IwaInternalsHandler;
 
 // This class is a singleton responsible for processing the IWA Key Distribution
 // Component data.
-class IwaKeyDistributionInfoProvider {
+//
+// TODO(crbug.com/431980377): This class will be moved to `chrome/` and renamed.
+class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
  public:
-  struct KeyRotationInfo {
-    using PublicKeyData = std::vector<uint8_t>;
-
-    explicit KeyRotationInfo(std::optional<PublicKeyData> public_key);
-    ~KeyRotationInfo();
-    KeyRotationInfo(const KeyRotationInfo&);
-
-    base::Value AsDebugValue() const;
-
-    std::optional<PublicKeyData> public_key;
-  };
-
   struct SpecialAppPermissionsInfo {
     base::Value AsDebugValue() const;
 
     bool skip_capture_started_notification;
   };
 
-  using KeyRotations = base::flat_map<std::string, KeyRotationInfo>;
+  using KeyRotations =
+      base::flat_map<std::string, IwaRuntimeDataProvider::KeyRotationInfo>;
   using ManagedAllowlist = base::flat_set<std::string>;
   using SpecialAppPermissions =
       base::flat_map<std::string, SpecialAppPermissionsInfo>;
@@ -72,15 +64,29 @@ class IwaKeyDistributionInfoProvider {
   static IwaKeyDistributionInfoProvider& GetInstance();
   static void DestroyInstanceForTesting();
 
-  ~IwaKeyDistributionInfoProvider();
+  ~IwaKeyDistributionInfoProvider() override;
 
   IwaKeyDistributionInfoProvider(const IwaKeyDistributionInfoProvider&) =
       delete;
   IwaKeyDistributionInfoProvider& operator=(
       const IwaKeyDistributionInfoProvider&) = delete;
 
-  const KeyRotationInfo* GetKeyRotationInfo(
-      const std::string& web_bundle_id) const;
+  // IwaRuntimeDataProvider:
+  const IwaRuntimeDataProvider::KeyRotationInfo* GetKeyRotationInfo(
+      const std::string& web_bundle_id) const override;
+  void AddObserver(IwaRuntimeDataProvider::Observer* observer) override;
+  void RemoveObserver(IwaRuntimeDataProvider::Observer* observer) override;
+
+  // Use this to post IWA-related tasks if they rely on the key distribution
+  // component. The event will be signalled
+  //  * Immediately if the kIwaKeyDistributionComponent flag is disabled
+  //  * Upon component loading if the available component is downloaded and not
+  //    preloaded
+  //  * In 15 seconds after the first call to this function if the available
+  //  component is preloaded and the component updater is unable to fetch a
+  //  newer version.
+  base::OneShotEvent& OnBestEffortRuntimeDataReady() override;
+
   const SpecialAppPermissionsInfo* GetSpecialAppPermissionsInfo(
       const std::string& web_bundle_id) const;
   std::vector<std::string> GetSkipMultiCaptureNotificationBundleIds() const;
@@ -120,16 +126,6 @@ class IwaKeyDistributionInfoProvider {
 
   // Writes component metadata (version and whether it's preloaded) to `log`.
   void WriteComponentMetadata(base::Value::Dict& log) const;
-
-  // Use this to post IWA-related tasks if they rely on the key distribution
-  // component. The event will be signalled
-  //  * Immediately if the kIwaKeyDistributionComponent flag is disabled
-  //  * Upon component loading if the available component is downloaded and not
-  //    preloaded
-  //  * In 15 seconds after the first call to this function if the available
-  //  component is preloaded and the component updater is unable to fetch a
-  //  newer version.
-  base::OneShotEvent& OnMaybeDownloadedComponentDataReady();
 
   std::optional<bool> IsPreloadedForTesting() const;
   void SetComponentDataForTesting(base::Version component_version,
@@ -209,6 +205,7 @@ class IwaKeyDistributionInfoProvider {
 
   std::optional<Component> component_;
   base::ObserverList<Observer> observers_;
+  base::ObserverList<IwaRuntimeDataProvider::Observer> key_provider_observers_;
   bool skip_managed_checks_for_testing_ = false;
 };
 

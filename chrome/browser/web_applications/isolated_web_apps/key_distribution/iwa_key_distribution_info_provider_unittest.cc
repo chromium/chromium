@@ -22,6 +22,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
+#include "chrome/browser/web_applications/isolated_web_apps/chrome_iwa_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/component_updater_paths.h"
@@ -160,6 +161,7 @@ class SignedWebBundleSignatureVerifierWithKeyDistributionTest
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     IwaIdentityValidator::CreateSingleton();
+    ChromeIwaClient::CreateSingleton();
   }
 
   base::FilePath WriteSignedWebBundleToDisk(
@@ -336,11 +338,11 @@ class IwaIwaKeyDistributionInfoProviderReadinessTest
     if (register_first()) {
       ASSERT_THAT(test::RegisterIwaKeyDistributionComponentAndWaitForLoad(),
                   matcher);
-      key_provider.OnMaybeDownloadedComponentDataReady().Post(FROM_HERE,
-                                                              std::move(task));
+      key_provider.OnBestEffortRuntimeDataReady().Post(FROM_HERE,
+                                                       std::move(task));
     } else {
-      key_provider.OnMaybeDownloadedComponentDataReady().Post(FROM_HERE,
-                                                              std::move(task));
+      key_provider.OnBestEffortRuntimeDataReady().Post(FROM_HERE,
+                                                       std::move(task));
       ASSERT_THAT(test::RegisterIwaKeyDistributionComponentAndWaitForLoad(),
                   matcher);
     }

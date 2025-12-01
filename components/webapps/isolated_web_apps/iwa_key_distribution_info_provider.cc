@@ -94,21 +94,6 @@ base::TaskPriority GetLoadTaskPriority() {
 }
 }  // namespace
 
-IwaKeyDistributionInfoProvider::KeyRotationInfo::KeyRotationInfo(
-    std::optional<PublicKeyData> public_key)
-    : public_key(std::move(public_key)) {}
-
-IwaKeyDistributionInfoProvider::KeyRotationInfo::~KeyRotationInfo() = default;
-
-IwaKeyDistributionInfoProvider::KeyRotationInfo::KeyRotationInfo(
-    const KeyRotationInfo&) = default;
-
-base::Value IwaKeyDistributionInfoProvider::KeyRotationInfo::AsDebugValue()
-    const {
-  return base::Value(base::Value::Dict().Set(
-      "public_key", public_key ? base::Base64Encode(*public_key) : "null"));
-}
-
 base::Value
 IwaKeyDistributionInfoProvider::SpecialAppPermissionsInfo::AsDebugValue()
     const {
@@ -128,7 +113,7 @@ void IwaKeyDistributionInfoProvider::DestroyInstanceForTesting() {
   GetGlobalIwaKeyDistributionInfoProviderInstance().reset();
 }
 
-const IwaKeyDistributionInfoProvider::KeyRotationInfo*
+const IwaRuntimeDataProvider::KeyRotationInfo*
 IwaKeyDistributionInfoProvider::GetKeyRotationInfo(
     const std::string& web_bundle_id) const {
   if (const auto* kr_info =
@@ -340,17 +325,27 @@ void IwaKeyDistributionInfoProvider::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void IwaKeyDistributionInfoProvider::AddObserver(
+    IwaRuntimeDataProvider::Observer* observer) {
+  key_provider_observers_.AddObserver(observer);
+}
+
+void IwaKeyDistributionInfoProvider::RemoveObserver(
+    IwaRuntimeDataProvider::Observer* observer) {
+  key_provider_observers_.RemoveObserver(observer);
+}
+
 void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
     base::PassKey<IwaInternalsHandler>,
     const std::string& web_bundle_id,
     const std::optional<std::vector<uint8_t>>& rotated_key) {
-  GetDevModeKeyRotationData().insert_or_assign(web_bundle_id,
-                                               KeyRotationInfo(rotated_key));
+  GetDevModeKeyRotationData().insert_or_assign(
+      web_bundle_id, IwaRuntimeDataProvider::KeyRotationInfo(rotated_key));
   DispatchComponentUpdateSuccess(/*is_preloaded=*/false);
 }
 
 base::OneShotEvent&
-IwaKeyDistributionInfoProvider::OnMaybeDownloadedComponentDataReady() {
+IwaKeyDistributionInfoProvider::OnBestEffortRuntimeDataReady() {
   if (!is_on_demand_supported_) {
     return AlreadySignalled();
   }
@@ -435,6 +430,8 @@ void IwaKeyDistributionInfoProvider::WriteComponentMetadata(
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateSuccess(
     bool is_preloaded) {
   observers_.Notify(&Observer::OnComponentUpdateSuccess, is_preloaded);
+  key_provider_observers_.Notify(
+      &IwaRuntimeDataProvider::Observer::OnRuntimeDataChanged);
 }
 
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateError(

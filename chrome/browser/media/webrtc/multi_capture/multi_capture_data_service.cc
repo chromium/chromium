@@ -127,7 +127,7 @@ void MultiCaptureDataService::Init() {
                          weak_ptr_factory_.GetWeakPtr()));
   provider_->on_registry_ready().Post(FROM_HERE,
                                       initialized_components_barrier);
-  info_provider_->OnMaybeDownloadedComponentDataReady().Post(
+  info_provider_->OnBestEffortRuntimeDataReady().Post(
       FROM_HERE, initialized_components_barrier);
 }
 

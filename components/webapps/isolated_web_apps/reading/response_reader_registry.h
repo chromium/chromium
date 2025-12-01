@@ -18,7 +18,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -36,9 +36,8 @@ namespace web_app {
 // will also check the integrity of the Signed Web Bundle. On ChromeOS, it is
 // assumed that the Signed Web Bundle has not been corrupted due to its location
 // inside cryptohome, and signatures are not checked.
-class IsolatedWebAppReaderRegistry
-    : public KeyedService,
-      public IwaKeyDistributionInfoProvider::Observer {
+class IsolatedWebAppReaderRegistry : public KeyedService,
+                                     public IwaRuntimeDataProvider::Observer {
  public:
   IsolatedWebAppReaderRegistry(
       content::BrowserContext* browser_context,
@@ -127,8 +126,8 @@ class IsolatedWebAppReaderRegistry
 
   bool IsCleanupTimerRunningForTesting() const;
 
-  // IwaKeyDistributionInfoProvider::Observer:
-  void OnComponentUpdateSuccess(bool is_preloaded) override;
+  // IwaRuntimeDataProvider::Observer:
+  void OnRuntimeDataChanged() override;
 
   void OnResponseReaderCreated(
       const base::FilePath& web_bundle_path,
@@ -145,9 +144,9 @@ class IsolatedWebAppReaderRegistry
       base::expected<IsolatedWebAppResponseReader::Response,
                      IsolatedWebAppResponseReader::Error> response);
 
-  base::ScopedObservation<IwaKeyDistributionInfoProvider,
-                          IwaKeyDistributionInfoProvider::Observer>
-      key_distribution_info_observation_{this};
+  base::ScopedObservation<IwaRuntimeDataProvider,
+                          IwaRuntimeDataProvider::Observer>
+      key_provider_observation_{this};
 
   // A set of files whose signatures have been verified successfully during the
   // current browser session. Signatures of these files are not re-verified even

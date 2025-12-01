@@ -12,7 +12,8 @@
 #include "base/strings/stringprintf.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
-#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
+#include "components/webapps/isolated_web_apps/client.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
 namespace web_app {
 
@@ -22,7 +23,7 @@ base::expected<void, std::string>
 ValidateWebBundleIdentityAgainstKeyRotationInfo(
     const std::string& web_bundle_id,
     const std::vector<web_package::PublicKey>& public_keys,
-    const IwaKeyDistributionInfoProvider::KeyRotationInfo& kr_info) {
+    const IwaRuntimeDataProvider::KeyRotationInfo& kr_info) {
   if (!kr_info.public_key) {
     return base::unexpected(base::StringPrintf(
         "Web Bundle ID <%s> is disabled via the Key Rotation Component.",
@@ -57,11 +58,12 @@ base::expected<void, std::string>
 IwaIdentityValidator::ValidateWebBundleIdentity(
     const std::string& web_bundle_id,
     const std::vector<web_package::PublicKey>& public_keys) const {
-  if (const auto* kr_info =
-          IwaKeyDistributionInfoProvider::GetInstance().GetKeyRotationInfo(
-              web_bundle_id)) {
-    return ValidateWebBundleIdentityAgainstKeyRotationInfo(
-        web_bundle_id, public_keys, *kr_info);
+  if (const auto* provider =
+          IwaClient::GetInstance()->GetRuntimeDataProvider()) {
+    if (const auto* kr_info = provider->GetKeyRotationInfo(web_bundle_id)) {
+      return ValidateWebBundleIdentityAgainstKeyRotationInfo(
+          web_bundle_id, public_keys, *kr_info);
+    }
   }
 
   return IdentityValidator::ValidateWebBundleIdentity(web_bundle_id,
