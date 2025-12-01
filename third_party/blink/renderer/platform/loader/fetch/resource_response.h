@@ -699,14 +699,6 @@ class PLATFORM_EXPORT ResourceResponse final {
 
   bool emitted_extra_info_ = false;
 
-  // Flag indicating if the request used IP Protection proxies.
-  // This differs from the `is_for_ip_protection` used in the network proxy
-  // chain, but uses `is_for_ip_protection`, along with whether the response was
-  // cached, to determine if the request was actively sent through an IP
-  // Protection proxy. This value is currently only set if
-  // kIpPrivacyEnableIppInDevTools is enabled.
-  bool is_ip_protection_used_ = false;
-
   Vector<network::IntegrityMetadata> unencoded_digests_;
 };
 

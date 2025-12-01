@@ -1947,16 +1947,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                       std::move(devtools_animation_styles_in_styles_tab_dict));
   }
 
-  if (net::features::kIpPrivacyEnableIppInDevTools.Get()) {
-    response_dict.Set("devToolsIpProtectionInDevTools",
-                      base::Value::Dict().Set("enabled", true));
-  }
-
-  if (net::features::kIpPrivacyEnableIppPanelInDevTools.Get()) {
-    response_dict.Set("devToolsIpProtectionPanelInDevTools",
-                      base::Value::Dict().Set("enabled", true));
-  }
-
   base::Value::Dict deep_links_via_extensibility_api_dict;
   deep_links_via_extensibility_api_dict.Set(
       "enabled",
