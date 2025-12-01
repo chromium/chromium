@@ -73,6 +73,9 @@ export interface ManageProfilesBrowserProxy {
   /** Opens all profiles. */
   launchAllProfiles(profilesPathList: string[]): void;
 
+  /** Records that the Open All Profiles button was shown. */
+  recordOpenAllProfilesButtonShown(): void;
+
   /**
    * Inform native the user's choice on whether to show the profile picker
    * on startup or not.
@@ -188,6 +191,10 @@ export class ManageProfilesBrowserProxyImpl {
 
   launchAllProfiles(profilesPathList: string[]) {
     chrome.send('launchAllProfiles', profilesPathList);
+  }
+
+  recordOpenAllProfilesButtonShown() {
+    chrome.send('recordOpenAllProfilesButtonShown');
   }
 
   askOnStartupChanged(shouldShow: boolean) {

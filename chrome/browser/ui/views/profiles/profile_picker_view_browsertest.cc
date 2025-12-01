@@ -4211,6 +4211,7 @@ class ProfilePickerOpenAllProfilesButtonExperimentBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerOpenAllProfilesButtonExperimentBrowserTest,
                        MAYBE_OpenAllProfilesAfterSimulatingButtonClick) {
+  base::HistogramTester histogram_tester;
   base::FilePath profile_path1 = browser()->profile()->GetPath();
   base::FilePath profile_path2 = CreateNewProfileWithoutBrowser();
   base::FilePath profile_path3 = CreateNewProfileWithoutBrowser();
@@ -4239,4 +4240,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerOpenAllProfilesButtonExperimentBrowserTest,
   EXPECT_EQ(new_browser2->GetProfile()->GetPath(), profile_path2);
   EXPECT_EQ(new_browser3->GetProfile()->GetPath(), profile_path3);
   ASSERT_EQ(3u, chrome::GetTotalBrowserCount());
+
+  histogram_tester.ExpectBucketCount(
+      "ProfilePicker.OpenAllProfilesButtonAction",
+      ProfilePickerOpenAllProfilesButtonAction::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "ProfilePicker.OpenAllProfilesButtonAction",
+      ProfilePickerOpenAllProfilesButtonAction::kClicked, 1);
 }

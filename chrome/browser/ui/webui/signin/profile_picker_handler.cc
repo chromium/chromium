@@ -255,6 +255,11 @@ void ProfilePickerHandler::RegisterMessages() {
       base::BindRepeating(&ProfilePickerHandler::HandleLaunchAllProfiles,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "recordOpenAllProfilesButtonShown",
+      base::BindRepeating(
+          &ProfilePickerHandler::HandleRecordOpenAllProfilesButtonShown,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "askOnStartupChanged",
       base::BindRepeating(&ProfilePickerHandler::HandleAskOnStartupChanged,
                           base::Unretained(this)));
@@ -467,6 +472,9 @@ void ProfilePickerHandler::HandleLaunchAllProfiles(
     const base::Value::List& args) {
   CHECK(base::FeatureList::IsEnabled(
       switches::kOpenAllProfilesFromProfilePickerExperiment));
+  base::UmaHistogramEnumeration(
+      "ProfilePicker.OpenAllProfilesButtonAction",
+      ProfilePickerOpenAllProfilesButtonAction::kClicked);
   if (args.size() <= 1u ||
       args.size() >
           static_cast<size_t>(
@@ -504,6 +512,13 @@ void ProfilePickerHandler::HandleLaunchAllProfiles(
                              weak_factory_.GetWeakPtr())
             : base::OnceCallback<void(bool)>());
   }
+}
+
+void ProfilePickerHandler::HandleRecordOpenAllProfilesButtonShown(
+    const base::Value::List& args) {
+  base::UmaHistogramEnumeration(
+      "ProfilePicker.OpenAllProfilesButtonAction",
+      ProfilePickerOpenAllProfilesButtonAction::kShown);
 }
 
 void ProfilePickerHandler::HandleLaunchGuestProfile(

@@ -451,6 +451,7 @@ suite('ProfilePickerMainViewTest', function() {
 
     const profiles = generateProfilesList(2);
     await simulateProfilesListChanged(profiles);
+    await browserProxy.whenCalled('recordOpenAllProfilesButtonShown');
 
     assertFalse(mainViewElement.$.openAllProfilesButton.hidden);
     mainViewElement.$.openAllProfilesButton.click();
@@ -466,10 +467,12 @@ suite('ProfilePickerMainViewTest', function() {
     await browserProxy.whenCalled('initializeMainView');
 
     const profiles = generateProfilesList(6);
+
     await simulateProfilesListChanged(profiles);
     assertTrue(mainViewElement.$.openAllProfilesButton.hidden);
 
     await simulateProfileRemoved(profiles[2]!.profilePath);
+    await browserProxy.whenCalled('recordOpenAllProfilesButtonShown');
     assertFalse(mainViewElement.$.openAllProfilesButton.hidden);
   });
 

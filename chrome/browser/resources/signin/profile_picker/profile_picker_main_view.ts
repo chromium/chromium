@@ -175,6 +175,11 @@ export class ProfilePickerMainViewElement extends
       this.updateLearnMoreLinkEvents_();
       this.computeShouldShowOpenAllProfilesButton_();
     }
+
+    if (changedPrivateProperties.has('shouldShowOpenAllProfilesButton_') &&
+        this.shouldShowOpenAllProfilesButton_) {
+      this.manageProfilesBrowserProxy_.recordOpenAllProfilesButtonShown();
+    }
   }
 
   override disconnectedCallback() {
@@ -292,9 +297,9 @@ export class ProfilePickerMainViewElement extends
   }
 
   protected onOpenAllProfilesClick_() {
+    this.disableAllPickerButtons_();
     chrome.metricsPrivate.recordUserAction(
         'ProfilePicker_OpenAllProfilesClicked');
-    this.disableAllPickerButtons_();
     this.manageProfilesBrowserProxy_.launchAllProfiles(
         this.profilesList_.map(profile => profile.profilePath));
   }
