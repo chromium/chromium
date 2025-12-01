@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/values.h"
 #include "content/browser/metrics/histogram_synchronizer.h"
@@ -118,11 +119,15 @@ void HistogramsMessageHandler::HandleRequestHistograms(
   base::Value::List histograms_list;
   for (base::HistogramBase* histogram :
        base::StatisticsRecorder::Sort(base::StatisticsRecorder::WithName(
-           base::StatisticsRecorder::GetHistograms(), params.query,
+           base::StatisticsRecorder::GetHistograms(
+               /*include_persistent=*/true,
+               /*exclude_flags=*/base::HistogramBase::Flags::kNoFlags),
+           params.query,
            /*case_sensitive=*/false))) {
     base::Value::Dict histogram_dict = histogram->ToGraphDict();
-    if (!histogram_dict.empty())
+    if (!histogram_dict.empty()) {
       histograms_list.Append(std::move(histogram_dict));
+    }
   }
 
   ResolveJavascriptCallback(base::Value(params.callback_id), histograms_list);
