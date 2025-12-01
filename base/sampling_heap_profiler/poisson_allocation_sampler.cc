@@ -376,10 +376,10 @@ void PoissonAllocationSampler::DoRecordAllocation(
         std::max(address_cache_max_size_, balanced_address_cache.size());
     address_cache_max_load_factor_ = std::max(
         address_cache_max_load_factor_, balanced_address_cache.load_factor());
-    if (balanced_address_cache.bloom_filter()) {
+    if (balanced_address_cache.HasBloomFilter()) {
       bloom_filter_max_saturation_ =
           std::max(bloom_filter_max_saturation_,
-                   balanced_address_cache.bloom_filter()->CountBits());
+                   balanced_address_cache.MaxBloomFilterSaturation());
     }
     observers_copy = observers_;
   }

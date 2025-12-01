@@ -14,6 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/synchronization/lock.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/simple_thread.h"
 #include "partition_alloc/shim/allocator_shim.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,14 +23,18 @@ namespace base {
 
 using ContainsResult = LockFreeAddressHashSet::ContainsResult;
 
-class LockFreeAddressHashSetTest : public ::testing::Test {
+class LockFreeAddressHashSetTest : public ::testing::TestWithParam<bool> {
  public:
+  LockFreeAddressHashSetTest() {
+    scoped_feature_list_.InitWithFeatureState(kUseLockFreeBloomFilter,
+                                              GetParam());
+  }
+
   static bool IsSubset(const LockFreeAddressHashSet& superset,
                        const LockFreeAddressHashSet& subset) {
-    for (const std::atomic<LockFreeAddressHashSet::Node*>& bucket :
-         subset.buckets_) {
+    for (const LockFreeAddressHashSet::Bucket& bucket : subset.buckets_) {
       for (const LockFreeAddressHashSet::Node* node =
-               bucket.load(std::memory_order_acquire);
+               bucket.head.load(std::memory_order_acquire);
            node; node = node->next) {
         void* key = node->key.load(std::memory_order_relaxed);
         if (key && superset.Contains(key) != ContainsResult::kFound) {
@@ -49,7 +54,7 @@ class LockFreeAddressHashSetTest : public ::testing::Test {
   static size_t BucketSize(const LockFreeAddressHashSet& set, size_t bucket) {
     size_t count = 0;
     for (const LockFreeAddressHashSet::Node* node =
-             set.buckets_[bucket].load(std::memory_order_acquire);
+             set.buckets_[bucket].head.load(std::memory_order_acquire);
          node; node = node->next) {
       if (node->key.load(std::memory_order_relaxed) != nullptr) {
         ++count;
@@ -58,22 +63,20 @@ class LockFreeAddressHashSetTest : public ::testing::Test {
     return count;
   }
 
-  // Returns the number of nodes in `bucket`, whether or not they contain keys.
-  static size_t BucketCapacity(const LockFreeAddressHashSet& set,
-                               size_t bucket) {
-    size_t capacity = 0;
-    for (const LockFreeAddressHashSet::Node* node =
-             set.buckets_[bucket].load(std::memory_order_acquire);
-         node; node = node->next) {
-      ++capacity;
-    }
-    return capacity;
-  }
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 using LockFreeAddressHashSetDeathTest = LockFreeAddressHashSetTest;
 
-TEST_F(LockFreeAddressHashSetTest, EmptySet) {
+INSTANTIATE_TEST_SUITE_P(EnableBloomFilter,
+                         LockFreeAddressHashSetTest,
+                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(EnableBloomFilter,
+                         LockFreeAddressHashSetDeathTest,
+                         ::testing::Bool());
+
+TEST_P(LockFreeAddressHashSetTest, EmptySet) {
   Lock lock;
   LockFreeAddressHashSet set(8, lock);
 
@@ -84,7 +87,7 @@ TEST_F(LockFreeAddressHashSetTest, EmptySet) {
   EXPECT_NE(set.Contains(&set), ContainsResult::kFound);
 }
 
-TEST_F(LockFreeAddressHashSetTest, BasicOperations) {
+TEST_P(LockFreeAddressHashSetTest, BasicOperations) {
   Lock lock;
   LockFreeAddressHashSet set(8, lock);
 
@@ -116,7 +119,7 @@ TEST_F(LockFreeAddressHashSetTest, BasicOperations) {
   }
 }
 
-TEST_F(LockFreeAddressHashSetTest, Copy) {
+TEST_P(LockFreeAddressHashSetTest, Copy) {
   Lock lock;
   LockFreeAddressHashSet set(16, lock);
 
@@ -178,7 +181,7 @@ class WriterThread : public SimpleThread {
   raw_ref<std::atomic_bool> cancel_;
 };
 
-TEST_F(LockFreeAddressHashSetTest, ConcurrentAccess) {
+TEST_P(LockFreeAddressHashSetTest, ConcurrentAccess) {
   // The purpose of this test is to make sure adding/removing keys concurrently
   // does not disrupt the state of other keys.
   Lock lock;
@@ -214,7 +217,7 @@ TEST_F(LockFreeAddressHashSetTest, ConcurrentAccess) {
             ContainsResult::kFound);
 }
 
-TEST_F(LockFreeAddressHashSetTest, BucketsUsage) {
+TEST_P(LockFreeAddressHashSetTest, BucketsUsage) {
   // Test the uniformity of buckets usage.
   size_t count = 10000;
   Lock lock;
@@ -237,7 +240,7 @@ TEST_F(LockFreeAddressHashSetTest, BucketsUsage) {
   EXPECT_LE(set.GetBucketStats().chi_squared, 1.05);
 }
 
-TEST_F(LockFreeAddressHashSetDeathTest, LockAsserts) {
+TEST_P(LockFreeAddressHashSetDeathTest, LockAsserts) {
   Lock lock;
   LockFreeAddressHashSet set(8, lock);
   LockFreeAddressHashSet set2(8, lock);

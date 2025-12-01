@@ -4,6 +4,7 @@
 
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 
+#include <algorithm>
 #include <atomic>
 #include <bit>
 #include <limits>
@@ -24,9 +25,37 @@ BASE_FEATURE(kUseLockFreeBloomFilter, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
-// See the probability table in lock_free_bloom_filter.h to estimate the
-// optimal bits per key. It's a tradeoff between better performance for the most
-// common table sizes and better performance at outliers.
+// Choosing the parameters of the Bloom filter:
+//
+// The estimated false positive rate is approximately (1-e^(-kn/m))^k, where
+// k is the number of hash functions (bits per key), m is the number of bits
+// in the filter, and n is the number of keys. (See
+// https://en.wikipedia.org/wiki/Bloom_filter#Probability_of_false_positives.)
+//
+// Since the implementation uses a fixed size, m is hardcoded to 64. This gives
+// estimated false positives (in percent) of:
+//
+//           k=2     k=3     k=4     k=5     k=6     k=7     k=8     k=9    k=10
+// n=1:     0.09    0.01    0.00    0.00    0.00    0.00    0.00    0.00    0.00
+// n=2:     0.37    0.07    0.02    0.01    0.00    0.00    0.00    0.00    0.00
+// n=3:     0.80    0.23    0.09    0.04    0.02    0.01    0.01    0.01    0.01
+// n=4:     1.38    0.50    0.24    0.14    0.09    0.07    0.06    0.05    0.05
+// n=5:     2.09    0.91    0.52    0.35    0.27    0.24    0.22    0.21    0.22
+// n=6:     2.92    1.47    0.96    0.73    0.63    0.60    0.60    0.63    0.69
+// n=7:     3.86    2.19    1.58    1.33    1.24    1.25    1.34    1.48    1.69
+// n=8:     4.89    3.06    2.40    2.17    2.16    2.29    2.55    2.92    3.42
+// n=10:    7.20    5.24    4.66    4.68    5.07    5.75    6.72    7.97    9.51
+// n=20:   21.60   22.52   25.92   30.85   36.83   43.47   50.40   57.27   63.81
+// n=40:   50.91   60.69   70.99   79.88   86.69   91.51   94.74   96.81   98.09
+// n=80:   84.26   93.11   97.33   99.04   99.67   99.89   99.96   99.99  100.00
+// n=100:  91.41   97.26   99.23   99.80   99.95   99.99  100.00  100.00  100.00
+//
+// Please update this table if kMaxLockFreeBloomFilterBits changes.
+//
+// This can be used to estimate the optimal number of hash functions (k) for the
+// expected number of keys that will be added. It's a tradeoff between better
+// performance for the most common table sizes and better performance at
+// outliers.
 //
 // Field data shows that on most platforms the hash table has about 5-10 entries
 // at the 50th percentile, 10-20 entries at the 75th percentile, and 40-100
@@ -43,8 +72,32 @@ namespace {
 // 4 bits per key:  0.5% to  4.7% at the 50th
 //                  4.7% to 25.0% at the 75th
 //                 71.0% to 99.2% at the 99th
-constexpr base::FeatureParam<size_t> kBitsPerKey{&kUseLockFreeBloomFilter,
-                                                 "bits_per_key", 3};
+//
+// 3 bits per key seems optimal, but even that isn't very good.
+//
+// Individual buckets hold about 1-2 entries at the 50th percentile, 2-4 at the
+// 75th, 4-6 at the 99th, and 5-7 at the 99.9th, depending on process and
+// platform. With a filter for each bucket, that gives expected false positive
+// rates of:
+//
+// 6 bits per key: 0.0%  to 0.09% at the 75th
+//                 0.09% to 0.63% at the 99th
+//                 0.27% to 1.24% at the 99.9th
+//
+// 7 bits per key: 0.0%  to 0.07% at the 75th
+//                 0.07% to 0.60% at the 99th
+//                 0.24% to 1.25% at the 99.9th
+//
+// 8 bits per key: 0.0%  to 0.06% at the 75th
+//                 0.06% to 0.60% at the 99th
+//                 0.22% to 1.34% at the 99.9th
+//
+// 9 bits per key: 0.0%  to 0.05% at the 75th
+//                 0.05% to 0.63% at the 99th
+//                 0.21% to 1.48% at the 99.9th
+//
+// 7 or 8 bits per key seems optimal: after that point the false positive rate
+// starts to rise at the 99th, which could lead to spikes of poor performance.
 
 // Returns the result of a chi-squared test showing how evenly keys are
 // distributed. `bucket_key_counts` is the count of keys stored in each bucket.
@@ -70,19 +123,18 @@ double ChiSquared(const std::vector<size_t>& bucket_key_counts) {
 }  // namespace
 
 LockFreeAddressHashSet::LockFreeAddressHashSet(size_t buckets_count, Lock& lock)
-    : lock_(lock), buckets_(buckets_count), bucket_mask_(buckets_count - 1) {
-  DCHECK(std::has_single_bit(buckets_count));
-  DCHECK_LE(bucket_mask_, std::numeric_limits<uint32_t>::max());
-  if (base::FeatureList::IsEnabled(kUseLockFreeBloomFilter)) {
-    const size_t bits_per_key = kBitsPerKey.Get();
-    CHECK_GT(bits_per_key, 0u);
-    filter_.emplace(bits_per_key);
-  }
+    : lock_(lock),
+      buckets_(buckets_count),
+      bucket_mask_(buckets_count - 1),
+      bloom_filters_enabled_(
+          base::FeatureList::IsEnabled(kUseLockFreeBloomFilter)) {
+  CHECK(std::has_single_bit(buckets_count));
+  CHECK_LE(bucket_mask_, std::numeric_limits<uint32_t>::max());
 }
 
 LockFreeAddressHashSet::~LockFreeAddressHashSet() {
-  for (std::atomic<Node*>& bucket : buckets_) {
-    Node* node = bucket.load(std::memory_order_relaxed);
+  for (const Bucket& bucket : buckets_) {
+    Node* node = bucket.head.load(std::memory_order_relaxed);
     while (node) {
       Node* next = node->next;
       delete node;
@@ -93,7 +145,7 @@ LockFreeAddressHashSet::~LockFreeAddressHashSet() {
 
 void LockFreeAddressHashSet::Insert(void* key) {
   lock_->AssertAcquired();
-  DCHECK_NE(key, nullptr);
+  CHECK_NE(key, nullptr);
   CHECK_NE(Contains(key), ContainsResult::kFound);
 
   // Also store the key in the bloom filter.
@@ -175,15 +227,15 @@ void LockFreeAddressHashSet::Insert(void* key) {
   // Each of the 3 states that could be seen by T1 due to unsynchronized updates
   // of `filter_` and `buckets_` could already be seen by T1 if the updates were
   // sequentially consistent.
-  if (filter_) {
-    filter_->Add(key);
+  Bucket& bucket = buckets_[Hash(key) & bucket_mask_];
+  if (bloom_filters_enabled_) {
+    bucket.filter.Add(key);
   }
 
   ++size_;
   // Note: There's no need to use std::atomic_compare_exchange here,
   // as we do not support concurrent inserts, so values cannot change midair.
-  std::atomic<Node*>& bucket = buckets_[Hash(key) & bucket_mask_];
-  Node* node = bucket.load(std::memory_order_relaxed);
+  Node* node = bucket.head.load(std::memory_order_relaxed);
   // First iterate over the bucket nodes and try to reuse an empty one if found.
   for (; node != nullptr; node = node->next) {
     if (node->key.load(std::memory_order_relaxed) == nullptr) {
@@ -193,16 +245,62 @@ void LockFreeAddressHashSet::Insert(void* key) {
   }
   // There are no empty nodes to reuse left in the bucket.
   // Create a new node first...
-  Node* new_node = new Node(key, bucket.load(std::memory_order_relaxed));
+  Node* new_node = new Node(key, bucket.head.load(std::memory_order_relaxed));
   // ... and then publish the new chain.
-  bucket.store(new_node, std::memory_order_release);
+  bucket.head.store(new_node, std::memory_order_release);
+}
+
+void LockFreeAddressHashSet::Remove(void* key) {
+  lock_->AssertAcquired();
+  Bucket& bucket = buckets_[Hash(key) & bucket_mask_];
+
+  // Keys can't be removed from the bloom filter, so rebuild it from scratch to
+  // keep the false positive rate as low as possible. The overhead of rebuilding
+  // the filter on every delete is acceptable because adding and removing keys
+  // is extremely rare compared to looking them up. (See the comment in Insert()
+  // explaining why this is thread-safe.)
+  LockFreeBloomFilterBits bits = 0;
+
+  // memory_order_relaxed is enough here because the lock prevents the head
+  // pointer from being modified during Remove().
+  Node* node = bucket.head.load(std::memory_order_relaxed);
+  for (; node != nullptr; node = node->next) {
+    void* node_key = node->key.load(std::memory_order_relaxed);
+    if (node_key == key) {
+      break;
+    }
+    // Rebuild the bloom filter as we go, without the removed key.
+    if (bloom_filters_enabled_ && node_key != nullptr) {
+      bits |= bucket.filter.GetBitsForKey(node_key);
+    }
+  }
+  DCHECK_NE(node, nullptr);
+
+  // We can never delete the node, nor detach it from the current bucket as
+  // there may always be another thread currently iterating over it. Instead we
+  // just mark it as empty, so |Insert| can reuse it later.
+  node->key.store(nullptr, std::memory_order_relaxed);
+  --size_;
+
+  // Finish rebuilding the bloom filter if needed.
+  if (bloom_filters_enabled_) {
+    for (node = node->next; node != nullptr; node = node->next) {
+      void* node_key = node->key.load(std::memory_order_relaxed);
+      CHECK_NE(node_key, key);
+      if (node_key != nullptr) {
+        bits |= bucket.filter.GetBitsForKey(node_key);
+      }
+    }
+
+    bucket.filter.AtomicSetBits(bits);
+  }
 }
 
 void LockFreeAddressHashSet::Copy(const LockFreeAddressHashSet& other) {
   lock_->AssertAcquired();
-  DCHECK_EQ(0u, size());
-  for (const std::atomic<Node*>& bucket : other.buckets_) {
-    for (const Node* node = bucket.load(std::memory_order_relaxed); node;
+  CHECK_EQ(0u, size());
+  for (const Bucket& bucket : other.buckets_) {
+    for (const Node* node = bucket.head.load(std::memory_order_relaxed); node;
          node = node->next) {
       void* key = node->key.load(std::memory_order_relaxed);
       if (key) {
@@ -219,13 +317,13 @@ LockFreeAddressHashSet::BucketStats LockFreeAddressHashSet::GetBucketStats()
   lengths.reserve(buckets_.size());
   std::vector<size_t> key_counts;
   key_counts.reserve(buckets_.size());
-  for (const std::atomic<Node*>& bucket : buckets_) {
+  for (const Bucket& bucket : buckets_) {
     // Bucket length includes all nodes, including ones with null keys, since
     // they will need to be searched when iterating. Key count only includes
     // real keys.
     size_t length = 0;
     size_t key_count = 0;
-    for (const Node* node = bucket.load(std::memory_order_relaxed);
+    for (const Node* node = bucket.head.load(std::memory_order_relaxed);
          node != nullptr; node = node->next) {
       ++length;
       if (node->key.load(std::memory_order_relaxed)) {
@@ -238,19 +336,14 @@ LockFreeAddressHashSet::BucketStats LockFreeAddressHashSet::GetBucketStats()
   return BucketStats(std::move(lengths), ChiSquared(key_counts));
 }
 
-void LockFreeAddressHashSet::RebuildFilter() {
-  DCHECK(filter_);
+size_t LockFreeAddressHashSet::MaxBloomFilterSaturation() const {
+  CHECK(bloom_filters_enabled_);
   lock_->AssertAcquired();
-  LockFreeBloomFilter::BitStorage bits = 0;
-  for (const std::atomic<Node*>& bucket : buckets_) {
-    for (const Node* node = bucket.load(std::memory_order_relaxed); node;
-         node = node->next) {
-      if (void* key = node->key.load(std::memory_order_relaxed)) {
-        bits |= filter_->GetBitsForKey(key);
-      }
-    }
+  size_t max_bits = 0;
+  for (const Bucket& bucket : buckets_) {
+    max_bits = std::max(max_bits, bucket.filter.CountBits());
   }
-  filter_->AtomicSetBits(bits);
+  return max_bits;
 }
 
 LockFreeAddressHashSet::BucketStats::BucketStats(std::vector<size_t> lengths,

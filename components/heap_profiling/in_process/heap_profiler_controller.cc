@@ -220,7 +220,7 @@ void LogProfilerStats(std::optional<ProcessType> process_type,
 
   if (base::FeatureList::IsEnabled(base::kUseLockFreeBloomFilter)) {
     const size_t kMaxSaturationSize = 65;
-    static_assert(kMaxSaturationSize == base::LockFreeBloomFilter::kMaxBits + 1,
+    static_assert(kMaxSaturationSize == base::kMaxLockFreeBloomFilterBits + 1,
                   "LockFreeBloomFilter's max bits has changed. Need to update "
                   "the metric.");
 

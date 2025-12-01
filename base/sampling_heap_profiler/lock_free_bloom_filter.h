@@ -9,8 +9,11 @@
 #include <stdint.h>
 
 #include <atomic>
+#include <bit>
+#include <bitset>
 
-#include "base/base_export.h"
+#include "base/containers/span.h"
+#include "base/hash/hash.h"
 
 namespace base {
 
@@ -47,102 +50,114 @@ namespace base {
 // This class only guarantees that accessing the Bloom filter is thread-safe.
 // The caller is responsible for ensuring that accessing both the filter and
 // LockFreeAddressHashSet from multiple threads gives consistent results.
-class BASE_EXPORT LockFreeBloomFilter {
+//
+// See lock_free_address_hash_set.cc for a table of estimated false positive
+// rates when the filter is used with LockFreeAddressHashSet.
+
+// An integer to hold the bits that are set in the filter.
+using LockFreeBloomFilterBits = uint64_t;
+
+// Maximum number of bits in the filter.
+static constexpr size_t kMaxLockFreeBloomFilterBits =
+    8 * sizeof(LockFreeBloomFilterBits);
+
+// A bloom filter of `kMaxLockFreeBloomFilterBits` size that sets up to
+// `BitsPerKey` bits per entry. Each key added to the filter is hashed with
+// `BitsPerKey` separate hash functions, each of which returns the index of a
+// bit to set. (Fewer bits can be set for a given entry if multiple hash
+// functions return the same index.)
+//
+// If UseFakeHashFunctionsForTesting is `true`, hashing a key with hash function
+// N will shift the key N bits to the right, allowing the test to precisely
+// control how keys are hashed.
+template <size_t BitsPerKey, bool UseFakeHashFunctionsForTesting = false>
+class LockFreeBloomFilter {
  public:
-  // An integer to hold the bits that are set in the filter.
-  //
-  // The estimated false positive rate is approximately (1-e^(-kn/m))^k, where
-  // k is the number of hash functions (bits per key), m is the number of bits
-  // in the filter, and n is the number of keys. (See
-  // https://en.wikipedia.org/wiki/Bloom_filter#Probability_of_false_positives.)
-  //
-  // Since this implementation uses a fixed size, m is hardcoded to 64. This
-  // gives estimated false positives of:
-  //
-  // k=2, n=5: 2.1%
-  // k=2, n=10: 7.2%
-  // k=2, n=20: 21.6%
-  // k=2, n=40: 50.9%
-  // k=2, n=80: 84.3%
-  // k=2, n=100: 91.4%
-  //
-  // k=3, n=5: 0.9%
-  // k=3, n=10: 5.2%
-  // k=3, n=20: 22.5%
-  // k=3, n=40: 60.7%
-  // k=3, n=80: 93.1%
-  // k=3, n=100: 97.3%
-  //
-  // k=4, n=5: 0.5%
-  // k=4, n=10: 4.7%
-  // k=4, n=20: 25.9%
-  // k=4, n=40: 71.0%
-  // k=4, n=80: 97.3%
-  // k=4, n=100: 99.2%
-  //
-  // Please update this table if the size of BitStorage changes. This can be
-  // used to estimate the optimal number of hash functions (k) for the expected
-  // number of keys that will be added.
-  using BitStorage = uint64_t;
-
-  // Atomic wrapper for the bits.
-  using AtomicBitStorage = std::atomic<BitStorage>;
-  static_assert(AtomicBitStorage::is_always_lock_free);
-
-  // Maximum number of bits in the filter.
-  static constexpr size_t kMaxBits = 8 * sizeof(BitStorage);
-
-  // Constructs a Bloom filter of `kMaxBits` size with zero-ed data and using
-  // `num_hash_functions` per entry.
-  explicit LockFreeBloomFilter(size_t num_hash_functions);
+  LockFreeBloomFilter() = default;
+  ~LockFreeBloomFilter() = default;
 
   LockFreeBloomFilter(const LockFreeBloomFilter&) = delete;
   LockFreeBloomFilter& operator=(const LockFreeBloomFilter&) = delete;
 
-  ~LockFreeBloomFilter();
+  // Returns the bits corresponding to `ptr` in this Bloom filter.
+  LockFreeBloomFilterBits GetBitsForKey(void* ptr) const;
 
   // Returns whether `ptr` may have been added as a key in this Bloom filter. If
   // this returns false, `ptr` is definitely not in the filter. Otherwise `ptr`
   // may or may not be in the filter, since Bloom filters inherently have false
   // positives. (See the table of estimated false positive rates above.)
-  bool MaybeContains(void* ptr) const;
+  bool MaybeContains(void* ptr) const {
+    // `ptr` is potentially in the filter iff ALL bits in the bitmask are set.
+    const LockFreeBloomFilterBits bitmask = GetBitsForKey(ptr);
+    return (bits_.load(std::memory_order_relaxed) & bitmask) == bitmask;
+  }
 
   // Adds `ptr` as a key in this Bloom filter. After this call
   // MaybeContains(ptr) will always return true.
-  void Add(void* ptr);
+  void Add(void* ptr) {
+    bits_.fetch_or(GetBitsForKey(ptr), std::memory_order_relaxed);
+  }
 
   // Atomically overwrites the bloom filter with `bits`.
-  void AtomicSetBits(BitStorage bits);
-
-  // Returns the bits corresponding to `ptr` in this Bloom filter.
-  BitStorage GetBitsForKey(void* ptr) const;
+  void AtomicSetBits(LockFreeBloomFilterBits bits) {
+    bits_.store(bits, std::memory_order_relaxed);
+  }
 
   // Returns the bit array data of this Bloom filter as an integer.
-  BitStorage GetBitsForTesting() const;
-
-  // If called with `true`, hashing a key with hash function N will shift the
-  // key N bits to the right, allowing the test to precisely control how keys
-  // are hashed. Calling this with `false` will restore the default hash
-  // functions.
-  void SetFakeHashFunctionsForTesting(bool use_fake_hash_functions) {
-    use_fake_hash_functions_ = use_fake_hash_functions;
+  LockFreeBloomFilterBits GetBitsForTesting() const {
+    return bits_.load(std::memory_order_relaxed);
   }
 
   // Returns the number of bits that are set, for stats.
-  size_t CountBits() const;
+  size_t CountBits() const {
+    return std::bitset<kMaxLockFreeBloomFilterBits>(
+               bits_.load(std::memory_order_relaxed))
+        .count();
+  }
 
  private:
-  // Number of bits to set for each added key.
-  const size_t num_hash_functions_;
-
   // Bit data for the filter.
   // Accessed with std::memory_order_relaxed since the class doesn't synchronize
   // access to pointed-to memory. Instead pointers passed to Add() are treated
   // as opaque keys.
-  AtomicBitStorage bits_ = 0;
-
-  bool use_fake_hash_functions_ = false;
+  static_assert(std::atomic<LockFreeBloomFilterBits>::is_always_lock_free);
+  std::atomic<LockFreeBloomFilterBits> bits_ = 0;
 };
+
+template <size_t BitsPerKey, bool UseFakeHashFunctionsForTesting>
+LockFreeBloomFilterBits
+LockFreeBloomFilter<BitsPerKey, UseFakeHashFunctionsForTesting>::GetBitsForKey(
+    void* ptr) const {
+  // If LockFreeBloomFilterBits is N bits wide, then an evenly-distributed hash
+  // function can be used as an index into it by masking off the last N-1 bits.
+  // (Equivalent to mod N when N is divisible by 2.)
+  static_assert(std::has_single_bit(kMaxLockFreeBloomFilterBits),
+                "kMaxLockFreeBloomFilterBits must be divisible by 2");
+
+  constexpr size_t kIndexMask = kMaxLockFreeBloomFilterBits - 1;
+  constexpr size_t kShiftWidth = std::bit_width(kIndexMask);
+  static_assert(BitsPerKey * kShiftWidth <= 8 * sizeof(size_t),
+                "Must be able to mask off `BitsPerKey` subsets of a size_t");
+
+  LockFreeBloomFilterBits bitmask = 0;
+  const uintptr_t int_ptr = reinterpret_cast<uintptr_t>(ptr);
+  size_t hash = base::FastHash(base::as_byte_span({int_ptr}));
+  for (size_t i = 0; i < BitsPerKey; ++i) {
+    if constexpr (UseFakeHashFunctionsForTesting) {
+      // Overwrite the previous hash with a fake.
+      hash = int_ptr >> i;
+    }
+    // Use the last bits of the hash as an index, and set the bit at that index.
+    // Make sure the argument of << is the same type as `bitmask` to avoid
+    // undefined behaviour on overflow if size_t is narrower.
+    constexpr LockFreeBloomFilterBits kOneBit = 1;
+    bitmask |= kOneBit << (hash & kIndexMask);
+
+    // Shift the used bits out of the hash.
+    hash >>= kShiftWidth;
+  }
+  return bitmask;
+}
 
 }  // namespace base
 

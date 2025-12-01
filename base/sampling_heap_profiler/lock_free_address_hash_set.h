@@ -7,7 +7,6 @@
 
 #include <atomic>
 #include <cstdint>
-#include <optional>
 #include <vector>
 
 #include "base/base_export.h"
@@ -19,7 +18,6 @@
 #include "base/sampling_heap_profiler/lock_free_bloom_filter.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "base/types/optional_util.h"
 
 namespace base {
 
@@ -35,8 +33,15 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kUseLockFreeBloomFilter);
 // However, please note the result of concurrent execution of |Contains|
 // with |Insert| or |Remove| over the same key is racy.
 //
+// The destructor must only be called from single-threaded context because it is
+// unsafe to call while any thread is calling |Contains|. In practice
+// LockFreeAddressHashSet objects are only destroyed in tests. In production
+// PoissonAllocationSampler uses a global LockFreeAddressHashSet that is leaked.
+//
 // The hash set never rehashes, so the number of buckets stays the same
-// for the lifetime of the set.
+// for the lifetime of the set. PoissonAllocationSampler handles rebalancing by
+// creating a larger LockFreeAddressHashSet to take over as the global set and
+// leaking the original.
 //
 // Internally the hashset is implemented as a vector of N buckets
 // (N has to be a power of 2). Each bucket holds a single-linked list of
@@ -69,9 +74,10 @@ class BASE_EXPORT LockFreeAddressHashSet {
     double chi_squared = 0.0;
   };
 
-  // Creates a hash set with `buckets_count` buckets. `lock` is a lock that
-  // must be held by callers of |Insert|, |Remove| and |Copy|. |Contains| is
-  // lock-free.
+  // Creates a hash set with `buckets_count` buckets (which must be a power of
+  // 2). `lock` is a reference to a global lock (shared by all
+  // LockFreeAddressHashSet instances) that must be held by callers of |Insert|,
+  // |Remove| and |Copy|. |Contains| is lock-free.
   LockFreeAddressHashSet(size_t buckets_count, Lock& lock);
 
   ~LockFreeAddressHashSet();
@@ -98,7 +104,7 @@ class BASE_EXPORT LockFreeAddressHashSet {
   // Removes the |key|, which must not be nullptr, from the set. The key must be
   // present in the set before the invocation. Concurrent execution of |Insert|,
   // |Remove|, or |Copy| is not supported.
-  ALWAYS_INLINE void Remove(void* key);
+  void Remove(void* key);
 
   // Inserts the |key|, which must not be nullptr, into the set. The key must
   // not be present in the set before the invocation. Also adds the key to the
@@ -132,10 +138,11 @@ class BASE_EXPORT LockFreeAddressHashSet {
   // |Insert|, |Remove| or |Copy|.
   BucketStats GetBucketStats() const;
 
-  LockFreeBloomFilter* bloom_filter() { return base::OptionalToPtr(filter_); }
-  const LockFreeBloomFilter* bloom_filter() const {
-    return base::OptionalToPtr(filter_);
-  }
+  // Returns true if bloom filters are enabled.
+  bool HasBloomFilter() const { return bloom_filters_enabled_; }
+
+  // Returns the highest number of bits set in any bloom filter, for metrics.
+  size_t MaxBloomFilterSaturation() const;
 
  private:
   friend class LockFreeAddressHashSetTest;
@@ -151,64 +158,58 @@ class BASE_EXPORT LockFreeAddressHashSet {
     RAW_PTR_EXCLUSION Node* next;
   };
 
-  // Returns the node containing `key` (which must not be null), or nullptr if
-  // it's not in the hash set.
-  ALWAYS_INLINE Node* FindNode(void* key);
-  ALWAYS_INLINE const Node* FindNode(void* key) const;
+  struct Bucket {
+    // The current head Node for this bucket, potentially updated under `lock_`
+    // with memory_order_release semantics during Insert(). Readers under
+    // `lock_` can read it with memory_order_relaxed, but concurrent readers
+    // (Contains) must use memory_order_acquire to ensure they view a fully
+    // initialized Node.
+    std::atomic<Node*> head;
+
+    // A bloom filter to speed up lookups of addresses not in the hash set.
+    // If a key hashes to this bucket, it can be checked against this filter
+    // (which is a simple bit compare) before spending the overhead of
+    // traversing the bucket nodes.
+    // The BitsPerKey param is set to 8 based on the table in
+    // lock_free_address_hash_set.cc. However 32-bit platforms only have room
+    // for 5 keys.
+    LockFreeBloomFilter<sizeof(size_t) < 8 ? 5 : 8> filter;
+  };
+
+  // Returns the node in `bucket` containing `key` (which must not be null), or
+  // nullptr if it's not in the hash set.
+  ALWAYS_INLINE const Node* FindNode(const Bucket& bucket, void* key) const;
 
   // Returns the hash of `key`.
   ALWAYS_INLINE static uint32_t Hash(void* key);
 
-  // Resets the bloom filter to exactly match the contents of the set.
-  void RebuildFilter();
-
   raw_ref<Lock> lock_;
 
-  std::vector<std::atomic<Node*>> buckets_;
+  std::vector<Bucket> buckets_;
   size_t size_ GUARDED_BY(lock_) = 0;
   const size_t bucket_mask_;
-
-  // A bloom filter to speed up lookups of addresses not in the hash set.
-  std::optional<LockFreeBloomFilter> filter_;
+  const bool bloom_filters_enabled_;
 };
 
 ALWAYS_INLINE LockFreeAddressHashSet::ContainsResult
 LockFreeAddressHashSet::Contains(void* key) const {
-  if (!filter_) {
-    return FindNode(key) ? ContainsResult::kFound : ContainsResult::kNotFound;
+  const Bucket& bucket = buckets_[Hash(key) & bucket_mask_];
+  if (!bloom_filters_enabled_) {
+    return FindNode(bucket, key) ? ContainsResult::kFound
+                                 : ContainsResult::kNotFound;
   }
-  if (filter_->MaybeContains(key)) {
+  if (bucket.filter.MaybeContains(key)) {
     // The filter may have false positives, so need to check the hash set.
-    return FindNode(key) ? ContainsResult::kFound
-                         : ContainsResult::kNotFoundButMatchedInBloomFilter;
+    return FindNode(bucket, key)
+               ? ContainsResult::kFound
+               : ContainsResult::kNotFoundButMatchedInBloomFilter;
   }
   return ContainsResult::kNotFound;
 }
 
-ALWAYS_INLINE void LockFreeAddressHashSet::Remove(void* key) {
-  lock_->AssertAcquired();
-  Node* node = FindNode(key);
-  DCHECK_NE(node, nullptr);
-  // We can never delete the node, nor detach it from the current bucket
-  // as there may always be another thread currently iterating over it.
-  // Instead we just mark it as empty, so |Insert| can reuse it later.
-  node->key.store(nullptr, std::memory_order_relaxed);
-  --size_;
-
-  // Keys can't be removed from the bloom filter, so rebuild it from scratch to
-  // keep the false positive rate as low as possible. The overhead of rebuilding
-  // the filter on every delete is acceptable because adding and removing keys
-  // is extremely rare compared to looking them up. (See the comment in Insert()
-  // explaining why this is thread-safe.)
-  if (filter_) {
-    RebuildFilter();
-  }
-}
-
-ALWAYS_INLINE LockFreeAddressHashSet::Node* LockFreeAddressHashSet::FindNode(
-    void* key) {
+ALWAYS_INLINE const LockFreeAddressHashSet::Node*
+LockFreeAddressHashSet::FindNode(const Bucket& bucket, void* key) const {
   DCHECK_NE(key, nullptr);
-  const std::atomic<Node*>& bucket = buckets_[Hash(key) & bucket_mask_];
   // It's enough to use std::memory_order_consume ordering here, as the
   // node->next->...->next loads form a dependency chain.
   // However std::memory_order_consume is temporarily deprecated in C++17.
@@ -222,18 +223,13 @@ ALWAYS_INLINE LockFreeAddressHashSet::Node* LockFreeAddressHashSet::FindNode(
   // happens-before" - but "Release-Consume ordering" still carries the note
   // that it's "temporarily discouraged" so it's unclear if it's now safe to use
   // here.
-  for (Node* node = bucket.load(std::memory_order_acquire); node != nullptr;
-       node = node->next) {
+  for (Node* node = bucket.head.load(std::memory_order_acquire);
+       node != nullptr; node = node->next) {
     if (node->key.load(std::memory_order_relaxed) == key) {
       return node;
     }
   }
   return nullptr;
-}
-
-ALWAYS_INLINE const LockFreeAddressHashSet::Node*
-LockFreeAddressHashSet::FindNode(void* key) const {
-  return const_cast<LockFreeAddressHashSet*>(this)->FindNode(key);
 }
 
 // static
