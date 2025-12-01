@@ -3306,6 +3306,18 @@ constexpr SurfaceTestCase kSurfaceTestCases[] = {
       s.src = URL.createObjectURL(b);
       document.body.appendChild(s);
     )SCRIPT"},
+    {"dynamic_script_tag_module_data", R"SCRIPT(
+      const s = document.createElement("script");
+      s.type = "module";
+      s.src = 'data:text/javascript,$1();';
+      document.body.appendChild(s);
+    )SCRIPT"},
+    {"dynamic_script_tag_module", R"SCRIPT(
+      const s = document.createElement("script");
+      s.type = "module";
+      s.innerText = '$1();';
+      document.body.appendChild(s);
+    )SCRIPT"},
 };
 
 INSTANTIATE_TEST_SUITE_P(
