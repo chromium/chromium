@@ -115,7 +115,6 @@
 <translation id="2241587408274973373">Yangi varaq sahifasi bildirgilari</translation>
 <translation id="2241634353105152135">Bir marta</translation>
 <translation id="2253414712144136228">Olib tashlash: <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2281098328019574668">Chrome brauzerida tajribangizni yaxshilovchi statistika boʻyicha bildirishnomalar oling</translation>
 <translation id="228293613124499805">Siz ochgan saytlarning aksariyati sozlamalaringiz yoki ularga ulashgan axborotlar kabilarni qurilmangizda saqlashi mumkin. Koʻpincha bu qulayligingiz uchun amalga oshiriladi. Bu sozlamani oʻchirmaslikni tavsiya qilamiz.</translation>
 <translation id="2289270750774289114">Sayt atrofdagi Bluetooth qurilmalarni tekshirmoqchi boʻlsa, xabar berilsin (tavsiya etiladi)</translation>
 <translation id="2315043854645842844">Tanlangan mijoz sertifikati eskirgan va operatsion tizim tomonidan qo‘llab-quvvatlanmaydi.</translation>
@@ -172,6 +171,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="2787357173144933081">Omniboksdan boshlash</translation>
 <translation id="2789132527330338807">Sites atrofingiz 3D xaritasini yaratish yoki kamera holatini kuzatish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="2790501146643349491">Yoqilsa, yaqinda yopilgan saytlar axborot yuborish va qabul qilishni toʻxtatishi mumkin. Oʻchirilsa, toʻxtata olmaydi.</translation>
+<translation id="2794551654724114396">Chromedan unumli foydalanish uchun foydali maslahatlar bildirishnomalarini yoqing</translation>
 <translation id="2795716239552913152">Saytlar odatda mahalliy yangiliklar yoki atrofdagi doʻkonlar kabi tegishli funksiya yoki axborotlar uchun joylashuvingizdan foydalanadi</translation>
 <translation id="2800760947029405028">Rasm yuklash</translation>
 <translation id="2802908157808345702">Saytlarga qalqib chiquvchi oynalar ochish yoki tashrifni yoʻnaltirish taqiqlansin</translation>
@@ -226,7 +226,6 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="3368138297038111198">Oyna ulashilmoqda</translation>
 <translation id="3386292677130313581">Joylashuv ma’lumotini ko‘rishiga ruxsat so‘ralsin (tavsiya etiladi)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Yoqish</translation>
 <translation id="344449859752187052">Tashqi cookie fayl bloklandi</translation>
 <translation id="3448554387819310837">Yoqilsa, saytlar kameradan foydalanishni soʻrashi mumkin. Oʻchirilsa, kameradan foydalana olmaydi.</translation>
 <translation id="3491678231052507920">Saytlar odatda VR seanslarga kirishingizda virtual reallik qurilmalari va maʼlumotlaridan foydalanadi</translation>
@@ -245,6 +244,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="3611658447322220736">Yaqinda yopilgan saytlar axborot yuborishi va qabul qilishi mumkin</translation>
 <translation id="3619294456800709762">Saytlar tasvir ustida tasvir rejimiga avtomatik kirishi mumkin</translation>
 <translation id="3628308229821498208">Tavsiya etilgan qidiruvlar</translation>
+<translation id="3632460243282703117">Obuna</translation>
 <translation id="363748948745453283">Taxminiy joylashuv ishlatilmoqda</translation>
 <translation id="3641456520301071208">Saytlar joylashuv axborotingizni talab qilishi mumkin</translation>
 <translation id="3658847490588580244">Birlamchi brauzer quyi ekrani</translation>
@@ -574,7 +574,6 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="7260727271532453612">Ruxsat berildi: <ph name="PERMISSION_1" /> va <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Yoqilsa, saytlar virtual reallik qurilmalaridan foydalanishni soʻrashi mumkin Oʻchirilsa, bunday qurilmalardan foydalana olmaydi.</translation>
 <translation id="728412880473384942">Saytlar tezroq ochiladi, ammo himoyasi kamroq</translation>
-<translation id="7324836168971967994">Faqat siz uchun moslangan maslahatlar</translation>
 <translation id="7366415735885268578">Sayt qo‘shish</translation>
 <translation id="7368695150573390554">Barcha oflayn maʼlumotlar oʻchib ketadi</translation>
 <translation id="7369678931043226462">Yangi varaq sahifasini moslash quyi ekrani yarim hajmda ochildi</translation>
@@ -633,6 +632,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="7990211076305263060">Yoqilsa, saytlar mikrofondan foydalanishni soʻrashi mumkin. Oʻchirilsa, mikrofondan foydalana olmaydi.</translation>
 <translation id="8007176423574883786">Ushbu qurilma uchun o‘chirilgan</translation>
 <translation id="802154636333426148">Yuklab olib bo‘lmadi</translation>
+<translation id="8033047164036749181">Bu saytdan bildirishnoma olishga yoziling</translation>
 <translation id="8042586301629853791">Saralash:</translation>
 <translation id="8051193500142930381">Kamera ishlatadigan funksiyalar ishlamaydi</translation>
 <translation id="8056330801132235235">Chrome (standart)</translation>

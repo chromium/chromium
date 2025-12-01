@@ -115,7 +115,6 @@
 <translation id="2241587408274973373">Cartes de la page Nouvel onglet</translation>
 <translation id="2241634353105152135">Une fois</translation>
 <translation id="2253414712144136228">Retirer l'élément suivant : <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2281098328019574668">Recevez des notifications pour des statistiques qui améliorent votre expérience sur Chrome</translation>
 <translation id="228293613124499805">La plupart des sites que vous visitez peuvent enregistrer des données sur votre appareil, souvent pour améliorer votre expérience en enregistrant vos préférences ou en fonction de vos interactions avec le site. Nous vous recommandons de conserver ce paramètre activé.</translation>
 <translation id="2289270750774289114">Demander quand un site souhaite rechercher les appareils Bluetooth à proximité (recommandé)</translation>
 <translation id="2315043854645842844">La sélection du certificat client SSL n'est pas prise en charge par le système d'exploitation.</translation>
@@ -172,6 +171,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="2787357173144933081">Démarrage rapide d'omnibox</translation>
 <translation id="2789132527330338807">Les sites peuvent demander de créer une carte 3D de votre environnement ou de suivre la position de la caméra</translation>
 <translation id="2790501146643349491">Lorsque cette option est activée, les sites récemment fermés peuvent terminer l'envoi et la réception de données. Lorsqu'elle est désactivée, les sites récemment fermés ne peuvent pas terminer l'envoi ni la réception de données.</translation>
+<translation id="2794551654724114396">Activez les notifications pour recevoir des conseils utiles qui vous aideront à tirer le plein potentiel de Chrome</translation>
 <translation id="2795716239552913152">Les sites utilisent généralement votre position pour proposer des fonctionnalités ou de l'information pertinente, comme la météo locale ou des magasins à proximité</translation>
 <translation id="2800760947029405028">Téléverser une image</translation>
 <translation id="2802908157808345702">Ne pas autoriser les sites à envoyer des fenêtres contextuelles ni à utiliser des redirections</translation>
@@ -226,7 +226,6 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="3368138297038111198">Partage d'une fenêtre en cours…</translation>
 <translation id="3386292677130313581">Demander avant d'autoriser des sites à connaître votre emplacement (recommandé)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Activer</translation>
 <translation id="344449859752187052">Témoins tiers bloqués</translation>
 <translation id="3448554387819310837">Lorsque cette option est activée, les sites peuvent demander à utiliser votre appareil photo. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser votre appareil photo.</translation>
 <translation id="3491678231052507920">Les sites utilisent généralement vos données et vos appareils de réalité virtuelle pour que vous puissiez lancer des sessions de RV</translation>
@@ -574,7 +573,6 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="7260727271532453612">Autorisations <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /> accordées</translation>
 <translation id="7276071417425470385">Lorsque cette option est activée, les sites peuvent demander à utiliser des appareils de réalité virtuelle. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser d'appareils de réalité virtuelle.</translation>
 <translation id="728412880473384942">Les sites sont plus rapides, mais moins sécurisés</translation>
-<translation id="7324836168971967994">Conseils personnalisés pour vous</translation>
 <translation id="7366415735885268578">Ajouter un site</translation>
 <translation id="7368695150573390554">Toutes les données hors ligne seront supprimées</translation>
 <translation id="7369678931043226462">Zone de contenu dans le bas de l'écran de Personnaliser votre page Nouvel onglet ouverte à mi-hauteur</translation>

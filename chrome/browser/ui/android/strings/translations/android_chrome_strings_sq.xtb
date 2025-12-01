@@ -1267,6 +1267,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="641643625718530986">Printo…</translation>
 <translation id="6433501201775827830">Zgjidh motorin e kërkimit</translation>
 <translation id="6434309073475700221">Hidhe</translation>
+<translation id="6435307030888827407">Qëndro i paidentifikuar</translation>
 <translation id="6437162790453527153">Identifikohu për të marrë faqeshënuesit etj. në të gjitha pajisjet e tua</translation>
 <translation id="6437478888915024427">Informacionet e faqes</translation>
 <translation id="6440291723980579689">Faqet ngarkohen vetëm kur i hap</translation>
@@ -1337,6 +1338,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="670498945988402717">Kontrolluar dje</translation>
 <translation id="6710213216561001401">Prapa</translation>
 <translation id="671481426037969117">Kohëmatësi <ph name="FQDN" /> përfundoi. Do të fillojë përsëri nesër.</translation>
+<translation id="6716434912087331834">Për të restauruar një dritare të re, zvogëlo numrin total të dritareve aktive në <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ose më pak. Dritaret joaktive fshihen pas 6 muajsh.</translation>
 <translation id="6723740634201835758">Në "Llogarinë tënde të Google"</translation>
 <translation id="6734310707649923383">Mund të shikosh faqet që ke vizituar ose të fshish ato nga historiku yt</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, skeda "e fshehtë" e gozhduar në regjistrim</translation>
@@ -1654,6 +1656,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> është i vjetruar.</translation>
 <translation id="7944772052836377867">Sinkronizimi ka nevojë të verifikojë që je ti</translation>
 <translation id="7951102827450076904">Hap gjithmonë skedarët e shkarkuar PDF</translation>
+<translation id="7952479614398473176">Për të hapur një dritare të re, zvogëlo numrin total të dritareve aktive në <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ose më pak.</translation>
 <translation id="7957413488482743710">Një kartë virtuale fsheh kartën tënde aktuale për të të mbrojtur nga mashtrimi i mundshëm. <ph name="BEGIN_LINK1" />Mëso më shumë rreth kartave virtuale<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Skedat në këtë pajisje</translation>
 <translation id="7961926449547174351">Ke çaktivizuar qasjen te "Hapësira ruajtëse". Shko te "Cilësimet" për ta aktivizuar atë.</translation>

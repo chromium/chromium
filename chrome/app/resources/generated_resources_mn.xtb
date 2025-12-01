@@ -1352,6 +1352,7 @@
 <translation id="1907044622262489040">Дуу хоолойгоороо бичнэ үү. Search + D-г ашиглаад, дараа нь ярьж эхэлнэ үү.</translation>
 <translation id="1907659324308286326">Зарим Thunderbolt эсвэл USB4 нэмэлт хэрэгсэлд зохих ёсоор ажиллахад санах ойд хандах эрх шаардлагатай.</translation>
 <translation id="1908591798274282246">Хаасан бүлгийг дахин нээх</translation>
+<translation id="1909677622563887527">Chrome-г автоматжуулсан туршилтын программ хангамж удирдаж байна</translation>
 <translation id="1909880997794698664">Та энэ төхөөрөмжийг байнгын киоск горимд хадгалахыг хүсч байна уу?</translation>
 <translation id="1910721550319506122">Тавтай морилно уу!</translation>
 <translation id="1910736334623230603">Олон зураг хайх боломжгүй. Нэг удаад нэг зураг нэмнэ үү.</translation>
@@ -1705,6 +1706,7 @@
 <translation id="2144536955299248197">Сертификат нээгч: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux-н Андройд аппын хөгжүүлэлт</translation>
 <translation id="2145468727756963476">Gemini-г сэргээж байна...</translation>
+<translation id="2145688286532368277">Энэ сайтын хувьд JavaScript-н оновчлол унтраалттай байна.</translation>
 <translation id="2145917706968602070">Таны утас ойрхон, түгжээг нь тайлсан, Bluetooth, Wi-Fi-г нь асаасан болохыг шалгана уу</translation>
 <translation id="2146263598007866206">Сайтууд таны цагийг хэмнэхийн тулд холбоотой файлуудыг хамтад нь автоматаар татаж болзошгүй</translation>
 <translation id="2147218225094845757">Хажуугийн самбарыг нуух</translation>
@@ -4356,6 +4358,7 @@
 
 Та <ph name="CONTROL_PANEL_APPLET_NAME" />-ийг эхлүүлэхийг хүсэж байна уу?</translation>
 <translation id="3942420633017001071">Оношилгоо</translation>
+<translation id="3942558231079086184">Энэ сайтын хувьд JavaScript-н оновчлол унтраалттай байна. Гүйцэтгэлийг сайжруулахын тулд идэвхжүүлнэ үү.</translation>
 <translation id="3943582379552582368">&amp; Буцах</translation>
 <translation id="3943857333388298514">Хуулан буулгах</translation>
 <translation id="3945513714196326460">Илүү богино нэр оруулж үзнэ үү</translation>
@@ -10194,6 +10197,7 @@
 <translation id="8032569120109842252">Дагаж буй</translation>
 <translation id="8033827949643255796">Сонгогдсон</translation>
 <translation id="8033958968890501070">Хугацаа хэтэрсэн</translation>
+<translation id="8034399942062051455">V8-н оновчлол унтраалттай байна</translation>
 <translation id="8034697324150621782">Дээд талын харагдах байдлаар солих</translation>
 <translation id="8035059678007243127">Нууцлалтай Back/Forward Cache хийсэн хуудас: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Автоматаар бөглөх хэсгийг сайжруулахад тусална уу</translation>

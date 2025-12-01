@@ -39,6 +39,7 @@
 <translation id="141901961143729572">ನಿಮ್ಮ ವಿಚಾರಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="1465192221147974788">ನಿಮ್ಮ ವಿಂಡೋ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲು, ಸಿಸ್ಟಂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chromium ಗೆ ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಮಾಡಲು ಅನುಮತಿಸಿ.</translation>
 <translation id="1478370723027452770">Chrome for Testing ನ ಸಹಾಯ ಪಡೆಯಿರಿ</translation>
+<translation id="1496875977627931224">ಹಾಯ್ <ph name="USER_NAME" />,<ph name="LINE_BREAK" />ಇಂದು ನಿಮ್ಮ ಮನಸ್ಸಿನಲ್ಲಿ ಏನಿದೆ?</translation>
 <translation id="1497802159252041924">ಇನ್‌ಸ್ಟಾಲ್ ದೋಷ: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">ಈ ಪುಟವನ್ನು ರಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="1524282610922162960">Chromium ಟ್ಯಾಬ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
@@ -192,6 +193,7 @@
 <translation id="3103660991484857065">ಆರ್ಕೈವ್ ಅನ್ನು ಸಂಕ್ಷೇಪ ಮಾಡದಿರಲು ಸ್ಥಾಪಕ ವಿಫಲಗೊಂಡಿದೆ. ದಯವಿಟ್ಟು Chromium ಅನ್ನು ಪುನಃ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="310459126943037700">ಕಾರ್ಯವನ್ನು(ಗಳು) ಅಂತ್ಯಗೊಳಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="3130323860337406239">Chromium ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಬಳಸುತ್ತಿದೆ.</translation>
+<translation id="3130333203120345554">ಹೊಸ ಹುಡುಕಾಟ</translation>
 <translation id="3137969841538672700">ಹುಡುಕಲು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="3144188012276422546">ಈ ಟ್ಯಾಬ್ ಇನ್ನಷ್ಟು ಮಾಹಿತಿಯ ಮೂಲಗಳನ್ನು ಬಳಸುತ್ತಿದೆ. ನಿಮ್ಮ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಸುಧಾರಿಸಲು, ಅದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು Chromium ಅನ್ನು ಅನುಮತಿಸಿ.</translation>
 <translation id="3149163023759831301">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲು, ಸಿಸ್ಟಂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chromium ಗೆ ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಮಾಡಲು ಅನುಮತಿಸಿ</translation>
@@ -347,6 +349,7 @@
 <translation id="4994636714258228724">ನೀವಾಗಿಯೇ Chromium ಗೆ ಸೇರಿಕೊಳ್ಳಿ</translation>
 <translation id="5123973130450702873">ನಿಮ್ಮ ಹ್ಯಾಂಡ್‌ಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು Chromium ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5141988424377517949">ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿಲ್ಲ. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ಅನ್ನು Chromium ತೆಗೆದುಹಾಕಿದೆ.</translation>
+<translation id="5167819546851111585">ನಿಮ್ಮ ಮನಸ್ಸಿನಲ್ಲಿ ಏನಿದೆ?</translation>
 <translation id="5174969993834422967">ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತೀರಿ. ನಿಮಗೆ ಸೂಚನೆ ನೀಡಲು ಈ ಸೈಟ್‌ಗೆ ಅನುಮತಿಸುವುದಕ್ಕಾಗಿ, ನಿಮ್ಮ ಸ್ಥಳ ಪಟ್ಟಿಯ ಬಲ ಮೂಲೆಯಲ್ಲಿರುವ ನೋಟಿಫಿಕೇಶನ್ ಐಕಾನ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="5174983315706567306">ಸಾಕಷ್ಟು ಡಿಸ್ಕ್ ಸ್ಪೇಸ್ ಇಲ್ಲ.</translation>
 <translation id="5187123684706427865">Chromium ಖಾತೆಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ಮರು-ದೃಢೀಕರಣದ ಅಗತ್ಯವಿದೆ</translation>
@@ -379,6 +382,7 @@
 <translation id="5496810170689441661">Chromium, ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ. ಇದನ್ನು ಅನುಮತಿಸಲು ನಿಮ್ಮ Windows ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಟೈಪ್ ಮಾಡಿ.</translation>
 <translation id="5524890928877629608">ಹುಡುಕಾಟ ಪ್ರದೇಶದ ಮೇಲಿನ ಎಡ ಮೂಲೆ: ಎಡಕ್ಕೆ <ph name="LEFT" />%, ಮೇಲಕ್ಕೆ <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Chromium ನಲ್ಲಿ PDF ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="5536164441519929134">ಈ ಟ್ಯಾಬ್ ಕುರಿತು<ph name="LINE_BREAK" />ಕೇಳಿ</translation>
 <translation id="5579324208890605088">ಸ್ಟಾರ್ಟ್‌ಅಪ್ ದೋಷ: ಇನ್‌ಸ್ಟಾಲರ್‌‌ ಅನ್ನು ಸಾಮಾನ್ಯ ಬಳಕೆದಾರರಂತೆ ರನ್ ಮಾಡಿ, ನಿರ್ವಾಹಕರಾಗಿ ಅಲ್ಲ.</translation>
 <translation id="5580770360767802657">Chromium ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಆಗಿ ಬಳಸಿ ಮತ್ತು ಅದು ಪಿನ್ ಆಗಿರಲಿ</translation>
 <translation id="5596627076506792578">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>

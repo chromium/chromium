@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">ಇಂದಿನ ಸುದ್ದಿಗಳನ್ನು ಓದಿ <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">ಇನ್ನಷ್ಟು ವಿವರಗಳು</translation>
 <translation id="3123734510202723619">ಪ್ರಕಟಣೆಗಳು</translation>
+<translation id="3134385238404760368">ಯಾವುದೇ ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="314939179385989105">Chrome ನ ಮುಖಪುಟ</translation>
 <translation id="3158667104057012316">ಹಸ್ತಚಾಲಿತ ಕ್ರಮದ ಪ್ರಕಾರವಾಗಿ ವಿಂಗಡಿಸುವುದು</translation>
 <translation id="3159335509547415276">ನಿರ್ಬಂಧಿಸಲಾದ ಖಾತೆಗಳ ಕುರಿತು ತಿಳಿಯಿರಿ</translation>
@@ -816,6 +817,7 @@
 <translation id="4577115723294378384">A ನಿಂದ Z ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="4578289292431526768">ಪ್ರಾರಂಭಿಸೋಣ</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# ನಿಮಿಷದ ಹಿಂದೆ}one{# ನಿಮಿಷಗಳ ಹಿಂದೆ}other{# ನಿಮಿಷಗಳ ಹಿಂದೆ}}</translation>
+<translation id="4585751637295612750">ನಿಮ್ಮ ಪ್ರಶ್ನೆಗೆ ಅದನ್ನು ಸೇರಿಸಲು ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">ಈ ಆಫ್‍ಲೈನ್ ಪುಟವನ್ನು <ph name="CREATION_TIME" /> ರಂದು ರಚಿಸಲಾಗಿದೆ ಮತ್ತು ಇದು ಆನ್‌ಲೈನ್ ಆವೃತ್ತಿಗಿಂತ ಭಿನ್ನವಾಗಿರಬಹುದು.</translation>
 <translation id="4595237294768457124">ಹೊಸ ಟ್ಯಾಬ್ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -1266,6 +1268,7 @@
 <translation id="641643625718530986">ಮುದ್ರಿಸು...</translation>
 <translation id="6433501201775827830">ನಿಮ್ಮ ಹುಡುಕಾಟದ ಇಂಜಿನ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6434309073475700221">ತಿರಸ್ಕರಿಸಿ</translation>
+<translation id="6435307030888827407">ಸೈನ್ ಔಟ್ ಆಗಿಯೇ ಇರಿ</translation>
 <translation id="6437162790453527153">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6437478888915024427">ಪುಟದ ಮಾಹಿತಿ</translation>
 <translation id="6440291723980579689">ನೀವು ಪುಟಗಳನ್ನು ತೆರೆದ ಬಳಿಕವಷ್ಟೇ ಅವು ಲೋಡ್ ಆಗುತ್ತವೆ</translation>

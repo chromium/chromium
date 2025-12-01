@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">Odaberite "Dodajte na Google Kalendar" ili "Dodajte na Apple Kalendar".</translation>
 <translation id="1629162218487290695">Potvrda identiteta…</translation>
 <translation id="1636234353664774105">Dobijajte smjernice do odredišta uz detaljan vodič pomoću navigacijske funkcije</translation>
+<translation id="1637811476055996098">Odaberite fajlove</translation>
 <translation id="1641113438599504367">Sigurno pregledanje</translation>
 <translation id="1644574205037202324">Historija</translation>
 <translation id="164673457281113247">{count,plural, =1{Oznaka je sačuvana}one{Oznake su sačuvane}few{Oznake su sačuvane}other{Oznake su sačuvane}}</translation>
@@ -1609,6 +1610,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="7039345315346323556">Nedavno</translation>
 <translation id="704692552158601232">Zadana aplikacija preglednika</translation>
 <translation id="7055240621761583113">Automatsko popunjavanje lozinke</translation>
+<translation id="7057567173736333354">Opišite sliku</translation>
 <translation id="7063811929043357292">Tvojim računom upravlja roditelj.
 <ph name="BEGIN_LINK" />Saznaj više<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Svi fajlovi</translation>

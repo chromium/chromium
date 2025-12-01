@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">“Google Taqvimga kiritish” yoki “Apple Taqvimga kiritish” bandini tanlang.</translation>
 <translation id="1629162218487290695">Shaxsingizni tasdiqlang…</translation>
 <translation id="1636234353664774105">Navigatsiya yordamida manzilgacha qadamli koʻrsatkichlarni oling</translation>
+<translation id="1637811476055996098">Fayllarni tanlash</translation>
 <translation id="1641113438599504367">Saytlarni xavfsiz kezish</translation>
 <translation id="1644574205037202324">Tarix</translation>
 <translation id="164673457281113247">{count,plural, =1{Bukmark saqlandi}other{Bukmarklar saqlandi}}</translation>
@@ -261,6 +262,7 @@
 <translation id="1962969542251276847">Ekran qulfi</translation>
 <translation id="1963976881984600709">Standart himoya</translation>
 <translation id="1964507856799750384"><ph name="BEGIN_BOLD" />Brauzer ilovasini<ph name="END_BOLD" /> bosing</translation>
+<translation id="1965633132497641148">Xavfsizlik kodi xato</translation>
 <translation id="1966313166384086081">sayt maʼlumotlari</translation>
 <translation id="1967461193809857427">{count,plural, =1{Androidda koʻrilgan varaq ochilsinmi?}other{Androidda koʻrilgan varaqlar ochilsinmi?}}</translation>
 <translation id="1972325230031091483">Sahifalar joriy tashrifi asosida oldindan yuklanadi va tezroq ochiladi</translation>
@@ -575,6 +577,7 @@
 <translation id="3186796054637504691">Tarix va sayt maʼlumotlarini tozalash</translation>
 <translation id="3190736958609431397">Kuzatilmasin</translation>
 <translation id="3208260410153224535">Hisobga kirish tashkilotingiz tomonidan faolsizlantirilgan. Yangi bukmarklar, parollar va boshqalar faqat shu qurilmada saqlanadi.</translation>
+<translation id="3211969308836412674">Saytni yechish</translation>
 <translation id="3213807041830307252">Kamera yoki galereya rasmi bilan mahsulot toping, matn tarjima qiling va atrofdagi obyektlar axborotini oling.</translation>
 <translation id="3214379938835224220">iPad qurilmasini tiklash mobaynida hisobingizdan chiqarildingiz. Hisobga kirish uchun quyida davom etish ustiga bosing.</translation>
 <translation id="3218296450292600703">Boshqariladigan hisob orqali kirsangiz, varaqlar, parollar va tarix kabi tashkilotingizga oid brauzer maʼlumotlari alohida saqlanadi.</translation>
@@ -604,6 +607,7 @@
 <translation id="3324193307694657476">Manzil, 2-qator</translation>
 <translation id="3328801116991980348">Sayt haqida ma’lumot</translation>
 <translation id="333229797575847124">Bu funksiyani yoqish tartibi</translation>
+<translation id="3344233834747405775">Karta egasi ismi yaroqsiz</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bukmark {email} hisobingizdagi “{title}” jildiga saqlandi}other{Bukmark {email} hisobingizdagi “{title}” jildiga saqlandi}}</translation>
 <translation id="334690320928261823">Oxirgi varaqlar</translation>
 <translation id="3349031117032695619">Qalqib chiquvchi oynalarni bloklash</translation>
@@ -878,6 +882,7 @@
 <translation id="4430505936695785931">Saqlangan parollardan boshqa ilovalarda foydalanish</translation>
 <translation id="4431224949908513835">Kiritish uchun toʻlov usulini tanlang.</translation>
 <translation id="4432122368769493392">Sozlamalar</translation>
+<translation id="443975520858086928">Googledan istalgan narsangizni soʻrang</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Sozlamalarni<ph name="END_BOLD" /> oching</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> uchun boshqa variantlar</translation>
 <translation id="4455710003856931944">Ortga qaytish yoki oldinga oʻtish uchun chekkasini yonga suring.</translation>
@@ -1098,6 +1103,7 @@
 <translation id="5220945116117011963">Sanalardan taqvim tadbirlarini yaratish</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Saytni tahrirlash</translation>
 <translation id="5233638681132016545">Yangi varaq</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bukmark Google hisobingizga ({email}) saqlandi}other{Bukmarklar Google hisobingizga ({email}) saqlandi}}</translation>
 <translation id="5234764350956374838">Yopish</translation>
@@ -1324,6 +1330,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6066301408025741299">Bekor qilish uchun bu yerga bosing.</translation>
 <translation id="6074656473835429958">Bildirishnomalar olish</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) yuklanmaydi</translation>
+<translation id="6076618233738284461">Saytni mahkamlash</translation>
 <translation id="6077126322656614846">Kameradan foydalanishga ruxsat berildi</translation>
 <translation id="607730456154980869">Chrome ichida Gemini bilan tezkor javoblar oling</translation>
 <translation id="6078236141387574983">Sahifa balandligini qayta sozlash</translation>
@@ -1389,6 +1396,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6259928806013786178">Mutolaa rejimi ishga tushmadi</translation>
 <translation id="6268773951964630964">Nusxalangan rasmni qidirish</translation>
 <translation id="6271462272606946663">Mobil versiyani berkitish</translation>
+<translation id="6271556257184622612">Sahifa va boshqa narsalar haqida Googledan soʻrang</translation>
 <translation id="6271824294945464304">Parol ulashilgan</translation>
 <translation id="628251768213143684">Google hisobida nimalar saqlanishini istalgan vaqt boshqarish mumkin</translation>
 <translation id="6284652193729350524">Bu tildagi sahifalar tarjimasi taklif qilinsin: <ph name="LANGUAGE" /></translation>
@@ -1609,6 +1617,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7039345315346323556">Yaqinda</translation>
 <translation id="704692552158601232">Birlamchi brauzer ilovasi</translation>
 <translation id="7055240621761583113">Parollarni avtomatik kiritish</translation>
+<translation id="7057567173736333354">Rasmni tavsiflang</translation>
 <translation id="7063811929043357292">Hisobingiz ota-onangiz boshqaruvida.
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Barcha fayllar</translation>
@@ -1681,6 +1690,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7398211386814746684">Hisobingiz boshqariladi</translation>
 <translation id="7399802613464275309">Xavfsizlik tekshiruvi</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7402375256128852434">Oxirgi varaqlarni kiritish</translation>
 <translation id="7402602673739047753">{count,plural, =1{1 ta bukmark faqat shu qurilmada saqlanadi. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda ({email}) saqlang.}other{{count} ta bukmark faqat shu qurilmaga saqlanadi. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda ({email}) saqlang.}}</translation>
 <translation id="7403227077090127147"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) uchun “<ph name="GROUP_NAME" />” varaqlar guruhiga ruxsat darhol yopiladi</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ta maqola ochilmagan.</translation>
@@ -2169,6 +2179,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="91023216973987714">Toʻlov usullari</translation>
 <translation id="9106655997975673326">“<ph name="SOURCE_DEVICE" />” qurilmasidan</translation>
 <translation id="9107664647686727385">Oshkor etilgan parollar uchun tekshirish</translation>
+<translation id="9119764377203471454">Biriktirma kiritish imkonsiz</translation>
 <translation id="9124387962554796433">Qidiruv va boshqa xizmatlarni sizga moslashtirish uchun Google tarix maʼlumotlaringizdan foydalanishi mumkin.</translation>
 <translation id="9124978074365039456">Kamera yoki galereya rasmi bilan mahsulot toping, matn tarjima qiling va atrofdagi obyektlar axborotini oling</translation>
 <translation id="9130317582644834675">Matn masshtabini berkitish</translation>

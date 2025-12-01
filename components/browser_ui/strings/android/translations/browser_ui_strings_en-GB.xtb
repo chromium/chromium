@@ -171,6 +171,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="2787357173144933081">Jump-start omnibox</translation>
 <translation id="2789132527330338807">Sites can ask to create a 3D map of your surroundings or track camera position</translation>
 <translation id="2790501146643349491">When on, recently closed sites can finish sending and receiving data. When off, recently closed sites can't finish sending or receiving data.</translation>
+<translation id="2794551654724114396">Turn on notifications for useful tips to help you get the best of Chrome</translation>
 <translation id="2795716239552913152">Sites usually use your location for relevant features or info, like local news or nearby shops</translation>
 <translation id="2800760947029405028">Upload an image</translation>
 <translation id="2802908157808345702">Don't allow sites to send pop-ups and use redirects</translation>
@@ -225,7 +226,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="3368138297038111198">Sharing a window</translation>
 <translation id="3386292677130313581">Ask before allowing sites to know your location (recommended)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Enable</translation>
 <translation id="344449859752187052">Third-party cookies blocked</translation>
 <translation id="3448554387819310837">When on, sites can ask to use your camera. When off, sites can't use your camera.</translation>
 <translation id="3491678231052507920">Sites usually use your virtual reality devices and data to let you enter VR sessions</translation>

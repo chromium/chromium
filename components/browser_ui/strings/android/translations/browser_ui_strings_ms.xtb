@@ -115,7 +115,6 @@
 <translation id="2241587408274973373">Kad halaman tab baharu</translation>
 <translation id="2241634353105152135">Hanya sekali</translation>
 <translation id="2253414712144136228">Alih keluar <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2281098328019574668">Dapatkan pemberitahuan untuk cerapan yang meningkatkan pengalaman anda pada Chrome</translation>
 <translation id="228293613124499805">Kebanyakan laman yang anda lawati mungkin menyimpan data pada peranti anda, selalunya untuk meningkatkan pengalaman anda dengan menyimpan pilihan anda atau maklumat yang anda kongsi dengan laman tersebut. Kami mengesyorkan agar anda membiarkan tetapan ini dihidupkan.</translation>
 <translation id="2289270750774289114">Tanya apabila tapak mahu mencari peranti Bluetooth berdekatan (disyorkan)</translation>
 <translation id="2315043854645842844">Pemilihan sijil pihak pelanggan tidak disokong oleh sistem pengendalian ini.</translation>
@@ -172,6 +171,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="2787357173144933081">Mulakan Omnibox</translation>
 <translation id="2789132527330338807">Laman boleh meminta untuk membuat peta 3D persekitaran anda atau menjejaki kedudukan kamera</translation>
 <translation id="2790501146643349491">Apabila dihidupkan, laman yang ditutup baru-baru ini dapat menyelesaikan penghantaran dan penerimaan data. Apabila dimatikan, laman yang ditutup baru-baru ini tidak dapat menyelesaikan penghantaran atau penerimaan data.</translation>
+<translation id="2794551654724114396">Hidupkan pemberitahuan untuk mendapatkan petua berguna yang membantu anda memanfaatkan Chrome sepenuhnya</translation>
 <translation id="2795716239552913152">Tapak biasanya menggunakan lokasi anda untuk ciri atau maklumat yang berkaitan, seperti berita tempatan atau kedai berdekatan</translation>
 <translation id="2800760947029405028">Muat naik imej</translation>
 <translation id="2802908157808345702">Jangan benarkan laman menghantar kandungan timbul dan menggunakan ubah hala</translation>
@@ -226,7 +226,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="3368138297038111198">Berkongsi tetingkap</translation>
 <translation id="3386292677130313581">Tanya sebelum membenarkan tapak mengetahui lokasi anda (disyorkan)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Dayakan</translation>
 <translation id="344449859752187052">Kuki pihak ketiga disekat</translation>
 <translation id="3448554387819310837">Apabila dihidupkan, laman dapat meminta untuk menggunakan kamera anda. Apabila dimatikan, laman tidak dapat menggunakan kamera anda.</translation>
 <translation id="3491678231052507920">Tapak biasanya menggunakan peranti dan data realiti maya anda untuk membolehkan anda memasuki sesi VR</translation>
@@ -245,6 +244,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="3611658447322220736">Laman yang ditutup baru-baru ini boleh menyelesaikan penghantaran dan penerimaan data</translation>
 <translation id="3619294456800709762">Laman dapat memasukkan gambar dalam gambar secara automatik</translation>
 <translation id="3628308229821498208">Carian cadangan</translation>
+<translation id="3632460243282703117">Langgan</translation>
 <translation id="363748948745453283">Menggunakan lokasi anggaran</translation>
 <translation id="3641456520301071208">Laman boleh meminta lokasi anda</translation>
 <translation id="3658847490588580244">Helaian bawah penyemak imbas lalai</translation>
@@ -574,7 +574,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> dan <ph name="PERMISSION_2" /> dibenarkan</translation>
 <translation id="7276071417425470385">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti realiti maya. Apabila dimatikan, laman tidak dapat menggunakan peranti realiti maya.</translation>
 <translation id="728412880473384942">Laman lebih pantas tetapi kurang selamat</translation>
-<translation id="7324836168971967994">Petua yang disesuaikan untuk anda</translation>
 <translation id="7366415735885268578">Tambahkan tapak</translation>
 <translation id="7368695150573390554">Mana-mana data luar talian akan dipadamkan</translation>
 <translation id="7369678931043226462">Sesuaikan helaian bawah halaman tab baharu anda dibuka pada ketinggian separuh</translation>
@@ -633,6 +632,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7990211076305263060">Apabila dihidupkan, laman dapat meminta untuk menggunakan mikrofon anda. Apabila dimatikan, laman tidak dapat menggunakan mikrofon anda.</translation>
 <translation id="8007176423574883786">Dimatikan untuk peranti ini</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
+<translation id="8033047164036749181">Langgan untuk mendapatkan pemberitahuan daripada laman ini</translation>
 <translation id="8042586301629853791">Isih mengikut:</translation>
 <translation id="8051193500142930381">Ciri yang memerlukan kamera tidak akan berfungsi</translation>
 <translation id="8056330801132235235">Lalai Chrome</translation>

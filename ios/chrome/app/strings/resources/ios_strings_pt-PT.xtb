@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">Selecione "Adicionar ao Calendário Google" ou "Adicionar ao Calendário Apple".</translation>
 <translation id="1629162218487290695">Validar a sua identidade…</translation>
 <translation id="1636234353664774105">Receba direções para o seu destino com as orientações passo a passo da funcionalidade de navegação</translation>
+<translation id="1637811476055996098">Escolher Ficheiros</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="164673457281113247">{count,plural, =1{Marcador guardado}other{Marcadores guardados}}</translation>
@@ -1616,6 +1617,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7039345315346323556">Recentes</translation>
 <translation id="704692552158601232">App de navegador predefinida</translation>
 <translation id="7055240621761583113">Preencher automaticamente a palavra-passe</translation>
+<translation id="7057567173736333354">Descreva a imagem</translation>
 <translation id="7063811929043357292">A conta é gerida pelos teus pais.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Todos os ficheiros</translation>

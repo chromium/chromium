@@ -38,6 +38,7 @@
 <translation id="141901961143729572">Fikr-mulohaza qoldiring</translation>
 <translation id="1465192221147974788">Oynani ulashish uchun tizim sozlamalarida Chromium brauzeriga ekranni yozib olish uchun ruxsat bering.</translation>
 <translation id="1478370723027452770">Chrome for Testing yuzasidan yordam olish</translation>
+<translation id="1496875977627931224">Salom, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />bugun nimalarni xayol qilyapsiz?</translation>
 <translation id="1497802159252041924">O'rnatishdagi xatolik: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Bu sahifa himoyalangan</translation>
 <translation id="1524282610922162960">Chromium sahifasini namoyish qilish</translation>
@@ -191,6 +192,7 @@
 <translation id="3103660991484857065">O‘rnatish dasturi arxivni ajrata olmadi. Chromium’ni qayta yuklab oling.</translation>
 <translation id="310459126943037700">Vazifalar yakunlanmadi.</translation>
 <translation id="3130323860337406239">Chromium mikrofondan foydalanmoqda.</translation>
+<translation id="3130333203120345554">Yangi qidiruv</translation>
 <translation id="3137969841538672700">Qidirish uchun obyektni torting</translation>
 <translation id="3144188012276422546">Bu varaq ortiqcha resurs sarflayapti. Unumdorlikni kuchaytirish uchun Chromium varaqni nofaol qilishiga ruxsat bering.</translation>
 <translation id="3149163023759831301">Ekranni ulashish uchun tizim sozlamalarida Chromium uchun ekranni yozib olishga ruxsat bering.</translation>
@@ -346,6 +348,7 @@
 <translation id="4994636714258228724">Chromium foydalanuvchini qo‘shish</translation>
 <translation id="5123973130450702873">Chromium qoʻllaringiz holatini kuzatishi uchun ruxsat olmagan</translation>
 <translation id="5141988424377517949">Yaqinda ochmagansiz. Chromium olib tashladi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
+<translation id="5167819546851111585">Bugun nimalarni xayol qilyapsiz?</translation>
 <translation id="5174969993834422967">Odatda bildirishnomalarni bloklaysiz. Ularni olish uchun manzillar qatoridan yuqori oʻng burchakdagi bildirishnoma belgisini bosing.</translation>
 <translation id="5174983315706567306">Diskdagi joy yetarli emas.</translation>
 <translation id="5187123684706427865">Chromium hisobi uchun qayta autentifikatsiya kerak</translation>
@@ -378,6 +381,7 @@
 <translation id="5496810170689441661">Chromium parollarni tahrirlashga urinmoqda. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
 <translation id="5524890928877629608">qidiruv hududining yuqori chap burchagi: chap <ph name="LEFT" />%, yuqori <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">PDF fayllarni Chromium bilan ochish</translation>
+<translation id="5536164441519929134">Bu varaq haqida<ph name="LINE_BREAK" />savol bering</translation>
 <translation id="5579324208890605088">Ishga tushirishda xato: oʻrnatish faylini oddiy foydalanuvchi (administrator emas) nomidan ishga tushiring.</translation>
 <translation id="5580770360767802657">Chromiumdan birlamchi holatda foydalanish va uni mahkamlash</translation>
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>

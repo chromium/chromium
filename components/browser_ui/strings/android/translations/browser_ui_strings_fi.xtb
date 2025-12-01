@@ -171,6 +171,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="2787357173144933081">Omniboxin pikakäynnistys</translation>
 <translation id="2789132527330338807">Sivustot voivat pyytää lupaa luoda 3D-kartan ympäristöstäsi tai seurata kameran asentoa</translation>
 <translation id="2790501146643349491">Kun tämä on päällä, äskettäin suljetut sivustot voivat viimeistellä datan lähettämistä tai vastaanottamista. Kun tämä ei ole päällä, äskettäin suljetut sivustot eivät voi viimeistellä datan lähettämistä tai vastaanottamista.</translation>
+<translation id="2794551654724114396">Laita ilmoitukset päälle, niin saat hyödyllisiä vinkkejä, joiden avulla saat parhaan hyödyn Chromesta</translation>
 <translation id="2795716239552913152">Sivustot käyttävät yleensä sijaintia tarjotakseen siihen liittyviä ominaisuuksia tai tietoja (esim. paikallisuutisia tai tietoja lähellä olevista kaupoista)</translation>
 <translation id="2800760947029405028">Lähetä kuva</translation>
 <translation id="2802908157808345702">Älä salli sivustojen lähettää ponnahdusikkunoita ja käyttää uudelleenohjauksia</translation>
@@ -225,7 +226,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3368138297038111198">Jaetaan ikkunaa</translation>
 <translation id="3386292677130313581">Pyydä lupaa, kun sivustot yrittävät käyttää sijaintiasi (suositus).</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Ota käyttöön</translation>
 <translation id="344449859752187052">Kolmannen osapuolen evästeet estetty</translation>
 <translation id="3448554387819310837">Kun tämä on päällä, sivustot voivat pyytää lupaa kameran käyttöön. Kun tämä on pois päältä, sivustot eivät voi käyttää kameraasi.</translation>
 <translation id="3491678231052507920">Sivustot käyttävät yleensä virtuaalitodellisuuslaitteita ja ‑dataa VR-käyttökertojen luomiseen</translation>

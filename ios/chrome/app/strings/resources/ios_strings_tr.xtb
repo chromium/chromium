@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">"Google Takvim'e ekle" veya "Apple Takvim'e ekle"yi seçin.</translation>
 <translation id="1629162218487290695">Kimliğinizi doğrulayın…</translation>
 <translation id="1636234353664774105">Rota izleme özelliğini kullanarak varış noktanız için adım adım yol tarifi alın.</translation>
+<translation id="1637811476055996098">Dosyaları Seç</translation>
 <translation id="1641113438599504367">Güvenli Tarama</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
 <translation id="164673457281113247">{count,plural, =1{Yer işareti kaydedildi}other{Yer işaretleri kaydedildi}}</translation>
@@ -1608,6 +1609,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7039345315346323556">En son</translation>
 <translation id="704692552158601232">Saptanmış Tarayıcı Uygulaması</translation>
 <translation id="7055240621761583113">Şifreyi otomatik doldur</translation>
+<translation id="7057567173736333354">Resminizi tarif edin</translation>
 <translation id="7063811929043357292">Hesabınız ebeveyniniz tarafından yönetiliyor.
 <ph name="BEGIN_LINK" />Daha Fazla Bilgi<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Tüm Dosyalar</translation>

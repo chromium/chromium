@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">آج کی خبریں پڑھیں <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">مزید تفصیلات</translation>
 <translation id="3123734510202723619">اعلانات</translation>
+<translation id="3134385238404760368">کوئی حالیہ ٹیب نہیں</translation>
 <translation id="314939179385989105">‏Chrome کا ہوم پیج</translation>
 <translation id="3158667104057012316">دستی ترتیب کے لحاظ سے ترتیب دیا جا رہا ہے</translation>
 <translation id="3159335509547415276">مسدود کردہ اکاؤنٹس کے بارے میں جانیں</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">‏A سے Z کے لحاظ سے ترتیب دیں</translation>
 <translation id="4578289292431526768">آئیے شروع کریں</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# منٹ پہلے}other{# منٹ پہلے}}</translation>
+<translation id="4585751637295612750">اسے اپنے سوال میں شامل کرنے کے لیے ایک نیا ٹیب کھولیں</translation>
 <translation id="4587589328781138893">سائٹیں</translation>
 <translation id="4594952190837476234">یہ آف لائن صفحہ <ph name="CREATION_TIME" /> کا ہے اور آن لائن ورژن سے مختلف ہو سکتا ہے۔</translation>
 <translation id="4595237294768457124">نئے ٹیب کا صفحہ کھولیں</translation>
@@ -1267,6 +1269,7 @@
 <translation id="641643625718530986">پرنٹ کریں…</translation>
 <translation id="6433501201775827830">اپنے تلاش انجن کا انتخاب کریں</translation>
 <translation id="6434309073475700221">مسترد کریں</translation>
+<translation id="6435307030888827407">سائن آؤٹ رہیں</translation>
 <translation id="6437162790453527153">اپنے تمام آلات پر اپنے بُک مارکس وغیرہ حاصل کرنے کیلئے سائن ان کریں</translation>
 <translation id="6437478888915024427">صفحہ کی معلومات</translation>
 <translation id="6440291723980579689">صفحات آپ کے کھولنے کے بعد ہی لوڈ ہوتے ہیں</translation>

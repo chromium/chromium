@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">“Google Calendar मध्ये जोडा” किंवा “Apple Calendar मध्ये जोडा” निवडा.</translation>
 <translation id="1629162218487290695">हे तुम्हीच असल्याची पडताळणी करा…</translation>
 <translation id="1636234353664774105">नेव्हिगेशन वैशिष्ट्य वापरून टर्न बाय टर्न मार्गदर्शनासह तुमच्या गंतव्यस्थानी जाण्यासाठी दिशानिर्देश मिळवा</translation>
+<translation id="1637811476055996098">फाइल निवडा</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउझिंग</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="164673457281113247">{count,plural, =1{बुकमार्क सेव्ह केला आहे}other{बुकमार्क सेव्ह केले आहेत}}</translation>
@@ -1610,6 +1611,7 @@
 <translation id="7039345315346323556">अलीकडील</translation>
 <translation id="704692552158601232">डीफॉल्ट ब्राउझर अ‍ॅप</translation>
 <translation id="7055240621761583113">पासवर्ड ऑटोफिल करा</translation>
+<translation id="7057567173736333354">तुमच्या इमेजचे वर्णन करा</translation>
 <translation id="7063811929043357292">तुमचे खाते तुमच्या पालकांद्वारे व्यवस्थापित केले जाते.
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">सर्व फाइल</translation>

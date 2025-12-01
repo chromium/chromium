@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">Chọn "Thêm vào Lịch Google" hoặc "Thêm vào Lịch Apple".</translation>
 <translation id="1629162218487290695">Xác minh danh tính của bạn…</translation>
 <translation id="1636234353664774105">Sử dụng tính năng tìm đường để xem đường tới điểm đến theo từng chặng</translation>
+<translation id="1637811476055996098">Chọn tệp</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
 <translation id="1644574205037202324">Nhật ký</translation>
 <translation id="164673457281113247">{count,plural, =1{Đã lưu dấu trang}other{Đã lưu các dấu trang}}</translation>
@@ -1609,6 +1610,7 @@
 <translation id="7039345315346323556">Gần đây</translation>
 <translation id="704692552158601232">Ứng dụng trình duyệt mặc định</translation>
 <translation id="7055240621761583113">Tự động điền mật khẩu</translation>
+<translation id="7057567173736333354">Mô tả hình ảnh bạn muốn tạo</translation>
 <translation id="7063811929043357292">Tài khoản của bạn do cha mẹ bạn quản lý.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Tất cả tệp</translation>

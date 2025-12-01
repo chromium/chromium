@@ -45,6 +45,7 @@
 <translation id="146866447420868597">Chrome hisobiga kirasizmi?</translation>
 <translation id="1476347941828409626">Chrome profillarini boshqarish</translation>
 <translation id="1492280395845991349">Chrome yangilanishini yakunlash uchun qayta oching</translation>
+<translation id="1496875977627931224">Salom, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />bugun nimalarni xayol qilyapsiz?</translation>
 <translation id="1497802159252041924">O'rnatishdagi xatolik: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Yangi Chrome profilini moslash</translation>
 <translation id="1518627427551567882">Bu sahifa himoyalangan</translation>
@@ -199,6 +200,7 @@
 <translation id="3112458742631356345">Chrome bu yuklamani blokladi, chunki bunday fayl odatda yuklab olinmaydi va xavfli boʻlishi mumkin</translation>
 <translation id="3114643501466072395">Parollarni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalash uchun <ph name="BEGIN_LINK" />Chrome hisobingizga kiring<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome bu yuklanmani blokladi, chunki bu arxivda zararli dastur yashirilgan boʻlishi mumkin</translation>
+<translation id="3130333203120345554">Yangi qidiruv</translation>
 <translation id="3135560418014806498">Chrome profilini qoʻshish</translation>
 <translation id="3137969841538672700">Qidirish uchun obyektni torting</translation>
 <translation id="3140883423282498090">O‘zgartirishlar Google Chrome qaytadan ishga tushirilganda kuchga kiradi.</translation>
@@ -363,6 +365,7 @@
 <translation id="5139423532931106058">Chrome profilingizni sozlang</translation>
 <translation id="5163087008893166964">Chrome brauzeriga xush kelibsiz, yangi oyna ochildi</translation>
 <translation id="5166439563123238795">Chrome qoʻllaringiz holatini kuzatishi uchun ruxsat olmagan</translation>
+<translation id="5167819546851111585">Bugun nimalarni xayol qilyapsiz?</translation>
 <translation id="5170938038195470297">Profilingizdan foydalanib bo‘lmaydi, chunki u yanada yangiroq Google Chrome versiyasiga ta’luqli.
 
 Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tanlang yoki yangiroq Google Chrome versiyasini o‘rnating.</translation>
@@ -644,6 +647,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8013993649590906847">Agar rasmga foydali tavsif berilmagan boʻlsa, Google Chrome uni sizga tavsiflaydi. Tavsif yaratish uchun rasmlar Googlega yuboriladi.</translation>
 <translation id="8019103195866286235">Bu kengaytma dasturchisi uning nashrini bekor qildi va u xavfli boʻlishi mumkin. Ochilgan saytlarda shaxsiy axborot kabi maʼlumotlarni koʻrishi va oʻzgartirishini tugatish uchun uni Chromedan olib tashlang.</translation>
 <translation id="8040768861829554732">Kengaytma Chrome hisobiga kirishingizni soʻramoqda</translation>
+<translation id="8041795619940733262">Bu varaq haqida<ph name="LINE_BREAK" />Googlega savol bering</translation>
 <translation id="80471789339884597">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin barcha brauzerlarni qayta ishga tushirishingiz kerak.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Boshqa Chrome profillari</translation>

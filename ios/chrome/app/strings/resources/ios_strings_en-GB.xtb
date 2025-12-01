@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">Select “Add to Google Calendar“ or “Add to Apple Calendar.“</translation>
 <translation id="1629162218487290695">Verify that it's you…</translation>
 <translation id="1636234353664774105">Get directions to your destination with turn-by-turn guidance using the navigation feature.</translation>
+<translation id="1637811476055996098">Choose files</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="164673457281113247">{count,plural, =1{Bookmark saved}other{Bookmarks saved}}</translation>
@@ -1608,6 +1609,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7039345315346323556">Recent</translation>
 <translation id="704692552158601232">Default browser app</translation>
 <translation id="7055240621761583113">Autofill the password</translation>
+<translation id="7057567173736333354">Describe your image</translation>
 <translation id="7063811929043357292">Your account is managed by your parent.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">All files</translation>

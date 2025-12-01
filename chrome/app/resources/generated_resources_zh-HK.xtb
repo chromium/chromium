@@ -3710,6 +3710,7 @@
 <translation id="3527085408025491307">資料夾</translation>
 <translation id="3528498924003805721">捷徑目標</translation>
 <translation id="3529851166527095708">地址和其他資料(&amp;A)</translation>
+<translation id="3530919970074558307">取消聚焦群組</translation>
 <translation id="3531070080754387701">Microsoft 365 無法從此資料夾開啟 <ph name="FILE_NAMES" /></translation>
 <translation id="3531883061432162622">在「書籤」和「清單」中尋找閱讀清單和書籤</translation>
 <translation id="3532273508346491126">同步管理</translation>
@@ -4063,6 +4064,7 @@
 <translation id="3757567010566591880">從「工具列」中取消固定</translation>
 <translation id="3757645900890881944">搜尋工具</translation>
 <translation id="3757733214359997190">找不到任何網站</translation>
+<translation id="3757825964096339958">聚焦群組</translation>
 <translation id="375841316537350618">正在下載 Proxy 指令碼…</translation>
 <translation id="3758887577462995665">提示：</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> 月</translation>
@@ -4852,6 +4854,7 @@
 <translation id="4292613336957320546">加速</translation>
 <translation id="429312253194641664">網站正在播放媒體</translation>
 <translation id="4293219510510666933">利用日常用語搜尋瀏覽記錄，搜尋你瀏覽過的網站。你亦可提出問題，系統會根據瀏覽記錄提供解答。此設定已開啟。</translation>
+<translation id="429344752071832554">取消聚焦群組</translation>
 <translation id="4294392694389031609">已從下載記錄中刪除「<ph name="FILE_NAME" />」，但此檔案仍保存在你的裝置上</translation>
 <translation id="4295072614469448764">應用程式已在終端機上完成安裝，其圖示可能會在啟動器中顯示。</translation>
 <translation id="4295979599050707005">請再次登入，確認您的帳戶 <ph name="USER_EMAIL" /> 可用於 Chrome 和 Google Play 的網站、應用程式和擴充程式。您亦可以移除此帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -5007,6 +5010,7 @@
 <translation id="4405224443901389797">移至…</translation>
 <translation id="4405781821077215583">縮小或放大畫面上的項目，包括文字</translation>
 <translation id="4406308048672435032">你可以將分頁設定為閒置，或重新整理以再次查看完整清單</translation>
+<translation id="4406881185911439342">聚焦群組</translation>
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4406963243402726564">未儲存的資料</translation>
 <translation id="4408599188496843485">說明(&amp;E)</translation>

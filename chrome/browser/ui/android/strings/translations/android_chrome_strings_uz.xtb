@@ -496,6 +496,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3114507951000454849">Bugungi yangiliklar bilan tanishing <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Batafsil</translation>
 <translation id="3123734510202723619">Xabarnomalar</translation>
+<translation id="3134385238404760368">Oxirgi varaqlar mavjud emas</translation>
 <translation id="314939179385989105">Chrome bosh sahifasi</translation>
 <translation id="3158667104057012316">Qoʻlda saralanmoqda</translation>
 <translation id="3159335509547415276">Bloklangan hisoblar haqida batafsil</translation>
@@ -817,6 +818,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4577115723294378384">Alifbo tartibida saralash</translation>
 <translation id="4578289292431526768">Boshlash</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# daqiqa oldin}other{# daqiqa oldin}}</translation>
+<translation id="4585751637295612750">Savolga kiritish uchun uni yangi varaqda oching</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Bu sahifa saytning <ph name="CREATION_TIME" /> kunidagi nusxasi va onlayn versiyasidan farq qilishi mumkin.</translation>
 <translation id="4595237294768457124">Yangi varaq sahifasini oching</translation>
@@ -1267,6 +1269,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="641643625718530986">Chop etish…</translation>
 <translation id="6433501201775827830">Qidiruv tizimini tanlang</translation>
 <translation id="6434309073475700221">Bekor qilish</translation>
+<translation id="6435307030888827407">Hisobga kirilmasin</translation>
 <translation id="6437162790453527153">Barcha qurilmalaringizda bukmarklar va boshqalarni uchun hisobingizga kiring.</translation>
 <translation id="6437478888915024427">Sahifa haqida</translation>
 <translation id="6440291723980579689">Sahifalar ular ochilganidan keyingina yuklanadi</translation>

@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">Hautatu "Gehitu Google Calendar-en" edo "Gehitu Apple Calendar-en".</translation>
 <translation id="1629162218487290695">Egiaztatu zeu zarela…</translation>
 <translation id="1636234353664774105">Jaso helmugara iristeko urratsez urratseko jarraibideak nabigazio-eginbidea erabilita</translation>
+<translation id="1637811476055996098">Aukeratu fitxategiak</translation>
 <translation id="1641113438599504367">Arakatze segurua</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="164673457281113247">{count,plural, =1{Gorde da laster-marka}other{Gorde dira laster-markak}}</translation>
@@ -1609,6 +1610,7 @@
 <translation id="7039345315346323556">Azkenaldikoak</translation>
 <translation id="704692552158601232">Arakatzaile lehenetsia</translation>
 <translation id="7055240621761583113">Bete pasahitza automatikoki</translation>
+<translation id="7057567173736333354">Deskribatu irudia</translation>
 <translation id="7063811929043357292">Gurasoak kudeatzen dizu kontua.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Fitxategi guztiak</translation>

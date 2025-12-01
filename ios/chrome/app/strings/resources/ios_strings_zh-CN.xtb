@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">选择“添加到 Google 日历”或“添加到 Apple 日历”。</translation>
 <translation id="1629162218487290695">验证身份…</translation>
 <translation id="1636234353664774105">使用导航功能查询前往目的地的精细路线指导</translation>
+<translation id="1637811476055996098">选择文件</translation>
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="164673457281113247">{count,plural, =1{书签已保存}other{个书签已保存}}</translation>
@@ -1609,6 +1610,7 @@
 <translation id="7039345315346323556">最近用过</translation>
 <translation id="704692552158601232">默认浏览器应用</translation>
 <translation id="7055240621761583113">自动填充密码</translation>
+<translation id="7057567173736333354">描述您的图片</translation>
 <translation id="7063811929043357292">你的账号由家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">所有文件</translation>

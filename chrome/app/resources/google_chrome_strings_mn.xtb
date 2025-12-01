@@ -47,6 +47,7 @@
 <translation id="146866447420868597">Chrome-д нэвтрэх үү?</translation>
 <translation id="1476347941828409626">&amp;Chrome-н профайлуудыг удирдах</translation>
 <translation id="1492280395845991349">Chrome-н шинэчлэлтийг дуусгахын тулд дахин ачаалах</translation>
+<translation id="1496875977627931224">Сайн уу <ph name="USER_NAME" />?<ph name="LINE_BREAK" />Өнөөдөр та юу бодож байна вэ?</translation>
 <translation id="1497802159252041924">Суулгалтын алдаа: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Chrome-н шинэ профайлаа тохируулна уу</translation>
 <translation id="1518627427551567882">Энэ хуудсыг хамгаалагдсан байна</translation>
@@ -201,6 +202,7 @@
 <translation id="3112458742631356345">Файлыг ихэвчлэн татдаггүй бөгөөд энэ нь аюултай байж магадгүй тул Chrome энэ таталтыг блоклосон</translation>
 <translation id="3114643501466072395">Бусад нууц үгэндээ өгөгдлийн зөрчил болон аюулгүй байдлын өөр асуудал байхгүй болохыг шалгахын тулд <ph name="BEGIN_LINK" />Chrome-д нэвтэрнэ үү<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Архивын файлд хортой программыг нууж байж магадгүй бусад файл багтдаг тул Chrome энэ таталтыг блоклосон</translation>
+<translation id="3130333203120345554">Шинэ хайлт</translation>
 <translation id="3135560418014806498">Chrome-н профайл нэмэх</translation>
 <translation id="3137969841538672700">Хайхын тулд чирнэ үү</translation>
 <translation id="3140883423282498090">Таны оруулсан өөрчлөлт дараа дахин Google Chrome-г ашиглах үед идэвхжинэ.</translation>
@@ -364,6 +366,7 @@
 <translation id="5139423532931106058">Chrome-н профайлаа өөрчлөх</translation>
 <translation id="5163087008893166964">Chrome-д тавтай морилно уу; хөтчийн шинэ цонхыг нээсэн</translation>
 <translation id="5166439563123238795">Chrome-д таны гарыг хянах зөвшөөрөл шаардлагатай</translation>
+<translation id="5167819546851111585">Өнөөдөр та юу бодож байна вэ?</translation>
 <translation id="5170938038195470297">Таны профайл Google Chrome-ийн шинэ хувилбарынх тул ашиглаж болохгүй.
 
 Зарим функц ажиллахгүй байж болох юм. Өөр профайл тодорхойл эсвэл Chrome-ийн шинэ хувилбарыг хэрэглэнэ үү.</translation>
@@ -643,6 +646,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8013993649590906847">Хэрэв зурагт хэрэгтэй тайлбар байхгүй бол Chrome танд тайлбар өгөхөөр оролдох болно. Тайлбар үүсгэхийн тулд зургийг Google-д илгээнэ.</translation>
 <translation id="8019103195866286235">Энэ өргөтгөлийг хөгжүүлэгч нь нийтлэхээ больсон бөгөөд энэ нь аюултай байж магадгүй. Үүнийг Chrome-с хассанаар энэ нь цаашид таны хувийн мэдээллийг оруулаад зочилсон сайтуудын тань өгөгдлийг харах болон өөрчлөх боломжгүй болно.</translation>
 <translation id="8040768861829554732">Өргөтгөл таныг Chrome-д нэвтрэхийг хүсэж байна</translation>
+<translation id="8041795619940733262">Энэ табын талаар<ph name="LINE_BREAK" />Google-с асуух</translation>
 <translation id="80471789339884597">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө бүх хөтчөө дахин эхлүүлэх ёстой.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Chrome-н бусад профайл</translation>

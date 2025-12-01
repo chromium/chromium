@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">Seleziona l'opzione "Aggiungi a Google Calendar" o "Aggiungi a Calendario Apple".</translation>
 <translation id="1629162218487290695">Verifica la tua identità…</translation>
 <translation id="1636234353664774105">Usa la funzionalità di navigazione per ricevere indicazioni stradali passo passo per raggiungere la tua destinazione</translation>
+<translation id="1637811476055996098">Scegli file</translation>
 <translation id="1641113438599504367">Navigazione sicura</translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="164673457281113247">{count,plural, =1{Preferito salvato}other{Preferiti salvati}}</translation>
@@ -1613,6 +1614,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7039345315346323556">Recenti</translation>
 <translation id="704692552158601232">App browser predefinita</translation>
 <translation id="7055240621761583113">Compila automaticamente la password</translation>
+<translation id="7057567173736333354">Descrivi la tua immagine</translation>
 <translation id="7063811929043357292">Il tuo account è gestito da un genitore.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Tutti i file</translation>

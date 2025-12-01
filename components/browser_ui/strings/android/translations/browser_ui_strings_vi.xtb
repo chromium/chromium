@@ -115,7 +115,6 @@
 <translation id="2241587408274973373">Thẻ trên trang thẻ mới</translation>
 <translation id="2241634353105152135">Chỉ một lần</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Xoá</translation>
-<translation id="2281098328019574668">Nhận thông báo về thông tin chi tiết giúp bạn có trải nghiệm tốt hơn trên Chrome</translation>
 <translation id="228293613124499805">Hầu hết trang web bạn truy cập có thể sẽ lưu dữ liệu vào thiết bị, thường là để cải thiện trải nghiệm của bạn bằng cách lưu các lựa chọn ưu tiên hoặc thông tin mà bạn chia sẻ với trang web. Chúng tôi khuyên bạn luôn bật chế độ cài đặt này.</translation>
 <translation id="2289270750774289114">Hỏi khi một trang web muốn tìm các thiết bị Bluetooth ở gần (khuyên dùng)</translation>
 <translation id="2315043854645842844">Lựa chọn chứng chỉ phía ứng dụng khách không được hệ điều hành hỗ trợ.</translation>
@@ -171,6 +170,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="2787357173144933081">Khởi động nhanh Thanh địa chỉ</translation>
 <translation id="2789132527330338807">Các trang web có thể yêu cầu tạo bản đồ 3D khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của camera</translation>
 <translation id="2790501146643349491">Khi bạn bật tuỳ chọn này, các trang web đã đóng gần đây có thể hoàn tất quá trình gửi và nhận dữ liệu. Khi bạn tắt tuỳ chọn này, các trang web đã đóng gần đây không thể hoàn tất quá trình gửi hoặc nhận dữ liệu.</translation>
+<translation id="2794551654724114396">Bật thông báo để nhận các mẹo hữu ích giúp bạn tận dụng Chrome</translation>
 <translation id="2795716239552913152">Các trang web thường sử dụng thông tin vị trí của bạn cho các tính năng hoặc thông tin liên quan, như tin tức địa phương hoặc cửa hàng lân cận</translation>
 <translation id="2800760947029405028">Tải ảnh lên</translation>
 <translation id="2802908157808345702">Không cho phép các trang web hiển thị cửa sổ bật lên hay dùng lệnh chuyển hướng</translation>
@@ -225,7 +225,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="3368138297038111198">Đang chia sẻ một cửa sổ</translation>
 <translation id="3386292677130313581">Hỏi trước khi cho phép các trang web biết vị trí của bạn (được đề xuất)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Bật</translation>
 <translation id="344449859752187052">Đã chặn cookie của bên thứ ba</translation>
 <translation id="3448554387819310837">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng camera. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng camera.</translation>
 <translation id="3491678231052507920">Các trang web thường sử dụng dữ liệu và thiết bị thực tế ảo để cho phép bạn bắt đầu những phiên thực tế ảo</translation>
@@ -573,7 +572,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7260727271532453612">Đã cho phép: <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị thực tế ảo. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị thực tế ảo.</translation>
 <translation id="728412880473384942">Các trang web này nhanh hơn nhưng kém an toàn hơn</translation>
-<translation id="7324836168971967994">Mẹo dành riêng cho bạn</translation>
 <translation id="7366415735885268578">Thêm trang web</translation>
 <translation id="7368695150573390554">Mọi dữ liệu ngoại tuyến sẽ bị xoá</translation>
 <translation id="7369678931043226462">Bảng tuỳ chỉnh trang thẻ mới của bạn ở dưới cùng đã mở trên một nửa màn hình</translation>

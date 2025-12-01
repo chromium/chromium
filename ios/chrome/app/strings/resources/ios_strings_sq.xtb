@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">Zgjidh “Shto te 'Kalendari i Google'“ ose “Shto tek Apple Calendar“.</translation>
 <translation id="1629162218487290695">Verifiko që je ti…</translation>
 <translation id="1636234353664774105">Merr udhëzime për te destinacioni yt me udhëzime kthesë pas kthese duke përdorur veçorinë e navigimit</translation>
+<translation id="1637811476055996098">Zgjidh skedarët</translation>
 <translation id="1641113438599504367">Shfletimi i sigurt</translation>
 <translation id="1644574205037202324">Historiku</translation>
 <translation id="164673457281113247">{count,plural, =1{Faqeshënuesi u ruajt}other{Faqeshënuesit u ruajtën}}</translation>
@@ -1539,6 +1540,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[REZERVUAR]</translation>
 <translation id="6779455296366983087">Të dhënat e tua të shfletimit do të fshihen</translation>
+<translation id="6782531425936234573">Eksporto të dhënat</translation>
 <translation id="6791425686608802741">Trokit te "Shto skedën te grupi i ri"</translation>
 <translation id="6794476726485507147">Zgjidh një datë dhe orë për të marrë një njoftim rikujtues për të rivizituar këtë faqe</translation>
 <translation id="6795481620482106033">Të dhëna të pavlefshme</translation>
@@ -1608,6 +1610,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7039345315346323556">Të fundit</translation>
 <translation id="704692552158601232">Aplikacioni i parazgjedhur i shfletuesit</translation>
 <translation id="7055240621761583113">Plotëso automatikisht fjalëkalimin</translation>
+<translation id="7057567173736333354">Përshkruaj imazhin tënd</translation>
 <translation id="7063811929043357292">Llogaria jote menaxhohet nga prindi yt.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Të gjithë skedarët</translation>

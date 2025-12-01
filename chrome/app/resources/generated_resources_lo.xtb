@@ -1353,6 +1353,7 @@
 <translation id="1907044622262489040">ພິມດ້ວຍສຽງຂອງທ່ານ. ໃຊ້ຊອກຫາ + D, ຈາກນັ້ນເລີ່ມເວົ້າ.</translation>
 <translation id="1907659324308286326">ອຸປະກອນເສີມ Thunderbolt ຫຼື USB4 ບາງຢ່າງຕ້ອງມີສິດເຂົ້າເຖິງໜ່ວຍຄວາມຈຳຈຶ່ງຈະເຮັດວຽກໄດ້ຢ່າງຖືກຕ້ອງ.</translation>
 <translation id="1908591798274282246">ເປີດກຸ່ມທີ່ປິດໄປແລ້ວຄືນໃໝ່</translation>
+<translation id="1909677622563887527">ຊອບແວທົດສອບອັດຕະໂນມັດກຳລັງຄວບຄຸມ Chrome ຢູ່</translation>
 <translation id="1909880997794698664">ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການຮັກສາເຄື່ອງນີ້ໄວ້ຢູ່ໃນໂໝດ kiosk ຢ່າງຖາວອນ?</translation>
 <translation id="1910721550319506122">ຍິນ​ດີ​ຕ້ອນ​ຮັບ​!</translation>
 <translation id="1910736334623230603">ບໍ່ສາມາດຊອກຫາຫຼາຍຮູບໄດ້. ກະລຸນາເພີ່ມເທື່ອລະຮູບ.</translation>
@@ -1708,6 +1709,7 @@
 <translation id="2144536955299248197">ຕົວເບິ່ງໃບຢັ້ງຢືນ: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">ການພັດທະນາແອັບ Android ໃນ Linux</translation>
 <translation id="2145468727756963476">Gemini ກຳລັງໂຫຼດຂໍ້ມູນຄືນໃໝ່...</translation>
+<translation id="2145688286532368277">ການເພີ່ມປະສິດທິພາບ JavaScript ປິດຢູ່ສຳລັບເວັບໄຊນີ້.</translation>
 <translation id="2145917706968602070">ກວດສອບວ່າໂທລະສັບຂອງທ່ານຢູ່ໃກ້ຄຽງ, ປົດລັອກແລ້ວ, ຮວມທັງເປີດ Bluetooth ແລະ Wi-Fi ໄວ້</translation>
 <translation id="2146263598007866206">ເວັບໄຊອາດຈະດາວໂຫຼດໄຟລ໌ທີ່ກ່ຽວຂ້ອງຮວມກັນໂດຍອັດຕະໂນມັດເພື່ອປະຢັດເວລາໃຫ້ທ່ານ</translation>
 <translation id="2147218225094845757">ເຊື່ອງແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
@@ -4361,6 +4363,7 @@
 
  ທ່ານຕ້ອງການເລີ່ມຕົ້ນ <ph name="CONTROL_PANEL_APPLET_NAME" /> ບໍ?</translation>
 <translation id="3942420633017001071">ການກວດວິເຄາະບັນຫາ</translation>
+<translation id="3942558231079086184">ການເພີ່ມປະສິດທິພາບ JavaScript ປິດຢູ່ສຳລັບເວັບໄຊນີ້. ເປີດການນຳໃຊ້ເພື່ອປະສິດທິພາບທີ່ດີຍິ່ງຂຶ້ນ.</translation>
 <translation id="3943582379552582368">ກັບ​ຄືນ​</translation>
 <translation id="3943857333388298514">ແປະໃສ່</translation>
 <translation id="3945513714196326460">ກະລຸນາລອງໃຊ້ຊື່ທີ່ສັ້ນລົງ</translation>
@@ -10202,6 +10205,7 @@
 <translation id="8032569120109842252">ກຳລັງຕິດຕາມ</translation>
 <translation id="8033827949643255796">ເລືອກແລ້ວ</translation>
 <translation id="8033958968890501070">ໝົດເວລາ</translation>
+<translation id="8034399942062051455">ການເພີ່ມປະສິດທິພາບ V8 ປິດຢູ່</translation>
 <translation id="8034697324150621782">ສະຫຼັບກັບມຸມມອງທາງເທິງ</translation>
 <translation id="8035059678007243127">ໜ້າແຄສຍ້ອນຫຼັງແບບບໍ່ເປີດເຜີຍຕົວຕົນ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">ຊ່ວຍປັບປຸງການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>

@@ -171,6 +171,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="2787357173144933081">Arrancar con omnibox</translation>
 <translation id="2789132527330338807">Los sitios pueden solicitar permiso para crear un mapa 3D de tu entorno o hacer un seguimiento de la posición de la cámara</translation>
 <translation id="2790501146643349491">Cuando esta opción está activada, los sitios cerrados recientemente pueden terminar de enviar y recibir datos. Si está desactivada, los sitios cerrados recientemente no pueden terminar de enviar ni de recibir datos.</translation>
+<translation id="2794551654724114396">Activa las notificaciones para recibir consejos útiles que te ayudarán a sacar el máximo partido de Chrome</translation>
 <translation id="2795716239552913152">Los sitios suelen acceder a tu ubicación para mostrar información o usar funciones relevantes, como noticias locales o tiendas cercanas.</translation>
 <translation id="2800760947029405028">Subir una imagen</translation>
 <translation id="2802908157808345702">No permitir que los sitios envíen ventanas emergentes ni utilicen redirecciones</translation>
@@ -225,7 +226,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="3368138297038111198">Compartiendo una ventana</translation>
 <translation id="3386292677130313581">Preguntar antes de permitir que los sitios detecten tu ubicación (recomendado)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Habilitar</translation>
 <translation id="344449859752187052">Cookies de terceros bloqueadas</translation>
 <translation id="3448554387819310837">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar tu cámara. Si está desactivada, los sitios no pueden usar tu cámara.</translation>
 <translation id="3491678231052507920">Los sitios suelen utilizar tus datos y dispositivos de realidad virtual para permitirte acceder a sesiones de realidad virtual.</translation>

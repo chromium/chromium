@@ -497,6 +497,7 @@
 <translation id="3114507951000454849">الاطّلاع على أخبار اليوم <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">المزيد من التفاصيل</translation>
 <translation id="3123734510202723619">الإعلامات</translation>
+<translation id="3134385238404760368">ما مِن علامات تبويب حديثة</translation>
 <translation id="314939179385989105">‏الصفحة الرئيسية لمتصفّح Chrome</translation>
 <translation id="3158667104057012316">جارٍ الترتيب يدويًا</translation>
 <translation id="3159335509547415276">مزيد من المعلومات عن الحسابات المحظورة</translation>
@@ -818,6 +819,7 @@
 <translation id="4577115723294378384">الترتيب من أ إلى ي</translation>
 <translation id="4578289292431526768">لنبدأ</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{قبل دقيقة واحدة (#)}zero{قبل # دقيقة}two{قبل دقيقتين (#)}few{قبل # دقائق}many{قبل # دقيقة}other{قبل # دقيقة}}</translation>
+<translation id="4585751637295612750">يمكنك فتح علامة تبويب جديدة لإضافتها إلى سؤالك</translation>
 <translation id="4587589328781138893">المواقع</translation>
 <translation id="4594952190837476234">تم إنشاء هذه الصفحة المتوفّرة بلا اتصال بالإنترنت في <ph name="CREATION_TIME" />، وقد تختلف عن النسخة المتوفِّرة على الإنترنت.</translation>
 <translation id="4595237294768457124">افتح صفحة "علامة تبويب جديدة"</translation>
@@ -1268,6 +1270,7 @@
 <translation id="641643625718530986">طباعة…</translation>
 <translation id="6433501201775827830">اختيار محرك البحث</translation>
 <translation id="6434309073475700221">تجاهل</translation>
+<translation id="6435307030888827407">البقاء في وضع تسجيل الخروج</translation>
 <translation id="6437162790453527153">سجِّل الدخول للوصول إلى الإشارات المرجعية وغير ذلك على جميع أجهزتك</translation>
 <translation id="6437478888915024427">معلومات الصفحة</translation>
 <translation id="6440291723980579689">لا يتم تحميل الصفحات إلّا بعد أن تفتحها.</translation>
@@ -1338,6 +1341,7 @@
 <translation id="670498945988402717">تمّ إجراء عملية التحقُّق أمس.</translation>
 <translation id="6710213216561001401">السابق</translation>
 <translation id="671481426037969117">انقضى وقت موقّت <ph name="FQDN" />، وسيبدأ عمله مرّةً أخرى غدًا.</translation>
+<translation id="6716434912087331834">لاستعادة نافذة جديدة، عليك تقليل العدد الإجمالي للنوافذ النشطة إلى <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> أو أقل. ويتم حذف النوافذ غير النشطة بعد 6 أشهر.</translation>
 <translation id="6723740634201835758">‏في حسابك على Google</translation>
 <translation id="6734310707649923383">يمكنك من خلال السجلّ الاطّلاع على الصفحات التي زرتها أو حذفها</translation>
 <translation id="6737429434215739253">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تسجِّل وسائط في "وضع التصفّح المتخفي"</translation>
@@ -1656,6 +1660,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> قديم.</translation>
 <translation id="7944772052836377867">تحتاج ميزة المزامنة إلى التحقّق من هويتك</translation>
 <translation id="7951102827450076904">‏الفتح التلقائي لملفات PDF التي يتم تنزيلها</translation>
+<translation id="7952479614398473176">لفتح نافذة جديدة، عليك تقليل العدد الإجمالي للنوافذ النشطة إلى <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> أو أقل.</translation>
 <translation id="7957413488482743710">تُخفي البطاقة الافتراضية بطاقتك الفعلية للمساعدة على حمايتك من عمليات الاحتيال المحتمَلة. <ph name="BEGIN_LINK1" />مزيد من المعلومات حول البطاقات الافتراضية<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">علامات التبويب على هذا الجهاز</translation>
 <translation id="7961926449547174351">لقد أوقفت إذن الوصول إلى "مساحة التخزين". يُرجى الانتقال إلى "الإعدادات" لتفعيله.</translation>

@@ -258,6 +258,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> i përket tavolinës së punës <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Po hapet në <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema e fundit me IA <ph name="INDEX" /> nga "<ph name="SUBJECT" />", në stilin "<ph name="STYLE" />", me atmosferën "<ph name="MOOD" />".</translation>
+<translation id="1168799042879144934">Pyet Google rreth faqes së mëparshme</translation>
 <translation id="116896278675803795">Ndrysho automatikisht gjuhën që të përputhet me përmbajtjen e zgjedhur</translation>
 <translation id="1169266963600477608">Kontrollet e lojës</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> ka të dhëna delikate ose të rrezikshme. Administratori yt thotë: "<ph name="CUSTOM_MESSAGE" />"</translation>
@@ -1423,6 +1424,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1956167375087861299">Nuk lejohen të përdorin identifikuesit për të luajtur përmbajtjet e mbrojtura</translation>
 <translation id="1956390763342388273">Kjo do të ngarkojë të gjithë skedarët nga "<ph name="FOLDER_PATH" />". Bëje këtë vetëm nëse e beson sajtin.</translation>
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{U shqyrtua 1 shtesë}other{U shqyrtuan {NUM_EXTENSIONS} shtesa}}</translation>
+<translation id="1957188536718247425">Pyet Google rreth skedës së mëparshme</translation>
 <translation id="1957426642613794386">Informacionet e tua të ruajtura</translation>
 <translation id="1959421829481337178">Fut kodin e aktivizimit që është dhënë nga operatori celular.</translation>
 <translation id="1960211333621141174">Shkëmb</translation>
@@ -2918,6 +2920,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2981033191524548279">Më vjen keq, ndodhi një gabim. Jep komente me #bruschetta në përshkrim. Kodi i gabimit është <ph name="ERROR" />. Kjo mund të rregullohet duke e rindezur dhe duke e provuar përsëri.</translation>
 <translation id="2981113813906970160">Shfaq kursorin e madh të miut</translation>
 <translation id="2983102365694924129">Bazuar në aktivitetin tënd në një sajt. Ky cilësim është joaktiv.</translation>
+<translation id="2983311431122838216">Pyet "Modalitetin e IA-së" në "Kërko në Google"</translation>
 <translation id="2983373101216420412">Niveli i baterisë i kasës - <ph name="PERCENTAGE" />%.</translation>
 <translation id="2983818520079887040">Cilësimet...</translation>
 <translation id="2984384421572259426">Pastro skedat e papërdorura</translation>
@@ -3500,6 +3503,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3402585168444815892">Po regjistrohesh në modalitetin e demonstrimit</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Nuk ka fjalëkalime të ruajtura për këtë sajt</translation>
+<translation id="3405382848027996799">Hardueri i Google Beam është gati për t'u konfiguruar</translation>
 <translation id="3405664148539009465">Personalizo shkrimin</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Lejohen të përdorin të dhënat dhe pajisjet e realitetit virtual</translation>
@@ -5302,6 +5306,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4628762811416793313">Konfigurimi i kontejnerit të Linux nuk përfundoi. Provo përsëri.</translation>
 <translation id="4629521233550547305">Hap profilin <ph name="PROFILE_NAME" /></translation>
 <translation id="4629803160911640220">E besuar</translation>
+<translation id="4631637535315947773">Shkurtoret për sajtet e tua më të vizituara u hoqën sepse nuk i ke përdorur së fundi</translation>
 <translation id="4631955550884380853">Zëri i fokusuar</translation>
 <translation id="4632655012900268062">Personalizo kartat</translation>
 <translation id="4633003931260532286">Shtesa kërkon "<ph name="IMPORT_NAME" />" me një version minimal "<ph name="IMPORT_VERSION" />", por është instaluar vetëm versioni "<ph name="INSTALLED_VERSION" />"</translation>
@@ -5630,6 +5635,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4854603338816296098">Adresa u hoq</translation>
 <translation id="485480310608090163">Cilësime dhe leje të tjera</translation>
 <translation id="4857304314344645169">Shiko një shpjegim hap pas hapi të çdo problemi</translation>
+<translation id="4857506880242459832">Pyet Google rreth faqes së mëparshme: <ph name="PAGE_TITLE" /></translation>
 <translation id="485806788160414322">Luaj ose vendos në pauzë median</translation>
 <translation id="4858913220355269194">Maradona</translation>
 <translation id="486213875233855629">Vendosur në heshtje nga administratori</translation>
@@ -6373,6 +6379,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5390677308841849479">E kuqe e errët dhe portokalli</translation>
 <translation id="5392192690789334093">Lejohen të dërgojnë njoftime</translation>
 <translation id="5393330235977997602">Opsionet e kodit PIN</translation>
+<translation id="5393474451146553463">Pyet Google rreth kësaj skede</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Lidhje}other{# lidhje}}</translation>
 <translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395353843367783642">Po ruhen në llogarinë tënde...</translation>
@@ -8572,6 +8579,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6922763095098248079">Pajisja jote menaxhohet nga organizata jote. Administratorët mund të kenë qasje në të dhënat në çdo profil në këtë pajisje.</translation>
 <translation id="6923633482430812883">Gabim gjatë montimit të ndarjes. Kontrollo që serveri i skedarëve me të cilin po lidhesh mbështet SMBv2 ose një version më të lartë.</translation>
 <translation id="6924109527536857168">Nevojitet sinkronizimi</translation>
+<translation id="6924940560840297548">Kartat u hoqën sepse nuk i ke përdorur së fundi</translation>
 <translation id="6927200998271693557">Për t'u kthyer me shpejtësi te sajtet që ke vizituar, sinkronizo historikun dhe skedat e tua me <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">Hiq automatikisht lejet nga sajtet e papërdorura</translation>
 <translation id="6929126689972602640">Kontrollet prindërore nuk mbështeten për llogaritë e shkollës. Për të shtuar një llogari shkolle për t'u qasur te "Klasa e Google" dhe sajte të tjera të uebit për detyrat e shkollës në shtëpi, në fillim identifikohu me llogarinë personale të fëmijës. Mund ta shtosh llogarinë e shkollës më vonë te konfigurimi.</translation>
@@ -8794,6 +8802,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7082850163410901674">Njoftimet janë çaktivizuar në cilësimet e sistemit Mac</translation>
 <translation id="7083729794572207131">Sajtet zakonisht kërkojnë që të instalojnë aplikacione uebi që të përmirësojnë përvojën tënde në sajt</translation>
 <translation id="7083774521940805477">Steam për Chromebook (Beta) nuk është i disponueshëm në pajisjen tënde Chromebook.</translation>
+<translation id="7084095352418993433">Pyet Google rreth kësaj faqeje: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(e pakonfiguruar)</translation>
 <translation id="7086377898680121060">Rrit ndriçimin</translation>
 <translation id="7086672505018440886">Përfshi skedarët e evidencave të Chrome në arkiv.</translation>
@@ -9011,6 +9020,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7246230585855757313">Rifut çelësin e sigurisë dhe provo përsëri</translation>
 <translation id="7249197363678284330">Të ndryshohet ky cilësim në shiritin e adresave?</translation>
 <translation id="7249764475759804559">Përfshije këtë aplikacion si opsion kur hap skedarët</translation>
+<translation id="7249885578105575587">Pyet Google rreth kësaj skede: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">Pajisja me të cilën po ndan nuk u përgjigj. Provo përsëri.</translation>
 <translation id="725109152065019550">Na vjen keq, por administratori yt ka çaktivizuar hapësirën ruajtëse të jashtme në llogarinë tënde.</translation>
 <translation id="7251635775446614726">Administratori yt thotë: "<ph name="CUSTOM_MESSAGE" />"</translation>
@@ -10344,6 +10354,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8143442547342702591">Aplikacion i pavlefshëm</translation>
 <translation id="8144429778087524791">Shënoje si të kryer dhe fshihe</translation>
 <translation id="8145170459658034418">Kursyesi i memories</translation>
+<translation id="8145219802299093106">Kërko në këtë faqe me "Lenten e Google": <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">Nëse je regjistruar tashmë në këtë pajisje, mund <ph name="LINK2_START" />të identifikohesh si përdorues ekzistues<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Shto dhe rendit gjuhët e tua të preferuara. Faqet e internetit do të shfaqen në gjuhët e tua të preferuara, kur të jetë e mundur. Këto preferenca sinkronizohen me cilësimet e shfletuesit tënd. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Identifikimi dështoi. Kontakto me administratorin ose provo përsëri.</translation>
@@ -11905,6 +11916,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9182556968660520230">Mos lejo që sajtet të luajnë përmbajtje të mbrojtura</translation>
 <translation id="9183302530794969518">Dokumentet e Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacion}other{# aplikacione}}</translation>
+<translation id="9184211686591068713">Kërko në këtë skedë me "Lenten e Google": <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />. Nuk do të njoftohesh kur të fillojë regjistrimi.}=2{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" /> dhe <ph name="APP1_NAME" />. Nuk do të njoftohesh kur të fillojë regjistrimi.}=3{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dhe 1 aplikacion tjetër. Nuk do të njoftohesh kur të fillojë regjistrimi.}other{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dhe # aplikacione të tjera. Nuk do të njoftohesh kur të fillojë regjistrimi.}}</translation>
 <translation id="9186963452600581158">Identifikohu me "Llogarinë e Google" të fëmijës tënd</translation>
 <translation id="9187967020623675250">Tastet nuk përputhen. Shtyp një tast çfarëdo për veprimin "<ph name="RESPONSE" />".</translation>
@@ -12004,6 +12016,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="963000966785016697">Kërko për imazhin me: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Administratori i teknologjisë së informacionit ka çaktivizuar "Chrome Goodies" për pajisjen tënde.</translation>
 <translation id="964790508619473209">Sistemimi i ekranit</translation>
+<translation id="964903383988132751">Pyet Google rreth skedës së mëparshme: <ph name="TAB_TITLE" /></translation>
 <translation id="96535553604365597">Raporto një problem me Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Rishiko 1 sajt që ka dërguar së fundi shumë njoftime}other{Rishiko {NUM_SITES} sajte që kanë dërguar së fundi shumë njoftime}}</translation>
 <translation id="966588271015727539">Zgjidh një ekran breil me Bluetooth</translation>

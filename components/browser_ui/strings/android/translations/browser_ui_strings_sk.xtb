@@ -115,7 +115,6 @@
 <translation id="2241587408274973373">Karty na stránke na novej karte</translation>
 <translation id="2241634353105152135">Iba raz</translation>
 <translation id="2253414712144136228">Odobrať osobu alebo odstrániť položku <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2281098328019574668">Dostávajte upozornenia na štatistiky, ktoré zlepšia vaše prostredie v Chrome</translation>
 <translation id="228293613124499805">Väčšina webov, ktoré navštevujete, pravdepodobne ukladá dáta vo vašom zariadení. Často ukladajú vaše predvoľby alebo informácie, ktoré s nimi zdieľate, čím zlepšujú vaše prostredie. Toto nastavenie odporúčame nechať zapnuté.</translation>
 <translation id="2289270750774289114">Opýtať sa, keď chce web objavovať zariadenia Bluetooth v okolí (odporúčané)</translation>
 <translation id="2315043854645842844">Operačný systém nepodporuje výber certifikátu na strane klienta.</translation>
@@ -172,6 +171,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="2787357173144933081">Rýchly štart omniboxu</translation>
 <translation id="2789132527330338807">Weby môžu žiadať o vytvorenie 3D mapy vášho okolia alebo sledovanie polohy vašej kamery</translation>
 <translation id="2790501146643349491">Keď je táto možnosť zapnutá, nedávno zavreté weby môžu dokončiť odosielanie a prijímanie údajov. Keď je táto možnosť vypnutá, nedávno zavreté weby nemôžu dokončiť odosielanie ani prijímanie údajov.</translation>
+<translation id="2794551654724114396">Zapnite upozornenia na užitočné tipy, ktoré vám pomôžu využívať Chrome naplno</translation>
 <translation id="2795716239552913152">Weby zvyčajne používajú vašu polohu, aby mohli poskytovať relevantné funkcie či informácie, napríklad miestne správy alebo predajne v okolí</translation>
 <translation id="2800760947029405028">Nahrať obrázok</translation>
 <translation id="2802908157808345702">Nepovoliť webom odosielať vyskakovacie okná a používať presmerovania</translation>
@@ -226,7 +226,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="3368138297038111198">Zdieľa sa okno</translation>
 <translation id="3386292677130313581">Pýtať sa, či chcete povoliť webu zisťovať vašu polohu (odporúčané)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Aktivovať</translation>
 <translation id="344449859752187052">Súbory cookie tretích strán sú blokované</translation>
 <translation id="3448554387819310837">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať vašu kameru. Keď je táto možnosť vypnutá, weby nemôžu používať vašu kameru.</translation>
 <translation id="3491678231052507920">Weby vám zvyčajne pomocou zariadení virutálnej reality a súvisiacich údajov umožňujú prejsť do relácii VR</translation>
@@ -574,7 +573,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="7260727271532453612">Povolené: <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Keď je táto možnosť zapnutá, weby môžu žiadať o používanie zariadení virtuálnej reality. Keď je táto možnosť vypnutá, weby nemôžu používať zariadenia virtuálnej reality.</translation>
 <translation id="728412880473384942">Weby budú rýchlejšie, ale menej zabezpečené</translation>
-<translation id="7324836168971967994">Tipy prispôsobené vám na mieru</translation>
 <translation id="7366415735885268578">Pridanie webu</translation>
 <translation id="7368695150573390554">Všetky offline dáta budú odstránené</translation>
 <translation id="7369678931043226462">Dolný hárok úprav stránky na novej karte je otvorený na polovičnú výšku</translation>

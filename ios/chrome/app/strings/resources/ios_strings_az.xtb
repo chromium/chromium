@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">"Google Calendar-a əlavə edin" və ya "Apple Calendar-a əlavə edin" seçin.</translation>
 <translation id="1629162218487290695">Kimliyinizi təsdiq edin…</translation>
 <translation id="1636234353664774105">Naviqasiya funksiyası vasitəsilə təyinat yeri üzrə istiqamətləri növbəli şəkildə əldə edin</translation>
+<translation id="1637811476055996098">Faylları seçin</translation>
 <translation id="1641113438599504367">Təhlükəsiz Axtarış</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="164673457281113247">{count,plural, =1{Əlfəcin yadda saxlandı}other{Əlfəcinlər yadda saxlandı}}</translation>
@@ -1609,6 +1610,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7039345315346323556">Son</translation>
 <translation id="704692552158601232">Defolt brauzer tətbiqi</translation>
 <translation id="7055240621761583113">Parolu avtomatik doldurun</translation>
+<translation id="7057567173736333354">Şəkli təsvir edin</translation>
 <translation id="7063811929043357292">Hesabı valideyn idarə edir.
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Bütün fayllar</translation>

@@ -115,7 +115,6 @@
 <translation id="2241587408274973373">Cartões da página Novo separador</translation>
 <translation id="2241634353105152135">Apenas uma vez</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Remover</translation>
-<translation id="2281098328019574668">Receba notificações de estatísticas que melhoram a sua experiência no Chrome</translation>
 <translation id="228293613124499805">É provável que a maioria dos sites que visita guarde dados no seu dispositivo, muitas vezes para melhorar a sua experiência ao guardar as suas preferências ou informações que partilha com o site. Recomendamos que mantenha esta definição ativada.</translation>
 <translation id="2289270750774289114">Perguntar quando um site quer detetar dispositivos Bluetooth próximos (recomendado)</translation>
 <translation id="2315043854645842844">O sistema operativo não suporta a seleção do certificado do lado do cliente.</translation>
@@ -172,6 +171,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="2787357173144933081">Iniciar rapidamente caixa geral</translation>
 <translation id="2789132527330338807">Os sites podem pedir para criar um mapa 3D do ambiente à sua volta ou monitorizar a posição da câmara</translation>
 <translation id="2790501146643349491">Quando esta opção está ativada, os sites fechados recentemente podem concluir o envio e a receção de dados. Quando esta opção está desativada, os sites fechados recentemente não podem concluir o envio nem a receção de dados.</translation>
+<translation id="2794551654724114396">Ative as notificações para receber dicas úteis que ajudam a tirar o máximo partido do Chrome</translation>
 <translation id="2795716239552913152">Normalmente, os sites utilizam a sua localização para funcionalidades ou informações relevantes, como notícias locais ou lojas próximas.</translation>
 <translation id="2800760947029405028">Carregar uma imagem</translation>
 <translation id="2802908157808345702">Não permitir que os sites enviem pop-ups nem usem redirecionamentos</translation>
@@ -226,7 +226,6 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="3368138297038111198">A partilhar uma janela</translation>
 <translation id="3386292677130313581">Perguntar antes de permitir que os sites conheçam a sua localização (recomendado)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="3435896845095436175">Ativar</translation>
 <translation id="344449859752187052">Cookies de terceiros bloqueados</translation>
 <translation id="3448554387819310837">Quando esta opção está ativada, os sites podem pedir para usar a câmara. Quando esta opção está desativada, os sites não podem usar a câmara.</translation>
 <translation id="3491678231052507920">Normalmente, os sites utilizam os seus dados e dispositivos de realidade virtual para que possa entrar nas sessões de RV.</translation>
@@ -575,7 +574,6 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="7260727271532453612">Autorização de <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" />.</translation>
 <translation id="7276071417425470385">Quando esta opção está ativada, os sites podem pedir para usar dispositivos de realidade virtual. Quando esta opção está desativada, os sites não podem usar dispositivos de realidade virtual.</translation>
 <translation id="728412880473384942">Os sites são mais rápidos, mas menos seguros</translation>
-<translation id="7324836168971967994">Dicas personalizadas só para si</translation>
 <translation id="7366415735885268578">Adicionar um site</translation>
 <translation id="7368695150573390554">Todos os dados offline são eliminados</translation>
 <translation id="7369678931043226462">Secção inferior de Personalize a página Novo separador aberta a meia altura</translation>

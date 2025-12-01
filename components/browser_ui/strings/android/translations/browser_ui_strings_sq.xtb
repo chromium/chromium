@@ -171,6 +171,7 @@
 <translation id="2787357173144933081">Nis me shpejti omnibox-in</translation>
 <translation id="2789132527330338807">Sajtet mund të kërkojnë të krijojnë një hartë 3D të ambientit tënd rrethues ose të monitorojnë pozicionin e kamerës</translation>
 <translation id="2790501146643349491">Kur cilësimi është aktiv, sajtet e mbyllura së fundi mund të përfundojnë dërgimin dhe marrjen e të dhënave. Kur cilësimi është joaktiv, sajtet e mbyllura së fundi nuk mund të përfundojnë dërgimin ose marrjen e të dhënave.</translation>
+<translation id="2794551654724114396">Aktivizo njoftimet për këshilla të dobishme për të të ndihmuar të përfitosh sa më shumë nga Chrome</translation>
 <translation id="2795716239552913152">Sajtet përdorin zakonisht vendndodhjen tënde për veçori ose informacione përkatëse, si p.sh. lajmet lokale ose dyqanet në afërsi</translation>
 <translation id="2800760947029405028">Ngarko imazh</translation>
 <translation id="2802908157808345702">Mos lejo që sajtet të dërgojnë dritare kërcyese apo të përdorin ridrejtimet</translation>
@@ -225,7 +226,6 @@
 <translation id="3368138297038111198">Po ndahet një dritare</translation>
 <translation id="3386292677130313581">Pyet përpara se sajtet të lejohen të dinë vendndodhjen tënde (rekomandohet)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Aktivizo</translation>
 <translation id="344449859752187052">Kukit e palëve të treta janë bllokuar</translation>
 <translation id="3448554387819310837">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin kamerën. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin kamerën.</translation>
 <translation id="3491678231052507920">Sajtet përdorin zakonisht të dhënat dhe pajisjet e realitetit virtual për të të lejuar të hysh në sesionet e realitetit VR</translation>

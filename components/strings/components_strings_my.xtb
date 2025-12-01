@@ -2061,6 +2061,7 @@
 <translation id="4299919199185766032">ဖြတ်လမ်းလင့်ခ် အမည်သည် အများဆုံး ခွင့်ပြုထားသည့် စာလုံးရေ <ph name="MAX_LENGTH" /> လုံးကို ကျော်နေသည်။</translation>
 <translation id="4300272766492248925">အက်ပ်ကို ဖွင့်ရန်</translation>
 <translation id="4300675098767811073">ညာဘက်တွင် အများအပြားဖောက်ရန်</translation>
+<translation id="4300841966382281549">ခရီးစဉ်</translation>
 <translation id="4302514097724775343">ကစားရန် ဒိုင်နိုကိုတို့ပါ</translation>
 <translation id="4304049446746819918">{0,plural, =1{ဤဖိုင်အား <ph name="DESTINATION_NAME" /> သို့ ရွှေ့ခြင်းကို စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ}other{ဤဖိုင်များအား <ph name="DESTINATION_NAME" /> သို့ ရွှေ့ခြင်းကို စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ}}</translation>
 <translation id="4304485328308299773">သုံးသပ်ချက်များနှင့် ပတ်သက်သော သင်၏ဆုံးဖြတ်ချက်များကို အသိပေးနိုင်ရန် ကုန်ပစ္စည်း၊ ဝန်ဆောင်မှု (သို့) အသုံးပြုမှုများအပေါ် ဝယ်ယူသူအကဲဖြတ်မှုများကို ဖတ်နိုင်သည်။</translation>
@@ -3425,6 +3426,7 @@
 <translation id="6539092367496845964">တစ်ခုခု မှားသွားသည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6540488083026747005">ဤဝဘ်ဆိုက်တွင် ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို သင်ခွင့်ပြုထားသည်</translation>
 <translation id="6545864417968258051">ဘလူးတုသ် ရှာဖွေရန်</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> - <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">ဘယ်ဘက်တွင် နှစ်ချက်ဖောက်ရန်</translation>
 <translation id="6549443526281184652">ဝတ်စုံများ</translation>
 <translation id="6550245281449521513">မောက်စ်လော့ခ်ချခြင်း ခွင့်မပြုတော့ပါ</translation>
@@ -4810,6 +4812,7 @@
 <translation id="8814547618907885931">နှိုင်းယှဉ်ပြဇယား အားလုံး ကြည့်ရန်</translation>
 <translation id="8814707942599948500">C8 စာအိတ်</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင့် Chrome ဆက်တင်များမှတစ်ဆင့် Chrome ကို အပ်ဒိတ်လုပ်ရန် Tab နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
+<translation id="8819855907485254989">သယ်ယူပို့ဆောင်ရေးလက်မှတ်ကို Wallet တွင် သိမ်းခြင်း</translation>
 <translation id="8820817407110198400">စာညှပ်များ</translation>
 <translation id="882338992931677877">ကိုယ်တိုင်ထည့် အပေါက်</translation>
 <translation id="8827067923357481311">နောက်မှပေး ရွေးစရာများ</translation>

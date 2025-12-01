@@ -171,6 +171,7 @@
 <translation id="2787357173144933081">ジャンプスタート アドレスバー</translation>
 <translation id="2789132527330338807">サイトが周囲の 3D マップの作成またはカメラ位置の追跡を要求できるようにする</translation>
 <translation id="2790501146643349491">オンにすると、最近閉じたサイトのデータの送受信を完了できます。オフにすると、最近閉じたサイトのデータの送受信を完了できません。</translation>
+<translation id="2794551654724114396">Chrome を最大限に活用するためのヒントを受け取るには、通知をオンにしてください</translation>
 <translation id="2795716239552913152">多くのサイトは、ローカル ニュースや近くのお店の情報などを取得するためにユーザーの位置情報を使用します。</translation>
 <translation id="2800760947029405028">画像をアップロード</translation>
 <translation id="2802908157808345702">サイトにポップアップの送信とリダイレクトの使用を許可しない</translation>
@@ -225,7 +226,6 @@
 <translation id="3368138297038111198">ウィンドウを共有しています</translation>
 <translation id="3386292677130313581">サイトに現在地の認識を許可する前に確認する（推奨）</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="3435896845095436175">有効にする</translation>
 <translation id="344449859752187052">サードパーティ Cookie がブロックされています</translation>
 <translation id="3448554387819310837">オンにすると、サイトはカメラの使用を要求できます。オフにすると、サイトはカメラを使用できません。</translation>
 <translation id="3491678231052507920">VR セッションに参加するため、サイトでバーチャル リアリティ デバイスとデータを使用する場合があります。</translation>

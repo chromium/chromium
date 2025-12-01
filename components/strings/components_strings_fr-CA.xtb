@@ -2065,6 +2065,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4299919199185766032">Le nom du raccourci dépasse la longueur maximale autorisée de <ph name="MAX_LENGTH" /> caractères.</translation>
 <translation id="4300272766492248925">Ouvrir l'application</translation>
 <translation id="4300675098767811073">Multiple perforation à droite</translation>
+<translation id="4300841966382281549">Trajet</translation>
 <translation id="4302514097724775343">Touchez le dinosaure pour jouer</translation>
 <translation id="4304049446746819918">{0,plural, =1{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas de transférer ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Lisez les évaluations des clients sur les produits, les services ou les expériences pour vous aider à prendre des décisions éclairées à l'aide de leurs avis.</translation>
@@ -3435,6 +3436,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6539092367496845964">Une erreur s'est produite. Réessayez plus tard.</translation>
 <translation id="6540488083026747005">Vous avez autorisé les témoins tiers pour ce site</translation>
 <translation id="6545864417968258051">Recherche d'appareils Bluetooth</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> – <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Double perforation à gauche</translation>
 <translation id="6549443526281184652">Costumes</translation>
 <translation id="6550245281449521513">Le verrouillage de la souris n'est pas autorisé</translation>
@@ -4820,6 +4822,7 @@ Détails supplémentaires :
 <translation id="8814547618907885931">Afficher tous les tableaux comparatifs</translation>
 <translation id="8814707942599948500">Enveloppe C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour mettre à jour Chrome dans les paramètres de Chrome</translation>
+<translation id="8819855907485254989">Enregistrer le titre de transport dans Portefeuille</translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="882338992931677877">Insertion manuelle</translation>
 <translation id="8827067923357481311">Options de paiement différé</translation>

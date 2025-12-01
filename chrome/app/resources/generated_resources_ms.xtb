@@ -4340,6 +4340,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Saiz paparan dan teks <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Menghantar URL kepada Penyemakan Imbas Selamat untuk semakan. Turut menghantar sedikit contoh halaman, muat turun, aktiviti sambungan dan maklumat sistem untuk membantu penemuan ancaman baharu. Memautkan data ini pada Google Account anda secara sementara apabila anda log masuk, untuk melindungi anda merentas apl Google.</translation>
+<translation id="3924788966103416622">Aplikasi luar mahukan kawalan penuh bagi sesi Chrome ini untuk penyahpepijatan. Hal ini termasuk akses kepada data anda yang disimpan, kuki dan data laman serta keupayaan untuk menavigasi kepada mana-mana URL.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Pengguna lain pada peranti ini boleh menggunakan rangkaian ini juga</translation>
 <translation id="3926002189479431949">Telefon Smart Lock telah berubah</translation>
@@ -4478,6 +4479,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4015250302257349679">Tekan <ph name="ACCELERATOR" /> untuk memfokuskan gelembung ini, kemudian tekan sekali lagi untuk memfokuskan elemen yang ditunjuk gelembung tersebut.</translation>
 <translation id="4016762287427926315">Kebenaran yang anda benarkan untuk <ph name="APP_NAME" /> juga akan dibenarkan untuk apl ini. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Buat Kod QR untuk pautan ini</translation>
+<translation id="4018953474106733212">Hanya pembangun web yang perlu menghidupkan ciri ini dan menggunakan ciri ini dengan apl yang dipercayai sahaja.</translation>
 <translation id="4019983356493507433">Edit Senarai Penanda Halaman</translation>
 <translation id="4020701737692625681">Pentadbir anda boleh merakam skrin anda</translation>
 <translation id="4021279097213088397">–</translation>
@@ -11516,6 +11518,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8910987510378294980">Sembunyikan senarai peranti</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8912810933860534797">Dayakan autoimbas</translation>
+<translation id="8914030287343429787">Lihat kata laluan anda walaupun ketika anda tidak menggunakan Chrome atau Android dengan log masuk ke <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Lancarkan semula Chrome</translation>
 <translation id="8915307125957890427">Klik kanan pada tab dan pilih "Tambahkan tab pada kumpulan", kemudian pilih "Kumpulan baharu"</translation>
 <translation id="8915370057835397490">Memuatkan cadangan</translation>

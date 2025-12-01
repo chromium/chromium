@@ -171,6 +171,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="2787357173144933081">Arrenca omnibox</translation>
 <translation id="2789132527330338807">Els llocs web poden demanar permís per crear un mapa 3D del teu entorn o fer un seguiment de la posició de la càmera</translation>
 <translation id="2790501146643349491">Quan aquesta opció està activada, els llocs web tancats recentment poden acabar d'enviar i de rebre dades. Quan aquesta opció està desactivada, els llocs web tancats recentment no poden acabar d'enviar ni de rebre dades.</translation>
+<translation id="2794551654724114396">Activa les notificacions per rebre consells útils que t'ajudaran a treure el màxim profit de Chrome</translation>
 <translation id="2795716239552913152">Els llocs web solen utilitzar la teva ubicació per a funcions o informació rellevants, com ara notícies locals o botigues a prop</translation>
 <translation id="2800760947029405028">Penja una imatge</translation>
 <translation id="2802908157808345702">No permetis que els llocs web enviïn finestres emergents ni que utilitzin redireccions</translation>
@@ -225,7 +226,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="3368138297038111198">S'està compartint una finestra</translation>
 <translation id="3386292677130313581">Pregunta abans de permetre que els llocs web sàpiguen la teva ubicació (opció recomanada)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Activa</translation>
 <translation id="344449859752187052">Galetes de tercers bloquejades</translation>
 <translation id="3448554387819310837">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar la càmera. Quan aquesta opció està desactivada, els llocs web no poden utilitzar la càmera.</translation>
 <translation id="3491678231052507920">Els llocs web solen utilitzar les teves dades i dispositius de realitat virtual perquè puguis entrar a sessions de RV</translation>

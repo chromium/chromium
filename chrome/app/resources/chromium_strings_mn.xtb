@@ -41,6 +41,7 @@
 <translation id="141901961143729572">Бодол санаагаа хуваалц</translation>
 <translation id="1465192221147974788">Цонхоо хуваалцахын тулд Системийн тохиргоонд Chromium-д дэлгэцийн үйлдэл бичихийг зөвшөөрнө үү.</translation>
 <translation id="1478370723027452770">Chrome for Testing-р тусламж авах</translation>
+<translation id="1496875977627931224">Сайн уу <ph name="USER_NAME" />?<ph name="LINE_BREAK" />Өнөөдөр та юу бодож байна вэ?</translation>
 <translation id="1497802159252041924">Суулгалтын алдаа: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Энэ хуудсыг хамгаалагдсан байна</translation>
 <translation id="1524282610922162960">Chromium-н таб хуваалцах</translation>
@@ -194,6 +195,7 @@
 <translation id="3103660991484857065">Програм суулгагч нь архивыг задалж үл чадсан тул Chromium-г дахин татаж авна уу.</translation>
 <translation id="310459126943037700">Ажил(ууд)-ыг дуусгаж чадсангүй.</translation>
 <translation id="3130323860337406239">Chromium нь таны микрофоныг ашиглаж байна.</translation>
+<translation id="3130333203120345554">Шинэ хайлт</translation>
 <translation id="3137969841538672700">Хайхын тулд чирнэ үү</translation>
 <translation id="3144188012276422546">Энэ таб нэмэлт нөөц ашиглаж байна. Гүйцэтгэлээ сайжруулахын тулд Chromium-д энэ табыг идэвхгүй болгохыг зөвшөөрнө үү.</translation>
 <translation id="3149163023759831301">Дэлгэцээ хуваалцахын тулд Системийн тохиргоонд Chromium-д дэлгэцийн үйлдэл бичихийг зөвшөөрнө үү</translation>
@@ -348,6 +350,7 @@
 <translation id="4994636714258228724">Өөрийгөө Chromium руу нэмэх</translation>
 <translation id="5123973130450702873">Chromium-д таны гарыг хянах зөвшөөрөл шаардлагатай</translation>
 <translation id="5141988424377517949">Та ойрын үед зочлоогүй байна. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />-г хассан.</translation>
+<translation id="5167819546851111585">Өнөөдөр та юу бодож байна вэ?</translation>
 <translation id="5174969993834422967">Та ихэвчлэн мэдэгдлийг блоклодог. Энэ сайтад танд мэдэгдэхийг зөвшөөрөхийн тулд байршлын хэсгийн тань баруун дээд буланд байх мэдэгдлийн дүрс тэмдгийг товшино уу.</translation>
 <translation id="5174983315706567306">Дискийн зай хангалтгүй байна.</translation>
 <translation id="5187123684706427865">Chromium бүртгэл дахин баталгаажуулахыг шаарддаг</translation>
@@ -380,6 +383,7 @@
 <translation id="5496810170689441661">Chromium нь нууц үгсийг засах гэж оролдож байна. Үүнийг зөвшөөрөхийн тулд Windows-н нууц үгээ бичнэ үү.</translation>
 <translation id="5524890928877629608">хайлтын хэсгийн зүүн дээд булан: зүүн <ph name="LEFT" />%, дээд <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">PDF-г Chromium-д нээх</translation>
+<translation id="5536164441519929134">Энэ табын талаар<ph name="LINE_BREAK" />асуух</translation>
 <translation id="5579324208890605088">Эхлэхэд алдаа гарлаа: суулгагчийг администратораар бус, энгийн хэрэглэгчээр ажиллуулна уу.</translation>
 <translation id="5580770360767802657">Chromium-г өгөгдмөлөөр ашиглаж, бэхлээрэй</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>

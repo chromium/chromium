@@ -1349,6 +1349,7 @@
 <translation id="1907044622262489040">ನಿಮ್ಮ ಧ್ವನಿಯೊಂದಿಗೆ ಟೈಪ್ ಮಾಡಿ. ಹುಡುಕಾಟ + D ಅನ್ನು ಒತ್ತಿರಿ, ನಂತರ ಮಾತನಾಡಲು ಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="1907659324308286326">ಕೆಲವು Thunderbolt ಅಥವಾ USB4 ಪರಿಕರಗಳು ಸರಿಯಾಗಿ ಕೆಲಸ ಮಾಡಲು ಮೆಮೊರಿ ಆ್ಯಕ್ಸೆಸ್‌ನ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="1908591798274282246">ಮುಚ್ಚಿದ ಗುಂಪನ್ನು ಮರುತೆರೆಯಿರಿ</translation>
+<translation id="1909677622563887527">Chrome ಅನ್ನು ಸ್ವಯಂಚಾಲಿತ ಪರೀಕ್ಷೆಯ ಸಾಫ್ಟ್‌ವೇರ್ ನಿಯಂತ್ರಿಸುತ್ತಿದೆ</translation>
 <translation id="1909880997794698664">ನೀವು ಈ ಸಾಧನವನ್ನು ಕಿಯೋಸ್ಕ್ ಮೋಡ‌್‌ನಲ್ಲಿ ಶಾಶ್ವತವಾಗಿ ಇರಿಸಲು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?</translation>
 <translation id="1910721550319506122">ಸುಸ್ವಾಗತ!</translation>
 <translation id="1910736334623230603">ಬಹು ಚಿತ್ರಗಳನ್ನು ಹುಡುಕಲು ಸಾಧ್ಯವಿಲ್ಲ. ಒಂದು ಬಾರಿಗೆ ಒಂದೇ ಚಿತ್ರವನ್ನು ಸೇರಿಸಿ.</translation>
@@ -1703,6 +1704,7 @@
 <translation id="2144536955299248197">ಪ್ರಮಾಣಪತ್ರ ವೀಕ್ಷಕ: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android ಆ್ಯಪ್‌ ಸುಧಾರಣೆ</translation>
 <translation id="2145468727756963476">Gemini ರಿಫ್ರೆಶ್ ಆಗುತ್ತಿದೆ...</translation>
+<translation id="2145688286532368277">ಈ ಸೈಟ್‌ಗಾಗಿ JavaScript ಆಪ್ಟಿಮೈಸೇಷನ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="2145917706968602070">ನಿಮ್ಮ ಫೋನ್ ಸಮೀಪದಲ್ಲಿದೆ, ಅನ್‌ಲಾಕ್ ಆಗಿದೆ ಮತ್ತು ಅದರಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಹಾಗೂ ವೈ-ಫೈ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="2146263598007866206">ಸೈಟ್‌ಗಳು, ನಿಮ್ಮ ಸಮಯವನ್ನು ಉಳಿಸಲು ಸಂಬಂಧಿತ ಫೈಲ್‌ಗಳನ್ನು ಒಂದೇ ಬಾರಿಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಬಹುದು</translation>
 <translation id="2147218225094845757">ಪಾರ್ಶ್ವ ಫಲಕವನ್ನು ಮರೆಮಾಡಿ</translation>
@@ -4356,6 +4358,7 @@
 
   ನೀವು <ph name="CONTROL_PANEL_APPLET_NAME" /> ಪ್ರಾರಂಭಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="3942420633017001071">ತಪಾಸಣೆಗಳು</translation>
+<translation id="3942558231079086184">ಈ ಸೈಟ್‌ಗಾಗಿ JavaScript ಆಪ್ಟಿಮೈಸೇಷನ್ ಆಫ್ ಆಗಿದೆ. ಉತ್ತಮ ಪರ್ಫಾರ್ಮೆನ್ಸ್‌ಗಾಗಿ ಸಕ್ರಿಯಗೊಳಿಸಿ.</translation>
 <translation id="3943582379552582368">&amp;ಹಿಂದೆ</translation>
 <translation id="3943857333388298514">ಅಂಟಿಸು</translation>
 <translation id="3945513714196326460">ಚಿಕ್ಕದಾದ ಹೆಸರನ್ನು ಪ್ರಯತ್ನಿಸಿ</translation>
@@ -10202,6 +10205,7 @@
 <translation id="8032569120109842252">ಫಾಲೋ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8033827949643255796">ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8033958968890501070">ಅವಧಿ ಮೀರಿದೆ</translation>
+<translation id="8034399942062051455">V8 ಆಪ್ಟಿಮೈಸೇಶನ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="8034697324150621782">ಮೇಲಿನ ವೀಕ್ಷಣೆಯೊಂದಿಗೆ ಸ್ವ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="8035059678007243127">ಅಜ್ಞಾತ ಬ್ಯಾಕ್-ಫಾರ್ವರ್ಡ್ ಕ್ಯಾಷ್ ಮಾಡಿದ ಪುಟ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">ಆಟೋಫಿಲ್ ಅನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>

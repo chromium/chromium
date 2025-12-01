@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">Dewis "Ychwanegu at Google Calendar" neu "Ychwanegu at Apple Calendar."</translation>
 <translation id="1629162218487290695">Cadarnhewch mai chi sydd yno…</translation>
 <translation id="1636234353664774105">Defnyddiwch y nodwedd llywio i gael cyfarwyddiadau i'ch cyrchfan gydag arweiniad tro-wrth-dro</translation>
+<translation id="1637811476055996098">Dewis Ffeiliau</translation>
 <translation id="1641113438599504367">Pori'n Ddiogel</translation>
 <translation id="1644574205037202324">Hanes</translation>
 <translation id="164673457281113247">{count,plural, =1{Mae'r Nod tudalen wedi'i gadw}zero{Mae'r Nodau tudalen wedi'u cadw}two{Mae'r Nodau tudalen wedi'u cadw}few{Mae'r Nodau tudalen wedi'u cadw}many{Mae'r Nodau tudalen wedi'u cadw}other{Mae'r Nodau tudalen wedi'u cadw}}</translation>
@@ -1608,6 +1609,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7039345315346323556">Diweddar</translation>
 <translation id="704692552158601232">Ap Porwr Diofyn</translation>
 <translation id="7055240621761583113">Awto-lenwi'r cyfrinair</translation>
+<translation id="7057567173736333354">Disgrifio'ch llun</translation>
 <translation id="7063811929043357292">Mae dy borwr yn cael ei reoli gan dy riant.
 <ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Pob Ffeil</translation>

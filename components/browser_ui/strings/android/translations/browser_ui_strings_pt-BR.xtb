@@ -171,6 +171,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="2787357173144933081">Iniciar com a omnibox</translation>
 <translation id="2789132527330338807">Os sites podem pedir para criar um mapa 3D do ambiente ao seu redor ou acompanhar a posição da câmera</translation>
 <translation id="2790501146643349491">Quando essa configuração está ativada, os sites fechados recentemente podem terminar de enviar e receber dados. Quando está desativada, os sites fechados recentemente não conseguem terminar de enviar ou receber dados.</translation>
+<translation id="2794551654724114396">Ative as notificações para receber dicas úteis e aproveitar o Chrome ao máximo</translation>
 <translation id="2795716239552913152">Os sites geralmente usam sua localização para recursos ou informações relevantes, como notícias locais ou lojas por perto</translation>
 <translation id="2800760947029405028">Fazer upload de uma imagem</translation>
 <translation id="2802908157808345702">Não permitir que os sites exibam pop-ups e usem redirecionamentos</translation>
@@ -225,7 +226,6 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="3368138297038111198">Compartilhando uma janela</translation>
 <translation id="3386292677130313581">Perguntar antes de permitir que sites saibam seu local (recomendado)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="3435896845095436175">Ativar</translation>
 <translation id="344449859752187052">Cookies de terceiros bloqueados</translation>
 <translation id="3448554387819310837">Quando essa configuração está ativada, os sites podem pedir para usar a câmera. Quando está desativada, os sites não podem usar a câmera.</translation>
 <translation id="3491678231052507920">Os sites geralmente usam dispositivos e dados de realidade virtual para permitir que você participe de sessões de RV</translation>

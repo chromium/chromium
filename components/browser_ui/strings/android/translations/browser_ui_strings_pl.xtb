@@ -115,7 +115,6 @@
 <translation id="2241587408274973373">Karty na stronie nowej karty</translation>
 <translation id="2241634353105152135">Tylko raz</translation>
 <translation id="2253414712144136228">Usuń <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2281098328019574668">Otrzymuj powiadomienia o statystykach, które ułatwiają korzystanie z Chrome</translation>
 <translation id="228293613124499805">Aby strony, na które wchodzisz, mogły lepiej działać, przeważnie zapisują one na Twoim urządzeniu dane. Najczęściej są to informacje, które im udostępniasz, lub Twoje ustawienia. Zalecamy pozostawienie tego ustawienia włączonego.</translation>
 <translation id="2289270750774289114">Pytaj, gdy strona chce wykryć urządzenia Bluetooth w pobliżu (zalecane)</translation>
 <translation id="2315043854645842844">Wybieranie certyfikatu klienta nie jest obsługiwane przez ten system operacyjny.</translation>
@@ -172,6 +171,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="2787357173144933081">Szybki start omniboksa</translation>
 <translation id="2789132527330338807">Strony mogą prosić o utworzenie mapy 3D otoczenia lub śledzenie pozycji kamery</translation>
 <translation id="2790501146643349491">Gdy ta opcja jest włączona, ostatnio zamknięte strony internetowe mogą dokończyć wysyłanie i odbieranie danych. Gdy jest wyłączona, nie mogą tego zrobić.</translation>
+<translation id="2794551654724114396">Włącz powiadomienia, aby otrzymywać przydatne wskazówki, które pomogą Ci w pełni wykorzystać możliwości Chrome</translation>
 <translation id="2795716239552913152">Strony zwykle używają lokalizacji w celu dobierania funkcji lub informacji, na przykład wiadomości lokalnych lub sklepów w pobliżu</translation>
 <translation id="2800760947029405028">Prześlij obraz</translation>
 <translation id="2802908157808345702">Nie zezwalaj stronom na wysyłanie wyskakujących okienek ani używanie przekierowań</translation>
@@ -226,7 +226,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3368138297038111198">Udostępniam okno</translation>
 <translation id="3386292677130313581">Pytaj, zanim udostępnisz stronom swoją lokalizację (zalecane)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="3435896845095436175">Włącz</translation>
 <translation id="344449859752187052">Pliki cookie innych firm zostały zablokowane</translation>
 <translation id="3448554387819310837">Gdy ta opcja jest włączona, strony internetowe mogą prosić o dostęp do kamery. Gdy jest wyłączona, strony nie mogą używać kamery.</translation>
 <translation id="3491678231052507920">Strony zwykle używają urządzeń i danych rzeczywistości wirtualnej, by umożliwić Ci udział w sesjach VR</translation>
@@ -574,7 +573,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="7260727271532453612">Dozwolone: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na korzystanie z urządzeń rzeczywistości wirtualnej. Gdy jest wyłączona, strony nie mogą używać takich urządzeń.</translation>
 <translation id="728412880473384942">Strony są szybsze, ale mniej bezpieczne</translation>
-<translation id="7324836168971967994">Wskazówki dopasowane do Ciebie</translation>
 <translation id="7366415735885268578">Dodawanie strony</translation>
 <translation id="7368695150573390554">Wszystkie dane offline zostaną usunięte</translation>
 <translation id="7369678931043226462">Plansza dolna Dostosuj stronę nowej karty otwarta do połowy wysokości</translation>

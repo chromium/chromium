@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">жүржүүд</translation>
 <translation id="1275718070701477396">Сонгогдсон</translation>
 <translation id="1290331692326790741">Муу дохио</translation>
+<translation id="1292474106138697109">Хичээлийн хэрэглэгдэхүүний дэлгэц</translation>
 <translation id="1300115153046603471">APN нь өгөгдмөл бөгөөд <ph name="ATTACH" /> төрөл юм.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Хөрвүүлэх</translation>
@@ -1046,6 +1047,7 @@
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> товчлуурыг туршиж үзсэн</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Хичээлийн хэрэглэгдэхүүн таны дэлгэцийг <ph name="RECEIVER_NAME" />-тай хуваалцаж байна</translation>
 <translation id="5613201299517339763">Таныг гаргалаа</translation>
 <translation id="5620281292257375798">Зөвхөн дотоодод</translation>
 <translation id="5628106863521633649">Боломжтой хэлнүүд</translation>

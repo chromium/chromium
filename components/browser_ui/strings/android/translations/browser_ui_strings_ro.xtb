@@ -171,6 +171,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="2787357173144933081">Pornește direct în caseta polivalentă</translation>
 <translation id="2789132527330338807">Site-urile pot solicita permisiunea de a crea o hartă 3D a lucrurilor din jur sau de a urmări poziția camerei video</translation>
 <translation id="2790501146643349491">Când opțiunea este activată, site-urile închise recent pot să finalizeze trimiterea și primirea datelor. Când opțiunea este dezactivată, site-urile închise recent nu pot finaliza trimiterea sau primirea datelor.</translation>
+<translation id="2794551654724114396">Activează notificările pentru sfaturi utile care te ajută să profiți din plin de Chrome</translation>
 <translation id="2795716239552913152">Site-urile folosesc de obicei locația pentru funcții sau informații relevante, cum ar fi știri locale sau magazine din apropiere</translation>
 <translation id="2800760947029405028">Încarcă o imagine</translation>
 <translation id="2802908157808345702">Nu permite site-urilor să afișeze ferestre pop-up sau să folosească redirecționări</translation>
@@ -225,7 +226,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3368138297038111198">Se permite accesul la o fereastră</translation>
 <translation id="3386292677130313581">Întreabă înainte de a permite site-urilor să afle locația (recomandat)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Activează</translation>
 <translation id="344449859752187052">Cookie-urile terță parte au fost blocate</translation>
 <translation id="3448554387819310837">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi camera. Când opțiunea este dezactivată, site-urile nu pot folosi camera.</translation>
 <translation id="3491678231052507920">Site-urile folosesc de obicei dispozitivele de realitate virtuală și datele conexe pentru a-ți permite accesul la sesiuni RV</translation>

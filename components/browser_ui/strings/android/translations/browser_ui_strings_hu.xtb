@@ -171,6 +171,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="2787357173144933081">Gyorsindítás a cím- és keresősávval</translation>
 <translation id="2789132527330338807">A webhelyek kérhetik az Ön környezetéről készített 3D-s térkép létrehozását, valamint a kamera pozíciójának nyomon követését</translation>
 <translation id="2790501146643349491">Ha be van kapcsolva, a nemrégiben bezárt webhelyek befejezhetik az adatok küldését és fogadását. Ha ki van kapcsolva, a nemrégiben bezárt webhelyek nem tudják befejezni az adatok küldését és fogadását.</translation>
+<translation id="2794551654724114396">Kapcsolja be az értesítéseket, hogy hasznos tippeket kapjon, amelyek segítségével a legtöbbet hozhatja ki a Chrome-ból</translation>
 <translation id="2795716239552913152">A webhelyek általában arra használják az Ön helyadatait, hogy releváns szolgáltatásokat vagy információkat biztosítsanak (például helyi hírekről vagy közeli üzletekről)</translation>
 <translation id="2800760947029405028">Kép feltöltése</translation>
 <translation id="2802908157808345702">A webhelyek nem jeleníthetnek meg előugró ablakokat és nem használhatnak átirányításokat</translation>
@@ -225,7 +226,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="3368138297038111198">Ablak megosztása…</translation>
 <translation id="3386292677130313581">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára a tartózkodási helyhez való hozzáférést (ajánlott)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="3435896845095436175">Engedélyezés</translation>
 <translation id="344449859752187052">Harmadik féltől származó cookie-k letiltva</translation>
 <translation id="3448554387819310837">Ha be van kapcsolva, a webhelyek hozzáférést kérhetnek a kamerához. Ha ki van kapcsolva, a webhelyek nem használhatják a kamerát.</translation>
 <translation id="3491678231052507920">A webhelyek általában arra használják a virtuálisvalóság-eszközöket és -adatokat, hogy belépést biztosítsanak a VR-munkamenetekbe</translation>

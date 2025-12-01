@@ -171,6 +171,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="2787357173144933081">Omnikastikese kiirkäivitamine</translation>
 <translation id="2789132527330338807">Lubage saitidel küsida luba luua teie ümbrusest 3D-kaarti või jälgida kaamera asendit</translation>
 <translation id="2790501146643349491">Kui see on sisse lülitatud, saavad hiljuti suletud saidid andmete saatmise ja vastuvõtmise lõpetada. Kui see on välja lülitatud, ei saa hiljuti suletud saidid andmete saatmist ega vastuvõtmist lõpetada.</translation>
+<translation id="2794551654724114396">Lülitage sisse märguanded, et saada kasulikke nõuandeid Chrome’i parimal moel kasutamiseks.</translation>
 <translation id="2795716239552913152">Saidid kasutavad teie asukohateavet tavaliselt asjakohaste funktsioonide või teabe (nt kohalikud uudised või läheduses asuvad kauplused) pakkumiseks</translation>
 <translation id="2800760947029405028">Laadige üles pilt</translation>
 <translation id="2802908157808345702">Ärge lubage saitidel saata hüpikaknaid ega kasutada ümbersuunamisi</translation>
@@ -225,7 +226,6 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="3368138297038111198">Akna jagamine</translation>
 <translation id="3386292677130313581">Küsi enne saitidele minu asukoha avaldamist (soovitatav)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="3435896845095436175">Luba</translation>
 <translation id="344449859752187052">Kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="3448554387819310837">Kui see on sisse lülitatud, võivad saidid küsida luba teie kaamera kasutamiseks. Kui see on välja lülitatud, ei saa saidid teie kaamerat kasutada.</translation>
 <translation id="3491678231052507920">Saidid kasutavad teie VR-seadmeid ja -andmeid tavaliselt VR-seansi käivitamiseks</translation>

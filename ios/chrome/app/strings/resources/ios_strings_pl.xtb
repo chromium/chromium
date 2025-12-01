@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">Wybierz „Dodaj do Kalendarza Google” lub „Dodaj do Kalendarza Apple”.</translation>
 <translation id="1629162218487290695">Potwierdź swoją tożsamość…</translation>
 <translation id="1636234353664774105">Korzystaj ze szczegółowych wskazówek dojazdu dostępnych w funkcji nawigacji</translation>
+<translation id="1637811476055996098">Wybierz pliki</translation>
 <translation id="1641113438599504367">Bezpieczne przeglądanie</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="164673457281113247">{count,plural, =1{Zakładka została zapisana}few{Zakładki zostały zapisane}many{Zakładki zostały zapisane}other{Zakładki zostały zapisane}}</translation>
@@ -1609,6 +1610,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7039345315346323556">Ostatnie</translation>
 <translation id="704692552158601232">Domyślna przeglądarka</translation>
 <translation id="7055240621761583113">Automatycznie uzupełnij hasło</translation>
+<translation id="7057567173736333354">Opisz obraz</translation>
 <translation id="7063811929043357292">Twoim kontem zarządza rodzic.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Wszystkie pliki</translation>

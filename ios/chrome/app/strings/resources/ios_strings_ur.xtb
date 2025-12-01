@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">‏"Google کیلنڈر میں شامل کریں" یا "Apple کیلنڈر میں شامل کریں" کو منتخب کریں۔</translation>
 <translation id="1629162218487290695">توثیق کریں کہ یہ آپ ہیں…</translation>
 <translation id="1636234353664774105">نیویگیشن خصوصیت کا استعمال کرتے ہوئے موڈ در موڈ ڈائریکشنز رہنمائی کے ساتھ اپنی منزل کی ڈائریکشنز حاصل کریں</translation>
+<translation id="1637811476055996098">فائلوں کا انتخاب کریں</translation>
 <translation id="1641113438599504367">محفوظ براؤزنگ</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
 <translation id="164673457281113247">{count,plural, =1{بُک مارک محفوظ ہو گیا}other{بُک مارکس محفوظ ہو گئے}}</translation>
@@ -261,6 +262,7 @@
 <translation id="1962969542251276847">مقفل اسکرین</translation>
 <translation id="1963976881984600709">معیاری تحفظ</translation>
 <translation id="1964507856799750384"><ph name="BEGIN_BOLD" />براؤزر ایپ<ph name="END_BOLD" /> پر تھپتھپائیں</translation>
+<translation id="1965633132497641148">سیکیورٹی کوڈ غلط ہے</translation>
 <translation id="1966313166384086081">سائٹ ڈیٹا</translation>
 <translation id="1967461193809857427">{count,plural, =1{‏وہ ٹیب منتخب کریں جو آپ نے Android پر چھوڑا تھا؟}other{‏وہ ٹیبز منتخب کریں جنہیں آپ نے Android پر چھوڑا تھا؟}}</translation>
 <translation id="1972325230031091483">آپ تیزی سے براؤز کریں گے کیونکہ مواد آپ کے موجودہ ویب صفحہ کے ملاحظہ کی بنیاد پر فعال طور پر لوڈ ہوتا ہے</translation>
@@ -575,6 +577,7 @@
 <translation id="3186796054637504691">سرگزشت اور ویب سائٹ کا ڈیٹا صاف کریں</translation>
 <translation id="3190736958609431397">ٹریک کو کالعدم کریں</translation>
 <translation id="3208260410153224535">آپ کی تنظیم نے سائن ان کو آف کر دیا ہے۔ نئے بُک مارکس، پاس ورڈز اور بہت کچھ کو صرف اس آلہ میں محفوظ کیا جائے گا۔</translation>
+<translation id="3211969308836412674">سائٹ سے پن ہٹائیں</translation>
 <translation id="3213807041830307252">اپنے کیمرے اور تصویری گیلری کا استعمال کرتے ہوئے جو آپ کو دکھائی دیتا ہے اسے خریدیں، ترجمہ کریں اور شناخت کریں۔</translation>
 <translation id="3214379938835224220">‏آپ اپنے iPad ری سیٹ کے حصے کے طور پر سائن آؤٹ ہو گئے تھے۔ سائن ان کرنے کے لیے نیچے جاری رکھیں پر تھپتھپائیں۔</translation>
 <translation id="3218296450292600703">اپنے نظم کردہ اکاؤنٹ سے سائن ان کرنے سے آپ کو اپنی تنظیم سے متعلق براؤزنگ کو اپنی دوسری براؤزنگ سے الگ رکھنے میں مدد ملتی ہے (بشمول ٹیبز، سرگزشت اور پاس ورڈز)</translation>
@@ -604,6 +607,7 @@
 <translation id="3324193307694657476">پتہ 2</translation>
 <translation id="3328801116991980348">سائٹ کی معلومات</translation>
 <translation id="333229797575847124">اس خصوصیت کو فعال کرنے کا طریقہ</translation>
+<translation id="3344233834747405775">کارڈ کے حامل کا نام غلط ہے</translation>
 <translation id="3344485292736684439">{count,plural, =1{بُک مارک کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}other{بُک مارکس کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}}</translation>
 <translation id="334690320928261823">حالیہ ٹیبز</translation>
 <translation id="3349031117032695619">پاپ اپس مسدود کریں</translation>
@@ -1098,6 +1102,7 @@
 <translation id="5220945116117011963">تاریخوں سے کیلنڈر ایونٹس تخلیق کریں</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">سائٹ میں ترمیم کریں</translation>
 <translation id="5233638681132016545">نیا ٹیب</translation>
 <translation id="5234094073825090254">{count,plural, =1{‏بُک مارک کو آپ کے Google اکاؤنٹ {email} میں محفوظ کیا گیا۔}other{‏بُک مارکس کو آپ کے Google اکاؤنٹ {email} میں محفوظ کیا گیا۔}}</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
@@ -1324,6 +1329,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6066301408025741299">منسوخ کرنے کیلئے تھپتھپائیں۔</translation>
 <translation id="6074656473835429958">اطلاعات حاصل کریں</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) کو اپ لوڈ نہیں کیا جا سکا</translation>
+<translation id="6076618233738284461">سائٹ کو پن کریں</translation>
 <translation id="6077126322656614846">کیمرے تک رسائی کی اجازت ہے</translation>
 <translation id="607730456154980869">‏‫Chrome میں Gemini کے ساتھ تیزی سے جوابات حاصل کریں</translation>
 <translation id="6078236141387574983">شیٹ کی اونچائی کو دوبارہ ایڈجسٹ کریں</translation>
@@ -1608,6 +1614,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7039345315346323556">حالیہ</translation>
 <translation id="704692552158601232">ڈیفالٹ براؤزر ایپ</translation>
 <translation id="7055240621761583113">پاس ورڈ آٹو فل کریں</translation>
+<translation id="7057567173736333354">اپنی تصویر کی وضاحت کریں</translation>
 <translation id="7063811929043357292">آپ کا اکاؤنٹ آپ کے والد/والدہ کے زیر انتظام ہے۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">سبھی فائلز</translation>

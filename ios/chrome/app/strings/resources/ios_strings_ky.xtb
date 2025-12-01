@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">"Google Жылнаамага кошуу" же "Apple Жылнаамага кошуу" дегенди тандаңыз.</translation>
 <translation id="1629162218487290695">Сиз экениңизди ырастаңыз…</translation>
 <translation id="1636234353664774105">Багыт алуу функциясын колдонуп, бара турган жерге багыттарды алыңыз</translation>
+<translation id="1637811476055996098">Файлдарды тандаңыз</translation>
 <translation id="1641113438599504367">Коопсуз серептөө</translation>
 <translation id="1644574205037202324">Таржымал</translation>
 <translation id="164673457281113247">{count,plural, =1{Кыстарма сакталды}other{Кыстармалар сакталды}}</translation>
@@ -1609,6 +1610,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7039345315346323556">Акыркы</translation>
 <translation id="704692552158601232">Демейки серепчи</translation>
 <translation id="7055240621761583113">Сырсөздү автотолтуруу</translation>
+<translation id="7057567173736333354">Cүрөтүңүздү сүрөттөп бериңиз</translation>
 <translation id="7063811929043357292">Аккаунтуңду ата-энең тескейт.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Бардык файлдар</translation>

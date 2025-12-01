@@ -2166,6 +2166,7 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ແບບຟອມບໍ່ປອດໄພ. ລະບົບໄດ້ປິດການຕື່ມຂໍ້ມູນອັດຕະໂນມັດແລ້ວ.</translation>
 <translation id="4477350412780666475">ເພງຕໍ່ໄປ</translation>
+<translation id="4479915773139026885">ໂໝດ AI ໃນ Google ຊອກຫາ</translation>
 <translation id="4480760608050410381">ວິດີໂອ MP4</translation>
 <translation id="448363931695049633">ຮ້ານພິຊຊ່າ</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -3165,6 +3166,7 @@
 <translation id="6124432979022149706">ເຄື່ອງມືເຊື່ອມຕໍ່ Chrome Enterprise</translation>
 <translation id="6124996493718543728">ໜ້າຈໍຄວາມຄືບໜ້າຂອງຊື້ກ່ອນຈ່າຍນຳຫຼັງເປີດຢູ່ລະດັບຄວາມສູງເຕັມໜ້າຈໍ.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />ລາຍລະອຽດເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Enter ເພື່ອຖາມໂໝດ AI ໃນ Google ຊອກຫາ</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6131824478727057281">ສະຖານທີ່</translation>
 <translation id="6133320744616005677">ສືບຕໍ່ການອະນຸຍາດ</translation>
@@ -3903,6 +3905,7 @@
 <translation id="7337248890521463931">ສະແດງແຖວເພີ່ມເຕີມ</translation>
 <translation id="7337706099755338005">ບໍ່ສາມາດໃຊ້ໄດ້ໃນແພລັດຟອມຂອງທ່ານ.</translation>
 <translation id="733923710415886693">ໃບຢັ້ງຢືນຂອງເຊີບເວີບໍ່ຖືກເປີດເຜີຍຜ່ານນະໂຍບາຍຄວາມໂປ່ງໃສຂອງໃບຢັ້ງຢືນ.</translation>
+<translation id="73398226265793546">ປຸ່ມໂໝດ AI, ເປີດນຳໃຊ້ເພື່ອຖາມໂໝດ AI ໃນ Google ຊອກຫາ</translation>
 <translation id="7346048084945669753">ເຊື່ອມໂຍງ:</translation>
 <translation id="7346062987309535530">ເຄື່ອງໃສ່ອາຫານ</translation>
 <translation id="7346081071264046066">"ຕອບຕົກລົງກັບຄຳເຊີນງານແຕ່ງດອງນີ້ດ້ວຍຄວາມຕື່ນເຕັ້ນ"</translation>
@@ -4708,6 +4711,7 @@
 <translation id="8622864575115813231">ກຳລັງຕິດຕໍ່ຫາສະຖາບັນການເງິນຂອງທ່ານ...</translation>
 <translation id="8624354461147303341">ຮັບສ່ວນຫຼຸດ</translation>
 <translation id="8634957317623797170">54 x 86 ມມ</translation>
+<translation id="8635822281281406185">ເພີ່ມໄຟລ໌, ແຖບ ຫຼື ຮູບໄດ້ສູງສຸດ 10 ລາຍການ</translation>
 <translation id="8637362707224133343">Chrome ມີຄຸນສົມບັດຄວາມປອດໄພໃນຕົວເພື່ອປົກປ້ອງທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ — ເຊັ່ນ: Google Safe Browsing, ເຊິ່ງ <ph name="BEGIN_LINK" />ພົບການຫຼອກເອົາຂໍ້ມູນເມື່ອບໍ່ດົນມານີ້ <ph name="END_LINK" /> ຢູ່ເວັບໄຊທີ່ທ່ານພະຍາຍາມເຂົ້າເບິ່ງ. ເວັບໄຊການຫຼອກເອົາຂໍ້ມູນຈະແອບອ້າງເປັນເວັບໄຊອື່ນໆເພື່ອຫຼອກທ່ານ.<ph name="NEW_LINE" />ບາງເທື່ອເວັບໄຊທີ່ໂດຍປົກກະຕິຈະປອດໄພກໍອາດຕົກຢູ່ໃນອັນຕະລາຍຈາກຜູ້ໂຈມຕີໄດ້. <ph name="BEGIN_ERROR_LINK" />ແຈ້ງໃຫ້ພວກເຮົາຮູ້<ph name="END_ERROR_LINK" /> ຫາກທ່ານຄິດວ່າມີຂໍ້ຜິດພາດເກີດຂຶ້ນ ແລະ ເວັບໄຊນີ້ບໍ່ເປັນອັນຕະລາຍ.</translation>
 <translation id="8640996933372643759">ເພື່ອແບ່ງປັນແຖບ ແລະ ຮ່ວມມືກັບຜູ້ອື່ນ, ທ່ານຕ້ອງສາມາດເຂົ້າສູ່ລະບົບ Chrome ໄດ້</translation>
 <translation id="8641131559425911240">ຊອງ (ບອນດ໌)</translation>

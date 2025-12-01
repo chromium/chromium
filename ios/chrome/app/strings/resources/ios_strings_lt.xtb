@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">Pasirinkite „Pridėti prie „Google“ kalendoriaus“ arba „Pridėti prie „Apple Calendar“.</translation>
 <translation id="1629162218487290695">Patvirtinkite savo tapatybę…</translation>
 <translation id="1636234353664774105">Gaukite nuoseklias nuorodas į kelionės tikslą naudodami navigacijos funkciją</translation>
+<translation id="1637811476055996098">Pasirinkti failus</translation>
 <translation id="1641113438599504367">Saugus naršymas</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="164673457281113247">{count,plural, =1{Žymė išsaugota}one{Žymės išsaugotos}few{Žymės išsaugotos}many{Žymės išsaugotos}other{Žymės išsaugotos}}</translation>
@@ -1614,6 +1615,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7039345315346323556">Naujausi</translation>
 <translation id="704692552158601232">Numatytoji naršyklės programa</translation>
 <translation id="7055240621761583113">Automatinis slaptažodžio pildymas</translation>
+<translation id="7057567173736333354">Aprašykite vaizdą</translation>
 <translation id="7063811929043357292">Jūsų paskyrą tvarko vienas iš tėvų.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Visi failai</translation>

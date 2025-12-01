@@ -115,7 +115,6 @@
 <translation id="2241587408274973373">Tarjetas de pestañas nuevas</translation>
 <translation id="2241634353105152135">Solo esta vez</translation>
 <translation id="2253414712144136228">Quitar <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2281098328019574668">Recibe notificaciones sobre estadísticas que mejoran tu experiencia en Chrome</translation>
 <translation id="228293613124499805">Es probable que la mayoría de los sitios que visitas guarden datos en tu dispositivo, a menudo para mejorar tu experiencia, ya que guardan tus preferencias o la información que compartes con ellos. Te recomendamos que mantengas esta configuración activada.</translation>
 <translation id="2289270750774289114">Preguntarme cuando un sitio intente conectarse a dispositivos Bluetooth cercanos (recomendado)</translation>
 <translation id="2315043854645842844">El sistema operativo no admite la selección de certificados del lado del cliente.</translation>
@@ -172,6 +171,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="2787357173144933081">Inicia el cuadro multifunción</translation>
 <translation id="2789132527330338807">Los sitios pueden solicitar permiso para crear un mapa 3D de tu entorno o hacer un seguimiento de la posición de la cámara</translation>
 <translation id="2790501146643349491">Cuando esta opción está activada, los sitios cerrados recientemente pueden terminar de enviar y recibir datos. Cuando está desactivada, los sitios cerrados recientemente no pueden terminar de enviar ni recibir datos.</translation>
+<translation id="2794551654724114396">Activa las notificaciones para recibir sugerencias útiles que te ayudarán a aprovechar Chrome al máximo</translation>
 <translation id="2795716239552913152">Por lo general, los sitios utilizan tu ubicación para mostrar información o habilitar funciones relevantes, como noticias locales o tiendas cercanas.</translation>
 <translation id="2800760947029405028">Cargar una imagen</translation>
 <translation id="2802908157808345702">No permitir que los sitios envíen ventanas emergentes ni utilicen redireccionamientos</translation>
@@ -226,7 +226,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="3368138297038111198">Se está compartiendo una ventana</translation>
 <translation id="3386292677130313581">Preguntar antes de permitir que los sitios conozcan tu ubicación (recomendado)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="3435896845095436175">Habilitar</translation>
 <translation id="344449859752187052">Se bloquearon las cookies de terceros</translation>
 <translation id="3448554387819310837">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar la cámara. Cuando está desactivada, los sitios no pueden usar la cámara.</translation>
 <translation id="3491678231052507920">Por lo general los sitios utilizan los datos y dispositivos de realidad virtual para otorgarte acceso a las sesiones de RV.</translation>
@@ -574,7 +573,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="7260727271532453612">Permitidos: <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos de realidad virtual. Cuando está desactivada, los sitios no pueden usar dispositivos de realidad virtual.</translation>
 <translation id="728412880473384942">Los sitios son más rápidos, pero menos seguros</translation>
-<translation id="7324836168971967994">Sugerencias personalizadas para ti</translation>
 <translation id="7366415735885268578">Agregar un sitio</translation>
 <translation id="7368695150573390554">Se borrarán los datos sin conexión</translation>
 <translation id="7369678931043226462">La hoja inferior de personalización de la página Nueva pestaña está abierta a media altura</translation>

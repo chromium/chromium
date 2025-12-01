@@ -115,7 +115,6 @@
 <translation id="2241587408274973373">“新标签页”页面卡片</translation>
 <translation id="2241634353105152135">仅一次</translation>
 <translation id="2253414712144136228">移除“<ph name="NAME_OF_LIST_ITEM" />”</translation>
-<translation id="2281098328019574668">接收通知，获取可提升 Chrome 使用体验的分析洞见</translation>
 <translation id="228293613124499805">您访问的大多数网站很可能会将数据保存到设备上，例如保存您的偏好设置或您与网站分享的信息，这通常是为了提升您的浏览体验。我们建议您保持此设置的开启状态。</translation>
 <translation id="2289270750774289114">在网站想发现附近的蓝牙设备时询问您（推荐）</translation>
 <translation id="2315043854645842844">操作系统不支持选择客户端证书。</translation>
@@ -172,6 +171,7 @@
 <translation id="2787357173144933081">快速启动多功能框</translation>
 <translation id="2789132527330338807">网站可以请求为您的周边环境创建 3D 地图或跟踪摄像头位置</translation>
 <translation id="2790501146643349491">开启此设置后，最近关闭的网站可以完成数据收发操作。关闭此设置后，最近关闭的网站无法完成数据收发操作。</translation>
+<translation id="2794551654724114396">开启通知，获取实用提示，尽享 Chrome 的出色功能</translation>
 <translation id="2795716239552913152">网站通常会使用您的位置信息以实现相关功能或提供相关信息（例如本地新闻或附近的商店）</translation>
 <translation id="2800760947029405028">上传图片</translation>
 <translation id="2802908157808345702">不允许网站显示弹出式窗口和使用重定向</translation>
@@ -226,7 +226,6 @@
 <translation id="3368138297038111198">正在共享窗口</translation>
 <translation id="3386292677130313581">需先询问，得到许可后才允许网站获取您的位置信息（推荐）</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="3435896845095436175">启用</translation>
 <translation id="344449859752187052">已阻止第三方 Cookie</translation>
 <translation id="3448554387819310837">开启此设置后，网站可以请求使用您的摄像头。关闭此设置后，网站无法使用您的摄像头。</translation>
 <translation id="3491678231052507920">网站通常会使用您的虚拟现实设备和数据以让您进入 VR 会话</translation>
@@ -574,7 +573,6 @@
 <translation id="7260727271532453612">已授予“<ph name="PERMISSION_1" />”权限和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="7276071417425470385">开启此设置后，网站可以请求使用虚拟现实设备。关闭此设置后，网站无法使用虚拟现实设备。</translation>
 <translation id="728412880473384942">网站速度更快，但安全性更低</translation>
-<translation id="7324836168971967994">专为您量身定制的提示</translation>
 <translation id="7366415735885268578">添加网站</translation>
 <translation id="7368695150573390554">所有离线数据都将被删除</translation>
 <translation id="7369678931043226462">自定义“新标签页”页面的底部动作条已按一半高度显示</translation>

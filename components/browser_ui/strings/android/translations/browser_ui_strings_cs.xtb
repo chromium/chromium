@@ -171,6 +171,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="2787357173144933081">Spouštět v omniboxu</translation>
 <translation id="2789132527330338807">Weby můžou žádat o vytvoření 3D mapy okolí nebo sledování polohy kamery</translation>
 <translation id="2790501146643349491">Když je tato možnost zapnutá, nedávno zavřené weby mohou dokončit odesílání a přijímání dat. Když je vypnutá, nedávno zavřené weby nemohou dokončit odesílání nebo přijímání dat.</translation>
+<translation id="2794551654724114396">Zapněte si oznámení s užitečnými tipy, které vám pomůžou využít Chrome na maximum</translation>
 <translation id="2795716239552913152">Weby obvykle používají polohu pro související funkce nebo informace, jako jsou místní zprávy nebo obchody v okolí</translation>
 <translation id="2800760947029405028">Nahrát obrázek</translation>
 <translation id="2802908157808345702">Nepovolovat webům zobrazovat vyskakovací okna ani používat přesměrování</translation>
@@ -225,7 +226,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="3368138297038111198">Sdílení okna</translation>
 <translation id="3386292677130313581">Pokud web bude chtít znát vaši polohu, zobrazit dotaz (doporučeno)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Aktivovat</translation>
 <translation id="344449859752187052">Soubory cookie třetích stran jsou blokovány</translation>
 <translation id="3448554387819310837">Když je tato možnost zapnutá, weby mohou žádat o použití kamery. Když je vypnutá, weby kameru používat nemohou.</translation>
 <translation id="3491678231052507920">Weby obvykle používají zařízení a data pro virtuální realitu ke spouštění relací ve VR</translation>

@@ -2162,6 +2162,7 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Энэ маягт аюултай байна. Автоматаар бөглөх хэсгийг унтраасан байна.</translation>
 <translation id="4477350412780666475">Дараагийн бичлэг</translation>
+<translation id="4479915773139026885">Google Хайлтын ХОУ-ы горим</translation>
 <translation id="4480760608050410381">MP4 видео</translation>
 <translation id="448363931695049633">Пиццаны газрууд</translation>
 <translation id="4489023393592172404">Каку дугтуй 4</translation>
@@ -3158,6 +3159,7 @@
 <translation id="6124432979022149706">Chrome байгууллагын холбогч</translation>
 <translation id="6124996493718543728">"Одоо ав, дараа төл" төлбөрийн хэрэгслийн явцын дэлгэцийг бүтэн өндрөөр нээсэн.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Дэлгэрэнгүй мэдээлэл<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Хайлтад ХОУ-ы горимоос асуухын тулд Enter дээр дарна уу</translation>
 <translation id="6126565365696310362">Хятад дугтуй #2</translation>
 <translation id="6131824478727057281">байршил</translation>
 <translation id="6133320744616005677">Үргэлжлүүлэн зөвшөөрөх</translation>
@@ -3893,6 +3895,7 @@
 <translation id="7337248890521463931">Илүү олон мөр харуулах</translation>
 <translation id="7337706099755338005">Таны платформд боломжгүй.</translation>
 <translation id="733923710415886693">Серверийн сертификатыг Сертификатын ил тод байдлаар ил тод болгоогүй.</translation>
+<translation id="73398226265793546">ХОУ-ы горимын товч, Google Хайлтад ХОУ-ы горимоос асуухын тулд идэвхжүүлнэ үү</translation>
 <translation id="7346048084945669753">Холбоотой:</translation>
 <translation id="7346062987309535530">Хоолны хэрэгслүүд</translation>
 <translation id="7346081071264046066">"энэ хуримын урилгад баяртайгаар тийм гэж хариу бичнэ үү"</translation>
@@ -4698,6 +4701,7 @@
 <translation id="8622864575115813231">Таны санхүүгийн байгууллагатай холбогдож байна...</translation>
 <translation id="8624354461147303341">Хөнгөлөлт авах</translation>
 <translation id="8634957317623797170">54 x 86 мм</translation>
+<translation id="8635822281281406185">10 хүртэлх файл, таб, зураг нэмнэ үү</translation>
 <translation id="8637362707224133343">Chrome-д Google-н аюулгүй хөтөч зэрэг таныг үзэж байхад хамгаалах аюулгүй байдлын бүрэлдэхүүн онцлогууд байдаг бөгөөд эдгээр онцлог таны зочлохоор оролдсон сайт дээрээс <ph name="BEGIN_LINK" />саяхан фишинг олсон<ph name="END_LINK" />. Фишингийн сайтууд таныг хуурахын тулд өөр сайт болж дүр эсгэдэг.<ph name="NEW_LINE" />Ихэвчлэн аюулгүй байдаг сайт хүртэл зарим тохиолдолд халдагчдын халдлагад өртдөг. Хэрэв та алдаа гарсан бөгөөд энэ сайт аюулгүй гэж үзэж байвал <ph name="BEGIN_ERROR_LINK" />бидэнд мэдэгдэнэ үү<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Та бусад хүнтэй таб хуваалцах, хамтран ажиллахын тулд Chrome-д нэвтрэх боломжтой байх ёстой</translation>
 <translation id="8641131559425911240">Дугтуй (бонд)</translation>

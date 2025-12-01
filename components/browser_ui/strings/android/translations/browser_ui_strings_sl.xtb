@@ -171,6 +171,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="2787357173144933081">Hiter začetek z naslovno vrstico</translation>
 <translation id="2789132527330338807">Spletna mesta lahko zahtevajo ustvarjanje 3D-zemljevida vaše okolice ali spremljanje položaja fotoaparata</translation>
 <translation id="2790501146643349491">Če je ta možnost vklopljena, nedavno zaprta spletna mesta lahko dokončajo pošiljanje in prejemanje podatkov. Če je ta možnost izklopljena, nedavno zaprta spletna mesta ne smejo dokončati pošiljanja ali prejemanja podatkov.</translation>
+<translation id="2794551654724114396">Vklopite obvestila, če želite prejemati koristne nasvete, s katerimi boste lahko izkoristili najboljše, kar ponuja Chrome</translation>
 <translation id="2795716239552913152">Spletna mesta običajno uporabljajo vašo lokacijo zaradi ustreznih funkcij ali informacij, kot so lokalne novice ali trgovine v bližini.</translation>
 <translation id="2800760947029405028">Naloži sliko</translation>
 <translation id="2802908157808345702">Spletnim mestom ni dovoljeno pošiljati pojavnih oken in uporabljati preusmeritev</translation>
@@ -225,7 +226,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="3368138297038111198">Deljenje okna</translation>
 <translation id="3386292677130313581">Prikaži poziv, preden se spletnim mestom razkrije vaša lokacija (priporočeno)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Omogoči</translation>
 <translation id="344449859752187052">Piškotki tretjih oseb so blokirani</translation>
 <translation id="3448554387819310837">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo kamere. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati kamere.</translation>
 <translation id="3491678231052507920">Spletna mesta običajno uporabljajo naprave in podatke za navidezno resničnost, da vam lahko omogočijo zagon sej navidezne resničnosti.</translation>

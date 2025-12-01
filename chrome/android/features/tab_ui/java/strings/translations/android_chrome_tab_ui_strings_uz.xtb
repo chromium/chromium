@@ -7,6 +7,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> yil oldin yaratilgan}other{<ph name="NUM_YEARS_MANY" /> yil oldin yaratilgan}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Nofaol varaqlar va guruhlar 1 oydan keyin yopiladi}other{Nofaol varaqlar va guruhlar <ph name="MONTH_COUNT_MANY" /> oydan keyin yopiladi}}</translation>
 <translation id="1173894706177603556">Qayta nomlash</translation>
+<translation id="1203747227183434426">Media yozib olinmoqda</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> varaqli “<ph name="TITLE_OF_GROUP" />” guruhini ochish}other{<ph name="TAB_COUNT2" /> varaqli “<ph name="TITLE_OF_GROUP" />” guruhini ochish}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> varaqlar guruhi sozlamalari</translation>
 <translation id="1300188005269437765">Varaqlar va varaqlar guruhi qachon avtomatik nofaol seansga olinishini tanlang</translation>
@@ -21,6 +22,7 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta nofaol obyekt}other{<ph name="TABS_COUNT_MANY" /> ta nofaol obyekt}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ta varaq guruhlandi</translation>
 <translation id="1657719826150349398">Varaqni pastga tushirish</translation>
+<translation id="1670942869417022142">Audio ovozsiz qilingan</translation>
 <translation id="1697284962337958118">Kiritish</translation>
 <translation id="1713541401465507417">Barcha varaq va guruhlarni yopish</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> ta varaqlar guruhi endi mavjud emas}other{<ph name="TAB_GROUPS_COUNT_MANY" /> ta varaqlar guruhi endi mavjud emas}}</translation>
@@ -111,6 +113,7 @@
 <translation id="4871719318659334896">Guruhni yopish</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Varaqlar guruhini (<ph name="TITLE_OF_GROUP" />) tiklash va ochish, varaqlari: <ph name="TABS_COUNT_ONE" /> ta, rangi: <ph name="COLOR_NAME" />.}other{Varaqlar guruhini (<ph name="TITLE_OF_GROUP" />) tiklash va ochish, varaqlari: <ph name="TABS_COUNT_MANY" /> ta, rangi: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">Ochish</translation>
+<translation id="4894777338623123366">Sahifa namoyish etilmoqda</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Varaqni yopish}other{Varaqlarni yopish}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> guruhlari saqlanib qoladi (varaqlar yopiladi va guruhlar oʻchiriladi)</translation>
 <translation id="492284538114688557">Narx pasayishi aniqlandi</translation>
@@ -143,6 +146,7 @@
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Guruhni yangi oynaga olish}other{Guruhni boshqa oynaga olish}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Varaqni oʻngga olish}other{Varaqlarni oʻngga olish}}</translation>
 <translation id="6228793724645064692">(doʻkon reytingi)</translation>
+<translation id="6251046978189636310">Audio ijro etilmoqda</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Varaqni guruhdan olib tashlash}other{Varaqlarni guruhdan olib tashlash}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Varaqni yangi guruhga kiritish}other{Varaqlarni yangi guruhga kiritish}}</translation>
 <translation id="6333260925957816943">Bu doʻkon haqidagi axborot</translation>
@@ -219,6 +223,7 @@
 <translation id="8428213095426709021">Sozlamalar</translation>
 <translation id="855081842937141170">Tabni qadab qo‘yish</translation>
 <translation id="8633025649649592204">Oxirgi faollik</translation>
+<translation id="8635822281281406185">Maksimum 10 ta fayl, varaq yoki rasm kiriting</translation>
 <translation id="8712637175834984815">Tushunarli</translation>
 <translation id="8714939927607906138">Past narxda</translation>
 <translation id="8730621377337864115">Tayyor</translation>

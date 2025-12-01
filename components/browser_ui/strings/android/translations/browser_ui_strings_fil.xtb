@@ -115,7 +115,6 @@
 <translation id="2241587408274973373">Mga card ng page na bagong tab</translation>
 <translation id="2241634353105152135">Isang beses lang</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Alisin</translation>
-<translation id="2281098328019574668">Makatanggap ng mga notification para sa mga insight na nagpapaganda ng iyong experience sa Chrome</translation>
 <translation id="228293613124499805">Posibleng nagse-save ng data sa iyong device ang karamihan sa mga site na binibisita mo, kadalasan para mapaganda ang iyong experience sa pamamagitan ng pag-save ng mga preference mo o impormasyong shine-share mo sa site. Inirerekomenda naming panatilihing naka-on ang setting na ito.</translation>
 <translation id="2289270750774289114">Magtanong kapag gusto ng isang site na tumuklas ng mga Bluetooth device na nasa malapit (inirerekomenda)</translation>
 <translation id="2315043854645842844">Hindi sinusuportahan ng operating system ang pagpipilian ng certificate sa panig ng kliyente.</translation>
@@ -172,6 +171,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="2787357173144933081">Simulan ang Omnibox</translation>
 <translation id="2789132527330338807">Puwedeng hilingin ng mga site na gumawa ng 3D na map ng iyong kapaligiran o subaybayan ang posisyon ng camera</translation>
 <translation id="2790501146643349491">Kapag naka-on, matatapos ng mga kamakailang isinarang site ang pagpapadala at pagtanggap ng data. Kapag naka-off, hindi matatapos ng mga kamakailang isinarang site ang pagpapadala at pagtanggap ng data.</translation>
+<translation id="2794551654724114396">I-on ang mga notification para sa mga kapaki-pakinabang na tip para matulungan kang masulit ang Chrome</translation>
 <translation id="2795716239552913152">Karaniwang ginagamit ng mga site ang iyong lokasyon para sa mga nauugnay na feature o impormasyon, gaya ng lokal na balita o mga kalapit na tindahan</translation>
 <translation id="2800760947029405028">Mag-upload ng larawan</translation>
 <translation id="2802908157808345702">Huwag payagan ang mga site na magpadala ng mga pop-up at gumamit ng mga redirect</translation>
@@ -226,7 +226,6 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="3368138297038111198">Nagshe-share ng window</translation>
 <translation id="3386292677130313581">Magtanong bago payagan ang mga site na malaman ang iyong lokasyon (inirerekomenda)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">I-enable</translation>
 <translation id="344449859752187052">Naka-block ang third-party na cookies</translation>
 <translation id="3448554387819310837">Kapag naka-on, puwedeng hilingin ng mga site na gamitin ang iyong camera. Kapag naka-off, hindi magagamit ng mga site ang iyong camera.</translation>
 <translation id="3491678231052507920">Karaniwang ginagamit ng mga site ang iyong mga virtual reality device at data para payagan kang pumasok sa mga VR session</translation>
@@ -574,7 +573,6 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="7260727271532453612">Pinapayagan ang <ph name="PERMISSION_1" /> at <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga virtual reality device. Kapag naka-off, hindi makakagamit ang mga site ng mga virtual reality device.</translation>
 <translation id="728412880473384942">Mas mabilis ang mga site pero hindi gaanong secure</translation>
-<translation id="7324836168971967994">Mga tip na iniangkop para lang sa iyo</translation>
 <translation id="7366415735885268578">Magdagdag ng site</translation>
 <translation id="7368695150573390554">Made-delete ang anumang offline data</translation>
 <translation id="7369678931043226462">Binuksan nang kalahati ang bottom sheet ng pag-customize ng page ng bagong tab mo</translation>

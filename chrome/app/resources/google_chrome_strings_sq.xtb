@@ -274,6 +274,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4022972681110646219">Përkthe ekranin</translation>
 <translation id="4023601594785368013">Gjuha origjinale: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ChromeOS ka nevojë të riniset për të zbatuar përditësimin.</translation>
+<translation id="4039097928859803404">Shfaq gjithmonë shkurtoret e "Modalitetit të IA-së"</translation>
 <translation id="4050175100176540509">Përmirësime të rëndësishme sigurie dhe funksione të reja ofrohen në versionin e fundit.</translation>
 <translation id="4053720452172726777">Personalizo dhe kontrollo Google Chrome</translation>
 <translation id="408393047846373801">Për të marrë fjalëkalimet etj. në të gjitha pajisjet e tua, identifikohu në Chrome. Ky fjalëkalim do të ruhet në "Llogarinë tënde të Google" pasi të identifikohesh.</translation>
@@ -355,6 +356,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4970880042055371251">Versioni i ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliko te “Menaxheri i fjalëkalimeve i Google”</translation>
+<translation id="5043786843026425788">Mëso më shumë rreth kërkimit me "Lenten e Google" në Chrome</translation>
 <translation id="504867494566807945">Hap lidhjet në Chrome nga çdo aplikacion. Dhe për qasje të lehtë, ai gozhdohet te shiriti yt i veglave.</translation>
 <translation id="5114340746415930644">Fut frazën e kalimit për të përdorur dhe ruajtur të dhënat e Chrome në llogarinë tënde <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Identifikohu në Chrome kur identifikohesh në shërbimet e tjera të Google</translation>
@@ -528,6 +530,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="683440813066116847">Rregulli hyrës për Google Chrome për të lejuar trafikun mDNS.</translation>
 <translation id="6841242485723266823">Profilet e Chrome të ndihmojnë t'i mbash të veçuara pjesë të ndryshme të jetës sate. Shto një profil të ri tani.</translation>
 <translation id="684888714667046800">Lidhja me internetin nuk mund të kryhej. Nëse përdor një mur mbrojtës, sigurohu që <ph name="PRODUCT_EXE_NAME" /> të jetë në listën e lejimeve.</translation>
+<translation id="6859580922007887573">Shtyp tastin Tab për të vazhduar</translation>
 <translation id="6877155553248388166">këndi poshtë djathtas i zonës së kërkimit: djathtas <ph name="RIGHT" />%, poshtë <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Po përditëson Chrome</translation>
 <translation id="6885412569789873916">Aplikacionet e Chrome Beta</translation>
@@ -627,6 +630,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7849037457735762883">Vazhdo aty ku e ke lënë: Chrome mund t'i restaurojë skedat e tua sa herë që e rinis. Për ta aktivizuar këtë, shko te</translation>
 <translation id="7872446069773932638">Po shkarkohet... Kanë mbetur edhe <ph name="SECONDS" /> sekonda</translation>
 <translation id="7886087451482920026">Zgjidh tekstin me "Lenten e Google"</translation>
+<translation id="7887929410013642057">Shfaq gjithmonë shkurtoret e "Modalitetit të IA-së"</translation>
 <translation id="7890208801193284374">Nëse e ndan një kompjuter, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chrome pikërisht ashtu si dëshirojnë.</translation>
 <translation id="7896673875602241923">Dikush është identifikuar më parë në Chrome në këtë kompjuter si <ph name="ACCOUNT_EMAIL_LAST" />. Krijo një përdorues të ri të Chrome për t'i mbajtur të ndara informacionet e tua.</translation>
 <translation id="7904985524660297937">Provo Gemini në Google Chrome</translation>

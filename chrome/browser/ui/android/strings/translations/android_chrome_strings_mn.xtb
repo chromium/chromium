@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">Өнөөдрийн мэдээг уншаарай <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="3123734510202723619">Зарлал</translation>
+<translation id="3134385238404760368">Саяхны ямар ч таб байхгүй</translation>
 <translation id="314939179385989105">Chrome-н нүүр хуудас</translation>
 <translation id="3158667104057012316">Гар дарааллаар эрэмбэлж байна</translation>
 <translation id="3159335509547415276">Блоклосон бүртгэлийн талаар мэдэж авах</translation>
@@ -817,6 +818,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4577115723294378384">Я-аас А руу эрэмбэлэх</translation>
 <translation id="4578289292431526768">Эхэлцгээе</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# минутын өмнө}other{# минутын өмнө}}</translation>
+<translation id="4585751637295612750">Үүнийг асуултдаа нэмэхийн тулд шинэ таб нээнэ үү</translation>
 <translation id="4587589328781138893">Сайт</translation>
 <translation id="4594952190837476234">Энэ офлайн хуудсыг <ph name="CREATION_TIME" />-с харуулж байгаа бөгөөд онлайн хувилбараас өөр байж болзошгүй.</translation>
 <translation id="4595237294768457124">Шинэ таб хуудсыг нээх</translation>
@@ -1267,6 +1269,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="641643625718530986">Хэвлэх...</translation>
 <translation id="6433501201775827830">Хайлтын системээ сонгоно уу</translation>
 <translation id="6434309073475700221">Хэрэгсэхгүй байх</translation>
+<translation id="6435307030888827407">Гарсан хэвээр байх</translation>
 <translation id="6437162790453527153">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="6437478888915024427">Хуудасны мэдээлэл</translation>
 <translation id="6440291723980579689">Таныг зөвхөн хуудаснуудыг нээсний дараа тэдгээрийг ачаална</translation>

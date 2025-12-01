@@ -171,6 +171,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="2787357173144933081">Omnibox avvio rapido</translation>
 <translation id="2789132527330338807">I siti possono chiedere di creare una mappa 3D dell'ambiente circostante o di monitorare la posizione della fotocamera</translation>
 <translation id="2790501146643349491">Quando l'opzione è attiva, i siti chiusi di recente possono terminare l'invio e la ricezione di dati. Quando l'opzione è disattivata, i siti chiusi di recente non possono terminare l'invio o la ricezione di dati.</translation>
+<translation id="2794551654724114396">Attiva le notifiche per ricevere suggerimenti utili che ti aiuteranno a usare Chrome al meglio</translation>
 <translation id="2795716239552913152">In genere, i siti usano la tua posizione per funzionalità o informazioni pertinenti come notizie locali o negozi nelle vicinanze</translation>
 <translation id="2800760947029405028">Carica un'immagine</translation>
 <translation id="2802908157808345702">Non consentire ai siti di inviare popup e usare reindirizzamenti</translation>
@@ -225,7 +226,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="3368138297038111198">Condivisione di una finestra in corso…</translation>
 <translation id="3386292677130313581">Chiedi conferma prima di consentire ai siti di conoscere la tua posizione (opzione consigliata)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="3435896845095436175">Abilita</translation>
 <translation id="344449859752187052">Cookie di terze parti bloccati</translation>
 <translation id="3448554387819310837">Quando l'opzione è attiva, i siti potrebbero chiederti di usare la videocamera. Quando l'opzione è disattivata, i siti non possono utilizzare la videocamera.</translation>
 <translation id="3491678231052507920">In genere, i siti usano dati e dispositivi per realtà virtuale per consentirti di avviare sessioni VR</translation>

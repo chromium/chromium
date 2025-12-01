@@ -47,6 +47,7 @@
 <translation id="146866447420868597">ເຂົ້າສູ່ລະບົບ Chrome ບໍ?</translation>
 <translation id="1476347941828409626">&amp;ຈັດການໂປຣໄຟລ໌ Chrome</translation>
 <translation id="1492280395845991349">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອສຳເລັດການອັບເດດ Chrome</translation>
+<translation id="1496875977627931224">ສະບາຍດີ <ph name="USER_NAME" />,<ph name="LINE_BREAK" />ມື້ນີ້ທ່ານກຳລັງຄິດຫຍັງຢູ່?</translation>
 <translation id="1497802159252041924">ຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">ປັບແຕ່ງໂປຣໄຟລ໌ Chrome ໃໝ່ຂອງທ່ານ</translation>
 <translation id="1518627427551567882">ໜ້ານີ້ໄດ້ຮັບການປ້ອງກັນ</translation>
@@ -202,6 +203,7 @@
 <translation id="3112458742631356345">Chrome ບລັອກການດາວໂຫຼດນີ້ ເນື່ອງຈາກໄຟລ໌ບໍ່ໄດ້ມີການດາວໂຫຼດໂດຍທົ່ວໄປ ແລະ ອາດເປັນອັນຕະລາຍ</translation>
 <translation id="3114643501466072395">ເພື່ອກວດເບິ່ງວ່າລະຫັດຜ່ານອື່ນຂອງທ່ານປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນຫຼືບໍ່, ກະລຸນາ <ph name="BEGIN_LINK" />ເຂົ້າສູ່ລະບົບ Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome ບລັອກການດາວໂຫຼດນີ້ເພາະວ່າໄຟລ໌ທີ່ເກັບໄວ້ໃນແຟ້ມມີໄຟລ໌ອື່ນໆທີ່ອາດຈະເຊື່ອງເມົາແວໄວ້</translation>
+<translation id="3130333203120345554">ຊອກຫາໃໝ່</translation>
 <translation id="3135560418014806498">ເພີ່ມໂປຣໄຟລ໌ Chrome</translation>
 <translation id="3137969841538672700">ລາກເພື່ອຊອກຫາ</translation>
 <translation id="3140883423282498090">ການປ່ຽນແປງຂອງທ່ານຈະມີຜົນຄັ້ງຕໍ່ໄປທີ່ທ່ານເລີ່ມເປີດໃຊ້ Google Chrome ໃໝ່.</translation>
@@ -367,6 +369,7 @@
 <translation id="5139423532931106058">ປັບແຕ່ງໂປຣໄຟລ໌ Chrome ຂອງທ່ານ</translation>
 <translation id="5163087008893166964">ຍິນດີຕ້ອນຮັບສູ່ Chrome; ເປີດໜ້າຈໍໂປຣແກຣມທ່ອງເວັບໃໝ່ແລ້ວ</translation>
 <translation id="5166439563123238795">Chrome ຕ້ອງໄດ້ຮັບການອະນຸຍາດເພື່ອຕິດຕາມການເຄື່ອນໄຫວຂອງມືທ່ານ</translation>
+<translation id="5167819546851111585">ມື້ນີ້ທ່ານກຳລັງຄິດຫຍັງຢູ່?</translation>
 <translation id="5170938038195470297">ບໍ່ສາມາດໃຊ້ໂປຣໄຟລ໌ຂອງທ່ານໄດ້ ເພາະວ່າມັນມາຈາກ Google Chrome ລຸ້ນໃໝ່.
 
 ອາດຈະບໍ່ມີບາງຄຸນສົມບັດຢູ່. ກະລຸນາລະບຸໄດເຣັກຕໍຣີໂປຣໄຟລ໌ອື່ນ ຫຼືໃຊ້ Chrome ລຸ້ນໃໝ່ກ່ວາ.</translation>
@@ -648,6 +651,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8013993649590906847">ຖ້າຮູບບໍ່ມີລາຍລະອຽດທີ່ເປັນປະໂຫຍດ, Chrome ຈະພະຍາຍາມໃຫ້ລາຍລະອຽດແກ່ທ່ານ. ເພື່ອສ້າງລາຍລະອຽດ, ລະບົບຈະສົ່ງຮູບພາບໃຫ້ Google.</translation>
 <translation id="8019103195866286235">ນັກພັດທະນາຍົກເລີກການເຜີຍແຜ່ສ່ວນຂະຫຍາຍນີ້ແລ້ວ ແລະ ອາດບໍ່ປອດໄພ. ລຶບສ່ວນຂະຫຍາຍດັ່ງກ່າວອອກຈາກ Chrome ເພື່ອບໍ່ໃຫ້ເບິ່ງ ແລະ ປ່ຽນຂໍ້ມູນຂອງທ່ານຢູ່ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ, ເຊິ່ງຮວມເຖິງຂໍ້ມູນສ່ວນຕົວຂອງທ່ານ.</translation>
 <translation id="8040768861829554732">ສ່ວນຂະຫຍາຍຕ້ອງການໃຫ້ທ່ານເຂົ້າສູ່ລະບົບ Chrome</translation>
+<translation id="8041795619940733262">ຖາມ Google<ph name="LINE_BREAK" />ກ່ຽວກັບແຖບນີ້</translation>
 <translation id="80471789339884597">ຂໍຂອບໃຈສຳລັບການຕິດຕັ້ງ. ທ່ານຈະຕ້ອງຣີສະຕາດໂປຣແກຣມທ່ອງເວັບຂອງທ່ານທັງໝົດກ່ອນການໃຊ້ <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">ໂປຣໄຟລ໌ Chrome ອື່ນໆ</translation>

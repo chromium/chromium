@@ -40,6 +40,7 @@
 <translation id="141901961143729572">اپنے خیالات کا اشتراک کریں</translation>
 <translation id="1465192221147974788">‏اپنی ونڈو کا اشتراک کرنے کیلئے، سسٹم کی ترتیبات میں Chromium کیلئے اسکرین ریکارڈنگ کی اجازت دیں۔</translation>
 <translation id="1478370723027452770">‏Chrome for Testing کے سلسلے میں مدد حاصل کریں</translation>
+<translation id="1496875977627931224">آداب <ph name="USER_NAME" />،<ph name="LINE_BREAK" />آج آپ کے ذہن میں کیا چل رہا ہے؟</translation>
 <translation id="1497802159252041924">انسٹال کی خرابی: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">یہ صفحہ محفوظ ہے</translation>
 <translation id="1524282610922162960">‏ایک Chromium ٹیب کا اشتراک کریں</translation>
@@ -193,6 +194,7 @@
 <translation id="3103660991484857065">‏انسٹالر آرکائیو کا کمپریشن ختم کرنے میں ناکام ہوگیا۔ براہ کرم Chromium کو دوبارہ ڈاؤن لوڈ کریں۔</translation>
 <translation id="310459126943037700">ٹاسک (ٹاسکس) ختم کرنے میں ناکام۔</translation>
 <translation id="3130323860337406239">‏Chromium آپ کا مائیکروفون استعمال کر رہا ہے۔</translation>
+<translation id="3130333203120345554">نئی تلاش</translation>
 <translation id="3137969841538672700">تلاش کرنے کے لیے گھسیٹیں</translation>
 <translation id="3144188012276422546">‏یہ ٹیب اضافی وسائل کا استعمال کر رہا ہے۔ اپنی کارکردگی کو بہتر بنانے کیلئے، Chromium کو اسے غیر فعال کرنے کی اجازت دیں۔</translation>
 <translation id="3149163023759831301">‏اپنی اسکرین کا اشتراک کرنے کیلئے، سسٹم کی ترتیبات میں Chromium کیلئے اسکرین ریکارڈنگ کی اجازت دیں</translation>
@@ -349,6 +351,7 @@
 <translation id="4994636714258228724">‏خود کو Chromium میں شامل کریں</translation>
 <translation id="5123973130450702873">‏آپ کے ہاتھوں کو ٹریک کرنے کے لیے Chromium کو اجازت درکار ہے</translation>
 <translation id="5141988424377517949">‏آپ نے حال ہی میں ملاحظہ نہیں کیا ہے۔ ‫Chromium نے <ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، <ph name="PERMISSION_3" /> کو ہٹا دیا۔</translation>
+<translation id="5167819546851111585">آج آپ کے ذہن میں کیا چل رہا ہے؟</translation>
 <translation id="5174969993834422967">آپ عام طور پر اطلاعات کو مسدود کرتے ہیں۔ اس سائٹ کو آپ کو مطلع کرنے کی اجازت دینے کے لیے، اپنے مقام بار کے دائیں کونے میں نوٹیفکیشن آئیکن پر کلک کریں۔</translation>
 <translation id="5174983315706567306">ڈسک میں کافی اسپیس نہیں ہے۔</translation>
 <translation id="5187123684706427865">‏‫Chromium اکاؤنٹ میں دوبارہ تصدیق درکار ہے</translation>
@@ -381,6 +384,7 @@
 <translation id="5496810170689441661">‏Chromium پاس ورڈز میں ترمیم کرنے کی کوشش کر رہا ہے۔ اس کی اجازت دینے کے لیے اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="5524890928877629608">تلاش کے حلقے کا اوپری دایاں کونا: <ph name="LEFT" /> فیصد دائیں، <ph name="TOP" /> فیصد اوپر</translation>
 <translation id="5527463683072221100">‏Chromium میں PDFs کھولیں</translation>
+<translation id="5536164441519929134">اس ٹیب کے بارے میں<ph name="LINE_BREAK" /> پوچھیں</translation>
 <translation id="5579324208890605088">اسٹارٹ اپ کی خرابی: براہ کرم انسٹالر کو باقاعدہ صارف کے طور پر چلائیں، منتظم کے طور پر نہیں۔</translation>
 <translation id="5580770360767802657">‏‫Chromium کو بطور ڈیفالٹ استعمال کریں اور اسے پن کریں</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>

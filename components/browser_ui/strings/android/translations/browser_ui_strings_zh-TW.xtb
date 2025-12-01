@@ -171,6 +171,7 @@
 <translation id="2787357173144933081">啟動時將焦點置於網址列</translation>
 <translation id="2789132527330338807">網站可以要求建立你周遭環境的 3D 地圖或追蹤攝影機位置</translation>
 <translation id="2790501146643349491">如果啟用，最近關閉的網站就可以完成資料收發作業。如果停用，最近關閉的網站將無法完成資料收發作業。</translation>
+<translation id="2794551654724114396">開啟通知功能，取得有助充分運用 Chrome 的實用提示</translation>
 <translation id="2795716239552913152">網站通常會使用你的位置資訊，以提供地方新聞或附近商家等相關功能或資訊</translation>
 <translation id="2800760947029405028">上傳圖片</translation>
 <translation id="2802908157808345702">不允許網站傳送彈出式視窗和使用重新導向</translation>
@@ -225,7 +226,6 @@
 <translation id="3368138297038111198">正在分享視窗</translation>
 <translation id="3386292677130313581">允許網站存取你的位置資訊前，必須先詢問你 (建議)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="3435896845095436175">啟用</translation>
 <translation id="344449859752187052">已封鎖第三方 Cookie</translation>
 <translation id="3448554387819310837">如果啟用，網站就可以要求使用攝影機。如果停用，網站將無法使用攝影機。</translation>
 <translation id="3491678231052507920">網站通常會使用虛擬實境裝置和資料讓你進入 VR 工作階段</translation>

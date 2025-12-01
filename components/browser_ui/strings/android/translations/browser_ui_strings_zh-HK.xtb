@@ -115,7 +115,6 @@
 <translation id="2241587408274973373">新分頁資訊卡</translation>
 <translation id="2241634353105152135">只此一次</translation>
 <translation id="2253414712144136228">移除<ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2281098328019574668">接收可改善 Chrome 使用體驗的分析資料通知</translation>
 <translation id="228293613124499805">您瀏覽的大多數網站可能會在裝置上儲存資料，通常是透過儲存您的偏好設定或您與網站分享的資料，從而改善使用體驗。建議您將此設定保持開啟。</translation>
 <translation id="2289270750774289114">在網站要探索附近的藍牙裝置時詢問您 (建議)</translation>
 <translation id="2315043854645842844">作業系統不支援由客戶端選取憑證。</translation>
@@ -172,6 +171,7 @@
 <translation id="2787357173144933081">快速開啟網址列</translation>
 <translation id="2789132527330338807">網站可以要求建立你周遭環境的 3D 地圖或追蹤攝錄機位置</translation>
 <translation id="2790501146643349491">開咗之後，最近閂咗嘅網站可以完成傳送同接收資料。閂咗之後，最近閂咗嘅網站唔可以完成傳送同接收資料。</translation>
+<translation id="2794551654724114396">開啟通知，接收有助你充分善用 Chrome 的實用貼士</translation>
 <translation id="2795716239552913152">網站通常會使用您的位置以提供相關功能或資料，例如本地新聞或附近商店</translation>
 <translation id="2800760947029405028">上載圖片</translation>
 <translation id="2802908157808345702">不允許網站傳送彈出式視窗和使用重新導向</translation>
@@ -226,7 +226,6 @@
 <translation id="3368138297038111198">正在分享視窗</translation>
 <translation id="3386292677130313581">允許網站存取您的位置前先詢問您 (建議)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">啟用</translation>
 <translation id="344449859752187052">已封鎖第三方 Cookie</translation>
 <translation id="3448554387819310837">開咗之後，網站可以要求使用相機。閂咗之後，網站唔可以使用相機。</translation>
 <translation id="3491678231052507920">網站通常會使用虛擬實境﻿裝置和資料，讓您進入 VR 工作階段</translation>
@@ -575,7 +574,6 @@
 <translation id="7260727271532453612">已允許「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="7276071417425470385">開咗之後，網站可以要求使用虛擬實境裝置。閂咗之後，網站唔可以使用虛擬實境裝置。</translation>
 <translation id="728412880473384942">網站更快，但安全性較低</translation>
-<translation id="7324836168971967994">為你度身訂造的貼士</translation>
 <translation id="7366415735885268578">新增網站</translation>
 <translation id="7368695150573390554">系統將刪除所有離線資料</translation>
 <translation id="7369678931043226462">自訂新分頁頁底面板宜家顯示喺畫面下半部</translation>

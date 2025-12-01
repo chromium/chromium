@@ -3701,6 +3701,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3527085408025491307">Dossier</translation>
 <translation id="3528498924003805721">Cibles des raccourcis</translation>
 <translation id="3529851166527095708">Adresses et plus</translation>
+<translation id="3530919970074558307">Annuler la mise en évidence du groupe</translation>
 <translation id="3531070080754387701">Microsoft 365 ne peut pas ouvrir <ph name="FILE_NAMES" /> à partir de ce dossier</translation>
 <translation id="3531883061432162622">Trouvez votre liste de lecture et vos favoris dans Favoris et listes</translation>
 <translation id="3532273508346491126">Gestion de la synchronisation</translation>
@@ -4054,6 +4055,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3757567010566591880">Détacher de la barre d'outils</translation>
 <translation id="3757645900890881944">Outils de Recherche</translation>
 <translation id="3757733214359997190">Aucun site trouvé</translation>
+<translation id="3757825964096339958">Mettre en évidence le groupe</translation>
 <translation id="375841316537350618">Téléchargement du script de mandataire en cours...</translation>
 <translation id="3758887577462995665">Conseil :</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> mois</translation>
@@ -4843,6 +4845,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4292613336957320546">Accélération</translation>
 <translation id="429312253194641664">Un site lit du contenu multimédia</translation>
 <translation id="4293219510510666933">Utilisez un langage courant pour effectuer des recherches dans votre historique de navigation et trouver les sites que vous avez visités. Vous pouvez aussi poser des questions et obtenir des réponses en fonction de votre historique de navigation. Ce paramètre est activé.</translation>
+<translation id="429344752071832554">Annuler la mise en évidence du groupe</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> a été supprimé de l'historique des téléchargements, mais il est toujours sur votre appareil</translation>
 <translation id="4295072614469448764">L'application est disponible dans votre terminal. Une icône peut également être disponible dans votre lanceur d'applications.</translation>
 <translation id="4295979599050707005">Veuillez vous connecter à nouveau pour confirmer que votre compte <ph name="USER_EMAIL" /> peut être utilisé avec des sites Web, des applications et des extensions dans Chrome et dans Google Play. Vous pouvez aussi supprimer ce compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -4998,6 +5001,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4405224443901389797">Déplacer dans…</translation>
 <translation id="4405781821077215583">Ajustez la taille des éléments affichés à l'écran, y compris le texte, pour les rendre plus petits ou plus grands</translation>
 <translation id="4406308048672435032">Vous pouvez rendre cet onglet inactif ou actualiser la liste pour revoir la liste complète</translation>
+<translation id="4406881185911439342">Mettre en évidence le groupe</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4406963243402726564">Données non enregistrées</translation>
 <translation id="4408599188496843485">Aid&amp;e</translation>

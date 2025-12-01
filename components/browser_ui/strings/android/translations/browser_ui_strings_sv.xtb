@@ -171,6 +171,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="2787357173144933081">Snabbstarta adressfältet</translation>
 <translation id="2789132527330338807">Webbplatser får begära tillstånd att skapa en 3D-karta över dina omgivningar eller registrera kamerans position</translation>
 <translation id="2790501146643349491">När detta är aktiverat kan nyligen stängda webbplatser fortsätta att skicka och ta emot data. När detta är inaktiverat får webbplatser som nyligen stängts inte skicka eller ta emot data.</translation>
+<translation id="2794551654724114396">Aktivera aviseringar om användbara tips som hjälper dig att få ut mesta möjliga av Chrome</translation>
 <translation id="2795716239552913152">Åtkomst till enhetens plats brukar kunna behövas för relevanta funktioner eller information som lokala nyheter eller affärer i närheten</translation>
 <translation id="2800760947029405028">Ladda upp en bild</translation>
 <translation id="2802908157808345702">Tillåt inte att webbplatser skickar popup-fönster eller omdirigerar dig</translation>
@@ -225,7 +226,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3368138297038111198">Dela ett fönster</translation>
 <translation id="3386292677130313581">Fråga innan webbplatser tillåts att veta var du befinner dig (rekommenderas)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Aktivera</translation>
 <translation id="344449859752187052">Tredjepartscookies har blockerats</translation>
 <translation id="3448554387819310837">När detta är aktiverat kan webbplatser be om att få använda kameran. När detta är inaktiverat får webbplatser inte använda kameran.</translation>
 <translation id="3491678231052507920">Åtkomst till VR-enheter och VR-data brukar kunna behövas för VR-sessioner på webbplatsen</translation>

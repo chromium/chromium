@@ -269,6 +269,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4023601594785368013">Gjuha origjinale: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Hap lidhjet në Chromium nga çdo aplikacion. Dhe për qasje të lehtë, ai gozhdohet te shiriti yt i veglave.</translation>
 <translation id="4036079820698952681">Ndihmo në përmirësimin e Chromium duke raportuar <ph name="BEGIN_LINK" />cilësimet aktuale<ph name="END_LINK" /></translation>
+<translation id="4039097928859803404">Shfaq gjithmonë shkurtoret e "Modalitetit të IA-së"</translation>
 <translation id="4050175100176540509">Përmirësime të rëndësishme sigurie dhe funksione të reja ofrohen në versionin e fundit.</translation>
 <translation id="4055805654398742145">Men&amp;axheri i fjalëkalimeve</translation>
 <translation id="4061696872429826774">Një program tjetër në kompjuterin tënd shtoi një shtesë që mund të ndryshojë mënyrën se si funksionon Chromium.
@@ -505,6 +506,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
 <translation id="6847869444787758381">Chromium të informon nëse fjalëkalimet e tua komprometohen ndonjëherë</translation>
 <translation id="684888714667046800">Lidhja me internetin nuk mund të kryhej. Nëse përdor një mur mbrojtës, sigurohu që <ph name="PRODUCT_EXE_NAME" /> të jetë në listën e lejimeve.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
+<translation id="6859580922007887573">Shtyp tastin Tab për të vazhduar</translation>
 <translation id="6862030660799253820">Kërkoje këtë imazh me "Kërkimin e imazheve"</translation>
 <translation id="6873893289264747459">Chromium vuri re se "<ph name="EXTENSION_NAME" />" përmban softuer keqdashës</translation>
 <translation id="6877155553248388166">këndi poshtë djathtas i zonës së kërkimit: djathtas <ph name="RIGHT" />%, poshtë <ph name="BOTTOM" />%</translation>
@@ -590,6 +592,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7872446069773932638">Po shkarkohet... Kanë mbetur edhe <ph name="SECONDS" /> sekonda</translation>
 <translation id="7873537467422636035">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" /></translation>
 <translation id="7877212753140190672">Pyet "Rreth këtij imazhi"</translation>
+<translation id="7887929410013642057">Shfaq gjithmonë shkurtoret e "Modalitetit të IA-së"</translation>
 <translation id="7888981273428720788">Cakto Chromium si parazgjedhje</translation>
 <translation id="7934340546140346950">Chromium i përmirëson lidhjet e pasigurta automatikisht në HTTPS kur është e mundur</translation>
 <translation id="7937630085815544518">Je identifikuar në Chromium si <ph name="USER_EMAIL_ADDRESS" />. Përdor të njëjtën llogari për t'u identifikuar sërish.</translation>
@@ -637,6 +640,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8416884904046428725">Chromium duhet të verifikojë që je ti përpara se të mund të ruhen disa të dhëna në "Llogarinë tënde të Google" dhe të përdoren në të gjitha pajisjet e tua. Nëse del tani, këto të dhëna do të fshihen.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Hap përsëri Chromium brenda një dite}other{Hap përsëri Chromium brenda # ditësh}}</translation>
 <translation id="8438543370129609977">Kur përdor "Kërkimin nëpërmjet imazheve", titulli i faqes, URL-ja dhe përmbajtja, duke përfshirë skedarët PDF, dërgohen te serveri. <ph name="LEARN_MORE" /></translation>
+<translation id="8447525028100794994">Mëso më shumë rreth kërkimit me "Kërkimin e imazheve" në Chromium</translation>
 <translation id="8453117565092476964">Arkivi i instaluesit është i dëmtuar ose i pavlefshëm. Shkarkoje Chromium përsëri.</translation>
 <translation id="8458614432758743027">Chromium kërkon Windows 10 ose një version më të lartë.</translation>
 <translation id="8463672209299734063">Opsionale: Ndihmo në përmirësimin e veçorive dhe performancës së ChromiumOS duke dërguar automatikisht te Google të dhëna diagnostikuese dhe përdorimi.</translation>

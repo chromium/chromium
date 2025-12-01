@@ -171,6 +171,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="2787357173144933081">Çok amaçlı adres çubuğuna hızlı başlangıç</translation>
 <translation id="2789132527330338807">Siteler, çevrenizin 3D haritasını oluşturmak veya kameranızın konumunu takip etmek isteyebilir</translation>
 <translation id="2790501146643349491">Bu düğme açıkken yeni kapatılan siteler veri gönderip alma işlemini bitirebilir. Düğme kapalıyken yeni kapatılan siteler veri gönderip alma işlemini bitiremez.</translation>
+<translation id="2794551654724114396">Chrome'dan en iyi şekilde yararlanmanıza yardımcı olacak faydalı ipuçları için bildirimleri açın</translation>
 <translation id="2795716239552913152">Yerel haberler veya yakındaki mağazalar gibi alakalı özellikleri ya da bilgileri sunmak için siteler genellikle konumunuzu kullanır</translation>
 <translation id="2800760947029405028">Resim yükle</translation>
 <translation id="2802908157808345702">Sitelerin pop-up'lar göndermesine veya yönlendirmeler kullanmasına izin verme</translation>
@@ -225,7 +226,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="3368138297038111198">Pencere paylaşılıyor</translation>
 <translation id="3386292677130313581">Sitelerin, konumunuzu öğrenmesine izin verilmeden önce size sorulsun (önerilir)</translation>
 <translation id="3403537308306431953">%%<ph name="ZOOM_LEVEL" /></translation>
-<translation id="3435896845095436175">Etkinleştir</translation>
 <translation id="344449859752187052">Üçüncü taraf çerezleri engellendi</translation>
 <translation id="3448554387819310837">Bu düğme açıkken siteler kameranızı kullanmak isteyebilir. Düğme kapalıyken siteler kameranızı kullanamaz.</translation>
 <translation id="3491678231052507920">VR oturumlarına katılmanızı sağlamak için siteler genellikle sanal gerçeklik cihazlarınızı ve verilerinizi kullanır</translation>

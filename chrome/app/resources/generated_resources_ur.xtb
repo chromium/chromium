@@ -1345,6 +1345,7 @@
 <translation id="1907044622262489040">‏اپنی آواز کی مدد سے ٹائپ کریں۔ Search + D استعمال کریں، پھر بولنا شروع کریں۔</translation>
 <translation id="1907659324308286326">‏ٹھیک طریقے سے کام کرنے کیلئے، Thunderbolt یا USB4 کے کچھ لوازمات کو میموری تک رسائی کی ضرورت پڑتی ہے۔</translation>
 <translation id="1908591798274282246">بند گروپ دوبارہ کھولیں</translation>
+<translation id="1909677622563887527">‏‫Chrome کو خودکار ٹیسٹ سافٹ ویئر کنٹرول کر رہا ہے</translation>
 <translation id="1909880997794698664">کیا آپ واقعی مستقل طور پر اس آلے کو کیوسک وضع میں رکھنا چاہتے ہیں؟</translation>
 <translation id="1910721550319506122">خوش آمدید!</translation>
 <translation id="1910736334623230603">متعدد تصاویر کو تلاش نہیں کیا جا سکتا۔ ایک وقت میں ایک تصویر شامل کریں۔</translation>
@@ -1618,7 +1619,7 @@
       اپنے آلے پر حسب ضرورت کوڈ انسٹال اور ٹیسٹ کرنے کے لیے، آپ اپنے ChromeOS آلے پر ڈیبگ کرنے کی خصوصیات کو فعال کر سکتے ہیں۔ اس سے آپ کو ان چیزوں کی اجازت مل جائے گی:<ph name="BR" />
       <ph name="BEGIN_LIST" />
         <ph name="LIST_ITEM" />rootfs کی توثیق ہٹائیں تاکہ آپ OS فائلوں میں ترمیم کر سکیں
-        <ph name="LIST_ITEM" />معیاری ٹیسٹ کی کلیدوں کا استعمال کر کے آلے پر SSH رسائی فعال کریں تاکہ آپ آلے تک رسائی حاصل کرنے کے لیے <ph name="BEGIN_CODE" />'cros flash'<ph name="END_CODE" /> جیسے ٹولز کا استعمال کر سکیں
+        <ph name="LIST_ITEM" />معیاری ٹیسٹ کی کلیدوں کا استعمال کر کے آلے پر SSH رسائی فعال کریں تاکہ آپ آلے تک رسائی حاصل کرنے کے لیے <ph name="BEGIN_CODE" />'cros flash‘<ph name="END_CODE" /> جیسے ٹولز کا استعمال کر سکیں
         <ph name="LIST_ITEM" />USB سے بوٹ کرنے کو فعال کریں تاکہ آپ ایک USB ڈرائیو سے OS امیج انسٹال کر سکیں
         <ph name="LIST_ITEM" />dev اور سسٹم root لاگ ان پاس ورڈ دونوں کو ایک حسب ضرورت قدر پر سیٹ کریں تاکہ آپ دستی طور پر آلے میں SSH کر سکیں
       <ph name="END_LIST" />
@@ -1699,6 +1700,7 @@
 <translation id="2144536955299248197">سرٹیفکیٹ کا ناظر: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">‏Linux Android ایپ ڈیولپمنٹ</translation>
 <translation id="2145468727756963476">‏‫Gemini ریفریش ہو رہا ہے...</translation>
+<translation id="2145688286532368277">‏اس سائٹ کے لیے JavaScript آپٹیمائزیشن آف ہے۔</translation>
 <translation id="2145917706968602070">‏یقینی بنائیں کہ آپ کا فون قریب میں ہے، غیر مقفل ہے اور اس میں بلوٹوتھ اور Wi-Fi آن ہے</translation>
 <translation id="2146263598007866206">سائٹس آپ کا وقت بچانے کے لیے خودکار طور پر متعلقہ فائلز کو ایک ساتھ ڈاؤن لوڈ کر سکتی ہیں</translation>
 <translation id="2147218225094845757">سائیڈ پینل چھپائیں</translation>
@@ -4345,6 +4347,7 @@
 
   کیا آپ <ph name="CONTROL_PANEL_APPLET_NAME" /> کو شروع کرنا چاہیں گے؟</translation>
 <translation id="3942420633017001071">تشخیصات</translation>
+<translation id="3942558231079086184">‏اس سائٹ کے لیے JavaScript آپٹیمائزیشن آف ہے۔ بہتر کارکردگی کے لیے فعال کریں۔</translation>
 <translation id="3943582379552582368">&amp;پیچھے</translation>
 <translation id="3943857333388298514">پیسٹ کریں</translation>
 <translation id="3945513714196326460">کوئی چھوٹا نام آزمائیں</translation>
@@ -10179,6 +10182,7 @@
 <translation id="8032569120109842252">پیروی ہو رہی ہے</translation>
 <translation id="8033827949643255796">منتخب کردہ</translation>
 <translation id="8033958968890501070">وقت ختم ہو گیا</translation>
+<translation id="8034399942062051455">‏‫V8 کی بہتری آف ہے</translation>
 <translation id="8034697324150621782">اوپر کے منظر کے ساتھ تبدیل کریں</translation>
 <translation id="8035059678007243127">بیک/فارورڈکیش کردہ پوشیدگی صفحہ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">آٹو فل کو بہتر بنانے میں مدد کریں</translation>
@@ -11478,6 +11482,7 @@
 <translation id="8910987510378294980">آلے کی فہرست چھپائیں</translation>
 <translation id="8912362522468806198">‏Google اکاؤنٹ</translation>
 <translation id="8912810933860534797">خودکار اسکین فعال کریں</translation>
+<translation id="8914030287343429787">‏آپ Chrome یا Android استعمال نہ کر رہے ہوں تب بھی <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> میں سائن ان کر کے اپنے پاس ورڈز دیکھیں</translation>
 <translation id="8914504000324227558">‏Chrome کو دوبارہ شروع کریں</translation>
 <translation id="8915307125957890427">ٹیب پر دایاں کلک کریں اور "گروپ میں ٹیب شامل کریں" کو منتخب کریں اور پھر "نیا گروپ" منتخب کریں</translation>
 <translation id="8915370057835397490">تجویز لوڈ ہو رہی ہے</translation>

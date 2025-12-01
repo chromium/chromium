@@ -965,6 +965,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2536110899380797252">Manzil kiritish</translation>
 <translation id="2537931901612099523">Faoliyatingiz bu qurilmaning boshqa foydalanuvchilariga koʻrinmaydi va saytlarni yanada maxfiy kezishingiz mumkin. Bunda ochilgan saytlar va Google kabi xizmatlarning maʼlumotlarni qanday jamlashi oʻzgarmaydi. Yuklanmalar va bukmarklar saqlanib qoladi.</translation>
 <translation id="2541219929084442027">Inkognito rejimida ochilgan sahifalar brauzer yoki qidiruv tarixida saqlanmaydi. Barcha inkognito sahifalari yopilganda qurilmangizda cookie fayllar kabi izlar qolmaydi. Yuklab olingan fayllar va bukmarklaringiz saqlanib qoladi.</translation>
+<translation id="2541474152868747095">Tarix qaydlarini boshqa qurilmalarda olish uchun shaxsingizni tasdiqlang. Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="2542106216580219892">Serfing</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" />: Butun ekrandan chiqish uchun |<ph name="ACCELERATOR" />| tugmasini bosib turing</translation>
 <translation id="2544546346215446551">Administrator qurilmangizni qayta ishga tushirdi</translation>
@@ -2026,6 +2027,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4255487295905690262">Har qaysi saytda narx tushganda sizga email orqali ogohlantirish yuboriladi.</translation>
 <translation id="425582637250725228">Kiritilgan o‘zgarishlar saqlanmasligi mumkin.</translation>
 <translation id="4258748452823770588">Imzo buzilgan</translation>
+<translation id="4260407128682690669">Boshqa qurilmalardagi tarix qaydlarini olish uchun tarix va varaqlarni <ph name="ACCOUNT_EMAIL" /> hisobiga sinxronlang. Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="4265635050210404830">Sodiq mijoz kartalaringiz</translation>
 <translation id="4265872034478892965">Administrator ruxsat bergan</translation>
 <translation id="4267590181863312380">Boshqa qurilmalardagi tarix qaydlarini olish uchun hisobga kiring va tarixni sinxronlang. Shuningdek, parollar va boshqa maʼlumotlardan barcha qurilmalarda foydalana olasiz. Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
@@ -2162,6 +2164,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Bu shakl xavfsiz emas. Avtomatik kiritish faolsizlantirildi.</translation>
 <translation id="4477350412780666475">Keyingi trek</translation>
+<translation id="4479915773139026885">Google Qidiruv ichida AI rejimi</translation>
 <translation id="4480760608050410381">MP4 video</translation>
 <translation id="448363931695049633">Pitseriyalar</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -3004,6 +3007,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5886961930368713749">Taqqoslash yuzasidan fikr-mulohaza</translation>
 <translation id="5887400589839399685">Karta saqlandi</translation>
 <translation id="5887687176710214216">Oxirgi tashrif: kecha</translation>
+<translation id="5889251770650310375">Boshqa qurilmalardagi tarix qaydlarini olish uchun shaxsingizni tasdiqlab, tarix va varaqlarni sinxronlang. Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="5890248301649767931">Redress raqami saqlansinmi?</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
 <translation id="5895187275912066135">Berilgan vaqti</translation>
@@ -3161,6 +3165,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6124432979022149706">Chrome korporativ konnektorlari</translation>
 <translation id="6124996493718543728">Hozir olib, keyin toʻlash jarayoni ekrani toʻliq hajmda ochildi.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Qidiruvda AI rejimida savol berish uchun Enter tugmasini bosing</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6131824478727057281">joylashuv</translation>
 <translation id="6133320744616005677">Ruxsat davom etilsin</translation>
@@ -3899,6 +3904,7 @@ Batafsil axborot:
 <translation id="7337248890521463931">Koʻproq qatorlarni koʻrsatish</translation>
 <translation id="7337706099755338005">Sizdagi tizimda ishlamaydi.</translation>
 <translation id="733923710415886693">Sertifikatning ishonchlilik belgilari haqidagi ma’lumot server tomonidan taqdim etilmadi.</translation>
+<translation id="73398226265793546">AI rejimi tugmasi, Google Qidiruvda AI rejimida savol berish uchun faollashtiring</translation>
 <translation id="7346048084945669753">Tasarrufidami:</translation>
 <translation id="7346062987309535530">Oshxona idishlari</translation>
 <translation id="7346081071264046066">“toʻy taklifini xursandchilik bilan qabul qiling”</translation>
@@ -4704,6 +4710,7 @@ Batafsil axborot:
 <translation id="8622864575115813231">Moliyaviy muassasa bilan aloqa oʻrnatilmoqda...</translation>
 <translation id="8624354461147303341">Chegirmalar olish</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">Maksimum 10 ta fayl, varaq yoki rasm kiriting</translation>
 <translation id="8637362707224133343">Chrome tarkibida Google Saytlarni xavfsiz kezish kabi himoya funksiyalari mavjud va bu funksiya siz ochayotgan saytda yaqinda <ph name="BEGIN_LINK" />fishing amaliyotini aniqlagan<ph name="END_LINK" />. Fishing saytlar boshqa saytlar koʻrinishida sizni aldashga urinadi.<ph name="NEW_LINE" />Hatto normal xavfsizlikdagi saytlar ham vaqti-vaqti bilan firibgarlar tomonidan boshqariladi. Agar buni xatolik va bu sayt xavfli emas deb hisoblasangiz, bu haqida <ph name="BEGIN_ERROR_LINK" />bizga xabar qiling<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Varaqlarni ulashish va boshqalar bilan birga ishlash uchun Chrome hisobiga kiring</translation>
 <translation id="8641131559425911240">Karton (oliy sifatli)</translation>

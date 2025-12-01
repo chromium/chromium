@@ -45,6 +45,7 @@
 <translation id="146866447420868597">‏هل المطلوب تسجيل الدخول إلى Chrome؟</translation>
 <translation id="1476347941828409626">‏&amp;إدارة الملفات الشخصية على Chrome</translation>
 <translation id="1492280395845991349">‏إعادة التشغيل لإكمال تحديث Chrome</translation>
+<translation id="1496875977627931224">مرحبًا "<ph name="USER_NAME" />"،<ph name="LINE_BREAK" />ما الذي يجول في خاطرك اليوم؟</translation>
 <translation id="1497802159252041924">حدث خطأ أثناء التثبيت: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">‏يمكنك الآن تخصيص ملفك الشخصي الجديد على Chrome.</translation>
 <translation id="1518627427551567882">هذه الصفحة محمية</translation>
@@ -200,6 +201,7 @@
 <translation id="3112458742631356345">‏حَظَر Chrome عملية التنزيل هذه لأن الملف لا يتم تنزيله عادةً، وقد يكون خطيرًا.</translation>
 <translation id="3114643501466072395">‏للتحقُّق مما إذا كانت كلمات المرور الأخرى آمنة من عمليات اختراق البيانات ومشاكل الأمان الأخرى، يُرجى <ph name="BEGIN_LINK" />تسجيل الدخول إلى متصفِّح Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">‏حَظَر Chrome عملية التنزيل هذه لأنّ ملف الأرشيف يتضمّن ملفات أخرى قد تخفي برامج ضارة</translation>
+<translation id="3130333203120345554">بحث جديد</translation>
 <translation id="3135560418014806498">‏إضافة ملف شخصي على Chrome</translation>
 <translation id="3137969841538672700">اسحب للبحث</translation>
 <translation id="3140883423282498090">‏ستسري التغييرات في المرة التالية التي تعيد فيها تشغيل Google Chrome.</translation>
@@ -273,6 +275,7 @@
 <translation id="4022972681110646219">ترجمة محتوى الشاشة</translation>
 <translation id="4023601594785368013">اللغة الأصلية: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">‏يجب إعادة تشغيل نظام التشغيل Chrome لتثبيت التحديث.</translation>
+<translation id="4039097928859803404">‏عرض اختصارات "وضع AI" دائمًا</translation>
 <translation id="4050175100176540509">تحسينات الأمان المهمة والميزات الجديدة متاحة في أحدث إصدار.</translation>
 <translation id="4053720452172726777">‏تخصيص Google Chrome والتحكم فيه</translation>
 <translation id="408393047846373801">‏سجِّل الدخول إلى Chrome للوصول إلى كلمات المرور وغيرها على جميع أجهزتك. سيتم حفظ كلمة المرور هذه في حسابك على Google بعد تسجيل الدخول.</translation>
@@ -354,6 +357,7 @@
 <translation id="4970880042055371251">‏إصدار نظام التشغيل Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">‏انقر على "مدير كلمات المرور في Google".</translation>
+<translation id="5043786843026425788">‏مزيد من المعلومات حول البحث باستخدام "عدسة Google" في Chrome</translation>
 <translation id="504867494566807945">‏يمكنك فتح الروابط من أي تطبيق في Chrome، ويمكن تثبيته في شريط المهام للوصول إليه بسهولة.</translation>
 <translation id="5114340746415930644">‏يجب إدخال عبارة المرور لاستخدام بيانات Chrome وحفظها في حسابك (<ph name="USER_EMAIL" />)</translation>
 <translation id="5120334927898581447">‏تسجيل الدخول إلى Chrome عند تسجيل الدخول إلى خدمات Google الأخرى</translation>
@@ -363,6 +367,7 @@
 <translation id="5139423532931106058">‏تخصيص ملفك الشخصي في Chrome</translation>
 <translation id="5163087008893166964">‏مرحبًا بك في Chrome. تم فتح نافذة متصفّح جديدة.</translation>
 <translation id="5166439563123238795">‏يحتاج Chrome إلى إذن لتتبُّع حركات يديك</translation>
+<translation id="5167819546851111585">ما الذي يجول في خاطرك اليوم؟</translation>
 <translation id="5170938038195470297">‏لا يمكن استخدام ملفك الشخصي نظرًا لأنه من إصدار أحدث من Google Chrome.
 
 قد تكون بعض الميزات غير متاحة. يُرجى تحديد دليل ملف شخصي مختلف أو استخدام إصدار أحدث من Chrome.</translation>
@@ -525,6 +530,7 @@
 <translation id="683440813066116847">‏قاعدة الوارد إلى Google Chrome Canary للسماح بحركة مرور mDNS.</translation>
 <translation id="6841242485723266823">‏تساعدك الملفات الشخصية على Chrome في الفصل بين جوانب حياتك المختلفة. بإمكانك إضافة ملف شخصي جديد الآن.</translation>
 <translation id="684888714667046800">يتعذّر الاتصال بالإنترنت. في حال استخدام جدار حماية، يُرجى التأكّد من إدراج <ph name="PRODUCT_EXE_NAME" /> في القائمة المسموح بها.</translation>
+<translation id="6859580922007887573">‏يجب النقر على مفتاح Tab للمتابعة</translation>
 <translation id="6877155553248388166">أسفل يسار مساحة البحث: %<ph name="RIGHT" /> من الجهة اليسرى و%<ph name="BOTTOM" /> من الأسفل</translation>
 <translation id="6881299373831449287">‏جارٍ تحديث Chrome.</translation>
 <translation id="6885412569789873916">‏تطبيقات الإصدار التجريبي من Chrome</translation>
@@ -624,6 +630,7 @@
 <translation id="7849037457735762883">‏المتابعة من حيث توقفت: يمكن لمتصفح Chrome استعادة علامات التبويب كلما أعدت تشغيله. لتفعيل هذه الميزة، يُرجى الانتقال إلى</translation>
 <translation id="7872446069773932638">جارٍ التنزيل… الثواني المتبقّية: <ph name="SECONDS" /></translation>
 <translation id="7886087451482920026">‏اختيار نص باستخدام "عدسة Google"</translation>
+<translation id="7887929410013642057">‏عرض اختصارات "وضع AI" دائمًا</translation>
 <translation id="7890208801193284374">‏إذا كنت تشارك الكمبيوتر مع أصدقائك وعائلتك، فبإمكانهم التصفح على حدة وإعداد Chrome على النحو الذي يريدونه.</translation>
 <translation id="7896673875602241923">‏سجّل شخص ما الدخول من قبل إلى Chrome على جهاز الكمبيوتر هذا باسم <ph name="ACCOUNT_EMAIL_LAST" />. يُرجى إنشاء حساب مستخدم جديد في Chrome للإبقاء على معلوماتك بشكلٍ منفصل.</translation>
 <translation id="7904985524660297937">‏يمكنك تجربة Gemini في Google Chrome الآن</translation>
@@ -640,6 +647,7 @@
 <translation id="8013993649590906847">‏في حال لم تتضمن صورة ما وصفًا مفيدًا، سيحاول Chrome توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google.</translation>
 <translation id="8019103195866286235">‏ألغى المطوِّر نشر هذه الإضافة، علمًا بأنّها قد تكون غير آمنة. يُرجى إزالة هذه الإضافة من Chrome كي لا تتمكّن من الاطّلاع على بياناتك وتغييرها، بما في ذلك معلوماتك الشخصية، على المواقع الإلكترونية التي تزورها.</translation>
 <translation id="8040768861829554732">‏تطلب منك إحدى الإضافات تسجيل الدخول إلى Chrome</translation>
+<translation id="8041795619940733262">‏طرح سؤال على Google<ph name="LINE_BREAK" />حول علامة التبويب هذه</translation>
 <translation id="80471789339884597">شكرًا على التثبيت. عليك إعادة تشغيل جميع المتصفِّحات قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">‏نظام التشغيل ChromeOS Flex</translation>
 <translation id="8077579734294125741">‏الملفات الشخصية الأخرى على Chrome</translation>

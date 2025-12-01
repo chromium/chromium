@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">Selecciona Afegeix a Google Calendar o Afegeix a Calendari d'Apple.</translation>
 <translation id="1629162218487290695">Verifica la teva identitat…</translation>
 <translation id="1636234353664774105">Obtén indicacions fins a la teva destinació amb instruccions pas a pas amb la funció de navegació</translation>
+<translation id="1637811476055996098">Tria els fitxers</translation>
 <translation id="1641113438599504367">Navegació segura</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{S'ha desat l'adreça d'interès}other{S'han desat les adreces d'interès}}</translation>
@@ -1613,6 +1614,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7039345315346323556">Recents</translation>
 <translation id="704692552158601232">Aplicació de navegació predeterminada</translation>
 <translation id="7055240621761583113">Emplena automàticament la contrasenya</translation>
+<translation id="7057567173736333354">Descriu la imatge</translation>
 <translation id="7063811929043357292">El teu pare o mare gestiona el teu compte.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Tots els fitxers</translation>

@@ -115,7 +115,6 @@
 <translation id="2241587408274973373">Yeni tab səhifə kartları</translation>
 <translation id="2241634353105152135">Sadəcə bir dəfə</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Silin</translation>
-<translation id="2281098328019574668">Chrome-da təcrübənizi təkmilləşdirən statistik məlumatlar üçün bildirişlər əldə edin</translation>
 <translation id="228293613124499805">Ziyarət etdiyiniz əksər saytlar adətən təcrübənizi təkmilləşdirmək üçün tərcihlərinizi və ya saytla paylaşdığınız məlumatı yadda saxlayır. Bu ayarı aktiv saxlamağı tövsiyə edirik.</translation>
 <translation id="2289270750774289114">Sayt yaxınlıqdakı Bluetooth cihazlarını kəşf etmək istədikdə soruşun (tövsiyə edilir)</translation>
 <translation id="2315043854645842844">Müştəri sayt sertifikatı seçimi əməliyyat sistemi tərəfindən dəstəklənmir.</translation>
@@ -172,6 +171,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="2787357173144933081">Omnibox-u sürətlə başladın</translation>
 <translation id="2789132527330338807">Saytlar ətrafın 3D xəritəsini yaratmaq və ya kameranın mövqeyini izləmək istəyə bilər</translation>
 <translation id="2790501146643349491">Aktiv ediləndə son qapadılan saytlar data göndərilməsi və qəbulunu tamamlaya bilər. Deaktiv ediləndə son qapadılan saytlar data göndərilməsi və ya qəbulunu tamamlaya bilməz.</translation>
+<translation id="2794551654724114396">Chrome-dan maksimum yararlanmağınıza kömək edəcək faydalı ipucular üçün bildirişləri aktiv edin</translation>
 <translation id="2795716239552913152">Saytlar adətən yerli xəbərlər və ya yaxınlıqdakı mağazalar kimi müvafiq xüsusiyyətlər və məlumatlar üçün məkanınızdan istifadə edir</translation>
 <translation id="2800760947029405028">Təsvir yükləyin</translation>
 <translation id="2802908157808345702">Saytlara popap bildirişlər göndərmək və yönləndirmələrdən istifadə etmək icazəsi verməyin</translation>
@@ -226,7 +226,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="3368138297038111198">Pəncərə paylaşılır</translation>
 <translation id="3386292677130313581">Saytlara məkanınızı bilmək icazəsi verməmişdən əvvəl soruşun (tövsiyə olunur)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="3435896845095436175">Aktivləşdirin</translation>
 <translation id="344449859752187052">Üçüncü tərəf kukiləri bloklandı</translation>
 <translation id="3448554387819310837">Aktiv ediləndə saytlar kameradan istifadə etmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar kameradan istifadə edə bilməz.</translation>
 <translation id="3491678231052507920">Saytlar adətən sizə VR sessiyalarına daxil olmaq imkanı vermək üçün virtual reallıq cihazlarınızdan və datadan istifadə edir</translation>
@@ -574,7 +573,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> və <ph name="PERMISSION_2" /> üçün icazə verilib</translation>
 <translation id="7276071417425470385">Aktiv ediləndə saytlar virtual reallıq cihazlarından istifadə icazəsi istəyə bilər. Deaktiv ediləndə saytlar virtual reallıq cihazlarından istifadə edə bilməz.</translation>
 <translation id="728412880473384942">Saytlar daha sürətli, lakin daha az güvənlidir</translation>
-<translation id="7324836168971967994">Sizə özəl məsləhətlər</translation>
 <translation id="7366415735885268578">Sayt əlavə edin</translation>
 <translation id="7368695150573390554">Oflayn data silinəcək</translation>
 <translation id="7369678931043226462">Yeni tab səhifəsinin yarım hündürlükdə açılmış aşağıdakı vərəqini fərdiləşdirin</translation>

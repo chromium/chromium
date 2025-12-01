@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">Izaberite Dodaj u Google kalendar ili Dodaj u Apple Calendar.</translation>
 <translation id="1629162218487290695">Potvrdite da ste to vi…</translation>
 <translation id="1636234353664774105">Dobijajte uputstva do odredišta pomoću detaljnih uputstava uz funkciju za navigaciju.</translation>
+<translation id="1637811476055996098">Izbor datoteka</translation>
 <translation id="1641113438599504367">Bezbedno pregledanje</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="164673457281113247">{count,plural, =1{Obeleživač je sačuvan}one{Obeleživači su sačuvani}few{Obeleživači su sačuvani}other{Obeleživači su sačuvani}}</translation>
@@ -1616,6 +1617,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="7039345315346323556">Nedavno</translation>
 <translation id="704692552158601232">Podrazumevana aplikacija pregledača</translation>
 <translation id="7055240621761583113">Automatski popunite lozinku</translation>
+<translation id="7057567173736333354">Opišite sliku</translation>
 <translation id="7063811929043357292">Nalogom upravlja roditelj.
 <ph name="BEGIN_LINK" />Saznaj više<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Svi fajlovi</translation>

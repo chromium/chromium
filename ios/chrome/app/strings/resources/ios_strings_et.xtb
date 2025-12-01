@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">Tehke valik „Lisa Google'i kalendrisse“ või „Lisa teenusesse Apple Calendar“.</translation>
 <translation id="1629162218487290695">Kinnitage oma isik …</translation>
 <translation id="1636234353664774105">Hankige sihtkohta liikumise täppisjuhiseid, kasutades navigeerimisfunktsiooni.</translation>
+<translation id="1637811476055996098">Vali failid</translation>
 <translation id="1641113438599504367">Google'i ohutu sirvimine</translation>
 <translation id="1644574205037202324">Ajalugu</translation>
 <translation id="164673457281113247">{count,plural, =1{Järjehoidja salvestati}other{Järjehoidjad salvestati}}</translation>
@@ -1613,6 +1614,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7039345315346323556">Hiljutised</translation>
 <translation id="704692552158601232">Vaikebrauseri rakendus</translation>
 <translation id="7055240621761583113">Parooli automaatselt täitmine</translation>
+<translation id="7057567173736333354">Kirjeldage oma pilti</translation>
 <translation id="7063811929043357292">Sinu kontot haldab vanem.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Kõik failid</translation>

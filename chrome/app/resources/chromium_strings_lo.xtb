@@ -41,6 +41,7 @@
 <translation id="141901961143729572">ແບ່ງປັນຄວາມຄິດຂອງທ່ານ</translation>
 <translation id="1465192221147974788">ເພື່ອແບ່ງປັນໜ້າຈໍຂອງທ່ານ, ໃຫ້ອະນຸຍາດການບັນທຶກໜ້າຈໍສຳລັບ Chromium ໃນການຕັ້ງຄ່າລະບົບ.</translation>
 <translation id="1478370723027452770">ຮັບຄວາມຊ່ວຍເຫຼືອກ່ຽວກັບ Chrome ສຳລັບການທົດສອບ</translation>
+<translation id="1496875977627931224">ສະບາຍດີ <ph name="USER_NAME" />,<ph name="LINE_BREAK" />ມື້ນີ້ທ່ານກຳລັງຄິດຫຍັງຢູ່?</translation>
 <translation id="1497802159252041924">ຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">ໜ້ານີ້ໄດ້ຮັບການປ້ອງກັນ</translation>
 <translation id="1524282610922162960">ແບ່ງປັນແຖບ Chromium</translation>
@@ -194,6 +195,7 @@
 <translation id="3103660991484857065">ຕົວຕິດຕັ້ງບໍ່ສາມາດ​ຄາຍ​ການບີບອັດຄັງເກັບມ້ຽນ. ກະລຸນາດາວໂຫຼດ Chromium ອີກ.</translation>
 <translation id="310459126943037700">ເຮັດໃຫ້ໜ້າວຽກສິ້ນສຸດບໍ່ສຳເລັດ.</translation>
 <translation id="3130323860337406239">Chromium ກໍາລັງໃຊ້​ໄມໂຄຣໂຟນຂອງ​ທ່ານ​.</translation>
+<translation id="3130333203120345554">ຊອກຫາໃໝ່</translation>
 <translation id="3137969841538672700">ລາກເພື່ອຊອກຫາ</translation>
 <translation id="3144188012276422546">ແຖບນີ້ກຳລັງໃຊ້ຊັບພະຍາກອນເພີ່ມເຕີມ. ເພື່ອປັບປຸງປະສິດທິພາບຂອງທ່ານ, ໃຫ້ Chromium ຊ່ວຍເຮັດໃຫ້ມັນບໍ່ເຮັດວຽກ.</translation>
 <translation id="3149163023759831301">ເພື່ອແບ່ງປັນໜ້າຈໍຂອງທ່ານ, ໃຫ້ອະນຸຍາດການບັນທຶກໜ້າຈໍສຳລັບ Chromium ໃນການຕັ້ງຄ່າລະບົບ</translation>
@@ -351,6 +353,7 @@
 <translation id="4994636714258228724">ເພີ່ມທ່ານເອງໃສ່ Chromium</translation>
 <translation id="5123973130450702873">Chromium ຕ້ອງໄດ້ຮັບການອະນຸຍາດເພື່ອຕິດຕາມການເຄື່ອນໄຫວຂອງມືທ່ານ</translation>
 <translation id="5141988424377517949">ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້. Chromium ໄດ້ລຶບ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ອອກແລ້ວ.</translation>
+<translation id="5167819546851111585">ມື້ນີ້ທ່ານກຳລັງຄິດຫຍັງຢູ່?</translation>
 <translation id="5174969993834422967">ໂດຍປົກກະຕິແລ້ວທ່ານບລັອກການແຈ້ງເຕືອນ. ເພື່ອໃຫ້ເວັບໄຊນີ້ແຈ້ງເຕືອນທ່ານ, ໃຫ້ຄລິກທີ່ໄອຄອນການແຈ້ງເຕືອນຢູ່ມຸມຂວາຂອງແຖບສະຖານທີ່ຂອງທ່ານ.</translation>
 <translation id="5174983315706567306">ພື້ນທີ່ດິສກ໌ບໍ່ພຽງພໍ.</translation>
 <translation id="5187123684706427865">ບັນຊີ Chromium ຕ້ອງມີການພິສູດຢືນຢັນຄືນໃໝ່</translation>
@@ -383,6 +386,7 @@
 <translation id="5496810170689441661">Chromium ກໍາລັງພະຍາຍາມແກ້ໄຂລະຫັດຜ່ານ. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດໃຫ້ສຳເນົາໄດ້.</translation>
 <translation id="5524890928877629608">ມຸມຊ້າຍເທິງຂອງພື້ນທີ່ຊອກຫາ: ຊ້າຍ <ph name="LEFT" />%, ເທິງ <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">ເປີດ PDF ໃນ Chromium</translation>
+<translation id="5536164441519929134">ຖາມ<ph name="LINE_BREAK" />ກ່ຽວກັບແຖບນີ້</translation>
 <translation id="5579324208890605088">ຂໍ້ຜິດພາດໃນການເລີ່ມຕົ້ນ: ກະລຸນາເອີ້ນໃຊ້ຕົວຕິດຕັ້ງໃນຖານະຜູ້ໃຊ້ທົ່ວໄປ, ບໍ່ແມ່ນໃນຖານະຜູ້ເບິ່ງແຍງລະບົບ.</translation>
 <translation id="5580770360767802657">ໃຊ້ Chromium ເປັນຄ່າເລີ່ມຕົ້ນ ແລະ ປັກໝຸດມັນໄວ້</translation>
 <translation id="5596627076506792578">ໂຕ​ເລືອກ​ເພີ່ມ​ເຕີມ</translation>

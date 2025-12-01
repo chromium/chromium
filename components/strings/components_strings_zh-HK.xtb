@@ -2064,6 +2064,7 @@
 <translation id="4299919199185766032">捷徑名稱長度超出 <ph name="MAX_LENGTH" /> 個字元的上限。</translation>
 <translation id="4300272766492248925">開啟應用程式</translation>
 <translation id="4300675098767811073">多孔 (右側)</translation>
+<translation id="4300841966382281549">行程</translation>
 <translation id="4302514097724775343">輕按恐龍即可開始遊戲</translation>
 <translation id="4304049446746819918">{0,plural, =1{管理員政策不建議將此檔案移至<ph name="DESTINATION_NAME" />}other{管理員政策不建議將這些檔案移至<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">閱讀客戶的產品和服務評價或體驗，再根據評論作出決定。</translation>
@@ -3436,6 +3437,7 @@
 <translation id="6539092367496845964">發生錯誤，請稍後再試。</translation>
 <translation id="6540488083026747005">你已允許此網站使用第三方 Cookie</translation>
 <translation id="6545864417968258051">藍牙掃瞄</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> - <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">雙孔 (左側)</translation>
 <translation id="6549443526281184652">服飾道具</translation>
 <translation id="6550245281449521513">唔可以鎖定滑鼠</translation>
@@ -4711,6 +4713,7 @@
 <translation id="8622864575115813231">正在聯絡金融機構…</translation>
 <translation id="8624354461147303341">取得折扣</translation>
 <translation id="8634957317623797170">54 x 86 毫米</translation>
+<translation id="8635822281281406185">最多可加入 10 個檔案、分頁或圖片</translation>
 <translation id="8637362707224133343">Chrome 內置安全功能，可在你瀏覽網站時提供保護，例如「Google 安全瀏覽」。此功能最近曾在你嘗試瀏覽的網站上<ph name="BEGIN_LINK" />發現仿冒詐騙內容<ph name="END_LINK" />。仿冒詐騙網站會偽裝成其他網站，藉此欺騙你。<ph name="NEW_LINE" />即使是平常可安心瀏覽的網站，有時亦會受攻擊者入侵。如果你認為我們的判斷有誤，且這個網站沒有危險，請<ph name="BEGIN_ERROR_LINK" />告訴我們<ph name="END_ERROR_LINK" />。</translation>
 <translation id="8640996933372643759">如想與他人分享分頁和協作，你必須登入 Chrome</translation>
 <translation id="8641131559425911240">信封 (銅版紙)</translation>
@@ -4823,6 +4826,7 @@
 <translation id="8814547618907885931">查看所有比較表格</translation>
 <translation id="8814707942599948500">C8 信封</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以透過 Chrome 設定更新 Chrome</translation>
+<translation id="8819855907485254989">將交通票卡儲存至「錢包」</translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="882338992931677877">手動插槽</translation>
 <translation id="8827067923357481311">稍後付款選項</translation>

@@ -175,6 +175,7 @@
 <translation id="1622717322707146952">ជ្រើសរើស “បញ្ចូល​ទៅ Google ប្រតិទិន“ ឬ “បញ្ចូលទៅ Apple Calendar“។</translation>
 <translation id="1629162218487290695">ផ្ទៀងផ្ទាត់ថាជាអ្នក…</translation>
 <translation id="1636234353664774105">ទទួល​បានទិសដៅ​ទៅកាន់​គោលដៅ​របស់អ្នកដោយមាន​ការណែនាំផ្លូវលម្អិត ដោយប្រើមុខងាររុករកផ្លូវ</translation>
+<translation id="1637811476055996098">ជ្រើសរើសឯកសារ</translation>
 <translation id="1641113438599504367">ការរុករកសុវត្ថិភាព</translation>
 <translation id="1644574205037202324">ប្រវត្តិ</translation>
 <translation id="164673457281113247">{count,plural, =1{បាន​រក្សាទុក​ចំណាំ}other{បាន​រក្សាទុក​ចំណាំ}}</translation>
@@ -1614,6 +1615,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7039345315346323556">ថ្មីៗ</translation>
 <translation id="704692552158601232">កម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើម</translation>
 <translation id="7055240621761583113">បំពេញពាក្យ​សម្ងាត់ដោយស្វ័យប្រវត្តិ</translation>
+<translation id="7057567173736333354">ពណ៌នាអំពីរូបភាពរបស់អ្នក</translation>
 <translation id="7063811929043357292">គណនី​របស់អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រង​របស់មាតាបិតា​អ្នក។
 <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">ឯកសារ​ទាំងអស់</translation>
