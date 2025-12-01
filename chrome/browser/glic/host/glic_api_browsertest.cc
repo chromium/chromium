@@ -145,6 +145,7 @@ using ::testing::UnorderedElementsAre;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTab);
 std::vector<std::string> GetTestSuiteNames() {
   return {
@@ -1165,7 +1166,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testThereCanOnlyBeOneFloaty) {
             tab0_instance->GetPanelState().kind);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testSwitchConversationToSpecific) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       testSwitchConversationToOldConversationNewInstance) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Multi-instance only";
   }
@@ -1177,7 +1179,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSwitchConversationToSpecific) {
       GlicSwitchConversationTarget::kSwitchedToNewInstance, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testSwitchConversationToNew) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       testSwitchConversationToNewConversationNewInstance) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Multi-instance only";
   }
@@ -1187,6 +1190,71 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSwitchConversationToNew) {
   histogram_tester->ExpectBucketCount(
       "Glic.Interaction.SwitchConversationTarget",
       GlicSwitchConversationTarget::kStartNewConversation, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       testSwitchConversationToLastActiveConversation) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Multi-instance only";
+  }
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  ExecuteJsTest({.params = base::Value("step1")});
+
+  ASSERT_TRUE(AddTabAtIndex(1, page_url(), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  TrackGlicInstanceWithTabIndex(1);
+  RunTestSequence(InstrumentTab(kSecondTab),
+                  OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  ExecuteJsTest({.params = base::Value("step2")});
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester->GetBucketCount(
+               "Glic.Interaction.SwitchConversationTarget",
+               GlicSwitchConversationTarget::kSwitchedToLastActive) == 1;
+  }));
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       testSwitchConversationToOldConversationInOldInstance) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Multi-instance only";
+  }
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  ExecuteJsTest({.params = base::Value("step1")});
+
+  ASSERT_TRUE(AddTabAtIndex(1, page_url(), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  TrackGlicInstanceWithTabIndex(1);
+  RunTestSequence(InstrumentTab(kSecondTab),
+                  OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  ExecuteJsTest({.params = base::Value("step2")});
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester->GetBucketCount(
+               "Glic.Interaction.SwitchConversationTarget",
+               GlicSwitchConversationTarget::kSwitchedToNewInstance) == 1;
+  }));
+  ASSERT_TRUE(AddTabAtIndex(1, page_url(), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  RunTestSequence(InstrumentTab(kThirdTab),
+                  OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  ExecuteJsTest({.params = base::Value("step3")});
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester->GetBucketCount(
+               "Glic.Interaction.SwitchConversationTarget",
+               GlicSwitchConversationTarget::kSwitchedToExistingInstance) == 1;
+  }));
+  ContinueJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testTabSwitchDoesNotLogActivationMetric) {

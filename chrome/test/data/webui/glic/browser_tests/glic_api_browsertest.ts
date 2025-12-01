@@ -1653,16 +1653,59 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-
-  async testSwitchConversationToSpecific() {
+  async testSwitchConversationToOldConversationNewInstance() {
     assertDefined(this.host.switchConversation);
     await this.host.switchConversation(
         {conversationId: 'A', conversationTitle: 'Title A'});
   }
 
-  async testSwitchConversationToNew() {
+  async testSwitchConversationToNewConversationNewInstance() {
     assertDefined(this.host.switchConversation);
     await this.host.switchConversation();
+  }
+
+  async testSwitchConversationToLastActiveConversation() {
+    assertDefined(this.host.registerConversation);
+    assertDefined(this.host.switchConversation);
+    if (this.testParams === 'step1') {
+      await this.host.registerConversation(
+          {conversationId: 'A', conversationTitle: 'Title A'});
+      await this.advanceToNextStep();
+    } else if (this.testParams === 'step2') {
+      // Return and then switch conversation to ensure that ExecuteJsTest
+      // completes before the instance is deleted. The instance is deleted
+      // during the `switchConversation` call.
+      sleep(100).then(() => {
+        assertDefined(this.host.switchConversation);
+        this.host.switchConversation(
+            {conversationId: 'A', conversationTitle: 'Title A'});
+      });
+    }
+  }
+
+  async testSwitchConversationToOldConversationInOldInstance() {
+    assertDefined(this.host.registerConversation);
+    assertDefined(this.host.switchConversation);
+    if (this.testParams === 'step1') {
+      await this.host.registerConversation(
+          {conversationId: 'A', conversationTitle: 'Title A'});
+      await this.advanceToNextStep();
+    } else if (this.testParams === 'step2') {
+      sleep(100).then(() => {
+        assertDefined(this.host.switchConversation);
+        this.host.switchConversation(
+            {conversationId: 'B', conversationTitle: 'Title B'});
+      });
+    } else if (this.testParams === 'step3') {
+      // Return and then switch conversation to ensure that ExecuteJsTest
+      // completes before the instance is deleted. The instance is deleted
+      // during the `switchConversation` call.
+      sleep(100).then(() => {
+        assertDefined(this.host.switchConversation);
+        this.host.switchConversation(
+            {conversationId: 'A', conversationTitle: 'Title A'});
+      });
+    }
   }
 
   async testTabSwitchDoesNotLogActivationMetric() {
