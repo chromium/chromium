@@ -456,6 +456,12 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_tab_sharing) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_multiple_infobars) {
+// Consistently failing on Windows https://crbug.com/1462107.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_multiple_infobars DISABLED_InvokeUi_multiple_infobars
+#else
+#define MAYBE_InvokeUi_multiple_infobars InvokeUi_multiple_infobars
+#endif
+IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_multiple_infobars) {
   ShowAndVerifyUi();
 }
