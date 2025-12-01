@@ -196,8 +196,93 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   [self showFirstRunUI];
 }
 
-#pragma mark - Private methods
+#pragma mark - GuidedTourCoordinatorDelegate
 
+- (void)stepCompleted:(GuidedTourStep)step {
+  CHECK_EQ(step, _currentGuidedTourStep);
+  if (step == GuidedTourStep::kNTP) {
+    _currentGuidedTourStep = GuidedTourStep::kTabGridIncognito;
+    id<ApplicationCommands> applicationHandler =
+        HandlerForProtocol([self commandDispatcher], ApplicationCommands);
+    [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
+  }
+}
+
+- (void)nextTappedForStep:(GuidedTourStep)step {
+  base::UmaHistogramEnumeration(kGuidedTourStepDidFinishHistogram, step);
+  if (IsManualUploadForBestOfAppEnabled()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          first_run::FirstRunProfileAgentMetricsHelper metricsHelper;
+          metricsHelper.StartOutOfBandUploadIfPossible();
+        }));
+  }
+  if (step == GuidedTourStep::kNTP) {
+    id<GuidedTourCommands> handler =
+        HandlerForProtocol([self commandDispatcher], GuidedTourCommands);
+    [handler stepCompleted:GuidedTourStep::kNTP];
+  }
+}
+
+#pragma mark - GuidedTourPromoCoordinatorDelegate
+
+- (void)dismissGuidedTourPromo {
+  [_guidedTourPromoCoordinator stopWithCompletion:nil];
+  [self guidedTourCompleted];
+  [self logGuidedTourPromoResult:NO];
+}
+
+- (void)startGuidedTour {
+  __weak FirstRunProfileAgent* weakSelf = self;
+  ProceduralBlock completion = ^{
+    [weakSelf showNTPStep];
+  };
+  [_guidedTourPromoCoordinator stopWithCompletion:completion];
+  [self logGuidedTourPromoResult:YES];
+}
+
+#pragma mark - FirstRunCoordinatorDelegate
+
+- (void)didFinishFirstRun {
+  DCHECK_EQ(self.profileState.initStage, ProfileInitStage::kFirstRun);
+  __weak FirstRunProfileAgent* weakSelf = self;
+  ProceduralBlock completion = ^{
+    [weakSelf performNextPostFirstRunAction];
+  };
+  [_firstRunCoordinator stopWithCompletion:completion];
+  _firstRunCoordinator = nil;
+  [self.profileState queueTransitionToNextInitStage];
+}
+
+#pragma mark - SafariDataImportUIHandler
+
+- (void)safariDataImportDidDismiss {
+  [self performNextPostFirstRunAction];
+}
+
+#pragma mark - Private
+
+// Command dispatcher for the presenting scene state.
+- (CommandDispatcher*)commandDispatcher {
+  id<BrowserProvider> presentingInterface =
+      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
+  Browser* browser = presentingInterface.browser;
+  return browser->GetCommandDispatcher();
+}
+
+// Returns the original (i.e., not off-the-record) profile associated with the
+// current browser. May return nullptr.
+- (ProfileIOS*)originalProfile {
+  id<BrowserProvider> presentingInterface =
+      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
+  Browser* browser = presentingInterface.browser;
+  if (!browser || !browser->GetProfile()) {
+    return nullptr;
+  }
+  return browser->GetProfile()->GetOriginalProfile();
+}
+
+// Handles the First Run stage of app startup.
 - (void)handleFirstRunStage {
   // Skip the FRE because it wasn't determined to be needed.
   if (!self.profileState.appState.startupInformation.isFirstRun) {
@@ -216,6 +301,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   [self showFirstRunUI];
 }
 
+// Starts the First Run Experience flow.
 - (void)showFirstRunUI {
   DCHECK_EQ(self.profileState.initStage, ProfileInitStage::kFirstRun);
 
@@ -285,6 +371,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   }
 }
 
+// Shows the initial prompt for the Guided Tour promo.
 - (void)showGuidedTourPrompt {
   if (_guidedTourPromoCoordinator) {
     return;
@@ -299,6 +386,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   [_guidedTourPromoCoordinator start];
 }
 
+// Shows the New Tab Page step of the Guided Tour.
 - (void)showNTPStep {
   _currentGuidedTourStep = GuidedTourStep::kNTP;
   id<GuidedTourCommands> handler =
@@ -315,6 +403,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   [_guidedTourCoordinator start];
 }
 
+// Shows the Long Press step of the Guided Tour in the tab grid..
 - (void)showLongPressStep {
   _currentGuidedTourStep = GuidedTourStep::kTabGridLongPress;
   __weak FirstRunProfileAgent* weakSelf = self;
@@ -326,6 +415,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   [handler showGuidedTourLongPressStepWithDismissalCompletion:completion];
 }
 
+// Shows the Tab Group step of the Guided Tour in the tab grid.
 - (void)showTabGroupStep {
   _currentGuidedTourStep = GuidedTourStep::kTabGridTabGroup;
   id<TabGridToolbarCommands> handler =
@@ -337,6 +427,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   [handler showGuidedTourTabGroupStepWithDismissalCompletion:completion];
 }
 
+// Called when the Guided Tour flow is completed.
 - (void)guidedTourCompleted {
   [self releaseUILocks];
   [self performNextPostFirstRunAction];
@@ -363,97 +454,11 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   }
 }
 
-// Command dispatcher for the presenting scene state.
-- (CommandDispatcher*)commandDispatcher {
-  id<BrowserProvider> presentingInterface =
-      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-  Browser* browser = presentingInterface.browser;
-  return browser->GetCommandDispatcher();
-}
-
 // Release UI locks that prohibits orientation change, more IPHs and overlays.
 - (void)releaseUILocks {
   _displayLock.reset();
   _scopedForceOrientation.reset();
   _firstRunUIBlocker.reset();
-}
-
-#pragma mark - GuidedTourCoordinatorDelegate
-
-- (void)stepCompleted:(GuidedTourStep)step {
-  CHECK_EQ(step, _currentGuidedTourStep);
-  if (step == GuidedTourStep::kNTP) {
-    _currentGuidedTourStep = GuidedTourStep::kTabGridIncognito;
-    id<ApplicationCommands> applicationHandler =
-        HandlerForProtocol([self commandDispatcher], ApplicationCommands);
-    [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
-  }
-}
-
-- (void)nextTappedForStep:(GuidedTourStep)step {
-  base::UmaHistogramEnumeration(kGuidedTourStepDidFinishHistogram, step);
-  if (IsManualUploadForBestOfAppEnabled()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          first_run::FirstRunProfileAgentMetricsHelper metricsHelper;
-          metricsHelper.StartOutOfBandUploadIfPossible();
-        }));
-  }
-  if (step == GuidedTourStep::kNTP) {
-    id<GuidedTourCommands> handler =
-        HandlerForProtocol([self commandDispatcher], GuidedTourCommands);
-    [handler stepCompleted:GuidedTourStep::kNTP];
-  }
-}
-
-#pragma mark - GuidedTourPromoCoordinatorDelegate
-
-- (void)dismissGuidedTourPromo {
-  [_guidedTourPromoCoordinator stopWithCompletion:nil];
-  [self guidedTourCompleted];
-  [self logGuidedTourPromoResult:NO];
-}
-
-- (void)startGuidedTour {
-  __weak FirstRunProfileAgent* weakSelf = self;
-  ProceduralBlock completion = ^{
-    [weakSelf showNTPStep];
-  };
-  [_guidedTourPromoCoordinator stopWithCompletion:completion];
-  [self logGuidedTourPromoResult:YES];
-}
-
-#pragma mark - FirstRunCoordinatorDelegate
-
-- (void)didFinishFirstRun {
-  DCHECK_EQ(self.profileState.initStage, ProfileInitStage::kFirstRun);
-  __weak FirstRunProfileAgent* weakSelf = self;
-  ProceduralBlock completion = ^{
-    [weakSelf performNextPostFirstRunAction];
-  };
-  [_firstRunCoordinator stopWithCompletion:completion];
-  _firstRunCoordinator = nil;
-  [self.profileState queueTransitionToNextInitStage];
-}
-
-#pragma mark - SafariDataImportUIHandler
-
-- (void)safariDataImportDidDismiss {
-  [self performNextPostFirstRunAction];
-}
-
-#pragma mark - Private
-
-// Returns the original (i.e., not off-the-record) profile associated with the
-// current browser. May return nullptr.
-- (ProfileIOS*)originalProfile {
-  id<BrowserProvider> presentingInterface =
-      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-  Browser* browser = presentingInterface.browser;
-  if (!browser || !browser->GetProfile()) {
-    return nullptr;
-  }
-  return browser->GetProfile()->GetOriginalProfile();
 }
 
 // Returns the profile pref service for the original (i.e., not off-the-record)
