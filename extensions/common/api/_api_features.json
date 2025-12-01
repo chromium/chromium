@@ -403,6 +403,7 @@
       "chrome://history/*",
       "chrome://new-tab-page/*",
       "chrome://newtab-footer/*",
+      "chrome://omnibox-popup.top-chrome/*",
       "chrome://oobe/*",
       "chrome://os-settings/*",
       "chrome://password-manager/*",
