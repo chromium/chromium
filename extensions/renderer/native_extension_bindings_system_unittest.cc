@@ -9,12 +9,14 @@
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -1392,5 +1394,36 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     FeatureAvailabilityNativeExtensionBindingsSystemUnittest,
     testing::Bool());
+
+// Tests that updating bindings does not crash if the global "browser" property
+// is defined but is not an object when the
+// `extensions_features::kExtensionBrowserNamespaceAlternative` feature is
+// enabled. Regression test for crbug.com/459049475.
+// TODO(crbug.com/459049475): Create a test for `set_restricted_accessor` too.
+TEST_F(NativeExtensionBindingsSystemUnittest, TestWindowBrowserCrash) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      extensions_features::kExtensionBrowserNamespaceAlternative);
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("foo").SetManifestVersion(3).Build();
+  RegisterExtension(extension);
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  ScriptContext* script_context = CreateScriptContext(
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
+  script_context->set_url(extension->url());
+
+  // Set `window.browser` to a non-object (string).
+  v8::Local<v8::String> browser_str = gin::StringToV8(isolate(), "a string");
+  context->Global()
+      ->Set(context, gin::StringToSymbol(isolate(), "browser"), browser_str)
+      .Check();
+
+  // This should not crash.
+  bindings_system()->UpdateBindingsForContext(script_context);
+}
 
 }  // namespace extensions

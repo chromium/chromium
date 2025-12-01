@@ -591,6 +591,9 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
           if (!browser) {
             browser = GetOrCreateGlobalObjectProperty(v8_context, "browser");
           }
+          if (browser->IsEmpty()) {
+            return false;
+          }
           v8::Maybe<bool> browser_success = (*browser)->SetLazyDataProperty(
               v8_context, api_name, &BindingAccessor, api_name);
           if (!browser_success.IsJust() || !browser_success.FromJust()) {
@@ -616,6 +619,9 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
     if (set_accessor_on_browser && accessor_name != "app") {
       if (!browser) {
         browser = GetOrCreateGlobalObjectProperty(v8_context, "browser");
+      }
+      if (browser->IsEmpty()) {
+        return false;
       }
       v8::Maybe<bool> browser_success = (*browser)->SetLazyDataProperty(
           v8_context, api_name, &ThrowDeveloperModeRestrictedError, api_name);
