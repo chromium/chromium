@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,6 +20,8 @@
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/sync_preferences/features.h"
+#include "content/public/browser/page_navigator.h"
+#include "content/public/common/referrer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -214,6 +217,38 @@ TEST_F(IOSPromoBubbleViewTest, AcceptShowsConfirmation_Reminder) {
   EXPECT_TRUE(bubble_view_->Accept());
 
   // Close triggers dismissal.
+  bubble_view_ = nullptr;
+  bubble_widget_->Close();
+  run_loop.Run();
+}
+
+// Tests that clicking the Accept button for the QR Code promo closes the bubble
+// and attempts to open the correct URL.
+TEST_F(IOSPromoBubbleViewTest, AcceptOpensUrl_QRCode) {
+  CreateAndShowBubble(PromoType::kLens, BubbleType::kQRCode);
+
+  base::MockCallback<IOSPromoBubbleView::OpenUrlCallback> mock_callback;
+  bubble_view_->SetOpenUrlCallbackForTesting(mock_callback.Get());
+
+  EXPECT_CALL(mock_callback, Run(testing::_))
+      .WillOnce([](const content::OpenURLParams& params) {
+        EXPECT_EQ(params.url.host(), "www.google.com");
+        EXPECT_EQ(params.url.path(), "/chrome/go-mobile/");
+        EXPECT_TRUE(base::Contains(params.url.query(), "ios-campaign"));
+        EXPECT_TRUE(base::Contains(params.url.query(), "android-campaign"));
+        EXPECT_EQ(params.disposition,
+                  WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      });
+
+  // Click Accept. Expect it to return true (close bubble).
+  EXPECT_TRUE(bubble_view_->Accept());
+
+  // Expect dismissal on close.
+  base::RunLoop run_loop;
+  EXPECT_CALL(user_action_callback_,
+              Run(IOSPromoBubbleView::UserAction::kDismiss))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
   bubble_view_ = nullptr;
   bubble_widget_->Close();
   run_loop.Run();

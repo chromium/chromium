@@ -103,6 +103,7 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpPasswordBubble(
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
       config.promo_image = CreateQrCodeImage(
           IOSPromoConstants::kIOSPromoPasswordBubbleQRCodeURL);
+      config.qr_code_url = IOSPromoConstants::kIOSPromoPasswordBubbleQRCodeURL;
       break;
     case BubbleType::kReminder:
       config.promo_title_id =
@@ -138,6 +139,7 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpAddressBubble(
   config.accept_button_text_id = IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
   config.promo_image =
       CreateQrCodeImage(IOSPromoConstants::kIOSPromoAddressBubbleQRCodeURL);
+  config.qr_code_url = IOSPromoConstants::kIOSPromoAddressBubbleQRCodeURL;
   return config;
 }
 
@@ -159,6 +161,7 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpPaymentBubble(
   config.accept_button_text_id = IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
   config.promo_image =
       CreateQrCodeImage(IOSPromoConstants::kIOSPromoPaymentBubbleQRCodeURL);
+  config.qr_code_url = IOSPromoConstants::kIOSPromoPaymentBubbleQRCodeURL;
   return config;
 }
 
@@ -175,9 +178,9 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpEnhancedBrowsingBubble(
           IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_DESCRIPTION_QR;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
-      // TODO(crbug.com/442562546): Create URL for kEnhancedBrowsing promo.
       config.promo_image =
-          CreateQrCodeImage(IOSPromoConstants::kIOSPromoPaymentBubbleQRCodeURL);
+          CreateQrCodeImage(IOSPromoConstants::kIOSPromoESBBubbleQRCodeURL);
+      config.qr_code_url = IOSPromoConstants::kIOSPromoESBBubbleQRCodeURL;
       break;
     case BubbleType::kReminder:
       config.promo_title_id = IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_TITLE_REMINDER;
@@ -211,9 +214,9 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpLensBubble(BubbleType bubble_type) {
           IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
-      // TODO(crbug.com/442562546): Placeholder, set URL for kLens promo.
-      config.promo_image = CreateQrCodeImage(
-          IOSPromoConstants::kIOSPromoPasswordBubbleQRCodeURL);
+      config.promo_image =
+          CreateQrCodeImage(IOSPromoConstants::kIOSPromoLensBubbleQRCodeURL);
+      config.qr_code_url = IOSPromoConstants::kIOSPromoLensBubbleQRCodeURL;
       break;
     case BubbleType::kReminder:
       config.promo_title_id = IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_REMINDER;

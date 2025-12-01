@@ -6,9 +6,11 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/promos/ios_promo_trigger_service.h"
 #include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 #include "chrome/browser/ui/views/promos/ios_promo_constants.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
@@ -17,6 +19,8 @@
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/user_education/views/help_bubble_views.h"
+#include "content/public/browser/page_navigator.h"
+#include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -31,6 +35,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
+#include "url/gurl.h"
 
 using ios_promos_utils::IsUserActiveOnIOS;
 using user_education::CustomHelpBubbleUi;
@@ -202,12 +207,35 @@ bool IOSPromoBubbleView::Accept() {
       // Return false to prevent the bubble from closing on accept.
       return false;
     }
-    case BubbleType::kQRCode:
-      // TODO(crbug.com/438769954): Open QRCode URL.
+    case BubbleType::kQRCode: {
+      content::OpenURLParams params(GURL(config_.qr_code_url),
+                                    content::Referrer(),
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                    ui::PAGE_TRANSITION_LINK, false);
+
+      if (open_url_callback_) {
+        open_url_callback_.Run(params);
+        return true;
+      }
+
+      if (views::View* anchor_view = GetAnchorView()) {
+        if (BrowserView* browser_view =
+                BrowserView::GetBrowserViewForNativeWindow(
+                    anchor_view->GetWidget()->GetNativeWindow())) {
+          browser_view->browser()->OpenURL(params,
+                                           /*navigation_handle_callback=*/{});
+        }
+      }
       return true;
+    }
     case BubbleType::kReminderConfirmation:
       return true;
   }
+}
+
+void IOSPromoBubbleView::SetOpenUrlCallbackForTesting(  // IN-TEST
+    OpenUrlCallback callback) {
+  open_url_callback_ = std::move(callback);
 }
 
 void IOSPromoBubbleView::SetWidth(views::DistanceMetric metric) {

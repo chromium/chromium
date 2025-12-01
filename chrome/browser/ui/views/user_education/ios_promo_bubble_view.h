@@ -11,6 +11,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble/custom_help_bubble.h"
 #include "components/user_education/common/user_education_context.h"
+#include "content/public/browser/page_navigator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -27,6 +28,9 @@ class IOSPromoBubbleView : public views::BubbleDialogDelegateView,
   METADATA_HEADER(IOSPromoBubbleView, views::View)
 
  public:
+  using OpenUrlCallback =
+      base::RepeatingCallback<void(const content::OpenURLParams&)>;
+
   // Factory method to create an IOSPromoBubbleView.
   static std::unique_ptr<IOSPromoBubbleView> Create(
       desktop_to_mobile_promos::PromoType promo_type,
@@ -47,6 +51,9 @@ class IOSPromoBubbleView : public views::BubbleDialogDelegateView,
   // views::View:
   void AddedToWidget() override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
+
+  // Set the handle to the open url callback for testing.
+  void SetOpenUrlCallbackForTesting(OpenUrlCallback callback);
 
  private:
   // Sets the width based on the given metric.
@@ -70,6 +77,9 @@ class IOSPromoBubbleView : public views::BubbleDialogDelegateView,
   // kReminderConfirmation.
   desktop_to_mobile_promos::BubbleType promo_bubble_type_;
   IOSPromoConstants::IOSPromoTypeConfigs config_;
+
+  // The callback to open the url for testing.
+  OpenUrlCallback open_url_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IOS_PROMO_BUBBLE_VIEW_H_
