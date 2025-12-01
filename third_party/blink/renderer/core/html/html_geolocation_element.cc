@@ -250,6 +250,9 @@ bool HTMLGeolocationElement::ShouldShowInProgressAppearance() {
 }
 
 void HTMLGeolocationElement::RequestGeolocation() {
+  if (in_progress_appearance_started_time_ != base::TimeTicks()) {
+    return;
+  }
   if (FastHasAttribute(html_names::kWatchAttr)) {
     WatchPosition();
   } else {

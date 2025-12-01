@@ -57,6 +57,8 @@ class CORE_EXPORT HTMLGeolocationElement final : public HTMLPermissionElement {
                            GeolocationTranslateInnerText);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
                            RequestLocationAfterClickAndPermissionChanged);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           GeolocationRequestInProgress);
 
   // HTMLPermissionElement:
   void UpdateAppearance() override;

@@ -392,6 +392,29 @@ TEST_F(HTMLGeolocationElementTest, GeolocationAutolocateTriggersOnce) {
                   /*is_in_progress*/ false);
 }
 
+TEST_F(HTMLGeolocationElementTest, GeolocationRequestInProgress) {
+  CachedPermissionStatus::From(GetDocument().domWindow())
+      ->SetPermissionStatusMap({{blink::mojom::PermissionName::GEOLOCATION,
+                                 MojoPermissionStatus::GRANTED}});
+
+  auto* geolocation_element = CreateGeolocationElement();
+  auto* event = Event::Create(event_type_names::kDOMActivate);
+
+  geolocation_element->DefaultEventHandler(*event);
+  CheckAppearance(geolocation_element, kGeolocationString,
+                  /*is_in_progress*/ true);
+  auto first_request_time =
+      geolocation_element->InProgressApearanceStartedTimeForTesting();
+
+  geolocation_element->DefaultEventHandler(*event);
+  CheckAppearance(geolocation_element, kGeolocationString,
+                  /*is_in_progress*/ true);
+  auto second_request_time =
+      geolocation_element->InProgressApearanceStartedTimeForTesting();
+
+  EXPECT_EQ(first_request_time, second_request_time);
+}
+
 TEST_F(HTMLGeolocationElementTest,
        RequestLocationAfterClickAndPermissionChanged) {
   // This test simulates the following scenario:
