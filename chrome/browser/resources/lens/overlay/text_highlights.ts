@@ -45,7 +45,6 @@ export function createHighlightedLines(
   assert(endIndex < words.length);
   const highlightedLines: HighlightedLine[] = [];
 
-  // TODO(crbug.com/397669819): Handle cases for curved text.
   for (let i = startIndex; i <= endIndex; i++) {
     const firstWord = words[i];
     assert(firstWord);
