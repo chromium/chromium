@@ -94,6 +94,20 @@ void RecordActionChipsRetrievalLatencyMetrics(base::TimeDelta latency) {
   base::UmaHistogramTimes(
       "NewTabPage.ActionChips.Handler.ActionChipsRetrievalLatency", latency);
 }
+
+bool IsTabReadyForActionChipsRetrieval(content::WebContents* web_contents,
+                                       const TabStripModelChange& change) {
+  if (web_contents == nullptr) {
+    return false;
+  }
+
+  if (change.type() == TabStripModelChange::kReplaced &&
+      change.GetReplace()->old_contents == web_contents) {
+    return false;
+  }
+
+  return tabs::TabInterface::GetFromContents(web_contents)->IsActivated();
+}
 }  // namespace
 
 ActionChipsHandler::ActionChipsHandler(
@@ -101,13 +115,11 @@ ActionChipsHandler::ActionChipsHandler(
     mojo::PendingRemote<action_chips::mojom::Page> page,
     Profile* profile,
     content::WebUI* web_ui,
-    const TabReadinessChecker* checker,
     std::unique_ptr<ActionChipsGenerator> action_chips_generator)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       profile_(profile),
       web_ui_(web_ui),
-      tab_readiness_checker_(checker),
       action_chips_generator_(std::move(action_chips_generator)) {
   content::WebContents* web_contents = web_ui_->GetWebContents();
   auto* browser_window_interface =
@@ -143,10 +155,9 @@ void ActionChipsHandler::SendActionChipsToUi(std::vector<ActionChipPtr> chips) {
 
 void ActionChipsHandler::OnTabStripModelChanged(
     TabStripModel*,
-    const TabStripModelChange&,
+    const TabStripModelChange& change,
     const TabStripSelectionChange&) {
-  if (!tab_readiness_checker_->IsReadyForActionChipsRetrieval(
-          web_ui_->GetWebContents())) {
+  if (!IsTabReadyForActionChipsRetrieval(web_ui_->GetWebContents(), change)) {
     return;
   }
   StartActionChipsRetrieval();
