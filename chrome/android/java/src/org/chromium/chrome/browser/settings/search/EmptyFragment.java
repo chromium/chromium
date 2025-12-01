@@ -20,6 +20,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -28,10 +30,12 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 @NullMarked
 public class EmptyFragment extends Fragment {
 
-    private final int mImageSrc;
-    private final Runnable mOpenHelpCenter;
+    private int mImageSrc;
+    private Runnable mOpenHelpCenter;
 
-    public EmptyFragment(int imageSrc, Runnable openHelpCenter) {
+    @Initializer
+    @EnsuresNonNull("mOpenHelpCenter")
+    public void init(int imageSrc, Runnable openHelpCenter) {
         mImageSrc = imageSrc;
         mOpenHelpCenter = openHelpCenter;
     }

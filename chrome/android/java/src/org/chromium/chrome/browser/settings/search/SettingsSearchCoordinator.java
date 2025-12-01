@@ -390,7 +390,8 @@ public class SettingsSearchCoordinator {
         var fragmentManager = getSettingsFragmentManager();
         int viewId = getViewIdForSearchDisplay();
         var transaction = fragmentManager.beginTransaction();
-        var emptyFragment = new EmptyFragment(imageId, openHelpCenter);
+        var emptyFragment = new EmptyFragment();
+        emptyFragment.init(imageId, openHelpCenter);
         transaction.setReorderingAllowed(true);
         transaction.replace(viewId, emptyFragment);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
