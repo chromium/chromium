@@ -34,7 +34,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
             <div class="main">main</div>
         </div>
 
-        <p id="description">This test verifies the names, positions and sizes of the highlight rectangles overlayed on CSS Masonry areas.</p>
+        <p id="description">This test verifies the names, positions and sizes of the highlight rectangles overlayed on CSS Grid Lanes areas.</p>
       `);
 
     function dumpGridLanesHighlight(id) {

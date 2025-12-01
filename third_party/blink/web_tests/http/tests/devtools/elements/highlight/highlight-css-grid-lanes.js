@@ -53,7 +53,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
         <div style="width:30px; height: 100%;"></div>
     </div>
     <div id="empty-grid-lanes-container" class="empty-grid-lanes"></div>
-    <p id="description">This test verifies the position and size of the highlight rectangles overlayed on an inspected CSS masonry div.</p>
+    <p id="description">This test verifies the position and size of the highlight rectangles overlayed on an inspected CSS grid-lanes div.</p>
     `);
 
   function dumpGridLanesHighlight(id) {
