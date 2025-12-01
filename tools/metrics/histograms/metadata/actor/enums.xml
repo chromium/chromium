@@ -188,6 +188,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:StoppedReason) -->
 
+<!-- LINT.IfChange(TaskNudgeState) -->
+
+<enum name="TaskNudgeState">
+  <int value="0" label="kDefault"/>
+  <int value="1" label="kNeedsAttention"/>
+  <int value="2" label="kMultipleTasksNeedAttention"/>
+  <int value="3" label="kCompleteTasks"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/states/actor_task_nudge_state.h:ActorTaskNudgeState) -->
+
 <!-- LINT.IfChange(TimeOfUseResult) -->
 
 <enum name="TimeOfUseResult">

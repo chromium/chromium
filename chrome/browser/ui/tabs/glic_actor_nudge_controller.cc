@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -83,6 +84,11 @@ void GlicActorNudgeController::OnStateUpdateImpl(
             l10n_util::GetStringUTF16(IDR_ACTOR_TASK_COMPLETE_NUDGE_LABEL));
       }
       break;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign) &&
+      tab_strip_action_container_->GetIsShowingGlicActorTaskIconNudge()) {
+    actor::ui::RecordTaskNudgeShown(actor_task_nudge_state);
   }
 }
 

@@ -8,7 +8,7 @@
 #include <string_view>
 
 namespace actor::ui {
-
+// LINT.IfChange(ActorTaskNudgeState)
 struct ActorTaskNudgeState {
   enum class Text {
     // Default/no text.
@@ -27,6 +27,7 @@ struct ActorTaskNudgeState {
     return text == other.text;
   }
 };
+// LINT.ThenChange(//chrome/tools/metrics/histograms/metadata/actor/enums.xml:TaskNudgeState)
 
 inline std::string_view ToString(const ActorTaskNudgeState& state) {
   switch (state.text) {

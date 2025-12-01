@@ -48,6 +48,11 @@ void LogTaskNudgeClick(ActorTaskNudgeState nudge_state) {
       GetActorUiMetricName("TaskNudge.", ToString(nudge_state), ".Click"));
 }
 
+void RecordTaskNudgeShown(ActorTaskNudgeState nudge_state) {
+  base::UmaHistogramEnumeration(GetActorUiMetricName("TaskNudge.Shown"),
+                                nudge_state.text);
+}
+
 void RecordActuatingTabWebContentsAttached() {
   base::RecordAction(base::UserMetricsAction(
       GetActorUiMetricName("ActuatingTabWebContentsAttached").c_str()));

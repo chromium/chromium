@@ -693,6 +693,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        LogsWhenGlicActorTaskNudgeClicked) {
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
   ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(1));
 
@@ -712,6 +713,12 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
 
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Actor.Ui.TaskNudge.Shown",
+               ActorTaskNudgeState::Text::kNeedsAttention) == 1;
+  }));
+
   base::UserActionTester user_action_tester;
   OnButtonClicked(GlicActorTaskIcon());
   EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -720,6 +727,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        GlicActorCompleteDoesNotShowTaskNudge) {
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
   ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
@@ -733,6 +741,12 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
   EXPECT_FALSE(GlicActorTaskIcon()->GetIsShowingNudge());
+
+  EXPECT_TRUE(RunUntil([&]() { return !GlicActorTaskIcon()->GetVisible(); }));
+  EXPECT_EQ(histogram_tester.GetBucketCount(
+                "Actor.Ui.TaskNudge.Shown",
+                ActorTaskNudgeState::Text::kCompleteTasks),
+            0);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
@@ -772,6 +786,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        ResetGlicActorTaskNudgeOnCheckTaskToActiveStateChange) {
+  base::HistogramTester histogram_tester;
   auto* actor_nudge_controller =
       tabs::GlicActorNudgeController::From(browser());
   auto actor_task_nudge_state = ActorTaskNudgeState();
@@ -798,6 +813,12 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   EXPECT_TRUE(RunUntil([&]() { return !GlicActorTaskIcon()->GetVisible(); }));
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
+  // Ensure the shown histogram was not recorded as the default state doesn't
+  // show a nudge.
+  EXPECT_EQ(
+      histogram_tester.GetBucketCount("Actor.Ui.TaskNudge.Shown",
+                                      ActorTaskNudgeState::Text::kDefault),
+      0);
   // Check that GlicButton was removed from the GlicActorButtonContainer.
   ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(1));
   EXPECT_EQ(GlicActorTaskIcon(), GlicActorButtonContainer()->children()[0]);

@@ -670,6 +670,14 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when an error happens in the ActorUiTabController.</summary>
 </histogram>
 
+<histogram name="Actor.Ui.TaskNudge.Shown" enum="TaskNudgeState"
+    expires_after="2026-08-11">
+  <owner>kenok@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>Recorded when a task nudge is shown.</summary>
+</histogram>
+
 <histogram name="Actor.UiTabController.NumberOfPendingCallbacks"
     units="callbacks" expires_after="2026-08-11">
   <owner>chrstne@google.com</owner>

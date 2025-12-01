@@ -24,6 +24,9 @@ void LogTaskIconClick();
 // This fails if the nudge is in the default state.
 void LogTaskNudgeClick(ActorTaskNudgeState nudge_state);
 
+// Recorded when the task nudge is shown.
+void RecordTaskNudgeShown(ActorTaskNudgeState nudge_state);
+
 // Records web content attachment for the actuating tab.
 void RecordActuatingTabWebContentsAttached();
 
