@@ -8,14 +8,14 @@
 #import "base/unguessable_token.h"
 
 @implementation ComposeboxInputItem {
-  base::UnguessableToken _token;
+  base::UnguessableToken _identifier;
 }
 
 - (instancetype)initWithComposeboxInputItemType:(ComposeboxInputItemType)type
                                         assetID:(NSString*)assetID {
   self = [super init];
   if (self) {
-    _token = base::UnguessableToken::Create();
+    _identifier = base::UnguessableToken::Create();
     _state = ComposeboxInputItemState::kLoading;
     _type = type;
     _assetID = [assetID copy];
@@ -27,8 +27,8 @@
   return [self initWithComposeboxInputItemType:type assetID:nil];
 }
 
-- (const base::UnguessableToken&)token {
-  return _token;
+- (const base::UnguessableToken&)identifier {
+  return _identifier;
 }
 
 - (BOOL)isEqual:(id)other {
@@ -39,11 +39,11 @@
     return NO;
   }
   ComposeboxInputItem* otherItem = (ComposeboxInputItem*)other;
-  return _token == otherItem->_token;
+  return _identifier == otherItem->_identifier;
 }
 
 - (NSUInteger)hash {
-  return base::UnguessableTokenHash()(_token);
+  return base::UnguessableTokenHash()(_identifier);
 }
 
 - (id)copyWithZone:(NSZone*)zone {
@@ -51,7 +51,7 @@
   if (copy) {
     // This is a shallow copy, but it's all that's needed for the diffable
     // data source. The UnguessableToken is copied by value.
-    copy->_token = _token;
+    copy->_identifier = _identifier;
     copy.previewImage = self.previewImage;
     copy.title = self.title;
     copy.state = self.state;

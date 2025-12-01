@@ -7,7 +7,10 @@
 #import <PhotosUI/PhotosUI.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
+#import "base/memory/raw_ptr.h"
 #import "components/application_locale_storage/application_locale_storage.h"
+#import "components/contextual_search/contextual_search_service.h"
+#import "components/contextual_search/contextual_search_session_handle.h"
 #import "components/omnibox/browser/location_bar_model_impl.h"
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
 #import "components/search_engines/template_url_service.h"
@@ -17,6 +20,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_omnibox_client.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_coordinator.h"
+#import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
@@ -94,6 +98,7 @@ const CGFloat kSnackbarBottomMargin = 10;
   std::unique_ptr<WebLocationBarImpl> _locationBar;
   std::unique_ptr<LocationBarModelDelegateIOS> _locationBarModelDelegate;
   std::unique_ptr<LocationBarModel> _locationBarModel;
+  raw_ptr<contextual_search::ContextualSearchService> _contextualService;
   ComposeboxTabPickerCoordinator* _tabPickerCoordinator;
   ComposeboxTheme* _theme;
   ComposeboxMetricsRecorder* _metricsRecorder;
@@ -132,35 +137,30 @@ const CGFloat kSnackbarBottomMargin = 10;
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
 
-  TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForProfile(self.profile);
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(self.profile);
   auto query_contoller_config_params = std::make_unique<
       contextual_search::ContextualSearchContextController::ConfigParams>();
   query_contoller_config_params->send_lns_surface = false;
   query_contoller_config_params->enable_multi_context_input_flow = true;
   query_contoller_config_params->enable_viewport_images = true;
 
-  auto composeboxQueryController =
-      std::make_unique<ComposeboxQueryControllerIOS>(
-          identityManager, GetApplicationContext()->GetSharedURLLoaderFactory(),
-          ::GetChannel(),
-          GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
-          templateURLService,
-          VariationsClientServiceFactory::GetForProfile(self.profile),
-          std::move(query_contoller_config_params));
+  _contextualService =
+      ContextualSearchServiceFactory::GetForProfile(self.profile);
+
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      contextualSearchSession = _contextualService->CreateSession(
+          std::move(query_contoller_config_params),
+          contextual_search::ContextualSearchSource::kOmnibox);
 
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
   _mediator = [[ComposeboxInputPlateMediator alloc]
-      initWithComposeboxQueryController:std::move(composeboxQueryController)
-                           webStateList:self.browser->GetWebStateList()
-                          faviconLoader:faviconLoader
-                 persistTabContextAgent:PersistTabContextBrowserAgent::
-                                            FromBrowser(self.browser)
-                            isIncognito:self.isOffTheRecord
-                             modeHolder:_modeHolder];
+      initWithContextualSearchSession:std::move(contextualSearchSession)
+                         webStateList:self.browser->GetWebStateList()
+                        faviconLoader:faviconLoader
+               persistTabContextAgent:PersistTabContextBrowserAgent::
+                                          FromBrowser(self.browser)
+                          isIncognito:self.isOffTheRecord
+                           modeHolder:_modeHolder];
   _mediator.URLLoader = _URLLoader;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;

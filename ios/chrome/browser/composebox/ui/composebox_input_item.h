@@ -35,8 +35,10 @@ enum class ComposeboxInputItemType {
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithComposeboxInputItemType:(ComposeboxInputItemType)type;
 
-// The file token for this item, which also serves as its unique identifier.
-@property(nonatomic, assign, readonly) const base::UnguessableToken& token;
+// The item's identifier.
+@property(nonatomic, assign, readonly) const base::UnguessableToken& identifier;
+// The server token for this item, used to identify the item on the server.
+@property(nonatomic, assign) base::UnguessableToken serverToken;
 // The preview image for this item.
 @property(nonatomic, strong) UIImage* previewImage;
 // The icon image for this item. Only set for kComposeboxInputItemTypeFile and

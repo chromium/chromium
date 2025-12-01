@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/scoped_observation.h"
-#include "components/contextual_search/internal/composebox_query_controller.h"
+#include "components/contextual_search/contextual_search_context_controller.h"
 
 // Objective-C protocol for observing file upload status changes from
 // ComposeboxQueryController.
@@ -25,10 +25,12 @@
 // Bridge class that forwards file upload status changes from a C++
 // ComposeboxQueryController to an Objective-C observer.
 class ComposeboxFileUploadObserverBridge
-    : public ComposeboxQueryController::FileUploadStatusObserver {
+    : public contextual_search::ContextualSearchContextController::
+          FileUploadStatusObserver {
  public:
-  ComposeboxFileUploadObserverBridge(id<ComposeboxFileUploadObserver> observer,
-                                     ComposeboxQueryController* controller);
+  ComposeboxFileUploadObserverBridge(
+      id<ComposeboxFileUploadObserver> observer,
+      contextual_search::ContextualSearchContextController* controller);
   ~ComposeboxFileUploadObserverBridge() override;
 
   // ComposeboxQueryController::FileUploadStatusObserver implementation.
@@ -41,8 +43,9 @@ class ComposeboxFileUploadObserverBridge
 
  private:
   __weak id<ComposeboxFileUploadObserver> observer_;
-  base::ScopedObservation<ComposeboxQueryController,
-                          ComposeboxQueryController::FileUploadStatusObserver>
+  base::ScopedObservation<contextual_search::ContextualSearchContextController,
+                          contextual_search::ContextualSearchContextController::
+                              FileUploadStatusObserver>
       observation_{this};
 };
 

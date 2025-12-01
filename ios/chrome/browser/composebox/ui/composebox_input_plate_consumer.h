@@ -15,9 +15,9 @@
 // Sets the current list of items to be displayed.
 - (void)setItems:(NSArray<ComposeboxInputItem*>*)items;
 
-// Updates the state for the item with the given token.
+// Updates the state for the item with the given identifier.
 - (void)updateState:(ComposeboxInputItemState)state
-    forItemWithToken:(const base::UnguessableToken&)token;
+    forItemWithIdentifier:(const base::UnguessableToken&)identifier;
 
 // Updates the mic and lens button visibility.
 - (void)hideLensAndMicButton:(BOOL)hidden;

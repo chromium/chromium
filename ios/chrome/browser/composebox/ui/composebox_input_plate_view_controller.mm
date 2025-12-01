@@ -319,12 +319,12 @@ UIImage* SendButtonImage(BOOL highlighted) {
 }
 
 - (void)updateState:(ComposeboxInputItemState)state
-    forItemWithToken:(const base::UnguessableToken&)token {
+    forItemWithIdentifier:(const base::UnguessableToken&)identifier {
   NSDiffableDataSourceSnapshot<NSString*, ComposeboxInputItem*>*
       currentSnapshot = _dataSource.snapshot;
   ComposeboxInputItem* itemToUpdate;
   for (ComposeboxInputItem* item in currentSnapshot.itemIdentifiers) {
-    if (item.token == token) {
+    if (item.identifier == identifier) {
       itemToUpdate = item;
       break;
     }

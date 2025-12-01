@@ -20,11 +20,14 @@
 
 @class ComposeboxMetricsRecorder;
 @protocol ComposeboxURLLoader;
-class ComposeboxQueryControllerIOS;
 class FaviconLoader;
 class GURL;
 class PersistTabContextBrowserAgent;
 class WebStateList;
+
+namespace contextual_search {
+class ContextualSearchSessionHandle;
+}  // namespace contextual_search
 
 // Delegate for the ComposeboxInputPlateMediator.
 @protocol ComposeboxInputPlateMediatorDelegate
@@ -54,14 +57,15 @@ class WebStateList;
 @property(nonatomic, weak) ComposeboxMetricsRecorder* metricsRecorder;
 
 - (instancetype)
-    initWithComposeboxQueryController:
-        (std::unique_ptr<ComposeboxQueryControllerIOS>)composeboxQueryController
-                         webStateList:(WebStateList*)webStateList
-                        faviconLoader:(FaviconLoader*)faviconLoader
-               persistTabContextAgent:
-                   (PersistTabContextBrowserAgent*)persistTabContextAgent
-                          isIncognito:(BOOL)isIncognito
-                           modeHolder:(ComposeboxModeHolder*)modeHolder;
+    initWithContextualSearchSession:
+        (std::unique_ptr<contextual_search::ContextualSearchSessionHandle>)
+            contextualSearchSession
+                       webStateList:(WebStateList*)webStateList
+                      faviconLoader:(FaviconLoader*)faviconLoader
+             persistTabContextAgent:
+                 (PersistTabContextBrowserAgent*)persistTabContextAgent
+                        isIncognito:(BOOL)isIncognito
+                         modeHolder:(ComposeboxModeHolder*)modeHolder;
 
 - (void)disconnect;
 

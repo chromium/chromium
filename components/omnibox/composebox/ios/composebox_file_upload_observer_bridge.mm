@@ -8,7 +8,7 @@
 
 ComposeboxFileUploadObserverBridge::ComposeboxFileUploadObserverBridge(
     id<ComposeboxFileUploadObserver> observer,
-    ComposeboxQueryController* controller)
+    contextual_search::ContextualSearchContextController* controller)
     : observer_(observer) {
   DCHECK(observer_);
   observation_.Observe(controller);

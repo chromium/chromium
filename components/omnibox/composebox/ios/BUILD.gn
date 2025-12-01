@@ -13,6 +13,7 @@ source_set("ios") {
   ]
   deps = [
     "//base",
+    "//components/contextual_search:public",
     "//components/contextual_search/internal",
     "//components/lens",
     "//third_party/lens_server_proto:lens_overlay_proto",
