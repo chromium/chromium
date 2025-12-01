@@ -2047,39 +2047,7 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
   if (!element.IsConnected()) {
     return;
   }
-  // The provisionally saved form must be updated on JS changes. However, it
-  // should not be changed to another form, so that only the user can set the
-  // tracked form and not JS. This call here is meant to keep the tracked form
-  // up to date with the form's most recent version.
-  if (form_tracker_->provisionally_saved_form() &&
-      form_util::GetFormRendererId(element.GetOwningFormForAutofill()) ==
-          form_tracker_->last_interacted_form().GetId()) {
-    // Ideally, we re-extract the form at this moment, but to avoid performance
-    // regression, we just update what JS updated on the Blink side.
-    std::vector<FormFieldData> fields =
-        form_tracker_->provisionally_saved_form()->ExtractFields();
-    if (auto it =
-            std::ranges::find(fields, form_util::GetFieldRendererId(element),
-                              &FormFieldData::renderer_id);
-        it != fields.end()) {
-      it->set_value(element.Value().Utf16().substr(0, kMaxStringLength));
-      it->set_is_autofilled(element.IsAutofilled());
-      form_util::MaybeUpdateUserInput(
-          *it, form_util::GetFieldRendererId(element), field_data_manager());
-    }
-    form_tracker_->provisionally_saved_form()->set_fields(std::move(fields));
-  }
-
-  const auto input_element = element.DynamicTo<WebInputElement>();
-  if (input_element && input_element.IsTextField() &&
-      !element.Value().IsEmpty() &&
-      (input_element.FormControlTypeForAutofill() ==
-           blink::mojom::FormControlType::kInputPassword ||
-       password_autofill_agent_->IsUsernameInputField(input_element))) {
-    password_autofill_agent_->UpdatePasswordStateForTextChange(
-        input_element,
-        /*form_cache=*/{});
-  }
+  form_tracker_->OnJavaScriptChangedValue(element);
 
   if (!was_autofilled) {
     return;

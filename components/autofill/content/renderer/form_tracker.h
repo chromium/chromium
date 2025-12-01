@@ -112,6 +112,9 @@ class FormTracker : public content::RenderFrameObserver,
       const base::flat_map<FieldRendererId, FormRendererId>&
           filled_fields_and_forms);
 
+  // Updates submission data according to the JS value-change event.
+  void OnJavaScriptChangedValue(const blink::WebFormControlElement& element);
+
   // A form_id means that the user last interacted with a FormElement.
   // A field_id means that the user last interacted with a formless control.
   void UpdateLastInteractedElement(
