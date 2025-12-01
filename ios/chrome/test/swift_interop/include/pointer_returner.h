@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_POINTER_RETURNER_H_
 #define IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_POINTER_RETURNER_H_
 
+#include "base/memory/raw_ptr.h"
+
 class PointerReturner {
  public:
   PointerReturner();
@@ -22,7 +24,7 @@ class PointerReturner {
 
  private:
   int integer_;
-  __attribute__((annotate("raw_ptr_exclusion"))) PointerReturner* child_;
+  raw_ptr<PointerReturner> child_;
 };
 
 #endif  // IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_POINTER_RETURNER_H_
