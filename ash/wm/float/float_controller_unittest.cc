@@ -60,11 +60,11 @@
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/views_test_utils.h"
@@ -193,8 +193,8 @@ TEST_F(WindowFloatTest, FloatWindowAnimatesInOverview) {
 
   // Enter overview, both windows should animate when entering overview, since
   // both are visible to the user.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ToggleOverview();
   EXPECT_TRUE(floated_window->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(maximized_window->layer()->GetAnimator()->is_animating());
@@ -211,8 +211,8 @@ TEST_F(WindowFloatTest, FloatWindowAnimatesInOverview) {
 TEST_F(WindowFloatTest, FloatToMaximizeWindowAnimates) {
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
   WindowState::Get(window.get())->OnWMEvent(&maximize_event);
   // `WindowState::SetBoundsDirectCrossFade` still starts an animation if the
@@ -1345,8 +1345,8 @@ TEST_F(TabletWindowFloatTest, TabletClamshellTransitionAnimation) {
   // stacked on top and visible.
   wm::ActivateWindow(normal_window.get());
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Tests that on entering tablet mode, both windows are animating since both
   // are visible before and after the transition.
@@ -1772,8 +1772,8 @@ TEST_F(TabletWindowFloatTest, TuckedWindowVisibility) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Fling to tuck the window in the bottom right. Test that the window is
   // invisible once the animation is finished.
@@ -1802,8 +1802,8 @@ TEST_F(TabletWindowFloatTest, UntuckedWindowVisibility) {
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();
 
   // Long duration for tuck animation, to allow it to be interrupted.
-  ui::ScopedAnimationDurationScaleMode test_duration(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
   // Fling to tuck the window. Press the untuck handle before the window
   // finishes the tuck animation. Test that the window is visible.

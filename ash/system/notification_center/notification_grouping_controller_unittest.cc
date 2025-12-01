@@ -22,8 +22,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/color/color_id.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -524,8 +524,8 @@ TEST_F(NotificationGroupingControllerTest,
   const GURL url(u"http://test-url.com/");
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   id0 = AddNotificationWithOriginUrl(url);
   id1 = AddNotificationWithOriginUrl(url);
@@ -541,8 +541,8 @@ TEST_F(NotificationGroupingControllerTest,
 TEST_F(NotificationGroupingControllerTest,
        ParentNotificationRemovedDuringAnimation) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto* message_center = MessageCenter::Get();
   std::string id0, id1;

@@ -24,7 +24,6 @@
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
@@ -36,6 +35,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -534,8 +534,8 @@ TEST_F(RootWindowTransformersTest,
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   aura::Window* root_window = root_windows[0];
 
-  ui::ScopedAnimationDurationScaleMode test_duration(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   ui::Layer* layer = root_window->layer();
   {
     ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
@@ -561,8 +561,8 @@ TEST_F(RootWindowTransformersTest,
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   aura::Window* root_window = root_windows[0];
 
-  ui::ScopedAnimationDurationScaleMode test_duration(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   ui::Layer* layer = root_window->layer();
   {
     ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
@@ -587,8 +587,8 @@ TEST_F(RootWindowTransformersTest, ShouldSetWindowSizeDuringOpacityAnimation) {
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   aura::Window* root_window = root_windows[0];
 
-  ui::ScopedAnimationDurationScaleMode test_duration(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   {
     ui::Layer* layer = root_window->layer();
     ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());

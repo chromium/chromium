@@ -38,8 +38,8 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/interaction/interactive_test.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/test/test_widget_builder.h"
@@ -220,7 +220,7 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
  public:
   CampaignsManagerInteractiveUiTest()
       : animation_duration_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kGrowthCampaignsInConsumerSession);
     CHECK(temp_dir_.CreateUniqueTempDir());
@@ -319,7 +319,7 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
-  ui::ScopedAnimationDurationScaleMode animation_duration_;
+  gfx::ScopedAnimationDurationScaleMode animation_duration_;
   std::unique_ptr<TestCampaignsManagerObserver> observer_;
   base::WeakPtrFactory<CampaignsManagerInteractiveUiTest> weak_ptr_factory_{
       this};

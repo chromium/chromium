@@ -40,12 +40,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 using SpokenFeedbackTestVariant = ash::SpokenFeedbackTestVariant;
 using SpokenFeedbackTestConfig = ::ash::SpokenFeedbackTestConfig;
@@ -191,8 +191,8 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
     // Do not run expand arrow hinting animation to avoid msan test crash.
     // (See https://crbug.com/926038)
     zero_duration_mode_ =
-        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
     // Disable the app list nudge in the spoken feedback app list test.
     AppListTestApi().DisableAppListNudge(true);
@@ -290,7 +290,7 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   const SpokenFeedbackTestVariant variant_;
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 };
 
 class SpokenFeedbackAppListTest : public SpokenFeedbackAppListBaseTest {

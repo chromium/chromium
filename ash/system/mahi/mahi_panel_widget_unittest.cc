@@ -27,11 +27,11 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -193,8 +193,8 @@ TEST_F(MahiPanelWidgetTest, WidgetPositionWithConstrainedRightSpace) {
 
 TEST_F(MahiPanelWidgetTest, WidgetDestroyedDuringShowAnimation) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   auto widget = MahiPanelWidget::CreateAndShowPanelWidget(
       GetPrimaryDisplay().id(),
       /*mahi_menu_bounds=*/gfx::Rect(100, 100, 200, 200), &ui_controller_);

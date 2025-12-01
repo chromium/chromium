@@ -29,10 +29,10 @@
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/display/display_switches.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -249,8 +249,8 @@ TEST_F(TabletModeMultitaskMenuTest, SwipeDownInSplitView) {
 // Tests no crash when swiping down another window during menu animation.
 // http://b/276792842.
 TEST_F(TabletModeMultitaskMenuTest, SwipeDownInSplitViewWhileAnimating) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Create a larger display so the menu is within the window bounds when split.
   UpdateDisplay("1600x1000");
@@ -375,8 +375,8 @@ TEST_F(TabletModeMultitaskMenuTest, CloseMultitaskMenuOnTap) {
 // Tests that pressing a button before the show animation ends closes the menu
 // (http://b/279355302).
 TEST_F(TabletModeMultitaskMenuTest, CloseMultitaskMenuOnButtonPress) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Swipe down the menu partially to start an animation.
   auto window = CreateAppWindow();
@@ -785,8 +785,8 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenExitingTabletMode) {
   // We need to use a non zero duration otherwise the fade out animation will
   // complete immediately and destroy the multitask menu before the tablet mode
   // window manager gets destroyed, which is not what happens on a real device.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto window = CreateAppWindow();
   ShowMultitaskMenu(*window);
@@ -795,8 +795,8 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenExitingTabletMode) {
 
 // Tests that update drag does not cause a crash. Test for http://b/290102602.
 TEST_F(TabletModeMultitaskMenuTest, NoCrashDuringUpdateDrag) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   auto window = CreateAppWindow();
 
   // Partially drag down to start an animation. `end_y` must be less than half
@@ -839,8 +839,8 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashDuringUpdateDrag) {
 // EventType::kGestureScrollUpdate, causing the controller to create the menu on
 // the split view divider (b/293954921).
 TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenDraggingSplitViewDivider) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   UpdateDisplay("1600x1000");
   auto window = CreateAppWindow();
   PressPartialPrimary(*window);

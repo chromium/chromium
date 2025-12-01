@@ -44,7 +44,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event.h"
@@ -54,6 +53,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/button/image_button.h"
@@ -156,7 +156,7 @@ class HomeButtonAnimationTest : public HomeButtonTestBase {
     HomeButtonTestBase::SetUp();
 
     animation_duration_.emplace(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   }
 
   void TearDown() override {
@@ -165,7 +165,7 @@ class HomeButtonAnimationTest : public HomeButtonTestBase {
   }
 
  private:
-  std::optional<ui::ScopedAnimationDurationScaleMode> animation_duration_;
+  std::optional<gfx::ScopedAnimationDurationScaleMode> animation_duration_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -447,8 +447,8 @@ TEST_F(HomeButtonWithQuickAppAccess, EmptyAppId) {
 // Test that the quick app button animates when showing and hiding.
 TEST_F(HomeButtonWithQuickAppAccess, QuickAppButtonAnimation) {
   EXPECT_FALSE(IsQuickAppVisible());
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   const std::string quick_app_id = "Quick App Item";
   GetAppListTestHelper()->model()->CreateAndAddItem(quick_app_id);

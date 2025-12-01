@@ -35,7 +35,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
@@ -146,7 +146,7 @@ class TrayAccessibilityTest : public InProcessBrowserTest,
  public:
   TrayAccessibilityTest()
       : disable_animations_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
   ~TrayAccessibilityTest() override = default;
 
   // The profile which should be used by these tests.
@@ -213,7 +213,7 @@ class TrayAccessibilityTest : public InProcessBrowserTest,
   }
 
   // Disable animations so that tray icons hide immediately.
-  ui::ScopedAnimationDurationScaleMode disable_animations_;
+  gfx::ScopedAnimationDurationScaleMode disable_animations_;
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;

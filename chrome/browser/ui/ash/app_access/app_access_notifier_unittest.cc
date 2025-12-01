@@ -38,8 +38,8 @@
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 
 namespace {
@@ -549,8 +549,8 @@ TEST_P(AppAccessNotifierTest, AppAccessNotification) {
 TEST_P(AppAccessNotifierTest, PrivacyIndicatorsVisibility) {
   // Uses normal animation duration so that the icons would not be immediately
   // hidden after the animation.
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Make sure privacy indicators work on multiple displays.
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())

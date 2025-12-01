@@ -25,11 +25,11 @@
 #include "base/test/simple_test_clock.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -362,8 +362,8 @@ TEST_F(HomeToOverviewNudgeControllerTest,
   EXPECT_FALSE(GetNudgeController()->nudge_for_testing());
   ASSERT_TRUE(GetNudgeController()->HasShowTimerForTesting());
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   GetNudgeController()->FireShowTimerForTesting();
   ASSERT_TRUE(GetNudgeWidget()->GetLayer()->GetAnimator()->is_animating());
@@ -440,8 +440,8 @@ TEST_F(HomeToOverviewNudgeControllerTest, NudgeHiddenDuringShowAnimation) {
   ASSERT_TRUE(GetNudgeController());
   ASSERT_TRUE(GetNudgeController()->HasShowTimerForTesting());
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   GetNudgeController()->FireShowTimerForTesting();
   ASSERT_TRUE(GetNudgeWidget()->GetLayer()->GetAnimator()->is_animating());
@@ -536,8 +536,8 @@ TEST_F(HomeToOverviewNudgeControllerTest, TapOnTheNudgeDuringShowAnimation) {
   ASSERT_TRUE(GetNudgeController());
   ASSERT_TRUE(GetNudgeController()->HasShowTimerForTesting());
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   GetNudgeController()->FireShowTimerForTesting();
   ASSERT_TRUE(GetNudgeWidget()->GetLayer()->GetAnimator()->is_animating());

@@ -10,10 +10,10 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 namespace {
@@ -22,15 +22,15 @@ using AppListBubbleSearchPageTest = AshTestBase;
 
 TEST_F(AppListBubbleSearchPageTest, AnimateShowPage) {
   // Open the app list without animation.
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   auto* helper = GetAppListTestHelper();
   helper->AddAppItems(5);
   helper->ShowAppList();
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Type a key to switch to the search page.
   PressAndReleaseKey(ui::VKEY_A);
@@ -52,8 +52,8 @@ TEST_F(AppListBubbleSearchPageTest, AnimateShowPage) {
 
 TEST_F(AppListBubbleSearchPageTest, AnimateHidePage) {
   // Open the app list without animation.
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   auto* helper = GetAppListTestHelper();
   helper->AddAppItems(5);
   helper->ShowAppList();
@@ -63,15 +63,15 @@ TEST_F(AppListBubbleSearchPageTest, AnimateHidePage) {
 
   // Type a key to switch to the search page. This should also be done without
   // animations.
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   PressAndReleaseKey(ui::VKEY_A);
   auto* search_page = helper->GetBubbleSearchPage();
   ASSERT_TRUE(search_page->GetVisible());
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Pressing backspace to delete the search triggers the hide animation.
   PressAndReleaseKey(ui::VKEY_BACK);
@@ -93,8 +93,8 @@ TEST_F(AppListBubbleSearchPageTest, AnimateHidePage) {
 TEST_F(AppListBubbleSearchPageTest,
        SearchPageVisibleAfterQuicklyClearingAndRepopulatingSearch) {
   // Open the app list without animation.
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   auto* helper = GetAppListTestHelper();
   helper->AddAppItems(5);
   helper->ShowAppList();
@@ -105,8 +105,8 @@ TEST_F(AppListBubbleSearchPageTest,
   ASSERT_FALSE(search_page->GetVisible());
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Type a key to trigger the animation to transition to the search page.
   ui::Layer* layer = apps_page->GetPageAnimationLayerForTest();

@@ -16,13 +16,13 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/animation_delegate_notifier.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
@@ -561,7 +561,8 @@ base::TimeDelta ImmersiveFullscreenController::GetAnimationDuration(
       break;
   }
 
-  return ui::ScopedAnimationDurationScaleMode::duration_multiplier() * duration;
+  return gfx::ScopedAnimationDurationScaleMode::duration_multiplier() *
+         duration;
 }
 
 void ImmersiveFullscreenController::MaybeStartReveal(Animate animate) {

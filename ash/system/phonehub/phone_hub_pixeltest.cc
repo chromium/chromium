@@ -21,7 +21,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -96,8 +96,8 @@ class PhoneHubPixelTest : public AshTestBase {
     phone_hub_tray_->SetPhoneHubManager(&phone_hub_manager_);
 
     // Disable animations to prevent screenshot mismatch.
-    ui::ScopedAnimationDurationScaleMode duration_mode(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   }
 
   // AshTestBase:

@@ -27,10 +27,10 @@
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/animation/linear_animation.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -328,8 +328,8 @@ TEST_F(ReturnToAppPanelTest, MaxCapturingCount) {
 }
 
 TEST_F(ReturnToAppPanelTest, ReturnToApp) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   base::HistogramTester histogram_tester;
 
@@ -386,8 +386,8 @@ TEST_F(ReturnToAppPanelTest, ReturnToApp) {
 }
 
 TEST_F(ReturnToAppPanelTest, ExpandAnimation) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   controller()->ClearMediaApps();
   controller()->AddMediaApp(CreateFakeMediaApp(
@@ -439,8 +439,8 @@ TEST_F(ReturnToAppPanelTest, ExpandAnimation) {
 }
 
 TEST_F(ReturnToAppPanelTest, CollapseAnimation) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   controller()->ClearMediaApps();
   controller()->AddMediaApp(CreateFakeMediaApp(
@@ -510,8 +510,8 @@ TEST_F(ReturnToAppPanelTest, CollapseAnimation) {
 // Verify that the layer animations to show/hide the view are performed with
 // the expected visibility and opacity before and after the animation.
 TEST_F(ReturnToAppPanelTest, LayerAnimations) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   controller()->ClearMediaApps();
   controller()->AddMediaApp(CreateFakeMediaApp(

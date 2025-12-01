@@ -25,8 +25,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
@@ -178,8 +178,8 @@ TEST_P(NotificationCenterTrayTest, ClickOnTrayAfterRemovingNotifications) {
 
   // Make sure animations don't complete immediately for the rest of the test,
   // so that we can click on the tray while its running its hide animation.
-  ui::ScopedAnimationDurationScaleMode animation_duration_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_duration_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Remove all notifications and verify that the tray's hide animation is
   // running.
@@ -379,8 +379,8 @@ TEST_P(NotificationCenterTrayTest,
   // scheduled, but `TrayItemView` animations are bypassed when the animation
   // duration scale mode is set to ZERO_DURATION. Hence, set the animation
   // duration scale mode to something else for this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // This test relies on the lock screen actually being created (and creating
   // the lock screen requires the existence of an `AuthEventsRecorder`).

@@ -41,8 +41,8 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/border.h"
@@ -323,7 +323,7 @@ void GlanceablesTasksView::AnimateResize(ResizeAnimation::Type resize_type) {
   resize_animation_.reset();
   running_resize_animation_.reset();
 
-  if (!ui::ScopedAnimationDurationScaleMode::duration_multiplier()) {
+  if (!gfx::ScopedAnimationDurationScaleMode::duration_multiplier()) {
     PreferredSizeChanged();
     return;
   }

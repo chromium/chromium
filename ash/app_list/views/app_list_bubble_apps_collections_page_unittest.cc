@@ -26,10 +26,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -79,8 +79,8 @@ class AppListBubbleAppsCollectionsPageTest : public AshTestBase {
 TEST_F(AppListBubbleAppsCollectionsPageTest,
        AppsCollectionsPageVisibleAfterQuicklyClearingSearch) {
   // Open the app list without animation.
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   auto* helper = GetAppListTestHelper();
   helper->ShowAppList();
 
@@ -88,8 +88,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest,
   ASSERT_TRUE(apps_collections_page->GetVisible());
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Type a key to trigger the animation to transition to the search page.
   PressAndReleaseKey(ui::VKEY_A);
@@ -110,8 +110,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest,
 
 TEST_F(AppListBubbleAppsCollectionsPageTest, AnimateHidePage) {
   // Open the app list without animation.
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   auto* helper = GetAppListTestHelper();
   helper->ShowAppList();
 
@@ -119,8 +119,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, AnimateHidePage) {
   ASSERT_TRUE(apps_collections_page->GetVisible());
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Type a key to trigger the animation to transition to the search page.
   PressAndReleaseKey(ui::VKEY_A);
@@ -138,8 +138,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, AnimateHidePage) {
 
 TEST_F(AppListBubbleAppsCollectionsPageTest, AnimateShowPage) {
   // Open the app list without animation.
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   auto* helper = GetAppListTestHelper();
   helper->ShowAppList();
 
@@ -150,8 +150,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, AnimateShowPage) {
   ASSERT_FALSE(apps_collections_page->GetVisible());
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Press escape to trigger animation back to the apps page.
   PressAndReleaseKey(ui::VKEY_ESCAPE);
@@ -169,8 +169,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, AnimateShowPage) {
 
 TEST_F(AppListBubbleAppsCollectionsPageTest, DismissNudgeIsVisible) {
   // Open the app list without animation.
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   auto* helper = GetAppListTestHelper();
   helper->ShowAppList();
 
@@ -181,8 +181,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, DismissNudgeIsVisible) {
 
 TEST_F(AppListBubbleAppsCollectionsPageTest, ShowAppsPageAfterDismissingNudge) {
   // Open the app list without animation.
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   auto* helper = GetAppListTestHelper();
   helper->ShowAppList();
 
@@ -202,8 +202,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, ShowAppsPageAfterDismissingNudge) {
 TEST_F(AppListBubbleAppsCollectionsPageTest,
        CancelDismissDialogAfterAttempingSort) {
   // Open the app list without animation.
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   auto* helper = GetAppListTestHelper();
   helper->ShowAppList();
 
@@ -243,8 +243,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest,
 
 TEST_F(AppListBubbleAppsCollectionsPageTest, ShowAppsPageAfterClearingSearch) {
   // Open the app list without animation.
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   auto* helper = GetAppListTestHelper();
   helper->ShowAppList();
 
@@ -278,8 +278,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, ShowAppsPageAfterClearingSearch) {
 TEST_F(AppListBubbleAppsCollectionsPageTest,
        ShowAppsPageAfterSortingFromAppsGrid) {
   // Open the app list without animation.
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   auto* helper = GetAppListTestHelper();
   helper->ShowAppList();
 
@@ -321,8 +321,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest,
 // Verifies that a UserAction is recorded for scrolling to the bottom of the
 // Apps Grid.
 TEST_F(AppListBubbleAppsCollectionsPageTest, ScrollToBottomLogsAction) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto* helper = GetAppListTestHelper();
   helper->AddAppListItemsWithCollection(AppCollection::kEntertainment, 50);
@@ -364,8 +364,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, ScrollToBottomLogsAction) {
 // Verifies that a UserAction is recorded for keyboard navigating to the bottom
 // of the Apps Grid.
 TEST_F(AppListBubbleAppsCollectionsPageTest, KeyboardSelectToBottomLogsAction) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Show an app list with enough apps to allow scrolling.
   auto* helper = GetAppListTestHelper();
@@ -401,8 +401,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, KeyboardSelectToBottomLogsAction) {
 
 TEST_F(AppListBubbleAppsCollectionsPageTest,
        ShowAppsPageAfterSortingFromAppItem) {
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   auto* helper = GetAppListTestHelper();
   helper->AddAppListItemsWithCollection(AppCollection::kEntertainment, 2);
   helper->ShowAppList();
@@ -440,8 +440,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest,
 
 TEST_F(AppListBubbleAppsCollectionsPageTest,
        CancelDismissDialogAfterAttempingSortFromAppItem) {
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   auto* helper = GetAppListTestHelper();
   helper->AddAppListItemsWithCollection(AppCollection::kEntertainment, 2);
   helper->ShowAppList();
@@ -480,8 +480,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest,
 // Verifies that the metrics for launching the Showoff app by clicking the
 // Discovery Chip are recorded.
 TEST_F(AppListBubbleAppsCollectionsPageTest, DiscoveryChipLogsMetric) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto* helper = GetAppListTestHelper();
   helper->AddAppListItemsWithCollection(AppCollection::kEntertainment, 50);
@@ -510,8 +510,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, DiscoveryChipLogsMetric) {
 
 // Verifies that apps visibility is correctly calculated.
 TEST_F(AppListBubbleAppsCollectionsPageTest, AppsVisibility) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Create enough apps so that the launcher can be scrolled.
   auto* helper = GetAppListTestHelper();

@@ -98,9 +98,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/wm/core/window_util.h"
@@ -302,7 +302,7 @@ class FullRestoreAppLaunchHandlerTestBase
  public:
   FullRestoreAppLaunchHandlerTestBase()
       : faster_animations_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_restore_for_testing_ = std::make_unique<ScopedRestoreForTesting>();
     set_launch_browser_for_testing(nullptr);
   }
@@ -396,7 +396,7 @@ class FullRestoreAppLaunchHandlerTestBase
   void ResetRestoreForTesting() { scoped_restore_for_testing_.reset(); }
 
  protected:
-  ui::ScopedAnimationDurationScaleMode faster_animations_;
+  gfx::ScopedAnimationDurationScaleMode faster_animations_;
   std::unique_ptr<ScopedRestoreForTesting> scoped_restore_for_testing_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   base::test::ScopedFeatureList scoped_feature_list_;

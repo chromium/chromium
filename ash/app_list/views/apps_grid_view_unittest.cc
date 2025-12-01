@@ -80,13 +80,13 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/presentation_time_recorder.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -937,8 +937,8 @@ TEST_F(AppsGridViewTest, RemoveSelectedLastApp) {
 // Tests that the item list changed without user operations; this happens on
 // active user switch. See https://crbug.com/980082.
 TEST_F(AppsGridViewTest, MoveItemAcrossRowDoesNotCauseCrash) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   const int cols = apps_grid_view_->cols();
   ASSERT_LE(0, cols);
   GetTestModel()->PopulateApps(cols * 2);
@@ -1027,8 +1027,8 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationOnDragToPreviousPage) {
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Testing animations require non-zero duration.
-    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
 
     const views::ViewModelT<AppListItemView>* view_model =
@@ -1083,8 +1083,8 @@ TEST_P(AppsGridViewClamshellAndTabletTest, InFolderBetweenRowsAnimation) {
   EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
   EXPECT_EQ(4u, folder_item->ChildItemCount());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   AppListItemView* const dragged_item_view =
       GetItemViewInCurrentPageAt(0, 0, folder_apps_grid_view());
   StartDragForViewAndFireTimer(AppsGridView::MOUSE, dragged_item_view);
@@ -1133,8 +1133,8 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationReversal) {
 
   // Use non-zero animations to test that animations are correct while in
   // progress.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest(apps_grid_view_));
 
@@ -1267,8 +1267,8 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationReversal) {
 // Test that cascading item animation durations are correct when an item moves
 // from a top row to a bottom row.
 TEST_P(AppsGridViewClamshellTest, CascadingItemAnimationMoveItemTopToBottom) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   GetTestModel()->PopulateApps(20);
   UpdateLayout();
 
@@ -1314,8 +1314,8 @@ TEST_P(AppsGridViewClamshellTest, CascadingItemAnimationMoveItemTopToBottom) {
 // Test that cascading item animation durations are correct when an item moves
 // from a bottom row to a top row.
 TEST_P(AppsGridViewClamshellTest, CascadingItemAnimationMoveItemBottomToTop) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   GetTestModel()->PopulateApps(20);
   UpdateLayout();
 
@@ -1361,8 +1361,8 @@ TEST_P(AppsGridViewClamshellTest, CascadingItemAnimationMoveItemBottomToTop) {
 // Test that cascading item animation durations are correct when an item moves
 // within a single row, from the left side to the right side.
 TEST_P(AppsGridViewClamshellTest, CascadingItemAnimationMoveItemLeftToRight) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   GetTestModel()->PopulateApps(5);
   UpdateLayout();
 
@@ -1404,8 +1404,8 @@ TEST_P(AppsGridViewClamshellTest, CascadingItemAnimationMoveItemLeftToRight) {
 // Test that cascading item animation durations are correct when an item moves
 // within a single row, from the right side to the left side.
 TEST_P(AppsGridViewClamshellTest, CascadingItemAnimationMoveItemRightToLeft) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   GetTestModel()->PopulateApps(5);
   UpdateLayout();
 
@@ -1748,8 +1748,8 @@ TEST_P(AppsGridViewDragTest, DismissWhileDraggingDoesNotCrash) {
   // Non-zero animation durations are necessary to make sure we don't miss
   // crashes involving animation delegates. Specifically, `bounds_animator_` had
   // a use after free problem in the past.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   AppListItemView* const item_view =
       GetItemViewInCurrentPageAt(0, 1, apps_grid_view_);
@@ -1832,8 +1832,8 @@ TEST_P(AppsGridViewDragTest, DismissWhileDraggingInFolderDoesNotCrash) {
   // Non-zero animation durations are necessary to make sure we don't miss
   // crashes involving animation delegates. Specifically, `bounds_animator_` had
   // a use after free problem in the past.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   AppListItemView* const item_view =
       GetItemViewInCurrentPageAt(0, 1, folder_apps_grid_view());
@@ -1905,8 +1905,8 @@ TEST_P(AppsGridViewDragTest, ItemViewsDontHaveLayerAfterDrag) {
 }
 
 TEST_P(AppsGridViewFolderIconRefreshTest, AppIconExtendState) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   size_t kTotalItems = 2;
   GetTestModel()->PopulateApps(kTotalItems);
@@ -1958,8 +1958,8 @@ TEST_P(AppsGridViewFolderIconRefreshTest, AppIconExtendState) {
 }
 
 TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconExtendState) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Create a folder and an app.
   GetTestModel()->CreateAndPopulateFolderWithApps(2);
@@ -2118,8 +2118,8 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragToFolder) {
   GetTestModel()->PopulateApps(1);
   UpdateLayout();
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   StartDragForViewAndFireTimer(
       AppsGridView::MOUSE, GetItemViewInCurrentPageAt(0, 1, apps_grid_view_));
 
@@ -2149,8 +2149,8 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragToCreateFolder) {
   GetTestModel()->PopulateApps(3);
   UpdateLayout();
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   StartDragForViewAndFireTimer(
       AppsGridView::MOUSE, GetItemViewInCurrentPageAt(0, 1, apps_grid_view_));
 
@@ -2196,8 +2196,8 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesToTargetItemBounds) {
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Enable drop animation, as the test is verifying target animated
     // transform/bounds.
-    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
     EndDrag();
 
@@ -2258,8 +2258,8 @@ TEST_P(AppsGridViewDragTest,
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Enable drop animation, as the test is verifying target animated
     // transform/bounds.
-    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
     EndDrag();
 
@@ -2313,8 +2313,8 @@ TEST_P(AppsGridViewDragTest, FolderNotOpenedIfGridHidesDuringIconDrop) {
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Enable animations, as the test is testing interactions that depend on the
     // animation timing.
-    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
     EndDrag();
 
@@ -2491,8 +2491,8 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragOutOfFolder) {
   test_api_->Update();
   test_api_->PressItemAt(0);
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Drag the first folder child out of the folder.
   AppListItemView* drag_view =
@@ -2532,8 +2532,8 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragToAnotherFolder) {
   test_api_->Update();
   test_api_->PressItemAt(0);
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Drag the first folder child out of the folder.
   AppListItemView* drag_view =
@@ -2581,8 +2581,8 @@ TEST_P(AppsGridViewDragTest,
   test_api_->Update();
   test_api_->PressItemAt(2);
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Drag the only folder child out of the folder.
   AppListItemView* drag_view =
@@ -2621,8 +2621,8 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterReorderDrag) {
   test_api_->Update();
   UpdateLayout();
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Drag the first item to an empty slot in the grid.
 
@@ -5089,8 +5089,8 @@ TEST_P(AppsGridViewDragTest, RemoveDisplayWhileDraggingItemOntoShelf) {
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Enable animations to catch potential crashes during display removal.
-    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
     // Remove display while drag is over the shelf bounds, verify that the shelf
     // model does not change.
@@ -5156,8 +5156,8 @@ TEST_P(AppsGridViewDragTest, RemoveDisplayWhileDraggingFolderItemOntoShelf) {
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Enable animations to catch potential crashes during display removal.
-    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
     // Remove display while drag is over the shelf bounds, verify that the shelf
     // model does not change.
@@ -6437,8 +6437,8 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   UpdateLayout();
   EXPECT_EQ(0u, GetPulsingBlocksModel().view_size());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   // Set the model status as syncing. The Pulsing blocks model should not be
   // empty.
@@ -6462,8 +6462,8 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   UpdateLayout();
   EXPECT_EQ(0u, GetPulsingBlocksModel().view_size());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   GetTestModel()->SetStatus(AppListModelStatus::kStatusSyncing);
   UpdateLayout();
@@ -6495,8 +6495,8 @@ TEST_F(AppsGridViewTest, AppIconSubtitutesPulsingBlockView) {
   UpdateLayout();
   EXPECT_EQ(0u, GetPulsingBlocksModel().view_size());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   GetTestModel()->SetStatus(AppListModelStatus::kStatusSyncing);
   UpdateLayout();
@@ -6687,8 +6687,8 @@ TEST_P(AppsGridViewClamshellAndTabletTest, QuickDragToRemoveItemFromFolder) {
 
   // Enable animation times once the folder is open, to test animations when
   // dragging items out.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   StartDragForViewAndFireTimer(AppsGridView::MOUSE, item_in_folder);
 
@@ -6722,8 +6722,8 @@ TEST_P(AppsGridViewClamshellAndTabletTest, QuickDragToRemoveItemFromFolder) {
 }
 
 TEST_P(AppsGridViewClamshellAndTabletTest, ReorderDragAnimationMetrics) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   base::HistogramTester histogram_tester;
   const int kAppsInGrid = 9;
   GetTestModel()->PopulateApps(kAppsInGrid);
@@ -6834,8 +6834,8 @@ TEST_F(AppsGridViewTest, PromiseIconLayers) {
   item->UpdateAppStatusForTesting(AppStatus::kInstallSuccess);
   EXPECT_TRUE(promise_view->layer());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Simulate pushing the installed app.
   GetTestModel()->DeleteItem(item->id());
@@ -6883,8 +6883,8 @@ TEST_F(AppsGridViewTest, PromiseAppsSharePackage) {
   first_item->UpdateAppStatusForTesting(AppStatus::kInstallSuccess);
   EXPECT_TRUE(first_promise_view->layer());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Simulate pushing the installed app.
   GetTestModel()->DeleteItem(first_item->id());
@@ -6986,8 +6986,8 @@ TEST_F(AppsGridViewTest, DragEndsDuringPromiseAppReplacement) {
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Simulate promise item getting replaced.
     {
-      ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-          ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+          gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
       // Simulate pushing the installed app.
       GetTestModel()->DeleteItem(item->id());

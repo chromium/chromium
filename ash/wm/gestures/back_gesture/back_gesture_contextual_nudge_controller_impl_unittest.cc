@@ -20,7 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -217,8 +217,8 @@ TEST_F(BackGestureContextualNudgeControllerMultiUserTest, MonitorWindowsTest) {
 // in-progress nudge animation.
 TEST_F(BackGestureContextualNudgeControllerTest,
        ActivationCancelAnimationTest) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   EXPECT_FALSE(nudge());
 
   EXPECT_TRUE(contextual_tooltip::ShouldShowNudge(
@@ -248,8 +248,8 @@ TEST_F(BackGestureContextualNudgeControllerTest,
 // animation.
 TEST_F(BackGestureContextualNudgeControllerTest,
        EndTabletModeCancelAnimationTest) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   EXPECT_FALSE(nudge());
 
   EXPECT_TRUE(contextual_tooltip::ShouldShowNudge(
@@ -318,8 +318,8 @@ TEST_F(BackGestureContextualNudgeControllerTest, NotShownWithDragHandleNudge) {
 // enough time passes, even if the user does not leave tablet mode.
 TEST_F(BackGestureContextualNudgeControllerTest,
        CanBeShownAfterDragHandleNudgeWithoutLeavingTabletMode) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   TabletModeControllerTestApi tablet_mode_api;
   tablet_mode_api.LeaveTabletMode();
 
@@ -354,8 +354,8 @@ TEST_F(BackGestureContextualNudgeControllerTest,
 // even it the user does not leave tablet mode.
 TEST_F(BackGestureContextualNudgeControllerTest,
        CanBeShownAfterRenteringTabletMode) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Verify the nudge is created and wait until nudge animation is shown.
   std::unique_ptr<aura::Window> window = CreateTestWindow();
@@ -386,8 +386,8 @@ TEST_F(BackGestureContextualNudgeControllerTest,
 
 // Back gesture metrics should be recorded after performing gesture.
 TEST_F(BackGestureContextualNudgeControllerTest, GesturePerformedMetricTest) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   // Verify the nudge is created and wait until nudge animation is shown.
   std::unique_ptr<aura::Window> window = CreateTestWindow();
   EXPECT_TRUE(nudge());
@@ -397,8 +397,8 @@ TEST_F(BackGestureContextualNudgeControllerTest, GesturePerformedMetricTest) {
 }
 
 TEST_P(BackGestureContextualNudgeControllerTestA11yPrefs, TimeoutMetricsTest) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   std::unique_ptr<aura::Window> window = CreateTestWindow();
   EXPECT_TRUE(nudge());
   WaitNudgeAnimationDone();
@@ -407,8 +407,8 @@ TEST_P(BackGestureContextualNudgeControllerTestA11yPrefs, TimeoutMetricsTest) {
 
 TEST_P(BackGestureContextualNudgeControllerTestA11yPrefs,
        LogDismissMetricsAfterNudgeShown) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   std::unique_ptr<aura::Window> window = CreateTestWindow();
   EXPECT_TRUE(nudge());
   // Before nudge is still waiting to be shown, exit tablet mode. The nudge will

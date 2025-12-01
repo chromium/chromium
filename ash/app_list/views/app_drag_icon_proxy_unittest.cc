@@ -11,11 +11,11 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -160,8 +160,8 @@ TEST_F(AppDragIconProxyTest, AnimateBoundsForClosure) {
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   base::RunLoop run_loop;
   gfx::Rect target_bounds = gfx::Rect(gfx::Point(50, 50), gfx::Size(10, 10));
@@ -196,8 +196,8 @@ TEST_F(AppDragIconProxyTest, CloseAnimationCallbackCalledWithZeroAnimation) {
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   bool animation_callback_called = false;
   gfx::Rect target_bounds = gfx::Rect(gfx::Point(50, 50), gfx::Size(10, 10));
@@ -229,8 +229,8 @@ TEST_F(AppDragIconProxyTest,
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Animate the drag image layer transform, so
   // `AnimateToBoundsAndCloseWidget()` interrupts an animation.
@@ -287,8 +287,8 @@ TEST_F(AppDragIconProxyTest, ProxyResetDuringCloseAnimation) {
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   bool animation_callback_called = false;
   gfx::Rect target_bounds = gfx::Rect(gfx::Point(50, 50), gfx::Size(10, 10));
@@ -316,8 +316,8 @@ TEST_F(AppDragIconProxyTest, UpdatePositionDuringCloseIsNoOp) {
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   base::RunLoop run_loop;
   gfx::Rect target_bounds = gfx::Rect(gfx::Point(50, 50), gfx::Size(10, 10));

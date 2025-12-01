@@ -25,8 +25,8 @@
 #include "base/run_loop.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -236,7 +236,7 @@ views::MenuItemView* DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
     click_on_view(default_button);
 
     // Wait for the desk bar to finish animating to the expanded state.
-    if (!ui::ScopedAnimationDurationScaleMode::is_zero()) {
+    if (!gfx::ScopedAnimationDurationScaleMode::is_zero()) {
       DesksTestApi::WaitForDeskBarUiUpdate(bar_view);
     }
 

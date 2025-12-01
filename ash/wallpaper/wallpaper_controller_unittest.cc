@@ -111,7 +111,6 @@
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -121,6 +120,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
@@ -223,8 +223,8 @@ int ChildCountForContainer(int container_id) {
 // Steps a layer animation until it is completed. Animations must be enabled.
 void RunAnimationForLayer(ui::Layer* layer) {
   // Animations must be enabled for stepping to work.
-  ASSERT_NE(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_NE(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   ui::LayerAnimatorTestController controller(layer->GetAnimator());
   // Multiple steps are required to complete complex animations.
@@ -1150,8 +1150,8 @@ TEST_P(WallpaperControllerTest, SwitchWallpapersWhenNewWallpaperAnimationEnds) {
   SimulateUserLogin(kAccountId1);
 
   // We cannot short-circuit animations for this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Create the wallpaper and its view.
   WallpaperControllerImpl* controller = Shell::Get()->wallpaper_controller();
@@ -1175,8 +1175,8 @@ TEST_P(WallpaperControllerTest, WallpaperMovementDuringUnlock) {
   SimulateUserLogin(kAccountId1);
 
   // We cannot short-circuit animations for this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Reset wallpaper state, see ControllerOwnership above.
   WallpaperControllerImpl* controller = Shell::Get()->wallpaper_controller();
@@ -1232,8 +1232,8 @@ TEST_P(WallpaperControllerTest, ChangeWallpaperQuick) {
   SimulateUserLogin(kAccountId1);
 
   // We cannot short-circuit animations for this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Reset wallpaper state, see ControllerOwnership above.
   WallpaperControllerImpl* controller = Shell::Get()->wallpaper_controller();
@@ -1296,8 +1296,8 @@ TEST_P(WallpaperControllerTest, DontScaleWallpaperWithCenterLayout) {
   SimulateUserLogin(kAccountId1);
 
   // We cannot short-circuit animations for this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   const gfx::Size high_resolution(3600, 2400);
   const gfx::Size low_resolution(360, 240);
@@ -3481,8 +3481,8 @@ TEST_P(WallpaperControllerTest, WallpaperBlur) {
 TEST_P(WallpaperControllerTest, WallpaperBlurDuringLockScreenTransition) {
   SimulateUserLogin(kAccountId1);
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   gfx::ImageSkia image = CreateImage(600, 400, kWallpaperColor);
   controller_->ShowWallpaperImage(
@@ -4192,8 +4192,8 @@ TEST_P(WallpaperControllerTest, WallpaperSyncedDuringPreview) {
 }
 
 TEST_P(WallpaperControllerTest, AddFirstWallpaperAnimationEndCallback) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   std::unique_ptr<aura::Window> test_window(
       CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
 
@@ -4588,8 +4588,8 @@ TEST_F(WallpaperControllerPrefTest, InitWithPrefs) {
 }
 
 TEST_P(WallpaperControllerTest, NoAnimationForNewRootWindowWhenLocked) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   SimulateUserLogin(kAccountId1);
   SetSessionState(SessionState::LOCKED);
   UpdateDisplay("800x600, 800x600");

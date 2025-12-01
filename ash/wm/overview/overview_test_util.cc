@@ -16,8 +16,8 @@
 #include "ash/wm/window_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/views_test_utils.h"
 
 namespace ash {
@@ -26,8 +26,8 @@ namespace {
 
 void WaitForOverviewAnimationState(OverviewAnimationState state) {
   // Early out if animations are disabled.
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     return;
   }
 

@@ -66,7 +66,6 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
@@ -77,6 +76,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -1810,8 +1810,8 @@ TEST_F(WindowCycleControllerTest, ArrowKeyBeforeCycleViewUI) {
 // initiate an alt + tab session, start a fling, trigger another alt + tab and
 // make sure this doesn't trigger a UAF crash in ASAN builds.
 TEST_F(WindowCycleControllerTest, SimulateFlingInAltTab) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   std::unique_ptr<Window> w0 = CreateTestWindow();
   std::unique_ptr<Window> w1 = CreateTestWindow();
   std::unique_ptr<Window> w2 = CreateTestWindow();
@@ -2024,10 +2024,10 @@ class ModeSelectionWindowCycleControllerTest
 
   void SwitchPerDeskAltTabMode(bool per_desk_mode,
                                bool use_slow_duration = false) {
-    ui::ScopedAnimationDurationScaleMode animation_scale(
+    gfx::ScopedAnimationDurationScaleMode animation_scale(
         use_slow_duration
-            ? ui::ScopedAnimationDurationScaleMode::SLOW_DURATION
-            : ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+            ? gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION
+            : gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     gfx::Point button_center =
         GetWindowCycleTabSliderButtons()[per_desk_mode ? 1 : 0]
             ->GetBoundsInScreen()

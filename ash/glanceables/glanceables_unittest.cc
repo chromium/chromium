@@ -30,9 +30,9 @@
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/test/widget_animation_waiter.h"
 #include "ui/views/view_utils.h"
@@ -761,8 +761,8 @@ TEST_F(GlanceablesTasksAndClassroomTest,
 TEST_F(GlanceablesTasksAndClassroomTest,
        ExpandCollapseAnimationSmoothnessHistogram) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   base::HistogramTester resize_animation_histograms;
 

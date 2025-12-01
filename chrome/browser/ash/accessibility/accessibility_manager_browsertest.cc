@@ -64,8 +64,8 @@
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -478,7 +478,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
  protected:
   AccessibilityManagerTest()
       : disable_animations_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
 
   AccessibilityManagerTest(const AccessibilityManagerTest&) = delete;
   AccessibilityManagerTest& operator=(const AccessibilityManagerTest&) = delete;
@@ -558,7 +558,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  ui::ScopedAnimationDurationScaleMode disable_animations_;
+  gfx::ScopedAnimationDurationScaleMode disable_animations_;
 };
 
 // Test that a new user's application locale is mapped to a supported Dictation
@@ -1033,7 +1033,7 @@ class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
  public:
   AccessibilityManagerDlcTest()
       : disable_animations_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
   ~AccessibilityManagerDlcTest() override = default;
   AccessibilityManagerDlcTest(const AccessibilityManagerDlcTest&) = delete;
   AccessibilityManagerDlcTest& operator=(const AccessibilityManagerDlcTest&) =
@@ -1109,7 +1109,7 @@ class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
   }
 
  private:
-  ui::ScopedAnimationDurationScaleMode disable_animations_;
+  gfx::ScopedAnimationDurationScaleMode disable_animations_;
 };
 
 // Tests that SODA download is initiated when Dictation is enabled.
@@ -1642,7 +1642,7 @@ class AccessibilityManagerDictationDialogTest
  protected:
   AccessibilityManagerDictationDialogTest()
       : disable_animations_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
   ~AccessibilityManagerDictationDialogTest() override = default;
   AccessibilityManagerDictationDialogTest(
       const AccessibilityManagerDictationDialogTest&) = delete;
@@ -1694,7 +1694,7 @@ class AccessibilityManagerDictationDialogTest
 
  private:
   std::string locale_;
-  ui::ScopedAnimationDurationScaleMode disable_animations_;
+  gfx::ScopedAnimationDurationScaleMode disable_animations_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1787,7 +1787,7 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
  protected:
   AccessibilityManagerLoginTest()
       : disable_animations_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_feature_list_.InitWithFeatures(
         {::features::kAccessibilityReducedAnimations,
          ::features::kAccessibilityMouseKeys},
@@ -1853,7 +1853,7 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
       AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
 
  private:
-  ui::ScopedAnimationDurationScaleMode disable_animations_;
+  gfx::ScopedAnimationDurationScaleMode disable_animations_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

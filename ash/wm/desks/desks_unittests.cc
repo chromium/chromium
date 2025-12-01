@@ -135,7 +135,6 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
@@ -156,6 +155,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -2541,8 +2541,8 @@ TEST_P(DesksTest, RemoveDisplayWhileSwitchingDesks) {
   UpdateDisplay("800x600,800x600");
   NewDesk();
 
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   DeskSwitchAnimationWaiter desk_switch_waiter;
 
@@ -2565,8 +2565,8 @@ TEST_P(DesksTest, AddDeskWhileExitingOverview) {
   EnterOverview();
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Exit overview (with an animation) and immediately create a second desk.
   ExitOverview();
@@ -2778,8 +2778,8 @@ TEST_F(DesksWithMultiDisplayOverview, DropOnOtherDeskInOtherDisplay) {
 TEST_F(DesksWithMultiDisplayOverview, CloseDeskBeforeAnimationFinishes) {
   // We need a non-zero duration to ensure we can close the desk before the
   // animation completes.
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Create a maximized window on Desk 1. This means that when entering
   // overview, we skip the wallpaper animation for Desk 1, so that the
@@ -3325,8 +3325,8 @@ TEST_P(TabletModeDesksTest,
   {
     // For this test to fail the stacking test below, we need to drag and drop
     // while animations are enabled. https://crbug.com/1055732.
-    ui::ScopedAnimationDurationScaleMode normal_anim(
-        ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+    gfx::ScopedAnimationDurationScaleMode normal_anim(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
     DragItemToPoint(overview_item,
                     desk_2_mini_view->GetBoundsInScreen().CenterPoint(),
                     GetEventGenerator());
@@ -3785,8 +3785,8 @@ TEST_P(DesksTest, AutohiddenShelfAnimatesAfterDeskSwitch) {
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
 
   // Enable animations so that we can make sure that they occur.
-  ui::ScopedAnimationDurationScaleMode non_zero_animation(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_animation(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   NewDesk();
 
@@ -5508,8 +5508,8 @@ TEST_P(DesksAcceleratorsTest, HitAcceleratorWhenAlreadyAtEdge) {
   NewDesk();
 
   // Enable animations so that we can make sure that they occur.
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // First go right. Wait until the ending screenshot is taken.
   const int flags = ui::EF_COMMAND_DOWN;
@@ -6671,8 +6671,8 @@ TEST_P(DesksTest, DesksBarExitAnimation) {
   NewDesk();
 
   // Set to non-zero animation.
-  ui::ScopedAnimationDurationScaleMode animation(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Enter then exit overview. When shutting down overview grid, the desk bar
   // slide animation will take over the ownership of the desk bar widget. This
@@ -7411,8 +7411,8 @@ TEST_P(DesksTest, ClickTargetLocationOfDroppedDesk) {
 
   event_generator->MoveMouseBy(0, desk_bar_view->height());
 
-  ui::ScopedAnimationDurationScaleMode normal_anim(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode normal_anim(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   // Drop the desk and click on the mini view.
   event_generator->ReleaseLeftButton();
   EXPECT_TRUE(desk_bar_view->IsDraggingDesk());
@@ -7447,8 +7447,8 @@ TEST_P(DesksTest, DragNewDeskWhileSnappingBack) {
 
   event_generator->MoveMouseBy(0, desks_bar_view->height());
 
-  ui::ScopedAnimationDurationScaleMode normal_anim(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode normal_anim(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Drop the desk and drag first desk.
   event_generator->ReleaseLeftButton();
@@ -7564,8 +7564,8 @@ TEST_P(DesksTest, DragMiniViewWhileRemoving) {
   LayerAnimationWaiter animation_waiter(mini_view->layer()->GetAnimator());
   {
     // This test requires animation to repro the asan failure.
-    ui::ScopedAnimationDurationScaleMode animation_scale(
-        ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+    gfx::ScopedAnimationDurationScaleMode animation_scale(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
     // This will trigger the mini view removal animation, and the miniview won't
     // be removed immediately.
@@ -7601,8 +7601,8 @@ TEST_P(DesksTest, FastDeskSwitches) {
   desks_controller->ActivateDesk(desks_controller->GetDeskAtIndex(3),
                                  DesksSwitchSource::kUserSwitch);
 
-  ui::ScopedAnimationDurationScaleMode normal_anim(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode normal_anim(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Activate the first 2 desks very quickly, without waiting for screenshots to
   // be taken.
@@ -9185,8 +9185,8 @@ TEST_P(DeskBarTest, ShutdownNoAnimation) {
 // Tests that shutting down when desk bar is alive does not crash with
 // animation.
 TEST_P(DeskBarTest, ShutdownWithAnimation) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   OpenDeskBar();
 }
@@ -9503,8 +9503,8 @@ TEST_P(DeskBarTest, NewDeskButton) {
 
 // Tests that we can go to saved desk library directly via desk button desk bar.
 TEST_P(DeskBarTest, LibraryButton) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Add a saved desk, so that the library button can show up.
   AddSavedDeskEntry(desk_model(), base::Uuid::GenerateRandomV4(),

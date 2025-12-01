@@ -71,7 +71,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/compositor/presentation_time_recorder.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/screen.h"
@@ -79,6 +78,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -653,8 +653,8 @@ TEST_F(SplitViewControllerTest,
 // be no crash. See http://b/315549001 for more details about the crash
 // reported.
 TEST_F(SplitViewControllerTest, NoCrashWhenCreatingNewWindowWhileDragging) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   UpdateDisplay("900x600");
   SplitViewController* controller = split_view_controller();
   std::unique_ptr<aura::Window> window1(
@@ -918,8 +918,8 @@ TEST_F(SplitViewControllerTest, EnterExitOverviewModeHistograms) {
   ASSERT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller()->state());
 
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   ToggleOverview();
   WaitForOverviewEnterAnimation();
@@ -1195,8 +1195,8 @@ TEST_F(SplitViewControllerTest, TabletModeMultiDisplay) {
 // https://crbug.com/1316230.
 TEST_F(SplitViewControllerTest,
        DisplayDisconnectionWithSnappedWindowInTabletMode) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   UpdateDisplay("800x600,800x600");
 
@@ -1231,8 +1231,8 @@ TEST_F(SplitViewControllerTest,
 // https://crbug.com/1316892.
 TEST_F(SplitViewControllerTest,
        DisplayDisconnectionWhileDraggingSplitDividerInTabletMode) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   UpdateDisplay("800x600,800x600");
 
@@ -1924,8 +1924,8 @@ TEST_F(SplitViewControllerTest, LongPressInOverviewMode) {
 #if defined(NDEBUG) && !defined(ADDRESS_SANITIZER) && \
     !defined(LEAK_SANITIZER) && !defined(THREAD_SANITIZER)
 TEST_F(SplitViewControllerTest, LongPressInOverviewModeHistograms) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   ToggleOverview();
   WaitForOverviewEnterAnimation();
@@ -2710,8 +2710,8 @@ TEST_F(SplitViewControllerTest, ShadowDisappearsWhenSnapped) {
 // exiting animation.
 // TODO(b/315345858): Fix flakiness and re-enable.
 TEST_F(SplitViewControllerTest, DISABLED_OverviewExitAnimationTest) {
-  ui::ScopedAnimationDurationScaleMode anmatin_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode anmatin_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
@@ -3663,8 +3663,8 @@ TEST_F(SplitViewControllerTest,
 // Tests no crash on tablet <-> clamshell transition after a divider snap
 // animation is started.
 TEST_F(SplitViewControllerTest, NoCrashAfterDividerSnapAnimation) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
@@ -3857,8 +3857,8 @@ TEST_F(SplitViewControllerTest, DividerStaysVisibleDuringMinimizeAndRestore) {
 // Tests the windows stay onscreen during fast resize. Regression test for
 // b/304367964.
 TEST_F(SplitViewControllerTest, PerformantResize) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   UpdateDisplay("900x600");
   const gfx::Rect work_area =
       display::Screen::Get()->GetPrimaryDisplay().work_area();

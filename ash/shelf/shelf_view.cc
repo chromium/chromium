@@ -81,7 +81,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
@@ -91,6 +90,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
@@ -360,7 +360,7 @@ ShelfView::ShelfView(ShelfModel* model,
   shelf_->AddObserver(this);
   bounds_animator_->AddObserver(this);
   bounds_animator_->SetAnimationDuration(
-      ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
+      gfx::ScopedAnimationDurationScaleMode::duration_multiplier() *
       ShelfConfig::Get()->shelf_animation_duration());
   set_context_menu_controller(this);
   set_allow_deactivate_on_esc(true);
@@ -768,10 +768,11 @@ void ShelfView::ButtonPressed(views::Button* sender,
       base::Milliseconds(100));
 
   // Slow down activation animations if Control key is pressed.
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> slowing_animations;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> slowing_animations;
   if (event.IsControlDown()) {
-    slowing_animations = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-        ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+    slowing_animations =
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   }
 
   // Collect usage statistics before we decide what to do with the click.

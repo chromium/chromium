@@ -20,9 +20,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -107,8 +107,8 @@ TEST_F(AppsContainerViewTest, CanHideContinueSection) {
 
 TEST_F(AppsContainerViewTest, HideContinueSectionPlaysAnimation) {
   // Show the app list without animation.
-  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   auto* helper = GetAppListTestHelper();
   helper->AddContinueSuggestionResults(4);
   helper->AddRecentApps(5);
@@ -117,8 +117,8 @@ TEST_F(AppsContainerViewTest, HideContinueSectionPlaysAnimation) {
   TabletMode::Get()->SetEnabledForTest(true);
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Hide the continue section.
   Shell::Get()->app_list_controller()->SetHideContinueSection(true);
@@ -193,8 +193,8 @@ TEST_F(AppsContainerViewTest, ShowContinueSectionPlaysAnimation) {
   TabletMode::Get()->SetEnabledForTest(true);
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Show the continue section.
   Shell::Get()->app_list_controller()->SetHideContinueSection(false);

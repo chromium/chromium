@@ -26,7 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/controls/scroll_view.h"
@@ -398,8 +398,8 @@ TEST_P(NotificationCenterViewTest, StackingIconsNeverMoreThanThree) {
   GetScroller()->ScrollToPosition(GetScrollBar(), bottom_position);
 
   // Force animations to happen, so we can see if multiple animations trigger.
-  ui::ScopedAnimationDurationScaleMode scoped_duration_modifier(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_duration_modifier(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   // Scroll past 20 notifications, so we can scroll back up quickly.
   for (int i = 20; i >= 0; --i) {
     const int scroll_amount = (GetMessageViewVisibleBounds(0).height() * i) + 1;

@@ -31,7 +31,7 @@
 #include "ui/base/class_property.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash::personalization_app {
@@ -149,8 +149,8 @@ class PersonalizationAppIntegrationBrowserTest
   }
 
  private:
-  ui::ScopedAnimationDurationScaleMode animation_duration_scale_mode_{
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION};
+  gfx::ScopedAnimationDurationScaleMode animation_duration_scale_mode_{
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION};
 };
 
 // Test that the Personalization App installs correctly.

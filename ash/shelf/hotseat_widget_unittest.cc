@@ -50,11 +50,11 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/presentation_time_recorder.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/widget_animation_waiter.h"
 #include "ui/wm/core/window_util.h"
 
@@ -903,8 +903,8 @@ TEST_P(HotseatWidgetTest, SwipeUpOnShelfShowsHotseatInSplitView) {
 // Tests that HotseatTransitionAimationObserver starting and ending calls have a
 // 1:1 relation. This test verifies that behavior.
 TEST_P(HotseatWidgetTest, ObserverCallsMatch) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   // Enter tablet mode to show the home launcher. Hotseat state should be
   // kShownHomeLauncher.
   TabletModeControllerTestApi().EnterTabletMode();
@@ -1181,8 +1181,8 @@ TEST_P(HotseatWidgetTest, VerifyShelfAnimationWhenEnteringOverview) {
   GetPrimaryShelf()->SetAutoHideBehavior(shelf_auto_hide_behavior());
   TabletModeControllerTestApi().EnterTabletMode();
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   HotseatWidget* hotseat_widget = GetPrimaryShelf()->hotseat_widget();
   ASSERT_EQ(HotseatState::kShownHomeLauncher, hotseat_widget->state());
@@ -1245,8 +1245,8 @@ TEST_P(HotseatWidgetTest, InAppToHomeChangesStateOnce) {
   // directly to kShownHomeLauncher.
   SwipeUpOnShelf();
   {
-    ui::ScopedAnimationDurationScaleMode regular_animations(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode regular_animations(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     HotseatStateWatcher watcher(GetShelfLayoutManager());
     FlingUpOnShelf();
     watcher.CheckEqual({HotseatState::kShownHomeLauncher});
@@ -1293,8 +1293,8 @@ TEST_P(HotseatWidgetTest, HomeToOverviewAndBack) {
 
   // Start going to overview.
   {
-    ui::ScopedAnimationDurationScaleMode regular_animations(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode regular_animations(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     StartOverview();
 
     watcher.CheckEqual({/*Hotseat state should not change*/});
@@ -1327,8 +1327,8 @@ TEST_P(HotseatWidgetTest, InAppToOverviewAndBack) {
   // Start going to overview - use non zero animation so transition is not
   // immediate.
   {
-    ui::ScopedAnimationDurationScaleMode regular_animations(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode regular_animations(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     StartOverview();
   }
 
@@ -1369,8 +1369,8 @@ TEST_P(HotseatWidgetTest, ShowShelfAndGoHomeDuringInAppToOverviewTransition) {
   // Start going to overview - use non zero animation so transition is not
   // immediate.
   {
-    ui::ScopedAnimationDurationScaleMode regular_animations(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode regular_animations(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     StartOverview();
   }
 
@@ -2312,8 +2312,8 @@ TEST_P(HotseatWidgetTest, NoBlurDuringAnimations) {
   ASSERT_EQ(
       ShelfConfig::Get()->shelf_blur_radius(),
       GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest());
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Open a window, as the hotseat animates to kHidden, it should lose its blur.
   std::unique_ptr<aura::Window> window =
@@ -2342,8 +2342,8 @@ TEST_P(HotseatWidgetTest, AnimationAfterDrag) {
       AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
   wm::ActivateWindow(window.get());
 
-  ui::ScopedAnimationDurationScaleMode animation_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   HotseatWidget* const hotseat_widget = GetPrimaryShelf()->hotseat_widget();
   gfx::Point last_app_views_position =
@@ -2481,8 +2481,8 @@ TEST_P(HotseatWidgetTest, InitialAnimationPositionWithNonIdentityTransform) {
   generator->ReleaseTouch();
   ASSERT_TRUE(app_views_moved());
 
-  ui::ScopedAnimationDurationScaleMode animation_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   auto set_animated_transform = [](ui::Layer* layer,
                                    const gfx::Vector2d& initial_offset) {
     // Set translate animation on the hotseat widget, to simulate a state which

@@ -27,12 +27,12 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
@@ -249,8 +249,8 @@ TEST_F(ArcNotificationViewTest, Events) {
 }
 
 TEST_F(ArcNotificationViewTest, SlideOut) {
-  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_scope(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   std::string notification_id(kDefaultNotificationId);
 
@@ -279,8 +279,8 @@ TEST_F(ArcNotificationViewTest, SlideOut) {
 #define MAYBE_SlideOutNested SlideOutNested
 #endif
 TEST_F(ArcNotificationViewTest, MAYBE_SlideOutNested) {
-  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_scope(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   notification_view()->SetIsNested();
   std::string notification_id(kDefaultNotificationId);
@@ -304,8 +304,8 @@ TEST_F(ArcNotificationViewTest, MAYBE_SlideOutNested) {
 }
 
 TEST_F(ArcNotificationViewTest, SlideOutPinned) {
-  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_scope(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_pinned(true);
@@ -324,8 +324,8 @@ TEST_F(ArcNotificationViewTest, SlideOutPinned) {
 }
 
 TEST_F(ArcNotificationViewTest, SnoozeButton) {
-  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_scope(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   message_center::RichNotificationData rich_data;
   rich_data.pinned = true;
@@ -400,8 +400,8 @@ TEST_F(ArcNotificationViewTest, ChangeContentHeight) {
 }
 
 TEST_F(ArcNotificationViewTest, TrackPadGestureSlideOut) {
-  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_scope(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   ui::test::EventGenerator generator(
       (notification_view()->GetWidget()->GetNativeWindow()->GetRootWindow()));
@@ -463,8 +463,8 @@ class ArcNotificationViewRenderByChromeEnabledTest
 TEST_F(ArcNotificationViewRenderByChromeEnabledTest,
        DISABLED_AnimateGroupedChildExpandedCollapseChanged) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->SetGroupChild();

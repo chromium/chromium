@@ -61,7 +61,6 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -69,6 +68,7 @@
 #include "ui/events/test/events_test_utils.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gl/test/gl_test_support.h"
 #include "ui/views/widget/widget.h"
 
@@ -1865,8 +1865,8 @@ TEST_F(PointerConstraintTest, ConstrainPointerWithUncommittedShellSurface) {
 // swipe animation, that the animation is able to complete and pointer lock is
 // correctly set. Regression test for b/324146178.
 TEST_F(PointerConstraintTest, DeskSwitchSwipeGesture) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Start with a surface that has a constrained pointer.
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));

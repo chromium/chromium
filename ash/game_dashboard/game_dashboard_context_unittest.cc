@@ -81,10 +81,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
@@ -2081,8 +2081,8 @@ TEST_F(GameDashboardContextTest,
 // are not visible.
 TEST_F(GameDashboardContextTest, UIVisibilityWithWindowSnapAnimation) {
   // Prevent short-circuit animations in this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Create an ARC game window.
   CreateGameWindow(/*is_arc_window=*/true);
@@ -2130,8 +2130,8 @@ TEST_F(GameDashboardContextTest, UIVisibilityWithWindowSnapAnimation) {
 // widgets are not visible.
 TEST_F(GameDashboardContextTest, UIVisibilityWithWindowFloatAnimation) {
   // Do not short-circuit animations in this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Create an ARC game window.
   CreateGameWindow(/*is_arc_window=*/true);

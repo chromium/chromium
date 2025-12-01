@@ -26,9 +26,9 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_occlusion_tracker.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 namespace {
@@ -111,8 +111,8 @@ TEST_F(AppListPresenterImplTest, ClearShelfObserversOnShelfRemoval) {
   // Enter tablet mode, so the test can trigger tablet mode exit later on.
   EnableTabletMode();
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Remove the secondary display, and exit tablet mode to trigger app list view
   // dismissal. Note that the display will be removed before the app list close

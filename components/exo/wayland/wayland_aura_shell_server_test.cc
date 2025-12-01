@@ -18,7 +18,7 @@
 #include "components/exo/xdg_shell_surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/test_widget_builder.h"
 
 namespace exo::wayland {
@@ -409,8 +409,8 @@ TEST_F(WaylandAuraShellServerTest, OverviewMode) {
   // Need at least one window for overview animation.
   auto native_widget = views::test::TestWidgetBuilder().BuildOwnsNativeWidget();
 
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Test starting overview and letting the animation complete.
   overview_controller->StartOverview(start_action);

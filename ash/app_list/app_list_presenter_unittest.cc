@@ -89,7 +89,6 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -101,6 +100,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -731,8 +731,8 @@ class PopulatedAppListScreenRotationTest : public PopulatedAppListTest {
 
 // Verify that open folders are closed after sorting apps grid.
 TEST_P(AppListBubbleAndTabletTest, SortingClosesOpenFolderView) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   GetAppListModel()->CreateAndPopulateFolderWithApps(4);
 
@@ -766,8 +766,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Cache the initial folder item bounds.
   const gfx::Rect original_folder_item_bounds =
@@ -837,8 +837,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -954,8 +954,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1075,8 +1075,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1196,8 +1196,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1282,8 +1282,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1382,8 +1382,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1480,8 +1480,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1554,8 +1554,8 @@ TEST_P(AppListBubbleAndTabletTest, ReorderedFolderItemDeletionDuringShow) {
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1815,8 +1815,8 @@ TEST_P(AppListPresenterTest, ClickSearchBoxInTabletMode) {
 
   // Necessary for AppListView::StateAnimationMetricsReporter::Report being
   // called when animation ends.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   ui::test::EventGenerator* generator = GetEventGenerator();
 
@@ -2285,8 +2285,8 @@ TEST_P(AppListBubbleAndTabletTest, ShutdownDuringRotationAnimationSmoke) {
       DisplayConfigurationControllerTestApi(
           Shell::Get()->display_configuration_controller())
           .GetScreenRotationAnimatorForDisplay(display.id());
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   animator->Rotate(display::Display::ROTATE_90,
                    display::Display::RotationSource::USER,
                    DisplayConfigurationController::ANIMATION_SYNC);
@@ -2642,8 +2642,8 @@ TEST_F(PopulatedAppListTest,
   const int kItemCount = 5;
   PopulateApps(kItemCount);
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -4592,8 +4592,8 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
 TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
        TransitionContinuesWhereItWasInterrupted) {
   EnsureAppListViewIsCached();
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* const layer = GetAppListTestHelper()
                           ->GetAppListView()
                           ->GetWidget()
@@ -4639,8 +4639,8 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
 
   // Switch to tablet mode and set normal animation duration.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   EXPECT_EQ(visibility_observer->visibility_changed_to_hidden_times(), 0);
   ash::TabletModeControllerTestApi().LeaveTabletMode();

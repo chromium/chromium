@@ -45,9 +45,9 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -564,8 +564,8 @@ TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
 // Tests that dragging and snapping the snapped window update the width ratio
 // correctly (crbug.com/1208969).
 TEST_F(WindowStateTest, SnapSnappedWindow) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   UpdateDisplay("800x600");
   const gfx::Rect kWorkAreaBounds =
       display::Screen::Get()->GetPrimaryDisplay().work_area();

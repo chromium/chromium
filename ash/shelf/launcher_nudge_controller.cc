@@ -25,8 +25,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/tablet_state.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 namespace {
@@ -221,7 +221,7 @@ void LauncherNudgeController::MaybeShowNudge() {
 
   // Don't run the nudge animation if the duration multiplier is 0 to prevent
   // crashes that caused by showing the animation that immediately gets deleted.
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() != 0) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() != 0) {
     // Only show the nudge on the home button which is on the same display with
     // the cursor.
     int64_t display_id_for_nudge =

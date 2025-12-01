@@ -33,10 +33,10 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
@@ -96,8 +96,8 @@ void FadeInView(views::View* view,
                 const std::string& animation_histogram_name) {
   // If we are in testing with animation (non zero duration), we shouldn't have
   // delays so that we can properly track when animation is completed in test.
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
     delay_in_ms = 0;
   }
 
@@ -534,8 +534,8 @@ void ReturnToAppPanel::OnExpandedStateChanged(bool expanded) {
   // In tests, widget might be null and the animation, in some cases, might be
   // configured to have zero duration.
   if (GetWidget() &&
-      ui::ScopedAnimationDurationScaleMode::duration_multiplier() !=
-          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+      gfx::ScopedAnimationDurationScaleMode::duration_multiplier() !=
+          gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     container_view_->set_expanded_target(expanded);
     container_view_->StartExpandCollapseAnimation();
   } else {

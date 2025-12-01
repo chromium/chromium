@@ -19,8 +19,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -85,8 +85,8 @@ TEST_F(OverviewSessionMetricsRecorderTest, DeskBarVisibilityShownImmediately) {
 
 TEST_F(OverviewSessionMetricsRecorderTest,
        DeskBarVisibilityShownAfterFirstFrame) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   // With 1 normal (not maximized) window, the desk bar should be rendered after
   // the overview enter animation completes.
   constexpr gfx::Rect kBounds(0, 0, 10, 10);

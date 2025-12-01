@@ -34,9 +34,9 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ui/compositor/presentation_time_recorder.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/event_utils.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 
@@ -808,8 +808,8 @@ TEST_P(ScrollableShelfViewRTLTest, CheckRoundedCornersSetForInkDrop) {
 // clamshell mode to tablet mode (https://crbug.com/1086484).
 TEST_P(ScrollableShelfViewRTLTest,
        CheckRoundedCornersAfterTabletStateTransition) {
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   PopulateAppShortcut(1);
 
   ShelfAppButton* icon = test_api_->GetButton(0);
@@ -852,8 +852,8 @@ TEST_P(ScrollableShelfViewRTLTest,
 // an app icon from context menu (https://crbug.com/1086484).
 TEST_F(ScrollableShelfViewTest,
        CheckRoundedCornersAfterUnpinningFromContextMenu) {
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ash::TabletModeControllerTestApi().EnterTabletMode();
 
   AddAppShortcut();
@@ -889,8 +889,8 @@ TEST_F(ScrollableShelfViewTest,
 // rounded corners are being kept if needed. (see https://crbug.com/1079330)
 TEST_F(ScrollableShelfViewTest, CheckRoundedCornersAfterLongPress) {
   // Enable animations so that we can make sure that they occur.
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ash::TabletModeControllerTestApi().EnterTabletMode();
   PopulateAppShortcut(3);
   ASSERT_EQ(ScrollableShelfView::kNotShowArrowButtons,
@@ -1127,8 +1127,8 @@ TEST_F(ScrollableShelfViewTest, RemoveLastItemWhileClickingSeoncdLastOne) {
       shelf_view_->view_model_for_test()->view_size();
   {
     // Remove the last shelf item with animation enabled.
-    ui::ScopedAnimationDurationScaleMode regular_animations(
-        ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+    gfx::ScopedAnimationDurationScaleMode regular_animations(
+        gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
     ShelfModel::Get()->RemoveItemAt(view_size_before_removal - 1);
     EXPECT_TRUE(shelf_view_->IsAnimating());
   }

@@ -28,11 +28,11 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
 
 using PowerManagerClient = chromeos::PowerManagerClient;
@@ -647,8 +647,8 @@ TEST_F(PowerButtonControllerTest,
   EnableTabletMode(false);
 
   // Enable animations so that we can make sure that they occur.
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   PressPowerButton();
   ReleasePowerButton();
@@ -1087,8 +1087,8 @@ TEST_F(PowerButtonControllerTest, PartiallyShownMenuInTabletMode) {
   EnableTabletMode(true);
 
   // Enable animations so that we can make sure that they occur.
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   PressPowerButton();
   EXPECT_TRUE(power_button_test_api_->PowerButtonMenuTimerIsRunning());
@@ -1430,8 +1430,8 @@ class PowerButtonControllerLegacyTest : public PowerButtonControllerTest {
 // create a new menu.
 TEST_F(PowerButtonControllerLegacyTest, LegacyPowerButtonIgnoreExtraPress) {
   // Enable animations so that we can make sure that they occur.
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   PressPowerButton();
   // Power menu is in the partially shown state.
   ASSERT_TRUE(power_button_test_api_->IsMenuOpened());

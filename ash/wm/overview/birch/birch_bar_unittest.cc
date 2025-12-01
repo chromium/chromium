@@ -45,10 +45,10 @@
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/models/image_model.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -562,8 +562,8 @@ TEST_F(BirchBarTest, NoCrashOnSettingIconAfterShutdown) {
 
   BirchChipButton* chip = views::AsViewClass<BirchChipButton>(chips[0].get());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Create a set icon callback to simulate the case of setting icon after
   // shutting down the chip.
@@ -1619,8 +1619,8 @@ TEST_F(BirchBarAnimationTest, NoCrashOnRemovingChip) {
   // Cache the third chip before removing.
   auto* chip_3 = chips[2].get();
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   RemoveItem(2);
   WaitLayerAnimationEnd(chip_3->layer());
 
@@ -1661,8 +1661,8 @@ TEST_F(BirchBarAnimationTest, RemoveMultipleChips) {
       grid_test_api.GetBirchChips(),
       [&item_6](const auto& chip) { return chip->GetItem() == item_6; }));
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Cache the third chip view before removing.
   auto* chip_4 = grid_test_api.GetBirchChips()[3].get();
@@ -1693,8 +1693,8 @@ TEST_F(BirchBarAnimationTest, NoCrashOnRemovingFirstChipWithPrivacyNudge) {
   EXPECT_TRUE(
       Shell::Get()->anchored_nudge_manager()->IsNudgeShown("BirchPrivacyId"));
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Cache the first chip before removing.
   auto* first_chip = OverviewGridTestApi(Shell::GetPrimaryRootWindow())

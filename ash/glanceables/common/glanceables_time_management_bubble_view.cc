@@ -19,8 +19,8 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
@@ -115,7 +115,7 @@ GlanceablesTimeManagementBubbleView::ResizeAnimation::ResizeAnimation(
       break;
   }
   SetDuration(duration *
-              ui::ScopedAnimationDurationScaleMode::duration_multiplier());
+              gfx::ScopedAnimationDurationScaleMode::duration_multiplier());
 }
 
 int GlanceablesTimeManagementBubbleView::ResizeAnimation::GetCurrentHeight()

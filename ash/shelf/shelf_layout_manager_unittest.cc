@@ -101,7 +101,6 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_observer.h"
@@ -114,6 +113,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/test/test_widget_builder.h"
 #include "ui/views/test/widget_animation_waiter.h"
@@ -364,8 +364,8 @@ TEST_F(ShelfLayoutManagerTest, SetStateWhileAnimating) {
   gfx::Rect initial_status_bounds =
       shelf_widget->status_area_widget()->GetWindowBoundsInScreen();
 
-  ui::ScopedAnimationDurationScaleMode normal_animation_duration(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode normal_animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   SetState(layout_manager, SHELF_HIDDEN);
   SetState(layout_manager, SHELF_VISIBLE);
 
@@ -679,8 +679,8 @@ TEST_F(ShelfLayoutManagerTest, ShelfDoesNotAutoHideWithVoxAndTabletMode) {
 
 // Tests that the shelf should be visible when in overview mode.
 TEST_F(ShelfLayoutManagerTest, VisibleInOverview) {
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::unique_ptr<aura::Window> window(CreateTestWindow());
   window->SetBounds({0, 0, 120, 320});
@@ -753,8 +753,8 @@ TEST_F(ShelfLayoutManagerTest, SetAutoHideBehavior) {
   EXPECT_EQ(screen->GetPrimaryDisplay().work_area().bottom(),
             widget->GetWorkAreaBoundsInScreen().bottom());
 
-  ui::ScopedAnimationDurationScaleMode animation_duration(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
   ShelfWidget* shelf_widget = GetShelfWidget();
@@ -1806,8 +1806,8 @@ TEST_F(ShelfLayoutManagerTest,
   gfx::Rect visible_bounds = GetShelfWidget()->GetWindowBoundsInScreen();
   {
     // Enable animations so that we can make sure that they occur.
-    ui::ScopedAnimationDurationScaleMode regular_animations(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode regular_animations(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
     ui::test::EventGenerator* generator = GetEventGenerator();
     gfx::Rect shelf_bounds_in_screen =
@@ -1843,8 +1843,8 @@ TEST_F(ShelfLayoutManagerTest, ShelfAnimatesToVisibleWhenGestureInComplete) {
 
   {
     // Enable the animations so that we can make sure they do occur.
-    ui::ScopedAnimationDurationScaleMode regular_animations(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode regular_animations(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
     display::Display display = display::Screen::Get()->GetPrimaryDisplay();
     gfx::Point start = display.bounds().bottom_center();
@@ -1878,8 +1878,8 @@ TEST_F(ShelfLayoutManagerTest,
 
   {
     // Enable the animations so that we can make sure they do occur.
-    ui::ScopedAnimationDurationScaleMode regular_animations(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode regular_animations(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
     ui::test::EventGenerator* generator = GetEventGenerator();
 
@@ -1922,8 +1922,8 @@ TEST_F(ShelfLayoutManagerTest,
 
   {
     // Enable the animations so that we can make sure they do occur.
-    ui::ScopedAnimationDurationScaleMode regular_animations(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode regular_animations(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
     ui::test::EventGenerator* generator = GetEventGenerator();
 
@@ -2290,8 +2290,8 @@ TEST_F(ShelfLayoutManagerTest,
       GetShelfWidget()->status_area_widget()->GetNativeView();
   gfx::Rect initial_bounds = status_window->bounds();
 
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   GetPrimaryShelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlwaysHidden);
   gfx::Rect hide_target_bounds = status_window->GetTargetBounds();
   EXPECT_GT(hide_target_bounds.y(), initial_bounds.y());
@@ -3105,8 +3105,8 @@ TEST_F(ShelfLayoutManagerTest, NoBackgroundChange) {
 TEST_F(ShelfLayoutManagerTest, NoTemporaryAutoHideStateWhileOpeningLauncher) {
   // Enable animations and simulate the zero state search called when showing
   // the launcher.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
 
   Shelf* shelf = GetPrimaryShelf();
@@ -3712,8 +3712,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
 
   // Make animations not end immediately for the rest of the test (so the test
   // can test whether the animating shelf background is animating).
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   const gfx::Rect shelf_widget_bounds =
       GetShelfWidget()->GetWindowBoundsInScreen();
@@ -4154,8 +4154,8 @@ TEST_F(ShelfLayoutManagerTest, NoShelfUpdateDuringOverviewAnimation) {
   base::RunLoop().RunUntilIdle();
   TabletModeControllerTestApi().EnterTabletMode();
   // Run overview animations.
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   std::unique_ptr<aura::Window> fullscreen(CreateTestWindow());
@@ -4177,8 +4177,8 @@ TEST_F(ShelfLayoutManagerTest, NoShelfUpdateDuringOverviewAnimation) {
 // Tests that shelf bounds are updated properly after overview animation.
 TEST_F(ShelfLayoutManagerTest, ShelfBoundsUpdateAfterOverviewAnimation) {
   // Run overview animations.
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   Shelf* shelf = GetPrimaryShelf();
   ASSERT_EQ(ShelfAlignment::kBottom, shelf->alignment());

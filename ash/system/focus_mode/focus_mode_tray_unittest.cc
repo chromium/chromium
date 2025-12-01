@@ -32,7 +32,7 @@
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "url/gurl.h"
@@ -253,7 +253,7 @@ TEST_F(FocusModeTrayTest, ClickActivateDeactivate) {
 // view.
 TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(kMaxAnimationScale);
+  gfx::ScopedAnimationDurationScaleMode duration(kMaxAnimationScale);
 
   FocusModeTask task;
   task.task_id = {.list_id = "default", .id = "task1"};
@@ -297,8 +297,8 @@ TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
 // Regression test for b/363291923.
 TEST_F(FocusModeTrayTest, MarkTaskAsCompletedDoubleClick) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   FocusModeTask task;
   task.task_id = {.list_id = "default", .id = "task1"};
@@ -339,8 +339,8 @@ TEST_F(FocusModeTrayTest, MarkTaskAsCompletedDoubleClick) {
 // Regression test for b/363291923.
 TEST_F(FocusModeTrayTest, MarkTaskAsCompletedBeforeModelUpdate) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   FocusModeTask task;
   task.task_id = {.list_id = "default", .id = "task1"};
@@ -379,8 +379,8 @@ TEST_F(FocusModeTrayTest, MarkTaskAsCompletedBeforeModelUpdate) {
 // Regression test for b/363291923.
 TEST_F(FocusModeTrayTest, MarkTaskAsCompletedAfterModelUpdate) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   FocusModeTask task;
   task.task_id = {.list_id = "default", .id = "task1"};

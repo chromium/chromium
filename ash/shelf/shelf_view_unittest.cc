@@ -83,7 +83,6 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -94,6 +93,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/ink_drop.h"
@@ -1486,8 +1486,8 @@ TEST_P(LtrRtlShelfViewTest, ActivateAppButtonDuringDropAnimation) {
 
   // Enable animations, as the test verifies behavior while a drop animation is
   // in progress.
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // The test makes some assumptions that the shelf is bottom aligned.
   ASSERT_EQ(shelf_view_->shelf()->alignment(), ShelfAlignment::kBottom);
@@ -2736,8 +2736,8 @@ TEST_F(ShelfViewTest, TapOnItemDuringFadeOut) {
 
   // Enable animations, as the test verifies behavior while a fade out animation
   // is in progress.
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Simulate test app getting uninstalled.
   model_->RemoveItemAt(model_->ItemIndexByID(test_item_id));
@@ -2762,8 +2762,8 @@ TEST_F(ShelfViewTest, SwipeOnItemDuringFadeOut) {
 
   // Enable animations, as the test verifies behavior while a fade out animation
   // is in progress.
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Simulate test app getting uninstalled.
   model_->RemoveItemAt(model_->ItemIndexByID(test_item_id));
@@ -4386,8 +4386,8 @@ TEST_F(ShelfViewPromiseAppTest, PromiseIconLayers) {
   EXPECT_EQ(button->app_status(), AppStatus::kInstallSuccess);
   EXPECT_TRUE(button->layer());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Simulate pushing the installed app.
   model_->RemoveItemAt(index);

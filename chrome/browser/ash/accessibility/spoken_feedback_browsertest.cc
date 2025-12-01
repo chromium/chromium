@@ -118,7 +118,7 @@ const base::TimeDelta kExpectedPhoneticSpeechAndHintDelay = base::Seconds(1);
 }  // namespace
 
 LoggedInSpokenFeedbackTest::LoggedInSpokenFeedbackTest()
-    : animation_mode_(ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+    : animation_mode_(gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
 
 LoggedInSpokenFeedbackTest::~LoggedInSpokenFeedbackTest() = default;
 

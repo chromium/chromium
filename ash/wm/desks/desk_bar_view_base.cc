@@ -56,7 +56,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
@@ -65,6 +64,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/background.h"
 #include "ui/views/event_monitor.h"
@@ -1351,10 +1351,10 @@ void DeskBarViewBase::OnActivateDeskTimer(const base::Uuid& uuid) {
 
 void DeskBarViewBase::HandleClickEvent(DeskMiniView* mini_view) {
   // A timer to delay closing the desk bar.
-  if (!ui::ScopedAnimationDurationScaleMode::is_zero()) {
+  if (!gfx::ScopedAnimationDurationScaleMode::is_zero()) {
     desk_activation_timer_.Start(
         FROM_HERE,
-        ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
+        gfx::ScopedAnimationDurationScaleMode::duration_multiplier() *
             kAnimationDelayDuration,
         base::BindOnce(&DeskBarViewBase::OnActivateDeskTimer,
                        base::Unretained(this), mini_view->desk()->uuid()));

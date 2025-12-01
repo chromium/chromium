@@ -8,15 +8,15 @@
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
 using MessagePopupAnimationWaiterTest = AshTestBase;
 
 TEST_F(MessagePopupAnimationWaiterTest, Basic) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   message_center::MessageCenter::Get()->AddNotification(
       CreateSimpleNotification(/*id=*/"id"));
   MessagePopupAnimationWaiter(

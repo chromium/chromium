@@ -11,8 +11,8 @@
 #include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ui::test {
 class EventGenerator;
@@ -108,7 +108,7 @@ class LoggedInSpokenFeedbackTest
   std::unique_ptr<ChromeVoxTestUtils> chromevox_test_utils_;
 
   StubBrailleController braille_controller_;
-  ui::ScopedAnimationDurationScaleMode animation_mode_;
+  gfx::ScopedAnimationDurationScaleMode animation_mode_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

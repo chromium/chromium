@@ -23,8 +23,8 @@
 #include "base/notreached.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -205,7 +205,7 @@ void ContentsView::SetActiveStateInternal(int page_index, bool animate) {
 
   // Start animating to the new page. Disable animation for tests.
   bool should_animate = animate && !set_active_state_without_animation_ &&
-                        !ui::ScopedAnimationDurationScaleMode::is_zero();
+                        !gfx::ScopedAnimationDurationScaleMode::is_zero();
 
   // There's a chance of selecting page during the transition animation. To
   // reschedule the new animation from the beginning, |pagination_model_| needs
@@ -387,7 +387,7 @@ bool ContentsView::Back() {
         apps_container_view_->app_list_folder_view()->CloseFolderPage();
       } else if (pagination_model->total_pages() > 0 &&
                  pagination_model->selected_page() > 0) {
-        bool animate = !ui::ScopedAnimationDurationScaleMode::is_zero();
+        bool animate = !gfx::ScopedAnimationDurationScaleMode::is_zero();
         pagination_model->SelectPage(0, animate);
       } else {
         return false;

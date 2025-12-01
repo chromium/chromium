@@ -124,7 +124,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
@@ -146,6 +145,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
@@ -400,8 +400,8 @@ TEST_P(OverviewSessionTest, SmallDisplay) {
 
 // Tests entering overview mode with two windows and selecting one by clicking.
 TEST_P(OverviewSessionTest, Basic) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   // Overview disabled by default.
   EXPECT_FALSE(InOverviewSession());
@@ -801,8 +801,8 @@ TEST_P(OverviewSessionTest, CloseButton) {
 TEST_P(OverviewSessionTest, CloseAnimationShadow) {
   // Give us some time to check if the shadow has disappeared.
   ScopedOverviewTransformWindow::SetImmediateCloseForTests(/*immediate=*/false);
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
@@ -1028,8 +1028,8 @@ TEST_P(OverviewSessionTest, MaximizedFullscreenHistograms) {
       ->OnWMEvent(&toggle_fullscreen_event);
   ASSERT_TRUE(WindowState::Get(fullscreen_window.get())->IsFullscreen());
 
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   // Enter and exit overview with the maximized window activated.
   wm::ActivateWindow(maximized_window.get());
@@ -1056,8 +1056,8 @@ TEST_P(OverviewSessionTest, MaximizedFullscreenHistograms) {
 #endif
 
 TEST_P(OverviewSessionTest, TabletModeHistograms) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   EnterTabletMode();
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
@@ -1089,8 +1089,8 @@ TEST_P(OverviewSessionTest, TabletModeHistograms) {
 // mode correctly applies the transformations to the window and correctly
 // updates the window bounds on exiting overview mode: http://crbug.com/401664.
 TEST_P(OverviewSessionTest, FullscreenWindowTabletMode) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   UpdateDisplay("800x600");
   const gfx::Rect bounds(400, 400);
@@ -1419,8 +1419,8 @@ TEST_P(OverviewSessionTest, QuickReentryRestoresInitialTransform) {
   // animating when we reenter. We cannot short circuit animations for this but
   // we also don't have to wait for them to complete.
   {
-    ui::ScopedAnimationDurationScaleMode test_duration_mode(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     ToggleOverview();
     ToggleOverview();
   }
@@ -1610,8 +1610,8 @@ TEST_P(OverviewSessionTest, RemoveDisplayWithAnimation) {
   ToggleOverview();
   EXPECT_TRUE(InOverviewSession());
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   UpdateDisplay("500x400");
   EXPECT_FALSE(InOverviewSession());
 }
@@ -2173,8 +2173,8 @@ TEST_P(OverviewSessionTest, SetWindowListAnimationStates) {
   EXPECT_TRUE(WindowState::Get(window2.get())->IsFullscreen());
   EXPECT_TRUE(WindowState::Get(window3.get())->IsFullscreen());
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   // Enter overview.
   ToggleOverview();
   EXPECT_TRUE(window1->layer()->GetAnimator()->is_animating());
@@ -2208,8 +2208,8 @@ TEST_P(OverviewSessionTest, SetWindowListAnimationStatesWithSelectedWindow) {
   // Enter overview.
   ToggleOverview();
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   // Click on |window3| to activate it and exit overview.
   // Should only set |should_animate_when_exiting_| and
   // |should_be_observed_when_exiting_| on window 3.
@@ -2246,8 +2246,8 @@ TEST_P(OverviewSessionTest,
   // Enter overview.
   ToggleOverview();
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   // Click on |window3| to activate it and exit overview.
   // Should only set |should_animate_when_exiting_| and
   // |should_be_observed_when_exiting_| on window 3.
@@ -2324,8 +2324,8 @@ TEST_P(OverviewSessionTest, HandleActiveWindowNotInOverviewGrid) {
   // Enter overview.
   ToggleOverview();
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   // Create and active a new window should exit overview without error.
   auto widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
@@ -2397,8 +2397,8 @@ TEST_P(OverviewSessionTest, HandleAlwaysOnTopWindow) {
   };
 
   // Case 1: Click on `window1` to activate it and exit overview.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ToggleOverview();
   // For entering animation, only animate `window1`, `window2`, `window3` and
   // `window5`. `window2` is fullscreen so all windows except `window1`,
@@ -2555,8 +2555,8 @@ TEST_P(OverviewSessionTest, WindowItemCanAnimateOnDragRelease) {
   histogram_tester.ExpectTotalCount(
       "Ash.Overview.WindowDrag.PresentationTime.MaxLatency.TabletMode", 0);
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   generator->ReleaseLeftButton();
   EXPECT_TRUE(window2->layer()->GetAnimator()->IsAnimatingProperty(
       ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
@@ -2770,8 +2770,8 @@ TEST_P(OverviewSessionTest, RoundedCornersVisibility) {
   wm::ActivateWindow(window2.get());
   wm::ActivateWindow(window1.get());
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Test that entering overview mode normally will disable all the rounded
   // corners until the animation is complete.
@@ -2823,8 +2823,8 @@ TEST_P(OverviewSessionTest, ShadowVisibilityDragging) {
   ToggleOverview();
   auto* item1 = GetOverviewItemForWindow(window1.get());
   auto* item2 = GetOverviewItemForWindow(window2.get());
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Drag the first window. Verify that the shadow was removed for the first
   // window but still exists for the second window as we do not make shadow
@@ -3176,8 +3176,8 @@ TEST_P(OverviewSessionTest, EatKeysDuringStartAnimation) {
   test_window->SetTargetHandler(&test_event_handler);
   test_window->Focus();
 
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Keys shouldn't be eaten by overview session normally.
   PressAndReleaseKey(ui::VKEY_A);
@@ -3218,8 +3218,8 @@ TEST_P(OverviewSessionTest, TapOnBackgroundGoToHome) {
   // Tap on the background. The tap location should be out of the tapping area
   // for back gesture. Otherwise, the touch event will be consumed and no
   // gesture event will be generated.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   GetEventGenerator()->GestureTapAt(
       gfx::Point(BackGestureEventHandler::kStartGoingBackLeftEdgeInset, 10));
   ShellTestApi().WaitForOverviewAnimationState(
@@ -3261,8 +3261,8 @@ TEST_P(OverviewSessionTest, FadeIn) {
   std::unique_ptr<aura::Window> window = CreateTestWindow();
   WindowState::Get(window.get())->Minimize();
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   ToggleOverview(OverviewEnterExitType::kFadeInEnter);
   ASSERT_TRUE(InOverviewSession());
@@ -3297,8 +3297,8 @@ TEST_P(OverviewSessionTest, FadeOutExit) {
   ASSERT_TRUE(InOverviewSession());
   EXPECT_FALSE(WindowState::Get(test_window.get())->IsMinimized());
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Grab the item widget before the session starts shutting down. The widget
   // should outlive the session, at least until the animations are done - given
@@ -3603,8 +3603,8 @@ TEST_P(OverviewSessionTest, WindowClippingAfterCombiningDesks) {
   normal_window->SetProperty(aura::client::kTopViewInset, 32);
   ASSERT_TRUE(normal_window->layer()->clip_rect().IsEmpty());
 
-  ui::ScopedAnimationDurationScaleMode scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   ToggleOverview();
   WaitForOverviewEnterAnimation();
@@ -3623,8 +3623,8 @@ TEST_P(OverviewSessionTest, WindowClippingAfterCombiningDesks) {
 // Tests that if we tab while the desks bar is sliding out, there is no crash.
 // Regression test for http://b/302708219.
 TEST_P(OverviewSessionTest, TabbingDuringExitAnimation) {
-  ui::ScopedAnimationDurationScaleMode scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   ToggleOverview();
   WaitForOverviewEnterAnimation();
@@ -3921,8 +3921,8 @@ TEST_F(FloatOverviewSessionTest, FloatContainerStacking) {
   // We need at least one window for an overview enter animation.
   auto window = CreateAppWindow();
 
-  ui::ScopedAnimationDurationScaleMode duration_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   EXPECT_TRUE(IsFloatContainerNormalStacked());
 
@@ -4615,8 +4615,8 @@ TEST_P(ContinuousOverviewAnimationTest, WindowSizesAndOpacities) {
 
 // Tests that the opacity of the "No recent items" label is continuous.
 TEST_P(ContinuousOverviewAnimationTest, NoRecentItemsLabel) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Start scrolling to enter overview. The no recent items label should have an
   // opacity between 0.f and 1.f and not be animating.
@@ -4685,8 +4685,8 @@ TEST_P(ContinuousOverviewAnimationTest, WindowCornerRadiiAndShadows) {
 
   // Give us some time to check the entry animation since we will be triggering
   // it by scrolling up and then lifting the fingers off of the trackpad.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Scroll up more than 50% of the threshold then let go of the trackpad.
   const float medium_scroll =
@@ -7768,8 +7768,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
 // opposite sides.
 TEST_F(SplitViewOverviewSessionInClamshellTest,
        BothSnappedOverviewExitAnimationHistogramTest) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> left_window(CreateAppWindow(bounds));
   std::unique_ptr<aura::Window> right_window(CreateAppWindow(bounds));
@@ -7979,8 +7979,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
 // desk bar, shadow. See the regression behavior in http://b/324478757.
 TEST_F(SplitViewOverviewSessionInClamshellTest,
        NoCrashWhenDraggingSnappedWindowToEdge) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
   // Create another desk to ensure the desk bar shows in overview.
   auto* desks_controller = DesksController::Get();
@@ -9738,8 +9738,8 @@ TEST_F(OverviewWallpaperTest, NoWindowsWidget) {
 // entering Overview mode and that both the wallpaper view layer and underlay
 // layer restore properly upon exiting.
 TEST_F(OverviewWallpaperTest, WallpaperClipAnimation) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   const gfx::Rect display_bounds(
       GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
 
@@ -9788,8 +9788,8 @@ TEST_F(OverviewWallpaperTest, NoAnimationWithMaximizedWindow) {
   WindowState::Get(window1.get())->OnWMEvent(&maximize_event);
   ASSERT_TRUE(WindowState::Get(window1.get())->IsMaximized());
 
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // The wallpaper is completely occluded by the maximized window + shelf here,
   // so we can optimize and skip the animation.

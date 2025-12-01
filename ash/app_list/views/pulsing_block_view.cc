@@ -18,7 +18,7 @@
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/animation_sequence_block.h"
 #include "ui/views/background.h"
@@ -95,7 +95,7 @@ PulsingBlockView::~PulsingBlockView() {}
 void PulsingBlockView::OnStartDelayTimer() {
   // Restart the timer to schedule the animation if animations are disabled.
   // NOTE: `ScreenRotationAnimator` can set animations to ZERO_DURATION.
-  if (ui::ScopedAnimationDurationScaleMode::is_zero()) {
+  if (gfx::ScopedAnimationDurationScaleMode::is_zero()) {
     start_delay_timer_.Start(FROM_HERE, base::Seconds(1), this,
                              &PulsingBlockView::OnStartDelayTimer);
     return;

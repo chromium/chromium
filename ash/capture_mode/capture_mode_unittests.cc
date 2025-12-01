@@ -112,7 +112,6 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util.h"
@@ -127,6 +126,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/test_widget_builder.h"
@@ -642,8 +642,8 @@ TEST_P(CaptureModeTest, NoCrashOnMultipleClicksOnStopRecordingButton) {
 
   // Use slow animations so that the stop recording button takes much longer to
   // hide, so it's easier to repro the crash at http://b/270625738.
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
   LeftClickOn(stop_recording_button);
   test_api.FlushRecordingServiceForTesting();
@@ -1842,8 +1842,8 @@ TEST_P(CaptureModeTest, RegionDragCursorCompositing) {
 // incoming input events.
 TEST_P(CaptureModeTest, DoNotHandleEventDuringCountDown) {
   // We need a non-zero duration to avoid infinite loop on countdown.
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Create 2 windows that overlap with each other.
   std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(200, 200)));
@@ -1876,8 +1876,8 @@ TEST_P(CaptureModeTest, DoNotHandleEventDuringCountDown) {
 // Test that during countdown, window changes or crashes are handled.
 TEST_P(CaptureModeTest, WindowChangesDuringCountdown) {
   // We need a non-zero duration to avoid infinite loop on countdown.
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::unique_ptr<aura::Window> window;
 
@@ -3437,8 +3437,8 @@ TEST_P(CaptureModeTest, SuspendWhileSessionIsActive) {
 TEST_P(CaptureModeTest, SuspendAfterCountdownStarts) {
   // User NORMAL_DURATION for the countdown animation so we can have predictable
   // timings.
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
   // Hit Enter to begin recording, wait for 1 second, then suspend the device.
@@ -3481,8 +3481,8 @@ TEST_P(CaptureModeTest, SwitchUsersWhileRecording) {
 TEST_P(CaptureModeTest, SwitchUsersAfterCountdownStarts) {
   // User NORMAL_DURATION for the countdown animation so we can have predictable
   // timings.
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
   // Hit Enter to begin recording, wait for 1 second, then switch users.
@@ -3639,8 +3639,8 @@ TEST_P(CaptureModeTest, CaptureSessionSwitchedModeMetric) {
 
 // Test that cancel recording during countdown won't cause crash.
 TEST_P(CaptureModeTest, CancelCaptureDuringCountDown) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   // Hit Enter to begin recording, Wait for 1 second, then press ESC while count
   // down is in progress.
@@ -3656,8 +3656,8 @@ TEST_P(CaptureModeTest, CancelCaptureDuringCountDown) {
 }
 
 TEST_P(CaptureModeTest, EscDuringCountDownWhileSettingsOpen) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
 
   // Hitting Esc while the settings menu is open and the count down is in
@@ -3792,8 +3792,8 @@ TEST_P(CaptureModeTest, ResizeRegionBoundedByDisplay) {
 }
 
 TEST_P(CaptureModeTest, FullscreenCapture) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   CaptureModeController* controller = StartCaptureSession(
       CaptureModeSource::kFullscreen, CaptureModeType::kImage);
   EXPECT_TRUE(controller->IsActive());
@@ -6111,8 +6111,8 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
 
 TEST_P(ProjectorCaptureModeIntegrationTests,
        ProjectorSessionAbortedAfterCountDownStarts) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
 

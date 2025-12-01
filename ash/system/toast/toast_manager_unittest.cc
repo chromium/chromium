@@ -34,10 +34,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -233,8 +233,8 @@ TEST_F(ToastManagerImplTest, ShowAndCloseManually) {
 }
 
 TEST_F(ToastManagerImplTest, ShowAndCloseManuallyDuringAnimation) {
-  ui::ScopedAnimationDurationScaleMode slow_animation_duration(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode slow_animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
   ASSERT_TRUE(task_environment()->UsesMockTime());
 
@@ -710,8 +710,8 @@ TEST_F(ToastManagerImplTest,
        ReplaceContentsOfCurrentToastBeforePriorReplacementFinishes) {
   // By default, the animation duration is zero in tests. Set the animation
   // duration to non-zero so that toasts don't immediately close.
-  ui::ScopedAnimationDurationScaleMode animation_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::string id1 = ShowToast(/*text=*/"TEXT1", ToastData::kInfiniteDuration);
   std::string id2 = ShowToast(/*text=*/"TEXT2", ToastData::kInfiniteDuration);

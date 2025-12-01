@@ -115,7 +115,6 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -129,6 +128,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/test/test_widget_observer.h"
@@ -1609,8 +1609,8 @@ TEST_F(FasterSplitScreenTest,
 TEST_F(FasterSplitScreenTest, NoCrashWhenDoubleTapAfterTransition) {
   // Use non-zero to start an animation, which will notify
   // `SplitViewOverviewSession::OnWindowBoundsChanged()`.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio);
@@ -2326,8 +2326,8 @@ TEST_F(SnapGroupTest, AddAndRemoveSnapGroupTest) {
 // divider in a Snap Group in landscape. See the regression at
 // http://b/333618907.
 TEST_F(SnapGroupTest, NoGapAfterSnapGroupCreationInLandscape) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   UpdateDisplay("1366x768");
 
@@ -2364,8 +2364,8 @@ TEST_F(SnapGroupTest, NoGapAfterSnapGroupCreationInLandscape) {
 // divider in a Snap Group in portrait. See the regression at
 // http://b/335323278.
 TEST_F(SnapGroupTest, NoGapAfterSnapGroupCreationInPortrait) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   UpdateDisplay("768x1366");
 
@@ -4015,8 +4015,8 @@ using SnapGroupFloatTest = SnapGroupTest;
 
 // Tests that we can create a Snap Group with a floated window.
 TEST_F(SnapGroupFloatTest, SnapGroupCreationWithFloatedWindow) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::unique_ptr<aura::Window> normal_window(CreateAppWindow());
   std::unique_ptr<aura::Window> floated_window(CreateAppWindow());
@@ -4053,8 +4053,8 @@ TEST_F(SnapGroupFloatTest, SnapGroupCreationWithFloatedWindow) {
 // Tests that creating a snap group, then floating a window in the group, then
 // re-snapping snaps to the correct bounds. See http://b/349177630 for context.
 TEST_F(SnapGroupFloatTest, ReSnapFloatedWindow) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
 
@@ -4971,8 +4971,8 @@ TEST_F(SnapGroupOverviewTest, OverviewGroupItemCreationBasic) {
 // animation of the two windows in overview mode is complete, guaranteeing a
 // seamless transition. See regression at http://b/333465871.
 TEST_F(SnapGroupOverviewTest, DividerExitOverviewAnimation) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
@@ -9449,8 +9449,8 @@ TEST_F(SnapGroupMultiDisplayTest, SnapGroupCreationOnExternalDisplay) {
 }
 
 TEST_F(SnapGroupMultiDisplayTest, NoGapAfterSnapGroupCreation) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   UpdateDisplay("1366x768,1367+0-1366x768");
   const gfx::Size window_minimum_size = gfx::Size(500, 0);

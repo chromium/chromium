@@ -34,10 +34,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -217,8 +217,8 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSummary) {
       chromeos::mahi::MahiMenuView::GetWidgetName());
   ASSERT_TRUE(mahi_menu_widget);
 
-  ui::ScopedAnimationDurationScaleMode zero_duration(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   // Open the Mahi panel by left clicking the menu's summary button.
   const views::View* const summary_button =
@@ -288,8 +288,8 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuQuestionSent) {
   const std::u16string question_text(u"question");
   TypeStringToMahiMenuTextfield(mahi_menu_widget, question_text);
 
-  ui::ScopedAnimationDurationScaleMode zero_duration(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   const views::View* question_submit_button =
       mahi_menu_widget->GetContentsView()->GetViewByID(
@@ -418,8 +418,8 @@ IN_PROC_BROWSER_TEST_P(MahiUiWithDisclaimerViewBrowserTest,
       chromeos::mahi::MahiMenuView::GetWidgetName());
   ASSERT_TRUE(mahi_menu_widget);
 
-  ui::ScopedAnimationDurationScaleMode zero_duration(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   // Show the disclaimer view by left clicking the menu's summary button.
   const views::View* const summary_button =
@@ -473,8 +473,8 @@ IN_PROC_BROWSER_TEST_P(MahiUiWithDisclaimerViewBrowserTest,
   const std::u16string question_text(u"question");
   TypeStringToMahiMenuTextfield(mahi_menu_widget, question_text);
 
-  ui::ScopedAnimationDurationScaleMode zero_duration(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   const views::View* question_submit_button =
       mahi_menu_widget->GetContentsView()->GetViewByID(

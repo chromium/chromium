@@ -8,9 +8,9 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/touch_selection/touch_selection_magnifier_aura.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -58,8 +58,8 @@ class TouchSelectionPixelTest : public AshTestBase {
  private:
   // Disable animations so that touch selection UI appears immediately when
   // triggered.
-  ui::ScopedAnimationDurationScaleMode disable_animations_{
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION};
+  gfx::ScopedAnimationDurationScaleMode disable_animations_{
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION};
 };
 
 TEST_F(TouchSelectionPixelTest, MagnifierOnTextfield) {

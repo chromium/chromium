@@ -23,7 +23,6 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
@@ -31,6 +30,7 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/animation/compositor_animation_runner.h"
 #include "ui/views/widget/widget.h"
@@ -128,8 +128,8 @@ class FrameSizeButton::PieAnimationView : public views::View,
     // example, if we are 1/4 through the animation when pressed, then we want
     // the remaining animation to only take 3/4 of the full long press duration.
     animation_.SetSlideDuration(
-        ui::ScopedAnimationDurationScaleMode::duration_multiplier() * duration *
-        (1 - animation_value));
+        gfx::ScopedAnimationDurationScaleMode::duration_multiplier() *
+        duration * (1 - animation_value));
     animation_.Show();
   }
 

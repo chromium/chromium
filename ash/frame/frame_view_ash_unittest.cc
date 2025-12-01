@@ -40,12 +40,12 @@
 #include "ui/base/accelerators/test_accelerator_target.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/test/test_widget_builder.h"
 #include "ui/views/test/views_test_utils.h"
@@ -455,8 +455,8 @@ TEST_F(FrameViewAshTest, HeaderVisibilityInFullscreen) {
 
   auto* controller = ImmersiveFullscreenController::Get(widget.get());
   ImmersiveFullscreenControllerTestApi test_api(controller);
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   FrameViewAsh* frame_view = delegate->frame_view();
   chromeos::HeaderView* header_view = frame_view->GetHeaderView();

@@ -19,7 +19,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -41,8 +41,8 @@ class UserChooserDetailedViewControllerTest : public AshTestBase {
     AshTestBase::SetUp();
     tray_test_api_ = std::make_unique<SystemTrayTestApi>();
     disable_animations_ =
-        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   }
 
   bool IsBubbleViewVisible(ViewID view_id) const {
@@ -71,7 +71,7 @@ class UserChooserDetailedViewControllerTest : public AshTestBase {
   SystemTrayTestApi* tray_test_api() { return tray_test_api_.get(); }
 
  private:
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animations_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> disable_animations_;
   std::unique_ptr<SystemTrayTestApi> tray_test_api_;
 };
 
