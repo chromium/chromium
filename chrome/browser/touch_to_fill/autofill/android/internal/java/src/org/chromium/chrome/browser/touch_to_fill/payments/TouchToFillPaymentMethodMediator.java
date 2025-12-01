@@ -769,12 +769,11 @@ class TouchToFillPaymentMethodMediator {
     public void showBnplIssuerTos(BnplIssuerTosDetail bnplIssuerTosDetail) {
         ModelList sheetItems = new ModelList();
         String issuerName = bnplIssuerTosDetail.getIssuerName();
+        mBnplIssuerIdWithTosShown = bnplIssuerTosDetail.getIssuerId();
 
         sheetItems.add(
                 buildHeaderForBnplIssuerTos(
-                        GlobalNightModeStateProviderHolder.getInstance().isInNightMode()
-                                ? bnplIssuerTosDetail.getHeaderIconDarkDrawableId()
-                                : bnplIssuerTosDetail.getHeaderIconDrawableId(),
+                        mBnplIssuerIdWithTosShown,
                         mContext.getString(
                                 bnplIssuerTosDetail.getIsLinkedIssuer()
                                         ? R.string.autofill_bnpl_tos_linked_title
@@ -831,7 +830,6 @@ class TouchToFillPaymentMethodMediator {
         mModel.set(SHEET_ITEMS, sheetItems);
         mModel.set(VISIBLE, true);
 
-        mBnplIssuerIdWithTosShown = bnplIssuerTosDetail.getIssuerId();
         recordTouchToFillBnplTosUserAction(TouchToFillBnplTosScreenUserAction.SHOWN);
     }
 
@@ -1286,11 +1284,24 @@ class TouchToFillPaymentMethodMediator {
                 BNPL_SELECTION_PROGRESS_HEADER, bnplSelectionProgressHeaderBuilder.build());
     }
 
-    private ListItem buildHeaderForBnplIssuerTos(int issuerImageId, String title) {
+    private ListItem buildHeaderForBnplIssuerTos(String issuerId, String title) {
+        @Nullable
+        final TouchToFillResourceProvider resourceProvider =
+                ServiceLoaderUtil.maybeCreate(TouchToFillResourceProvider.class);
+        @DrawableRes
+        final int issuerImageId =
+                resourceProvider == null
+                        ? R.drawable.bnpl_icon_generic
+                        : resourceProvider.getBnplIssuerTosDrawableId(
+                                issuerId,
+                                /* isLightMode= */ !GlobalNightModeStateProviderHolder.getInstance()
+                                        .isInNightMode());
         return new ListItem(
                 HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(IMAGE_DRAWABLE_ID, issuerImageId)
+                        .with(
+                                IMAGE_DRAWABLE_ID,
+                                issuerImageId == 0 ? R.drawable.bnpl_icon_generic : issuerImageId)
                         .with(TITLE_STRING, title)
                         .build());
     }
