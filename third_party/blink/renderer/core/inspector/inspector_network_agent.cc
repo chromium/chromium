@@ -2563,6 +2563,7 @@ protocol::Response InspectorNetworkAgent::emulateNetworkConditionsByRule(
     std::unique_ptr<protocol::Array<protocol::Network::NetworkConditions>>
         matched_network_conditions,
     std::unique_ptr<protocol::Array<String>>* rule_ids_result) {
+  *rule_ids_result = std::make_unique<protocol::Array<String>>();
   return protocol::Response::Success();
 }
 
