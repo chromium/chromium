@@ -531,6 +531,7 @@
 // - external/xnnpack+/src/f32-vunary/gen/f32-vsqr-sse2.c
 // - external/xnnpack+/src/log.c
 // - external/xnnpack+/src/microparams-init.c
+// - external/xnnpack+/src/operators/fingerprint_id.c
 // - external/xnnpack+/src/qd8-f16-qb4w-gemm/gen/qd8-f16-qb4w-gemm-1x8c8-minmax-avx2.c
 // - external/xnnpack+/src/qd8-f16-qb4w-gemm/gen/qd8-f16-qb4w-gemm-3x8c8-minmax-avx2.c
 // - external/xnnpack+/src/qd8-f16-qc4w-gemm/gen/qd8-f16-qc4w-gemm-1x8c8-minmax-avx2-madd-prfm.c
@@ -1005,10 +1006,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-  152,  83, 138, 239,  66,  82, 163,  86,
-   19, 153, 118, 161, 248,  25, 212,   7,
-   42, 232, 205, 140, 144,  63,  78, 111,
-  174, 198, 192, 226,  90,  48, 101, 161
+  165,  29,  77,  82, 254, 190,  37,  83,
+   68, 114, 203, 175, 162, 153,  76, 100,
+  137,  79,  38, 182, 221, 246, 183, 208,
+   11,  15,  90,   8, 251, 150, 194,  74
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
