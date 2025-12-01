@@ -177,7 +177,11 @@ AXBlockFlowData::Neighbor AXBlockFlowData::ComputeNeighborOnLine(
     switch (it->Type()) {
       case FragmentItem::kText:
       case FragmentItem::kGeneratedText:
-        if (it->GetLayoutObject()->IsText()) {
+        if (!it->GetLayoutObject()) [[unlikely]] {
+          // A generated text fragment item may not have a backing LayoutObject.
+          // For regular text, we expect them to always have one.
+          CHECK_EQ(it->Type(), FragmentItem::kGeneratedText);
+        } else if (it->GetLayoutObject()->IsText()) {
           // TODO(accessibility): Investigate when an item can be text, but its
           // LayoutObject is not marked as such.
           return std::make_pair(it->GetLayoutObject(), index);
