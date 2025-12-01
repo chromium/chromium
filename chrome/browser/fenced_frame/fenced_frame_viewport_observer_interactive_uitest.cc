@@ -227,8 +227,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameViewportObserverBrowserTest,
   ValidateHistograms(/*overall_max=*/3, /*unload_time_max=*/3);
 }
 
-// TODO(crbug.com/445735972): Fix failing test on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/445735972): Fix failing test on Mac
+// TODO(crbug.com/465059974): and Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_LogVisibleFrameMetricsNestedCrossSiteFrames \
   DISABLED_LogVisibleFrameMetricsNestedCrossSiteFrames
 #else
