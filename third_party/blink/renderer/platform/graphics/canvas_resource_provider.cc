@@ -80,22 +80,23 @@ class FlushForImageListener {
   // unnecessary.
  public:
   static FlushForImageListener* GetFlushForImageListener();
-  void AddObserver(CanvasResourceProvider* observer) {
+  void AddObserver(CanvasResourceProviderSharedImage* observer) {
     observers_.AddObserver(observer);
   }
 
-  void RemoveObserver(CanvasResourceProvider* observer) {
+  void RemoveObserver(CanvasResourceProviderSharedImage* observer) {
     observers_.RemoveObserver(observer);
   }
 
   void NotifyFlushForImage(cc::PaintImage::ContentId content_id) {
-    for (CanvasResourceProvider& obs : observers_)
+    for (CanvasResourceProviderSharedImage& obs : observers_) {
       obs.OnFlushForImage(content_id);
+    }
   }
 
  private:
   friend class ThreadSpecific<FlushForImageListener>;
-  base::ObserverList<CanvasResourceProvider> observers_;
+  base::ObserverList<CanvasResourceProviderSharedImage> observers_;
 };
 
 static FlushForImageListener* GetFlushForImageListener() {
