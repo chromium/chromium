@@ -49,8 +49,8 @@ void OmniboxPopupPresenterBase::Show() {
       widget_->Activate();
       content->RequestFocus();
       content->GetWebContents()->Focus();
-      content->ShowUI();
     }
+    content->ShowUI();
   }
 }
 

@@ -36,7 +36,6 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   void OnClosedWithInput(const std::string& input);
 
   private:
-  bool is_shown_ = false;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
