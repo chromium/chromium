@@ -96,31 +96,6 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestEnableRandomSampling,
 
 namespace {
 
-// Test class that allows to enable UKM recording.
-class PrivacyBudgetBrowserTestWithUkmRecording
-    : private EnableRandomSampling,
-      public PrivacyBudgetBrowserTestBaseWithUkmRecording {};
-
-}  // namespace
-
-// When UKM resets the Client ID for some reason the study should reset its
-// local state as well.
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithUkmRecording,
-                       UkmClientIdChangesResetStudyState) {
-  EXPECT_TRUE(blink::IdentifiabilityStudySettings::Get()->IsActive());
-  ASSERT_TRUE(EnableUkmRecording());
-
-  local_state()->SetString(prefs::kPrivacyBudgetSeenSurfaces, "1,2,3");
-
-  ASSERT_TRUE(DisableUkmRecording());
-
-  EXPECT_TRUE(
-      local_state()->GetString(prefs::kPrivacyBudgetSeenSurfaces).empty())
-      << "Active surface list still exists after resetting client ID";
-}
-
-namespace {
-
 class PrivacyBudgetGroupConfigBrowserTest : public PlatformBrowserTest {
  public:
   PrivacyBudgetGroupConfigBrowserTest() {

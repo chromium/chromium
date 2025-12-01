@@ -55,7 +55,6 @@
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 #include "chrome/browser/performance_manager/metrics/metrics_provider_common.h"
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
-#include "chrome/browser/privacy_budget/privacy_budget_metrics_provider.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -1066,10 +1065,6 @@ void ChromeMetricsServiceClient::RegisterUKMProviders() {
 
   ukm_service_->RegisterMetricsProvider(
       ukm::CreateFieldTrialsProviderForUkm(synthetic_trial_registry_.get()));
-
-  ukm_service_->RegisterMetricsProvider(
-      std::make_unique<PrivacyBudgetMetricsProvider>(
-          identifiability_study_state_.get()));
 
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::ComponentMetricsProvider>(
