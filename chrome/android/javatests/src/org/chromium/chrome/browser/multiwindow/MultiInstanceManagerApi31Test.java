@@ -287,6 +287,89 @@ public class MultiInstanceManagerApi31Test {
 
     @Test
     @SmallTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
+    })
+    public void moveTabsToOtherWindow_multipleWindowsOpen_hideTargetSelector_newIncognitoWindow() {
+        var incognitoActivity =
+                createNewWindow(
+                        mActivityTestRule.getActivity(),
+                        /* instanceId= */ 3,
+                        /* addIncognitoExtras= */ true);
+        createNewWindows(
+                mActivityTestRule.getActivity(),
+                /* numWindows= */ 2,
+                /* addIncognitoExtras= */ false);
+        List<Tab> tabs = new ArrayList<>();
+        var activeTab = ThreadUtils.runOnUiThreadBlocking(incognitoActivity::getActivityTab);
+        tabs.add(activeTab);
+
+        ChromeTabbedActivity newWindow =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        () ->
+                                mMultiInstanceManager.moveTabsToOtherWindow(
+                                        tabs, MultiInstanceManager.NewWindowAppSource.MENU));
+
+        assertFalse(
+                "Target selector dialog should not be visible", mModalDialogManager.isShowing());
+        assertTrue("New window should be incognito", newWindow.isIncognitoWindow());
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
+    })
+    public void moveTabsToOtherWindow_multipleWindowsOpen_hideTargetSelector_newRegularWindow() {
+        var activity = mActivityTestRule.getActivity();
+        createNewWindows(
+                mActivityTestRule.getActivity(),
+                /* numWindows= */ 2,
+                /* addIncognitoExtras= */ true);
+        List<Tab> tabs = new ArrayList<>();
+        var activeTab = ThreadUtils.runOnUiThreadBlocking(activity::getActivityTab);
+        tabs.add(activeTab);
+
+        ChromeTabbedActivity newWindow =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        () ->
+                                mMultiInstanceManager.moveTabsToOtherWindow(
+                                        tabs, MultiInstanceManager.NewWindowAppSource.MENU));
+
+        assertFalse(
+                "Target selector dialog should not be visible", mModalDialogManager.isShowing());
+        assertFalse("New window should not be incognito", newWindow.isIncognitoWindow());
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
+    public void moveTabsToOtherWindow_multipleWindowsOpen_showTargetSelector() {
+        var activity = mActivityTestRule.getActivity();
+        createNewWindows(
+                mActivityTestRule.getActivity(),
+                /* numWindows= */ 2,
+                /* addIncognitoExtras= */ true);
+        List<Tab> tabs = new ArrayList<>();
+        var activeTab = ThreadUtils.runOnUiThreadBlocking(activity::getActivityTab);
+        tabs.add(activeTab);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMultiInstanceManager.moveTabsToOtherWindow(
+                            tabs, MultiInstanceManager.NewWindowAppSource.MENU);
+                });
+        assertTrue("Target selector dialog should be visible", mModalDialogManager.isShowing());
+    }
+
+    @Test
+    @SmallTest
     @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "https://crbug.com/454379518")
     public void moveTabGroupToOtherWindow_singleWindowOpen() {
         verifyInstanceState(/* expectedActiveInstances= */ 1, /* expectedTotalInstances= */ 1);
