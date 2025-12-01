@@ -743,9 +743,7 @@ const CSSValue* TimelineTriggerName::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* TimelineTriggerName::InitialValue() const {
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
-  return list;
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
 const CSSValue* TimelineTriggerRangeStart::ParseSingleValue(

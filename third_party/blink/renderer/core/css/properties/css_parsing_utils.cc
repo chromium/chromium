@@ -4637,32 +4637,6 @@ CSSValue* ConsumeSingleTimelineInsetSide(CSSParserTokenStream& stream,
                                 CSSPrimitiveValue::ValueRange::kAll);
 }
 
-CSSValue* ConsumeTimelineTriggerValue(CSSPropertyID property,
-                                      CSSParserTokenStream& stream,
-                                      const CSSParserContext& context) {
-  switch (property) {
-    case CSSPropertyID::kTimelineTriggerName:
-      return css_parsing_utils::ConsumeSingleTimelineTriggerName(stream,
-                                                                 context);
-    case CSSPropertyID::kTimelineTriggerSource:
-      return css_parsing_utils::ConsumeAnimationTimeline(stream, context);
-    case CSSPropertyID::kTimelineTriggerRangeStart:
-      return css_parsing_utils::ConsumeAnimationRange(stream, context, 0.0,
-                                                      /*allow_auto=*/false);
-    case CSSPropertyID::kTimelineTriggerExitRangeStart:
-      return css_parsing_utils::ConsumeAnimationRange(stream, context, 0.0,
-                                                      /*allow_auto=*/true);
-    case CSSPropertyID::kTimelineTriggerRangeEnd:
-      return css_parsing_utils::ConsumeAnimationRange(stream, context, 100.0,
-                                                      /*allow_auto=*/false);
-    case CSSPropertyID::kTimelineTriggerExitRangeEnd:
-      return css_parsing_utils::ConsumeAnimationRange(stream, context, 100.0,
-                                                      /*allow_auto=*/true);
-    default:
-      NOTREACHED();
-  }
-}
-
 }  // namespace
 
 CSSValue* ConsumeSingleTimelineInset(CSSParserTokenStream& stream,
@@ -4701,46 +4675,50 @@ bool ConsumeTimelineTriggerShorthand(
     longhands[i] = CSSValueList::CreateCommaSeparated();
   }
 
+  auto add_value =
+      [&](CSSValue* value, unsigned index,
+          std::array<bool, kMaxNumTimelineTriggerLonghands>& parsed_longhand) {
+        if (value) {
+          longhands[index]->Append(*value);
+          parsed_longhand[index] = true;
+        }
+      };
+
   do {
     std::array<bool, kMaxNumTimelineTriggerLonghands> parsed_longhand = {};
-    bool found_any = false;
-    CSSValue* trigger_exit_range_start = nullptr;
-    CSSValue* trigger_range_start = nullptr;
-    // TODO(crbug.com/429392773): Extract this do-while into a separate
-    // function.
-    do {
-      bool found_property = false;
-      for (unsigned i = 0; i < longhand_count; ++i) {
-        if (parsed_longhand[i]) {
-          continue;
-        }
 
-        CSSValue* value = ConsumeTimelineTriggerValue(
-            shorthand.properties()[i]->PropertyID(), stream, context);
-        if (value) {
-          parsed_longhand[i] = true;
-          found_property = true;
-          found_any = true;
-          longhands[i]->Append(*value);
-          // If we don't get a trigger{-exit}-range-end, we'll need to infer
-          // based on the trigger{-exit}-range-start.
-          if (shorthand.properties()[i]->PropertyID() ==
-              CSSPropertyID::kTimelineTriggerExitRangeStart) {
-            trigger_exit_range_start = value;
-          } else if (shorthand.properties()[i]->PropertyID() ==
-                     CSSPropertyID::kTimelineTriggerRangeStart) {
-            trigger_range_start = value;
-          }
-          break;
-        }
-      }
-      if (!found_property) {
-        break;
-      }
-    } while (!stream.AtEnd() && stream.Peek().GetType() != kCommaToken);
+    CSSValue* trigger_name_value =
+        css_parsing_utils::ConsumeSingleTimelineTriggerName(stream, context);
+    add_value(trigger_name_value, 0, parsed_longhand);
 
-    if (!found_any) {
-      return false;
+    CSSValue* trigger_timeline_value =
+        css_parsing_utils::ConsumeAnimationTimeline(stream, context);
+    add_value(trigger_timeline_value, 1, parsed_longhand);
+
+    CSSValue* trigger_range_start_value =
+        css_parsing_utils::ConsumeAnimationRange(stream, context, 0.0,
+                                                 /*allow_auto=*/false);
+    add_value(trigger_range_start_value, 2, parsed_longhand);
+
+    CSSValue* trigger_range_end_value =
+        css_parsing_utils::ConsumeAnimationRange(stream, context, 100.0,
+                                                 /*allow_auto=*/false);
+    add_value(trigger_range_end_value, 3, parsed_longhand);
+
+    CSSValue* trigger_exit_range_start_value = nullptr;
+    if (ConsumeSlashIncludingWhitespace(stream)) {
+      trigger_exit_range_start_value =
+          css_parsing_utils::ConsumeAnimationRange(stream, context, 0.0,
+                                                   /*allow_auto=*/true);
+      if (!trigger_exit_range_start_value) {
+        return false;
+      }
+      add_value(trigger_exit_range_start_value, 4, parsed_longhand);
+
+      CSSValue* trigger_exit_range_end_value =
+          css_parsing_utils::ConsumeAnimationRange(stream, context, 100.0,
+                                                   /*allow_auto=*/true);
+      add_value(trigger_exit_range_end_value, 5, parsed_longhand);
     }
 
     for (unsigned i = 0; i < longhand_count; ++i) {
@@ -4750,13 +4728,14 @@ bool ConsumeTimelineTriggerShorthand(
         CSSValue* longhand_value = nullptr;
 
         // If we didn't get a trigger{-exit}-range-end, try to infer it from
-        // trigger{-exit}-range-start if we got one.
+        // trigger{-exit}-range-start if we got one. This allows, for example,
+        // 'contain 0%' to expand to 'contain 0% contain 100%'.
         if (property_id == CSSPropertyID::kTimelineTriggerExitRangeEnd) {
-          longhand_value =
-              css_parsing_utils::GetImpliedRangeEnd(trigger_exit_range_start);
+          longhand_value = css_parsing_utils::GetImpliedRangeEnd(
+              trigger_exit_range_start_value);
         } else if (property_id == CSSPropertyID::kTimelineTriggerRangeEnd) {
           longhand_value =
-              css_parsing_utils::GetImpliedRangeEnd(trigger_range_start);
+              css_parsing_utils::GetImpliedRangeEnd(trigger_range_start_value);
         }
 
         if (longhand_value) {
@@ -4767,9 +4746,6 @@ bool ConsumeTimelineTriggerShorthand(
       }
       parsed_longhand[i] = false;
     }
-
-    trigger_range_start = nullptr;
-    trigger_exit_range_start = nullptr;
   } while (ConsumeCommaIncludingWhitespace(stream));
 
   return true;

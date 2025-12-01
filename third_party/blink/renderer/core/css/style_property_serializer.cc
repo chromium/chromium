@@ -1047,6 +1047,16 @@ std::pair<CSSValueID, double> GetTimelineRangePercent(
   return {name, offset_percent};
 }
 
+bool DropAnimationRangeEndValue(const CSSValue& start, const CSSValue& end) {
+  // The form "name X name 100%" must contract to "name X".
+  //
+  // https://github.com/w3c/csswg-drafts/issues/8438
+  const auto& start_pair = GetTimelineRangePercent(start, 0.0);
+  const auto& end_pair = GetTimelineRangePercent(end, 100.0);
+  std::pair<CSSValueID, double> omittable_end = {start_pair.first, 100.0};
+  return end_pair == omittable_end;
+}
+
 CSSValue* AnimationRangeShorthandValueItem(wtf_size_t index,
                                            const CSSValueList& start_list,
                                            const CSSValueList& end_list) {
@@ -1060,13 +1070,7 @@ CSSValue* AnimationRangeShorthandValueItem(wtf_size_t index,
 
   list->Append(start);
 
-  // The form "name X name 100%" must contract to "name X".
-  //
-  // https://github.com/w3c/csswg-drafts/issues/8438
-  const auto& start_pair = GetTimelineRangePercent(start, 0.0);
-  const auto& end_pair = GetTimelineRangePercent(end, 100.0);
-  std::pair<CSSValueID, double> omittable_end = {start_pair.first, 100.0};
-  if (end_pair != omittable_end) {
+  if (!DropAnimationRangeEndValue(start, end)) {
     list->Append(end);
   }
 
@@ -1829,6 +1833,79 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         }
       }
 
+      if (shorthand.id() == CSSPropertyID::kTimelineTrigger) {
+        if (property->IDEquals(CSSPropertyID::kTimelineTriggerName)) {
+          const auto* name_identifier = DynamicTo<CSSIdentifierValue>(value);
+          if (name_identifier) {
+            DCHECK(name_identifier->GetValueID() == CSSValueID::kNone);
+            omit_value = true;
+          }
+        } else if (property->IDEquals(CSSPropertyID::kTimelineTriggerSource)) {
+          const auto* timeline_identifier =
+              DynamicTo<CSSIdentifierValue>(value);
+          if (timeline_identifier) {
+            DCHECK(timeline_identifier->GetValueID() == CSSValueID::kAuto);
+            omit_value = true;
+          }
+        } else if (property->IDEquals(
+                       CSSPropertyID::kTimelineTriggerRangeStart)) {
+          if (const auto* start_identifier =
+                  DynamicTo<CSSIdentifierValue>(value)) {
+            // Only 'normal' is stored as an identifier, other values are lists.
+            // 'normal' is the default value. It should be skipped.
+            DCHECK(start_identifier->GetValueID() == CSSValueID::kNormal);
+            omit_value = true;
+          }
+        } else if (property->IDEquals(
+                       CSSPropertyID::kTimelineTriggerRangeEnd)) {
+          if (const auto* end_identifier =
+                  DynamicTo<CSSIdentifierValue>(value)) {
+            DCHECK(end_identifier->GetValueID() == CSSValueID::kNormal);
+            omit_value = true;
+          } else {
+            // Get timeline-trigger-range-start.
+            // The form "name X name 100%" must contract to "name X".
+            //
+            // https://github.com/w3c/csswg-drafts/issues/8438
+            const auto* property_values =
+                To<CSSValueList>(values[property_index - 1].Get());
+
+            DCHECK_LT(layer, property_values->length());
+            const CSSValue* start_value = &property_values->Item(layer);
+
+            omit_value = DropAnimationRangeEndValue(*start_value, *value);
+          }
+        } else if (property->IDEquals(
+                       CSSPropertyID::kTimelineTriggerExitRangeStart)) {
+          if (const auto* start_identifier =
+                  DynamicTo<CSSIdentifierValue>(value)) {
+            // Only 'normal' and 'auto' are stored as identifiers, other values
+            // are lists. 'normal' is the default value. 'auto' should be
+            // skipped as it is the default.
+            DCHECK(start_identifier->GetValueID() == CSSValueID::kNormal ||
+                   start_identifier->GetValueID() == CSSValueID::kAuto);
+            omit_value = start_identifier->GetValueID() == CSSValueID::kAuto;
+          }
+        } else if (property->IDEquals(
+                       CSSPropertyID::kTimelineTriggerExitRangeEnd)) {
+          if (const auto* end_identifier =
+                  DynamicTo<CSSIdentifierValue>(value)) {
+            DCHECK(end_identifier->GetValueID() == CSSValueID::kAuto ||
+                   end_identifier->GetValueID() == CSSValueID::kNormal);
+            omit_value = end_identifier->GetValueID() == CSSValueID::kAuto;
+          } else {
+            // Get timeline-trigger-exit-range-start.
+            const auto* property_values =
+                To<CSSValueList>(values[property_index - 1].Get());
+
+            DCHECK_LT(layer, property_values->length());
+            const CSSValue* start_value = &property_values->Item(layer);
+
+            omit_value = DropAnimationRangeEndValue(*start_value, *value);
+          }
+        }
+      }
+
       if (!omit_value) {
         if (property->IDEquals(CSSPropertyID::kBackgroundSize) ||
             property->IDEquals(CSSPropertyID::kMaskSize)) {
@@ -1837,6 +1914,9 @@ String StylePropertySerializer::GetLayeredShorthandValue(
           } else {
             layer_result.Append(" 0% 0% / ");
           }
+        } else if (property->IDEquals(
+                       CSSPropertyID::kTimelineTriggerExitRangeStart)) {
+          layer_result.Append(" / ");
         } else if (!layer_result.empty()) {
           // Do this second to avoid ending up with an extra space in the output
           // if we hit the continue above.
@@ -1863,6 +1943,10 @@ String StylePropertySerializer::GetLayeredShorthandValue(
       // set to their defaults. If everything is set to the default, then emit
       // "all" instead of an empty string.
       layer_result.Append("all");
+    }
+    if (shorthand.id() == CSSPropertyID::kTimelineTrigger &&
+        layer_result.empty()) {
+      layer_result.Append("none");
     }
     if (!layer_result.empty()) {
       if (!result.empty()) {

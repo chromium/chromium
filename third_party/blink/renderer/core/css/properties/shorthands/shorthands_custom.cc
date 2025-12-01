@@ -329,6 +329,29 @@ bool ConsumeAnimationRangeItemInto(CSSParserTokenStream& stream,
   return true;
 }
 
+const CSSValueList* SingleAnimationRangeCSSValueFromComputedStyle(
+    const ComputedStyle& style,
+    const std::optional<TimelineOffset>& start,
+    const std::optional<TimelineOffset>& end,
+    const TimelineOffset& default_start,
+    const TimelineOffset& default_end) {
+  auto* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+      start, style, Length::Percent(0.0)));
+
+  // The form "name X name 100%" must contract to "name X".
+  //
+  // https://github.com/w3c/csswg-drafts/issues/8438
+  TimelineOffset omittable_end(start.value_or(default_start).name,
+                               Length::Percent(100));
+  if (end.value_or(default_end) != omittable_end) {
+    list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+        end, style, Length::Percent(100.0)));
+  }
+
+  return list;
+}
+
 const CSSValue* AnimationRangeCSSValueFromComputedStyle(
     const ComputedStyle& style,
     const Vector<std::optional<TimelineOffset>>& range_start_list,
@@ -346,21 +369,8 @@ const CSSValue* AnimationRangeCSSValueFromComputedStyle(
   for (wtf_size_t i = 0; i < range_start_list.size(); ++i) {
     const std::optional<TimelineOffset>& start = range_start_list[i];
     const std::optional<TimelineOffset>& end = range_end_list[i];
-
-    auto* inner_list = CSSValueList::CreateSpaceSeparated();
-    inner_list->Append(*ComputedStyleUtils::ValueForAnimationRange(
-        start, style, Length::Percent(0.0)));
-
-    // The form "name X name 100%" must contract to "name X".
-    //
-    // https://github.com/w3c/csswg-drafts/issues/8438
-    TimelineOffset omittable_end(start.value_or(default_start).name,
-                                 Length::Percent(100));
-    if (end.value_or(default_end) != omittable_end) {
-      inner_list->Append(*ComputedStyleUtils::ValueForAnimationRange(
-          end, style, Length::Percent(100.0)));
-    }
-    outer_list->Append(*inner_list);
+    outer_list->Append(*SingleAnimationRangeCSSValueFromComputedStyle(
+        style, start, end, default_start, default_end));
   }
 
   return outer_list;
@@ -4251,62 +4261,122 @@ const CSSValue* TextWrap::CSSValueFromComputedStyleInternal(
   return list;
 }
 
+namespace {
+
+const CSSValueList* SingleTimelineTriggerExitRangeCSSValueFromComputedStyle(
+    const ComputedStyle& style,
+    const TimelineOffsetOrAuto& start,
+    const TimelineOffsetOrAuto& end,
+    const TimelineOffset& default_start,
+    const TimelineOffset& default_end) {
+  if (end.IsAuto() || !end.GetTimelineOffset()) {
+    // end is 'auto' or 'normal' (nullopt TimelineOffset implies 'normal').
+    // 'auto' is the default value and is contracted away.
+    // 'normal normal' does not contract as that would make 'normal' ambiguous.
+    // So, we always add normal.
+    auto* list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*ComputedStyleUtils::ValueForAnimationRangeOrAuto(
+        start, style, Length::Percent(0.0)));
+    if (!end.IsAuto()) {
+      list->Append(*CSSIdentifierValue::Create(CSSValueID::kNormal));
+    }
+
+    return list;
+  }
+
+  return SingleAnimationRangeCSSValueFromComputedStyle(
+      style, start.GetTimelineOffset(), end.GetTimelineOffset(), default_start,
+      default_end);
+}
+
+}  // namespace
+
 const CSSValue* TimelineTrigger::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
+  TimelineOffset default_start(TimelineOffset::NamedRange::kNone,
+                               Length::Percent(0));
+  TimelineOffset default_end(TimelineOffset::NamedRange::kNone,
+                             Length::Percent(100));
+
   if (const CSSAnimationData* animation_data = style.Animations()) {
     CSSValueList* triggers_list = CSSValueList::CreateCommaSeparated();
     for (wtf_size_t i = 0; i < animation_data->TimelineTriggerNameList().size();
          ++i) {
-      CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+      CSSValueList* list = CSSValueList::CreateSlashSeparated();
+      CSSValueList* before_slash = CSSValueList::CreateSpaceSeparated();
 
-      std::optional<Persistent<const ScopedCSSName>> name =
-          animation_data->TimelineTriggerNameList().at(i);
-      list->Append(
-          name ? *ComputedStyleUtils::ValueForCustomIdentOrNone(name->Get())
-               : *CSSIdentifierValue::Create(CSSValueID::kNone));
+      if (std::optional<Member<const ScopedCSSName>> name =
+              animation_data->TimelineTriggerNameList().at(i)) {
+        if (name->Get()) {
+          before_slash->Append(*MakeGarbageCollected<CSSCustomIdentValue>(
+              name->Get()->GetName()));
+        }
+      }
 
-      list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(
-          animation_data->TimelineTriggerSourceList().at(i), style));
+      const CSSValue* timeline_value =
+          ComputedStyleUtils::ValueForAnimationTimeline(
+              animation_data->TimelineTriggerSourceList().at(i), style);
+      if (timeline_value &&
+          (!timeline_value->IsIdentifierValue() ||
+           To<CSSIdentifierValue>(timeline_value)->GetValueID() !=
+               CSSValueID::kAuto)) {
+        before_slash->Append(*timeline_value);
+      }
 
-      list->Append(*ComputedStyleUtils::ValueForAnimationRange(
-          animation_data->TimelineTriggerRangeStartList().at(i), style,
-          Length::Percent(0.0)));
-      list->Append(*ComputedStyleUtils::ValueForAnimationRange(
-          animation_data->TimelineTriggerRangeEndList().at(i), style,
-          Length::Percent(100)));
-      list->Append(*ComputedStyleUtils::ValueForAnimationRangeOrAuto(
-          animation_data->TimelineTriggerExitRangeStartList().at(i), style,
-          Length::Percent(0.0)));
-      list->Append(*ComputedStyleUtils::ValueForAnimationRangeOrAuto(
-          animation_data->TimelineTriggerExitRangeEndList().at(i), style,
-          Length::Percent(100)));
+      const CSSValueList* enter_range =
+          SingleAnimationRangeCSSValueFromComputedStyle(
+              style, animation_data->TimelineTriggerRangeStartList().at(i),
+              animation_data->TimelineTriggerRangeEndList().at(i),
+              default_start, default_end);
+      DCHECK(enter_range->length());
+      // Skip a value of 'normal' as that is the default for the enter range.
+      bool skip_enter_range = false;
+      if (enter_range->length() == 1) {
+        const CSSIdentifierValue* enter_identifier =
+            DynamicTo<CSSIdentifierValue>(enter_range->Item(0));
+        if (enter_identifier &&
+            enter_identifier->GetValueID() == CSSValueID::kNormal) {
+          skip_enter_range = true;
+        }
+      }
+      if (!skip_enter_range) {
+        before_slash->Append(*enter_range);
+      }
+      list->Append(*before_slash);
+
+      const CSSValueList* exit_range =
+          SingleTimelineTriggerExitRangeCSSValueFromComputedStyle(
+              style, animation_data->TimelineTriggerExitRangeStartList().at(i),
+              animation_data->TimelineTriggerExitRangeEndList().at(i),
+              default_start, default_end);
+      DCHECK(exit_range->length());
+      // Skip a value of 'auto' as that is the default for the exit range.
+      bool skip_exit_range = false;
+      if (exit_range->length() == 1) {
+        const CSSIdentifierValue* exit_identifier =
+            DynamicTo<CSSIdentifierValue>(exit_range->Item(0));
+        if (exit_identifier &&
+            exit_identifier->GetValueID() == CSSValueID::kAuto) {
+          skip_exit_range = true;
+        }
+      }
+      if (!skip_exit_range) {
+        list->Append(*exit_range);
+      }
+
+      if (list->length() == 0) {
+        list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
+      }
 
       triggers_list->Append(*list);
     }
     return triggers_list;
   }
 
-  CSSValueList* default_list = CSSValueList::CreateSpaceSeparated();
-  default_list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
-  default_list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(
-      CSSAnimationData::InitialTimelineTriggerSource(), style));
-  default_list->Append(*ComputedStyleUtils::ValueForAnimationRange(
-      CSSAnimationData::InitialTimelineTriggerRangeStart(), style,
-      Length::Percent(0.0)));
-  default_list->Append(*ComputedStyleUtils::ValueForAnimationRange(
-      CSSAnimationData::InitialTimelineTriggerRangeEnd(), style,
-      Length::Percent(100)));
-  default_list->Append(*ComputedStyleUtils::ValueForAnimationRangeOrAuto(
-      CSSAnimationData::InitialTimelineTriggerExitRangeStart(), style,
-      Length::Percent(0.0)));
-  default_list->Append(*ComputedStyleUtils::ValueForAnimationRangeOrAuto(
-      CSSAnimationData::InitialTimelineTriggerExitRangeEnd(), style,
-      Length::Percent(100)));
-
-  return default_list;
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
 bool TimelineTrigger::ParseShorthand(

@@ -1631,7 +1631,7 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewRepeat) {
         height: 50px;
         width: 50px;
         animation: myAnim linear 0.5s forwards;
-        timeline-trigger: --trigger view() contain 10% contain 90%
+        timeline-trigger: --trigger view() contain 10% contain 90% /
         cover 1% cover 99%;
         animation-trigger: --trigger;
       }
