@@ -354,17 +354,17 @@ void SerializedScriptValue::TransferOffscreenCanvas(
     if (visited.Contains(offscreen_canvases[i].Get()))
       continue;
     if (offscreen_canvases[i]->IsNeutered()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "OffscreenCanvas at index " +
-                                            String::Number(i) +
-                                            " is already detached.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          StrCat({"OffscreenCanvas at index ", String::Number(i),
+                  " is already detached."}));
       return;
     }
     if (offscreen_canvases[i]->RenderingContext()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "OffscreenCanvas at index " +
-                                            String::Number(i) +
-                                            " has an associated context.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          StrCat({"OffscreenCanvas at index ", String::Number(i),
+                  " has an associated context."}));
       return;
     }
     visited.insert(offscreen_canvases[i].Get());
@@ -527,10 +527,10 @@ bool SerializedScriptValue::ExtractTransferables(
   for (const auto& script_object : object_sequence) {
     // Validation of non-null objects, per HTML5 spec 10.3.3.
     if (script_object.IsNull()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "Value at index " + String::Number(i) +
-                                            " is an untransferable " +
-                                            "'null' value.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          StrCat({"Value at index ", String::Number(i),
+                  " is an untransferable 'null' value."}));
       return false;
     }
     if (!factory.ExtractTransferable(isolate, script_object.V8Object(), i,
@@ -538,8 +538,8 @@ bool SerializedScriptValue::ExtractTransferables(
       if (!exception_state.HadException()) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kDataCloneError,
-            "Value at index " + String::Number(i) +
-                " does not have a transferable type.");
+            StrCat({"Value at index ", String::Number(i),
+                    " does not have a transferable type."}));
       }
       return false;
     }

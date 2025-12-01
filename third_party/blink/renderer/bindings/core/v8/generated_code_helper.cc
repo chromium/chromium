@@ -242,9 +242,9 @@ void ReportInvalidEnumSetToAttribute(v8::Isolate* isolate,
   ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
-  String message = "The provided value '" + value +
-                   "' is not a valid enum value of type " + enum_type_name +
-                   ".";
+  String message =
+      StrCat({"The provided value '", value,
+              "' is not a valid enum value of type ", enum_type_name, "."});
 
   execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,

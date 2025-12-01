@@ -118,14 +118,14 @@ static double EnforceRange(double x,
                            ExceptionState& exception_state) {
   if (!std::isfinite(x)) {
     exception_state.ThrowTypeError(
-        "Value is" + String(std::isinf(x) ? " infinite and" : "") +
-        " not of type '" + String(type_name) + "'.");
+        StrCat({"Value is", std::isinf(x) ? " infinite and" : "",
+                " not of type '", type_name, "'."}));
     return 0;
   }
   x = trunc(x);
   if (x < minimum || x > maximum) {
-    exception_state.ThrowTypeError("Value is outside the '" +
-                                   String(type_name) + "' value range.");
+    exception_state.ThrowTypeError(
+        StrCat({"Value is outside the '", type_name, "' value range."}));
     return 0;
   }
   return x;
@@ -184,8 +184,8 @@ static inline T ToSmallerInt(v8::Isolate* isolate,
     if (result >= LimitsTrait::kMinValue && result <= LimitsTrait::kMaxValue)
       return static_cast<T>(result);
     if (configuration == kEnforceRange) {
-      exception_state.ThrowTypeError("Value is outside the '" +
-                                     String(type_name) + "' value range.");
+      exception_state.ThrowTypeError(
+          StrCat({"Value is outside the '", type_name, "' value range."}));
       return 0;
     }
     if (configuration == kClamp)
@@ -252,8 +252,8 @@ static inline T ToSmallerUInt(v8::Isolate* isolate,
     if (result >= 0 && result <= LimitsTrait::kMaxValue)
       return static_cast<T>(result);
     if (configuration == kEnforceRange) {
-      exception_state.ThrowTypeError("Value is outside the '" +
-                                     String(type_name) + "' value range.");
+      exception_state.ThrowTypeError(
+          StrCat({"Value is outside the '", type_name, "' value range."}));
       return 0;
     }
     if (configuration == kClamp)

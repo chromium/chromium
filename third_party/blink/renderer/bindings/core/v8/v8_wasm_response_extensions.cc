@@ -363,7 +363,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
       ScriptState::Scope scope(script_state_);
       streaming_->Abort(V8ThrowException::CreateTypeError(
           script_state_->GetIsolate(),
-          "WebAssembly compilation aborted: " + reason));
+          StrCat({"WebAssembly compilation aborted: ", reason})));
     } else {
       // We are not allowed to execute a script, which indicates that we should
       // not reject the promise of the streaming compilation. By passing no

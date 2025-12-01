@@ -76,7 +76,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -424,7 +423,7 @@ void LocalWindowProxy::SetSecurityToken(const SecurityOrigin* origin) {
       context->UseDefaultSecurityToken();
       return;
     }
-    token = frame_security_token + token;
+    token = StrCat({frame_security_token, token});
   }
 
   // NOTE: V8 does identity comparison in fast path, must use a symbol
