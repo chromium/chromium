@@ -60,16 +60,9 @@ if (defined(android_app_secondary_abi)) {
 }
 
 if (android_64bit_target_cpu) {
-  _main_monochrome_public_bundle_target = "monochrome_32_64_public_bundle"
   _main_trichrome_chrome_bundle_target = "trichrome_chrome_32_64_bundle"
   _main_trichrome_library_apk_target = "trichrome_library_32_64_apk"
-
-  # monochrome_apk is only 64-bit primary, we have no 32-bit primary version,
-  # as we don't ship it to users.
-  _main_monochrome_public_apk_target = "monochrome_64_32_public_apk"
 } else {
-  _main_monochrome_public_bundle_target = "monochrome_public_bundle"
-  _main_monochrome_public_apk_target = "monochrome_public_apk"
   _main_trichrome_chrome_bundle_target = "trichrome_chrome_bundle"
   _main_trichrome_library_apk_target = "trichrome_library_apk"
 }
@@ -2213,25 +2206,10 @@ if (_is_default_toolchain) {
     group("trichrome_library_apk") {
       deps = [ ":trichrome_library_64_apk" ]
     }
-    group("monochrome_public_apk") {
-      deps = [ ":monochrome_64_public_apk" ]
-    }
   } else {
     if (android_64bit_target_cpu) {
       alias_with_wrapper_script("trichrome_library_apk") {
         alias_target = ":trichrome_library_64_32_apk"
-      }
-      alias_with_wrapper_script("monochrome_public_apk") {
-        alias_target = ":monochrome_64_32_public_apk"
-      }
-    }
-    chrome_public_apk_or_module_tmpl(_main_monochrome_public_apk_target) {
-      is_monochrome = true
-      apk_name = "MonochromePublic"
-      target_type = "android_apk"
-      if (android_64bit_target_cpu) {
-        is_64_bit_browser = true
-        include_32_bit_webview = true
       }
     }
 
@@ -2541,28 +2519,6 @@ if (_is_default_toolchain) {
     extra_args = _common_smoke_test_args
   }
 
-  # Public webview targets don't work with non-public sdks.
-  # https://crbug.com/1000763
-  instrumentation_test_runner("monochrome_public_smoke_test") {
-    if (android_64bit_target_cpu && !defined(android_app_secondary_abi)) {
-      apk_under_test = ":monochrome_64_public_apk"
-      if (!is_java_debug) {
-        proguard_mapping_path =
-            "$root_build_dir/apks/MonochromePublic64.apk.mapping"
-      }
-    } else {
-      apk_under_test = ":$_main_monochrome_public_apk_target"
-      if (!is_java_debug) {
-        proguard_mapping_path =
-            "$root_build_dir/apks/MonochromePublic.apk.mapping"
-      }
-    }
-    android_test_apk = ":chrome_smoke_test_apk"
-    additional_apks = [ "//net/android:net_test_support_apk" ]
-    never_incremental = true
-    extra_args = _common_smoke_test_args
-  }
-
   android_test_apk("chrome_bundle_smoke_test_apk") {
     apk_name = "ChromeBundleSmokeTest"
     android_manifest = "javatests/src/org/chromium/chrome/test/smoke/AndroidManifest_bundle.xml"
@@ -2603,34 +2559,6 @@ if (_is_default_toolchain) {
     "--enable-test-dummy-module",
     "--disable-fre",
   ]
-
-  instrumentation_test_runner("monochrome_public_bundle_smoke_test") {
-    if (android_64bit_target_cpu) {
-      if (!defined(android_app_secondary_abi)) {
-        apk_under_test = "//chrome/android:monochrome_64_public_bundle_apks"
-        if (!is_java_debug) {
-          proguard_mapping_path =
-              "$root_build_dir/apks/MonochromePublic64.aab.mapping"
-        }
-      } else {
-        apk_under_test = "//chrome/android:monochrome_64_32_public_bundle_apks"
-        if (!is_java_debug) {
-          proguard_mapping_path =
-              "$root_build_dir/apks/MonochromePublic6432.aab.mapping"
-        }
-      }
-    } else {
-      apk_under_test = "//chrome/android:monochrome_public_bundle_apks"
-      if (!is_java_debug) {
-        proguard_mapping_path =
-            "$root_build_dir/apks/MonochromePublic.aab.mapping"
-      }
-    }
-    android_test_apk = ":chrome_bundle_smoke_test_apk"
-    never_incremental = true
-    modules = [ "test_dummy" ]
-    extra_args = _bundle_smoke_test_extra_args
-  }
 
   _verify_32bit_static_initializers =
       defined(expected_static_initializer_32bit_count) &&
@@ -2781,31 +2709,13 @@ if (_is_default_toolchain) {
   }
 
   if (android_64bit_target_cpu && !defined(android_app_secondary_abi)) {
-    alias_with_wrapper_script("monochrome_public_bundle") {
-      alias_target = ":monochrome_64_public_bundle"
-    }
     alias_with_wrapper_script("trichrome_chrome_bundle") {
       alias_target = ":trichrome_chrome_64_bundle"
     }
   } else {
     if (android_64bit_target_cpu) {
-      alias_with_wrapper_script("monochrome_public_bundle") {
-        alias_target = ":monochrome_64_32_public_bundle"
-      }
       alias_with_wrapper_script("trichrome_chrome_bundle") {
         alias_target = ":trichrome_chrome_64_32_bundle"
-      }
-    }
-
-    # Public webview targets don't work with non-public sdks.
-    # https://crbug.com/1000763
-    chrome_public_bundle(_main_monochrome_public_bundle_target) {
-      is_monochrome = true
-      bundle_name = "MonochromePublic"
-
-      if (android_64bit_target_cpu) {
-        is_64_bit_browser = false
-        include_64_bit_webview = true
       }
     }
 
@@ -3010,13 +2920,6 @@ if (_is_default_toolchain) {
   }
 
   if (android_64bit_target_cpu) {
-    chrome_public_bundle("monochrome_64_public_bundle") {
-      is_monochrome = true
-      bundle_name = "MonochromePublic64"
-      is_64_bit_browser = true
-      include_32_bit_webview = false
-    }
-
     chrome_public_bundle("trichrome_chrome_64_bundle") {
       is_trichrome = true
       bundle_name = "TrichromeChrome64"
@@ -3034,20 +2937,6 @@ if (_is_default_toolchain) {
     }
 
     if (defined(android_app_secondary_abi)) {
-      chrome_public_bundle("monochrome_32_public_bundle") {
-        is_monochrome = true
-        bundle_name = "MonochromePublic32"
-        is_64_bit_browser = false
-        include_64_bit_webview = false
-      }
-
-      chrome_public_bundle("monochrome_64_32_public_bundle") {
-        is_monochrome = true
-        bundle_name = "MonochromePublic6432"
-        is_64_bit_browser = true
-        include_32_bit_webview = true
-      }
-
       chrome_public_bundle("trichrome_chrome_64_32_bundle") {
         is_trichrome = true
         bundle_name = "TrichromeChrome6432"
@@ -3489,14 +3378,14 @@ template("libmonochrome_tmpl") {
     }
 
     defines = []
+    java_targets = [
+      "//chrome/android:chrome_public_bundle",
+      "//android_webview:system_webview_bundle",  # Needed to support trichrome.
+    ]
     if (android_64bit_target_cpu) {
-      java_targets = [ "//chrome/android:monochrome_64_public_bundle" ]
-
       # To be compatible with secondary ABI library.
       priority_java_targets = [ "//android_webview:system_webview_64_bundle" ]
       never_omit_switch_num = true
-    } else {
-      java_targets = [ "//chrome/android:monochrome_public_bundle" ]
     }
 
     is_monochrome = true
