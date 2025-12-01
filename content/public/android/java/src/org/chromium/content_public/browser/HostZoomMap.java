@@ -17,6 +17,7 @@ public class HostZoomMap {
     // not use the slider. These zoom factors correspond to the zoom levels that are used on
     // desktop, i.e. {0.50, 0.67, ... 3.00}, excluding the smallest/largest two, since they are
     // of little value on a mobile device.
+    // TODO(crbug.com/461528057): These are better placed at the embedder layer, such as //chrome.
     public static final double[] AVAILABLE_ZOOM_FACTORS =
             new double[] {
                 -3.80, -2.20, -1.58, -1.22, -0.58, 0.00, 0.52, 1.22, 1.56, 2.22, 3.07, 3.80, 5.03,
@@ -30,18 +31,19 @@ public class HostZoomMap {
     // levels will be increased/decreased by this factor, which is multiplicative (not additive).
     // That is, if this factor is 1.10f, a user choice of 100% zoom actually renders at 110% while
     // still displaying 100% to the user. If the user increases the zoom to 150%, the content would
-    // actually be rendering at 165%. This is the same approach as adjusting for the OS-level font
-    // scale. This value can change at runtime, for example an external display may want to use a
-    // higher value to make content easier to read, and a Desktop build may want an increased value
-    // but less than when an external monitor is being used. By default this is 1.0f (no scaling),
-    // which is the value used on all mobile devices.
-    private static float sPlatformScale = 1.0f;
+    // actually be rendering at 165%. This value can change at runtime, and is set by an embedder.
+    // Use-cases may be windows on an external monitor with a high-density, and the browser is
+    // configured to increase scaling by some set factor to make it easier to read. This factor is
+    // not saved as part of the URL/Host value (i.e. in the above examples, 100% and 150% would be
+    // saved for the user at the URL-level, NOT 110% or 165% respectively).
+    private static float sTransparentZoomAdjustment = 1.0f;
 
     // The current |fontScale| value from Android Configuration. Represents user font size choice.
     // The system font scale acts like the "zoom level" of this component. For the default
     // setting, |fontScale|=1.0; for {Small, Large, XL} the values are {0.85, 1.15, 1.30}.
     // This will be transparently taken into account. If a user has the system font set to
     // XL, then Page Zoom will behave as if it is at 130% while displaying 100% to the user.
+    // TODO(crbug.com/461528057): Combine with above and move any existing logic into //chrome.
     private static float sSystemFontScale = 1.0f;
 
     // Private constructor to prevent unwanted construction.
@@ -66,21 +68,22 @@ public class HostZoomMap {
         HostZoomMapImpl.setZoomLevel(
                 webContents,
                 newZoomLevel,
-                HostZoomMapImpl.adjustZoomLevel(newZoomLevel, sSystemFontScale, sPlatformScale));
+                HostZoomMapImpl.adjustZoomLevel(
+                        newZoomLevel, sSystemFontScale, sTransparentZoomAdjustment));
     }
 
-    /** Get the current platform scale. */
-    public static float getPlatformScale() {
-        return sPlatformScale;
+    /** Get the current zoom adjustment. */
+    public static float getTransparentZoomAdjustment() {
+        return sTransparentZoomAdjustment;
     }
 
     /**
-     * Set the current platform scale.
+     * Set the zoom adjustment applied to all pages transparently to the user.
      *
-     * @param newPlatformScale float, new value.
+     * @param newTransparentZoomAdjustment float, new value.
      */
-    public static void setPlatformScale(float newPlatformScale) {
-        sPlatformScale = newPlatformScale;
+    public static void setTransparentZoomAdjustment(float newTransparentZoomAdjustment) {
+        sTransparentZoomAdjustment = newTransparentZoomAdjustment;
     }
 
     /** Get the current system font scale */
@@ -111,7 +114,7 @@ public class HostZoomMap {
         return HostZoomMapImpl.adjustZoomLevel(
                 HostZoomMapImpl.getZoomLevel(webContents),
                 (1.0f / sSystemFontScale),
-                (1.0f / sPlatformScale));
+                (1.0f / sTransparentZoomAdjustment));
     }
 
     /**

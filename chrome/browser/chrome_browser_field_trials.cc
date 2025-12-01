@@ -271,6 +271,11 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(features::kDisplayEdgeToEdgeFullscreen);
   feature_overrides.EnableFeature(
       features::kEnableFullscreenToAnyScreenAndroid);
+
+  // Enables the ability to specify a platform-specific zoom scaling that will
+  // apply transparently to all pages.
+  // TODO(crbug.com/450281745): Remove once feature is enabled by default.
+  feature_overrides.EnableFeature(::features::kAndroidDesktopZoomScaling);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.

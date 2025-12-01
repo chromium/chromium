@@ -5,9 +5,8 @@
 package org.chromium.content.browser;
 
 import static org.chromium.content_public.browser.HostZoomMap.TEXT_SIZE_MULTIPLIER_RATIO;
-import static org.chromium.content_public.browser.HostZoomMap.getPlatformScale;
 import static org.chromium.content_public.browser.HostZoomMap.getSystemFontScale;
-import static org.chromium.content_public.browser.HostZoomMap.setPlatformScale;
+import static org.chromium.content_public.browser.HostZoomMap.getTransparentZoomAdjustment;
 import static org.chromium.content_public.browser.HostZoomMap.setSystemFontScale;
 
 import org.jni_zero.CalledByNative;
@@ -17,12 +16,10 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.SiteZoomInfo;
@@ -112,15 +109,8 @@ public class HostZoomMapImpl {
         if (!shouldAdjustForOSLevel()) {
             systemFontScale = 1;
         }
-        // The platform adjustment only applies to Desktop devices currently.
-        // TODO(crbug.com/450281745): Add treatment for external monitors on per tab basis.
-        if (DeviceInfo.isDesktop()) {
-            // We use an int for the scaling factor FeatureParam, e.g. 109 = 109% scaling, but
-            // the underlying code expects a float of 1.09f in that case.
-            setPlatformScale(
-                    ContentFeatureList.sAndroidDesktopZoomScalingFactor.getValue() / 100.0f);
-        }
-        return adjustZoomLevel(zoomLevel, systemFontScale, getPlatformScale());
+
+        return adjustZoomLevel(zoomLevel, systemFontScale, getTransparentZoomAdjustment());
     }
 
     @CalledByNative
