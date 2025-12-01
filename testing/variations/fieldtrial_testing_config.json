@@ -11032,6 +11032,21 @@
             ]
         }
     ],
+    "FluidResize": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FluidResize"
+                    ]
+                }
+            ]
+        }
+    ],
     "FlushPersistentSystemProfileOnWrite": [
         {
             "platforms": [

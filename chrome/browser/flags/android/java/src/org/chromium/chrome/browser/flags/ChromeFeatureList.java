@@ -929,7 +929,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEnableXAxisActivityTransition =
             newCachedFlag(ENABLE_X_AXIS_ACTIVITY_TRANSITION, false);
     public static final CachedFlag sFloatingSnackbar = newCachedFlag(FLOATING_SNACKBAR, true);
-    public static final CachedFlag sFluidResize = newCachedFlag(FLUID_RESIZE, false);
+    public static final CachedFlag sFluidResize =
+            newCachedFlag(FLUID_RESIZE, /* defaultValue= */ false, /* defaultValueInTests= */ true);
     public static final CachedFlag sForceTranslucentNotificationTrampoline =
             newCachedFlag(FORCE_TRANSLUCENT_NOTIFICATION_TRAMPOLINE, false);
     public static final CachedFlag sFullscreenInsetsApiMigration =
