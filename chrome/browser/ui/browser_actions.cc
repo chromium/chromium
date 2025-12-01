@@ -1350,7 +1350,7 @@ void BrowserActions::InitializeBrowserActions() {
                 IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE))
             .SetTooltipText(l10n_util::GetStringUTF16(
                 IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE))
-            .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kChatIcon,
+            .SetImage(ui::ImageModel::FromVectorIcon(kDockToRightSparkIcon,
                                                      ui::kColorIcon))
             .SetProperty(
                 actions::kActionItemPinnableKey,

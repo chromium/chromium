@@ -1024,7 +1024,7 @@ void ToolsMenuModel::Build(Browser* browser) {
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_SHOW_CONTEXTUAL_TASKS_SIDE_PANEL,
-        IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE, vector_icons::kChatIcon);
+        IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE, kDockToRightSparkIcon);
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);

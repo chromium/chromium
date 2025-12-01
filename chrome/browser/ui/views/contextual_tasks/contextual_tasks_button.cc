@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 
 #include "base/functional/bind.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,7 +19,6 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,7 +37,7 @@ ContextualTasksButton::ContextualTasksButton(
                     nullptr,
                     nullptr),
       browser_window_interface_(browser_window_interface) {
-  SetVectorIcon(vector_icons::kChatIcon);
+  SetVectorIcon(kDockToRightSparkIcon);
   SetProperty(views::kElementIdentifierKey, kContextualTasksToolbarButton);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE));

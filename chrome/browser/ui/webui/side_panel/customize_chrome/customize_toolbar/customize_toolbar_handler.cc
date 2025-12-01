@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/display/screen.h"
 
 namespace {
@@ -261,7 +262,7 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
             prefs()->GetBoolean(prefs::kPinContextualTaskButton), false,
             side_panel::customize_chrome::mojom::CategoryId::kNavigation,
             GURL(webui::EncodePNGAndMakeDataURI(
-                ui::ImageModel::FromVectorIcon(vector_icons::kChatIcon,
+                ui::ImageModel::FromVectorIcon(kDockToRightSparkIcon,
                                                icon_color_id)
                     .Rasterize(&provider),
                 scale_factor)));
