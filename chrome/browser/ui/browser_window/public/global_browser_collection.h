@@ -45,8 +45,13 @@ class GlobalBrowserCollection final : public BrowserCollection,
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
   void OnBrowserDeactivated(BrowserWindowInterface* browser) override;
 
-  // References to the global set of browsers in creation order.
+  // References to the global set of browsers in creation order, with the
+  // least recently created browser appearing at the front of the vector.
   std::vector<raw_ptr<BrowserWindowInterface>> browsers_creation_order_;
+
+  // References to the global set of browsers in activation order, with the
+  // most recently activated browser appearing at the front of the vector.
+  std::vector<raw_ptr<BrowserWindowInterface>> browsers_activation_order_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_GLOBAL_BROWSER_COLLECTION_H_

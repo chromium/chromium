@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/browser_manager_service.h"
 
+#include <algorithm>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
@@ -21,6 +23,7 @@ void BrowserManagerService::Shutdown() {
 }
 
 void BrowserManagerService::AddBrowser(std::unique_ptr<Browser> browser) {
+  BrowserWindowInterface* const browser_ptr = browser.get();
   browsers_and_subscriptions_.push_back(std::pair(
       std::move(browser),
       std::pair(browser->RegisterDidBecomeActive(base::BindRepeating(
@@ -30,8 +33,13 @@ void BrowserManagerService::AddBrowser(std::unique_ptr<Browser> browser) {
                     &BrowserManagerService::OnBrowserDeactivated,
                     base::Unretained(this))))));
 
+  // Push the browser to the back of the activation order list. It will be moved
+  // to the front when the browser is eventually activated (which may or may
+  // not happen immediately after creation).
+  browsers_activation_order_.push_back(browser_ptr);
+
   base::WeakPtr<BrowserWindowInterface> browser_weak_ptr =
-      browsers_and_subscriptions_.back().first->GetWeakPtr();
+      browser_ptr->GetWeakPtr();
   for (BrowserCollectionObserver& observer : observers()) {
     if (browser_weak_ptr) {
       observer.OnBrowserCreated(browser_weak_ptr.get());
@@ -50,6 +58,7 @@ void BrowserManagerService::DeleteBrowser(Browser* removed_browser) {
         return browser_and_subscriptions.first.get() == removed_browser;
       });
   if (it != browsers_and_subscriptions_.end()) {
+    std::erase(browsers_activation_order_, it->first.get());
     target_browser_and_subscriptions = std::move(*it);
     browsers_and_subscriptions_.erase(it);
   } else {
@@ -64,7 +73,11 @@ void BrowserManagerService::DeleteBrowser(Browser* removed_browser) {
 
 BrowserCollection::BrowserVector BrowserManagerService::GetBrowsers(
     Order order) {
-  CHECK_EQ(order, Order::kCreation);
+  CHECK(order == Order::kCreation || order == Order::kActivation);
+  if (order == Order::kActivation) {
+    return browsers_activation_order_;
+  }
+
   BrowserCollection::BrowserVector browsers;
   browsers.reserve(browsers_and_subscriptions_.size());
   std::ranges::transform(browsers_and_subscriptions_,
@@ -75,6 +88,11 @@ BrowserCollection::BrowserVector BrowserManagerService::GetBrowsers(
 
 void BrowserManagerService::OnBrowserActivated(
     BrowserWindowInterface* browser) {
+  // Move `browser` to the front of the activation list.
+  auto it = std::ranges::find(browsers_activation_order_, browser);
+  CHECK(it != browsers_activation_order_.end());
+  std::rotate(browsers_activation_order_.begin(), it, it + 1);
+
   for (BrowserCollectionObserver& observer : observers()) {
     observer.OnBrowserActivated(browser);
   }

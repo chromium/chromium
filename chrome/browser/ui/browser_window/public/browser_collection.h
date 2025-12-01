@@ -21,9 +21,13 @@ class BrowserCollection {
   using BrowserVector = std::vector<raw_ptr<BrowserWindowInterface>>;
 
   // Defines the order in which browsers are iterated.
-  // TODO(crbug.com/431671320): Update to support activation order.
+  // `kCreation` will iterate over browsers starting from the least recently
+  // created to the most recently created.
+  // `kActivation` will iterate over browsers starting from the most recently
+  // activated to the least recently activated.
   enum class Order {
     kCreation,
+    kActivation,
   };
 
   // Iterates over all BrowserWindowInstances in this collection present at
