@@ -27,6 +27,7 @@ namespace blink {
 
 bool operator==(const CounterDirectives& a, const CounterDirectives& b) {
   return a.reset_value_ == b.reset_value_ &&
+         a.is_reset_reversed_ == b.is_reset_reversed_ &&
          a.increment_value_ == b.increment_value_ &&
          a.set_value_ == b.set_value_;
 }

@@ -10,6 +10,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
+#include "third_party/blink/renderer/core/css/css_counter_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -515,7 +516,14 @@ bool ConsumeColumnWidthOrCount(CSSParserTokenStream&,
                                CSSValue*&);
 CSSValue* ConsumeGapLength(CSSParserTokenStream&, const CSSParserContext&);
 
-CSSValue* ConsumeCounter(CSSParserTokenStream&, const CSSParserContext&, int);
+cssvalue::CSSCounterValue* ConsumeCounter(CSSParserTokenStream& stream,
+                                          const CSSParserContext& context,
+                                          int default_value,
+                                          bool accept_reversed_function);
+CSSValue* ConsumeCounters(CSSParserTokenStream&,
+                          const CSSParserContext&,
+                          int,
+                          bool accept_reversed_function = false);
 
 CSSValue* ConsumeFontSize(CSSParserTokenStream&,
                           const CSSParserContext&,

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
+#include "third_party/blink/renderer/core/css/css_counter_value.h"
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
@@ -5720,26 +5721,67 @@ CSSValue* ConsumeGapLength(CSSParserTokenStream& stream,
                                 CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
-CSSValue* ConsumeCounter(CSSParserTokenStream& stream,
-                         const CSSParserContext& context,
-                         int default_value) {
+cssvalue::CSSCounterValue* ConsumeCounter(CSSParserTokenStream& stream,
+                                          const CSSParserContext& context,
+                                          int default_value,
+                                          bool accept_reversed_function) {
+  if (stream.Peek().Id() == CSSValueID::kNone) {
+    return nullptr;
+  }
+  const bool is_reversed = accept_reversed_function &&
+                           stream.Peek().FunctionId() == CSSValueID::kReversed;
+  CSSCustomIdentValue* counter_name;
+  if (is_reversed) {
+    {
+      CSSParserTokenStream::BlockGuard guard(stream);
+      stream.ConsumeWhitespace();
+      if (stream.Peek().Id() == CSSValueID::kNone) {
+        return nullptr;
+      }
+      counter_name = ConsumeCustomIdent(stream, context);
+    }
+    stream.ConsumeWhitespace();
+  } else {
+    counter_name = ConsumeCustomIdent(stream, context);
+  }
+  if (!counter_name) {
+    return nullptr;
+  }
+  CSSPrimitiveValue* value =
+      // <reversed-counter-name> has no starting value if not given.
+      is_reversed ? nullptr
+                  : CSSNumericLiteralValue::Create(
+                        default_value, CSSPrimitiveValue::UnitType::kInteger);
+  if (CSSPrimitiveValue* counter_value = ConsumeInteger(stream, context)) {
+    value = counter_value;
+  }
+  return MakeGarbageCollected<cssvalue::CSSCounterValue>(*counter_name, value,
+                                                         is_reversed);
+}
+
+// https://drafts.csswg.org/css-lists-3/#counter-reset
+// https://drafts.csswg.org/css-lists-3/#increment-set
+//
+// if |accept_reversed_function| is true:
+//   [ <counter-name> <integer>? | <reversed-counter-name> <integer>? ]+ | none
+// else:
+//   [ <counter-name> <integer>? ]+ | none
+CSSValue* ConsumeCounters(CSSParserTokenStream& stream,
+                          const CSSParserContext& context,
+                          int default_value,
+                          bool accept_reversed_function) {
   if (stream.Peek().Id() == CSSValueID::kNone) {
     return ConsumeIdent(stream);
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   do {
-    CSSCustomIdentValue* counter_name = ConsumeCustomIdent(stream, context);
-    if (!counter_name) {
+    CSSValue* counter_value = ConsumeCounter(stream, context, default_value,
+                                             accept_reversed_function);
+    if (!counter_value) {
       break;
     }
-    CSSPrimitiveValue* value = CSSNumericLiteralValue::Create(
-        default_value, CSSPrimitiveValue::UnitType::kInteger);
-    if (CSSPrimitiveValue* counter_value = ConsumeInteger(stream, context)) {
-      value = counter_value;
-    }
-    list->Append(*MakeGarbageCollected<CSSValuePair>(
-        counter_name, value, CSSValuePair::kDropIdenticalValues));
+    list->Append(*counter_value);
   } while (!stream.AtEnd());
   if (list->length() == 0) {
     return nullptr;

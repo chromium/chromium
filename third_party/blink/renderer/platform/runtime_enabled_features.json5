@@ -1382,6 +1382,12 @@
       status: "experimental",
     },
     {
+      // https://drafts.csswg.org/css-lists-3/#counter-reset
+      // https://crbug.com/40760770
+      name: "CSSCounterResetReversed",
+      status: "experimental",
+    },
+    {
       // Unprefixed cross-fade() (in addition to the existing -webkit-cross-fade()).
       // https://drafts.csswg.org/css-images-4/#cross-fade-function
       name: "CSSCrossFade",

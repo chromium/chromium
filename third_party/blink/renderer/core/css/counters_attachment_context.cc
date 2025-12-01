@@ -58,7 +58,7 @@ std::optional<std::pair<unsigned, int>> DetermineCounterTypeAndValue(
   if (directives.IsDefined()) {
     unsigned type_mask = 0;
     int value = directives.CombinedValue();
-    type_mask |= directives.IsIncrement()
+    type_mask |= directives.HasIncrement()
                      ? static_cast<unsigned>(
                            CountersAttachmentContext::Type::kIncrementType)
                      : 0u;
@@ -67,7 +67,7 @@ std::optional<std::pair<unsigned, int>> DetermineCounterTypeAndValue(
             ? static_cast<unsigned>(CountersAttachmentContext::Type::kResetType)
             : 0;
     type_mask |=
-        directives.IsSet()
+        directives.HasSet()
             ? static_cast<unsigned>(CountersAttachmentContext::Type::kSetType)
             : 0;
     return std::make_pair(type_mask, value);

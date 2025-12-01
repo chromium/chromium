@@ -2090,5 +2090,8 @@
     "play-pause",
     "replay",
     // "none",
+
+    // counter-reset
+    "reversed",
   ],
 }

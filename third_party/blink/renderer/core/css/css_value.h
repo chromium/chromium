@@ -88,6 +88,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   }
   bool IsColorValue() const { return class_type_ == kColorClass; }
   bool IsColorMixValue() const { return class_type_ == kColorMixClass; }
+  bool IsCounterValue() const { return class_type_ == kCounterClass; }
   bool IsCounterContentValue() const {
     return class_type_ == kCounterContentClass;
   }
@@ -271,6 +272,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kColorClass,
     kUnresolvedColorClass,
     kColorMixClass,
+    kCounterClass,
     kCounterContentClass,
     kQuadClass,
     kCustomIdentClass,

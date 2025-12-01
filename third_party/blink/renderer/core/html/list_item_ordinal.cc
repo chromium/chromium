@@ -152,10 +152,10 @@ ListItemOrdinal::PreviousListItem(const Node* list_node, const Node* item) {
               To<Element>(current)->GetComputedStyle()) {
         const CounterDirectives directives =
             style->GetCounterDirectives(list_item_identifier);
-        if (directives.IsSet()) {
+        if (directives.HasSet()) {
           intermediate_sum += directives.SetValue();
           counter_set_seen = true;
-        } else if (directives.IsIncrement()) {
+        } else if (directives.HasIncrement()) {
           intermediate_sum += directives.IncrementValue();
         }
       }
@@ -187,10 +187,12 @@ int ListItemOrdinal::CalcValue(const Node& item_node) const {
   if (const auto* style = To<Element>(item_node).GetComputedStyle()) {
     const auto directives =
         style->GetCounterDirectives(AtomicString("list-item"));
-    if (directives.IsSet())
+    if (directives.HasSet()) {
       return directives.CombinedValue();
-    if (directives.IsIncrement())
+    }
+    if (directives.HasIncrement()) {
       value_step = directives.CombinedValue();
+    }
   }
 
   // If the element does not have the `counter-set` CSS property set, return
@@ -287,7 +289,7 @@ void ListItemOrdinal::SetExplicitValue(int value, const Element& element) {
   if (const auto* style = element.GetComputedStyle()) {
     const auto directives =
         style->GetCounterDirectives(AtomicString("list-item"));
-    if (directives.IsSet()) {
+    if (directives.HasSet()) {
       return;
     }
   }
@@ -348,7 +350,7 @@ int ListItemOrdinal::InitialCounterForReversedOrderedList(
     if (const ComputedStyle* style = To<Element>(current)->GetComputedStyle()) {
       directives = style->GetCounterDirectives(list_item_identifier);
     }
-    if (directives.IsIncrement()) {
+    if (directives.HasIncrement()) {
       increment_negated = -directives.IncrementValue();
     }
 
@@ -360,7 +362,7 @@ int ListItemOrdinal::InitialCounterForReversedOrderedList(
 
     // 3. If el sets this counter with counter-set, then add that integer
     // value to |initial_counter| and break this loop.
-    if (directives.IsSet()) {
+    if (directives.HasSet()) {
       initial_counter += directives.SetValue();
       break;
     }

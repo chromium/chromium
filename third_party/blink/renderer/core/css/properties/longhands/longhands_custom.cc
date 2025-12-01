@@ -3597,8 +3597,8 @@ const CSSValue* CounterIncrement::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeCounter(stream, context,
-                                           kCounterIncrementDefaultValue);
+  return css_parsing_utils::ConsumeCounters(stream, context,
+                                            kCounterIncrementDefaultValue);
 }
 
 const CSSValue* CounterIncrement::CSSValueFromComputedStyleInternal(
@@ -3616,8 +3616,10 @@ const CSSValue* CounterReset::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeCounter(stream, context,
-                                           kCounterResetDefaultValue);
+  return css_parsing_utils::ConsumeCounters(
+      stream, context, kCounterResetDefaultValue,
+      /*accept_reversed_function=*/
+      RuntimeEnabledFeatures::CSSCounterResetReversedEnabled());
 }
 
 const CSSValue* CounterReset::CSSValueFromComputedStyleInternal(
@@ -3635,8 +3637,8 @@ const CSSValue* CounterSet::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeCounter(stream, context,
-                                           kCounterSetDefaultValue);
+  return css_parsing_utils::ConsumeCounters(stream, context,
+                                            kCounterSetDefaultValue);
 }
 
 const CSSValue* CounterSet::CSSValueFromComputedStyleInternal(

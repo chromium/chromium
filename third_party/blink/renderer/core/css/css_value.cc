@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_counter_content_value.h"
+#include "third_party/blink/renderer/core/css/css_counter_value.h"
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
 #include "third_party/blink/renderer/core/css/css_cursor_image_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
@@ -214,6 +215,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
       case kUnresolvedColorClass:
         return CompareCSSValues<cssvalue::CSSUnresolvedColorValue>(*this,
                                                                    other);
+      case kCounterClass:
+        return CompareCSSValues<cssvalue::CSSCounterValue>(*this, other);
       case kCounterContentClass:
         return CompareCSSValues<cssvalue::CSSCounterContentValue>(*this, other);
       case kCursorImageClass:
@@ -395,6 +398,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSColorMixValue>(this)->CustomCSSText();
     case kUnresolvedColorClass:
       return To<cssvalue::CSSUnresolvedColorValue>(this)->CustomCSSText();
+    case kCounterClass:
+      return To<cssvalue::CSSCounterValue>(this)->CustomCSSText();
     case kCounterContentClass:
       return To<cssvalue::CSSCounterContentValue>(this)->CustomCSSText();
     case kCursorImageClass:
@@ -584,6 +589,7 @@ unsigned CSSValue::Hash() const {
     case kMathFunctionClass:
     case kScopedKeywordClass:
     case kColorMixClass:
+    case kCounterClass:
     case kCounterContentClass:
     case kQuadClass:
     case kURIClass:
@@ -709,6 +715,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kUnresolvedColorClass:
       To<cssvalue::CSSUnresolvedColorValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kCounterClass:
+      To<cssvalue::CSSCounterValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kCounterContentClass:
       To<cssvalue::CSSCounterContentValue>(this)->TraceAfterDispatch(visitor);
@@ -951,6 +960,8 @@ String CSSValue::ClassTypeToString() const {
       return "ColorMixClass";
     case kUnresolvedColorClass:
       return "UnresolvedColorClass";
+    case kCounterClass:
+      return "CounterClass";
     case kCounterContentClass:
       return "CounterContentClass";
     case kQuadClass:

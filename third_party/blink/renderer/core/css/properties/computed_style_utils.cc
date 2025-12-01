@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_counter_content_value.h"
+#include "third_party/blink/renderer/core/css/css_counter_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_font_feature_value.h"
@@ -3446,13 +3447,13 @@ CSSValue* ComputedStyleUtils::ValueForCounterDirectives(
     bool is_valid_counter_value = false;
     switch (type) {
       case CountersAttachmentContext::Type::kIncrementType:
-        is_valid_counter_value = item.value.IsIncrement();
+        is_valid_counter_value = item.value.HasIncrement();
         break;
       case CountersAttachmentContext::Type::kResetType:
         is_valid_counter_value = item.value.IsReset();
         break;
       case CountersAttachmentContext::Type::kSetType:
-        is_valid_counter_value = item.value.IsSet();
+        is_valid_counter_value = item.value.HasSet();
         break;
     }
 
@@ -3460,23 +3461,35 @@ CSSValue* ComputedStyleUtils::ValueForCounterDirectives(
       continue;
     }
 
-    int32_t number = 0;
+    bool is_reversed = false;
+    std::optional<int32_t> number;
     switch (type) {
       case CountersAttachmentContext::Type::kIncrementType:
         number = item.value.IncrementValue();
         break;
-      case CountersAttachmentContext::Type::kResetType:
-        number = item.value.ResetValue();
+      case CountersAttachmentContext::Type::kResetType: {
+        if (item.value.IsResetReversed()) {
+          is_reversed = true;
+        }
+        const std::optional<int> reset_value = item.value.ResetValue();
+        if (reset_value.has_value()) {
+          number = reset_value.value();
+        }
         break;
+      }
       case CountersAttachmentContext::Type::kSetType:
         number = item.value.SetValue();
         break;
     }
-    list->Append(*MakeGarbageCollected<CSSValuePair>(
-        MakeGarbageCollected<CSSCustomIdentValue>(item.key),
-        CSSNumericLiteralValue::Create((double)number,
-                                       CSSPrimitiveValue::UnitType::kInteger),
-        CSSValuePair::IdenticalValuesPolicy::kDropIdenticalValues));
+    const CSSNumericLiteralValue* counter_value = nullptr;
+    if (number.has_value()) {
+      counter_value =
+          CSSNumericLiteralValue::Create(static_cast<double>(number.value()),
+                                         CSSPrimitiveValue::UnitType::kInteger);
+    }
+    list->Append(*MakeGarbageCollected<cssvalue::CSSCounterValue>(
+        *MakeGarbageCollected<CSSCustomIdentValue>(item.key), counter_value,
+        is_reversed));
   }
 
   if (!list->length()) {

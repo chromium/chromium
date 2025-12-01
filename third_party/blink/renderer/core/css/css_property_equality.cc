@@ -28,13 +28,61 @@ bool CounterRulesEqual(const CounterDirectiveMap* a_map,
     return false;
   }
 
+  if (RuntimeEnabledFeatures::CSSCounterResetReversedEnabled()) {
+    if (a_map->size() != b_map->size()) {
+      return false;
+    }
+
+    for (const auto& a_entry : *a_map) {
+      const auto b_iterator = b_map->find(a_entry.key);
+      if (b_iterator == b_map->end()) {
+        return false;
+      }
+
+      const CounterDirectives& a_value = a_entry.value;
+      const CounterDirectives& b_value = b_iterator->value;
+      switch (property) {
+        case CSSPropertyID::kCounterIncrement:
+          if (a_value.HasIncrement() != b_value.HasIncrement()) {
+            return false;
+          }
+          if (a_value.HasIncrement() &&
+              a_value.IncrementValue() != b_value.IncrementValue()) {
+            return false;
+          }
+          break;
+        case CSSPropertyID::kCounterReset:
+          if (a_value.IsReset() != b_value.IsReset()) {
+            return false;
+          }
+          if (a_value.IsReset() &&
+              (a_value.ResetValue() != b_value.ResetValue() ||
+               a_value.IsResetReversed() != b_value.IsResetReversed())) {
+            return false;
+          }
+          break;
+        case CSSPropertyID::kCounterSet:
+          if (a_value.HasSet() != b_value.HasSet()) {
+            return false;
+          }
+          if (a_value.HasSet() && a_value.SetValue() != b_value.SetValue()) {
+            return false;
+          }
+          break;
+        default:
+          NOTREACHED();
+      }
+    }
+    return true;
+  }
+
   return std::ranges::equal(*a_map, *b_map, [](const auto& a, const auto& b) {
     switch (property) {
       case CSSPropertyID::kCounterIncrement:
-        if (a.value.IsIncrement() != b.value.IsIncrement()) {
+        if (a.value.HasIncrement() != b.value.HasIncrement()) {
           return false;
         }
-        if (a.value.IsIncrement() &&
+        if (a.value.HasIncrement() &&
             a.value.IncrementValue() != b.value.IncrementValue()) {
           return false;
         }
@@ -48,10 +96,10 @@ bool CounterRulesEqual(const CounterDirectiveMap* a_map,
         }
         break;
       case CSSPropertyID::kCounterSet:
-        if (a.value.IsSet() != b.value.IsSet()) {
+        if (a.value.HasSet() != b.value.HasSet()) {
           return false;
         }
-        if (a.value.IsSet() && a.value.SetValue() != b.value.SetValue()) {
+        if (a.value.HasSet() && a.value.SetValue() != b.value.SetValue()) {
           return false;
         }
         break;
