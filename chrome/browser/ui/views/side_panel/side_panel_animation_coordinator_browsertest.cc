@@ -128,15 +128,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelAnimationCoordinatorBrowserTest,
   EXPECT_TRUE(control_animation_ended.Wait());
 }
 
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_AnimationIdObserversDoNotFireTypeCallbacks \
-  DISABLED_AnimationIdObserversDoNotFireTypeCallbacks
-#else
-#define MAYBE_AnimationIdObserversDoNotFireTypeCallbacks \
-  AnimationIdObserversDoNotFireTypeCallbacks
-#endif
 IN_PROC_BROWSER_TEST_F(SidePanelAnimationCoordinatorBrowserTest,
-                       MAYBE_AnimationIdObserversDoNotFireTypeCallbacks) {
+                       AnimationIdObserversDoNotFireTypeCallbacks) {
   SidePanelAnimationCoordinator* animation_coordinator =
       GetAnimationCoordinator();
 
@@ -144,28 +137,15 @@ IN_PROC_BROWSER_TEST_F(SidePanelAnimationCoordinatorBrowserTest,
   AddAnimationSequence(SidePanelAnimationCoordinator::AnimationType::kOpen,
                        {.animation_id = kTestAnimationId,
                         .start = base::Milliseconds(0),
-                        .duration = base::Milliseconds(200)});
+                        .duration = base::Milliseconds(100)});
   AddAnimationSequence(SidePanelAnimationCoordinator::AnimationType::kClose,
                        {.animation_id = kTestAnimationId,
                         .start = base::Milliseconds(0),
-                        .duration = base::Milliseconds(200)});
+                        .duration = base::Milliseconds(100)});
 
   MockSidePanelAnimationObserver target_observer;
   animation_coordinator->AddObserver(kTestAnimationId, &target_observer);
 
-  // The control observer is needed to notify us when the entire animation has
-  // finished so we can start the close animation. Without
-  // this observer the test animation will finish before the side panel bounds
-  // animation and will immediately trigger the close animation. The close
-  // animation will not run properly since it will be mid-animation (on some
-  // machines).
-  //
-  // This results in receiving the OnAnimationSequenceEnded event
-  // before the OnAnimationSequenceProgressed event effectively ending the test
-  // and causing test failures since progressed events were never received.
-  //
-  // In practice, this has no visual effect since the OnAnimationSequenceEnded
-  // observers should put their UI in the correct final state.
   MockSidePanelAnimationObserver control_observer;
   animation_coordinator->AddObserver(
       SidePanelAnimationCoordinator::AnimationType::kOpen, &control_observer);
@@ -174,14 +154,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelAnimationCoordinatorBrowserTest,
 
   base::test::TestFuture<void> target_animation_finished;
   base::test::TestFuture<void> control_animation_finished;
-
-  EXPECT_CALL(target_observer,
-              OnAnimationSequenceProgressed(kTestAnimationId, _))
-      .Times(testing::AtLeast(1));
-  EXPECT_CALL(target_observer, OnAnimationSequenceEnded(kTestAnimationId))
-      .WillOnce([&target_animation_finished]() {
-        target_animation_finished.SetValue();
-      });
 
   EXPECT_CALL(target_observer, OnAnimationTypeStarted(_)).Times(0);
   EXPECT_CALL(target_observer, OnAnimationTypeEnded(_)).Times(0);
@@ -193,8 +165,30 @@ IN_PROC_BROWSER_TEST_F(SidePanelAnimationCoordinatorBrowserTest,
         control_animation_finished.SetValue();
       });
 
+  // Manually drive the animation to avoid flakiness.
+  auto* animation = static_cast<gfx::SlideAnimation*>(
+      animation_coordinator->animation_for_testing());
+  auto* delegate = static_cast<gfx::AnimationDelegate*>(animation_coordinator);
+
   animation_coordinator->Start(
       SidePanelAnimationCoordinator::AnimationType::kOpen);
+
+  // Progress the animation and verify the observer is fired at least once.
+  EXPECT_CALL(target_observer,
+              OnAnimationSequenceProgressed(kTestAnimationId, _))
+      .Times(testing::AtLeast(1));
+
+  // Manually drive the animation to 50% progress.
+  animation->SetCurrentValue(0.5);
+  delegate->AnimationProgressed(animation);
+
+  // Go to the end of the test animation and verify it is observed properly.
+  EXPECT_CALL(target_observer, OnAnimationSequenceEnded(kTestAnimationId))
+      .WillOnce([&target_animation_finished]() {
+        target_animation_finished.SetValue();
+      });
+
+  animation->End();
 
   EXPECT_TRUE(target_animation_finished.Wait());
   EXPECT_TRUE(control_animation_finished.Wait());
@@ -210,8 +204,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelAnimationCoordinatorBrowserTest,
         target_animation_finished.SetValue();
       });
 
-  EXPECT_CALL(target_observer, OnAnimationTypeStarted(_)).Times(0);
-
   EXPECT_CALL(control_observer,
               OnAnimationTypeEnded(
                   SidePanelAnimationCoordinator::AnimationType::kClose))
@@ -221,6 +213,12 @@ IN_PROC_BROWSER_TEST_F(SidePanelAnimationCoordinatorBrowserTest,
 
   animation_coordinator->Start(
       SidePanelAnimationCoordinator::AnimationType::kClose);
+
+  // Manually drive the animation to 50% progress.
+  animation->SetCurrentValue(0.5);
+  delegate->AnimationProgressed(animation);
+
+  animation->End();
 
   EXPECT_TRUE(target_animation_finished.Wait());
   EXPECT_TRUE(control_animation_finished.Wait());

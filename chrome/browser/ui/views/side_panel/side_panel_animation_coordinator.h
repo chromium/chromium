@@ -46,7 +46,7 @@ class Animation;
 //    properties (e.g., position, opacity).
 // 5. The SidePanel automatically calls `Start()` or `Reset()` on the
 //    coordinator when its visibility changes, driving the animation.
-class SidePanelAnimationCoordinator : views::AnimationDelegateViews {
+class SidePanelAnimationCoordinator : public views::AnimationDelegateViews {
  public:
   using SidePanelAnimationId = ui::ElementIdentifier;
   enum class AnimationType { kOpen, kOpenWithContentTransition, kClose };
