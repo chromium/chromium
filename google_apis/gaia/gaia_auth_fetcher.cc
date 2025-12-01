@@ -852,16 +852,16 @@ void GaiaAuthFetcher::OnOAuthMultiloginFetched(const std::string& data,
 }
 
 void GaiaAuthFetcher::OnURLLoadComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   net::Error net_error = static_cast<net::Error>(url_loader_->NetError());
-  std::string data = response_body ? std::move(*response_body) : "";
 
   int response_code = 0;
   if (url_loader_->ResponseInfo()) {
     if (url_loader_->ResponseInfo()->headers)
       response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
-  OnURLLoadCompleteInternal(net_error, response_code, data);
+  OnURLLoadCompleteInternal(net_error, response_code,
+                            std::move(response_body).value_or(""));
 }
 
 void GaiaAuthFetcher::OnURLLoadCompleteInternal(net::Error net_error,

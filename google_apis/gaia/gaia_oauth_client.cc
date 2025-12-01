@@ -5,6 +5,8 @@
 #include "google_apis/gaia/gaia_oauth_client.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -92,7 +94,7 @@ class GaiaOAuthClient::Core
                     Delegate* delegate);
 
   // Called as a SimpleURLLoader callback
-  void OnURLLoadComplete(std::unique_ptr<std::string> body);
+  void OnURLLoadComplete(std::optional<std::string> body);
 
  private:
   friend class base::RefCountedThreadSafe<Core>;
@@ -134,7 +136,7 @@ class GaiaOAuthClient::Core
   // Actually sends the request.
   void SendRequestImpl();
 
-  void HandleResponse(std::unique_ptr<std::string> body,
+  void HandleResponse(std::optional<std::string> body,
                       bool* should_retry_request);
 
   net::BackoffEntry::Policy backoff_policy_;
@@ -497,8 +499,7 @@ void GaiaOAuthClient::Core::SendRequestImpl() {
                      base::Unretained(this)));
 }
 
-void GaiaOAuthClient::Core::OnURLLoadComplete(
-    std::unique_ptr<std::string> body) {
+void GaiaOAuthClient::Core::OnURLLoadComplete(std::optional<std::string> body) {
   bool should_retry = false;
   base::WeakPtr<GaiaOAuthClient::Core> weak_this =
       weak_ptr_factory_.GetWeakPtr();
@@ -515,7 +516,7 @@ void GaiaOAuthClient::Core::OnURLLoadComplete(
   }
 }
 
-void GaiaOAuthClient::Core::HandleResponse(std::unique_ptr<std::string> body,
+void GaiaOAuthClient::Core::HandleResponse(std::optional<std::string> body,
                                            bool* should_retry_request) {
   *should_retry_request = false;
   // Move ownership of the request fetcher into a local scoped_ptr which
@@ -538,9 +539,8 @@ void GaiaOAuthClient::Core::HandleResponse(std::unique_ptr<std::string> body,
 
   std::optional<base::Value::Dict> response_dict;
   if (response_code == net::HTTP_OK && body) {
-    std::string data = std::move(*body);
     response_dict =
-        base::JSONReader::ReadDict(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+        base::JSONReader::ReadDict(*body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   }
 
   if (!response_dict) {

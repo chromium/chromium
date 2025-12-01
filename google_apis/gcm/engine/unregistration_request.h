@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -129,12 +131,12 @@ class GCM_EXPORT UnregistrationRequest {
  private:
   // Invoked from SimpleURLLoader.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
-                         std::unique_ptr<std::string> body);
+                         std::optional<std::string> body);
 
   void BuildRequestHeaders(net::HttpRequestHeaders* headers);
   void BuildRequestBody(std::string* body);
   Status ParseResponse(const network::SimpleURLLoader* source,
-                       std::unique_ptr<std::string> body);
+                       std::optional<std::string> body);
 
   // Schedules a retry attempt with a backoff.
   void RetryWithBackoff();

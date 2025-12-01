@@ -6,6 +6,7 @@
 #define GOOGLE_APIS_GAIA_GAIA_AUTH_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -223,7 +224,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   bool IsListAccountsUrl(const GURL& url);
 
  private:
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(std::optional<std::string> response_body);
 
   void OnOAuth2TokenPairFetched(const std::string& data,
                                 net::Error net_error,
