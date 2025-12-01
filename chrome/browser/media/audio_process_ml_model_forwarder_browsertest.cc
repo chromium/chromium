@@ -24,7 +24,7 @@ namespace {
 class AudioProcessMlModelForwarderBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_{
-      kWebRtcAudioNeuralResidualEchoEstimation};
+      media::kWebRtcAudioNeuralResidualEchoEstimation};
 };
 
 IN_PROC_BROWSER_TEST_F(AudioProcessMlModelForwarderBrowserTest,

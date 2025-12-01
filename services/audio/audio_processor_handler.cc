@@ -7,9 +7,11 @@
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/media_switches.h"
 #include "services/audio/ml_model_manager.h"
 
 namespace audio {
@@ -49,6 +51,17 @@ AudioProcessorHandler::AudioProcessorHandler(
   DCHECK(settings.NeedWebrtcAudioProcessing());
   if (aecdump_recording_manager_) {
     aecdump_recording_manager->RegisterAecdumpSource(this);
+  }
+  if (media::IsAudioProcessMlModelUsageEnabled() &&
+      settings.echo_cancellation) {
+    // Only log model availability when model management is enabled and echo
+    // cancellation is requested, in order to avoid diluting the metric.
+    // We log it here, in the audio service, because lower layers are also
+    // used from render processes where this feature is not available.
+    bool is_model_available = residual_echo_estimation_model_handle_ != nullptr;
+    base::UmaHistogramBoolean(
+        "Media.Audio.Capture.NeuralResidualEchoEstimationModelAvailable",
+        is_model_available);
   }
 }
 

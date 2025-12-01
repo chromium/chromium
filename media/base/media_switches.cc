@@ -1534,6 +1534,19 @@ bool IsChromeWideEchoCancellationEnabled() {
 #endif
 }
 
+BASE_FEATURE(kWebRtcAudioNeuralResidualEchoEstimation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAudioProcessMlModelUsageEnabled() {
+  if (!media::IsChromeWideEchoCancellationEnabled()) {
+    // The feature relies on Chrome-wide echo cancellation being enabled,
+    // because that is when the audio service has processing that may use a
+    // model.
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kWebRtcAudioNeuralResidualEchoEstimation);
+}
+
 #if BUILDFLAG(IS_MAC)
 namespace {
 // Enables system audio loopback capture using the macOS Screen Capture Kit

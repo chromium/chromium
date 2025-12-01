@@ -506,6 +506,15 @@ MEDIA_EXPORT std::string GetEffectiveAutoplayPolicy(
 
 MEDIA_EXPORT bool IsChromeWideEchoCancellationEnabled();
 
+// When enabled, input audio processing in the audio process may use an ML-based
+// residual echo estimator instead of the default heuristics, when applying
+// WebRTC echo cancellation.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebRtcAudioNeuralResidualEchoEstimation);
+
+// Controls a global feature for sending ML model updates from the Optimization
+// Guide framework in the browser process to the audio process.
+MEDIA_EXPORT bool IsAudioProcessMlModelUsageEnabled();
+
 #if BUILDFLAG(IS_MAC)
 MEDIA_EXPORT bool IsMacCatapSystemLoopbackCaptureSupported();
 MEDIA_EXPORT bool IsMacSckSystemLoopbackCaptureSupported();

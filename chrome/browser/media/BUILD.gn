@@ -34,10 +34,7 @@ source_set("audio_process_ml_model_forwarder") {
     "//mojo/public/cpp/bindings",
     "//services/audio/public/mojom",
   ]
-  deps = [
-    "//content/public/browser",
-    "//media",
-  ]
+  deps = [ "//content/public/browser" ]
 }
 
 source_set("unittests") {

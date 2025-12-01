@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -26,15 +25,6 @@ class ModelInfo;
 }  // namespace optimization_guide
 
 class AudioProcessObserver;
-
-// When enabled, input audio processing in the audio process may use an ML-based
-// residual echo estimator instead of the default heuristics, when applying
-// WebRTC echo cancellation.
-BASE_DECLARE_FEATURE(kWebRtcAudioNeuralResidualEchoEstimation);
-
-// Controls the global feature for sending ML model updates from the
-// Optimization Guide framework in the browser process to the audio process.
-bool IsAudioProcessMlModelUsageEnabled();
 
 // Propagates ML models from the Optimization Guide to the audio process.
 // Currently only a single model, for residual echo estimatino, but may be

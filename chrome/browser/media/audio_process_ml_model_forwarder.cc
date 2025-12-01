@@ -22,7 +22,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
-#include "media/base/media_switches.h"
 #include "services/audio/public/mojom/audio_service.mojom.h"
 
 namespace {
@@ -39,19 +38,6 @@ AudioProcessMlModelForwarder::WrappedFilePtr OpenFileAndReturn(
   return {file.release(), base::OnTaskRunnerDeleter(deletion_task_runner)};
 }
 }  // namespace
-
-BASE_FEATURE(kWebRtcAudioNeuralResidualEchoEstimation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsAudioProcessMlModelUsageEnabled() {
-  if (!media::IsChromeWideEchoCancellationEnabled()) {
-    // The feature relies on Chrome-wide echo cancellation being enabled,
-    // because that is when the audio service has processing that may use a
-    // model.
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kWebRtcAudioNeuralResidualEchoEstimation);
-}
 
 // Used to monitor audio process launches and bind to the audio service
 // MlModelManager interface.

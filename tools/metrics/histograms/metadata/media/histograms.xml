@@ -876,6 +876,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.Audio.Capture.NeuralResidualEchoEstimationModelAvailable"
+    enum="BooleanAvailable" expires_after="2026-05-25">
+  <owner>saza@chromium.org</owner>
+  <owner>devicentepena@webrtc.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    A boolean that reflects whether or not an ML model for neural residual echo
+    estimation is available. Logged when an audio processor with echo
+    cancellation is constructed. Logging is restricted to when audio service ML
+    model delivery is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.ProcessingAudioFifo.MaxUsage"
     units="buffers" expires_after="2026-11-17">
   <owner>tguilbert@chromium.org</owner>

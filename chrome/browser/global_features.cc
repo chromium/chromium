@@ -132,7 +132,7 @@ void GlobalFeatures::InitCoreFeatures() {
   optimization_guide_global_feature_ =
       std::make_unique<optimization_guide::OptimizationGuideGlobalFeature>();
 
-  if (IsAudioProcessMlModelUsageEnabled()) {
+  if (media::IsAudioProcessMlModelUsageEnabled()) {
     audio_process_ml_model_forwarder_ = AudioProcessMlModelForwarder::Create();
   }
 
