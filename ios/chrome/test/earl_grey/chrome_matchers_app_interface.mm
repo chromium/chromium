@@ -752,6 +752,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                                       IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW];
 }
 
++ (id<GREYMatcher>)navigationBarCloseButton {
+  return grey_allOf(grey_accessibilityLabel(@"Close"),
+                    grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)navigationBarDoneButton {
   return grey_allOf(
       [ChromeMatchersAppInterface

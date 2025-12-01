@@ -151,9 +151,9 @@
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:instructions];
 
-  // Tap Done Button.
+  // Tap Close Button.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      selectElementWithMatcher:chrome_test_util::NavigationBarCloseButton()]
       performAction:grey_tap()];
   GREYAssert([ChromeCoordinatorAppInterface
                  selectorWasDispatched:@"dismissSearchWhatYouSeePromo"],

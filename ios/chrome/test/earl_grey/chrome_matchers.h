@@ -264,6 +264,9 @@ id<GREYMatcher> OpenLinkInIncognitoButton();
 // long pressing a link.
 id<GREYMatcher> OpenLinkInNewWindowButton();
 
+// Returns a matcher for the close button on the navigation bar.
+id<GREYMatcher> NavigationBarCloseButton();
+
 // Returns a matcher for the done button on the navigation bar.
 id<GREYMatcher> NavigationBarDoneButton();
 

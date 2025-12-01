@@ -23,6 +23,7 @@
 
 @implementation SearchWhatYouSeePromoCoordinator {
   SearchWhatYouSeePromoViewController* _viewController;
+  UINavigationController* _navigationController;
   SearchWhatYouSeePromoInstructionsViewController* _instructionsViewController;
   UINavigationController* _instructionsNavigationController;
 }
@@ -33,24 +34,31 @@
   _viewController = [[SearchWhatYouSeePromoViewController alloc] init];
   _viewController.actionHandler = self;
 
-  UINavigationController* navigationController = [[UINavigationController alloc]
+  _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
-  navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-  [self.baseViewController presentViewController:navigationController
+  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  _viewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                           target:self
+                           action:@selector(dismiss)];
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
-  navigationController.presentationController.delegate = self;
+  _navigationController.presentationController.delegate = self;
 }
 
 - (void)stop {
   _instructionsViewController.actionHandler = nil;
   _viewController.actionHandler = nil;
 
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
 
   _instructionsViewController = nil;
+  _instructionsNavigationController = nil;
   _viewController = nil;
+  _navigationController = nil;
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -82,10 +90,6 @@
   [_viewController presentViewController:_instructionsNavigationController
                                 animated:YES
                               completion:nil];
-}
-
-- (void)confirmationAlertDismissAction {
-  [self dismiss];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

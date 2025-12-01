@@ -248,6 +248,9 @@
 // pressing a link.
 + (id<GREYMatcher>)openLinkInNewWindowButton;
 
+// Matcher for the close button on the navigation bar.
++ (id<GREYMatcher>)navigationBarCloseButton;
+
 // Matcher for the done button on the navigation bar.
 + (id<GREYMatcher>)navigationBarDoneButton;
 
