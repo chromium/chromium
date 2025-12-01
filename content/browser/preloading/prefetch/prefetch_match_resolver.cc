@@ -517,9 +517,7 @@ void PrefetchMatchResolver::OnDeterminedHead(
                 case PrefetchContainer::LoadState::kDeterminedHead:
                 case PrefetchContainer::LoadState::kCompleted:
                 case PrefetchContainer::LoadState::kFailedHeldback:
-                  // We don't expect to enter this path.
-                  return PrefetchPotentialCandidateServingResult::
-                      kNotServedOnDeterminedHeadWithNotServableUnknown;
+                  NOTREACHED();
               }
             }
         }

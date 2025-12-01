@@ -92,11 +92,13 @@ enum class PrefetchPotentialCandidateServingResult {
   kNotServedIneligibleRedirect = 11,
   // The candidate is not served because the loading is failed.
   kNotServedLoadFailed = 12,
+  // Deprecated
+  //
   // The candidate is not served because
   // `PrefetchContainer::Observer::OnDeterminedHead()` is called with
   // `PrefetchServableState::kNotServable` except for expired nor failure. We
   // don't expect to enter this path.
-  kNotServedOnDeterminedHeadWithNotServableUnknown = 13,
+  // kNotServedOnDeterminedHeadWithNotServableUnknown = 13,
 
   // A special value for `PrefetchMatchResolver::UnblockForNoCandidates()`.
   kNotServedNoCandidates = 14,

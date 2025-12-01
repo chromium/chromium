@@ -46,7 +46,10 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="kNotServedOnDeterminedHeadWithServableExpired"/>
   <int value="11" label="kNotServedIneligibleRedirect"/>
   <int value="12" label="kNotServedLoadFailed"/>
-  <int value="13" label="kNotServedOnDeterminedHeadWithNotServableUnknown"/>
+<!-- Deprecated -->
+
+<!-- <int value="13" label="kNotServedOnDeterminedHeadWithNotServableUnknown"/> -->
+
   <int value="14" label="kNotServedNoCandidates"/>
 </enum>
 
