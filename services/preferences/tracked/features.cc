@@ -12,6 +12,6 @@ BASE_FEATURE(kEncryptedPrefHashing, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables encrypted tracked preferences for enterprise users.
 BASE_FEATURE(kEnableEncryptedTrackedPrefOnEnterprise,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace tracked
