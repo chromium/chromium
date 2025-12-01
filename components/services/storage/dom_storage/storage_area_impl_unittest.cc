@@ -96,7 +96,7 @@ class MockDelegate : public StorageAreaImpl::Delegate {
     if (committed_)
       std::move(committed_).Run();
   }
-  void OnMapLoaded(DbStatus) override { map_load_count_++; }
+  void OnMapLoaded() override { ++map_load_count_; }
 
   int map_load_count() const { return map_load_count_; }
 

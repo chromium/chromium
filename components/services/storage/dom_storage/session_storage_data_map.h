@@ -93,7 +93,7 @@ class SessionStorageDataMap final
       scoped_refptr<SessionStorageDataMap> forking_from);
   ~SessionStorageDataMap() override;
 
-  void OnMapLoaded(DbStatus status) override;
+  void OnMapLoaded() override;
 
   static StorageAreaImpl::Options GetOptions();
 

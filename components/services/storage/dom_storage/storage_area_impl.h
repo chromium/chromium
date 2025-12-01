@@ -61,7 +61,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
         std::vector<DomStorageDatabase::KeyValuePair>* extra_entries_to_add,
         std::vector<DomStorageDatabase::Key>* extra_keys_to_delete);
     virtual void DidCommit(DbStatus error) = 0;
-    virtual void OnMapLoaded(DbStatus status);
+    virtual void OnMapLoaded();
   };
 
   enum class CacheMode {
@@ -289,8 +289,8 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   // Then if the |cache_mode_| is keys-only, it unloads the map to the
   // |keys_only_map_| and sets the |map_state_| to LOADED_KEYS_ONLY
   void LoadMap(base::OnceClosure completion_callback);
-  void OnMapLoaded(DbStatus status,
-                   std::vector<DomStorageDatabase::KeyValuePair> data);
+  void OnMapLoaded(
+      StatusOr<std::vector<DomStorageDatabase::KeyValuePair>> data);
   void CalculateStorageAndMemoryUsed();
   void OnLoadComplete();
 
