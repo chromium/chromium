@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/browser_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -27,8 +28,15 @@ IOSChromeAimEligibilityServiceFactory::GetInstance() {
 }
 
 IOSChromeAimEligibilityServiceFactory::IOSChromeAimEligibilityServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("AimEligibilityService",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+    : ProfileKeyedServiceFactoryIOS(
+          "AimEligibilityService",
+          IsAIMEligibilityServiceStartWithProfileEnabled()
+              ? ServiceCreation::kCreateWithProfile
+              : ServiceCreation::kDefault,
+          ProfileSelection::kOwnInstanceInIncognito,
+          IsAIMEligibilityServiceStartWithProfileEnabled()
+              ? TestingCreation::kNoServiceForTests
+              : TestingCreation::kDefault) {
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
