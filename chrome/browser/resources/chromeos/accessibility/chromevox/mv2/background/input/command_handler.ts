@@ -1519,7 +1519,6 @@ export class CommandHandler implements CommandHandlerInterface {
 
   /**
    * Launch ChromeVox options page in settings app.
-   * TODO(b/268196299): Add test for showing options page.
    */
   private showOptionsPage_(): void {
     // Launch ChromeVox settings (inside ChromeOS Settings App).
