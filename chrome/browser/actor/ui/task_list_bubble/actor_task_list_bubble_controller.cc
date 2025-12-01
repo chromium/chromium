@@ -43,6 +43,10 @@ ActorTaskListBubbleController::~ActorTaskListBubbleController() = default;
 
 #if BUILDFLAG(ENABLE_GLIC)
 void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view) {
+  if (!browser_->IsActive()) {
+    // Only show the bubble in the active window.
+    return;
+  }
   auto task_id_to_state = tabs::GlicActorTaskIconManagerFactory::GetForProfile(
                               browser_->GetProfile())
                               ->GetActorTaskListBubbleRows();

@@ -61,6 +61,8 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
         .WillByDefault(::testing::ReturnRef(user_data_host_));
     ON_CALL(*browser_window_interface_, GetProfile())
         .WillByDefault(testing::Return(profile_.get()));
+    ON_CALL(*browser_window_interface_, IsActive())
+        .WillByDefault(testing::Return(true));
     actor_task_list_bubble_controller_ =
         std::make_unique<ActorTaskListBubbleController>(
             browser_window_interface_.get());
