@@ -21,6 +21,8 @@ namespace glic {
 namespace {
 
 BASE_FEATURE(kCacheZeroStateSuggestions, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRefreshZeroStateSuggestionsOnFocusedTabChange,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 std::vector<std::string> EmptySuggestions() {
   return {};
@@ -163,7 +165,10 @@ void GlicZeroStateSuggestionsManager::
       caching_zero_state_manager_
           ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
               contents_for_request, is_first_run, supported_tools,
-              active_web_contents,
+              base::FeatureList::IsEnabled(
+                  kRefreshZeroStateSuggestionsOnFocusedTabChange)
+                  ? active_web_contents
+                  : nullptr,
               base::BindOnce(&GlicZeroStateSuggestionsManager::
                                  OnZeroStateSuggestionsNotify,
                              GetWeakPtr(), is_first_run, supported_tools));
@@ -172,7 +177,10 @@ void GlicZeroStateSuggestionsManager::
           contextual_cueing_service_
               ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
                   contents_for_request, is_first_run, supported_tools,
-                  active_web_contents,
+                  base::FeatureList::IsEnabled(
+                      kRefreshZeroStateSuggestionsOnFocusedTabChange)
+                      ? active_web_contents
+                      : nullptr,
                   mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                       base::BindOnce(&GlicZeroStateSuggestionsManager::
                                          OnZeroStateSuggestionsNotify,
