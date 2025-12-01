@@ -408,6 +408,7 @@ UkmPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
   }
   if (GetDelegate().StartedInForeground())
     RecordTimingMetrics(timing);
+  RecordLastSoftNavigation();
   ReportLayoutStability();
   RecordDroppedFramesMetrics();
   RecordResponsivenessMetrics();
@@ -487,6 +488,7 @@ void UkmPageLoadMetricsObserver::OnComplete(
   }
   if (GetDelegate().StartedInForeground())
     RecordTimingMetrics(timing);
+  RecordLastSoftNavigation();
   ReportLayoutStability();
   RecordDroppedFramesMetrics();
   RecordResponsivenessMetrics();
@@ -1044,15 +1046,18 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
   builder.SetNet_MediaBytes2(
       ukm::GetExponentialBucketMinForBytes(media_bytes_.InBytes()));
 
-  const auto& soft_navigation_metrics =
-      GetDelegate().GetSoftNavigationMetrics();
-  builder.SetSoftNavigationCount(soft_navigation_metrics.count);
-
   if (main_frame_timing_) {
     ReportMainResourceTimingMetrics(builder);
   }
-
   builder.Record(ukm::UkmRecorder::Get());
+}
+
+void UkmPageLoadMetricsObserver::RecordLastSoftNavigation() {
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+
+  const auto& soft_navigation_metrics =
+      GetDelegate().GetSoftNavigationMetrics();
+  builder.SetSoftNavigationCount(soft_navigation_metrics.count);
 
   // Record last soft navigation metrics; note that 0 is the absent navigation
   // id, see third_party/blink/renderer/core/timing/navigation_id_generator.h.
@@ -1062,6 +1067,7 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
             *soft_navigation_metrics.same_document_metrics_token),
         soft_navigation_metrics);
   }
+  builder.Record(ukm::UkmRecorder::Get());
 
   // Record soft navigation count histogram to UMA.
   base::UmaHistogramCounts100(kHistogramSoftNavigationCount,

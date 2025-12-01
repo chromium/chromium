@@ -130,6 +130,12 @@ class UkmPageLoadMetricsObserver
       const page_load_metrics::ContentfulPaintTimingInfo&
           all_frames_largest_contentful_paint);
 
+  // Finalizes soft navigation recording - this emits both the last
+  // SoftNavigationEvent, PageLoad.SoftNavigationCount, and the UMA
+  // histogram. This is to be emitted regardless of whether the page started in
+  // the background or is / was backgrounded.
+  void RecordLastSoftNavigation();
+
   // Records metrics based on the page load information exposed by the observer
   // delegate, as well as updating the URL. |app_background_time| should be set
   // to a timestamp if the app was backgrounded, otherwise it should be set to
