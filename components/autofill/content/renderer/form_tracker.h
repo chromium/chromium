@@ -29,6 +29,7 @@ class WebFormElementObserver;
 namespace autofill {
 
 class AutofillAgent;
+class PasswordAutofillAgent;
 
 // Reference to a WebFormElement, represented as such and as a FormRendererId.
 // TODO(crbug.com/40056157): Replace with FormRendererId when
@@ -75,16 +76,14 @@ class FormTracker : public content::RenderFrameObserver,
  public:
   enum class SaveFormReason {
     kTextFieldChanged,
-    // TODO(crbug.com/40281981): Remove after launching the feature
-    // kAutofillPreferSavedFormAsSubmittedForm.
-    kWillSendSubmitEvent,
     kSelectChanged,
   };
 
   using UserGestureRequired =
       base::StrongAlias<class UserGestureRequiredTag, bool>;
   explicit FormTracker(content::RenderFrame* render_frame,
-                       AutofillAgent& agent);
+                       AutofillAgent& autofill_agent,
+                       PasswordAutofillAgent& password_autofill_agent);
 
   FormTracker(const FormTracker&) = delete;
   FormTracker& operator=(const FormTracker&) = delete;
@@ -170,9 +169,12 @@ class FormTracker : public content::RenderFrameObserver,
   void FormControlDidChangeImpl(FieldRendererId element_id,
                                 SaveFormReason change_source);
   // Virtual for testing.
+  // TODO(crbug.com/40281981): Remove `reset_last_interacted_elements` when
+  // `kAutofillFixFormTracking` launches.
   virtual void FireFormSubmission(
       mojom::SubmissionSource source,
-      std::optional<blink::WebFormElement> submitted_form_element);
+      std::optional<blink::WebFormElement> submitted_form_element,
+      bool reset_last_interacted_elements);
   void FireSubmissionIfFormDisappear(mojom::SubmissionSource source);
   bool CanInferFormSubmitted();
 
@@ -209,8 +211,9 @@ class FormTracker : public content::RenderFrameObserver,
     bool xhr_succeeded = false;
   } submission_triggering_events_;
 
-  // The object owning this `FormTracker`.
-  raw_ref<AutofillAgent> agent_;
+  // The respective agents for Autofill and PasswordManager.
+  raw_ref<AutofillAgent> autofill_agent_;
+  raw_ref<PasswordAutofillAgent> password_autofill_agent_;
 
   SEQUENCE_CHECKER(form_tracker_sequence_checker_);
 

@@ -27,7 +27,9 @@ class MockFormTracker : public FormTracker {
   using FormTracker::FormTracker;
   MOCK_METHOD((void),
               FireFormSubmission,
-              (mojom::SubmissionSource, std::optional<blink::WebFormElement>),
+              (mojom::SubmissionSource,
+               std::optional<blink::WebFormElement>,
+               bool),
               (override));
 };
 
@@ -50,8 +52,8 @@ class FormTrackerTest : public test::AutofillRendererTest,
 
   void SetUp() override {
     test::AutofillRendererTest::SetUp();
-    auto tracker = std::make_unique<MockFormTracker>(GetMainRenderFrame(),
-                                                     autofill_agent());
+    auto tracker = std::make_unique<MockFormTracker>(
+        GetMainRenderFrame(), autofill_agent(), password_autofill_agent());
     tracker->SetUserGestureRequired(FormTracker::UserGestureRequired(true));
     test_api(autofill_agent()).set_form_tracker(std::move(tracker));
   }
@@ -99,7 +101,7 @@ TEST_P(FormTrackerTest, FormlessXHRThenHide) {
 
   // FormTracker should detect a submission after the <input>s are hidden.
   EXPECT_CALL(form_tracker(),
-              FireFormSubmission(mojom::SubmissionSource::XHR_SUCCEEDED, _))
+              FireFormSubmission(mojom::SubmissionSource::XHR_SUCCEEDED, _, _))
       .Times(1);
   ExecuteJavaScriptForTests(
       R"(document.getElementById('input1').style.display = 'none';
@@ -132,7 +134,7 @@ TEST_P(FormTrackerTest, FormlessHideThenXhr) {
 
   // FormTracker should detect a submission when the XHR succeeds.
   EXPECT_CALL(form_tracker(),
-              FireFormSubmission(mojom::SubmissionSource::XHR_SUCCEEDED, _))
+              FireFormSubmission(mojom::SubmissionSource::XHR_SUCCEEDED, _, _))
       .Times(1);
   form_tracker().AjaxSucceeded();
   task_environment_.RunUntilIdle();

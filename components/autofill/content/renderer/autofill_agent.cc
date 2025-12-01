@@ -522,9 +522,11 @@ AutofillAgent::AutofillAgent(
       password_generation_agent_(std::move(password_generation_agent)),
       replace_form_element_observer_(base::FeatureList::IsEnabled(
           features::kAutofillReplaceFormElementObserver)) {
-  form_tracker_->SetUserGestureRequired(config_.user_gesture_required);
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent_->Init(this);
+  form_tracker_ = std::make_unique<FormTracker>(unsafe_render_frame(), *this,
+                                                *password_autofill_agent_);
+  form_tracker_->SetUserGestureRequired(config_.user_gesture_required);
   registry->AddInterface<mojom::AutofillAgent>(base::BindRepeating(
       &AutofillAgent::BindPendingReceiver, base::Unretained(this)));
 }
@@ -2107,20 +2109,6 @@ void AutofillAgent::OnProvisionallySaveForm(
   }
 
   switch (source) {
-    case FormTracker::SaveFormReason::kWillSendSubmitEvent:
-      // TODO(crbug.com/40281981): Figure out if this is still needed, and
-      // document the reason, otherwise remove.
-      password_autofill_agent_->InformBrowserAboutUserInput(
-          form_element, WebInputElement(),
-          SynchronousFormCache(form_util::GetFormRendererId(form_element),
-                               provisionally_saved_form()));
-      // Fire the form submission event to avoid missing submissions where
-      // websites handle the onsubmit event. This also gets the form before
-      // Javascript's submit event handler could change it. We don't clear
-      // submitted_forms_ because OnFormSubmitted will normally be invoked
-      // afterwards and we don't want to fire the same event twice.
-      OnFormSubmission(mojom::SubmissionSource::FORM_SUBMISSION, form_element);
-      break;
     case FormTracker::SaveFormReason::kTextFieldChanged:
       OnTextFieldValueChanged(
           element,

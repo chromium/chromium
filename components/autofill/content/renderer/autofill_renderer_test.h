@@ -13,6 +13,7 @@
 
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "content/public/test/render_view_test.h"
@@ -156,6 +157,9 @@ class AutofillRendererTest : public content::RenderViewTest {
 
  protected:
   AutofillAgent& autofill_agent() { return *autofill_agent_; }
+  PasswordAutofillAgent& password_autofill_agent() {
+    return test_api(*autofill_agent_).password_autofill_agent();
+  }
   MockAutofillDriver& autofill_driver() { return autofill_driver_; }
 
  private:

@@ -496,8 +496,7 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // This is never null, it is created at construction time and is not changed
   // until destruction time.
-  std::unique_ptr<FormTracker> form_tracker_ =
-      std::make_unique<FormTracker>(unsafe_render_frame(), *this);
+  std::unique_ptr<FormTracker> form_tracker_;
 
   mojo::AssociatedReceiver<mojom::AutofillAgent> receiver_{this};
 
