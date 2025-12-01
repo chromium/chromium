@@ -41,6 +41,10 @@
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+#include "third_party/webrtc/modules/desktop_capture/mac/window_list_utils.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace {
 
 // TODO(crbug.com/40181897): Eliminate code duplication with
@@ -360,6 +364,12 @@ std::optional<std::string> GetApplicationId(intptr_t window_id) {
     return std::nullopt;
   }
 
+  return media::CreateApplicationLoopbackDeviceId(process_id);
+#elif BUILDFLAG(IS_MAC)
+  base::ProcessId process_id = webrtc::GetWindowOwnerPid(window_id);
+  if (process_id == base::kNullProcessId) {
+    return std::nullopt;
+  }
   return media::CreateApplicationLoopbackDeviceId(process_id);
 #else
   return std::nullopt;
