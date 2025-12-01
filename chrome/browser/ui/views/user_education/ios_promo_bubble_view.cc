@@ -37,7 +37,6 @@
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
-using ios_promos_utils::IsUserActiveOnIOS;
 using user_education::CustomHelpBubbleUi;
 
 namespace {
@@ -120,8 +119,13 @@ std::unique_ptr<IOSPromoBubbleView> IOSPromoBubbleView::Create(
   Profile* profile = context->AsA<BrowserUserEducationContext>()
                          ->GetBrowserView()
                          .GetProfile();
-  BubbleType promo_bubble_type =
-      IsUserActiveOnIOS(profile) ? BubbleType::kReminder : BubbleType::kQRCode;
+  IOSPromoTriggerService* service =
+      IOSPromoTriggerServiceFactory::GetForProfile(profile);
+  // If the user has a synced iOS device, show the reminder bubble. Otherwise,
+  // show the QR code bubble.
+  BubbleType promo_bubble_type = (service && service->GetIOSDeviceToRemind())
+                                     ? BubbleType::kReminder
+                                     : BubbleType::kQRCode;
   auto* const anchor_element = params.anchor_element.get();
   return std::make_unique<IOSPromoBubbleView>(
       profile, promo_type, promo_bubble_type,

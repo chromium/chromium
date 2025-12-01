@@ -73,6 +73,20 @@ void IOSPromoController::OnPromoTriggered(PromoType promo_type) {
     return;
   }
 
+  // Do not show the promo if the user does not meet one of the two
+  // conditions:
+  // 1. Does not have Chrome installed on any iOS device
+  // 2. Is active for no more than 16 days in the last 28
+  IOSPromoTriggerService* service =
+      IOSPromoTriggerServiceFactory::GetForProfile(browser_->profile());
+  if (!service) {
+    return;
+  }
+  const syncer::DeviceInfo* device = service->GetIOSDeviceToRemind();
+  if (device && ios_promos_utils::IsUserActiveOnIOS(browser_->profile())) {
+    return;
+  }
+
   auto* user_education_interface =
       BrowserUserEducationInterface::From(browser_);
   if (user_education_interface) {
