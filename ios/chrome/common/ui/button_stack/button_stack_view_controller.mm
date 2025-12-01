@@ -610,13 +610,11 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 // Updates the visibility of the gradient view based on scroll position.
 - (void)updateGradientVisibility {
   // Determine if the gradient should be visible.
-  BOOL scrollable =
-      _scrollView.contentSize.height >
-      _scrollView.bounds.size.height + _scrollView.adjustedContentInset.bottom;
-  CGFloat effectiveGradientHeight =
-      kGradientHeight - _scrollView.adjustedContentInset.bottom;
-  BOOL shouldShowGradient =
-      _showsGradientView && scrollable && (effectiveGradientHeight > 0);
+  CGFloat visibleHeight = _scrollView.bounds.size.height -
+                          _scrollView.adjustedContentInset.top -
+                          _scrollView.adjustedContentInset.bottom;
+  BOOL scrollable = _scrollView.contentSize.height > visibleHeight;
+  BOOL shouldShowGradient = _showsGradientView && scrollable;
 
   if (!shouldShowGradient) {
     _scrollContainerView.layer.mask = nil;
@@ -637,9 +635,9 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   _gradientMask.frame = _scrollContainerView.bounds;
 
   CGFloat startY =
-      (effectiveGradientHeight >= _gradientMask.frame.size.height)
+      (kGradientHeight >= _gradientMask.frame.size.height)
           ? 0.0
-          : 1.0 - (effectiveGradientHeight / _gradientMask.frame.size.height);
+          : 1.0 - (kGradientHeight / _gradientMask.frame.size.height);
   _gradientMask.startPoint = CGPointMake(0.0, startY);
 }
 
