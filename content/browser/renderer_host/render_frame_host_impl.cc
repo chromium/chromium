@@ -18396,7 +18396,7 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
       // happens after commit.
       DCHECK(children_.empty());
     }
-    if (GetOutermostMainFrameOrEmbedder() == this &&
+    if (IsOutermostMainFrame() &&
         (lifecycle_state() == LifecycleStateImpl::kInBackForwardCache ||
          lifecycle_state() == LifecycleStateImpl::kPrerendering)) {
       // We mark all the children, including inner FrameTrees and delegate
