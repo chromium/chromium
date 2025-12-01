@@ -496,7 +496,7 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
     if (!pending_request->picker) {
       std::move(pending_request->callback)
           .Run(blink::mojom::StreamDevicesSet(),
-               MediaStreamRequestResult::INVALID_STATE,
+               MediaStreamRequestResult::NOT_SUPPORTED,
                /*ui=*/nullptr);
       return;
     }
