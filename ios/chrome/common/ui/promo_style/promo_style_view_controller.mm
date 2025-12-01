@@ -860,8 +860,7 @@ UIImage* ArrowDownImage() {
     _bannerConstraints = [_bannerConstraints arrayByAddingObjectsFromArray:@[
       [self.bannerImageView.heightAnchor constraintEqualToConstant:0],
       [self.bannerImageView.topAnchor
-          constraintEqualToAnchor:self.contentView.topAnchor
-                         constant:kButtonStackMargin]
+          constraintEqualToAnchor:self.contentView.topAnchor]
     ]];
   } else if (self.shouldBannerFillTopSpace) {
     NSLayoutDimension* dimFromToOfViewToBottomOfBanner = [self.view.topAnchor
@@ -883,10 +882,7 @@ UIImage* ArrowDownImage() {
           constraintEqualToAnchor:self.contentView.topAnchor],
     ]];
   }
-  if (UIScrollView* scrollView = base::apple::ObjCCastStrict<UIScrollView>(
-          self.contentView.superview)) {
-    scrollView.contentInsetAdjustmentBehavior = contentInsetAdjustmentBehavior;
-  }
+  self.contentInsetAdjustmentBehavior = contentInsetAdjustmentBehavior;
 
   [NSLayoutConstraint activateConstraints:_bannerConstraints];
 }
