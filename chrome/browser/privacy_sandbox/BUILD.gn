@@ -399,9 +399,6 @@ if (!is_android && !is_chromeos_device) {
   }
 }
 
-# TODO(crbug.com/408801109) move other privacy_sandbox sources
-# from chrome/test/BUILD.gn here.
-
 source_set("test_support") {
   testonly = true
 
