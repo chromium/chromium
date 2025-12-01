@@ -981,11 +981,21 @@ gpu.ci.linux_builder(
     targets = targets.bundle(
         # This bot doesn't run any browser-based tests (tab_capture_end2end_tests)
         targets = [
-            "gpu_fyi_linux_debug_gtests",
+            "gpu_common_gtests_passthrough_swiftshader",
         ],
         mixins = [
-            "linux_nvidia_gtx_1660_obsolete",
+            "gpu-swarming-pool",
+            "no_gpu",
+            "linux-jammy",
+            "x86-64",
         ],
+        per_test_modifications = {
+            "gl_tests_passthrough": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux.swiftshader.tsan.gl_tests_passthrough.filter",
+                ],
+            ),
+        },
     ),
     # This bot doesn't run any Telemetry-based tests so doesn't
     # need the browser_config parameter.

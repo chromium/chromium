@@ -386,6 +386,7 @@ source_set("gl_tests_filters") {
     "//testing/buildbot/filters/android.samsung_a13.gl_tests.filter",
     "//testing/buildbot/filters/android.samsung_a23.gl_tests.filter",
     "//testing/buildbot/filters/linux.intel.arc_b570.gl_tests_passthrough.filter",
+    "//testing/buildbot/filters/linux.swiftshader.tsan.gl_tests_passthrough.filter",
     "//testing/buildbot/filters/linux.uhd_630.gl_tests_passthrough.filter",
     "//testing/buildbot/filters/linux.uhd_770.gl_tests_passthrough.filter",
     "//testing/buildbot/filters/win.amd.7600.gl_tests_passthrough.filter",

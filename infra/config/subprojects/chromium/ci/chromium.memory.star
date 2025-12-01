@@ -837,13 +837,15 @@ linux_memory_builder(
                 reason = "https://crbug.com/crashpad/304",
             ),
             "gl_tests_passthrough": [
+                "gpu-swarming-pool",
+                "no_gpu",
+                "linux-jammy",
+                "x86-64",
                 targets.mixin(
                     args = [
-                        "--use-gpu-in-tests",
-                        "--no-xvfb",
+                        "--test-launcher-filter-file=../../testing/buildbot/filters/linux.swiftshader.tsan.gl_tests_passthrough.filter",
                     ],
                 ),
-                "linux_nvidia_gtx_1660_obsolete",
             ],
             "interactive_ui_tests": targets.mixin(
                 # https://crbug.com/1498240
