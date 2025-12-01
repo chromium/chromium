@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/profiles/profile_activity_metrics_recorder.h"
+
 #include <string>
 #include <vector>
 
@@ -11,9 +13,10 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
-#include "chrome/browser/profiles/profile_activity_metrics_recorder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_manager_service.h"
+#include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -59,14 +62,28 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
     // next test case.
     ProfileActivityMetricsRecorder::CleanupForTesting();
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
+
+    for (auto browser_and_profile : browsers_and_profiles_) {
+      // TODO(crbug.com/465101639): tracking and deleting these browsers should
+      // not be necessary, but currently not doing so results in a crash during
+      // profile destruction. This needs to be investigated.
+      BrowserManagerServiceFactory::GetForProfile(browser_and_profile.second)
+          ->DeleteBrowser(browser_and_profile.first);
+    }
   }
 
   void ActivateBrowser(Profile* profile) {
     Browser::CreateParams browser_params(profile, false);
-    browsers_.push_back(CreateBrowserWithTestWindowForParams(browser_params));
+    std::unique_ptr<Browser> browser(
+        CreateBrowserWithTestWindowForParams(browser_params));
+    Browser* browser_ptr = browser.get();
+    BrowserManagerServiceFactory::GetForProfile(profile)->AddBrowser(
+        std::move(browser));
+
+    browsers_and_profiles_.emplace_back(browser_ptr, profile);
 
     // This triggers the recorder to post a task, wait until that's done.
-    BrowserList::SetLastActive(browsers_.back().get());
+    browser_ptr->DidBecomeActive();
     task_environment_.RunUntilIdle();
   }
 
@@ -105,7 +122,7 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
   TestingProfileManager profile_manager_;
   base::HistogramTester histogram_tester_;
 
-  std::vector<std::unique_ptr<Browser>> browsers_;
+  std::vector<std::pair<Browser*, Profile*>> browsers_and_profiles_;
 };
 
 TEST_F(ProfileActivityMetricsRecorderTest, GuestProfile) {
