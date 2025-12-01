@@ -895,7 +895,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 // Simulates rejecting the unload handle on a single grouped tab when:
 // - The group is closing - in this case we should ungroup the tabs
 // - The group is not closing - in this case we should do nothinig
-// TODO(crbug.com/370559961): This is a regression test. See bug for more info.
+// This is a regression test. See crbug.com/370559961 for more info.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, KeepTabWhenUnloadHandlerRejected) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
