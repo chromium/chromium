@@ -322,6 +322,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
     gl_share_group_ = task_executor_->GetShareGroup();
   }
 
+  bool enable_gpu_rasterization = false;
   switch (params.attribs->which()) {
     case mojom::ContextCreationAttribs::Tag::kWebgpu: {
       if (!task_executor_->gpu_preferences().enable_webgpu) {
@@ -374,9 +375,9 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
               /*is_privileged=*/true);
 
       const auto& attribs = params.attribs->get_raster();
-      auto result =
-          raster_decoder->Initialize(attribs->enable_gpu_rasterization,
-                                     attribs->lose_context_when_out_of_memory);
+      enable_gpu_rasterization = attribs->enable_gpu_rasterization;
+      auto result = raster_decoder->Initialize(
+          enable_gpu_rasterization, attribs->lose_context_when_out_of_memory);
       if (result != gpu::ContextResult::kSuccess) {
         DestroyOnGpuThread();
         DLOG(ERROR) << "Failed to initialize decoder.";
@@ -500,6 +501,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
   }
 
   *params.capabilities = decoder_->GetCapabilities();
+  params.capabilities->gpu_rasterization = enable_gpu_rasterization;
   *params.gl_capabilities = decoder_->GetGLCapabilities();
 
   return gpu::ContextResult::kSuccess;

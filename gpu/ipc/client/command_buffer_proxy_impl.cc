@@ -76,6 +76,11 @@ ContextResult CommandBufferProxyImpl::Initialize(
   // prevent cleanup on destruction.
   auto channel = std::move(channel_);
 
+  bool enable_gpu_rasterization = false;
+  if (attribs->which() == mojom::ContextCreationAttribs::Tag::kRaster) {
+    enable_gpu_rasterization = attribs->get_raster()->enable_gpu_rasterization;
+  }
+
   auto params = mojom::CreateCommandBufferParams::New();
   params->stream_id = stream_id_;
   params->stream_priority = stream_priority;
@@ -116,6 +121,7 @@ ContextResult CommandBufferProxyImpl::Initialize(
       command_buffer_.BindNewEndpointAndPassReceiver(channel->io_task_runner()),
       client_receiver_.BindNewEndpointAndPassRemote(callback_thread_), &result,
       &capabilities_, &gl_capabilities_);
+  capabilities_.gpu_rasterization = enable_gpu_rasterization;
   if (!sent) {
     command_buffer_.reset();
     client_receiver_.reset();

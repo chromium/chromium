@@ -848,7 +848,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   // Number of commands remaining to be processed in DoCommands().
   int commands_to_process_ = 0;
 
-  bool use_gpu_raster_ = false;
   bool use_passthrough_ = false;
   bool performed_raster_ = false;
 
@@ -1075,7 +1074,6 @@ ContextResult RasterDecoderImpl::Initialize(
     if (!gr_context() && !graphite_shared_context()) {
       return ContextResult::kFatalFailure;
     }
-    use_gpu_raster_ = true;
   }
   paint_cache_ = std::make_unique<cc::ServicePaintCache>();
 
@@ -1149,7 +1147,6 @@ gl::GLSurface* RasterDecoderImpl::GetGLSurface() {
 Capabilities RasterDecoderImpl::GetCapabilities() {
   // TODO(enne): reconcile this with gles2_cmd_decoder's capability settings.
   Capabilities caps;
-  caps.gpu_rasterization = use_gpu_raster_;
   caps.gpu_memory_buffer_formats =
       feature_info()->feature_flags().gpu_memory_buffer_formats;
   caps.texture_format_bgra8888 =
