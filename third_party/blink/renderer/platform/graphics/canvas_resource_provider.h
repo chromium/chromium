@@ -465,7 +465,7 @@ class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
     NOTREACHED();
   }
 
-  void RasterRecord(cc::PaintRecord last_recording) override;
+  void RasterRecord(cc::PaintRecord last_recording) override { NOTREACHED(); }
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,

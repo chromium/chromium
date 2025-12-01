@@ -258,11 +258,6 @@ sk_sp<SkSurface> CanvasResourceProviderExternalBitmap::CreateSkSurface() const {
   return SkSurfaces::Raster(info, &props);
 }
 
-void CanvasResourceProviderExternalBitmap::RasterRecord(
-    cc::PaintRecord last_recording) {
-  return UnacceleratedRasterRecord(last_recording);
-}
-
 sk_sp<SkSurface> Canvas2DResourceProviderBitmap::CreateSkSurface() const {
   TRACE_EVENT0("blink", "Canvas2DResourceProviderBitmap::CreateSkSurface");
 
