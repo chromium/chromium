@@ -418,6 +418,7 @@ void BnplManager::OnVcnDetailsFetched(
         ongoing_flow_state_->issuer->issuer_id()));
     credit_card.set_is_bnpl_card(true);
     credit_card.SetNickname(ongoing_flow_state_->issuer->GetDisplayName());
+    credit_card.set_server_id(ongoing_flow_state_->instrument_id);
     std::move(ongoing_flow_state_->on_bnpl_vcn_fetched_callback)
         .Run(credit_card);
   } else {

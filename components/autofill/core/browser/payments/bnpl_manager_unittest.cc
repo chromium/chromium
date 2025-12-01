@@ -656,6 +656,8 @@ TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
             base::UTF8ToUTF16(response_details.expiration_month));
   EXPECT_EQ(fetched_vcn.Expiration4DigitYearAsString(),
             base::UTF8ToUTF16(response_details.expiration_year));
+  EXPECT_EQ(fetched_vcn.server_id(),
+            base::NumberToString(issuer.payment_instrument()->instrument_id()));
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 

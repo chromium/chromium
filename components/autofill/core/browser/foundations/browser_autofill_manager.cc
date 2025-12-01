@@ -2006,6 +2006,12 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       return;
     }
 
+    if (credit_card.record_type() == CreditCard::RecordType::kFullServerCard ||
+        credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
+      self->GetCreditCardAccessManager()->CacheUnmaskedCardInfo(
+          credit_card, credit_card.cvc());
+    }
+
     self->last_unlocked_credit_card_cvc_ = credit_card.cvc();
     // If the synced down card is a virtual card or a server card enrolled in
     // runtime retrieval, let the client know so that it can show the UI to help
@@ -2031,12 +2037,6 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       options.cvc = credit_card.cvc();
       options.card_image = self->GetCardImage(credit_card);
       self->client().GetPaymentsAutofillClient()->OnCardDataAvailable(options);
-    }
-
-    if (credit_card.record_type() == CreditCard::RecordType::kFullServerCard ||
-        credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
-      self->GetCreditCardAccessManager()->CacheUnmaskedCardInfo(
-          credit_card, credit_card.cvc());
     }
 
     fill_or_preview(*self, mojom::ActionPersistence::kFill, form, field_id,
