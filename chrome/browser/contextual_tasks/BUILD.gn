@@ -97,6 +97,8 @@ source_set("impl") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/contextual_search:public",
+      "//components/optimization_guide/core:model_execution",
+      "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/tabs:public",
       "//components/url_deduplication",
       "//components/visited_url_ranking/public",

@@ -15,6 +15,7 @@ namespace contextual_tasks {
 
 BASE_DECLARE_FEATURE(kContextualTasks);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
+BASE_DECLARE_FEATURE(kContextualTasksContextLogging);
 
 // Enables context menu settings for contextual tasks.
 BASE_DECLARE_FEATURE(kContextualTasksContextMenu);
@@ -34,11 +35,15 @@ enum class EntryPointOption {
 extern const base::FeatureParam<double> kMinEmbeddingSimilarityScore;
 // Whether to only consider titles for similarity.
 extern const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity;
-// Controls whether the contextual task page action should show
-extern const base::FeatureParam<EntryPointOption, true> kShowEntryPoint;
-
 // Minimum score, computed using multiple signals, to consider a tab relevant.
 extern const base::FeatureParam<double> kMinMultiSignalScore;
+
+// The sample rate for logging contextual tasks context quality.
+extern const base::FeatureParam<double>
+    kContextualTasksContextLoggingSampleRate;
+
+// Controls whether the contextual task page action should show
+extern const base::FeatureParam<EntryPointOption, true> kShowEntryPoint;
 
 // If true, the side panel is task scoped. Meaning that for all tabs associated
 // with the same task, they will share the same side panel. If the side panel
@@ -80,6 +85,9 @@ extern bool GetEnableLensInContextualTasks();
 
 // Returns the user agent suffix to use for requests.
 extern std::string GetContextualTasksUserAgentSuffix();
+
+// Whether the contextual tasks context quality should be logged.
+extern bool ShouldLogContextualTasksContextQuality();
 
 namespace flag_descriptions {
 

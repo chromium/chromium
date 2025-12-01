@@ -31,6 +31,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Embedder not available"/>
   <int value="2" label="Query embedding failed"/>
   <int value="3" label="Query embedding output malformed"/>
+  <int value="4" label="No eligible tabs"/>
 </enum>
 
 </enums>

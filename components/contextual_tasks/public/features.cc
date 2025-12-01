@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/metrics/field_trial_params.h"
+#include "base/rand_util.h"
 #include "base/strings/string_split.h"
 
 namespace contextual_tasks {
@@ -17,6 +18,10 @@ BASE_FEATURE(kContextualTasks, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables relevant context determination for contextual tasks.
 BASE_FEATURE(kContextualTasksContext, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables quality logging for relevant context determination for contextual
+// tasks.
+BASE_FEATURE(kContextualTasksContextLogging, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables context menu settings for contextual tasks.
 BASE_FEATURE(kContextualTasksContextMenu,
@@ -28,6 +33,22 @@ BASE_FEATURE(kContextualTasksSuggestionsEnabled,
              "ContextualTasksSuggestionsEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<double> kMinEmbeddingSimilarityScore{
+    &kContextualTasksContext, "ContextualTasksContextEmbeddingSimilarityScore",
+    0.8};
+
+const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
+    &kContextualTasksContext,
+    "ContextualTasksContextOnlyUseTitles",
+    false);
+
+const base::FeatureParam<double> kMinMultiSignalScore{
+    &kContextualTasksContext, "ContextualTasksContextMinMultiSignalScore", 0.8};
+
+const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
+    &kContextualTasksContextLogging, "ContextualTasksContextLoggingSampleRate",
+    1.0};
+
 // The base URL for the AI page.
 const base::FeatureParam<std::string> kContextualTasksAiPageUrl{
     &kContextualTasksContext, "ai-page-url",
@@ -37,18 +58,6 @@ const base::FeatureParam<std::string> kContextualTasksAiPageUrl{
 const base::FeatureParam<std::string> kContextualTasksSignInDomains{
     &kContextualTasksContext, "sign-in-domains",
     "accounts.google.com,login.corp.google.com"};
-
-const base::FeatureParam<double> kMinEmbeddingSimilarityScore{
-    &kContextualTasksContext, "ContextualTasksContextEmbeddingSimilarityScore",
-    0.8};
-
-const base::FeatureParam<double> kMinMultiSignalScore{
-    &kContextualTasksContext, "ContextualTasksContextMinMultiSignalScore", 0.8};
-
-const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
-    &kContextualTasksContext,
-    "ContextualTasksContextOnlyUseTitles",
-    false);
 
 constexpr base::FeatureParam<EntryPointOption>::Option kEntryPointOptions[] = {
     {EntryPointOption::kNoEntryPoint, "no-entry-point"},
@@ -117,6 +126,13 @@ bool GetEnableLensInContextualTasks() {
 
 std::string GetContextualTasksUserAgentSuffix() {
   return kContextualTasksUserAgentSuffix.Get();
+}
+
+bool ShouldLogContextualTasksContextQuality() {
+  if (!base::FeatureList::IsEnabled(kContextualTasksContextLogging)) {
+    return false;
+  }
+  return base::RandDouble() <= kContextualTasksContextLoggingSampleRate.Get();
 }
 
 namespace flag_descriptions {

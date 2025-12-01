@@ -4,6 +4,9 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 
+#include <memory>
+
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -20,6 +23,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/proto/features/contextual_tasks_context.pb.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -90,27 +95,6 @@ double GetTabScore(const TabSignals& signals) {
     score = ProbOr(score, lexical_match_score);
   }
   return score;
-}
-
-std::vector<content::WebContents*> GetAllTabsForProfile(Profile* profile) {
-  std::vector<content::WebContents*> all_tabs;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [profile, &all_tabs](BrowserWindowInterface* browser) {
-        if (browser->GetProfile() != profile) {
-          return true;
-        }
-        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
-        for (int i = 0; i < tab_strip_model->count(); i++) {
-          content::WebContents* web_contents =
-              tab_strip_model->GetWebContentsAt(i);
-          if (web_contents &&
-              web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
-            all_tabs.push_back(web_contents);
-          }
-        }
-        return true;
-      });
-  return all_tabs;
 }
 
 void RecordContextDeterminationStatus(ContextDeterminationStatus status) {
@@ -188,7 +172,7 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
   AUTO_CONTEXT_LOG(base::StringPrintf("Processing query %s in mode %d", query,
                                       options.tab_selection_mode));
 
-  if (!is_embedder_available_) {
+  if (!embedder_model_version_) {
     AUTO_CONTEXT_LOG("Embedder not available");
     RecordContextDeterminationStatus(
         ContextDeterminationStatus::kEmbedderNotAvailable);
@@ -213,7 +197,9 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
 
 void ContextualTasksContextService::EmbedderMetadataUpdated(
     passage_embeddings::EmbedderMetadata metadata) {
-  is_embedder_available_ = metadata.IsValid();
+  embedder_model_version_ = metadata.IsValid()
+                                ? std::make_optional(metadata.model_version)
+                                : std::nullopt;
 }
 
 passage_embeddings::PageEmbeddingsService::Priority
@@ -250,37 +236,35 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
     return;
   }
 
-  RecordContextDeterminationStatus(ContextDeterminationStatus::kSuccess);
-
   AUTO_CONTEXT_LOG(
       base::StringPrintf("Processing query embedding for %s", query));
 
-  passage_embeddings::Embedding query_embedding = embeddings[0];
-  std::vector<content::WebContents*> all_tabs = GetAllTabsForProfile(profile_);
-  std::vector<content::WebContents*> relevant_tabs =
-      SelectRelevantTabs(query, options, query_embedding, all_tabs);
-  size_t initial_relevant_count = relevant_tabs.size();
-
-  // Remove tabs that are not eligible for server upload.
-  std::erase_if(relevant_tabs, [this](content::WebContents* web_contents) {
-    bool removed = !ShouldAddTabToSelection(web_contents);
-    if (removed) {
-      AUTO_CONTEXT_LOG(
-          base::StringPrintf("Removing %s from relevant set as it is not "
-                             "eligible for server upload",
-                             web_contents->GetLastCommittedURL().spec()));
-    }
-    return removed;
-  });
-
-  if (relevant_tabs.size() != initial_relevant_count) {
-    base::UmaHistogramCounts100(
-        "ContextualTasks.Context.RelevantButInvalidTabsCount",
-        initial_relevant_count - relevant_tabs.size());
+  std::vector<content::WebContents*> all_tabs = GetAllEligibleTabs();
+  if (all_tabs.empty()) {
+    AUTO_CONTEXT_LOG("No eligible tabs");
+    RecordContextDeterminationStatus(
+        ContextDeterminationStatus::kNoEligibleTabs);
+    std::move(callback).Run({});
+    return;
   }
 
-  AUTO_CONTEXT_LOG(base::StringPrintf("Number of open tabs for query %s: %d",
-                                      query, all_tabs.size()));
+  RecordContextDeterminationStatus(ContextDeterminationStatus::kSuccess);
+
+  auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
+      optimization_guide_keyed_service_->GetModelQualityLogsUploaderService()
+          ->GetWeakPtr());
+
+  passage_embeddings::Embedding query_embedding = embeddings[0];
+  auto* quality_log = log_entry->log_ai_data_request()
+                          ->mutable_contextual_tasks_context()
+                          ->mutable_quality();
+  quality_log->set_embedding_model_version(
+      embedder_model_version_.value_or(-1));
+  std::vector<content::WebContents*> relevant_tabs = SelectRelevantTabs(
+      query, options, query_embedding, all_tabs, explicit_urls, quality_log);
+
+  AUTO_CONTEXT_LOG(base::StringPrintf(
+      "Number of eligible open tabs for query %s: %d", query, all_tabs.size()));
   AUTO_CONTEXT_LOG(base::StringPrintf(
       "Number of relevant tabs for query %s: %d", query, relevant_tabs.size()));
 
@@ -299,7 +283,46 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
         std::set<GURL>(explicit_urls.begin(), explicit_urls.end()));
   }
 
+  if (!ShouldLogContextualTasksContextQuality() ||
+      quality_log->eligible_tabs().size() == 0) {
+    // Explicitly drop when we don't want to log. Otherwise, the destructor of
+    // the log entry will trigger an upload.
+    optimization_guide::ModelQualityLogEntry::Drop(std::move(log_entry));
+  }
+
   std::move(callback).Run(std::move(relevant_tabs));
+}
+
+std::vector<content::WebContents*>
+ContextualTasksContextService::GetAllEligibleTabs() {
+  std::vector<content::WebContents*> all_tabs;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &all_tabs](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile_) {
+          return true;
+        }
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->count(); i++) {
+          content::WebContents* web_contents =
+              tab_strip_model->GetWebContentsAt(i);
+          if (!web_contents) {
+            continue;
+          }
+          if (!web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+            continue;
+          }
+          if (!ShouldAddTabToSelection(web_contents)) {
+            AUTO_CONTEXT_LOG(
+                base::StringPrintf("Removing %s from relevant set as it is not "
+                                   "eligible for server upload",
+                                   web_contents->GetLastCommittedURL().spec()));
+            continue;
+          }
+          all_tabs.push_back(web_contents);
+        }
+        return true;
+      });
+  return all_tabs;
 }
 
 std::vector<content::WebContents*>
@@ -307,11 +330,13 @@ ContextualTasksContextService::SelectRelevantTabs(
     const std::string& query,
     const TabSelectionOptions& options,
     const passage_embeddings::Embedding& query_embedding,
-    const std::vector<content::WebContents*>& all_tabs) {
+    const std::vector<content::WebContents*>& all_tabs,
+    const std::vector<GURL>& explicit_urls,
+    optimization_guide::proto::ContextualTasksContextQuality* quality_log) {
   switch (options.tab_selection_mode) {
     case mojom::TabSelectionMode::kMultiSignalScoring:
       return SelectTabsByMultiSignalScore(query, options, query_embedding,
-                                          all_tabs);
+                                          all_tabs, explicit_urls, quality_log);
     case mojom::TabSelectionMode::kEmbeddingsMatch:
       return SelectTabsByEmbeddingsMatch(query, options, query_embedding,
                                          all_tabs);
@@ -323,9 +348,14 @@ ContextualTasksContextService::SelectTabsByMultiSignalScore(
     const std::string& query,
     const TabSelectionOptions& options,
     const passage_embeddings::Embedding& query_embedding,
-    const std::vector<content::WebContents*>& all_tabs) {
+    const std::vector<content::WebContents*>& all_tabs,
+    const std::vector<GURL>& explicit_urls,
+    optimization_guide::proto::ContextualTasksContextQuality* quality_log) {
   std::vector<content::WebContents*> relevant_tabs;
   for (auto* web_contents : all_tabs) {
+    optimization_guide::proto::ContextualTasksTabContext* tab_context =
+        quality_log->add_eligible_tabs();
+
     // Collect tab signals.
     TabSignals tab_signals;
     tab_signals.web_contents = web_contents;
@@ -343,22 +373,31 @@ ContextualTasksContextService::SelectTabsByMultiSignalScore(
           "ContextualTasks.Context.EmbeddingSimilarityScore",
           static_cast<int>(
               std::min(100 * *(tab_signals.embedding_score), 100.0f)));
+      tab_context->set_best_embedding_score(*tab_signals.embedding_score);
     }
     if (tab_signals.duration_since_last_active.has_value()) {
       base::UmaHistogramTimes("ContextualTasks.Context.DurationSinceLastActive",
                               *(tab_signals.duration_since_last_active));
+      tab_context->set_seconds_since_last_active(
+          tab_signals.duration_since_last_active->InSeconds());
     }
     if (tab_signals.num_query_title_matching_words.has_value()) {
       base::UmaHistogramCounts100(
           "ContextualTasks.Context.MatchingWordsCount",
           std::min(*(tab_signals.num_query_title_matching_words), 100));
+      tab_context->set_number_of_common_words(
+          *tab_signals.num_query_title_matching_words);
     }
 
     // Score and select qualifying tabs.
     double score = GetTabScore(tab_signals);
+    tab_context->set_aggregate_tab_score(score);
     if (score >= options.min_model_score.value_or(kMinMultiSignalScore.Get())) {
       relevant_tabs.push_back(tab_signals.web_contents);
     }
+
+    tab_context->set_was_explicitly_chosen(
+        base::Contains(explicit_urls, web_contents->GetLastCommittedURL()));
 
     base::UmaHistogramSparse("ContextualTasks.Context.TabScore",
                              static_cast<int>(std::min(100 * score, 100.0)));

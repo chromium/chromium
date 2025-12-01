@@ -27,6 +27,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace optimization_guide::proto {
+class ContextualTasksContextQuality;
+}  // namespace optimization_guide::proto
+
 namespace page_content_annotations {
 class PageContentExtractionService;
 }  // namespace page_content_annotations
@@ -44,10 +48,11 @@ enum class ContextDeterminationStatus {
   kEmbedderNotAvailable = 1,
   kQueryEmbeddingFailed = 2,
   kQueryEmbeddingOutputMalformed = 3,
+  kNoEligibleTabs = 4,
 
   // Keep in sync with ContextualTasksContextDeterminationStatus in
   // contextual_tasks/enums.xml.
-  kMaxValue = kQueryEmbeddingOutputMalformed,
+  kMaxValue = kNoEligibleTabs,
 };
 
 // Options to regulate tab selection behavior.
@@ -109,12 +114,17 @@ class ContextualTasksContextService
       passage_embeddings::Embedder::TaskId task_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
+  // Returns all tabs for the profile that are eligible for selection.
+  std::vector<content::WebContents*> GetAllEligibleTabs();
+
   // Returns the relevant tabs for `query` based on given `tab_selection_mode`.
   std::vector<content::WebContents*> SelectRelevantTabs(
       const std::string& query,
       const TabSelectionOptions& options,
       const passage_embeddings::Embedding& query_embedding,
-      const std::vector<content::WebContents*>& all_tabs);
+      const std::vector<content::WebContents*>& all_tabs,
+      const std::vector<GURL>& explicit_urls,
+      optimization_guide::proto::ContextualTasksContextQuality* quality_log);
 
   // Selects tabs based on embeddings match.
   std::vector<content::WebContents*> SelectTabsByEmbeddingsMatch(
@@ -129,7 +139,9 @@ class ContextualTasksContextService
       const std::string& query,
       const TabSelectionOptions& options,
       const passage_embeddings::Embedding& query_embedding,
-      const std::vector<content::WebContents*>& all_tabs);
+      const std::vector<content::WebContents*>& all_tabs,
+      const std::vector<GURL>& explicit_urls,
+      optimization_guide::proto::ContextualTasksContextQuality* quality_log);
 
   // Returns the duration since the tab was last active.
   std::optional<base::TimeDelta> GetDurationSinceLastActive(
@@ -138,8 +150,8 @@ class ContextualTasksContextService
   // Returns whether the tab should be added to the selection.
   bool ShouldAddTabToSelection(content::WebContents* web_contents);
 
-  // Whether the embedder is available.
-  bool is_embedder_available_ = false;
+  // The version of the embedder model.
+  std::optional<int64_t> embedder_model_version_;
 
   // Not owned. Guaranteed to outlive `this`.
   raw_ptr<Profile> profile_;
