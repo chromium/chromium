@@ -27,6 +27,10 @@ class FormTrackerTestApi {
         /*reset_last_interacted_elements=*/false);
   }
 
+  std::optional<FormData> provisionally_saved_form() {
+    return form_tracker_->provisionally_saved_form();
+  }
+
  private:
   const raw_ref<FormTracker> form_tracker_;
 };

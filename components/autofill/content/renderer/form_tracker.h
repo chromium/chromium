@@ -126,40 +126,7 @@ class FormTracker : public content::RenderFrameObserver,
   // discarded.
   void SetUserGestureRequired(UserGestureRequired user_gesture_required);
 
-  FormRef last_interacted_form() const { return last_interacted_.form; }
-
-  // TODO(crbug.com/40281981): Remove.
-  std::optional<FormData>& provisionally_saved_form() {
-    return last_interacted_.saved_state;
-  }
-
   bool IsTracking() const;
-
-  // TODO(crbug.com/40281981): Remove.
-  base::flat_map<FormRendererId, DenseSet<mojom::SubmissionSource>>&
-  submitted_forms() {
-    return submitted_forms_;
-  }
-
-  // Notifies agents of the submission of `form_data`.
-  void FireHostSubmitEvents(const FormData& form_data,
-                            mojom::SubmissionSource source);
-
-  // Returns an approximation of the submitted form. The candidates are:
-  // - `provisionally_saved_form_` , because it may be the last-known complete
-  //   state of the form (i.e., the form or some fields in the form may have
-  //   been removed afterwards).
-  // - `last_interacted_form_`'s current `FormData`, because this corresponds to
-  //   the last form element the user interacted with.
-  // - `submitted_form_element`'s current `FormData`, because the caller
-  //    specified that this is the form element that was submitted, regardless
-  //    of autofill's tracking.
-  // When `submitted_form_element` is provided the function makes sure
-  // that the returned form corresponds to that DOM element.
-  // `source` is the type of submission requesting the submitted form.
-  std::optional<FormData> GetSubmittedForm(
-      mojom::SubmissionSource source,
-      std::optional<blink::WebFormElement> submitted_form_element);
 
   // Called when current form is no longer submittable, submitted_forms_ is
   // cleared in this method.
@@ -198,11 +165,38 @@ class FormTracker : public content::RenderFrameObserver,
   void OnFrameDetached() override {}
   void WillSendSubmitEvent(const blink::WebFormElement& form) override;
 
+  FormRef last_interacted_form() const { return last_interacted_.form; }
+
+  std::optional<FormData>& provisionally_saved_form() {
+    return last_interacted_.saved_state;
+  }
+
   // Called in a posted task by textFieldDidChange() to work-around a WebKit bug
   // http://bugs.webkit.org/show_bug.cgi?id=16976 , we also don't want to
   // process element while it is changing.
   void FormControlDidChangeImpl(FieldRendererId element_id,
                                 SaveFormReason change_source);
+
+  // Notifies agents of the submission of `form_data`.
+  void FireHostSubmitEvents(const FormData& form_data,
+                            mojom::SubmissionSource source);
+
+  // Returns an approximation of the submitted form. The candidates are:
+  // - `provisionally_saved_form_` , because it may be the last-known complete
+  //   state of the form (i.e., the form or some fields in the form may have
+  //   been removed afterwards).
+  // - `last_interacted_form_`'s current `FormData`, because this corresponds to
+  //   the last form element the user interacted with.
+  // - `submitted_form_element`'s current `FormData`, because the caller
+  //    specified that this is the form element that was submitted, regardless
+  //    of autofill's tracking.
+  // When `submitted_form_element` is provided the function makes sure
+  // that the returned form corresponds to that DOM element.
+  // `source` is the type of submission requesting the submitted form.
+  std::optional<FormData> GetSubmittedForm(
+      mojom::SubmissionSource source,
+      std::optional<blink::WebFormElement> submitted_form_element);
+
   // Virtual for testing.
   // TODO(crbug.com/40281981): Remove `reset_last_interacted_elements` when
   // `kAutofillFixFormTracking` launches.
