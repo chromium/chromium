@@ -86,6 +86,12 @@ class ReadAnythingController : public TabStripModelObserver,
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
 
+  // Called by other host views of the Reading Mode WebUI to return ownership of
+  // the WebUIContentsWrapper to this controller.
+  void TransferWebUiOwnership(
+      std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
+          web_ui_wrapper);
+
  private:
   // Returns the SidePanelUI for the active tab if it can be shown.
   // Otherwise, returns nullptr.

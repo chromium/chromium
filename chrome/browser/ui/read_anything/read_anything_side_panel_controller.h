@@ -100,6 +100,9 @@ class ReadAnythingSidePanelController
   // SidePanelEntryObserver:
   void OnEntryShown(SidePanelEntry* entry) override;
   void OnEntryHidden(SidePanelEntry* entry) override;
+  void OnEntryWillHide(SidePanelEntry* entry,
+                       SidePanelEntryHideReason reason) override;
+
 
   void AddObserver(ReadAnythingSidePanelController::Observer* observer);
   void RemoveObserver(ReadAnythingSidePanelController::Observer* observer);
@@ -107,6 +110,8 @@ class ReadAnythingSidePanelController
   tabs::TabInterface* tab() { return tab_.get(); }
 
  private:
+   void ReturnWebUIToController();
+
   // Creates the container view and all its child views for side panel entry.
   std::unique_ptr<views::View> CreateContainerView(SidePanelEntryScope& scope);
 

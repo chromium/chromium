@@ -292,3 +292,65 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(controller1->isActiveTab());
   ASSERT_FALSE(controller2->isActiveTab());
 }
+
+// TODO(crbug.com/463939639): Change this test to confirm that the WebUI is
+// passed back and forth between IRM and SP, instead of checking that the same
+// WebUI is reused on open and close of the SP.
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       ReusesWebUIOnOpenCloseAndReopen) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
+
+  // Open side panel for the first time and get the WebContents.
+  controller->ToggleReadAnythingSidePanel(SidePanelOpenTrigger::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  auto* side_panel = BrowserView::GetBrowserViewForBrowser(browser())
+                         ->contents_height_side_panel();
+  auto* content_wrapper = side_panel->GetContentParentView();
+  ASSERT_EQ(1u, content_wrapper->children().size());
+  auto* side_panel_view =
+      static_cast<SidePanelWebUIView*>(content_wrapper->children()[0]);
+  content::WebContents* web_contents1 = side_panel_view->web_contents();
+  ASSERT_TRUE(web_contents1);
+
+  // Close the side panel.
+  controller->ToggleReadAnythingSidePanel(SidePanelOpenTrigger::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  // Ensure the WebUI is now owned by the controller.
+  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
+      controller->GetOrCreateWebUIWrapper();
+  ASSERT_TRUE(wrapper->web_contents());
+  // Return the wrapper to the controller so it can be passed to the side panel.
+  controller->SetWebUIWrapperForTest(std::move(wrapper));
+
+  // Re-open the side panel.
+  controller->ToggleReadAnythingSidePanel(SidePanelOpenTrigger::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  // Get the new WebContents from the side panel and assert it's the same one.
+  side_panel = BrowserView::GetBrowserViewForBrowser(browser())
+                   ->contents_height_side_panel();
+  content_wrapper = side_panel->GetContentParentView();
+  ASSERT_EQ(1u, content_wrapper->children().size());
+  side_panel_view =
+      static_cast<SidePanelWebUIView*>(content_wrapper->children()[0]);
+  content::WebContents* web_contents2 = side_panel_view->web_contents();
+  ASSERT_TRUE(web_contents2);
+
+  EXPECT_EQ(web_contents1, web_contents2);
+}

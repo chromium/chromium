@@ -107,7 +107,7 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
 }
 
 ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
-  if (web_view_) {
+  if (web_view_ && web_view_->contents_wrapper()) {
     web_view_->contents_wrapper()->web_contents()->RemoveUserData(
         ReadAnythingSidePanelControllerGlue::UserDataKey());
   }
@@ -235,11 +235,33 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
                     std::optional<ReadAnythingOpenTrigger>());
 }
 
+void ReadAnythingSidePanelController::OnEntryWillHide(
+    SidePanelEntry* entry,
+    SidePanelEntryHideReason reason) {
+  if (reason == SidePanelEntryHideReason::kSidePanelClosed) {
+    ReturnWebUIToController();
+  }
+}
+
+void ReadAnythingSidePanelController::ReturnWebUIToController() {
+  if (!features::IsImmersiveReadAnythingEnabled()) {
+    return;
+  }
+  if (!web_view_ || !web_view_->contents_wrapper()) {
+    return;
+  }
+  web_view_->contents_wrapper()->web_contents()->RemoveUserData(
+      ReadAnythingSidePanelControllerGlue::UserDataKey());
+  auto* controller = ReadAnythingController::From(tab_);
+  CHECK(controller);
+  controller->TransferWebUiOwnership(web_view_->TakeContentsWrapper());
+}
+
 std::unique_ptr<views::View>
 ReadAnythingSidePanelController::CreateContainerView(
     SidePanelEntryScope& scope) {
   // If there was an old WebView, clear the reference.
-  if (web_view_) {
+  if (web_view_ && web_view_->contents_wrapper()) {
     web_view_->contents_wrapper()->web_contents()->RemoveUserData(
         ReadAnythingSidePanelControllerGlue::UserDataKey());
   }

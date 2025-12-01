@@ -43,6 +43,9 @@ class ReadAnythingSidePanelWebView
 
   base::WeakPtr<ReadAnythingSidePanelWebView> GetWeakPtr();
 
+  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
+  TakeContentsWrapper();
+
  private:
   base::WeakPtrFactory<ReadAnythingSidePanelWebView> weak_factory_{this};
 };

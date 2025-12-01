@@ -100,6 +100,13 @@ void ReadAnythingController::SetWebUIWrapperForTest(
   web_ui_wrapper_ = std::move(web_ui_wrapper);
 }
 
+void ReadAnythingController::TransferWebUiOwnership(
+    std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
+        web_ui_wrapper) {
+  CHECK(!web_ui_wrapper_);
+  web_ui_wrapper_ = std::move(web_ui_wrapper);
+}
+
 // TODO(crbug.com/447418049): Open immersive reading mode via this
 // entrypoint. Currently just open side panel reading mode via
 // ReadAnythingController when is_immersive_read_anything_enabled_ flag is
