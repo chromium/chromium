@@ -544,15 +544,11 @@ std::u16string GetStringWithPlaceholder(int resource_id,
 
 const LocalizedErrorMap* FindErrorMapInArray(
     base::span<const LocalizedErrorMap> maps,
-    size_t spanification_suspected_redundant_num_maps,
     int error_code) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_num_maps == maps.size(),
-        base::NotFatalUntil::M143);
-  for (size_t i = 0; i < spanification_suspected_redundant_num_maps; ++i) {
-    if (maps[i].error_code == error_code)
-      return &maps[i];
+  for (const auto& map : maps) {
+    if (map.error_code == error_code) {
+      return &map;
+    }
   }
   return nullptr;
 }
@@ -572,25 +568,22 @@ const LocalizedErrorMap* LookupErrorMap(const std::string& error_domain,
         net::IsHostnameResolutionError(error_code)) {
       return &secure_dns_network_error;
     }
-    return FindErrorMapInArray(net_error_options, std::size(net_error_options),
-                               error_code);
+    return FindErrorMapInArray(net_error_options, error_code);
   } else if (error_domain == Error::kHttpErrorDomain) {
-    const LocalizedErrorMap* map = FindErrorMapInArray(
-        http_error_options, std::size(http_error_options), error_code);
+    const LocalizedErrorMap* map =
+        FindErrorMapInArray(http_error_options, error_code);
     // Handle miscellaneous 400/500 errors.
     return !map && error_code >= 400 && error_code < 600
                ? &generic_4xx_5xx_error
                : map;
   } else if (error_domain == Error::kDnsProbeErrorDomain) {
     const LocalizedErrorMap* map =
-        FindErrorMapInArray(dns_probe_error_options,
-                            std::size(dns_probe_error_options), error_code);
+        FindErrorMapInArray(dns_probe_error_options, error_code);
     DCHECK(map);
     return map;
   } else if (error_domain == Error::kLinkPreviewErrorDomain) {
     const LocalizedErrorMap* map =
-        FindErrorMapInArray(link_preview_error_options,
-                            std::size(link_preview_error_options), error_code);
+        FindErrorMapInArray(link_preview_error_options, error_code);
     CHECK(map);
     return map;
   } else {

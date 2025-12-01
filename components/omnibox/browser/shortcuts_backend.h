@@ -35,8 +35,7 @@ struct TestShortcutData;
 
 void PopulateShortcutsBackendWithTestData(
     scoped_refptr<ShortcutsBackend> backend,
-    base::span<TestShortcutData> db,
-    size_t spanification_suspected_redundant_db_size);
+    base::span<TestShortcutData> db);
 
 class ShortcutsDatabase;
 

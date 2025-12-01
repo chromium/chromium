@@ -528,28 +528,19 @@ CustomPatternWithAlias kCustomPatternsWithoutContext[] = {
 bool FindAndConsumeAndGetSkippedN(std::string_view* input,
                                   const re2::RE2& pattern,
                                   std::string_view* skipped_input,
-                                  base::span<std::string_view*> args,
-                                  int spanification_suspected_redundant_argc) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_argc == static_cast<int>(args.size()),
-        base::NotFatalUntil::M143);
+                                  base::span<std::string_view*> args) {
   std::string_view old_input = *input;
 
-  CHECK_GE(spanification_suspected_redundant_argc, 1);
-  re2::RE2::Arg a0(spanification_suspected_redundant_argc > 0 ? args[0]
-                                                              : nullptr);
-  re2::RE2::Arg a1(spanification_suspected_redundant_argc > 1 ? args[1]
-                                                              : nullptr);
-  re2::RE2::Arg a2(spanification_suspected_redundant_argc > 2 ? args[2]
-                                                              : nullptr);
-  re2::RE2::Arg a3(spanification_suspected_redundant_argc > 3 ? args[3]
-                                                              : nullptr);
+  CHECK_GE(args.size(), 1u);
+  re2::RE2::Arg a0(args.size() > 0 ? args[0] : nullptr);
+  re2::RE2::Arg a1(args.size() > 1 ? args[1] : nullptr);
+  re2::RE2::Arg a2(args.size() > 2 ? args[2] : nullptr);
+  re2::RE2::Arg a3(args.size() > 3 ? args[3] : nullptr);
   const re2::RE2::Arg* const wrapped_args[] = {&a0, &a1, &a2, &a3};
-  CHECK_LE(spanification_suspected_redundant_argc, 4);
+  CHECK_LE(args.size(), 4u);
 
-  bool result = re2::RE2::FindAndConsumeN(
-      input, pattern, wrapped_args, spanification_suspected_redundant_argc);
+  bool result =
+      re2::RE2::FindAndConsumeN(input, pattern, wrapped_args, args.size());
 
   if (skipped_input && result) {
     size_t bytes_skipped = args[0]->data() - old_input.data();
@@ -565,8 +556,7 @@ bool FindAndConsumeAndGetSkipped(std::string_view* input,
                                  std::string_view* skipped_input,
                                  Arg*... match_groups) {
   std::string_view* args[] = {match_groups...};
-  return FindAndConsumeAndGetSkippedN(input, pattern, skipped_input, args,
-                                      std::size(args));
+  return FindAndConsumeAndGetSkippedN(input, pattern, skipped_input, args);
 }
 
 bool HasRepeatedChar(std::string_view text, char c) {

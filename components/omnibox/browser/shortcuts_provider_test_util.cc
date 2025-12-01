@@ -52,11 +52,8 @@ TestShortcutData::~TestShortcutData() = default;
 void PopulateShortcutsBackendWithTestData(
     scoped_refptr<ShortcutsBackend> backend,
     base::span<TestShortcutData> db) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
   size_t expected_size = backend->shortcuts_map().size() + db.size();
-  for (size_t i = 0; i < db.size(); ++i) {
-    const TestShortcutData& cur = db[i];
+  for (const auto& cur : db) {
     ShortcutsDatabase::Shortcut shortcut(
         cur.guid, base::ASCIIToUTF16(cur.text),
         ShortcutsDatabase::Shortcut::MatchCore(
