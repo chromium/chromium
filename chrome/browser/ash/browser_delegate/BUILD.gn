@@ -53,5 +53,6 @@ static_library("impl") {
     "//chromeos/ash/components/browser_context_helper",
     "//components/sessions:session_id",
     "//ui/aura",
+    "//ui/base",
   ]
 }

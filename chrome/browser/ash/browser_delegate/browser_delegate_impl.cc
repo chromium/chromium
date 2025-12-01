@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_info.h"
+#include "ui/base/base_window.h"
 
 namespace ash {
 
@@ -89,6 +90,10 @@ content::WebContents* BrowserDelegateImpl::GetInspectedWebContents() const {
   return target_tab;
 }
 
+ui::BaseWindow* BrowserDelegateImpl::GetWindow() const {
+  return browser_->window();
+}
+
 aura::Window* BrowserDelegateImpl::GetNativeWindow() const {
   return browser_->window()->GetNativeWindow();
 }
@@ -150,6 +155,14 @@ void BrowserDelegateImpl::AddTab(const GURL& url,
                                  TabDisposition disposition) {
   chrome::AddTabAt(&browser_.get(), url, index.has_value() ? *index : -1,
                    disposition == TabDisposition::kForeground);
+}
+
+void BrowserDelegateImpl::CloseWebContentsAt(size_t index,
+                                             UserGesture user_gesture) {
+  browser_->tab_strip_model()->CloseWebContentsAt(
+      index, user_gesture == UserGesture::kYes
+                 ? TabCloseTypes::CLOSE_USER_GESTURE
+                 : TabCloseTypes::CLOSE_NONE);
 }
 
 content::WebContents* BrowserDelegateImpl::NavigateWebApp(const GURL& url,

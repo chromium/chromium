@@ -27,8 +27,6 @@
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -71,7 +69,7 @@ ash::ShelfAction ActivateContentOrMinimize(bool allow_minimize,
     tab_strip->ActivateTabAt(index);
   }
   return ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
-      browser->GetBrowser().window(), index == old_index && allow_minimize);
+      browser->GetWindow(), index == old_index && allow_minimize);
 }
 
 // Advance to the next window of an app if possible. |items| is the list of
@@ -350,7 +348,7 @@ void AppShortcutShelfItemController::ItemSelected(
                   ->ActivateWindowOrMinimizeIfActive(
                       // We don't need to check nullptr here because
                       // we just called GetAppMenuItems() above to update it.
-                      app_menu_browsers_[0]->window(), can_minimize)
+                      app_menu_browsers_[0]->GetWindow(), can_minimize)
             : ActivateContentOrMinimize(can_minimize,
                                         app_menu_web_contents_[0]),
         {});
@@ -380,9 +378,10 @@ AppShortcutShelfItemController::GetAppMenuItems(
   };
 
   if (IsWindowedWebApp() && !(event_flags & ui::EF_SHIFT_DOWN)) {
-    std::vector<raw_ptr<Browser, VectorExperimental>> app_menu_browsers;
+    std::vector<raw_ptr<ash::BrowserDelegate, VectorExperimental>>
+        app_menu_browsers;
     for (ash::BrowserDelegate* browser : GetAppBrowsers(filter_predicate)) {
-      app_menu_browsers.push_back(&browser->GetBrowser());
+      app_menu_browsers.push_back(browser);
       add_menu_item(browser->GetActiveWebContents());
     }
     app_menu_browsers_ = std::move(app_menu_browsers);
@@ -422,9 +421,7 @@ void AppShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
       event_flags & (ui::EF_SHIFT_DOWN | ui::EF_MIDDLE_MOUSE_BUTTON);
 
   if (app_menu_cached_by_browsers_) {
-    ash::BrowserDelegate* browser =
-        ash::BrowserController::GetInstance()->GetDelegate(
-            app_menu_browsers_[command_id]);
+    ash::BrowserDelegate* browser = app_menu_browsers_[command_id];
     if (browser) {
       if (should_close) {
         browser->GetBrowser().tab_strip_model()->CloseAllTabs();
@@ -445,7 +442,8 @@ void AppShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
                                 : TabStripModel::kNoTab;
     if (index != TabStripModel::kNoTab) {
       if (should_close) {
-        tab_strip->CloseWebContentsAt(index, TabCloseTypes::CLOSE_USER_GESTURE);
+        browser->CloseWebContentsAt(index,
+                                    ash::BrowserDelegate::UserGesture::kYes);
       } else {
         tab_strip->ActivateTabAt(index);
         ShowAndActivateBrowser(/*move_to_current_desktop=*/true, browser);
@@ -472,7 +470,8 @@ void AppShortcutShelfItemController::Close() {
       TabStripModel* tab_strip = browser->GetBrowser().tab_strip_model();
       int index = tab_strip->GetIndexOfWebContents(item);
       DCHECK(index != TabStripModel::kNoTab);
-      tab_strip->CloseWebContentsAt(index, TabCloseTypes::CLOSE_NONE);
+      browser->CloseWebContentsAt(index,
+                                  ash::BrowserDelegate::UserGesture::kNo);
     }
   }
 }
@@ -481,7 +480,7 @@ void AppShortcutShelfItemController::OnBrowserClosed(
     ash::BrowserDelegate* browser) {
   // Reset pointers to the closed browser, but leave menu indices intact.
   for (auto& it : app_menu_browsers_) {
-    if (it == &browser->GetBrowser()) {
+    if (it == browser) {
       it = nullptr;
     }
   }

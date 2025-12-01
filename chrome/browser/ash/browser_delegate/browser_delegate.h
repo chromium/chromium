@@ -26,6 +26,10 @@ namespace tab_groups {
 struct TabGroupInfo;
 }  // namespace tab_groups
 
+namespace ui {
+class BaseWindow;
+}  // namespace ui
+
 namespace ash {
 
 // Abstraction of the `Browser` class from chrome/browser/ui/browser.h for use
@@ -71,6 +75,10 @@ class BrowserDelegate {
   // Can also be nullptr while the browser is initialized/shutdown.
   virtual content::WebContents* GetInspectedWebContents() const = 0;
 
+  // Returns the window. Can be nullptr, e.g. when the browser is being
+  // closed.
+  virtual ui::BaseWindow* GetWindow() const = 0;
+
   // Returns the native window. Can be nullptr, e.g. when the browser is being
   // closed.
   virtual aura::Window* GetNativeWindow() const = 0;
@@ -115,7 +123,7 @@ class BrowserDelegate {
   // Closes the browser as soon as possible.
   virtual void Close() = 0;
 
-  // Load the given URL in a new tab.
+  // Loads the given URL in a new tab.
   // If the `url` is empty the new tab-page is loaded.
   // If an `index` is given, the tab is placed at the corresponding position in
   // the tab strip. Otherwise it is added to the end.
@@ -123,6 +131,12 @@ class BrowserDelegate {
   virtual void AddTab(const GURL& url,
                       std::optional<size_t> index,
                       TabDisposition disposition) = 0;
+
+  // Closes the contents at the given index, triggering its destruction.
+  // If UserGesture::kYes is given, the contents will first be marked as closed
+  // by user gesture.
+  enum class UserGesture { kYes, kNo };
+  virtual void CloseWebContentsAt(size_t index, UserGesture user_gesture) = 0;
 
   // Navigates the browser to the given URL.
   // The browser must be of `kApp` or `kAppPopup` type.

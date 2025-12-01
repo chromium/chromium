@@ -77,12 +77,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -117,6 +112,7 @@
 #include "extensions/common/manifest_handlers/app_display_info.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -1622,23 +1618,22 @@ void ChromeShelfController::CloseWindowedAppsFromRemovedExtension(
   CHECK(!app_id.empty());
   // This function cannot rely on the controller's enumeration functionality
   // since the extension has already been unloaded.
-  std::vector<BrowserWindowInterface*> browser_to_close;
+  std::vector<ash::BrowserDelegate*> browsers_to_close;
   ash::BrowserController::GetInstance()->ForEachBrowser(
       ash::BrowserController::BrowserOrder::kAscendingActivationTime,
       [&](ash::BrowserDelegate& browser) {
         if (IsAppBrowser(browser) && browser.GetAppId() == app_id &&
             profile == browser.GetBrowser().GetProfile()) {
-          browser_to_close.push_back(&browser.GetBrowser());
+          browsers_to_close.push_back(&browser);
         }
         return ash::BrowserController::kContinueIteration;
       });
-  while (!browser_to_close.empty()) {
-    TabStripModel* tab_strip =
-        browser_to_close.back()->GetFeatures().tab_strip_model();
-    if (!tab_strip->empty()) {
-      tab_strip->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
+  while (!browsers_to_close.empty()) {
+    ash::BrowserDelegate* browser = browsers_to_close.back();
+    if (browser->GetWebContentsCount()) {
+      browser->CloseWebContentsAt(0, ash::BrowserDelegate::UserGesture::kNo);
     }
-    browser_to_close.pop_back();
+    browsers_to_close.pop_back();
   }
 }
 

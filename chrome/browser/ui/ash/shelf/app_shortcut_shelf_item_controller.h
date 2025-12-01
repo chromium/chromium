@@ -26,7 +26,6 @@ namespace content {
 class WebContents;
 }
 
-class Browser;
 class ShelfContextMenu;
 
 // Item controller for an app shortcut.
@@ -119,7 +118,8 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
   // of |app_menu_cached_by_browsers_|.
   std::vector<raw_ptr<content::WebContents, VectorExperimental>>
       app_menu_web_contents_;
-  std::vector<raw_ptr<Browser, VectorExperimental>> app_menu_browsers_;
+  std::vector<raw_ptr<ash::BrowserDelegate, VectorExperimental>>
+      app_menu_browsers_;
   bool app_menu_cached_by_browsers_ = false;
 
   std::unique_ptr<ShelfContextMenu> context_menu_;

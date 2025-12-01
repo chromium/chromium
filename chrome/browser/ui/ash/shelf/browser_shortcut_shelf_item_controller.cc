@@ -27,12 +27,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -250,7 +246,7 @@ void BrowserShortcutShelfItemController::ItemSelected(
     // Single browser, activate or minimize if active.
     action =
         ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
-            last_browser->GetBrowser().window(), true /* minimize allowed */);
+            last_browser->GetWindow(), true /* minimize allowed */);
   } else if (source == ash::LAUNCH_FROM_SHELF) {
     // Multiple targets, activating from shelf, a menu will be shown.
     // No need to activate or minimize the recently active browser.
@@ -260,8 +256,7 @@ void BrowserShortcutShelfItemController::ItemSelected(
     // Activate the recently active browser, never minimize.
     action =
         ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
-            last_browser->GetBrowser().window(),
-            false /* minimize not allowed */);
+            last_browser->GetWindow(), false /* minimize not allowed */);
   }
   std::move(callback).Run(action, std::move(items));
 }
@@ -357,8 +352,8 @@ void BrowserShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
       if (tab_index == kNoTab) {
         tab_strip->CloseAllTabs();
       } else if (tab_strip->ContainsIndex(tab_index)) {
-        tab_strip->CloseWebContentsAt(tab_index,
-                                      TabCloseTypes::CLOSE_USER_GESTURE);
+        browser->CloseWebContentsAt(tab_index,
+                                    ash::BrowserDelegate::UserGesture::kYes);
       }
     } else {
       if (tab_index != kNoTab && tab_strip->ContainsIndex(tab_index)) {
