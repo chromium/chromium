@@ -62,18 +62,16 @@ class PasskeyTabHelper : public web::WebStateObserver,
   bool HasCredential(const std::string& rp_id,
                      const std::string& credential_id) const;
 
-  // Requests a passkey to be created given the provided params.
-  // Fetches the shared keys list and calls the CompletePasskeyCreation
-  // callback.
+  // Requests a passkey to be created given the provided request ID. Fetches the
+  // shared keys list and calls the CompletePasskeyCreation callback.
   // TODO(crbug.com/460485333): Test passkey creation flow.
   void StartPasskeyCreation(std::string request_id);
 
-  // Requests that the provided passkey be used for passkey assertion given the
-  // provided params. Fetches the shared keys list and calls the
-  // CompletePasskeyAssertion callback.
+  // Requests that the passkey matching the provided credential ID be used for
+  // passkey assertion given the provided request ID. Fetches the shared keys
+  // list and calls the CompletePasskeyAssertion callback.
   // TODO(crbug.com/460485333): Test passkey assertion flow.
-  void StartPasskeyAssertion(std::string request_id,
-                             sync_pb::WebauthnCredentialSpecifics passkey);
+  void StartPasskeyAssertion(std::string request_id, std::string credential_id);
 
  private:
   friend class web::WebStateUserData<PasskeyTabHelper>;

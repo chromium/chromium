@@ -132,6 +132,26 @@ std::optional<PasskeyJavaScriptFeature::AssertionData> CreateAssertionObject(
       std::move(client_data_json));
 }
 
+// Attempts to find a passkey matching the provided credential ID in a list of
+// passkeys. Returns the passkey on success and std::nullopt on failure.
+std::optional<sync_pb::WebauthnCredentialSpecifics> FindPasskey(
+    std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
+    std::string credential_id) {
+  if (passkeys.empty()) {
+    return std::nullopt;
+  }
+
+  auto it = std::find_if(
+      passkeys.begin(), passkeys.end(),
+      [&credential_id](const sync_pb::WebauthnCredentialSpecifics& passkey) {
+        return passkey.credential_id() == credential_id;
+      });
+  if (it == passkeys.end()) {
+    return std::nullopt;
+  }
+  return *it;
+}
+
 }  // namespace
 
 PasskeyTabHelper::~PasskeyTabHelper() = default;
@@ -389,9 +409,8 @@ void PasskeyTabHelper::CompletePasskeyCreation(
       std::move(attestation_data));
 }
 
-void PasskeyTabHelper::StartPasskeyAssertion(
-    std::string request_id,
-    sync_pb::WebauthnCredentialSpecifics passkey) {
+void PasskeyTabHelper::StartPasskeyAssertion(std::string request_id,
+                                             std::string credential_id) {
   std::optional<AssertionRequestParams> optional_params =
       ExtractParamsFromAssertionRequestsMap(request_id);
   if (!optional_params.has_value()) {
@@ -405,6 +424,13 @@ void PasskeyTabHelper::StartPasskeyAssertion(
     return;
   }
 
+  std::optional<sync_pb::WebauthnCredentialSpecifics> passkey =
+      FindPasskey(GetFilteredPasskeys(params), std::move(credential_id));
+  if (!passkey.has_value()) {
+    DeferToRenderer(web_frame, params);
+    return;
+  }
+
   // TODO(crbug.com/460485333): Use proper top origin.
   std::string client_data_json = BuildClientDataJson(
       {ClientDataRequestType::kWebAuthnGet, web_frame->GetSecurityOrigin(),
@@ -415,7 +441,7 @@ void PasskeyTabHelper::StartPasskeyAssertion(
   client_->FetchKeys(
       ReauthenticatePurpose::kDecrypt,
       base::BindOnce(&PasskeyTabHelper::CompletePasskeyAssertion,
-                     this->AsWeakPtr(), std::move(params), std::move(passkey),
+                     this->AsWeakPtr(), std::move(params), std::move(*passkey),
                      std::move(client_data_json)));
 }
 

@@ -31,11 +31,11 @@ IOSChromePasskeyClient::IOSChromePasskeyClient(web::WebState* web_state) {
   CHECK(web_state);
   web_state_ = web_state->GetWeakPtr();
   profile_ = ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-  bool metricsReportingEnabled =
+  bool metrics_reporting_enabled =
       GetApplicationContext()->GetLocalState()->GetBoolean(
           metrics::prefs::kMetricsReportingEnabled);
   passkey_keychain_provider_ =
-      std::make_unique<PasskeyKeychainProvider>(metricsReportingEnabled);
+      std::make_unique<PasskeyKeychainProvider>(metrics_reporting_enabled);
 }
 
 IOSChromePasskeyClient::~IOSChromePasskeyClient() {}
@@ -69,11 +69,11 @@ void IOSChromePasskeyClient::ShowSuggestionBottomSheet(
     return;
   }
 
-  // TODO(crbug.com/460485496): Use an empty passkey for now.
-  // The real passkey will come from WebAuthnCredentialsDelegate.
-  sync_pb::WebauthnCredentialSpecifics passkey;
+  // TODO(crbug.com/460485496): Use an empty credential ID for now.
+  // The real credential ID will come from WebAuthnCredentialsDelegate.
+  std::string credential_id;
   passkey_tab_helper->StartPasskeyAssertion(request_info.request_id,
-                                            std::move(passkey));
+                                            std::move(credential_id));
 }
 
 void IOSChromePasskeyClient::ShowCreationBottomSheet(RequestInfo request_info) {
