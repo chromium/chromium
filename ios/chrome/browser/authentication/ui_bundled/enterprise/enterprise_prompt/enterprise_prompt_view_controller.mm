@@ -32,8 +32,6 @@
   self.imageHasFixedSize = YES;
   self.customSpacingAfterImage = 30;
 
-  self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
-
   self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE);
   self.configuration.secondaryActionString =

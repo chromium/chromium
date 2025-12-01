@@ -104,7 +104,6 @@ TEST_F(ReminderNotificationsViewControllerTest,
       [[ReminderNotificationsViewController alloc] init];
   [viewController view];
 
-  EXPECT_FALSE(viewController.showDismissBarButton);
   EXPECT_TRUE(viewController.topAlignedLayout);
   EXPECT_TRUE(viewController.alwaysShowImage);
   EXPECT_TRUE(viewController.imageHasFixedSize);

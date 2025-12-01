@@ -44,7 +44,6 @@ constexpr CGFloat kCustomSpacingAfterImage = 1;
 - (void)viewDidLoad {
   self.image = [UIImage imageNamed:@"enterprise_grey_icon_large"];
   self.imageHasFixedSize = YES;
-  self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
 
   self.titleTextStyle = UIFontTextStyleTitle2;
   // Icon already contains some spacing for the shadow.

@@ -54,7 +54,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
 // References to the UI properties that need to be updated when the trait
 // collection changes.
 @property(nonatomic, strong) UIStackView* stackView;
-@property(nonatomic, strong) UINavigationBar* navigationBar;
 @property(nonatomic, strong) UIImageView* imageView;
 @property(nonatomic, strong) UIView* imageContainerView;
 @property(nonatomic, strong) NSLayoutConstraint* imageViewAspectRatioConstraint;
@@ -68,8 +67,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
     self.actionDelegate = self;
     _customSpacingAfterImage = kStackViewSpacingAfterIllustration;
     _customSpacing = kStackViewSpacing;
-    _showDismissBarButton = NO;
-    _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
     _shouldFillInformationStack = NO;
     _imageBackgroundColor = [UIColor colorNamed:kBackgroundColor];
     _mainBackgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
@@ -85,14 +82,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [super viewDidLoad];
 
   self.view.backgroundColor = self.mainBackgroundColor;
-
-  if (self.hasNavigationBar) {
-    self.navigationBar = [self createNavigationBar];
-    [self.view addSubview:self.navigationBar];
-    AddSameConstraintsToSides(
-        self.navigationBar, self.view.safeAreaLayoutGuide,
-        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
-  }
 
   NSMutableArray* stackSubviews = [[NSMutableArray alloc] init];
 
@@ -151,10 +140,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
     [self.stackView.trailingAnchor
         constraintEqualToAnchor:self.contentView.trailingAnchor],
   ]];
-  CGFloat stackViewTopConstant = 0;
-  if (!self.hasNavigationBar) {
-    stackViewTopConstant = self.customSpacingBeforeImageIfNoNavigationBar;
-  }
+  CGFloat stackViewTopConstant = self.customSpacingBeforeImageIfNoNavigationBar;
   if (self.topAlignedLayout) {
     [self.stackView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor
                                              constant:stackViewTopConstant]
@@ -205,19 +191,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [self.view registerForTraitChanges:traits withHandler:handler];
 }
 
-- (void)viewDidLayoutSubviews {
-  [super viewDidLayoutSubviews];
-  if (self.hasNavigationBar) {
-    UIScrollView* scrollView = (UIScrollView*)self.contentView.superview;
-    CGFloat navBarHeight = self.navigationBar.frame.size.height;
-    if (scrollView.contentInset.top != navBarHeight) {
-      scrollView.contentInset = UIEdgeInsetsMake(navBarHeight, 0, 0, 0);
-      scrollView.scrollIndicatorInsets =
-          UIEdgeInsetsMake(navBarHeight, 0, 0, 0);
-    }
-  }
-}
-
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
   [self.view setNeedsUpdateConstraints];
@@ -241,9 +214,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [self.imageContainerView setHidden:!showImageView];
   self.imageViewAspectRatioConstraint.active = showImageView;
 
-  // Allow the navigation bar to update its height based on new layout.
-  [self.navigationBar invalidateIntrinsicContentSize];
-
   [super updateViewConstraints];
 }
 
@@ -258,17 +228,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
 - (CGFloat)preferredHeightForContent {
   CGFloat height = [super preferredHeightForContent];
 
-  // Add the height of the navigation bar if present.
-  if (self.navigationBar) {
-    // Ask the navigation bar for its intrinsic height instead of relying on its
-    // frame.
-    height += [self.navigationBar
-                  systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
-                  .height;
-  } else {
-    // If no navigation bar, account for the custom spacing.
     height += self.customSpacingBeforeImageIfNoNavigationBar;
-  }
 
   return height;
 }
@@ -303,51 +263,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
 }
 
 #pragma mark - Private
-
-// Handle taps on the dismiss button.
-- (void)didTapDismissBarButton {
-  CHECK(self.showDismissBarButton);
-  if ([self.actionHandler
-          respondsToSelector:@selector(confirmationAlertDismissAction)]) {
-    [self.actionHandler confirmationAlertDismissAction];
-    base::UmaHistogramEnumeration(
-        "IOS.ConfirmationAlertSheet.Outcome",
-        ConfirmationAlertSheetAction::kDismissButtonTapped);
-  }
-}
-
-// Helper to create the navigation bar.
-- (UINavigationBar*)createNavigationBar {
-  UINavigationBar* navigationBar = [[UINavigationBar alloc] init];
-  navigationBar.translucent =
-      CGColorGetAlpha(self.mainBackgroundColor.CGColor) < 1.0;
-  [navigationBar setShadowImage:[[UIImage alloc] init]];
-  [navigationBar setBarTintColor:self.mainBackgroundColor];
-
-  UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
-
-  if (self.showDismissBarButton) {
-    UIBarButtonItem* dismissButton;
-    if (self.customDismissBarButtonImage) {
-      dismissButton = [[UIBarButtonItem alloc]
-          initWithImage:self.customDismissBarButtonImage
-                  style:UIBarButtonItemStylePlain
-                 target:self
-                 action:@selector(didTapDismissBarButton)];
-    } else {
-      dismissButton = [[UIBarButtonItem alloc]
-          initWithBarButtonSystemItem:self.dismissBarButtonSystemItem
-                               target:self
-                               action:@selector(didTapDismissBarButton)];
-    }
-    navigationItem.rightBarButtonItem = dismissButton;
-  }
-
-  navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
-  [navigationBar setItems:@[ navigationItem ]];
-
-  return navigationBar;
-}
 
 - (void)setImage:(UIImage*)image {
   _image = image;
@@ -509,10 +424,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
       kConfirmationAlertSubtitleAccessibilityIdentifier;
   [self customizeSubtitle:subtitle];
   return subtitle;
-}
-
-- (BOOL)hasNavigationBar {
-  return self.showDismissBarButton;
 }
 
 // Helper to create the stack view.
