@@ -25,6 +25,7 @@ found in the LICENSE file.
     <dimen name="page_zoom_indicator_popup_height">56dp</dimen>
     <dimen name="page_zoom_indicator_popup_padding_start">16dp</dimen>
     <dimen name="page_zoom_indicator_popup_padding_end">8dp</dimen>
+    <dimen name="page_zoom_indicator_popup_dropdown_offset">48dp</dimen>
     <dimen name="zoom_percentage_width">82dp</dimen>
     <dimen name="zoom_buttons_margin_outwards">6dp</dimen>
     <dimen name="zoom_buttons_margin_inwards">10dp</dimen>
