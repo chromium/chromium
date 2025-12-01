@@ -46,7 +46,7 @@ class BatchUploadPromoHandler : public batch_upload_promo::mojom::PageHandler,
   void OnBatchUploadPromoClicked() override;
 
  private:
-  void OnLocalDataCountChanged(int32_t local_data_count);
+  void OnLocalDataCountChanged(int64_t local_data_count);
 
   mojo::Receiver<batch_upload_promo::mojom::PageHandler> receiver_;
   mojo::Remote<batch_upload_promo::mojom::Page> page_;

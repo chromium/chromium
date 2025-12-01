@@ -45,7 +45,7 @@ class MockPage : public batch_upload_promo::mojom::Page {
 
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
-  MOCK_METHOD(void, OnLocalDataCountChanged, (int32_t), (override));
+  MOCK_METHOD(void, OnLocalDataCountChanged, (int64_t), (override));
 
   mojo::Receiver<batch_upload_promo::mojom::Page> receiver_{this};
 };
@@ -113,7 +113,7 @@ TEST_F(BatchUploadPromoHandlerTest, SendEmptyBatchUploadData) {
 }
 
 TEST_F(BatchUploadPromoHandlerTest, GetEmptyBatchUploadData) {
-  base::MockCallback<base::OnceCallback<void(int32_t)>> callback;
+  base::MockCallback<base::OnceCallback<void(int64_t)>> callback;
   EXPECT_CALL(callback, Run(0)).Times(1);
 
   handler()->GetBatchUploadPromoLocalDataCount(callback.Get());
@@ -131,7 +131,7 @@ TEST_F(BatchUploadPromoHandlerTest, SendBatchUploadDataWithLocalItems) {
 TEST_F(BatchUploadPromoHandlerTest, GetBatchUploadDataWithLocalItems) {
   AddBatchUploadData();
 
-  base::MockCallback<base::OnceCallback<void(int32_t)>> callback;
+  base::MockCallback<base::OnceCallback<void(int64_t)>> callback;
   EXPECT_CALL(callback, Run(kBookmarksCount + kPasswordsCount)).Times(1);
 
   handler()->GetBatchUploadPromoLocalDataCount(callback.Get());

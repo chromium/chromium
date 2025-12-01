@@ -7,7 +7,6 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/numerics/safe_conversions.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,12 +20,12 @@ namespace {
 void RunCallbackOnLocalDataDescriptionReceived(
     BatchUploadPromoHandler::GetBatchUploadPromoLocalDataCountCallback callback,
     std::map<syncer::DataType, syncer::LocalDataDescription> local_data_map) {
-  int32_t local_data_count = std::accumulate(
+  int64_t local_data_count = std::accumulate(
       local_data_map.begin(), local_data_map.end(), 0,
-      [](int32_t current_count,
+      [](int64_t current_count,
          std::pair<syncer::DataType, syncer::LocalDataDescription> local_data) {
-        return current_count + base::checked_cast<int32_t>(
-                                   local_data.second.local_data_models.size());
+        return current_count +
+               static_cast<int64_t>(local_data.second.local_data_models.size());
       });
 
   std::move(callback).Run(local_data_count);
@@ -55,7 +54,7 @@ BatchUploadPromoHandler::~BatchUploadPromoHandler() {
 }
 
 void BatchUploadPromoHandler::OnLocalDataCountChanged(
-    int32_t local_data_count) {
+    int64_t local_data_count) {
   page_->OnLocalDataCountChanged(local_data_count);
 }
 
