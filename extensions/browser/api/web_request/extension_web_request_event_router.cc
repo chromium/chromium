@@ -2420,9 +2420,6 @@ void WebRequestEventRouter::LoadPersistedLazyListeners(
     for (const auto& [event_name, listeners] : *listener_map) {
       for (const auto& listener : listeners) {
         if (listener->id.extension_id == extension_id) {
-          // TODO(crbug.com/448893426): remove these for loops if we can verify
-          // this never happens.
-          base::debug::DumpWithoutCrashing();
           return;
         }
       }
