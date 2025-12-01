@@ -392,6 +392,14 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         }
     }
 
+    @Override
+    public void restoreTabs(boolean setActiveTab) {
+        super.restoreTabs(setActiveTab);
+        if (mShadowTabPersistentStore != null) {
+            mShadowTabPersistentStore.restoreTabs(setActiveTab);
+        }
+    }
+
     private void createAndInitArchivedTabModelOrchestrator(TabContentManager tabContentManager) {
         if (mActivityLifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
         ThreadUtils.assertOnUiThread();

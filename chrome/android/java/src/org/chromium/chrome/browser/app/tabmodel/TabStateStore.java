@@ -213,8 +213,13 @@ public class TabStateStore implements TabPersistentStore {
     @Override
     public void saveState() {
         // TODO(https://crbug.com/448151052): Because the db is only accessible on the background
-        // thread this either needs to do a blocking wait or be inherently a no-op. If all observers
-        // are WAI and trigger a save quickly, this can be a no-op.
+        // thread this either needs to do a blocking wait or be inherently a no-op. The legacy
+        // implementation: 1) saves the tab state list (i.e. collection tree), 2) saves the current
+        // tab in both the regular and incognito models, 3) saves any remaining tabs that are in
+        // the save queue. For our implementation all operations on the collection tree should
+        // already be queued to the DB tree so no work for that should be needed. We should queue
+        // saves for the current tabs in both models and then consider a blocking wait to flush
+        // the DB queue.
     }
 
     @Override
@@ -237,9 +242,8 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void restoreTabs(boolean setActiveTab) {
-        // TODO(https://crbug.com/448151052): Currently this is baked into loadState. The primary
-        // reason this is separated is to track some metrics for TabModelStartupInfoSupplier which
-        // could get inlined.
+        assert mTabRestorer != null;
+        mTabRestorer.start(setActiveTab);
     }
 
     @Override
@@ -383,11 +387,6 @@ public class TabStateStore implements TabPersistentStore {
 
         assert mTabRestorer != null;
         mTabRestorer.onDataLoaded(data);
-        // A side-effect of onDataLoaded may invalidate the mTabRestorer.
-        if (mTabRestorer != null) {
-            // TODO(crbug.com/464029104): Move this to restoreTabs().
-            mTabRestorer.start();
-        }
     }
 
     private void onFinishedCreatingAllTabs() {

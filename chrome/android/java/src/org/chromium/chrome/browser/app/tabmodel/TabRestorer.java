@@ -36,6 +36,7 @@ class TabRestorer {
 
     @IntDef({
         State.EMPTY,
+        State.RESTORE_ONCE_LOADED,
         State.LOADED,
         State.RESTORING,
         State.CANCELLED,
@@ -47,16 +48,18 @@ class TabRestorer {
     private @interface State {
         // No data to restore tabs has been loaded.
         int EMPTY = 0;
+        // Restore once loaded.
+        int RESTORE_ONCE_LOADED = 1;
         // Data to restore tabs has been loaded.
-        int LOADED = 1;
+        int LOADED = 2;
         // Tab restore is in progress.
-        int RESTORING = 2;
+        int RESTORING = 3;
         // Tab restore is cancelled.
-        int CANCELLED = 3;
+        int CANCELLED = 4;
         // Tab restore is finished, but the finish signals have not been sent yet.
-        int FINISHING = 4;
+        int FINISHING = 5;
         // Tab restore is finished and all finish signals have been sent.
-        int FINISHED = 5;
+        int FINISHED = 6;
     }
 
     interface TabRestorerDelegate {
@@ -86,6 +89,7 @@ class TabRestorer {
 
     private @State int mState = State.EMPTY;
     private @Nullable StorageLoadedData mData;
+    private boolean mRestoreActiveTabImmediately;
 
     /**
      * Track the index we are restoring the next tab from. This is done globally so that {@link
@@ -118,27 +122,56 @@ class TabRestorer {
             return;
         }
 
-        assert mState == State.EMPTY;
-        mState = State.LOADED;
-        if (mData.getLoadedTabStates().length == 0) {
-            // Cleanup as soon as possible rather than posting.
-            mState = State.FINISHING; // Skip assert for an invalid transition.
-            onFinished();
+        // Start was already called before the load finished. Start immediately.
+        if (mState == State.RESTORE_ONCE_LOADED) {
+            mState = State.LOADED;
+            start(mRestoreActiveTabImmediately);
             return;
         }
+
+        assert mState == State.EMPTY;
+        mState = State.LOADED;
     }
 
     /**
      * Start the tab restoration process.
      *
      * <p>This should only be called after {@link #onDataLoaded(StorageLoadedData)} has been called.
+     *
+     * @param restoreActiveTabImmediately Whether the active tab should be restored immediately. If
+     *     false another tab may have already been created and activated so this should just restore
+     *     the active tab as if it were any other tab.
      */
-    public void start() {
-        assert mState != State.EMPTY;
+    public void start(boolean restoreActiveTabImmediately) {
+        mRestoreActiveTabImmediately = restoreActiveTabImmediately;
+
+        // If load is not finished yet, schedule restore to start as soon as it finishes.
+        if (mState == State.EMPTY) {
+            mState = State.RESTORE_ONCE_LOADED;
+            return;
+        }
         if (mState != State.LOADED) return;
 
         mState = State.RESTORING;
-        restoreActiveTab();
+
+        // If there are no tabs to restore, we can finish immediately.
+        assert mData != null;
+        if (mData.getLoadedTabStates().length == 0) {
+            // Cleanup as soon as possible rather than posting.
+            mState = State.FINISHING; // Skip assert for an invalid transition.
+            onFinished();
+            return;
+        }
+
+        // Synchronously restore the active tab if requested as there is no other tab already open
+        // and doing this in a posted task would block user interaction with the app until finished.
+        if (restoreActiveTabImmediately) {
+            restoreActiveTab();
+        } else {
+            // Post this task as there is an assumption that another tab is already open and this
+            // operation is not blocking user interaction.
+            PostTask.postTask(TaskTraits.UI_DEFAULT, this::restoreNextBatchOfTabs);
+        }
     }
 
     /**
