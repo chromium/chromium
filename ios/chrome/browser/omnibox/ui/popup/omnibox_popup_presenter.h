@@ -12,9 +12,9 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_omnibox_consumer.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_type.h"
 
-@protocol ContentProviding;
 @class LayoutGuideCenter;
 @class OmniboxPopupPresenter;
+@class OmniboxPopupViewController;
 
 @protocol OmniboxPopupPresenterDelegate
 
@@ -69,11 +69,13 @@
 /// Tells the presenter to update, following a trait collection change.
 - (void)updatePopupAfterTraitCollectionChange;
 
+- (void)setAdditionalVerticalContentInset:
+    (CGFloat)additionalVerticalContentInset;
+
 - (instancetype)
     initWithPopupPresenterDelegate:
         (id<OmniboxPopupPresenterDelegate>)presenterDelegate
-               popupViewController:
-                   (UIViewController<ContentProviding>*)viewController
+               popupViewController:(OmniboxPopupViewController*)viewController
                  layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
                          incognito:(BOOL)incognito
                presentationContext:

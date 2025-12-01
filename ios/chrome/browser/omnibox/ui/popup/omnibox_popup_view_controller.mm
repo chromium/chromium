@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/omnibox_popup_carousel_cell.h"
-#import "ios/chrome/browser/omnibox/ui/popup/content_providing.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_mutator.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/actions/omnibox_popup_actions_row_content_configuration.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/actions/omnibox_popup_actions_row_delegate.h"
@@ -175,6 +174,13 @@ const CGFloat kCloseButtonPadding = 16.0f;
                         object:nil];
   }
   return self;
+}
+
+// Sets the additional vertical content inset for the suggestion list.
+- (void)setAdditionalVerticalContentInset:
+    (CGFloat)additionalVerticalContentInset {
+  self.tableView.contentInset =
+      UIEdgeInsetsMake(kTopPadding + additionalVerticalContentInset, 0, 0, 0);
 }
 
 - (void)toggleOmniboxDebuggerView {
@@ -1036,8 +1042,6 @@ const CGFloat kCloseButtonPadding = 16.0f;
 - (void)contentSizeDidChange:(NSNotification*)notification {
   self.shouldUpdateVisibleSuggestionCount = YES;
 }
-
-#pragma mark - ContentProviding
 
 - (BOOL)hasContent {
   return self.tableView.numberOfSections > 0 &&

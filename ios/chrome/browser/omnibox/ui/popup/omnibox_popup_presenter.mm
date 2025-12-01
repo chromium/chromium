@@ -6,7 +6,7 @@
 
 #import "base/time/time.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
-#import "ios/chrome/browser/omnibox/ui/popup/content_providing.h"
+#import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_view_controller.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -38,7 +38,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 @property(nonatomic, strong) NSLayoutConstraint* heightConstraintTablet;
 
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate> delegate;
-@property(nonatomic, weak) UIViewController<ContentProviding>* viewController;
+@property(nonatomic, weak) OmniboxPopupViewController* viewController;
 /// Readwrite internal redefinition.
 @property(nonatomic, strong) UIView* popupContainerView;
 /// Separator for the bottom edge of the popup on iPad.
@@ -74,8 +74,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
 - (instancetype)
     initWithPopupPresenterDelegate:(id<OmniboxPopupPresenterDelegate>)delegate
-               popupViewController:
-                   (UIViewController<ContentProviding>*)viewController
+               popupViewController:(OmniboxPopupViewController*)viewController
                  layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
                          incognito:(BOOL)incognito
                presentationContext:
@@ -217,6 +216,13 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     self.bottomConstraintPhone.active = YES;
     self.bottomSeparator.hidden = NO;
   }
+}
+
+// Sets the additional vertical content inset for the suggestion list.
+- (void)setAdditionalVerticalContentInset:
+    (CGFloat)additionalVerticalContentInset {
+  [_viewController
+      setAdditionalVerticalContentInset:additionalVerticalContentInset];
 }
 
 #pragma mark - ToolbarOmniboxConsumer

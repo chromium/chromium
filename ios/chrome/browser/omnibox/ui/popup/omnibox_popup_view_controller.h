@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_keyboard_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item.h"
-#import "ios/chrome/browser/omnibox/ui/popup/content_providing.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_consumer.h"
 
 @protocol AutocompleteSuggestionGroup;
@@ -33,7 +32,6 @@ class LargeIconService;
 @interface OmniboxPopupViewController
     : UIViewController <OmniboxPopupConsumer,
                         CarouselItemConsumer,
-                        ContentProviding,
                         OmniboxKeyboardDelegate,
                         UIScrollViewDelegate>
 
@@ -54,6 +52,9 @@ class LargeIconService;
 /// The layout guide center to use to refer to the omnibox leading image.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
+// Whether the contained table view has content.
+@property(nonatomic, readonly) BOOL hasContent;
+
 @property(nonatomic, strong)
     NSArray<id<AutocompleteSuggestionGroup>>* currentResult;
 
@@ -64,6 +65,10 @@ class LargeIconService;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+
+// Sets the additional vertical content inset for the scroll view.
+- (void)setAdditionalVerticalContentInset:
+    (CGFloat)additionalVerticalContentInset;
 
 /// Toggle visibility of the omnibox debugger view.
 - (void)toggleOmniboxDebuggerView;
