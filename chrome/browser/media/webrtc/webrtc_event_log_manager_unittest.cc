@@ -4347,9 +4347,6 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 // ProfileDefaultsToLoggingEnabledTestCase in
 // webrtc_event_log_manager_common_unittest because the test setup in this
 // class currently does not seem to allow for an easy setup of some user types.
-// TODO(crbug.com/1035829): Figure out whether this can be resolved by tweaking
-// the test setup or whether the Active Directory services need to be adapted
-// for easy testing.
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(WebRtcEventLogManagerTestPolicy,
        ManagedProfileDoesNotAllowRemoteLoggingForSupervisedProfiles) {
