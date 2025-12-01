@@ -43,18 +43,9 @@ _AGG_CHUNKSIZE = 100
 
 
 def main(args):
-  traces = []
   out = utils.CapacitorFile(args.out_file)
-  print('Finding json files')
-  for d, _, filenames in args.out_dir.walk():
-    all_files = set(filenames)
-    for f in filenames:
-      if f.endswith('.json') and f[:-4] + 'o' in all_files:
-        traces.append(d / f)
 
-  if args.limit:
-    # Sort for determinism, since that's useful when debugging.
-    traces = sorted(traces)[:args.limit]
+  traces = _collect_traces(args.out_dir, args.limit)
 
   # Mapping from filename to (ID, each time the source was seen)
   sources: dict[str, tuple[int, list[Source]]] = {}
@@ -113,6 +104,23 @@ class Source:
         'direct': self.direct_us,
         'includes': [i.name for i in self.includes],
     })
+
+
+def _collect_traces(out_dir: pathlib.Path, limit: int | None = None):
+  traces = []
+  print('Finding json files')
+  for d, _, filenames in out_dir.walk():
+    all_files = set(filenames)
+    for f in filenames:
+      idx = f.find('.json')
+      if idx > 0 and f[:idx] + '.o' in all_files:
+        traces.append(d / f)
+
+  if limit:
+    # Sort for determinism, since that's useful when debugging.
+    traces = sorted(traces)[:limit]
+  print(f'Found {len(traces)} trace files.')
+  return traces
 
 
 def _aggregate(sources: list[Source]) -> ftime_pb2.SourceFile:
