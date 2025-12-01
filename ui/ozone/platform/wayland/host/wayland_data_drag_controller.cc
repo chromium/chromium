@@ -486,17 +486,9 @@ void WaylandDataDragController::OnDragMotion(const gfx::PointF& location,
   if (drag_source_.has_value()) {
     // Update the cursor position only for drag with mouse.
     if (*drag_source_ == mojom::DragEventSource::kMouse) {
-      auto* cursor_position = connection_->wayland_cursor_position();
-      if (cursor_position) {
-        CHECK(window_);
-        // TODO(crbug.com/41494257): Once we enable the input region for
-        // subsurfaces, we need to update this part since the location will no
-        // longer be relative to the window.
-        auto location_in_screen =
-            gfx::ToRoundedPoint(location) +
-            window_->GetBoundsInDIP().origin().OffsetFromOrigin();
-        cursor_position->OnCursorPositionChanged(location_in_screen);
-      }
+      pointer_delegate_->OnPointerMotionEvent(
+          location, timestamp, wl::EventDispatchPolicy::kImmediate,
+          /*is_synthesized=*/true);
     }
   }
 

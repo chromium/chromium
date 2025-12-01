@@ -130,6 +130,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // TODO(crbug.com/40598679): Remove once focus is fixed during DND sessions.
   WaylandWindow* entered_window() const { return window_; }
 
+  WaylandPointer::Delegate* pointer_delegate() const {
+    return pointer_delegate_;
+  }
+
   // Returns false iff the data is for a window dragging session.
   bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const;
 

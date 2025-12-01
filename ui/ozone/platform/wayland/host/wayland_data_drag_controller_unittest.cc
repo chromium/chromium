@@ -1441,8 +1441,10 @@ TEST_P(WaylandDataDragControllerTest,
     // Send a drag motion and see if cursor position is updated.
     SendDndMotion(gfx::Point(10, 11));
     WaitForDragDropTasks();
-    // Cursor position should be updated.
+    // Cursor and pointer positions should be updated.
+    auto* pointer_delegate = drag_controller()->pointer_delegate();
     EXPECT_EQ(gfx::Point(10, 11), cursor_position->GetCursorSurfacePoint());
+    EXPECT_EQ(gfx::PointF(10, 11), pointer_delegate->GetPointerLocation());
 
     SendDndLeave();
     SendDndCancelled();
