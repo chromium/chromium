@@ -31,6 +31,7 @@ class BrowserWindowInterface;
 namespace actor::ui {
 
 class ActorUiTabControllerInterface;
+class HandoffButtonController;
 
 // Manages the actor ui components for a single contents container (e.g., a
 // single tab's content area). In split-view mode, there will be multiple
@@ -81,6 +82,8 @@ class ActorUiContentsContainerController : public content::WebContentsObserver,
       actor_ui_tab_controller_callback_runners_;
   raw_ptr<views::WebView> contents_container_view_ = nullptr;
   raw_ptr<ActorOverlayWebView> overlay_ = nullptr;
+
+  std::unique_ptr<HandoffButtonController> handoff_button_controller_;
 
   // Observer to get notifications when the view changes.
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
