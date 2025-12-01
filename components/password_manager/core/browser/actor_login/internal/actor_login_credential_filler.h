@@ -75,15 +75,6 @@ class ActorLoginCredentialFiller {
       std::vector<password_manager::PasswordFormManager*> eligible_managers,
       const password_manager::PasswordForm& stored_credential);
 
-  // Checks if device reauthentication is required before filling.
-  // If required, triggers reauthentication and restarts the form fetching
-  // process to avoid using potentially stale pointers.
-  // If not required, proceeds directly to filling the form managed by
-  // `signin_form_manager`.
-  void MaybeReauthAndFillForm(
-      password_manager::PasswordFormManager* signin_form_manager,
-      const password_manager::PasswordForm& stored_credential);
-
   // Triggers the device reauthentication flow.
   // `on_reauth_cb` is executed only if reauthentication is successful.
   // If reauthentication fails, the filling process is aborted and an error
@@ -102,15 +93,6 @@ class ActorLoginCredentialFiller {
   // operation. Invokes `fill_form_cb` if authentication was successful.
   void OnDeviceReauthCompleted(base::OnceClosure fill_form_cb,
                                bool authenticated);
-
-  // Sends a message to the renderer to fill the form in the `driver`'s frame,
-  // identified by `form_global_id.form_renderer_id`. `username` and `password`
-  // are the strings to fill in the form.
-  // This method might be called async if reauthentication is needed beforehand.
-  void FillForm(base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-                autofill::FormGlobalId form_global_id,
-                std::u16string username,
-                std::u16string password);
 
   // Fills all eligible fields with `stored_credential.password_value` and
   // `stored_credential.username_value`.
