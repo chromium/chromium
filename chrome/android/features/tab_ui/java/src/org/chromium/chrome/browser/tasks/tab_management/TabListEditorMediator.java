@@ -300,7 +300,7 @@ class TabListEditorMediator
         @StringRes
         int titleId =
                 (mCreationMode == CreationMode.ITEM_PICKER)
-                        ? R.string.tab_selection_editor_toolbar_add_tabs
+                        ? R.string.tab_selection_editor_toolbar_add_recent_tabs
                         : R.string.tab_selection_editor_toolbar_select_items;
         mModel.set(TabListEditorProperties.TOOLBAR_TITLE, mContext.getString(titleId));
 
