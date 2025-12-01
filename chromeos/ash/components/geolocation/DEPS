@@ -1,6 +1,7 @@
 noparent = True
 
 include_rules = [
+  "+chromeos/constants",
   "+ash/constants",
   "+base",
   "+chromeos/ash/components/network",

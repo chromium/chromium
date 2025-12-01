@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/geolocation/cache_eviction_options.h"
 
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/network/network_util.h"
@@ -67,14 +68,29 @@ void PopulateCellTowers(geolocation::GeopositionContext& context,
   }
 }
 
+// MUST BE in line with the thresholds used in `cache_eviction_options.cc`.
+constexpr double GetSimilarityThreshold(
+    geolocation::SimilarityDegree similarity_degree) {
+  switch (similarity_degree) {
+    case geolocation::SimilarityDegree::kLoose:
+      return 0.5;  // 50% overlap required
+    case geolocation::SimilarityDegree::kModerate:
+      return 0.7;  // 70% overlap required
+    case geolocation::SimilarityDegree::kStrict:
+      return 0.9;  // 90% overlap required
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 using CacheEvictionOptions_WifiEquivalenceWithToleranceTestBaseCase =
-    testing::TestWithParam<double>;
+    testing::TestWithParam<geolocation::SimilarityDegree>;
 TEST_P(CacheEvictionOptions_WifiEquivalenceWithToleranceTestBaseCase,
        CheckEmpty) {
-  auto tolerance = GetParam();
-  geolocation::WifiEquivalenceWithTolerance eviction_strategy(tolerance);
+  auto similarity_degree = GetParam();
+  geolocation::WifiEquivalenceWithTolerance eviction_strategy(
+      similarity_degree);
 
   geolocation::GeopositionContext old_context;
   // Combination of empty contexts don't flag displacement.
@@ -99,16 +115,20 @@ TEST_P(CacheEvictionOptions_WifiEquivalenceWithToleranceTestBaseCase,
 INSTANTIATE_TEST_SUITE_P(
     All,
     CacheEvictionOptions_WifiEquivalenceWithToleranceTestBaseCase,
-    testing::Values(.5, .7, .9));
+    testing::Values(geolocation::SimilarityDegree::kLoose,
+                    geolocation::SimilarityDegree::kModerate,
+                    geolocation::SimilarityDegree::kStrict));
 
 using CacheEvictionOptions_WifiEquivalenceWithToleranceTest =
-    testing::TestWithParam<std::tuple<double, bool, bool>>;
+    testing::TestWithParam<
+        std::tuple<geolocation::SimilarityDegree, bool, bool>>;
 TEST_P(CacheEvictionOptions_WifiEquivalenceWithToleranceTest,
        CheckToleranceLimits) {
-  auto tolerance = std::get<0>(GetParam());
+  auto similarity_degree = std::get<0>(GetParam());
   auto shuffle_ssid = std::get<1>(GetParam());
   auto shuffle_signal_strength = std::get<2>(GetParam());
-  geolocation::WifiEquivalenceWithTolerance eviction_strategy(tolerance);
+  geolocation::WifiEquivalenceWithTolerance eviction_strategy(
+      similarity_degree);
 
   geolocation::GeopositionContext old_context;
   geolocation::GeopositionContext new_context;
@@ -118,8 +138,9 @@ TEST_P(CacheEvictionOptions_WifiEquivalenceWithToleranceTest,
   // elements to check the boundary condition.
   PopulateWifiAPs(old_context, kNumScans, shuffle_ssid,
                   shuffle_signal_strength);
-  PopulateWifiAPs(new_context, kNumScans * tolerance, shuffle_ssid,
-                  shuffle_signal_strength);
+  PopulateWifiAPs(new_context,
+                  kNumScans * GetSimilarityThreshold(similarity_degree),
+                  shuffle_ssid, shuffle_signal_strength);
 
   // Scans should be similar:
   EXPECT_FALSE(eviction_strategy.IsSignificantDisplacementIndicated(
@@ -138,11 +159,14 @@ TEST_P(CacheEvictionOptions_WifiEquivalenceWithToleranceTest,
       new_context, old_context));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CacheEvictionOptions_WifiEquivalenceWithToleranceTest,
-                         testing::Combine(testing::Values(.5, .7, .9),
-                                          testing::Bool(),
-                                          testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CacheEvictionOptions_WifiEquivalenceWithToleranceTest,
+    testing::Combine(testing::Values(geolocation::SimilarityDegree::kLoose,
+                                     geolocation::SimilarityDegree::kModerate,
+                                     geolocation::SimilarityDegree::kStrict),
+                     testing::Bool(),
+                     testing::Bool()));
 
 using CacheEvictionOptions_HasCommonWifiAP = testing::Test;
 
@@ -204,11 +228,12 @@ TEST_F(CacheEvictionOptions_HasCommonWifiAP, CheckOnlyMacAddressesMatter) {
 }
 
 using CacheEvictionOptions_CellularEquivalenceWithToleranceBaseCaseTest =
-    testing::TestWithParam<double>;
+    testing::TestWithParam<geolocation::SimilarityDegree>;
 TEST_P(CacheEvictionOptions_CellularEquivalenceWithToleranceBaseCaseTest,
        CheckEmpty) {
-  auto tolerance = GetParam();
-  geolocation::CellularEquivalenceWithTolerance eviction_strategy(tolerance);
+  auto similarity_degree = GetParam();
+  geolocation::CellularEquivalenceWithTolerance eviction_strategy(
+      similarity_degree);
 
   geolocation::GeopositionContext old_context;
   // Combination of empty contexts don't flag displacement.
@@ -233,15 +258,18 @@ TEST_P(CacheEvictionOptions_CellularEquivalenceWithToleranceBaseCaseTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     CacheEvictionOptions_CellularEquivalenceWithToleranceBaseCaseTest,
-    testing::Values(.5, .7, .9));
+    testing::Values(geolocation::SimilarityDegree::kLoose,
+                    geolocation::SimilarityDegree::kModerate,
+                    geolocation::SimilarityDegree::kStrict));
 
 using CacheEvictionOptions_CellularEquivalenceWithToleranceTest =
-    testing::TestWithParam<std::tuple<double, bool>>;
+    testing::TestWithParam<std::tuple<geolocation::SimilarityDegree, bool>>;
 TEST_P(CacheEvictionOptions_CellularEquivalenceWithToleranceTest,
        CheckToleranceLimits) {
-  auto tolerance = std::get<0>(GetParam());
+  auto similarity_degree = std::get<0>(GetParam());
   auto shuffle_lac = std::get<1>(GetParam());
-  geolocation::CellularEquivalenceWithTolerance eviction_strategy(tolerance);
+  geolocation::CellularEquivalenceWithTolerance eviction_strategy(
+      similarity_degree);
 
   geolocation::GeopositionContext old_context;
   geolocation::GeopositionContext new_context;
@@ -250,7 +278,9 @@ TEST_P(CacheEvictionOptions_CellularEquivalenceWithToleranceTest,
   // New context will be the subset of first `kNumScans*tolerance`
   // elements to check the boundary condition.
   PopulateCellTowers(old_context, kNumScans, shuffle_lac);
-  PopulateCellTowers(new_context, kNumScans * tolerance, shuffle_lac);
+  PopulateCellTowers(new_context,
+                     kNumScans * GetSimilarityThreshold(similarity_degree),
+                     shuffle_lac);
 
   // Scans should be similar:
   EXPECT_FALSE(eviction_strategy.IsSignificantDisplacementIndicated(
@@ -272,7 +302,10 @@ TEST_P(CacheEvictionOptions_CellularEquivalenceWithToleranceTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     CacheEvictionOptions_CellularEquivalenceWithToleranceTest,
-    testing::Combine(testing::Values(.5, .7, .9), testing::Bool()));
+    testing::Combine(testing::Values(geolocation::SimilarityDegree::kLoose,
+                                     geolocation::SimilarityDegree::kModerate,
+                                     geolocation::SimilarityDegree::kStrict),
+                     testing::Bool()));
 
 using CacheEvictionOptions_HasCommonCellTowerTest = testing::Test;
 

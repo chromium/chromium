@@ -1746,6 +1746,66 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram
+    name="ChromeOS.Geolocation.CacheEviction.{NonParameterizedEvictionStrategy}.{PredictionToken}"
+    units="meters" expires_after="2026-06-01">
+  <owner>zauri@google.com</owner>
+  <owner>chromeos-privacy-features-eng@google.com</owner>
+  <summary>
+    Records how {NonParameterizedEvictionStrategy} eviction strategy performs in
+    the wild. Namely, reports the distance traveled between the location
+    requests and emits it to either *PredictedYes or *PredictedNo, depending on
+    the eviction strategy assessment. Events are recorded every time ChromeOS
+    system service requests device location. This happens periodically every
+    6-to-24 hours (e.g. Automatic Time Zone has 6 hours refresh timeout, while
+    Night Light has 24h) and also on power events such as reboot and
+    wake-up-from-sleep. Emitted events are from [0m, ~20'000km (half the earth
+    circumference)] range, bucketed into [1m, 10m, 100m, 1km, 10km, 100km,
+    1000km] ranges.
+  </summary>
+  <token key="NonParameterizedEvictionStrategy">
+    <variant name="CommonCell"/>
+    <variant name="CommonWifi"/>
+    <variant name="CommonWifiAndCell"/>
+  </token>
+  <token key="PredictionToken">
+    <variant name="PredictedNo"/>
+    <variant name="PredictedYes"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Geolocation.CacheEviction.{ParameterizedEvictionStrategy}{SimilarityDegreeParameter}.{PredictionToken}"
+    units="meters" expires_after="2026-06-01">
+  <owner>zauri@google.com</owner>
+  <owner>chromeos-privacy-features-eng@google.com</owner>
+  <summary>
+    Records how {ParameterizedEvictionStrategy} eviction strategy with
+    {SimilarityDegreeParameter} performs in the wild. Namely, reports the
+    distance traveled between the location requests and emits it to either
+    *PredictedYes or *PredictedNo, depending on the eviction strategy
+    assessment. Events are recorded every time ChromeOS system service requests
+    device location. This happens periodically every 6-to-24 hours (e.g.
+    Automatic Time Zone has 6 hours refresh timeout, while Night Light has 24h)
+    and also on power events such as reboot and wake-up-from-sleep. Emitted
+    events are from [0m, ~20'000km (half the earth circumference)] range,
+    bucketed into [1m, 10m, 100m, 1km, 10km, 100km, 1'000km] ranges.
+  </summary>
+  <token key="ParameterizedEvictionStrategy">
+    <variant name="CellularTolerance"/>
+    <variant name="WifiTolerance"/>
+  </token>
+  <token key="SimilarityDegreeParameter">
+    <variant name="Loose" summary="50% similarity threshold"/>
+    <variant name="Moderate" summary="70% similarity threshold"/>
+    <variant name="Strict" summary="90 similarity threshold"/>
+  </token>
+  <token key="PredictionToken">
+    <variant name="PredictedNo"/>
+    <variant name="PredictedYes"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.HardwareVerifier.Report.IsCompliant" enum="Boolean"
     expires_after="2026-12-31">
   <owner>itspeter@chromium.org</owner>

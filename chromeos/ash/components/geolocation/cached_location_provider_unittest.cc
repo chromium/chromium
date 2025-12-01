@@ -4,15 +4,20 @@
 
 #include "chromeos/ash/components/geolocation/cached_location_provider.h"
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/geolocation/cache_eviction_options.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
 #include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/geolocation/test_utils.h"
 #include "chromeos/ash/components/network/network_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -47,17 +52,80 @@ CellTower GetTestCellTower() {
   return cell_tower;
 }
 
+// MUST BE in line with the `kEvictionStrategyOptions` in
+// `cached_location_provider.cc`.
+constexpr std::string_view EvictionStrategyToParamString(
+    const geolocation::CacheEvictionStrategy strategy) {
+  switch (strategy) {
+    case geolocation::CacheEvictionStrategy::kWifiTolerance:
+      return "wifi_tolerance";
+    case geolocation::CacheEvictionStrategy::kCommonWifi:
+      return "common_wifi";
+    case geolocation::CacheEvictionStrategy::kCellularTolerance:
+      return "cellular_tolerance";
+    case geolocation::CacheEvictionStrategy::kCommonCell:
+      return "common_cell";
+    case geolocation::CacheEvictionStrategy::kCommonWifiAndCell:
+      return "common_wifi_and_cell";
+  }
+  NOTREACHED();
+}
+
+constexpr std::string_view EvictionStrategyToString(
+    const geolocation::CacheEvictionStrategy strategy) {
+  switch (strategy) {
+    case geolocation::CacheEvictionStrategy::kWifiTolerance:
+      return "WifiTolerance";
+    case geolocation::CacheEvictionStrategy::kCommonWifi:
+      return "CommonWifi";
+    case geolocation::CacheEvictionStrategy::kCellularTolerance:
+      return "CellularTolerance";
+    case geolocation::CacheEvictionStrategy::kCommonCell:
+      return "CommonCell";
+    case geolocation::CacheEvictionStrategy::kCommonWifiAndCell:
+      return "CommonWifiAndCell";
+  }
+  NOTREACHED();
+}
+
+constexpr std::string_view SimilarityDegreeToString(
+    const geolocation::SimilarityDegree similarity_degree) {
+  switch (similarity_degree) {
+    case geolocation::SimilarityDegree::kLoose:
+      return "Loose";
+    case geolocation::SimilarityDegree::kModerate:
+      return "Moderate";
+    case geolocation::SimilarityDegree::kStrict:
+      return "Strict";
+  }
+  NOTREACHED();
+}
+
+// Must be in line with the `kEvictionStrategyToleranceOptions` in
+// `cached_location_provider.cc`.
+constexpr std::string_view SimilarityDegreeToParamString(
+    const geolocation::SimilarityDegree similarity_degree) {
+  switch (similarity_degree) {
+    case geolocation::SimilarityDegree::kLoose:
+      return "loose_similarity";
+    case geolocation::SimilarityDegree::kModerate:
+      return "moderate_similarity";
+    case geolocation::SimilarityDegree::kStrict:
+      return "strict_similarity";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 namespace utils = geolocation::test_utils;
 
-class CachedLocationProviderTestBase
-    : public testing::TestWithParam<std::tuple<bool, bool>> {
+class CachedLocationProviderTestBase : public testing::Test {
  public:
-  CachedLocationProviderTestBase() : interceptor(&url_factory_) {
-    use_wifi_scan = std::get<0>(GetParam());
-    use_cellular_scan = std::get<1>(GetParam());
-  }
+  CachedLocationProviderTestBase(bool use_wifi_scan, bool use_cellular_scan)
+      : use_wifi_scan(use_wifi_scan),
+        use_cellular_scan(use_cellular_scan),
+        interceptor(&url_factory_) {}
 
   void SetUp() override {
     network_delegate.AddWifiAP(GetTestWifiAP());
@@ -131,7 +199,14 @@ class CachedLocationProviderTestBase
   }
 };
 
-class CachedLocationProviderTest : public CachedLocationProviderTestBase {
+class CachedLocationProviderTest
+    : public CachedLocationProviderTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  CachedLocationProviderTest()
+      : CachedLocationProviderTestBase(std::get<0>(GetParam()),
+                                       std::get<1>(GetParam())) {}
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment;
 };
@@ -239,8 +314,312 @@ INSTANTIATE_TEST_SUITE_P(
                                 std::get<1>(info.param));
     });
 
-class CachedLocationProviderMockTimeTest
+class CachedLocationProviderFieldTrialTestBase
     : public CachedLocationProviderTestBase {
+ public:
+  CachedLocationProviderFieldTrialTestBase(
+      bool use_wifi_scan,
+      bool use_cellular_scan,
+      bool is_field_trial_mode,
+      geolocation::CacheEvictionStrategy eviction_strategy =
+          geolocation::CacheEvictionStrategy::kWifiTolerance,
+      geolocation::SimilarityDegree similarity_degree =
+          geolocation::SimilarityDegree::kLoose)
+      : CachedLocationProviderTestBase(use_wifi_scan, use_cellular_scan),
+        is_field_trial_mode(is_field_trial_mode),
+        eviction_strategy(eviction_strategy),
+        similarity_degree(similarity_degree) {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        chromeos::features::kCachedLocationProvider,
+        {
+            {"field_trial_phase", is_field_trial_mode ? "true" : "false"},
+            {"strategy",
+             std::string(EvictionStrategyToParamString(eviction_strategy))},
+            {"tolerance",
+             std::string(SimilarityDegreeToParamString(similarity_degree))},
+        });
+  }
+
+ protected:
+  const bool is_field_trial_mode;
+  const geolocation::CacheEvictionStrategy eviction_strategy;
+  const geolocation::SimilarityDegree similarity_degree;
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class CachedLocationProviderFieldTrialHistogramsTester
+    : public CachedLocationProviderFieldTrialTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  CachedLocationProviderFieldTrialHistogramsTester()
+      : CachedLocationProviderFieldTrialTestBase(std::get<0>(GetParam()),
+                                                 std::get<1>(GetParam()),
+                                                 /*is_field_trial_mode=*/true) {
+  }
+
+ protected:
+  base::HistogramTester histogram_tester;
+
+  static constexpr char kCacheEvictionHistogramPrefix[] =
+      "ChromeOS.Geolocation.CacheEviction";
+
+  std::vector<std::string> GetFieldTrialHistogramNames() {
+    std::vector<std::string> histogram_names;
+    for (auto& strategy_pair :
+         *cached_location_provider->GetEvictionStrategiesUnderTest()) {
+      histogram_names.emplace_back(base::StrCat(
+          {kCacheEvictionHistogramPrefix, ".",
+           EvictionStrategyToString(strategy_pair.first->strategy()),
+           (strategy_pair.second
+                ? SimilarityDegreeToString(*strategy_pair.second)
+                : "")}));
+    }
+
+    return histogram_names;
+  }
+
+  std::string GetPredictedYesHistogramName(std::string_view histogram) {
+    return base::StrCat({histogram, ".", "PredictedYes"});
+  }
+  std::string GetPredictedNoHistogramName(std::string_view histogram) {
+    return base::StrCat({histogram, ".", "PredictedNo"});
+  }
+};
+
+TEST_P(CachedLocationProviderFieldTrialHistogramsTester,
+       CheckFieldTrialMetrics_SameLocation) {
+  Geoposition first_position;
+  {
+    base::test::TestFuture<const Geoposition&, bool, base::TimeDelta> future;
+    cached_location_provider->RequestLocation(kRequestTimeout, use_wifi_scan,
+                                              use_cellular_scan,
+                                              future.GetCallback());
+    first_position = future.Get<0>();
+    EXPECT_EQ(1U, interceptor.attempts());
+  }
+
+  // First location fetch doesn't populate histograms.
+  EXPECT_TRUE(
+      histogram_tester.GetTotalCountsForPrefix(kCacheEvictionHistogramPrefix)
+          .empty());
+
+  // Second request.
+  {
+    base::test::TestFuture<const Geoposition&, bool, base::TimeDelta> future;
+    cached_location_provider->RequestLocation(kRequestTimeout, use_wifi_scan,
+                                              use_cellular_scan,
+                                              future.GetCallback());
+    auto second_position = future.Get<0>();
+
+    // Check that new API call was made but expect the same position.
+    EXPECT_EQ(2U, interceptor.attempts());
+    EXPECT_EQ(first_position.latitude, second_position.latitude);
+    EXPECT_EQ(first_position.longitude, second_position.longitude);
+    EXPECT_EQ(first_position.accuracy, second_position.accuracy);
+  }
+
+  if (!IsForPreciseResolution(use_wifi_scan, use_cellular_scan)) {
+    // Coarse requests don't populate the eviction histograms.
+    EXPECT_TRUE(
+        histogram_tester.GetTotalCountsForPrefix(kCacheEvictionHistogramPrefix)
+            .empty());
+  } else {
+    for (auto histogram : GetFieldTrialHistogramNames()) {
+      auto predicted_no = GetPredictedNoHistogramName(histogram);
+      auto predicted_yes = GetPredictedYesHistogramName(histogram);
+
+      histogram_tester.ExpectTotalCount(predicted_no, 1);
+      histogram_tester.ExpectBucketCount(predicted_no, 0, 1);
+
+      histogram_tester.ExpectTotalCount(predicted_yes, 0);
+    }
+  }
+}
+
+TEST_P(CachedLocationProviderFieldTrialHistogramsTester,
+       CheckFieldTrialMetrics_DifferentLocation) {
+  // Configure Remote API to return the following location:
+  auto expected_position = Geoposition();
+  expected_position.latitude = 10;
+  expected_position.longitude = 10;
+  expected_position.accuracy = 100;
+  expected_position.status = Geoposition::STATUS_OK;
+  expected_position.timestamp = base::Time::Now();
+  ConfigureLocationResponse(expected_position);
+
+  Geoposition first_position;
+  // First request.
+  {
+    base::test::TestFuture<const Geoposition&, bool, base::TimeDelta> future;
+    cached_location_provider->RequestLocation(kRequestTimeout, use_wifi_scan,
+                                              use_cellular_scan,
+                                              future.GetCallback());
+    first_position = future.Get<0>();
+    EXPECT_EQ(1U, interceptor.attempts());
+  }
+
+  // First location fetch doesn't populate histograms (the cache is empty).
+  EXPECT_TRUE(
+      histogram_tester.GetTotalCountsForPrefix(kCacheEvictionHistogramPrefix)
+          .empty());
+
+  // Configure Remote API to return diametrical position.
+  expected_position.latitude *= -1;
+  expected_position.longitude *= -1;
+  ConfigureLocationResponse(expected_position);
+
+  // Second request.
+  {
+    base::test::TestFuture<const Geoposition&, bool, base::TimeDelta> future;
+    cached_location_provider->RequestLocation(kRequestTimeout, use_wifi_scan,
+                                              use_cellular_scan,
+                                              future.GetCallback());
+    auto second_position = future.Get<0>();
+
+    // Check that new API call was made.
+    EXPECT_EQ(2U, interceptor.attempts());
+    EXPECT_EQ(expected_position.latitude, second_position.latitude);
+    EXPECT_EQ(expected_position.longitude, second_position.longitude);
+  }
+
+  if (!IsForPreciseResolution(use_wifi_scan, use_cellular_scan)) {
+    // Coarse requests don't populate the eviction histograms.
+    EXPECT_TRUE(
+        histogram_tester.GetTotalCountsForPrefix(kCacheEvictionHistogramPrefix)
+            .empty());
+  } else {
+    for (auto histogram : GetFieldTrialHistogramNames()) {
+      auto predicted_no = GetPredictedNoHistogramName(histogram);
+      auto predicted_yes = GetPredictedYesHistogramName(histogram);
+
+      histogram_tester.ExpectTotalCount(predicted_no, 1);
+      histogram_tester.ExpectBucketCount(predicted_no, 1000000, 1);
+
+      histogram_tester.ExpectTotalCount(predicted_yes, 0);
+    }
+  }
+
+  // Empty out network context, this would lead to all eviction methods
+  // predicting significant displacement (emitting to *PredictedYes histograms).
+  network_delegate.RemoveWifiAP(GetTestWifiAP());
+  network_delegate.RemoveCellTower(GetTestCellTower());
+
+  // Third request.
+  {
+    base::test::TestFuture<const Geoposition&, bool, base::TimeDelta> future;
+    cached_location_provider->RequestLocation(kRequestTimeout, use_wifi_scan,
+                                              use_cellular_scan,
+                                              future.GetCallback());
+    auto third_position = future.Get<0>();
+
+    EXPECT_EQ(3U, interceptor.attempts());
+    if (!IsForPreciseResolution(use_wifi_scan, use_cellular_scan)) {
+      // Coarse requests don't populate the eviction histograms.
+      EXPECT_TRUE(histogram_tester
+                      .GetTotalCountsForPrefix(kCacheEvictionHistogramPrefix)
+                      .empty());
+    } else {
+      for (auto histogram : GetFieldTrialHistogramNames()) {
+        auto predicted_no = GetPredictedNoHistogramName(histogram);
+        auto predicted_yes = GetPredictedYesHistogramName(histogram);
+        // Check *PredictedNo stayed the same.
+        histogram_tester.ExpectTotalCount(predicted_no, 1);
+        histogram_tester.ExpectBucketCount(predicted_no, 1000000, 1);
+
+        // Check *PredictedYes was populated by this request.
+        histogram_tester.ExpectTotalCount(predicted_yes, 1);
+        histogram_tester.ExpectBucketCount(predicted_yes, 1000000, 1);
+      }
+    }
+  }
+}
+INSTANTIATE_TEST_SUITE_P(All,
+                         CachedLocationProviderFieldTrialHistogramsTester,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+class CachedLocationProviderFieldTrialTest
+    : public CachedLocationProviderFieldTrialTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  CachedLocationProviderFieldTrialTest()
+      : CachedLocationProviderFieldTrialTestBase(std::get<0>(GetParam()),
+                                                 std::get<1>(GetParam()),
+                                                 /*is_field_trial_mode=*/true) {
+  }
+};
+
+TEST_P(CachedLocationProviderFieldTrialTest, OptimizationsAreDisabled) {
+  Geoposition first_position;
+  {
+    base::test::TestFuture<const Geoposition&, bool, base::TimeDelta> future;
+    cached_location_provider->RequestLocation(kRequestTimeout, use_wifi_scan,
+                                              use_cellular_scan,
+                                              future.GetCallback());
+    first_position = future.Get<0>();
+    EXPECT_EQ(1U, interceptor.attempts());
+  }
+
+  // Second request.
+  {
+    base::test::TestFuture<const Geoposition&, bool, base::TimeDelta> future;
+    cached_location_provider->RequestLocation(kRequestTimeout, use_wifi_scan,
+                                              use_cellular_scan,
+                                              future.GetCallback());
+    auto second_position = future.Get<0>();
+
+    // Check that new API call was made but expect the same position, only
+    // timestamp could differ.
+    EXPECT_EQ(2U, interceptor.attempts());
+    EXPECT_EQ(first_position.latitude, second_position.latitude);
+    EXPECT_EQ(first_position.longitude, second_position.longitude);
+    EXPECT_EQ(first_position.accuracy, second_position.accuracy);
+    EXPECT_EQ(first_position.status, second_position.status);
+    EXPECT_EQ(first_position.error_code, second_position.error_code);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CachedLocationProviderFieldTrialTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+class CachedLocationProviderFieldTrialDisabledTest
+    : public CachedLocationProviderFieldTrialTestBase,
+      public testing::WithParamInterface<geolocation::CacheEvictionStrategy> {
+ public:
+  CachedLocationProviderFieldTrialDisabledTest()
+      : CachedLocationProviderFieldTrialTestBase(
+            /*use_wifi_scan=*/true,
+            /*use_cellular_scan=*/true,
+            /*is_field_trial_mode=*/false,
+            GetParam()) {}
+};
+
+TEST_P(CachedLocationProviderFieldTrialDisabledTest, CorrectEvictionUsed) {
+  CHECK_EQ(
+      eviction_strategy,
+      cached_location_provider->GetEvictionStrategyForTesting()->strategy());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CachedLocationProviderFieldTrialDisabledTest,
+    testing::Values(geolocation::CacheEvictionStrategy::kWifiTolerance,
+                    geolocation::CacheEvictionStrategy::kCommonWifi,
+                    geolocation::CacheEvictionStrategy::kCellularTolerance,
+                    geolocation::CacheEvictionStrategy::kCommonCell,
+                    geolocation::CacheEvictionStrategy::kCommonWifiAndCell));
+
+class CachedLocationProviderMockTimeTest
+    : public CachedLocationProviderTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  CachedLocationProviderMockTimeTest()
+      : CachedLocationProviderTestBase(std::get<0>(GetParam()),
+                                       std::get<1>(GetParam())) {}
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

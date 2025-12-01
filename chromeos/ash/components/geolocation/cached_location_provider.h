@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/geolocation/cache_eviction_options.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
 #include "chromeos/ash/components/geolocation/geoposition_context.h"
 #include "chromeos/ash/components/geolocation/location_provider.h"
@@ -32,11 +33,22 @@ class CacheEviction;
 // precise location calls, cached data is returned if the underlying wireless
 // signals have not changed significantly, based on defined displacement
 // criteria.
+//
+// NOTE: While `IsFieldTrialPhase()`, this class will behave just like
+// `LiveLocationProvider`, applying NO optimizations and serving all requests
+// with a real-time (live) location through the remote API calls.
+// During this phase fitness metrics on the selected `CacheEviction` methods
+// will be collected.
+//
 // TODO(crbug.com/463591748): Refactor to avoid conditional handling of
 // the coarse/precise flows.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
     CachedLocationProvider : public LocationProvider {
  public:
+  using EvictionStrategyPair =
+      std::pair<std::unique_ptr<geolocation::CacheEviction>,
+                std::optional<geolocation::SimilarityDegree>>;
+
   explicit CachedLocationProvider(
       std::unique_ptr<LocationFetcher> location_fetcher);
   ~CachedLocationProvider() override;
@@ -47,11 +59,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
                        bool use_cell_towers,
                        ResponseCallback callback) override;
 
+  // Exposes the list of eviction strategies used in the field trial.
+  static const std::vector<EvictionStrategyPair>*
+  GetEvictionStrategiesUnderTest();
+
   base::TimeDelta GetRateLimitForTesting() { return rate_limit_; }
+  geolocation::CacheEviction* GetEvictionStrategyForTesting() {
+    return cache_eviction_method_.get();
+  }
 
  private:
-  // Represents a single location cache entry. It combines the computed position
-  // with the context used to generate it.
+  // Represents a single location cache entry. It combines the computed
+  // position with the context used to generate it.
   struct GeopositionCache {
     // The actual latitude, longitude, and accuracy of the position.
     Geoposition position;
@@ -80,8 +99,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
     ~GeopositionCache();
   };
 
-  // Checks if the specified `location_cache` is valid and fresh enough to serve
-  // the current request.
+  // Checks if the specified `location_cache` is valid and fresh enough to
+  // serve the current request.
   //
   // Returns true if the cache is within the time limit and, for precise
   // requests, if the displacement since the last fetch is not expected to be
@@ -109,6 +128,28 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
 
   // Retrieves the current Wi-Fi and cell tower data for precise location.
   geolocation::GeopositionContext GetPreciseLocationContext();
+
+  // Returns true if the provider is currently running a field trial
+  // experiment to measure fitness for each eviction strategy under test.
+  // During this phase, the caching optimizations are disabled and this class
+  // effectively mimics the `LiveLocationProvider` to collect the ground truth
+  // data.
+  // TODO(crbug.com/465074906): Rename to InMetricsCollectionMode().
+  bool IsFieldTrialPhase();
+
+  // Collects metrics for the selected cache eviction methods.
+  // For each `CacheEviction` strategy under test, populates 2 different UMA
+  // histograms:
+  // "<EvictionName>.PredictedYes" - emits actual displacement (in meters) if
+  //        the strategy predicts "Significant Displacement" on the
+  //        {`old_cache`,`new_cache`} pair.
+  // "<EvictionName>.PredictedNo" - emits actual displacement (in meters) if
+  //        the strategy DOES NOT predict "Significant Displacement" on the
+  //        {`old_cache`, `new_cache`} pair.
+  //
+  //  `CacheEvictionStrategy` enum lists all eviction strategies being tested.
+  void ReportFieldTrialMetrics(const GeopositionCache& old_cache,
+                               const GeopositionCache& new_cache);
 
   // The minimum time that must elapse between successful outbound requests.
   // Applies to both Precise and Coarse requests.

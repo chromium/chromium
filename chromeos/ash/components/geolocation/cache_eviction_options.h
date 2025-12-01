@@ -5,13 +5,34 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_GEOLOCATION_CACHE_EVICTION_OPTIONS_H_
 #define CHROMEOS_ASH_COMPONENTS_GEOLOCATION_CACHE_EVICTION_OPTIONS_H_
 
-#include "chromeos/ash/components/geolocation/cached_location_provider.h"
 #include "chromeos/ash/components/geolocation/geoposition_context.h"
 
 namespace ash::geolocation {
 
+// The full list of strategies considered for the `CachedLocationProvided`.
+enum class CacheEvictionStrategy {
+  kWifiTolerance = 0,
+  kCommonWifi,
+  kCellularTolerance,
+  kCommonCell,
+  kCommonWifiAndCell,
+  kMaxValue = kCommonWifiAndCell,
+};
+
+// Similarity degree needed for two network scans (e.g. Wifi AP scans) to be
+// considered equal. Used by the `CacheEviction` classes with the tolerance
+// parameter.
+enum class SimilarityDegree {
+  kLoose = 0,
+  kModerate,
+  kStrict,
+  kMaxValue = kStrict,
+};
+
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION) CacheEviction {
  public:
+  explicit CacheEviction(CacheEvictionStrategy strategy)
+      : strategy_(strategy) {}
   virtual ~CacheEviction() = default;
 
   // Determines if the significant physical displacement is implied by the
@@ -24,21 +45,26 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION) CacheEviction {
   virtual bool IsSignificantDisplacementIndicated(
       const GeopositionContext& context_a,
       const GeopositionContext& context_b) const = 0;
+
+  CacheEvictionStrategy strategy() const { return strategy_; }
+
+ private:
+  CacheEvictionStrategy strategy_;
 };
 
 // Eviction strategy based on the overlap of visible WiFi Access Points (APs).
 // Calculates the intersection of APs between two scans. If the intersection
-// is large enough (determined by `tolerance`), the device is assumed to be
-// stationary (no eviction).
+// is large enough (determined by `similarity_degree`), the device is assumed to
+// be stationary (no eviction).
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
     WifiEquivalenceWithTolerance : public CacheEviction {
  public:
-  // `tolerance` represents the required overlap ratio (0.0 to 1.0) to assume
-  // stillness.
-  // A higher `tolerance` requires a larger overlap to keep the cache valid,
-  // meaning the cache expires more easily.
-  explicit WifiEquivalenceWithTolerance(double tolerance)
-      : tolerance_(tolerance) {}
+  // `similarity_degree` represents the required overlap ratio (0.0 to 1.0) to
+  // assume stillness. A higher `similarity_degree` requires a larger overlap to
+  // keep the cache valid, meaning the cache expires more easily.
+  explicit WifiEquivalenceWithTolerance(SimilarityDegree similarity_degree)
+      : CacheEviction(CacheEvictionStrategy::kWifiTolerance),
+        similarity_degree_(similarity_degree) {}
 
   // CacheEviction:
   bool IsSignificantDisplacementIndicated(
@@ -46,7 +72,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
       const GeopositionContext& context_b) const override;
 
  private:
-  const double tolerance_;
+  SimilarityDegree similarity_degree_;
 };
 
 // Minimalist strategy: Considers the cached location valid as long as there is
@@ -55,6 +81,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION) HasCommonWifiAP
     : public CacheEviction {
  public:
+  HasCommonWifiAP() : CacheEviction(CacheEvictionStrategy::kCommonWifi) {}
   // CacheEviction:
   bool IsSignificantDisplacementIndicated(
       const GeopositionContext& context_a,
@@ -63,17 +90,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION) HasCommonWifiAP
 
 // Eviction strategy based on the overlap of visible Cell Towers.
 // Calculates the intersection of Cell Towers between two scans. If the
-// intersection is large enough (determined by `tolerance`), the device is
-// assumed to be stationary (no eviction).
+// intersection is large enough (determined by `similarity_degree`), the device
+// is assumed to be stationary (no eviction).
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
     CellularEquivalenceWithTolerance : public CacheEviction {
  public:
-  // `tolerance` represents the required overlap ratio (0.0 to 1.0) to assume
-  // stillness.
-  // A higher `tolerance` requires a larger overlap to keep the cache valid,
-  // meaning the cache expires more easily.
-  explicit CellularEquivalenceWithTolerance(double tolerance)
-      : tolerance_(tolerance) {}
+  // `similarity_degree` represents the required overlap ratio (0.0 to 1.0) to
+  // assume stillness. A higher `similarity_degree` requires a larger overlap to
+  // keep the cache valid, meaning the cache expires more easily.
+  explicit CellularEquivalenceWithTolerance(SimilarityDegree similarity_degree)
+      : CacheEviction(CacheEvictionStrategy::kCellularTolerance),
+        similarity_degree_(similarity_degree) {}
 
   // CacheEviction:
   bool IsSignificantDisplacementIndicated(
@@ -81,7 +108,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
       const GeopositionContext& context_b) const override;
 
  private:
-  const double tolerance_;
+  SimilarityDegree similarity_degree_;
 };
 
 // Minimalist strategy: Considers the cached location valid as long as there is
@@ -90,6 +117,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION) HasCommonCellTower
     : public CacheEviction {
  public:
+  HasCommonCellTower() : CacheEviction(CacheEvictionStrategy::kCommonCell) {}
   // CacheEviction:
   bool IsSignificantDisplacementIndicated(
       const GeopositionContext& context_a,
@@ -103,6 +131,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION) HasCommonCellTower
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
     HasCommonWifiApAndCellTower : public CacheEviction {
  public:
+  HasCommonWifiApAndCellTower()
+      : CacheEviction(CacheEvictionStrategy::kCommonWifiAndCell) {}
   // CacheEviction:
   bool IsSignificantDisplacementIndicated(
       const GeopositionContext& context_a,

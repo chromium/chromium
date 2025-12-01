@@ -4,11 +4,28 @@
 
 #include "chromeos/ash/components/geolocation/cache_eviction_options.h"
 
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "chromeos/ash/components/geolocation/cached_location_provider.h"
 #include "chromeos/ash/components/network/network_util.h"
 
 namespace ash::geolocation {
 namespace {
+
+// Returns the percentage of overlap (0.0 to 1.0) required to consider
+// two scans "similar" enough to prevent eviction.
+constexpr double GetSimilarityThreshold(
+    const SimilarityDegree similarity_degree) {
+  switch (similarity_degree) {
+    case SimilarityDegree::kLoose:
+      return 0.5;  // 50% overlap required
+    case SimilarityDegree::kModerate:
+      return 0.7;  // 70% overlap required
+    case SimilarityDegree::kStrict:
+      return 0.9;  // 90% overlap required
+  }
+  NOTREACHED();
+}
 
 template <typename T, typename TComparator>
   requires std::strict_weak_order<TComparator, const T&, const T&>
@@ -56,7 +73,8 @@ bool WifiEquivalenceWithTolerance::IsSignificantDisplacementIndicated(
                       });
 
   return wifi_scan_intersection.size() <
-         std::max(wifi_scan_a.size(), wifi_scan_b.size()) * tolerance_;
+         std::max(wifi_scan_a.size(), wifi_scan_b.size()) *
+             GetSimilarityThreshold(similarity_degree_);
 }
 
 bool HasCommonWifiAP::IsSignificantDisplacementIndicated(
@@ -93,7 +111,8 @@ bool CellularEquivalenceWithTolerance::IsSignificantDisplacementIndicated(
       [](const CellTower& a, const CellTower& b) { return a.ci < b.ci; });
 
   return cellular_scan_intersection.size() <
-         std::max(cellular_scan_a.size(), cellular_scan_b.size()) * tolerance_;
+         std::max(cellular_scan_a.size(), cellular_scan_b.size()) *
+             GetSimilarityThreshold(similarity_degree_);
 }
 
 bool HasCommonCellTower::IsSignificantDisplacementIndicated(
