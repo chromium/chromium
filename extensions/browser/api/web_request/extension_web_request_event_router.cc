@@ -2170,6 +2170,20 @@ void WebRequestEventRouter::AddPersistedLazyListener(
   const base::Value::List* existing_listeners =
       prefs->ReadPrefAsList(extension_id, kFilteredLazyListeners);
 
+  // Ensure we don't add duplicate listeners.
+  if (existing_listeners) {
+    for (const auto& entry : *existing_listeners) {
+      if (!entry.is_dict()) {
+        continue;
+      }
+      const std::string* name =
+          entry.GetDict().FindString(kListenerSubEventNameKey);
+      if (name && *name == listener.id.sub_event_name) {
+        return;
+      }
+    }
+  }
+
   base::Value::List new_listeners;
   if (existing_listeners) {
     new_listeners = existing_listeners->Clone();
