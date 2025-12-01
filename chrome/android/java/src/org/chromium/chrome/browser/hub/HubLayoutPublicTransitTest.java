@@ -110,6 +110,8 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    // TODO(crbug.com/461916575): Test disabled for Incognito windowing, delete once fixed
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testTabGroupPane_newTabGroup() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         int firstTabId = firstPage.loadedTabElement.value().getId();
