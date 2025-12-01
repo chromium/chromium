@@ -62,6 +62,7 @@ source_set("password_store_impl") {
     "//components/sync/engine",
     "//components/sync/model",
     "//components/sync/protocol",
+    "//crypto",
     "//sql",
     "//third_party/abseil-cpp:absl",
     "//third_party/re2",
