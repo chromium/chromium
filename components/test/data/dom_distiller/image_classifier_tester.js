@@ -71,7 +71,7 @@ suite('ImageClassifier', function() {
   });
 
   test('should classify images and apply correct classes', async function() {
-    const {assert} = await import('./chai.js');
+    const {assert} = await import('./index.js');
 
     // Define all test dimensions in density-independent units (DP).
     const INLINE_WIDTH_FALLBACK_UPPER_BOUND_DP = 300;

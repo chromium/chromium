@@ -426,7 +426,8 @@ generate_grd("build_chai_grdp") {
   out_grd = "$target_gen_dir/chai_resources.grdp"
   input_files_base_dir =
       rebase_path("//third_party/node/node_modules/chai", "//")
-  input_files = [ "chai.js" ]
+  input_files = [ "index.js" ]
+  resource_path_rewrites = [ "index.js|chai.js" ]
 }
 
 generate_grd("build_mocha_grdp") {

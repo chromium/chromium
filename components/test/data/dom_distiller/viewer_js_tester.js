@@ -7,7 +7,7 @@ suite('ViewerJs', function() {
   test('SanitizeLinks', async function() {
     // Use a dynamic import since this file is not executed as a module from
     // distilled_page_js_browsertest.cc
-    const {assert} = await import('./chai.js');
+    const {assert} = await import('./index.js');
 
     const container = document.createElement('div');
     container.innerHTML = '<a href="http://example.com">good link</a>' +

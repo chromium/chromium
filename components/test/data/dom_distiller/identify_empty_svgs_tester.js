@@ -4,7 +4,7 @@
 
 suite('IdentifyEmptySVGsTest', function() {
   test('Correctly identifies SVG with href', async function() {
-    const {assert} = await import('./chai.js');
+    const {assert} = await import('./index.js');
 
     const container = document.createElement('div');
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -22,7 +22,7 @@ suite('IdentifyEmptySVGsTest', function() {
   });
 
   test('Correctly identifies SVG with xlink:href', async function() {
-    const {assert} = await import('./chai.js');
+    const {assert} = await import('./index.js');
 
     const container = document.createElement('div');
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -40,7 +40,7 @@ suite('IdentifyEmptySVGsTest', function() {
   });
 
   test('Ignores SVG without local resource pointer', async function() {
-    const {assert} = await import('./chai.js');
+    const {assert} = await import('./index.js');
 
     const container = document.createElement('div');
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -58,7 +58,7 @@ suite('IdentifyEmptySVGsTest', function() {
   });
 
   test('Ignores SVG without use element', async function() {
-    const {assert} = await import('./chai.js');
+    const {assert} = await import('./index.js');
 
     const container = document.createElement('div');
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');

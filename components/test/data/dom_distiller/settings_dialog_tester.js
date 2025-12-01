@@ -6,7 +6,7 @@ suite('SettingsDialog', function() {
   test('Theme Selection', async function() {
     // Use a dynamic import since this file is not executed as a module from
     // distilled_page_js_browsertest.cc
-    const {assert} = await import('./chai.js');
+    const {assert} = await import('./index.js');
 
     const body = document.body;
     const queryString = 'input[type=\'radio\']:checked';
@@ -25,7 +25,7 @@ suite('SettingsDialog', function() {
   test('Font Family Selection', async function() {
     // Use a dynamic import since this file is not executed as a module from
     // distilled_page_js_browsertest.cc
-    const {assert} = await import('./chai.js');
+    const {assert} = await import('./index.js');
 
     const body = document.body;
     const fontFamilySelector = document.getElementById('font-family-selection');

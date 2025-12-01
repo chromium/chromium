@@ -20,7 +20,7 @@ suite('ListClassifier', function() {
   });
 
   const runTest = async (html, expected) => {
-    const {assert} = await import('./chai.js');
+    const {assert} = await import('./index.js');
     testContainer.innerHTML = html;
     ListClassifier.processListsIn(testContainer);
     const el = testContainer.firstElementChild;

@@ -6,7 +6,7 @@ suite('FontSizeSlider', function() {
   test('Font Scale Desktop Selection', async function() {
     // Use a dynamic import since this file is not executed as a module from
     // distilled_page_js_browsertest.cc
-    const {assert} = await import('./chai.js');
+    const {assert} = await import('./index.js');
 
     assert.strictEqual(pincher, undefined);
     const documentElement = document.documentElement;

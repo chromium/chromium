@@ -20,8 +20,8 @@ set -eu
 tmp_dir="node_modules_manual"
 mkdir -p "${tmp_dir}"
 
-CHAI_VERSION="5.1.1"
-MOCHA_VERSION="10.4.0"
+CHAI_VERSION="6.2.1"
+MOCHA_VERSION="11.7.5"
 
 download_package() {
   local PACKAGE="$1"

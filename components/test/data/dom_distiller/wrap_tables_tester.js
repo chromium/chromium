@@ -5,7 +5,7 @@
 // Test that the JS file is loaded and the test is running.
 suite('MakeTablesScrollableTest', function() {
   test('Wrap the tables in a scrollable-container', async function() {
-    const {assert} = await import('./chai.js');
+    const {assert} = await import('./index.js');
 
     const container = document.createElement('div');
     container.innerHTML = '<h2>Regular Table</h2>' +
