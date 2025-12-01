@@ -7,6 +7,8 @@ import("//components/optimization_guide/features.gni")
 static_library("browser") {
   sources = [
     "country_type.h",
+    "data_models/walletable_pass.cc",
+    "data_models/walletable_pass.h",
     "strike_databases/walletable_pass_consent_strike_database.h",
     "strike_databases/walletable_pass_save_strike_database_by_host.cc",
     "strike_databases/walletable_pass_save_strike_database_by_host.h",
@@ -23,6 +25,7 @@ static_library("browser") {
     "//base",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/strike_database",
@@ -46,6 +49,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "data_models/walletable_pass_unittest.cc",
     "walletable_pass_service_unittest.cc",
     "walletable_permission_utils_unittest.cc",
   ]
