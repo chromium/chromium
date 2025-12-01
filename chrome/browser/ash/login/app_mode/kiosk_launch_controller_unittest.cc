@@ -96,9 +96,6 @@ const char kDefaultNetwork[] = "default-network";
 const char kWebStoreExtensionUpdateUrl[] =
     "https://clients2.google.com/service/update2/crx";
 
-// URL of off store extensions.
-const char kOffStoreExtensionUpdateUrl[] = "https://example.com/crx";
-
 auto BuildExtension(std::string extension_name, std::string extension_id) {
   return extensions::ExtensionBuilder(extension_name)
       .SetID(extension_id)
@@ -922,44 +919,6 @@ TEST_F(KioskLaunchControllerWithExtensionTest,
   EXPECT_TRUE(launcher().HasAppLaunched());
 
   histogram.ExpectTotalCount("Kiosk.Extensions.InstallTimedOut", 0);
-}
-
-TEST_F(KioskLaunchControllerWithExtensionTest,
-       WebStoreExtensionFailureShouldBeLogged) {
-  base::HistogramTester histogram;
-
-  SetForceInstallPolicy(kExtensionId, kWebStoreExtensionUpdateUrl);
-  RunUntilAppPrepared();
-  EXPECT_THAT(controller(), HasState(AppState::kInstallingExtensions,
-                                     NetworkUIState::kNotShowing));
-  EXPECT_THAT(
-      screen(),
-      HasViewState(
-          AppLaunchSplashScreenView::AppLaunchState::kInstallingExtension));
-
-  SetExtensionFailed(
-      kExtensionId, kExtensionName,
-      extensions::InstallStageTracker::FailureReason::INVALID_ID);
-
-  histogram.ExpectUniqueSample(
-      "Kiosk.Extensions.InstallError.WebStore",
-      extensions::InstallStageTracker::FailureReason::INVALID_ID, 1);
-}
-
-TEST_F(KioskLaunchControllerWithExtensionTest,
-       OffStoreExtensionFailureShouldBeLogged) {
-  base::HistogramTester histogram;
-
-  SetForceInstallPolicy(kExtensionId, kOffStoreExtensionUpdateUrl);
-  RunUntilAppPrepared();
-
-  SetExtensionFailed(
-      kExtensionId, kExtensionName,
-      extensions::InstallStageTracker::FailureReason::INVALID_ID);
-
-  histogram.ExpectUniqueSample(
-      "Kiosk.Extensions.InstallError.OffStore",
-      extensions::InstallStageTracker::FailureReason::INVALID_ID, 1);
 }
 
 TEST_F(KioskLaunchControllerTest, TestFullFlow) {

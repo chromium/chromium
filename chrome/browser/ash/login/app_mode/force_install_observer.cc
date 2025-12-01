@@ -58,18 +58,6 @@ bool IsExtensionInstallForcelistPolicyValid() {
   return errors.GetErrors(policy::key::kExtensionInstallForcelist).empty();
 }
 
-void RecordKioskExtensionInstallError(
-    extensions::InstallStageTracker::FailureReason reason,
-    bool is_from_store) {
-  if (is_from_store) {
-    base::UmaHistogramEnumeration("Kiosk.Extensions.InstallError.WebStore",
-                                  reason);
-  } else {
-    base::UmaHistogramEnumeration("Kiosk.Extensions.InstallError.OffStore",
-                                  reason);
-  }
-}
-
 void RecordKioskExtensionInstallTimedOut(bool timeout) {
   UMA_HISTOGRAM_BOOLEAN("Kiosk.Extensions.InstallTimedOut", timeout);
 }
@@ -119,15 +107,6 @@ void ForceInstallObserver::OnExtensionWaitTimeOut() {
 void ForceInstallObserver::OnForceInstalledExtensionsReady() {
   RecordKioskExtensionInstallTimedOut(false);
   ReportDone();
-}
-
-void ForceInstallObserver::OnForceInstalledExtensionFailed(
-    const extensions::ExtensionId& installation_id,
-    extensions::InstallStageTracker::FailureReason reason,
-    bool is_from_store) {
-  // We will still receive the OnForceInstalledExtensionsReady callback, so only
-  // log this failure.
-  RecordKioskExtensionInstallError(reason, is_from_store);
 }
 
 void ForceInstallObserver::ReportDone() {
