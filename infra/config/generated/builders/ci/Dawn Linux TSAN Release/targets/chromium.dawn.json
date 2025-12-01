@@ -8,8 +8,7 @@
           "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
           "--test-launcher-batch-limit=512",
-          "--no-xvfb",
-          "--adapter-vendor-id=0x1AE0"
+          "--no-xvfb"
         ],
         "ci_only": true,
         "merge": {
@@ -20,15 +19,14 @@
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
-            "gpu": "none",
-            "os": "Ubuntu-22.04",
+            "gpu": "10de:2184-440.100",
+            "os": "Ubuntu-18.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 2
         },
         "test": "dawn_end2end_tests",
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
@@ -40,8 +38,7 @@
           "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
           "--test-launcher-batch-limit=512",
-          "--no-xvfb",
-          "--adapter-vendor-id=0x1AE0"
+          "--no-xvfb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -51,15 +48,14 @@
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
-            "gpu": "none",
-            "os": "Ubuntu-22.04",
+            "gpu": "10de:2184-440.100",
+            "os": "Ubuntu-18.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 2
         },
         "test": "dawn_end2end_tests",
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
@@ -70,8 +66,7 @@
           "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
           "--test-launcher-batch-limit=512",
-          "--no-xvfb",
-          "--adapter-vendor-id=0x1AE0"
+          "--no-xvfb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -81,15 +76,14 @@
         "name": "dawn_end2end_tests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
-            "gpu": "none",
-            "os": "Ubuntu-22.04",
+            "gpu": "10de:2184-440.100",
+            "os": "Ubuntu-18.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 2
         },
         "test": "dawn_end2end_tests",
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
@@ -101,8 +95,7 @@
           "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
           "--test-launcher-batch-limit=512",
-          "--no-xvfb",
-          "--adapter-vendor-id=0x1AE0"
+          "--no-xvfb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -112,15 +105,14 @@
         "name": "dawn_end2end_wire_tests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
-            "gpu": "none",
-            "os": "Ubuntu-22.04",
+            "gpu": "10de:2184-440.100",
+            "os": "Ubuntu-18.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 2
         },
         "test": "dawn_end2end_tests",
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"

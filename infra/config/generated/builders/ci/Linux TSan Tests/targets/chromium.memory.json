@@ -781,7 +781,8 @@
         "args": [
           "--use-cmd-decoder=passthrough",
           "--test-launcher-print-test-stdio=always",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux.swiftshader.tsan.gl_tests_passthrough.filter"
+          "--use-gpu-in-tests",
+          "--no-xvfb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -792,9 +793,8 @@
         "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
-            "gpu": "none",
-            "os": "Ubuntu-22.04",
+            "gpu": "10de:2184-440.100",
+            "os": "Ubuntu-18.04",
             "pool": "chromium.tests.gpu"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
