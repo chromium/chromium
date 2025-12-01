@@ -55,7 +55,6 @@ class PrivacySandboxNoticeService
 
   NoticeStorage* notice_storage() { return notice_storage_.get(); }
 
-  // TODO(crbug.com/392612108): Create eligibility and notice result callbacks.
   raw_ptr<Profile> profile_;
   std::unique_ptr<NoticeCatalog> catalog_;
   std::unique_ptr<NoticeStorage> notice_storage_;
