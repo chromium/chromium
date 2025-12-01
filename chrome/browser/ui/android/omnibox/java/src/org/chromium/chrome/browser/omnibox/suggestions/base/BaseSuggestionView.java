@@ -17,12 +17,10 @@ import android.widget.ImageView;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SimpleSelectionController;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.base.KeyNavigationUtil;
@@ -126,14 +124,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
      * @param isSelected whether to apply hairline
      */
     private void highlightActionButton(int buttonIndex, boolean isHighlighted) {
-        highlightActionButton(mActionButtons.get(buttonIndex), isHighlighted);
-    }
-
-    private void highlightActionButton(ActionButtonView actionButtonView, boolean isHighlighted) {
-        actionButtonView.setForeground(
-                isHighlighted
-                        ? AppCompatResources.getDrawable(getContext(), R.drawable.hairline_circle)
-                        : null);
+        ActionButtonView actionButtonView = mActionButtons.get(buttonIndex);
         actionButtonView.setSelected(isHighlighted);
         if (isHighlighted) {
             actionButtonView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_SELECTED);
@@ -255,10 +246,6 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
             }
         }
         setHovered(mIsHovered || isAnyActionButtonHovered);
-
-        if (actionButtonView != null) {
-            highlightActionButton(actionButtonView, isActionButtonHovered);
-        }
     }
 
     @Override

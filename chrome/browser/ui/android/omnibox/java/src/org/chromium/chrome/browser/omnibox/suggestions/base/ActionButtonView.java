@@ -8,11 +8,14 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 
 /**
  * A View that is displayed as an action button.
@@ -25,6 +28,7 @@ public class ActionButtonView extends AppCompatImageView {
     private boolean mParentHovered;
     private boolean mParentSelected;
     private boolean mHovered;
+    private boolean mSelected;
 
     public ActionButtonView(Context context) {
         super(context);
@@ -85,9 +89,17 @@ public class ActionButtonView extends AppCompatImageView {
         if (action == MotionEvent.ACTION_HOVER_ENTER || action == MotionEvent.ACTION_HOVER_EXIT) {
             mHovered = action == MotionEvent.ACTION_HOVER_ENTER;
             updateVisibility();
+            updateVisualStyle();
         }
 
         return result;
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+        super.setSelected(selected);
+        mSelected = selected;
+        updateVisualStyle();
     }
 
     public boolean isActionButtonHovered() {
@@ -96,5 +108,18 @@ public class ActionButtonView extends AppCompatImageView {
 
     void dispatchHoverEventForTesting(MotionEvent event) {
         dispatchHoverEvent(event);
+    }
+
+    private void updateVisualStyle() {
+        if (getVisibility() != View.VISIBLE) return;
+        @DrawableRes
+        int resId =
+                mSelected
+                        ? (mHovered
+                                ? R.drawable.action_button_selected_hovered
+                                : R.drawable.action_button_selected)
+                        : (mHovered ? R.drawable.action_button_hovered : 0);
+        setForeground(
+                (resId != 0) ? OmniboxResourceProvider.getDrawable(getContext(), resId) : null);
     }
 }
