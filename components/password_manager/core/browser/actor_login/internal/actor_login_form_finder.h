@@ -81,6 +81,11 @@ class ActorLoginFormFinder {
   ActorLoginFormFinder(const ActorLoginFormFinder&) = delete;
   ActorLoginFormFinder& operator=(const ActorLoginFormFinder&) = delete;
 
+  // Sets the form data in `form_data_proto` using the data of the given `form`.
+  static void SetFormData(
+      optimization_guide::proto::ActorLoginQuality_FormData& form_data_proto,
+      const password_manager::PasswordForm& form);
+
   // Extracts the site or app origin (scheme, host, port) from a URL as a
   // string.
   static std::u16string GetSourceSiteOrAppFromUrl(const GURL& url);
@@ -92,7 +97,9 @@ class ActorLoginFormFinder {
           eligible_managers);
 
   // Retrieves all `PasswordFormManager`s for the given `origin` that contain a
-  // valid login form, along with the `ParsedFormDetails` for all parsed forms.
+  // valid login form, along with the
+  // `optimization_guide::proto::ActorLoginQuality_ParsedFormDetails` for all
+  // parsed forms.
   FormFinderResult GetEligibleLoginFormManagers(const url::Origin& origin);
 
   // Asynchronously finds all `PasswordFormManager`s that are associated with
@@ -111,8 +118,8 @@ class ActorLoginFormFinder {
       base::OnceCallback<void(bool)> callback);
 
   // Callback executed when the visibility checks for a specific form are done.
-  // It populates the `ParsedFormDetails`, records the timing, and replies to
-  // callback with whether the form is a login form.
+  // It populates the `form_details`, records  the timing,
+  // and replies to callback with whether the form is a login form.
   void OnVisibilityChecksComplete(
       optimization_guide::proto::ActorLoginQuality_ParsedFormDetails
           form_details,

@@ -417,11 +417,15 @@ void ActorLoginCredentialFiller::FillAllEligibleFields(
 
     const password_manager::PasswordForm* parsed_form =
         manager->GetParsedObservedForm();
-    FillField(manager->GetDriver().get(), parsed_form->form_data.global_id(),
+    autofill::FormGlobalId form_global_id = parsed_form->form_data.global_id();
+    ActorLoginFormFinder::SetFormData(
+        *filling_results_[form_global_id].mutable_form_data(), *parsed_form);
+
+    FillField(manager->GetDriver().get(), form_global_id,
               parsed_form->username_element_renderer_id,
               stored_credential.username_value, FieldType::kUsername,
               concurrent_filling.CreateClosure());
-    FillField(manager->GetDriver().get(), parsed_form->form_data.global_id(),
+    FillField(manager->GetDriver().get(), form_global_id,
               parsed_form->password_element_renderer_id,
               stored_credential.password_value, FieldType::kPassword,
               concurrent_filling.CreateClosure());

@@ -78,8 +78,6 @@ using ParsedFormDetails =
     optimization_guide::proto::ActorLoginQuality_ParsedFormDetails;
 using FieldData =
     optimization_guide::proto::ActorLoginQuality_FormData_FieldData;
-using ParsedFormDetails =
-    optimization_guide::proto::ActorLoginQuality_ParsedFormDetails;
 
 Matcher<AttemptLoginDetails> EqualsAttemptLoginDetails(
     const AttemptLoginDetails& expected) {
@@ -623,6 +621,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillsNestedFrameWithSameOrigin) {
   *expected_details.add_parsed_form_details() = CreateExpectedLoginFormDetails(
       *parsed_form, /*is_username_visible=*/true, /*is_password_visible=*/true);
   FillingFormResult* form_result = expected_details.add_filling_form_result();
+  *form_result->mutable_form_data() = CreateExpectedFormData(*parsed_form);
   form_result->set_was_username_filled(true);
   form_result->set_was_password_filled(true);
   EXPECT_CALL(
@@ -1478,11 +1477,16 @@ TEST_P(ActorLoginCredentialFillerTest,
       /*is_password_visible=*/true);
 
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  *form_result1->mutable_form_data() = CreateExpectedFormData(*parsed_form);
   form_result1->set_was_username_filled(false);
   form_result1->set_was_password_filled(false);
   FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  *form_result2->mutable_form_data() =
+      CreateExpectedFormData(*username_only_parsed_form);
   form_result2->set_was_username_filled(true);
   FillingFormResult* form_result3 = expected_details.add_filling_form_result();
+  *form_result3->mutable_form_data() =
+      CreateExpectedFormData(*password_only_parsed_form);
   form_result3->set_was_password_filled(true);
   EXPECT_CALL(
       mock_mqls_logger_,
@@ -1592,9 +1596,11 @@ TEST_P(ActorLoginCredentialFillerTest,
       /*is_password_visible=*/true);
 
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  *form_result1->mutable_form_data() = CreateExpectedFormData(*parsed_form_1);
   form_result1->set_was_username_filled(false);
   form_result1->set_was_password_filled(false);
   FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  *form_result2->mutable_form_data() = CreateExpectedFormData(*parsed_form_2);
   form_result2->set_was_username_filled(true);
   form_result2->set_was_password_filled(true);
   EXPECT_CALL(
@@ -1907,11 +1913,16 @@ TEST_P(ActorLoginCredentialFillerTest, StoresPermissionWhenFillingAllFields) {
       /*is_password_visible=*/true);
 
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  *form_result1->mutable_form_data() = CreateExpectedFormData(*parsed_form);
   form_result1->set_was_username_filled(true);
   form_result1->set_was_password_filled(true);
   FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  *form_result2->mutable_form_data() =
+      CreateExpectedFormData(*username_only_parsed_form);
   form_result2->set_was_username_filled(true);
   FillingFormResult* form_result3 = expected_details.add_filling_form_result();
+  *form_result3->mutable_form_data() =
+      CreateExpectedFormData(*password_only_parsed_form);
   form_result3->set_was_password_filled(true);
   EXPECT_CALL(
       mock_mqls_logger_,
@@ -2008,11 +2019,16 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameInAllEligibleFields) {
       CreateExpectedFormData(*password_only_parsed_form);
 
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  *form_result1->mutable_form_data() = CreateExpectedFormData(*parsed_form);
   form_result1->set_was_username_filled(false);
   form_result1->set_was_password_filled(false);
   FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  *form_result2->mutable_form_data() =
+      CreateExpectedFormData(*username_only_parsed_form);
   form_result2->set_was_username_filled(true);
   FillingFormResult* form_result3 = expected_details.add_filling_form_result();
+  *form_result3->mutable_form_data() =
+      CreateExpectedFormData(*password_only_parsed_form);
   form_result3->set_was_password_filled(false);
   EXPECT_CALL(
       mock_mqls_logger_,
@@ -2105,11 +2121,16 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyPasswordInAllEligibleFields) {
       /*is_password_visible=*/true);
 
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  *form_result1->mutable_form_data() = CreateExpectedFormData(*parsed_form);
   form_result1->set_was_username_filled(false);
   form_result1->set_was_password_filled(true);
   FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  *form_result2->mutable_form_data() =
+      CreateExpectedFormData(*username_only_parsed_form);
   form_result2->set_was_username_filled(false);
   FillingFormResult* form_result3 = expected_details.add_filling_form_result();
+  *form_result3->mutable_form_data() =
+      CreateExpectedFormData(*password_only_parsed_form);
   form_result3->set_was_password_filled(false);
   EXPECT_CALL(
       mock_mqls_logger_,
@@ -2201,11 +2222,16 @@ TEST_P(ActorLoginCredentialFillerTest, FillingFailsInAllEligibleFields) {
       /*is_password_visible=*/true);
 
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  *form_result1->mutable_form_data() = CreateExpectedFormData(*parsed_form);
   form_result1->set_was_username_filled(false);
   form_result1->set_was_password_filled(false);
   FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  *form_result2->mutable_form_data() =
+      CreateExpectedFormData(*username_only_parsed_form);
   form_result2->set_was_username_filled(false);
   FillingFormResult* form_result3 = expected_details.add_filling_form_result();
+  *form_result3->mutable_form_data() =
+      CreateExpectedFormData(*password_only_parsed_form);
   form_result3->set_was_password_filled(false);
   EXPECT_CALL(
       mock_mqls_logger_,
@@ -2441,9 +2467,12 @@ TEST_P(ActorLoginCredentialFillerTest,
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
   expected_details.set_attempt_login_time_ms(kRequestDurationMs);
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  *form_result1->mutable_form_data() = CreateExpectedFormData(*parsed_form);
   form_result1->set_was_username_filled(true);
   form_result1->set_was_password_filled(true);
   FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  *form_result2->mutable_form_data() =
+      CreateExpectedFormData(*username_only_parsed_form);
   form_result2->set_was_username_filled(true);
 
   // Expect parsed form details for all 3 forms found.
@@ -2557,9 +2586,12 @@ TEST_P(ActorLoginCredentialFillerTest,
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
   expected_details.set_attempt_login_time_ms(0);
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  *form_result1->mutable_form_data() = CreateExpectedFormData(*parsed_form);
   form_result1->set_was_username_filled(true);
   form_result1->set_was_password_filled(true);
   FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  *form_result2->mutable_form_data() =
+      CreateExpectedFormData(*password_only_parsed_form);
   form_result2->set_was_password_filled(true);
 
   // Expect parsed form details for all 3 forms found.

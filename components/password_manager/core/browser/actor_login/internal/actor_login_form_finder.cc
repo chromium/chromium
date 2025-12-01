@@ -87,23 +87,6 @@ GetFieldType(const autofill::FormFieldData& field,
       UNKNOWN;
 }
 
-void SetFormData(optimization_guide::proto::ActorLoginQuality_ParsedFormDetails&
-                     form_details,
-                 const password_manager::PasswordForm& form) {
-  optimization_guide::proto::ActorLoginQuality_FormData* form_data_proto =
-      form_details.mutable_form_data();
-
-  form_data_proto->set_form_signature(
-      autofill::CalculateFormSignature(form.form_data).value());
-  for (const auto& field : form.form_data.fields()) {
-    optimization_guide::proto::ActorLoginQuality_FormData_FieldData field_data;
-    field_data.set_signature(
-        autofill::CalculateFieldSignatureForField(field).value());
-    field_data.set_field_type(GetFieldType(field, form));
-    *form_data_proto->add_field_data() = field_data;
-  }
-}
-
 bool IsFormOriginSupported(const url::Origin& form_origin,
                            const url::Origin& main_frame_origin) {
   if (base::FeatureList::IsEnabled(
@@ -157,12 +140,14 @@ int64_t ComputeRequestDurationForLogs(base::TimeTicks start_time) {
 
 namespace actor_login {
 
+using ParsedFormDetails =
+    optimization_guide::proto::ActorLoginQuality_ParsedFormDetails;
+
 FormFinderResult::FormFinderResult() = default;
 
 FormFinderResult::FormFinderResult(
     std::vector<password_manager::PasswordFormManager*> eligible_managers,
-    std::vector<optimization_guide::proto::ActorLoginQuality_ParsedFormDetails>
-        parsed_forms_details)
+    std::vector<ParsedFormDetails> parsed_forms_details)
     : eligible_managers(std::move(eligible_managers)),
       parsed_forms_details(std::move(parsed_forms_details)) {}
 
@@ -178,6 +163,21 @@ ActorLoginFormFinder::ActorLoginFormFinder(
     password_manager::PasswordManagerClient* client)
     : client_(client) {}
 ActorLoginFormFinder::~ActorLoginFormFinder() = default;
+
+// static
+void ActorLoginFormFinder::SetFormData(
+    optimization_guide::proto::ActorLoginQuality_FormData& form_data_proto,
+    const password_manager::PasswordForm& form) {
+  form_data_proto.set_form_signature(
+      autofill::CalculateFormSignature(form.form_data).value());
+  for (const auto& field : form.form_data.fields()) {
+    optimization_guide::proto::ActorLoginQuality_FormData_FieldData field_data;
+    field_data.set_signature(
+        autofill::CalculateFieldSignatureForField(field).value());
+    field_data.set_field_type(GetFieldType(field, form));
+    *form_data_proto.add_field_data() = field_data;
+  }
+}
 
 // static
 std::u16string ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(
@@ -231,8 +231,8 @@ FormFinderResult ActorLoginFormFinder::GetEligibleLoginFormManagers(
       continue;
     }
 
-    optimization_guide::proto::ActorLoginQuality_ParsedFormDetails form_details;
-    SetFormData(form_details, *parsed_form);
+    ParsedFormDetails form_details;
+    SetFormData(*form_details.mutable_form_data(), *parsed_form);
     parsed_forms_details_.emplace_back(std::move(form_details));
 
     if (!IsLoginForm(*parsed_form)) {
@@ -263,9 +263,9 @@ void ActorLoginFormFinder::GetEligibleLoginFormManagersAsync(
     }
 
     if (!IsValidFrameAndOriginToFill(manager->GetDriver(), origin)) {
-      optimization_guide::proto::ActorLoginQuality_ParsedFormDetails
-          form_details;
-      SetFormData(form_details, *manager->GetParsedObservedForm());
+      ParsedFormDetails form_details;
+      SetFormData(*form_details.mutable_form_data(),
+                  *manager->GetParsedObservedForm());
       form_details.set_is_valid_frame_and_origin(false);
       parsed_forms_details_.emplace_back(std::move(form_details));
       continue;
@@ -315,8 +315,8 @@ void ActorLoginFormFinder::IsLoginFormAsync(
     return;
   }
 
-  optimization_guide::proto::ActorLoginQuality_ParsedFormDetails form_details;
-  SetFormData(form_details, form);
+  ParsedFormDetails form_details;
+  SetFormData(*form_details.mutable_form_data(), form);
   // This method should only be called for forms that are in a valid frame and
   // origin so setting this to `true` is correct.
   form_details.set_is_valid_frame_and_origin(true);
@@ -360,7 +360,7 @@ void ActorLoginFormFinder::IsLoginFormAsync(
 }
 
 void ActorLoginFormFinder::OnVisibilityChecksComplete(
-    optimization_guide::proto::ActorLoginQuality_ParsedFormDetails form_details,
+    ParsedFormDetails form_details,
     base::TimeTicks start_time,
     base::OnceCallback<void(bool)> callback,
     std::vector<std::pair<LoginFieldType, bool>> results) {
