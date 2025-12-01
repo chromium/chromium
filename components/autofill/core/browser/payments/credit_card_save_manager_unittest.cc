@@ -108,6 +108,8 @@ using SaveCardOfferUserDecision =
 using UserProvidedCardDetails =
     payments::PaymentsAutofillClient::UserProvidedCardDetails;
 
+constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
+
 #if !BUILDFLAG(IS_IOS)
 base::TimeDelta kVeryLargeDelta = base::Days(365) * 75;
 #endif
@@ -937,7 +939,11 @@ TEST_F(CreditCardSaveManagerTest,
             cvc_storage_strike_database.GetStrikes(local_card.guid()));
 
   // Verify that CVC prompt is not offered.
+#if BUILDFLAG(IS_IOS)
+  EXPECT_CALL(payments_autofill_client(), ShowSaveCreditCardLocally).Times(0);
+#else
   payments_autofill_client().ExpectLocalSaveWithPromptShown(false);
+#endif
   credit_card_save_manager().AttemptToOfferCvcLocalSave(local_card);
 }
 
@@ -965,9 +971,11 @@ TEST_F(CreditCardSaveManagerTest,
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   CreditCard local_card = test::GetCreditCard();
-
+  // On iOS, the prompt is suppressed when the delay condition is not met,
+  // resulting in 2 calls. On other platforms (like Desktop), the client is
+  // called even when suppressed, resulting in 3 calls.
   EXPECT_CALL(payments_autofill_client(), ShowSaveCreditCardLocally)
-      .Times(3)
+      .Times(is_ios ? 2 : 3)
       .WillRepeatedly(
           [](const CreditCard&, SaveCreditCardOptions,
              payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
@@ -1073,7 +1081,11 @@ TEST_F(CreditCardSaveManagerTest,
                 base::NumberToString(server_card.instrument_id())));
 
   // Verify that CVC prompt is not offered.
+#if BUILDFLAG(IS_IOS)
+  EXPECT_CALL(payments_autofill_client(), ShowSaveCreditCardToCloud).Times(0);
+#else
   payments_autofill_client().ExpectCloudSaveWithPromptShown(false);
+#endif
   credit_card_save_manager().AttemptToOfferCvcUploadSave(server_card);
 }
 
@@ -1090,7 +1102,11 @@ TEST_F(CreditCardSaveManagerTest,
       1, base::NumberToString(server_card.instrument_id()));
 
   // Verify that CVC prompt is not offered.
+#if BUILDFLAG(IS_IOS)
+  EXPECT_CALL(payments_autofill_client(), ShowSaveCreditCardToCloud).Times(0);
+#else
   payments_autofill_client().ExpectCloudSaveWithPromptShown(false);
+#endif
   credit_card_save_manager().AttemptToOfferCvcUploadSave(server_card);
 }
 

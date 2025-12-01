@@ -78,6 +78,8 @@ using SaveCardOfferUserDecision =
 using SaveCardPromptOffer = autofill_metrics::SaveCardPromptOffer;
 using SaveCardPromptResult = autofill_metrics::SaveCardPromptResult;
 
+constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
+
 // If |name| consists of three whitespace-separated parts and the second of the
 // three parts is a single character or a single character followed by a period,
 // returns the result of joining the first and third parts with a space.
@@ -568,16 +570,19 @@ void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
   show_save_prompt_.reset();
 
   show_save_prompt_ = !DetermineAndLogCvcSaveStrikeDatabaseBlockDecision();
-  // TODO(crbug.com/40931101): Refactor ShowSaveCreditCardToCloud to change
-  // legal_message_lines_ to optional.
-  payments_autofill_client().ShowSaveCreditCardToCloud(
-      card_save_candidate_, legal_message_lines_,
-      payments::PaymentsAutofillClient::SaveCreditCardOptions()
-          .with_show_prompt(show_save_prompt_.value())
-          .with_card_save_type(
-              payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly),
-      base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave,
-                     weak_ptr_factory_.GetWeakPtr()));
+
+  if (!is_ios || show_save_prompt_.value_or(true)) {
+    // TODO(crbug.com/40931101): Refactor ShowSaveCreditCardToCloud to change
+    // legal_message_lines_ to optional.
+    payments_autofill_client().ShowSaveCreditCardToCloud(
+        card_save_candidate_, legal_message_lines_,
+        payments::PaymentsAutofillClient::SaveCreditCardOptions()
+            .with_show_prompt(show_save_prompt_.value())
+            .with_card_save_type(
+                payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly),
+        base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
@@ -874,14 +879,16 @@ void CreditCardSaveManager::OfferCardLocalSave() {
 }
 
 void CreditCardSaveManager::OfferCvcLocalSave() {
-  payments_autofill_client().ShowSaveCreditCardLocally(
-      card_save_candidate_,
-      payments::PaymentsAutofillClient::SaveCreditCardOptions()
-          .with_show_prompt(show_save_prompt_.value_or(false))
-          .with_card_save_type(
-              payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly),
-      base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (!is_ios || show_save_prompt_.value_or(true)) {
+    payments_autofill_client().ShowSaveCreditCardLocally(
+        card_save_candidate_,
+        payments::PaymentsAutofillClient::SaveCreditCardOptions()
+            .with_show_prompt(show_save_prompt_.value_or(false))
+            .with_card_save_type(
+                payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly),
+        base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void CreditCardSaveManager::OfferCardUploadSave(ukm::SourceId ukm_source_id) {
