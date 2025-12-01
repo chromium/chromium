@@ -123,6 +123,12 @@ class RegionalCapabilitiesService : public KeyedService {
   // the regional scope.
   bool IsChoiceScreenCompatibleWithCurrentLocation();
 
+  // Returns whether display state metrics can be recorded.
+  // `display_state_country_id` is passed by the caller as this may be used to
+  // check the compatibility of display states cached from previous sessions.
+  bool CanRecordDisplayStateForCountry(
+      country_codes::CountryId display_state_country_id);
+
   bool ShouldRecordSearchEngineChoicesMadeFromSettings();
 
 #if !BUILDFLAG(IS_ANDROID)
