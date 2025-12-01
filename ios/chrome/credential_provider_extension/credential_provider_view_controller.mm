@@ -572,12 +572,6 @@ enum class PasskeyUserVerificationStatus {
 
 #pragma mark - ConfirmationAlertActionHandler
 
-- (void)confirmationAlertDismissAction {
-  // Finish the extension. There is no recovery from the stale credentials
-  // state.
-  [self dismissExtension];
-}
-
 - (void)confirmationAlertPrimaryAction {
   if ([self.presentedViewController
           isKindOfClass:[PasskeyErrorAlertViewController class]]) {
@@ -1136,10 +1130,17 @@ enum class PasskeyUserVerificationStatus {
   GenericErrorViewController* genericErrorViewController =
       [[GenericErrorViewController alloc] init];
   genericErrorViewController.actionHandler = self;
-  genericErrorViewController.presentationController.delegate = self;
-  [self presentViewController:genericErrorViewController
-                     animated:YES
-                   completion:nil];
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:genericErrorViewController];
+
+  genericErrorViewController.navigationItem.rightBarButtonItem =
+      [[UIBarButtonItem alloc]
+          initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                               target:self
+                               action:@selector(dismissExtension)];
+
+  navigationController.presentationController.delegate = self;
+  [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 // Returns the favicon associated with the rpId if it exists.
