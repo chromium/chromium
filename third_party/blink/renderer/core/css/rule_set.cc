@@ -1063,41 +1063,29 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                  apply_mixins_stack);
     } else if (auto* contents_rule =
                    DynamicTo<StyleRuleContentsStatement>(rule)) {
-      const StyleRuleMixin* mixin = apply_mixins_stack.back().mixin;
       StyleRuleApplyMixin* apply =
           apply_mixins_stack.back().invoking_apply_rule;
       const MixinParameterBindings* mixin_parameter_bindings =
           apply_mixins_stack.back().mixin_parameter_bindings;
 
-      // Verify that the mixin actually has a @contents parameter.
-      // Otherwise, @contents is illegal and ignored.
-      const bool has_contents_parameter = std::ranges::any_of(
-          mixin->GetParameters(),
-          [](const StyleRuleFunction::Parameter& parameter) {
-            return parameter.name == "@contents";
-          });
-
-      if (has_contents_parameter) {
-        // Try first the parameter from @apply, then the fallback block given in
-        // @contents, and if neither exists, nothing happens.
-        StyleRule* rules_to_add = nullptr;
-        if (apply->FakeParentRuleForDeclarations()) {
-          rules_to_add =
-              To<StyleRuleApplyMixin>(
-                  apply->Clone(parent_rule, mixin_parameter_bindings))
-                  ->FakeParentRuleForDeclarations();
-        } else if (contents_rule->FakeParentRuleForFallback() &&
-                   contents_rule->FakeParentRuleForFallback()->ChildRules()) {
-          rules_to_add =
-              To<StyleRuleContentsStatement>(
-                  contents_rule->Clone(parent_rule, mixin_parameter_bindings))
-                  ->FakeParentRuleForFallback();
-        }
-        if (rules_to_add && rules_to_add->ChildRules()) {
-          AddChildRules(parent_rule, *rules_to_add->ChildRules(), medium,
-                        mixins, add_rule_flags, container_query, cascade_layer,
-                        style_scope, apply_mixins_stack);
-        }
+      // Try first the parameter from @apply, then the fallback block given in
+      // @contents, and if neither exists, nothing happens.
+      StyleRule* rules_to_add = nullptr;
+      if (apply->FakeParentRuleForDeclarations()) {
+        rules_to_add = To<StyleRuleApplyMixin>(
+                           apply->Clone(parent_rule, mixin_parameter_bindings))
+                           ->FakeParentRuleForDeclarations();
+      } else if (contents_rule->FakeParentRuleForFallback() &&
+                 contents_rule->FakeParentRuleForFallback()->ChildRules()) {
+        rules_to_add =
+            To<StyleRuleContentsStatement>(
+                contents_rule->Clone(parent_rule, mixin_parameter_bindings))
+                ->FakeParentRuleForFallback();
+      }
+      if (rules_to_add && rules_to_add->ChildRules()) {
+        AddChildRules(parent_rule, *rules_to_add->ChildRules(), medium, mixins,
+                      add_rule_flags, container_query, cascade_layer,
+                      style_scope, apply_mixins_stack);
       }
     } else if (auto* nested_declarations =
                    DynamicTo<StyleRuleNestedDeclarations>(rule)) {
