@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -307,6 +306,7 @@ public class FuseboxMediatorUnitTest {
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
         doReturn(true).when(mTab1).isInitialized();
         doReturn(100L).when(mTab1).getTimestampMillis();
+        doReturn(mWebContents).when(mTab1).getWebContents();
 
         doReturn("Title3").when(mTab2).getTitle();
         doReturn(new GURL("chrome://flags")).when(mTab2).getUrl();
@@ -325,7 +325,6 @@ public class FuseboxMediatorUnitTest {
         assertNull(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON));
 
         doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
-        doReturn(mWebContents).when(mTab1).getWebContents();
         doReturn("token").when(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
         mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED).run();
         verify(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
@@ -421,6 +420,7 @@ public class FuseboxMediatorUnitTest {
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
         doReturn(true).when(mTab1).isInitialized();
         doReturn(100L).when(mTab1).getTimestampMillis();
+        doReturn(mWebContents).when(mTab1).getWebContents();
 
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         ShadowLooper.idleMainLooper();
@@ -646,14 +646,14 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testAddAttachment_disablesCreateImage() {
-        doReturn("token-tab1")
-                .when(mComposeBoxQueryControllerBridge)
-                .addTabContextFromCache(anyLong());
+        doReturn("token-tab1").when(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
         doReturn("Title1").when(mTab1).getTitle();
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
         doReturn(true).when(mTab1).isInitialized();
+        doReturn(false).when(mTab1).isFrozen();
         doReturn(100L).when(mTab1).getTimestampMillis();
+        doReturn(mWebContents).when(mTab1).getWebContents();
 
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));

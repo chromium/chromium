@@ -286,6 +286,7 @@ public class FuseboxMediator {
         Tab currentTab = assumeNonNull(tabModelSelector.getCurrentTab());
         boolean tabIsEligible =
                 FuseboxTabUtils.isTabEligibleForAttachment(currentTab)
+                        && FuseboxTabUtils.isTabActive(currentTab)
                         && !currentTab.isIncognitoBranded();
 
         if (tabIsEligible) {

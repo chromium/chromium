@@ -22,9 +22,19 @@ public class FuseboxTabUtils {
         // TODO: This also has to check the eligibility here:
         // components/optimization_guide/content/browser/page_context_eligibility.h
         return tab != null
-                && tab.isInitialized()
-                && !tab.isFrozen()
                 && (tab.getUrl().getScheme().equals(UrlConstants.HTTP_SCHEME)
                         || tab.getUrl().getScheme().equals(UrlConstants.HTTPS_SCHEME));
+    }
+
+    /**
+     * Returns the whether a tab is active.
+     *
+     * @param tab The tab to be checked.
+     */
+    public static boolean isTabActive(@Nullable Tab tab) {
+        return tab != null
+                && tab.isInitialized()
+                && !tab.isFrozen()
+                && tab.getWebContents() != null;
     }
 }

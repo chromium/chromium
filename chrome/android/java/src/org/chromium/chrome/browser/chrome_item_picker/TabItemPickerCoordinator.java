@@ -195,7 +195,7 @@ public class TabItemPickerCoordinator {
         for (Tab tab : allTabs) {
             // TODO(crbug.com/458152854): Allow reloading of tabs.
             boolean isActiveOrCachedTab =
-                    tab.getWebContents() != null || cachedTabIdsSet.contains(tab.getId());
+                    FuseboxTabUtils.isTabActive(tab) || cachedTabIdsSet.contains(tab.getId());
             if (FuseboxTabUtils.isTabEligibleForAttachment(tab) && isActiveOrCachedTab) {
                 tabsToShow.add(tab);
             }
@@ -217,7 +217,11 @@ public class TabItemPickerCoordinator {
 
         controller.getHandleBackPressChangedSupplier().addObserver(mBackPressEnabledObserver);
 
-        int currentTabIndex = mTabModelSelector.getModel(/* incognito= */ false).index();
+        Profile profile = mProfileSupplier.get();
+        int currentTabIndex =
+                mTabModelSelector
+                        .getModel(profile == null ? false : profile.isIncognitoBranded())
+                        .index();
         RecyclerViewPosition position = new RecyclerViewPosition(currentTabIndex, 0);
 
         controller.show(
@@ -288,10 +292,12 @@ public class TabItemPickerCoordinator {
     /** Creates a TabGroupModelFilter instance required by the TabListEditorCoordinator. */
     private ObservableSupplier<@Nullable TabGroupModelFilter> createTabGroupModelFilterSupplier(
             TabModelSelector tabModelSelector) {
+        Profile profile = mProfileSupplier.get();
         return new ObservableSupplierImpl<@Nullable TabGroupModelFilter>(
                 tabModelSelector
                         .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(/* isIncognito= */ false));
+                        .getTabGroupModelFilter(
+                                profile == null ? false : profile.isIncognitoBranded()));
     }
 
     /** Creates a TabContentManager instance required by the TabListEditorCoordinator. */
