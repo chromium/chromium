@@ -79,7 +79,7 @@ export class PeerConnectionUpdateTable {
     const row = document.createElement('tr');
     tableElement.firstChild.appendChild(row);
 
-    const time = new Date(parseFloat(update.time));
+    const time = new Date(parseFloat(update.timestamp));
     const timeItem = document.createElement('td');
     timeItem.textContent = time.toLocaleString();
     row.appendChild(timeItem);
