@@ -1008,13 +1008,18 @@ enum class PasskeyUserVerificationStatus {
 - (void)showStaleCredentials {
   StaleCredentialsViewController* staleCredentialsViewController =
       [[StaleCredentialsViewController alloc] init];
-  staleCredentialsViewController.modalPresentationStyle =
-      UIModalPresentationOverCurrentContext;
   staleCredentialsViewController.actionHandler = self;
-  staleCredentialsViewController.presentationController.delegate = self;
-  [self presentViewController:staleCredentialsViewController
-                     animated:NO
-                   completion:nil];
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:staleCredentialsViewController];
+  staleCredentialsViewController.navigationItem.rightBarButtonItem =
+      [[UIBarButtonItem alloc]
+          initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                               target:self
+                               action:@selector(dismissExtension)];
+  navigationController.modalPresentationStyle =
+      UIModalPresentationOverCurrentContext;
+  navigationController.presentationController.delegate = self;
+  [self presentViewController:navigationController animated:NO completion:nil];
 }
 
 // Starts the credential list feature.
