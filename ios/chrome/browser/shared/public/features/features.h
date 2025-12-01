@@ -1175,4 +1175,10 @@ BASE_DECLARE_FEATURE(kAIMEligibilityRefreshNTPModules);
 // Returns true if the AIMEligibilityRefreshNTPModules feature is enabled.
 bool IsAIMEligibilityRefreshNTPModulesEnabled();
 
+// Enables the AIMEligibilityServiceStartWithProfile feature.
+BASE_DECLARE_FEATURE(kAIMEligibilityServiceStartWithProfile);
+
+// Returns true if the AIMEligibilityServiceStartWithProfile feature is enabled.
+bool IsAIMEligibilityServiceStartWithProfileEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

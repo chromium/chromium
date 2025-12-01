@@ -26,6 +26,9 @@ extern const char kAIHubNewBadgeDescription[];
 extern const char kAIMEligibilityRefreshNTPModulesName[];
 extern const char kAIMEligibilityRefreshNTPModulesDescription[];
 
+extern const char kAIMEligibilityServiceStartWithProfileName[];
+extern const char kAIMEligibilityServiceStartWithProfileDescription[];
+
 extern const char kAIMNTPEntrypointTabletName[];
 extern const char kAIMNTPEntrypointTabletDescription[];
 

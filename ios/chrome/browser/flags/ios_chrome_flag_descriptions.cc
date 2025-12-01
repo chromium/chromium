@@ -20,6 +20,11 @@ const char kAIMEligibilityRefreshNTPModulesName[] =
 const char kAIMEligibilityRefreshNTPModulesDescription[] =
     "Enables the AIMEligibilityRefreshNTPModules feature.";
 
+const char kAIMEligibilityServiceStartWithProfileName[] =
+    "AIMEligibilityServiceStartWithProfile";
+const char kAIMEligibilityServiceStartWithProfileDescription[] =
+    "Start the AIM eligibility service with the profile.";
+
 const char kAIMNTPEntrypointTabletName[] = "AIMNTPEntrypointTablet";
 const char kAIMNTPEntrypointTabletDescription[] =
     "Enables the AIMNTPEntrypointTablet feature.";
