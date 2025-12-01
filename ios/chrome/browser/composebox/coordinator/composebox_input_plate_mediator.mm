@@ -164,6 +164,8 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL _isMultiline;
   // Whether the browser is in incognito mode.
   BOOL _isIncognito;
+  // Whether the mediator is currently updating the compact mode.
+  BOOL _isUpdatingCompactMode;
 }
 
 - (instancetype)
@@ -1043,8 +1045,15 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)textFieldViewContaining:(UIView<TextFieldViewContaining>*)sender
                 didChangeHeight:(CGFloat)height {
+  // Prevent re-entrant calls if `_isMultiline` changes when updating compact
+  // mode.
+  if (_isUpdatingCompactMode) {
+    return;
+  }
   _isMultiline = sender.numberOfLines > 1;
+  _isUpdatingCompactMode = YES;
   [self updateCompactModeIfNeeded];
+  _isUpdatingCompactMode = NO;
 }
 
 @end
