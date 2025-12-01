@@ -118,7 +118,7 @@ BASE_FEATURE(kAudioWorkletThreadPool, base::FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, synthetic select metrics are logged.
 // See go/analyzing-synthetic-selects for more details.
 BASE_FEATURE(kAutofillEnableSyntheticSelectMetricsLogging,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, WebFormElement applies the same special case to nested forms
 // as it does for the outermost form. The fix is relevant only to Autofill.
