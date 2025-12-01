@@ -32,14 +32,18 @@ source_set("ios_chrome_passkey_client") {
     "ios_chrome_passkey_client.mm",
   ]
   deps = [
+    "//components/metrics:metrics_pref_names",
     "//components/password_manager/core/browser",
     "//components/password_manager/ios",
     "//components/webauthn/ios",
     "//components/webauthn/ios:features",
     "//ios/chrome/browser/credential_provider/model:buildflags",
     "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/common/credential_provider:passkey_keychain_provider_chrome",
     "//ios/web/public",
   ]
 

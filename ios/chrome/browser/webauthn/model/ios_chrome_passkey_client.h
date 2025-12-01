@@ -8,6 +8,9 @@
 #import "base/memory/weak_ptr.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 
+class PasskeyKeychainProvider;
+class ProfileIOS;
+
 namespace web {
 class WebState;
 }  // namespace web
@@ -30,6 +33,13 @@ class IOSChromePasskeyClient : public webauthn::IOSPasskeyClient {
       IOSPasswordManagerDriver* driver) override;
 
  private:
+  // Pointer to the associated ProfileIOS. Must outlive
+  // IOSChromePasskeyClient.
+  raw_ptr<ProfileIOS> profile_;
+
+  // Provider that manages passkey vault keys.
+  std::unique_ptr<PasskeyKeychainProvider> passkey_keychain_provider_;
+
   // Weak WebState.
   base::WeakPtr<web::WebState> web_state_;
 };

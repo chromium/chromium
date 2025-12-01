@@ -5,15 +5,22 @@
 #import "ios/chrome/browser/webauthn/model/ios_chrome_passkey_client.h"
 
 #import "base/functional/callback.h"
+#import "components/metrics/metrics_pref_names.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
 #import "ios/web/public/web_state.h"
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
@@ -23,6 +30,12 @@
 IOSChromePasskeyClient::IOSChromePasskeyClient(web::WebState* web_state) {
   CHECK(web_state);
   web_state_ = web_state->GetWeakPtr();
+  profile_ = ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  bool metricsReportingEnabled =
+      GetApplicationContext()->GetLocalState()->GetBoolean(
+          metrics::prefs::kMetricsReportingEnabled);
+  passkey_keychain_provider_ =
+      std::make_unique<PasskeyKeychainProvider>(metricsReportingEnabled);
 }
 
 IOSChromePasskeyClient::~IOSChromePasskeyClient() {}
@@ -35,8 +48,13 @@ bool IOSChromePasskeyClient::PerformUserVerification() {
 
 void IOSChromePasskeyClient::FetchKeys(webauthn::ReauthenticatePurpose purpose,
                                        webauthn::KeysFetchedCallback callback) {
-  // TODO(crbug.com/460485614): Fetch the keys. See PasskeyKeychainProvider.
-  std::move(callback).Run({});
+  // TODO(crbug.com/460485614): Allow onboarding, bootstrapping and reauth.
+  CoreAccountInfo account =
+      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+
+  passkey_keychain_provider_->FetchKeys(account.gaia.ToNSString(), purpose,
+                                        std::move(callback));
 }
 
 void IOSChromePasskeyClient::ShowSuggestionBottomSheet(
@@ -77,10 +95,7 @@ void IOSChromePasskeyClient::AllowPasskeyCreationInfobar(bool allowed) {
     return;
   }
 
-  ProfileIOS* const profile =
-      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-
-  BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
+  BrowserList* browserList = BrowserListFactory::GetForProfile(profile_);
   for (Browser* browser :
        browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
     if (auto* agent = CredentialProviderBrowserAgent::FromBrowser(browser)) {
