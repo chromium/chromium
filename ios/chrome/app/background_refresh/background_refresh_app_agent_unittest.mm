@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/test/ios/test_utils.h"
@@ -340,6 +341,8 @@ TEST_F(BackgroundRefreshAppAgentTest, ExecuteSingleTask) {
   // Test that when a single provider is registered, that task executes and the
   // refresh is marked successful.
 
+  base::HistogramTester histogram_tester;
+
   TestRefreshProvider* provider = [[TestRefreshProvider alloc] init];
   [agent_ addAppRefreshProvider:provider];
 
@@ -354,6 +357,11 @@ TEST_F(BackgroundRefreshAppAgentTest, ExecuteSingleTask) {
   VerifyTaskCompleted(YES);
   EXPECT_TRUE(audience_.ended);
   EXPECT_TRUE([provider injectedTask].executed);
+
+  histogram_tester.ExpectTotalCount("IOS.BackgroundRefresh.ExecutionDuration",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.BackgroundRefresh.Provider.Duration.TestRefreshProvider", 1);
 }
 
 TEST_F(BackgroundRefreshAppAgentTest, NotExecuteNotDueTask) {

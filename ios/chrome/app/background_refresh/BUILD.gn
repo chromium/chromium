@@ -46,7 +46,7 @@ source_set("metrics") {
     "background_refresh_metrics.h",
     "background_refresh_metrics.mm",
   ]
-  deps = []
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

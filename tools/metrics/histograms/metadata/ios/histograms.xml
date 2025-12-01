@@ -349,6 +349,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.BackgroundRefresh.ExecutionDuration" units="ms"
+    expires_after="2026-04-26">
+  <owner>fedegermi@google.com</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    Logged when a background refresh task completes successfully. Logs the
+    duration of the execution.
+  </summary>
+</histogram>
+
+<histogram name="IOS.BackgroundRefresh.ExecutionDuration.Timeout" units="ms"
+    expires_after="2026-04-26">
+  <owner>fedegermi@google.com</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    Logged when a background refresh task expires (times out). Logs the duration
+    of the execution up to the timeout.
+  </summary>
+</histogram>
+
 <histogram name="IOS.BackgroundRefresh.InitStage"
     enum="InitStageDuringBackgroundRefreshType" expires_after="2026-03-29">
   <owner>fedegermi@google.com</owner>
@@ -365,7 +385,40 @@ chromium-metrics-reviews@google.com.
   <owner>marq@chromium.org</owner>
   <summary>
     Logged when a background refresh is triggered. Logs the launch type (warm
-    vs. cold) for the background refresh.
+    start, cold start) or if the browser objects were not ready.
+  </summary>
+</histogram>
+
+<histogram name="IOS.BackgroundRefresh.Provider.Duration.{ProviderID}"
+    units="ms" expires_after="2026-04-26">
+  <owner>fedegermi@google.com</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    Logged when a background refresh provider task completes. Logs the duration
+    of the provider's execution.
+  </summary>
+  <token key="ProviderID">
+    <variant name="TestRefresher"/>
+  </token>
+</histogram>
+
+<histogram name="IOS.BackgroundRefresh.Timeout.ActiveProviderCount"
+    units="count" expires_after="2026-04-26">
+  <owner>fedegermi@google.com</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    Logged when a background refresh task expires (times out). Logs the number
+    of active providers at the time of timeout.
+  </summary>
+</histogram>
+
+<histogram name="IOS.BackgroundRefresh.Timeout.TotalProviderCount"
+    units="count" expires_after="2026-04-26">
+  <owner>fedegermi@google.com</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    Logged when a background refresh task expires (times out). Logs the total
+    number of providers scheduled to run in the task that timed out.
   </summary>
 </histogram>
 

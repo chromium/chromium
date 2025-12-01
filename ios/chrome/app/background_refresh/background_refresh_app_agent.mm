@@ -29,6 +29,8 @@
 @property(nonatomic) NSMutableSet<AppRefreshProvider*>* providers;
 // The subset of `providers` that are currently running refresh tasks.
 @property(nonatomic) NSMutableSet<AppRefreshProvider*>* activeProviders;
+// The total count of providers run for the current refresh task.
+@property(nonatomic) NSInteger providerCount;
 @end
 
 // Debugging notes:
@@ -100,6 +102,7 @@
 // corresponding main-thread methods have names beginning with `handle`.
 
 @implementation BackgroundRefreshAppAgent {
+  base::Time _refresh_start;
   BGTask* _pendingTask;
   SEQUENCE_CHECKER(_sequenceChecker);
 }
@@ -223,9 +226,11 @@
   _pendingTask = nil;
 
   [self refreshStarted];
+  self.providerCount = 0;
   for (AppRefreshProvider* provider in self.providers) {
     // Only execute due tasks.
     if ([provider isDue]) {
+      self.providerCount++;
       // Track running providers. The completion handler will remove tasks as
       // they complete.
       [self.activeProviders addObject:provider];
@@ -251,6 +256,13 @@
   // expiration, there's no mechanism for looging or informing the app as a
   // whole that this has happened.
 
+  base::UmaHistogramMediumTimes(kExecutionDurationTimeoutHistogram,
+                                base::Time::Now() - _refresh_start);
+  base::UmaHistogramCounts100(kActiveProviderCountAtTimeoutHistogram,
+                              self.activeProviders.count);
+  base::UmaHistogramCounts100(kTotalProviderCountAtTimeoutHistogram,
+                              self.providerCount);
+
   // Remove any pending task.
   _pendingTask = nil;
 
@@ -260,6 +272,7 @@
   }
   // Stop tracking all remaining providers.
   [self.activeProviders removeAllObjects];
+  self.providerCount = 0;
   // Mark the task unsuccessful.
   [task setTaskCompletedWithSuccess:NO];
   // Signal that the refresh is complete.
@@ -273,6 +286,7 @@
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self.activeProviders removeObject:provider];
   if (self.activeProviders.count == 0) {
+    self.providerCount = 0;
     [task setTaskCompletedWithSuccess:YES];
     [self refreshComplete];
   }
@@ -280,11 +294,14 @@
 
 - (void)refreshStarted {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  _refresh_start = base::Time::Now();
   [self.audience backgroundRefreshDidStart];
 }
 
 - (void)refreshComplete {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  base::UmaHistogramMediumTimes(kExecutionDurationHistogram,
+                                base::Time::Now() - _refresh_start);
   [self.audience backgroundRefreshDidEnd];
 }
 

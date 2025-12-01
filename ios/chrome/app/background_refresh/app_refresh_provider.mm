@@ -8,6 +8,7 @@
 #import "base/functional/bind.h"
 #import "base/notreached.h"
 #import "base/task/thread_pool.h"
+#import "ios/chrome/app/background_refresh/background_refresh_metrics.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
@@ -19,8 +20,9 @@
 @end
 
 @implementation AppRefreshProvider {
-  base::CancelableOnceCallback<void()> _task;
+  base::CancelableOnceClosure _task_wrapper;
   SEQUENCE_CHECKER(_sequenceChecker);
+  base::Time _startTime;
 }
 
 - (instancetype)init {
@@ -76,8 +78,9 @@
 // Called on the main thread, runs tasks on (by default) the IO thread.
 - (void)handleRefreshWithCompletion:(ProceduralBlock)completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  _startTime = base::Time::Now();
   id<AppRefreshProviderTask> task = [self task];
-  _task.Reset(base::BindOnce(^{
+  _task_wrapper.Reset(base::BindOnce(^{
     [task execute];
   }));
 
@@ -88,15 +91,15 @@
 
   // `_task` has a cancelable wrapper, so `_task.callback()` is the underlying
   // OnceCallback to execute.
-  self.taskThread->PostTaskAndReply(FROM_HERE, _task.callback(),
+  self.taskThread->PostTaskAndReply(FROM_HERE, _task_wrapper.callback(),
                                     std::move(callback));
 }
 
-// Terminate the running task immediately.
+// Cancel the task, so it won't run if it hasn't started.
 - (void)cancelRefresh {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
-  _task.Cancel();
+  _task_wrapper.Cancel();
 }
 
 - (id<AppRefreshProviderTask>)task {
@@ -108,6 +111,12 @@
 
 - (void)refreshTaskFinishedWithCompletion:(ProceduralBlock)completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  // If the metric is missing from the dashboard, you need to add the provider
+  // identifier to the tokens for the histogram
+  // IOS.BackgroundRefresh.Provider.Duration.{ProviderID} in
+  // tools/metrics/histograms/metadata/ios/histograms.xml.
+  RecordProviderExecutionDuration(self.identifier,
+                                  base::Time::Now() - _startTime);
   self.lastRun = base::Time::Now();
 
   completion();
