@@ -38,6 +38,8 @@ CHROME_OPTIONS = [
     "--enable-logging=stderr",
     # Sets the default verbose logging level to 1.
     "--v=1",
+    "--no-sandbox",
+    "--disable-gpu-sandbox",
 ]
 
 def connect_to_remote_driver(chrome_options, binary_location):

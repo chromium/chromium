@@ -41,8 +41,8 @@ SERVER_PORT = int(os.environ.get('SERVER_PORT', '8000'))
 
 RECORDINGS_DIR = os.path.join(os.environ.get('ISOLATED_OUTDIR', '/tmp'),
                               'recordings')
-REMOTE_URL = f'http://127.0.0.1:{CHROMEDRIVER_PORT}'
 LOCAL_HOST_IP = '127.0.0.1'
+REMOTE_URL = f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}'
 
 # This code is used as the default failure value for recordings in the case that
 # `results.get()` throws an unexpected error. -128 is chosen as a clear fail
@@ -93,11 +93,11 @@ SENDER_STATUS_CMD = {
         f'-s '
         f'-o /dev/null '
         f"-w '%{{http_code}}' "
-        f'http://127.0.0.1:{CHROMEDRIVER_PORT}/status'
+        f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status'
     ),
     'win': (
         f'powershell -Command "(Invoke-WebRequest -Uri '
-        f'http://127.0.0.1:{CHROMEDRIVER_PORT}/status -UseBasicParsing '
+        f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status -UseBasicParsing '
         f'-ErrorAction SilentlyContinue).StatusCode"'
     ),
 }
@@ -107,10 +107,13 @@ SENDER_TERMINATE_DRIVER_CMD = {
         'killall chromedriver'
     ),
     'win': (
-        'powershell -Command "Stop-Process -Name chromedriver '
-        '-ErrorAction SilentlyContinue"'
+        'powershell -Command "Stop-Process -Name chromedriver -Force; '
+        'taskkill /F /IM chromedriver.exe /t"'
     ),
 }
+
+WIN_REMOTE_TMP_DIR = 'C:\\cft_temp'
+
 
 class StartProcess(AbstractContextManager):
   """Starts a multiprocessing.Process."""
@@ -182,6 +185,7 @@ def send_ssh_command(hostname, username, command, blocking=False):
     """
   key_path = os.path.expanduser('~/.ssh/id_ed25519')
   ssh_command = ['ssh', '-i', key_path, f'{username}@{hostname}', command]
+  logging.debug('Executing SSH command: %s', ' '.join(ssh_command))
 
   if blocking:
     process = subprocess.run(ssh_command,
@@ -281,14 +285,28 @@ def install_and_setup_chrome(args, chrome_version):
         'Testing.app')
     remote_chromedriver_path = (
         f'{remote_tmp_dir}/{driver_unzip_dir}/chromedriver')
-    remote_chromedriver_dir = f'{remote_tmp_dir}/{driver_unzip_dir}'
 
     chmod_command = f'chmod +x {remote_chromedriver_path}'
     send_ssh_command(args.sender, args.username, chmod_command, blocking=True)
 
+    start_driver_cmd = (
+        f'nohup {remote_chromedriver_path} --port={CHROMEDRIVER_PORT} '
+        f'--allowed-origins=\"*\" '
+        f'--verbose '
+        f'--log-path=/tmp/chromedriver_verbose.log '
+        f'--enable-chrome-logs '
+        f'> /dev/null 2>&1 &'
+    )
+    send_ssh_command(args.sender, args.username, start_driver_cmd)
+
   elif args.sender_os == 'win':
     logging.info("Windows OS detected. Implementing install and setup.")
-    remote_tmp_dir = 'C:\\Windows\\Temp'
+    remote_tmp_dir = WIN_REMOTE_TMP_DIR
+    send_ssh_command(args.sender,
+                     args.username,
+                     f'if not exist {remote_tmp_dir} mkdir {remote_tmp_dir}',
+                     blocking=True)
+    logging.info("Using remote_tmp_dir: %s", remote_tmp_dir)
     chrome_zip_path = f'{remote_tmp_dir}\\{chrome_zip}'
     driver_zip_path = f'{remote_tmp_dir}\\{driver_zip}'
 
@@ -322,29 +340,43 @@ def install_and_setup_chrome(args, chrome_version):
     remote_chromedriver_path = (
         f'{remote_chromedriver_dir}\\chromedriver.exe')
 
-  # --- Start Chromedriver ---
-  start_driver_cmd = {
-      'mac': (
-          f'nohup {remote_chromedriver_path} --port={CHROMEDRIVER_PORT} '
-          f'--allowed-origins=\"*\" '
-          f'--verbose '
-          f'--log-path=/tmp/chromedriver_verbose.log '
-          f'--enable-chrome-logs '
-          f'> /dev/null 2>&1 &'
-      ),
-      'win': (
-          f"powershell -Command \"cd '{remote_chromedriver_dir}'; "
-          f"& '{remote_chromedriver_path}' --port={CHROMEDRIVER_PORT} "
-          f"--allowed-origins=* --verbose "
-          f"--log-path='{remote_chromedriver_dir}\\'"
-          f"'chromedriver_verbose.log' "
-          f"--enable-chrome-logs\""
-      )
-  }
+    # Create and run the batch script
+    batch_script_path = f'{remote_tmp_dir}\\start_chromedriver.bat'
+    batch_script_content = (
+        f'set PATH=%PATH%;{remote_chromedriver_dir}\n'
+        f'cd /d "{remote_chromedriver_dir}"\n'
+        f'"{remote_chromedriver_path}" --port={CHROMEDRIVER_PORT} '
+        f'--disable-ipv6 '
+        f'--allowed-origins=* --allowed-ips= --verbose '
+        f'--log-path="{remote_chromedriver_dir}\\chromedriver_verbose.log" '
+        f'--enable-chrome-logs > '
+        f'"{remote_chromedriver_dir}\\chromedriver_console.log" 2>&1\n'
+    )
 
-  send_ssh_command(args.sender, args.username,
-                   start_driver_cmd[args.sender_os])
-  logging.info("Started new chromedriver.")
+    create_script_cmd = (
+        f"powershell -Command \"'{batch_script_content}' | "
+        f"Out-File -FilePath '{batch_script_path}' -Encoding ascii\""
+    )
+    logging.info("Creating remote batch script...")
+    send_ssh_command(args.sender,
+                     args.username,
+                     create_script_cmd,
+                     blocking=True)
+
+    logging.info("Scheduling and running a task to start chromedriver...")
+    delete_task_cmd = 'schtasks /delete /tn StartChromeDriverTask /f'
+    send_ssh_command(args.sender, args.username, delete_task_cmd, blocking=True)
+
+    create_task_cmd = (
+        f'schtasks /create /tn StartChromeDriverTask /tr "{batch_script_path}" '
+        '/sc ONCE /st 23:59 /f'
+    )
+    send_ssh_command(args.sender, args.username, create_task_cmd, blocking=True)
+
+    run_task_cmd = 'schtasks /run /tn StartChromeDriverTask'
+    send_ssh_command(args.sender, args.username, run_task_cmd, blocking=True)
+
+  logging.info("Finished chromedriver setup attempt.")
   return remote_app_path
 
 
@@ -372,6 +404,7 @@ def wait_for_chromedriver(args):
     except Exception as e:  # pylint: disable=broad-exception-caught
       logging.warning("A script-level error occurred: %s. Retrying...", e)
     time.sleep(2)
+
   raise RuntimeError("Chromedriver still not ready after multiple attempts.")
 
 def start_ssh_tunnel(args):
@@ -382,9 +415,9 @@ def start_ssh_tunnel(args):
       '-i',
       f'~/.ssh/id_ed25519',
       '-L',
-      f'{CHROMEDRIVER_PORT}:127.0.0.1:{CHROMEDRIVER_PORT}',
+    f'{CHROMEDRIVER_PORT}:{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}',
       '-R',
-      f'{SERVER_PORT}:127.0.0.1:{SERVER_PORT}',
+      f'{SERVER_PORT}:{LOCAL_HOST_IP}:{SERVER_PORT}',
       f'{args.username}@{args.sender}',
       '-N'
   ]
@@ -443,17 +476,8 @@ def teardown_test_environment(driver, tunnel_proc, args):
           f"/tmp/*.zip"
       ),
       'win': (
-          f'powershell -Command "'
-          f'Remove-Item -Path C:\\Windows\\Temp\\*.zip -ErrorAction '
-          f'SilentlyContinue; '
-          f'Remove-Item -Path C:\\Windows\\Temp\\chrome-win64 -Recurse '
-          f'-Force -ErrorAction SilentlyContinue; '
-          f'Remove-Item -Path C:\\Windows\\Temp\\chromedriver-win64 '
-          f'-Recurse -Force -ErrorAction SilentlyContinue; '
-          f'Remove-Item -Path '
-          f'C:\\Windows\\Temp\\chromedriver_verbose.log -ErrorAction '
-          f'SilentlyContinue'
-          f'"'
+          f'powershell -Command "Remove-Item -Path {WIN_REMOTE_TMP_DIR} '
+          '-Recurse -Force -ErrorAction SilentlyContinue"'
       ),
   }
 
