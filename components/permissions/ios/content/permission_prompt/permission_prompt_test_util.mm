@@ -4,6 +4,8 @@
 
 #include "components/permissions/ios/content/permission_prompt/permission_prompt_test_util.h"
 
+#include "components/permissions/resolvers/permission_prompt_options.h"
+
 namespace permissions {
 
 MockPermissionPromptDelegate::MockPermissionPromptDelegate() = default;
@@ -34,6 +36,10 @@ void MockPermissionPromptDelegate::Deny() {
 void MockPermissionPromptDelegate::Dismiss() {}
 void MockPermissionPromptDelegate::Ignore() {}
 
+GeolocationAccuracy
+MockPermissionPromptDelegate::GetInitialGeolocationAccuracySelection() const {
+  return GeolocationAccuracy::kPrecise;
+}
 void MockPermissionPromptDelegate::SetPromptOptions(
     PromptOptions prompt_options) {}
 void MockPermissionPromptDelegate::FinalizeCurrentRequests() {}
