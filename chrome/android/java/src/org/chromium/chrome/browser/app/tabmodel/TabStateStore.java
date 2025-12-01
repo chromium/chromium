@@ -384,6 +384,11 @@ public class TabStateStore implements TabPersistentStore {
     }
 
     private void onDataLoaded(StorageLoadedData data, long loadStartTime) {
+        if (mIsDestroyed) {
+            data.destroy();
+            return;
+        }
+
         LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
 
         long duration = SystemClock.elapsedRealtime() - loadStartTime;
@@ -399,8 +404,10 @@ public class TabStateStore implements TabPersistentStore {
             initRestoreOrchestrator(data);
         }
 
-        assert mTabRestorer != null;
-        mTabRestorer.onDataLoaded(data);
+        // TODO(ckitagawa): Change back to assert if the `mIsDestroyed` check is sufficient.
+        if (mTabRestorer != null) {
+            mTabRestorer.onDataLoaded(data);
+        }
     }
 
     private void onFinishedCreatingAllTabs() {
