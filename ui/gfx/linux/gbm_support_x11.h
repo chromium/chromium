@@ -23,8 +23,7 @@ namespace ui {
 class GbmBuffer;
 class GbmDevice;
 
-// Obtains and holds a GbmDevice for creating GbmBuffers.  Maintains a list of
-// supported buffer configurations.
+// Obtains and holds a GbmDevice for creating GbmBuffers.
 class COMPONENT_EXPORT(GBM_SUPPORT_X11) GBMSupportX11 {
  public:
   static GBMSupportX11* GetInstance();
