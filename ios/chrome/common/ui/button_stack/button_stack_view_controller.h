@@ -61,6 +61,11 @@
 // indicator. Must be set before the view is loaded. Default is YES.
 @property(nonatomic, assign) BOOL showsVerticalScrollIndicator;
 
+// Controls the scroll view's content inset adjustment behavior.
+// Default is UIScrollViewContentInsetAdjustmentAlways.
+@property(nonatomic, assign)
+    UIScrollViewContentInsetAdjustmentBehavior contentInsetAdjustmentBehavior;
+
 // Controls the addition of the a bottom inset to the contentView.
 // Defaults to YES.
 @property(nonatomic, assign) BOOL addsContentViewBottomInset;

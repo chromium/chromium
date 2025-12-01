@@ -97,6 +97,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
     _addsContentViewBottomInset = YES;
     _showsGradientView = YES;
     _actionStackBottomMargin = kButtonStackBottomMargin;
+    _contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
   }
   return self;
 }
@@ -112,6 +113,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   [self.view addSubview:_scrollContainerView];
 
   _scrollView = [self createScrollView];
+  _scrollView.contentInsetAdjustmentBehavior = _contentInsetAdjustmentBehavior;
   [_scrollContainerView addSubview:_scrollView];
 
   _contentView = [[UIView alloc] init];
@@ -271,6 +273,14 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 - (void)setShowsGradientView:(BOOL)showsGradientView {
   _showsGradientView = showsGradientView;
   [self updateGradientVisibility];
+}
+
+- (void)setContentInsetAdjustmentBehavior:
+    (UIScrollViewContentInsetAdjustmentBehavior)contentInsetAdjustmentBehavior {
+  _contentInsetAdjustmentBehavior = contentInsetAdjustmentBehavior;
+  if (self.isViewLoaded) {
+    _scrollView.contentInsetAdjustmentBehavior = contentInsetAdjustmentBehavior;
+  }
 }
 
 - (void)setActionStackBottomMargin:(CGFloat)actionStackBottomMargin {
