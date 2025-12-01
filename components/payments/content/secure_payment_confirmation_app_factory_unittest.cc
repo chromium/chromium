@@ -28,6 +28,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/test/test_web_contents.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -35,6 +36,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/payments/content/mock_content_payment_request_delegate.h"
+#endif
 
 namespace payments {
 namespace {
@@ -107,6 +112,11 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
         .WillOnce(Return(ByMove(std::move(mock_authenticator_))));
     EXPECT_CALL(*mock_delegate, GetWebPaymentsWebDataService())
         .WillRepeatedly(Return(mock_service_));
+#if !BUILDFLAG(IS_ANDROID)
+    ON_CALL(*mock_delegate, GetPaymentRequestDelegate())
+        .WillByDefault(testing::Return(
+            mock_content_payment_request_delegate_.GetContentWeakPtr()));
+#endif
 
     return mock_delegate;
   }
@@ -176,6 +186,13 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
   // after it to avoid a dangling raw_ptr during destruction.
   raw_ptr<MockSecurePaymentConfirmationCredentialFinder>
       mock_credential_finder_;
+
+ private:
+  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
+  // MockContentPaymentRequestDelegate is not available on Android.
+#if !BUILDFLAG(IS_ANDROID)
+  MockContentPaymentRequestDelegate mock_content_payment_request_delegate_;
+#endif
 };
 
 // Test that parsing a valid SecureConfirmationPaymentRequest succeeds.
@@ -788,8 +805,6 @@ class SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest
 // Test that the browser bound key is retrieved
 TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
        ProvidesBrowserBoundingToSecurePaymentConfirmationApp) {
-  base::test::ScopedFeatureList feature_list{
-      blink::features::kSecurePaymentConfirmationBrowserBoundKeys};
   url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
   std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
   auto method_data = mojom::PaymentMethodData::New();

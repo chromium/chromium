@@ -299,6 +299,7 @@ source_set("payment_content_unit_tests") {
     "//components/webauthn/core/browser:test_support",
     "//components/webdata/common",
     "//content/test:test_support",
+    "//crypto:test_support",
     "//net:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network:test_support",

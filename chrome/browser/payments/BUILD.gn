@@ -54,6 +54,7 @@ source_set("browser_tests") {
     "//components/payments/core:test_support",
     "//components/ukm:test_support",
     "//components/webdata_services",
+    "//crypto:test_support",
     "//device/fido:test_support",
   ]
 

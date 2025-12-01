@@ -15,6 +15,7 @@
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "device/fido/virtual_fido_device_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -133,6 +134,9 @@ class SecurePaymentConfirmationAuthenticatorTestBase
   }
 
   std::unique_ptr<autofill::EventWaiter<Event>> event_waiter_;
+
+ private:
+  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
 };
 
 using SecurePaymentConfirmationAuthenticatorCreateTest =
