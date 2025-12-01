@@ -134,8 +134,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   CreateExternalBitmapProvider(gfx::Size size,
                                viz::SharedImageFormat format,
                                SkAlphaType alpha_type,
-                               const gfx::ColorSpace& color_space,
-                               ShouldInitialize initialize_provider);
+                               const gfx::ColorSpace& color_space);
 
   static std::unique_ptr<CanvasResourceProviderSharedImage>
   CreateSharedImageProviderForSoftwareCompositor(

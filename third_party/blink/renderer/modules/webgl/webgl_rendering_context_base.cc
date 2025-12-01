@@ -8813,8 +8813,7 @@ CanvasResourceProvider* WebGLRenderingContextBase::
         size, format, alpha_type, color_space, raster_context_provider);
   } else {
     temp = CanvasResourceProvider::CreateExternalBitmapProvider(
-        size, format, alpha_type, color_space,
-        CanvasResourceProvider::ShouldInitialize::kNo);
+        size, format, alpha_type, color_space);
   }
 
   if (!temp)

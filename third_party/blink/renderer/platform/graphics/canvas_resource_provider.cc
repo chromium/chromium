@@ -1189,17 +1189,10 @@ CanvasResourceProvider::CreateExternalBitmapProvider(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    ShouldInitialize should_initialize) {
+    const gfx::ColorSpace& color_space) {
   auto provider = std::make_unique<CanvasResourceProviderExternalBitmap>(
       size, format, alpha_type, color_space);
   if (provider->IsValid()) {
-    if (should_initialize ==
-        CanvasResourceProvider::ShouldInitialize::kCallClear) {
-      provider->Clear();
-    }
-    // The Clear() call cannot turn a CRPExternalBitmap invalid.
-    CHECK(provider->IsValid());
     return provider;
   }
   return nullptr;
