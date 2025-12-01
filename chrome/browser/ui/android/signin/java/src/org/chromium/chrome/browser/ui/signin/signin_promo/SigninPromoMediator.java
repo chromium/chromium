@@ -89,7 +89,8 @@ final class SigninPromoMediator
                         /* secondaryButtonString= */ "",
                         /* shouldSuppressSecondaryButton= */ false,
                         /* shouldHideDismissButton= */ false,
-                        /* shouldShowSignedInLayout= */ false);
+                        /* shouldShowAccountPicker= */ true,
+                        /* shouldShowHeaderWithAvatar= */ false);
         mMaxImpressionReached = mDelegate.isMaxImpressionsReached();
         mDelegate.refreshPromoState(visibleAccount);
         mShouldShowPromo = canShowPromo();
@@ -234,7 +235,10 @@ final class SigninPromoMediator
                 SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON,
                 mDelegate.shouldHideDismissButton());
         mModel.set(
-                SigninPromoProperties.SHOULD_SHOW_SIGNED_IN_LAYOUT,
+                SigninPromoProperties.SHOULD_SHOW_ACCOUNT_PICKER,
+                profileData != null && !mDelegate.shouldDisplaySignedInLayout());
+        mModel.set(
+                SigninPromoProperties.SHOULD_SHOW_HEADER_WITH_AVATAR,
                 mDelegate.shouldDisplaySignedInLayout());
     }
 

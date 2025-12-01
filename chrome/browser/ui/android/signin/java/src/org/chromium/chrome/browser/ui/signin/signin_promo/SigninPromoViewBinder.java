@@ -35,18 +35,15 @@ final class SigninPromoViewBinder {
         if (key == SigninPromoProperties.PROFILE_DATA) {
             DisplayableProfileData profileData = model.get(SigninPromoProperties.PROFILE_DATA);
             if (profileData == null) {
-                if (seamlessSigninPromoType == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
-                    view.getSelectedAccountView().setVisibility(View.GONE);
-                } else {
+                if (seamlessSigninPromoType != SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
                     view.getImage().setImageResource(R.drawable.chrome_sync_logo);
-                    // TODO(crbug.com/456378546): move this logic to SigninPromoCoordinator
-                    setImageSize(
-                            context,
-                            view,
+                    int imageDim =
                             seamlessSigninPromoType
                                             == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS
                                     ? R.dimen.seamless_signin_promo_cold_state_image_size
-                                    : R.dimen.signin_promo_cold_state_image_size);
+                                    : R.dimen.signin_promo_cold_state_image_size;
+                    // TODO(crbug.com/456378546): move this logic to SigninPromoCoordinator
+                    setImageSize(context, view, imageDim);
                 }
             } else {
                 Drawable accountImage = profileData.getImage();
@@ -94,11 +91,7 @@ final class SigninPromoViewBinder {
                         .setText(model.get(SigninPromoProperties.SECONDARY_BUTTON_TEXT));
             }
         } else if (key == SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON) {
-            if (seamlessSigninPromoType == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
-                view.getSelectedAccountView()
-                        .setClickable(
-                                !model.get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON));
-            } else {
+            if (seamlessSigninPromoType != SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
                 int secondaryButtonVisibility =
                         model.get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON)
                                 ? View.GONE
@@ -113,12 +106,20 @@ final class SigninPromoViewBinder {
                             ? View.INVISIBLE
                             : View.VISIBLE;
             view.getDismissButton().setVisibility(dismissButtonVisibility);
-        } else if (key == SigninPromoProperties.SHOULD_SHOW_SIGNED_IN_LAYOUT) {
-            showSignedInLayout(
-                    model.get(SigninPromoProperties.SHOULD_SHOW_SIGNED_IN_LAYOUT),
+        } else if (key == SigninPromoProperties.SHOULD_SHOW_HEADER_WITH_AVATAR) {
+            showHeaderWithAvatar(
+                    model.get(SigninPromoProperties.SHOULD_SHOW_HEADER_WITH_AVATAR),
                     seamlessSigninPromoType,
                     context,
                     view);
+        } else if (key == SigninPromoProperties.SHOULD_SHOW_ACCOUNT_PICKER) {
+            if (seamlessSigninPromoType == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
+                int accountPickerVisibility =
+                        model.get(SigninPromoProperties.SHOULD_SHOW_ACCOUNT_PICKER)
+                                ? View.VISIBLE
+                                : View.GONE;
+                view.getSelectedAccountView().setVisibility(accountPickerVisibility);
+            }
         } else {
             throw new IllegalArgumentException("Unknown property key: " + key);
         }
@@ -159,7 +160,7 @@ final class SigninPromoViewBinder {
         view.setLayoutParams(lp);
     }
 
-    private static void showSignedInLayout(
+    private static void showHeaderWithAvatar(
             boolean showLayout,
             @SigninFeatureMap.SeamlessSigninPromoType int promoType,
             Context context,
@@ -169,13 +170,11 @@ final class SigninPromoViewBinder {
         }
         ImageView signedInPromoImage = view.findViewById(R.id.signed_in_promo_image);
         TextView descriptionText = view.findViewById(R.id.signin_promo_description);
-        View selectedAccountView = view.getSelectedAccountView();
         LinearLayout compactLayoutImageAndDescriptionContainer =
                 view.getImageAndDescriptionContainer();
         ButtonCompat primaryButton = view.getPrimaryButton();
         if (showLayout) {
             signedInPromoImage.setVisibility(View.VISIBLE);
-            selectedAccountView.setVisibility(View.GONE);
             int imageAndDescriptionContainerMarginTop =
                     context.getResources()
                             .getDimensionPixelSize(
@@ -193,7 +192,6 @@ final class SigninPromoViewBinder {
             updateViewMargins(primaryButton, buttonMargins, null, buttonMargins, null);
         } else {
             signedInPromoImage.setVisibility(View.GONE);
-            selectedAccountView.setVisibility(View.VISIBLE);
             updateViewMargins(compactLayoutImageAndDescriptionContainer, null, 0, null, null);
             descriptionText.setGravity(Gravity.CENTER);
             int buttonMargins =

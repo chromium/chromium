@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -32,6 +33,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -247,5 +249,53 @@ public class SigninPromoMediatorTest {
                         AccountManagerFacadeProvider.getInstance(),
                         mProfileDataCache,
                         delegate);
+    }
+
+    @Test
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/signinButton"
+    })
+    public void testPromoLayoutUpdatesAfterAccountAdded() {
+        // Initial state: No accounts on the device.
+        when(mSigninManager.isSigninAllowed()).thenReturn(true);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        when(mIdentityServicesProvider.getSigninManager(mProfile)).thenReturn(mSigninManager);
+
+        NtpSigninPromoDelegate delegate =
+                new NtpSigninPromoDelegate(
+                        ApplicationProvider.getApplicationContext(), mProfile, mLauncher, () -> {});
+        createSigninPromoMediator(delegate);
+
+        // Verify initial cold state
+        assertFalse(mMediator.getModel().get(SigninPromoProperties.SHOULD_SHOW_ACCOUNT_PICKER));
+        assertEquals(null, mMediator.getModel().get(SigninPromoProperties.PROFILE_DATA));
+
+        // Simulate adding an account
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        when(mIdentityManager.findExtendedAccountInfoByEmailAddress(
+                        TestAccounts.ACCOUNT1.getEmail()))
+                .thenReturn(TestAccounts.ACCOUNT1);
+
+        // Ensure ProfileDataCache spy returns data for the new account
+        DisplayableProfileData profileData =
+                new DisplayableProfileData(
+                        TestAccounts.ACCOUNT1.getEmail(),
+                        new BitmapDrawable(TestAccounts.ACCOUNT1.getAccountImage()),
+                        TestAccounts.ACCOUNT1.getFullName(),
+                        TestAccounts.ACCOUNT1.getGivenName(),
+                        true);
+        doReturn(profileData)
+                .when(mProfileDataCache)
+                .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail());
+
+        // Simulate the ProfileDataCache observer notification
+        mMediator.onProfileDataUpdated(TestAccounts.ACCOUNT1.getEmail());
+
+        // Verify UI properties are updated for the signed-in state
+        assertEquals(profileData, mMediator.getModel().get(SigninPromoProperties.PROFILE_DATA));
+        assertTrue(mMediator.getModel().get(SigninPromoProperties.SHOULD_SHOW_ACCOUNT_PICKER));
     }
 }

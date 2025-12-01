@@ -51,6 +51,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -602,6 +603,64 @@ public class SigninPromoCoordinatorTest {
                 mPromoView,
                 "WithAccount_SignedIn_"
                         + getParamToRenderId(SigninAccessPoint.BOOKMARK_MANAGER, nightModeEnabled));
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/twoButtons"
+                + "/seamless-signin-string-type/signinButton"
+    })
+    @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
+    public void testRendering_noAccountThenWithAccount_twoButtons(
+            @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
+        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
+            // Promo hidden for the history page.
+            return;
+        }
+
+        setUpSignInPromo(accessPoint);
+        mRenderTestRule.render(
+                mPromoView,
+                "NoAccountThenWithAccount_noAccount_"
+                        + getParamToRenderId(accessPoint, nightModeEnabled));
+
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mRenderTestRule.render(
+                mPromoView,
+                "NoAccountThenWithAccount_withAccount_"
+                        + getParamToRenderId(accessPoint, nightModeEnabled));
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/signinButton"
+    })
+    @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
+    public void testRendering_noAccountThenWithAccount_compact(
+            @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
+        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
+            // Promo hidden for the history page.
+            return;
+        }
+
+        setUpSignInPromo(accessPoint);
+        mRenderTestRule.render(
+                mPromoView,
+                "NoAccountThenWithAccount_noAccount_"
+                        + getParamToRenderId(accessPoint, nightModeEnabled));
+
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mRenderTestRule.render(
+                mPromoView,
+                "NoAccountThenWithAccount_withAccount_"
+                        + getParamToRenderId(accessPoint, nightModeEnabled));
     }
 
     private void setUpSignInPromo(@SigninAccessPoint int accessPoint) {
