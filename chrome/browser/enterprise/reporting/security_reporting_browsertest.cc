@@ -440,11 +440,65 @@ IN_PROC_BROWSER_TEST_P(SecurityReportTriggerBrowserTest,
                 em::ChromeProfileReportRequest::PROFILE_REPORT);
 }
 
+// Tests that a security-only report is sent and that a policy change report
+// gets triggered on first profile launch. Also tests that when policies are
+// updated another report is uploaded with the policy change trigger.
+IN_PROC_BROWSER_TEST_P(SecurityReportTriggerBrowserTest,
+                       SecurityReportFromPolicyUpdate) {
+  SetFakeCookieValue();
+
+  // Timer trigger report that occurs on initial startup.
+  base::test::TestFuture<CapturedProfileReportRequest> test_future;
+  pending_capture_ =
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         test_future.GetCallback());
+
+  base::flat_map<std::string, std::optional<base::Value>> policy_values;
+  policy_values.insert(
+      {policy::key::kUserSecuritySignalsReporting, base::Value(true)});
+  policy_values.insert(
+      {policy::key::kSavingBrowserHistoryDisabled, base::Value(false)});
+  management_mixin()->SetCloudUserPolicies(std::move(policy_values));
+
+  VerifyRequest(test_future.Get(),
+                em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS);
+
+  // This ensures the Network Service response has time to hop threads
+  // and trigger the "OnReportUploaded" callback.
+  {
+    base::RunLoop loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, loop.QuitClosure(), base::Seconds(1));
+    loop.Run();
+  }
+
+  // Policy update trigger report that occurs when policies are updated.
+  test_future.Clear();
+  pending_capture_ =
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         test_future.GetCallback());
+
+  base::flat_map<std::string, std::optional<base::Value>> policy_values2;
+  policy_values2.insert(
+      {policy::key::kUserSecuritySignalsReporting, base::Value(true)});
+  policy_values2.insert(
+      {policy::key::kSavingBrowserHistoryDisabled, base::Value(true)});
+  management_mixin()->SetCloudUserPolicies(std::move(policy_values2));
+
+  VerifyRequest(test_future.Get(),
+                em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS);
+
+  histogram_tester().ExpectBucketCount("Enterprise.SecurityReport.User.Trigger",
+                                       SecurityReportTrigger::kTimer, 1);
+  histogram_tester().ExpectBucketCount("Enterprise.SecurityReport.User.Trigger",
+                                       SecurityReportTrigger::kPolicyChange, 2);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     SecurityReportTriggerBrowserTest,
     testing::Combine(/*is_device_managed*/ ::testing::Values(false),
                      /*is_affiliated*/ ::testing::Values(false),
-                     /*is_policy_collection_enabled*/ testing::Bool()));
+                     /*is_policy_collection_enabled*/ testing::Values(true)));
 
 }  // namespace enterprise_reporting
