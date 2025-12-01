@@ -16,6 +16,7 @@
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -283,13 +284,12 @@ bool UserPoliciesManager::GetUserPolicies(const std::wstring& sid,
     return false;
   }
 
-  std::vector<char> buffer(policy_file->GetLength());
-  UNSAFE_TODO(policy_file->Read(0, buffer.data(), buffer.size()));
+  std::vector<uint8_t> buffer(policy_file->GetLength());
+  policy_file->Read(0, buffer);
   policy_file.reset();
 
-  std::optional<base::Value::Dict> policy_data =
-      base::JSONReader::ReadDict(std::string_view(buffer.data(), buffer.size()),
-                                 base::JSON_ALLOW_TRAILING_COMMAS);
+  std::optional<base::Value::Dict> policy_data = base::JSONReader::ReadDict(
+      base::as_string_view(buffer), base::JSON_ALLOW_TRAILING_COMMAS);
   if (!policy_data) {
     LOGFN(ERROR) << "Failed to read policy data from file!";
     return false;
