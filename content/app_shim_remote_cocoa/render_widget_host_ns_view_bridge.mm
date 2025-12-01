@@ -19,6 +19,7 @@
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h"
 #import "content/app_shim_remote_cocoa/web_menu_runner_mac.h"
 #include "content/common/mac/attributed_string_type_converters.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/apple/url_conversions.h"
 #import "skia/ext/skia_utils_mac.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"

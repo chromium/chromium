@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/lib/send_validation_serialization.h"
 #include "mojo/public/cpp/bindings/lib/send_validation_type.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/serialization_death.test-mojom.h"
 #include "mojo/public/cpp/system/message_pipe.h"
