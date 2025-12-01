@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 
 namespace one_time_tokens {
@@ -21,10 +22,6 @@ namespace one_time_tokens {
 enum class OneTimeTokenSource {
   kUnknown = 0,
   kOnDeviceSms = 1,
-};
-
-enum class OneTimeTokenRetrievalError {
-  kUnknown = 0,
 };
 
 // Service to subscribe to `OneTimeToken`s. One instance per profile.

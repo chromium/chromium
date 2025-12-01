@@ -8,6 +8,7 @@ static_library("browser") {
     "one_time_token.h",
     "one_time_token_cache.cc",
     "one_time_token_cache.h",
+    "one_time_token_retrieval_error.h",
     "one_time_token_service.h",
     "one_time_token_service_impl.cc",
     "one_time_token_service_impl.h",
