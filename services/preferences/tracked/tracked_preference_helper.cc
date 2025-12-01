@@ -168,3 +168,7 @@ void TrackedPreferenceHelper::ReportAction(ResetAction reset_action) const {
       break;
   }
 }
+
+size_t TrackedPreferenceHelper::GetReportingId() const {
+  return reporting_id_;
+}
