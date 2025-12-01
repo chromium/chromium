@@ -70,7 +70,6 @@ class PaintTestConfigurations
       // Create a TaskEnvironment for the garbage collection below.
       task_environment = std::make_unique<base::test::TaskEnvironment>();
     }
-    feature_list_.Reset();
     WebHeap::CollectAllGarbageForTesting();
   }
 
