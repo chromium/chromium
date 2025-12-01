@@ -694,6 +694,10 @@ String StylePropertySerializer::SerializeShorthand(
       return TextSpacingValue();
     case CSSPropertyID::kTimelineTrigger:
       return GetLayeredShorthandValue(timelineTriggerShorthand());
+    case CSSPropertyID::kTimelineTriggerRange:
+      return TimelineTriggerRangeShorthandValue();
+    case CSSPropertyID::kTimelineTriggerExitRange:
+      return TimelineTriggerExitRangeShorthandValue();
     case CSSPropertyID::kWebkitTextStroke:
       return GetShorthandValue(webkitTextStrokeShorthand());
     case CSSPropertyID::kTextWrap:
@@ -1077,6 +1081,36 @@ CSSValue* AnimationRangeShorthandValueItem(wtf_size_t index,
   return list;
 }
 
+CSSValue* TimelineTriggerExitRangeShorthandValueItem(
+    wtf_size_t index,
+    const CSSValueList& start_list,
+    const CSSValueList& end_list) {
+  DCHECK_LT(index, start_list.length());
+  DCHECK_LT(index, end_list.length());
+
+  if (const auto* end_name =
+          DynamicTo<CSSIdentifierValue>(end_list.Item(index))) {
+    // Only the 'normal' and 'auto' keywords are stored as identifiers.
+    DCHECK(end_name->GetValueID() == CSSValueID::kAuto ||
+           end_name->GetValueID() == CSSValueID::kNormal);
+
+    CSSValueList* name_list = CSSValueList::CreateSpaceSeparated();
+    name_list->Append(start_list.Item(index));
+
+    // Only add 'normal' as 'auto' is the default.
+    if (end_name->GetValueID() == CSSValueID::kNormal) {
+      name_list->Append(*end_name);
+    }
+
+    return name_list;
+  }
+
+  CSSValue* list =
+      AnimationRangeShorthandValueItem(index, start_list, end_list);
+
+  return list;
+}
+
 }  // namespace
 
 String StylePropertySerializer::AnimationRangeShorthandValue() const {
@@ -1099,6 +1133,61 @@ String StylePropertySerializer::AnimationRangeShorthandValue() const {
 
   for (wtf_size_t i = 0; i < start_list.length(); ++i) {
     list->Append(*AnimationRangeShorthandValueItem(i, start_list, end_list));
+  }
+
+  return list->CssText();
+}
+
+String StylePropertySerializer::TimelineTriggerRangeShorthandValue() const {
+  CHECK_EQ(timelineTriggerRangeShorthand().length(), 2u);
+  CHECK_EQ(timelineTriggerRangeShorthand().properties()[0],
+           &GetCSSPropertyTimelineTriggerRangeStart());
+  CHECK_EQ(timelineTriggerRangeShorthand().properties()[1],
+           &GetCSSPropertyTimelineTriggerRangeEnd());
+
+  const CSSValueList& start_list =
+      To<CSSValueList>(*property_set_.GetPropertyCSSValue(
+          GetCSSPropertyTimelineTriggerRangeStart()));
+  const CSSValueList& end_list =
+      To<CSSValueList>(*property_set_.GetPropertyCSSValue(
+          GetCSSPropertyTimelineTriggerRangeEnd()));
+
+  if (start_list.length() != end_list.length()) {
+    return "";
+  }
+
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+
+  for (wtf_size_t i = 0; i < start_list.length(); ++i) {
+    list->Append(*AnimationRangeShorthandValueItem(i, start_list, end_list));
+  }
+
+  return list->CssText();
+}
+
+String StylePropertySerializer::TimelineTriggerExitRangeShorthandValue() const {
+  CHECK_EQ(timelineTriggerExitRangeShorthand().length(), 2u);
+  CHECK_EQ(timelineTriggerExitRangeShorthand().properties()[0],
+           &GetCSSPropertyTimelineTriggerExitRangeStart());
+  CHECK_EQ(timelineTriggerExitRangeShorthand().properties()[1],
+           &GetCSSPropertyTimelineTriggerExitRangeEnd());
+
+  const CSSValueList& start_list =
+      To<CSSValueList>(*property_set_.GetPropertyCSSValue(
+          GetCSSPropertyTimelineTriggerExitRangeStart()));
+  const CSSValueList& end_list =
+      To<CSSValueList>(*property_set_.GetPropertyCSSValue(
+          GetCSSPropertyTimelineTriggerExitRangeEnd()));
+
+  if (start_list.length() != end_list.length()) {
+    return "";
+  }
+
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+
+  for (wtf_size_t i = 0; i < start_list.length(); ++i) {
+    list->Append(
+        *TimelineTriggerExitRangeShorthandValueItem(i, start_list, end_list));
   }
 
   return list->CssText();

@@ -544,9 +544,11 @@ textWrapMode
 textWrapStyle
 timelineScope
 timelineTrigger
+timelineTriggerExitRange
 timelineTriggerExitRangeEnd
 timelineTriggerExitRangeStart
 timelineTriggerName
+timelineTriggerRange
 timelineTriggerRangeEnd
 timelineTriggerRangeStart
 timelineTriggerSource

@@ -958,6 +958,12 @@ All changes to this list should go through Blink's feature review process: http:
         timeline-trigger-range-end
         timeline-trigger-range-start
         timeline-trigger-source
+    timeline-trigger-exit-range
+        timeline-trigger-exit-range-end
+        timeline-trigger-exit-range-start
+    timeline-trigger-range
+        timeline-trigger-range-end
+        timeline-trigger-range-start
     transition
         transition-behavior
         transition-delay
