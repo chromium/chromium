@@ -35,10 +35,6 @@ class Browser;
 // automatically start the check.
 - (void)checkSavedPasswords;
 
-// Starts the credential exchange import flow. `UUID` is a token passed by the
-// OS during app launch, required to receive the credential data.
-- (void)startCredentialImport:(NSUUID*)UUID;
-
 @property(nonatomic, weak) id<PasswordsCoordinatorDelegate> delegate;
 
 @property(nonatomic, strong, readonly) UIViewController* viewController;
@@ -46,6 +42,12 @@ class Browser;
 // Flag indicating whether the PasswordManagerViewController should be presented
 // in search mode.
 @property(nonatomic, assign) BOOL openViewControllerForPasswordSearch;
+
+// Token received from the OS during the app launch for credential exchange
+// import, needed to interact with the OS library to receive credential data.
+// If present, the credential import flow should be started after successful
+// local authentication. Will be set to nil after starting the import flow.
+@property(nonatomic, copy) NSUUID* credentialImportUUID;
 
 @end
 

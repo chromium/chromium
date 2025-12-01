@@ -1213,8 +1213,16 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 - (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID {
-  [self showSavedPasswords];
-  [self.savedPasswordsCoordinator startCredentialImport:UUID];
+  self.savedPasswordsCoordinator = [[PasswordsCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser];
+  self.savedPasswordsCoordinator.delegate = self;
+
+  // `UUID` needs to be set before calling `start`, as the latter will invoke
+  // user verification and the presence of `UUID` will be a signal to start the
+  // credential import on successful user verification.
+  self.savedPasswordsCoordinator.credentialImportUUID = UUID;
+  [self.savedPasswordsCoordinator start];
 }
 
 - (void)showAddressDetails:(const autofill::AutofillProfile)address

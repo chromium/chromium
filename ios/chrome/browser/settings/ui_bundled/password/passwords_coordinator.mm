@@ -138,15 +138,6 @@
   password_manager::LogStartPasswordCheckAutomatically();
 }
 
-- (void)startCredentialImport:(NSUUID*)UUID {
-  _credentialImportCoordinator = [[CredentialImportCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                            UUID:UUID];
-  _credentialImportCoordinator.delegate = self;
-  [_credentialImportCoordinator start];
-}
-
 - (UIViewController*)viewController {
   return self.passwordsViewController;
 }
@@ -503,6 +494,11 @@
 
   [_visitsRecorder maybeRecordVisitMetric];
 
+  if (self.credentialImportUUID) {
+    [self startCredentialImport];
+    return;
+  }
+
   [self.mediator askFETToShowPasswordManagerWidgetPromo];
 
   // Make sure that the Password Manager's toolbar is in the correct state once
@@ -638,6 +634,21 @@
   [_trustedVaultReauthenticationCoordinator stop];
   _trustedVaultReauthenticationCoordinator.delegate = nil;
   _trustedVaultReauthenticationCoordinator = nil;
+}
+
+// Starts the credential import coordinator.
+- (void)startCredentialImport {
+  CHECK(self.credentialImportUUID);
+
+  // TODO(crbug.com/464469872): Display sign-in sheet when no user signed-in.
+  // TODO(crbug.com/450982128): Dismiss reauth coordinator before starting.
+  _credentialImportCoordinator = [[CredentialImportCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                            UUID:self.credentialImportUUID];
+  self.credentialImportUUID = nil;
+  _credentialImportCoordinator.delegate = self;
+  [_credentialImportCoordinator start];
 }
 
 // Stops the credential import coordinator.
