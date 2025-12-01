@@ -113,7 +113,6 @@ def _per_test_modifications(
 
 _BROWSER_CONFIG_MAPPING = {
     'android-chromium': 'ANDROID_CHROMIUM',
-    'android-chromium-monochrome': 'ANDROID_CHROMIUM_MONOCHROME',
     'android-webview': 'ANDROID_WEBVIEW',
     'cros-chrome': 'CROS_CHROME',
     'debug': 'DEBUG',
