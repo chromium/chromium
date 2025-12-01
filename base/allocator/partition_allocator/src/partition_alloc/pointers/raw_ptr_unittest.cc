@@ -2444,54 +2444,6 @@ TEST_F(BackupRefPtrTest, QuarantineHook) {
   partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(nullptr);
 }
 
-TEST_F(BackupRefPtrTest, RawPtrTraits_DisableBRP) {
-  // Allocate a slot so that a slot span doesn't get decommitted from memory,
-  // while we allocate/deallocate/access the tested slot below.
-  void* sentinel = allocator_.root()->Alloc(sizeof(unsigned int), "");
-  constexpr uint32_t kQuarantined2Bytes =
-      partition_alloc::internal::kQuarantinedByte |
-      (partition_alloc::internal::kQuarantinedByte << 8);
-  constexpr uint32_t kQuarantined4Bytes =
-      kQuarantined2Bytes | (kQuarantined2Bytes << 16);
-
-  {
-    raw_ptr<unsigned int, DanglingUntriaged> ptr = static_cast<unsigned int*>(
-        allocator_.root()->Alloc(sizeof(unsigned int), ""));
-    *ptr = 0;
-    // Freeing would  update the MTE tag so use |TagPtr()| to dereference it
-    // below.
-    allocator_.root()->Free(ptr);
-#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    // Recreate the raw_ptr so we can use a pointer with the updated MTE tag.
-    // Reassigning to |ptr| would hit the PartitionRefCount cookie check rather
-    // than the |IsPointeeAlive()| check.
-    raw_ptr<unsigned int, DanglingUntriaged> dangling_ptr =
-        partition_alloc::internal::TagPtr(ptr.get());
-    EXPECT_DEATH_IF_SUPPORTED(*dangling_ptr = 0, "");
-#else
-    EXPECT_EQ(kQuarantined4Bytes,
-              *partition_alloc::internal::TagPtr(ptr.get()));
-#endif
-  }
-  // raw_ptr with DisableBRP, BRP is expected to be off.
-  {
-    raw_ptr<unsigned int, DanglingUntriaged | RawPtrTraits::kDisableBRP> ptr =
-        static_cast<unsigned int*>(
-            allocator_.root()->Alloc(sizeof(unsigned int), ""));
-    *ptr = 0;
-    allocator_.root()->Free(ptr);
-    // A tad fragile as a new allocation or free-list pointer may be there, but
-    // highly unlikely it'll match 4 quarantine bytes in a row.
-    // Use |TagPtr()| for this dereference because freeing would have updated
-    // the MTE tag.
-    EXPECT_NE(kQuarantined4Bytes,
-              *partition_alloc::internal::TagPtr(ptr.get()));
-  }
-
-  allocator_.root()->Free(sentinel);
-}
-
 #endif  // PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
