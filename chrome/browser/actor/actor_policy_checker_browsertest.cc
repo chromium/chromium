@@ -306,10 +306,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
                    ->GetPolicyChecker()
                    .can_act_on_web());
 
-  // Note: because we explicitly paused the task, the result will be
-  // `ActionResultCode::kError` instead of `ActionResultCode::kTaskWentAway`.
-  // See `ActorTask::OnFinishedAct` for more details.
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kTaskPaused);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,

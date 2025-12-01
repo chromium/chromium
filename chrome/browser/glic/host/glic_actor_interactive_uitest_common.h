@@ -162,6 +162,9 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   MultiStep ResumeActorTask(base::Value::Dict context_options,
                             ExpectedResumeResult expected_result);
 
+  // Interrupts a task by calling the glic InterruptActorTask API.
+  MultiStep InterruptActorTask();
+
   MultiStep WaitForActorTaskState(mojom::ActorTaskState expected_state);
 
   // Gets a reference to a state observable for use in

@@ -61,12 +61,13 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
   // Helper that sets a future if an ActorTask with `task_id` enters a completed
   // state.
   base::CallbackListSubscription CreateTaskCompletetionSubscription(
-      TaskId task_id,
+      TaskId for_task_id,
       TestFuture<ActorTask::State>& future) {
     return actor_keyed_service()->AddTaskStateChangedCallback(
-        base::BindLambdaForTesting([&future, task_id](const ActorTask& task) {
-          if (task.id() == task_id && task.IsCompleted()) {
-            future.SetValue(task.GetState());
+        base::BindLambdaForTesting([&future, for_task_id](
+                                       TaskId task_id, ActorTask::State state) {
+          if (task_id == for_task_id && ActorTask::IsCompletedState(state)) {
+            future.SetValue(state);
           }
         }));
   }

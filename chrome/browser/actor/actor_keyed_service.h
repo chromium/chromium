@@ -133,11 +133,11 @@ class ActorKeyedService : public KeyedService,
       base::OnceCallback<void(TabObservationResult)> callback);
 
   using TaskStateChangedCallback =
-      base::RepeatingCallback<void(const ActorTask&)>;
+      base::RepeatingCallback<void(TaskId, ActorTask::State)>;
   base::CallbackListSubscription AddTaskStateChangedCallback(
       TaskStateChangedCallback callback);
 
-  void NotifyTaskStateChanged(const ActorTask& task);
+  void NotifyTaskStateChanged(TaskId task_id, ActorTask::State state);
   void OnActOnWebCapabilityChanged(bool can_act_on_web);
 
   using ActOnWebCapabilityChangedCallback = base::RepeatingCallback<void(bool)>;
@@ -196,7 +196,7 @@ class ActorKeyedService : public KeyedService,
 
   std::unique_ptr<ActorPolicyChecker> policy_checker_;
 
-  base::RepeatingCallbackList<void(const ActorTask&)>
+  base::RepeatingCallbackList<void(TaskId, ActorTask::State)>
       tab_state_change_callback_list_;
 
   base::RepeatingCallbackList<ActOnWebCapabilityChangedCallback::RunType>

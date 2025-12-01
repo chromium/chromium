@@ -93,6 +93,11 @@ BASE_FEATURE(kGlicNavigateUsingLoadURL, base::FEATURE_ENABLED_BY_DEFAULT);
 // but with different risk profile.  No-op if above flag is on.
 BASE_FEATURE(kGlicNavigateWithoutUserGesture, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Killswitch for updating the Glic Actor API to ensure that calls to
+// performAction return first when a task is stopped or paused.
+BASE_FEATURE(kGlicPerformActionsReturnsBeforeStateChange,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicSkipBeforeUnloadDialogAndNavigate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

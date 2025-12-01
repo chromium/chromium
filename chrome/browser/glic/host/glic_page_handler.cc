@@ -1785,9 +1785,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->NotifyFocusedTabChanged(std::move(data));
   }
 
-  void NotifyActorTaskStateChanged(const actor::ActorTask& task) {
+  void NotifyActorTaskStateChanged(actor::TaskId task_id,
+                                   actor::ActorTask::State task_state) {
     const mojom::ActorTaskState state = [&]() {
-      switch (task.GetState()) {
+      switch (task_state) {
         case actor::ActorTask::State::kCreated:
         case actor::ActorTask::State::kReflecting:
         case actor::ActorTask::State::kWaitingOnUser:
@@ -1803,7 +1804,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           return mojom::ActorTaskState::kStopped;
       }
     }();
-    web_client_->NotifyActorTaskStateChanged(task.id().value(), state);
+    web_client_->NotifyActorTaskStateChanged(task_id.value(), state);
   }
 
   void RequestToShowCredentialSelectionDialog(

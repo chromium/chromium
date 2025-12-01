@@ -6,7 +6,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/browser_action_util.h"
@@ -607,6 +609,222 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
   // clang-format on
 }
 
+// This test suite sets a 60s click delay so that the click tool waits 60
+// seconds between mouse down and mouse up. This is used to ensure that once the
+// tool is invoked it doesn't return unless canceled.
+class GlicActorCallbackOrderGeneralUiTest : public GlicActorGeneralUiTest {
+ public:
+  GlicActorCallbackOrderGeneralUiTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kGlicActor,
+             {{features::kGlicActorClickDelay.name, "60000ms"}}},
+            {actor::kGlicPerformActionsReturnsBeforeStateChange, {}},
+        },
+        /*disabled_features=*/{});
+  }
+
+  ~GlicActorCallbackOrderGeneralUiTest() override = default;
+
+  MultiStep RecordActorTaskStateChanges() {
+    return Steps(ExecuteInGlic(base::BindLambdaForTesting(
+        [&task_id = task_id_](content::WebContents* glic_contents) {
+          std::string script = content::JsReplace(R"JS(
+              window.event_log= [];
+              window.taskStateObs = client.browser.getActorTaskState($1);
+              window.taskStateObs.subscribe((new_state) => {
+                const state_name = (() => {
+                  switch(new_state) {
+                    case ActorTaskState.UNKNOWN: return 'UNKNOWN';
+                    case ActorTaskState.IDLE: return 'IDLE';
+                    case ActorTaskState.ACTING: return 'ACTING';
+                    case ActorTaskState.PAUSED: return 'PAUSED';
+                    case ActorTaskState.STOPPED: return 'STOPPED';
+                    default: return 'UNEXPECTED';
+                  }
+                })();
+                window.event_log.push(state_name);
+              });
+            )JS",
+                                                  task_id.value());
+          ASSERT_TRUE(content::ExecJs(glic_contents, script));
+        })));
+  }
+
+  MultiStep WaitForActorTaskState(mojom::ActorTaskState state) {
+    return Steps(ExecuteInGlic(base::BindLambdaForTesting(
+        [state](content::WebContents* glic_contents) {
+          std::string script = content::JsReplace(
+              R"JS(
+            window.taskStateObs.waitUntil((state) => {
+              return state == $1;
+            });
+          )JS",
+              base::to_underlying(state));
+          ASSERT_TRUE(content::ExecJs(glic_contents, script));
+        })));
+  }
+
+  MultiStep InvokeToolThatNeverFinishes(ui::ElementIdentifier tab_id) {
+    return Steps(
+        InAnyContext(WithElement(
+            tab_id,
+            [this](ui::TrackedElement* el) {
+              content::WebContents* contents =
+                  AsInstrumentedWebContents(el)->web_contents();
+              acting_tab_ =
+                  tabs::TabInterface::GetFromContents(contents)->GetHandle();
+            })),
+        ExecuteInGlic(base::BindLambdaForTesting(
+            [&](content::WebContents* glic_contents) {
+              apc::Actions action =
+                  actor::MakeClick(acting_tab_, gfx::Point(15, 15),
+                                   ClickAction::LEFT, ClickAction::SINGLE);
+              action.set_task_id(task_id_.value());
+              std::string encoded_action = EncodeActionProto(action);
+              std::string script = content::JsReplace(
+                  R"JS(
+                  window.performActionsPromise =
+                      client.browser.performActions(
+                          Uint8Array.fromBase64($1).buffer);
+                  window.performActionsPromise.then(() => {
+                        window.event_log.push('PERFORM_ACTIONS_RETURNED');
+                    });
+                )JS",
+                  encoded_action);
+              ASSERT_TRUE(
+                  content::ExecJs(glic_contents, std::move(script),
+                                  content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+            })));
+  }
+
+  std::string GetEventLog() {
+    content::WebContents* glic_contents = GetGlicContents();
+    return content::EvalJs(glic_contents, "window.event_log.join(',')")
+        .ExtractString();
+  }
+
+ private:
+  tabs::TabHandle acting_tab_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Ensure that an in-progress call to PerformActions returns before the task
+// state change callback after a task is canceled.
+IN_PROC_BROWSER_TEST_F(GlicActorCallbackOrderGeneralUiTest,
+                       PerformActionsReturnsBeforeStateChangeOnStop) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(GURL(url::kAboutBlankURL), kNewActorTabId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+
+      RecordActorTaskStateChanges(),
+      InvokeToolThatNeverFinishes(kNewActorTabId),
+      StopActorTask(),
+      WaitForActorTaskState(mojom::ActorTaskState::kStopped),
+
+      CheckResult([this]() { return GetEventLog(); },
+          "IDLE,"
+          "ACTING,"
+          "PERFORM_ACTIONS_RETURNED,"
+          "STOPPED")
+    );
+  // clang-format on
+}
+
+// Ensure that an in-progress call to PerformActions returns before the task
+// state change callback after a task is paused.
+IN_PROC_BROWSER_TEST_F(GlicActorCallbackOrderGeneralUiTest,
+                       PerformActionsReturnsBeforeStateChangeOnPause) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(GURL(url::kAboutBlankURL), kNewActorTabId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+
+      RecordActorTaskStateChanges(),
+      InvokeToolThatNeverFinishes(kNewActorTabId),
+      PauseActorTask(),
+      WaitForActorTaskState(mojom::ActorTaskState::kPaused),
+
+      CheckResult([this]() { return GetEventLog(); },
+          "IDLE,"
+          "ACTING,"
+          "PERFORM_ACTIONS_RETURNED,"
+          "PAUSED")
+    );
+  // clang-format on
+}
+
+// Ensure that an in-progress call to PerformActions returns before the task
+// state change callback after a task is stopped while interrupted.
+IN_PROC_BROWSER_TEST_F(
+    GlicActorCallbackOrderGeneralUiTest,
+    PerformActionsReturnsBeforeStateChangeFromInterruptAndStop) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(GURL(url::kAboutBlankURL), kNewActorTabId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+
+      RecordActorTaskStateChanges(),
+      InvokeToolThatNeverFinishes(kNewActorTabId),
+      WaitForActorTaskState(mojom::ActorTaskState::kActing),
+      InterruptActorTask(),
+      StopActorTask(),
+      WaitForActorTaskState(mojom::ActorTaskState::kStopped),
+
+      CheckResult([this]() { return GetEventLog(); },
+          "IDLE,"
+          "ACTING,"
+          "IDLE,"
+          "PERFORM_ACTIONS_RETURNED,"
+          "STOPPED")
+    );
+  // clang-format on
+}
+
+// Ensure that an in-progress call to PerformActions returns before the task
+// state change callback after a task is paused while interrupted.
+IN_PROC_BROWSER_TEST_F(
+    GlicActorCallbackOrderGeneralUiTest,
+    PerformActionsReturnsBeforeStateChangeFromInterruptAndPause) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(GURL(url::kAboutBlankURL), kNewActorTabId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+
+      RecordActorTaskStateChanges(),
+      InvokeToolThatNeverFinishes(kNewActorTabId),
+      WaitForActorTaskState(mojom::ActorTaskState::kActing),
+      InterruptActorTask(),
+      PauseActorTask(),
+      WaitForActorTaskState(mojom::ActorTaskState::kPaused),
+
+      CheckResult([this]() { return GetEventLog(); },
+          "IDLE,"
+          "ACTING,"
+          "IDLE,"
+          "PERFORM_ACTIONS_RETURNED,"
+          "PAUSED")
+    );
+  // clang-format on
+}
+
 class GlicActorGeneralUiTestHighDPI : public GlicActorGeneralUiTest {
  public:
   static constexpr double kDeviceScaleFactor = 2.0;
@@ -652,6 +870,47 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTestHighDPI,
       CheckJsResult(kNewActorTabId, "() => offscreen_button_clicked", false),
       ExecuteAction(std::move(click_provider)),
       CheckJsResult(kNewActorTabId, "() => offscreen_button_clicked"));
+  // clang-format on
+}
+
+// Test for the above behavior when the killswitch is turned off. i.e. that the
+// state change callback invokes before performActions resolves.
+class GlicActorCallbackOrderKillSwitchGeneralUiTest
+    : public GlicActorCallbackOrderGeneralUiTest {
+ public:
+  GlicActorCallbackOrderKillSwitchGeneralUiTest() {
+    feature_list_.InitAndDisableFeature(
+        actor::kGlicPerformActionsReturnsBeforeStateChange);
+  }
+
+  ~GlicActorCallbackOrderKillSwitchGeneralUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicActorCallbackOrderKillSwitchGeneralUiTest,
+                       StateChangeBeforePerformActionsResolves) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(GURL(url::kAboutBlankURL), kNewActorTabId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+
+      RecordActorTaskStateChanges(),
+      InvokeToolThatNeverFinishes(kNewActorTabId),
+      StopActorTask(),
+      WaitForActorTaskState(mojom::ActorTaskState::kStopped),
+
+      CheckResult([this]() { return GetEventLog(); },
+          "IDLE,"
+          "ACTING,"
+          "STOPPED,"
+          "PERFORM_ACTIONS_RETURNED")
+    );
   // clang-format on
 }
 

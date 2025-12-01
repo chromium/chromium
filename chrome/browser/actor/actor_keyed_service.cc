@@ -245,7 +245,7 @@ TaskId ActorKeyedService::AddActiveTask(std::unique_ptr<ActorTask> task) {
   task->SetId(base::PassKey<ActorKeyedService>(), task_id);
   task->GetExecutionEngine()->SetOwner(task.get());
   // Notify of task creation now that the task id is set.
-  NotifyTaskStateChanged(*task);
+  NotifyTaskStateChanged(task->id(), task->GetState());
   active_tasks_[task_id] = std::move(task);
   return task_id;
 }
@@ -297,8 +297,9 @@ base::CallbackListSubscription ActorKeyedService::AddTaskStateChangedCallback(
   return tab_state_change_callback_list_.Add(std::move(callback));
 }
 
-void ActorKeyedService::NotifyTaskStateChanged(const ActorTask& task) {
-  tab_state_change_callback_list_.Notify(task);
+void ActorKeyedService::NotifyTaskStateChanged(TaskId task_id,
+                                               ActorTask::State state) {
+  tab_state_change_callback_list_.Notify(task_id, state);
 }
 
 void ActorKeyedService::OnActOnWebCapabilityChanged(bool can_act_on_web) {

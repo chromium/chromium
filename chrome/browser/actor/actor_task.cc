@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/actor_task.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
 
 #include "base/feature_list.h"
@@ -236,7 +237,19 @@ void ActorTask::SetState(State new_state) {
                                              .new_state = new_state,
                                              .title = title_});
 
-  actor::ActorKeyedService::Get(profile_)->NotifyTaskStateChanged(*this);
+  if (base::FeatureList::IsEnabled(
+          actor::kGlicPerformActionsReturnsBeforeStateChange)) {
+    // The callback_for_act_ is posted before calling SetState. We want that to
+    // invoke before the client sees the state change so post that as well.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ActorKeyedService::NotifyTaskStateChanged,
+                       actor::ActorKeyedService::Get(profile_)->GetWeakPtr(),
+                       id_, state_));
+  } else {
+    actor::ActorKeyedService::Get(profile_)->NotifyTaskStateChanged(id_,
+                                                                    state_);
+  }
 
   // If the state is to be finished/cancelled record a histogram.
   if (state_ == kFinished || state_ == kCancelled || state_ == kFailed) {
@@ -275,53 +288,58 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   total_number_of_actions_ += actions.size();
 
   action_tracker_for_metrics_->WillAct(actions);
+  callback_for_act_ = std::move(callback);
 
-  execution_engine_->Act(
-      std::move(actions),
-      base::BindOnce(&ActorTask::OnFinishedAct, weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback)));
+  execution_engine_->Act(std::move(actions),
+                         base::BindOnce(&ActorTask::OnFinishedAct,
+                                        weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ActorTask::OnFinishedAct(
-    base::WeakPtr<ActorTask> actor_task,
-    ActCallback callback,
-    mojom::ActionResultPtr result,
-    std::optional<size_t> index_of_failed_action,
-    std::vector<ActionResultWithLatencyInfo> action_results) {
-  // Actor task disappeared.
-  if (!actor_task) {
-    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskWentAway),
-                            std::nullopt, {});
-    return;
-  }
-  actor_task->OnFinishedActImpl(std::move(callback), std::move(result),
-                                index_of_failed_action,
-                                std::move(action_results));
-}
-
-void ActorTask::OnFinishedActImpl(
-    ActCallback callback,
     mojom::ActionResultPtr result,
     std::optional<size_t> index_of_failed_action,
     std::vector<ActionResultWithLatencyInfo> action_results) {
   if (state_ != State::kActing) {
+    // Note: this likely isn't a problem when it happens - e.g. the task was
+    // paused while the act was in progress but we note it here for debugging
+    // purposes.
     journal_->Log(GURL(), id(), "ActorTask::OnFinishedAct",
                   JournalDetailsBuilder()
                       .Add("result", ToDebugString(*result))
-                      .AddError("Not in kActing state")
+                      .Add("Not in kActing state", base::ToString(state_))
                       .Build());
-    mojom::ActionResultPtr error_result = MakeErrorResult();
-    action_tracker_for_metrics_->OnFinishedAct(*error_result);
-    std::move(callback).Run(std::move(error_result), std::nullopt, {});
-    return;
   }
-  action_tracker_for_metrics_->OnFinishedAct(*result);
-  SetState(State::kReflecting);
-  std::move(callback).Run(std::move(result), index_of_failed_action,
-                          std::move(action_results));
+
+  // The callback may already have been called, if the task was stopped or
+  // paused.
+  if (callback_for_act_) {
+    // Interruption (WaitingOnUser) can happen while acting, but in that case
+    // the tool is the source and must not finish before uninterrupting.
+    DCHECK_EQ(state_, State::kActing);
+    action_tracker_for_metrics_->OnFinishedAct(*result);
+    std::move(callback_for_act_)
+        .Run(std::move(result), index_of_failed_action,
+             std::move(action_results));
+  }
+
+  if (state_ == State::kActing) {
+    SetState(State::kReflecting);
+  }
 }
 
 void ActorTask::Stop(StoppedReason stop_reason) {
+  // Invoke the callback before changing states so that the client sees the Act
+  // result before seeing the state transition.
+  if (callback_for_act_) {
+    DCHECK(state_ == State::kActing || state_ == State::kWaitingOnUser);
+    mojom::ActionResultPtr result =
+        MakeResult(mojom::ActionResultCode::kTaskWentAway);
+    action_tracker_for_metrics_->OnFinishedAct(*result);
+    std::move(callback_for_act_)
+        .Run(std::move(result), /*index_of_failed_action=*/std::nullopt,
+             /*action_results=*/{});
+  }
+
   if (execution_engine_) {
     execution_engine_->CancelOngoingActions(
         mojom::ActionResultCode::kTaskWentAway);
@@ -357,6 +375,19 @@ void ActorTask::Pause(bool from_actor) {
   if (IsCompleted()) {
     return;
   }
+
+  // Invoke the callback before changing states so that the client sees the Act
+  // result before seeing the state transition.
+  if (callback_for_act_) {
+    DCHECK(state_ == State::kActing || state_ == State::kWaitingOnUser);
+    mojom::ActionResultPtr result =
+        MakeResult(mojom::ActionResultCode::kTaskPaused);
+    action_tracker_for_metrics_->OnFinishedAct(*result);
+    std::move(callback_for_act_)
+        .Run(MakeResult(mojom::ActionResultCode::kTaskPaused),
+             /*index_of_failed_action=*/std::nullopt, /*action_results=*/{});
+  }
+
   if (execution_engine_) {
     execution_engine_->CancelOngoingActions(
         mojom::ActionResultCode::kTaskPaused);
@@ -402,8 +433,13 @@ bool ActorTask::IsUnderActorControl() const {
 }
 
 bool ActorTask::IsCompleted() const {
-  return (GetState() == State::kFinished) ||
-         (GetState() == State::kCancelled) || (GetState() == State::kFailed);
+  return IsCompletedState(GetState());
+}
+
+// static
+bool ActorTask::IsCompletedState(State state) {
+  return (state == State::kFinished) || (state == State::kCancelled) ||
+         (state == State::kFailed);
 }
 
 base::Time ActorTask::GetEndTime() const {
