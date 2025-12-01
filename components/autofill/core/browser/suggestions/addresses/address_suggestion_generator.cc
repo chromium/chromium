@@ -502,7 +502,11 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
   // disabled because we want to offer the user suggestions to swap the
   // current value of the field with something else, making the prefix
   // matching not useful.
-  if (!trigger_field.is_autofilled()) {
+  // Similarly, prefix matching is disabled for <select> fields. Select fields
+  // are only used as trigger fields during actor flows, in which the initial
+  // value is likely irrelevant.
+  if (!trigger_field.is_autofilled() &&
+      trigger_field.form_control_type() != FormControlType::kSelectOne) {
     profiles_to_suggest = GetPrefixMatchedProfiles(
         profiles_to_suggest, trigger_field_type, normalized_field_contents);
   }

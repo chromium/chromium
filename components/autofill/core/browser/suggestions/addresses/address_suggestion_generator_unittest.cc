@@ -46,11 +46,12 @@
 namespace autofill {
 namespace {
 
-using testing::Field;
-using testing::IsEmpty;
-using testing::Matcher;
-using testing::Optional;
-using testing::Property;
+using ::testing::Field;
+using ::testing::IsEmpty;
+using ::testing::Matcher;
+using ::testing::Optional;
+using ::testing::Property;
+using ::testing::SizeIs;
 
 constexpr char kAddressesSuppressedHistogramName[] =
     "Autofill.AddressesSuppressedForDisuse";
@@ -899,6 +900,31 @@ TEST_F(AddressSuggestionGeneratorTest,
   std::vector<Suggestion> address_suggestions =
       GetSuggestionsForProfiles(triggering_field, NAME_FIRST);
   EXPECT_EQ(address_suggestions.size(), 3ul);
+  EXPECT_THAT(address_suggestions, ContainsAddressFooterSuggestions());
+}
+
+// Tests that perform no prefix matching for select fields.
+TEST_F(AddressSuggestionGeneratorTest,
+       GetSuggestionsForProfiles_SelectField_NoPrefixMatching) {
+  AutofillProfile profile1 = test::GetFullProfile();
+  AutofillProfile profile2 = test::GetFullCanadianProfile();
+  address_data().AddProfile(profile1);
+  address_data().AddProfile(profile2);
+
+  // Create a triggering field that does not prefix-match either `profile1` or
+  // `profile2`.
+  FormFieldData triggering_field;
+  triggering_field.set_form_control_type(FormControlType::kSelectOne);
+  triggering_field.set_value(u"random text");
+  ASSERT_NE(profile1.GetRawInfo(ADDRESS_HOME_COUNTRY),
+            triggering_field.value());
+  ASSERT_NE(profile2.GetRawInfo(ADDRESS_HOME_COUNTRY),
+            triggering_field.value());
+
+  // Expect that suggestions are not prefix matched.
+  std::vector<Suggestion> address_suggestions =
+      GetSuggestionsForProfiles(triggering_field, ADDRESS_HOME_COUNTRY);
+  EXPECT_THAT(address_suggestions, SizeIs(4));
   EXPECT_THAT(address_suggestions, ContainsAddressFooterSuggestions());
 }
 
