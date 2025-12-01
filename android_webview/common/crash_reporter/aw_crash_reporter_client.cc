@@ -146,3 +146,5 @@ bool CrashReporterEnabled() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwCrashReporterClient)

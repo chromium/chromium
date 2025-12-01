@@ -29,3 +29,5 @@ static jboolean JNI_MemoryPurgeManager_IsOnPreFreezeMemoryTrimEnabled(
     JNIEnv* env) {
   return base::android::PreFreezeBackgroundMemoryTrimmer::ShouldUseModernTrim();
 }
+
+DEFINE_JNI(MemoryPurgeManager)

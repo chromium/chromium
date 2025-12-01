@@ -19,3 +19,5 @@ static jlong JNI_TrafficStatsTestUtil_GetTaggedBytes(JNIEnv* env,
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(TrafficStatsTestUtil)

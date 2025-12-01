@@ -124,3 +124,5 @@ void CacheSeedFreshness(long freshness) {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(VariationsSeedLoader)

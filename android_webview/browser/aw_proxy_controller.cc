@@ -95,3 +95,5 @@ static void JNI_AwProxyController_ClearProxyOverride(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwProxyController)

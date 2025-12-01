@@ -40,3 +40,5 @@ int GetCachedLowMemoryDeviceThresholdMb() {
 }  // namespace android
 
 }  // namespace base
+
+DEFINE_JNI(SysUtils)

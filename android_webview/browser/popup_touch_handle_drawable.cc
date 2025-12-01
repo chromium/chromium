@@ -93,3 +93,5 @@ static jlong JNI_PopupTouchHandleDrawable_Init(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(PopupTouchHandleDrawable)

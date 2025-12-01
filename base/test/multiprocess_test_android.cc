@@ -97,3 +97,6 @@ bool MultiProcessTestChildHasCleanExit(const Process& process) {
 }
 
 }  // namespace base
+
+DEFINE_JNI(MainReturnCodeResult)
+DEFINE_JNI(MultiprocessTestClientLauncher)

@@ -106,3 +106,5 @@ void OnSelfFreeze() {
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(ChildProcessService)

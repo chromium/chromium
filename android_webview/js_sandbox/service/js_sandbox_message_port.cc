@@ -232,3 +232,5 @@ void JsSandboxMessagePort::HandleArrayBufferOnIsolateThread(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(JsSandboxMessagePort)

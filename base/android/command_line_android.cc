@@ -71,3 +71,5 @@ void CommandLineInit(std::vector<std::string>& command_line) {
   AppendToCommandLine(command_line, true);
 }
 }  // namespace base::android
+
+DEFINE_JNI(CommandLine)

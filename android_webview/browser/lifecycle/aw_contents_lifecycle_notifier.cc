@@ -224,3 +224,5 @@ void AwContentsLifecycleNotifier::InitForTesting() {  // IN-TEST
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwContentsLifecycleNotifier)

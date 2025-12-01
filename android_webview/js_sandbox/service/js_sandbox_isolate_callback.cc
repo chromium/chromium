@@ -101,3 +101,6 @@ JsSandboxIsolateCallback::UseCallback() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(JsSandboxIsolateCallback)
+DEFINE_JNI(JsSandboxIsolateFdCallback)

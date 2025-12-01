@@ -39,3 +39,5 @@ static std::optional<bool> JNI_WebViewCachedFlags_GetStateIfOverridden(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(WebViewCachedFlags)

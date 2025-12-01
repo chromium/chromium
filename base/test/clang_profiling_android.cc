@@ -15,3 +15,5 @@ static void JNI_ClangProfiler_WriteClangProfilingProfile(JNIEnv* env) {
 }
 
 }  // namespace base
+
+DEFINE_JNI(ClangProfiler)

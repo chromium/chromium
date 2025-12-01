@@ -163,3 +163,5 @@ mojom::Renderer* AwRenderProcess::GetRendererRemote() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwRenderProcess)

@@ -106,3 +106,5 @@ jni_zero::ScopedJavaLocalRef<jobject> AwOriginMatchedHeader::ToJavaObject(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwOriginMatchedHeader)

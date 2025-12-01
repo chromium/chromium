@@ -121,3 +121,5 @@ bool AwTracingController::IsTracing(JNIEnv* env) {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwTracingController)

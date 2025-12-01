@@ -496,3 +496,5 @@ static void JNI_AwPacProcessor_InitializeEnvironment(JNIEnv* env) {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwPacProcessor)

@@ -98,3 +98,5 @@ void SetBackgroundStartupTracingFlag(bool enabled) {
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(EarlyTraceEvent)

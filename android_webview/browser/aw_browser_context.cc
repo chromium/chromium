@@ -919,3 +919,5 @@ AwBrowserContext::CreateURLLoaderFactory() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwBrowserContext)

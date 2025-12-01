@@ -20,3 +20,5 @@ void PostTaskAndroid::ResetTaskRunnerForTesting() {
 }
 
 }  // namespace base
+
+DEFINE_JNI(PostTask)

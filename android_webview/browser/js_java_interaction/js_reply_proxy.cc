@@ -43,3 +43,5 @@ void JsReplyProxy::PostMessage(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(JsReplyProxy)

@@ -378,3 +378,5 @@ bool AwBrowserProcess::DidEarlyPerfettoInitialization() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwBrowserProcess)

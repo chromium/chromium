@@ -180,3 +180,5 @@ size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {
 }
 
 }  // namespace base
+
+DEFINE_JNI(ThreadUtils)

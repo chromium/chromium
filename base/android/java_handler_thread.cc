@@ -180,3 +180,5 @@ JavaHandlerThread::State::~State() = default;
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(JavaHandlerThread)

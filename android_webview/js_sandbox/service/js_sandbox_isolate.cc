@@ -1225,3 +1225,5 @@ static jlong JNI_JsSandboxIsolate_CreateNativeJsSandboxIsolateWrapper(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(JsSandboxIsolate)

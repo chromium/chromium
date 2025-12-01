@@ -115,3 +115,5 @@ void* BundleUtils::DlOpenModuleLibraryPartition(const std::string& library_name,
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(BundleUtils)

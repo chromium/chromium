@@ -29,3 +29,5 @@ ScopedServiceBindingBatch::~ScopedServiceBindingBatch() {
 }
 
 }  // namespace base::android
+
+DEFINE_JNI(ScopedServiceBindingBatch)

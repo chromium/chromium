@@ -375,3 +375,5 @@ void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwQuotaManagerBridge)

@@ -43,3 +43,5 @@ static jboolean JNI_MemoryMetricsLoggerUtils_ForceRecordHistograms(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(MemoryMetricsLoggerUtils)

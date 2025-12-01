@@ -88,3 +88,5 @@ void AwPermissionRequest::CancelAndDelete() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwPermissionRequest)

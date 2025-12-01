@@ -22,3 +22,5 @@ FilePath GetIsolatedTestRoot() {
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(UrlUtils)

@@ -44,3 +44,5 @@ FunctionAddressRange callWithJavaFunction(OnceClosure closure) {
 }
 
 }  // namespace base
+
+DEFINE_JNI(TestSupport)

@@ -39,3 +39,5 @@ bool JavaHandlerThreadHelpers::IsExceptionTestException(
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(JavaHandlerThreadHelpers)

@@ -60,3 +60,5 @@ static void JNI_PwaRestoreBottomSheetTestUtils_SetAppListForRestoring(
 }
 
 }  // namespace webapps
+
+DEFINE_JNI(PwaRestoreBottomSheetTestUtils)

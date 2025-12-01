@@ -197,3 +197,5 @@ FilePath ContentUriGetDocumentFromQuery(const FilePath& content_uri,
 }
 
 }  // namespace base
+
+DEFINE_JNI(ContentUriUtils)

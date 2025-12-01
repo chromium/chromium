@@ -28,3 +28,5 @@ AwBackForwardCacheSettings::AwBackForwardCacheSettings(int timeout_in_seconds,
       max_pages_in_cache_(max_pages_in_cache) {}
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwBackForwardCacheSettings)

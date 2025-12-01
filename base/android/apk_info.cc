@@ -138,3 +138,5 @@ std::string host_signing_cert_sha256() {
   return Java_ApkInfo_getHostSigningCertSha256(env);
 }
 }  // namespace base::android::apk_info
+
+DEFINE_JNI(ApkInfo)

@@ -21,3 +21,5 @@ static void JNI_PathService_Override(JNIEnv* env,
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(PathService)

@@ -161,3 +161,5 @@ bool IsDisableOriginTrialsSafeModeActionOn() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(DisableOriginTrialsSafeModeUtils)

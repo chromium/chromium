@@ -153,3 +153,5 @@ void RootBeginFrameSourceWebView::AddBeginFrameCompletionCallback(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(RootBeginFrameSourceWebView)

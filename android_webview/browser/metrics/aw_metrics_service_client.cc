@@ -842,3 +842,5 @@ JNI_AwMetricsServiceClient_SetOnFinalMetricsCollectedListenerForTesting(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwMetricsServiceClient)

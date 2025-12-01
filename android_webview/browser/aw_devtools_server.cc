@@ -161,3 +161,5 @@ static void JNI_AwDevToolsServer_SetRemoteDebuggingEnabled(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwDevToolsServer)

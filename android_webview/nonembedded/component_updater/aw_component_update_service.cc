@@ -342,3 +342,6 @@ base::FilePath AwComponentUpdateService::GetComponentsProviderServiceDirectory(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwComponentUpdateService)
+DEFINE_JNI(ComponentsProviderPathUtil)

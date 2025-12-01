@@ -350,3 +350,5 @@ static jint JNI_AwDrawFnImpl_GetReferenceInstanceCount(JNIEnv* env) {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwDrawFnImpl)

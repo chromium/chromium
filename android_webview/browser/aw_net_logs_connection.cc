@@ -68,3 +68,5 @@ static void JNI_AwNetLogsConnection_StopNetLogs(JNIEnv* env) {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwNetLogsConnection)

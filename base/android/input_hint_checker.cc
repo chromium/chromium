@@ -358,3 +358,5 @@ static void JNI_InputHintChecker_SetIsAfterInputYieldForTesting(  // IN-TEST
 }
 
 }  // namespace base::android
+
+DEFINE_JNI(InputHintChecker)

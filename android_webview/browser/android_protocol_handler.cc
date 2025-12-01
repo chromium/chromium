@@ -92,3 +92,5 @@ static std::string JNI_AndroidProtocolHandler_GetWellKnownMimeType(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AndroidProtocolHandler)

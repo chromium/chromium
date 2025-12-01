@@ -319,3 +319,6 @@ void AwUrlCheckerDelegateImpl::StartDisplayingDefaultBlockingPage(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwSafeBrowsingConfigHelper)
+DEFINE_JNI(AwSafeBrowsingSafeModeAction)

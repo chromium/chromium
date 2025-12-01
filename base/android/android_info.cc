@@ -182,3 +182,5 @@ const std::string& security_patch() {
 }
 
 }  // namespace base::android::android_info
+
+DEFINE_JNI(AndroidInfo)

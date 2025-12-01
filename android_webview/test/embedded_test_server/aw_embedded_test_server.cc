@@ -340,3 +340,5 @@ static ScopedJavaLocalRef<jlongArray> JNI_AwEmbeddedTestServerImpl_GetHandlers(
 
 }  // namespace test
 }  // namespace android_webview
+
+DEFINE_JNI(AwEmbeddedTestServerImpl)

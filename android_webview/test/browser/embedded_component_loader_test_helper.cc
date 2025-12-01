@@ -119,3 +119,6 @@ JNI_EmbeddedComponentLoaderFactory_GetComponentLoaderPolicies(JNIEnv* env) {
 }
 
 }  // namespace component_updater
+
+DEFINE_JNI(EmbeddedComponentLoaderTest)
+DEFINE_JNI(EmbeddedComponentLoaderFactory)

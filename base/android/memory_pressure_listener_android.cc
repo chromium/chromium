@@ -50,3 +50,5 @@ void MemoryPressureListenerAndroid::Initialize(JNIEnv* env) {
 }
 
 }  // namespace base::android
+
+DEFINE_JNI(MemoryPressureListener)

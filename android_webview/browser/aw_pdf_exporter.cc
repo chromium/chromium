@@ -151,3 +151,5 @@ void AwPdfExporter::DidExportPdf(int page_count) {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwPdfExporter)

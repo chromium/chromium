@@ -99,3 +99,5 @@ bool MeminfoDumpProvider::OnMemoryDump(
 }
 
 }  // namespace base::android
+
+DEFINE_JNI(MemoryInfoBridge)

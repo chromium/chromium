@@ -835,3 +835,5 @@ static jlong JNI_ContextManager_Init(JNIEnv* env, jboolean use_vulkan) {
 }
 
 }  // namespace draw_fn
+
+DEFINE_JNI(ContextManager)

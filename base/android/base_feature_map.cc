@@ -40,3 +40,5 @@ static jlong JNI_BaseFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace base::android
+
+DEFINE_JNI(BaseFeatureMap)

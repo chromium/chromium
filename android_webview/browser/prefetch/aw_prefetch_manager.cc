@@ -220,3 +220,5 @@ AwPrefetchManager::GetJavaPrefetchManager() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwPrefetchManager)

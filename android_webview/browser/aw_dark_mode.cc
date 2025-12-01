@@ -181,3 +181,5 @@ void AwDarkMode::InferredColorSchemeUpdated(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwDarkMode)

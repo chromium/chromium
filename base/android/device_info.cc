@@ -150,3 +150,5 @@ void reset_is_xr_for_testing() {
   get_holder().reset();
 }
 }  // namespace base::android::device_info
+
+DEFINE_JNI(DeviceInfo)

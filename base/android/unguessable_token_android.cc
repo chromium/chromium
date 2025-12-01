@@ -45,3 +45,4 @@ UnguessableTokenAndroid::ParcelAndUnparcelForTesting(
 }  // namespace base
 
 DEFINE_JNI(UnguessableToken)
+DEFINE_JNI(TokenBase)

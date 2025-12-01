@@ -48,3 +48,5 @@ void AwContextMenuHelper::DismissContextMenu() {
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AwContextMenuHelper);
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwContextMenuHelper)

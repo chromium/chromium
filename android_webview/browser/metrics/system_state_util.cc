@@ -26,3 +26,5 @@ PrimaryCpuAbiBitness GetPrimaryCpuAbiBitness() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(SystemStateUtil)

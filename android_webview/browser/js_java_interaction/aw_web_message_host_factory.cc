@@ -99,3 +99,6 @@ AwWebMessageHostFactory::CreateHost(const std::string& top_level_origin_string,
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(WebMessageListenerHolder)
+DEFINE_JNI(WebMessageListenerInfo)

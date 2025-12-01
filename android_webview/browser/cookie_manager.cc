@@ -803,3 +803,5 @@ static void JNI_AwCookieManager_DisablePartitionedCookies(JNIEnv* env) {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwCookieManager)

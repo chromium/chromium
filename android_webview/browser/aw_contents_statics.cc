@@ -210,3 +210,5 @@ static void JNI_AwContentsStatics_ForceVariationIdsForTesting(  // IN-TEST
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwContentsStatics)

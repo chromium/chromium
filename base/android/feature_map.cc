@@ -122,3 +122,5 @@ JNI_FeatureMap_GetFlattedFieldTrialParamsForFeature(JNIEnv* env,
 }
 
 }  // namespace base::android
+
+DEFINE_JNI(FeatureMap)

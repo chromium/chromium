@@ -40,3 +40,5 @@ static std::string JNI_Features_GetFieldTrialParamByFeatureAsString(
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(Features)

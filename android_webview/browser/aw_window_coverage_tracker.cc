@@ -41,3 +41,5 @@ static void JNI_AwWindowCoverageTracker_UpdateScreenCoverage(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwWindowCoverageTracker)

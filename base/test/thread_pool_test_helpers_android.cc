@@ -39,3 +39,5 @@ static void JNI_ThreadPoolTestHelpers_DisableThreadPoolExecutionForTesting(
     JNIEnv* env) {
   base::ThreadPoolTestHelpers::BeginFenceForTesting();
 }
+
+DEFINE_JNI(ThreadPoolTestHelpers)

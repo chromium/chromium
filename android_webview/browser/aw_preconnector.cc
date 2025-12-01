@@ -132,3 +132,5 @@ content::PreconnectManager& AwPreconnector::GetPreconnectManager() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwPreconnector)

@@ -24,3 +24,5 @@ static jboolean JNI_EarlyNativeTest_IsProcessNameEmpty(JNIEnv* env) {
 }
 
 }  // namespace base
+
+DEFINE_JNI(EarlyNativeTest)

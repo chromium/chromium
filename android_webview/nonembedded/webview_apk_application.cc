@@ -19,3 +19,5 @@ static void JNI_WebViewApkApplication_InitializeGlobalsAndResources(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(WebViewApkApplication)

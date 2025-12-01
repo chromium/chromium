@@ -85,3 +85,5 @@ static jlong JNI_AwFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwFeatureMap)

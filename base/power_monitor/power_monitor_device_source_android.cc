@@ -120,3 +120,6 @@ PowerMonitorDeviceSource::GetCurrentThermalState() const {
 }
 
 }  // namespace base
+
+DEFINE_JNI(PowerMonitorReading)
+DEFINE_JNI(PowerMonitor)

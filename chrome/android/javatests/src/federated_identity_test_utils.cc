@@ -26,3 +26,5 @@ static void JNI_FederatedIdentityTestUtils_EmbargoFedCmForRelyingParty(
 }
 
 }  // namespace federated_identity
+
+DEFINE_JNI(FederatedIdentityTestUtils)

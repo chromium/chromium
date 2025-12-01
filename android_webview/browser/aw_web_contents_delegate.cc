@@ -485,3 +485,5 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwWebContentsDelegate)

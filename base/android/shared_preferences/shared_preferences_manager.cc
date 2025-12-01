@@ -63,3 +63,5 @@ void SharedPreferencesManager::WriteString(
 }
 
 }  // namespace base::android
+
+DEFINE_JNI(SharedPreferencesManager)

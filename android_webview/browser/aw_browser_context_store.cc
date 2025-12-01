@@ -352,3 +352,5 @@ AwBrowserContextStore::Entry::Entry(Entry&&) = default;
 AwBrowserContextStore::Entry::~Entry() = default;
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwBrowserContextStore)

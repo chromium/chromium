@@ -251,3 +251,5 @@ void NetworkFetcherTask::InvokePostRequestCompleteCallback(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(NetworkFetcherTask)

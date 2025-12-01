@@ -519,3 +519,6 @@ bool AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwBrowserMainParts)
+DEFINE_JNI(AwInterfaceRegistrar)

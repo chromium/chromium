@@ -645,3 +645,6 @@ bool AwContentsIoThreadClient::ShouldIncludeCookiesOnIntercept() const {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwContentsIoThreadClient)
+DEFINE_JNI(ShouldInterceptRequestMediator)

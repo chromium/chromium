@@ -23,3 +23,5 @@ static void JNI_LibraryPrefetcher_PrefetchNativeLibraryForWebView(JNIEnv* env) {
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(LibraryPrefetcher)

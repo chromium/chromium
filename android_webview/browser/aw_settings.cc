@@ -871,3 +871,5 @@ static ScopedJavaLocalRef<jobject> JNI_AwSettings_GetDefaultUserAgentMetadata(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwSettings)

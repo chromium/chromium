@@ -166,3 +166,5 @@ TEST_F(AwContentsClientBridgeTest,
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(MockAwContentsClientBridge)

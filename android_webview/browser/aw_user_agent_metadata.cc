@@ -125,3 +125,5 @@ ScopedJavaLocalRef<jobject> ToJavaAwUserAgentMetadata(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwUserAgentMetadata)

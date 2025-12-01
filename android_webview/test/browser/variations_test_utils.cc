@@ -16,3 +16,5 @@ static void JNI_VariationsTestUtils_DisableSignatureVerificationForTesting(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(VariationsTestUtils)

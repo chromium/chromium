@@ -93,3 +93,6 @@ bool GetShouldBypassHttpCacheFromHeaders(net::HttpRequestHeaders& headers,
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwNoVarySearchData)
+DEFINE_JNI(AwPrefetchParameters)

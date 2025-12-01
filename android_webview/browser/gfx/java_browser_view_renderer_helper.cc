@@ -183,3 +183,5 @@ std::unique_ptr<SoftwareCanvasHolder> SoftwareCanvasHolder::Create(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(JavaBrowserViewRendererHelper)

@@ -24,3 +24,5 @@ static std::string JNI_StatisticsRecorderAndroid_ToJson(
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(StatisticsRecorderAndroid)

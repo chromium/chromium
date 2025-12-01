@@ -69,3 +69,5 @@ void RunRunnableAndroid(const JavaRef<jobject>& runnable) {
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(Callback)

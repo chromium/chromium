@@ -20,3 +20,5 @@ void AwGrContextOptionsProvider::SetCustomGrContextOptions(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwGrContextOptionsProvider)

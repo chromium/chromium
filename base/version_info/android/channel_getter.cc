@@ -35,3 +35,5 @@ static void JNI_VersionConstantsBridge_NativeSetChannel(JNIEnv* env,
 
 }  // namespace android
 }  // namespace version_info
+
+DEFINE_JNI(VersionConstantsBridge)

@@ -52,3 +52,5 @@ void AwPicture::Draw(JNIEnv* env,
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwPicture)

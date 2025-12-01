@@ -89,3 +89,5 @@ void AwHttpAuthHandler::Start() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwHttpAuthHandler)

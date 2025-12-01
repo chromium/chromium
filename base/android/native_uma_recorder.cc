@@ -330,3 +330,5 @@ static void JNI_NativeUmaRecorder_RemoveActionCallbackForTesting(
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(NativeUmaRecorder)

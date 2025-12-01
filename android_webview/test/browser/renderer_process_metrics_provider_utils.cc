@@ -17,3 +17,5 @@ static void JNI_RendererProcessMetricsProviderUtils_ForceRecordHistograms(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(RendererProcessMetricsProviderUtils)

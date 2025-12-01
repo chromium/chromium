@@ -97,3 +97,5 @@ int64_t GetCacheQuotaBytes() {
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(PathUtils)

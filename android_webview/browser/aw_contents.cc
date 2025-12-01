@@ -1797,3 +1797,7 @@ void AwContents::OnPerformanceMark(std::string mark_name,
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwContents)
+DEFINE_JNI(AwSiteVisitLogger)
+DEFINE_JNI(StartupJavascriptInfo)
