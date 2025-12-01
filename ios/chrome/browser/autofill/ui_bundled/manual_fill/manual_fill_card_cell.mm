@@ -784,26 +784,9 @@ CGFloat GPayIconTopAnchorOffset() {
   }
 }
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  if (textView == self.cardInstructionTextView) {
-    // The learn more link was clicked.
-    [self.navigationDelegate
-          openURL:[[CrURL alloc]
-                      initWithGURL:autofill::payments::
-                                       GetVirtualCardEnrollmentSupportUrl()]
-        withTitle:[textView.text substringWithRange:characterRange]];
-  }
-  return NO;
-}
-#endif
-
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
-               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+               defaultAction:(UIAction*)defaultAction {
   if (textView != self.cardInstructionTextView) {
     return defaultAction;
   }
