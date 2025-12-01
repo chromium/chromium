@@ -47,9 +47,11 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/settings/FaviconLoader.java",
     "android/java/src/org/chromium/chrome/browser/settings/ProfileDependentSetting.java",
   ]
-  public_deps = [ ":factory_java" ]
-  deps = [
+  public_deps = [
+    ":factory_java",
     ":search_java",
+  ]
+  deps = [
     "//base:base_java",
     "//chrome/browser/feedback/android:factory_java",
     "//chrome/browser/feedback/android:java",
