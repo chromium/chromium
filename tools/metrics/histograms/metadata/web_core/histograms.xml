@@ -280,22 +280,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBOpenErrors" enum="LevelDBErrorTypes"
-    expires_after="2025-02-02">
-  <owner>estade@chromium.org</owner>
+    expires_after="2026-05-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Error classes returned by LevelDB when it failed to open a database.
+
+    Warning: this histogram was expired from 2025-02-02 to 2025-12-01; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBOpenErrors.BFE{LevelDBBFEMethods}"
-    enum="PlatformFileError" expires_after="2025-04-13">
-  <owner>estade@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
+    enum="PlatformFileError" expires_after="2026-05-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Errors (base::File::Error) encountered by a single LevelDBEnv method when
     opening an IndexedDB instance. {LevelDBBFEMethods}
+
+    Warning: this histogram was expired from 2025-04-13 to 2025-12-01; data may
+    be missing.
   </summary>
   <token key="LevelDBBFEMethods" variants="LevelDBBFEMethods">
     <variant name=""/>
@@ -303,20 +310,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBOpenErrors.Corruption"
-    enum="LevelDBCorruptionTypes" expires_after="2025-06-22">
-  <owner>estade@chromium.org</owner>
+    enum="LevelDBCorruptionTypes" expires_after="2026-05-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Types of corruption that LevelDB encounters when opening a database.
+
+    Warning: this histogram was expired from 2025-06-22 to 2025-12-01; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBOpenErrors.EnvMethod"
-    enum="LevelDBIOErrorMethods" expires_after="2025-03-23">
-  <owner>estade@chromium.org</owner>
+    enum="LevelDBIOErrorMethods" expires_after="2026-05-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     LevelDBEnv methods that generated IO errors when opening a database.
+
+    Warning: this histogram was expired from 2025-03-23 to 2025-12-01; data may
+    be missing.
   </summary>
 </histogram>
 
