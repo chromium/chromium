@@ -34,7 +34,6 @@ import {createDummyApp} from './web_app_settings_utils.js';
 
 const AppElementBase = I18nMixinLit(CrLitElement);
 
-// TODO(crbug.com/40213759): Investigate end-to-end WebAppSettings tests
 export class AppElement extends AppElementBase {
   static get is() {
     return 'web-app-settings-app';
