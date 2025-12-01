@@ -119,10 +119,6 @@ class DownloadManagerTabHelper
   // Schedules the downloaded file for Auto-deletion if enabled.
   void MaybeScheduleFileForAutoDeletion();
 
-  // Sets the path of the file scheduled for Auto-deletion to the DownloadTask's
-  // permanent filepath.
-  void MaybeUpdatePathOfScheduledFileForAutoDeletion();
-
   // Defers task destruction to avoid iterator invalidation during notification.
   void ScheduleTaskDestruction();
 

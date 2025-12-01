@@ -35,20 +35,6 @@ std::string HashDownloadData(base::span<const uint8_t> data) {
   return base::HexEncodeLower(crypto::hash::Sha256(data));
 }
 
-// Returns a base::FilePath object pointing to the location on the device where
-// `file` persists.
-base::FilePath GetFilePathForScheduledFile(
-    const auto_deletion::ScheduledFile& file) {
-  NSString* filename =
-      base::apple::FilePathToNSString(file.filepath().BaseName());
-  NSFileManager* manager = [NSFileManager defaultManager];
-  NSURL* documentsDirectory =
-      [[manager URLsForDirectory:NSDocumentDirectory
-                       inDomains:NSUserDomainMask] firstObject];
-  NSURL* URL = [NSURL URLWithString:filename relativeToURL:documentsDirectory];
-  return base::apple::NSURLToFilePath(URL.absoluteURL);
-}
-
 // Removes the ScheduledFiles from the device. It is intended to be invoked on a
 // background thread.
 void RemoveScheduledFilesHelper(
@@ -60,39 +46,43 @@ void RemoveScheduledFilesHelper(
     base::UmaHistogramEnumeration(
         kAutoDeletionServiceActionsHistogram,
         AutoDeletionServiceActions::kScheduledFileIdentifiedForRemoval);
-    base::FilePath file_path = GetFilePathForScheduledFile(file);
+    NSString* filename =
+        base::apple::FilePathToNSString(file.filepath().BaseName());
+    NSFileManager* manager = [NSFileManager defaultManager];
+    NSURL* documentsDirectory =
+        [[manager URLsForDirectory:NSDocumentDirectory
+                         inDomains:NSUserDomainMask] firstObject];
+    NSURL* URL = [NSURL URLWithString:filename
+                        relativeToURL:documentsDirectory];
+    NSString* path = URL.absoluteURL.path;
 
-    if (!base::PathExists(file_path)) {
+    if (![manager fileExistsAtPath:path]) {
       base::UmaHistogramEnumeration(
           kAutoDeletionServiceFileRemovalFailureHistogram,
           AutoDeletionServiceFileRemovalFailures::kFileDoesNotExist);
       continue;
     }
 
-    std::optional<std::vector<uint8_t>> buffer =
-        base::ReadFileToBytes(file_path);
-    if (!buffer.has_value()) {
-      base::UmaHistogramEnumeration(
-          kAutoDeletionServiceFileRemovalFailureHistogram,
-          AutoDeletionServiceFileRemovalFailures::kFileReadFailure);
-      continue;
-    }
+    // TODO(crbug.com/455800280): Use `base::ReadFileToBytes()` to read the file
+    // into `buffer`.
+    std::vector<uint8_t> buffer;
+    const std::string hash = HashDownloadData(buffer);
 
-    const std::string hash = HashDownloadData(buffer.value());
     if (hash != file.hash()) {
       base::UmaHistogramEnumeration(
           kAutoDeletionServiceFileRemovalFailureHistogram,
           AutoDeletionServiceFileRemovalFailures::kHashMismatch);
-      continue;
+      return;
     }
 
-    if (!base::DeleteFile(file_path)) {
+    NSError* error;
+    [manager removeItemAtPath:path error:&error];
+    if (error) {
       base::UmaHistogramEnumeration(
           kAutoDeletionServiceFileRemovalFailureHistogram,
           AutoDeletionServiceFileRemovalFailures::kGenericRemovalError);
-      continue;
+      return;
     }
-
     base::UmaHistogramEnumeration(
         kAutoDeletionServiceActionsHistogram,
         AutoDeletionServiceActions::kScheduledFileRemovedFromDevice);
@@ -116,38 +106,14 @@ void AutoDeletionService::RegisterLocalStatePrefs(
   registry->RegisterListPref(prefs::kDownloadAutoDeletionScheduledFiles);
 }
 
-void AutoDeletionService::MarkTaskForDeletion(web::DownloadTask* task) {
-  // Schedules the task for observation if it is still downloading content.
-  if (!task->IsDone()) {
-    if (!download_tasks_observation_.IsObservingSource(task)) {
-      download_tasks_observation_.AddObservation(task);
-    }
-    return;
-  }
-
+void AutoDeletionService::MarkTaskForDeletion(web::DownloadTask* task,
+                                              DeletionEnrollmentStatus status) {
   std::string task_id = base::SysNSStringToUTF8(task->GetIdentifier());
   auto waiting_task = tasks_awaiting_scheduling_.find(task_id);
   if (waiting_task == tasks_awaiting_scheduling_.end()) {
-    DownloadTaskDetails details;
-    details.enrollment_status = DeletionEnrollmentStatus::kUndecided;
-    details.file_content = nil;
-    tasks_awaiting_scheduling_.insert({task_id, details});
-  }
-
-  task->GetResponseData(
-      base::BindOnce(&AutoDeletionService::UpdateAwaitingTaskOnResponseData,
-                     weak_ptr_factory_.GetWeakPtr(), task_id));
-}
-
-void AutoDeletionService::SetEnrollmentStatusForTask(
-    web::DownloadTask* task,
-    DeletionEnrollmentStatus status) {
-  std::string task_id = base::SysNSStringToUTF8(task->GetIdentifier());
-  auto waiting_task = tasks_awaiting_scheduling_.find(task_id);
-  if (waiting_task == tasks_awaiting_scheduling_.end()) {
-    DownloadTaskDetails details;
-    details.enrollment_status = status;
-    details.file_content = nil;
+    const base::FilePath path;
+    DownloadTaskDetails details =
+        DownloadTaskDetails::DetailsForEnrollmentDecision(status);
     tasks_awaiting_scheduling_.insert({task_id, details});
   } else {
     waiting_task->second.enrollment_status = status;
@@ -167,16 +133,21 @@ void AutoDeletionService::SetEnrollmentStatusForTask(
 
   MaybeRemoveObservation(task);
   task->GetResponseData(
-      base::BindOnce(&AutoDeletionService::UpdateAwaitingTaskOnResponseData,
+      base::BindOnce(&AutoDeletionService::MarkTaskForDeletionHelper,
                      weak_ptr_factory_.GetWeakPtr(), task_id));
 }
 
-void AutoDeletionService::SetPermanentPathForTask(web::DownloadTask* task,
-                                                  const base::FilePath& path) {
+void AutoDeletionService::MarkTaskForDeletion(web::DownloadTask* task,
+                                              const base::FilePath& path) {
   std::string task_id = base::SysNSStringToUTF8(task->GetIdentifier());
   auto iterator = tasks_awaiting_scheduling_.find(task_id);
-  DCHECK(iterator != tasks_awaiting_scheduling_.end());
-  iterator->second.path = path;
+  if (iterator == tasks_awaiting_scheduling_.end()) {
+    DownloadTaskDetails details =
+        DownloadTaskDetails::DetailsForPermanentPath(path);
+    tasks_awaiting_scheduling_.insert({task_id, details});
+  } else {
+    iterator->second.path = path;
+  }
 
   // Schedules the task for observation if it is still downloading content.
   if (!task->IsDone()) {
@@ -188,8 +159,29 @@ void AutoDeletionService::SetPermanentPathForTask(web::DownloadTask* task,
 
   MaybeRemoveObservation(task);
   task->GetResponseData(
-      base::BindOnce(&AutoDeletionService::UpdateAwaitingTaskOnResponseData,
+      base::BindOnce(&AutoDeletionService::MarkTaskForDeletionHelper,
                      weak_ptr_factory_.GetWeakPtr(), task_id));
+}
+
+void AutoDeletionService::ScheduleFileForDeletion(const std::string& task_id) {
+  if (!AreAllPreconditionsMet(task_id)) {
+    return;
+  }
+
+  auto iterator = tasks_awaiting_scheduling_.find(task_id);
+  DCHECK(iterator != tasks_awaiting_scheduling_.end());
+  DownloadTaskDetails details = iterator->second;
+  if (details.enrollment_status == DeletionEnrollmentStatus::kEnrolled) {
+    ScheduledFile file(
+        details.path,
+        HashDownloadData(base::apple::NSDataToSpan(details.file_content)),
+        base::Time::Now());
+    scheduler_.ScheduleFile(file);
+    base::UmaHistogramEnumeration(
+        kAutoDeletionServiceActionsHistogram,
+        AutoDeletionServiceActions::kFileScheduledForAutoDeletion);
+  }
+  tasks_awaiting_scheduling_.erase(iterator);
 }
 
 void AutoDeletionService::RemoveScheduledFilesReadyForDeletion(
@@ -215,35 +207,11 @@ void AutoDeletionService::Clear() {
   scheduler_.Clear();
 }
 
-void AutoDeletionService::ScheduleFileForDeletion(const std::string& task_id) {
-  if (!AreAllPreconditionsMet(task_id)) {
-    return;
-  }
-
+void AutoDeletionService::MarkTaskForDeletionHelper(const std::string& task_id,
+                                                    NSData* data) {
   auto iterator = tasks_awaiting_scheduling_.find(task_id);
   DCHECK(iterator != tasks_awaiting_scheduling_.end());
-  DownloadTaskDetails details = iterator->second;
-  if (details.enrollment_status == DeletionEnrollmentStatus::kEnrolled) {
-    ScheduledFile file(
-        details.path,
-        HashDownloadData(base::apple::NSDataToSpan(details.file_content)),
-        base::Time::Now());
-    scheduler_.ScheduleFile(file);
-    base::UmaHistogramEnumeration(
-        kAutoDeletionServiceActionsHistogram,
-        AutoDeletionServiceActions::kFileScheduledForAutoDeletion);
-  }
-  tasks_awaiting_scheduling_.erase(iterator);
-}
-
-void AutoDeletionService::UpdateAwaitingTaskOnResponseData(
-    const std::string& task_id,
-    NSData* data) {
-  auto iterator = tasks_awaiting_scheduling_.find(task_id);
-  DCHECK(iterator != tasks_awaiting_scheduling_.end());
-  if (data != nil) {
-    iterator->second.file_content = data;
-  }
+  iterator->second.file_content = data;
 
   ScheduleFileForDeletion(task_id);
 }
@@ -277,7 +245,7 @@ void AutoDeletionService::OnDownloadUpdated(web::DownloadTask* download_task) {
   download_tasks_observation_.RemoveObservation(download_task);
   std::string task_id = base::SysNSStringToUTF8(download_task->GetIdentifier());
   download_task->GetResponseData(
-      base::BindOnce(&AutoDeletionService::UpdateAwaitingTaskOnResponseData,
+      base::BindOnce(&AutoDeletionService::MarkTaskForDeletionHelper,
                      weak_ptr_factory_.GetWeakPtr(), task_id));
 }
 

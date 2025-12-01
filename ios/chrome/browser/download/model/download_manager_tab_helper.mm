@@ -247,7 +247,6 @@ void DownloadManagerTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
                 &DownloadManagerTabHelper::UseAvailableUserDocumentsPath,
                 weak_ptr_factory_.GetWeakPtr()));
       }
-      MaybeScheduleFileForAutoDeletion();
       break;
     case web::DownloadTask::State::kFailed:
     case web::DownloadTask::State::kFailedNotResumable:
@@ -335,7 +334,7 @@ void DownloadManagerTabHelper::MoveComplete(bool move_completed,
                                             const base::FilePath& source_path,
                                             const base::FilePath& final_path) {
   DCHECK(move_completed);
-  MaybeUpdatePathOfScheduledFileForAutoDeletion();
+  MaybeScheduleFileForAutoDeletion();
 }
 
 void DownloadManagerTabHelper::MaybeScheduleFileForAutoDeletion() {
@@ -348,20 +347,7 @@ void DownloadManagerTabHelper::MaybeScheduleFileForAutoDeletion() {
 
   auto_deletion::AutoDeletionService* service =
       GetApplicationContext()->GetAutoDeletionService();
-  service->MarkTaskForDeletion(task_.get());
-}
-
-void DownloadManagerTabHelper::MaybeUpdatePathOfScheduledFileForAutoDeletion() {
-  PrefService* localState = GetApplicationContext()->GetLocalState();
-  BOOL isAutoDeletionEnabled =
-      localState->GetBoolean(prefs::kDownloadAutoDeletionEnabled);
-  if (!IsDownloadAutoDeletionFeatureEnabled() || !isAutoDeletionEnabled) {
-    return;
-  }
-
-  auto_deletion::AutoDeletionService* service =
-      GetApplicationContext()->GetAutoDeletionService();
-  service->SetPermanentPathForTask(task_.get(), GetDownloadTaskFinalFilePath());
+  service->MarkTaskForDeletion(task_.get(), GetDownloadTaskFinalFilePath());
 }
 
 void DownloadManagerTabHelper::ScheduleTaskDestruction() {

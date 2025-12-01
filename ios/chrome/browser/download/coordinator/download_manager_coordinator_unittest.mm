@@ -40,7 +40,6 @@
 #import "ios/chrome/browser/shared/ui/util/file_size_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/fakes/fake_contained_presenter.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -119,7 +118,6 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
 
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   FakeContainedPresenter* presenter_;
