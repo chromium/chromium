@@ -13507,7 +13507,7 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillDisableBnplCountryCheckForTesting)},
 
     {"infobar-refresh", flag_descriptions::kInfobarRefreshName,
-     flag_descriptions::kInfobarRefreshDescription, kOsAll,
+     flag_descriptions::kInfobarRefreshDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kInfobarRefresh)},
 
 #if BUILDFLAG(IS_ANDROID)
