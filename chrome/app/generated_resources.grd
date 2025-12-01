@@ -7942,6 +7942,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_SHOW_CHIPS_LABEL" desc="The label for the option to show the Google Search tools options in the New Tab Page" meaning="Toggle to display/hide the Search tool options in the New Tab Page.">
         Show options
       </message>
+      <message name="IDS_NTP_CUSTOMIZE_SHOW_SUGGESTIONS_CHIPS_LABEL" desc="The label for the option to show the Google Search tool suggestions in the New Tab Page" meaning="Toggle to display/hide the Search tool suggestions in the New Tab Page.">
+        Show suggestions
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_SHOW_SHORTCUTS_LABEL" desc="The label for the option to show shortcuts in the customization menu on the New Tab Page">
         Show shortcuts
       </message>
@@ -8735,6 +8738,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_COMPOSE_DEEP_SEARCH_PLACEHOLDER" desc="Placeholder text for the composebox when in deep search mode.">
         Research anything
+      </message>
+      <message name="IDS_COMPOSE_CREATE_IMAGE_IPH" desc="In-product help text to suggest adding an image as context to a composebox query with create image tool enabled.">
+        Add and edit an image
+      </message>
+      <message name="IDS_COMPOSE_DEEP_SEARCH_IPH" desc="In-product help text to explain what deep search mode does.">
+        Get deeper responses with more sources, in a little extra time
       </message>
       <message name="IDS_COMPOSE_CREATE_IMAGE_PLACEHOLDER" desc="Placeholder text for the composebox when in create image mode.">
         Describe your image
