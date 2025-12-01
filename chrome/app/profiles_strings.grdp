@@ -635,6 +635,9 @@
     <message name="IDS_PROFILE_CUSTOMIZATION_INPUT_LABEL" desc="Not displayed. Used by screen readers to describe the input used to rename the profile.">
       Rename your profile
     </message>
+    <message name="IDS_PROFILE_CUSTOMIZATION_INPUT_TITLE" desc="Title text for the input used to rename the profile.">
+      Add a name or label for your profile
+    </message>
     <message name="IDS_PROFILE_CUSTOMIZATION_INPUT_PLACEHOLDER" desc="Placeholder text for the input used to rename the profile.">
       Add a name or label, like Work or Personal
     </message>
