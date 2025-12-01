@@ -86,7 +86,7 @@ public class TipsUtilsUnitTest {
                 mActivity.getString(R.string.tips_promo_bottom_sheet_third_step_quick_delete),
                 promoData.detailPageSteps.get(2));
         assertEquals(
-                mActivity.getString(R.string.tips_promo_bottom_sheet_title_quick_delete),
+                mActivity.getString(R.string.tips_promo_bottom_sheet_title_quick_delete_short),
                 promoData.detailPageTitle);
     }
 

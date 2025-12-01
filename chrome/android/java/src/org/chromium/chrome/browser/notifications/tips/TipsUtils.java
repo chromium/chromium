@@ -99,7 +99,7 @@ public class TipsUtils {
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_quick_delete;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_quick_delete;
                 mainPageLogoViewRes = R.drawable.tips_promo_quick_delete_logo;
-                detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_quick_delete;
+                detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_quick_delete_short;
                 detailPageSteps.add(
                         context.getString(
                                 R.string.tips_promo_bottom_sheet_first_step_quick_delete));
