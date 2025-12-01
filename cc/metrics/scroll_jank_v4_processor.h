@@ -5,13 +5,11 @@
 #ifndef CC_METRICS_SCROLL_JANK_V4_PROCESSOR_H_
 #define CC_METRICS_SCROLL_JANK_V4_PROCESSOR_H_
 
-#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
-#include "cc/metrics/scroll_jank_v4_decider.h"
+#include "cc/metrics/scroll_jank_v4_decision_queue.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
 #include "cc/metrics/scroll_jank_v4_frame_stage.h"
-#include "cc/metrics/scroll_jank_v4_histogram_emitter.h"
 
 namespace cc {
 
@@ -25,6 +23,8 @@ namespace cc {
 // for more details about the scroll jank v4 metric.
 class CC_EXPORT ScrollJankV4Processor {
  public:
+  ScrollJankV4Processor();
+
   void ProcessEventsMetricsForPresentedFrame(EventMetrics::List& events_metrics,
                                              base::TimeTicks presentation_ts,
                                              const viz::BeginFrameArgs& args);
@@ -32,18 +32,9 @@ class CC_EXPORT ScrollJankV4Processor {
  private:
   void HandleFrame(ScrollJankV4FrameStage::List& stages,
                    const ScrollJankV4Frame::ScrollDamage& damage,
-                   const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
-                   bool counts_towards_histogram_frame_count);
-  void HandleFrameWithScrollUpdates(
-      ScrollJankV4FrameStage::ScrollUpdates& updates,
-      const ScrollJankV4Frame::ScrollDamage& damage,
-      const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
-      bool counts_towards_histograms);
-  void HandleScrollStarted();
-  void HandleScrollEnded();
+                   const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args);
 
-  ScrollJankV4Decider decider_;
-  ScrollJankV4HistogramEmitter histogram_emitter_;
+  ScrollJankV4DecisionQueue decision_queue_;
 };
 
 }  // namespace cc
