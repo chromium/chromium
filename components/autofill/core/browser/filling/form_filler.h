@@ -183,12 +183,14 @@ class FormFiller {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+ protected:
+  struct RefillContext;
+
  private:
   friend class FormFillerTestApi;
   friend class TestFormFiller;
 
   struct AugmentedFillingPayload;
-  struct RefillContext;
 
   void SetRefillContext(FormGlobalId form_id,
                         std::unique_ptr<RefillContext> context);

@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -1037,6 +1038,16 @@ void FormFiller::MaybeTriggerRefill(
       }
       break;
     case RefillTriggerReason::kSelectOptionsChanged:
+      if (const bool allow_refill =
+              field && field->IsSelectElement() &&
+              field->Type().GetGroups().contains_any(
+                  refill_context->type_groups_originally_filled);
+          !allow_refill && base::FeatureList::IsEnabled(
+                               features::kAutofillFewerTrivialRefills)) {
+        // The element in question is not fillable as a result of this signal.
+        // Do not trigger a refill as it would most likely be a trivial one.
+        return;
+      }
       break;
     case RefillTriggerReason::kExpirationDateFormatted:
       CHECK(field && old_value);

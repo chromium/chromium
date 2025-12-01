@@ -2351,9 +2351,10 @@ void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
   if (!form_structure) {
     return;
   }
-  form_filler_->MaybeTriggerRefill(
-      form, *form_structure, RefillTriggerReason::kSelectOptionsChanged,
-      AutofillTriggerSource::kSelectOptionsChanged);
+  form_filler_->MaybeTriggerRefill(form, *form_structure,
+                                   RefillTriggerReason::kSelectOptionsChanged,
+                                   AutofillTriggerSource::kSelectOptionsChanged,
+                                   form_structure->GetFieldById(field_id));
 }
 
 void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(

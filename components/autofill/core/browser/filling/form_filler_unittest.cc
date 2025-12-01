@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/filling/test_form_filler.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -49,6 +50,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-data-view.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -212,7 +214,8 @@ class FormFillerTest
     // to the iframe security policy).
     EXPECT_CALL(autofill_driver(), ApplyFormAction)
         .WillOnce(
-            DoAll(SaveArgElementsTo<2>(&filled_fields), Return(global_ids)));
+            DoAll(SaveArgElementsTo<2>(&filled_fields), Return(global_ids)))
+        .WillRepeatedly({});
     trigger(form);
     // Copy the filled data into the form.
     for (FormFieldData& field : test_api(form).fields()) {
@@ -1800,6 +1803,64 @@ TEST_F(FormFillerTest, PreFilledCCFieldInAddressFormDoesNotCauseCrash) {
   AutofillProfile profile = test::GetFullProfile();
   AutofillForm(form, form.fields().front(), &profile);
   // Expect that this test doesn't cause a crash.
+}
+
+class MockFormFiller : public TestFormFiller {
+ public:
+  MockFormFiller(BrowserAutofillManager& manager) : TestFormFiller(manager) {}
+  MOCK_METHOD(void,
+              ScheduleRefill,
+              (const FormData& form,
+               RefillContext& refill_context,
+               AutofillTriggerSource trigger_source,
+               RefillTriggerReason refill_trigger_reason),
+              (override));
+};
+
+class RefillTest : public FormFillerTest {
+ public:
+  void SetUp() override {
+    FormFillerTest::SetUp();
+    test_api(autofill_manager())
+        .set_form_filler(std::make_unique<MockFormFiller>(autofill_manager()));
+  }
+
+  MockFormFiller& mock_form_filler() {
+    return static_cast<MockFormFiller&>(form_filler());
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(RefillTest, SelectOptionsChanged_IrrelevantSelectField) {
+  AutofillProfile profile = test::GetFullProfile();
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kAutofillFewerTrivialRefills);
+    FormData form = test::GetFormData(
+        {.fields = {
+             {.role = NAME_FULL, .autocomplete_attribute = "name"},
+             {.form_control_type = mojom::FormControlType::kSelectOne}}});
+    FormsSeen({form});
+    AutofillForm(form, form.fields().front(), &profile);
+    EXPECT_CALL(mock_form_filler(), ScheduleRefill).Times(1);
+    autofill_manager().OnSelectFieldOptionsDidChange(
+        form, form.fields().back().global_id());
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list{
+        features::kAutofillFewerTrivialRefills};
+    FormData form = test::GetFormData(
+        {.fields = {
+             {.role = NAME_FULL, .autocomplete_attribute = "name"},
+             {.form_control_type = mojom::FormControlType::kSelectOne}}});
+    FormsSeen({form});
+    AutofillForm(form, form.fields().front(), &profile);
+    EXPECT_CALL(mock_form_filler(), ScheduleRefill).Times(0);
+    autofill_manager().OnSelectFieldOptionsDidChangeImpl(
+        form, form.fields().back().global_id());
+  }
 }
 
 // The following Refill Tests ensure that Autofill can handle the situation
