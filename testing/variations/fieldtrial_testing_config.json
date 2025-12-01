@@ -25723,6 +25723,22 @@
                     ]
                 }
             ]
+        },
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "TreesInViz"
+                    ]
+                }
+            ]
         }
     ],
     "TriggerPasswordResyncWhenUndecryptablePasswordsDetected": [
