@@ -177,3 +177,5 @@ BluetoothRemoteGattDescriptorAndroid::BluetoothRemoteGattDescriptorAndroid(
     : instance_id_(instance_id) {}
 
 }  // namespace device
+
+DEFINE_JNI(ChromeBluetoothRemoteGattDescriptor)

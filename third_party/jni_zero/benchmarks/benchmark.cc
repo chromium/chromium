@@ -433,3 +433,6 @@ static void JNI_Benchmark_SendListObject(JNIEnv* env,
 }
 
 }  // namespace jni_zero::benchmark
+
+DEFINE_JNI(Benchmark)
+DEFINE_JNI(Integer)

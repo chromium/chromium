@@ -187,3 +187,5 @@ base::TimeDelta ViewConfiguration::GetTextCursorBlinkInterval() {
 }
 
 }  // namespace gfx
+
+DEFINE_JNI(ViewConfigurationHelper)

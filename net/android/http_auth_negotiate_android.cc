@@ -168,3 +168,5 @@ void HttpAuthNegotiateAndroid::SetResultInternal(int result,
 }
 
 }  // namespace net::android
+
+DEFINE_JNI(HttpNegotiateAuthenticator)

@@ -108,3 +108,5 @@ void SmartSelectionClient::OnSurroundingTextReceived(int callback_data,
 }
 
 }  // namespace content
+
+DEFINE_JNI(SmartSelectionClient)

@@ -34,3 +34,5 @@ void PageProxy::WillDeletePage(bool is_prerendering) {
 }
 
 }  // namespace content
+
+DEFINE_JNI(Page)

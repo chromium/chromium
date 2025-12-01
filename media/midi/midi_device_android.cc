@@ -68,3 +68,5 @@ std::string MidiDeviceAndroid::GetDeviceVersion() {
 }
 
 }  // namespace midi
+
+DEFINE_JNI(MidiDeviceAndroid)

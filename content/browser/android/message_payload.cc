@@ -115,3 +115,5 @@ blink::WebMessagePayload ConvertToWebMessagePayloadFromJava(
 }
 
 }  // namespace content::android
+
+DEFINE_JNI(MessagePayloadJni)

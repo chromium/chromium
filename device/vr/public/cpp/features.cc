@@ -105,3 +105,7 @@ bool IsHandTrackingEnabled() {
 #endif
 }
 }  // namespace device::features
+
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(XrFeatureStatus)
+#endif

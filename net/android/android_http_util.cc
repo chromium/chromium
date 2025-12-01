@@ -28,3 +28,5 @@ static jboolean JNI_HttpUtil_IsAllowedHeader(
 }
 
 }  // namespace net
+
+DEFINE_JNI(HttpUtil)

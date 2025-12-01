@@ -20,3 +20,5 @@ static void JNI_X509Util_NotifyClientCertStoreChanged(JNIEnv* env) {
 }
 
 }  // namespace net
+
+DEFINE_JNI(X509Util)

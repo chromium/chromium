@@ -64,3 +64,5 @@ GetAttributionSrcTokenFromJavaAdditionalNavigationParams(
 }
 
 }  // namespace content
+
+DEFINE_JNI(AdditionalNavigationParamsUtils)

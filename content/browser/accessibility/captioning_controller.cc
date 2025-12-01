@@ -101,3 +101,5 @@ static jlong JNI_CaptioningController_Init(
 }
 
 }  // namespace content
+
+DEFINE_JNI(CaptioningController)

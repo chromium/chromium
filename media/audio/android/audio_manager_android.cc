@@ -1236,3 +1236,5 @@ void AudioManagerAndroid::SetJniDelegateForTesting(
 }
 
 }  // namespace media
+
+DEFINE_JNI(AudioManagerAndroid)

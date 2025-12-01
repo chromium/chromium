@@ -2711,3 +2711,8 @@ static jlong JNI_WebContentsAccessibilityImpl_InitForAssistData(
 }
 
 }  // namespace content
+
+DEFINE_JNI(AccessibilityNodeInfoBuilder)
+DEFINE_JNI(AccessibilityNodeInfoUtils)
+DEFINE_JNI(AssistDataBuilder)
+DEFINE_JNI(WebContentsAccessibilityImpl)

@@ -70,3 +70,5 @@ float HandleViewResources::GetDrawableHorizontalPaddingRatio() const {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(HandleViewResources)

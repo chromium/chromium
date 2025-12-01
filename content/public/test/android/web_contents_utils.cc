@@ -128,3 +128,5 @@ static void JNI_WebContentsUtils_SimulateEndOfPaintHolding(
 }
 
 }  // namespace content
+
+DEFINE_JNI(WebContentsUtils)

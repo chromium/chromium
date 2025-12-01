@@ -140,3 +140,5 @@ bool ToUpperUsingLocale(std::u16string_view str, std::u16string* output) {
 }
 
 }  // namespace net
+
+DEFINE_JNI(NetStringUtil)

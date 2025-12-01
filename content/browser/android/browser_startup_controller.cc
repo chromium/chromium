@@ -53,3 +53,5 @@ static void JNI_BrowserStartupControllerImpl_FlushStartupTasks(
 }
 
 }  // namespace content
+
+DEFINE_JNI(BrowserStartupControllerImpl)

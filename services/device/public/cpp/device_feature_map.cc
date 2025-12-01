@@ -44,3 +44,5 @@ static jlong JNI_DeviceFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace features
+
+DEFINE_JNI(DeviceFeatureMap)

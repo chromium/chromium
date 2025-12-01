@@ -26,3 +26,5 @@ BrowserContext* BrowserContextFromJavaHandle(const JavaRef<jobject>& jhandle) {
 }
 
 }  // namespace content
+
+DEFINE_JNI(BrowserContextHandleImpl)

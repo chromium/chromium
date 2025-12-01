@@ -20,3 +20,5 @@ static jni_zero::ScopedJavaLocalRef<jstring> JNI_BytesFormatting_FormatSpeed(
 }
 
 }  // namespace ui
+
+DEFINE_JNI(BytesFormatting)

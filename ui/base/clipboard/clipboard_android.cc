@@ -821,3 +821,5 @@ void ClipboardAndroid::WriteConfidentialDataForPassword() {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(Clipboard)

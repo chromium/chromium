@@ -31,3 +31,5 @@ static jboolean JNI_RenderProcessHostUtils_IsSpareRenderReady(JNIEnv* env) {
   return spare->IsReady();
 }
 }  // namespace content
+
+DEFINE_JNI(RenderProcessHostUtils)

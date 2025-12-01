@@ -378,3 +378,5 @@ void SelectionPopupController::ChildLocalSurfaceIdChanged() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(SelectionPopupControllerImpl)

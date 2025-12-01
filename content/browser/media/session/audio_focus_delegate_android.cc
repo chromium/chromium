@@ -131,3 +131,5 @@ std::unique_ptr<AudioFocusDelegate> AudioFocusDelegate::Create(
 }
 
 }  // namespace content
+
+DEFINE_JNI(AudioFocusDelegate)

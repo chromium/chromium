@@ -180,3 +180,5 @@ const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
 }
 
 }  // namespace media
+
+DEFINE_JNI(VideoAcceleratorUtil)

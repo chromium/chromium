@@ -223,3 +223,5 @@ SelectFileDialog* CreateSelectFileDialog(
 }
 
 }  // namespace ui
+
+DEFINE_JNI(SelectFileDialog)

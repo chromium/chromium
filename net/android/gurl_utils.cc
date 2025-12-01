@@ -23,3 +23,5 @@ static ScopedJavaLocalRef<jstring> JNI_GURLUtils_GetOrigin(
 }
 
 }  // namespace net
+
+DEFINE_JNI(GURLUtils)

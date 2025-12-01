@@ -364,3 +364,5 @@ void ChildProcessLauncherHelper::OnSpareRendererPriorityGraduatedOnClientThread(
 }  // namespace internal
 
 }  // namespace content
+
+DEFINE_JNI(ChildProcessLauncherHelperImpl)

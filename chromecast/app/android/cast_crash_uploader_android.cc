@@ -127,3 +127,5 @@ void CastCrashUploaderAndroid::UploadCrashReport(bool opt_in_stats) {
   CastCrashUploaderAndroid::UploadDumps("", "", opt_in_stats);
 }
 }  // namespace chromecast
+
+DEFINE_JNI(CastCrashHandler)

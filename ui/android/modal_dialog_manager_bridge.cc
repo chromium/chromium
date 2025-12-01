@@ -62,3 +62,5 @@ static void JNI_ModalDialogManagerBridge_Destroy(JNIEnv* env,
 }
 
 }  // namespace ui
+
+DEFINE_JNI(ModalDialogManagerBridge)

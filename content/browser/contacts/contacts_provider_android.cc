@@ -164,3 +164,5 @@ void ContactsProviderAndroid::EndWithPermissionDenied(JNIEnv* env) {
 }
 
 }  // namespace content
+
+DEFINE_JNI(ContactsDialogHost)

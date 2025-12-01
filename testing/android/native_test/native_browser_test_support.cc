@@ -51,3 +51,5 @@ void RunActivityTeardownCallback() {
 
 }  // namespace android
 }  // namespace testing
+
+DEFINE_JNI(NativeBrowserTest)

@@ -289,3 +289,5 @@ void TracingControllerAndroid::OnTraceBufferUsageReceived(
 }
 
 }  // namespace content
+
+DEFINE_JNI(TracingControllerAndroidImpl)

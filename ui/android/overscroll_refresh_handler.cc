@@ -51,3 +51,5 @@ void OverscrollRefreshHandler::PullReset() {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(OverscrollRefreshHandler)

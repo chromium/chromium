@@ -452,3 +452,5 @@ float AudioSinkAndroidAudioTrackImpl::EffectiveVolume() const {
 
 }  // namespace media
 }  // namespace chromecast
+
+DEFINE_JNI(AudioSinkAudioTrackImpl)

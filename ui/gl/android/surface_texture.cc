@@ -143,3 +143,5 @@ void SurfaceTexture::SetDefaultBufferSize(int width, int height) {
 }
 
 }  // namespace gl
+
+DEFINE_JNI(ChromeSurfaceTexture)

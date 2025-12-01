@@ -398,3 +398,5 @@ static jlong JNI_GestureListenerManagerImpl_Init(
 }
 
 }  // namespace content
+
+DEFINE_JNI(GestureListenerManagerImpl)

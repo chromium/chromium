@@ -96,3 +96,5 @@ ViewStructureBuilder_addViewStructureNodeChild(
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEB_CONTENTS_VIEW_STRUCTURE_BUILDER_ANDROID_H_
+
+DEFINE_JNI(ViewStructureBuilder)

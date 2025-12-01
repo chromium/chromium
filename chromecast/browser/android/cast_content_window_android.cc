@@ -113,3 +113,5 @@ void CastContentWindowAndroid::OnVisibilityChange(JNIEnv* env,
 }
 
 }  // namespace chromecast
+
+DEFINE_JNI(CastContentWindowAndroid)

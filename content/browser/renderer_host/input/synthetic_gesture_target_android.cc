@@ -213,3 +213,5 @@ RenderWidgetHostViewAndroid* SyntheticGestureTargetAndroid::GetView() const {
 }
 
 }  // namespace content
+
+DEFINE_JNI(SyntheticGestureTarget)

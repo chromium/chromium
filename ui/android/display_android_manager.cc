@@ -276,3 +276,5 @@ jint DisplayAndroidManager::GetDisplaySdkMatching(JNIEnv* env,
 }
 
 }  // namespace ui
+
+DEFINE_JNI(DisplayAndroidManager)

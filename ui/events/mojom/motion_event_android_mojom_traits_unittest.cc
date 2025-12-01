@@ -196,3 +196,5 @@ TEST(CachedPointerTraitsTest, ToolType) {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(MotionEventTestUtils)

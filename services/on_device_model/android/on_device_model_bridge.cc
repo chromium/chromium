@@ -46,3 +46,5 @@ OnDeviceModelBridge::CreateModelDownloader(
 }
 
 }  // namespace on_device_model
+
+DEFINE_JNI(OnDeviceModelBridge)

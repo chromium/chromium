@@ -26,3 +26,5 @@ void InputTokenForwarderManager::ForwardVizInputTransferToken(
 }
 
 }  // namespace content
+
+DEFINE_JNI(InputTokenForwarderManager)

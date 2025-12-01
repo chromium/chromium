@@ -207,3 +207,5 @@ ScopedJavaLocalRef<jobject> MediaSessionAndroid::GetJavaObject() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(MediaSessionImpl)

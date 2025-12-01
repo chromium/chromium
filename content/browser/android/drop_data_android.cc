@@ -73,3 +73,5 @@ ScopedJavaLocalRef<jobject> ToJavaDropData(const DropData& drop_data) {
 }  // ToJavaDropData
 
 }  // namespace content
+
+DEFINE_JNI(DropDataAndroid)

@@ -97,3 +97,5 @@ static void JNI_Parsed_InitNative(JNIEnv* env,
 }
 
 }  // namespace url
+
+DEFINE_JNI(Parsed)

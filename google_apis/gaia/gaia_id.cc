@@ -43,3 +43,7 @@ GaiaId ConvertFromJavaGaiaId(JNIEnv* env,
   return GaiaId(Java_GaiaId_toString(env, j_gaia_id));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(GaiaId)
+#endif

@@ -129,3 +129,5 @@ static void JNI_AiCoreModelDownloaderWrapper_OnUnavailable(
 }
 
 }  // namespace on_device_model
+
+DEFINE_JNI(AiCoreModelDownloaderWrapper)

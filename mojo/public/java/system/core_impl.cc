@@ -354,3 +354,5 @@ static jlong JNI_CoreImpl_CreatePlatformHandle(JNIEnv* env, jint fd) {
 
 }  // namespace android
 }  // namespace mojo
+
+DEFINE_JNI(CoreImpl)

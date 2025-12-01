@@ -37,3 +37,5 @@ static jint JNI_MainRunner_RunMain(
 
 }  // namespace android
 }  // namespace testing
+
+DEFINE_JNI(MainRunner)

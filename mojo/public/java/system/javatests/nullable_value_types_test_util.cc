@@ -133,3 +133,5 @@ static void JNI_NullableValueTypesTestUtil_BindTestInterface(
 
 }  // namespace android
 }  // namespace mojo
+
+DEFINE_JNI(NullableValueTypesTestUtil)

@@ -371,3 +371,5 @@ void BluetoothDeviceAndroid::UpdateAclConnectState(uint8_t transport,
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeBluetoothDevice)

@@ -1154,3 +1154,5 @@ void MediaDrmBridge::OnHasAdditionalUsableKey() {
 }
 
 }  // namespace media
+
+DEFINE_JNI(MediaDrmBridge)

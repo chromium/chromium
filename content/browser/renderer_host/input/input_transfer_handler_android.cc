@@ -375,3 +375,5 @@ void InputTransferHandlerAndroid::InputObserver::OnInputEvent(
 }
 
 }  // namespace content
+
+DEFINE_JNI(InputTransferHandler)

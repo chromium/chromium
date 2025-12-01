@@ -114,3 +114,5 @@ JNI_ClipboardAndroidTestSupport_NativeTestClipboardNotifications(JNIEnv* env) {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(ClipboardAndroidTestSupport)

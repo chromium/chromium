@@ -301,3 +301,5 @@ void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(MagnifierSurfaceControl)

@@ -233,3 +233,5 @@ static jlong JNI_ContentUiEventHandler_Init(
 }
 
 }  // namespace content
+
+DEFINE_JNI(ContentUiEventHandler)

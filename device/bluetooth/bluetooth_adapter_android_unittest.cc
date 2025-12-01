@@ -632,3 +632,6 @@ TEST_F(BluetoothAdapterAndroidTest, ScanFailsWithoutLeSupport) {
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeBluetoothLeScannerTestUtil)
+DEFINE_JNI(ChromeBluetoothScanFilter)

@@ -194,3 +194,5 @@ void TtsPlatformImplAndroid::OnCanSpeakNowChanged() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(TtsPlatformImpl)

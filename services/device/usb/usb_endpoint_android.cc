@@ -26,3 +26,5 @@ mojom::UsbEndpointInfoPtr UsbEndpointAndroid::Convert(
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeUsbEndpoint)

@@ -854,3 +854,7 @@ bool HostZoomMapImpl::IsIndependentZoomFrameTreeNode(
 }
 
 }  // namespace content
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(HostZoomMapImpl)
+#endif

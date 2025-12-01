@@ -145,3 +145,5 @@ static void JNI_GURL_ReplaceComponents(
 }
 
 }  // namespace url
+
+DEFINE_JNI(GURL)

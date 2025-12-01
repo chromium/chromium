@@ -787,3 +787,5 @@ bool ViewAndroid::IsCheckHitEligible() const {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(ViewAndroidDelegate)

@@ -200,3 +200,5 @@ void MidiManagerAndroid::AddDevice(std::unique_ptr<MidiDeviceAndroid> device) {
 }
 
 }  // namespace midi
+
+DEFINE_JNI(MidiManagerAndroid)

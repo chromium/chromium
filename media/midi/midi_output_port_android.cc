@@ -44,3 +44,5 @@ void MidiOutputPortAndroid::Send(const std::vector<uint8_t>& data) {
 }
 
 }  // namespace midi
+
+DEFINE_JNI(MidiOutputPortAndroid)

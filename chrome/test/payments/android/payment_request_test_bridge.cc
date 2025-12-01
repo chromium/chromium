@@ -189,3 +189,5 @@ static void JNI_PaymentRequestTestBridge_InvokeBooleanCallback(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(PaymentRequestTestBridge)

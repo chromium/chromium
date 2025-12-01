@@ -55,3 +55,5 @@ void MidiInputPortAndroid::OnData(JNIEnv* env,
 }
 
 }  // namespace midi
+
+DEFINE_JNI(MidiInputPortAndroid)

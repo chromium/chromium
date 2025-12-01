@@ -138,3 +138,5 @@ FakeModalDialogManagerBridge::FakeModalDialogManagerBridge(
     : j_fake_manager_(j_fake_manager), window_(window) {}
 
 }  // namespace ui
+
+DEFINE_JNI(FakeModalDialogManager)

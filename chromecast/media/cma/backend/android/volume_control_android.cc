@@ -362,3 +362,6 @@ float VolumeControl::DbFSToVolume(float db) {
 
 }  // namespace media
 }  // namespace chromecast
+
+DEFINE_JNI(VolumeControl)
+DEFINE_JNI(VolumeMap)

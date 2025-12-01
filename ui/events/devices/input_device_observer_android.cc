@@ -51,3 +51,5 @@ void InputDeviceObserverAndroid::NotifyObserversDeviceConfigurationChanged() {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(InputDeviceObserver)

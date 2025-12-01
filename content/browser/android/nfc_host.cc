@@ -141,3 +141,5 @@ void NFCHost::Close() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(NfcHost)

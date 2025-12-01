@@ -281,3 +281,6 @@ bool MediaCodecUtil::IsKnownUnaccelerated(VideoCodec codec,
 }
 
 }  // namespace media
+
+DEFINE_JNI(CodecProfileLevelList)
+DEFINE_JNI(MediaCodecUtil)

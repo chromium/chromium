@@ -32,3 +32,5 @@ static void JNI_PrefetchTestUtil_WaitUntilPrefetchResponseCompleted(
 }
 
 }  // namespace content
+
+DEFINE_JNI(PrefetchTestUtil)

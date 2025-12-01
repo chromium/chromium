@@ -241,3 +241,5 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
 }
 
 }  // namespace content
+
+DEFINE_JNI(ScreenCapture)

@@ -248,3 +248,6 @@ void TextSuggestionHostAndroid::OnSuggestionMenuTimeout() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(SuggestionInfo)
+DEFINE_JNI(TextSuggestionHost)

@@ -200,3 +200,5 @@ void BluetoothRemoteGattServiceAndroid::EnsureCharacteristicsCreated() const {
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeBluetoothRemoteGattService)

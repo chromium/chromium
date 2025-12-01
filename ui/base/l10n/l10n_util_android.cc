@@ -116,3 +116,5 @@ static ScopedJavaLocalRef<jstring> JNI_LocalizationUtils_GetNativeUiLocale(
 }
 
 }  // namespace l10n_util
+
+DEFINE_JNI(LocalizationUtils)

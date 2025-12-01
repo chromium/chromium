@@ -656,3 +656,5 @@ void BluetoothTestAndroid::OnFakeAdapterStateChanged(
 }
 
 }  // namespace device
+
+DEFINE_JNI(Fakes)

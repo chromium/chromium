@@ -291,3 +291,5 @@ static void JNI_GamepadList_SetGamepadData(
 }
 
 }  // namespace device
+
+DEFINE_JNI(GamepadList)

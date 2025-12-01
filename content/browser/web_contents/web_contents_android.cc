@@ -1057,3 +1057,5 @@ WebContentsAndroid::GetDocumentPictureInPictureOpener(JNIEnv* env) {
 }
 
 }  // namespace content
+
+DEFINE_JNI(WebContentsImpl)

@@ -379,3 +379,5 @@ void ModalDialogWrapper::Close() {
 void ModalDialogWrapper::OnDialogButtonChanged() {}
 
 }  // namespace ui
+
+DEFINE_JNI(ModalDialogWrapper)

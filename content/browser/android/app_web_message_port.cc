@@ -219,3 +219,5 @@ JNI_AppWebMessagePort_CreatePair(JNIEnv* env) {
 }
 
 }  // namespace content::android
+
+DEFINE_JNI(AppWebMessagePort)

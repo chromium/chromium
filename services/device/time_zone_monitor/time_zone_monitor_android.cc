@@ -46,3 +46,5 @@ std::unique_ptr<TimeZoneMonitor> TimeZoneMonitor::Create(
 }
 
 }  // namespace device
+
+DEFINE_JNI(TimeZoneMonitor)

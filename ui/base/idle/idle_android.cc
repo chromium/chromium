@@ -86,3 +86,5 @@ IdleState CalculateIdleState(int idle_threshold) {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(IdleDetector)

@@ -381,3 +381,6 @@ int main() {
 
   return 0;
 }
+
+DEFINE_JNI(SampleForAnnotationProcessor)
+DEFINE_JNI(SampleForTests)

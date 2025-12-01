@@ -653,3 +653,5 @@ void ImeAdapterAndroid::PerformSpellCheck(JNIEnv* env) {
 }
 
 }  // namespace content
+
+DEFINE_JNI(ImeAdapterImpl)

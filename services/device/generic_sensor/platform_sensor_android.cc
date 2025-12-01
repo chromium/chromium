@@ -139,3 +139,5 @@ void PlatformSensorAndroid::SimulateSensorEventFromJavaForTesting(
 }
 
 }  // namespace device
+
+DEFINE_JNI(PlatformSensor)

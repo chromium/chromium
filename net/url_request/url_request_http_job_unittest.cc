@@ -2886,3 +2886,7 @@ TEST_F(URLRequestHttpJobTest, IgnoreUnsafeMethodForSameSiteLax) {
 }
 
 }  // namespace net
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AndroidNetworkLibraryTestUtil)
+#endif

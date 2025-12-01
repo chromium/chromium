@@ -103,3 +103,5 @@ void OnDeviceModelBridgeNativeUnitTestHelper::TriggerDownloaderOnAvailable(
 }
 
 }  // namespace on_device_model
+
+DEFINE_JNI(OnDeviceModelBridgeNativeUnitTestHelper)

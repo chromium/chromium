@@ -154,3 +154,5 @@ void LocationApiAdapterAndroid::NotifyNewGeoposition(
 }
 
 }  // namespace device
+
+DEFINE_JNI(LocationProviderAdapter)

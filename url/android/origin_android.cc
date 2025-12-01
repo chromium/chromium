@@ -76,3 +76,5 @@ static void JNI_Origin_AssignNativeOrigin(JNIEnv* env,
 }
 
 }  // namespace url
+
+DEFINE_JNI(Origin)

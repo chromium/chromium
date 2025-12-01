@@ -42,3 +42,5 @@ mojom::UsbInterfaceInfoPtr UsbInterfaceAndroid::Convert(
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeUsbInterface)

@@ -64,3 +64,5 @@ static void JNI_BaseRunLoop_DeleteMessageLoop(JNIEnv* env, jlong runLoopID) {
 
 }  // namespace android
 }  // namespace mojo
+
+DEFINE_JNI(BaseRunLoop)

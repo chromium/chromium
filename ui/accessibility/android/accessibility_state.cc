@@ -159,3 +159,6 @@ AccessibilityState::AccessibilityState() = default;
 AccessibilityState::~AccessibilityState() = default;
 
 }  // namespace ui
+
+DEFINE_JNI(AccessibilityAutofillHelper)
+DEFINE_JNI(AccessibilityState)

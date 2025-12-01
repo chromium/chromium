@@ -20,3 +20,5 @@ static void JNI_CastMetricsHelper_LogMediaPause(JNIEnv* env) {
 
 }  // namespace shell
 }  // namespace chromecast
+
+DEFINE_JNI(CastMetricsHelper)

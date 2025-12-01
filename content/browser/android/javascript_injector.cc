@@ -111,3 +111,5 @@ static jlong JNI_JavascriptInjectorImpl_Init(
 WEB_CONTENTS_USER_DATA_KEY_IMPL(JavascriptInjector);
 
 }  // namespace content
+
+DEFINE_JNI(JavascriptInjectorImpl)

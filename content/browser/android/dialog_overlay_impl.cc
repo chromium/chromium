@@ -355,3 +355,5 @@ JNI_DialogOverlayImpl_LookupSurfaceForTesting(
 }
 
 }  // namespace content
+
+DEFINE_JNI(DialogOverlayImpl)

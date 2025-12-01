@@ -84,3 +84,5 @@ ExtractResourceRequestBodyFromJavaObject(
 }
 
 }  // namespace content
+
+DEFINE_JNI(ResourceRequestBody)

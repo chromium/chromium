@@ -29,3 +29,5 @@ void SystemTimeChangeNotifierAndroid::OnTimeChanged(
 }
 
 }  // namespace chromecast
+
+DEFINE_JNI(SystemTimeChangeNotifierAndroid)

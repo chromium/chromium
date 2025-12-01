@@ -119,3 +119,5 @@ void MenuModelBridge::AddExtensionItems() {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(MenuModelBridge)

@@ -303,3 +303,5 @@ void ResourceManagerImpl::RequestResourceFromJava(AndroidResourceType res_type,
 }
 
 }  // namespace ui
+
+DEFINE_JNI(ResourceManager)

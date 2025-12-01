@@ -76,3 +76,5 @@ static void JNI_MojoTestRule_RunLoop(JNIEnv* env,
 
 }  // namespace android
 }  // namespace mojo
+
+DEFINE_JNI(MojoTestRule)

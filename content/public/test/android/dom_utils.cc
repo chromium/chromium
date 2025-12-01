@@ -30,3 +30,5 @@ static jint JNI_DOMUtils_GetTopControlsShrinkBlinkHeight(
 }
 
 }  // namespace content
+
+DEFINE_JNI(DOMUtils)

@@ -39,3 +39,5 @@ static void JNI_OriginJavaTestHelper_TestOriginEquivalence(JNIEnv* env) {
 }
 
 }  // namespace url
+
+DEFINE_JNI(OriginJavaTestHelper)

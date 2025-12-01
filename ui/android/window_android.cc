@@ -425,3 +425,5 @@ static jlong JNI_WindowAndroid_Init(JNIEnv* env,
 }
 
 }  // namespace ui
+
+DEFINE_JNI(WindowAndroid)

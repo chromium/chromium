@@ -202,3 +202,7 @@ static void JNI_AiCoreSessionWrapper_OnResponse(
 }
 
 }  // namespace on_device_model
+
+DEFINE_JNI(AiCoreSessionWrapper)
+DEFINE_JNI(GenerateOptionsHelper)
+DEFINE_JNI(InputPieceHelper)

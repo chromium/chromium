@@ -101,3 +101,5 @@ ScopedJavaLocalRef<jobject> ToJavaLong(JNIEnv* env, int64_t val) {
 }
 
 }  // namespace jni_zero
+
+DEFINE_JNI(JniUtil)

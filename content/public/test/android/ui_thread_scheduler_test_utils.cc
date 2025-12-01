@@ -17,3 +17,5 @@ static void JNI_UiThreadSchedulerTestUtils_PostBrowserMainLoopStartupTasks(
 }
 
 }  // namespace content
+
+DEFINE_JNI(UiThreadSchedulerTestUtils)

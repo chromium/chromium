@@ -44,3 +44,5 @@ base::android::ScopedJavaLocalRef<jobjectArray> ToImeTextSpanJniArray(
       env, ime_text_span_array);
 }
 }  // namespace content
+
+DEFINE_JNI(ImeTextSpan)

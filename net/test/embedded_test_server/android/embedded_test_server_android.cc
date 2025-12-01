@@ -224,3 +224,5 @@ EmbeddedTestServerAndroid::RequestInfoByPath::operator=(
     const EmbeddedTestServerAndroid::RequestInfoByPath& other) = default;
 
 }  // namespace net::test_server
+
+DEFINE_JNI(EmbeddedTestServerImpl)

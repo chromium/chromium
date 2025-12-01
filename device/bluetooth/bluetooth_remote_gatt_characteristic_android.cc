@@ -338,3 +338,5 @@ void BluetoothRemoteGattCharacteristicAndroid::EnsureDescriptorsCreated()
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeBluetoothRemoteGattCharacteristic)

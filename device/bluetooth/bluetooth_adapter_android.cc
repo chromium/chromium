@@ -564,3 +564,7 @@ void BluetoothAdapterAndroid::RemovePairingDelegateInternal(
     device::BluetoothDevice::PairingDelegate* pairing_delegate) {}
 
 }  // namespace device
+
+DEFINE_JNI(ChromeBluetoothAdapter)
+DEFINE_JNI(ChromeBluetoothScanFilterBuilder)
+DEFINE_JNI(ChromeBluetoothScanFilterList)

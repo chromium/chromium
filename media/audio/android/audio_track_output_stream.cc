@@ -208,3 +208,5 @@ jlong AudioTrackOutputStream::GetAddress(
 }
 
 }  // namespace media
+
+DEFINE_JNI(AudioTrackOutputStream)

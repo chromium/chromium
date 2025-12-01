@@ -579,3 +579,7 @@ void GeolocationProviderImpl::DoStartProvidersOnGeolocationThread() {
 }
 
 }  // namespace device
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(LocationProviderFactory)
+#endif

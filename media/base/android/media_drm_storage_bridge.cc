@@ -200,3 +200,5 @@ void MediaDrmStorageBridge::OnSessionDataLoaded(
 }
 
 }  // namespace media
+
+DEFINE_JNI(MediaDrmStorageBridge)

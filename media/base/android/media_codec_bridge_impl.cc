@@ -997,3 +997,6 @@ void MediaCodecBridgeImpl::ReportAnyErrorToUMA(MediaCodecStatus status) {
 }
 
 }  // namespace media
+
+DEFINE_JNI(MediaCodecBridgeBuilder)
+DEFINE_JNI(MediaCodecBridge)

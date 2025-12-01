@@ -72,3 +72,5 @@ JNI_SurfaceWrapper_getBrowserInputToken(
 }
 
 }  // namespace content.
+
+DEFINE_JNI(SurfaceWrapper)

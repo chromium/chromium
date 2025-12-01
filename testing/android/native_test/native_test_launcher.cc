@@ -182,3 +182,5 @@ void InstallHandlers() {
 
 }  // namespace android
 }  // namespace testing
+
+DEFINE_JNI(NativeTest)

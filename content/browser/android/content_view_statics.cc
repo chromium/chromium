@@ -101,3 +101,5 @@ static void JNI_ContentViewStaticsImpl_SetWebKitSharedTimersSuspended(
     g_suspended_processes_watcher.Pointer()->ResumeWebkitSharedTimers();
   }
 }
+
+DEFINE_JNI(ContentViewStaticsImpl)

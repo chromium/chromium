@@ -54,3 +54,5 @@ HoverType GetPrimaryHoverType() {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(TouchDevice)

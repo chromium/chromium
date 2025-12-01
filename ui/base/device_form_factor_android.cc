@@ -42,3 +42,5 @@ DeviceFormFactor GetDeviceFormFactor() {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(DeviceFormFactor)

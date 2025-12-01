@@ -48,3 +48,5 @@ static ScopedJavaLocalRef<jobject> JNI_ValidationTestUtil_ParseData(
 
 }  // namespace android
 }  // namespace mojo
+
+DEFINE_JNI(ValidationTestUtil)

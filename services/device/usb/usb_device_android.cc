@@ -224,3 +224,5 @@ void UsbDeviceAndroid::OnReadWebUsbDescriptors(
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeUsbDevice)

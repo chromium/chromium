@@ -22,3 +22,5 @@ base::android::ScopedJavaLocalRef<jobject> MediaPosition::CreateJavaObject(
 }
 
 }  // namespace media_session
+
+DEFINE_JNI(MediaPosition)

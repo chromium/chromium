@@ -20,3 +20,5 @@ ScopedJavaLocalRef<jobject> BluetoothAdapterWrapper_CreateWithDefaultAdapter() {
 }
 
 }  // namespace device
+
+DEFINE_JNI(BluetoothAdapterWrapper)

@@ -73,3 +73,5 @@ void ScreenOrientationDelegateAndroid::Unlock(WebContents* web_contents) {
 }
 
 } // namespace content
+
+DEFINE_JNI(ScreenOrientationProviderImpl)

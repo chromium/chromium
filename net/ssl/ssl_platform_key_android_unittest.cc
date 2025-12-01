@@ -161,3 +161,5 @@ TEST(SSLPlatformKeyAndroidSigAlgTest, SignatureAlgorithmsToJavaKeyTypes) {
 }
 
 }  // namespace net
+
+DEFINE_JNI(AndroidKeyStoreTestUtil)

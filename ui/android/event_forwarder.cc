@@ -430,3 +430,5 @@ float EventForwarder::GetCurrentTouchSequenceYOffset() {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(EventForwarder)

@@ -162,3 +162,5 @@ JNI_ContentChildProcessServiceDelegate_RetrieveFileDescriptorsIdsToKeys(
 }
 
 }  // namespace content
+
+DEFINE_JNI(ContentChildProcessServiceDelegate)

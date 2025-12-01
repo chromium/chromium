@@ -236,3 +236,5 @@ void SpeechRecognizerImplAndroid::OnRecognitionEnd(JNIEnv* env) {
 }
 
 }  // namespace content
+
+DEFINE_JNI(SpeechRecognitionImpl)

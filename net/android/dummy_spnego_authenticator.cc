@@ -198,3 +198,5 @@ void DummySpnegoAuthenticator::CheckQueueNotEmpty() {
 
 }  // namespace android
 }  // namespace net
+
+DEFINE_JNI(DummySpnegoAuthenticator)

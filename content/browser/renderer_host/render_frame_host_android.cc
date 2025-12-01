@@ -357,3 +357,5 @@ void RenderFrameHostAndroid::ViewSource(JNIEnv* env) {
 }
 
 }  // namespace content
+
+DEFINE_JNI(RenderFrameHostImpl)

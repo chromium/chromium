@@ -45,3 +45,5 @@ static jlong JNI_UiAndroidFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(UiAndroidFeatureMap)

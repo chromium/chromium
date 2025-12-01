@@ -102,3 +102,5 @@ static void JNI_WatcherImpl_Delete(JNIEnv* env,
 
 }  // namespace android
 }  // namespace mojo
+
+DEFINE_JNI(WatcherImpl)

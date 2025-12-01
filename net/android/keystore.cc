@@ -112,3 +112,5 @@ bool EncryptWithPrivateKey(const JavaRef<jobject>& private_key_ref,
 }
 
 }  // namespace net::android
+
+DEFINE_JNI(AndroidKeyStore)

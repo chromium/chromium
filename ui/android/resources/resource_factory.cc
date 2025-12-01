@@ -35,3 +35,5 @@ static jlong JNI_ResourceFactory_CreateNinePatchBitmapResource(
 }
 
 }  // namespace ui
+
+DEFINE_JNI(ResourceFactory)

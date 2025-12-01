@@ -360,3 +360,7 @@ static jboolean JNI_GoogleServiceAuthError_IsTransientError(JNIEnv* env,
   return IsTransientError(static_cast<GoogleServiceAuthError::State>(state));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(GoogleServiceAuthError)
+#endif

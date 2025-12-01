@@ -505,3 +505,6 @@ void NetworkChangeNotifierDelegateAndroid::
 }
 
 }  // namespace net
+
+DEFINE_JNI(NetworkActiveNotifier)
+DEFINE_JNI(NetworkChangeNotifier)

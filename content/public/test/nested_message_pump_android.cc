@@ -130,3 +130,5 @@ void NestedMessagePumpAndroid::QuitJavaSystemMessageHandler() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(NestedSystemMessageHandler)

@@ -68,3 +68,5 @@ void DestroyShellManager() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(ShellManager)

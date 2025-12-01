@@ -156,3 +156,5 @@ void SelectPopup::SelectMenuItems(JNIEnv* env,
 }
 
 }  // namespace content
+
+DEFINE_JNI(SelectPopup)

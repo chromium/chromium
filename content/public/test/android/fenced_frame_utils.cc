@@ -47,3 +47,5 @@ static ScopedJavaLocalRef<jobject> JNI_FencedFrameUtils_GetLastFencedFrame(
 }
 
 }  // namespace content
+
+DEFINE_JNI(FencedFrameUtils)

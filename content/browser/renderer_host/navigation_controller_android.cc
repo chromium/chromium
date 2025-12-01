@@ -537,3 +537,5 @@ void NavigationControllerAndroid::CopyStateFrom(
 }
 
 }  // namespace content
+
+DEFINE_JNI(NavigationControllerImpl)

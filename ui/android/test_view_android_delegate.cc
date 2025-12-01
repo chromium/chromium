@@ -28,3 +28,5 @@ void TestViewAndroidDelegate::InsetViewportBottom(int bottom) {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(TestViewAndroidDelegate)

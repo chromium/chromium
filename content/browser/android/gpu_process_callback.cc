@@ -48,3 +48,5 @@ JNI_GpuProcessCallback_GetViewSurface(JNIEnv* env, jint surface_id) {
 }
 
 }  // namespace content
+
+DEFINE_JNI(GpuProcessCallback)

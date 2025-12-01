@@ -137,3 +137,5 @@ std::string NavigationHandleProxy::GetMimeType() const {
 }
 
 }  // namespace content
+
+DEFINE_JNI(NavigationHandle)

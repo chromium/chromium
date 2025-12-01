@@ -109,3 +109,5 @@ void UsbServiceAndroid::AddDevice(scoped_refptr<UsbDeviceAndroid> device) {
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeUsbService)

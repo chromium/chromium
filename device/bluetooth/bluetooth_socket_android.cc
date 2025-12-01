@@ -235,3 +235,5 @@ void BluetoothSocketAndroid::Accept(AcceptCompletionCallback success_callback,
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeBluetoothSocket)

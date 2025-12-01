@@ -564,3 +564,5 @@ void ProxyConfigServiceAndroid::ClearProxyOverride(base::OnceClosure callback) {
 }
 
 } // namespace net
+
+DEFINE_JNI(ProxyChangeListener)

@@ -94,3 +94,5 @@ void RenderFrameHostTestExt::NotifyVirtualKeyboardOverlayRect(JNIEnv* env,
 }
 
 }  // namespace content
+
+DEFINE_JNI(RenderFrameHostTestExt)

@@ -789,3 +789,5 @@ void VideoCaptureDeviceAndroid::DoSetPhotoOptions(
 }
 
 }  // namespace media
+
+DEFINE_JNI(VideoCapture)

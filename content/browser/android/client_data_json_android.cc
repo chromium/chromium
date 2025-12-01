@@ -83,3 +83,5 @@ JNI_ClientDataJsonImpl_BuildClientDataJson(
 }
 
 }  // namespace content
+
+DEFINE_JNI(ClientDataJsonImpl)

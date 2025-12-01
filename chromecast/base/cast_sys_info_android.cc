@@ -128,3 +128,5 @@ std::string CastSysInfoAndroid::GetAndroidProperty(
 }
 
 }  // namespace chromecast
+
+DEFINE_JNI(CastSysInfoAndroid)

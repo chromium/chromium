@@ -90,3 +90,7 @@ void ShapeDetectionService::BindTextDetection(
 }
 
 }  // namespace shape_detection
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(InterfaceRegistrar)
+#endif

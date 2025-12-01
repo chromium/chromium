@@ -418,3 +418,5 @@ std::vector<ResourceBundle::FdAndRegion> SwapAndroidGlobalsForTesting(
 }
 
 }  // namespace ui
+
+DEFINE_JNI(ResourceBundle)

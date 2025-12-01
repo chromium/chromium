@@ -201,3 +201,5 @@ VideoCaptureFormats VideoCaptureDeviceFactoryAndroid::GetSupportedFormats(
 }
 
 }  // namespace media
+
+DEFINE_JNI(VideoCaptureFactory)

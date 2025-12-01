@@ -249,3 +249,5 @@ printing::NativeDrawingContext PrintingContextAndroid::context() const {
 }
 
 }  // namespace printing
+
+DEFINE_JNI(PrintingContext)

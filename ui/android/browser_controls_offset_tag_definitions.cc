@@ -93,3 +93,7 @@ BrowserControlsOffsetTagDefinitions FromJavaBrowserControlsOffsetTagDefinitions(
 }
 
 }  // namespace ui
+
+DEFINE_JNI(BrowserControlsOffsetTagConstraints)
+DEFINE_JNI(BrowserControlsOffsetTagDefinitions)
+DEFINE_JNI(OffsetTagConstraints)

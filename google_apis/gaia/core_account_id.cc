@@ -108,3 +108,7 @@ CoreAccountId ConvertFromJavaCoreAccountId(
       Java_CoreAccountId_getId(env, j_core_account_id));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(CoreAccountId)
+#endif

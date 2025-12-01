@@ -80,3 +80,5 @@ void BackgroundSyncNetworkObserverAndroid::RegisterWithNetworkConnectionTracker(
     network::NetworkConnectionTracker* network_connection_tracker) {}
 
 }  // namespace content
+
+DEFINE_JNI(BackgroundSyncNetworkObserver)

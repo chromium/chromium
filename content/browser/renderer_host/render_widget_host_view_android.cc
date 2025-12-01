@@ -3820,3 +3820,5 @@ bool RenderWidgetHostViewAndroid::IsHitTestReady() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(RenderWidgetHostViewImpl)

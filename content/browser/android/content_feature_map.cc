@@ -75,3 +75,5 @@ static jlong JNI_ContentFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace content::android
+
+DEFINE_JNI(ContentFeatureMap)

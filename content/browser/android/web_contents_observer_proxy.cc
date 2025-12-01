@@ -379,3 +379,6 @@ void WebContentsObserverProxy::WasDiscarded() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(LoadCommittedDetails)
+DEFINE_JNI(WebContentsObserverProxy)

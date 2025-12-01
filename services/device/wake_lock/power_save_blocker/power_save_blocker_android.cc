@@ -88,3 +88,5 @@ void PowerSaveBlocker::InitDisplaySleepBlocker(ui::ViewAndroid* view_android) {
 }
 
 }  // namespace device
+
+DEFINE_JNI(PowerSaveBlocker)

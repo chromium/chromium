@@ -24,3 +24,5 @@ static jboolean JNI_LoadUrlParams_IsDataScheme(
 }
 
 }  // namespace content
+
+DEFINE_JNI(LoadUrlParams)

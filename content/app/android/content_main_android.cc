@@ -84,3 +84,5 @@ void InitChildProcessCommon(int32_t cpu_count, int64_t cpu_features) {
 }
 
 }  // namespace content
+
+DEFINE_JNI(ContentMain)

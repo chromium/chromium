@@ -148,3 +148,7 @@ device::mojom::DeviceService& GetDeviceService() {
 }
 
 }  // namespace content
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(ContentNfcDelegate)
+#endif

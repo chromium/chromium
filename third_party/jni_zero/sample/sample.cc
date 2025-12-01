@@ -33,3 +33,5 @@ static ScopedJavaLocalRef<jobject> JNI_Sample_CallBackIntoInstance(
 }
 
 }  // namespace jni_zero::sample
+
+DEFINE_JNI(Sample)

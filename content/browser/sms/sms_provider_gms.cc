@@ -115,3 +115,5 @@ void SmsProviderGms::SetClientAndWindowForTesting(
 }
 
 }  // namespace content
+
+DEFINE_JNI(SmsProviderGms)

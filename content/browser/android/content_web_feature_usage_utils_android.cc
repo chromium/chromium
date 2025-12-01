@@ -25,3 +25,5 @@ static void JNI_ContentWebFeatureUsageUtils_LogWebFeatureForCurrentPage(
 }
 
 }  // namespace content
+
+DEFINE_JNI(ContentWebFeatureUsageUtils)
