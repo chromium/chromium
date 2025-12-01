@@ -40,8 +40,6 @@ namespace variations {
 class SyntheticTrialRegistry;
 }
 
-class IdentifiabilityStudyState;
-
 namespace metrics {
 
 class MetricsLogUploader;
@@ -80,10 +78,6 @@ class MetricsServiceClient {
 
   // Returns the PumaService instance that this client is associated with.
   virtual metrics::private_metrics::PumaService* GetPumaService();
-
-  // Returns the IdentifiabilityStudyState instance that this client is
-  // associated with. Might be nullptr.
-  virtual IdentifiabilityStudyState* GetIdentifiabilityStudyState();
 
   // Returns the StructuredMetricsService instance that this client is
   // associated with.

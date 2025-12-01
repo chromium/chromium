@@ -6,7 +6,6 @@ source_set("headers") {
   sources = [
     "encountered_surface_tracker.h",
     "identifiability_study_group_settings.h",
-    "identifiability_study_state.h",
     "mesa_distribution.h",
     "privacy_budget_prefs.h",
     "representative_surface_set.h",
@@ -29,7 +28,6 @@ source_set("privacy_budget") {
   sources = [
     "encountered_surface_tracker.cc",
     "identifiability_study_group_settings.cc",
-    "identifiability_study_state.cc",
     "privacy_budget_prefs.cc",
     "representative_surface_set.cc",
     "surface_set_equivalence.cc",
@@ -64,9 +62,6 @@ source_set("unit_tests") {
   sources = [
     "encountered_surface_tracker_unittest.cc",
     "identifiability_study_group_settings_unittest.cc",
-    "identifiability_study_state_unittest.cc",
-    "inspectable_identifiability_study_state.cc",
-    "inspectable_identifiability_study_state.h",
     "mesa_distribution_unittest.cc",
     "representative_surface_set_unittest.cc",
     "surface_set_equivalence_unittest.cc",

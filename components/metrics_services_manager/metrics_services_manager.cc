@@ -60,12 +60,6 @@ ukm::UkmService* MetricsServicesManager::GetUkmService() {
   return GetMetricsServiceClient()->GetUkmService();
 }
 
-IdentifiabilityStudyState*
-MetricsServicesManager::GetIdentifiabilityStudyState() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return GetMetricsServiceClient()->GetIdentifiabilityStudyState();
-}
-
 metrics::structured::StructuredMetricsService*
 MetricsServicesManager::GetStructuredMetricsService() {
   DCHECK(thread_checker_.CalledOnValidThread());

@@ -100,11 +100,6 @@ metrics::private_metrics::PumaService* MetricsServiceClient::GetPumaService() {
   return nullptr;
 }
 
-IdentifiabilityStudyState*
-MetricsServiceClient::GetIdentifiabilityStudyState() {
-  return nullptr;
-}
-
 structured::StructuredMetricsService*
 MetricsServiceClient::GetStructuredMetricsService() {
   return nullptr;

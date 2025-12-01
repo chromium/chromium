@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/metrics/incognito_observer.h"
 #include "chrome/browser/metrics/metrics_memory_details.h"
-#include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -102,7 +101,6 @@ class ChromeMetricsServiceClient
   ukm::UkmService* GetUkmService() override;
   metrics::dwa::DwaService* GetDwaService() override;
   metrics::private_metrics::PumaService* GetPumaService() override;
-  IdentifiabilityStudyState* GetIdentifiabilityStudyState() override;
   metrics::structured::StructuredMetricsService* GetStructuredMetricsService()
       override;
   void SetMetricsClientId(const std::string& client_id) override;
@@ -244,9 +242,6 @@ class ChromeMetricsServiceClient
   void CreateStructuredMetricsService();
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // Chrome's privacy budget identifiability study state.
-  std::unique_ptr<IdentifiabilityStudyState> identifiability_study_state_;
 
   // Weak pointer to the MetricsStateManager.
   const raw_ptr<metrics::MetricsStateManager> metrics_state_manager_;

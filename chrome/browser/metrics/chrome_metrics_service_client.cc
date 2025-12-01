@@ -54,7 +54,6 @@
 #include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 #include "chrome/browser/performance_manager/metrics/metrics_provider_common.h"
-#include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -587,11 +586,6 @@ ukm::UkmService* ChromeMetricsServiceClient::GetUkmService() {
   return ukm_service_.get();
 }
 
-IdentifiabilityStudyState*
-ChromeMetricsServiceClient::GetIdentifiabilityStudyState() {
-  return identifiability_study_state_.get();
-}
-
 metrics::structured::StructuredMetricsService*
 ChromeMetricsServiceClient::GetStructuredMetricsService() {
   return structured_metrics_service_.get();
@@ -724,9 +718,6 @@ void ChromeMetricsServiceClient::Initialize() {
 
   if (IsMetricsReportingForceEnabled() ||
       base::FeatureList::IsEnabled(ukm::kUkmFeature)) {
-    identifiability_study_state_ =
-        std::make_unique<IdentifiabilityStudyState>(local_state);
-
     ukm_service_ = std::make_unique<ukm::UkmService>(
         local_state, this,
         MakeDemographicMetricsProvider(

@@ -116,10 +116,6 @@ class ChromeMetricsServiceClientTest : public testing::Test {
     ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    // ChromeMetricsServiceClient::Initialize() initializes
-    // IdentifiabilityStudySettings as part of creating the
-    // PrivacyBudgetUkmEntryFilter. Reset them after the test.
-    blink::IdentifiabilityStudySettings::ResetStateForTesting();
   }
 
  protected:

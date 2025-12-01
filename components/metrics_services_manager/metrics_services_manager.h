@@ -44,8 +44,6 @@ class SyntheticTrialRegistry;
 class VariationsService;
 }  // namespace variations
 
-class IdentifiabilityStudyState;
-
 namespace metrics_services_manager {
 
 class MetricsServicesManagerClient;
@@ -89,10 +87,6 @@ class MetricsServicesManager {
 
   // Returns the PumaService, creating it if it hasn't been created yet.
   metrics::private_metrics::PumaService* GetPumaService();
-
-  // Returns the IdentifiabilityStudyState, if it has been created, and nullptr
-  // otherwise.
-  IdentifiabilityStudyState* GetIdentifiabilityStudyState();
 
   // Returns the StructuredMetricsService associated with the
   // |metrics_service_client_|.

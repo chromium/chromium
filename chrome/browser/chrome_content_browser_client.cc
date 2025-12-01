@@ -134,7 +134,6 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/preloading/prerender/prerender_web_contents_delegate.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
-#include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1740,13 +1739,6 @@ void ChromeContentBrowserClient::RenderProcessWillLaunch(
       CrashMemoryMetricsCollector::kCrashMemoryMetricsCollectorKey,
       std::make_unique<CrashMemoryMetricsCollector>(host));
 #endif
-
-  IdentifiabilityStudyState* identifiability_study_state =
-      g_browser_process->GetMetricsServicesManager()
-          ->GetIdentifiabilityStudyState();
-  if (identifiability_study_state) {
-    identifiability_study_state->InitializeRenderer(host);
-  }
 
   // The RendereUpdater might be null for some irregular profiles, e.g. the
   // System Profile.
