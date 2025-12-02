@@ -2956,6 +2956,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="TooBigDictionary"/>
 </enum>
 
+<!-- LINT.IfChange(SharedDictionaryTransactionOutcome) -->
+
+<enum name="SharedDictionaryTransactionOutcome">
+  <int value="0" label="Dictionary Used (Brotli)"/>
+  <int value="1" label="Dictionary Used (Zstandard)"/>
+  <int value="2" label="Dictionary Not Used"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/shared_dictionary/shared_dictionary_transaction_outcome.h:SharedDictionaryTransactionOutcome) -->
+
 <enum name="SkipCompletionPortOnSuccessOutcome">
   <int value="0"
       label="Not all available transport protocols return Installable File

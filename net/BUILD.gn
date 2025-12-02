@@ -943,6 +943,7 @@ component("net") {
     "shared_dictionary/shared_dictionary_network_transaction.h",
     "shared_dictionary/shared_dictionary_network_transaction_factory.cc",
     "shared_dictionary/shared_dictionary_network_transaction_factory.h",
+    "shared_dictionary/shared_dictionary_transaction_outcome.h",
     "socket/client_socket_factory.cc",
     "socket/client_socket_factory.h",
     "socket/client_socket_handle.cc",

@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "crypto/hash.h"
 #include "net/base/features.h"
@@ -23,6 +24,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/shared_dictionary/shared_dictionary.h"
 #include "net/shared_dictionary/shared_dictionary_constants.h"
+#include "net/shared_dictionary/shared_dictionary_transaction_outcome.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
@@ -252,6 +254,7 @@ class SharedDictionaryNetworkTransactionTest : public ::testing::Test {
 };
 
 TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {
+  base::HistogramTester histogram_tester;
   MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
@@ -268,6 +271,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {
                                 NetLogWithSource()),
               test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionary.Transaction.Outcome",
+      SharedDictionaryTransactionOutcome::kDictionaryUsedBrotli, 1);
 
   scoped_refptr<IOBufferWithSize> buf =
       base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
@@ -281,6 +287,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, NotAllowedToUseDictionary) {
+  base::HistogramTester histogram_tester;
   // Change MockTransaction to check that there is no available-dictionary
   // header.
   scoped_mock_transaction_->handler =
@@ -303,6 +310,8 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NotAllowedToUseDictionary) {
                                 NetLogWithSource()),
               test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
+  histogram_tester.ExpectTotalCount("Net.SharedDictionary.Transaction.Outcome",
+                                    0);
 
   scoped_refptr<IOBufferWithSize> buf =
       base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
@@ -664,6 +673,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, WithoutValidLoadFlag) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
+  base::HistogramTester histogram_tester;
   // Change MockTransaction to remove `content-encoding: dcb`.
   scoped_mock_transaction_->response_headers = "";
 
@@ -683,6 +693,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
                                 NetLogWithSource()),
               test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionary.Transaction.Outcome",
+      SharedDictionaryTransactionOutcome::kDictionaryNotUsed, 1);
 
   scoped_refptr<IOBufferWithSize> buf =
       base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
@@ -1074,6 +1087,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, GetLoadState) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, SharedZstd) {
+  base::HistogramTester histogram_tester;
   // Override MockTransaction to use `content-encoding: dcz`.
   scoped_mock_transaction_.reset();
   ScopedMockTransaction new_mock_transaction(kZstdDictionaryTestTransaction);
@@ -1094,6 +1108,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SharedZstd) {
                                 NetLogWithSource()),
               test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionary.Transaction.Outcome",
+      SharedDictionaryTransactionOutcome::kDictionaryUsedZstandard, 1);
 
   scoped_refptr<IOBufferWithSize> buf =
       base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);

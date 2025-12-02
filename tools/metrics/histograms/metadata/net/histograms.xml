@@ -7233,6 +7233,20 @@ chromium-metrics-reviews@google.com.
   <token key="HostType" variants="HostType"/>
 </histogram>
 
+<histogram name="Net.SharedDictionary.Transaction.Outcome"
+    enum="SharedDictionaryTransactionOutcome" expires_after="2026-11-11">
+  <owner>wbjacksonjr@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    Tracks the outcome of a network transaction only when a matching shared
+    dictionary was found and advertised to the server in the request headers. It
+    is emitted after the server's response headers have been received. The
+    metric records whether the server actually used the dictionary for
+    compression, which type of compression was used, or whether it chose not to
+    use the dictionary.
+  </summary>
+</histogram>
+
 <histogram name="Net.SharedDictionaryManagerOnDisk.CacheMaxSize" units="MB"
     expires_after="2026-07-01">
   <owner>pmeenan@chromium.org</owner>
