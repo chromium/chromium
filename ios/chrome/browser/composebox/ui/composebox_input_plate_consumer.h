@@ -19,11 +19,11 @@
 - (void)updateState:(ComposeboxInputItemState)state
     forItemWithIdentifier:(const base::UnguessableToken&)identifier;
 
-// Updates the mic and lens button visibility.
-- (void)hideLensAndMicButton:(BOOL)hidden;
+// Sets whether to show the Send button vs the other enabled controls.
+- (void)setShowsSendButton:(BOOL)showsSendButton;
 
-// Updates the send button visibility.
-- (void)hideSendButton:(BOOL)hidden;
+// Sets whether to show the extended controls (Plus button and Lens button).
+- (void)setShowsExtendedControls:(BOOL)showsExtendedControls;
 
 // Sets whether AI mode is enabled.
 - (void)setAIModeEnabled:(BOOL)enabled;

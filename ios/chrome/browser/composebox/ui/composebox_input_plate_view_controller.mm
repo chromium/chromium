@@ -167,6 +167,10 @@ UIImage* SendButtonImage(BOOL highlighted) {
   UIView* _trailingCarouselFadeView;
   /// The carousel container.
   UIView* _carouselContainer;
+  /// Whether the Send button should be shown, hiding the other controls.
+  BOOL _showsSendButton;
+  /// Whether the extended controls (Plus and Lens button) should be shown.
+  BOOL _showsExtendedControls;
   /// Attach current tab action state.
   BOOL _attachCurrentTabActionHidden;
   /// Attach tabs actions state.
@@ -237,6 +241,7 @@ UIImage* SendButtonImage(BOOL highlighted) {
   _plusButton = [self createPlusButton];
   _sendButton = [self createSendButton];
   [self updatePlusButtonItems];
+  [self updateButtonsVisibility];
   [self setupCarouselContainer];
 
   _inputPlateStackView =
@@ -373,13 +378,20 @@ UIImage* SendButtonImage(BOOL highlighted) {
   }
 }
 
-- (void)hideLensAndMicButton:(BOOL)hidden {
-  _micButton.hidden = hidden;
-  _lensButton.hidden = hidden;
+- (void)setShowsSendButton:(BOOL)showsSendButton {
+  if (_showsSendButton == showsSendButton) {
+    return;
+  }
+  _showsSendButton = showsSendButton;
+  [self updateButtonsVisibility];
 }
 
-- (void)hideSendButton:(BOOL)hidden {
-  _sendButton.hidden = hidden;
+- (void)setShowsExtendedControls:(BOOL)showsExtendedControls {
+  if (_showsExtendedControls == showsExtendedControls) {
+    return;
+  }
+  _showsExtendedControls = showsExtendedControls;
+  [self updateButtonsVisibility];
 }
 
 - (void)setCompact:(BOOL)compact {
@@ -403,6 +415,7 @@ UIImage* SendButtonImage(BOOL highlighted) {
   [self updatePlaceholderText];
   [self updateAIMButtonAppearance];
   [self updatePlusButtonItems];
+  [self updateButtonsVisibility];
   [self triggerGlowEffect];
 }
 
@@ -679,6 +692,14 @@ UIImage* SendButtonImage(BOOL highlighted) {
   [_inputPlateContainerView.layer setNeedsDisplay];
 }
 
+- (void)updateButtonsVisibility {
+  _plusButton.hidden = !_showsExtendedControls;
+  _aimButton.hidden = !self.AIModeEnabled;
+  _micButton.hidden = _showsSendButton;
+  _lensButton.hidden = _showsSendButton || !_showsExtendedControls;
+  _sendButton.hidden = !_showsSendButton;
+}
+
 /// Updates the AIM button taking into account if the button should be minimize
 /// or not or if the mode is enable or not.
 - (void)updateAIMButtonAppearance {
@@ -711,8 +732,6 @@ UIImage* SendButtonImage(BOOL highlighted) {
     config.background.backgroundColor =
         [_theme aimButtonBackgroundColorWithAIMEnabled:YES];
     config.baseForegroundColor = [_theme aimButtonTextColorWithAIMEnabled:YES];
-
-    _aimButton.hidden = NO;
   } else {
     config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 8);
     config.background.backgroundColor =
@@ -723,9 +742,8 @@ UIImage* SendButtonImage(BOOL highlighted) {
       _aimButton.layer.borderWidth = 1;
       _aimButton.layer.borderColor = [UIColor colorNamed:kGrey200Color].CGColor;
     }
-
-    _aimButton.hidden = YES;
   }
+  [self updateButtonsVisibility];
 
   _aimButton.configuration = config;
 

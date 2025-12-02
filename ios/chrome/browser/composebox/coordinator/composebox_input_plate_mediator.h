@@ -23,6 +23,7 @@
 class FaviconLoader;
 class GURL;
 class PersistTabContextBrowserAgent;
+class TemplateURLService;
 class WebStateList;
 
 namespace contextual_search {
@@ -65,7 +66,8 @@ class ContextualSearchSessionHandle;
              persistTabContextAgent:
                  (PersistTabContextBrowserAgent*)persistTabContextAgent
                         isIncognito:(BOOL)isIncognito
-                         modeHolder:(ComposeboxModeHolder*)modeHolder;
+                         modeHolder:(ComposeboxModeHolder*)modeHolder
+                 templateURLService:(TemplateURLService*)templateURLService;
 
 - (void)disconnect;
 
