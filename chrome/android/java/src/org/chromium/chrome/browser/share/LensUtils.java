@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 /** This class provides utilities for intenting into Google Lens. */
-// TODO(crbug.com/40160855): Consolidate param-checks into a single function.
 @NullMarked
 public class LensUtils {
     private static final String LOG_UKM_PARAM_NAME = "logUkm";
