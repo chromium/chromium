@@ -22,7 +22,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
@@ -71,7 +70,6 @@ public class PerformancePTTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/464298925")
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION})
     public void zeroCompositorFramesWhileScrollingBrowserControls() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
