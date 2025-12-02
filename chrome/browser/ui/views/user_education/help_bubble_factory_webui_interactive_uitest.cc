@@ -211,13 +211,10 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
 };
 
 // TODO(https://crbug.com/463379523): This test is flaky on CI on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ShowFloatingHelpBubble DISABLED_ShowFloatingHelpBubble
-#else
-#define MAYBE_ShowFloatingHelpBubble ShowFloatingHelpBubble
-#endif
+// TODO(https://crbug.com/463867599): This test is flaky/failing on CI on
+// Windows, Linux, and ChromeOS.
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
-                       MAYBE_ShowFloatingHelpBubble) {
+                       DISABLED_ShowFloatingHelpBubble) {
   const DeepQuery kPathToAddCurrentTabElement{"reading-list-app",
                                               "#currentPageActionButton"};
   gfx::Rect bubble_rect;
