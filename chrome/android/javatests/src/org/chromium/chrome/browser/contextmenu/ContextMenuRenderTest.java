@@ -158,7 +158,6 @@ public class ContextMenuRenderTest {
     @Feature({"RenderTest"})
     public void testContextMenu_itemsFromExtensions() throws IOException {
         // Test types of items that can be registered by extensions.
-        // TODO(crbug.com/418807464): Add more types of items here once they are ready.
 
         // We choose an arbitrary icon for testing.
         Bitmap testBitmap = drawableToBitmap(sActivity.getDrawable(R.drawable.lens_icon));
