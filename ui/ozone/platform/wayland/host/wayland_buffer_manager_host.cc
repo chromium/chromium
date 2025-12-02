@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"

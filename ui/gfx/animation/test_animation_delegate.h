@@ -5,6 +5,7 @@
 #ifndef UI_GFX_ANIMATION_TEST_ANIMATION_DELEGATE_H_
 #define UI_GFX_ANIMATION_TEST_ANIMATION_DELEGATE_H_
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "ui/gfx/animation/animation_delegate.h"
 

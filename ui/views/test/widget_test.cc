@@ -4,6 +4,7 @@
 
 #include "ui/views/test/widget_test.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"

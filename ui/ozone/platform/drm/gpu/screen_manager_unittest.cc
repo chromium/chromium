@@ -15,6 +15,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
