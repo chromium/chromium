@@ -1293,6 +1293,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.sync") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//base:base_java_test_support",
     "//chrome/browser/ui/android/extensions:java",
     "//chrome/browser/user_education:java",
     "//components/sync/android:sync_java",

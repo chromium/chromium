@@ -25,9 +25,9 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
@@ -42,7 +42,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 
 /** Tests for {@link PersonalizeGoogleServicesSettings}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "Affects sign-in state, which is global.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PersonalizeGoogleServicesSettingsTest {
     private static final int RENDER_TEST_REVISION = 1;

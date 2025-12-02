@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.app.appmenu;
 
 import static org.junit.Assert.assertEquals;
 
-import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType.DIVIDER;
 
 import android.view.KeyEvent;
@@ -30,11 +29,11 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -69,7 +68,7 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 
 /** Tests tabbed mode app menu popup. */
-@Batch(PER_CLASS)
+@DoNotBatch(reason = "Affects sign-in state, which is global.")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // Prevents the sync UI from exposing an error due to outdated GmsCore
