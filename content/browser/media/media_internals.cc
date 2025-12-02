@@ -42,7 +42,6 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/media_log_record.h"
 #include "media/base/media_switches.h"
-#include "media/webrtc/webrtc_features.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/sandbox_type.h"
