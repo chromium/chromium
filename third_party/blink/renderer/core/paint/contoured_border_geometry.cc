@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "ui/gfx/geometry/line_f.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -55,20 +56,15 @@ gfx::QuadF ComputeHullQuad(const ContouredRect::Corner& corner) {
   const gfx::PointF perpendicular_line =
       half_corner + gfx::LineF(corner.Outer(), half_corner).Normal();
   const gfx::LineF tangent_line(half_corner, perpendicular_line);
-  auto intersection_point_1 =
-      tangent_line.IntersectionWith({corner.Start(), corner.Center()});
-  auto intersection_point_2 =
-      tangent_line.IntersectionWith({corner.End(), corner.Center()});
-  if (!intersection_point_1 || !intersection_point_2) {
-    // See crbug.com/451657549. This dump should help reproduce the crashing
-    // scenario.
-    DUMP_WILL_BE_CHECK(intersection_point_1 && intersection_point_2)
-        << "Invalid corner for hull detection " << corner.ToString();
-    return gfx::QuadF(corner.BoundingBox());
-  }
+  const gfx::PointF intersection_point_1 =
+      tangent_line.IntersectionWith({corner.Start(), corner.Center()})
+          .value_or(corner.Center());
+  const gfx::PointF intersection_point_2 =
+      tangent_line.IntersectionWith({corner.End(), corner.Center()})
+          .value_or(corner.Center());
 
-  return gfx::QuadF(corner.Start(), *intersection_point_1,
-                    *intersection_point_2, corner.End());
+  return gfx::QuadF(corner.Start(), intersection_point_1, intersection_point_2,
+                    corner.End());
 }
 
 gfx::QuadF ScaleQuadFromOrigin(const gfx::QuadF& quad,
