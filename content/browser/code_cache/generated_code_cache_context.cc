@@ -151,10 +151,13 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
   } else {
 #if !BUILDFLAG(IS_FUCHSIA)
     // Target the same amount of disk space used for persistent_cache as is used
-    // for disk_cache.
-    int64_t disk_cache_max_size = disk_cache::PreferredCacheSize(
-        base::SysInfo::AmountOfFreeDiskSpace(path).value_or(-1),
-        net::GENERATED_BYTE_CODE_CACHE);
+    // for disk_cache or use `max_bytes` if provided.
+    int64_t disk_cache_max_size =
+        max_bytes > 0
+            ? max_bytes
+            : disk_cache::PreferredCacheSize(
+                  base::SysInfo::AmountOfFreeDiskSpace(path).value_or(-1),
+                  net::GENERATED_BYTE_CODE_CACHE);
 
     persistent_cache_collection_ = {
         new persistent_cache::PersistentCacheCollection(
