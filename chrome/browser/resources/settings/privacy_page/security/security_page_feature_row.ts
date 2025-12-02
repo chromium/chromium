@@ -43,8 +43,6 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
 
       numericUncheckedValues: Array,
 
-      numericCheckedValue: Number,
-
       stateTextMap: Object,
 
       /* The computed string label for the current pref state. */
@@ -60,7 +58,6 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
   declare pref: chrome.settingsPrivate.PrefObject;
   declare subLabel: string;
   declare numericUncheckedValues: number[];
-  declare numericCheckedValue: number;
   declare stateTextMap: Record<string, string>;
   declare private currentStateLabel_: string;
 

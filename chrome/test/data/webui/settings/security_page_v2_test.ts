@@ -5,8 +5,8 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrExpandButtonElement, SettingsSecurityPageV2Element} from 'chrome://settings/lazy_load.js';
-import {HttpsFirstModeSetting, SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
+import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import type {ControlledRadioButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, Router, routes, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -184,89 +184,6 @@ suite('Main', function() {
         page.getPref('generated.password_leak_detection').value,
         `Password leak detection should not be changed by switching to
          Standard bundle`);
-  });
-
-
-  test('HttpsFirstModeRowRadioButtonsDisabledWhenOff', async function() {
-    page.setPrefValue(
-        'generated.https_first_mode_enabled', HttpsFirstModeSetting.DISABLED);
-    await flushTasks();
-
-    const row = page.$.httpsFirstModeRow;
-    assertFalse(
-        (row as any).expanded, 'Initially, the row should be collapsed');
-
-    const expandButton =
-        row.shadowRoot!.querySelector<CrExpandButtonElement>('#expandButton');
-    assertTrue(!!expandButton);
-    expandButton.click();
-    await flushTasks();
-    assertTrue((row as any).expanded, 'Row should be expanded');
-
-    // The toggle is visible and set to OFF because the row is expanded and
-    // HTTPS First Mode is DISABLED, respectively.
-    const toggle = row.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#toggleButton');
-    assertTrue(!!toggle);
-    assertTrue(isVisible(toggle), 'Toggle should be visible');
-    assertFalse(toggle.checked, 'Toggle should be set to off');
-
-    // The radio buttons are disabled because HTTPS First Mode is DISABLED.
-    const balancedButton =
-        page.shadowRoot!.querySelector<ControlledRadioButtonElement>(
-            '#httpsFirstModeEnabledBalanced');
-    assertTrue(!!balancedButton);
-    assertTrue(
-        (balancedButton as any).disabled,
-        'Balanced radio button should be disabled');
-    const strictButton =
-        page.shadowRoot!.querySelector<ControlledRadioButtonElement>(
-            '#httpsFirstModeEnabledStrict');
-    assertTrue(!!strictButton);
-    assertTrue(
-        (strictButton as any).disabled,
-        'Strict radio button should be disabled');
-
-    toggle.click();
-    await flushTasks();
-
-    // The toggle is set to ON, so the radio buttons are now enabled.
-    assertFalse(
-        (balancedButton as any).disabled,
-        'Balanced radio button should be enabled');
-    assertFalse(
-        (strictButton as any).disabled,
-        'Strict radio button should be enabled');
-  });
-
-  test('HttpsFirstModeDefaultBalancedWhenToggledOn', async function() {
-    page.setPrefValue(
-        'generated.https_first_mode_enabled', HttpsFirstModeSetting.DISABLED);
-    await flushTasks();
-
-    const row = page.$.httpsFirstModeRow;
-
-    const expandButton =
-        row.shadowRoot!.querySelector<CrExpandButtonElement>('#expandButton');
-    assertTrue(!!expandButton);
-    expandButton.click();
-    await flushTasks();
-    assertTrue((row as any).expanded, 'Row should be expanded');
-
-    const toggle = row.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#toggleButton');
-    assertTrue(!!toggle);
-    assertFalse(toggle.checked, 'Toggle should be OFF');
-
-    toggle.click();
-    await flushTasks();
-    assertTrue(toggle.checked, 'Toggle should be ON');
-
-    // The pref should default to ENABLED_BALANCED.
-    assertEquals(
-        HttpsFirstModeSetting.ENABLED_BALANCED,
-        page.getPref('generated.https_first_mode_enabled').value,
-        'HTTPS First Mode should default to ENABLED_BALANCED when enabled');
   });
 });
 

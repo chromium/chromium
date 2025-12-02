@@ -43,21 +43,9 @@ export enum SecuritySettingsBundleSetting {
 }
 // LINT.ThenChange(/components/safe_browsing/core/common/safe_browsing_prefs.h:SecuritySettingsBundleSetting)
 
-/** Enumeration of all HTTPS-First Mode setting states.*/
-// LINT.IfChange(HttpsFirstModeSetting)
-export enum HttpsFirstModeSetting {
-  DISABLED = 0,
-  // DEPRECATED: A separate Incognito setting never shipped.
-  // ENABLED_INCOGNITO = 1,
-  ENABLED_FULL = 2,
-  ENABLED_BALANCED = 3,
-}
-// LINT.ThenChange(/chrome/browser/ssl/https_first_mode_settings_tracker.h)
-
 export interface SettingsSecurityPageV2Element {
   $: {
     bundlesRadioGroup: SettingsRadioGroupElement,
-    httpsFirstModeRow: SecurityPageFeatureRowElement,
     passwordsLeakToggle: SettingsToggleButtonElement,
     resetEnhancedBundleToDefaultsButton: CrButtonElement,
     resetStandardBundleToDefaultsButton: CrButtonElement,
@@ -93,11 +81,6 @@ export class SettingsSecurityPageV2Element extends
         value: SafeBrowsingSetting,
       },
 
-      httpsFirstModeSettingEnum_: {
-        type: Object,
-        value: HttpsFirstModeSetting,
-      },
-
       isResetStandardBundleToDefaultsButtonVisible_: {
         type: Boolean,
         value: false,
@@ -130,11 +113,6 @@ export class SettingsSecurityPageV2Element extends
               loadTimeData.getString('securityFeatureRowStateOff'),
         }),
       },
-
-      httpsFirstModeUncheckedValues_: {
-        type: Array,
-        value: () => [HttpsFirstModeSetting.DISABLED],
-      },
     };
   }
 
@@ -152,7 +130,6 @@ export class SettingsSecurityPageV2Element extends
   declare private isResetEnhancedBundleToDefaultsButtonVisible_: boolean;
   declare private safeBrowsingOff_: SafeBrowsingSetting[];
   declare private safeBrowsingStateTextMap_: Object;
-  declare private httpsFirstModeUncheckedValues_: HttpsFirstModeSetting[];
 
   private lastFocusTime_: number|undefined;
   private totalTimeInFocus_: number = 0;
@@ -349,10 +326,6 @@ export class SettingsSecurityPageV2Element extends
         'generated.safe_browsing',
         this.getDefaultSafeBrowsingValue_(bundleSetting));
     this.isResettingToDefaults_ = false;
-  }
-
-  private isHttpsFirstModeEnabled_(value: number): boolean {
-    return value !== HttpsFirstModeSetting.DISABLED;
   }
 }
 

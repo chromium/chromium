@@ -13,8 +13,7 @@
 <template is="dom-if" if="[[expanded]]" restamp>
   <settings-toggle-button id="toggleButton" pref="{{pref}}" label="[[label]]"
       sub-label="[[subLabel]]"
-      numeric-unchecked-values="[[numericUncheckedValues]]"
-      numeric-checked-value="[[numericCheckedValue]]">
+      numeric-unchecked-values="[[numericUncheckedValues]]">
     <div slot="more-actions-after">
       <cr-expand-button id="expandButton" expanded="{{expanded}}">
       </cr-expand-button>
