@@ -873,44 +873,148 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTestHighDPI,
   // clang-format on
 }
 
-// Test for the above behavior when the killswitch is turned off. i.e. that the
-// state change callback invokes before performActions resolves.
-class GlicActorCallbackOrderKillSwitchGeneralUiTest
-    : public GlicActorCallbackOrderGeneralUiTest {
- public:
-  GlicActorCallbackOrderKillSwitchGeneralUiTest() {
-    feature_list_.InitAndDisableFeature(
-        actor::kGlicPerformActionsReturnsBeforeStateChange);
-  }
-
-  ~GlicActorCallbackOrderKillSwitchGeneralUiTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(GlicActorCallbackOrderKillSwitchGeneralUiTest,
-                       StateChangeBeforePerformActionsResolves) {
+IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ScreenshotInMinimizedWindow) {
+  EnableScreenshotsInContext();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kIsMinimizedState);
 
+  const GURL task_url = embedded_test_server()->GetURL("/actor/blank.html");
   RunTestSequence(
       // clang-format off
-      InitializeWithOpenGlicWindow(),
-      StartActorTaskInNewTab(GURL(url::kAboutBlankURL), kNewActorTabId),
-      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                              kActivateSurfaceIncompatibilityNotice),
+    InitializeWithOpenGlicWindow(),
+    StartActorTaskInNewTab(task_url, kNewActorTabId),
+    SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                            kActivateSurfaceIncompatibilityNotice),
+    // Wait for painting, so we can get the screenshot.
+    WaitForWebContentsPainted(kNewActorTabId),
+    // Take an action with the actor to make sure that actuation has started.
+    ClickAction({1,1}, ClickAction::LEFT, ClickAction::SINGLE),
+    // Verify we can get the screenshot.
+    GetPageContextForActorTab(),
+    Steps(Do(base::BindLambdaForTesting([this](){
+      EXPECT_TRUE(annotated_page_content_);
+      EXPECT_TRUE(viewport_screenshot_);
+      annotated_page_content_.reset();
+      viewport_screenshot_.reset();
+    }))),
 
-      RecordActorTaskStateChanges(),
-      InvokeToolThatNeverFinishes(kNewActorTabId),
-      StopActorTask(),
-      WaitForActorTaskState(mojom::ActorTaskState::kStopped),
+    // Minimize the window and wait until it is minimized.
+    Steps(Do([this](){
+      browser()->window()->Minimize();
+    })),
+    PollState(kIsMinimizedState, [this]() {
+      return browser()->window()->IsMinimized();
+    }),
+    WaitForState(kIsMinimizedState, true),
 
-      CheckResult([this]() { return GetEventLog(); },
-          "IDLE,"
-          "ACTING,"
-          "STOPPED,"
-          "PERFORM_ACTIONS_RETURNED")
-    );
+    // Try to get the screenshot when the window is minimized.
+    GetPageContextForActorTab(),
+    Steps(Do(base::BindLambdaForTesting([this](){
+      EXPECT_TRUE(annotated_page_content_);
+      EXPECT_TRUE(viewport_screenshot_);
+    }))));
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ScreenshotInInitiallyMinimizedWindow) {
+  EnableScreenshotsInContext();
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kIsMinimizedState);
+
+  const GURL task_url = embedded_test_server()->GetURL("/actor/blank.html");
+  RunTestSequence(
+      // clang-format off
+    SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                            kActivateSurfaceIncompatibilityNotice),
+    InitializeWithOpenGlicWindow(),
+    AddInstrumentedTab(kNewActorTabId, task_url),
+    WithElement(kNewActorTabId, [this](ui::TrackedElement* el){
+      content::WebContents* tab_contents =
+          AsInstrumentedWebContents(el)->web_contents();
+      tabs::TabInterface* tab =
+          tabs::TabInterface::GetFromContents(tab_contents);
+      CHECK(tab);
+      tab_handle_ = tab->GetHandle();
+    }),
+
+    // Minimize the window and wait until it is minimized.
+    Steps(Do([this](){
+      browser()->window()->Minimize();
+    })),
+    PollState(kIsMinimizedState, [this]() {
+      return browser()->window()->IsMinimized();
+    }),
+    WaitForState(kIsMinimizedState, true),
+
+    CreateTask(task_id_, ""),
+    // Try to get the screenshot when the window is minimized.
+    GetPageContextForActorTab(),
+    Steps(Do(base::BindLambdaForTesting([this](){
+      EXPECT_TRUE(annotated_page_content_);
+      EXPECT_TRUE(viewport_screenshot_);
+    }))));
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ScreenshotInMinimizedWindowWithFloaty) {
+  EnableScreenshotsInContext();
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kIsMinimizedState);
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  // Ensure a new tab can be created without crashing when the most recently
+  // focused browser window is not a normal tabbed browser (e.g. a DevTools
+  // window).
+  TrackFloatingGlicInstance();
+  RunTestSequence(
+      // clang-format off
+    SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                            kActivateSurfaceIncompatibilityNotice),
+    InstrumentTab(kNewActorTabId),
+    NavigateWebContents(kNewActorTabId, task_url),
+    OpenGlicFloatingWindow(),
+    WaitForWebContentsReady(kNewActorTabId),
+    WithElement(kNewActorTabId, [this](ui::TrackedElement* el){
+      content::WebContents* tab_contents =
+          AsInstrumentedWebContents(el)->web_contents();
+      tabs::TabInterface* tab =
+          tabs::TabInterface::GetFromContents(tab_contents);
+      CHECK(tab);
+      tab_handle_ = tab->GetHandle();
+    }),
+    CreateTask(task_id_, ""),
+
+    // Wait for painting, so we can get the screenshot.
+    WaitForWebContentsPainted(kNewActorTabId),
+    // Verify we can get the screenshot.
+    GetPageContextForActorTab(),
+    Steps(Do(base::BindLambdaForTesting([this](){
+      EXPECT_TRUE(annotated_page_content_);
+      EXPECT_TRUE(viewport_screenshot_);
+      annotated_page_content_.reset();
+      viewport_screenshot_.reset();
+    }))),
+
+    // // Minimize the window and wait until it is minimized.
+    Steps(Do([this](){
+      browser()->window()->Minimize();
+    })),
+    PollState(kIsMinimizedState, [this]() {
+      return browser()->window()->IsMinimized();
+    }),
+    WaitForState(kIsMinimizedState, true),
+
+    // Try to get the screenshot when the window is minimized.
+    GetPageContextForActorTab(),
+    Steps(Do(base::BindLambdaForTesting([this](){
+      EXPECT_TRUE(annotated_page_content_);
+      EXPECT_TRUE(viewport_screenshot_);
+    }))));
   // clang-format on
 }
 

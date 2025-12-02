@@ -148,6 +148,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   gfx::Rect CalculateRootWindowBounds() const override;
   gfx::Rect GetBoundsInDIP() const override;
 
+  void OnVideoCaptureLockCreated() override;
+  void OnVideoCaptureLockDestroyed() override;
+
   // CompositorObserver:
   void OnCompositorVisibilityChanging(ui::Compositor* compositor,
                                       bool visible) override;
@@ -245,6 +248,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   const raw_ptr<DesktopNativeWidgetAura> desktop_native_widget_aura_;
 
   bool is_active_ = false;
+
+  bool has_video_capture_ = false;
 
   std::u16string window_title_;
 
