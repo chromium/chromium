@@ -137,7 +137,7 @@ class FetcherDelegate : public ModelExecutionManager::Delegate {
 
   explicit FetcherDelegate(std::unique_ptr<legion::Client> client)
       : client_(std::move(client)) {
-    CHECK(client);
+    CHECK(client_);
   }
 
   std::unique_ptr<optimization_guide::ModelExecutionFetcher>
