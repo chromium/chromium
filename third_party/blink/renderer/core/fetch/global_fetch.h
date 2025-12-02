@@ -20,6 +20,7 @@ class RequestInit;
 class DeferredRequestInit;
 class Response;
 class ScriptState;
+class WindowOrWorkerGlobalScope;
 class WorkerGlobalScope;
 class FetchLaterResult;
 
@@ -51,8 +52,7 @@ class CORE_EXPORT GlobalFetch {
                                           uint64_t& quota_for_url_origin,
                                           uint64_t& total_quota) const;
 
-    static ScopedFetcher* From(LocalDOMWindow&);
-    static ScopedFetcher* From(WorkerGlobalScope&);
+    static ScopedFetcher* From(WindowOrWorkerGlobalScope&);
     static ScopedFetcher* From(NavigatorBase& navigator);
 
     void Trace(Visitor*) const override;

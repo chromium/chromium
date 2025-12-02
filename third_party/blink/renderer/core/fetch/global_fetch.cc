@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/fetch/fetch_manager.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/window_or_worker_global_scope.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -190,15 +191,9 @@ void GlobalFetch::ScopedFetcher::UpdateDeferredBytesQuota(
 }
 
 GlobalFetch::ScopedFetcher* GlobalFetch::ScopedFetcher::From(
-    LocalDOMWindow& window) {
-  return GlobalFetchImpl<LocalDOMWindow>::From(window,
-                                               window.GetExecutionContext());
-}
-
-GlobalFetch::ScopedFetcher* GlobalFetch::ScopedFetcher::From(
-    WorkerGlobalScope& worker) {
-  return GlobalFetchImpl<WorkerGlobalScope>::From(worker,
-                                                  worker.GetExecutionContext());
+    WindowOrWorkerGlobalScope& window_or_worker) {
+  return GlobalFetchImpl<WindowOrWorkerGlobalScope>::From(
+      window_or_worker, window_or_worker.GetExecutionContext());
 }
 
 GlobalFetch::ScopedFetcher* GlobalFetch::ScopedFetcher::From(
