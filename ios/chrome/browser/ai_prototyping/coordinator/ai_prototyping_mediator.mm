@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/tab_organization_request_wrapper.h"
 #import "ios/chrome/browser/intelligence/smart_tab_grouping/model/smart_tab_grouping_service_impl.h"
+#import "ios/chrome/browser/intelligence/smart_tab_grouping/utils/smart_tab_grouping_utils.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/mojom/enhanced_calendar_service.mojom-forward.h"
@@ -417,7 +418,7 @@
   return result;
 }
 
-// Handles the SmartTabGroupingResponse by outputting the response proto or
+// Handles the IosSmartTabGroupingResponse by outputting the response proto or
 // an error message into the result text field.
 - (void)handleSmartTabGroupingResponseResult:
     (ai::mojom::SmartTabGroupingResponseResultPtr)response_result {
@@ -428,13 +429,23 @@
     return;
   }
 
-  std::string result = [self
-      serializeSmartTabGroupingResponseToString:
-          response_result->get_response()
-              .As<optimization_guide::proto::IosSmartTabGroupingResponse>()
-              .value()];
+  auto response_proto =
+      response_result->get_response()
+          .As<optimization_guide::proto::IosSmartTabGroupingResponse>();
 
-  [self.consumer updateQueryResult:base::SysUTF8ToNSString(result)
+  if (!response_proto.has_value()) {
+    [self.consumer
+        updateQueryResult:@"Error parsing IosSmartTabGroupingResponse"
+               forFeature:AIPrototypingFeature::kSmartTabGrouping];
+    return;
+  }
+
+  ApplySmartTabGroupResponse(response_proto.value(), _webStateList);
+
+  std::string result_string =
+      [self serializeSmartTabGroupingResponseToString:response_proto.value()];
+
+  [self.consumer updateQueryResult:base::SysUTF8ToNSString(result_string)
                         forFeature:AIPrototypingFeature::kSmartTabGrouping];
 }
 

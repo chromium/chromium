@@ -22,6 +22,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/intelligence/proto_wrappers:ios_smart_tab_grouping_proto_wrapper",
     "//ios/chrome/browser/intelligence/smart_tab_grouping/model",
+    "//ios/chrome/browser/intelligence/smart_tab_grouping/utils",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/optimization_guide/mojom",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
