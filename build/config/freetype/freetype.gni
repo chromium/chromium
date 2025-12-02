@@ -21,10 +21,10 @@ declare_args() {
   # Ideally, this should be set with the same value as `enable_pdf` in
   # //pdf/features.gni, but:
   #
-  # - Fuchsia still needs FreeType: https://crbug.com/457696386
   # - Cast on Linux depends on Fontconfig, and Fontconfig depends on FreeType:
   #   https://crbug.com/370816215
   #
   # Note: //build should not import directly from //pdf for layering reasons.
-  enable_freetype = !is_android && !is_ios && (is_linux || !is_castos)
+  enable_freetype =
+      !is_android && !is_ios && (is_linux || !is_castos) && !is_fuchsia
 }
