@@ -120,6 +120,10 @@ class XMLDocumentParserRs final : public ScriptableDocumentParser,
   StringBuilder buffered_text_;
 
   Member<ContainerNode> current_node_;
+  // In fragment parsing, track a parent element that has reset the default
+  // namespace, in order not to apply the surrounding element's default
+  // namespace when fixing-up fragment element's namespace information.
+  Member<ContainerNode> ancestor_resetting_namespace_ = nullptr;
   HeapVector<Member<ContainerNode>> current_node_stack_;
   Member<Text> leaf_text_node_;
 

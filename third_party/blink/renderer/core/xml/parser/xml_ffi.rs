@@ -275,11 +275,13 @@ fn namespaces_next<'a>(
             // TODO(drott): Why do we see an empty namespace here for
             // fast/dom/attribute-namespaces-get-set.html and XML like:
             // <root xmlns:foo=\"http://www.example.com\" attr=\"test2\" foo:attr=\"test\" />
+            // and virtual/rust-xml/fast/xmlhttprequest/xmlhttprequest-get.xhtml
             // Filed as: https://github.com/kornelski/xml-rs/issues/50
 
+            // Letting the empty namespace and empty URL pass through here
+            // is important to reset the default namespace to none.
             if (namespace.0 == "xml" && namespace.1 == NS_XML_URI)
                 || (namespace.0 == "xmlns" && namespace.1 == NS_XMLNS_URI)
-                || (namespace.0 == "" && namespace.1 == "")
             {
                 continue;
             }

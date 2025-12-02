@@ -372,6 +372,7 @@ void XMLDocumentParser::PopCurrentNode() {
 void XMLDocumentParser::ClearCurrentNodeStack() {
   current_node_ = nullptr;
   leaf_text_node_ = nullptr;
+  ancestor_resetting_namespace_ = nullptr;
 
   if (current_node_stack_.size()) {  // Aborted parsing.
     current_node_stack_.clear();
@@ -914,6 +915,7 @@ XMLDocumentParser::~XMLDocumentParser() = default;
 void XMLDocumentParser::Trace(Visitor* visitor) const {
   visitor->Trace(current_node_);
   visitor->Trace(current_node_stack_);
+  visitor->Trace(ancestor_resetting_namespace_);
   visitor->Trace(leaf_text_node_);
   visitor->Trace(xml_errors_);
   visitor->Trace(document_);
@@ -959,6 +961,7 @@ void XMLDocumentParser::DoWrite(const String& parse_string) {
 static inline bool HandleNamespaceAttributes(
     Vector<Attribute, kAttributePrealloc>& prefixed_attributes,
     base::span<const xmlSAX2Namespace> namespaces,
+    bool& encountered_namespace_reset,
     ExceptionState& exception_state) {
   for (const auto& ns : namespaces) {
     AtomicString namespace_q_name = g_xmlns_atom;
@@ -972,6 +975,9 @@ static inline bool HandleNamespaceAttributes(
     if (!parsed_name) {
       DCHECK(exception_state.HadException());
       return false;
+    }
+    if (parsed_name->LocalName() == g_xmlns_atom) {
+      encountered_namespace_reset = namespace_uri.empty();
     }
     prefixed_attributes.push_back(Attribute(*parsed_name, namespace_uri));
   }
@@ -1046,6 +1052,18 @@ void XMLDocumentParser::StartElementNs(
   if (!UpdateLeafTextNode())
     return;
 
+  bool is_first_element = !saw_first_element_;
+  saw_first_element_ = true;
+
+  Vector<Attribute, kAttributePrealloc> prefixed_attributes;
+  bool encountered_namespace_reset = false;
+  if (!HandleNamespaceAttributes(prefixed_attributes, namespaces,
+                                 encountered_namespace_reset,
+                                 IGNORE_EXCEPTION)) {
+    StopParsing();
+    return;
+  }
+
   // Needed for fragment parsing. If the parser library reports an empty NS url,
   // resolve it against the initially preserved namespace hierarchy that is
   // built when creating an XMLDocumentParser with the fragment-parsing
@@ -1057,18 +1075,11 @@ void XMLDocumentParser::StartElementNs(
       if (it != prefix_to_namespace_map_.end())
         adjusted_uri = it->value;
     } else {
-      adjusted_uri = default_namespace_uri_;
+      adjusted_uri =
+          encountered_namespace_reset || ancestor_resetting_namespace_
+              ? g_null_atom
+              : default_namespace_uri_;
     }
-  }
-
-  bool is_first_element = !saw_first_element_;
-  saw_first_element_ = true;
-
-  Vector<Attribute, kAttributePrealloc> prefixed_attributes;
-  if (!HandleNamespaceAttributes(prefixed_attributes, namespaces,
-                                 IGNORE_EXCEPTION)) {
-    StopParsing();
-    return;
   }
 
   v8::Isolate* isolate = document_->GetAgent().isolate();
@@ -1134,6 +1145,10 @@ void XMLDocumentParser::StartElementNs(
 
   SetAttributes(new_element, prefixed_attributes, GetParserContentPolicy());
 
+  if (parsing_fragment_ && encountered_namespace_reset) {
+    ancestor_resetting_namespace_ = new_element;
+  }
+
   new_element->BeginParsingChildren();
 
   if (new_element->IsScriptElement())
@@ -1183,6 +1198,10 @@ void XMLDocumentParser::EndElementNs() {
   if (!element) {
     PopCurrentNode();
     return;
+  }
+
+  if (ancestor_resetting_namespace_ == n) {
+    ancestor_resetting_namespace_ = nullptr;
   }
 
   element->FinishParsingChildren();
