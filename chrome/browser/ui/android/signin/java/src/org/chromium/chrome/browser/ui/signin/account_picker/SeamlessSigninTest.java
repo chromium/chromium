@@ -17,8 +17,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -122,6 +124,13 @@ public class SeamlessSigninTest {
                 .isAccountManaged(eq(TestAccounts.ACCOUNT1), any());
         when(mSigninManagerMock.extractDomainName(TestAccounts.ACCOUNT1.getEmail()))
                 .thenReturn(TEST_DOMAIN);
+        doAnswer(
+                        (invocation) -> {
+                            mCoordinator.dismissBottomSheet();
+                            return null;
+                        })
+                .when(mAccountPickerDelegateMock)
+                .onSeamlessSigninAbandoned();
 
         mBottomSheetController =
                 mActivityTestRule
@@ -142,6 +151,8 @@ public class SeamlessSigninTest {
      *
      * <p>|AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT| is recorded correctly.
      * |AccountConsistencyPromoAction.SHOWN| is not recorded when the bottom sheet is not shown.
+     *
+     * <p>Also add coverage for |Event.SIGNIN_ABORTED| when sign-in is aborted.
      */
     @Test
     @MediumTest
@@ -260,16 +271,7 @@ public class SeamlessSigninTest {
         calledInOrder.verify(mSigninManagerMock).signin(eq(TestAccounts.ACCOUNT1), anyInt(), any());
     }
 
-    /**
-     * TODO(crbug.com/435381574): Add coverage for removing account during initialization, sign-in,
-     * or when waiting for confirmation on management notice:
-
-     * testSignInDefaultAccount_removeAccountDuringInitialization
-     * testSignInManagedAccount_removeAccountDuringInitialization
-     * testSignInManagedAccount_removeAccountWhileOnManagementNoticeSheet
-     *
-     * <p>Investigate if necessary to handle account removal while loading spinner is shown
-     */
+    /** TODO(crbug.com/435381574): Add coverage for removing account during initialization */
     @Test
     @MediumTest
     public void testFailedSignInDefaultAccount_errorScreenShown() {
@@ -324,6 +326,65 @@ public class SeamlessSigninTest {
 
         CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
         verifySigninAborted();
+    }
+
+    @Test
+    @MediumTest
+    public void testDuringSignIn_removingAccountAbandonsSignInFlow() {
+        emulateLongSignin();
+        createCoordinator();
+
+        // Remove the account while signin() is executing.
+        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+
+        verify(mAccountPickerDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onSeamlessSigninAbandoned();
+        assertBottomSheetNeverShown();
+    }
+
+    @Test
+    @MediumTest
+    public void testWhileOnErrorSheetForDefaultAccount_removingAccountAbandonsSignInFlow() {
+        mIsNextSigninSuccessful.set(false);
+        createCoordinator();
+        waitForErrorSheet();
+
+        // Remove the account while the error sheet is shown.
+        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+
+        verify(mAccountPickerDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onSeamlessSigninAbandoned();
+        CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
+    }
+
+    @Test
+    @MediumTest
+    public void testWaitingOnManagementConfirmation_removingAccountAbandonsSignInFlow() {
+        mIsAccountManaged = true;
+        createCoordinator();
+        waitForManagementNoticeSheet();
+
+        // Remove the account while the management notice sheet is shown.
+        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+
+        verify(mAccountPickerDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onSeamlessSigninAbandoned();
+        CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
+    }
+
+    @Test
+    @MediumTest
+    public void testOnDeviceLockActivity_removingAccountAbandonsSignInFlow() {
+        mAutoTestRule.setIsAutomotive(true);
+        createCoordinator();
+
+        // Remove the account before user completes the device lock.
+        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+        SigninTestUtil.completeDeviceLock(mDeviceLockActivityLauncher, true);
+
+        verify(mAccountPickerDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onSeamlessSigninAbandoned();
+        assertBottomSheetNeverShown();
     }
 
     @Test

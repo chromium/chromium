@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -63,7 +62,6 @@ public class AccountPickerBottomSheetMediator
     private final IdentityManager mIdentityManager;
     private final SigninManager mSigninManager;
     private final AccountPickerDelegate mAccountPickerDelegate;
-    private final @Nullable Runnable mRequestDisplayBottomSheet;
     private final Runnable mDismissBottomSheet;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private final @ViewState int mInitialViewState;
@@ -76,6 +74,7 @@ public class AccountPickerBottomSheetMediator
     private final AccountManagerFacade mAccountManagerFacade;
     private final boolean mIsSeamlessSignin;
 
+    private @Nullable Runnable mRequestDisplayBottomSheet;
     private @Nullable SigninFlowTimestampsLogger mSigninTimestampsLogger;
     private @Nullable CoreAccountInfo mSelectedAccount;
     private @Nullable CoreAccountInfo mDefaultAccount;
@@ -346,12 +345,6 @@ public class AccountPickerBottomSheetMediator
     /** Implements {@link AccountsChangeObserver}. */
     @Override
     public void onCoreAccountInfosChanged() {
-        if (mIsSeamlessSignin) {
-            // TODO(crbug.com/437038737): Handle selected account disappearance in seamless sign-in
-            // when bottom sheet is shown.
-            throw new UnsupportedOperationException(
-                    "Account changes are not yet supported in the seamless sign-in flow.");
-        }
         mAccountManagerFacade.getAccounts().then(this::updateAccounts);
     }
 
@@ -372,8 +365,8 @@ public class AccountPickerBottomSheetMediator
             mSigninManager.setUserAcceptedAccountManagement(false);
         }
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
-        if (mIsSeamlessSignin) {
-            assumeNonNull(mRequestDisplayBottomSheet).run();
+        if (mIsSeamlessSignin && mRequestDisplayBottomSheet != null) {
+            mRequestDisplayBottomSheet.run();
         }
     }
 
@@ -451,6 +444,16 @@ public class AccountPickerBottomSheetMediator
     }
 
     private void updateAccounts(List<AccountInfo> accounts) {
+        if (mIsSeamlessSignin) {
+            if (mSelectedAccount != null
+                    && AccountUtils.findAccountByAccountId(accounts, mSelectedAccount.getId())
+                            == null) {
+                // Account has been removed.
+                abandonSeamlessSignin();
+            }
+            return;
+        }
+
         if (accounts.isEmpty()) {
             // If all accounts disappeared, no matter if the account list is collapsed or expanded,
             // we will go to the zero account screen.
@@ -579,17 +582,8 @@ public class AccountPickerBottomSheetMediator
     }
 
     private void signIn() {
-        // If the account is not available or disappears right after the user adds it, the sign-in
-        // can't be done and a general error view with retry button is shown.
         if (mSelectedAccount == null) {
-            if (mIsSeamlessSignin) {
-                // TODO(crbug.com/437038737): Confirm if error screen should be shown or sign-in
-                // should be abandoned.
-                throw new UnsupportedOperationException(
-                        "Account being unavailable during sign-in is not supported.");
-            }
-            mModel.set(
-                    AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
+            handleMissingSelectedAccountForSignIn();
             return;
         }
 
@@ -614,23 +608,14 @@ public class AccountPickerBottomSheetMediator
 
     private void shownConfirmManagementSheet() {
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.CONFIRM_MANAGEMENT);
-        if (mIsSeamlessSignin) {
-            assumeNonNull(mRequestDisplayBottomSheet).run();
+        if (mIsSeamlessSignin && mRequestDisplayBottomSheet != null) {
+            mRequestDisplayBottomSheet.run();
         }
     }
 
     private void signInAfterCheckingManagement() {
-        // If the account is not available or disappears right after the user adds it, the sign-in
-        // can't be done and a general error view with retry button is shown.
         if (mSelectedAccount == null) {
-            if (mIsSeamlessSignin) {
-                // TODO(crbug.com/437038737): Confirm if error screen should be shown or sign-in
-                // should be abandoned.
-                throw new UnsupportedOperationException(
-                        "Account being unavailable during sign-in is not supported.");
-            }
-            mModel.set(
-                    AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
+            handleMissingSelectedAccountForSignIn();
             return;
         }
 
@@ -680,6 +665,33 @@ public class AccountPickerBottomSheetMediator
                         showGenericError();
                     }
                 });
+    }
+
+    /** Handles a missing selected account during sign-in. */
+    private void handleMissingSelectedAccountForSignIn() {
+        if (mIsSeamlessSignin) {
+            abandonSeamlessSignin();
+        } else {
+            mModel.set(
+                    AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
+        }
+    }
+
+    private void abandonSeamlessSignin() {
+        assert mIsSeamlessSignin;
+
+        if (mSelectedAccount == null) {
+            // The seamless sign-in flow has already been abandoned.
+            return;
+        }
+        // Permanently hide the bottom sheet and prevent any further sign-in attempts with the
+        // now-invalid account.
+        mSelectedAccount = null;
+        mDefaultAccount = null;
+        mRequestDisplayBottomSheet = null;
+        // TODO(crbug.com/437038737): Log Event.SIGNIN_ABORTED timestamp.
+
+        mAccountPickerDelegate.onSeamlessSigninAbandoned();
     }
 
     private void updateCredentials() {

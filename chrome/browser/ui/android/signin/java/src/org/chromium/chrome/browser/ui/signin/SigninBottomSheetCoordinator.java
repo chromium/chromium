@@ -244,6 +244,18 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     }
 
     /**
+     * TODO(crbug.com/464507068): This method name is temporary and linked to a specific
+     * implementation. The interface should be improved to use a generic `onSignInCancel()` from the
+     * delegate.
+     */
+    @Override
+    public void onSeamlessSigninAbandoned() {
+        assert mSeamlessSigninCoordinator != null;
+        assert mAccountPickerBottomSheetCoordinator == null;
+        mDelegate.onSignInCancel();
+    }
+
+    /**
      * Called by the embedder to dismiss the bottom sheet. This method is different from
      * `onAccountPickerDestroy` since the latter is called by the account picker coordinator, and
      * only after the bottom sheet's dismissal.
