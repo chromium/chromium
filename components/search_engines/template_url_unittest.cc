@@ -1539,12 +1539,8 @@ TEST_F(TemplateURLTest, ComposeboxSuggestClient) {
 
   search_terms_args.request_source = RequestSource::NTP_COMPOSEBOX;
   // Check that the URL is correct for `RequestSource::NTP_COMPOSEBOX`.
-  GURL result(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?client=chrome-omni", result.spec());
   features.InitAndEnableFeature(omnibox::kComposeboxUsesChromeComposeClient);
-  result = GURL(
+  GURL result(
       url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
   EXPECT_EQ("http://google.com/?client=chrome-compose", result.spec());
 }

@@ -342,7 +342,7 @@ BASE_FEATURE(kOmniboxAimShortcutTypedState, DISABLED);
 BASE_FEATURE(kMultilineEditField, "OmniboxMultilineEditField", DISABLED);
 
 // Controls whether the composebox
-BASE_FEATURE(kComposeboxUsesChromeComposeClient, DISABLED);
+BASE_FEATURE(kComposeboxUsesChromeComposeClient, ENABLED);
 
 // Controls whether or not contextual composebox should display suggestions.
 BASE_FEATURE(kComposeboxAttachmentsTypedState, DISABLED);
