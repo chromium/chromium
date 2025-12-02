@@ -5860,11 +5860,6 @@ inline constexpr char kTabStripIncognitoMigrationDescription[] =
     "Migrates tab strip incognito switcher to toolbar and adds options to tab "
     "switcher context menu.";
 
-inline constexpr char kTabStripMouseCloseResizeDelayName[] =
-    "Tab Strip Mouse Close Resize Delay";
-inline constexpr char kTabStripMouseCloseResizeDelayDescription[] =
-    "Delays resizing the tab strip when closing a tab with the mouse.";
-
 inline constexpr char kToolbarSnapshotRefactorName[] =
     "Toolbar Snapshot Refactor";
 inline constexpr char kToolbarSnapshotRefactorDescription[] =

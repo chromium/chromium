@@ -178,10 +178,7 @@ import java.util.stream.IntStream;
         qualifiers = "sw600dp",
         shadows = {ShadowAppCompatResources.class})
 @LooperMode(Mode.LEGACY)
-@DisableFeatures({
-    ChromeFeatureList.DATA_SHARING,
-    ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY
-})
+@DisableFeatures(ChromeFeatureList.DATA_SHARING)
 @EnableFeatures(ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)
 public class StripLayoutHelperTest {
     private static final Token TAB_GROUP_ID_1 = new Token(1L, 1L);
@@ -4052,7 +4049,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
     public void testPendingMouseTabClosure_SetOnClose() {
         // Initialize.
         initializeTest(/* tabIndex= */ 0);
@@ -4066,7 +4062,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
     public void testPendingMouseTabClosure_ClearOnTabClosure() {
         // Initialize and mark a pending a mouse tab closure.
         setupForAnimations();
@@ -4082,7 +4077,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
     public void testPendingMouseTabClosure_SuppressResize() {
         // Initialize and mark a pending a mouse tab closure.
         initializeTest(/* tabIndex= */ 0);
@@ -4101,7 +4095,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
     public void testPendingMouseTabClosure_ResizeOnHoverExit_InTabStrip() {
         // Initialize and mark a pending a mouse tab closure.
         initializeTest(/* tabIndex= */ 0);
@@ -4119,7 +4112,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
     public void testPendingMouseTabClosure_ResizeOnHoverExit_NotInTabStrip() {
         // Initialize and mark a pending a mouse tab closure.
         initializeTest(/* tabIndex= */ 0);

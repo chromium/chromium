@@ -2697,8 +2697,7 @@ public class StripLayoutHelper
         clearCompositorButtonHoverStateIfNotClicked();
 
         // Trigger a resize, as the pointer has left the strip, and we no longer need to suppress.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
-                && !inTabStrip) {
+        if (!inTabStrip) {
             clearPendingMouseTabClosureState();
             computeAndUpdateTabWidth(/* animate= */ true, /* deferAnimations= */ false);
         }
@@ -4669,9 +4668,7 @@ public class StripLayoutHelper
     private float getStripWidthForResizing() {
         // If we're resizing in response to a mouse click closing the end-most tab, we may restrict
         // the resize to align the next tab's close button with the cursor.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
-                && mClosingEndMostTabDrawX != null
-                && mClosingEndMostTabWidth != null) {
+        if (mClosingEndMostTabDrawX != null && mClosingEndMostTabWidth != null) {
             return getStripWidthForEndMostTabMouseClosure(
                     mClosingEndMostTabDrawX, mClosingEndMostTabWidth);
         }
@@ -4729,8 +4726,7 @@ public class StripLayoutHelper
         // tab shrinking, though. If closing the end-most tab, we may need to partially resize to
         // align the next tab's close button with the cursor (if possible).
         boolean delayingResizeForMouseClose =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
-                        && mPendingMouseTabClosure
+                mPendingMouseTabClosure
                         && mClosingEndMostTabDrawX == null
                         && mClosingEndMostTabWidth == null;
 

@@ -10303,11 +10303,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabStripIncognitoMigrationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripIncognitoMigration)},
 
-    {"tab-strip-mouse-close-resize-delay",
-     flag_descriptions::kTabStripMouseCloseResizeDelayName,
-     flag_descriptions::kTabStripMouseCloseResizeDelayDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabStripMouseCloseResizeDelay)},
-
     {"tab-switcher-group-suggestions-android",
      flag_descriptions::kTabSwitcherGroupSuggestionsAndroidName,
      flag_descriptions::kTabSwitcherGroupSuggestionsAndroidDescription,

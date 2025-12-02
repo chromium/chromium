@@ -9944,11 +9944,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "tab-strip-mouse-close-resize-delay",
-    "owners": [ "nemco@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 149
-  },
-  {
     "name": "tab-switcher-color-blend-animate",
     "owners": [ "skym@chromium.org", "mfiaz@google.com" ],
     "expiry_milestone": 140
