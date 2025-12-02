@@ -99,11 +99,8 @@ void GeolocationServiceImplContext::HandlePermissionResult(
 }
 
 GeolocationServiceImpl::GeolocationServiceImpl(
-    device::mojom::GeolocationContext* geolocation_context,
     RenderFrameHost* render_frame_host)
-    : geolocation_context_(geolocation_context),
-      render_frame_host_(render_frame_host) {
-  DCHECK(geolocation_context);
+    : render_frame_host_(render_frame_host) {
   DCHECK(render_frame_host);
 }
 
@@ -159,7 +156,11 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionResult(
     PermissionResult permission_result) {
   GeolocationPermissionLevel permission_level =
       GetPermissionLevel(permission_result);
-  if (permission_level == GeolocationPermissionLevel::kDenied) {
+
+  device::mojom::GeolocationContext* geolocation_context =
+      GetGeolocationContext();
+  if (permission_level == GeolocationPermissionLevel::kDenied ||
+      !geolocation_context) {
     std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
   }
@@ -174,7 +175,7 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionResult(
 
   bool has_precise_permission =
       permission_level == GeolocationPermissionLevel::kPrecise;
-  geolocation_context_->BindGeolocation(
+  geolocation_context->BindGeolocation(
       std::move(receiver), requesting_url,
       device::mojom::GeolocationClientId::kGeolocationServiceImpl,
       has_precise_permission);
@@ -195,6 +196,12 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionResult(
 
 void GeolocationServiceImpl::HandlePermissionResultChange(
     PermissionResult permission_result) {
+  device::mojom::GeolocationContext* geolocation_context =
+      GetGeolocationContext();
+  if (!geolocation_context) {
+    return;
+  }
+
   GeolocationPermissionLevel permission_level =
       GetPermissionLevel(permission_result);
   if (permission_level == GeolocationPermissionLevel::kDenied &&
@@ -204,8 +211,8 @@ void GeolocationServiceImpl::HandlePermissionResultChange(
         ->UnsubscribeFromPermissionResultChange(subscription_id_);
     DecrementActivityCount();
   }
-  geolocation_context_->OnPermissionUpdated(requesting_origin_,
-                                            permission_level);
+  geolocation_context->OnPermissionUpdated(requesting_origin_,
+                                           permission_level);
 }
 
 void GeolocationServiceImpl::OnDisconnected() {
@@ -228,6 +235,22 @@ void GeolocationServiceImpl::DecrementActivityCount() {
     static_cast<WebContentsImpl*>(web_contents)
         ->DecrementGeolocationActiveFrameCount();
   }
+}
+
+// Fetches the GeolocationContext from the WebContents. This is done on-demand
+// to avoid a potential Use-After-Free of the GeolocationContext, which has a
+// shorter lifetime than the RenderFrameHost. Refer to crbug.com/396303129 for
+// more information.
+device::mojom::GeolocationContext*
+GeolocationServiceImpl::GetGeolocationContext() {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host_);
+
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  return static_cast<WebContentsImpl*>(web_contents)->GetGeolocationContext();
 }
 
 }  // namespace content

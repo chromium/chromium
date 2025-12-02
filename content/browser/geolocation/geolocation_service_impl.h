@@ -52,8 +52,7 @@ class GeolocationServiceImplContext {
 class CONTENT_EXPORT GeolocationServiceImpl
     : public blink::mojom::GeolocationService {
  public:
-  GeolocationServiceImpl(device::mojom::GeolocationContext* geolocation_context,
-                         RenderFrameHost* render_frame_host);
+  explicit GeolocationServiceImpl(RenderFrameHost* render_frame_host);
 
   GeolocationServiceImpl(const GeolocationServiceImpl&) = delete;
   GeolocationServiceImpl& operator=(const GeolocationServiceImpl&) = delete;
@@ -85,8 +84,7 @@ class CONTENT_EXPORT GeolocationServiceImpl
   void IncrementActivityCount();
   void DecrementActivityCount();
 
-  const raw_ptr<device::mojom::GeolocationContext, DanglingUntriaged>
-      geolocation_context_;
+  device::mojom::GeolocationContext* GetGeolocationContext();
 
   // Used to subscribe to permission status changes.
   PermissionController::SubscriptionId subscription_id_;

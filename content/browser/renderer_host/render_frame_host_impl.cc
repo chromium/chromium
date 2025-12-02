@@ -14632,8 +14632,7 @@ void RenderFrameHostImpl::GetGeolocationService(
     if (!geolocation_context) {
       return;
     }
-    geolocation_service_ =
-        std::make_unique<GeolocationServiceImpl>(geolocation_context, this);
+    geolocation_service_ = std::make_unique<GeolocationServiceImpl>(this);
   }
   geolocation_service_->Bind(std::move(receiver));
 }

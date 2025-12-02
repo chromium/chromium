@@ -129,8 +129,7 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
         kEmbeddedUrl, embedded_rfh);
     navigation_simulator->Commit();
     embedded_rfh = navigation_simulator->GetFinalRenderFrameHost();
-    service_ =
-        std::make_unique<GeolocationServiceImpl>(context_.get(), embedded_rfh);
+    service_ = std::make_unique<GeolocationServiceImpl>(embedded_rfh);
     service_->Bind(service_remote_.BindNewPipeAndPassReceiver());
   }
 
