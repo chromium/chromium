@@ -53,6 +53,11 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
   static std::optional<SqliteVfsFileSet> BindToFileSet(
       PendingBackend pending_backend);
 
+  // Executes `statement` on the underlying database. Returns a SQLite result
+  // code in case of error.
+  base::expected<void, int> ExecuteStatementForTesting(
+      base::cstring_view statement);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PersistentCacheTest, RecoveryFromTransientError);
 

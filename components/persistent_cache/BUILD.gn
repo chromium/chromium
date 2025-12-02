@@ -58,6 +58,7 @@ component("persistent_cache") {
   public_deps = [ "//base" ]
 
   friend = [
+    ":perf_tests",
     ":test_support",
     ":unit_tests",
   ]
@@ -119,4 +120,19 @@ source_set("unit_tests") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+if (!is_fuchsia) {
+  source_set("perf_tests") {
+    testonly = true
+    sources = [ "persistent_cache_perftest.cc" ]
+    deps = [
+      ":persistent_cache",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//testing/gtest",
+      "//testing/perf",
+    ]
+  }
 }

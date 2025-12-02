@@ -199,6 +199,17 @@ base::expected<void, TransactionError> SqliteBackendImpl::Insert(
   return base::ok();
 }
 
+base::expected<void, int> SqliteBackendImpl::ExecuteStatementForTesting(
+    base::cstring_view statement) {
+  base::AutoLock lock(lock_, base::subtle::LockTracking::kEnabled);
+
+  if (!db_->Execute(statement)) {
+    return base::unexpected(db_->GetErrorCode());
+  }
+
+  return base::ok();
+}
+
 base::expected<std::optional<EntryMetadata>, int> SqliteBackendImpl::FindImpl(
     std::string_view key,
     BufferProvider buffer_provider) {
