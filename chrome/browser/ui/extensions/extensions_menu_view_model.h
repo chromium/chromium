@@ -24,9 +24,7 @@ class BrowserWindowInterface;
 class ExtensionsMenuViewPlatformDelegate;
 class ToolbarActionViewModel;
 
-// The platform agnostic controller for the extensions menu.
-// TODO(crbug.com/449814184): Move the observers from
-// ExtensionsMenuViewController here.
+// The platform agnostic model for the extensions menu.
 class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
                                 public ToolbarActionsModel::Observer,
                                 public TabListInterfaceObserver,
