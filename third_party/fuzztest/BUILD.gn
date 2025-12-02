@@ -245,6 +245,10 @@ source_set("fuzztest_internal") {
   }
 
   sources = [
+    # Ideally all files in common/ would live in `:common`, but some files
+    # depend on fuzztest/internal.
+    "src/common/crashing_input_filename.cc",
+    "src/common/crashing_input_filename.h",
     "src/fuzztest/domain.h",
     "src/fuzztest/domain_core.h",
     "src/fuzztest/fuzzing_bit_gen.cc",
