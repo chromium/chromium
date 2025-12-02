@@ -12,7 +12,8 @@
 #pragma mark - StandardPromoDisplayHandler
 
 - (void)handleDisplay {
-  // TODO(crbug.com/407963758): Implement the Welcome Back half sheet view.
+  DCHECK(self.handler);
+  [self.handler showWelcomeBackPromo];
 }
 
 #pragma mark - PromoProtocol
