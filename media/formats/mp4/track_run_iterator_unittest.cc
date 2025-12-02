@@ -531,13 +531,7 @@ class TrackRunIteratorTest : public testing::Test {
   void AddCencSampleGroup(
       Track* track,
       TrackFragment* frag,
-      base::span<const SampleToGroupEntry> sample_to_group_entries,
-      size_t spanification_suspected_redundant_num_entries) {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(spanification_suspected_redundant_num_entries ==
-              sample_to_group_entries.size(),
-          base::NotFatalUntil::M143);
+      base::span<const SampleToGroupEntry> sample_to_group_entries) {
     auto& track_cenc_group =
         track->media.information.sample_table.sample_group_description;
     track_cenc_group.grouping_type = FOURCC_SEIG;
@@ -570,9 +564,7 @@ class TrackRunIteratorTest : public testing::Test {
     frag->sample_to_group.grouping_type = FOURCC_SEIG;
     frag->sample_to_group.entries.assign(
         sample_to_group_entries.data(),
-        sample_to_group_entries
-            .subspan(spanification_suspected_redundant_num_entries)
-            .data());
+        sample_to_group_entries.subspan(sample_to_group_entries.size()).data());
   }
 
   // Add aux info covering the first track run to a TrackFragment, and update
@@ -943,8 +935,7 @@ TEST_F(TrackRunIteratorTest,
       // Associated with the third entry in SampleGroupDescription Box.
       // With Iv size 16 bytes.
       {1, SampleToGroupEntry::kFragmentGroupDescriptionIndexBase + 3}};
-  AddCencSampleGroup(&moov_.tracks[1], &moof.tracks[1], kSampleToGroupTable,
-                     std::size(kSampleToGroupTable));
+  AddCencSampleGroup(&moov_.tracks[1], &moof.tracks[1], kSampleToGroupTable);
 
   ASSERT_TRUE(iter_->Init(moof));
   // The run for track 2 will be the second, which is parsed according to
@@ -1022,8 +1013,7 @@ TEST_F(TrackRunIteratorTest, CencSampleGroupTest) {
       {1, SampleToGroupEntry::kFragmentGroupDescriptionIndexBase + 2},
       // Associated with the first entry in SampleGroupDescription Box.
       {1, SampleToGroupEntry::kFragmentGroupDescriptionIndexBase + 1}};
-  AddCencSampleGroup(&moov_.tracks[0], &moof.tracks[0], kSampleToGroupTable,
-                     std::size(kSampleToGroupTable));
+  AddCencSampleGroup(&moov_.tracks[0], &moof.tracks[0], kSampleToGroupTable);
 
   iter_.reset(new TrackRunIterator(&moov_, &media_log_));
   ASSERT_TRUE(InitMoofWithArbitraryAuxInfo(&moof));
@@ -1055,8 +1045,7 @@ TEST_F(TrackRunIteratorTest, CencSampleGroupWithTrackEncryptionBoxTest) {
       {3, SampleToGroupEntry::kFragmentGroupDescriptionIndexBase + 1},
       // Associated with the 1st entry in track SampleGroupDescription Box.
       {2, 1}};
-  AddCencSampleGroup(&moov_.tracks[0], &moof.tracks[0], kSampleToGroupTable,
-                     std::size(kSampleToGroupTable));
+  AddCencSampleGroup(&moov_.tracks[0], &moof.tracks[0], kSampleToGroupTable);
 
   iter_.reset(new TrackRunIterator(&moov_, &media_log_));
   ASSERT_TRUE(InitMoofWithArbitraryAuxInfo(&moof));
@@ -1273,8 +1262,7 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTestWithSampleGroupsAndConstantIv) {
       {1, SampleToGroupEntry::kFragmentGroupDescriptionIndexBase + 1},
       // Associated with the 1st entry in track SampleGroupDescription Box.
       {1, 1}};
-  AddCencSampleGroup(&moov_.tracks[1], &moof.tracks[1], kSampleToGroupTable,
-                     std::size(kSampleToGroupTable));
+  AddCencSampleGroup(&moov_.tracks[1], &moof.tracks[1], kSampleToGroupTable);
   AddConstantIvsToCencSampleGroup(&moov_.tracks[1], &moof.tracks[1]);
   iter_.reset(new TrackRunIterator(&moov_, &media_log_));
   ASSERT_TRUE(iter_->Init(moof));

@@ -155,7 +155,6 @@ class QuantizerEstimator {
   // the given |histogram|.
   static double ComputeEntropyFromHistogram(
       base::span<const int> histogram,
-      size_t spanification_suspected_redundant_histogram_size,
       int num_samples);
 
   // Map the |shannon_entropy| to its corresponding software VP8 quantizer.

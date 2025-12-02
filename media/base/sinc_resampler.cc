@@ -280,16 +280,10 @@ void SincResampler::SetRatio(double io_sample_rate_ratio) {
   }
 }
 
-void SincResampler::Resample(int spanification_suspected_redundant_frames,
-                             base::span<float> destination) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(static_cast<size_t>(spanification_suspected_redundant_frames) ==
-            destination.size(),
-        base::NotFatalUntil::M143);
+void SincResampler::Resample(base::span<float> destination) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("audio"), "SincResampler::Resample",
                "io sample rate ratio", io_sample_rate_ratio_);
-  int remaining_frames = spanification_suspected_redundant_frames;
+  int remaining_frames = destination.size();
 
   // Step (1) -- Prime the input buffer at the start of the input stream.
   if (!buffer_primed_ && remaining_frames) {

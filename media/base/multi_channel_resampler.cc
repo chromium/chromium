@@ -53,7 +53,7 @@ void MultiChannelResampler::Resample(int frames, AudioBus* audio_bus) {
   const size_t total_frames = base::checked_cast<size_t>(frames);
   // Optimize the single channel case to avoid the chunking process below.
   if (audio_bus->channels() == 1) {
-    resamplers_[0]->Resample(frames, audio_bus->channel_span(0).first(total_frames));
+    resamplers_[0]->Resample(audio_bus->channel_span(0).first(total_frames));
     return;
   }
 
@@ -78,8 +78,7 @@ void MultiChannelResampler::Resample(int frames, AudioBus* audio_bus) {
       // the first channel, then it will call it for the remaining channels,
       // since they all buffer in the same way and are processing the same
       // number of frames.
-      resamplers_[i]->Resample(frames_this_time,
-                               audio_bus->channel_span(i)
+      resamplers_[i]->Resample(audio_bus->channel_span(i)
                                    .subspan(output_frames_ready_)
                                    .first(frames_this_time));
     }

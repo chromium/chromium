@@ -65,8 +65,7 @@ class MEDIA_EXPORT SincResampler {
   ~SincResampler();
 
   // Resample |frames| of data from |read_cb_| into |destination|.
-  void Resample(int spanification_suspected_redundant_frames,
-                base::span<float> destination);
+  void Resample(base::span<float> destination);
 
   // The maximum size in output frames that guarantees Resample() will only make
   // a single call to |read_cb_| for more data.  Note: If PrimeWithSilence() is

@@ -208,9 +208,7 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
 
   bool ParseBlock(bool is_simple_block,
                   base::span<const uint8_t> buf,
-                  size_t spanification_suspected_redundant_size,
-                  const uint8_t* additional,
-                  int additional_size,
+                  base::span<const uint8_t> additional,
                   int duration,
                   int64_t discard_padding,
                   bool reference_block_set);
@@ -219,9 +217,7 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
                int timecode,
                int duration,
                base::span<const uint8_t> data,
-               size_t spanification_suspected_redundant_size,
-               const uint8_t* additional,
-               size_t additional_size,
+               base::span<const uint8_t> additional,
                int64_t discard_padding,
                bool is_keyframe);
 
@@ -244,14 +240,11 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
   // Cluster we parse, so we can't simply use the delta of the first Block in
   // the next Cluster). Avoid calling if encrypted; may produce unexpected
   // output. See implementation for supported codecs.
-  base::TimeDelta TryGetEncodedAudioDuration(
-      base::span<const uint8_t> data,
-      int spanification_suspected_redundant_size);
+  base::TimeDelta TryGetEncodedAudioDuration(base::span<const uint8_t> data);
 
   // Reads Opus packet header to determine packet duration. Duration returned
   // as TimeDelta or kNoTimestamp upon failure to read duration from packet.
-  base::TimeDelta ReadOpusDuration(base::span<const uint8_t> data,
-                                   int spanification_suspected_redundant_size);
+  base::TimeDelta ReadOpusDuration(base::span<const uint8_t> data);
 
   // Tracks the number of MEDIA_LOGs made in process of reading encoded
   // duration. Useful to prevent log spam.

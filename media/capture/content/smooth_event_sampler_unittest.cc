@@ -277,15 +277,9 @@ struct DataPoint {
 
 void ReplayCheckingSamplerDecisions(
     base::span<const DataPoint> data_points,
-    size_t spanification_suspected_redundant_num_data_points,
     SmoothEventSampler* sampler) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_num_data_points == data_points.size(),
-        base::NotFatalUntil::M143);
   base::TimeTicks t = InitialTestTimeTicks();
-  for (size_t i = 0; i < spanification_suspected_redundant_num_data_points;
-       ++i) {
+  for (size_t i = 0; i < data_points.size(); ++i) {
     t += base::Microseconds(
         static_cast<int64_t>(data_points[i].increment_ms * 1000));
     ASSERT_EQ(data_points[i].should_capture,
@@ -376,7 +370,7 @@ TEST(SmoothEventSamplerTest, DrawingAt24FpsWith60HzVsyncSampledAt30Hertz) {
                                           {false, 0}};
 
   SmoothEventSampler sampler(base::Seconds(1) / 30);
-  ReplayCheckingSamplerDecisions(data_points, std::size(data_points), &sampler);
+  ReplayCheckingSamplerDecisions(data_points, &sampler);
 }
 
 TEST(SmoothEventSamplerTest, DrawingAt30FpsWith60HzVsyncSampledAt30Hertz) {
@@ -485,7 +479,7 @@ TEST(SmoothEventSamplerTest, DrawingAt30FpsWith60HzVsyncSampledAt30Hertz) {
                                           {true, 33.44}};
 
   SmoothEventSampler sampler(base::Seconds(1) / 30);
-  ReplayCheckingSamplerDecisions(data_points, std::size(data_points), &sampler);
+  ReplayCheckingSamplerDecisions(data_points, &sampler);
 }
 
 TEST(SmoothEventSamplerTest, DrawingAt60FpsWith60HzVsyncSampledAt30Hertz) {
@@ -618,7 +612,7 @@ TEST(SmoothEventSamplerTest, DrawingAt60FpsWith60HzVsyncSampledAt30Hertz) {
                                           {true, 50.16}};
 
   SmoothEventSampler sampler(base::Seconds(1) / 30);
-  ReplayCheckingSamplerDecisions(data_points, std::size(data_points), &sampler);
+  ReplayCheckingSamplerDecisions(data_points, &sampler);
 }
 
 }  // namespace media

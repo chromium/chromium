@@ -39,18 +39,12 @@ VideoDecoderConfig CreateFakeVideoConfig() {
                             EncryptionScheme::kUnencrypted);
 }
 
-BufferQueue GenerateFakeBuffers(
-    base::span<const int> frame_pts_ms,
-    base::span<const bool> is_key_frame,
-    size_t spanification_suspected_redundant_frame_count) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_frame_count == frame_pts_ms.size(),
-        base::NotFatalUntil::M143);
+BufferQueue GenerateFakeBuffers(base::span<const int> frame_pts_ms,
+                                base::span<const bool> is_key_frame) {
   std::array<uint8_t, 4> dummy_buffer = {0, 0, 0, 0};
 
-  BufferQueue buffers(spanification_suspected_redundant_frame_count);
-  for (size_t k = 0; k < spanification_suspected_redundant_frame_count; k++) {
+  BufferQueue buffers(frame_pts_ms.size());
+  for (size_t k = 0; k < frame_pts_ms.size(); k++) {
     buffers[k] = StreamParserBuffer::CopyFrom(dummy_buffer, is_key_frame[k],
                                               DemuxerStream::VIDEO, 0);
     if (frame_pts_ms[k] < 0) {
@@ -123,8 +117,7 @@ TEST_F(EsAdapterVideoTest, FrameDurationSimpleGop) {
   bool is_key_frame[] = {
     true, false, false, false,
     false, false, false, false };
-  BufferQueue buffer_queue =
-      GenerateFakeBuffers(pts_ms, is_key_frame, std::size(pts_ms));
+  BufferQueue buffer_queue = GenerateFakeBuffers(pts_ms, is_key_frame);
 
   EXPECT_EQ("(1,Y) (2,N) (3,N) (4,N) (5,N) (6,N) (7,N) (7,N)",
             RunAdapterTest(buffer_queue));
@@ -136,8 +129,7 @@ TEST_F(EsAdapterVideoTest, FrameDurationComplexGop) {
   bool is_key_frame[] = {
     true, false, false, false, false,
     false, false, false, false, false };
-  BufferQueue buffer_queue =
-      GenerateFakeBuffers(pts_ms, is_key_frame, std::size(pts_ms));
+  BufferQueue buffer_queue = GenerateFakeBuffers(pts_ms, is_key_frame);
 
   EXPECT_EQ("(30,Y) (30,N) (30,N) (30,N) (30,N) "
             "(30,N) (30,N) (30,N) (30,N) (30,N)",
@@ -147,8 +139,7 @@ TEST_F(EsAdapterVideoTest, FrameDurationComplexGop) {
 TEST_F(EsAdapterVideoTest, LeadingNonKeyFrames) {
   int pts_ms[] = {30, 40, 50, 120, 150, 180};
   bool is_key_frame[] = {false, false, false, true, false, false};
-  BufferQueue buffer_queue =
-      GenerateFakeBuffers(pts_ms, is_key_frame, std::size(pts_ms));
+  BufferQueue buffer_queue = GenerateFakeBuffers(pts_ms, is_key_frame);
 
   EXPECT_EQ("(30,Y) (30,Y) (30,Y) (30,Y) (30,N) (30,N)",
             RunAdapterTest(buffer_queue));
@@ -157,8 +148,7 @@ TEST_F(EsAdapterVideoTest, LeadingNonKeyFrames) {
 TEST_F(EsAdapterVideoTest, LeadingKeyFrameWithNoTimestamp) {
   int pts_ms[] = {-1, 40, 50, 120, 150, 180};
   bool is_key_frame[] = {true, false, false, true, false, false};
-  BufferQueue buffer_queue =
-      GenerateFakeBuffers(pts_ms, is_key_frame, std::size(pts_ms));
+  BufferQueue buffer_queue = GenerateFakeBuffers(pts_ms, is_key_frame);
 
   EXPECT_EQ("(40,Y) (40,Y) (30,Y) (30,N) (30,N)",
             RunAdapterTest(buffer_queue));
@@ -167,8 +157,7 @@ TEST_F(EsAdapterVideoTest, LeadingKeyFrameWithNoTimestamp) {
 TEST_F(EsAdapterVideoTest, LeadingFramesWithNoTimestamp) {
   int pts_ms[] = {-1, -1, 50, 120, 150, 180};
   bool is_key_frame[] = {false, false, false, true, false, false};
-  BufferQueue buffer_queue =
-      GenerateFakeBuffers(pts_ms, is_key_frame, std::size(pts_ms));
+  BufferQueue buffer_queue = GenerateFakeBuffers(pts_ms, is_key_frame);
 
   EXPECT_EQ("(70,Y) (30,Y) (30,N) (30,N)",
             RunAdapterTest(buffer_queue));

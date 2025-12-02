@@ -934,7 +934,7 @@ std::optional<double> QuantizerEstimator::EstimateForKeyFrame(
   // histogram and return it.
   const int num_samples = (size.width() - 1) * rows_in_subset;
   return ToQuantizerEstimate(
-      ComputeEntropyFromHistogram(histogram, histogram.size(), num_samples));
+      ComputeEntropyFromHistogram(histogram, num_samples));
 }
 
 std::optional<double> QuantizerEstimator::EstimateForDeltaFrame(
@@ -981,7 +981,7 @@ std::optional<double> QuantizerEstimator::EstimateForDeltaFrame(
   // histogram and return it.
   const int num_samples = size.width() * rows_in_subset;
   return ToQuantizerEstimate(
-      ComputeEntropyFromHistogram(histogram, histogram.size(), num_samples));
+      ComputeEntropyFromHistogram(histogram, num_samples));
 }
 
 // static
@@ -994,17 +994,11 @@ bool QuantizerEstimator::CanExamineFrame(const VideoFrame& frame) {
 // static
 double QuantizerEstimator::ComputeEntropyFromHistogram(
     base::span<const int> histogram,
-    size_t spanification_suspected_redundant_histogram_size,
     int num_samples) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_histogram_size == histogram.size(),
-        base::NotFatalUntil::M143);
   DCHECK_LT(0, num_samples);
   double entropy = 0.0;
-  for (size_t i = 0; i < spanification_suspected_redundant_histogram_size;
-       ++i) {
-    const double probability = static_cast<double>(histogram[i]) / num_samples;
+  for (int value : histogram) {
+    const double probability = static_cast<double>(value) / num_samples;
     if (probability > 0.0) {
       entropy = entropy - probability * std::log2(probability);
     }
