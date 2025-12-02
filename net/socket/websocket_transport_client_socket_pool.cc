@@ -84,8 +84,9 @@ int WebSocketTransportClientSocketPool::RequestSocket(
 
   NetLogTcpClientSocketPoolRequestedSocket(request_net_log, group_id);
   request_net_log.BeginEvent(NetLogEventType::SOCKET_POOL);
+  UpdateStateBeforeAllocation();
 
-  if (ReachedMaxSocketsLimit() &&
+  if (State() == SocketPoolState::kCapped &&
       respect_limits == ClientSocketPool::RespectLimits::ENABLED) {
     request_net_log.AddEvent(NetLogEventType::SOCKET_POOL_STALLED_MAX_SOCKETS);
     stalled_request_queue_.emplace_back(
@@ -173,6 +174,7 @@ void WebSocketTransportClientSocketPool::CancelRequest(
   } else {
     pending_callbacks_.erase(reinterpret_cast<ClientSocketHandleID>(handle));
   }
+  UpdateStateAfterRelease();
 
   ActivateStalledRequest();
 }
@@ -183,6 +185,7 @@ void WebSocketTransportClientSocketPool::ReleaseSocket(
     int64_t generation) {
   CHECK_GT(handed_out_socket_count_, 0u);
   --handed_out_socket_count_;
+  UpdateStateAfterRelease();
 
   ActivateStalledRequest();
 }
@@ -214,6 +217,7 @@ void WebSocketTransportClientSocketPool::FlushWithError(
   stalled_request_map_.clear();
   stalled_request_queue_.clear();
   flushing_ = false;
+  ResetState();
 }
 
 void WebSocketTransportClientSocketPool::CloseIdleSockets(
@@ -382,10 +386,6 @@ void WebSocketTransportClientSocketPool::InvokeUserCallback(
   }
 }
 
-bool WebSocketTransportClientSocketPool::ReachedMaxSocketsLimit() const {
-  return SocketsInUse() >= SocketSoftCap();
-}
-
 void WebSocketTransportClientSocketPool::HandOutSocket(
     std::unique_ptr<StreamSocket> socket,
     const LoadTimingInfo::ConnectTiming& connect_timing,
@@ -439,7 +439,8 @@ void WebSocketTransportClientSocketPool::ActivateStalledRequest() {
   // Usually we will only be able to activate one stalled request at a time,
   // however if all the connects fail synchronously for some reason, we may be
   // able to clear the whole queue at once.
-  while (!stalled_request_queue_.empty() && !ReachedMaxSocketsLimit()) {
+  while (!stalled_request_queue_.empty() &&
+         State() == SocketPoolState::kUncapped) {
     StalledRequest request = std::move(stalled_request_queue_.front());
     stalled_request_queue_.pop_front();
     stalled_request_map_.erase(request.handle);

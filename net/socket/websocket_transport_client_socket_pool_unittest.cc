@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -138,10 +139,12 @@ class WebSocketTransportClientSocketPoolTest : public ::testing::Test,
 
   static void RunUntilIdle() { base::RunLoop().RunUntilIdle(); }
 
-  int StartRequest(RequestPriority priority) {
+  int StartRequest(
+      RequestPriority priority,
+      WebSocketTransportClientSocketPool* non_default_pool = nullptr) {
     return test_base_.StartRequestUsingPool(
-        &pool_, group_id_, priority, ClientSocketPool::RespectLimits::ENABLED,
-        params_);
+        non_default_pool ?: &pool_, group_id_, priority,
+        ClientSocketPool::RespectLimits::ENABLED, params_);
   }
 
   int GetOrderOfRequest(size_t index) {
@@ -1438,6 +1441,25 @@ TEST_F(WebSocketTransportClientSocketPoolTest, LoadState) {
   RunLoopForTimePeriod(TransportConnectJob::kIPv6FallbackTime +
                        base::Milliseconds(50));
   EXPECT_THAT(connect_job_v6_and_v4.GetLoadState(), LOAD_STATE_CONNECTING);
+}
+
+TEST_F(WebSocketTransportClientSocketPoolTest,
+       ValidateAdditionalCapacityForWebSocketTransportClientSocketPool) {
+  WebSocketTransportClientSocketPool pool(
+      /*socket_soft_cap=*/256, kFieldTrialPool, ProxyChain::Direct(),
+      &common_connect_job_params_);
+  ValidateAdditionalCapacityForSocketPool(
+      base::BindLambdaForTesting([&]() {
+        StartRequest(kDefaultPriority, &pool);
+        return pool.StateForTest();
+      }),
+      base::BindLambdaForTesting([&]() { RunUntilIdle(); }),
+      base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(ReleaseOneConnection(ClientSocketPoolTest::NO_KEEP_ALIVE));
+        return pool.StateForTest();
+      }),
+      base::BindLambdaForTesting([&]() { return pool.SocketsInUse(); }));
+  ReleaseAllConnections(ClientSocketPoolTest::NO_KEEP_ALIVE);
 }
 
 }  // namespace

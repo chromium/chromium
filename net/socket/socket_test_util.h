@@ -41,6 +41,7 @@
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/socket_performance_watcher.h"
+#include "net/socket/socket_pool_additional_capacity.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/transport_client_socket.h"
@@ -1549,6 +1550,20 @@ bool CanGetTaggedBytes();
 // |expected_tag| for our UID.  Return the count of received bytes.
 uint64_t GetTaggedBytes(int32_t expected_tag);
 #endif
+
+// This should be kept in sync with the field trial config's default pool.
+const SocketPoolAdditionalCapacity kFieldTrialPool =
+    SocketPoolAdditionalCapacity::CreateForTest(0.000001, 256, 0.01, 0.2);
+
+// The goal of this test is to walk a pool back and forth between being
+// capped and uncapped, tracking at what point the transition occurs
+// and using that data to validate expected behavior. We take this walk
+// about 100 times as there is randomization in the transition points.
+void ValidateAdditionalCapacityForSocketPool(
+    base::RepeatingCallback<SocketPoolState()> request_socket,
+    base::RepeatingCallback<void()> wait_for_socket_initialization,
+    base::RepeatingCallback<SocketPoolState()> release_socket,
+    base::RepeatingCallback<size_t()> sockets_in_use);
 
 }  // namespace net
 

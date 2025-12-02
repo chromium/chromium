@@ -2398,4 +2398,80 @@ uint64_t GetTaggedBytes(int32_t expected_tag) {
 }
 #endif
 
+void ValidateAdditionalCapacityForSocketPool(
+    base::RepeatingCallback<SocketPoolState()> request_socket,
+    base::RepeatingCallback<void()> wait_for_socket_initialization,
+    base::RepeatingCallback<SocketPoolState()> release_socket,
+    base::RepeatingCallback<size_t()> sockets_in_use) {
+  size_t total_sockets_seen_at_capping_point = 0;
+  size_t capping_points_seen = 0;
+  size_t minimum_sockets_seen_at_capping_point = 512;
+  size_t maximum_sockets_seen_at_capping_point = 0;
+  size_t total_sockets_seen_at_uncapping_point = 0;
+  size_t uncapping_points_seen = 0;
+  size_t minimum_sockets_seen_at_uncapping_point = 512;
+  size_t maximum_sockets_seen_at_uncapping_point = 0;
+  for (size_t i = 0; i < 100; ++i) {
+    while (request_socket.Run() == SocketPoolState::kUncapped) {
+      continue;
+    }
+    wait_for_socket_initialization.Run();
+    total_sockets_seen_at_capping_point += sockets_in_use.Run();
+    ++capping_points_seen;
+    if (minimum_sockets_seen_at_capping_point > sockets_in_use.Run()) {
+      minimum_sockets_seen_at_capping_point = sockets_in_use.Run();
+    }
+    if (maximum_sockets_seen_at_capping_point < sockets_in_use.Run()) {
+      maximum_sockets_seen_at_capping_point = sockets_in_use.Run();
+    }
+    while (release_socket.Run() == SocketPoolState::kCapped) {
+      continue;
+    }
+    total_sockets_seen_at_uncapping_point += sockets_in_use.Run();
+    ++uncapping_points_seen;
+    if (minimum_sockets_seen_at_uncapping_point > sockets_in_use.Run()) {
+      minimum_sockets_seen_at_uncapping_point = sockets_in_use.Run();
+    }
+    if (maximum_sockets_seen_at_uncapping_point < sockets_in_use.Run()) {
+      maximum_sockets_seen_at_uncapping_point = sockets_in_use.Run();
+    }
+  }
+  int average_sockets_seen_at_capping_point =
+      total_sockets_seen_at_capping_point / capping_points_seen;
+  int average_sockets_seen_at_uncapping_point =
+      total_sockets_seen_at_uncapping_point / uncapping_points_seen;
+  int capping_range = maximum_sockets_seen_at_capping_point -
+                      minimum_sockets_seen_at_capping_point;
+  int uncapping_range = maximum_sockets_seen_at_uncapping_point -
+                        minimum_sockets_seen_at_uncapping_point;
+  int average_difference = average_sockets_seen_at_capping_point -
+                           average_sockets_seen_at_uncapping_point;
+
+  // The pool should always uncap between 256 and 512.
+  EXPECT_GE(minimum_sockets_seen_at_capping_point, 256u);
+  EXPECT_LE(maximum_sockets_seen_at_capping_point, 512u);
+
+  // The pool should always uncap between 255 and 511.
+  EXPECT_GE(minimum_sockets_seen_at_uncapping_point, 255u);
+  EXPECT_LE(maximum_sockets_seen_at_uncapping_point, 511u);
+
+  // We expect the capping range to start, average, and end after the uncapping.
+  EXPECT_GE(minimum_sockets_seen_at_capping_point,
+            minimum_sockets_seen_at_uncapping_point);
+  EXPECT_GE(average_sockets_seen_at_capping_point,
+            average_sockets_seen_at_uncapping_point);
+  EXPECT_GE(maximum_sockets_seen_at_capping_point,
+            maximum_sockets_seen_at_uncapping_point);
+
+  // We expect a range of 140 to 260 for both capping and uncapping ranges.
+  EXPECT_GE(capping_range, 140);
+  EXPECT_LE(capping_range, 260);
+  EXPECT_GE(uncapping_range, 140);
+  EXPECT_LE(uncapping_range, 260);
+
+  // We expect a range 20 to 80 between the average capping and uncapping.
+  EXPECT_GE(average_difference, 20);
+  EXPECT_LE(average_difference, 80);
+}
+
 }  // namespace net

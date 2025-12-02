@@ -203,7 +203,6 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
                           base::WeakPtr<ClientSocketHandle> weak_handle,
                           CompletionOnceCallback callback,
                           int rv);
-  bool ReachedMaxSocketsLimit() const;
   void HandOutSocket(std::unique_ptr<StreamSocket> socket,
                      const LoadTimingInfo::ConnectTiming& connect_timing,
                      ClientSocketHandle* handle,

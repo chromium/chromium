@@ -5,20 +5,18 @@
 #include "net/socket/socket_pool_additional_capacity.h"
 
 #include "base/notimplemented.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/connect_job_factory.h"
+#include "net/socket/socket_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace net {
 
 namespace {
-
-// This should be kept in sync with the field trial config's default pool.
-const SocketPoolAdditionalCapacity kFieldTrialPool =
-    SocketPoolAdditionalCapacity::CreateForTest(0.000001, 256, 0.01, 0.2);
 
 TEST(SocketPoolAdditionalCapacityTest, CreateWithDisabledFeature) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -457,80 +455,14 @@ class MockClientSocketPool : public ClientSocketPool {
   size_t sockets_in_use_{0};
 };
 
-// The goal of this test is to walk a pool back and forth between being
-// capped and uncapped, tracking at what point the transition occurs
-// and using that data to validate expected behavior. We take this walk
-// about 1000 times as there is randomization in the transition points.
-TEST(SocketPoolAdditionalCapacityTest, ValidateMockClientSocketPool) {
+TEST(SocketPoolAdditionalCapacityTest,
+     ValidateAdditionalCapacityForMockClientSocketPool) {
   MockClientSocketPool pool;
-  size_t total_sockets_seen_at_capping_point = 0;
-  size_t capping_points_seen = 0;
-  size_t minimum_sockets_seen_at_capping_point = 512;
-  size_t maximum_sockets_seen_at_capping_point = 0;
-  size_t total_sockets_seen_at_uncapping_point = 0;
-  size_t uncapping_points_seen = 0;
-  size_t minimum_sockets_seen_at_uncapping_point = 512;
-  size_t maximum_sockets_seen_at_uncapping_point = 0;
-  for (size_t i = 0; i < 1000; ++i) {
-    while (pool.RequestSocket() == SocketPoolState::kUncapped) {
-      continue;
-    }
-    total_sockets_seen_at_capping_point += pool.SocketsInUse();
-    ++capping_points_seen;
-    if (minimum_sockets_seen_at_capping_point > pool.SocketsInUse()) {
-      minimum_sockets_seen_at_capping_point = pool.SocketsInUse();
-    }
-    if (maximum_sockets_seen_at_capping_point < pool.SocketsInUse()) {
-      maximum_sockets_seen_at_capping_point = pool.SocketsInUse();
-    }
-    while (pool.ReleaseSocket() == SocketPoolState::kCapped) {
-      continue;
-    }
-    total_sockets_seen_at_uncapping_point += pool.SocketsInUse();
-    ++uncapping_points_seen;
-    if (minimum_sockets_seen_at_uncapping_point > pool.SocketsInUse()) {
-      minimum_sockets_seen_at_uncapping_point = pool.SocketsInUse();
-    }
-    if (maximum_sockets_seen_at_uncapping_point < pool.SocketsInUse()) {
-      maximum_sockets_seen_at_uncapping_point = pool.SocketsInUse();
-    }
-  }
-  int average_sockets_seen_at_capping_point =
-      total_sockets_seen_at_capping_point / capping_points_seen;
-  int average_sockets_seen_at_uncapping_point =
-      total_sockets_seen_at_uncapping_point / uncapping_points_seen;
-  int capping_range = maximum_sockets_seen_at_capping_point -
-                      minimum_sockets_seen_at_capping_point;
-  int uncapping_range = maximum_sockets_seen_at_uncapping_point -
-                        minimum_sockets_seen_at_uncapping_point;
-  int average_difference = average_sockets_seen_at_capping_point -
-                           average_sockets_seen_at_uncapping_point;
-
-  // The pool should always uncap between 256 and 512.
-  EXPECT_GE(minimum_sockets_seen_at_capping_point, 256);
-  EXPECT_LE(maximum_sockets_seen_at_capping_point, 512);
-
-  // The pool should always uncap between 255 and 511.
-  EXPECT_GE(minimum_sockets_seen_at_uncapping_point, 255);
-  EXPECT_LE(maximum_sockets_seen_at_uncapping_point, 511);
-
-  // We expect the capping range to start, average, and end after the uncapping.
-  EXPECT_GT(minimum_sockets_seen_at_capping_point,
-            minimum_sockets_seen_at_uncapping_point);
-  EXPECT_GT(average_sockets_seen_at_capping_point,
-            average_sockets_seen_at_uncapping_point);
-  EXPECT_GT(maximum_sockets_seen_at_capping_point,
-            maximum_sockets_seen_at_uncapping_point);
-
-  // We expect a range of 150 to 250 for both capping and uncapping ranges.
-  EXPECT_GT(capping_range, 150);
-  EXPECT_LT(capping_range, 250);
-  EXPECT_GT(uncapping_range, 150);
-  EXPECT_LT(uncapping_range, 250);
-
-  // We expect a range 20 to 80 between the average capping and uncapping.
-  EXPECT_GT(average_difference, 20);
-  EXPECT_LT(average_difference, 80);
+  ValidateAdditionalCapacityForSocketPool(
+      base::BindLambdaForTesting([&]() { return pool.RequestSocket(); }),
+      base::DoNothing(),
+      base::BindLambdaForTesting([&]() { return pool.ReleaseSocket(); }),
+      base::BindLambdaForTesting([&]() { return pool.SocketsInUse(); }));
 }
 
 }  // namespace
