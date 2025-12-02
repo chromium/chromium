@@ -24,15 +24,12 @@
 #include "media/mojo/mojom/speech_recognition_result.h"
 
 namespace captions {
-
 LiveTranslateController::LiveTranslateController(
     PrefService* profile_prefs,
-    content::BrowserContext* browser_context)
+    std::unique_ptr<TranslationDispatcher> translation_dispatcher)
     : profile_prefs_(profile_prefs),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()),
-      translation_dispatcher_(
-          std::make_unique<TranslationDispatcher>(google_apis::GetAPIKey(),
-                                                  browser_context)) {
+      translation_dispatcher_(std::move(translation_dispatcher)) {
   pref_change_registrar_->Init(profile_prefs_);
   pref_change_registrar_->Add(
       prefs::kLiveTranslateEnabled,

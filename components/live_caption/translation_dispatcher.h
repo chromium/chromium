@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -40,12 +41,12 @@ class TranslationDispatcher {
                         content::BrowserContext* browser_context);
   TranslationDispatcher(const TranslationDispatcher&) = delete;
   TranslationDispatcher& operator=(const TranslationDispatcher&) = delete;
-  ~TranslationDispatcher();
+  virtual ~TranslationDispatcher();
 
-  void GetTranslation(const std::string& result,
-                      std::string source_language,
-                      std::string target_language,
-                      TranslateEventCallback callback);
+  virtual void GetTranslation(absl::string_view result,
+                              absl::string_view source_language,
+                              absl::string_view target_language,
+                              TranslateEventCallback callback);
 
  private:
   void ResetURLLoaderFactory();

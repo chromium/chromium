@@ -17,10 +17,6 @@
 class PrefChangeRegistrar;
 class PrefService;
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -36,8 +32,9 @@ namespace captions {
 //
 class LiveTranslateController : public KeyedService {
  public:
-  LiveTranslateController(PrefService* profile_prefs,
-                          content::BrowserContext* browser_context);
+  LiveTranslateController(
+      PrefService* profile_prefs,
+      std::unique_ptr<TranslationDispatcher> translation_dispatcher);
   LiveTranslateController(const LiveTranslateController&) = delete;
   LiveTranslateController& operator=(const LiveTranslateController&) = delete;
   ~LiveTranslateController() override;

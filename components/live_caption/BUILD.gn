@@ -121,6 +121,7 @@ if (!is_android && !is_ios) {
       "//components/live_caption:constants",
       "//components/prefs",
       "//components/prefs:test_support",
+      "//components/sync_preferences:test_support",
       "//media/mojo/mojom:speech_recognition",
       "//mojo/public/cpp/bindings",
       "//testing/gmock",
@@ -135,6 +136,7 @@ if (!is_android && !is_ios) {
         # This test verifies behavior of the controller
         # in an ash environment and requires ash dependencies.
         "live_caption_controller_unittest.cc",
+        "live_translate_controller_unittest.cc",
       ]
 
       deps += [

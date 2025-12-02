@@ -61,7 +61,10 @@ namespace captions {
 MockLiveTranslateController::MockLiveTranslateController(
     PrefService* profile_prefs,
     content::BrowserContext* browser_context)
-    : LiveTranslateController(profile_prefs, browser_context) {}
+    : LiveTranslateController(
+          profile_prefs,
+          std::make_unique<TranslationDispatcher>("dummy_api_key",
+                                                  browser_context)) {}
 
 MockLiveTranslateController::~MockLiveTranslateController() = default;
 
