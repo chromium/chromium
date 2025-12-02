@@ -36,6 +36,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -162,13 +163,27 @@ public class PartnerDisableIncognitoModeIntegrationTest {
         setParentalControlsEnabled(false);
         var page = mActivityTestRule.startOnBlankPage();
         waitForParentalControlsEnabledState(false);
-        page.openNewIncognitoTabOrWindowFast()
-                .loadWebPageProgrammatically(testUrls[0])
-                .openNewIncognitoTabOrWindowFast()
-                .loadWebPageProgrammatically(testUrls[1])
-                .openNewIncognitoTabOrWindowFast()
-                .loadWebPageProgrammatically(testUrls[2]);
-        mActivityTestRule.loadUrlInNewTab(testUrls[0], false);
+        var incognitoPage =
+                page.openNewIncognitoTabOrWindowFast()
+                        .loadWebPageProgrammatically(testUrls[0])
+                        .openNewIncognitoTabOrWindowFast()
+                        .loadWebPageProgrammatically(testUrls[1])
+                        .openNewIncognitoTabOrWindowFast()
+                        .loadWebPageProgrammatically(testUrls[2]);
+
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            // Incognito tabs were opened in a new window, so just focus the regular window.
+            page.bringWindowToFront();
+            page.loadWebPageProgrammatically(testUrls[0]);
+        } else {
+            // Otherwise, switch to the regular tabs pane then to a regular tab.
+            incognitoPage
+                    .openIncognitoTabSwitcher()
+                    .selectRegularTabsPane()
+                    .selectTabAtIndex(0, WebPageStation.newBuilder().initSelectingExistingTab())
+                    .loadWebPageProgrammatically(testUrls[0]);
+        }
+
         setParentalControlsEnabled(true);
         toggleActivityForegroundState();
         waitForParentalControlsEnabledState(true);

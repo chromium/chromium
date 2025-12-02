@@ -5,6 +5,8 @@
 package org.chromium.base.test.transit;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -53,6 +55,17 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
 
     void requireNoParticularTask() {
         replaceEnterCondition(new ActivityExistsInAnyTaskCondition());
+    }
+
+    TripBuilder bringWindowToFrontTo() {
+        return Triggers.runOnUiThreadTo(
+                () -> {
+                    var activity = get();
+                    assert activity != null;
+                    ActivityManager activityManager =
+                            (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+                    activityManager.moveTaskToFront(activity.getTaskId(), 0);
+                });
     }
 
     /**

@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import static org.chromium.base.test.transit.Condition.whether;
+
 import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
@@ -143,5 +145,21 @@ public abstract class Station<HostActivityT extends Activity> extends Conditiona
         assert mActivityElement != null;
         mActivityElement.expectActivityDestroyed();
         runTo(() -> getActivity().finish()).reachLastStop();
+    }
+
+    /** Brings the task of the associated Activity to front and waits until it has focus. */
+    public void bringWindowToFront() {
+        assert mActivityElement != null;
+        mActivityElement
+                .bringWindowToFrontTo()
+                .waitFor(
+                        SimpleConditions.instrumentationThreadCondition(
+                                String.format("%s has window focus", getName()),
+                                mActivityElement,
+                                activity ->
+                                        whether(
+                                                activity.getWindow()
+                                                        .getDecorView()
+                                                        .hasWindowFocus())));
     }
 }
