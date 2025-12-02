@@ -15,7 +15,6 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 
 namespace content_settings {
 

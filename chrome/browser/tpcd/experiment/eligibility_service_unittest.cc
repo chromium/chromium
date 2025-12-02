@@ -30,7 +30,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/version_info/channel.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
