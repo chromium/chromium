@@ -2535,7 +2535,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Group Context Menu")
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID)
     public void testDrag_DismissContextMenu() {
         // Initialize.
         initializeTest(false, false, 0);

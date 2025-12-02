@@ -175,16 +175,12 @@ public class ReorderDelegate {
             StripLayoutView interactingView, @ReorderType int reorderType) {
         boolean instanceOfTab = interactingView instanceof StripLayoutTab;
         boolean instanceOfGroup = interactingView instanceof StripLayoutGroupTitle;
-        boolean shouldDragDropGroup =
-                instanceOfGroup
-                        && ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID);
         boolean isMultiSelectedTab =
                 instanceOfTab
                         && mModel.isTabMultiSelected(((StripLayoutTab) interactingView).getTabId())
                         && mModel.getMultiSelectedTabsCount() > 1;
         if (mSourceViewDragDropReorderStrategy != null
-                && (instanceOfTab || shouldDragDropGroup)
+                && (instanceOfTab || instanceOfGroup)
                 && reorderType == ReorderType.START_DRAG_DROP) {
             if (isMultiSelectedTab) {
                 // Record the number of tabs that are multi-selected when the user starts dragging
@@ -193,7 +189,7 @@ public class ReorderDelegate {
                 StripLayoutUtils.recordTabMultiSelectionTabCount(mModel);
             }
             return mSourceViewDragDropReorderStrategy;
-        } else if ((instanceOfTab || shouldDragDropGroup)
+        } else if ((instanceOfTab || instanceOfGroup)
                 && reorderType == ReorderType.DRAG_ONTO_STRIP) {
             // Only external views can be dragged onto strip during startReorderMode.
             assert mExternalViewDragDropReorderStrategy != null;

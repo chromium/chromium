@@ -1717,7 +1717,6 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID)
     public void testMoveTabGroupToCurrentWindow_calledWithDesiredParameters() {
         setupTwoInstances();
 
@@ -1927,13 +1926,11 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID)
     public void testReparentGroupToRunningActivity() {
         doTestReparentGroupToRunningActivity(/* isGroupShared= */ false);
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID)
     public void testReparentGroupToRunningActivity_sharedTabGroup() {
         doTestReparentGroupToRunningActivity(/* isGroupShared= */ true);
     }

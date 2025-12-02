@@ -22,9 +22,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -34,7 +32,6 @@ import java.util.Map.Entry;
 /** Tests for {@link TabGroupMetadata}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID})
 public class TabGroupMetadataUnitTest {
 
     private static final ArrayList<Entry<Integer, String>> TAB_IDS_TO_URLS =

@@ -5846,14 +5846,6 @@ inline constexpr char kTabStripDensityChangeAndroidDescription[] =
     "mouse, touchpad, etc.) is connected, including reducing minimum tab "
     "width and button touch target to better support click-first interactions.";
 
-inline constexpr char kTabStripGroupDragDropAndroidName[] =
-    "Tab Strip Group Drag Drop Android";
-inline constexpr char kTabStripGroupDragDropAndroidDescription[] =
-    "Enables long-pressing on tab strip tab group indicators to start "
-    "drag-and-drop. Users can drag the tab group off the tab strip and drop it "
-    "into another window in split-screen mode or create a new window by "
-    "dropping it on the edge of Chrome.";
-
 inline constexpr char kTabStripIncognitoMigrationName[] =
     "Tab Strip Incognito switcher migration to toolbar";
 inline constexpr char kTabStripIncognitoMigrationDescription[] =
