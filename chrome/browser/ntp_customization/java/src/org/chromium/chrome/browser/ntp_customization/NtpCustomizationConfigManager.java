@@ -185,9 +185,14 @@ public class NtpCustomizationConfigManager {
 
     /**
      * Adds a {@link HomepageStateListener} to receive updates when the home modules state changes.
+     *
+     * @param listener The listener instance to add.
+     * @param context The Application context.
+     * @param skipNotify Whether to skip being notified immediately.
      */
-    public void addListener(HomepageStateListener listener, Context context) {
+    public void addListener(HomepageStateListener listener, Context context, boolean skipNotify) {
         mHomepageStateListeners.addObserver(listener);
+        if (skipNotify) return;
 
         if (!mIsInitialized) {
             maybeInitializeColorTheme(context);

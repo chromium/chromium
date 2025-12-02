@@ -333,7 +333,8 @@ public class StatusBarColorController
                         onBackgroundImageChangedImpl();
                     }
                 };
-        ntpCustomizationConfigManager.addListener(mHomepageStateListener, context);
+        ntpCustomizationConfigManager.addListener(
+                mHomepageStateListener, context, /* skipNotify= */ false);
     }
 
     /** Called when the background image of the NTP has changed. */

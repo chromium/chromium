@@ -147,7 +147,7 @@ public class MostVisitedMediatorUnitTest {
     public void testOnMvtToggleChanged_MvtCustomizationEnabled() {
         createMediator();
         verify(mNtpCustomizationConfigManager)
-                .addListener(mHomepageStateListenerCaptor.capture(), eq(mContext));
+                .addListener(mHomepageStateListenerCaptor.capture(), eq(mContext), eq(false));
         NtpCustomizationConfigManager.HomepageStateListener listener =
                 mHomepageStateListenerCaptor.getValue();
 
@@ -184,7 +184,7 @@ public class MostVisitedMediatorUnitTest {
     public void testOnMvtToggleChanged_MvtCustomizationDisabled() {
         createMediator();
         verify(mNtpCustomizationConfigManager)
-                .addListener(mHomepageStateListenerCaptor.capture(), eq(mContext));
+                .addListener(mHomepageStateListenerCaptor.capture(), eq(mContext), eq(false));
         NtpCustomizationConfigManager.HomepageStateListener listener =
                 mHomepageStateListenerCaptor.getValue();
 
@@ -519,7 +519,7 @@ public class MostVisitedMediatorUnitTest {
     @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT)
     public void testAddAndRemoveListener_FeatureEnabled() {
         createMediator();
-        verify(mNtpCustomizationConfigManager).addListener(any(), eq(mContext));
+        verify(mNtpCustomizationConfigManager).addListener(any(), eq(mContext), eq(false));
 
         mMediator.destroy();
         verify(mNtpCustomizationConfigManager).removeListener(any());
@@ -529,7 +529,7 @@ public class MostVisitedMediatorUnitTest {
     @Features.DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT)
     public void testAddAndRemoveListener_FeatureDisabled() {
         createMediator();
-        verify(mNtpCustomizationConfigManager, never()).addListener(any(), eq(mContext));
+        verify(mNtpCustomizationConfigManager, never()).addListener(any(), eq(mContext), eq(false));
 
         mMediator.destroy();
         verify(mNtpCustomizationConfigManager, never()).removeListener(any());

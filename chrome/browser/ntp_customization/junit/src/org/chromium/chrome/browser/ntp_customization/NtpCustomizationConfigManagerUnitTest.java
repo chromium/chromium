@@ -105,7 +105,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     @Test
     public void testOnUploadedImageSelected_persistsStateAndNotifiesListener() {
         int initialBackgroundImageType = mNtpCustomizationConfigManager.getBackgroundImageType();
-        mNtpCustomizationConfigManager.addListener(mListener, mContext);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
         BackgroundImageInfo backgroundImageInfo =
                 new BackgroundImageInfo(mPortraitMatrix, mLandscapeMatrix);
 
@@ -146,6 +146,32 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
+    public void testAddListener_skipNotify() {
+        BackgroundImageInfo backgroundImageInfo =
+                new BackgroundImageInfo(mPortraitMatrix, mLandscapeMatrix);
+        mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
+                NtpBackgroundImageType.IMAGE_FROM_DISK);
+        // Passes non-null matrices to mNtpCustomizationConfigManager.
+        mNtpCustomizationConfigManager.notifyBackgroundImageChanged(
+                mBitmap,
+                backgroundImageInfo,
+                /* fromInitialization= */ true,
+                /* oldType= */ NtpBackgroundImageType.DEFAULT);
+        mNtpCustomizationConfigManager.setIsInitializedForTesting(true);
+
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ true);
+
+        // Verifies that the listener isn't notified immediately with skipNotify being true.
+        verify(mListener, never())
+                .onBackgroundImageChanged(
+                        any(Bitmap.class),
+                        any(BackgroundImageInfo.class),
+                        anyBoolean(),
+                        anyInt(),
+                        anyInt());
+    }
+
+    @Test
     public void testAddListener_notifiesImmediatelyWithImage_forImageFromDisk() {
         BackgroundImageInfo backgroundImageInfo =
                 new BackgroundImageInfo(mPortraitMatrix, mLandscapeMatrix);
@@ -159,7 +185,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                 /* oldType= */ NtpBackgroundImageType.DEFAULT);
         mNtpCustomizationConfigManager.setIsInitializedForTesting(true);
 
-        mNtpCustomizationConfigManager.addListener(mListener, mContext);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
 
         // Verifies that the listener should be called back immediately with
         // fromInitialization=true.
@@ -181,7 +207,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                 NtpBackgroundImageType.DEFAULT);
         mNtpCustomizationConfigManager.setIsInitializedForTesting(true);
 
-        mNtpCustomizationConfigManager.addListener(mListener, mContext);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
 
         // Verifies that the listener should be called back immediately with
         // fromInitialization=true.
@@ -206,7 +232,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                 mContext, colorFromHexInfo, NtpBackgroundImageType.COLOR_FROM_HEX);
         mNtpCustomizationConfigManager.setIsInitializedForTesting(true);
 
-        mNtpCustomizationConfigManager.addListener(mListener, mContext);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
 
         // Verifies that the listener should be called back immediately with
         // fromInitialization=true.
@@ -223,7 +249,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     public void testRemoveListener_stopsReceivingUpdates_onBackgroundChanged() {
         mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpBackgroundImageType.IMAGE_FROM_DISK);
-        mNtpCustomizationConfigManager.addListener(mListener, mContext);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
         mNtpCustomizationConfigManager.removeListener(mListener);
 
         // Triggers a change that would normally notify the listener.
@@ -242,7 +268,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     public void testRemoveListener_stopsReceivingUpdates_onBackgroundColorChanged() {
         mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpBackgroundImageType.DEFAULT);
-        mNtpCustomizationConfigManager.addListener(mListener, mContext);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
         mNtpCustomizationConfigManager.removeListener(mListener);
 
         // Triggers a change that would normally notify the listener.
@@ -260,7 +286,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     @Test
     public void testAddAndRemoveMvtVisibilityListener() {
         // Verifies the listener added is notified when the visibility if changed.
-        mNtpCustomizationConfigManager.addListener(mListener, mContext);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
         mNtpCustomizationConfigManager.setPrefIsMvtToggleOn(/* isMvtToggleOn= */ true);
         verify(mListener).onMvtToggleChanged();
 
@@ -276,7 +302,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     public void testSetAndGetPrefMvtVisibility() {
         // Verifies setPrefIsMvtVisible() sets the ChromeSharedPreferences properly and
         // getPrefIsMvtVisible() gets the right value.
-        mNtpCustomizationConfigManager.addListener(mListener, mContext);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
         mNtpCustomizationConfigManager.setPrefIsMvtToggleOn(/* isMvtToggleOn= */ false);
         assertFalse(
                 ChromeSharedPreferences.getInstance()
@@ -303,7 +329,7 @@ public class NtpCustomizationConfigManagerUnitTest {
 
     @Test
     public void testOnBackgroundColorChanged() {
-        mNtpCustomizationConfigManager.addListener(mListener, mContext);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
         clearInvocations(mListener);
 
         int colorInfoId = NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE;
@@ -353,7 +379,7 @@ public class NtpCustomizationConfigManagerUnitTest {
 
     @Test
     public void testOnBackgroundColorChanged_colorFromHexString() {
-        mNtpCustomizationConfigManager.addListener(mListener, mContext);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
         clearInvocations(mListener);
 
         @ColorInt int backgroundColor = Color.RED;
@@ -398,7 +424,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     @Test
     public void testOnThemeCollectionImageSelected() {
         int initialBackgroundImageType = mNtpCustomizationConfigManager.getBackgroundImageType();
-        mNtpCustomizationConfigManager.addListener(mListener, mContext);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
         BackgroundImageInfo backgroundImageInfo =
                 new BackgroundImageInfo(mPortraitMatrix, mLandscapeMatrix);
         CustomBackgroundInfo customBackgroundInfo =
@@ -444,7 +470,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                 /* oldType= */ NtpBackgroundImageType.DEFAULT);
         mNtpCustomizationConfigManager.setIsInitializedForTesting(true);
 
-        mNtpCustomizationConfigManager.addListener(mListener, mContext);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
 
         // Verifies that the listener should be called back immediately with
         // fromInitialization=true.

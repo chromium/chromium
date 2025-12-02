@@ -859,7 +859,8 @@ public class NewTabPage
                                 /* applyWhiteBackgroundOnSearchBox= */ false);
                     }
                 };
-        NtpCustomizationConfigManager.getInstance().addListener(mHomepageStateListener, mContext);
+        NtpCustomizationConfigManager.getInstance()
+                .addListener(mHomepageStateListener, mContext, /* skipNotify= */ false);
     }
 
     /** Initializes whether to use a light tint color on icons of toolbar and status bar. */

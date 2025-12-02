@@ -167,7 +167,8 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
                         TopInsetCoordinator.this.refreshWindowInsets(consumeTopInset);
                     }
                 };
-        NtpCustomizationConfigManager.getInstance().addListener(mHomepageStateListener, context);
+        NtpCustomizationConfigManager.getInstance()
+                .addListener(mHomepageStateListener, context, /* skipNotify= */ false);
 
         mWindowInsetsConsumer = this::onApplyWindowInsets;
         mInsetObserver.addInsetsConsumer(

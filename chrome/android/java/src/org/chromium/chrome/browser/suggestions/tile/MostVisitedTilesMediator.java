@@ -114,7 +114,8 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
                         updateMvtVisibility();
                     }
                 };
-        NtpCustomizationConfigManager.getInstance().addListener(mMvtVisibilityListener, mContext);
+        NtpCustomizationConfigManager.getInstance()
+                .addListener(mMvtVisibilityListener, mContext, /* skipNotify= */ false);
     }
 
     /** Called to initialize this mediator when native is ready. */
