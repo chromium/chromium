@@ -85,8 +85,9 @@ void BackGestureContextualNudgeDelegate::StopTrackingNavigation() {
   if (window_) {
     ash::BrowserDelegate* browser =
         ash::BrowserController::GetInstance()->GetBrowserForWindow(window_);
-    CHECK(browser);
-    browser->GetBrowser().tab_strip_model()->RemoveObserver(this);
+    if (browser) {
+      browser->GetBrowser().tab_strip_model()->RemoveObserver(this);
+    }
 
     window_->RemoveObserver(this);
     window_ = nullptr;
