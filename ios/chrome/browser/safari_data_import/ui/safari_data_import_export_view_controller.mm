@@ -33,8 +33,6 @@ NSString* GetAnimationName(BOOL dark_mode) {
                    : kSafariDataExportEducationAnimation;
 }
 
-/// Vertical spacing of the instruction view.
-const CGFloat kInstructionViewVerticalSpacing = 16;
 
 /// Static text instructions to export data from Safari, formatted with
 /// paddings.
@@ -53,17 +51,7 @@ UIView* GetInstructionsView() {
         IDS_IOS_SAFARI_IMPORT_EXPORT_STATIC_INSTRUCTION_STEP_5),
   ]];
   instruction_view.translatesAutoresizingMaskIntoConstraints = NO;
-  /// Wraps the instructions with paddings, since its superview will be the
-  /// first item in a  stack view and `directionalLayoutMargins` would not be
-  /// honored.
-  UIView* wrapper = [[UIView alloc] initWithFrame:CGRectZero];
-  wrapper.translatesAutoresizingMaskIntoConstraints = NO;
-  [wrapper addSubview:instruction_view];
-  AddSameConstraintsWithInsets(
-      instruction_view, wrapper,
-      NSDirectionalEdgeInsetsMake(kInstructionViewVerticalSpacing, 0,
-                                  kInstructionViewVerticalSpacing, 0));
-  return wrapper;
+  return instruction_view;
 }
 
 /// Text provider for the animated promo.
