@@ -229,6 +229,8 @@ class BrowserToPageConnector {
 
     base::Value::Dict add_binding_params;
     add_binding_params.Set("name", binding_name);
+    // Expose to the default execution context only.
+    add_binding_params.Set("executionContextName", "");
     SendProtocolMessageToPage("Runtime.addBinding",
                               base::Value(std::move(add_binding_params)));
 
@@ -236,14 +238,13 @@ class BrowserToPageConnector {
         base::StringPrintf(kInitializerScript, binding_name.c_str());
 
     base::Value::Dict params;
-    params.Set("scriptSource", initializer_script);
-    SendProtocolMessageToPage("Page.addScriptToEvaluateOnLoad",
+    params.Set("source", initializer_script);
+    params.Set("worldName", "");
+    // Run the initializer script immediately on the current page. This is
+    // needed to expose the binding to the current page.
+    params.Set("runImmediately", true);
+    pending_request_id_ = SendProtocolMessageToPage("Page.addScriptToEvaluateOnNewDocument",
                               base::Value(std::move(params)));
-
-    base::Value::Dict evaluate_params;
-    evaluate_params.Set("expression", initializer_script);
-    pending_request_id_ = SendProtocolMessageToPage(
-        "Runtime.evaluate", base::Value(std::move(evaluate_params)));
     GetInstanceMap()[page_host_.get()].reset(this);
   }
 

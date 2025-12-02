@@ -1,0 +1,4 @@
+Verify that Target.exposeDevToolsProtocol scoped to the default execution context.
+Protocol exposed to foo. Expected: false. Actual: false.
+Protocol exposed to default execution context. Expected: true. Actual: true.
+
