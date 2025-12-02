@@ -14,7 +14,6 @@
 #include "chrome/android/chrome_jni_headers/AutofillSnackbarController_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 

@@ -16,13 +16,13 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace hats {
 
 SurveyConfigHolder::SurveyConfigHolder(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj,
+                                       const JavaRef<jobject>& obj,
                                        Profile* profile) {
   jobj_.Reset(env, obj);
   GetActiveSurveyConfigs(survey_configs_by_triggers_);
@@ -71,8 +71,8 @@ void SurveyConfigHolder::Destroy(JNIEnv* env) {
 // static
 static jlong JNI_SurveyConfig_InitHolder(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& caller,
-    const JavaParamRef<jobject>& profile) {
+    const base::android::JavaRef<jobject>& caller,
+    const JavaRef<jobject>& profile) {
   SurveyConfigHolder* holder =
       new SurveyConfigHolder(env, caller, Profile::FromJavaObject(profile));
   return reinterpret_cast<intptr_t>(holder);

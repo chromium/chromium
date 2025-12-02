@@ -19,16 +19,16 @@
 
 namespace {
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 }  // namespace
 
 // Implements Java |AndroidBrowserWindow.Natives#create|.
 static jlong JNI_AndroidBrowserWindow_Create(
     JNIEnv* env,
-    const JavaParamRef<jobject>& caller,
+    const JavaRef<jobject>& caller,
     jint browser_window_type,
-    const JavaParamRef<jobject>& j_profile) {
+    const JavaRef<jobject>& j_profile) {
   Profile* profile = Profile::FromJavaObject(j_profile);
   return reinterpret_cast<intptr_t>(new AndroidBrowserWindow(
       env, caller,
@@ -37,7 +37,7 @@ static jlong JNI_AndroidBrowserWindow_Create(
 
 AndroidBrowserWindow::AndroidBrowserWindow(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_android_browser_window,
+    const JavaRef<jobject>& java_android_browser_window,
     const BrowserWindowInterface::Type type,
     Profile* profile)
     : type_(type),

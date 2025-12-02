@@ -37,7 +37,7 @@
 // This JNI header is generated from TabCollectionTabModelImpl.java.
 #include "chrome/android/chrome_jni_headers/TabCollectionTabModelImpl_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::TokenAndroid;
 using tab_groups::TabGroupColorId;
@@ -589,7 +589,7 @@ TabCollectionTabModelImpl::GetTabGroupVisualDataChecked(
 
 static jlong JNI_TabCollectionTabModelImpl_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_java_object,
+    const JavaRef<jobject>& j_java_object,
     Profile* profile) {
   TabCollectionTabModelImpl* tab_collection_tab_model_impl =
       new TabCollectionTabModelImpl(env, j_java_object, profile);

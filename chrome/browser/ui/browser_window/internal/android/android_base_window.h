@@ -15,7 +15,7 @@ class AndroidBaseWindow final : public ui::BaseWindow {
  public:
   AndroidBaseWindow(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_android_base_window);
+      const base::android::JavaRef<jobject>& java_android_base_window);
   AndroidBaseWindow(const AndroidBaseWindow&) = delete;
   AndroidBaseWindow& operator=(const AndroidBaseWindow&) = delete;
   ~AndroidBaseWindow();

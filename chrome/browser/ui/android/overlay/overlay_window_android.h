@@ -35,9 +35,9 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
 
   static OverlayWindowAndroid* OnActivityStart(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& token,
+      const base::android::JavaRef<jobject>& token,
 
-      const base::android::JavaParamRef<jobject>& jwindow_android);
+      const base::android::JavaRef<jobject>& jwindow_android);
   void DestroyStartedByJava(JNIEnv* env);
   void TogglePlayPause(JNIEnv* env, bool toggleOn);
   void NextTrack(JNIEnv* env);
@@ -50,7 +50,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void Hide(JNIEnv* env);
   void CompositorViewCreated(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& compositor_view);
+      const base::android::JavaRef<jobject>& compositor_view);
   void OnViewSizeChanged(JNIEnv* env, jint width, jint height);
   void OnBackToTab(JNIEnv* env);
   void OnDismissal(JNIEnv* env);
@@ -91,8 +91,8 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
 
   void Initialize(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& self,
-                  const base::android::JavaParamRef<jobject>& jwindow_android);
+                  const base::android::JavaRef<jobject>& self,
+                  const base::android::JavaRef<jobject>& jwindow_android);
 
  private:
   // Notify PictureInPictureActivity that visible actions have changed.

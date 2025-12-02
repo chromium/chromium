@@ -17,7 +17,7 @@ class AndroidBrowserWindow final : public BrowserWindowInterface {
  public:
   AndroidBrowserWindow(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_android_browser_window,
+      const base::android::JavaRef<jobject>& java_android_browser_window,
       const BrowserWindowInterface::Type type,
       Profile* profile);
   AndroidBrowserWindow(const AndroidBrowserWindow&) = delete;

@@ -52,7 +52,7 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   void OnFillingTriggered(
       JNIEnv* env,
       jint tab_type,
-      const base::android::JavaParamRef<jobject>& j_user_info_field);
+      const base::android::JavaRef<jobject>& j_user_info_field);
   void OnPasskeySelected(JNIEnv* env,
                          jint tab_type,
                          std::vector<uint8_t>& passkey);

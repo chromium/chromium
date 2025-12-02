@@ -32,7 +32,7 @@
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionActionsBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using content::WebContents;
 

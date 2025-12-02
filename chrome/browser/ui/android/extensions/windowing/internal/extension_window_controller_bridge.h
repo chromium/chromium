@@ -23,7 +23,7 @@ enum class ExtensionInternalWindowEventForTesting;
 class ExtensionWindowControllerBridge final {
  public:
   ExtensionWindowControllerBridge(JNIEnv* env,
-                                  const base::android::JavaParamRef<jobject>&
+                                  const base::android::JavaRef<jobject>&
                                       java_extension_window_controller_bridge,
                                   BrowserWindowInterface* browser_window);
   ExtensionWindowControllerBridge(const ExtensionWindowControllerBridge&) =

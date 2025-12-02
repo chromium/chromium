@@ -54,9 +54,9 @@ class TestSurveyUiDelegate : public SurveyUiDelegateAndroid {
 
   void ShowSurveyInvitation(
       JNIEnv* env,
-      const JavaParamRef<jobject>& on_accepted_callback,
-      const JavaParamRef<jobject>& on_declined_callback,
-      const JavaParamRef<jobject>& on_presentation_failed_callback) override {
+      const JavaRef<jobject>& on_accepted_callback,
+      const JavaRef<jobject>& on_declined_callback,
+      const JavaRef<jobject>& on_presentation_failed_callback) override {
     on_accepted_callback_ = on_accepted_callback;
     on_declined_callback_ = on_declined_callback;
     on_presentation_failed_callback_ = on_presentation_failed_callback;

@@ -56,7 +56,7 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::SafeGetArrayLength;
 using base::android::ScopedJavaLocalRef;
 using chrome::android::ActivityType;
@@ -659,7 +659,7 @@ TabModelJniBridge::~TabModelJniBridge() {
 }
 
 static jlong JNI_TabModelJniBridge_Init(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj,
+                                        const JavaRef<jobject>& obj,
                                         Profile* profile,
                                         jint j_activity_type,
                                         unsigned char is_archived_tab_model) {

@@ -83,7 +83,7 @@ void ExtensionInstallDialogViewAndroid::ShowDialog(
 
 void ExtensionInstallDialogViewAndroid::OnDialogAccepted(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& justification_text) {
+    const base::android::JavaRef<jstring>& justification_text) {
   std::string justification =
       base::android::ConvertJavaStringToUTF8(env, justification_text);
   prompt_->OnDialogAccepted();

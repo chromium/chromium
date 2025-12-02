@@ -24,8 +24,8 @@ class FastCheckoutViewImpl : public FastCheckoutView {
 
   void OnOptionsSelected(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& autofill_profile_java,
-      const base::android::JavaParamRef<jobject>& credit_card_java);
+      const base::android::JavaRef<jobject>& autofill_profile_java,
+      const base::android::JavaRef<jobject>& credit_card_java);
   void OnDismiss(JNIEnv* env);
   void OpenAutofillProfileSettings(JNIEnv* env);
   void OpenCreditCardSettings(JNIEnv* env);

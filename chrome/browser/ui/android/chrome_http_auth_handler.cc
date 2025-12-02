@@ -22,7 +22,6 @@ using base::android::AttachCurrentThread;
 using base::android::CheckException;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 

@@ -159,10 +159,10 @@ void ExclusiveAccessManagerAndroid::Destroy(JNIEnv* env) {
 
 static jlong JNI_ExclusiveAccessManager_Init(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& jeam,
-    const jni_zero::JavaParamRef<jobject>& j_context,
-    const jni_zero::JavaParamRef<jobject>& j_fullscreen_manager,
-    const jni_zero::JavaParamRef<jobject>& j_activity_tab_provider) {
+    const jni_zero::JavaRef<jobject>& jeam,
+    const jni_zero::JavaRef<jobject>& j_context,
+    const jni_zero::JavaRef<jobject>& j_fullscreen_manager,
+    const jni_zero::JavaRef<jobject>& j_activity_tab_provider) {
   ExclusiveAccessManagerAndroid* content = new ExclusiveAccessManagerAndroid(
       env, jeam, j_context, j_fullscreen_manager, j_activity_tab_provider);
   return reinterpret_cast<intptr_t>(content);

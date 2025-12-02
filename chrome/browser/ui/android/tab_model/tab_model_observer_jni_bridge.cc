@@ -17,7 +17,6 @@
 #include "chrome/android/chrome_jni_headers/TabModelObserverJniBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 TabModelObserverJniBridge::TabModelObserverJniBridge(

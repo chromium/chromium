@@ -18,19 +18,19 @@
 
 namespace {
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 }  // namespace
 
 // Implements Java |AndroidBaseWindow.Natives#create|.
 static jlong JNI_AndroidBaseWindow_Create(JNIEnv* env,
-                                          const JavaParamRef<jobject>& caller) {
+                                          const JavaRef<jobject>& caller) {
   return reinterpret_cast<intptr_t>(new AndroidBaseWindow(env, caller));
 }
 
 AndroidBaseWindow::AndroidBaseWindow(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_android_base_window) {
+    const JavaRef<jobject>& java_android_base_window) {
   java_android_base_window_.Reset(env, java_android_base_window);
 }
 

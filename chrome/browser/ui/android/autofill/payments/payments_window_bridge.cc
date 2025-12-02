@@ -18,7 +18,7 @@
 namespace autofill::payments {
 
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 PaymentsWindowBridge::PaymentsWindowBridge(
     PaymentsWindowDelegate* payments_window_delegate)
@@ -48,14 +48,14 @@ void PaymentsWindowBridge::CloseEphemeralTab() {
 
 void PaymentsWindowBridge::OnNavigationFinished(
     JNIEnv* env,
-    const JavaParamRef<jobject>& clicked_url_object) {
+    const JavaRef<jobject>& clicked_url_object) {
   payments_window_delegate_->OnDidFinishNavigationForBnpl(
       url::GURLAndroid::ToNativeGURL(env, clicked_url_object));
 }
 
 void PaymentsWindowBridge::OnWebContentsObservationStarted(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_web_contents) {
+    const JavaRef<jobject>& j_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   if (web_contents) {

@@ -29,7 +29,6 @@
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
@@ -135,7 +134,7 @@ void LogoBridge::Destroy(JNIEnv* env) {
 }
 
 void LogoBridge::GetCurrentLogo(JNIEnv* env,
-                                const JavaParamRef<jobject>& j_logo_observer) {
+                                const JavaRef<jobject>& j_logo_observer) {
   // |observer| is deleted in LogoObserverAndroid::OnObserverRemoved().
   LogoObserverAndroid* observer = new LogoObserverAndroid(
       weak_ptr_factory_.GetWeakPtr(), env, j_logo_observer);

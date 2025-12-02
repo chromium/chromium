@@ -126,9 +126,9 @@ OverlayWindowAndroid::~OverlayWindowAndroid() {
 
 static jlong JNI_PictureInPictureActivity_OnActivityStart(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& j_token,
-    const jni_zero::JavaParamRef<jobject>& self,
-    const jni_zero::JavaParamRef<jobject>& window) {
+    const jni_zero::JavaRef<jobject>& j_token,
+    const jni_zero::JavaRef<jobject>& self,
+    const jni_zero::JavaRef<jobject>& window) {
   auto token = base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
       env, j_token);
   auto iter = GetWindowMap().find(token);
@@ -143,8 +143,8 @@ static jlong JNI_PictureInPictureActivity_OnActivityStart(
 
 void OverlayWindowAndroid::Initialize(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& self,
-    const base::android::JavaParamRef<jobject>& jwindow_android) {
+    const base::android::JavaRef<jobject>& self,
+    const base::android::JavaRef<jobject>& jwindow_android) {
   java_ref_ = JavaObjectWeakGlobalRef(env, self);
   window_android_ = ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
   window_android_->AddObserver(this);
@@ -267,7 +267,7 @@ void OverlayWindowAndroid::Hide(JNIEnv* env) {
 
 void OverlayWindowAndroid::CompositorViewCreated(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& compositor_view) {
+    const base::android::JavaRef<jobject>& compositor_view) {
   compositor_view_ =
       thin_webview::android::CompositorView::FromJavaObject(compositor_view);
   DCHECK(compositor_view_);

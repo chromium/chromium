@@ -19,7 +19,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/toolbar/jni_headers/LocationBarModel_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -82,7 +81,7 @@ bool LocationBarModelAndroid::IsNewTabPage() const {
 
 // static
 static jlong JNI_LocationBarModel_Init(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj) {
+                                       const JavaRef<jobject>& obj) {
   return reinterpret_cast<intptr_t>(new LocationBarModelAndroid(env, obj));
 }
 

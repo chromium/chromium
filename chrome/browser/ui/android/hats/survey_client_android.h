@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/android/hats/survey_ui_delegate_android.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 class Profile;

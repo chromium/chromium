@@ -32,7 +32,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ContextMenuHelper_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 ContextMenuHelper::ContextMenuHelper(content::WebContents* web_contents)

@@ -28,13 +28,13 @@ base::android::ScopedJavaLocalRef<jobject> CreateFastCheckoutCreditCard(
 std::unique_ptr<autofill::AutofillProfile>
 CreateFastCheckoutAutofillProfileFromJava(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jprofile,
+    const base::android::JavaRef<jobject>& jprofile,
     const std::string& locale);
 
 // Populate the CreditCard from the Java FastCheckoutCreditCard. This is
 // comparable to PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava.
 std::unique_ptr<autofill::CreditCard> CreateFastCheckoutCreditCardFromJava(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcredit_card);
+    const base::android::JavaRef<jobject>& jcredit_card);
 
 #endif  // CHROME_BROWSER_UI_ANDROID_FAST_CHECKOUT_UI_VIEW_ANDROID_UTILS_H_

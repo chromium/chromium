@@ -28,7 +28,7 @@ class ExtensionInstallDialogViewAndroid {
   // JNI methods.
   void OnDialogAccepted(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& justification_text);
+      const base::android::JavaRef<jstring>& justification_text);
   void OnDialogCanceled(JNIEnv* env);
   void OnDialogDismissed(JNIEnv* env);
   void Destroy(JNIEnv* env);
