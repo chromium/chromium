@@ -35,9 +35,9 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/UmaSessionStats_jni.h"
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
 using base::UserMetricsAction;
+using base::android::ConvertJavaStringToUTF8;
+using base::android::JavaRef;
 
 namespace {
 // Used to keep the state of whether we should consider metric consent enabled.
@@ -364,7 +364,7 @@ static void JNI_UmaSessionStats_UpdateMetricsServiceState(
 
 static void JNI_UmaSessionStats_RegisterExternalExperiment(
     JNIEnv* env,
-    const JavaParamRef<jintArray>& jexperiment_ids,
+    const JavaRef<jintArray>& jexperiment_ids,
     jboolean override_existing_ids) {
   std::vector<int> experiment_ids;
   // A null |jexperiment_ids| is the same as an empty list.

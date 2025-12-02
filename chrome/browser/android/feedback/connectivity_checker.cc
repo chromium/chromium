@@ -26,7 +26,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ConnectivityChecker_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace chrome {
 namespace android {
@@ -174,7 +174,7 @@ static void JNI_ConnectivityChecker_CheckConnectivity(
     Profile* profile,
     std::string& j_url,
     jlong j_timeout_ms,
-    const JavaParamRef<jobject>& j_callback,
+    const JavaRef<jobject>& j_callback,
     jint j_network_annotation_hash_code) {
   if (!profile) {
     JNI_ConnectivityChecker_PostCallback(env, j_callback,

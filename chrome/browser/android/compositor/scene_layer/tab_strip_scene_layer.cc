@@ -22,7 +22,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TabStripSceneLayer_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace android {
@@ -134,9 +133,8 @@ void TabStripSceneLayer::SetConstants(JNIEnv* env,
       reorder_background_corner_radius);
 }
 
-void TabStripSceneLayer::SetContentTree(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcontent_tree) {
+void TabStripSceneLayer::SetContentTree(JNIEnv* env,
+                                        const JavaRef<jobject>& jcontent_tree) {
   SceneLayer* content_tree = FromJavaObject(env, jcontent_tree);
   if (content_tree_ &&
       (!content_tree_->layer()->parent() ||
@@ -160,8 +158,8 @@ void TabStripSceneLayer::SetContentTree(
 void TabStripSceneLayer::BeginBuildingFrame(
     JNIEnv* env,
     jboolean visible,
-    const JavaParamRef<jobject>& jresource_manager,
-    const JavaParamRef<jobject>& jlayer_title_cache) {
+    const JavaRef<jobject>& jresource_manager,
+    const JavaRef<jobject>& jlayer_title_cache) {
   write_index_ = 0;
   group_write_index_ = 0;
   background_layer_->SetHideLayerAndSubtree(!visible);
@@ -190,9 +188,8 @@ void TabStripSceneLayer::FinishBuildingFrame(JNIEnv* env) {
                             group_title_layers_.end());
 }
 
-void TabStripSceneLayer::UpdateOffsetTag(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& joffset_tag) {
+void TabStripSceneLayer::UpdateOffsetTag(JNIEnv* env,
+                                         const JavaRef<jobject>& joffset_tag) {
   viz::OffsetTag tag = cc::android::FromJavaOffsetTag(env, joffset_tag);
   layer()->SetOffsetTag(tag);
 }
@@ -561,7 +558,7 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     jboolean foreground,
     jboolean collapsed,
     jboolean show_bubble,
-    const base::android::JavaParamRef<jobject>& jgroup_token,
+    const base::android::JavaRef<jobject>& jgroup_token,
     jint tint,
     jint reorder_background_tint,
     jint bubble_tint,
@@ -657,7 +654,7 @@ SkColor TabStripSceneLayer::GetBackgroundColor() {
 }
 
 static jlong JNI_TabStripSceneLayer_Init(JNIEnv* env,
-                                         const JavaParamRef<jobject>& jobj) {
+                                         const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   TabStripSceneLayer* scene_layer = new TabStripSceneLayer(env, jobj);
   return reinterpret_cast<intptr_t>(scene_layer);

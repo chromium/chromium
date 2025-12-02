@@ -39,11 +39,10 @@ class EdgeToEdgeBottomChinSceneLayer : public SceneLayer {
       jint divider_color,
       jfloat y_offset,
       jboolean hasConstraint,
-      const base::android::JavaParamRef<jobject>& joffset_tag);
+      const base::android::JavaRef<jobject>& joffset_tag);
 
-  void SetContentTree(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcontent_tree);
+  void SetContentTree(JNIEnv* env,
+                      const base::android::JavaRef<jobject>& jcontent_tree);
 
   SkColor GetBackgroundColor() override;
 

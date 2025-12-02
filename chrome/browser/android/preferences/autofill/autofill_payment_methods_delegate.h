@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 class Profile;
 
@@ -46,12 +46,11 @@ class AutofillPaymentMethodsDelegate {
   // Trigger enrollment/unenrollment action.
   void InitVirtualCardEnrollment(JNIEnv* env,
                                  int64_t instrument_id,
-                                 const JavaParamRef<jobject>& jcallback);
-  void EnrollOfferedVirtualCard(JNIEnv* env,
-                                const JavaParamRef<jobject>& jcallback);
+                                 const JavaRef<jobject>& jcallback);
+  void EnrollOfferedVirtualCard(JNIEnv* env, const JavaRef<jobject>& jcallback);
   void UnenrollVirtualCard(JNIEnv* env,
                            int64_t instrument_id,
-                           const JavaParamRef<jobject>& jcallback);
+                           const JavaRef<jobject>& jcallback);
 
   void DeleteSavedCvcs(JNIEnv* env);
 

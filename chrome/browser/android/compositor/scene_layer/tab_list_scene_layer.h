@@ -85,8 +85,8 @@ class TabListSceneLayer : public SceneLayer {
 
   void SetDependencies(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jtab_content_manager,
-      const base::android::JavaParamRef<jobject>& jresource_manager);
+      const base::android::JavaRef<jobject>& jtab_content_manager,
+      const base::android::JavaRef<jobject>& jresource_manager);
 
   void OnDetach() override;
   bool ShouldShowBackground() override;

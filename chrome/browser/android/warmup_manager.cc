@@ -15,7 +15,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/WarmupManager_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 static void JNI_WarmupManager_StartPreconnectPredictorInitialization(
     JNIEnv* env,

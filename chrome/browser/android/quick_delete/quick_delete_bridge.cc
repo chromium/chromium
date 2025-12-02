@@ -26,7 +26,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 
@@ -55,10 +54,9 @@ QuickDeleteDomainResult GetLastVisitedDomainAndUniqueDomainCountFromResult(
 }
 }  // namespace
 
-QuickDeleteBridge::QuickDeleteBridge(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    Profile* profile)
+QuickDeleteBridge::QuickDeleteBridge(JNIEnv* env,
+                                     const base::android::JavaRef<jobject>& obj,
+                                     Profile* profile)
     : jobject_(obj) {
   profile_ = profile;
 
@@ -113,7 +111,7 @@ void QuickDeleteBridge::OnHistoryCounterResult(
 
 static jlong JNI_QuickDeleteBridge_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaRef<jobject>& obj,
     Profile* profile) {
   QuickDeleteBridge* bridge = new QuickDeleteBridge(env, obj, profile);
   return reinterpret_cast<intptr_t>(bridge);

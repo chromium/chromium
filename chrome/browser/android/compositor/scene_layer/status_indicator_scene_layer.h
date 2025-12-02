@@ -32,13 +32,12 @@ class StatusIndicatorSceneLayer : public SceneLayer {
   // Update the compositor version of the view.
   void UpdateStatusIndicatorLayer(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jresource_manager,
+      const base::android::JavaRef<jobject>& jresource_manager,
       jint view_resource_id,
       jint y_offset);
 
-  void SetContentTree(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcontent_tree);
+  void SetContentTree(JNIEnv* env,
+                      const base::android::JavaRef<jobject>& jcontent_tree);
 
   SkColor GetBackgroundColor() override;
   bool ShouldShowBackground() override;

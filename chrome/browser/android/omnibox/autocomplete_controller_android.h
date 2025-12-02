@@ -58,17 +58,17 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_current_url,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
-      const base::android::JavaParamRef<jobject>& j_web_contents);
+      const base::android::JavaRef<jobject>& j_web_contents);
   base::android::ScopedJavaLocalRef<jobject> Classify(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_text);
+      const base::android::JavaRef<jstring>& j_text);
   void OnOmniboxFocused(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_omnibox_text,
-      const base::android::JavaParamRef<jstring>& j_current_url,
+      const base::android::JavaRef<jstring>& j_omnibox_text,
+      const base::android::JavaRef<jstring>& j_current_url,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
       omnibox::ChromeAimToolsAndModels tool_mode,
-      const base::android::JavaParamRef<jstring>& j_current_title);
+      const base::android::JavaRef<jstring>& j_current_title);
   void Stop(JNIEnv* env, bool clear_result);
   void ResetSession(JNIEnv* env);
 
@@ -77,17 +77,17 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       uintptr_t match_ptr,
       int suggestion_line,
       const jint j_window_open_disposition,
-      const base::android::JavaParamRef<jstring>& j_current_url,
+      const base::android::JavaRef<jstring>& j_current_url,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
       jlong elapsed_time_since_first_modified,
       jint completed_length,
-      const base::android::JavaParamRef<jobject>& j_web_contents,
+      const base::android::JavaRef<jobject>& j_web_contents,
       jlong omnibox_action_ptr);
   jboolean OnSuggestionTouchDown(
       JNIEnv* env,
       uintptr_t match_ptr,
       int match_index,
-      const base::android::JavaParamRef<jobject>& j_web_contents);
+      const base::android::JavaRef<jobject>& j_web_contents);
   void DeleteMatch(JNIEnv* env, uintptr_t match_ptr);
   void DeleteMatchElement(JNIEnv* env, uintptr_t match_ptr, jint element_index);
   base::android::ScopedJavaLocalRef<jobject>
@@ -117,8 +117,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // Pass detected voice matches down to VoiceSuggestionsProvider.
   void SetVoiceMatches(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& j_voice_matches,
-      const base::android::JavaParamRef<jfloatArray>& j_confidence_scores);
+      const base::android::JavaRef<jobjectArray>& j_voice_matches,
+      const base::android::JavaRef<jfloatArray>& j_confidence_scores);
 
   // Pass the information about the suggestion dropdown height changes to the
   // Grouping framework.

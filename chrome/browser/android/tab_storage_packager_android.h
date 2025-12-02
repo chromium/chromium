@@ -56,7 +56,7 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
   long ConsolidateTabData(
       JNIEnv* env,
       jlong timestamp_millis,
-      const jni_zero::JavaParamRef<jobject>& web_contents_state_buffer,
+      const jni_zero::JavaRef<jobject>& web_contents_state_buffer,
       std::optional<std::string> opener_app_id,
       jint theme_color,
       jlong last_navigation_committed_timestamp_millis,

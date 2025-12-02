@@ -46,20 +46,19 @@ class TabStripSceneLayer : public SceneLayer {
                     jint reorder_background_padding_long,
                     jint reorder_background_corner_radius);
 
-  void SetContentTree(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcontent_tree);
+  void SetContentTree(JNIEnv* env,
+                      const base::android::JavaRef<jobject>& jcontent_tree);
 
   void BeginBuildingFrame(
       JNIEnv* env,
       jboolean visible,
-      const base::android::JavaParamRef<jobject>& jresource_manager,
-      const base::android::JavaParamRef<jobject>& jlayer_title_cache);
+      const base::android::JavaRef<jobject>& jresource_manager,
+      const base::android::JavaRef<jobject>& jlayer_title_cache);
 
   void FinishBuildingFrame(JNIEnv* env);
 
   void UpdateOffsetTag(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& joffset_tag);
+                       const base::android::JavaRef<jobject>& joffset_tag);
 
   void UpdateTabStripLayer(JNIEnv* env,
                            jint width,
@@ -166,7 +165,7 @@ class TabStripSceneLayer : public SceneLayer {
       jboolean foreground,
       jboolean collapsed,
       jboolean show_bubble,
-      const base::android::JavaParamRef<jobject>& jgroup_token,
+      const base::android::JavaRef<jobject>& jgroup_token,
       jint tint,
       jint reorder_background_tint,
       jint bubble_tint,

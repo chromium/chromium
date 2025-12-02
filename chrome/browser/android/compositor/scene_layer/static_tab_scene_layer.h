@@ -38,11 +38,11 @@ class StaticTabSceneLayer : public SceneLayer {
                       jint default_background_color,
                       jfloat x,
                       jfloat y,
-                      const base::android::JavaParamRef<jobject>& joffset_tag);
+                      const base::android::JavaRef<jobject>& joffset_tag);
 
   void SetTabContentManager(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jtab_content_manager);
+      const base::android::JavaRef<jobject>& jtab_content_manager);
 
  private:
   scoped_refptr<android::ContentLayer> content_layer_;

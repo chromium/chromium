@@ -21,14 +21,14 @@
 
 namespace webapk {
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace {
 
 // Converts Java string to GURL. Returns an empty GURL if the Java string is
 // null.
 GURL ConvertNullableJavaStringToGURL(JNIEnv* env,
-                                     const JavaParamRef<jstring>& java_url) {
+                                     const JavaRef<jstring>& java_url) {
   return java_url ? GURL(base::android::ConvertJavaStringToUTF8(env, java_url))
                   : GURL();
 }
@@ -129,7 +129,7 @@ void WebApkUkmRecorder::RecordWebApkableVisit(const GURL& manifest_id) {
 // Called by the Java counterpart to record the Session Duration UKM metric.
 static void JNI_WebApkUkmRecorder_RecordSessionDuration(
     JNIEnv* env,
-    const JavaParamRef<jstring>& manifest_id,
+    const JavaRef<jstring>& manifest_id,
     jint distributor,
     jint version_code,
     jlong duration) {
@@ -141,7 +141,7 @@ static void JNI_WebApkUkmRecorder_RecordSessionDuration(
 // Called by the Java counterpart to record the Visit UKM metric.
 static void JNI_WebApkUkmRecorder_RecordVisit(
     JNIEnv* env,
-    const JavaParamRef<jstring>& manifest_id,
+    const JavaRef<jstring>& manifest_id,
     jint distributor,
     jint version_code,
     jint source) {
@@ -153,7 +153,7 @@ static void JNI_WebApkUkmRecorder_RecordVisit(
 // Called by the Java counterpart to record the Uninstall UKM metrics.
 static void JNI_WebApkUkmRecorder_RecordUninstall(
     JNIEnv* env,
-    const JavaParamRef<jstring>& manifest_id,
+    const JavaRef<jstring>& manifest_id,
     jint distributor,
     jint version_code,
     jint launch_count,

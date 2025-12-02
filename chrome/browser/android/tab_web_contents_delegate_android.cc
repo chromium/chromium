@@ -96,7 +96,6 @@
 #include "chrome/android/chrome_jni_headers/TabWebContentsDelegateAndroidImpl_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using blink::mojom::FileChooserParams;
@@ -738,7 +737,7 @@ void TabWebContentsDelegateAndroid::DraggableRegionsChanged(
 
 static void JNI_TabWebContentsDelegateAndroidImpl_OnRendererUnresponsive(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_web_contents) {
+    const JavaRef<jobject>& java_web_contents) {
   // Rate limit the number of stack dumps so we don't overwhelm our crash
   // reports.
   content::WebContents* web_contents =

@@ -16,19 +16,18 @@ namespace android {
 class BookmarkBarSceneLayer : public SceneLayer {
  public:
   BookmarkBarSceneLayer(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& jobj);
+                        const base::android::JavaRef<jobject>& jobj);
 
   BookmarkBarSceneLayer(const BookmarkBarSceneLayer&) = delete;
   BookmarkBarSceneLayer& operator=(const BookmarkBarSceneLayer&) = delete;
   ~BookmarkBarSceneLayer() override;
 
-  void SetContentTree(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcontent_tree);
+  void SetContentTree(JNIEnv* env,
+                      const base::android::JavaRef<jobject>& jcontent_tree);
 
   void UpdateBookmarkBarLayer(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jresource_manager,
+      const base::android::JavaRef<jobject>& jresource_manager,
       jint view_resource_id,
       jint scene_layer_background_color,
       jint scene_layer_offset_height,
@@ -38,7 +37,7 @@ class BookmarkBarSceneLayer : public SceneLayer {
       jint snapshot_offset_height,
       jint hairline_height,
       jint hairline_background_color,
-      const base::android::JavaParamRef<jobject>& joffset_tag);
+      const base::android::JavaRef<jobject>& joffset_tag);
 
   void ShowBookmarkBar(JNIEnv* env);
   void HideBookmarkBar(JNIEnv* env);

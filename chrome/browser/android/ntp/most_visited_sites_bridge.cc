@@ -36,7 +36,7 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using ntp_tiles::MostVisitedSites;
@@ -51,7 +51,7 @@ namespace {
 class JavaHomepageClient : public MostVisitedSites::HomepageClient {
  public:
   JavaHomepageClient(JNIEnv* env,
-                     const JavaParamRef<jobject>& obj,
+                     const JavaRef<jobject>& obj,
                      Profile* profile);
 
   JavaHomepageClient(const JavaHomepageClient&) = delete;
@@ -73,7 +73,7 @@ class JavaHomepageClient : public MostVisitedSites::HomepageClient {
 };
 
 JavaHomepageClient::JavaHomepageClient(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj,
+                                       const JavaRef<jobject>& obj,
                                        Profile* profile)
     : client_(env, obj), profile_(profile) {
   DCHECK(profile);
@@ -129,7 +129,7 @@ GURL JavaHomepageClient::GetHomepageUrl() const {
 
 class MostVisitedSitesBridge::JavaObserver : public MostVisitedSites::Observer {
  public:
-  JavaObserver(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  JavaObserver(JNIEnv* env, const JavaRef<jobject>& obj);
 
   JavaObserver(const JavaObserver&) = delete;
   JavaObserver& operator=(const JavaObserver&) = delete;
@@ -144,9 +144,8 @@ class MostVisitedSitesBridge::JavaObserver : public MostVisitedSites::Observer {
   ScopedJavaGlobalRef<jobject> observer_;
 };
 
-MostVisitedSitesBridge::JavaObserver::JavaObserver(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj)
+MostVisitedSitesBridge::JavaObserver::JavaObserver(JNIEnv* env,
+                                                   const JavaRef<jobject>& obj)
     : observer_(env, obj) {}
 
 void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
@@ -196,15 +195,14 @@ void MostVisitedSitesBridge::OnHomepageStateChanged(JNIEnv* env) {
 
 void MostVisitedSitesBridge::SetHomepageClient(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_client) {
+    const base::android::JavaRef<jobject>& j_client) {
   most_visited_->SetHomepageClient(
       std::make_unique<JavaHomepageClient>(env, j_client, profile_));
 }
 
-void MostVisitedSitesBridge::SetObserver(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_observer,
-    jint num_sites) {
+void MostVisitedSitesBridge::SetObserver(JNIEnv* env,
+                                         const JavaRef<jobject>& j_observer,
+                                         jint num_sites) {
   java_observer_ = std::make_unique<JavaObserver>(env, j_observer);
   most_visited_->AddMostVisitedURLsObserver(java_observer_.get(), num_sites);
 }
@@ -256,7 +254,7 @@ jboolean MostVisitedSitesBridge::ReorderCustomLink(JNIEnv* env,
 
 void MostVisitedSitesBridge::AddOrRemoveBlockedUrl(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_url,
+    const JavaRef<jobject>& j_url,
     jboolean add_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   most_visited_->AddOrRemoveBlockedUrl(url, add_url);
@@ -275,7 +273,7 @@ void MostVisitedSitesBridge::RecordTileImpression(
     jint jicon_type,
     jint jtitle_source,
     jint jsource,
-    const JavaParamRef<jobject>& jurl) {
+    const JavaRef<jobject>& jurl) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, jurl);
   TileTitleSource title_source = static_cast<TileTitleSource>(jtitle_source);
   TileSource source = static_cast<TileSource>(jsource);

@@ -22,7 +22,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/android/cookies/jni_headers/CookiesFetcher_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -79,7 +79,7 @@ static std::string JNI_CookiesFetcher_GetCookieFileDirectory(JNIEnv* env,
 static void JNI_CookiesFetcher_PersistCookies(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_cookies_fetcher) {
+    const JavaRef<jobject>& j_cookies_fetcher) {
   cookie_fetcher_restore_util::GetCookieServiceClient(profile)->GetAllCookies(
       base::BindOnce(&OnCookiesFetchFinished,
                      ScopedJavaGlobalRef<jobject>(j_cookies_fetcher)));

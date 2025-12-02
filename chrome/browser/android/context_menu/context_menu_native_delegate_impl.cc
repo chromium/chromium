@@ -31,7 +31,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/contextmenu/jni_headers/ContextMenuNativeDelegateImpl_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace {
@@ -171,7 +170,7 @@ void ContextMenuNativeDelegateImpl::InspectElement(
 void ContextMenuNativeDelegateImpl::RetrieveImageForShare(
     JNIEnv* env,
     content::RenderFrameHost* render_frame_host,
-    const JavaParamRef<jobject>& jcallback,
+    const JavaRef<jobject>& jcallback,
     jint max_width_px,
     jint max_height_px,
     jint jimage_format) {
@@ -183,7 +182,7 @@ void ContextMenuNativeDelegateImpl::RetrieveImageForShare(
 void ContextMenuNativeDelegateImpl::RetrieveImageForContextMenu(
     JNIEnv* env,
     content::RenderFrameHost* render_frame_host,
-    const JavaParamRef<jobject>& jcallback,
+    const JavaRef<jobject>& jcallback,
     jint max_width_px,
     jint max_height_px) {
   // For context menu, Image needs to be PNG for receiving transparency pixels.
@@ -196,7 +195,7 @@ void ContextMenuNativeDelegateImpl::RetrieveImageInternal(
     JNIEnv* env,
     ImageRetrieveCallback retrieve_callback,
     content::RenderFrameHost* render_frame_host,
-    const JavaParamRef<jobject>& jcallback,
+    const JavaRef<jobject>& jcallback,
     jint max_width_px,
     jint max_height_px,
     chrome::mojom::ImageFormat image_format) {
@@ -234,7 +233,7 @@ void ContextMenuNativeDelegateImpl::SetPictureInPicture(
 static jlong JNI_ContextMenuNativeDelegateImpl_Init(
     JNIEnv* env,
     content::WebContents* web_contents,
-    const JavaParamRef<jobject>& jcontext_menu_params) {
+    const JavaRef<jobject>& jcontext_menu_params) {
   DCHECK(web_contents);
   auto* params =
       context_menu::ContextMenuParamsFromJavaObject(jcontext_menu_params);

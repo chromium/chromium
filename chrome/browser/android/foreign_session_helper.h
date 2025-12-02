@@ -36,28 +36,26 @@ class ForeignSessionHelper {
   void TriggerSessionSync(JNIEnv* env);
   void SetOnForeignSessionCallback(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& callback);
-  jboolean GetForeignSessions(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& result);
+      const base::android::JavaRef<jobject>& callback);
+  jboolean GetForeignSessions(JNIEnv* env,
+                              const base::android::JavaRef<jobject>& result);
   jboolean GetMobileAndTabletForeignSessions(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& result);
+      const base::android::JavaRef<jobject>& result);
   jboolean OpenForeignSessionTab(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_tab,
-      const base::android::JavaParamRef<jstring>& session_tag,
+      const base::android::JavaRef<jobject>& j_tab,
+      const base::android::JavaRef<jstring>& session_tag,
       jint tab_id,
       jint disposition);
-  void DeleteForeignSession(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& session_tag);
+  void DeleteForeignSession(JNIEnv* env,
+                            const base::android::JavaRef<jstring>& session_tag);
   void SetInvalidationsForSessionsEnabled(JNIEnv* env, jboolean enabled);
   jint OpenForeignSessionTabsAsBackgroundTabs(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_tab,
-      const base::android::JavaParamRef<jintArray>& j_session_tab_ids,
-      const base::android::JavaParamRef<jstring>& session_tag);
+      const base::android::JavaRef<jobject>& j_tab,
+      const base::android::JavaRef<jintArray>& j_session_tab_ids,
+      const base::android::JavaRef<jstring>& session_tag);
 
  private:
   // Fires |callback_| if it is not null.
@@ -65,14 +63,13 @@ class ForeignSessionHelper {
   // Returns the WebContents of the new foreground tab or nullptr if the
   // operation failed.
   content::WebContents* RestoreTabWithRenderer(
-      const base::android::JavaParamRef<jstring>& session_tag,
-      const base::android::JavaParamRef<jobject>& j_tab,
+      const base::android::JavaRef<jstring>& session_tag,
+      const base::android::JavaRef<jobject>& j_tab,
       int session_tab_id);
   // Returns whether a background tab with no renderer was restored.
-  bool RestoreTabNoRenderer(
-      const base::android::JavaParamRef<jstring>& session_tag,
-      int session_tab_id,
-      content::WebContents* web_contents);
+  bool RestoreTabNoRenderer(const base::android::JavaRef<jstring>& session_tag,
+                            int session_tab_id,
+                            content::WebContents* web_contents);
 
   raw_ptr<Profile> profile_;  // weak
   base::android::ScopedJavaGlobalRef<jobject> callback_;

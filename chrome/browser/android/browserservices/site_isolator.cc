@@ -13,12 +13,12 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/SiteIsolator_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 static void JNI_SiteIsolator_StartIsolatingSite(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_gurl) {
+    const JavaRef<jobject>& j_gurl) {
   GURL gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
   content::SiteInstance::StartIsolatingSite(

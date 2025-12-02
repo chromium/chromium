@@ -16,7 +16,6 @@
 #include "components/viz/common/quads/offset_tag.h"
 #include "ui/base/ui_base_switches.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace android {
@@ -62,7 +61,7 @@ void EdgeToEdgeBottomChinSceneLayer::UpdateEdgeToEdgeBottomChinLayer(
     jint divider_color,
     jfloat y_offset,
     jboolean has_constraint,
-    const base::android::JavaParamRef<jobject>& joffset_tag) {
+    const base::android::JavaRef<jobject>& joffset_tag) {
   view_container_->SetBounds(gfx::Size(container_width, container_height));
   view_container_->SetPosition(gfx::PointF(0, y_offset - container_height));
 
@@ -86,7 +85,7 @@ void EdgeToEdgeBottomChinSceneLayer::UpdateEdgeToEdgeBottomChinLayer(
 
 void EdgeToEdgeBottomChinSceneLayer::SetContentTree(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcontent_tree) {
+    const JavaRef<jobject>& jcontent_tree) {
   SceneLayer* content_tree = FromJavaObject(env, jcontent_tree);
   if (!content_tree || !content_tree->layer()) {
     return;
@@ -115,7 +114,7 @@ bool EdgeToEdgeBottomChinSceneLayer::ShouldShowBackground() {
 
 static jlong JNI_EdgeToEdgeBottomChinSceneLayer_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj) {
+    const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   EdgeToEdgeBottomChinSceneLayer* scene_layer =
       new EdgeToEdgeBottomChinSceneLayer(env, jobj);

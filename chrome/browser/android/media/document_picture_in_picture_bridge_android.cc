@@ -16,8 +16,8 @@ class DocumentPictureInPictureCCTActivity {
 
 static void JNI_DocumentPictureInPictureActivity_OnActivityStart(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& parentWebContent,
-    const jni_zero::JavaParamRef<jobject>& webContent) {
+    const jni_zero::JavaRef<jobject>& parentWebContent,
+    const jni_zero::JavaRef<jobject>& webContent) {
   WebContents* parent_web_contents =
       WebContents::FromJavaWebContents(parentWebContent);
   WebContents* web_content = WebContents::FromJavaWebContents(webContent);

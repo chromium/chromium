@@ -33,7 +33,7 @@ class ComposeboxQueryControllerBridge
  public:
   explicit ComposeboxQueryControllerBridge(
       Profile* profile,
-      const base::android::JavaParamRef<jobject>& java_obj);
+      const base::android::JavaRef<jobject>& java_obj);
   ~ComposeboxQueryControllerBridge() override;
   void Destroy(JNIEnv* env);
   void NotifySessionStarted(JNIEnv* env);
@@ -42,7 +42,7 @@ class ComposeboxQueryControllerBridge
       JNIEnv* env,
       std::string& file_name,
       std::string& file_type,
-      const jni_zero::JavaParamRef<jobject>& file_data);
+      const jni_zero::JavaRef<jobject>& file_data);
   base::android::ScopedJavaLocalRef<jobject> AddTabContext(
       JNIEnv* env,
       content::WebContents* web_contents);

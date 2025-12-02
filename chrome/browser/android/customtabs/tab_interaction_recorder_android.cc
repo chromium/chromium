@@ -29,7 +29,7 @@
 namespace customtabs {
 
 using autofill::AutofillManager;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using content::GlobalRenderFrameHostId;
 using content::RenderFrameHost;
@@ -284,7 +284,7 @@ void TabInteractionRecorderAndroid::Reset(JNIEnv* env) {
 
 static ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_GetFromTab(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jtab) {
+    const JavaRef<jobject>& jtab) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
   if (!tab || !tab->web_contents() || tab->web_contents()->IsBeingDestroyed()) {
     return ScopedJavaLocalRef<jobject>::Adopt(env, nullptr);
@@ -298,7 +298,7 @@ static ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_GetFromTab(
 
 static ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_CreateForTab(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jtab) {
+    const JavaRef<jobject>& jtab) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
   if (!tab || !tab->web_contents() || tab->web_contents()->IsBeingDestroyed()) {
     return ScopedJavaLocalRef<jobject>::Adopt(env, nullptr);

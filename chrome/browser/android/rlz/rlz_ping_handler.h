@@ -39,11 +39,11 @@ class RlzPingHandler {
   // |j_language| is the 2 letter lower case language. |events| is a single
   // string where multiple 4 character long events are concatenated with ,
   // and |id| is a unique id for the device that is 50 characters long.
-  void Ping(const base::android::JavaParamRef<jstring>& j_brand,
-            const base::android::JavaParamRef<jstring>& j_language,
-            const base::android::JavaParamRef<jstring>& j_events,
-            const base::android::JavaParamRef<jstring>& j_id,
-            const base::android::JavaParamRef<jobject>& j_callback);
+  void Ping(const base::android::JavaRef<jstring>& j_brand,
+            const base::android::JavaRef<jstring>& j_language,
+            const base::android::JavaRef<jstring>& j_events,
+            const base::android::JavaRef<jstring>& j_id,
+            const base::android::JavaRef<jobject>& j_callback);
 
  private:
   void OnSimpleLoaderComplete(std::optional<std::string> response_body);

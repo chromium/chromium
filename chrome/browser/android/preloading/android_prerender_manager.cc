@@ -21,7 +21,7 @@
 // Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/ui/android/preloading/jni_headers/AndroidPrerenderManager_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 AndroidPrerenderManager::AndroidPrerenderManager(JNIEnv* env) {}
 

@@ -24,7 +24,7 @@ ScopedJavaLocalRef<jobject> GetPrintableForTab(
 
 static jboolean JNI_TabPrinter_Print(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
+    const base::android::JavaRef<jobject>& jweb_contents,
     jint render_process_id,
     jint render_frame_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

@@ -33,7 +33,6 @@
 #include "chrome/android/chrome_jni_headers/RlzPingHandler_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 constexpr int kMaxRetries = 10;
@@ -53,12 +52,11 @@ RlzPingHandler::RlzPingHandler(Profile* profile) {
 
 RlzPingHandler::~RlzPingHandler() = default;
 
-void RlzPingHandler::Ping(
-    const base::android::JavaParamRef<jstring>& j_brand,
-    const base::android::JavaParamRef<jstring>& j_language,
-    const base::android::JavaParamRef<jstring>& j_events,
-    const base::android::JavaParamRef<jstring>& j_id,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+void RlzPingHandler::Ping(const base::android::JavaRef<jstring>& j_brand,
+                          const base::android::JavaRef<jstring>& j_language,
+                          const base::android::JavaRef<jstring>& j_events,
+                          const base::android::JavaRef<jstring>& j_id,
+                          const base::android::JavaRef<jobject>& j_callback) {
   if (!j_brand || !j_language || !j_events || !j_id || !j_callback) {
     base::android::RunBooleanCallbackAndroid(j_callback, false);
     delete this;
@@ -157,11 +155,11 @@ void RlzPingHandler::OnSimpleLoaderComplete(
 static void JNI_RlzPingHandler_StartPing(
     JNIEnv* env,
     Profile* profile,
-    const base::android::JavaParamRef<jstring>& j_brand,
-    const base::android::JavaParamRef<jstring>& j_language,
-    const base::android::JavaParamRef<jstring>& j_events,
-    const base::android::JavaParamRef<jstring>& j_id,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jstring>& j_brand,
+    const base::android::JavaRef<jstring>& j_language,
+    const base::android::JavaRef<jstring>& j_events,
+    const base::android::JavaRef<jstring>& j_id,
+    const base::android::JavaRef<jobject>& j_callback) {
   RlzPingHandler* handler = new RlzPingHandler(profile);
   handler->Ping(j_brand, j_language, j_events, j_id, j_callback);
 }

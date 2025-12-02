@@ -20,7 +20,7 @@ class BrowsingDataCounterBridge {
   // Creates a BrowsingDataCounterBridge for a certain browsing data type.
   // The |data_type| is a value of the enum BrowsingDataType.
   BrowsingDataCounterBridge(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj,
+                            const base::android::JavaRef<jobject>& obj,
 
                             Profile* profile,
                             jint selected_time_period,

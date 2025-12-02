@@ -7,7 +7,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/toolbar/jni_headers/ResourceFactory_jni.h"
 
-using jni_zero::JavaParamRef;
+using jni_zero::JavaRef;
 
 namespace android {
 

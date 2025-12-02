@@ -46,7 +46,7 @@ int GetBackgroundTaskType(blink::mojom::BackgroundSyncType sync_type) {
 // static
 static void JNI_BackgroundSyncBackgroundTask_FireOneShotBackgroundSyncEvents(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_runnable) {
+    const base::android::JavaRef<jobject>& j_runnable) {
   BackgroundSyncLauncherAndroid::Get()->FireBackgroundSyncEvents(
       blink::mojom::BackgroundSyncType::ONE_SHOT, j_runnable);
 }
@@ -54,7 +54,7 @@ static void JNI_BackgroundSyncBackgroundTask_FireOneShotBackgroundSyncEvents(
 static void
 JNI_PeriodicBackgroundSyncChromeWakeUpTask_FirePeriodicBackgroundSyncEvents(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_runnable) {
+    const base::android::JavaRef<jobject>& j_runnable) {
   BackgroundSyncLauncherAndroid::Get()->FireBackgroundSyncEvents(
       blink::mojom::BackgroundSyncType::PERIODIC, j_runnable);
 }
@@ -131,7 +131,7 @@ void BackgroundSyncLauncherAndroid::CancelBrowserWakeupImpl(
 
 void BackgroundSyncLauncherAndroid::FireBackgroundSyncEvents(
     blink::mojom::BackgroundSyncType sync_type,
-    const base::android::JavaParamRef<jobject>& j_runnable) {
+    const base::android::JavaRef<jobject>& j_runnable) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto* profile = ProfileManager::GetLastUsedProfile();

@@ -78,7 +78,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using chrome::android::BackgroundTabManager;
 using content::GlobalRequestID;
@@ -376,9 +375,9 @@ void TabAndroid::InitWebContents(
     JNIEnv* env,
     jboolean incognito,
     jboolean is_background_tab,
-    const JavaParamRef<jobject>& jweb_contents,
-    const JavaParamRef<jobject>& jweb_contents_delegate,
-    const JavaParamRef<jobject>& jcontext_menu_populator_factory) {
+    const JavaRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jweb_contents_delegate,
+    const JavaRef<jobject>& jcontext_menu_populator_factory) {
   web_contents_.reset(content::WebContents::FromJavaWebContents(jweb_contents));
   DCHECK(web_contents_.get());
 
@@ -465,8 +464,8 @@ void TabAndroid::InitializeAutofillIfNecessary(JNIEnv* env) {
 
 void TabAndroid::UpdateDelegates(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents_delegate,
-    const JavaParamRef<jobject>& jcontext_menu_populator_factory) {
+    const JavaRef<jobject>& jweb_contents_delegate,
+    const JavaRef<jobject>& jcontext_menu_populator_factory) {
   ContextMenuHelper::FromWebContents(web_contents())
       ->SetPopulatorFactory(jcontext_menu_populator_factory);
   web_contents_delegate_ =
@@ -533,7 +532,7 @@ void TabAndroid::ReleaseWebContents(JNIEnv* env) {
 
 bool TabAndroid::IsPhysicalBackingSizeEmpty(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   auto size = web_contents->GetNativeView()->GetPhysicalBackingSize();
@@ -542,7 +541,7 @@ bool TabAndroid::IsPhysicalBackingSizeEmpty(
 
 void TabAndroid::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jweb_contents,
     jint width,
     jint height) {
   content::WebContents* web_contents =
@@ -853,7 +852,7 @@ void TabAndroid::SetTabGroupId(
 
 static base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   base::android::ScopedJavaLocalRef<jobject> jtab;
 
   content::WebContents* web_contents =
@@ -868,14 +867,14 @@ static base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
 
 static jboolean JNI_TabImpl_HandleNonNavigationAboutURL(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jurl) {
+    const JavaRef<jobject>& jurl) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, jurl);
   // TODO(crbug.com/418187845): Set browser context to support URL block policy.
   return HandleNonNavigationAboutURL(url, /*context=*/nullptr);
 }
 
 static void JNI_TabImpl_Init(JNIEnv* env,
-                             const JavaParamRef<jobject>& obj,
+                             const JavaRef<jobject>& obj,
                              Profile* profile,
                              jint id) {
   TRACE_EVENT0("native", "TabAndroid::Init");

@@ -96,7 +96,7 @@ void AutofillPaymentMethodsDelegate::Cleanup(JNIEnv* env) {
 void AutofillPaymentMethodsDelegate::InitVirtualCardEnrollment(
     JNIEnv* env,
     int64_t instrument_id,
-    const JavaParamRef<jobject>& jcallback) {
+    const JavaRef<jobject>& jcallback) {
   const CreditCard* credit_card =
       personal_data_manager_->payments_data_manager()
           .GetCreditCardByInstrumentId(instrument_id);
@@ -110,7 +110,7 @@ void AutofillPaymentMethodsDelegate::InitVirtualCardEnrollment(
 
 void AutofillPaymentMethodsDelegate::EnrollOfferedVirtualCard(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcallback) {
+    const JavaRef<jobject>& jcallback) {
   virtual_card_enrollment_manager_->Enroll(
       base::BindOnce(&RunVirtualCardEnrollmentUpdateResponseCallback,
                      ScopedJavaGlobalRef<jobject>(jcallback)));
@@ -119,7 +119,7 @@ void AutofillPaymentMethodsDelegate::EnrollOfferedVirtualCard(
 void AutofillPaymentMethodsDelegate::UnenrollVirtualCard(
     JNIEnv* env,
     int64_t instrument_id,
-    const JavaParamRef<jobject>& jcallback) {
+    const JavaRef<jobject>& jcallback) {
   virtual_card_enrollment_manager_->Unenroll(
       instrument_id,
       base::BindOnce(&RunVirtualCardEnrollmentUpdateResponseCallback,

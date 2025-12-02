@@ -63,20 +63,20 @@ class CompositorView : public content::CompositorClient,
       jint width,
       jint height,
       bool can_be_used_with_surface_control,
-      const base::android::JavaParamRef<jobject>& surface,
-      const base::android::JavaParamRef<jobject>& browser_input_token);
+      const base::android::JavaRef<jobject>& surface,
+      const base::android::JavaRef<jobject>& browser_input_token);
   void OnPhysicalBackingSizeChanged(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jweb_contents,
+      const base::android::JavaRef<jobject>& jweb_contents,
       jint width,
       jint height);
   void OnControlsResizeViewChanged(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jweb_contents,
+      const base::android::JavaRef<jobject>& jweb_contents,
       jboolean controls_resize_view);
   void NotifyVirtualKeyboardOverlayRect(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jweb_contents,
+      const base::android::JavaRef<jobject>& jweb_contents,
       jint x,
       jint y,
       jint width,
@@ -91,10 +91,10 @@ class CompositorView : public content::CompositorClient,
       JNIEnv* env,
       bool enabled);
   void SetSceneLayer(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& jscene_layer);
+                     const base::android::JavaRef<jobject>& jscene_layer);
   void SetCompositorWindow(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& window_android);
+      const base::android::JavaRef<jobject>& window_android);
   void CacheBackBufferForCurrentSurface(JNIEnv* env);
   void EvictCachedBackBuffer(JNIEnv* env);
   void OnTabChanged(JNIEnv* env);

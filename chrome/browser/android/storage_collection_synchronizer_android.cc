@@ -32,21 +32,21 @@ void StorageCollectionSynchronizerAndroid::FullSave(JNIEnv* env) {
 
 void StorageCollectionSynchronizerAndroid::ConsumeRestoreOrchestratorFactory(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& j_object) {
+    const jni_zero::JavaRef<jobject>& j_object) {
   synchronizer_.SetCollectionObserver(
       StorageRestoreOrchestratorFactoryAndroid::Build(env, j_object));
 }
 
 void StorageCollectionSynchronizerAndroid::ConsumeCollectionObserverFactory(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& j_object) {
+    const jni_zero::JavaRef<jobject>& j_object) {
   synchronizer_.SetCollectionObserver(
       CollectionStorageObserverFactoryAndroid::Build(env, j_object));
 }
 
 static jlong JNI_StorageCollectionSynchronizer_Init(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& j_object,
+    const jni_zero::JavaRef<jobject>& j_object,
     Profile* profile,
     tabs::TabStripCollection* collection) {
   StorageCollectionSynchronizerAndroid* tracker =

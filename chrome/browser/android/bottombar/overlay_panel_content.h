@@ -42,7 +42,7 @@ class OverlayPanelContent {
   void SetWebContents(
       JNIEnv* env,
       content::WebContents* web_contents,
-      const base::android::JavaParamRef<jobject>& jweb_contents_delegate);
+      const base::android::JavaRef<jobject>& jweb_contents_delegate);
 
   // Destroys the WebContents.
   void DestroyWebContents(JNIEnv* env);
@@ -50,7 +50,7 @@ class OverlayPanelContent {
   // Sets the delegate used to convert navigations to intents.
   void SetInterceptNavigationDelegate(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& delegate,
+      const base::android::JavaRef<jobject>& delegate,
       content::WebContents* web_contents);
 
   // Update the browser controls for the held web contents.

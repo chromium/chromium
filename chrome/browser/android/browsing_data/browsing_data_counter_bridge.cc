@@ -15,12 +15,12 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/BrowsingDataCounterBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 BrowsingDataCounterBridge::BrowsingDataCounterBridge(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaRef<jobject>& obj,
     Profile* profile,
     jint selected_time_period,
     jint data_type)
@@ -82,7 +82,7 @@ void BrowsingDataCounterBridge::onCounterFinished(
 
 static jlong JNI_BrowsingDataCounterBridge_InitWithoutPeriodPref(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaRef<jobject>& obj,
     Profile* profile,
     jint selected_time_period,
     jint data_type) {

@@ -264,7 +264,7 @@ class PersistedTabDataAndroidHelper {
  private:
   friend void ::JNI_PersistedTabData_OnTabClose(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_tab);
+      const base::android::JavaRef<jobject>& j_tab);
   friend void ::JNI_PersistedTabData_OnDeferredStartup(JNIEnv* env);
 
   static void OnTabClose(TabAndroid* tab_android) {
@@ -278,7 +278,7 @@ class PersistedTabDataAndroidHelper {
 
 static void JNI_PersistedTabData_OnTabClose(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_tab) {
+    const base::android::JavaRef<jobject>& j_tab) {
   TabAndroid* tab_android = TabAndroid::GetNativeTab(env, j_tab);
   PersistedTabDataAndroidHelper::OnTabClose(tab_android);
 }

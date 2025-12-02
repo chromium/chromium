@@ -27,7 +27,6 @@ class PrefRegistrySyncable;
 
 namespace usage_stats {
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 

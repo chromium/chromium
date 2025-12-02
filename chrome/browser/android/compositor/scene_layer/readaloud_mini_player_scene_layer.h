@@ -34,9 +34,8 @@ class ReadAloudMiniPlayerSceneLayer : public SceneLayer {
                                       jint container_height,
                                       jint bottom_offset);
 
-  void SetContentTree(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcontent_tree);
+  void SetContentTree(JNIEnv* env,
+                      const base::android::JavaRef<jobject>& jcontent_tree);
 
   SkColor GetBackgroundColor() override;
 

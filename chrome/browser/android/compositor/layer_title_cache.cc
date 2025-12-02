@@ -24,7 +24,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/LayerTitleCache_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace android {
@@ -98,7 +97,7 @@ void LayerTitleCache::UpdateLayer(JNIEnv* env,
 
 void LayerTitleCache::UpdateGroupLayer(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jgroup_token,
+    const base::android::JavaRef<jobject>& jgroup_token,
     jint title_resource_id,
     jint avatar_resource_id,
     jint avatar_padding,
@@ -180,7 +179,7 @@ LayerTitleCache::~LayerTitleCache() = default;
 
 static jlong JNI_LayerTitleCache_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
+    const JavaRef<jobject>& obj,
     jint fade_width,
     jint icon_start_padding,
     jint icon_end_padding,
@@ -191,7 +190,7 @@ static jlong JNI_LayerTitleCache_Init(
     jint bubble_offset,
     jint bubble_inner_tint,
     jint bubble_outer_tint,
-    const JavaParamRef<jobject>& jresource_manager) {
+    const JavaRef<jobject>& jresource_manager) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
   LayerTitleCache* cache = new LayerTitleCache(

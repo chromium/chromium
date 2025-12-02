@@ -20,11 +20,11 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/locale/jni_headers/LocaleTemplateUrlLoader_jni.h"
 
-using base::android::JavaParamRef;
-using base::android::ScopedJavaGlobalRef;
-using base::android::ScopedJavaLocalRef;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
+using base::android::JavaRef;
+using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
 
 static jlong JNI_LocaleTemplateUrlLoader_Init(JNIEnv* env,
                                               std::string& locale,

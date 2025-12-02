@@ -25,7 +25,7 @@ namespace extensions {
 
 static jlong JNI_ExtensionsUrlOverrideRegistryManager_Initialize(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& j_object,
+    const jni_zero::JavaRef<jobject>& j_object,
     Profile* profile) {
   ExtensionsUrlOverrideRegistryManager* extensions_url_override_manager =
       new ExtensionsUrlOverrideRegistryManager(env, j_object, profile);
@@ -49,7 +49,7 @@ void ExtensionsUrlOverrideRegistryManager::OnUrlOverrideDisabled(
 
 ExtensionsUrlOverrideRegistryManager::ExtensionsUrlOverrideRegistryManager(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& j_object,
+    const jni_zero::JavaRef<jobject>& j_object,
     Profile* profile)
     : j_object_(env, j_object) {
   if (!base::FeatureList::IsEnabled(

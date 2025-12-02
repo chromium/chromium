@@ -18,7 +18,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/android/httpclient/jni_headers/SimpleHttpClient_jni.h"
 
-using jni_zero::JavaParamRef;
+using jni_zero::JavaRef;
 using jni_zero::ScopedJavaGlobalRef;
 using jni_zero::ScopedJavaLocalRef;
 
@@ -48,7 +48,7 @@ void HttpClientBridge::SendNetworkRequest(
     std::vector<uint8_t>& request_body,
     std::map<std::string, std::string> headers,
     jint j_network_annotation_hashcode,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(gurl.is_valid());
   net::NetworkTrafficAnnotationTag tag =

@@ -26,16 +26,15 @@ class ContextMenuNativeDelegateImpl {
   void RetrieveImageForContextMenu(
       JNIEnv* env,
       content::RenderFrameHost* render_frame_host,
-      const base::android::JavaParamRef<jobject>& jcallback,
+      const base::android::JavaRef<jobject>& jcallback,
       jint max_width_px,
       jint max_height_px);
-  void RetrieveImageForShare(
-      JNIEnv* env,
-      content::RenderFrameHost* render_frame_host,
-      const base::android::JavaParamRef<jobject>& jcallback,
-      jint max_width_px,
-      jint max_height_px,
-      jint j_image_type);
+  void RetrieveImageForShare(JNIEnv* env,
+                             content::RenderFrameHost* render_frame_host,
+                             const base::android::JavaRef<jobject>& jcallback,
+                             jint max_width_px,
+                             jint max_height_px,
+                             jint j_image_type);
   void StartDownload(JNIEnv* env,
                      const GURL& gurl,
                      jboolean jis_media);
@@ -60,14 +59,13 @@ class ContextMenuNativeDelegateImpl {
       const std::vector<lens::mojom::LatencyLogPtr>)>;
 
  private:
-  void RetrieveImageInternal(
-      JNIEnv* env,
-      ImageRetrieveCallback retrieve_callback,
-      content::RenderFrameHost* render_frame_host,
-      const base::android::JavaParamRef<jobject>& jcallback,
-      jint max_width_px,
-      jint max_height_px,
-      chrome::mojom::ImageFormat image_format);
+  void RetrieveImageInternal(JNIEnv* env,
+                             ImageRetrieveCallback retrieve_callback,
+                             content::RenderFrameHost* render_frame_host,
+                             const base::android::JavaRef<jobject>& jcallback,
+                             jint max_width_px,
+                             jint max_height_px,
+                             chrome::mojom::ImageFormat image_format);
 
   const raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<content::ContextMenuParams> context_menu_params_;

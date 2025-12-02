@@ -7,11 +7,11 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/password_manager/android/first_cct_page_load_marker.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 static void JNI_CustomTabAuthUrlHeuristics_SetFirstCctPageLoadForPasswords(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jtab) {
+    const JavaRef<jobject>& jtab) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
 
   if (!tab || !tab->web_contents()) {

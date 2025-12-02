@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/search_engines/template_url.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 class TemplateURLService;
 

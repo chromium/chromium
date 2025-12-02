@@ -8,7 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "components/background_task_scheduler/background_task.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 class Profile;
 
@@ -26,7 +26,7 @@ class ProxyNativeTask {
   ~ProxyNativeTask();
 
   void StartBackgroundTaskInReducedMode(JNIEnv* env,
-                                        const JavaParamRef<jobject>& jkey);
+                                        const JavaRef<jobject>& jkey);
 
   void StartBackgroundTaskWithFullBrowser(JNIEnv* env,
                                           Profile* profile);

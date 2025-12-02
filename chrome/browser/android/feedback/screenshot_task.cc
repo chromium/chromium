@@ -15,7 +15,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ScreenshotTask_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -42,8 +41,8 @@ static void JNI_ScreenshotTask_SnapshotCallback(
 
 static void JNI_ScreenshotTask_GrabWindowSnapshotAsync(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcallback,
-    const JavaParamRef<jobject>& jwindow_android,
+    const JavaRef<jobject>& jcallback,
+    const JavaRef<jobject>& jwindow_android,
     jint window_width,
     jint window_height) {
   ui::WindowAndroid* window_android =

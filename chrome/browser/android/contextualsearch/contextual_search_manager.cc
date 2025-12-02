@@ -34,7 +34,6 @@
 #include "chrome/android/chrome_jni_headers/ContextualSearchManager_jni.h"
 #include "chrome/android/chrome_jni_headers/ContextualSearchPolicy_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using content::WebContents;
 
@@ -69,8 +68,8 @@ void ContextualSearchManager::Destroy(JNIEnv* env) {
 
 void ContextualSearchManager::StartSearchTermResolutionRequest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_contextual_search_context,
-    const JavaParamRef<jobject>& j_base_web_contents) {
+    const base::android::JavaRef<jobject>& j_contextual_search_context,
+    const JavaRef<jobject>& j_base_web_contents) {
   WebContents* base_web_contents =
       WebContents::FromJavaWebContents(j_base_web_contents);
   DCHECK(base_web_contents);
@@ -87,8 +86,8 @@ void ContextualSearchManager::StartSearchTermResolutionRequest(
 
 void ContextualSearchManager::GatherSurroundingText(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_contextual_search_context,
-    const JavaParamRef<jobject>& j_base_web_contents) {
+    const base::android::JavaRef<jobject>& j_contextual_search_context,
+    const JavaRef<jobject>& j_base_web_contents) {
   WebContents* base_web_contents =
       WebContents::FromJavaWebContents(j_base_web_contents);
   DCHECK(base_web_contents);
@@ -158,7 +157,7 @@ void ContextualSearchManager::OnTextSurroundingSelectionAvailable(
 }
 
 static jlong JNI_ContextualSearchManager_Init(JNIEnv* env,
-                                              const JavaParamRef<jobject>& obj,
+                                              const JavaRef<jobject>& obj,
                                               Profile* profile) {
   ContextualSearchManager* manager =
       new ContextualSearchManager(env, obj, profile);

@@ -33,17 +33,16 @@ class ScrollingBottomViewSceneLayer : public SceneLayer {
   // Update the compositor version of the view.
   void UpdateScrollingBottomViewLayer(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jresource_manager,
+      const base::android::JavaRef<jobject>& jresource_manager,
       jint view_resource_id,
       jint shadow_height,
       jfloat x_offset,
       jfloat y_offset,
       bool show_shadow,
-      const base::android::JavaParamRef<jobject>& joffset_tag);
+      const base::android::JavaRef<jobject>& joffset_tag);
 
-  void SetContentTree(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcontent_tree);
+  void SetContentTree(JNIEnv* env,
+                      const base::android::JavaRef<jobject>& jcontent_tree);
 
   SkColor GetBackgroundColor() override;
 

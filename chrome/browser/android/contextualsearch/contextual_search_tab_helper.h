@@ -31,7 +31,7 @@ class ContextualSearchTabHelper {
   // The |device_scale_factor| is the ratio of pixels to dips.
   void InstallUnhandledTapNotifierIfNeeded(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_base_web_contents,
+      const base::android::JavaRef<jobject>& j_base_web_contents,
       jfloat device_scale_factor);
 
  private:

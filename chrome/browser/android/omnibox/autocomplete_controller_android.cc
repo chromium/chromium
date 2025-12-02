@@ -95,7 +95,6 @@ using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaFloatArrayToFloatVector;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using metrics::OmniboxEventProto;
@@ -198,7 +197,7 @@ void AutocompleteControllerAndroid::StartPrefetch(
     JNIEnv* env,
     const JavaRef<jstring>& j_current_url,
     ::metrics::OmniboxEventProto::PageClassification page_classification,
-    const JavaParamRef<jobject>& j_web_contents) {
+    const JavaRef<jobject>& j_web_contents) {
   GURL current_url;
   std::u16string auto_complete_text;
 
@@ -232,7 +231,7 @@ void AutocompleteControllerAndroid::StartPrefetch(
 
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_text) {
+    const JavaRef<jstring>& j_text) {
   // The old AutocompleteResult is about to be invalidated.
   autocomplete_controller_->result().DestroyJavaObject();
 
@@ -252,11 +251,11 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
 
 void AutocompleteControllerAndroid::OnOmniboxFocused(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_omnibox_text,
-    const JavaParamRef<jstring>& j_current_url,
+    const JavaRef<jstring>& j_omnibox_text,
+    const JavaRef<jstring>& j_current_url,
     ::metrics::OmniboxEventProto::PageClassification page_classification,
     ::omnibox::ChromeAimToolsAndModels tool_mode,
-    const JavaParamRef<jstring>& j_current_title) {
+    const JavaRef<jstring>& j_current_title) {
   using OFT = metrics::OmniboxFocusType;
 
   // Prevents double triggering of zero suggest when OnOmniboxFocused is issued
@@ -334,11 +333,11 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
     uintptr_t match_ptr,
     int suggestion_line,
     const jint j_window_open_disposition,
-    const JavaParamRef<jstring>& j_current_url,
+    const JavaRef<jstring>& j_current_url,
     ::metrics::OmniboxEventProto::PageClassification page_classification,
     jlong elapsed_time_since_first_modified,
     jint completed_length,
-    const JavaParamRef<jobject>& j_web_contents,
+    const JavaRef<jobject>& j_web_contents,
     jlong omnibox_action_ptr) {
   std::u16string url = ConvertJavaStringToUTF16(env, j_current_url);
   const GURL current_url = GURL(url);
@@ -428,7 +427,7 @@ jboolean AutocompleteControllerAndroid::OnSuggestionTouchDown(
     JNIEnv* env,
     uintptr_t match_ptr,
     int match_index,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
+    const base::android::JavaRef<jobject>& j_web_contents) {
   const auto& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
 
   if (SearchPrefetchService* search_prefetch_service =
@@ -510,8 +509,8 @@ void AutocompleteControllerAndroid::SetComposeboxQueryControllerBridge(
 
 void AutocompleteControllerAndroid::SetVoiceMatches(
     JNIEnv* env,
-    const JavaParamRef<jobjectArray>& j_voice_matches,
-    const JavaParamRef<jfloatArray>& j_confidence_scores) {
+    const JavaRef<jobjectArray>& j_voice_matches,
+    const JavaRef<jfloatArray>& j_confidence_scores) {
   auto* const voice_suggest_provider =
       autocomplete_controller_->voice_suggest_provider();
   DCHECK(voice_suggest_provider)

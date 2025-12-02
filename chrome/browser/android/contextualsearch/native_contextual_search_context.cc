@@ -94,7 +94,7 @@ void NativeContextualSearchContext::Destroy(JNIEnv* env) {
 
 static jlong JNI_ContextualSearchContext_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+    const base::android::JavaRef<jobject>& obj) {
   NativeContextualSearchContext* context =
       new NativeContextualSearchContext(env, obj);
   return reinterpret_cast<intptr_t>(context);

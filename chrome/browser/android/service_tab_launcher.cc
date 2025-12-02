@@ -19,14 +19,14 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 // Called by Java when the WebContents instance for a request Id is available.
 static void JNI_ServiceTabLauncher_OnWebContentsForRequestAvailable(
     JNIEnv* env,
     jint request_id,
-    const JavaParamRef<jobject>& android_web_contents) {
+    const JavaRef<jobject>& android_web_contents) {
   ServiceTabLauncher::GetInstance()->OnTabLaunched(
       request_id,
       content::WebContents::FromJavaWebContents(android_web_contents));

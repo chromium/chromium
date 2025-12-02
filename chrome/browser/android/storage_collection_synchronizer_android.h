@@ -30,10 +30,10 @@ class StorageCollectionSynchronizerAndroid {
 
   void ConsumeRestoreOrchestratorFactory(
       JNIEnv* env,
-      const jni_zero::JavaParamRef<jobject>& j_object);
+      const jni_zero::JavaRef<jobject>& j_object);
   void ConsumeCollectionObserverFactory(
       JNIEnv* env,
-      const jni_zero::JavaParamRef<jobject>& j_object);
+      const jni_zero::JavaRef<jobject>& j_object);
 
   // Should only be destroyed through Java object.
   void Destroy(JNIEnv* env);

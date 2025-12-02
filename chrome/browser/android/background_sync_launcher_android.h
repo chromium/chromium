@@ -46,7 +46,7 @@ class BackgroundSyncLauncherAndroid {
   // Fires one-shot Background Sync events for registration of |sync_type|.
   void FireBackgroundSyncEvents(
       blink::mojom::BackgroundSyncType sync_type,
-      const base::android::JavaParamRef<jobject>& j_runnable);
+      const base::android::JavaRef<jobject>& j_runnable);
 
  private:
   friend struct base::LazyInstanceTraitsBase<BackgroundSyncLauncherAndroid>;

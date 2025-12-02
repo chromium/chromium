@@ -45,7 +45,6 @@
 #include "chrome/android/chrome_jni_headers/BrowsingDataBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -81,7 +80,7 @@ void OnBrowsingDataModelBuilt(JNIEnv* env,
 static void JNI_BrowsingDataBridge_ClearBrowsingData(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& jcallback,
+    const JavaRef<jobject>& jcallback,
     std::vector<int>& data_types_vector,
     jint time_period,
     std::vector<std::string>& excluding_domains,
@@ -162,7 +161,7 @@ static void EnableDialogAboutOtherFormsOfBrowsingHistory(
 static void JNI_BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& listener) {
+    const JavaRef<jobject>& listener) {
   TRACE_EVENT0(
       "browsing_data",
       "BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory");
@@ -177,7 +176,7 @@ static void JNI_BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory(
 static void JNI_BrowsingDataBridge_FetchImportantSites(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& java_callback) {
+    const JavaRef<jobject>& java_callback) {
   TRACE_EVENT0("browsing_data", "BrowsingDataBridge_FetchImportantSites");
   std::vector<site_engagement::ImportantSitesUtil::ImportantDomainInfo>
       important_sites =
@@ -286,7 +285,7 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionTimePeriod(
 static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& java_callback) {
+    const JavaRef<jobject>& java_callback) {
   BrowsingDataModel::BuildFromDisk(
       profile, ChromeBrowsingDataModelDelegate::CreateForProfile(profile),
       base::BindOnce(&OnBrowsingDataModelBuilt, env,

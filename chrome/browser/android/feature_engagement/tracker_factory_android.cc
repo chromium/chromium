@@ -33,7 +33,7 @@ JNI_TrackerFactory_GetTrackerForProfile(JNIEnv* env, Profile* profile) {
 static void JNI_TrackerFactory_SetTestingFactory(
     JNIEnv* env,
     Profile* profile,
-    const base::android::JavaParamRef<jobject>& jtracker) {
+    const base::android::JavaRef<jobject>& jtracker) {
   DCHECK(profile);
 
   feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(

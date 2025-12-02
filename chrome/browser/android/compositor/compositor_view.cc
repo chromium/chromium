@@ -44,7 +44,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/CompositorView_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace android {
 
@@ -54,9 +54,9 @@ static jboolean JNI_CompositorView_IsSurfaceControlEnabled(JNIEnv* env) {
 
 static jlong JNI_CompositorView_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jwindow_android,
-    const JavaParamRef<jobject>& jtab_content_manager) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jwindow_android,
+    const JavaRef<jobject>& jtab_content_manager) {
   CompositorView* view;
   ui::WindowAndroid* window_android =
       ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
@@ -201,8 +201,8 @@ std::optional<int> CompositorView::SurfaceChanged(
     jint width,
     jint height,
     bool can_be_used_with_surface_control,
-    const JavaParamRef<jobject>& surface,
-    const JavaParamRef<jobject>& browser_input_token) {
+    const JavaRef<jobject>& surface,
+    const JavaRef<jobject>& browser_input_token) {
   // Java View layout sometimes unexpectedly cause CompositorView to be sized so
   // large that it exceeds the max texture size and memory on the device. This
   // then subsequently causes the GPU process to crash loop. See
@@ -232,7 +232,7 @@ std::optional<int> CompositorView::SurfaceChanged(
 
 void CompositorView::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jweb_contents,
     jint width,
     jint height) {
   content::WebContents* web_contents =
@@ -243,7 +243,7 @@ void CompositorView::OnPhysicalBackingSizeChanged(
 
 void CompositorView::OnControlsResizeViewChanged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jweb_contents,
     jboolean controls_resize_view) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
@@ -253,7 +253,7 @@ void CompositorView::OnControlsResizeViewChanged(
 
 void CompositorView::NotifyVirtualKeyboardOverlayRect(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jweb_contents,
     jint x,
     jint y,
     jint width,
@@ -323,7 +323,7 @@ void CompositorView::SetOverlayXrFullScreenMode(
 }
 
 void CompositorView::SetSceneLayer(JNIEnv* env,
-                                   const JavaParamRef<jobject>& jscene_layer) {
+                                   const JavaRef<jobject>& jscene_layer) {
   SceneLayer* scene_layer = SceneLayer::FromJavaObject(env, jscene_layer);
 
   if (scene_layer_ != scene_layer) {
@@ -400,7 +400,7 @@ void CompositorView::BrowserChildProcessKilled(
 
 void CompositorView::SetCompositorWindow(
     JNIEnv* env,
-    const JavaParamRef<jobject>& window_android) {
+    const JavaRef<jobject>& window_android) {
   ui::WindowAndroid* wa =
       ui::WindowAndroid::FromJavaWindowAndroid(window_android);
   compositor_->SetRootWindow(wa);

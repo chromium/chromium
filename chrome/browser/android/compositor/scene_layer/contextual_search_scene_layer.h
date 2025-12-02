@@ -48,7 +48,7 @@ class ContextualSearchSceneLayer : public SceneLayer,
 
   void CreateContextualSearchLayer(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jresource_manager);
+      const base::android::JavaRef<jobject>& jresource_manager);
 
   void UpdateContextualSearchLayer(
       JNIEnv* env,
@@ -126,9 +126,8 @@ class ContextualSearchSceneLayer : public SceneLayer,
       const GURL& url,
       const SkBitmap* bitmap) override;
 
-  void SetContentTree(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcontent_tree);
+  void SetContentTree(JNIEnv* env,
+                      const base::android::JavaRef<jobject>& jcontent_tree);
 
   void HideTree(JNIEnv* env);
 

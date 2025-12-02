@@ -78,7 +78,7 @@ void NotifyClientOfTextFragmentLookupCompletion(
 static void JNI_CustomTabsConnection_CreateAndStartDetachedResourceRequest(
     JNIEnv* env,
     Profile* native_profile,
-    const base::android::JavaParamRef<jobject>& session,
+    const base::android::JavaRef<jobject>& session,
     std::string& package_name,
     std::string& url,
     std::string& origin,
@@ -112,7 +112,7 @@ static void JNI_CustomTabsConnection_CreateAndStartDetachedResourceRequest(
 
 static void JNI_CustomTabsConnection_SetClientDataHeader(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
+    const base::android::JavaRef<jobject>& jweb_contents,
     std::string& jheader) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   ClientDataHeaderWebContentsObserver::CreateForWebContents(web_contents);
@@ -122,10 +122,10 @@ static void JNI_CustomTabsConnection_SetClientDataHeader(
 
 static void JNI_CustomTabsConnection_TextFragmentLookup(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& session,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
+    const base::android::JavaRef<jobject>& session,
+    const base::android::JavaRef<jobject>& jweb_contents,
     std::string& state_key,
-    const base::android::JavaParamRef<jobjectArray>& jtext_fragments) {
+    const base::android::JavaRef<jobjectArray>& jtext_fragments) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
 
   TextFragmentLookupStateTracker::OnResultCallback cb =
@@ -144,8 +144,8 @@ static void JNI_CustomTabsConnection_TextFragmentLookup(
 
 static void JNI_CustomTabsConnection_TextFragmentFindScrollAndHighlight(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& session,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
+    const base::android::JavaRef<jobject>& session,
+    const base::android::JavaRef<jobject>& jweb_contents,
     std::string& text_fragment) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
 

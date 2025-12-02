@@ -39,7 +39,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/WebApkUpdateDataFetcher_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
@@ -54,11 +54,11 @@ bool IsInScope(const GURL& url, const GURL& scope) {
 
 static jlong JNI_WebApkUpdateDataFetcher_Initialize(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
+    const JavaRef<jobject>& obj,
     std::string& java_start_url,
     std::string& java_scope_url,
     std::string& java_web_manifest_url,
-    const JavaParamRef<jstring>& java_web_manifest_id) {
+    const JavaRef<jstring>& java_web_manifest_id) {
   GURL start_url(java_start_url);
   GURL scope(java_scope_url);
   GURL web_manifest_url(java_web_manifest_url);
@@ -92,7 +92,7 @@ WebApkUpdateDataFetcher::~WebApkUpdateDataFetcher() = default;
 
 void WebApkUpdateDataFetcher::ReplaceWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_web_contents) {
+    const JavaRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   content::WebContentsObserver::Observe(web_contents);
@@ -102,9 +102,8 @@ void WebApkUpdateDataFetcher::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void WebApkUpdateDataFetcher::Start(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& java_web_contents) {
+void WebApkUpdateDataFetcher::Start(JNIEnv* env,
+                                    const JavaRef<jobject>& java_web_contents) {
   ReplaceWebContents(env, java_web_contents);
   if (!web_contents()->IsLoading())
     FetchInstallableData();
