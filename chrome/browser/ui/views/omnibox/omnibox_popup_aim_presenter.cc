@@ -39,7 +39,7 @@ void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,
   // If a user clicks outside the popup, we will hide the popup.
   //
   // Separately, if a user opens a context menu inside this popup. The context
-  // menu is an child widget so this popup widget is still considered active. We
+  // menu is a child widget so this popup widget is still considered active. We
   // will not hide the popup.
   if (!active && controller_->popup_state_manager()->popup_state() ==
                      OmniboxPopupState::kAim &&
