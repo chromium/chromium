@@ -19,6 +19,7 @@
 #import "components/sync_device_info/device_info_tracker.h"
 #import "components/sync_device_info/local_device_info_provider.h"
 #import "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
+#import "components/sync_preferences/synced_set_up/utils.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -36,7 +37,6 @@
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_mediator_delegate.h"
 #import "ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h"
 #import "ios/chrome/browser/synced_set_up/ui/synced_set_up_consumer.h"
-#import "ios/chrome/browser/synced_set_up/utils/utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
@@ -434,7 +434,7 @@ void LogSnackbarInteraction(SyncedSetUpState state,
   CHECK(localDeviceInfoProvider);
 
   std::map<std::string_view, base::Value> remoteDevicePrefs =
-      GetCrossDevicePrefsFromRemoteDevice(
+      sync_preferences::synced_set_up::GetCrossDevicePrefsFromRemoteDevice(
           _prefTracker, _deviceInfoSyncService->GetDeviceInfoTracker(),
           localDeviceInfoProvider->GetLocalDeviceInfo());
 
@@ -446,9 +446,9 @@ void LogSnackbarInteraction(SyncedSetUpState state,
   }
 
   // Cache profile and local-state prefs.
-  CachePrefs(kCrossDeviceToProfilePrefMap, _profilePrefService,
-             _profilePrefsToApply, remoteDevicePrefs);
-  CachePrefs(kCrossDeviceToLocalStatePrefMap,
+  CachePrefs(sync_preferences::synced_set_up::kCrossDeviceToProfilePrefMap,
+             _profilePrefService, _profilePrefsToApply, remoteDevicePrefs);
+  CachePrefs(sync_preferences::synced_set_up::kCrossDeviceToLocalStatePrefMap,
              GetApplicationContext()->GetLocalState(), _localStatePrefsToApply,
              remoteDevicePrefs);
 

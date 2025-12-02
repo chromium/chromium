@@ -371,6 +371,7 @@ test("components_unittests") {
     "//components/sync_device_info:unit_tests",
     "//components/sync_preferences:unit_tests",
     "//components/sync_preferences/cross_device_pref_tracker:unit_tests",
+    "//components/sync_preferences/synced_set_up:unit_tests",
     "//components/sync_user_events:unit_tests",
     "//components/system_cpu:unit_tests",
     "//components/system_media_controls:unit_tests",
