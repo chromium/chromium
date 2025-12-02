@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -87,14 +88,18 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
 
   std::vector<GURL> GetEntries() {
     std::vector<GURL> urls;
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      for (int j = 0; j < browser->tab_strip_model()->count(); j++) {
-        content::NavigationController* controller =
-            &browser->tab_strip_model()->GetWebContentsAt(j)->GetController();
-        for (int i = 0; i < controller->GetEntryCount(); i++)
-          urls.push_back(controller->GetEntryAtIndex(i)->GetURL());
-      }
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [&urls](BrowserWindowInterface* browser) {
+          TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+          for (int j = 0; j < tab_strip_model->count(); j++) {
+            content::NavigationController* const controller =
+                &tab_strip_model->GetWebContentsAt(j)->GetController();
+            for (int i = 0; i < controller->GetEntryCount(); i++) {
+              urls.push_back(controller->GetEntryAtIndex(i)->GetURL());
+            }
+          }
+          return true;
+        });
     return urls;
   }
 
@@ -156,11 +161,11 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, AddWindow) {
 
   AddBrowser(browser(), {url_a_, url_b_});
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
-  ExpectEntries({about_blank_, url_a_, url_b_}, GetEntries());
+  ExpectEntries({url_a_, url_b_, about_blank_}, GetEntries());
 
   AddBrowser(browser(), {url_c_, url_d_});
   EXPECT_EQ(3U, chrome::GetTotalBrowserCount());
-  ExpectEntries({about_blank_, url_a_, url_b_, url_c_, url_d_}, GetEntries());
+  ExpectEntries({url_c_, url_d_, url_a_, url_b_, about_blank_}, GetEntries());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, GoBack) {
@@ -283,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, TwoWindowsDeletion) {
   browsing_data::RemoveNavigationEntries(profile(),
                                          DeletionInfo::ForAllHistory());
 
-  ExpectEntries({url_b_, url_d_}, GetEntries());
+  ExpectEntries({url_d_, url_b_}, GetEntries());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, GoBackAndDelete) {

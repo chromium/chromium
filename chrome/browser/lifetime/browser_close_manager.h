@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/timer/elapsed_timer.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 // Manages confirming that browser windows are closeable and closing them at
 // shutdown.
@@ -68,7 +68,7 @@ class BrowserCloseManager : public base::RefCounted<BrowserCloseManager> {
 
   // The browser for which we are waiting for a callback to
   // OnBrowserReportCloseable.
-  raw_ptr<Browser> current_browser_;
+  raw_ptr<BrowserWindowInterface> current_browser_;
 };
 
 #endif  // CHROME_BROWSER_LIFETIME_BROWSER_CLOSE_MANAGER_H_
