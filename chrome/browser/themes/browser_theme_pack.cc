@@ -365,24 +365,25 @@ constexpr auto kPreloadIDs = std::to_array<BrowserThemePack::PersistentID>({
 
 // Returns a piece of memory with the contents of the file |path|.
 scoped_refptr<base::RefCountedMemory> ReadFileData(const base::FilePath& path) {
-  if (!path.empty()) {
-    base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-    if (file.IsValid()) {
-      int64_t length = file.GetLength();
-      if (length > 0 && length < INT_MAX) {
-        int size = static_cast<int>(length);
-        std::vector<unsigned char> raw_data;
-        raw_data.resize(size);
-        char* data = reinterpret_cast<char*>(&(raw_data.front()));
-        if (UNSAFE_TODO(file.ReadAtCurrentPos(data, size)) == length) {
-          return base::MakeRefCounted<base::RefCountedBytes>(
-              std::move(raw_data));
-        }
-      }
-    }
+  if (path.empty()) {
+    return nullptr;
   }
 
-  return nullptr;
+  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!file.IsValid()) {
+    return nullptr;
+  }
+
+  const int64_t length = file.GetLength();
+  if (length < 0 || length >= INT_MAX) {
+    return nullptr;
+  }
+
+  std::vector<uint8_t> raw_data(length);
+  if (file.ReadAtCurrentPos(raw_data) != raw_data.size()) {
+    return nullptr;
+  }
+  return base::MakeRefCounted<base::RefCountedBytes>(std::move(raw_data));
 }
 
 // Computes a bitmap at one scale from a bitmap at a different scale.
