@@ -89,17 +89,11 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   // Create a task for the URL that was just intercepted.
   ContextualTask task = context_controller_->CreateTaskFromUrl(url);
 
-  // Map the task ID to the a new URL that uses the base AI page URL with the
-  // query from the one that was intercepted. This is done so the UI knows
-  // which URL to load initially in the embedded frame.
-  std::string query;
-  net::GetValueForKeyInQuery(url, "q", &query);
-  GURL stripped_query_url = GetDefaultAiPageUrl();
-  if (!query.empty()) {
-    stripped_query_url =
-        net::AppendQueryParameter(stripped_query_url, "q", query);
-  }
-  task_id_to_creation_url_[task.GetTaskId()] = stripped_query_url;
+  // Map the task ID to the intercepted url. This is done so the UI knows which
+  // URL to load initially in the embedded frame.
+  GURL query_url = lens::AppendCommonSearchParametersToURL(
+      url, g_browser_process->GetApplicationLocale(), false);
+  task_id_to_creation_url_[task.GetTaskId()] = query_url;
 
   GURL ui_url = GetContextualTaskUrlForTask(task.GetTaskId());
 
