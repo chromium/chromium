@@ -153,8 +153,7 @@ public abstract class TabModelSelectorBase
      *
      * @param tabContentProvider A {@link TabContentManager} instance.
      */
-    public void onNativeLibraryReady(
-            TabContentManager tabContentProvider, boolean wasTabCollectionsActive) {}
+    public void onNativeLibraryReady(TabContentManager tabContentProvider) {}
 
     @Override
     public void onTabsViewShown() {}

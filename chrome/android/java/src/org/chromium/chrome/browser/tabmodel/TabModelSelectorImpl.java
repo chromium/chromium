@@ -131,8 +131,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
      * @param tabContentProvider A {@link TabContentManager} instance.
      */
     @Override
-    public void onNativeLibraryReady(
-            TabContentManager tabContentProvider, boolean wasTabCollectionsActive) {
+    public void onNativeLibraryReady(TabContentManager tabContentProvider) {
         assert mTabContentManager == null : "onNativeLibraryReady called twice!";
 
         ProfileProvider profileProvider = mProfileProviderSupplier.get();
@@ -173,8 +172,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                         regularTabRemover,
                         mIsUndoSupported,
                         /* isArchivedTabModel= */ false,
-                        tabUngrouperFactory,
-                        wasTabCollectionsActive);
+                        tabUngrouperFactory);
         if (regularTabCreator instanceof NeedsTabModel needsTabModel) {
             needsTabModel.setTabModel(normalModelHolder.tabModel);
         }
@@ -201,8 +199,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                         mActivityType,
                         this,
                         incognitoTabRemover,
-                        tabUngrouperFactory,
-                        wasTabCollectionsActive);
+                        tabUngrouperFactory);
         if (incognitoTabCreator instanceof NeedsTabModel needsTabModel) {
             needsTabModel.setTabModel(incognitoModelHolder.tabModel);
         }

@@ -85,10 +85,7 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
                         /* snapshotsEnabled= */ false,
                         mTabModelSelector::getTabById,
                         TabWindowManagerSingleton.getInstance());
-        boolean wasTabCollectionsActive =
-                TabCollectionMigrationUtil.wasTabCollectionsActiveForMetadataFile(
-                        policy.getMetadataFileName());
-        mTabModelSelector.onNativeLibraryReady(tabContentManager, wasTabCollectionsActive);
+        mTabModelSelector.onNativeLibraryReady(tabContentManager);
         policy.setTabContentManager(tabContentManager);
 
         mTabPersistentStore.onNativeLibraryReady();

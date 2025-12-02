@@ -39,8 +39,7 @@ public class TabModelHolderFactory {
             TabRemover tabRemover,
             boolean supportUndo,
             boolean isArchivedTabModel,
-            TabUngrouperFactory tabUngrouperFactory,
-            boolean wasTabCollectionsActive) {
+            TabUngrouperFactory tabUngrouperFactory) {
         if (ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
             return createCollectionTabModelHolder(
                     profile,
@@ -70,8 +69,7 @@ public class TabModelHolderFactory {
                 tabRemover,
                 supportUndo,
                 isArchivedTabModel,
-                tabUngrouperFactory,
-                wasTabCollectionsActive);
+                tabUngrouperFactory);
     }
 
     /**
@@ -89,8 +87,7 @@ public class TabModelHolderFactory {
             @ActivityType int activityType,
             TabModelDelegate modelDelegate,
             TabRemover tabRemover,
-            TabUngrouperFactory tabUngrouperFactory,
-            boolean wasTabCollectionsActive) {
+            TabUngrouperFactory tabUngrouperFactory) {
         if (ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
             return createCollectionIncognitoTabModelHolder(
                     profileProvider,
@@ -116,8 +113,7 @@ public class TabModelHolderFactory {
                 activityType,
                 modelDelegate,
                 tabRemover,
-                tabUngrouperFactory,
-                wasTabCollectionsActive);
+                tabUngrouperFactory);
     }
 
     /** Creates an empty {@link IncognitoTabModelHolder}. */
@@ -207,8 +203,7 @@ public class TabModelHolderFactory {
             TabRemover tabRemover,
             boolean supportUndo,
             boolean isArchivedTabModel,
-            TabUngrouperFactory tabUngrouperFactory,
-            boolean wasTabCollectionsActive) {
+            TabUngrouperFactory tabUngrouperFactory) {
         TabModelImpl regularTabModel =
                 new TabModelImpl(
                         profile,
@@ -226,8 +221,7 @@ public class TabModelHolderFactory {
 
         return new TabModelHolder(
                 regularTabModel,
-                createLegacyTabGroupModelFilterInternal(
-                        regularTabModel, tabUngrouperFactory, wasTabCollectionsActive));
+                createLegacyTabGroupModelFilterInternal(regularTabModel, tabUngrouperFactory));
     }
 
     private static IncognitoTabModelHolder createLegacyIncognitoTabModelHolder(
@@ -241,8 +235,7 @@ public class TabModelHolderFactory {
             @ActivityType int activityType,
             TabModelDelegate modelDelegate,
             TabRemover tabRemover,
-            TabUngrouperFactory tabUngrouperFactory,
-            boolean wasTabCollectionsActive) {
+            TabUngrouperFactory tabUngrouperFactory) {
         IncognitoTabModelImplCreator incognitoCreator =
                 new IncognitoTabModelImplCreator(
                         profileProvider,
@@ -260,19 +253,16 @@ public class TabModelHolderFactory {
 
         return new IncognitoTabModelHolder(
                 incognitoTabModel,
-                createLegacyTabGroupModelFilterInternal(
-                        incognitoTabModel, tabUngrouperFactory, wasTabCollectionsActive));
+                createLegacyTabGroupModelFilterInternal(incognitoTabModel, tabUngrouperFactory));
     }
 
     private static TabGroupModelFilterInternal createLegacyTabGroupModelFilterInternal(
-            TabModelInternal tabModel,
-            TabUngrouperFactory tabUngrouperFactory,
-            boolean wasTabCollectionsActive) {
+            TabModelInternal tabModel, TabUngrouperFactory tabUngrouperFactory) {
         boolean isIncognitoBranded = tabModel.isIncognitoBranded();
         Holder<@Nullable TabGroupModelFilter> filterHolder = new Holder<>(null);
         TabUngrouper tabUngrouper = tabUngrouperFactory.create(isIncognitoBranded, filterHolder);
         TabGroupModelFilterInternal filter =
-                new TabGroupModelFilterImpl(tabModel, tabUngrouper, wasTabCollectionsActive);
+                new StubTabGroupModelFilterImpl(tabModel, tabUngrouper);
         filterHolder.value = filter;
         return filter;
     }

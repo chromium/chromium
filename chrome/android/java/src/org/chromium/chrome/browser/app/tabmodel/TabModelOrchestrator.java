@@ -123,10 +123,7 @@ public class TabModelOrchestrator {
 
     public void onNativeLibraryReady(TabContentManager tabContentManager) {
         assertInitialized();
-        boolean wasTabCollectionsActive =
-                TabCollectionMigrationUtil.wasTabCollectionsActiveForMetadataFile(
-                        mTabPersistencePolicy.getMetadataFileName());
-        mTabModelSelector.onNativeLibraryReady(tabContentManager, wasTabCollectionsActive);
+        mTabModelSelector.onNativeLibraryReady(tabContentManager);
         mTabPersistencePolicy.setTabContentManager(tabContentManager);
         if (!mTabPersistentStoreDestroyedEarly) mTabPersistentStore.onNativeLibraryReady();
     }

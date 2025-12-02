@@ -63,10 +63,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * This class is a drop-in replacement for {@link TabModelImpl} and {@link TabGroupModelFilterImpl}.
- * To minimize duplication, many common methods are implemented in {@link TabModelJniBridge}. Until
- * this class if fully launched, parity between this class and {@link TabModelImpl} & {@link
- * TabGroupModelFilterImpl} should be maintained.
+ * This class implements {@link TabModelInternal} and {@link TabGroupModelFilterInternal}.
  *
  * <p>The class uses the tab collection tree-like structure available in components/tabs/ to
  * organize tabs. The tabs in C++ tab collections are only cached with weak ptr references to the
@@ -75,8 +72,7 @@ import java.util.function.Supplier;
  * this class's public methods can only be used on the UI thread.
  *
  * <p>Ideally, more of the observers and logic should be moved to be in C++ or shared with desktop's
- * tab strip model. However, to achieve drop-in compatibility, most of the observer events and the
- * interfaces were kept as-is for now and can be migrated to C++ later.
+ * tab strip model.
  */
 @NullMarked
 @JNINamespace("tabs")

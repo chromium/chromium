@@ -23,14 +23,8 @@ import java.util.Set;
  * last incognito tab is closed we fully tear down the associated profile and related {@link
  * TabCollectionTabModelImpl}. However, this class is long lasting and abstracts away this lifecycle
  * complexity to the outside world by always existing regardless of the existence of an OTR profile.
- *
- * <p>This class only exists if {@link TabCollectionTabModelImpl} is in use as the prior
- * implementation of {@link TabGroupModelFilterImpl} already fulfilled this role by wrapping the
- * {@link IncognitoTabModelImpl}.
- *
- * <p>Post {@link TabCollectionTabModelImpl} launching we could merge this class with {@link
- * IncognitoTabModelImpl}.
  */
+// TODO(crbug.com/463685717): Consider merging with IncognitoTabModelImpl.
 @NullMarked
 public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInternal {
     private final Callback<TabModelInternal> mDelegateModelObserver = this::setDelegateModel;

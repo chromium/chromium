@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Interface for getting tab groups for the tabs in the {@link TabModel}. */
+// TODO(crbug.com/463685717): Consider merging with TabModel.
 @NullMarked
 public interface TabGroupModelFilter extends SupportsTabModelObserver {
 
