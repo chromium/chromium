@@ -29,7 +29,7 @@ class CC_PAINT_EXPORT PaintImageGenerator : public SkRefCnt {
   PaintImageGenerator& operator=(const PaintImageGenerator&) = delete;
 
   // Returns a reference to the encoded content of this image.
-  virtual sk_sp<SkData> GetEncodedData() const = 0;
+  virtual sk_sp<const SkData> GetEncodedData() const = 0;
 
   // Decode into the given SkPixmap. This will modify the pixels pointed to by
   // `dst_pixmap`, but will not modify any of its properties (e.g, its

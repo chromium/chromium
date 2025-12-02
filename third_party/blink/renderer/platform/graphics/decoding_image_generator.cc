@@ -61,7 +61,7 @@ namespace blink {
 
 // static
 std::unique_ptr<SkImageGenerator>
-DecodingImageGenerator::CreateAsSkImageGenerator(sk_sp<SkData> data) {
+DecodingImageGenerator::CreateAsSkImageGenerator(sk_sp<const SkData> data) {
   // This image generator is used only by code in Skia, which in practice means
   // out of process printing deserialization (MSKP) and a few odds and ends.
   // Blink side code uses DecodingImageGenerator::Create directly instead.
@@ -134,7 +134,7 @@ DecodingImageGenerator::DecodingImageGenerator(
 
 DecodingImageGenerator::~DecodingImageGenerator() = default;
 
-sk_sp<SkData> DecodingImageGenerator::GetEncodedData() const {
+sk_sp<const SkData> DecodingImageGenerator::GetEncodedData() const {
   TRACE_EVENT0("blink", "DecodingImageGenerator::refEncodedData");
 
   // getAsSkData() may require copying, but the clients of this function are

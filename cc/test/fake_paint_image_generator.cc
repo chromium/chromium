@@ -41,7 +41,7 @@ FakePaintImageGenerator::FakePaintImageGenerator(
 
 FakePaintImageGenerator::~FakePaintImageGenerator() = default;
 
-sk_sp<SkData> FakePaintImageGenerator::GetEncodedData() const {
+sk_sp<const SkData> FakePaintImageGenerator::GetEncodedData() const {
   return SkData::MakeEmpty();
 }
 

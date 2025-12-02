@@ -259,8 +259,7 @@ TEST(MetafileSkiaTest, SerializeUnencodedRasterImageAsPNG) {
     ImageSerializationContext images;
     SkSerialProcs procs = SerializationProcs(&subframes, nullptr, &images);
 
-    sk_sp<SkData> encoded_data =
-        (*procs.fImageProc)(image.get(), procs.fImageCtx);
+    auto encoded_data = procs.fImageProc(image.get(), procs.fImageCtx);
     ASSERT_TRUE(encoded_data);
     EXPECT_GT(encoded_data->size(), sizeof(uint32_t));
 
@@ -304,8 +303,7 @@ TEST(MetafileSkiaTest, SkipEncodingAsPngWhenImageIsAlreadyEncoded) {
     PictureSerializationContext subframes;
     ImageSerializationContext images;
     SkSerialProcs procs = SerializationProcs(&subframes, nullptr, &images);
-    sk_sp<SkData> encoded_data =
-        (*procs.fImageProc)(jpeg_img.get(), procs.fImageCtx);
+    auto encoded_data = procs.fImageProc(jpeg_img.get(), procs.fImageCtx);
     ASSERT_TRUE(encoded_data);
     EXPECT_GT(encoded_data->size(), sizeof(uint32_t));
 
@@ -343,8 +341,7 @@ TEST(MetafileSkiaTest, SerializeUniqueImages) {
   ImageSerializationContext images;
   SkSerialProcs procs = SerializationProcs(&subframes, nullptr, &images);
 
-  sk_sp<SkData> encoded_data1 =
-      (*procs.fImageProc)(unencoded_img.get(), procs.fImageCtx);
+  auto encoded_data1 = procs.fImageProc(unencoded_img.get(), procs.fImageCtx);
   ASSERT_TRUE(encoded_data1);
   EXPECT_GT(encoded_data1->size(), sizeof(uint32_t));
 
@@ -363,8 +360,7 @@ TEST(MetafileSkiaTest, SerializeUniqueImages) {
   }
 
   // Call the serialization proc on the image for the second time.
-  sk_sp<SkData> encoded_data2 =
-      (*procs.fImageProc)(unencoded_img.get(), procs.fImageCtx);
+  auto encoded_data2 = procs.fImageProc(unencoded_img.get(), procs.fImageCtx);
   ASSERT_TRUE(encoded_data2);
   EXPECT_EQ(encoded_data2->size(), sizeof(uint32_t));
 

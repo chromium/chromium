@@ -190,7 +190,7 @@ class SkPictureSerializer {
       DCHECK(file.isValid());
 
       SkSerialProcs procs{
-          .fImageProc = [](SkImage* img, void*) -> sk_sp<SkData> {
+          .fImageProc = [](SkImage* img, void*) -> SkSerialReturnType {
             // Note: if the picture contains texture-backed (gpu) images, they
             // will fail to be read-back and therefore fail to be encoded unless
             // we can thread the correct GrDirectContext through to here.

@@ -164,7 +164,7 @@ TEST(SegmentReaderTest, getAsSkData) {
   }
   SegmentReaders reader_struct(data);
   for (auto segment_reader : reader_struct.segment_readers) {
-    sk_sp<SkData> skdata = segment_reader->GetAsSkData();
+    sk_sp<const SkData> skdata = segment_reader->GetAsSkData();
     EXPECT_EQ(data->size(), skdata->size());
     auto skdata_span = skia::as_byte_span(*skdata);
 

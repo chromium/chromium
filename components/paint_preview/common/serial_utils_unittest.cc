@@ -72,7 +72,7 @@ TEST(PaintPreviewSerialUtils, TestTransformedPictureProcs) {
 
   // Check that serializing then deserialize the picture works produces a
   // correct clip rect.
-  sk_sp<SkData> serial_pic_data =
+  auto serial_pic_data =
       serial_procs.fPictureProc(pic.get(), serial_procs.fPictureCtx);
   sk_sp<SkPicture> deserial_pic = deserial_procs.fPictureProc(
       serial_pic_data->data(), serial_pic_data->size(),

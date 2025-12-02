@@ -69,7 +69,7 @@ class SharedBufferSegmentReader final : public SegmentReader {
       delete;
   size_t size() const override;
   base::span<const uint8_t> GetSomeData(size_t position) const override;
-  sk_sp<SkData> GetAsSkData() const override;
+  sk_sp<const SkData> GetAsSkData() const override;
 
  private:
   ~SharedBufferSegmentReader() override = default;
@@ -93,7 +93,7 @@ base::span<const uint8_t> SharedBufferSegmentReader::GetSomeData(
   return base::as_byte_span(*it);
 }
 
-sk_sp<SkData> SharedBufferSegmentReader::GetAsSkData() const {
+sk_sp<const SkData> SharedBufferSegmentReader::GetAsSkData() const {
   sk_sp<SkData> data = SkData::MakeUninitialized(shared_buffer_->size());
   auto buffer = skia::as_writable_byte_span(*data);
   for (const auto& span : *shared_buffer_) {
@@ -107,19 +107,19 @@ sk_sp<SkData> SharedBufferSegmentReader::GetAsSkData() const {
 // Interface for ImageDecoder to read an SkData.
 class DataSegmentReader final : public SegmentReader {
  public:
-  explicit DataSegmentReader(sk_sp<SkData>);
+  explicit DataSegmentReader(sk_sp<const SkData>);
   DataSegmentReader(const DataSegmentReader&) = delete;
   DataSegmentReader& operator=(const DataSegmentReader&) = delete;
   size_t size() const override;
   base::span<const uint8_t> GetSomeData(size_t position) const override;
-  sk_sp<SkData> GetAsSkData() const override;
+  sk_sp<const SkData> GetAsSkData() const override;
 
  private:
   ~DataSegmentReader() override = default;
-  sk_sp<SkData> data_;
+  sk_sp<const SkData> data_;
 };
 
-DataSegmentReader::DataSegmentReader(sk_sp<SkData> data)
+DataSegmentReader::DataSegmentReader(sk_sp<const SkData> data)
     : data_(std::move(data)) {}
 
 size_t DataSegmentReader::size() const {
@@ -134,7 +134,7 @@ base::span<const uint8_t> DataSegmentReader::GetSomeData(
   return skia::as_byte_span(*data_).subspan(position);
 }
 
-sk_sp<SkData> DataSegmentReader::GetAsSkData() const {
+sk_sp<const SkData> DataSegmentReader::GetAsSkData() const {
   return data_;
 }
 
@@ -148,7 +148,7 @@ class ROBufferSegmentReader final : public SegmentReader {
 
   size_t size() const override;
   base::span<const uint8_t> GetSomeData(size_t position) const override;
-  sk_sp<SkData> GetAsSkData() const override;
+  sk_sp<const SkData> GetAsSkData() const override;
 
  private:
   ~ROBufferSegmentReader() override = default;
@@ -197,7 +197,7 @@ static void UnrefROBuffer(const void* ptr, void* context) {
   static_cast<ROBuffer*>(context)->Release();
 }
 
-sk_sp<SkData> ROBufferSegmentReader::GetAsSkData() const {
+sk_sp<const SkData> ROBufferSegmentReader::GetAsSkData() const {
   if (!ro_buffer_) {
     return nullptr;
   }
@@ -226,7 +226,7 @@ scoped_refptr<SegmentReader> SegmentReader::CreateFromSharedBuffer(
 }
 
 scoped_refptr<SegmentReader> SegmentReader::CreateFromSkData(
-    sk_sp<SkData> data) {
+    sk_sp<const SkData> data) {
   return base::AdoptRef(new DataSegmentReader(std::move(data)));
 }
 

@@ -319,7 +319,7 @@ sk_sp<SkDocument> MakeXpsDocument(SkWStream* stream) {
 }
 #endif
 
-sk_sp<SkData> SerializeOopPicture(SkPicture* pic, void* ctx) {
+SkSerialReturnType SerializeOopPicture(SkPicture* pic, void* ctx) {
   const auto* context = reinterpret_cast<const ContentToProxyTokenMap*>(ctx);
   uint32_t pic_id = pic->uniqueID();
   auto iter = context->find(pic_id);
@@ -350,7 +350,7 @@ sk_sp<SkPicture> DeserializeOopPicture(const void* data,
   return iter->second;
 }
 
-sk_sp<SkData> SerializeOopTypeface(SkTypeface* typeface, void* ctx) {
+SkSerialReturnType SerializeOopTypeface(SkTypeface* typeface, void* ctx) {
   auto* context = reinterpret_cast<TypefaceSerializationContext*>(ctx);
   SkTypefaceID typeface_id = typeface->uniqueID();
   bool data_included = context->insert(typeface_id).second;
@@ -399,7 +399,7 @@ sk_sp<SkTypeface> DeserializeOopTypeface(const void* data,
   return typeface;
 }
 
-sk_sp<SkData> SerializeRasterImage(SkImage* img, void* ctx) {
+SkSerialReturnType SerializeRasterImage(SkImage* img, void* ctx) {
   if (!img) {
     return nullptr;
   }

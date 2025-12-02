@@ -51,7 +51,7 @@ struct SerializedRectData {
 #pragma pack(pop)
 
 // Serializes a SkPicture representing a subframe as a custom data placeholder.
-sk_sp<SkData> SerializePictureAsRectData(SkPicture* picture, void* ctx) {
+SkSerialReturnType SerializePictureAsRectData(SkPicture* picture, void* ctx) {
   TRACE_EVENT0("paint_preview", "SerializePictureAsRectData");
   const PictureSerializationContext* context =
       reinterpret_cast<PictureSerializationContext*>(ctx);
@@ -75,7 +75,7 @@ sk_sp<SkData> SerializePictureAsRectData(SkPicture* picture, void* ctx) {
 // De-duplicates and subsets used typefaces and discards any unused typefaces.
 // If subsetting fails (or on Android) this returns data only for non-system
 // fonts. This means the resulting SkPicture is not portable across devices.
-sk_sp<SkData> SerializeTypeface(SkTypeface* typeface, void* ctx) {
+SkSerialReturnType SerializeTypeface(SkTypeface* typeface, void* ctx) {
   TRACE_EVENT0("paint_preview", "SerializeTypeface");
   TypefaceSerializationContext* context =
       reinterpret_cast<TypefaceSerializationContext*>(ctx);
@@ -140,7 +140,7 @@ static bool is_supported_codec(sk_sp<const SkData> data) {
          SkWebpDecoder::IsWebp(data->data(), data->size());
 }
 
-sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
+SkSerialReturnType SerializeImage(SkImage* image, void* ctx) {
   TRACE_EVENT0("paint_preview", "SerializeImage");
   ImageSerializationContext* context =
       reinterpret_cast<ImageSerializationContext*>(ctx);
@@ -184,7 +184,6 @@ sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
     }
     context->remaining_image_size -= encoded_data->size();
   }
-
   return encoded_data;
 }
 

@@ -111,7 +111,7 @@ enum class WebPFileFormat {
 //
 // TODO(crbug.com/1009237): consider combining this with the logic to detect
 // WebPs that can be decoded to YUV.
-bool IsSimpleLossyWebPImage(const sk_sp<SkData>& blob) {
+bool IsSimpleLossyWebPImage(const sk_sp<const SkData>& blob) {
   if (blob->size() < 20UL) {
     return false;
   }
@@ -122,7 +122,7 @@ bool IsSimpleLossyWebPImage(const sk_sp<SkData>& blob) {
 
 // This method parses |blob|'s header and emits a UMA with the file format, as
 // defined by WebP, see WebPFileFormat.
-void UpdateWebPFileFormatUMA(const sk_sp<SkData>& blob) {
+void UpdateWebPFileFormatUMA(const sk_sp<const SkData>& blob) {
   if (!blink::IsMainThread()) {
     return;
   }

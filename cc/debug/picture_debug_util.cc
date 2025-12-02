@@ -21,12 +21,13 @@ namespace cc {
 
 void PictureDebugUtil::SerializeAsBase64(const SkPicture* picture,
                                          std::string* output) {
-  SkSerialProcs procs{.fImageProc = [](SkImage* img, void*) -> sk_sp<SkData> {
-    // Note: if the picture contains texture-backed (gpu) images, they will fail
-    // to be read-back and therefore fail to be encoded unless we can thread the
-    // correct GrDirectContext through to here.
-    return skia::EncodePngAsSkData(nullptr, img);
-  }};
+  SkSerialProcs procs{
+      .fImageProc = [](SkImage* img, void*) -> SkSerialReturnType {
+        // Note: if the picture contains texture-backed (gpu) images, they will
+        // fail to be read-back and therefore fail to be encoded unless we can
+        // thread the correct GrDirectContext through to here.
+        return skia::EncodePngAsSkData(nullptr, img);
+      }};
   sk_sp<SkData> data = picture->serialize(&procs);
   *output = base::Base64Encode(
       std::string_view(static_cast<const char*>(data->data()), data->size()));

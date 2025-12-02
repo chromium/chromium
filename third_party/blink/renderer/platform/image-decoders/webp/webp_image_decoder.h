@@ -122,7 +122,7 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
   // - the SegmentReader's data, if contiguous.
   // - its own copy, if not, and all data was received initially.
   // - |buffer_|, if streaming.
-  sk_sp<SkData> consolidated_data_;
+  sk_sp<const SkData> consolidated_data_;
   Vector<char> buffer_;
 };
 

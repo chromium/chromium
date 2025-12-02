@@ -666,7 +666,7 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
 
   ~VideoImageGenerator() override = default;
 
-  sk_sp<SkData> GetEncodedData() const override { return nullptr; }
+  sk_sp<const SkData> GetEncodedData() const override { return nullptr; }
 
   bool GetPixels(SkPixmap dst_pixmap,
                  size_t frame_index,

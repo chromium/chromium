@@ -107,7 +107,7 @@ class ParkableImageSegmentReader : public SegmentReader {
   explicit ParkableImageSegmentReader(scoped_refptr<ParkableImage> image);
   size_t size() const override;
   base::span<const uint8_t> GetSomeData(size_t position) const override;
-  sk_sp<SkData> GetAsSkData() const override;
+  sk_sp<const SkData> GetAsSkData() const override;
   void LockData() override;
   void UnlockData() override;
 
@@ -139,7 +139,7 @@ base::span<const uint8_t> ParkableImageSegmentReader::GetSomeData(
   return RWBufferGetSomeData(iter, position_of_block, position);
 }
 
-sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
+sk_sp<const SkData> ParkableImageSegmentReader::GetAsSkData() const {
   if (!parkable_image_) {
     return nullptr;
   }

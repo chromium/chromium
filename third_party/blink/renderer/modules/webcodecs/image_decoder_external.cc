@@ -87,7 +87,7 @@ class ArrayBufferContentsSegmentReader : public SegmentReader {
   base::span<const uint8_t> GetSomeData(size_t position) const override {
     return segment_reader_->GetSomeData(position);
   }
-  sk_sp<SkData> GetAsSkData() const override {
+  sk_sp<const SkData> GetAsSkData() const override {
     return segment_reader_->GetAsSkData();
   }
 
