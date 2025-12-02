@@ -63,6 +63,7 @@ class SaveUpdateAddressProfileFlowManager {
 
   void OnPromptWithDetailsDismissed();
 
+  // TODO: crbug.com/460410690 - Use `AutofillMessageController` instead.
   SaveUpdateAddressProfileMessageController
       save_update_address_profile_message_controller_;
   std::unique_ptr<SaveUpdateAddressProfilePromptController>
