@@ -1538,6 +1538,8 @@ public class ChromeAndroidTaskImplUnitTest {
         shadowOf(getMainLooper()).idle();
 
         // Assert
+        Assert.assertEquals(
+                "Task should have finished updating", State.IDLE, chromeAndroidTask.getState());
         Assert.assertNull(
                 "Restore should be not pending after #restore is finished",
                 chromeAndroidTask.getPendingActionManagerForTesting().getFutureBoundsInDp());
@@ -1557,7 +1559,7 @@ public class ChromeAndroidTaskImplUnitTest {
         var pendingActionManager = task.getPendingActionManagerForTesting();
         assertEquals(
                 PendingAction.SET_BOUNDS, pendingActionManager.getPendingActionsForTesting()[0]);
-        assertEquals(taskBounds, pendingActionManager.getPendingBoundsInDp());
+        assertEquals(taskBounds, pendingActionManager.getPendingBoundsInDpForTesting());
     }
 
     @Test
@@ -1572,7 +1574,10 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         var pendingActionManager = task.getPendingActionManagerForTesting();
         assertEquals(PendingAction.NONE, pendingActionManager.getPendingActionsForTesting()[0]);
-        assertNull(pendingActionManager.getPendingBoundsInDp());
+        assertEquals(
+                "Initial bounds default to empty",
+                new Rect(),
+                pendingActionManager.getFutureBoundsInDp());
     }
 
     @Test

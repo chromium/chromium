@@ -209,6 +209,9 @@ final class PendingActionManager {
             mIsVisibleFuture = true;
             mIsActiveFuture = true;
 
+            // A window of given bounds will be launched.
+            mFutureBoundsInDp = pendingTaskInfo.mCreateParams.getInitialBounds();
+
             // Update states based on PendingTaskInfo
             @WindowShowState.EnumType
             int initialShowState = pendingTaskInfo.mCreateParams.getInitialShowState();
@@ -233,12 +236,6 @@ final class PendingActionManager {
     @Nullable Rect getFutureBoundsInDp() {
         synchronized (mPendingActionsLock) {
             return mFutureBoundsInDp;
-        }
-    }
-
-    @Nullable Rect getPendingBoundsInDp() {
-        synchronized (mPendingActionsLock) {
-            return mPendingBoundsInDp;
         }
     }
 
@@ -513,6 +510,12 @@ final class PendingActionManager {
     @VisibleForTesting
     static boolean isPrimaryAction(@PendingAction int action) {
         return action != PendingAction.SHOW_INACTIVE && action != PendingAction.DEACTIVATE;
+    }
+
+    @Nullable Rect getPendingBoundsInDpForTesting() {
+        synchronized (mPendingActionsLock) {
+            return mPendingBoundsInDp;
+        }
     }
 
     @PendingAction
