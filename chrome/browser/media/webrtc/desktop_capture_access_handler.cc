@@ -412,23 +412,29 @@ void DesktopCaptureAccessHandler::HandleRequest(
   content::RenderFrameHost* const main_frame =
       web_contents_for_stream ? web_contents_for_stream->GetPrimaryMainFrame()
                               : nullptr;
-  if (main_frame) {
-    // This function would have already returned if this vector was empty.
-    CHECK(!request.requested_video_device_ids.empty());
-    media_id =
-        content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
-            request.requested_video_device_ids.front(),
-            main_frame->GetProcess()->GetDeprecatedID(),
-            main_frame->GetRoutingID(),
-            url::Origin::Create(request.security_origin),
-            content::kRegistryStreamTypeDesktop);
+  if (!main_frame) {
+    std::move(pending_request->callback)
+        .Run(blink::mojom::StreamDevicesSet(),
+             MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
+             /*ui=*/nullptr);
+    return;
   }
+
+  // This function would have already returned if this vector was empty.
+  CHECK(!request.requested_video_device_ids.empty());
+  media_id =
+      content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
+          request.requested_video_device_ids.front(),
+          main_frame->GetProcess()->GetDeprecatedID(),
+          main_frame->GetRoutingID(),
+          url::Origin::Create(request.security_origin),
+          content::kRegistryStreamTypeDesktop);
 
   // Received invalid device id.
   if (media_id.type == content::DesktopMediaID::TYPE_NONE) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::INVALID_STATE,
+             MediaStreamRequestResult::STREAM_NOT_FOUND_IN_REGISTRY,
              /*ui=*/nullptr);
     return;
   }
