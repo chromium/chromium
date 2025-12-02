@@ -14,42 +14,48 @@ test(t => {
   const canvas = new OffscreenCanvas(300, 150);
   const ctx = canvas.getContext('2d');
 
-  // Test that restore() undoes any modifications.
-  var old = ctx.strokeStyle;
+  const old = ctx.strokeStyle;
   ctx.save();
   ctx.strokeStyle = "#ff0000";
   ctx.restore();
   _assertSame(ctx.strokeStyle, old, "ctx.strokeStyle", "old");
+}, "save()/restore() restores strokeStyle, for a canvas of size (300, 150).");
 
-  // Also test that save() doesn't modify the values.
+test(t => {
+  const canvas = new OffscreenCanvas(300, 150);
+  const ctx = canvas.getContext('2d');
+
   ctx.strokeStyle = "#ff0000";
-  old = ctx.strokeStyle;
+  const old = ctx.strokeStyle;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against `old` instead of against "#ff0000".
+  // from rounding), so compare against `old` instead of "#ff0000".
   ctx.save();
   _assertSame(ctx.strokeStyle, old, "ctx.strokeStyle", "old");
   ctx.restore();
-}, "save()/restore() works for strokeStyle, with a canvas size of (300, 150)");
+}, "save() does not modify strokeStyle, for a canvas of size (300, 150).");
 
 test(t => {
   const canvas = new OffscreenCanvas(0, 0);
   const ctx = canvas.getContext('2d');
 
-  // Test that restore() undoes any modifications.
-  var old = ctx.strokeStyle;
+  const old = ctx.strokeStyle;
   ctx.save();
   ctx.strokeStyle = "#ff0000";
   ctx.restore();
   _assertSame(ctx.strokeStyle, old, "ctx.strokeStyle", "old");
+}, "save()/restore() restores strokeStyle, for a canvas of size (0, 0).");
 
-  // Also test that save() doesn't modify the values.
+test(t => {
+  const canvas = new OffscreenCanvas(0, 0);
+  const ctx = canvas.getContext('2d');
+
   ctx.strokeStyle = "#ff0000";
-  old = ctx.strokeStyle;
+  const old = ctx.strokeStyle;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against `old` instead of against "#ff0000".
+  // from rounding), so compare against `old` instead of "#ff0000".
   ctx.save();
   _assertSame(ctx.strokeStyle, old, "ctx.strokeStyle", "old");
   ctx.restore();
-}, "save()/restore() works for strokeStyle, with a canvas size of (0, 0)");
+}, "save() does not modify strokeStyle, for a canvas of size (0, 0).");
 
 </script>

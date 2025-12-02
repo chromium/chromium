@@ -14,42 +14,48 @@ test(t => {
   const canvas = new OffscreenCanvas(300, 150);
   const ctx = canvas.getContext('2d');
 
-  // Test that restore() undoes any modifications.
-  var old = ctx.lineWidth;
+  const old = ctx.lineWidth;
   ctx.save();
   ctx.lineWidth = 0.5;
   ctx.restore();
   _assertSame(ctx.lineWidth, old, "ctx.lineWidth", "old");
+}, "save()/restore() restores lineWidth, for a canvas of size (300, 150).");
 
-  // Also test that save() doesn't modify the values.
+test(t => {
+  const canvas = new OffscreenCanvas(300, 150);
+  const ctx = canvas.getContext('2d');
+
   ctx.lineWidth = 0.5;
-  old = ctx.lineWidth;
+  const old = ctx.lineWidth;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against `old` instead of against 0.5.
+  // from rounding), so compare against `old` instead of 0.5.
   ctx.save();
   _assertSame(ctx.lineWidth, old, "ctx.lineWidth", "old");
   ctx.restore();
-}, "save()/restore() works for lineWidth, with a canvas size of (300, 150)");
+}, "save() does not modify lineWidth, for a canvas of size (300, 150).");
 
 test(t => {
   const canvas = new OffscreenCanvas(0, 0);
   const ctx = canvas.getContext('2d');
 
-  // Test that restore() undoes any modifications.
-  var old = ctx.lineWidth;
+  const old = ctx.lineWidth;
   ctx.save();
   ctx.lineWidth = 0.5;
   ctx.restore();
   _assertSame(ctx.lineWidth, old, "ctx.lineWidth", "old");
+}, "save()/restore() restores lineWidth, for a canvas of size (0, 0).");
 
-  // Also test that save() doesn't modify the values.
+test(t => {
+  const canvas = new OffscreenCanvas(0, 0);
+  const ctx = canvas.getContext('2d');
+
   ctx.lineWidth = 0.5;
-  old = ctx.lineWidth;
+  const old = ctx.lineWidth;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against `old` instead of against 0.5.
+  // from rounding), so compare against `old` instead of 0.5.
   ctx.save();
   _assertSame(ctx.lineWidth, old, "ctx.lineWidth", "old");
   ctx.restore();
-}, "save()/restore() works for lineWidth, with a canvas size of (0, 0)");
+}, "save() does not modify lineWidth, for a canvas of size (0, 0).");
 
 </script>

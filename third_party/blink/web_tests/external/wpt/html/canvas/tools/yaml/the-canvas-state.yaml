@@ -104,26 +104,28 @@
     @assert ctx.lineWidth === 0.5;
 
 - name: 2d.state.saverestore
-  desc: save()/restore() works for {{ variant_names[1] }}, with a canvas size of
-        {{ size }}
-  code: |
-    // Test that restore() undoes any modifications.
-    var old = ctx.{{ variant_names[1] }};
-    ctx.save();
-    ctx.{{ variant_names[1] }} = {{ value }};
-    ctx.restore();
-    @assert ctx.{{ variant_names[1] }} === old;
-
-    // Also test that save() doesn't modify the values.
-    ctx.{{ variant_names[1] }} = {{ value }};
-    old = ctx.{{ variant_names[1] }};
-    // We're not interested in failures caused by get(set(x)) != x (e.g.
-    // from rounding), so compare against `old` instead of against {{ value }}.
-    ctx.save();
-    @assert ctx.{{ variant_names[1] }} === old;
-    ctx.restore();
-  variants_layout: [single_file, multi_files]
+  variants_layout: [single_file, single_file, multi_files]
   variants:
+  - restore-undoes-changes:
+      desc: save()/restore() restores {{ variant_names[2] }}, for a canvas of
+            size {{ size }}.
+      code: |
+        const old = ctx.{{ variant_names[2] }};
+        ctx.save();
+        ctx.{{ variant_names[2] }} = {{ value }};
+        ctx.restore();
+        @assert ctx.{{ variant_names[2] }} === old;
+    save-does-not-modify-values:
+      desc: save() does not modify {{ variant_names[2] }}, for a canvas of size
+            {{ size }}.
+      code: |
+        ctx.{{ variant_names[2] }} = {{ value }};
+        const old = ctx.{{ variant_names[2] }};
+        // We're not interested in failures caused by get(set(x)) != x (e.g.
+        // from rounding), so compare against `old` instead of {{ value }}.
+        ctx.save();
+        @assert ctx.{{ variant_names[2] }} === old;
+        ctx.restore();
   - non-zero-size:
       size: [300, 150]
     zero-size:

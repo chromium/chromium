@@ -17,22 +17,27 @@ test(t => {
   canvas.height = 150;
   const ctx = canvas.getContext('2d');
 
-  // Test that restore() undoes any modifications.
-  var old = ctx.font;
+  const old = ctx.font;
   ctx.save();
   ctx.font = "25px serif";
   ctx.restore();
   _assertSame(ctx.font, old, "ctx.font", "old");
+}, "save()/restore() restores font, for a canvas of size (300, 150).");
 
-  // Also test that save() doesn't modify the values.
+test(t => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 300;
+  canvas.height = 150;
+  const ctx = canvas.getContext('2d');
+
   ctx.font = "25px serif";
-  old = ctx.font;
+  const old = ctx.font;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against `old` instead of against "25px serif".
+  // from rounding), so compare against `old` instead of "25px serif".
   ctx.save();
   _assertSame(ctx.font, old, "ctx.font", "old");
   ctx.restore();
-}, "save()/restore() works for font, with a canvas size of (300, 150)");
+}, "save() does not modify font, for a canvas of size (300, 150).");
 
 test(t => {
   const canvas = document.createElement('canvas');
@@ -40,21 +45,26 @@ test(t => {
   canvas.height = 0;
   const ctx = canvas.getContext('2d');
 
-  // Test that restore() undoes any modifications.
-  var old = ctx.font;
+  const old = ctx.font;
   ctx.save();
   ctx.font = "25px serif";
   ctx.restore();
   _assertSame(ctx.font, old, "ctx.font", "old");
+}, "save()/restore() restores font, for a canvas of size (0, 0).");
 
-  // Also test that save() doesn't modify the values.
+test(t => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 0;
+  canvas.height = 0;
+  const ctx = canvas.getContext('2d');
+
   ctx.font = "25px serif";
-  old = ctx.font;
+  const old = ctx.font;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against `old` instead of against "25px serif".
+  // from rounding), so compare against `old` instead of "25px serif".
   ctx.save();
   _assertSame(ctx.font, old, "ctx.font", "old");
   ctx.restore();
-}, "save()/restore() works for font, with a canvas size of (0, 0)");
+}, "save() does not modify font, for a canvas of size (0, 0).");
 
 </script>

@@ -17,22 +17,27 @@ test(t => {
   canvas.height = 150;
   const ctx = canvas.getContext('2d');
 
-  // Test that restore() undoes any modifications.
-  var old = ctx.textAlign;
+  const old = ctx.textAlign;
   ctx.save();
   ctx.textAlign = "center";
   ctx.restore();
   _assertSame(ctx.textAlign, old, "ctx.textAlign", "old");
+}, "save()/restore() restores textAlign, for a canvas of size (300, 150).");
 
-  // Also test that save() doesn't modify the values.
+test(t => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 300;
+  canvas.height = 150;
+  const ctx = canvas.getContext('2d');
+
   ctx.textAlign = "center";
-  old = ctx.textAlign;
+  const old = ctx.textAlign;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against `old` instead of against "center".
+  // from rounding), so compare against `old` instead of "center".
   ctx.save();
   _assertSame(ctx.textAlign, old, "ctx.textAlign", "old");
   ctx.restore();
-}, "save()/restore() works for textAlign, with a canvas size of (300, 150)");
+}, "save() does not modify textAlign, for a canvas of size (300, 150).");
 
 test(t => {
   const canvas = document.createElement('canvas');
@@ -40,21 +45,26 @@ test(t => {
   canvas.height = 0;
   const ctx = canvas.getContext('2d');
 
-  // Test that restore() undoes any modifications.
-  var old = ctx.textAlign;
+  const old = ctx.textAlign;
   ctx.save();
   ctx.textAlign = "center";
   ctx.restore();
   _assertSame(ctx.textAlign, old, "ctx.textAlign", "old");
+}, "save()/restore() restores textAlign, for a canvas of size (0, 0).");
 
-  // Also test that save() doesn't modify the values.
+test(t => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 0;
+  canvas.height = 0;
+  const ctx = canvas.getContext('2d');
+
   ctx.textAlign = "center";
-  old = ctx.textAlign;
+  const old = ctx.textAlign;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against `old` instead of against "center".
+  // from rounding), so compare against `old` instead of "center".
   ctx.save();
   _assertSame(ctx.textAlign, old, "ctx.textAlign", "old");
   ctx.restore();
-}, "save()/restore() works for textAlign, with a canvas size of (0, 0)");
+}, "save() does not modify textAlign, for a canvas of size (0, 0).");
 
 </script>
