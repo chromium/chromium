@@ -19,8 +19,8 @@ namespace android_webview {
 static void JNI_AwWindowCoverageTracker_UpdateScreenCoverage(
     JNIEnv* env,
     jint global_percentage,
-    const base::android::JavaParamRef<jobjectArray>& jschemes,
-    const base::android::JavaParamRef<jintArray>& jscheme_percentages) {
+    const base::android::JavaRef<jobjectArray>& jschemes,
+    const base::android::JavaRef<jintArray>& jscheme_percentages) {
   std::vector<std::string> schemes;
   AppendJavaStringArrayToStringVector(env, jschemes, &schemes);
 

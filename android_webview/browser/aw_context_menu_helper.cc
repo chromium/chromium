@@ -9,7 +9,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "ui/android/view_android.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace android_webview {

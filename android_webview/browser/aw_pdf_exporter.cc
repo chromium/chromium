@@ -19,7 +19,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwPdfExporter_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -62,10 +61,10 @@ AwPdfExporter::~AwPdfExporter() {
 }
 
 void AwPdfExporter::ExportToPdf(JNIEnv* env,
-                                const JavaParamRef<jobject>& obj,
+                                const JavaRef<jobject>& obj,
                                 int fd,
-                                const JavaParamRef<jintArray>& pages,
-                                const JavaParamRef<jobject>& cancel_signal) {
+                                const JavaRef<jintArray>& pages,
+                                const JavaRef<jobject>& cancel_signal) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   printing::PageRanges page_ranges;
   JNI_AwPdfExporter_GetPageRanges(env, pages, &page_ranges);

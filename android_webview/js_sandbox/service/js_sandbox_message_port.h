@@ -38,11 +38,11 @@ class JsSandboxMessagePort : public gin::Wrappable<JsSandboxMessagePort> {
 
   static JsSandboxMessagePort* Create(
       JsSandboxIsolate* js_sandbox_isolate,
-      const base::android::JavaParamRef<jobject>& j_message_port);
+      const base::android::JavaRef<jobject>& j_message_port);
 
   explicit JsSandboxMessagePort(
       JsSandboxIsolate* js_sandbox_isolate,
-      const base::android::JavaParamRef<jobject>& j_message_port);
+      const base::android::JavaRef<jobject>& j_message_port);
   ~JsSandboxMessagePort() override;
 
   JsSandboxMessagePort(const JsSandboxMessagePort&) = delete;
@@ -58,7 +58,7 @@ class JsSandboxMessagePort : public gin::Wrappable<JsSandboxMessagePort> {
   // Offloads array buffer handling to the isolate thread.
   void HandleArrayBuffer(
       JNIEnv* env,
-      const base::android::JavaParamRef<jbyteArray>& j_array_buffer);
+      const base::android::JavaRef<jbyteArray>& j_array_buffer);
 
   // Closes the message port.
   //

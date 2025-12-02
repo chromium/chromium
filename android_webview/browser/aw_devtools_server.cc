@@ -24,7 +24,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwDevToolsServer_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using content::DevToolsAgentHost;
 
 namespace {

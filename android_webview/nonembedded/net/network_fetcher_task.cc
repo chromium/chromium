@@ -125,7 +125,7 @@ static void JNI_NetworkFetcherTask_CallPostRequestCompleteCallback(
     JNIEnv* env,
     jlong weak_ptr,
     jlong task_runner,
-    const base::android::JavaParamRef<jbyteArray>& response_body,
+    const base::android::JavaRef<jbyteArray>& response_body,
     jint network_error,
     std::string& header_e_tag,
     std::string& header_x_cup_server_proof,

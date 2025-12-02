@@ -38,7 +38,6 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -456,7 +455,7 @@ bool AwPacProcessor::MakeProxyRequest(std::string url, std::string* result) {
 
 ScopedJavaLocalRef<jstring> AwPacProcessor::MakeProxyRequest(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jurl) {
+    const JavaRef<jstring>& jurl) {
   std::string url = ConvertJavaStringToUTF8(env, jurl);
   std::string result;
   if (MakeProxyRequest(url, &result)) {

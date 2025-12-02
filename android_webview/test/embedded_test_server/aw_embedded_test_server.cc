@@ -17,7 +17,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/test/embedded_test_server/aw_net_jni_headers/AwEmbeddedTestServerImpl_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using net::test_server::BasicHttpResponse;

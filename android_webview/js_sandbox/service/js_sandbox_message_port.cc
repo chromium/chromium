@@ -56,7 +56,7 @@ void JsSandboxMessagePort::Trace(cppgc::Visitor* visitor) const {
 
 JsSandboxMessagePort* JsSandboxMessagePort::Create(
     JsSandboxIsolate* js_sandbox_isolate,
-    const base::android::JavaParamRef<jobject>& j_message_port) {
+    const base::android::JavaRef<jobject>& j_message_port) {
   v8::Isolate* isolate = js_sandbox_isolate->GetIsolate();
   JsSandboxMessagePort* message_port =
       cppgc::MakeGarbageCollected<JsSandboxMessagePort>(
@@ -67,7 +67,7 @@ JsSandboxMessagePort* JsSandboxMessagePort::Create(
 
 JsSandboxMessagePort::JsSandboxMessagePort(
     JsSandboxIsolate* js_sandbox_isolate,
-    const base::android::JavaParamRef<jobject>& j_message_port)
+    const base::android::JavaRef<jobject>& j_message_port)
     : js_sandbox_isolate_(js_sandbox_isolate) {
   JNIEnv* env = base::android::AttachCurrentThread();
   intptr_t native_js_sandbox_message_port = reinterpret_cast<intptr_t>(this);
@@ -90,7 +90,7 @@ void JsSandboxMessagePort::HandleString(JNIEnv* env, std::string string) {
 
 void JsSandboxMessagePort::HandleArrayBuffer(
     JNIEnv* env,
-    const base::android::JavaParamRef<jbyteArray>& j_array_buffer) {
+    const base::android::JavaRef<jbyteArray>& j_array_buffer) {
   base::android::ScopedJavaGlobalRef<jbyteArray> j_array_buffer_global(
       j_array_buffer);
   // TODO(crbug.com/450579523): Post tasks via control thread, so that the tasks

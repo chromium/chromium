@@ -64,7 +64,7 @@ class AwWebMessageHost : public js_injection::WebMessageHost {
 }  // namespace
 
 AwWebMessageHostFactory::AwWebMessageHostFactory(
-    const base::android::JavaParamRef<jobject>& listener)
+    const base::android::JavaRef<jobject>& listener)
     : listener_(listener) {}
 
 AwWebMessageHostFactory::~AwWebMessageHostFactory() = default;

@@ -21,7 +21,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwDrawFnImpl_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using content::BrowserThread;
 
 namespace android_webview {

@@ -49,25 +49,24 @@ class JsSandboxMessagePort;
 
 class JsSandboxIsolate {
  public:
-  explicit JsSandboxIsolate(
-      const base::android::JavaParamRef<jobject>& j_isolate_,
-      size_t max_heap_size_bytes);
+  explicit JsSandboxIsolate(const base::android::JavaRef<jobject>& j_isolate_,
+                            size_t max_heap_size_bytes);
   ~JsSandboxIsolate();
 
   jboolean EvaluateJavascript(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jcode,
-      const base::android::JavaParamRef<jobject>& j_callback);
+      const base::android::JavaRef<jstring>& jcode,
+      const base::android::JavaRef<jobject>& j_callback);
   jboolean EvaluateJavascriptWithFd(
       JNIEnv* env,
       const jint fd,
       const jlong length,
       const jlong offset,
-      const base::android::JavaParamRef<jobject>& j_callback,
-      const base::android::JavaParamRef<jobject>& pfd);
+      const base::android::JavaRef<jobject>& j_callback,
+      const base::android::JavaRef<jobject>& pfd);
   void DestroyNative(JNIEnv* env);
   jboolean ProvideNamedData(JNIEnv* env,
-                            const base::android::JavaParamRef<jstring>& jname,
+                            const base::android::JavaRef<jstring>& jname,
                             const jint fd,
                             const jint length);
   // May enable or disable inspection, as needed.
@@ -77,7 +76,7 @@ class JsSandboxIsolate {
   void ProvideMessagePort(
       JNIEnv* env,
       std::string name,
-      const base::android::JavaParamRef<jobject>& j_message_port);
+      const base::android::JavaRef<jobject>& j_message_port);
 
   gin::ContextHolder* GetContextHolder();
 

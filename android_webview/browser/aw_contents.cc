@@ -138,7 +138,6 @@ using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::HasException;
 using base::android::JavaIntArrayToIntVector;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -234,8 +233,8 @@ AwContents* AwContents::FromWebContents(WebContents* web_contents) {
 // static
 static void JNI_AwContents_UpdateDefaultLocale(
     JNIEnv* env,
-    const JavaParamRef<jstring>& locale,
-    const JavaParamRef<jstring>& locale_list) {
+    const JavaRef<jstring>& locale,
+    const JavaRef<jstring>& locale_list) {
   *g_locale() = ConvertJavaStringToUTF8(env, locale);
   *g_locale_list() = ConvertJavaStringToUTF8(env, locale_list);
 }
@@ -316,11 +315,11 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
 
 void AwContents::SetJavaPeers(
     JNIEnv* env,
-    const JavaParamRef<jobject>& aw_contents,
-    const JavaParamRef<jobject>& web_contents_delegate,
-    const JavaParamRef<jobject>& contents_client_bridge,
-    const JavaParamRef<jobject>& io_thread_client,
-    const JavaParamRef<jobject>& intercept_navigation_delegate) {
+    const JavaRef<jobject>& aw_contents,
+    const JavaRef<jobject>& web_contents_delegate,
+    const JavaRef<jobject>& contents_client_bridge,
+    const JavaRef<jobject>& io_thread_client,
+    const JavaRef<jobject>& intercept_navigation_delegate) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // The |aw_content| param is technically spurious as it duplicates |obj| but
   // is passed over anyway to make the binding more explicit.
@@ -483,7 +482,7 @@ JNI_AwContents_GetSafeBrowsingLocaleForTesting(JNIEnv* env) {
 
 static ScopedJavaLocalRef<jobject> JNI_AwContents_FromWebContents(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
+    const base::android::JavaRef<jobject>& jweb_contents) {
   base::android::ScopedJavaLocalRef<jobject> jaw_contents;
 
   content::WebContents* web_contents =
@@ -505,7 +504,7 @@ void DocumentHasImagesCallback(const ScopedJavaGlobalRef<jobject>& message,
 }  // namespace
 
 void AwContents::DocumentHasImages(JNIEnv* env,
-                                   const JavaParamRef<jobject>& message) {
+                                   const JavaRef<jobject>& message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ScopedJavaGlobalRef<jobject> j_message;
   j_message.Reset(env, message);
@@ -525,8 +524,8 @@ void GenerateMHTMLCallback(const JavaRef<jobject>& callback,
 }  // namespace
 
 void AwContents::GenerateMHTML(JNIEnv* env,
-                               const JavaParamRef<jstring>& jpath,
-                               const JavaParamRef<jobject>& callback) {
+                               const JavaRef<jstring>& jpath,
+                               const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::FilePath target_path(ConvertJavaStringToUTF8(env, jpath));
   web_contents_->GenerateMHTML(
@@ -536,7 +535,7 @@ void AwContents::GenerateMHTML(JNIEnv* env,
 }
 
 void AwContents::CreatePdfExporter(JNIEnv* env,
-                                   const JavaParamRef<jobject>& pdfExporter) {
+                                   const JavaRef<jobject>& pdfExporter) {
   pdf_exporter_ =
       std::make_unique<AwPdfExporter>(env, pdfExporter, web_contents_.get());
 }
@@ -563,9 +562,8 @@ void AwContents::SetOffscreenPreRaster(bool enabled) {
   browser_view_renderer_.SetOffscreenPreRaster(enabled);
 }
 
-void AwContents::AddVisitedLinks(
-    JNIEnv* env,
-    const JavaParamRef<jobjectArray>& jvisited_links) {
+void AwContents::AddVisitedLinks(JNIEnv* env,
+                                 const JavaRef<jobjectArray>& jvisited_links) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<std::u16string> visited_link_strings;
   AppendJavaStringArrayToStringVector(env, jvisited_links,
@@ -622,10 +620,9 @@ void AwContents::ShowGeolocationPrompt(const GURL& requesting_frame,
 }
 
 // Invoked from Java
-void AwContents::InvokeGeolocationCallback(
-    JNIEnv* env,
-    jboolean value,
-    const JavaParamRef<jstring>& origin) {
+void AwContents::InvokeGeolocationCallback(JNIEnv* env,
+                                           jboolean value,
+                                           const JavaRef<jstring>& origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (pending_geolocation_prompts_.empty())
     return;
@@ -700,7 +697,7 @@ void AwContents::OnPermissionRequestCanceled(AwPermissionRequest* request) {
 }
 
 void AwContents::PreauthorizePermission(JNIEnv* env,
-                                        const JavaParamRef<jstring>& origin,
+                                        const JavaRef<jstring>& origin,
                                         jlong resources) {
   permission_request_handler_->PreauthorizePermission(
       GURL(base::android::ConvertJavaStringToUTF8(env, origin)), resources);
@@ -754,7 +751,7 @@ void AwContents::CancelMIDISysexPermissionRequests(const GURL& origin) {
 }
 
 void AwContents::FindAllAsync(JNIEnv* env,
-                              const JavaParamRef<jstring>& search_string) {
+                              const JavaRef<jstring>& search_string) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   GetFindHelper()->FindAllAsync(ConvertJavaStringToUTF16(env, search_string));
 }
@@ -1040,9 +1037,8 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetOpaqueState(
   return base::android::ToJavaByteArray(env, *pickle);
 }
 
-jboolean AwContents::RestoreFromOpaqueState(
-    JNIEnv* env,
-    const JavaParamRef<jbyteArray>& state) {
+jboolean AwContents::RestoreFromOpaqueState(JNIEnv* env,
+                                            const JavaRef<jbyteArray>& state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(boliu): This copy can be optimized out if this is a performance
   // problem.
@@ -1056,7 +1052,7 @@ jboolean AwContents::RestoreFromOpaqueState(
 }
 
 bool AwContents::OnDraw(JNIEnv* env,
-                        const JavaParamRef<jobject>& canvas,
+                        const JavaRef<jobject>& canvas,
                         jboolean is_hardware_accelerated,
                         jint scroll_x,
                         jint scroll_y,
@@ -1295,10 +1291,9 @@ void InvokeVisualStateCallback(const JavaObjectWeakGlobalRef& java_ref,
 }
 }  // namespace
 
-void AwContents::InsertVisualStateCallback(
-    JNIEnv* env,
-    jlong request_id,
-    const JavaParamRef<jobject>& callback) {
+void AwContents::InsertVisualStateCallback(JNIEnv* env,
+                                           jlong request_id,
+                                           const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   web_contents_->GetPrimaryMainFrame()->InsertVisualStateCallback(
       base::BindOnce(&InvokeVisualStateCallback, java_ref_, request_id,
@@ -1333,8 +1328,8 @@ JsCommunicationHost* AwContents::GetJsCommunicationHost() {
 
 jint AwContents::AddDocumentStartJavaScript(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& script,
-    const base::android::JavaParamRef<jobjectArray>& allowed_origin_rules) {
+    const base::android::JavaRef<jstring>& script,
+    const base::android::JavaRef<jobjectArray>& allowed_origin_rules) {
   std::vector<std::string> native_allowed_origin_rule_strings;
   AppendJavaStringArrayToStringVector(env, allowed_origin_rules,
                                       &native_allowed_origin_rule_strings);
@@ -1360,9 +1355,9 @@ void AwContents::RemoveDocumentStartJavaScript(JNIEnv* env, jint script_id) {
 
 base::android::ScopedJavaLocalRef<jstring> AwContents::AddWebMessageListener(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& listener,
-    const base::android::JavaParamRef<jstring>& js_object_name,
-    const base::android::JavaParamRef<jobjectArray>& allowed_origin_rules) {
+    const base::android::JavaRef<jobject>& listener,
+    const base::android::JavaRef<jstring>& js_object_name,
+    const base::android::JavaRef<jobjectArray>& allowed_origin_rules) {
   std::u16string native_js_object_name =
       base::android::ConvertJavaStringToUTF16(env, js_object_name);
   std::vector<std::string> native_allowed_origin_rule_strings;
@@ -1379,7 +1374,7 @@ base::android::ScopedJavaLocalRef<jstring> AwContents::AddWebMessageListener(
 
 void AwContents::RemoveWebMessageListener(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& js_object_name) {
+    const base::android::JavaRef<jstring>& js_object_name) {
   GetJsCommunicationHost()->RemoveWebMessageHostFactory(
       ConvertJavaStringToUTF16(env, js_object_name));
 }
@@ -1422,9 +1417,9 @@ void AwContents::FlushBackForwardCache(JNIEnv* env, jint reason) {
 jint AwContents::StartPrerendering(
     JNIEnv* env,
     const std::string& prerendering_url,
-    const base::android::JavaParamRef<jobject>& j_prefetch_params,
-    const base::android::JavaParamRef<jobject>& j_activation_callback,
-    const base::android::JavaParamRef<jobject>& j_error_callback) {
+    const base::android::JavaRef<jobject>& j_prefetch_params,
+    const base::android::JavaRef<jobject>& j_activation_callback,
+    const base::android::JavaRef<jobject>& j_error_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(j_activation_callback);
   CHECK(j_error_callback);
@@ -1537,10 +1532,9 @@ void AwContents::ClearView(JNIEnv* env) {
   browser_view_renderer_.ClearView();
 }
 
-void AwContents::SetExtraHeadersForUrl(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& url,
-    const JavaParamRef<jstring>& jextra_headers) {
+void AwContents::SetExtraHeadersForUrl(JNIEnv* env,
+                                       const JavaRef<jstring>& url,
+                                       const JavaRef<jstring>& jextra_headers) {
   std::string extra_headers;
   if (jextra_headers)
     extra_headers = ConvertJavaStringToUTF8(env, jextra_headers);

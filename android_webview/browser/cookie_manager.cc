@@ -64,7 +64,7 @@
 using base::WaitableEvent;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using content::BrowserThread;
@@ -453,9 +453,9 @@ jboolean CookieManager::GetShouldAcceptCookies(JNIEnv* env) {
 }
 
 void CookieManager::SetCookie(JNIEnv* env,
-                              const JavaParamRef<jstring>& url,
+                              const JavaRef<jstring>& url,
                               std::string& cookie_value,
-                              const JavaParamRef<jobject>& java_callback) {
+                              const JavaRef<jobject>& java_callback) {
   DCHECK(java_callback) << "Unexpected null Java callback";
   GURL host(ConvertJavaStringToUTF16(env, url));
   base::OnceCallback<void(bool)> callback =
@@ -468,7 +468,7 @@ void CookieManager::SetCookie(JNIEnv* env,
 }
 
 void CookieManager::SetCookieSync(JNIEnv* env,
-                                  const JavaParamRef<jstring>& url,
+                                  const JavaRef<jstring>& url,
                                   std::string& value) {
   GURL host(ConvertJavaStringToUTF16(env, url));
   std::string cookie_value(value);
@@ -522,8 +522,7 @@ void CookieManager::SetCookieHelper(const GURL& host,
   }
 }
 
-std::string CookieManager::GetCookie(JNIEnv* env,
-                                     const JavaParamRef<jstring>& url) {
+std::string CookieManager::GetCookie(JNIEnv* env, const JavaRef<jstring>& url) {
   GURL host(ConvertJavaStringToUTF16(env, url));
 
   net::CookieList cookie_list;
@@ -536,7 +535,7 @@ std::string CookieManager::GetCookie(JNIEnv* env,
 
 ScopedJavaLocalRef<jobjectArray> CookieManager::GetCookieInfo(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
+    const JavaRef<jstring>& url) {
   GURL host(ConvertJavaStringToUTF16(env, url));
 
   net::CookieList cookie_list;
@@ -590,7 +589,7 @@ void CookieManager::GetCookieListCompleted(
 
 void CookieManager::RemoveSessionCookies(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_callback) {
+    const JavaRef<jobject>& java_callback) {
   DCHECK(java_callback) << "Unexpected null Java callback";
   base::OnceCallback<void(bool)> callback =
       base::BindOnce(&base::android::RunBooleanCallbackAndroid,
@@ -628,9 +627,8 @@ void CookieManager::RemoveCookiesCompleted(
   std::move(callback).Run(num_deleted > 0u);
 }
 
-void CookieManager::RemoveAllCookies(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& java_callback) {
+void CookieManager::RemoveAllCookies(JNIEnv* env,
+                                     const JavaRef<jobject>& java_callback) {
   DCHECK(java_callback) << "Unexpected null Java callback";
 
   base::OnceCallback<void(bool)> callback =

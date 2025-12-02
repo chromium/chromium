@@ -33,7 +33,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -97,7 +96,7 @@ static std::string JNI_AwContentsStatics_GetSafeBrowsingPrivacyPolicyUrl(
 // static
 static void JNI_AwContentsStatics_ClearClientCertPreferences(
     JNIEnv* env,
-    const JavaParamRef<jobject>& callback) {
+    const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::GetIOThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE, base::BindOnce(&NotifyClientCertificatesChanged),
@@ -120,8 +119,8 @@ static ScopedJavaLocalRef<jstring> JNI_AwContentsStatics_GetProductVersion(
 // static
 static void JNI_AwContentsStatics_SetSafeBrowsingAllowlist(
     JNIEnv* env,
-    const JavaParamRef<jobjectArray>& jrules,
-    const JavaParamRef<jobject>& callback) {
+    const JavaRef<jobjectArray>& jrules,
+    const JavaRef<jobject>& callback) {
   std::vector<std::string> rules;
   base::android::AppendJavaStringArrayToStringVector(env, jrules, &rules);
   AwSafeBrowsingAllowlistManager* allowlist_manager =
@@ -155,8 +154,8 @@ static void JNI_AwContentsStatics_LogCommandLineForDebugging(JNIEnv* env) {
 // static
 static void JNI_AwContentsStatics_LogFlagMetrics(
     JNIEnv* env,
-    const JavaParamRef<jobjectArray>& jswitches,
-    const JavaParamRef<jobjectArray>& jfeatures) {
+    const JavaRef<jobjectArray>& jswitches,
+    const JavaRef<jobjectArray>& jfeatures) {
   std::set<std::string> switches;
   for (const auto& jswitch : jswitches.ReadElements<jstring>()) {
     switches.insert(ConvertJavaStringToUTF8(jswitch));

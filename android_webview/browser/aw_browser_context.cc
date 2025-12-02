@@ -800,7 +800,7 @@ void AwBrowserContext::AddQuicHints(JNIEnv* env,
 
 void AwBrowserContext::SetServiceWorkerIoThreadClient(
     JNIEnv* const env,
-    const base::android::JavaParamRef<jobject>& io_thread_client) {
+    const base::android::JavaRef<jobject>& io_thread_client) {
   sw_io_thread_client_ =
       base::android::ScopedJavaGlobalRef<jobject>(io_thread_client);
 }

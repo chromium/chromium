@@ -113,10 +113,10 @@ class AwBrowserContext : public content::BrowserContext,
   base::android::ScopedJavaLocalRef<jobjectArray>
   UpdateServiceWorkerXRequestedWithAllowListOriginMatcher(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& rules);
+      const base::android::JavaRef<jobjectArray>& rules);
   void SetServiceWorkerIoThreadClient(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& io_thread_client);
+      const base::android::JavaRef<jobject>& io_thread_client);
 
   int AllowedPrerenderingCount() const;
   void SetAllowedPrerenderingCount(JNIEnv* const env, int allowed_count);

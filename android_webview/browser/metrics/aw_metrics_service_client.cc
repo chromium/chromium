@@ -834,7 +834,7 @@ static void JNI_AwMetricsServiceClient_SetUploadIntervalForTesting(
 static void
 JNI_AwMetricsServiceClient_SetOnFinalMetricsCollectedListenerForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& listener) {
+    const base::android::JavaRef<jobject>& listener) {
   AwMetricsServiceClient::GetInstance()
       ->SetOnFinalMetricsCollectedListenerForTesting(base::BindRepeating(
           base::android::RunRunnableAndroid,
