@@ -370,7 +370,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":with_prediction/true")
     public void testAutofocusCondition_withPrediction_autofocusFails() {
-        IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = false;
+        IncognitoNtpOmniboxAutofocusManager.setAutofocusAllowedWithPredictionForTesting(false);
         setUpManagerAndAddNewTab();
         finishLoadingNtp();
 
@@ -379,13 +379,12 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         runnableCaptor.getValue().run();
 
         verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt(), anyInt());
-        IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = null;
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":with_prediction/true")
     public void testAutofocusCondition_withPrediction_autofocusSucceeds() {
-        IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = true;
+        IncognitoNtpOmniboxAutofocusManager.setAutofocusAllowedWithPredictionForTesting(true);
         setUpManagerAndAddNewTab();
         finishLoadingNtp();
 
@@ -396,7 +395,6 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         verify(mOmniboxStub)
                 .setUrlBarFocus(
                         true, null, OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
-        IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = null;
     }
 
     @Test
@@ -438,7 +436,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
     public void
             testAutofocusCondition_combination_notFirstTabFails_predictionSucceeds_autofocusSucceeds() {
         // First tab, so not_first_tab fails.
-        IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = true;
+        IncognitoNtpOmniboxAutofocusManager.setAutofocusAllowedWithPredictionForTesting(true);
         setUpManagerAndAddNewTab();
         finishLoadingNtp();
 
@@ -450,7 +448,6 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         verify(mOmniboxStub)
                 .setUrlBarFocus(
                         true, null, OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
-        IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = null;
     }
 
     @Test
@@ -460,7 +457,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
     public void testAutofocusCondition_allEnabled_allFailed_autofocusFails() {
         // Set all conditions to fail.
         // 1. with_prediction:
-        IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = false;
+        IncognitoNtpOmniboxAutofocusManager.setAutofocusAllowedWithPredictionForTesting(false);
         // 2. with_hardware_keyboard:
         IncognitoNtpOmniboxAutofocusManager.setIsHardwareKeyboardAttachedForTesting(false);
         // 3. not_first_tab: This is the first tab, so it fails.
@@ -474,8 +471,6 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
 
         // Should not autofocus because all conditions fail.
         verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt(), anyInt());
-
-        IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = null;
     }
 
     @Test

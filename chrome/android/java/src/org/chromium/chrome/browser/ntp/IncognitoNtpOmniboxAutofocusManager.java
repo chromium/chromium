@@ -88,7 +88,7 @@ public class IncognitoNtpOmniboxAutofocusManager {
      * Overrides the result of {@link #checkAutofocusAllowedWithPrediction(Tab)} for testing
      * purposes.
      */
-    public static @Nullable Boolean sAutofocusAllowedWithPredictionForTesting;
+    private static @Nullable Boolean sAutofocusAllowedWithPredictionForTesting;
 
     /**
      * Overrides the result of {@link #checkAutofocusAllowedWithHardwareKeyboard()} for testing
@@ -521,9 +521,13 @@ public class IncognitoNtpOmniboxAutofocusManager {
         }
     }
 
+    public static void setAutofocusAllowedWithPredictionForTesting(Boolean allowed) {
+        sAutofocusAllowedWithPredictionForTesting = allowed;
+        ResettersForTesting.register(() -> sAutofocusAllowedWithPredictionForTesting = null);
+    }
+
     public static void setIsHardwareKeyboardAttachedForTesting(Boolean isAttached) {
-        Boolean oldValue = sIsHardwareKeyboardAttachedForTesting;
         sIsHardwareKeyboardAttachedForTesting = isAttached;
-        ResettersForTesting.register(() -> sIsHardwareKeyboardAttachedForTesting = oldValue);
+        ResettersForTesting.register(() -> sIsHardwareKeyboardAttachedForTesting = null);
     }
 }
