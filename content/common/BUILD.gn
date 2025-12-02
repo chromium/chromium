@@ -302,8 +302,6 @@ source_set("common") {
       "android/gin_java_bridge_errors.h",
       "android/gin_java_bridge_value.cc",
       "android/gin_java_bridge_value.h",
-      "android/hash_set.cc",
-      "android/hash_set.h",
       "android/surface_wrapper.cc",
       "android/surface_wrapper.h",
       "android/sync_compositor_statics.cc",

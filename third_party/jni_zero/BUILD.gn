@@ -35,6 +35,7 @@ generate_jar_jni("system_jni") {
 # This is the public target that we intend others to use.
 component("jni_zero") {
   public = [
+    "common_apis.h",
     "default_conversions.h",
     "jni_zero.h",
 
@@ -46,7 +47,6 @@ component("jni_zero") {
 
   sources = [
     "common_apis.cc",
-    "common_apis.h",
     "default_conversions.cc",
     "java_refs.cc",
     "java_refs.h",

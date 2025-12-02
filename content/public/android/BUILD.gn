@@ -495,7 +495,6 @@ java_cpp_strings("content_public_android_java_switches_srcjar") {
 
 generate_jar_jni("jar_jni") {
   classes = [
-    "java/util/HashSet.class",
     "android/view/DragEvent.class",
     "android/view/MotionEvent.class",
   ]
