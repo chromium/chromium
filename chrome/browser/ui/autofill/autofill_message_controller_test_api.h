@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_MESSAGE_CONTROLLER_TEST_API_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_MESSAGE_CONTROLLER_TEST_API_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_MESSAGE_CONTROLLER_TEST_API_H_
+#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_MESSAGE_CONTROLLER_TEST_API_H_
 
-#include "chrome/browser/ui/autofill/payments/autofill_message_controller.h"
+#include "chrome/browser/ui/autofill/autofill_message_controller.h"
 
 namespace autofill {
 
@@ -41,4 +41,4 @@ inline AutofillMessageControllerTestApi test_api(
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_MESSAGE_CONTROLLER_TEST_API_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_MESSAGE_CONTROLLER_TEST_API_H_

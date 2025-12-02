@@ -59,6 +59,8 @@ source_set("autofill") {
       "autofill_keyboard_accessory_controller.h",
       "autofill_keyboard_accessory_controller_impl.h",
       "autofill_keyboard_accessory_view.h",
+      "autofill_message_controller.h",
+      "autofill_message_model.h",
       "autofill_snackbar_controller.h",
       "autofill_snackbar_controller_impl.h",
       "autofill_snackbar_type.h",
@@ -182,6 +184,8 @@ source_set("impl") {
     sources += [
       "autofill_keyboard_accessory_controller.cc",
       "autofill_keyboard_accessory_controller_impl.cc",
+      "autofill_message_controller.cc",
+      "autofill_message_model.cc",
       "autofill_snackbar_controller_impl.cc",
     ]
     deps += [
@@ -312,12 +316,15 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [
       "autofill_keyboard_accessory_controller_impl_unittest.cc",
+      "autofill_message_controller_unittest.cc",
+      "autofill_message_model_unittest.cc",
       "autofill_snackbar_controller_impl_unittest.cc",
     ]
     deps += [
       "//chrome/browser/autofill/android:jni_test_headers",
       "//chrome/browser/fast_checkout",
       "//chrome/browser/preferences:android",
+      "//components/messages/android:test_support",
     ]
   } else {
     sources += [
@@ -351,7 +358,10 @@ source_set("test_support") {
   public_deps = [ ":autofill" ]
 
   if (is_android) {
-    sources += [ "autofill_keyboard_accessory_controller_impl_test_api.h" ]
+    sources += [
+      "autofill_keyboard_accessory_controller_impl_test_api.h",
+      "autofill_message_controller_test_api.h",
+    ]
   } else {
     sources += [
       "autofill_ai/mock_autofill_ai_import_data_controller.cc",

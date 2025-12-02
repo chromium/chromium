@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/payments/autofill_message_model.h"
+#include "chrome/browser/ui/autofill/autofill_message_model.h"
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/resource_mapper.h"

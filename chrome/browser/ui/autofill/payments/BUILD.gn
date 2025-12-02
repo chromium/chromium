@@ -35,8 +35,6 @@ source_set("payments") {
     sources += [
       "android_bnpl_ui_delegate.h",
       "android_payments_window_manager.h",
-      "autofill_message_controller.h",
-      "autofill_message_model.h",
       "offer_notification_controller_android.h",
     ]
     public_deps += [
@@ -119,8 +117,6 @@ source_set("impl") {
     sources += [
       "android_bnpl_ui_delegate.cc",
       "android_payments_window_manager.cc",
-      "autofill_message_controller.cc",
-      "autofill_message_model.cc",
       "offer_notification_controller_android.cc",
     ]
     public_deps += [ "//chrome/browser/touch_to_fill/autofill/android:public" ]
@@ -271,9 +267,6 @@ source_set("unit_tests") {
     sources += [
       "android_bnpl_ui_delegate_unittest.cc",
       "android_payments_window_manager_unittest.cc",
-      "autofill_message_controller_test_api.h",
-      "autofill_message_controller_unittest.cc",
-      "autofill_message_model_unittest.cc",
     ]
     public_deps += [ ":payments" ]
 
@@ -284,7 +277,6 @@ source_set("unit_tests") {
       "//chrome/browser/ui/android/tab_model:test_support",
       "//components/autofill/android:autofill_core_browser_java_enums",
       "//components/autofill/content/browser:test_support",
-      "//components/messages/android:test_support",
       "//components/resources:components_scaled_resources",
       "//components/resources:components_scaled_resources_grit",
       "//ui/android",

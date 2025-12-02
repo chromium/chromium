@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/payments/autofill_message_controller.h"
+#include "chrome/browser/ui/autofill/autofill_message_controller.h"
 
 #include <memory>
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/ui/autofill/payments/autofill_message_model.h"
+#include "chrome/browser/ui/autofill/autofill_message_model.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 
 namespace autofill {

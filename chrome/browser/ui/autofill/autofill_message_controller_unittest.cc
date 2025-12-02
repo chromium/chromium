@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/payments/autofill_message_controller.h"
+#include "chrome/browser/ui/autofill/autofill_message_controller.h"
 
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/autofill/payments/autofill_message_controller_test_api.h"
-#include "chrome/browser/ui/autofill/payments/autofill_message_model.h"
+#include "chrome/browser/ui/autofill/autofill_message_controller_test_api.h"
+#include "chrome/browser/ui/autofill/autofill_message_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
