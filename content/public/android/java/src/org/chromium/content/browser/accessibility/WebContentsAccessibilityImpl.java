@@ -1292,7 +1292,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             WebContentsAccessibilityImplJni.get().focus(mNativeObj, virtualViewId);
             return true;
         } else if (action == ACTION_CLEAR_FOCUS.getId()) {
-            WebContentsAccessibilityImplJni.get().blur(mNativeObj);
+            if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_SEQUENTIAL_FOCUS)
+                    && mAccessibilityFocusId != View.NO_ID) {
+                mPendingSetSequentialFocus = true;
+                WebContentsAccessibilityImplJni.get()
+                        .setSequentialFocusStartingPoint(mNativeObj, mAccessibilityFocusId);
+            } else {
+                WebContentsAccessibilityImplJni.get().blur(mNativeObj);
+            }
             return true;
         } else if (action == ACTION_NEXT_HTML_ELEMENT.getId()) {
             if (arguments == null) return false;
@@ -1595,7 +1602,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                                 AccessibilityState.getNumberOfRunningServices() == 1);
         if (id == 0) return false;
 
-        if (setSequentialFocus) {
+        // The old, proactive focus setting logic. Only run if the new feature is disabled.
+        if (setSequentialFocus
+                && !ContentFeatureMap.isEnabled(
+                        ContentFeatureList.ACCESSIBILITY_SEQUENTIAL_FOCUS)) {
             mPendingSetSequentialFocus = true;
             WebContentsAccessibilityImplJni.get().setSequentialFocusStartingPoint(mNativeObj, id);
         }
