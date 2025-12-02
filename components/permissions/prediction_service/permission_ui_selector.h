@@ -9,7 +9,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/permissions/permission_request_enums.h"
-#include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
 
 namespace content {
@@ -19,6 +18,7 @@ class WebContents;
 namespace permissions {
 
 class PermissionRequest;
+enum PermissionPrediction_Likelihood_DiscretizedLikelihood : int;
 
 // The interface for implementations that decide if the quiet prompt UI should
 // be used to display a permission |request|, whether a warning should be
