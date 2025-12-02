@@ -1017,18 +1017,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
   // Start data removal.  This will CreateTaskCompletionClosureForMojo and
   // register it as a completion callback for mojo calls to NetworkContext
   // and other StorageParition-owned mojo::Remote(s).
-  //
-  // kRemoveMask contains:
-  // - DATA_TYPE_SITE_DATA - cargo-culted default from other tests
-  // - DEFERRED_COOKIE_DELETION_DATA_TYPES - to get non-empty result from
-  //   ChromeBrowsingDataRemoverDelegate::GetDomainsForDeferredCookieDeletion
-  //   (which is needed to touch StoragePartition in
-  //   BrowsingDataRemoverImpl::OnTaskComplete when it is called later,
-  //   after starting destruction of the BrowserContext - see the description
-  //   of the next test step below).
-  constexpr uint64_t kRemoveMask =
-      chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
-      chrome_browsing_data_remover::DEFERRED_COOKIE_DELETION_DATA_TYPES;
   content::BrowserContext* browser_context = GetBrowser()->profile();
   content::BrowsingDataRemover* remover =
       browser_context->GetBrowsingDataRemover();
@@ -1036,7 +1024,8 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
   remover->RemoveAndReply(
       base::Time(),       // delete_begin
       base::Time::Max(),  // delete_end
-      kRemoveMask, content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+      chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
       &completion_observer);
 
   // Close the incognito browser.  This will tear down its

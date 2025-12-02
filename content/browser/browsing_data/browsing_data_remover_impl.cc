@@ -348,7 +348,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   // crbug.com/140910: Many places were calling this with base::Time() as
   // delete_end, even though they should've used base::Time::Max().
   DCHECK_NE(base::Time(), delete_end);
-  DCHECK(domains_for_deferred_cookie_deletion_.empty());
 
   // If a specific StoragePartition is specified in the filter, only data
   // types that are scoped to a StoragePartition should be removed.
@@ -425,11 +424,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(
       // above).
       storage_partition_remove_mask |=
           StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
-    }
-    if (embedder_delegate_) {
-      domains_for_deferred_cookie_deletion_ =
-          embedder_delegate_->GetDomainsForDeferredCookieDeletion(
-              storage_partition, remove_mask);
     }
   }
   if (remove_mask & DATA_TYPE_LOCAL_STORAGE) {
@@ -520,15 +514,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(
       deletion_filter = filter_builder->BuildCookieDeletionFilter();
     } else {
       deletion_filter = network::mojom::CookieDeletionFilter::New();
-    }
-
-    if (!domains_for_deferred_cookie_deletion_.empty()) {
-      // The data types that require deferred deletion are currently not
-      // filterable. If they become filterable we need to check if the
-      // selected domains should actually be deleted.
-      DCHECK(!deletion_filter->excluding_domains.has_value());
-      deletion_filter->excluding_domains =
-          domains_for_deferred_cookie_deletion_;
     }
 
     BrowsingDataRemoverDelegate::EmbedderOriginTypeMatcher embedder_matcher;
@@ -928,45 +913,6 @@ void BrowsingDataRemoverImpl::OnTaskComplete(TracingDataType data_type,
   if (!pending_sub_tasks_.empty())
     return;
 
-  // If any cookie deletions have been deferred do them now since all other
-  // tasks are completed.
-  if (!domains_for_deferred_cookie_deletion_.empty()) {
-    std::optional<StoragePartitionConfig> storage_partition_config =
-        task_queue_.front().filter_builder->GetStoragePartitionConfig();
-
-    DCHECK(remove_mask_ & DATA_TYPE_COOKIES);
-    DCHECK(!storage_partition_config.has_value() ||
-           storage_partition_config->is_default());
-
-    auto deletion_filter = network::mojom::CookieDeletionFilter::New();
-    deletion_filter->including_domains =
-        std::move(domains_for_deferred_cookie_deletion_);
-    // Moving a vector is defined to empty this vector.
-    DCHECK(domains_for_deferred_cookie_deletion_.empty());
-
-    // Asynchronous removal tasks might end up finishing after an arbitrary
-    // delay - this can postpone when OnTaskComplete runs.  Therefore we need to
-    // check if destruction of our `browser_context_` might have started in the
-    // meantime.  See also https://crbug.com/1216406.
-    if (browser_context_->ShutdownStarted()) {
-      // The tasks related to `domains_for_deferred_cookie_deletion_` and
-      // `deletion_filter` are implicitly dropped if we can't clear the data
-      // because the StoragePartition's destructor has already started running.
-      failed_data_types_ |= StoragePartition::REMOVE_DATA_MASK_COOKIES;
-    } else {
-      GetStoragePartition(storage_partition_config)
-          ->ClearData(
-              StoragePartition::REMOVE_DATA_MASK_COOKIES,
-              /*quota_storage_remove_mask=*/0,
-              /*filter_builder=*/nullptr,
-              /*storage_key_policy_matcher=*/base::NullCallback(),
-              std::move(deletion_filter),
-              /*perform_storage_cleanup=*/false, delete_begin_, delete_end_,
-              CreateTaskCompletionClosure(TracingDataType::kDeferredCookies));
-      return;
-    }
-  }
-
   slow_pending_tasks_closure_.Cancel();
 
   if (!would_complete_callback_.is_null()) {
@@ -1006,8 +952,6 @@ const char* BrowsingDataRemoverImpl::GetHistogramSuffix(TracingDataType task) {
       return "TrustTokens";
     case TracingDataType::kConversions:
       return "Conversions";
-    case TracingDataType::kDeferredCookies:
-      return "DeferredCookies";
     case TracingDataType::kSharedStorage:
       return "SharedStorage";
     case TracingDataType::kPreflightCache:

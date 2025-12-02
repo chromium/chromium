@@ -76,11 +76,6 @@ constexpr DataType FILTERABLE_DATA_TYPES =
     content::BrowsingDataRemover::DATA_TYPE_PREFETCH_CACHE |
     content::BrowsingDataRemover::DATA_TYPE_PRERENDER_CACHE;
 
-// Datatypes with account-scoped data that needs to be removed
-// before Google cookies are deleted.
-constexpr DataType DEFERRED_COOKIE_DELETION_DATA_TYPES =
-    DATA_TYPE_ACCOUNT_PASSWORDS;
-
 // Includes all the available remove options. Meant to be used by clients
 // that wish to wipe as much data as possible from a Profile, to make it
 // look like a new Profile. Does not delete account-scoped data like
@@ -133,14 +128,6 @@ constexpr OriginType ALL_ORIGIN_TYPES =
 static_assert((IMPORTANT_SITES_DATA_TYPES & ~FILTERABLE_DATA_TYPES) == 0,
               "All important sites datatypes must be filterable.");
 
-static_assert((DEFERRED_COOKIE_DELETION_DATA_TYPES & FILTERABLE_DATA_TYPES) ==
-                  0,
-              "Deferred deletion is currently not implemented for filterable "
-              "data types");
-
-static_assert((DEFERRED_COOKIE_DELETION_DATA_TYPES & WIPE_PROFILE) == 0,
-              "Account data should not be included in deletions that remove "
-              "all local data");
 }  // namespace chrome_browsing_data_remover
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_CHROME_BROWSING_DATA_REMOVER_CONSTANTS_H_

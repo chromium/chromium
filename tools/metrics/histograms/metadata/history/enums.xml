@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="kNetworkErrorLogging"/>
   <int value="12" label="kTrustTokens"/>
   <int value="13" label="kConversions"/>
-  <int value="14" label="kDeferredCookies"/>
+  <int value="14" label="(obsolete) kDeferredCookies"/>
   <int value="15" label="kSharedStorage"/>
   <int value="16" label="kPreflightCache"/>
   <int value="17" label="kSharedDictionary"/>

@@ -309,12 +309,6 @@ bool FilterMatchesCookie(const CookieDeletionFilterPtr& filter,
 class TestBrowsingDataRemoverDelegate
     : public content::BrowsingDataRemoverDelegate {
  public:
-  // BrowsingDataRemoverDelegate:
-  std::vector<std::string> GetDomainsForDeferredCookieDeletion(
-      StoragePartition* storage_partition,
-      uint64_t remove_mask) override {
-    return deferred_domains_;
-  }
   BrowsingDataRemoverDelegate::EmbedderOriginTypeMatcher GetOriginTypeMatcher()
       override {
     return base::NullCallback();
@@ -330,16 +324,11 @@ class TestBrowsingDataRemoverDelegate
     std::move(callback).Run(failed_data_types_);
   }
 
-  void set_deferred_domains(std::vector<std::string> deferred_domains) {
-    deferred_domains_ = deferred_domains;
-  }
-
   void set_failed_data_types(uint64_t failed_data_types) {
     failed_data_types_ = failed_data_types;
   }
 
  private:
-  std::vector<std::string> deferred_domains_;
   uint64_t failed_data_types_ = 0;
 };
 
@@ -1740,57 +1729,6 @@ TEST_F(BrowsingDataRemoverImplTest, ClearsTrustTokensForSiteDespiteTimeRange) {
                               std::move(builder));
 
   set_network_context_override(nullptr);
-}
-
-TEST_F(BrowsingDataRemoverImplTest, DeferCookieDeletion) {
-  TestBrowsingDataRemoverDelegate delegate;
-  GetBrowserContext()->GetBrowsingDataRemover()->SetEmbedderDelegate(&delegate);
-  uint32_t dom_storage_mask =
-      StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE |
-      StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
-      StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS |
-      StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
-      StoragePartition::REMOVE_DATA_MASK_BACKGROUND_FETCH |
-      StoragePartition::REMOVE_DATA_MASK_INDEXEDDB;
-  uint32_t dom_storage_and_cookie_mask =
-      dom_storage_mask | StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
-      StoragePartition::REMOVE_DATA_MASK_COOKIES |
-      StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY;
-  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
-                                BrowsingDataRemover::DATA_TYPE_COOKIES |
-                                    BrowsingDataRemover::DATA_TYPE_DOM_STORAGE,
-                                false);
-
-  // Verify storage partition deletion happens once without deferred domains.
-  auto removal_list = GetStoragePartitionRemovalDataListAndReset();
-  EXPECT_EQ(removal_list.size(), 1u);
-  EXPECT_EQ(removal_list[0].remove_mask, dom_storage_and_cookie_mask);
-  EXPECT_FALSE(removal_list[0].cookie_deletion_filter->excluding_domains);
-  EXPECT_FALSE(removal_list[0].cookie_deletion_filter->including_domains);
-
-  // Verify two separate deletions happen with deferred domains.
-  std::vector<std::string> deferred_domains = {"example.com"};
-  delegate.set_deferred_domains(deferred_domains);
-  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
-                                BrowsingDataRemover::DATA_TYPE_COOKIES |
-                                    BrowsingDataRemover::DATA_TYPE_DOM_STORAGE,
-                                false);
-
-  removal_list = GetStoragePartitionRemovalDataListAndReset();
-  EXPECT_EQ(removal_list.size(), 2u);
-  EXPECT_EQ(removal_list[0].remove_mask, dom_storage_and_cookie_mask);
-  EXPECT_EQ(removal_list[1].remove_mask,
-            StoragePartition::REMOVE_DATA_MASK_COOKIES);
-
-  EXPECT_EQ(removal_list[0].cookie_deletion_filter->excluding_domains,
-            deferred_domains);
-  EXPECT_FALSE(removal_list[0].cookie_deletion_filter->including_domains);
-  EXPECT_FALSE(removal_list[1].cookie_deletion_filter->excluding_domains);
-  EXPECT_EQ(removal_list[1].cookie_deletion_filter->including_domains,
-            deferred_domains);
-
-  // Reset delegate.
-  GetBrowserContext()->GetBrowsingDataRemover()->SetEmbedderDelegate(nullptr);
 }
 
 // Tests that the failed_data_types mask is correctly plumbed from the embedder

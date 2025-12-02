@@ -4256,35 +4256,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest,
       "");
 }
 
-TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       GetDomainsForDeferredCookieDeletion) {
-  auto* storage_partition = GetProfile()->GetDefaultStoragePartition();
-  auto* delegate = GetProfile()->GetBrowsingDataRemoverDelegate();
-
-  auto domains = delegate->GetDomainsForDeferredCookieDeletion(
-      storage_partition, constants::DATA_TYPE_ACCOUNT_PASSWORDS);
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_THAT(domains, IsEmpty());
-#else
-  EXPECT_THAT(domains, UnorderedElementsAre("google.com"));
-#endif
-
-  domains = delegate->GetDomainsForDeferredCookieDeletion(
-      storage_partition, constants::DATA_TYPE_PASSWORDS);
-  EXPECT_THAT(domains, IsEmpty());
-
-  domains = delegate->GetDomainsForDeferredCookieDeletion(
-      storage_partition, constants::ALL_DATA_TYPES);
-  EXPECT_THAT(domains, IsEmpty());
-
-  content::StoragePartition* non_default_storage_partition =
-      GetProfile()->GetStoragePartition(content::StoragePartitionConfig::Create(
-          GetProfile(), "domain", /*partition_name=*/"", /*in_memory=*/false));
-  domains = delegate->GetDomainsForDeferredCookieDeletion(
-      non_default_storage_partition, constants::DATA_TYPE_ACCOUNT_PASSWORDS);
-  EXPECT_THAT(domains, IsEmpty());
-}
-
 class
     ChromeBrowsingDataRemoverDelegateTest_RemoveSecurePaymentConfirmationCredentials
     : public ChromeBrowsingDataRemoverDelegateTest {

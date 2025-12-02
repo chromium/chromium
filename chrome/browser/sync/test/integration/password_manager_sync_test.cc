@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
@@ -64,9 +63,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -886,53 +883,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-// This test verifies that if such users delete passwords along with cookies,
-// the password deletions are uploaded before the server connection is cut.
-IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       PasswordDeletionsPropagateToServer) {
-  ASSERT_TRUE(SetupClients());
-
-  // Add credential to server.
-  AddCredentialToFakeServer(CreateTestPasswordForm("user", "pass"));
-
-  // Do implicit sign-in, so account storage is off by default.
-  SetupSyncTransportWithPasswordAccountStorage(/*explicit_signin=*/false);
-  password_manager::PasswordStoreInterface* account_store =
-      passwords_helper::GetAccountPasswordStoreInterface(0);
-
-  // Make sure the password show up in the account store and on the server.
-  ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
-  ASSERT_EQ(fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS).size(),
-            1u);
-  EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-      GetSyncService(0)));
-
-  // Clear cookies and account passwords.
-  content::BrowsingDataRemover* remover =
-      GetProfile(0)->GetBrowsingDataRemover();
-  content::BrowsingDataRemoverCompletionObserver observer(remover);
-  remover->RemoveAndReply(
-      base::Time(), base::Time::Max(),
-      chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
-          chrome_browsing_data_remover::DATA_TYPE_ACCOUNT_PASSWORDS,
-      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB, &observer);
-  observer.BlockUntilCompletion();
-
-  // Now passwords should be removed from the client and server.
-  EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
-  EXPECT_EQ(fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS).size(),
-            0u);
-
-  // Account storage is still enabled (because the user is still signed in).
-  EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-      GetSyncService(0)));
-
-  // The preference is reset as the account is removed from Chrome.
-  SignOut();
-  EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-      GetSyncService(0)));
-}
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
