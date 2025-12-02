@@ -7403,7 +7403,6 @@ test("unit_tests") {
     "//testing/gtest",
     "//testing/perf:unit_tests",
     "//third_party/abseil-cpp:absl",
-    "//third_party/blink/public/common/privacy_budget:test_support",
     "//third_party/icu",
     "//third_party/leveldatabase",
     "//third_party/libaddressinput",
@@ -9721,7 +9720,6 @@ test("unit_tests") {
 
       # This will add all of the unit tests for the schema compiler to this
       # target.
-      "//third_party/blink/common/privacy_budget:test_support",
       "//tools/json_schema_compiler/test:unit_tests",
     ]
 

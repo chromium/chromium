@@ -1,5 +1,0 @@
-include_rules = [
-    "+services/metrics/public/mojom",
-    "+services/metrics/public/cpp",
-    "+third_party/blink/public/mojom/web_feature"
-]
