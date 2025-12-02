@@ -628,15 +628,12 @@ useful for Chirp alerts (go/crca-alerts). -->
     <variant name="DangerousDownloadWarningAndroid"
         summary="DangerousDownloadWarningAndroid"/>
     <variant name="ExternalAppRedirect" summary="ExternalAppRedirect"/>
-    <variant name="HashPrefixRealTimeExperiment"
-        summary="HashPrefixRealTimeExperiment"/>
     <variant name="NotificationPermissionAccepted"
         summary="NotificationPermissionAccepted"/>
     <variant name="PhishySiteInteractions" summary="PhishySiteInteractions"/>
     <variant name="ServiceWorkerBehavior" summary="ServiceWorkerBehavior"/>
     <variant name="Unknown" summary="Unknown"/>
     <variant name="URLBilling" summary="URLBilling"/>
-    <variant name="URLClientSideMalware" summary="URLClientSideMalware"/>
     <variant name="URLClientSidePhishing" summary="URLClientSidePhishing"/>
     <variant name="URLMalware" summary="URLMalware"/>
     <variant name="URLPasswordProtectionPhishing"

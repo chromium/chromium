@@ -150,9 +150,6 @@ std::string GetReportTypeSuffix(
         ClientSafeBrowsingReportRequest_ReportType_URL_CLIENT_SIDE_PHISHING:
       return "URLClientSidePhishing";
     case safe_browsing::
-        ClientSafeBrowsingReportRequest_ReportType_URL_CLIENT_SIDE_MALWARE:
-      return "URLClientSideMalware";
-    case safe_browsing::
         ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_RECOVERY:
       return "DangerousDownloadRecovery";
     case safe_browsing::
@@ -183,9 +180,6 @@ std::string GetReportTypeSuffix(
         ClientSafeBrowsingReportRequest_ReportType_BLOCKED_AD_POPUP:
       return "BlockedAdPopup";
     case safe_browsing::
-        ClientSafeBrowsingReportRequest_ReportType_HASH_PREFIX_REAL_TIME_EXPERIMENT:
-      return "HashPrefixRealTimeExperiment";
-    case safe_browsing::
         ClientSafeBrowsingReportRequest_ReportType_PHISHY_SITE_INTERACTIONS:
       return "PhishySiteInteractions";
     case safe_browsing::
@@ -212,6 +206,12 @@ std::string GetReportTypeSuffix(
     case safe_browsing::
         ClientSafeBrowsingReportRequest_ReportType_SERVICE_WORKER_BEHAVIOR:
       return "ServiceWorkerBehavior";
+    // Deprecated report types.
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_URL_CLIENT_SIDE_MALWARE:
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_HASH_PREFIX_REAL_TIME_EXPERIMENT:
+      NOTREACHED();
   }
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/histograms.xml:ClientSafeBrowsingReportTypeString)
