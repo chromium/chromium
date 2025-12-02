@@ -81,7 +81,8 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
       AppendQuadsData* append_quads_data,
       viz::SharedQuadState* shared_quad_state,
       const Occlusion& scaled_occlusion,
-      const gfx::Vector2d& quad_offset) = 0;
+      const gfx::Vector2d& quad_offset,
+      float max_contents_scale) = 0;
 
   virtual float GetMaximumContentsScaleForUseInAppendQuads() = 0;
 
@@ -240,7 +241,8 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
   }
 
   AppendQuadsSpecialization(context, render_pass, append_quads_data,
-                            shared_quad_state, scaled_occlusion, quad_offset);
+                            shared_quad_state, scaled_occlusion, quad_offset,
+                            max_contents_scale);
 
   // Adjust shared_quad_state with the quad_offset, since by contract
   // AppendQuadsSpecialization() has adjusted each quad appended by that offset.

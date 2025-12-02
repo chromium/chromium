@@ -281,9 +281,8 @@ void PictureLayerImpl::AppendQuadsSpecialization(
     AppendQuadsData* append_quads_data,
     viz::SharedQuadState* shared_quad_state,
     const Occlusion& scaled_occlusion,
-    const gfx::Vector2d& quad_offset) {
-  float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
-
+    const gfx::Vector2d& quad_offset,
+    float max_contents_scale) {
   // Keep track of the tilings that were used so that tilings that are
   // unused can be considered for removal.
   last_append_quads_tilings_.clear();

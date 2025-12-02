@@ -76,7 +76,8 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl<FakeTiling> {
                                  AppendQuadsData* append_quads_data,
                                  viz::SharedQuadState* shared_quad_state,
                                  const Occlusion& scaled_occlusion,
-                                 const gfx::Vector2d& quad_offset) override {}
+                                 const gfx::Vector2d& quad_offset,
+                                 float max_contents_scale) override {}
   float GetMaximumContentsScaleForUseInAppendQuads() override { return 1.f; }
   bool IsDirectlyCompositedImage() const override { return false; }
   TilingResolution GetTilingResolutionForDebugBorders(
@@ -399,7 +400,8 @@ class OcclusionTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
                                  AppendQuadsData* append_quads_data,
                                  viz::SharedQuadState* shared_quad_state,
                                  const Occlusion& scaled_occlusion,
-                                 const gfx::Vector2d& quad_offset) override {
+                                 const gfx::Vector2d& quad_offset,
+                                 float max_contents_scale) override {
     scaled_occlusion_ = scaled_occlusion;
     // Create a dummy quad to avoid tripping debug checks.
     auto* quad =
@@ -551,7 +553,8 @@ class QuadOffsetTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
                                  AppendQuadsData* append_quads_data,
                                  viz::SharedQuadState* shared_quad_state,
                                  const Occlusion& scaled_occlusion,
-                                 const gfx::Vector2d& quad_offset) override {
+                                 const gfx::Vector2d& quad_offset,
+                                 float max_contents_scale) override {
     quad_offset_ = quad_offset;
     // Create a dummy quad to avoid tripping debug checks.
     auto* quad =
@@ -627,7 +630,8 @@ class QuadOffsetOrderTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
                                  AppendQuadsData* append_quads_data,
                                  viz::SharedQuadState* shared_quad_state,
                                  const Occlusion& scaled_occlusion,
-                                 const gfx::Vector2d& quad_offset) override {
+                                 const gfx::Vector2d& quad_offset,
+                                 float max_contents_scale) override {
     shared_quad_state_at_specialization_ =
         std::make_unique<viz::SharedQuadState>(*shared_quad_state);
     // Create a dummy quad to avoid tripping debug checks.

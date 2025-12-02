@@ -407,7 +407,8 @@ class CC_EXPORT PictureLayerImpl
                                  AppendQuadsData* append_quads_data,
                                  viz::SharedQuadState* shared_quad_state,
                                  const Occlusion& scaled_occlusion,
-                                 const gfx::Vector2d& quad_offset) override;
+                                 const gfx::Vector2d& quad_offset,
+                                 float max_contents_scale) override;
   float GetMaximumContentsScaleForUseInAppendQuads() override;
   void AppendQuadsForResourcelessSoftwareDraw(
       const AppendQuadsContext& context,
