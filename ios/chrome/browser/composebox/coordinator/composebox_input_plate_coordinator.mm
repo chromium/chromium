@@ -279,12 +279,9 @@ const CGFloat kSnackbarBottomMargin = 10;
     [self showMaxAttachmentSnackbarError];
     return;
   }
-  if (!_picker) {
     [self
         composeboxViewControllerMayShowGalleryPicker:composeboxViewController];
-  }
   [_viewController presentViewController:_picker animated:YES completion:nil];
-  _picker = nil;
 }
 
 - (void)composeboxViewControllerDidTapCameraButton:
@@ -309,12 +306,9 @@ const CGFloat kSnackbarBottomMargin = 10;
 
 - (void)composeboxViewControllerMayShowGalleryPicker:
     (ComposeboxInputPlateViewController*)composeboxViewController {
-  if (_picker) {
-    return;
-  }
   PHPickerConfiguration* config = [[PHPickerConfiguration alloc]
       initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
-  config.selectionLimit = 1;
+  config.selectionLimit = [_mediator maxNumberOfGalleryItemsAllowed];
   config.filter = [PHPickerFilter imagesFilter];
   _picker = [[PHPickerViewController alloc] initWithConfiguration:config];
   _picker.delegate = self;
@@ -377,14 +371,15 @@ const CGFloat kSnackbarBottomMargin = 10;
 - (void)picker:(PHPickerViewController*)picker
     didFinishPicking:(NSArray<PHPickerResult*>*)results {
   [picker dismissViewControllerAnimated:YES completion:nil];
-
+  _picker = nil;
   if (results.count == 0) {
     return;
   }
 
-  PHPickerResult* result = results.firstObject;
-  [_mediator processImageItemProvider:result.itemProvider
-                              assetID:result.assetIdentifier];
+  for (PHPickerResult* result in results) {
+    [_mediator processImageItemProvider:result.itemProvider
+                                assetID:result.assetIdentifier];
+  }
 }
 
 #pragma mark - UIDocumentPickerDelegate
