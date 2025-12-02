@@ -9856,7 +9856,7 @@
   {
     "name": "tab-grid-new-transitions",
     "owners": [ "gambard@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 142
+    "expiry_milestone": 150
   },
   {
     "name": "tab-group-android-visual-data-cleanup",
