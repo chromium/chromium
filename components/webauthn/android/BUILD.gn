@@ -47,7 +47,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/Fido2CredentialRequest.java",
     "java/src/org/chromium/components/webauthn/FidoIntentSender.java",
     "java/src/org/chromium/components/webauthn/GetCredentialResponseCallback.java",
-    "java/src/org/chromium/components/webauthn/GetMatchingCredentialIdsResponseCallback.java",
+    "java/src/org/chromium/components/webauthn/GetMatchingCredentialIdsDelegate.java",
     "java/src/org/chromium/components/webauthn/GmsCoreGetCredentialsHelper.java",
     "java/src/org/chromium/components/webauthn/GmsCoreUtils.java",
     "java/src/org/chromium/components/webauthn/GpmBrowserOptionsHelper.java",

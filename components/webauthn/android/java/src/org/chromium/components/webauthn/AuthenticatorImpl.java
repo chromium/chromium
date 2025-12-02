@@ -430,20 +430,12 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             String relyingPartyId,
             byte[][] credentialIds,
             boolean requireThirdPartyPayment,
-            GetMatchingCredentialIdsResponseCallback callback) {
+            GetMatchingCredentialIdsDelegate.ResponseCallback callback) {
         log(TAG, "getMatchingCredentialIds");
-        if (!GmsCoreUtils.isGetMatchingCredentialIdsSupported()) {
-            callback.onResponse(new ArrayList<byte[]>());
-            return;
-        }
 
-        getFido2CredentialRequest()
-                .handleGetMatchingCredentialIdsRequest(
-                        relyingPartyId,
-                        credentialIds,
-                        requireThirdPartyPayment,
-                        callback,
-                        this::onError);
+        GetMatchingCredentialIdsDelegate.getInstance()
+                .getMatchingCredentialIds(
+                        this, relyingPartyId, credentialIds, requireThirdPartyPayment, callback);
     }
 
     @Override
@@ -561,11 +553,6 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     private void completeRequest(@NonNull WebauthnRequestResponse requestResponse) {
         assumeNonNull(mRequestCallback).onComplete(requestResponse);
         if (mPendingFido2CredentialRequest != null) mPendingFido2CredentialRequest.destroyBridge();
-        cleanupRequest();
-    }
-
-    private void onError(Integer status) {
-        log(TAG, "Request completed with error: " + status);
         cleanupRequest();
     }
 

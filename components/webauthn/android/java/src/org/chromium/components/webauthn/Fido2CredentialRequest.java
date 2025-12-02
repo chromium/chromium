@@ -853,56 +853,6 @@ public class Fido2CredentialRequest
                 });
     }
 
-    public void handleGetMatchingCredentialIdsRequest(
-            String relyingPartyId,
-            byte[][] allowCredentialIds,
-            boolean requireThirdPartyPayment,
-            GetMatchingCredentialIdsResponseCallback callback,
-            AuthenticatorErrorResponseCallback errorCallback) {
-        log(TAG, "handleGetMatchingCredentialIdsRequest");
-        assert mErrorCallback == null;
-        mErrorCallback = errorCallback;
-
-        if (!mPlayServicesAvailable) {
-            logError(TAG, "Google Play Services' Fido2PrivilegedApi is not available.");
-            returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-            return;
-        }
-
-        GmsCoreGetCredentialsHelper.getInstance()
-                .getCredentials(
-                        mAuthenticationContextProvider,
-                        relyingPartyId,
-                        GmsCoreGetCredentialsHelper.Reason.GET_MATCHING_CREDENTIAL_IDS,
-                        (credentials) ->
-                                onGetMatchingCredentialIdsListReceived(
-                                        credentials,
-                                        allowCredentialIds,
-                                        requireThirdPartyPayment,
-                                        callback),
-                        this::onBinderCallException);
-    }
-
-    private void onGetMatchingCredentialIdsListReceived(
-            List<WebauthnCredentialDetails> retrievedCredentials,
-            byte[][] allowCredentialIds,
-            boolean requireThirdPartyPayment,
-            GetMatchingCredentialIdsResponseCallback callback) {
-        log(TAG, "onGetMatchingCredentialIdsListReceived");
-        List<byte[]> matchingCredentialIds = new ArrayList<>();
-        for (WebauthnCredentialDetails credential : retrievedCredentials) {
-            if (requireThirdPartyPayment && !credential.mIsPayment) continue;
-
-            for (byte[] allowedId : allowCredentialIds) {
-                if (Arrays.equals(allowedId, credential.mCredentialId)) {
-                    matchingCredentialIds.add(credential.mCredentialId);
-                    break;
-                }
-            }
-        }
-        callback.onResponse(matchingCredentialIds);
-    }
-
     public void overrideBrowserBridgeForTesting(WebauthnBrowserBridge bridge) {
         mBrowserBridge = bridge;
     }

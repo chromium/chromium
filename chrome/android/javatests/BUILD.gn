@@ -1599,6 +1599,7 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/webauth/AuthenticatorImplTest.java",
     "src/org/chromium/chrome/browser/webauth/AuthenticatorTest.java",
     "src/org/chromium/chrome/browser/webauth/Fido2CredentialRequestTest.java",
+    "src/org/chromium/chrome/browser/webauth/GetMatchingCredentialsDelegateTest.java",
     "src/org/chromium/chrome/browser/webauth/WebauthnTestUtils.java",
     "src/org/chromium/chrome/browser/webid/DigitalCredentialProviderTest.java",
     "src/org/chromium/chrome/browser/webshare/WebShareTest.java",

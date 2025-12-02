@@ -29,6 +29,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.Origin;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 /**
  * Acts as a bridge from InternalAuthenticator declared in
@@ -209,14 +210,18 @@ public class InternalAuthenticator {
                 relyingPartyId,
                 credentialIds,
                 requireThirdPartyPayment,
-                (matchingCredentialIds) -> {
-                    if (mNativeInternalAuthenticatorAndroid != 0) {
-                        InternalAuthenticatorJni.get()
-                                .invokeGetMatchingCredentialIdsResponse(
-                                        mNativeInternalAuthenticatorAndroid,
-                                        matchingCredentialIds.toArray(new byte[0][]));
-                    }
-                });
+                this::handleGetMatchingCredentialIdsResponse);
+    }
+
+    private void handleGetMatchingCredentialIdsResponse(
+            @Nullable List<byte[]> matchingCredentialIds) {
+        if (matchingCredentialIds == null || mNativeInternalAuthenticatorAndroid == 0) {
+            return;
+        }
+        InternalAuthenticatorJni.get()
+                .invokeGetMatchingCredentialIdsResponse(
+                        mNativeInternalAuthenticatorAndroid,
+                        matchingCredentialIds.toArray(new byte[0][]));
     }
 
     @CalledByNative
