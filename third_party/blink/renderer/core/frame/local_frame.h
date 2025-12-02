@@ -94,6 +94,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_unique_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/geometry/transform.h"
@@ -1094,6 +1095,10 @@ class CORE_EXPORT LocalFrame final
 
   void EnsureLinkPreviewTriggererInitialized();
 
+  void OnStorageAccessCallback(base::OnceCallback<void(bool)> callback,
+                               mojom::blink::StorageTypeAccessed storage_type,
+                               bool isAllowed);
+
   std::unique_ptr<FrameScheduler> frame_scheduler_;
 
   // Holds all PauseSubresourceLoadingHandles allowing either |this| to delete
@@ -1284,6 +1289,7 @@ class CORE_EXPORT LocalFrame final
   // not so it can block BFCache.
   FrameScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
+  scoped_refptr<scheduler::EventLoop::PauseMicrotasksHandle> microtasks_pauser_;
 
   WebPrintParams print_params_;
 
@@ -1307,10 +1313,6 @@ class CORE_EXPORT LocalFrame final
   ForwardDeclaredMember<RemoteObjectGatewayImpl> remote_object_gateway_impl_;
   ForwardDeclaredMember<DevToolsFrontendImpl, InspectorFrontendClient>
       dev_tools_frontend_impl_;
-
-  void OnStorageAccessCallback(base::OnceCallback<void(bool)> callback,
-                               mojom::blink::StorageTypeAccessed storage_type,
-                               bool isAllowed);
 };
 
 inline FrameLoader& LocalFrame::Loader() const {
