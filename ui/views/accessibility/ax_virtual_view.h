@@ -212,9 +212,6 @@ class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
   void NotifyDataChanged() override;
   void UpdateFocusableState() override;
   void UpdateInvisibleState() override;
-  void OnWidgetClosing(Widget* widget) override;
-  void OnWidgetDestroyed(Widget* widget) override;
-  void OnWidgetUpdated(Widget* widget, Widget* old_widget) override;
   void UpdateReadyToNotifyEvents() override;
   void UpdateIgnoredState() override;
   void SetIsEnabled(bool enabled) override;

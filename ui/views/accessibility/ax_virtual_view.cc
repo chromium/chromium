@@ -672,41 +672,6 @@ void AXVirtualView::UpdateInvisibleState() {
   UpdateFocusableState();
 }
 
-void AXVirtualView::OnWidgetClosing(Widget* widget) {
-  // The RootView's ViewAccessibility should be the only registered
-  // WidgetObserver.
-  CHECK_EQ(GetOwnerView(), widget->GetRootView());
-  SetWidgetClosedRecursive(widget, true);
-}
-
-void AXVirtualView::OnWidgetDestroyed(Widget* widget) {
-  // The RootView's ViewAccessibility should be the only registered
-  // WidgetObserver.
-  CHECK(widget->GetRootView());
-  CHECK_EQ(GetOwnerView(), widget->GetRootView());
-  SetWidgetClosedRecursive(widget, true);
-}
-
-void AXVirtualView::OnWidgetUpdated(Widget* widget, Widget* old_widget) {
-  CHECK(widget);
-  DCHECK_EQ(widget, GetWidget());
-  if (widget == old_widget) {
-    return;
-  }
-
-  // There's a chance we are reparenting a view that was previously a root
-  // view in another widget, if so we need to remove it as an observer of the
-  // old widget.
-  if (old_widget && old_widget != widget) {
-    old_widget->RemoveObserver(this);
-  }
-
-  // If we have already marked `is_widget_closed_` as true, then there's a
-  // chance that the view was reparented to a non-closed widget. If so, we must
-  // update `is_widget_closed_` in case the new widget is not closed.
-  SetWidgetClosedRecursive(widget, widget->IsClosed());
-}
-
 void AXVirtualView::UpdateIgnoredState() {
 // TODO(crbug.com/371237539): In ChromeOS, its not an expectation that being
 // a view unfocusable descendant of a focusable ancestor will make the view
