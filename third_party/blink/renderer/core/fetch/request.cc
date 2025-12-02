@@ -279,10 +279,7 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
         nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
   } else if (FormData* form = V8FormData::ToWrappable(isolate, body)) {
     scoped_refptr<EncodedFormData> form_data = form->EncodeMultiPartFormData();
-    // Here we handle formData->boundary() as a C-style string. See
-    // FormDataEncoder::generateUniqueBoundaryString.
-    content_type = AtomicString("multipart/form-data; boundary=") +
-                   form_data->Boundary().data();
+    content_type = form_data->FormatContentTypeWithBoundary();
     body_byte_length = form_data->SizeInBytes();
     return_buffer = BodyStreamBuffer::Create(
         script_state,
@@ -401,16 +398,16 @@ Request* Request::CreateRequestWithRequestOrString(
     KURL parsed_url = KURL(base_url, input_string);
     // "If |parsedURL| is failure, throw a TypeError."
     if (!parsed_url.IsValid()) {
-      exception_state.ThrowTypeError("Failed to parse URL from " +
-                                     input_string);
+      exception_state.ThrowTypeError(
+          StrCat({"Failed to parse URL from ", input_string}));
       return nullptr;
     }
     //   "If |parsedURL| includes credentials, throw a TypeError."
     if (!parsed_url.User().empty() || !parsed_url.Pass().empty()) {
       exception_state.ThrowTypeError(
-          "Request cannot be constructed from a URL that includes "
-          "credentials: " +
-          input_string);
+          StrCat({"Request cannot be constructed from a URL that includes "
+                  "credentials: ",
+                  input_string}));
       return nullptr;
     }
     // "Set |request|'s url to |parsedURL| and replace |request|'s url list
@@ -473,8 +470,8 @@ Request* Request::CreateRequestWithRequestOrString(
       KURL parsed_referrer(base_url, init->referrer());
       if (!parsed_referrer.IsValid()) {
         // "If |parsedReferrer| is failure, throw a TypeError."
-        exception_state.ThrowTypeError("Referrer '" + init->referrer() +
-                                       "' is not a valid URL.");
+        exception_state.ThrowTypeError(
+            StrCat({"Referrer '", init->referrer(), "' is not a valid URL."}));
         return nullptr;
       }
       if ((parsed_referrer.ProtocolIsAbout() &&
@@ -757,22 +754,22 @@ Request* Request::CreateRequestWithRequestOrString(
   // "If |init|'s method member is present, let |method| be it and run these
   // substeps:"
   if (init->hasMethod()) {
+    const String& method = init->method();
     // "If |method| is not a method or method is a forbidden method, throw
     // a TypeError."
-    if (!IsValidHTTPToken(init->method())) {
-      exception_state.ThrowTypeError("'" + init->method() +
-                                     "' is not a valid HTTP method.");
+    if (!IsValidHTTPToken(method)) {
+      exception_state.ThrowTypeError(
+          StrCat({"'", method, "' is not a valid HTTP method."}));
       return nullptr;
     }
-    if (FetchUtils::IsForbiddenMethod(init->method())) {
-      exception_state.ThrowTypeError("'" + init->method() +
-                                     "' HTTP method is unsupported.");
+    if (FetchUtils::IsForbiddenMethod(method)) {
+      exception_state.ThrowTypeError(
+          StrCat({"'", method, "' HTTP method is unsupported."}));
       return nullptr;
     }
     // "Normalize |method|."
     // "Set |request|'s method to |method|."
-    request->SetMethod(
-        FetchUtils::NormalizeMethod(AtomicString(init->method())));
+    request->SetMethod(FetchUtils::NormalizeMethod(AtomicString(method)));
   }
 
   // "If |init|'s signal member is present, then set |signal| to it."
@@ -837,8 +834,9 @@ Request* Request::CreateRequestWithRequestOrString(
     // "If |r|'s request's method is not a CORS-safelisted method, throw a
     // TypeError."
     if (!cors::IsCorsSafelistedMethod(r->GetRequest()->Method())) {
-      exception_state.ThrowTypeError("'" + r->GetRequest()->Method() +
-                                     "' is unsupported in no-cors mode.");
+      exception_state.ThrowTypeError(
+          StrCat({"'", r->GetRequest()->Method(),
+                  "' is unsupported in no-cors mode."}));
       return nullptr;
     }
     // "Set |r|'s Headers object's guard to "request-no-cors"."

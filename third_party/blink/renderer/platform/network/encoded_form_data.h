@@ -129,6 +129,9 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
   Vector<FormDataElement>& MutableElements() { return elements_; }
 
   const Vector<char>& Boundary() const { return boundary_; }
+  // Returns a string concatenating "multipart/form-data; boundary=" and the
+  // boundary.
+  String FormatContentTypeWithBoundary() const;
   void SetBoundary(Vector<char> boundary) { boundary_ = boundary; }
 
   // Identifies a particular form submission instance.  A value of 0 is used

@@ -218,6 +218,12 @@ String EncodedFormData::FlattenToString() const {
   return Latin1Encoding().Decode(base::as_byte_span(bytes));
 }
 
+String EncodedFormData::FormatContentTypeWithBoundary() const {
+  // Here we handle `boundary_` as a C-style string. See
+  // FormDataEncoder::GenerateUniqueBoundaryString.
+  return StrCat({"multipart/form-data; boundary=", boundary_.data()});
+}
+
 uint64_t EncodedFormData::SizeInBytes() const {
   unsigned size = 0;
   for (const FormDataElement& e : elements_) {

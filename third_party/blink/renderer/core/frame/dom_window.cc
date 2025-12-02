@@ -218,9 +218,10 @@ String CoopReportOnlyErrorMessage(const String& property_name) {
   } else if (property_name == "indexed") {
     call = "window[i]";
   } else {
-    call = "window." + property_name;
+    call = StrCat({"window.", property_name});
   }
-  return "Cross-Origin-Opener-Policy policy would block the " + call + " call.";
+  return StrCat(
+      {"Cross-Origin-Opener-Policy policy would block the ", call, " call."});
 }
 
 }  // namespace

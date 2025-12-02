@@ -978,8 +978,8 @@ String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
   // reasons (see https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports).
   KURL document_base(document_url.BaseAsString().ToString());
   String document_path = document_base.GetPath().ToString();
-  String script_path = script_url.GetPath().ToString() +
-                       script_url.QueryWithLeadingQuestionMark();
+  String script_path = StrCat({script_url.GetPath().ToString(),
+                               script_url.QueryWithLeadingQuestionMark()});
 
   Vector<String> document_path_tokens;
   Vector<String> script_path_tokens;

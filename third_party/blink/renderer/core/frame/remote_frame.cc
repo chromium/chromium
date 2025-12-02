@@ -200,7 +200,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
     window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "Not allowed to load local resource: " + url.ElidedString()));
+        StrCat({"Not allowed to load local resource: ", url.ElidedString()})));
     return;
   }
 

@@ -131,8 +131,7 @@ void BeaconURLSearchParams::Serialize(ResourceRequest& request) const {
 BeaconFormData::BeaconFormData(FormData* data)
     : data_(data),
       entity_body_(data_->EncodeMultiPartFormData()),
-      content_type_(StrCat({"multipart/form-data; boundary=",
-                            entity_body_->Boundary().data()})) {}
+      content_type_(entity_body_->FormatContentTypeWithBoundary()) {}
 
 uint64_t BeaconFormData::size() const {
   return entity_body_->SizeInBytes();
