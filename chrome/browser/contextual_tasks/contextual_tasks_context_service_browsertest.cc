@@ -10,8 +10,10 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
@@ -23,6 +25,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
 #include "components/passage_embeddings/passage_embeddings_test_util.h"
 #include "content/public/test/browser_test.h"
@@ -104,6 +108,17 @@ class MockPageEmbeddingsService
               GetEmbeddings,
               (content::WebContents * web_contents),
               (const override));
+
+  MOCK_METHOD(void, ProcessAllEmbeddings, (), (override));
+
+  MOCK_METHOD(void,
+              AddObserver,
+              (passage_embeddings::PageEmbeddingsService::Observer * observer),
+              (override));
+  MOCK_METHOD(void,
+              RemoveObserver,
+              (passage_embeddings::PageEmbeddingsService::Observer * observer),
+              (override));
 };
 
 class MockPageContentExtractionService
@@ -233,6 +248,20 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
             ->GetModelQualityLogsUploaderService());
   }
 
+  page_content_annotations::PageContentAnnotationsService*
+  page_content_annotations_service() {
+    return PageContentAnnotationsServiceFactory::GetForProfile(
+        browser()->profile());
+  }
+
+  void OverrideVisibilityScoresForTesting(
+      const base::flat_map<std::string, double>& visibility_scores_for_input) {
+    page_content_annotator_.UseVisibilityScores(std::nullopt,
+                                                visibility_scores_for_input);
+    page_content_annotations_service()->OverridePageContentAnnotatorForTesting(
+        &page_content_annotator_);
+  }
+
   void NotifyEmbedderMetadata() {
     embedder_metadata_provider_.NotifyObservers();
   }
@@ -271,6 +300,7 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
  private:
   FakeEmbedderMetadataProvider embedder_metadata_provider_;
   FakeEmbedder embedder_;
+  page_content_annotations::TestPageContentAnnotator page_content_annotator_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, NoEmbedder) {
@@ -415,6 +445,76 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.Context.ContextDeterminationStatus",
       ContextDeterminationStatus::kNoEligibleTabs, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       NotValidDueToContentVisibility) {
+  base::HistogramTester histogram_tester;
+
+  NavigateToValidURL();
+
+  NotifyEmbedderMetadata();
+
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_)).Times(0);
+  // Test Page is the title of valid_url().
+  OverrideVisibilityScoresForTesting({{"Test Page", 0.2f}});
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      {.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch},
+      "some text",
+      /*explicit_urls=*/{}, future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
+
+  histogram_tester.ExpectTotalCount("ContextualTasks.Context.RelevantTabsCount",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.ContextCalculationLatency", 0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ContextDeterminationStatus",
+      ContextDeterminationStatus::kNoEligibleTabs, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       VisiblePageHasNoEffect) {
+  base::HistogramTester histogram_tester;
+
+  NavigateToValidURL();
+
+  NotifyEmbedderMetadata();
+
+  std::vector<passage_embeddings::PassageEmbedding> fake_page_embeddings = {
+      // Not match.
+      {std::make_pair("passage 1",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(0.1f)},
+      // Match - active tab is added.
+      {std::make_pair("passage 2",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(1.0f)},
+      // Match - should be skipped.
+      {std::make_pair("passage 3",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(1.0f)}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillOnce(Return(fake_page_embeddings));
+  // Test Page is the title of valid_url().
+  OverrideVisibilityScoresForTesting({{"Test Page", 0.9f}});
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      {.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch},
+      "some text",
+      /*explicit_urls=*/{valid_url()}, future.GetCallback());
+  EXPECT_EQ(1u, future.Get().size());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,

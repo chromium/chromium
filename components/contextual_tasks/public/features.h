@@ -37,6 +37,8 @@ extern const base::FeatureParam<double> kMinEmbeddingSimilarityScore;
 extern const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity;
 // Minimum score, computed using multiple signals, to consider a tab relevant.
 extern const base::FeatureParam<double> kMinMultiSignalScore;
+// Minimum score required for a tab to be considered visible.
+extern const base::FeatureParam<double> kContentVisibilityThreshold;
 
 // The sample rate for logging contextual tasks context quality.
 extern const base::FeatureParam<double>

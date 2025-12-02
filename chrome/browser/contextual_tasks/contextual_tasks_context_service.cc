@@ -15,6 +15,7 @@
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_signal_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "chrome/browser/passage_embeddings/page_embeddings_service.h"
@@ -468,18 +469,32 @@ ContextualTasksContextService::GetDurationSinceLastActive(
 
 bool ContextualTasksContextService::ShouldAddTabToSelection(
     content::WebContents* web_contents) {
-  if (!page_content_extraction_service_) {
-    // We don't know - err on the side of allowing the tab to be added.
-    return true;
+  // Get sensitivity.
+  bool is_sensitive = false;
+  if (auto* page_content_annotations_observer =
+          page_content_annotations::PageContentAnnotationsWebContentsObserver::
+              FromWebContents(web_contents)) {
+    float visibility_score =
+        page_content_annotations_observer->content_visibility_score().value_or(
+            -1.0f);
+    is_sensitive = visibility_score < kContentVisibilityThreshold.Get() &&
+                   visibility_score >= 0.0;
   }
 
-  std::optional<page_content_annotations::ExtractedPageContentResult>
-      extracted_page_content_result =
-          page_content_extraction_service_
-              ->GetExtractedPageContentAndEligibilityForPage(
-                  web_contents->GetPrimaryPage());
-  return !extracted_page_content_result ||
-         extracted_page_content_result->is_eligible_for_server_upload;
+  // Get whether it's eligible for server upload.
+  bool is_eligible_for_server_upload = true;
+  if (page_content_extraction_service_) {
+    std::optional<page_content_annotations::ExtractedPageContentResult>
+        extracted_page_content_result =
+            page_content_extraction_service_
+                ->GetExtractedPageContentAndEligibilityForPage(
+                    web_contents->GetPrimaryPage());
+    is_eligible_for_server_upload =
+        !extracted_page_content_result ||
+        extracted_page_content_result->is_eligible_for_server_upload;
+  }
+
+  return is_eligible_for_server_upload && !is_sensitive;
 }
 
 }  // namespace contextual_tasks
