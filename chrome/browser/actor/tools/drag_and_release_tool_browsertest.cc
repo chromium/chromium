@@ -16,6 +16,11 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using base::test::TestFuture;
 using content::EvalJs;
 using content::ExecJs;
@@ -33,7 +38,14 @@ int GetRangeValue(content::RenderFrameHost& rfh, std::string_view query) {
 
 class ActorDragAndReleaseToolBrowserTest : public ActorToolsTest {
  public:
-  ActorDragAndReleaseToolBrowserTest() = default;
+  ActorDragAndReleaseToolBrowserTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/465305046): Investigate how the rounded windows feature
+    // affects the hit test.
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kFeatureManagementRoundedWindows);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
   ~ActorDragAndReleaseToolBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -41,6 +53,11 @@ class ActorDragAndReleaseToolBrowserTest : public ActorToolsTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
+
+ private:
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 // Test the drag and release tool by moving the thumb on a range slider control.
@@ -205,16 +222,8 @@ IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
   EXPECT_EQ(50, GetRangeValue(*main_frame(), "#offscreenRange"));
 }
 
-// TODO(crbug.com/460801630): Enable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DragAndReleaseTool_CrossOriginSubframe \
-  DISABLED_DragAndReleaseTool_CrossOriginSubframe
-#else
-#define MAYBE_DragAndReleaseTool_CrossOriginSubframe \
-  DragAndReleaseTool_CrossOriginSubframe
-#endif
 IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
-                       MAYBE_DragAndReleaseTool_CrossOriginSubframe) {
+                       DragAndReleaseTool_CrossOriginSubframe) {
   const GURL url = embedded_https_test_server().GetURL(
       "/actor/positioned_iframe_no_scroll.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
