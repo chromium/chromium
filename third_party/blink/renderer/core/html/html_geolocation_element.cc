@@ -100,9 +100,9 @@ void HTMLGeolocationElement::AttributeChanged(
     if (!params.new_value) {
       ClearWatch();
     }
-  } else if (params.name == html_names::kAccuracymodeAttr &&
-             EqualIgnoringASCIICase(params.new_value, kAccuracyModePrecise)) {
-    SetPreciseLocation();
+  } else if (params.name == html_names::kAccuracymodeAttr) {
+    SetPreciseLocation(
+        EqualIgnoringASCIICase(params.new_value, kAccuracyModePrecise));
   }
 
   // If it's not a geolocation element specific attribute, the base class

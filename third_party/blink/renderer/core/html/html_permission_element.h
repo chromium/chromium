@@ -142,7 +142,7 @@ class CORE_EXPORT HTMLPermissionElement
     return permission_text_span_.Get();
   }
 
-  void SetPreciseLocation();
+  void SetPreciseLocation(bool);
 
   bool is_precise_location() const { return is_precise_location_; }
 
@@ -268,6 +268,9 @@ class CORE_EXPORT HTMLPermissionElement
 
     // This element is disabled because of the element's style.
     kInvalidStyle,
+
+    // The element's attribute changed.
+    kAttributeChanged,
   };
 
   // These values are used for histograms. Entries should not be renumbered and
@@ -284,8 +287,8 @@ class CORE_EXPORT HTMLPermissionElement
     kIntersectionWithViewportChanged = 6,
     kIntersectionVisibilityOutOfViewPortOrClipped = 7,
     kIntersectionVisibilityOccludedOrDistorted = 8,
-
-    kMaxValue = kIntersectionVisibilityOccludedOrDistorted,
+    kAttributeChanged = 9,
+    kMaxValue = kAttributeChanged,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:PermissionElementUserInteractionDeniedReason)
 

@@ -226,7 +226,7 @@ TEST_F(HTMLPermissionElementTestBase, SetPreciseLocationAttribute) {
   EXPECT_TRUE(permission_element->is_precise_location_);
 
   permission_element->removeAttribute(html_names::kPreciselocationAttr);
-  EXPECT_TRUE(permission_element->is_precise_location_);
+  EXPECT_FALSE(permission_element->is_precise_location_);
 }
 
 TEST_F(HTMLPermissionElementTestBase, ParsePermissionDescriptorsFromType) {

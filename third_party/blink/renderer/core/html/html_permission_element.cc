@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -638,13 +639,13 @@ void HTMLPermissionElement::UpdatePermissionStatusAndAppearance() {
   UpdateAppearance();
 }
 
-void HTMLPermissionElement::SetPreciseLocation() {
-  // This attribute can only be set once, and can not be modified afterwards.
-  if (is_precise_location_) {
+void HTMLPermissionElement::SetPreciseLocation(bool is_precise_location) {
+  if (is_precise_location_ == is_precise_location) {
     return;
   }
-
-  is_precise_location_ = true;
+  DisableClickingTemporarily(DisableReason::kAttributeChanged,
+                             kDefaultDisableTimeout);
+  is_precise_location_ = is_precise_location;
   UpdateAppearance();
 }
 
@@ -694,6 +695,8 @@ String HTMLPermissionElement::DisableReasonToString(DisableReason reason) {
       return "intersection occluded or distorted";
     case DisableReason::kInvalidStyle:
       return "invalid style";
+    case DisableReason::kAttributeChanged:
+      return "an attribute changed";
     case DisableReason::kUnknown:
       NOTREACHED();
   }
@@ -716,6 +719,8 @@ HTMLPermissionElement::DisableReasonToUserInteractionDeniedReason(
           kIntersectionVisibilityOccludedOrDistorted;
     case DisableReason::kInvalidStyle:
       return UserInteractionDeniedReason::kInvalidStyle;
+    case DisableReason::kAttributeChanged:
+      return UserInteractionDeniedReason::kAttributeChanged;
     case DisableReason::kUnknown:
       NOTREACHED();
   }
@@ -735,6 +740,8 @@ AtomicString HTMLPermissionElement::DisableReasonToInvalidReasonString(
       return AtomicString("intersection_occluded_or_distorted");
     case DisableReason::kInvalidStyle:
       return AtomicString("style_invalid");
+    case DisableReason::kAttributeChanged:
+      return AtomicString("attribute_changed");
     case DisableReason::kUnknown:
       NOTREACHED();
   }
@@ -839,7 +846,7 @@ void HTMLPermissionElement::AttributeChanged(
   MaybeRegisterPageEmbeddedPermissionControl();
 
   if (params.name == html_names::kPreciselocationAttr) {
-    SetPreciseLocation();
+    SetPreciseLocation(params.new_value != nullptr);
   }
 
   HTMLElement::AttributeChanged(params);
