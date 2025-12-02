@@ -8,7 +8,7 @@
  */
 
 import {CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE} from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {generateRandomId, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -104,7 +104,7 @@ function registerSelfWithRemoteToken(remoteId: string): void {
  * Event handler for messages received via window.postMessage.
  * @param {MessageEvent} payload The data sent via postMessage.
  */
-function processChildFrameMessage(payload: MessageEvent): void {
+export function processChildFrameMessage(payload: MessageEvent): void {
   if (!autofillFormFeaturesApi.getFunction(
           'isAutofillAcrossIframesEnabled')()) {
     return;
@@ -138,18 +138,32 @@ function processChildFrameMessage(payload: MessageEvent): void {
  *      cached or a freshly generated one.
  */
 function getRemoteIdForFrame(frame: HTMLIFrameElement): string {
-  if (!gCrWebLegacy.hasOwnProperty('remoteFrameIdRegistrar')) {
-    gCrWebLegacy.remoteFrameIdRegistrar = new Map();
+  // TODO: crbug.com/464542835 - Remove gCrWeb injections and utilizations
+  // from shared library and utility files.
+  if (!gCrWeb.hasRegisteredApi('remoteFrameRegistration')) {
+    gCrWeb.registerApi('remoteFrameRegistration', new CrWebApi());
   }
 
+  const remoteFrameRegistration =
+      gCrWeb.getRegisteredApi('remoteFrameRegistration');
+
+  if (!remoteFrameRegistration.hasProperty('remoteFrameIdRegistrar')) {
+    remoteFrameRegistration.addProperty(
+        'remoteFrameIdRegistrar', new WeakMap<HTMLIFrameElement, string>());
+  }
+  const remoteFrameIdRegistrarMap =
+      remoteFrameRegistration.getProperty('remoteFrameIdRegistrar') as
+      WeakMap<HTMLIFrameElement, string>;
   // Return the cached remote token if the frame was already registered.
-  if (gCrWebLegacy.remoteFrameIdRegistrar.has(frame)) {
-    return gCrWebLegacy.remoteFrameIdRegistrar.get(frame);
+  let remoteId = remoteFrameIdRegistrarMap.get(frame);
+
+  if (remoteId) {
+    return remoteId;
   }
 
   // Otherwise, create a remote ID for the frame and cache it.
-  const remoteId: string = generateRandomId();
-  gCrWebLegacy.remoteFrameIdRegistrar.set(frame, remoteId);
+  remoteId = generateRandomId();
+  remoteFrameIdRegistrarMap.set(frame, remoteId);
   return remoteId;
 }
 
@@ -163,7 +177,7 @@ function getRemoteIdForFrame(frame: HTMLIFrameElement): string {
  *     should not be assumed that this frame ID will be known to the browser by
  *     the time this function completes.
  */
-function registerChildFrame(frame: HTMLIFrameElement): string {
+export function registerChildFrame(frame: HTMLIFrameElement): string {
   const remoteFrameId: string = getRemoteIdForFrame(frame);
 
   // Store remote frame token in DOM. This way, page content world scripts can
@@ -206,9 +220,3 @@ function registerChildFrame(frame: HTMLIFrameElement): string {
 
   return remoteFrameId;
 }
-
-gCrWebLegacy.remoteFrameRegistration = {
-  processChildFrameMessage,
-  registerChildFrame,
-  registerSelfWithRemoteToken,
-};

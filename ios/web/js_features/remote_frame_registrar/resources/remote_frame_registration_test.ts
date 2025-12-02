@@ -7,23 +7,18 @@
  * Requires functions in child_frame_registration_lib.ts.
  */
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-
+import {processChildFrameMessage, registerChildFrame} from '//ios/web/js_features/remote_frame_registrar/resources/remote_frame_registration.js';
 /**
  * Calls registerChildFrame on each frame in the document. This is a convenience
  * method for testing from the C++ layer.
  * @return {string[]} The list of remote IDs sent to the child frames.
  */
-function registerAllChildFrames(): string[] {
+export function registerAllChildFrames(): string[] {
   const ids: string[] = [];
   for (const frame of document.getElementsByTagName('iframe')) {
-    ids.push(gCrWebLegacy.remoteFrameRegistration.registerChildFrame(
-        (frame as HTMLIFrameElement)));
+    ids.push(registerChildFrame((frame as HTMLIFrameElement)));
   }
   return ids;
 }
 
-window.addEventListener(
-    'message', gCrWebLegacy.remoteFrameRegistration.processChildFrameMessage);
-
-gCrWebLegacy.remoteFrameRegistration.registerAllChildFrames = registerAllChildFrames;
+window.addEventListener('message', processChildFrameMessage);
