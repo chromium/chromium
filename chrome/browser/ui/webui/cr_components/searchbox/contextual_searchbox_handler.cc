@@ -466,12 +466,6 @@ void ContextualSearchboxHandler::OnFileUploadStatusChanged(
       error_type.has_value()
           ? std::make_optional(contextual_search::ToMojom(error_type.value()))
           : std::nullopt);
-  // TODO(crbug.com/458049845): Move responsibility of updating metrics on file
-  // upload status change to ContextualSearchSessionEntry.
-  if (auto* metrics_recorder = GetMetricsRecorder()) {
-    metrics_recorder->OnFileUploadStatusChanged(mime_type, file_upload_status,
-                                                error_type);
-  }
 }
 
 std::string ContextualSearchboxHandler::AutocompleteIconToResourceName(
