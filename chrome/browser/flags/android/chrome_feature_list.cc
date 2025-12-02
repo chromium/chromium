@@ -224,7 +224,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidOmniboxFocusedNewTabPage,
     &kAndroidPbDisablePulseAnimation,
     &kAndroidPbDisableSmoothAnimation,
-    &kAndroidPdfAssistContent,
     &kAndroidPinnedTabs,
     &kAndroidPinnedTabsTabletTabStrip,
     &kAndroidProgressBarVisualUpdate,
@@ -560,7 +559,6 @@ BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD, base::FEATURE_ENABLED_BY_DEFA
 BASE_FEATURE(kAndroidOmniboxFocusedNewTabPage, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidPbDisablePulseAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidPbDisableSmoothAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kAndroidPdfAssistContent, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidPinnedTabs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidPinnedTabsTabletTabStrip, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidProgressBarVisualUpdate, base::FEATURE_DISABLED_BY_DEFAULT);

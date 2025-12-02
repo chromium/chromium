@@ -235,7 +235,6 @@ public class ChromeActivityUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.PAGE_CONTENT_PROVIDER})
-    @DisableFeatures({ChromeFeatureList.ANDROID_PDF_ASSIST_CONTENT})
     public void testPageContentStructuredData() throws JSONException {
         TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
         when(chromeActivity.getActivityTab()).thenReturn(mActivityTab);

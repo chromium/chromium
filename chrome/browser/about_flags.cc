@@ -10917,13 +10917,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSharedStorageServerCardData)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"android-pdf-assist-content",
-     flag_descriptions::kAndroidPdfAssistContentName,
-     flag_descriptions::kAndroidPdfAssistContentDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidPdfAssistContent)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"multi-calendar-in-quick-settings",
      flag_descriptions::kMultiCalendarSupportName,

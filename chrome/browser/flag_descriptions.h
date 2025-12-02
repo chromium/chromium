@@ -5011,11 +5011,6 @@ inline constexpr char kAndroidPbDisableSmoothAnimationDescription[] =
     "When enabled, there will no longer be a smooth progress animation for the "
     "android progress bar for slow loading pages";
 
-inline constexpr char kAndroidPdfAssistContentName[] =
-    "Provide assist content for PDF";
-inline constexpr char kAndroidPdfAssistContentDescription[] =
-    "Provide assist content for PDF on Android.";
-
 inline constexpr char kAndroidPinnedTabsName[] = "Android pinned tabs";
 inline constexpr char kAndroidPinnedTabsDescription[] =
     "Enables the ability to pin tabs through various entry points like context "

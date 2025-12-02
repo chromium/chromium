@@ -1677,8 +1677,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             EnterpriseInfo.OwnedState enterpriseInfoState =
                     EnterpriseInfo.getInstance().getDeviceEnterpriseInfoSync();
 
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_PDF_ASSIST_CONTENT)
-                    && tab.getNativePage() instanceof PdfPage pdfPage) {
+            if (tab.getNativePage() instanceof PdfPage pdfPage) {
 
                 RecordHistogram.recordBooleanHistogram(
                         "Android.Pdf.AssistContent.IsEnterpriseInfoCached",

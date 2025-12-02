@@ -199,7 +199,6 @@ public abstract class ChromeFeatureList {
             "AndroidPbDisablePulseAnimation";
     public static final String ANDROID_PB_DISABLE_SMOOTH_ANIMATION =
             "AndroidPbDisableSmoothAnimation";
-    public static final String ANDROID_PDF_ASSIST_CONTENT = "AndroidPdfAssistContent";
     public static final String ANDROID_PINNED_TABS = "AndroidPinnedTabs";
     public static final String ANDROID_PINNED_TABS_TABLET_TAB_STRIP =
             "AndroidPinnedTabsTabletTabStrip";

@@ -342,11 +342,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "android-pdf-assist-content",
-    "owners": [ "shuyng@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 138
-  },
-  {
     "name": "android-pinned-tabs",
     "owners": [ "madhavpruthi@google.com", "ckitagawa@chromium.org" ],
     "expiry_milestone": 148
