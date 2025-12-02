@@ -955,6 +955,10 @@ BASE_FEATURE(kAutofillUseStructuralSignatureInsteadOfSecondary,
 BASE_FEATURE(kFieldClassificationModelCaching,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Autofill will retrieve one-time passwords from Gmail.
+// TODO(crbug.com/452607505): Clean up when launched.
+BASE_FEATURE(kGmailOtpRetrievalService, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, a HaTS survey is shown after the successful first time creation
 // flow.
 // TODO: crbug.com/348139343 - Move back to components/plus_addresses.
