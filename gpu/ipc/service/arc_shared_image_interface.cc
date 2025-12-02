@@ -42,10 +42,6 @@ bool MakeContextCurrentOnGpuThread(SharedContextState* context_state,
 scoped_refptr<ArcSharedImageInterface> ArcSharedImageInterface::Create(
     GpuChannelManager* gpu_channel_manager,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
-  if (!base::FeatureList::IsEnabled(arc::kVideoEncodeUseMappableSI)) {
-    return nullptr;
-  }
-
   CHECK(gpu_task_runner->BelongsToCurrentThread());
 
   gpu::ContextResult result;

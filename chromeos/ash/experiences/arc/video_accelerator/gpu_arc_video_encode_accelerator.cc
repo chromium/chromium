@@ -149,7 +149,7 @@ GpuArcVideoEncodeAccelerator::InitializeTask(
     return mojom::VideoEncodeAccelerator::Result::kInsufficientResourcesError;
   }
 
-  if (base::FeatureList::IsEnabled(kVideoEncodeUseMappableSI) && !sii_) {
+  if (!sii_) {
     DLOG(ERROR) << "Was passed null SharedImageInterface on construction";
     return mojom::VideoEncodeAccelerator::Result::kPlatformFailureError;
   }
@@ -241,30 +241,21 @@ void GpuArcVideoEncodeAccelerator::Encode(
     return;
   }
   scoped_refptr<media::VideoFrame> frame;
-  if (base::FeatureList::IsEnabled(kVideoEncodeUseMappableSI)) {
-    auto shared_image = sii_->CreateSharedImage(
-        {*si_format, visible_size_, gfx::ColorSpace(),
-         gpu::SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE,
-         "GpuArcVideoEncodeAccelerator"},
-        gpu::kNullSurfaceHandle,
-        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-        std::move(gmb_handle).value());
-    if (!shared_image) {
-      DLOG(ERROR) << "Failed to create mappable SharedImage";
-      client_->NotifyError(Error::kInvalidArgumentError);
-    }
-
-    frame = media::VideoFrame::WrapMappableSharedImage(
-        std::move(shared_image), gpu::SyncToken(), base::NullCallback(),
-        gfx::Rect(visible_size_), visible_size_, base::Microseconds(timestamp));
-  } else {
-    frame = media::VideoFrame::WrapExternalGpuMemoryBufferHandle(
-        gfx::Rect(visible_size_), visible_size_,
-        client_native_pixmap_factory_.get(), std::move(gmb_handle).value(),
-        coded_size_, *si_format,
-        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-        base::Microseconds(timestamp));
+  auto shared_image = sii_->CreateSharedImage(
+      {*si_format, visible_size_, gfx::ColorSpace(),
+       gpu::SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE,
+       "GpuArcVideoEncodeAccelerator"},
+      gpu::kNullSurfaceHandle,
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+      std::move(gmb_handle).value());
+  if (!shared_image) {
+    DLOG(ERROR) << "Failed to create mappable SharedImage";
+    client_->NotifyError(Error::kInvalidArgumentError);
   }
+
+  frame = media::VideoFrame::WrapMappableSharedImage(
+      std::move(shared_image), gpu::SyncToken(), base::NullCallback(),
+      gfx::Rect(visible_size_), visible_size_, base::Microseconds(timestamp));
 
   if (!frame) {
     DLOG(ERROR) << "Failed to create VideoFrame";

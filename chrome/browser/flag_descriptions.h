@@ -6743,11 +6743,6 @@ inline constexpr char kArcUnthrottleOnActiveAudioV2Name[] =
 inline constexpr char kArcUnthrottleOnActiveAudioV2Description[] =
     "Do not throttle ARC when there is an active audio stream running.";
 
-inline constexpr char kArcVideoEncodeUseMappableSIName[] =
-    "ARC video encode use mappable SharedImage";
-inline constexpr char kArcVideoEncodeUseMappableSIDescription[] =
-    "Controls whether ARC video encoding uses mappable SharedImage.";
-
 inline constexpr char kAshEnableUnifiedDesktopName[] = "Unified desktop mode";
 inline constexpr char kAshEnableUnifiedDesktopDescription[] =
     "Enable unified desktop mode which allows a window to span multiple "
