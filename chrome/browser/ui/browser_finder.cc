@@ -383,4 +383,22 @@ size_t GetTabbedBrowserCount(Profile* profile) {
       profile, kMatchNormal | kIncludeBrowsersScheduledForDeletion);
 }
 
+size_t GetOffTheRecordBrowsersActiveForProfile(Profile* profile) {
+  if (!profile) {
+    return 0;
+  }
+
+  size_t incognito_window_count = 0;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile, &incognito_window_count](BrowserWindowInterface* browser) {
+        if (browser->GetProfile()->IsSameOrParent(profile) &&
+            browser->GetProfile()->IsOffTheRecord() &&
+            browser->GetType() != BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
+          ++incognito_window_count;
+        }
+        return true;
+      });
+  return incognito_window_count;
+}
+
 }  // namespace chrome

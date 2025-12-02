@@ -269,7 +269,8 @@ class IncognitoStateProvider : public PrivateBaseStateProvider {
   std::u16string GetText() const override {
     return l10n_util::GetPluralStringFUTF16(
         IDS_AVATAR_BUTTON_INCOGNITO,
-        BrowserList::GetOffTheRecordBrowsersActiveForProfile(&profile()));
+        static_cast<int>(
+            chrome::GetOffTheRecordBrowsersActiveForProfile(&profile())));
   }
 
   std::optional<SkColor> GetHighlightColor(

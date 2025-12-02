@@ -201,6 +201,10 @@ size_t GetBrowserCount(Profile* profile);
 // the majority of other functions do not.
 size_t GetTabbedBrowserCount(Profile* profile);
 
+// Returns the number of off-the-record browser windows associated with
+// `profile`, excluding DevTools windows.
+size_t GetOffTheRecordBrowsersActiveForProfile(Profile* profile);
+
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_BROWSER_FINDER_H_
