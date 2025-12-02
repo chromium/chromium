@@ -547,7 +547,7 @@ public class InstanceSwitcherCoordinator {
         int instanceId = clickedItem.instanceId;
         boolean wasSelected = mSelectedItems.containsKey(instanceId);
 
-        if (UiUtils.isRobustWindowManagementEnabled()) {
+        if (UiUtils.isRobustWindowManagementBulkCloseEnabled()) {
             // Multi-selection is allowed. Toggle the clicked item.
             if (wasSelected) {
                 mSelectedItems.remove(instanceId);
@@ -579,7 +579,7 @@ public class InstanceSwitcherCoordinator {
         // 1. Update positive button state.
         boolean positiveButtonDisabled = true;
         if (selectionCount > 0) {
-            if (UiUtils.isRobustWindowManagementEnabled()) {
+            if (UiUtils.isRobustWindowManagementBulkCloseEnabled()) {
                 if (selectionCount == 1 && mActiveModelList.size() < mMaxInstanceCount) {
                     positiveButtonDisabled = false;
                 }
@@ -592,7 +592,7 @@ public class InstanceSwitcherCoordinator {
         mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, positiveButtonDisabled);
 
         // 2. Update per-item buttons (for robust mode).
-        if (!UiUtils.isRobustWindowManagementEnabled()) return;
+        if (!UiUtils.isRobustWindowManagementBulkCloseEnabled()) return;
         boolean itemButtonsEnabled = selectionCount <= 1;
         for (ListItem li : getCurrentList()) {
             if (mIsInactiveListShowing) {

@@ -113,7 +113,7 @@ public class TabStripContextMenuCoordinator {
     private void configureMenuItems(ModelList itemList, boolean isIncognito) {
         // Add "Name window" option.
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)) {
+                && ChromeFeatureList.sRobustWindowManagement.isEnabled()) {
             itemList.add(
                     new ListItemBuilder()
                             .withTitleRes(R.string.menu_name_window)

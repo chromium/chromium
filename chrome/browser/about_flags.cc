@@ -4911,6 +4911,12 @@ const FeatureEntry::FeatureVariation kAndroidTipsNotificationsVariations[] = {
      std::size(kAndroidTipsNotificationsResetFeatureTipShown), nullptr},
 };
 
+const FeatureEntry::FeatureParam kRobustWindowManagementBulkCloseEnabled[] = {
+    {"bulk_close", "false"}};
+const FeatureEntry::FeatureVariation kRobustWindowManagementVariations[] = {
+    {"Bulk Close", kRobustWindowManagementBulkCloseEnabled,
+     std::size(kRobustWindowManagementBulkCloseEnabled), nullptr}};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -12380,7 +12386,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"robust-window-management", flag_descriptions::kRobustWindowManagementName,
      flag_descriptions::kRobustWindowManagementDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kRobustWindowManagement)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kRobustWindowManagement,
+                                    kRobustWindowManagementVariations,
+                                    "RobustWindowManagement")},
 
     {"robust-window-management-experimental",
      flag_descriptions::kRobustWindowManagementExperimentalName,

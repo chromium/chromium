@@ -1312,7 +1312,7 @@ public class InstanceSwitcherCoordinatorTest {
     @SmallTest
     @EnableFeatures({
         ChromeFeatureList.INSTANCE_SWITCHER_V2,
-        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT + ":bulk_close/true"
     })
     public void testMultiSelectInactiveWindows_robustWindowManagement() throws Exception {
         // Initialize instance list with 2 active instances and 3 inactive instances.

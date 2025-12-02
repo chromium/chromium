@@ -1837,4 +1837,7 @@ public abstract class ChromeFeatureList {
             sAndroidTabHighlighting.newBooleanParam("force_ctrl_click", false);
     public static final MutableBooleanParamWithSafeDefault sAndroidTabHighlightingForceShiftClick =
             sAndroidTabHighlighting.newBooleanParam("force_shift_click", false);
+
+    public static final MutableBooleanParamWithSafeDefault sRobustWindowManagementBulkClose =
+            sRobustWindowManagement.newBooleanParam("bulk_close", false);
 }
