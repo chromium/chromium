@@ -26,7 +26,6 @@ namespace arc {
 
 // FileStreamReader implementation for ARC documents provider file system.
 // It actually delegates operations to ArcContentFileSystemFileStreamReader.
-// TODO(crbug.com/678886): Write unit tests.
 class ArcDocumentsProviderFileStreamReader : public storage::FileStreamReader {
  public:
   ArcDocumentsProviderFileStreamReader(const storage::FileSystemURL& url,
