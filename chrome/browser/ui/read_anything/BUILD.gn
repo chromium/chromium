@@ -22,6 +22,7 @@ source_set("read_anything") {
     "read_anything_service_factory.cc",
     "read_anything_service_factory.h",
     "read_anything_side_panel_controller.cc",
+    "read_anything_lifecycle_observer.h",
     "read_anything_side_panel_controller.h",
     "read_anything_side_panel_controller_utils.cc",
     "read_anything_side_panel_controller_utils.h",

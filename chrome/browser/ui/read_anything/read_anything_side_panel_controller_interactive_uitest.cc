@@ -30,13 +30,13 @@ constexpr char kDocumentWithNamedElement[] = "/select.html";
 }  // namespace
 
 class MockReadAnythingSidePanelControllerObserver
-    : public ReadAnythingSidePanelController::Observer {
+    : public ReadAnythingLifecycleObserver {
  public:
   MOCK_METHOD(void,
               Activate,
               (bool active, std::optional<ReadAnythingOpenTrigger>),
               (override));
-  MOCK_METHOD(void, OnSidePanelControllerDestroyed, (), (override));
+  MOCK_METHOD(void, OnDestroyed, (), (override));
   MOCK_METHOD(void, OnTabWillDetach, (), (override));
 };
 
@@ -51,10 +51,10 @@ class ReadAnythingSidePanelControllerTest : public InProcessBrowserTest {
         ->read_anything_side_panel_controller();
   }
 
-  void AddObserver(ReadAnythingSidePanelController::Observer* observer) {
+  void AddObserver(ReadAnythingLifecycleObserver* observer) {
     side_panel_controller()->AddObserver(observer);
   }
-  void RemoveObserver(ReadAnythingSidePanelController::Observer* observer) {
+  void RemoveObserver(ReadAnythingLifecycleObserver* observer) {
     side_panel_controller()->RemoveObserver(observer);
   }
 

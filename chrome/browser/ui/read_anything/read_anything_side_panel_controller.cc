@@ -113,8 +113,7 @@ ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
   }
 
   // Inform observers when |this| is destroyed so they can do their own cleanup.
-  observers_.Notify(&ReadAnythingSidePanelController::Observer::
-                        OnSidePanelControllerDestroyed);
+  observers_.Notify(&Observer::OnDestroyed);
 }
 
 void ReadAnythingSidePanelController::ResetForTabDiscard() {
@@ -135,13 +134,11 @@ void ReadAnythingSidePanelController::RemovePageHandlerAsObserver(
   RemoveObserver(page_handler.get());
 }
 
-void ReadAnythingSidePanelController::AddObserver(
-    ReadAnythingSidePanelController::Observer* observer) {
+void ReadAnythingSidePanelController::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void ReadAnythingSidePanelController::RemoveObserver(
-    ReadAnythingSidePanelController::Observer* observer) {
+void ReadAnythingSidePanelController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
@@ -200,8 +197,7 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
     }
   }
 
-  observers_.Notify(&ReadAnythingSidePanelController::Observer::Activate, true,
-                    read_anything_trigger);
+  observers_.Notify(&Observer::Activate, true, read_anything_trigger);
 }
 
 void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
@@ -231,7 +227,7 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
   if (service) {
     service->OnReadAnythingSidePanelEntryHidden();
   }
-  observers_.Notify(&ReadAnythingSidePanelController::Observer::Activate, false,
+  observers_.Notify(&Observer::Activate, false,
                     std::optional<ReadAnythingOpenTrigger>());
 }
 
@@ -311,8 +307,7 @@ void ReadAnythingSidePanelController::TabForegrounded(tabs::TabInterface* tab) {
 void ReadAnythingSidePanelController::TabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
-  observers_.Notify(
-      &ReadAnythingSidePanelController::Observer::OnTabWillDetach);
+  observers_.Notify(&Observer::OnTabWillDetach);
 
   if (!tab_->IsActivated()) {
     return;

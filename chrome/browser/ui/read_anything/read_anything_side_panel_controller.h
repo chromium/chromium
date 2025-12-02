@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
+#include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "components/tabs/public/tab_interface.h"
@@ -66,13 +67,7 @@ class ReadAnythingSidePanelController
       public content::WebContentsObserver,
       public page_actions::PageActionObserver {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void Activate(bool active,
-                          std::optional<ReadAnythingOpenTrigger> trigger) {}
-    virtual void OnSidePanelControllerDestroyed() = 0;
-    virtual void OnTabWillDetach() = 0;
-  };
+  using Observer = ReadAnythingLifecycleObserver;
   ReadAnythingSidePanelController(tabs::TabInterface* tab,
                                   SidePanelRegistry* side_panel_registry);
   ReadAnythingSidePanelController(const ReadAnythingSidePanelController&) =
@@ -104,8 +99,8 @@ class ReadAnythingSidePanelController
                        SidePanelEntryHideReason reason) override;
 
 
-  void AddObserver(ReadAnythingSidePanelController::Observer* observer);
-  void RemoveObserver(ReadAnythingSidePanelController::Observer* observer);
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   tabs::TabInterface* tab() { return tab_.get(); }
 
@@ -167,7 +162,7 @@ class ReadAnythingSidePanelController
   // IPH.
   std::unique_ptr<base::OneShotTimer> iph_response_timer_;
 
-  base::ObserverList<ReadAnythingSidePanelController::Observer> observers_;
+  base::ObserverList<Observer> observers_;
 
   const raw_ptr<tabs::TabInterface> tab_;
   raw_ptr<SidePanelRegistry> side_panel_registry_;
