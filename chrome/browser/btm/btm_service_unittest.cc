@@ -10,7 +10,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -43,12 +42,12 @@ class BtmService3pcExceptionsTest : public testing::Test {
 
  protected:
   BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_{
+      content_settings::features::kTrackingProtection3pcd};
   TestingProfile profile_;
   raw_ptr<content_settings::CookieSettings> cookie_settings_;
 
   void SetUp() override {
-    GetProfile()->GetPrefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled,
-                                         true);
     ASSERT_FALSE(Are3PcsGenerallyEnabled());
   }
 

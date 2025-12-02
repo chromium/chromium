@@ -594,16 +594,10 @@ class ManagerPrefsBrowserTest
   bool BlockAll3pcToggleEnabled() { return std::get<1>(GetParam()); }
 
   void SimulateTrackingProtectionSettings(Profile* profile = nullptr) {
-    GetPrefs(profile)->SetDefaultPrefValue(
-        prefs::kTrackingProtection3pcdEnabled, base::Value(true));
     EXPECT_TRUE(GetCookieSettings()->ShouldBlockThirdPartyCookies());
 
     GetPrefs(profile)->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
                                   BlockAll3pcToggleEnabled());
-  }
-
-  bool GetTrackingProtection3pcdEnabledPref(Profile* profile = nullptr) {
-    return GetPrefs(profile)->GetBoolean(prefs::kTrackingProtection3pcdEnabled);
   }
 
   bool GetBlockAll3pcToggleEnabledPref(Profile* profile = nullptr) {
@@ -875,7 +869,6 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
         browser()->profile()->GetPrimaryOTRProfile(true);
     EXPECT_TRUE(incognito_profile->IsIncognitoProfile());
     EXPECT_TRUE(incognito_profile->IsOffTheRecord());
-    EXPECT_EQ(GetTrackingProtection3pcdEnabledPref(incognito_profile), true);
     EXPECT_EQ(GetBlockAll3pcToggleEnabledPref(incognito_profile),
               BlockAll3pcToggleEnabled());
     Browser* browser = CreateBrowser(incognito_profile);
@@ -955,7 +948,6 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
     EXPECT_FALSE(guest_profile->IsIncognitoProfile());
     EXPECT_TRUE(guest_profile->IsOffTheRecord());
     EXPECT_TRUE(guest_profile->IsGuestSession());
-    EXPECT_EQ(GetTrackingProtection3pcdEnabledPref(guest_profile), true);
     EXPECT_EQ(GetBlockAll3pcToggleEnabledPref(guest_profile),
               BlockAll3pcToggleEnabled());
     Browser* browser = CreateBrowser(guest_profile);
