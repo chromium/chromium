@@ -9,6 +9,7 @@ source_set("bwg_api") {
   ]
   public_deps = [
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/settings/ui_bundled/bwg/model",
     "//services/network/public/cpp:cpp_base",
   ]
 }
