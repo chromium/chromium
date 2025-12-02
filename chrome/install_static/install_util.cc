@@ -682,7 +682,7 @@ bool IsExtendedStableChannel() {
 
 std::string WideToUTF8(const std::wstring& source) {
   if (source.empty() ||
-      static_cast<int>(source.size()) > std::numeric_limits<int>::max()) {
+      source.size() > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return std::string();
   }
   int size = ::WideCharToMultiByte(CP_UTF8, 0, &source[0],
@@ -700,7 +700,7 @@ std::string WideToUTF8(const std::wstring& source) {
 
 std::wstring UTF8ToWide(const std::string& source) {
   if (source.empty() ||
-      static_cast<int>(source.size()) > std::numeric_limits<int>::max()) {
+      source.size() > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return std::wstring();
   }
   int size = ::MultiByteToWideChar(CP_UTF8, 0, &source[0],
