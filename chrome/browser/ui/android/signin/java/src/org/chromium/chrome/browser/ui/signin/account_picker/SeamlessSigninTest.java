@@ -390,6 +390,33 @@ public class SeamlessSigninTest {
         verify(mAccountPickerDelegateMock).onSignInComplete(eq(TestAccounts.ACCOUNT1), any());
     }
 
+    @Test
+    @MediumTest
+    public void testBottomErrorSheetDismissalTriggersDestruction() {
+        mIsNextSigninSuccessful.set(false);
+        createCoordinator();
+        waitForErrorSheet();
+
+        // Dismissing the error sheet should trigger destroy() in the mediator.
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.dismissBottomSheet());
+
+        CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
+        verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
+    }
+
+    @Test
+    @MediumTest
+    public void testDismissalWithoutVisibleBottomSheetTriggersDestruction() {
+        createCoordinator();
+        assertBottomSheetNeverShown();
+
+        // In the successful scenario where the bottom sheet is never shown, calling dismiss
+        // should still trigger destroy() in the mediator.
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.dismissBottomSheet());
+
+        verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
+    }
+
     private void assertBottomSheetNeverShown() {
         // View should never have been initialized
         assertNull(mCoordinator.getBottomSheetViewForTesting());

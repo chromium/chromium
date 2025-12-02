@@ -93,7 +93,7 @@ public class SeamlessSigninCoordinator {
     }
 
     @MainThread
-    public void destroy() {
+    void destroy() {
         mAccountPickerBottomSheetMediator.destroy();
         mBottomSheetController.removeObserver(mBottomSheetObserver);
     }
@@ -103,7 +103,7 @@ public class SeamlessSigninCoordinator {
      * confirmation.
      */
     @MainThread
-    public void requestDisplayBottomSheet() {
+    void requestDisplayBottomSheet() {
         if (mView == null) {
             // Bottom sheet initialized lazily, in most cases no bottom sheet will be shown
             mView = new AccountPickerBottomSheetView(mActivity, mAccountPickerBottomSheetMediator);
@@ -123,9 +123,12 @@ public class SeamlessSigninCoordinator {
     @MainThread
     public void dismissBottomSheet() {
         if (mView != null) {
-            // TODO(crbug.com/437038737): log AccountConsistencyPromoAction.DISMISSED_BUTTON
-            // histogram
+            // TODO(crbug.com/437038737): Log AccountConsistencyPromoAction.DISMISSED_BUTTON
+            // histogram.
+            // The observer calls destroy() after the sheet is hidden.
             mBottomSheetController.hideContent(mView, true);
+        } else {
+            destroy();
         }
     }
 

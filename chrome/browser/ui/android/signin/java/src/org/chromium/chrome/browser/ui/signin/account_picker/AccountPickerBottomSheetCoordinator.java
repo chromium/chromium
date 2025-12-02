@@ -134,6 +134,7 @@ public class AccountPickerBottomSheetCoordinator {
     public void dismiss() {
         logMetricAndIncrementActiveDismissalCountIfWebSignin(
                 AccountConsistencyPromoAction.DISMISSED_BUTTON);
+        // The observer calls destroy() after the sheet is hidden.
         mBottomSheetController.hideContent(mView, true);
     }
 
