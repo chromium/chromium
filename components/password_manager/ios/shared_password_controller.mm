@@ -741,7 +741,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
 
       ASSIGN_OR_RETURN(
           password_manager::FillDataRetrievalResult fill_data_result,
-          stateless
+          (stateless && suggestion.params.has_value())
               ? [self.suggestionHelper
                     passwordFillDataForUsername:username
                              isBackupCredential:isBackupCredential
