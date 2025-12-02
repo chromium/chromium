@@ -2678,6 +2678,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (mTaskHandler != null) {
                 mTaskHandler.removeCallbacksAndMessages(null);
             }
+            if (mCookieControlsBridge != null) {
+                mCookieControlsBridge.destroy();
+            }
             if (mCallbackController != null) {
                 mCallbackController.destroy();
                 mCallbackController = null;
