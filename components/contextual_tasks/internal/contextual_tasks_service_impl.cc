@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_tasks/internal/account_utils.h"
 #include "components/contextual_tasks/internal/composite_context_decorator.h"
 #include "components/contextual_tasks/internal/conversions.h"
@@ -19,6 +20,7 @@
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
@@ -34,10 +36,12 @@ ContextualTasksServiceImpl::ContextualTasksServiceImpl(
     std::unique_ptr<CompositeContextDecorator> composite_context_decorator,
     AimEligibilityService* aim_eligibility_service,
     signin::IdentityManager* identity_manager,
+    PrefService* pref_service,
     bool supports_ephemeral_only)
     : composite_context_decorator_(std::move(composite_context_decorator)),
       aim_eligibility_service_(aim_eligibility_service),
       identity_manager_(identity_manager),
+      pref_service_(pref_service),
       supports_ephemeral_only_(supports_ephemeral_only) {
   const base::RepeatingClosure& dump_stack =
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel);
@@ -67,7 +71,9 @@ ContextualTasksServiceImpl::~ContextualTasksServiceImpl() {
 
 FeatureEligibility ContextualTasksServiceImpl::GetFeatureEligibility() {
   return {base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks),
-          aim_eligibility_service_->IsAimEligible()};
+          aim_eligibility_service_->IsAimEligible(),
+          contextual_search::ContextualSearchService::IsContextSharingEnabled(
+              pref_service_)};
 }
 
 bool ContextualTasksServiceImpl::IsInitialized() {

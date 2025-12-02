@@ -41,6 +41,7 @@ source_set("internal") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/omnibox/browser",
+    "//components/prefs",
     "//components/sessions:session_id",
     "//components/signin/public/identity_manager",
     "//components/sync/model",

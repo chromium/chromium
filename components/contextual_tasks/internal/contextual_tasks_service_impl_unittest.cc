@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "base/version_info/channel.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_tasks/internal/composite_context_decorator.h"
 #include "components/contextual_tasks/internal/contextual_tasks_service_impl.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
@@ -129,13 +130,16 @@ class ContextualTasksServiceImplTest : public testing::Test {
         std::make_unique<testing::NiceMock<MockCompositeContextDecorator>>();
     mock_decorator_ = mock_decorator.get();
     AimEligibilityService::RegisterProfilePrefs(pref_service_.registry());
+    contextual_search::ContextualSearchService::RegisterProfilePrefs(
+        pref_service_.registry());
     mock_aim_eligibility_service_ =
         std::make_unique<MockAimEligibilityService>(&pref_service_);
     service_ = std::make_unique<ContextualTasksServiceImpl>(
         version_info::Channel::UNKNOWN,
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         std::move(mock_decorator), mock_aim_eligibility_service_.get(),
-        identity_test_environment_.identity_manager(), SupportsEphemeralOnly());
+        identity_test_environment_.identity_manager(), &pref_service_,
+        SupportsEphemeralOnly());
   }
 
   virtual bool SupportsEphemeralOnly() { return false; }

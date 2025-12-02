@@ -58,6 +58,13 @@ void ContextualSearchService::RegisterProfilePrefs(
       static_cast<int>(kSearchContentSharingAllowedDefault));
 }
 
+// static
+bool ContextualSearchService::IsContextSharingEnabled(
+    const PrefService* prefs) {
+  return prefs->GetInteger(kSearchContentSharingSettings) ==
+         static_cast<int>(kSearchContentSharingAllowedDefault);
+}
+
 std::unique_ptr<ContextualSearchContextController>
 ContextualSearchService::CreateComposeboxQueryController(
     std::unique_ptr<ContextualSearchContextController::ConfigParams>

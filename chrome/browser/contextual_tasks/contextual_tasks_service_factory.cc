@@ -97,7 +97,8 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
           ->GetStoreFactory(),
       CreateCompositeContextDecorator(favicon_service, history_service,
                                       std::move(additional_decorators)),
-      aim_eligibility_service, identity_manager, supports_ephemeral_only);
+      aim_eligibility_service, identity_manager, profile->GetPrefs(),
+      supports_ephemeral_only);
 }
 
 }  // namespace contextual_tasks

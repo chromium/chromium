@@ -35,8 +35,12 @@ struct FeatureEligibility {
   bool contextual_tasks_enabled;
   // Whether the AIM backend is eligible for use.
   bool aim_eligible;
+  // Whether context sharing is enabled.
+  bool context_sharing_enabled;
 
-  bool IsEligible() const { return contextual_tasks_enabled && aim_eligible; }
+  bool IsEligible() const {
+    return contextual_tasks_enabled && aim_eligible && context_sharing_enabled;
+  }
 };
 
 // Service that allows clients to create and manage contextual tasks.

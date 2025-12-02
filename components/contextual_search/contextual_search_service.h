@@ -14,6 +14,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -48,6 +49,8 @@ class ContextualSearchService : public KeyedService {
 
   // Register profile related prefs.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  // Check whether contextual search is enabled.
+  static bool IsContextSharingEnabled(const PrefService* prefs);
 
   // Creates a new session and returns a handle to it.
   std::unique_ptr<ContextualSearchSessionHandle> CreateSession(
