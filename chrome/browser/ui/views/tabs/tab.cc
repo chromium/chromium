@@ -1109,6 +1109,17 @@ void Tab::MaybeAdjustLeftForPinnedTab(gfx::Rect* bounds,
 }
 
 void Tab::UpdateIconVisibility() {
+  // When a tab is less than it's minimum inactive width its implied that its
+  // collapsed, but some favicon functionality can escape the bounds of the tab
+  // causing artifacts. Fix this by explicitly disabling the visibility of the
+  // views in the tab if the width is such that it is collapsed.
+  if (width() < tab_style()->GetMinimumInactiveWidth()) {
+    showing_icon_ = false;
+    showing_alert_indicator_ = false;
+    showing_close_button_ = false;
+    return;
+  }
+
   // TODO(pkasting): This whole function should go away, and we should simply
   // compute child visibility state in Layout().
 

@@ -198,6 +198,10 @@ class Tab : public gfx::AnimationDelegate,
     return showing_close_button_;
   }
 
+  bool showing_icon() const { return showing_icon_; }
+  bool showing_alert_indicator() const { return showing_alert_indicator_; }
+  bool showing_close_button() const { return showing_close_button_; }
+
   raw_ptr<TabCloseButton> close_button() { return close_button_; }
 
   TabIcon* GetTabIconForTesting() const { return icon_; }
