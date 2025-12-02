@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/modules/gamepad/gamepad_event.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_raw_input_change_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
