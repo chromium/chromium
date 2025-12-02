@@ -2661,7 +2661,10 @@ void UpdatePrimaryAccountToBeManaged(Profile* profile) {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   AccountInfo account_info =
       identity_manager->FindExtendedAccountInfo(core_account_info);
-  account_info.hosted_domain = gaia::ExtractDomainName(account_info.email);
+  account_info =
+      AccountInfo::Builder(account_info)
+          .SetHostedDomain(gaia::ExtractDomainName(account_info.email))
+          .Build();
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 }
 
