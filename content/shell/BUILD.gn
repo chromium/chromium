@@ -113,8 +113,8 @@ static_library("content_shell_app") {
   }
   if (is_apple) {
     sources += [
-      "app/paths_mac.h",
-      "app/paths_mac.mm",
+      "app/paths_apple.h",
+      "app/paths_apple.mm",
     ]
   }
   if (is_mac) {

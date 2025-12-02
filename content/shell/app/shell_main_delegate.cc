@@ -63,7 +63,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#include "content/shell/app/paths_mac.h"
+#include "content/shell/app/paths_apple.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)

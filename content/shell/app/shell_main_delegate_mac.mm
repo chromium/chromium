@@ -14,7 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/public/common/content_switches.h"
-#include "content/shell/app/paths_mac.h"
+#include "content/shell/app/paths_apple.h"
 #include "content/shell/browser/shell_application_mac.h"
 #include "content/shell/common/shell_switches.h"
 

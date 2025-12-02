@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/shell/app/paths_mac.h"
+#include "content/shell/app/paths_apple.h"
 
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"

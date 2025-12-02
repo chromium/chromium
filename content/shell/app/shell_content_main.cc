@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "content/public/app/content_main.h"
 #include "content/public/common/content_switches.h"
-#include "content/shell/app/paths_mac.h"
+#include "content/shell/app/paths_apple.h"
 #include "content/shell/app/shell_main_delegate.h"
 
 #if BUILDFLAG(IS_MAC)

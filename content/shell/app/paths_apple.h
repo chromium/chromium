@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_SHELL_APP_PATHS_MAC_H_
-#define CONTENT_SHELL_APP_PATHS_MAC_H_
+#ifndef CONTENT_SHELL_APP_PATHS_APPLE_H_
+#define CONTENT_SHELL_APP_PATHS_APPLE_H_
 
 namespace base {
 class FilePath;
@@ -31,4 +31,4 @@ base::FilePath GetInfoPlistPath();
 // Sets up base::apple::BaseBundleID.
 void OverrideBundleID();
 
-#endif  // CONTENT_SHELL_APP_PATHS_MAC_H_
+#endif  // CONTENT_SHELL_APP_PATHS_APPLE_H_

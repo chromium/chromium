@@ -30,7 +30,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
-#include "content/shell/app/paths_mac.h"
+#include "content/shell/app/paths_apple.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
