@@ -77,44 +77,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Quota.DatabaseSpecificError.{Statement}"
-    enum="SqliteLoggedResultCode" expires_after="2025-12-07">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records error codes returned by SQLite for operations on the quota database.
-    These are logged separately for each database operation to help isolate
-    issues the quota db might be facing. Warning: this histogram was expired in
-    2025/06; data may be missing.
-  </summary>
-  <token key="Statement">
-    <variant name="BootstrapDefaultBucket"/>
-    <variant name="Commit"/>
-    <variant name="CountBuckets"/>
-    <variant name="CreateBucket"/>
-    <variant name="CreateTable"/>
-    <variant name="DeleteBucket"/>
-    <variant name="GetAllBuckets"/>
-    <variant name="GetBucket"/>
-    <variant name="GetBucketById"/>
-    <variant name="GetBucketsForEviction"/>
-    <variant name="GetBucketsForHost"/>
-    <variant name="GetBucketsForStorageKey"/>
-    <variant name="GetBucketsModifiedBetween"/>
-    <variant name="GetExpired"/>
-    <variant name="GetExpiredAndOrphanAndStale"/>
-    <variant name="GetOrphan"/>
-    <variant name="GetStale"/>
-    <variant name="GetStorageKeys"/>
-    <variant name="Open"/>
-    <variant name="SetBucketLastAccessTime"/>
-    <variant name="SetBucketLastModifiedTime"/>
-    <variant name="SetStorageKeyLastAccessTime"/>
-    <variant name="UpdateBucketExpiration"/>
-    <variant name="UpdateBucketPersistence"/>
-  </token>
-</histogram>
-
 <histogram name="Quota.DaysSinceLastAccessed" units="days"
     expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
@@ -282,8 +244,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.QuotaDatabaseDisabled"
-    enum="QuotaDatabaseDisabledReason" expires_after="2025-12-07">
-  <owner>estade@chromium.org</owner>
+    enum="QuotaDatabaseDisabledReason" expires_after="2026-12-07">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Records at which step the QuotaDatabase failed to bootstrap. Warning: this

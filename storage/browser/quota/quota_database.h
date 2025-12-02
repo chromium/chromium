@@ -307,9 +307,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static const IndexSchema kIndexes[];
   static const size_t kIndexCount;
 
-  // A descriptor of the last SQL statement that was executed, used for metrics.
-  std::optional<std::string> last_operation_;
-
   base::RepeatingCallback<void(int)> db_error_callback_;
 
   // We need to delay evicting stale buckets until after any session

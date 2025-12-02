@@ -854,8 +854,6 @@ TEST_P(QuotaDatabaseTest, OpenCorruptedDatabase) {
     expecter.ExpectError(SQLITE_CORRUPT);
     auto db = CreateDatabase(/*is_incognito=*/false);
     ASSERT_TRUE(EnsureOpened(db.get()));
-    histograms.ExpectBucketCount("Quota.DatabaseSpecificError.Open",
-                                 sql::SqliteLoggedResultCode::kCorrupt, 1);
     EXPECT_TRUE(expecter.SawExpectedErrors());
 
     // Ensure no nested transactions after reentrant calls to EnsureOpened()
@@ -995,7 +993,6 @@ TEST_P(QuotaDatabaseTest, UpdateOrCreateBucket_CorruptedDatabase) {
     EXPECT_EQ(sqlite_error_code,
               static_cast<int>(sql::SqliteResultCode::kCorrupt));
   }
-  histograms.ExpectTotalCount("Quota.DatabaseSpecificError.GetBucket", 1);
 }
 
 TEST_P(QuotaDatabaseTest, Expiration) {
