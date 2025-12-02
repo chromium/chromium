@@ -222,7 +222,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidNewMediaPicker,
     &kAndroidNoVisibleHintForDifferentTLD,
     &kAndroidOmniboxFocusedNewTabPage,
-    &kAndroidOpenPdfInlineBackport,
     &kAndroidPbDisablePulseAnimation,
     &kAndroidPbDisableSmoothAnimation,
     &kAndroidPdfAssistContent,
@@ -560,7 +559,6 @@ BASE_FEATURE(kAndroidLogoViewRefactor, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidNewMediaPicker, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidOmniboxFocusedNewTabPage, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kAndroidOpenPdfInlineBackport, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidPbDisablePulseAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidPbDisableSmoothAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidPdfAssistContent, base::FEATURE_ENABLED_BY_DEFAULT);

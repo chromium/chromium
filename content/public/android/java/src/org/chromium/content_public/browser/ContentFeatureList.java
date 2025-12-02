@@ -53,8 +53,6 @@ public class ContentFeatureList {
 
     public static final String ANDROID_MEDIA_INSERTION = "AndroidMediaInsertion";
 
-    public static final String ANDROID_OPEN_PDF_INLINE = "AndroidOpenPdfInline";
-
     public static final String HIDE_PASTE_POPUP_ON_GSB = "HidePastePopupOnGSB";
 
     public static final String JAVALESS_RENDERERS = "JavalessRenderers";

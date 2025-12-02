@@ -195,7 +195,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE =
             "AndroidOmniboxFocusedNewTabPage";
     public static final String ANDROID_OPEN_INCOGNITO_AS_WINDOW = "AndroidOpenIncognitoAsWindow";
-    public static final String ANDROID_OPEN_PDF_INLINE_BACKPORT = "AndroidOpenPdfInlineBackport";
     public static final String ANDROID_PB_DISABLE_PULSE_ANIMATION =
             "AndroidPbDisablePulseAnimation";
     public static final String ANDROID_PB_DISABLE_SMOOTH_ANIMATION =

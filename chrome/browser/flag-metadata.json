@@ -332,16 +332,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "android-open-pdf-inline",
-    "owners": [ "shuyng@google.com", "qinmin@chromium.org", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 137
-  },
-  {
-    "name": "android-open-pdf-inline-backport",
-    "owners": [ "shuyng@google.com", "qinmin@chromium.org", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 137
-  },
-  {
     "name": "android-pb-disable-pulse-animation",
     "owners": ["peilinwang@google.com", "clank-performance-team@google.com"],
     "expiry_milestone": 150

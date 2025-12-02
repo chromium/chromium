@@ -351,7 +351,6 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
     kAndroidDesktopZoomScalingFactor;
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kAndroidMonitorZoomScalingFactor;
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidOpenPdfInline);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidWebAppLaunchHandler);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kGinJavaBridgeMojoSkipClearObjectsOnMainDocumentReady);

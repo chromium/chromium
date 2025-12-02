@@ -10951,15 +10951,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillSharedStorageServerCardData)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-open-pdf-inline", flag_descriptions::kAndroidOpenPdfInlineName,
-     flag_descriptions::kAndroidOpenPdfInlineDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAndroidOpenPdfInline)},
-
-    {"android-open-pdf-inline-backport",
-     flag_descriptions::kAndroidOpenPdfInlineBackportName,
-     flag_descriptions::kAndroidOpenPdfInlineBackportDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidOpenPdfInlineBackport)},
-
     {"android-pdf-assist-content",
      flag_descriptions::kAndroidPdfAssistContentName,
      flag_descriptions::kAndroidPdfAssistContentDescription, kOsAndroid,

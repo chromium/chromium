@@ -5000,16 +5000,6 @@ inline constexpr char kAndroidMinimalUiLargeScreenDescription[] =
     "Display new minimal ui for PWAs on devices that support "
     "desktop windowing.";
 
-inline constexpr char kAndroidOpenPdfInlineBackportName[] =
-    "Open PDF Inline on Android pre-V";
-inline constexpr char kAndroidOpenPdfInlineBackportDescription[] =
-    "Enable Open PDF Inline on Android pre-V.";
-
-inline constexpr char kAndroidOpenPdfInlineName[] =
-    "Open PDF Inline on Android";
-inline constexpr char kAndroidOpenPdfInlineDescription[] =
-    "Enable Open PDF Inline on Android.";
-
 inline constexpr char kAndroidNewMediaPickerName[] =
     "Enable new media capture picker on Android";
 inline constexpr char kAndroidNewMediaPickerDescription[] =

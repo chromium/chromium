@@ -20,12 +20,9 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.url.GURL;
@@ -71,9 +68,6 @@ public class PdfUtils {
     }
 
     private static final String TAG = "PdfUtils";
-    private static final String PARAM_ANDROID_INLINE_PDF_IN_INCOGNITO = "inline_pdf_in_incognito";
-    private static final String PARAM_ANDROID_INLINE_PDF_BACKPORT_IN_INCOGNITO =
-            "inline_pdf_backport_in_incognito";
     private static final Set<String> TRANSIENT_PDF_SCHEMES =
             Set.of(
                     UrlConstants.HTTP_SCHEME,
@@ -140,29 +134,14 @@ public class PdfUtils {
     public static boolean shouldOpenPdfInline(boolean isIncognito) {
         if (sShouldOpenPdfInlineForTesting) return true;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            if (!ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_OPEN_PDF_INLINE)) {
-                return false;
-            }
-            if (isIncognito
-                    && !ContentFeatureMap.getInstance()
-                            .getFieldTrialParamByFeatureAsBoolean(
-                                    ContentFeatureList.ANDROID_OPEN_PDF_INLINE,
-                                    PARAM_ANDROID_INLINE_PDF_IN_INCOGNITO,
-                                    false)) {
+            if (isIncognito) {
                 return false;
             }
             return true;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 && SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S) >= 13) {
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT)) {
-                return false;
-            }
-            if (isIncognito
-                    && !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT,
-                            PARAM_ANDROID_INLINE_PDF_BACKPORT_IN_INCOGNITO,
-                            false)) {
+            if (isIncognito) {
                 return false;
             }
             return true;

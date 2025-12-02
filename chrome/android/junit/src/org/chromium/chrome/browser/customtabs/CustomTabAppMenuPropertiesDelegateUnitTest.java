@@ -58,7 +58,6 @@ import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -69,11 +68,7 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link CustomTabAppMenuPropertiesDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT,
-    ContentFeatureList.ANDROID_OPEN_PDF_INLINE,
-    ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT
-})
+@DisableFeatures(ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT)
 public class CustomTabAppMenuPropertiesDelegateUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ActivityTabProvider mActivityTabProvider;

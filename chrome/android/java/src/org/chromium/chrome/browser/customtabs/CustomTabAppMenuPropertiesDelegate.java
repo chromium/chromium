@@ -40,8 +40,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -257,11 +255,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         boolean isContentScheme = url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
         // TODO(crbug.com/384992232): Hide open in Chrome for blob and data url until such view
         //  intent can be handled.
-        if ((ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_OPEN_PDF_INLINE)
-                        || ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT))
-                && (url.getScheme().equals(UrlConstants.BLOB_SCHEME)
-                        || url.getScheme().equals(UrlConstants.DATA_SCHEME))) {
+        if (url.getScheme().equals(UrlConstants.BLOB_SCHEME)
+                || url.getScheme().equals(UrlConstants.DATA_SCHEME)) {
             openInChromeItemVisible = false;
         }
         addToHomeScreenVisible &=
