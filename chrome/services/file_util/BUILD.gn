@@ -51,6 +51,8 @@ source_set("file_util") {
 
   if (safe_browsing_mode == 1) {
     sources += [
+      "regular_archive_analysis_delegate.cc",
+      "regular_archive_analysis_delegate.h",
       "safe_archive_analyzer.cc",
       "safe_archive_analyzer.h",
     ]

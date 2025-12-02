@@ -7,6 +7,8 @@
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
+#include "chrome/services/file_util/regular_archive_analysis_delegate.h"
+#include "chrome/utility/safe_browsing/archive_analysis_delegate.h"
 
 namespace {
 // The maximum duration of analysis, in milliseconds.
@@ -35,6 +37,8 @@ void SafeArchiveAnalyzer::AnalyzeZipFile(
                               weak_factory_.GetWeakPtr());
   timeout_timer_.Start(FROM_HERE, kArchiveAnalysisTimeout, this,
                        &SafeArchiveAnalyzer::Timeout);
+  zip_analyzer_.SetAnalysisDelegate(
+      std::make_unique<safe_browsing::RegularArchiveAnalysisDelegate>());
   zip_analyzer_.Analyze(std::move(zip_file), base::FilePath(), password,
                         std::move(analysis_finished_callback),
                         std::move(temp_file_getter_callback), &results_);
@@ -58,6 +62,8 @@ void SafeArchiveAnalyzer::AnalyzeDmgFile(
                               weak_factory_.GetWeakPtr());
   timeout_timer_.Start(FROM_HERE, kArchiveAnalysisTimeout, this,
                        &SafeArchiveAnalyzer::Timeout);
+  dmg_analyzer_.SetAnalysisDelegate(
+      std::make_unique<safe_browsing::RegularArchiveAnalysisDelegate>());
   // TODO(crbug.com/40923881): Update DMG analyzer to use passwords and provide
   // the password here.
   dmg_analyzer_.Analyze(std::move(dmg_file), base::FilePath(),
@@ -87,6 +93,8 @@ void SafeArchiveAnalyzer::AnalyzeRarFile(
                               weak_factory_.GetWeakPtr());
   timeout_timer_.Start(FROM_HERE, kArchiveAnalysisTimeout, this,
                        &SafeArchiveAnalyzer::Timeout);
+  rar_analyzer_.SetAnalysisDelegate(
+      std::make_unique<safe_browsing::RegularArchiveAnalysisDelegate>());
   rar_analyzer_.Analyze(std::move(rar_file), base::FilePath(),
                         /*password=*/password,
                         std::move(analysis_finished_callback),
@@ -114,6 +122,8 @@ void SafeArchiveAnalyzer::AnalyzeSevenZipFile(
                        &SafeArchiveAnalyzer::Timeout);
   // TODO(crbug.com/40923881): Update 7Z analyzer to use passwords and provide
   // the password here.
+  seven_zip_analyzer_.SetAnalysisDelegate(
+      std::make_unique<safe_browsing::RegularArchiveAnalysisDelegate>());
   seven_zip_analyzer_.Analyze(std::move(seven_zip_file), base::FilePath(),
                               /*password=*/std::nullopt,
                               std::move(analysis_finished_callback),

@@ -32,6 +32,9 @@ class ZipAnalyzer : public ArchiveAnalyzer {
   void OnGetTempFile(base::File temp_file);
 
   base::File temp_file_;
+  // reader_delegate_ is held by ZipReader, but ZipReader doesn't own it.
+  // We need to keep the delegate alive while the reader is using it.
+  std::unique_ptr<zip::ReaderDelegate> reader_delegate_;
   zip::ZipReader reader_;
 
   bool has_encrypted_ = false;
