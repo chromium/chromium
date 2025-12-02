@@ -333,6 +333,7 @@ TEST_P(JapaneseTesting, CreateJapaneseSettingsFromPrefsTest) {
   ASSERT_TRUE(settings->is_japanese_settings());
   mojom::JapaneseSettingsPtr expected = mojom::JapaneseSettings::New();
   expected->unused2 = false;
+  expected->automatically_switch_to_halfwidth = false;
   expected->disable_personalized_suggestions = true;
   expected->input_mode = JapaneseSettings::InputMode::kKana;
   expected->keymap_style = JapaneseSettings::KeymapStyle::kChromeos;
