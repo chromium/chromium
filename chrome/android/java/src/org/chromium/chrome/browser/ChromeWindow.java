@@ -119,7 +119,6 @@ public class ChromeWindow extends ActivityWindowAndroid {
 
     @Override
     public ModalDialogManager getModalDialogManager() {
-        // TODO(crbug.com/40160045): Move ModalDialogManager to UnownedUserData.
         return mModalDialogManagerSupplier.get();
     }
 
