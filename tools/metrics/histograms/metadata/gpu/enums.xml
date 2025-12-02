@@ -1177,6 +1177,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 
 <!-- LINT.ThenChange(//gpu/config/gpu_info.h:IntelGpuSeriesType) -->
 
+<enum name="IntelNpuDeviceId">
+  <int value="25662" label="0x643e, Intel Lunarlake"/>
+  <int value="32029" label="0x7d1d, Intel Meteorlake"/>
+  <int value="44317" label="0xad1d, Intel Arrowlake"/>
+  <int value="45118" label="0xb03e, Intel Pantherlake"/>
+</enum>
+
 <enum name="MaximumGLESVersion">
   <summary>The maximum GLES version supported.</summary>
   <int value="0" label="GLES2.0"/>

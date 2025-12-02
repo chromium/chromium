@@ -980,6 +980,7 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
 #endif
   gpu_info_ = gpu_info;
   RecordDiscreteGpuHistograms(gpu_info_);
+  RecordNpuHistograms(gpu_info_);
 #if BUILDFLAG(ENABLE_VULKAN)
   // Remember the initial hardware_supports_vulkan value so it doesn't change
   // if GPU process restarts as Vulkan might get disabled by GPU mode fallback.

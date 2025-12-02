@@ -1869,6 +1869,16 @@ chromium-metrics-reviews@google.com.
   <token key="ExoSurfaceCodePaths" variants="ExoSurfaceCodePaths"/>
 </histogram>
 
+<histogram name="NPU.Intel.DeviceId" enum="IntelNpuDeviceId"
+    expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    Record Intel NPU device ID when GPU process launches and sends GPUInfo to
+    browser process.
+  </summary>
+</histogram>
+
 <histogram name="Skia.Graphite.PipelineCache.PipelineUsesInEpoch" units="count"
     expires_after="2026-01-01">
   <owner>robertphillips@google.com</owner>
