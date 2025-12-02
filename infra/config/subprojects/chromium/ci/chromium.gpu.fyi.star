@@ -2630,6 +2630,13 @@ ci.thin_tester(
                     },
                 ),
             ),
+            "trace_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    swarming = targets.swarming(
+                        shards = 2,
+                    ),
+                ),
+            ),
         },
     ),
     targets_settings = targets.settings(
