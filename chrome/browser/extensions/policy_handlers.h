@@ -105,7 +105,6 @@ class ExtensionInstallBlockListPolicyHandler
   ExtensionListPolicyHandler list_handler_;
 };
 
-#if !BUILDFLAG(IS_ANDROID)
 // Implements additional checks for policies that are lists of extension
 // URLPatterns.
 class ExtensionURLPatternListPolicyHandler
@@ -130,7 +129,6 @@ class ExtensionURLPatternListPolicyHandler
  private:
   const char* pref_path_;
 };
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ExtensionSettingsPolicyHandler
     : public policy::SchemaValidatingPolicyHandler {

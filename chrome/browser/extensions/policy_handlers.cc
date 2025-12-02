@@ -224,9 +224,6 @@ void ExtensionInstallBlockListPolicyHandler::ApplyPolicySettings(
   list_handler_.ApplyPolicySettings(policies, prefs);
 }
 
-// TODO(crbug.com/394876083): Support more extension policy handlers on desktop
-// Android.
-#if !BUILDFLAG(IS_ANDROID)
 // ExtensionURLPatternListPolicyHandler implementation -------------------------
 
 ExtensionURLPatternListPolicyHandler::ExtensionURLPatternListPolicyHandler(
@@ -290,7 +287,6 @@ void ExtensionURLPatternListPolicyHandler::ApplyPolicySettings(
     prefs->SetValue(pref_path_, value->Clone());
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // ExtensionSettingsPolicyHandler implementation  ------------------------------
 
