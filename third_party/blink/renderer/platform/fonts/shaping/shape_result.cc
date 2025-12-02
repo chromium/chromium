@@ -983,12 +983,12 @@ inline bool IsCursiveScript(hb_script_t script) {
 }
 }  // anonymous namespace
 
-float ShapeResult::ApplySpacingOrExpansion(ShapeResultSpacing& spacing,
-                                           bool is_expansion,
-                                           int text_start_offset) {
-  float offset = 0;
+TextRunLayoutUnit ShapeResult::ApplySpacingOrExpansion(
+    ShapeResultSpacing& spacing,
+    bool is_expansion,
+    int text_start_offset) {
   float total_advance = 0;
-  TextRunLayoutUnit space;
+  TextRunLayoutUnit spacing_after;
   for (auto& run : runs_) {
     if (!run)
       continue;
@@ -1008,49 +1008,49 @@ float ShapeResult::ApplySpacingOrExpansion(ShapeResultSpacing& spacing,
       ShapeResultSpacing::ComputeSpacingParameters parameters{
           .index = run_start_index + glyph_data.character_index,
           .original_advance = glyph_data.advance};
+      TextRunLayoutUnit spacing_before;
       if (is_expansion) {
         auto result = spacing.ComputeExpansion(parameters.index,
                                                IsCursiveScript(run->script_));
-        offset = result.first;
-        space = result.second;
+        spacing_before = result.first;
+        spacing_after = result.second;
       } else {
-        space = spacing.ComputeSpacing(parameters, offset,
-                                       IsCursiveScript(run->script_));
+        spacing_after =
+            spacing.ComputeSpacing(parameters, IsCursiveScript(run->script_));
       }
-      glyph_data.AddAdvance(space);
+      glyph_data.AddAdvance(spacing_before + spacing_after);
       total_advance_for_run += glyph_data.advance;
 
-      // |offset| is non-zero only when justifying CJK characters that follow
-      // non-CJK characters.
-      if (offset) [[unlikely]] {
+      // `spacing_before` is non-zero only when justifying CJK characters that
+      // follow non-CJK characters.
+      if (spacing_before) [[unlikely]] {
+        float offset = spacing_before.ToFloat();
         if (run->IsHorizontal()) {
           run->glyph_data_.AddOffsetWidthAt(i, offset);
         } else {
           run->glyph_data_.AddOffsetHeightAt(i, offset);
           has_vertical_offsets_ = true;
         }
-        offset = 0;
       }
     }
     run->width_ = total_advance_for_run;
     total_advance += run->width_;
   }
   width_ = total_advance;
-  return space;
+  return spacing_after;
 }
 
-float ShapeResult::ApplySpacing(ShapeResultSpacing& spacing,
-                                int text_start_offset) {
+void ShapeResult::ApplySpacing(ShapeResultSpacing& spacing,
+                               int text_start_offset) {
   // For simplicity, we apply spacing once only. If you want to do multiple
   // time, please get rid of below |DCHECK()|.
   DCHECK(!is_applied_spacing_) << this;
   is_applied_spacing_ = true;
-  return ApplySpacingOrExpansion(spacing, /* is_expansion */ false,
-                                 text_start_offset);
+  ApplySpacingOrExpansion(spacing, /* is_expansion */ false, text_start_offset);
 }
 
-float ShapeResult::ApplyExpansion(ShapeResultSpacing& spacing,
-                                  int text_start_offset) {
+TextRunLayoutUnit ShapeResult::ApplyExpansion(ShapeResultSpacing& spacing,
+                                              int text_start_offset) {
   // For simplicity, we apply spacing once only. If you want to do multiple
   // time, please get rid of below |DCHECK()|.
   DCHECK(!is_applied_spacing_) << this;

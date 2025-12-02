@@ -60,29 +60,31 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
                     bool allows_leading_expansion = false,
                     bool allows_trailing_expansion = false);
 
-  // Compute the sum of all spacings for the specified |index|.
-  // The |index| is for the string given in the constructor.
-  // For justification, this function must be called incrementally since it
-  // keeps states and counts consumed justification opportunities.
   struct ComputeSpacingParameters {
     unsigned index;
     float original_advance = 0.0;
   };
+  // Compute spacings for the specified `index`.
+  // This function returns space amount to be added after the glyph.
+  //
+  // The `index` is for the string given in the constructor.
   TextRunLayoutUnit ComputeSpacing(unsigned index,
-                                   float& offset,
                                    bool is_cursive_script = false) {
-    return ComputeSpacing(ComputeSpacingParameters{.index = index}, offset,
+    return ComputeSpacing(ComputeSpacingParameters{.index = index},
                           is_cursive_script);
   }
   TextRunLayoutUnit ComputeSpacing(const ComputeSpacingParameters& parameters,
-                                   float& offset,
                                    bool is_cursive_script);
 
-  // Returns a pair of
+  // Compute spacings to justify a glyph at the specified `index`.
+  // This function returns a pair of
   //  * Space amount to be added before the glyph, and
-  //  * Pixel amount to be added to the glyph's advance.
-  // Pixel amount to be added after the glyph is <the latter> - <the former>.
-  std::pair<float, TextRunLayoutUnit> ComputeExpansion(
+  //  * Space amount to be added after the glyph.
+  //
+  // The `index` is for the string given in the constructor.
+  // This function must be called incrementally since it keeps states and
+  // counts consumed justification opportunities.
+  std::pair<TextRunLayoutUnit, TextRunLayoutUnit> ComputeExpansion(
       unsigned index,
       bool is_cursive_script = false);
 

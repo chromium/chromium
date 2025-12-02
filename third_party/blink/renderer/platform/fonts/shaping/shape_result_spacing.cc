@@ -96,7 +96,6 @@ TextRunLayoutUnit ShapeResultSpacing::NextExpansion() {
 
 TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(
     const ComputeSpacingParameters& parameters,
-    float& offset,
     bool is_cursive_script) {
   DCHECK(has_spacing_);
   unsigned index = parameters.index;
@@ -132,16 +131,15 @@ TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(
   return spacing;
 }
 
-std::pair<float, TextRunLayoutUnit> ShapeResultSpacing::ComputeExpansion(
-    unsigned index,
-    bool is_cursive_script) {
+std::pair<TextRunLayoutUnit, TextRunLayoutUnit>
+ShapeResultSpacing::ComputeExpansion(unsigned index, bool is_cursive_script) {
   if (!HasExpansion() || index >= text_.length()) {
-    return {0.0f, TextRunLayoutUnit()};
+    return {TextRunLayoutUnit(), TextRunLayoutUnit()};
   }
   DCHECK(!normalize_space_);
   DCHECK(!allow_tabs_);
 
-  float spacing_before = 0;
+  TextRunLayoutUnit spacing_before;
   TextRunLayoutUnit spacing_after;
 
   bool opportunity_before = false;
@@ -152,8 +150,6 @@ std::pair<float, TextRunLayoutUnit> ShapeResultSpacing::ComputeExpansion(
     opportunity_before = pair.first;
     opportunity_after = pair.second;
   } else {
-    VLOG(0) << __func__ << " size=" << text_.Span16().size()
-            << " index=" << index;
     auto pair = CheckJustificationOpportunity16(
         justification_method_, CodePointAt(text_.Span16(), index),
         is_after_expansion_);
@@ -163,17 +159,13 @@ std::pair<float, TextRunLayoutUnit> ShapeResultSpacing::ComputeExpansion(
 
   if (opportunity_before) {
     // Take the expansion opportunity before this ideograph.
-    TextRunLayoutUnit expand_before = NextExpansion();
-    if (expand_before) {
-      spacing_before += expand_before.ToFloat();
-      spacing_after += expand_before;
-    }
+    spacing_before = NextExpansion();
     if (!HasExpansion()) {
       return {spacing_before, spacing_after};
     }
   }
   if (opportunity_after) {
-    return {spacing_before, spacing_after + NextExpansion()};
+    spacing_after = NextExpansion();
   }
   return {spacing_before, spacing_after};
 }

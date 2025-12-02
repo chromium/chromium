@@ -152,14 +152,14 @@ float JustifyResults(const String& text_content,
         // |spacing_before| is non-zero if this |item_result| is after
         // non-CJK character. See "text-combine-justify.html".
         DCHECK_EQ(kTextCombineItemMarker, line_text[line_text_offset]);
-        item_result.inline_size += spacing_after;
-        item_result.spacing_before = LayoutUnit(spacing_before);
+        item_result.inline_size += spacing_before + spacing_after;
+        item_result.spacing_before = spacing_before.To<LayoutUnit>();
       } else {
         DCHECK_EQ(uchar::kObjectReplacementCharacter,
                   line_text[line_text_offset]);
-        item_result.inline_size += spacing_after;
+        item_result.inline_size += spacing_before + spacing_after;
         // |spacing_before| is non-zero only before CJK characters.
-        DCHECK_EQ(spacing_before, 0.0f);
+        DCHECK_EQ(spacing_before, TextRunLayoutUnit());
       }
     } else if (item_result.IsRubyColumn()) {
       LineInfo& base_line = item_result.ruby_column->base_line;
@@ -185,7 +185,7 @@ float JustifyResults(const String& text_content,
         // ShapeResultSpacing doesn't ask for adding space to OBJECT
         // REPLACEMENT CHARACTER, and asks for adding space to the next item
         // instead.
-        DCHECK_EQ(spacing_before, 0.0f);
+        DCHECK_EQ(spacing_before, TextRunLayoutUnit());
         DCHECK_EQ(spacing_after, TextRunLayoutUnit());
       }
       if (i + 1 < results.size()) {
