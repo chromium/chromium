@@ -6981,7 +6981,7 @@
   {
     "name": "media-indicators-android",
     "owners": ["polardz@google.com", "ckitagawa@chromium.org", "clank-tab-dev@google.com"],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "media-picker-adoption",
@@ -9481,7 +9481,7 @@
   {
     "name": "show-new-tab-animations",
     "owners": [ "ckitagawa@chromium.org", "polardz@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "show-overdraw-feedback",
