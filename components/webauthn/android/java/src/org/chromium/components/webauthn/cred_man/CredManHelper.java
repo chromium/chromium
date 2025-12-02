@@ -43,12 +43,12 @@ import org.chromium.components.webauthn.CredManSupport;
 import org.chromium.components.webauthn.Fido2CredentialRequest.CancellableUiState;
 import org.chromium.components.webauthn.Fido2CredentialRequestJni;
 import org.chromium.components.webauthn.GetAssertionOutcome;
-import org.chromium.components.webauthn.GetCredentialResponseCallback;
 import org.chromium.components.webauthn.MakeCredentialOutcome;
-import org.chromium.components.webauthn.MakeCredentialResponseCallback;
 import org.chromium.components.webauthn.WebauthnBrowserBridge;
 import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
+import org.chromium.components.webauthn.WebauthnRequestCallback;
+import org.chromium.components.webauthn.WebauthnRequestResponse;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCreateRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPrepareRequestEnum;
@@ -82,12 +82,6 @@ public class CredManHelper {
     private CredManMetricsHelper mMetricsHelper;
     private @Nullable Runnable mNoCredentialsFallback;
 
-    // A callback that provides an AuthenticatorStatus error in the first argument, and optionally a
-    // metrics recording outcome in the second.
-    public interface ErrorCallback {
-        void onResult(int error, @Nullable Integer metricsOutcome);
-    }
-
     public CredManHelper(
             AuthenticationContextProvider authenticationContextProvider,
             WebauthnBrowserBridge.Provider bridgeProvider,
@@ -107,9 +101,7 @@ public class CredManHelper {
             PublicKeyCredentialCreationOptions options,
             String originString,
             byte @Nullable [] clientDataJson,
-            byte @Nullable [] clientDataHash,
-            @Nullable MakeCredentialResponseCallback makeCallback,
-            ErrorCallback errorCallback) {
+            byte @Nullable [] clientDataHash) {
         log(TAG, "startMakeRequest");
         mClientDataJson = clientDataJson;
         final String requestAsJson =
@@ -127,17 +119,25 @@ public class CredManHelper {
                                         + " ("
                                         + exception.getMessage()
                                         + ")");
+                        WebauthnRequestCallback callback =
+                                mAuthenticationContextProvider.getRequestCallback();
+                        if (callback == null) {
+                            logError(TAG, "No request callback for makeCredential request.");
+                            return;
+                        }
                         if (errorType.equals(CreateCredentialException.TYPE_USER_CANCELED)) {
-                            errorCallback.onResult(
-                                    AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                                    MakeCredentialOutcome.USER_CANCELLATION);
+                            callback.onComplete(
+                                    WebauthnRequestResponse.forFailedMakeCredential(
+                                            AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                                            MakeCredentialOutcome.USER_CANCELLATION));
                             mMetricsHelper.recordCredManCreateRequestHistogram(
                                     CredManCreateRequestEnum.CANCELLED);
                         } else if (errorType.equals(
                                 CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_INVALID_STATE_ERROR)) {
-                            errorCallback.onResult(
-                                    AuthenticatorStatus.CREDENTIAL_EXCLUDED,
-                                    MakeCredentialOutcome.CREDENTIAL_EXCLUDED);
+                            callback.onComplete(
+                                    WebauthnRequestResponse.forFailedMakeCredential(
+                                            AuthenticatorStatus.CREDENTIAL_EXCLUDED,
+                                            MakeCredentialOutcome.CREDENTIAL_EXCLUDED));
                             // This is successful from the point of view of the user.
                             mMetricsHelper.recordCredManCreateRequestHistogram(
                                     CredManCreateRequestEnum.SUCCESS);
@@ -146,7 +146,9 @@ public class CredManHelper {
                             //  * CreateCredentialException.TYPE_UNKNOWN
                             //  * CreateCredentialException.TYPE_NO_CREATE_OPTIONS
                             //  * CreateCredentialException.TYPE_INTERRUPTED
-                            errorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
+                            callback.onComplete(
+                                    WebauthnRequestResponse.forFailedMakeCredential(
+                                            AuthenticatorStatus.UNKNOWN_ERROR, null));
                             mMetricsHelper.recordCredManCreateRequestHistogram(
                                     CredManCreateRequestEnum.FAILURE);
                         }
@@ -158,8 +160,16 @@ public class CredManHelper {
                         Bundle data = createCredentialResponse.getData();
                         MakeCredentialAuthenticatorResponse response =
                                 parseCreateCredentialResponseData(data);
+                        WebauthnRequestCallback callback =
+                                mAuthenticationContextProvider.getRequestCallback();
+                        if (callback == null) {
+                            logError(TAG, "No request callback for makeCredential request.");
+                            return;
+                        }
                         if (response == null) {
-                            errorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
+                            callback.onComplete(
+                                    WebauthnRequestResponse.forFailedMakeCredential(
+                                            AuthenticatorStatus.UNKNOWN_ERROR, null));
                             mMetricsHelper.recordCredManCreateRequestHistogram(
                                     CredManCreateRequestEnum.FAILURE);
                             return;
@@ -168,8 +178,8 @@ public class CredManHelper {
                             response.info.clientDataJson = mClientDataJson;
                         }
                         response.echoCredProps = options.credProps;
-                        assumeNonNull(makeCallback);
-                        makeCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS, response);
+                        callback.onComplete(
+                                WebauthnRequestResponse.forSuccessfulMakeCredential(response));
                         mMetricsHelper.recordCredManCreateRequestHistogram(
                                 CredManCreateRequestEnum.SUCCESS);
                     }
@@ -198,15 +208,12 @@ public class CredManHelper {
             String originString,
             byte @Nullable [] clientDataJson,
             byte @Nullable [] clientDataHash,
-            @Nullable GetCredentialResponseCallback getCallback,
-            ErrorCallback errorCallback,
             Barrier barrier,
             @Nullable Runnable stopImmediateTimer,
             boolean ignoreGpm) {
         log(TAG, "startPrefetchRequest");
         long startTimeMs = SystemClock.elapsedRealtime();
         mBarrier = barrier; // Store this for any cancellation requests.
-        final ErrorCallback localErrorCallback = errorCallback;
         final Barrier localBarrier = barrier;
         final WebauthnBrowserBridge localBridge = assumeNonNull(mBridgeProvider.getBridge());
         assumeNonNull(options.publicKey);
@@ -266,6 +273,12 @@ public class CredManHelper {
                         mCancellableUiState = CancellableUiState.WAITING_FOR_SELECTION;
 
                         Runnable barrierCallback;
+                        WebauthnRequestCallback callback =
+                                mAuthenticationContextProvider.getRequestCallback();
+                        if (callback == null) {
+                            logError(TAG, "No request callback for getCredential request.");
+                            return;
+                        }
                         if (options.mediation == Mediation.IMMEDIATE
                                 && CredManSupportProvider.getCredManSupport()
                                         == CredManSupport.FULL_UNLESS_INAPPLICABLE) {
@@ -281,9 +294,10 @@ public class CredManHelper {
                             if (!hasPublicKeyCredentials && !mRequestPasswords) {
                                 // TODO(https://crbug.com/408002783): This should have a distinct
                                 // GetAssertionOutcome for logging.
-                                localErrorCallback.onResult(
-                                        AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                                        GetAssertionOutcome.OTHER_FAILURE);
+                                callback.onComplete(
+                                        WebauthnRequestResponse.forFailedGetCredential(
+                                                AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                                                GetAssertionOutcome.OTHER_FAILURE));
                                 return;
                             }
                             // This fallback should not be used because the prefetch identified
@@ -292,9 +306,10 @@ public class CredManHelper {
                             // shown when it should not be.
                             setNoCredentialsFallback(
                                     () ->
-                                            localErrorCallback.onResult(
-                                                    AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                                                    GetAssertionOutcome.OTHER_FAILURE));
+                                            callback.onComplete(
+                                                    WebauthnRequestResponse.forFailedGetCredential(
+                                                            AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                                                            GetAssertionOutcome.OTHER_FAILURE)));
                             barrierCallback =
                                     () ->
                                             startGetRequest(
@@ -302,8 +317,6 @@ public class CredManHelper {
                                                     originString,
                                                     clientDataJson,
                                                     clientDataHash,
-                                                    getCallback,
-                                                    localErrorCallback,
                                                     ignoreGpm);
                         } else {
                             barrierCallback =
@@ -318,8 +331,6 @@ public class CredManHelper {
                                                             originString,
                                                             clientDataJson,
                                                             clientDataHash,
-                                                            getCallback,
-                                                            localErrorCallback,
                                                             ignoreGpm);
                                                 });
                                     };
@@ -373,13 +384,10 @@ public class CredManHelper {
             String originString,
             byte @Nullable [] clientDataJson,
             byte @Nullable [] clientDataHash,
-            @Nullable GetCredentialResponseCallback getCallback,
-            ErrorCallback errorCallback,
             boolean ignoreGpm) {
         log(TAG, "startGetRequest");
         mClientDataJson = clientDataJson;
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
-        final ErrorCallback localErrorCallback = errorCallback;
         final WebauthnBrowserBridge localBridge = assumeNonNull(mBridgeProvider.getBridge());
         assumeNonNull(options.publicKey);
 
@@ -402,11 +410,18 @@ public class CredManHelper {
                             mCancellableUiState = CancellableUiState.NONE;
                             return;
                         }
+                        WebauthnRequestCallback callback =
+                                mAuthenticationContextProvider.getRequestCallback();
+                        if (callback == null) {
+                            logError(TAG, "No request callback for getCredential request");
+                            return;
+                        }
                         if (errorType.equals(GetCredentialException.TYPE_USER_CANCELED)) {
                             if (mCancellableUiState == CancellableUiState.NONE) {
-                                localErrorCallback.onResult(
-                                        AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                                        GetAssertionOutcome.USER_CANCELLATION);
+                                callback.onComplete(
+                                        WebauthnRequestResponse.forFailedGetCredential(
+                                                AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                                                GetAssertionOutcome.USER_CANCELLATION));
                             }
 
                             mMetricsHelper.reportGetCredentialMetrics(
@@ -425,16 +440,19 @@ public class CredManHelper {
                             if (mNoCredentialsFallback != null) {
                                 mNoCredentialsFallback.run();
                             } else if (mCancellableUiState == CancellableUiState.NONE) {
-                                localErrorCallback.onResult(
-                                        AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                                        GetAssertionOutcome.CREDENTIAL_NOT_RECOGNIZED);
+                                callback.onComplete(
+                                        WebauthnRequestResponse.forFailedGetCredential(
+                                                AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                                                GetAssertionOutcome.CREDENTIAL_NOT_RECOGNIZED));
                             }
                         } else {
                             // Includes:
                             //  * GetCredentialException.TYPE_UNKNOWN
                             //  * GetCredentialException.TYPE_NO_CREATE_OPTIONS
                             //  * GetCredentialException.TYPE_INTERRUPTED
-                            localErrorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
+                            callback.onComplete(
+                                    WebauthnRequestResponse.forFailedGetCredential(
+                                            AuthenticatorStatus.UNKNOWN_ERROR, null));
                             mMetricsHelper.reportGetCredentialMetrics(
                                     CredManGetRequestEnum.FAILURE, mCancellableUiState);
                         }
@@ -456,6 +474,12 @@ public class CredManHelper {
                         Bundle data = getCredentialResponse.getCredential().getData();
                         String type = getCredentialResponse.getCredential().getType();
 
+                        WebauthnRequestCallback callback =
+                                mAuthenticationContextProvider.getRequestCallback();
+                        if (callback == null) {
+                            logError(TAG, "No request callback for getCredential request");
+                            return;
+                        }
                         if (!TYPE_PASSKEY.equals(type)) {
                             if (options.mediation == Mediation.IMMEDIATE) {
                                 CredentialInfo passwordCredential =
@@ -467,9 +491,9 @@ public class CredManHelper {
                                                         data.getString(
                                                                 CRED_MAN_PREFIX
                                                                         + "BUNDLE_KEY_PASSWORD")));
-                                assumeNonNull(getCallback);
-                                getCallback.onCredentialResponse(
-                                        /* assertionResponse= */ null, passwordCredential);
+                                callback.onComplete(
+                                        WebauthnRequestResponse.forSuccessfulPassword(
+                                                passwordCredential));
                                 return;
                             }
 
@@ -502,7 +526,9 @@ public class CredManHelper {
                                             ? CancellableUiState.WAITING_FOR_SELECTION
                                             : CancellableUiState.NONE;
                             notifyBrowserOnCredManClosed(false);
-                            localErrorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
+                            callback.onComplete(
+                                    WebauthnRequestResponse.forFailedGetCredential(
+                                            AuthenticatorStatus.UNKNOWN_ERROR, null));
                             return;
                         }
 
@@ -520,7 +546,9 @@ public class CredManHelper {
                                             ? CancellableUiState.WAITING_FOR_SELECTION
                                             : CancellableUiState.NONE;
                             notifyBrowserOnCredManClosed(false);
-                            localErrorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
+                            callback.onComplete(
+                                    WebauthnRequestResponse.forFailedGetCredential(
+                                            AuthenticatorStatus.UNKNOWN_ERROR, null));
                             return;
                         }
                         if (mClientDataJson != null) {
@@ -538,8 +566,9 @@ public class CredManHelper {
                         if (frameHost != null) {
                             frameHost.notifyWebAuthnAssertionRequestSucceeded();
                         }
-                        assumeNonNull(getCallback);
-                        getCallback.onCredentialResponse(response, /* passwordCredential= */ null);
+                        assumeNonNull(callback);
+                        callback.onComplete(
+                                WebauthnRequestResponse.forSuccessfulGetAssertion(response));
                     }
                 };
 

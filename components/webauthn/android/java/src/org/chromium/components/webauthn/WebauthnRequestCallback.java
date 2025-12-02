@@ -14,7 +14,7 @@ import org.chromium.blink.mojom.Authenticator.GetCredential_Response;
 import org.chromium.blink.mojom.Authenticator.MakeCredential_Response;
 import org.chromium.blink.mojom.Authenticator.Report_Response;
 import org.chromium.blink.mojom.AuthenticatorStatus;
-import org.chromium.build.annotations.NonNull;
+import org.chromium.blink.mojom.GetCredentialResponse;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -167,10 +167,21 @@ public class WebauthnRequestCallback {
 
     private void handleGetCredentialResponse(WebauthnRequestResponse response) {
         assumeNonNull(mGetCredentialCallback);
+        GetCredentialResponse getCredentialResponse = response.getGetCredentialResponse();
+        assumeNonNull(getCredentialResponse);
+        if (getCredentialResponse.which() == GetCredentialResponse.Tag.GetAssertionResponse) {
+            log(
+                    TAG,
+                    "handleGetCredentialResponse: status=%d",
+                    getCredentialResponse.getGetAssertionResponse().status);
+        } else {
+            log(TAG, "handleGetCredentialResponse: called with password credential");
+        }
         mGetCredentialCallback.call(response.getGetCredentialResponse());
     }
 
-    private void handleMakeCredentialResponse(@NonNull WebauthnRequestResponse response) {
+    private void handleMakeCredentialResponse(WebauthnRequestResponse response) {
+        log(TAG, "handleMakeCredentialResponse: status=%d", response.getAuthenticatorStatus());
         assumeNonNull(mMakeCredentialCallback);
         if (response.getAuthenticatorStatus() == AuthenticatorStatus.SUCCESS) {
             mMakeCredentialCallback.call(

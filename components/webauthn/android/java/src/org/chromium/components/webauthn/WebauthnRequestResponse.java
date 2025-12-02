@@ -10,7 +10,6 @@ import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.GetAssertionResponse;
 import org.chromium.blink.mojom.GetCredentialResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
-import org.chromium.build.annotations.NonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -30,12 +29,11 @@ public class WebauthnRequestResponse {
     private WebauthnRequestResponse() {}
 
     public static WebauthnRequestResponse forSuccessfulMakeCredential(
-            MakeCredentialAuthenticatorResponse makeCredentialResponse,
-            @Nullable @MakeCredentialOutcome Integer makeCredentialOutcome) {
+            MakeCredentialAuthenticatorResponse makeCredentialResponse) {
         WebauthnRequestResponse response = new WebauthnRequestResponse();
         response.mAuthenticatorStatus = AuthenticatorStatus.SUCCESS;
         response.mMakeCredentialResponse = makeCredentialResponse;
-        response.mMakeCredentialOutcomeMetricValue = makeCredentialOutcome;
+        response.mMakeCredentialOutcomeMetricValue = MakeCredentialOutcome.SUCCESS;
         return response;
     }
 
@@ -44,7 +42,10 @@ public class WebauthnRequestResponse {
             @Nullable @MakeCredentialOutcome Integer makeCredentialOutcome) {
         WebauthnRequestResponse response = new WebauthnRequestResponse();
         response.mAuthenticatorStatus = makeCredentialStatus;
-        response.mMakeCredentialOutcomeMetricValue = makeCredentialOutcome;
+        response.mMakeCredentialOutcomeMetricValue =
+                makeCredentialOutcome != null
+                        ? makeCredentialOutcome
+                        : MakeCredentialOutcome.OTHER_FAILURE;
         return response;
     }
 
@@ -57,7 +58,7 @@ public class WebauthnRequestResponse {
     }
 
     public static WebauthnRequestResponse forSuccessfulGetAssertion(
-            @NonNull GetAssertionAuthenticatorResponse getAssertionAuthenticatorResponse) {
+            GetAssertionAuthenticatorResponse getAssertionAuthenticatorResponse) {
         GetAssertionResponse getAssertionResponse = new GetAssertionResponse();
         getAssertionResponse.status = AuthenticatorStatus.SUCCESS;
         getAssertionResponse.credential = getAssertionAuthenticatorResponse;
@@ -71,8 +72,7 @@ public class WebauthnRequestResponse {
         return response;
     }
 
-    public static WebauthnRequestResponse forSuccessfulPassword(
-            @NonNull CredentialInfo credentialInfo) {
+    public static WebauthnRequestResponse forSuccessfulPassword(CredentialInfo credentialInfo) {
         WebauthnRequestResponse response = new WebauthnRequestResponse();
         response.mGetCredentialResponse = new GetCredentialResponse();
         response.mGetCredentialResponse.setPasswordResponse(credentialInfo);
@@ -90,7 +90,10 @@ public class WebauthnRequestResponse {
 
         WebauthnRequestResponse response = new WebauthnRequestResponse();
         response.mGetCredentialResponse = getCredentialResponse;
-        response.mGetAssertionOutcomeMetricValue = getAssertionOutcome;
+        response.mGetAssertionOutcomeMetricValue =
+                getAssertionOutcome != null
+                        ? getAssertionOutcome
+                        : GetAssertionOutcome.OTHER_FAILURE;
         return response;
     }
 

@@ -4,9 +4,10 @@
 
 package org.chromium.components.webauthn;
 
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import androidx.annotation.IntDef;
 
@@ -20,7 +21,6 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRule;
 
 import java.lang.annotation.Retention;
@@ -204,16 +204,18 @@ public class BarrierTest {
 
     @Mock Runnable mCredManSuccesfulRunnable;
     @Mock Runnable mFido2ApiSuccessfulRunnable;
-    @Mock Callback<Integer> mErrorCallback;
+    @Mock AuthenticationContextProvider mAuthenticationContextProvider;
+    @Mock WebauthnRequestCallback mRequestCallback;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
+        when(mAuthenticationContextProvider.getRequestCallback()).thenReturn(mRequestCallback);
     }
 
     @Test
     public void testScenarios() {
-        Barrier barrier = new Barrier(mErrorCallback);
+        Barrier barrier = new Barrier(mAuthenticationContextProvider);
         barrier.resetAndSetWaitStatus(mMode);
 
         if (mFirstCompletedApi == ApiCallType.CRED_MAN
@@ -247,27 +249,27 @@ public class BarrierTest {
             case Expectation.BOTH_RAN:
                 verify(mFido2ApiSuccessfulRunnable, times(1)).run();
                 verify(mCredManSuccesfulRunnable, times(1)).run();
-                verify(mErrorCallback, times(0)).onResult(anyInt());
+                verify(mRequestCallback, times(0)).onComplete(any());
                 break;
             case Expectation.ERROR_RAN:
                 verify(mFido2ApiSuccessfulRunnable, times(0)).run();
                 verify(mCredManSuccesfulRunnable, times(0)).run();
-                verify(mErrorCallback, times(1)).onResult(anyInt());
+                verify(mRequestCallback, times(1)).onComplete(any());
                 break;
             case Expectation.FIDO_2_API_RAN:
                 verify(mFido2ApiSuccessfulRunnable, times(1)).run();
                 verify(mCredManSuccesfulRunnable, times(0)).run();
-                verify(mErrorCallback, times(0)).onResult(anyInt());
+                verify(mRequestCallback, times(0)).onComplete(any());
                 break;
             case Expectation.CRED_MAN_RAN:
                 verify(mFido2ApiSuccessfulRunnable, times(0)).run();
                 verify(mCredManSuccesfulRunnable, times(1)).run();
-                verify(mErrorCallback, times(0)).onResult(anyInt());
+                verify(mRequestCallback, times(0)).onComplete(any());
                 break;
             case Expectation.NONE:
                 verify(mFido2ApiSuccessfulRunnable, times(0)).run();
                 verify(mCredManSuccesfulRunnable, times(0)).run();
-                verify(mErrorCallback, times(0)).onResult(anyInt());
+                verify(mRequestCallback, times(0)).onComplete(any());
                 break;
             default:
                 throw new AssertionError(mExpectation);

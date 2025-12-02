@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.Callback;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -57,7 +56,7 @@ public class Barrier {
         int RUN_BOTH = 2;
     }
 
-    private final Callback<Integer> mErrorCallback;
+    private final AuthenticationContextProvider mAuthenticationContextProvider;
     @Nullable private Runnable mFido2ApiRunnable;
     @Nullable private Runnable mCredManRunnable;
     private @Status int mFido2ApiStatus;
@@ -67,8 +66,8 @@ public class Barrier {
     private boolean mCredManCancelled;
     private boolean mIsImmediateIncognito;
 
-    public Barrier(Callback<Integer> errorCallback) {
-        mErrorCallback = errorCallback;
+    public Barrier(AuthenticationContextProvider authenticationContextProvider) {
+        mAuthenticationContextProvider = authenticationContextProvider;
         mFido2ApiStatus = Status.NONE;
         mCredManStatus = Status.NONE;
     }
@@ -116,10 +115,10 @@ public class Barrier {
                 mCredManStatus = Status.FAILURE;
                 break;
             case Status.NONE:
-                mErrorCallback.onResult(error);
+                onError(error);
                 break;
             case Status.FAILURE:
-                mErrorCallback.onResult(mFido2ApiError);
+                onError(mFido2ApiError);
                 break;
         }
     }
@@ -151,14 +150,14 @@ public class Barrier {
                 break;
             case Status.NONE:
             case Status.FAILURE:
-                mErrorCallback.onResult(error);
+                onError(error);
                 break;
         }
     }
 
     public void onCredManCancelled(int error) {
         if (mFido2ApiStatus == Status.NONE || mFido2ApiCancelled) {
-            mErrorCallback.onResult(error);
+            onError(error);
             mFido2ApiCancelled = false;
             return;
         }
@@ -175,7 +174,7 @@ public class Barrier {
      */
     public void onFido2ApiCancelled(int error) {
         if (mCredManStatus == Status.NONE || mCredManCancelled) {
-            mErrorCallback.onResult(error);
+            onError(error);
             mCredManCancelled = false;
             return;
         }
@@ -196,7 +195,7 @@ public class Barrier {
 
     private void maybeRunSuccessCallbacks(@CallbacksToRun int callbacks) {
         if (mIsImmediateIncognito) {
-            mErrorCallback.onResult(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+            onError(AuthenticatorStatus.NOT_ALLOWED_ERROR);
             return;
         }
 
@@ -216,5 +215,12 @@ public class Barrier {
         mCredManStatus = Status.NONE;
         mCredManCancelled = false;
         mFido2ApiCancelled = false;
+    }
+
+    private void onError(int error) {
+        if (mAuthenticationContextProvider.getRequestCallback() == null) return;
+        mAuthenticationContextProvider
+                .getRequestCallback()
+                .onComplete(WebauthnRequestResponse.forFailedGetCredential(error, null));
     }
 }

@@ -34,12 +34,14 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.components.webauthn.AuthenticatorErrorResponseCallback;
+import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
 import org.chromium.components.webauthn.IsUvpaaResponseCallback;
 import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
+import org.chromium.components.webauthn.WebauthnRequestCallback;
+import org.chromium.components.webauthn.WebauthnRequestResponse;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -70,6 +72,7 @@ public class AuthenticatorTest {
     private Tab mTab;
     private AuthenticatorUpdateWaiter mUpdateWaiter;
     @Mock private Fido2CredentialRequest mMockCredentialRequest;
+    private AuthenticationContextProvider mCapturedProvider;
 
     /** Waits until the JavaScript code supplies a result. */
     private class AuthenticatorUpdateWaiter extends EmptyTabObserver {
@@ -110,23 +113,41 @@ public class AuthenticatorTest {
         WebauthnModeProvider.getInstance().setGlobalWebauthnMode(WebauthnMode.CHROME);
         doAnswer(
                         invocation -> {
-                            AuthenticatorErrorResponseCallback errorCallback =
-                                    invocation.getArgument(6);
-                            errorCallback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
+                            mCapturedProvider = invocation.getArgument(0);
                             return null;
                         })
                 .when(mMockCredentialRequest)
-                .handleMakeCredentialRequest(
-                        any(), any(), any(), any(), any(), any(), any(), any());
+                .setAuthenticationContextProvider(any());
         doAnswer(
                         invocation -> {
-                            AuthenticatorErrorResponseCallback errorCallback =
-                                    invocation.getArgument(5);
-                            errorCallback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
+                            if (mCapturedProvider != null) {
+                                WebauthnRequestCallback callback =
+                                        mCapturedProvider.getRequestCallback();
+                                if (callback != null) {
+                                    callback.onComplete(
+                                            WebauthnRequestResponse.forFailedMakeCredential(
+                                                    AuthenticatorStatus.NOT_IMPLEMENTED, null));
+                                }
+                            }
                             return null;
                         })
                 .when(mMockCredentialRequest)
-                .handleGetCredentialRequest(any(), any(), any(), any(), any(), any(), any());
+                .handleMakeCredentialRequest(any(), any(), any(), any(), any());
+        doAnswer(
+                        invocation -> {
+                            if (mCapturedProvider != null) {
+                                WebauthnRequestCallback callback =
+                                        mCapturedProvider.getRequestCallback();
+                                if (callback != null) {
+                                    callback.onComplete(
+                                            WebauthnRequestResponse.forFailedGetCredential(
+                                                    AuthenticatorStatus.NOT_IMPLEMENTED, null));
+                                }
+                            }
+                            return null;
+                        })
+                .when(mMockCredentialRequest)
+                .handleGetCredentialRequest(any(), any(), any(), any());
         doAnswer(
                         invocation -> {
                             IsUvpaaResponseCallback callback = invocation.getArgument(0);

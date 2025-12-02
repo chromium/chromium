@@ -53,7 +53,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.blink.mojom.GetAssertionResponse;
 import org.chromium.blink.mojom.GetCredentialOptions;
+import org.chromium.blink.mojom.GetCredentialResponse;
 import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
@@ -211,8 +213,7 @@ public class Fido2CredentialRequestRobolectricTest {
     public void testMakeCredential() {
         handleMakeCredentialRequest(/* browserOptions= */ null);
 
-        verify(mCredManHelperMock, times(1))
-                .startMakeRequest(any(), any(), any(), any(), any(), any());
+        verify(mCredManHelperMock, times(1)).startMakeRequest(any(), any(), any(), any());
     }
 
     @Test
@@ -225,8 +226,7 @@ public class Fido2CredentialRequestRobolectricTest {
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
         assertThat(mFido2ApiCallHelper.getChannelExtraOrNull()).isEqualTo(TEST_CHANNEL_EXTRA);
         assertThat(mFido2ApiCallHelper.getIncognitoExtraOrNull()).isTrue();
-        verify(mCredManHelperMock, times(0))
-                .startMakeRequest(any(), any(), any(), any(), any(), any());
+        verify(mCredManHelperMock, times(0)).startMakeRequest(any(), any(), any(), any());
     }
 
     @Test
@@ -269,9 +269,7 @@ public class Fido2CredentialRequestRobolectricTest {
                         any(),
                         any(),
                         /* clientDataJson= */ eq(null),
-                        /* clientDataHash= */ eq(null),
-                        any(),
-                        any());
+                        /* clientDataHash= */ eq(null));
     }
 
     @Test
@@ -295,8 +293,6 @@ public class Fido2CredentialRequestRobolectricTest {
                         eq(originString),
                         eq(TEST_CLIENT_DATA_JSON.getBytes()),
                         /* clientDataHash= */ notNull(),
-                        /* getCallback= */ any(),
-                        /* errorCallback= */ any(),
                         /* ignoreGpm= */ eq(false));
 
         assertThat(mFido2ApiCallHelper.mPasskeyCacheGetCredentialsCalled).isFalse();
@@ -325,8 +321,6 @@ public class Fido2CredentialRequestRobolectricTest {
                         eq(originString),
                         eq(TEST_CLIENT_DATA_JSON.getBytes()),
                         /* clientDataHash= */ any(),
-                        /* getCallback= */ any(),
-                        /* errorCallback= */ any(),
                         /* barrier= */ any(),
                         /* stopImmediateTimer= */ any(),
                         /* ignoreGpm= */ eq(true));
@@ -415,8 +409,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 ArgumentCaptor.forClass(Runnable.class);
         verify(mCredManHelperMock).setNoCredentialsFallback(setNoCredentialsParamCaptor.capture());
         verify(mCredManHelperMock)
-                .startGetRequest(
-                        any(), any(), any(), any(), any(), any(), /* ignoreGpm= */ eq(false));
+                .startGetRequest(any(), any(), any(), any(), /* ignoreGpm= */ eq(false));
 
         // Now run the no credentials fallback action:
         setNoCredentialsParamCaptor.getValue().run();
@@ -437,8 +430,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 GmsCoreGetCredentialsHelper.Reason.CHECK_FOR_MATCHING_CREDENTIALS,
                 Collections.emptyList());
         verify(mCredManHelperMock)
-                .startGetRequest(
-                        any(), any(), any(), any(), any(), any(), /* ignoreGpm= */ eq(false));
+                .startGetRequest(any(), any(), any(), any(), /* ignoreGpm= */ eq(false));
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
 
@@ -453,8 +445,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 new IllegalStateException("injected error"));
 
         verify(mCredManHelperMock)
-                .startGetRequest(
-                        any(), any(), any(), any(), any(), any(), /* ignoreGpm= */ eq(false));
+                .startGetRequest(any(), any(), any(), any(), /* ignoreGpm= */ eq(false));
         verify(mCredManHelperMock).setNoCredentialsFallback(any());
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
@@ -488,8 +479,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 GmsCoreGetCredentialsHelper.Reason.CHECK_FOR_MATCHING_CREDENTIALS,
                 Collections.emptyList());
         verify(mCredManHelperMock)
-                .startGetRequest(
-                        any(), any(), any(), any(), any(), any(), /* ignoreGpm= */ eq(true));
+                .startGetRequest(any(), any(), any(), any(), /* ignoreGpm= */ eq(true));
         verify(mCredManHelperMock).setNoCredentialsFallback(any());
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
@@ -525,14 +515,8 @@ public class Fido2CredentialRequestRobolectricTest {
         Fido2CredentialRequest request =
                 new Fido2CredentialRequest(mAuthenticationContextProviderMock);
 
-        request.handleGetCredentialRequest(
-                mRequestOptions,
-                mOrigin,
-                mOrigin,
-                /* payment= */ null,
-                mCallback::onSignResponse,
-                mCallback::onError,
-                mCallback::onRequestOutcome);
+        setUpGetCredentialCallback();
+        request.handleGetCredentialRequest(mRequestOptions, mOrigin, mOrigin, /* payment= */ null);
 
         verifyNoInteractions(mCredManHelperMock);
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
@@ -555,8 +539,6 @@ public class Fido2CredentialRequestRobolectricTest {
                         eq(originString),
                         eq(TEST_CLIENT_DATA_JSON.getBytes()),
                         /* clientDataHash= */ notNull(),
-                        /* getCallback= */ any(),
-                        /* errorCallback= */ any(),
                         /* barrier= */ any(),
                         /* stopImmediateTimer= */ any(),
                         /* ignoreGpm= */ eq(false));
@@ -586,8 +568,6 @@ public class Fido2CredentialRequestRobolectricTest {
                         eq(originString),
                         eq(TEST_CLIENT_DATA_JSON.getBytes()),
                         /* clientDataHash= */ notNull(),
-                        /* getCallback= */ any(),
-                        /* errorCallback= */ any(),
                         /* barrier= */ any(),
                         /* stopImmediateTimer= */ any(),
                         /* ignoreGpm= */ eq(true));
@@ -703,8 +683,7 @@ public class Fido2CredentialRequestRobolectricTest {
 
         assertThat(mCallback.getStatus()).isNull();
         verify(mCredManHelperMock, times(1))
-                .startPrefetchRequest(
-                        any(), any(), any(), any(), any(), any(), any(), any(), anyBoolean());
+                .startPrefetchRequest(any(), any(), any(), any(), any(), any(), anyBoolean());
     }
 
     @Test
@@ -719,7 +698,7 @@ public class Fido2CredentialRequestRobolectricTest {
         handleGetCredentialRequest();
 
         verify(mCredManHelperMock, times(1))
-                .startGetRequest(any(), any(), any(), any(), any(), any(), anyBoolean());
+                .startGetRequest(any(), any(), any(), any(), anyBoolean());
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
 
@@ -738,8 +717,6 @@ public class Fido2CredentialRequestRobolectricTest {
                         eq(originString),
                         eq(TEST_CLIENT_DATA_JSON.getBytes()),
                         /* clientDataHash= */ any(),
-                        /* getCallback= */ any(),
-                        /* errorCallback= */ any(),
                         /* barrier= */ any(),
                         /* stopImmediateTimer= */ notNull(),
                         /* ignoreGpm= */ eq(false));
@@ -755,7 +732,7 @@ public class Fido2CredentialRequestRobolectricTest {
         handleGetCredentialRequest();
 
         verify(mCredManHelperMock, never())
-                .startGetRequest(any(), any(), any(), any(), any(), any(), anyBoolean());
+                .startGetRequest(any(), any(), any(), any(), anyBoolean());
         assertThat(mCallback.getStatus())
                 .isEqualTo(Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
     }
@@ -790,32 +767,61 @@ public class Fido2CredentialRequestRobolectricTest {
     public void testReportRequest_noSignalArgumentsSet_unknownError() {
         PublicKeyCredentialReportOptions options = new PublicKeyCredentialReportOptions();
         options.relyingPartyId = "rpId";
-        mRequest.handleReportRequest(options, mOrigin, mCallback::onReportOutcome);
+        setUpReportCallback();
+        mRequest.handleReportRequest(options, mOrigin);
         assertThat(mCallback.getStatus())
                 .isEqualTo(Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR));
     }
 
     private void handleMakeCredentialRequest(Bundle browserOptions) {
+        setUpMakeCredentialCallback();
         mRequest.handleMakeCredentialRequest(
-                mCreationOptions,
-                browserOptions,
-                mOrigin,
-                mOrigin,
-                /* paymentOptions= */ null,
-                mCallback::onRegisterResponse,
-                mCallback::onError,
-                mCallback::onRequestOutcome);
+                mCreationOptions, browserOptions, mOrigin, mOrigin, /* paymentOptions= */ null);
     }
 
     private void handleGetCredentialRequest() {
-        mRequest.handleGetCredentialRequest(
-                mRequestOptions,
-                mOrigin,
-                mOrigin,
-                /* payment= */ null,
-                mCallback::onSignResponse,
-                mCallback::onError,
-                mCallback::onRequestOutcome);
+        setUpGetCredentialCallback();
+        mRequest.handleGetCredentialRequest(mRequestOptions, mOrigin, mOrigin, /* payment= */ null);
+    }
+
+    private void setUpMakeCredentialCallback() {
+        WebauthnRequestCallback callback =
+                WebauthnRequestCallback.forMakeCredential(
+                        (status, response, domException) -> {
+                            if (status == AuthenticatorStatus.SUCCESS) {
+                                mCallback.onRegisterResponse(status, response);
+                            } else {
+                                mCallback.onError(status);
+                            }
+                        },
+                        mCallback::onRequestOutcome);
+        Mockito.when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(callback);
+    }
+
+    private void setUpGetCredentialCallback() {
+        WebauthnRequestCallback callback =
+                WebauthnRequestCallback.forGetCredential(
+                        (response) -> {
+                            if (response.which() == GetCredentialResponse.Tag.PasswordResponse) {
+                                mCallback.onSignResponse(null, response.getPasswordResponse());
+                            } else {
+                                GetAssertionResponse assertion = response.getGetAssertionResponse();
+                                if (assertion.status == AuthenticatorStatus.SUCCESS) {
+                                    mCallback.onSignResponse(assertion.credential, null);
+                                } else {
+                                    mCallback.onError(assertion.status);
+                                }
+                            }
+                        },
+                        (outcome) -> mCallback.onRequestOutcome(outcome));
+        Mockito.when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(callback);
+    }
+
+    private void setUpReportCallback() {
+        WebauthnRequestCallback callback =
+                WebauthnRequestCallback.forReport(
+                        (status, unused) -> mCallback.onReportOutcome(status));
+        Mockito.when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(callback);
     }
 
     private void verifyGetCredentialsAndTriggerSuccess(

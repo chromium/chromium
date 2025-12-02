@@ -25,6 +25,7 @@ import org.chromium.blink.mojom.Authenticator.GetCredential_Response;
 import org.chromium.blink.mojom.Authenticator.MakeCredential_Response;
 import org.chromium.blink.mojom.Authenticator.Report_Response;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.GetCredentialResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 
@@ -51,8 +52,7 @@ public class WebauthnRequestCallbackRobolectricTest {
         MakeCredentialAuthenticatorResponse responseData =
                 new MakeCredentialAuthenticatorResponse();
         WebauthnRequestResponse response =
-                WebauthnRequestResponse.forSuccessfulMakeCredential(
-                        responseData, MakeCredentialOutcome.SUCCESS);
+                WebauthnRequestResponse.forSuccessfulMakeCredential(responseData);
         callback.onComplete(response);
 
         verify(mMakeCredentialCallback).call(AuthenticatorStatus.SUCCESS, responseData, null);
@@ -87,12 +87,12 @@ public class WebauthnRequestCallbackRobolectricTest {
                         mGetCredentialCallback, mRecordOutcomeCallback);
         callback.setCompletionCallback(mCompletionCallback);
 
-        GetCredentialResponse responseData = new GetCredentialResponse();
         WebauthnRequestResponse response =
-                WebauthnRequestResponse.forSuccessfulGetCredential(responseData);
+                WebauthnRequestResponse.forSuccessfulGetAssertion(
+                        new GetAssertionAuthenticatorResponse());
         callback.onComplete(response);
 
-        verify(mGetCredentialCallback).call(responseData);
+        verify(mGetCredentialCallback).call(response.getGetCredentialResponse());
         verify(mRecordOutcomeCallback).record(GetAssertionOutcome.SUCCESS);
         verify(mCompletionCallback).run();
     }
@@ -142,8 +142,7 @@ public class WebauthnRequestCallbackRobolectricTest {
         MakeCredentialAuthenticatorResponse responseData =
                 new MakeCredentialAuthenticatorResponse();
         WebauthnRequestResponse response =
-                WebauthnRequestResponse.forSuccessfulMakeCredential(
-                        responseData, MakeCredentialOutcome.SUCCESS);
+                WebauthnRequestResponse.forSuccessfulMakeCredential(responseData);
         callback.onComplete(response);
         // Second call should be ignored.
         callback.onComplete(response);
