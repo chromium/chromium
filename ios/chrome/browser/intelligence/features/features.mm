@@ -297,3 +297,8 @@ BASE_FEATURE(kGeminiPersonalization, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsGeminiPersonalizationEnabled() {
   return base::FeatureList::IsEnabled(kGeminiPersonalization);
 }
+BASE_FEATURE(kGeminiCopresence, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiCopresenceEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiCopresence);
+}

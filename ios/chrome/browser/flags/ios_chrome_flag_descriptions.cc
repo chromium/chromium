@@ -653,6 +653,11 @@ const char kFullscreenTransitionSpeedDescription[] =
     "When enabled, the speed of the fullscreen' transition is "
     "increased-decreased.";
 
+const char kGeminiCopresenceName[] = "Gemini Copresence";
+const char kGeminiCopresenceDescription[] =
+    "Enables the Gemini Copresence feature, which provides a persistent Gemini "
+    "overlay.";
+
 const char kGeminiCrossTabName[] = "Gemini Cross Tab";
 const char kGeminiCrossTabDescription[] =
     "When enabled, the Gemini floaty conversation persists across all tabs.";

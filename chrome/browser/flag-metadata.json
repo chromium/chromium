@@ -5513,6 +5513,16 @@
     "expiry_milestone": 135
   },
   {
+    "name": "gemini-copresence",
+    "owners": [
+      "adamta@chromium.org",
+      "joemerramos@google.com",
+      "tarekmakkouk@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "gemini-cross-tab",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 150

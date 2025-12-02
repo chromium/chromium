@@ -231,4 +231,8 @@ bool IsGeminiLiveEnabled();
 BASE_DECLARE_FEATURE(kGeminiPersonalization);
 bool IsGeminiPersonalizationEnabled();
 
+// Feature flag for Gemini Copresence.
+BASE_DECLARE_FEATURE(kGeminiCopresence);
+bool IsGeminiCopresenceEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
