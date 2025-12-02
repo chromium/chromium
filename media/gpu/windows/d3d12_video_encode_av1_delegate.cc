@@ -1042,7 +1042,6 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::EncodeImpl(
       used_as_ref
           ? D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAG_USED_AS_REFERENCE_PICTURE
           : D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAG_NONE;
-  auto reconstructed_buffer = dpb_.GetCurrentFrame();
   D3D12_VIDEO_ENCODE_REFERENCE_FRAMES reference_frames{};
   if (!IsKeyFrame()) {
     reference_frames = dpb_.ToD3D12VideoEncodeReferenceFrames();
@@ -1050,12 +1049,9 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::EncodeImpl(
   input_arguments_.PictureControlDesc.ReferenceFrames = reference_frames;
   input_arguments_.pInputFrame = input_frame;
   input_arguments_.InputFrameSubresource = input_frame_subresource;
-  D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE reconstructed_picture = {
-      .pReconstructedPicture =
-          used_as_ref ? reconstructed_buffer.resource_ : nullptr,
-      .ReconstructedPictureSubresource =
-          used_as_ref ? reconstructed_buffer.subresource_ : 0,
-  };
+  D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE reconstructed_picture =
+      used_as_ref ? dpb_.GetCurrentFrame()
+                  : D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE{};
 
   if (EncoderStatus result = video_encoder_wrapper_->Encode(
           input_arguments_, reconstructed_picture);

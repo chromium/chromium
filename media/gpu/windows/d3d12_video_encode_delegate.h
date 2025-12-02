@@ -194,13 +194,6 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   Microsoft::WRL::ComPtr<ID3D12Resource> processed_input_frame_;
 };
 
-// Records an ID3D12Resource pointer and a subresource index for a specific
-// subresource.
-struct D3D12PictureBuffer {
-  raw_ptr<ID3D12Resource> resource_ = nullptr;
-  UINT subresource_ = 0;
-};
-
 // A class to manage the decoded picture buffers for D3D12 video encode and
 // returns the |D3D12_VIDEO_ENCODE_REFERENCE_FRAMES| that D3D12 video encode API
 // expects. When initialized, it creates the textures that may be needed during
@@ -227,7 +220,7 @@ class D3D12VideoEncodeDecodedPictureBuffers {
                                   bool use_texture_array = false);
 
   // Get the unused buffer for current frame.
-  D3D12PictureBuffer GetCurrentFrame() const;
+  D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE GetCurrentFrame() const;
   // Insert the last picture buffer returned by |GetCurrentFrame()| into the
   // given index and move the old buffers with index no less than |position| to
   // the next index.

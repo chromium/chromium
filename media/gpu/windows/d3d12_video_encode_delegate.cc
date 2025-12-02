@@ -616,7 +616,7 @@ bool D3D12VideoEncodeDecodedPictureBuffers<
 }
 
 template <size_t maxDpbSize>
-D3D12PictureBuffer
+D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE
 D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::GetCurrentFrame() const {
   // Make sure we have initialized.
   CHECK_GT(resources_.size(), 0u);

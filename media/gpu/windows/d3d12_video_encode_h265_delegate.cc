@@ -443,11 +443,7 @@ EncoderStatus D3D12VideoEncodeH265Delegate::EncodeImpl(
   if (update_buffer) {
     input_arguments_.PictureControlDesc.Flags =
         D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAG_USED_AS_REFERENCE_PICTURE;
-    D3D12PictureBuffer reconstructed_picture =
-        reference_frame_manager_.GetCurrentFrame();
-    output_arguments.pReconstructedPicture = reconstructed_picture.resource_;
-    output_arguments.ReconstructedPictureSubresource =
-        reconstructed_picture.subresource_;
+    output_arguments = reference_frame_manager_.GetCurrentFrame();
   } else {
     input_arguments_.PictureControlDesc.Flags =
         D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAG_NONE;
