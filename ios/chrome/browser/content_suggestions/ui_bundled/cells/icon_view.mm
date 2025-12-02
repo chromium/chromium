@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_view.h"
 
+#import "base/notreached.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_view_configuration.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -14,6 +15,24 @@ namespace {
 // Constants related to icon container sizing.
 constexpr CGFloat kIconContainerSize = 30;
 constexpr CGFloat kIconSquareContainerRadius = 7;
+
+// Returns a UIImageView for the given local image resource using
+// `icon_view_configuration`.
+UIImageView* IconForImage(
+    const IconViewConfiguration* icon_view_configuration) {
+  UIImage* image = [UIImage imageNamed:icon_view_configuration.iconName];
+  UIImageView* icon = [[UIImageView alloc] initWithImage:image];
+
+  icon.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [icon.widthAnchor
+        constraintEqualToConstant:icon_view_configuration.iconWidth],
+    [icon.heightAnchor constraintEqualToAnchor:icon.widthAnchor],
+  ]];
+
+  return icon;
+}
 
 // Returns a UIImageView for the given SF Symbol using
 // `icon_view_configuration`.
@@ -32,9 +51,9 @@ UIImageView* IconForSymbol(
 
   UIImage* image = icon_view_configuration.defaultSymbol
                        ? DefaultSymbolWithConfiguration(
-                             icon_view_configuration.symbol, config)
+                             icon_view_configuration.iconName, config)
                        : CustomSymbolWithConfiguration(
-                             icon_view_configuration.symbol, config);
+                             icon_view_configuration.iconName, config);
 
   // If no color palette is provided, make the symbol multicolor.
   if (!icon_view_configuration.symbolColorPalette) {
@@ -47,7 +66,7 @@ UIImageView* IconForSymbol(
 
   [NSLayoutConstraint activateConstraints:@[
     [icon.widthAnchor
-        constraintEqualToConstant:icon_view_configuration.symbolWidth],
+        constraintEqualToConstant:icon_view_configuration.iconWidth],
     [icon.heightAnchor constraintEqualToAnchor:icon.widthAnchor],
   ]];
 
@@ -121,9 +140,17 @@ UIView* IconInSquareContainer(UIImageView* icon, UIColor* containerColor) {
 
 // Creates the icon.
 - (UIView*)createIcon {
-  UIImageView* icon = IconForSymbol(_configuration);
-
-  return IconInSquareContainer(icon, _configuration.symbolBackgroundColor);
+  switch (_configuration.iconSource) {
+    case IconViewSourceType::kSymbol: {
+      UIImageView* icon = IconForSymbol(_configuration);
+      return IconInSquareContainer(icon, _configuration.symbolBackgroundColor);
+    }
+    case IconViewSourceType::kImage: {
+      UIImageView* icon = IconForImage(_configuration);
+      return IconInSquareContainer(icon, _configuration.symbolBackgroundColor);
+    }
+  }
+  NOTREACHED();
 }
 
 @end

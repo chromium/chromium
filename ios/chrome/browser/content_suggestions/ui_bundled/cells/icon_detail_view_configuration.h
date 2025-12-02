@@ -45,6 +45,7 @@ struct BadgeShapeConfig {
 };
 
 @class IconViewConfiguration;
+enum class IconViewSourceType;
 
 // Configuration for the `IconDetailView`.
 @interface IconDetailViewConfiguration : NSObject
@@ -70,19 +71,21 @@ struct BadgeShapeConfig {
 // will be used instead of the symbol image.
 @property(nonatomic, strong) UIImage* backgroundImage;
 
-// Symbol properties.
-// The symbol to be displayed in the view.
-@property(nonatomic, copy) NSString* symbolName;
+// Icon properties.
+// The name of the image or symbol to be displayed in the view.
+@property(nonatomic, copy) NSString* iconName;
+// The type of resource (symbol, local image) to retrieve this icon from.
+@property(nonatomic, assign) IconViewSourceType iconSource;
 // The color palette of the symbol displayed in the view.
 @property(nonatomic, copy) NSArray<UIColor*>* symbolColorPalette;
 // The background color of the symbol displayed in the view.
 @property(nonatomic, strong) UIColor* symbolBackgroundColor;
 // The background color of the icon container in the view.
-@property(nonatomic, strong) UIColor* symbolContainerBackgroundColor;
+@property(nonatomic, strong) UIColor* iconContainerBackgroundColor;
 // Indicates whether the symbol is a default symbol.
 @property(nonatomic, assign) BOOL usesDefaultSymbol;
-// The width of the symbol.
-@property(nonatomic, assign) CGFloat symbolWidth;
+// The width of the icon.
+@property(nonatomic, assign) CGFloat iconWidth;
 
 // Badge properties.
 // The symbol name of the Badge Icon to be displayed in the view.

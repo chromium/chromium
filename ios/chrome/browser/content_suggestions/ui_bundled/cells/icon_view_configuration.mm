@@ -17,10 +17,23 @@ constexpr CGFloat kIconSize = 22;
 
 + (instancetype)configurationWithSymbolNamed:(NSString*)symbolName {
   return [[IconViewConfiguration alloc]
-             initWithSymbol:symbolName
+               initWithIcon:symbolName
+                 iconSource:IconViewSourceType::kSymbol
          symbolColorPalette:@[ [UIColor whiteColor] ]
       symbolBackgroundColor:[UIColor colorNamed:kBackgroundColor]
-                symbolWidth:kIconSize
+                  iconWidth:kIconSize
+              defaultSymbol:NO
+              compactLayout:NO
+                   inSquare:YES];
+}
+
++ (instancetype)configurationWithImageNamed:(NSString*)imageName {
+  return [[IconViewConfiguration alloc]
+               initWithIcon:imageName
+                 iconSource:IconViewSourceType::kImage
+         symbolColorPalette:@[ [UIColor whiteColor] ]
+      symbolBackgroundColor:[UIColor colorNamed:kBackgroundColor]
+                  iconWidth:kIconSize
               defaultSymbol:NO
               compactLayout:NO
                    inSquare:YES];
@@ -28,18 +41,20 @@ constexpr CGFloat kIconSize = 22;
 
 #pragma mark - Private Initializers
 
-- (instancetype)initWithSymbol:(NSString*)symbolName
-            symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
-         symbolBackgroundColor:(UIColor*)symbolBackgroundColor
-                   symbolWidth:(CGFloat)symbolWidth
-                 defaultSymbol:(BOOL)defaultSymbol
-                 compactLayout:(BOOL)compactLayout
-                      inSquare:(BOOL)inSquare {
+- (instancetype)initWithIcon:(NSString*)iconName
+                  iconSource:(IconViewSourceType)iconSource
+          symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
+       symbolBackgroundColor:(UIColor*)symbolBackgroundColor
+                   iconWidth:(CGFloat)iconWidth
+               defaultSymbol:(BOOL)defaultSymbol
+               compactLayout:(BOOL)compactLayout
+                    inSquare:(BOOL)inSquare {
   if ((self = [super init])) {
-    _symbol = [symbolName copy];
+    _iconName = [iconName copy];
+    _iconSource = iconSource;
     _symbolColorPalette = [symbolColorPalette copy];
     _symbolBackgroundColor = symbolBackgroundColor;
-    _symbolWidth = symbolWidth;
+    _iconWidth = iconWidth;
     _defaultSymbol = defaultSymbol;
     _compactLayout = compactLayout;
     _inSquare = inSquare;
@@ -51,10 +66,11 @@ constexpr CGFloat kIconSize = 22;
 
 - (instancetype)copyWithZone:(NSZone*)zone {
   return [[IconViewConfiguration allocWithZone:zone]
-             initWithSymbol:self.symbol
+               initWithIcon:self.iconName
+                 iconSource:self.iconSource
          symbolColorPalette:self.symbolColorPalette
       symbolBackgroundColor:self.symbolBackgroundColor
-                symbolWidth:self.symbolWidth
+                  iconWidth:self.iconWidth
               defaultSymbol:self.defaultSymbol
               compactLayout:self.compactLayout
                    inSquare:self.inSquare];

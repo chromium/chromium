@@ -36,23 +36,24 @@ constexpr CGFloat kBadgeIconSquareContainerRadius = 4;
       kBadgeIconCircleContainerRadius,   kBadgeIconCircleContainerRadius};
 
   return [[IconDetailViewConfiguration alloc]
-                   initWithTitleText:titleText
-                     descriptionText:descriptionText
-                          layoutType:IconDetailViewLayoutType::kHero
-                     backgroundImage:nil
-                          symbolName:kChromeProductSymbol
-                  symbolColorPalette:@[ [UIColor whiteColor] ]
-               symbolBackgroundColor:[UIColor colorNamed:kBackgroundColor]
-      symbolContainerBackgroundColor:[UIColor colorNamed:kGrey100Color]
-                   usesDefaultSymbol:NO
-                         symbolWidth:kIconSize
-                       showCheckmark:NO
-                     badgeSymbolName:nil
-                   badgeColorPalette:nil
-                    badgeShapeConfig:defaultBadgeShapeConfig
-                badgeBackgroundColor:nil
-              badgeUsesDefaultSymbol:NO
-             accessibilityIdentifier:nil];
+                 initWithTitleText:titleText
+                   descriptionText:descriptionText
+                        layoutType:IconDetailViewLayoutType::kHero
+                   backgroundImage:nil
+                          iconName:kChromeProductSymbol
+                        iconSource:IconViewSourceType::kSymbol
+                symbolColorPalette:@[ [UIColor whiteColor] ]
+             symbolBackgroundColor:[UIColor colorNamed:kBackgroundColor]
+      iconContainerBackgroundColor:[UIColor colorNamed:kGrey100Color]
+                 usesDefaultSymbol:NO
+                         iconWidth:kIconSize
+                     showCheckmark:NO
+                   badgeSymbolName:nil
+                 badgeColorPalette:nil
+                  badgeShapeConfig:defaultBadgeShapeConfig
+              badgeBackgroundColor:nil
+            badgeUsesDefaultSymbol:NO
+           accessibilityIdentifier:nil];
 }
 
 + (instancetype)configurationWithTitleText:(NSString*)titleText
@@ -67,55 +68,58 @@ constexpr CGFloat kBadgeIconSquareContainerRadius = 4;
                                        cornerRadius, cornerRadius,
                                        cornerRadius, cornerRadius};
   return [[IconDetailViewConfiguration alloc]
-                   initWithTitleText:titleText
-                     descriptionText:descriptionText
-                          layoutType:layoutType
-                     backgroundImage:nil
-                          symbolName:kChromeProductSymbol
-                  symbolColorPalette:@[ [UIColor whiteColor] ]
-               symbolBackgroundColor:[UIColor colorNamed:kBackgroundColor]
-      symbolContainerBackgroundColor:[UIColor colorNamed:kGrey100Color]
-                   usesDefaultSymbol:NO
-                         symbolWidth:kIconSize
-                       showCheckmark:NO
-                     badgeSymbolName:nil
-                   badgeColorPalette:nil
-                    badgeShapeConfig:badgeShapeConfig
-                badgeBackgroundColor:nil
-              badgeUsesDefaultSymbol:NO
-             accessibilityIdentifier:nil];
+                 initWithTitleText:titleText
+                   descriptionText:descriptionText
+                        layoutType:layoutType
+                   backgroundImage:nil
+                          iconName:kChromeProductSymbol
+                        iconSource:IconViewSourceType::kSymbol
+                symbolColorPalette:@[ [UIColor whiteColor] ]
+             symbolBackgroundColor:[UIColor colorNamed:kBackgroundColor]
+      iconContainerBackgroundColor:[UIColor colorNamed:kGrey100Color]
+                 usesDefaultSymbol:NO
+                         iconWidth:kIconSize
+                     showCheckmark:NO
+                   badgeSymbolName:nil
+                 badgeColorPalette:nil
+                  badgeShapeConfig:badgeShapeConfig
+              badgeBackgroundColor:nil
+            badgeUsesDefaultSymbol:NO
+           accessibilityIdentifier:nil];
 }
 
 #pragma mark - Private Initializers
 
 - (instancetype)initWithTitleText:(NSString*)titleText
-                   descriptionText:(NSString*)descriptionText
-                        layoutType:(IconDetailViewLayoutType)layoutType
-                   backgroundImage:(UIImage*)backgroundImage
-                        symbolName:(NSString*)symbolName
-                symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
-             symbolBackgroundColor:(UIColor*)symbolBackgroundColor
-    symbolContainerBackgroundColor:(UIColor*)symbolContainerBackgroundColor
-                 usesDefaultSymbol:(BOOL)usesDefaultSymbol
-                       symbolWidth:(CGFloat)symbolWidth
-                     showCheckmark:(BOOL)showCheckmark
-                   badgeSymbolName:(NSString*)badgeSymbolName
-                 badgeColorPalette:(NSArray<UIColor*>*)badgeColorPalette
-                  badgeShapeConfig:(BadgeShapeConfig)badgeShapeConfig
-              badgeBackgroundColor:(UIColor*)badgeBackgroundColor
-            badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
-           accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+                  descriptionText:(NSString*)descriptionText
+                       layoutType:(IconDetailViewLayoutType)layoutType
+                  backgroundImage:(UIImage*)backgroundImage
+                         iconName:(NSString*)iconName
+                       iconSource:(IconViewSourceType)iconSource
+               symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
+            symbolBackgroundColor:(UIColor*)symbolBackgroundColor
+     iconContainerBackgroundColor:(UIColor*)iconContainerBackgroundColor
+                usesDefaultSymbol:(BOOL)usesDefaultSymbol
+                        iconWidth:(CGFloat)iconWidth
+                    showCheckmark:(BOOL)showCheckmark
+                  badgeSymbolName:(NSString*)badgeSymbolName
+                badgeColorPalette:(NSArray<UIColor*>*)badgeColorPalette
+                 badgeShapeConfig:(BadgeShapeConfig)badgeShapeConfig
+             badgeBackgroundColor:(UIColor*)badgeBackgroundColor
+           badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
+          accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   if ((self = [super init])) {
     _titleText = [titleText copy];
     _descriptionText = [descriptionText copy];
     _layoutType = layoutType;
     _backgroundImage = backgroundImage;
-    _symbolName = [symbolName copy];
+    _iconName = [iconName copy];
+    _iconSource = iconSource;
     _symbolColorPalette = [symbolColorPalette copy];
     _symbolBackgroundColor = symbolBackgroundColor;
-    _symbolContainerBackgroundColor = symbolContainerBackgroundColor;
+    _iconContainerBackgroundColor = iconContainerBackgroundColor;
     _usesDefaultSymbol = usesDefaultSymbol;
-    _symbolWidth = symbolWidth;
+    _iconWidth = iconWidth;
     _showCheckmark = showCheckmark;
     _badgeSymbolName = [badgeSymbolName copy];
     _badgeColorPalette = [badgeColorPalette copy];
@@ -131,11 +135,12 @@ constexpr CGFloat kBadgeIconSquareContainerRadius = 4;
 
 - (IconViewConfiguration*)iconViewConfiguration:(BOOL)inSquare {
   _iconViewConfiguration =
-      [IconViewConfiguration configurationWithSymbolNamed:self.symbolName];
-  _iconViewConfiguration.symbol = self.symbolName;
+      [IconViewConfiguration configurationWithSymbolNamed:self.iconName];
+  _iconViewConfiguration.iconName = self.iconName;
+  _iconViewConfiguration.iconSource = self.iconSource;
   _iconViewConfiguration.symbolColorPalette = self.symbolColorPalette;
   _iconViewConfiguration.symbolBackgroundColor = self.symbolBackgroundColor;
-  _iconViewConfiguration.symbolWidth = self.symbolWidth;
+  _iconViewConfiguration.iconWidth = self.iconWidth;
   _iconViewConfiguration.defaultSymbol = self.usesDefaultSymbol;
   _iconViewConfiguration.compactLayout =
       (self.layoutType != IconDetailViewLayoutType::kHero);
@@ -147,23 +152,24 @@ constexpr CGFloat kBadgeIconSquareContainerRadius = 4;
 
 - (instancetype)copyWithZone:(NSZone*)zone {
   return [[IconDetailViewConfiguration allocWithZone:zone]
-                   initWithTitleText:self.titleText
-                     descriptionText:self.descriptionText
-                          layoutType:self.layoutType
-                     backgroundImage:self.backgroundImage
-                          symbolName:self.symbolName
-                  symbolColorPalette:self.symbolColorPalette
-               symbolBackgroundColor:self.symbolBackgroundColor
-      symbolContainerBackgroundColor:self.symbolContainerBackgroundColor
-                   usesDefaultSymbol:self.usesDefaultSymbol
-                         symbolWidth:self.symbolWidth
-                       showCheckmark:self.showCheckmark
-                     badgeSymbolName:self.badgeSymbolName
-                   badgeColorPalette:self.badgeColorPalette
-                    badgeShapeConfig:self.badgeShapeConfig
-                badgeBackgroundColor:self.badgeBackgroundColor
-              badgeUsesDefaultSymbol:self.badgeUsesDefaultSymbol
-             accessibilityIdentifier:self.accessibilityIdentifier];
+                 initWithTitleText:self.titleText
+                   descriptionText:self.descriptionText
+                        layoutType:self.layoutType
+                   backgroundImage:self.backgroundImage
+                          iconName:self.iconName
+                        iconSource:self.iconSource
+                symbolColorPalette:self.symbolColorPalette
+             symbolBackgroundColor:self.symbolBackgroundColor
+      iconContainerBackgroundColor:self.iconContainerBackgroundColor
+                 usesDefaultSymbol:self.usesDefaultSymbol
+                         iconWidth:self.iconWidth
+                     showCheckmark:self.showCheckmark
+                   badgeSymbolName:self.badgeSymbolName
+                 badgeColorPalette:self.badgeColorPalette
+                  badgeShapeConfig:self.badgeShapeConfig
+              badgeBackgroundColor:self.badgeBackgroundColor
+            badgeUsesDefaultSymbol:self.badgeUsesDefaultSymbol
+           accessibilityIdentifier:self.accessibilityIdentifier];
 }
 
 @end

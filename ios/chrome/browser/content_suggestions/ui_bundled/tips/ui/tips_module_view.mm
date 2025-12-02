@@ -267,12 +267,12 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
         configurationWithTitleText:[self titleText:tip]
                    descriptionText:[self descriptionText:tip]];
     viewConfig.backgroundImage = productImage;
-    viewConfig.symbolName = base::SysUTF8ToNSString(symbol.name);
+    viewConfig.iconName = base::SysUTF8ToNSString(symbol.name);
     viewConfig.symbolColorPalette = [self symbolColorPalette:tip];
     viewConfig.symbolBackgroundColor = [self symbolBackgroundColor:tip];
-    viewConfig.symbolContainerBackgroundColor = _symbolContainerBackgroundColor;
+    viewConfig.iconContainerBackgroundColor = _symbolContainerBackgroundColor;
     viewConfig.usesDefaultSymbol = symbol.is_default_symbol;
-    viewConfig.symbolWidth = kSymbolWidth;
+    viewConfig.iconWidth = kSymbolWidth;
 
     viewConfig.badgeSymbolName = base::SysUTF8ToNSString(badge.name);
     viewConfig.badgeColorPalette = badgeColorPalette;
@@ -293,10 +293,10 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
       configurationWithTitleText:[self titleText:tip]
                  descriptionText:[self descriptionText:tip]];
   viewConfig.backgroundImage = productImage;
-  viewConfig.symbolName = base::SysUTF8ToNSString(symbol.name);
+  viewConfig.iconName = base::SysUTF8ToNSString(symbol.name);
   viewConfig.symbolColorPalette = [self symbolColorPalette:tip];
   viewConfig.symbolBackgroundColor = [self symbolBackgroundColor:tip];
-  viewConfig.symbolContainerBackgroundColor = _symbolContainerBackgroundColor;
+  viewConfig.iconContainerBackgroundColor = _symbolContainerBackgroundColor;
   viewConfig.usesDefaultSymbol = symbol.is_default_symbol;
   viewConfig.accessibilityIdentifier = [self accessibilityIdentifier:tip];
 

@@ -461,7 +461,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
           useLargeContainer:(BOOL)useLargeContainer {
   UIView* iconContainer = [[UIView alloc] init];
 
-  iconContainer.backgroundColor = _configuration.symbolContainerBackgroundColor;
+  iconContainer.backgroundColor = _configuration.iconContainerBackgroundColor;
   iconContainer.layer.cornerRadius = kIconContainerCornerRadius;
 
   [iconContainer addSubview:icon];

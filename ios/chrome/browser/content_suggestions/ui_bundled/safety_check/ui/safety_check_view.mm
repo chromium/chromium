@@ -263,7 +263,7 @@ bool IsDefault(SafetyCheckState* state) {
                                       ? [self descriptionText:itemType]
                                       : [self
                                             compactDescriptionText:itemType])];
-  viewConfig.symbolName = symbolName;
+  viewConfig.iconName = symbolName;
   viewConfig.symbolColorPalette = _symbolColorPalette;
   viewConfig.symbolBackgroundColor = _symbolBackgroundColor;
   viewConfig.usesDefaultSymbol = [symbolName isEqualToString:kInfoCircleSymbol];
