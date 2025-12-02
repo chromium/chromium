@@ -238,24 +238,13 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // rate.
   virtual bool IsSingleBuffered() const = 0;
 
-  SkSurface* GetSkSurface() const;
   bool IsGpuContextLost() const;
-
-  // Returns true iff the resource provider is (a) using a GPU channel for
-  // software SharedImages and (b) that channel has been lost.
-  virtual bool IsSoftwareSharedImageGpuChannelLost() const;
-  static void NotifyGpuContextLostTask(base::WeakPtr<CanvasResourceProvider>);
 
   virtual bool WritePixels(const SkImageInfo& orig_info,
                            const void* pixels,
                            size_t row_bytes,
                            int x,
                            int y) = 0;
-  bool UnacceleratedWritePixels(const SkImageInfo& orig_info,
-                                const void* pixels,
-                                size_t row_bytes,
-                                int x,
-                                int y);
 
   CanvasResourceProvider(const CanvasResourceProvider&) = delete;
   CanvasResourceProvider& operator=(const CanvasResourceProvider&) = delete;
@@ -288,6 +277,18 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
  protected:
   class CanvasImageProvider;
+
+  // Returns true iff the resource provider is (a) using a GPU channel for
+  // software SharedImages and (b) that channel has been lost.
+  virtual bool IsSoftwareSharedImageGpuChannelLost() const;
+  static void NotifyGpuContextLostTask(base::WeakPtr<CanvasResourceProvider>);
+
+  SkSurface* GetSkSurface() const;
+  bool UnacceleratedWritePixels(const SkImageInfo& orig_info,
+                                const void* pixels,
+                                size_t row_bytes,
+                                int x,
+                                int y);
 
   gpu::raster::RasterInterface* RasterInterface() const;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
