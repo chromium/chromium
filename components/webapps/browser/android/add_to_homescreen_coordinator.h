@@ -57,6 +57,10 @@ class AddToHomescreenCoordinator : public AddToHomescreenDataFetcher::Observer {
                        AddToHomescreenParams::AppType app_type,
                        InstallableStatusCode status_code) override;
 
+  static void RecordEventForAppMenu(content::WebContents* web_contents,
+                                    AddToHomescreenEvent event,
+                                    const AddToHomescreenParams& a2hs_params);
+
   base::android::ScopedJavaGlobalRef<jobject> java_coordinator_;
 
   // These are used only in the startForAppMenu() flow.

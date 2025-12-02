@@ -49,7 +49,8 @@ class AddToHomescreenMediator {
   // started with startForAppMenu.
   void OnAppMetadataAvailable(const std::u16string& user_title,
                               const GURL& url,
-                              AddToHomescreenParams::AppType app_type);
+                              AddToHomescreenParams::AppType app_type,
+                              AddToHomescreenEventCallback event_callback);
   void OnFullAppDataAvailable(std::unique_ptr<AddToHomescreenParams> params);
 
   // Called from the Java side when the user accepts app installation from the
@@ -78,9 +79,6 @@ class AddToHomescreenMediator {
   void SetWebAppInfo(const std::u16string& user_title,
                      const GURL& url,
                      AddToHomescreenParams::AppType app_type);
-
-  void RecordEventForAppMenu(AddToHomescreenEvent event,
-                             const AddToHomescreenParams& a2hs_params);
 
   // Points to the Java reference.
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

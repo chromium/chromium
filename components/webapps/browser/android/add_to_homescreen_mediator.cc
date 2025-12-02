@@ -70,13 +70,9 @@ void AddToHomescreenMediator::StartForAppBanner(
 void AddToHomescreenMediator::OnAppMetadataAvailable(
     const std::u16string& user_title,
     const GURL& url,
-    AddToHomescreenParams::AppType app_type) {
-  // base::Unretained() is safe because the lifetime of this object is
-  // controlled by its Java counterpart. It will be destroyed when the add to
-  // home screen prompt is dismissed, which occurs after the last time
-  // RecordEventForAppMenu() can be called.
-  event_callback_ = base::BindRepeating(
-      &AddToHomescreenMediator::RecordEventForAppMenu, base::Unretained(this));
+    AddToHomescreenParams::AppType app_type,
+    AddToHomescreenEventCallback event_callback) {
+  event_callback_ = std::move(event_callback);
 
   SetWebAppInfo(user_title, url, app_type);
 }
@@ -160,25 +156,6 @@ void AddToHomescreenMediator::SetWebAppInfo(const std::u16string& user_title,
 
   Java_AddToHomescreenMediator_setWebAppInfo(env, java_ref_, j_user_title,
                                              j_url, static_cast<int>(app_type));
-}
-
-void AddToHomescreenMediator::RecordEventForAppMenu(
-    AddToHomescreenEvent event,
-    const AddToHomescreenParams& a2hs_params) {
-  if (!web_contents_ || a2hs_params.app_type == AppType::NATIVE) {
-    return;
-  }
-
-  if (event == AddToHomescreenEvent::INSTALL_REQUEST_FINISHED) {
-    AppBannerManager* app_banner_manager =
-        AppBannerManager::FromWebContents(web_contents_.get());
-    // Fire the appinstalled event and do install time logging.
-    if (app_banner_manager) {
-      app_banner_manager->OnInstall(
-          a2hs_params.shortcut_info->display,
-          /*set_current_web_app_not_installable=*/false);
-    }
-  }
 }
 
 }  // namespace webapps

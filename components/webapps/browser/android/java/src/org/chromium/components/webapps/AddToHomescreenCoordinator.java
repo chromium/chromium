@@ -120,6 +120,7 @@ public class AddToHomescreenCoordinator {
         return addToHomescreenMediator.getNativeMediator();
     }
 
+    @CalledByNative
     private void onFlowCompleted() {
         if (mNativeCoordinator != 0) {
             AddToHomescreenCoordinatorJni.get().destroy(mNativeCoordinator);
