@@ -57,6 +57,11 @@ group("deps") {
     if (is_asan || is_lsan || is_msan || is_tsan || is_ubsan_any) {
       public_configs += [ ":sanitizer_options_link_helper" ]
       deps += [ ":options_sources" ]
+
+      # Sanitizer malloc/free hooks depends on weak symbols.
+      if (is_asan && is_posix) {
+        deps += [ ":hooks_sources" ]
+      }
     }
     if (use_prebuilt_instrumented_libraries ||
         use_locally_built_instrumented_libraries) {
@@ -124,6 +129,58 @@ config("sanitizer_options_link_helper") {
     ldflags = [ "-Wl,-u,__sanitizer_options_link_helper" ]
   } else if (!is_win) {
     ldflags = [ "-Wl,-u_sanitizer_options_link_helper" ]
+  }
+}
+
+config("sanitizer_impl") {
+  defines = [ "SANITIZERS_IMPLEMENTATION" ]
+}
+
+# Provide exported functions invoked from sanitizer_hooks.cc.
+# asan ---> options_sources.a --> sanitizer_shared_hooks.so
+#   override weak           strong
+# Each binary will be linked with options_sources.a and its
+# sanitizer hooks will be replaced with our own hooks via
+# sanitizer_shared_hooks.so.
+if (is_asan) {
+  shared_library("sanitizer_shared_hooks") {
+    sources = [
+      "//build/sanitizers/sanitizer_shared_hooks.cc",
+      "//build/sanitizers/sanitizer_shared_hooks.h",
+    ]
+
+    # To avoid dependency cycle:
+    # ERROR Dependency cycle:
+    #  //build/config:common_deps ->
+    #  //build/config:common_deps_without_libcxx ->
+    #  //build/config/sanitizers:deps ->
+    #  //build/config/sanitizers:hooks_sources ->
+    #  //build/config/sanitizers:sanitizer_shared_hooks ->
+    #  //build/config:shared_library_deps ->
+    #  //build/config:common_deps
+    # `no_default_deps = true` is required here.
+    no_default_deps = true
+
+    # Don't compile this target with any sanitizer code. It can be called from
+    # the sanitizer runtimes, so instrumenting these functions could cause
+    # recursive calls into the runtime if there is an error.
+    configs -= [ "//build/config/sanitizers:default_sanitizer_flags" ]
+    configs += [ ":sanitizer_impl" ]
+
+    # To avoid `libsanitizer_shared_hooks.so is not found`, need to specify
+    # rpath for the shared_library. If is_component_build=true, the config
+    # has been already added by //build/config/*.
+    if ((is_linux || is_chromeos) && !is_component_build) {
+      all_dependent_configs =
+          [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
+    }
+  }
+}
+
+if (is_asan && is_posix) {
+  source_set("hooks_sources") {
+    sources = [ "//build/sanitizers/sanitizer_hooks.cc" ]
+    deps = [ ":sanitizer_shared_hooks" ]
   }
 }
 
@@ -317,6 +374,7 @@ config("asan_flags") {
   rustflags = []
   if (is_asan) {
     cflags += [ "-fsanitize=address" ]
+
     rustflags += [ "-Zsanitizer=address" ]
     if (!is_win && !is_apple && !is_fuchsia) {
       # TODO(crbug.com/1459233, crbug.com/1462248): This causes asan
