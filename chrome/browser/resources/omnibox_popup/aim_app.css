@@ -13,6 +13,7 @@
   --composebox-context-menu-entrypoint-button-color: var(--color-sys-primary);
   --cr-composebox-custom-font-size: var(--omnibox-font-size);
   --cr-composebox-expanded-border-radius: 16px;
+  --cr-composebox-file-thumbnail-remove-button-fill-color: var(--color-omnibox-results-icon);
   --cr-composebox-input-bottom-spacing: 8px;
   --cr-composebox-input-placeholder-font-size: var(--omnibox-font-size);
   --cr-composebox-match-height: 40px;
@@ -33,6 +34,17 @@ cr-composebox {
   --color-composebox-cancel-button-light: var(--color-omnibox-text-dimmed);
   --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-action-icon-hover);
   --color-composebox-context-entrypoint-text-disabled: var(--color-omnibox-composebox-foreground-disabled);
+  --color-composebox-file-carousel-remove-button: var(--color-omnibox-results-button-ink-drop-row-hovered);
+
+  /* Themed gradient hover background color for the close button in
+   * cr-composebox-file-thumbnail. */
+  --color-composebox-file-carousel-remove-gradient-start: var(--color-omnibox-composebox-chip-background);
+  --color-composebox-file-carousel-remove-gradient-end: color-mix(
+    in srgb,
+    var(--color-composebox-file-carousel-remove-gradient-start),
+    transparent 100%);
+
+  --color-composebox-file-carousel-url: var(--color-omnibox-text-dimmed);
   --color-composebox-file-image-overlay: var(--color-omnibox-text);
   --color-composebox-font: var(--color-omnibox-text);
   --color-composebox-font-light: var(--color-omnibox-text);
