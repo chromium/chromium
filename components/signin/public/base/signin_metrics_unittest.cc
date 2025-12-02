@@ -55,6 +55,7 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kNonModalSigninBookmarkPromo,
     AccessPoint::kUserManagerWithPrefilledEmail,
     AccessPoint::kEnterpriseDialogAfterSigninInterception,
+    AccessPoint::kCredentialExchangeImport,
 };
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
@@ -85,6 +86,7 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::kNotificationsOptInScreenContentToggle,
     AccessPoint::kAddressBubble,
     AccessPoint::kEnterpriseDialogAfterSigninInterception,
+    AccessPoint::kCredentialExchangeImport,
 };
 
 class SigninMetricsTest : public ::testing::Test {
@@ -257,6 +259,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "NtpFeaturePromo";
       case AccessPoint::kEnterpriseDialogAfterSigninInterception:
         return "EnterpriseDialogAfterSigninInterception";
+      case AccessPoint::kCredentialExchangeImport:
+        return "CredentialExchangeImport";
     }
   }
 };

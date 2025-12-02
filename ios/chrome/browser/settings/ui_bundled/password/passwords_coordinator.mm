@@ -10,10 +10,15 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_coordinator.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -117,6 +122,9 @@
 
   // The coordinator for the Credential Exchange feature handling the import.
   CredentialImportCoordinator* _credentialImportCoordinator;
+
+  // If needed, used for sign-in during the Credential Exchange import flow.
+  SigninCoordinator* _signinCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -229,6 +237,7 @@
   self.addPasswordCoordinator = nil;
 
   [self dismissCredentialImportCoordinator];
+  [self dismissSigninCoordinator];
 
   [self.reauthCoordinator stop];
   self.reauthCoordinator.delegate = nil;
@@ -636,11 +645,55 @@
   _trustedVaultReauthenticationCoordinator = nil;
 }
 
-// Starts the credential import coordinator.
+// Starts the credential import. If the user is signed-in, then displays the
+// credential import sheet. Otherwise, display a sign-in sheet.
 - (void)startCredentialImport {
   CHECK(self.credentialImportUUID);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.profile);
+  if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    [self startCredentialImportCoordinator];
+    return;
+  }
 
-  // TODO(crbug.com/464469872): Display sign-in sheet when no user signed-in.
+  CHECK(!_signinCoordinator, base::NotFatalUntil::M151);
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::kSettings;
+  _signinCoordinator = [SigninCoordinator
+      consistencyPromoSigninCoordinatorWithBaseViewController:
+          self.viewController
+                                                      browser:self.browser
+                                                 contextStyle:
+                                                     SigninContextStyle::
+                                                         kDefault
+                                                  accessPoint:accessPoint
+                                         prepareChangeProfile:nil
+                                         continuationProvider:
+                                             DoNothingContinuationProvider()];
+  __weak __typeof(self) weakSelf = self;
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf signinForImportFinishedWithCoordinator:coordinator
+                                                identity:identity];
+      };
+  [_signinCoordinator start];
+}
+
+// Handles signin completion for credential import. If user successfully signed
+// in, starts the credential import coordinator. Otherwise, just returns as the
+// import should not start.
+- (void)signinForImportFinishedWithCoordinator:(SigninCoordinator*)coordinator
+                                      identity:(id<SystemIdentity>)identity {
+  CHECK_EQ(coordinator, _signinCoordinator);
+  [self dismissSigninCoordinator];
+  if (identity) {
+    [self startCredentialImportCoordinator];
+  }
+}
+
+// Starts the credential import coordinator.
+- (void)startCredentialImportCoordinator {
   // TODO(crbug.com/450982128): Dismiss reauth coordinator before starting.
   _credentialImportCoordinator = [[CredentialImportCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -656,6 +709,12 @@
   [_credentialImportCoordinator stop];
   _credentialImportCoordinator.delegate = nil;
   _credentialImportCoordinator = nil;
+}
+
+// Stops the sign-in coordinator.
+- (void)dismissSigninCoordinator {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
 }
 
 @end

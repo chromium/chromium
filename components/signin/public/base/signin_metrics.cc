@@ -669,6 +669,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromEnterpriseDialogAfterSigninInterception"));
       break;
+    case AccessPoint::kCredentialExchangeImport:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromCredentialExchangeImport"));
+      break;
   }
 }
 
@@ -811,6 +815,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kEnterpriseDialogAfterSigninInterception:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromEnterpriseDialogAfterSigninInterception"));
+      break;
+    case AccessPoint::kCredentialExchangeImport:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromCredentialExchangeImport"));
       break;
     case AccessPoint::kEnterpriseSignoutCoordinator:
     case AccessPoint::kExtensions:

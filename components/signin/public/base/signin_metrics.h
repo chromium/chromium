@@ -310,10 +310,13 @@ enum class AccessPoint : int {
   kEnterpriseDialogAfterSigninInterception = 90,
   // "Your saved info" settings page.
   kSettingsYourSavedInfo = 91,
+  // Triggered when the user attempts to import credentials through the
+  // ASCredentialImportManager without being signed in.
+  kCredentialExchangeImport = 92,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kSettingsYourSavedInfo,  // This must be last.
+  kMaxValue = kCredentialExchangeImport,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

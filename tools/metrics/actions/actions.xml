@@ -42890,6 +42890,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromCredentialExchangeImport">
+  <owner>rgod@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Recorded when showing sign in that originates from the Credential Exchange
+    import flow. iOS only.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromDevicesPage" not_user_triggered="true">
   <owner>gogerald@chromium.org</owner>
   <description>
@@ -43718,6 +43727,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::kCreatorFeedFollow on Android Only.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromCredentialExchangeImport">
+  <owner>rgod@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kCredentialExchangeImport. iOS only.
   </description>
 </action>
 

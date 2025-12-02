@@ -984,6 +984,7 @@ chromium-metrics-reviews@google.com.
   <int value="89" label="New Tab Page sign-in feature promo"/>
   <int value="90" label="Enterprise dialog after signin interception"/>
   <int value="91" label="Your saved info page in settings"/>
+  <int value="92" label="Credential Exchange import"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">
