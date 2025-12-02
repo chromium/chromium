@@ -9,9 +9,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_medialist.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/media_query_set_owner.h"
-#include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
+
+class StyleRuleBase;
+class StyleRuleCustomMedia;
 
 class CORE_EXPORT CSSCustomMediaRule final : public CSSRule,
                                              public MediaQuerySetOwner {

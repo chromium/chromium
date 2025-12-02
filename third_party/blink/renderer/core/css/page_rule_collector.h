@@ -25,12 +25,14 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cascade_layered.h"
+#include "third_party/blink/renderer/core/css/parser/css_at_rule_id.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class CascadeLayerMap;
+class ComputedStyle;
 class StyleRulePage;
 
 class CORE_EXPORT PageRuleCollector {

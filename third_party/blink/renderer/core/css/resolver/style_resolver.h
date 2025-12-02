@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/color_scheme_flags.h"
-#include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/resolver/matched_properties_cache.h"
@@ -57,6 +56,7 @@ class PropertyHandle;
 class StyleCascade;
 class StyleRecalcContext;
 class StyleResolverState;
+class StyleRulePositionTry;
 class StyleRuleUsageTracker;
 
 // This class selects a ComputedStyle for a given element in a document based on

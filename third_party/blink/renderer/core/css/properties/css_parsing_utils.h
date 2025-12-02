@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
-#include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"

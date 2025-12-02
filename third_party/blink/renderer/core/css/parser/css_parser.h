@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
-#include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 
 namespace ui {
 class ColorProvider;
@@ -36,6 +35,7 @@ class CSSValue;
 class CSSPrimitiveValue;
 enum class ParseSheetResult;
 enum class SecureContextMode;
+struct KeyframeOffset;
 
 // This class serves as the public API for the css/parser subsystem
 class CORE_EXPORT CSSParser {

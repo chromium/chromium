@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_condition_rule.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
-#include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
@@ -60,6 +59,7 @@ class CascadeLayer;
 class CSSConditionRule;
 class CSSContainerRule;
 class CSSFunctionRule;
+class CSSKeyframesRule;
 class CSSPropertyName;
 class CSSRule;
 class CSSStyleRule;
@@ -79,6 +79,7 @@ class InspectorResourceContentLoader;
 class MediaList;
 class Node;
 class LayoutObject;
+class StyleRuleKeyframes;
 class StyleRuleUsageTracker;
 
 class CORE_EXPORT InspectorCSSAgent final

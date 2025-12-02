@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"

@@ -21,6 +21,7 @@ class CSSStyleSheet;
 class CSSVariableData;
 class CSSValue;
 class CSSProperty;
+class CSSRuleList;
 class PropertyRegistration;
 class PseudoIdFlags;
 

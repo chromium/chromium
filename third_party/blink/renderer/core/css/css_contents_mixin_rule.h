@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
-#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -15,6 +14,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+class StyleRuleContentsStatement;
 
 // CSSOM wrapper for @contents (used within @mixin). It is completely inert;
 // the only thing you can really do is serialize it.

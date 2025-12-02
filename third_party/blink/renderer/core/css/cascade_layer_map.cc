@@ -6,6 +6,7 @@
 
 #include <compare>
 
+#include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 
 namespace blink {

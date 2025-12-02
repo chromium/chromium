@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/selector_statistics_flag.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/inspector/style_rule_to_style_sheet_contents_map.h"
 

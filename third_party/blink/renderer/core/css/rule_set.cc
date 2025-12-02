@@ -39,9 +39,12 @@
 #include "base/substring_set_matcher/substring_set_matcher.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
+#include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
+#include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
+#include "third_party/blink/renderer/core/css/mixin_map.h"
 #include "third_party/blink/renderer/core/css/navigation_query.h"
 #include "third_party/blink/renderer/core/css/robin_hood_map-inl.h"
 #include "third_party/blink/renderer/core/css/seeker.h"
@@ -49,8 +52,12 @@
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
+#include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
+#include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
+#include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -221,6 +228,8 @@ void RuleData::MovedToDifferentRuleSet(const Vector<uint16_t>& old_backing,
   bloom_hash_pos_ = new_pos;
   position_ = new_position;
 }
+
+RuleSet::RuleSet() = default;
 
 void RuleSet::AddToBucket(const AtomicString& key,
                           RuleMap& map,

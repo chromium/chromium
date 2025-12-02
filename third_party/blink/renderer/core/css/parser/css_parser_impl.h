@@ -12,7 +12,6 @@
 #include "css_at_rule_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
-#include "third_party/blink/renderer/core/css/css_property_source_data.h"
 #include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
@@ -20,7 +19,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
-#include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -53,6 +51,7 @@ class StyleRuleProperty;
 class StyleRuleSupports;
 class StyleSheetContents;
 class Element;
+struct KeyframeOffset;
 
 enum class ParseSheetResult {
   kSucceeded,

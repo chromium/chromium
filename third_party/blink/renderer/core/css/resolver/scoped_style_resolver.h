@@ -31,9 +31,11 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
+#include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
+#include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_utils.h"
-#include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -46,6 +48,8 @@ class PartNames;
 class CascadeLayerMap;
 class StyleSheetContents;
 class FontFeatureValuesStorage;
+class RuleSet;
+class RuleSetGroup;
 
 // ScopedStyleResolver collects the style sheets that occur within a TreeScope
 // and provides methods to collect the rules that apply to a given element,

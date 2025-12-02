@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/keyframe_style_rule_css_style_declaration.h"
+#include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"

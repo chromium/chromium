@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CASCADE_LAYERED_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"

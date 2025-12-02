@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/if_condition.h"
 #include "third_party/blink/renderer/core/css/parser/css_if_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
+#include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"

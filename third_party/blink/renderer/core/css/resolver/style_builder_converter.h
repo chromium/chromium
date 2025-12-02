@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"

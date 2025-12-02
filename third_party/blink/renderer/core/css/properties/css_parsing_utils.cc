@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
+#include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_color_function_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_condition_rule.h"
 
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 
 namespace blink {
 

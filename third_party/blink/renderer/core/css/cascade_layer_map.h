@@ -9,11 +9,12 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
-#include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/cascade_layered.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
+
+class CascadeLayer;
 
 // Gathers cascade layers from all style sheets in a tree scope, sorts them
 // into the cascade layer ordering as per spec, and creates a mapping from

@@ -35,11 +35,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/cascade_layered.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/font_display.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -59,7 +59,6 @@ class MediaValues;
 class FontFaceDescriptors;
 class FontFeatureSettings;
 class FontVariationSettings;
-class StyleRuleFontFace;
 class V8FontFaceLoadStatus;
 class V8UnionArrayBufferOrArrayBufferViewOrString;
 struct FontMetricsOverride;

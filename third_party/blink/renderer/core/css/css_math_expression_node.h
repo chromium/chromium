@@ -60,6 +60,7 @@ static const int kMaxExpressionDepth = 100;
 class CalculationExpressionNode;
 class CSSNumericLiteralValue;
 class CSSParserContext;
+class CSSParserTokenStream;
 class TryTacticTransform;
 class WritingDirectionMode;
 class CSSMathExpressionNode;

@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
-#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -17,6 +16,7 @@
 namespace blink {
 
 class CSSStyleRule;
+class StyleRuleApplyMixin;
 
 // CSSOM wrapper for @apply (activating a mixin defined with @mixin).
 class CORE_EXPORT CSSApplyMixinRule final : public CSSRule {

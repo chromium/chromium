@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/animation/interpolation.h"
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -56,6 +55,7 @@ class ComputedStyleBuilder;
 class Element;
 class StylePropertyShorthand;
 class StyleResolver;
+class StyleRuleKeyframes;
 class StyleTimeline;
 class WritingDirectionMode;
 class TimelineTrigger;
@@ -190,10 +190,7 @@ class CORE_EXPORT CSSAnimations final {
       specified_timing = update.specified_timing;
     }
 
-    void Trace(Visitor* visitor) const {
-      visitor->Trace(animation);
-      visitor->Trace(style_rule);
-    }
+    void Trace(Visitor*) const;
 
     Member<Animation> animation;
     AtomicString name;

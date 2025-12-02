@@ -27,9 +27,12 @@
 #include "third_party/blink/renderer/core/css/font_face_cache.h"
 
 #include <numeric>
+
 #include "base/atomic_sequence_num.h"
 #include "third_party/blink/renderer/core/css/css_segmented_font_face.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/font_face.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"

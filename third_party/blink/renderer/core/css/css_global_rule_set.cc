@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_selector_watch.h"
+#include "third_party/blink/renderer/core/css/mixin_map.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"

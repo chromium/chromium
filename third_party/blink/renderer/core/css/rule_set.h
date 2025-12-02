@@ -31,18 +31,11 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/cascade_layered.h"
-#include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
-#include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
-#include "third_party/blink/renderer/core/css/mixin_map.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/css/robin_hood_map.h"
 #include "third_party/blink/renderer/core/css/rule_feature_set.h"
-#include "third_party/blink/renderer/core/css/style_rule.h"
-#include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
-#include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
-#include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
-#include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
+#include "third_party/blink/renderer/core/css/valid_property_filter.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/route_matching/route_match_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -56,6 +49,13 @@
 namespace blink {
 
 class RuleSet;
+class StyleRuleCounterStyle;
+class StyleRuleFontFeatureValues;
+class StyleRuleFontPaletteValues;
+class StyleRuleKeyframes;
+class StyleRulePositionTry;
+class StyleRuleViewTransition;
+struct MixinMap;
 
 using AddRuleFlags = unsigned;
 
@@ -65,43 +65,6 @@ enum AddRuleFlag {
   kRuleIsStartingStyle = 1 << 1,
 };
 
-// Some CSS properties do not apply to certain pseudo-elements, and need to be
-// ignored when resolving styles. Be aware that these values are used in a
-// bitfield. Make sure that it's large enough to hold new values.
-// See MatchedProperties::Data::valid_property_filter.
-enum class ValidPropertyFilter : unsigned {
-  // All properties are valid. This is the common case.
-  kNoFilter,
-  // Defined in a ::cue pseudo-element scope. Only properties listed
-  // in https://w3c.github.io/webvtt/#the-cue-pseudo-element are valid.
-  kCue,
-  // Defined in a ::first-letter pseudo-element scope. Only properties listed in
-  // https://drafts.csswg.org/css-pseudo-4/#first-letter-styling are valid.
-  kFirstLetter,
-  // Defined in a ::first-line pseudo-element scope. Only properties listed in
-  // https://drafts.csswg.org/css-pseudo-4/#first-line-styling are valid.
-  kFirstLine,
-  // Defined in a ::marker pseudo-element scope. Only properties listed in
-  // https://drafts.csswg.org/css-pseudo-4/#marker-pseudo are valid.
-  kMarker,
-  // Defined in a highlight pseudo-element scope like ::selection and
-  // ::target-text. Theoretically only properties listed in
-  // https://drafts.csswg.org/css-pseudo-4/#highlight-styling should be valid,
-  // but for highlight pseudos using originating inheritance instead of
-  // highlight inheritance we allow a different set of rules for
-  // compatibility reasons.
-  kHighlightLegacy,
-  // Defined in a highlight pseudo-element scope like ::selection and
-  // ::target-text. Only properties listed in
-  // https://drafts.csswg.org/css-pseudo-4/#highlight-styling are valid.
-  kHighlight,
-  // Defined in a @position-try rule. Only properties listed in
-  // https://drafts.csswg.org/css-anchor-position-1/#fallback-rule are valid.
-  kPositionTry,
-  // Defined in an @page rule.
-  // See https://drafts.csswg.org/css-page-3/#page-property-list
-  kPageContext,
-};
 
 class CSSSelector;
 class MediaQueryEvaluator;
@@ -374,7 +337,7 @@ class RuleMap {
 // under consideration by ElementRuleCollector::CollectMatchingRules.
 class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
  public:
-  RuleSet() = default;
+  RuleSet();
   RuleSet(const RuleSet&) = delete;
   RuleSet& operator=(const RuleSet&) = delete;
 

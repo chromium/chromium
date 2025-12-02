@@ -45,6 +45,8 @@ class CustomProperty;
 class MatchResult;
 class MediaQueryFeatureExpNode;
 class StyleResolverState;
+class StyleRuleFunction;
+class StyleRuleGroup;
 
 namespace cssvalue {
 

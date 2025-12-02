@@ -49,6 +49,7 @@ class CSSKeyframeRule;
 class CSSMediaRule;
 class CSSContainerRule;
 class CSSPositionTryRule;
+class CSSPropertySourceData;
 class CSSPropertyRule;
 class CSSStyleDeclaration;
 class CSSStyleRule;
@@ -60,6 +61,7 @@ class ExceptionState;
 class InspectorNetworkAgent;
 class InspectorResourceContainer;
 class InspectorStyleSheetBase;
+class SourceRange;
 
 typedef HeapVector<Member<CSSRule>> CSSRuleVector;
 

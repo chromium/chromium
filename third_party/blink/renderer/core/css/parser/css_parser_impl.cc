@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
+#include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
