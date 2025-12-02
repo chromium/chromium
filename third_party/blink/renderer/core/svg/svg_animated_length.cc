@@ -75,7 +75,7 @@ const CSSValue* SVGAnimatedLength::CssValue() const {
       return nullptr;
     }
   }
-  return &CurrentValue()->AsCSSPrimitiveValue();
+  return &CurrentValue()->AsCSSValue();
 }
 
 void SVGAnimatedLength::Trace(Visitor* visitor) const {

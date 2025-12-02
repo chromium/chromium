@@ -5009,6 +5009,10 @@
       status: "test",
     },
     {
+      name: "SvgLengthResolveUnparsedValue",
+      status: "stable",
+    },
+    {
       name: "SvgNonScalingStrokePrecisionFix",
       status: "stable",
     },
