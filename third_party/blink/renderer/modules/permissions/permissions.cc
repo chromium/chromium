@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -98,12 +97,10 @@ ScriptPromise<PermissionStatus> Permissions::query(
   // permission prompt will be shown even if the returned permission will most
   // likely be "prompt".
   PermissionDescriptorPtr descriptor_copy = descriptor->Clone();
-  base::TimeTicks query_start_time;
   GetService(context)->HasPermission(
       std::move(descriptor),
-      blink::BindOnce(&Permissions::QueryTaskComplete, WrapPersistent(this),
-                      WrapPersistent(resolver), std::move(descriptor_copy),
-                      query_start_time));
+      blink::BindOnce(&Permissions::TaskComplete, WrapPersistent(this),
+                      WrapPersistent(resolver), std::move(descriptor_copy)));
   return promise;
 }
 
@@ -242,15 +239,6 @@ PermissionService* Permissions::GetService(
 
 void Permissions::ServiceConnectionError() {
   service_.reset();
-}
-void Permissions::QueryTaskComplete(
-    ScriptPromiseResolver<PermissionStatus>* resolver,
-    mojom::blink::PermissionDescriptorPtr descriptor,
-    base::TimeTicks query_start_time,
-    mojom::blink::PermissionStatus result) {
-  base::UmaHistogramTimes("Permissions.Query.QueryResponseTime",
-                          base::TimeTicks::Now() - query_start_time);
-  TaskComplete(resolver, std::move(descriptor), result);
 }
 
 void Permissions::TaskComplete(
