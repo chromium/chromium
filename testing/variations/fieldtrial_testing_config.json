@@ -16377,7 +16377,10 @@
                     "name": "Version7",
                     "params": {
                         "version": "7"
-                    }
+                    },
+                    "enable_features": [
+                        "NTPPopularSites"
+                    ]
                 }
             ]
         }
