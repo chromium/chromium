@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "services/device/public/cpp/device_features.h"

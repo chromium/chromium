@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 

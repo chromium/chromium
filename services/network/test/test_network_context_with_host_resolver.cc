@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
+
 namespace network {
 
 TestNetworkContextWithHostResolver::TestNetworkContextWithHostResolver(

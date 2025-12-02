@@ -4,6 +4,7 @@
 
 #include "services/network/web_bundle/web_bundle_manager.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"

@@ -4,6 +4,7 @@
 
 #include "services/network/devtools_durable_msg_collector.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

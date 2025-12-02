@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"  // for [[fallthrough]];
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/structured_shared_memory.h"

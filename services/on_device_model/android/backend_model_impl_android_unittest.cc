@@ -4,6 +4,7 @@
 
 #include "services/on_device_model/android/backend_model_impl_android.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"

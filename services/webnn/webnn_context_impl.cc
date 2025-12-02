@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "gpu/command_buffer/service/scheduler.h"

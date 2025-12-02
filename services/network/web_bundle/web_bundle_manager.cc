@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/web_package/web_bundle_utils.h"
