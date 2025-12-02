@@ -50,6 +50,8 @@ import org.chromium.ui.widget.RectProvider;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Instrumentation tests for the hierarchical menu (drilldown and flyout). */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -70,9 +72,14 @@ public class HierarchicalMenuTest {
     private AnchoredPopupWindow mPopupWindow;
     private View mPopupView;
 
+    private AtomicReference<String> mExecutedItemRunnableTitle;
+    private AtomicBoolean mDismissRunnableExecuted;
+
     @Before
     public void setUp() {
         mActivity = mActivityTestRule.launchActivity(/* startIntent= */ null);
+        mDismissRunnableExecuted = new AtomicBoolean(false);
+        mExecutedItemRunnableTitle = new AtomicReference<String>(null);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -132,7 +139,12 @@ public class HierarchicalMenuTest {
 
                     ModelList modelList = createModelList(items);
                     mController.setupCallbacksRecursively(
-                            /* headerModelList= */ null, modelList, /* dismissDialog= */ () -> {});
+                            /* headerModelList= */ null,
+                            modelList,
+                            /* dismissDialog= */ () -> {
+                                mDismissRunnableExecuted.set(true);
+                                mController.destroyFlyoutController();
+                            });
 
                     mPopupWindow =
                             new AnchoredPopupWindow.Builder(
@@ -146,6 +158,10 @@ public class HierarchicalMenuTest {
                                     .setFocusable(true)
                                     .setMaxWidth(300)
                                     .setOutsideTouchable(true)
+                                    .addOnDismissListener(
+                                            () -> {
+                                                mController.destroyFlyoutController();
+                                            })
                                     .build();
                     mPopupWindow.show();
 
@@ -256,6 +272,61 @@ public class HierarchicalMenuTest {
                 findViewWithText(mPopupView, "Item 1-1 >"));
         Assert.assertNull(
                 "Header should not be visible anymore", findViewWithText(mPopupView, "Header"));
+    }
+
+    @Test
+    @MediumTest
+    public void testFlyoutTerminalItemClick() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mController.setDrillDownOverrideValueForTesting(false);
+                });
+
+        // Hover on Item 1 to open first flyout.
+        View item1 =
+                waitForViewWithText(getRootViewWithPopupIndex(mFlyoutController, 0), "Item 1 >");
+        dispatchHoverEnterEvent(item1);
+        CriteriaHelper.pollUiThread(
+                () -> mFlyoutController.getNumberOfPopups() == 2, "Popup count did not reach 2");
+
+        // Click on "Item 1-3".
+        View item1Sub3 =
+                waitForViewWithText(getRootViewWithPopupIndex(mFlyoutController, 1), "Item 1-3");
+        Assert.assertNotNull("Item 1-3 should be visible", item1Sub3);
+        Assert.assertNull(
+                "No item runnable should have been executed", mExecutedItemRunnableTitle.get());
+        ThreadUtils.runOnUiThreadBlocking(item1Sub3::performClick);
+
+        CriteriaHelper.pollUiThread(
+                () -> "Item 1-3".equals(mExecutedItemRunnableTitle.get()),
+                "Runnable for Item 1-3 was not executed");
+        CriteriaHelper.pollUiThread(
+                () -> mDismissRunnableExecuted.get(), "Dismiss runnable was not executed");
+    }
+
+    @Test
+    @MediumTest
+    public void testDrillDownTerminalItemClick() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mController.setDrillDownOverrideValueForTesting(true);
+                });
+
+        // Click on "Item 1" to drill down.
+        View item1 = waitForViewWithText(mPopupView, "Item 1 >");
+        ThreadUtils.runOnUiThreadBlocking(item1::performClick);
+
+        // Click on "Item 1-3".
+        Assert.assertNotNull(
+                "Item 1-3 should be visible", waitForViewWithText(mPopupView, "Item 1-3"));
+        View item1Sub3 = waitForViewWithText(mPopupView, "Item 1-3");
+        ThreadUtils.runOnUiThreadBlocking(item1Sub3::performClick);
+
+        CriteriaHelper.pollUiThread(
+                () -> "Item 1-3".equals(mExecutedItemRunnableTitle.get()),
+                "Runnable for Item 1-3 was not executed");
+        CriteriaHelper.pollUiThread(
+                () -> mDismissRunnableExecuted.get(), "Dismiss runnable was not executed");
     }
 
     /** Manually dispatches a {@code HOVER_ENTER} event to a specific target view. */
@@ -399,6 +470,11 @@ public class HierarchicalMenuTest {
                                 ? HierarchicalMenuTestUtils.ALL_SUBMENU_ITEM_KEYS
                                 : HierarchicalMenuTestUtils.ALL_MENU_ITEM_KEYS);
         builder.with(HierarchicalMenuTestUtils.TITLE, title);
+        builder.with(
+                HierarchicalMenuTestUtils.CLICK_LISTENER,
+                (view) -> {
+                    mExecutedItemRunnableTitle.set(title);
+                });
         return new ListItem(
                 hasSubmenu
                         ? HierarchicalMenuTestUtils.MENU_ITEM_WITH_SUBMENU
