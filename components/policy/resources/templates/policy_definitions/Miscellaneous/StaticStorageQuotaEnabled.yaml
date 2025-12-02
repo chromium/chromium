@@ -3,7 +3,7 @@ default: null
 desc: |-
   When enabled, the storage quota APIs will return a static value equal to usage + min(10 GiB, disk rounded up to the nearest 1 GiB).
   When disabled, the storage quota APIs will generally return a dynamic value proportional to the total space available on the device, regardless of usage.
-  If unset, the predictable reported storage quota feature launch or flags will determine behavior.
+  If unset, the storage quota APIs will use the default Chrome behavior.
   Sites with unlimited storage permissions are unaffected by this setting. Enforced quota is also unaffected.
 example_value: true
 features:
