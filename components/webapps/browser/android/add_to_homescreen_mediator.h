@@ -42,11 +42,8 @@ class AddToHomescreenMediator {
       const base::android::JavaParamRef<jobject>& java_ref,
       const base::android::JavaParamRef<jobject>& java_web_contents);
 
-  void StartForAppBanner(
-      std::unique_ptr<AddToHomescreenParams> params,
-      base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
-                                   const AddToHomescreenParams&)>
-          event_callback);
+  void StartForAppBanner(std::unique_ptr<AddToHomescreenParams> params,
+                         AddToHomescreenEventCallback event_callback);
 
   // These 2 methods are called from the coordinator when the current flow
   // started with startForAppMenu.
@@ -82,7 +79,7 @@ class AddToHomescreenMediator {
                      const GURL& url,
                      AddToHomescreenParams::AppType app_type);
 
-  void RecordEventForAppMenu(AddToHomescreenInstaller::Event event,
+  void RecordEventForAppMenu(AddToHomescreenEvent event,
                              const AddToHomescreenParams& a2hs_params);
 
   // Points to the Java reference.
@@ -92,9 +89,7 @@ class AddToHomescreenMediator {
 
   std::unique_ptr<AddToHomescreenParams> params_;
 
-  base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
-                               const AddToHomescreenParams&)>
-      event_callback_;
+  AddToHomescreenEventCallback event_callback_;
 
   AddToHomescreenMediator(const AddToHomescreenMediator&) = delete;
   AddToHomescreenMediator& operator=(const AddToHomescreenMediator&) = delete;

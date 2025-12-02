@@ -47,14 +47,12 @@ AddToHomescreenMediator::AddToHomescreenMediator(
 
 void AddToHomescreenMediator::StartForAppBanner(
     std::unique_ptr<AddToHomescreenParams> params,
-    base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
-                                 const AddToHomescreenParams&)>
-        event_callback) {
+    AddToHomescreenEventCallback event_callback) {
   params_ = std::move(params);
   event_callback_ = std::move(event_callback);
   // Call UI_SHOWN early since the UI is already shown on Java coordinator
   // initialization.
-  event_callback_.Run(AddToHomescreenInstaller::Event::UI_SHOWN, *params_);
+  event_callback_.Run(AddToHomescreenEvent::UI_SHOWN, *params_);
 
   if (params_->app_type == AppType::NATIVE) {
     JNIEnv* env = base::android::AttachCurrentThread();
@@ -125,14 +123,12 @@ void AddToHomescreenMediator::AddToHomescreen(
 
 void AddToHomescreenMediator::OnUiDismissed(JNIEnv* env) {
   if (params_) {
-    event_callback_.Run(AddToHomescreenInstaller::Event::UI_CANCELLED,
-                        *params_);
+    event_callback_.Run(AddToHomescreenEvent::UI_CANCELLED, *params_);
   }
 }
 
 void AddToHomescreenMediator::OnNativeDetailsShown(JNIEnv* env) {
-  event_callback_.Run(AddToHomescreenInstaller::Event::NATIVE_DETAILS_SHOWN,
-                      *params_);
+  event_callback_.Run(AddToHomescreenEvent::NATIVE_DETAILS_SHOWN, *params_);
 }
 
 void AddToHomescreenMediator::Destroy(JNIEnv* env) {
@@ -167,13 +163,13 @@ void AddToHomescreenMediator::SetWebAppInfo(const std::u16string& user_title,
 }
 
 void AddToHomescreenMediator::RecordEventForAppMenu(
-    AddToHomescreenInstaller::Event event,
+    AddToHomescreenEvent event,
     const AddToHomescreenParams& a2hs_params) {
   if (!web_contents_ || a2hs_params.app_type == AppType::NATIVE) {
     return;
   }
 
-  if (event == AddToHomescreenInstaller::Event::INSTALL_REQUEST_FINISHED) {
+  if (event == AddToHomescreenEvent::INSTALL_REQUEST_FINISHED) {
     AppBannerManager* app_banner_manager =
         AppBannerManager::FromWebContents(web_contents_.get());
     // Fire the appinstalled event and do install time logging.

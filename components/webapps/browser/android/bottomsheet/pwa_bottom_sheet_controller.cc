@@ -82,9 +82,7 @@ bool PwaBottomSheetController::MaybeShow(
     content::WebContents* web_contents,
     const WebAppBannerData& web_app_banner_data,
     bool expand_sheet,
-    base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
-                                 const AddToHomescreenParams&)>
-        a2hs_event_callback,
+    AddToHomescreenEventCallback a2hs_event_callback,
     std::unique_ptr<AddToHomescreenParams> a2hs_params) {
   if (!CanShowBottomSheet(web_contents, web_app_banner_data.screenshots)) {
     return false;
@@ -111,9 +109,7 @@ bool PwaBottomSheetController::MaybeShow(
 PwaBottomSheetController::PwaBottomSheetController(
     const WebAppBannerData& web_app_banner_data,
     std::unique_ptr<AddToHomescreenParams> a2hs_params,
-    base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
-                                 const AddToHomescreenParams&)>
-        a2hs_event_callback)
+    AddToHomescreenEventCallback a2hs_event_callback)
     : web_app_banner_data_(web_app_banner_data),
       a2hs_params_(std::move(a2hs_params)),
       a2hs_event_callback_(a2hs_event_callback) {}
@@ -124,8 +120,7 @@ void PwaBottomSheetController::Destroy(JNIEnv* env) {
   // to the regular install dialog prompt. Therefore, we send UI_CANCELLED
   // only if the bottom sheet was ever expanded and not closed.
   if (!install_triggered_ && !sheet_closed_ && sheet_expanded_) {
-    a2hs_event_callback_.Run(AddToHomescreenInstaller::Event::UI_CANCELLED,
-                             *a2hs_params_);
+    a2hs_event_callback_.Run(AddToHomescreenEvent::UI_CANCELLED, *a2hs_params_);
   }
   delete this;
 }
@@ -137,14 +132,12 @@ void PwaBottomSheetController::UpdateInstallSource(JNIEnv* env,
 }
 
 void PwaBottomSheetController::OnSheetClosedWithSwipe(JNIEnv* env) {
-  a2hs_event_callback_.Run(AddToHomescreenInstaller::Event::UI_CANCELLED,
-                           *a2hs_params_);
+  a2hs_event_callback_.Run(AddToHomescreenEvent::UI_CANCELLED, *a2hs_params_);
   sheet_closed_ = true;
 }
 
 void PwaBottomSheetController::OnSheetExpanded(JNIEnv* env) {
-  a2hs_event_callback_.Run(AddToHomescreenInstaller::Event::UI_SHOWN,
-                           *a2hs_params_);
+  a2hs_event_callback_.Run(AddToHomescreenEvent::UI_SHOWN, *a2hs_params_);
   sheet_expanded_ = true;
 }
 

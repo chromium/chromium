@@ -95,9 +95,7 @@ void AddToHomescreenCoordinator::Destroy(JNIEnv* env) {
 bool AddToHomescreenCoordinator::ShowForAppBanner(
     base::WeakPtr<AppBannerManager> weak_manager,
     std::unique_ptr<AddToHomescreenParams> params,
-    base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
-                                 const AddToHomescreenParams&)>
-        event_callback) {
+    AddToHomescreenEventCallback event_callback) {
   // Don't start if app info is not available.
   if ((params->app_type == AddToHomescreenParams::AppType::NATIVE &&
        params->native_app_data.is_null()) ||

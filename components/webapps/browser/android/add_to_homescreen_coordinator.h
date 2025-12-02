@@ -36,12 +36,9 @@ class AddToHomescreenCoordinator : public AddToHomescreenDataFetcher::Observer {
   void Destroy(JNIEnv* env);
 
   // Called for showing the add-to-homescreen UI for AppBannerManager.
-  static bool ShowForAppBanner(
-      base::WeakPtr<AppBannerManager> weak_manager,
-      std::unique_ptr<AddToHomescreenParams> params,
-      base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
-                                   const AddToHomescreenParams&)>
-          event_callback);
+  static bool ShowForAppBanner(base::WeakPtr<AppBannerManager> weak_manager,
+                               std::unique_ptr<AddToHomescreenParams> params,
+                               AddToHomescreenEventCallback event_callback);
 
   AddToHomescreenCoordinator() = delete;
   AddToHomescreenCoordinator(const AddToHomescreenCoordinator&) = delete;

@@ -82,7 +82,7 @@ class AppBannerManagerAndroid
     // Called when an install event occurs, allowing specializations to record
     // additional metrics.
     virtual void RecordExtraMetricsForInstallEvent(
-        AddToHomescreenInstaller::Event event,
+        AddToHomescreenEvent event,
         const AddToHomescreenParams& a2hs_params) = 0;
   };
 
@@ -129,14 +129,6 @@ class AppBannerManagerAndroid
       const base::android::JavaParamRef<jstring>& jicon_url);
 
   void ShowBannerFromBadge(const InstallBannerConfig& config);
-
-  // Installs the app referenced by the data in |a2hs_params|.
-  // |a2hs_event_callback| will be run to inform the caller of the progress of
-  // the installation.
-  void Install(const AddToHomescreenParams& a2hs_params,
-               base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
-                                            const AddToHomescreenParams&)>
-                   a2hs_event_callback);
 
   // Returns false if the bottom sheet can't be shown. In that case an
   // alternative UI should be shown.
@@ -190,7 +182,7 @@ class AppBannerManagerAndroid
   // Use as a callback to notify |this| after an install event such as a dialog
   // being cancelled or an app being installed has occurred.
   void OnInstallEvent(GURL validated_url,
-                      AddToHomescreenInstaller::Event event,
+                      AddToHomescreenEvent event,
                       const AddToHomescreenParams& a2hs_params);
 
   base::WeakPtr<AppBannerManagerAndroid> GetAndroidWeakPtr();

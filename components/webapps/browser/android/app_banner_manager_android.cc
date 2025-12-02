@@ -423,7 +423,7 @@ void AppBannerManagerAndroid::InstallableWebAppStatusUpdate() {
 
 void AppBannerManagerAndroid::OnInstallEvent(
     GURL validated_url,
-    AddToHomescreenInstaller::Event event,
+    AddToHomescreenEvent event,
     const AddToHomescreenParams& a2hs_params) {
   delegate_->RecordExtraMetricsForInstallEvent(event, a2hs_params);
 
@@ -433,12 +433,12 @@ void AppBannerManagerAndroid::OnInstallEvent(
       (a2hs_params.install_source == WebappInstallSource::MENU_BROWSER_TAB ||
        a2hs_params.install_source == WebappInstallSource::MENU_CUSTOM_TAB)) {
     switch (event) {
-      case AddToHomescreenInstaller::Event::INSTALL_REQUEST_FINISHED:
+      case AddToHomescreenEvent::INSTALL_REQUEST_FINISHED:
         SendBannerAccepted();
         OnInstall(a2hs_params.shortcut_info->display,
                   /*set_current_web_app_not_installable=*/false);
         break;
-      case AddToHomescreenInstaller::Event::UI_CANCELLED:
+      case AddToHomescreenEvent::UI_CANCELLED:
         // Collapsing the bottom sheet installer UI does not count as
         // UI_CANCELLED as it is still visible to the user and they can expand
         // it later.
@@ -473,7 +473,7 @@ void AppBannerManagerAndroid::OnInstallEvent(
   }
 
   switch (event) {
-    case AddToHomescreenInstaller::Event::INSTALL_STARTED:
+    case AddToHomescreenEvent::INSTALL_STARTED:
       TrackDismissEvent(DISMISS_EVENT_DISMISSED);
       switch (a2hs_params.app_type) {
         case AddToHomescreenParams::AppType::NATIVE:
@@ -494,21 +494,21 @@ void AppBannerManagerAndroid::OnInstallEvent(
       }
       break;
 
-    case AddToHomescreenInstaller::Event::INSTALL_FAILED:
+    case AddToHomescreenEvent::INSTALL_FAILED:
       TrackDismissEvent(DISMISS_EVENT_ERROR);
       break;
 
-    case AddToHomescreenInstaller::Event::NATIVE_INSTALL_OR_OPEN_FAILED:
+    case AddToHomescreenEvent::NATIVE_INSTALL_OR_OPEN_FAILED:
       DCHECK_EQ(a2hs_params.app_type, AddToHomescreenParams::AppType::NATIVE);
       TrackInstallEvent(INSTALL_EVENT_NATIVE_APP_INSTALL_TRIGGERED);
       break;
 
-    case AddToHomescreenInstaller::Event::NATIVE_INSTALL_OR_OPEN_SUCCEEDED:
+    case AddToHomescreenEvent::NATIVE_INSTALL_OR_OPEN_SUCCEEDED:
       DCHECK_EQ(a2hs_params.app_type, AddToHomescreenParams::AppType::NATIVE);
       TrackDismissEvent(DISMISS_EVENT_APP_OPEN);
       break;
 
-    case AddToHomescreenInstaller::Event::INSTALL_REQUEST_FINISHED:
+    case AddToHomescreenEvent::INSTALL_REQUEST_FINISHED:
       SendBannerAccepted();
       if (a2hs_params.app_type == AddToHomescreenParams::AppType::WEBAPK) {
         OnInstall(a2hs_params.shortcut_info->display,
@@ -516,11 +516,11 @@ void AppBannerManagerAndroid::OnInstallEvent(
       }
       break;
 
-    case AddToHomescreenInstaller::Event::NATIVE_DETAILS_SHOWN:
+    case AddToHomescreenEvent::NATIVE_DETAILS_SHOWN:
       TrackDismissEvent(DISMISS_EVENT_BANNER_CLICK);
       break;
 
-    case AddToHomescreenInstaller::Event::UI_SHOWN:
+    case AddToHomescreenEvent::UI_SHOWN:
       AppBannerSettingsHelper::RecordBannerEvent(
           web_contents(), validated_url, identifier,
           AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW, GetCurrentTime());
@@ -530,7 +530,7 @@ void AppBannerManagerAndroid::OnInstallEvent(
                             : DISPLAY_EVENT_WEB_APP_BANNER_CREATED);
       break;
 
-    case AddToHomescreenInstaller::Event::UI_CANCELLED:
+    case AddToHomescreenEvent::UI_CANCELLED:
       TrackDismissEvent(DISMISS_EVENT_DISMISSED);
 
       SendBannerDismissed();
@@ -675,15 +675,6 @@ void AppBannerManagerAndroid::OnMlInstallPrediction(
     base::PassKey<MLInstallabilityPromoter>,
     std::string result_label) {
   // TODO(crbug.com/40269982): Implement.
-}
-
-void AppBannerManagerAndroid::Install(
-    const AddToHomescreenParams& a2hs_params,
-    base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
-                                 const AddToHomescreenParams&)>
-        a2hs_event_callback) {
-  AddToHomescreenInstaller::Install(web_contents(), a2hs_params,
-                                    std::move(a2hs_event_callback));
 }
 
 base::WeakPtr<AppBannerManager>
