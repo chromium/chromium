@@ -166,7 +166,8 @@ CGFloat GetSubtitleMarginDistance() {
 
 }  // namespace
 
-@interface SearchEngineChoiceViewController () <UITextViewDelegate>
+@interface SearchEngineChoiceViewController () <UITextViewDelegate,
+                                                UITextDragDelegate>
 @end
 
 @implementation SearchEngineChoiceViewController {
@@ -329,6 +330,7 @@ CGFloat GetSubtitleMarginDistance() {
   // The text alignment needs to be set after the setting the attributed text.
   subtitle1TextView.textAlignment = NSTextAlignmentCenter;
   subtitle1TextView.delegate = self;
+  subtitle1TextView.textDragDelegate = self;
 
   NSLayoutYAxisAnchor* subtitleBottomAnchor = subtitle1TextView.bottomAnchor;
 
@@ -1083,6 +1085,21 @@ CGFloat GetSubtitleMarginDistance() {
   // selecting text. Setting the `selectable` property to `NO` doesn't help
   // since it makes links inside the text view untappable.
   textView.selectedTextRange = nil;
+}
+
+- (UITextItemMenuConfiguration*)textView:(UITextView*)textView
+            menuConfigurationForTextItem:(UITextItem*)textItem
+                             defaultMenu:(UIMenu*)defaultMenu {
+  // Disable Context menu as this is an internal link.
+  return nil;
+}
+
+#pragma mark - UITextDragDelegate
+
+- (NSArray<UIDragItem*>*)textDraggableView:
+                             (UIView<UITextDraggable>*)textDraggableView
+                              itemsForDrag:(id<UITextDragRequest>)dragRequest {
+  return @[];
 }
 
 #pragma mark - UIContentContainer
