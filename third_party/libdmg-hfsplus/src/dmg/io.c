@@ -137,7 +137,7 @@ static block* blockRead(threadData* d) {
 
 static void blockCompress(block* b, Compressor* comp) {
 	if (!b->keepRaw) {
-		ASSERT(comp->compress(b->inbuf, b->insize, b->outbuf, b->bufferSize, &b->outsize, comp->level) == 0, "compress");
+		ASSERT(comp->compressFn(b->inbuf, b->insize, b->outbuf, b->bufferSize, &b->outsize, comp->level) == 0, "compress");
 	}
 	
 	if(b->keepRaw || ((b->outsize / SECTOR_SIZE) >= (b->run.sectorCount - 15))) {

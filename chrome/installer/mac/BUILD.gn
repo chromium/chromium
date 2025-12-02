@@ -15,7 +15,11 @@ if (is_chrome_branded) {
 }
 
 group("mac") {
-  public_deps = [ ":copies" ]
+  public_deps = [
+    ":copies",
+    "//third_party/libdmg-hfsplus:dmg_tool",
+    "//third_party/libdmg-hfsplus:hfs_tool",
+  ]
 }
 
 _packaging_dir = "$root_out_dir/$chrome_product_full_name Packaging"

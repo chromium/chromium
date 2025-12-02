@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <dmg/dmg.h>
+#include "abstractfile.h"
 
 unsigned char* decodeBase64(char* toDecode, size_t* dataLength) {
   uint8_t buffer[4];

@@ -64,4 +64,13 @@ as symlinks, rather than duplicating their contents) and a new HFS+ volume
 configuration feature must be added (setting a folder to be automatically
 opened on mount).
 
-Local modifications: None
+Local modifications:
+ * patches/2025-12-01-zlib-conflict-and-debug-btree-initialization.patch
+   * Fixes a Chromium-specific conflict where a header file inside zlib that
+     redefines calls into various zlib functions also renames unrelated symbols
+     in libdmg-hfsplus referenced by files that do not all include zlib.h, by
+     renaming conflicted symbols.
+   * Fixes a warning in hfs/btree.c about debug_btree reading local variables
+     without initialization on some codepaths. (Other warnings exist unfixed;
+     this one cannot be silenced in Chromium's build.)
+

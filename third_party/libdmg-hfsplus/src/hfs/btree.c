@@ -617,6 +617,8 @@ int debugBTree(BTree* tree, int displayTree) {
   uint8_t i;
   
   errorCount = 0;
+  traverseCount = 0;
+  linearCount = 0;
   
   printf("Mapping nodes...\n"); fflush(stdout);
   map = mapNodes(tree, &numMapNodes, &errorCount);
@@ -628,10 +630,7 @@ int debugBTree(BTree* tree, int displayTree) {
   }
 
   if(tree->headerRec->rootNode == 0) {
-    if(tree->headerRec->firstLeafNode == 0 && tree->headerRec->lastLeafNode == 0) {
-      traverseCount = 0;
-      linearCount = 0;
-    } else {
+    if(tree->headerRec->firstLeafNode || tree->headerRec->lastLeafNode) {
       printf("BTREE CONSISTENCY ERROR: First leaf node (%d) and last leaf node (%d) inconsistent with empty BTree\n",
                 tree->headerRec->firstLeafNode, tree->headerRec->lastLeafNode);
       

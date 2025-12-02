@@ -106,20 +106,20 @@ int getCompressor(Compressor* comp, char *name)
 {
   if (strcasecmp(name, "bzip2") == 0) {
     comp->block_type = BLOCK_BZIP2;
-    comp->compress = bz2Compress;
+    comp->compressFn = bz2Compress;
     comp->decompressBuffer = oldDecompressBuffer;
     return 0;
   }
   if (strcasecmp(name, "zlib") == 0) {
     comp->block_type = BLOCK_ZLIB;
-    comp->compress = zlibCompress;
+    comp->compressFn = zlibCompress;
     comp->decompressBuffer = oldDecompressBuffer;
     return 0;
   }
 #ifdef HAVE_LIBLZMA
   if (strcasecmp(name, "lzma") == 0) {
     comp->block_type = BLOCK_LZMA;
-    comp->compress = lzmaCompress;
+    comp->compressFn = lzmaCompress;
     comp->decompressBuffer = modernDecompressBuffer;
     return 0;
   }
@@ -127,7 +127,7 @@ int getCompressor(Compressor* comp, char *name)
 #ifdef HAVE_LZFSE
   if (strcasecmp(name, "lzfse") == 0) {
     comp->block_type = BLOCK_LZFSE;
-    comp->compress = lzfseCompress;
+    comp->compressFn = lzfseCompress;
     comp->decompressBuffer = modernDecompressBuffer;
     return 0;
   }

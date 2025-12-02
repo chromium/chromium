@@ -20,7 +20,7 @@ typedef int (*CompressFunc)(unsigned char *inBuffer, size_t inSize,
 typedef size_t (*DecompressBufferFunc)(size_t runSectors);
 
 typedef struct {
-  CompressFunc compress;
+  CompressFunc compressFn;
   DecompressBufferFunc decompressBuffer;
   int level;
   uint32_t block_type;

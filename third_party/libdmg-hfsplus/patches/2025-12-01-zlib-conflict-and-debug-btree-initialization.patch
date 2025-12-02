@@ -1,0 +1,101 @@
+diff --git a/third_party/libdmg-hfsplus/src/common/base64.c b/third_party/libdmg-hfsplus/src/common/base64.c
+index 4e745aaef195f..7d306e19cd339 100644
+--- a/third_party/libdmg-hfsplus/src/common/base64.c
++++ b/third_party/libdmg-hfsplus/src/common/base64.c
+@@ -3,7 +3,7 @@
+ #include <stdio.h>
+ #include <string.h>
+ 
+-#include <dmg/dmg.h>
++#include "abstractfile.h"
+ 
+ unsigned char* decodeBase64(char* toDecode, size_t* dataLength) {
+   uint8_t buffer[4];
+diff --git a/third_party/libdmg-hfsplus/src/dmg/compress.c b/third_party/libdmg-hfsplus/src/dmg/compress.c
+index 172cf6f2d86d4..4331c2a623f3e 100644
+--- a/third_party/libdmg-hfsplus/src/dmg/compress.c
++++ b/third_party/libdmg-hfsplus/src/dmg/compress.c
+@@ -106,20 +106,20 @@ int getCompressor(Compressor* comp, char *name)
+ {
+   if (strcasecmp(name, "bzip2") == 0) {
+     comp->block_type = BLOCK_BZIP2;
+-    comp->compress = bz2Compress;
++    comp->compressFn = bz2Compress;
+     comp->decompressBuffer = oldDecompressBuffer;
+     return 0;
+   }
+   if (strcasecmp(name, "zlib") == 0) {
+     comp->block_type = BLOCK_ZLIB;
+-    comp->compress = zlibCompress;
++    comp->compressFn = zlibCompress;
+     comp->decompressBuffer = oldDecompressBuffer;
+     return 0;
+   }
+ #ifdef HAVE_LIBLZMA
+   if (strcasecmp(name, "lzma") == 0) {
+     comp->block_type = BLOCK_LZMA;
+-    comp->compress = lzmaCompress;
++    comp->compressFn = lzmaCompress;
+     comp->decompressBuffer = modernDecompressBuffer;
+     return 0;
+   }
+@@ -127,7 +127,7 @@ int getCompressor(Compressor* comp, char *name)
+ #ifdef HAVE_LZFSE
+   if (strcasecmp(name, "lzfse") == 0) {
+     comp->block_type = BLOCK_LZFSE;
+-    comp->compress = lzfseCompress;
++    comp->compressFn = lzfseCompress;
+     comp->decompressBuffer = modernDecompressBuffer;
+     return 0;
+   }
+diff --git a/third_party/libdmg-hfsplus/src/dmg/io.c b/third_party/libdmg-hfsplus/src/dmg/io.c
+index 922612cf19d07..ec507cd4993ce 100644
+--- a/third_party/libdmg-hfsplus/src/dmg/io.c
++++ b/third_party/libdmg-hfsplus/src/dmg/io.c
+@@ -137,7 +137,7 @@ static block* blockRead(threadData* d) {
+ 
+ static void blockCompress(block* b, Compressor* comp) {
+ 	if (!b->keepRaw) {
+-		ASSERT(comp->compress(b->inbuf, b->insize, b->outbuf, b->bufferSize, &b->outsize, comp->level) == 0, "compress");
++		ASSERT(comp->compressFn(b->inbuf, b->insize, b->outbuf, b->bufferSize, &b->outsize, comp->level) == 0, "compress");
+ 	}
+ 	
+ 	if(b->keepRaw || ((b->outsize / SECTOR_SIZE) >= (b->run.sectorCount - 15))) {
+diff --git a/third_party/libdmg-hfsplus/src/hfs/btree.c b/third_party/libdmg-hfsplus/src/hfs/btree.c
+index 6d8f4944248fd..72c9dab8396a3 100644
+--- a/third_party/libdmg-hfsplus/src/hfs/btree.c
++++ b/third_party/libdmg-hfsplus/src/hfs/btree.c
+@@ -617,6 +617,8 @@ int debugBTree(BTree* tree, int displayTree) {
+   uint8_t i;
+   
+   errorCount = 0;
++  traverseCount = 0;
++  linearCount = 0;
+   
+   printf("Mapping nodes...\n"); fflush(stdout);
+   map = mapNodes(tree, &numMapNodes, &errorCount);
+@@ -628,10 +630,7 @@ int debugBTree(BTree* tree, int displayTree) {
+   }
+ 
+   if(tree->headerRec->rootNode == 0) {
+-    if(tree->headerRec->firstLeafNode == 0 && tree->headerRec->lastLeafNode == 0) {
+-      traverseCount = 0;
+-      linearCount = 0;
+-    } else {
++    if(tree->headerRec->firstLeafNode || tree->headerRec->lastLeafNode) {
+       printf("BTREE CONSISTENCY ERROR: First leaf node (%d) and last leaf node (%d) inconsistent with empty BTree\n",
+                 tree->headerRec->firstLeafNode, tree->headerRec->lastLeafNode);
+       
+diff --git a/third_party/libdmg-hfsplus/src/includes/dmg/compress.h b/third_party/libdmg-hfsplus/src/includes/dmg/compress.h
+index ef4126b7b8bf5..9647cb177c14d 100644
+--- a/third_party/libdmg-hfsplus/src/includes/dmg/compress.h
++++ b/third_party/libdmg-hfsplus/src/includes/dmg/compress.h
+@@ -20,7 +20,7 @@ typedef int (*CompressFunc)(unsigned char *inBuffer, size_t inSize,
+ typedef size_t (*DecompressBufferFunc)(size_t runSectors);
+ 
+ typedef struct {
+-  CompressFunc compress;
++  CompressFunc compressFn;
+   DecompressBufferFunc decompressBuffer;
+   int level;
+   uint32_t block_type;
