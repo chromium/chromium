@@ -1312,6 +1312,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tab") {
     "src/org/chromium/chrome/browser/tab/TabContextMenuItemDelegateTest.java",
     "src/org/chromium/chrome/browser/tab/TabImplPWATest.java",
     "src/org/chromium/chrome/browser/tab/TabImplTest.java",
+    "src/org/chromium/chrome/browser/tab/TabMediaIndicatorTest.java",
     "src/org/chromium/chrome/browser/tab/TabStateTest.java",
     "src/org/chromium/chrome/browser/tab/TabUmaTest.java",
     "src/org/chromium/chrome/browser/tab/TabViewManagerTest.java",
@@ -1328,6 +1329,11 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tab") {
     "src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataTestUtils.java",
     "src/org/chromium/chrome/browser/tab/state/TabStateFlatBufferTest.java",
     "src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaverImplTest.java",
+  ]
+
+  data = [
+    "//chrome/test/data/media/tab_media_indicator.html",
+    "//chrome/test/data/media/bigbuck.webm",
   ]
 
   deps = [ ":chrome_test_java_helper" ]
