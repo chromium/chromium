@@ -31,7 +31,7 @@ const NSInteger kNumberOfTitleLines = 2;
     if (node->is_folder()) {
       self.cellClass = [TableViewBookmarksFolderCell class];
     } else {
-      self.cellClass = LegacyTableViewCell.class;
+      self.cellClass = [LegacyTableViewCell class];
     }
     _bookmarkNode = node;
   }

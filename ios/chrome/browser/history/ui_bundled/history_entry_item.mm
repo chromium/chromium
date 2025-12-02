@@ -35,7 +35,7 @@ const NSInteger kNumberOfTitleLines = 2;
        accessibilityDelegate:(id<HistoryEntryItemDelegate>)delegate {
   self = [super initWithType:type];
   if (self) {
-    self.cellClass = LegacyTableViewCell.class;
+    self.cellClass = [LegacyTableViewCell class];
     _accessibilityDelegate = delegate;
   }
   return self;
