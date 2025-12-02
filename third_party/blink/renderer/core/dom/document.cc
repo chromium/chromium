@@ -8707,11 +8707,6 @@ void Document::SetPopoverPointerdownTarget(const HTMLElement* popover) {
   popover_pointerdown_target_ = popover;
 }
 
-void Document::SetPopoverPickerMousedownLocation(
-    std::optional<gfx::PointF> point) {
-  popover_picker_mousedown_location_ = point;
-}
-
 const HTMLDialogElement* Document::DialogPointerdownTarget() const {
   return dialog_pointerdown_target_.Get();
 }
@@ -8719,6 +8714,14 @@ const HTMLDialogElement* Document::DialogPointerdownTarget() const {
 void Document::SetDialogPointerdownTarget(const HTMLDialogElement* dialog) {
   DCHECK(!dialog || dialog->IsOpen());
   dialog_pointerdown_target_ = dialog;
+}
+
+HTMLDocument::PopoverPickerPointerdownInfo Document::PopoverPickerPointerdown()
+    const {
+  return popover_picker_pointerdown_info_;
+}
+void Document::SetPopoverPickerPointerdown(PopoverPickerPointerdownInfo info) {
+  popover_picker_pointerdown_info_ = std::move(info);
 }
 
 void Document::exitPointerLock() {
@@ -9461,6 +9464,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(popover_hint_stack_);
   visitor->Trace(popover_pointerdown_target_);
   visitor->Trace(dialog_pointerdown_target_);
+  visitor->Trace(popover_picker_pointerdown_info_);
   visitor->Trace(popovers_waiting_to_hide_);
   visitor->Trace(all_open_popovers_);
   visitor->Trace(all_open_dialogs_);

@@ -370,7 +370,7 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual bool CanBeCommandInvoker() const;
   CommandEventType GetCommandEventType(const AtomicString& type,
                                        ExecutionContext*) const;
-  bool HandleCommandForActivation();
+  virtual bool HandleCommandForActivation();
   Element* commandForElement() const;
   AtomicString command() const;
   void setCommand(const AtomicString& type);

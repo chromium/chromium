@@ -1738,16 +1738,27 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapHashSet<Member<HTMLElement>>& PopoversWaitingToHide() {
     return popovers_waiting_to_hide_;
   }
+  // PopoverPointerdownTarget is used by the popover light dismiss system, to
+  // track pointer events that might light-dismiss popovers.
   const HTMLElement* PopoverPointerdownTarget() const {
     return popover_pointerdown_target_.Get();
   }
   void SetPopoverPointerdownTarget(const HTMLElement*);
-  std::optional<gfx::PointF> PopoverPickerMousedownLocation() const {
-    return popover_picker_mousedown_location_;
-  }
-  void SetPopoverPickerMousedownLocation(std::optional<gfx::PointF>);
+  // DialogPointerdownTarget is used by the dialog light dismiss (`closedby`)
+  // system, to track pointer events that might light-dismiss dialogs.
   const HTMLDialogElement* DialogPointerdownTarget() const;
   void SetDialogPointerdownTarget(const HTMLDialogElement*);
+  // PopoverPickerPointerdown* is used by both customizable-<select> and the
+  // <menuitem> element for mousedown-drag-mouseup type interactions. If the
+  // `target` member is nullptr, no pointerdown info is stored.
+  struct PopoverPickerPointerdownInfo {
+    DISALLOW_NEW();
+    Member<Node> target;
+    gfx::PointF location;
+    void Trace(Visitor* visitor) const { visitor->Trace(target); }
+  };
+  PopoverPickerPointerdownInfo PopoverPickerPointerdown() const;
+  void SetPopoverPickerPointerdown(PopoverPickerPointerdownInfo);
 
   HeapLinkedHashSet<Member<HTMLDialogElement>>& AllOpenDialogs() {
     return all_open_dialogs_;
@@ -3169,14 +3180,14 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapVector<Member<HTMLElement>> popover_hint_stack_;
   // The popover (if any) that received the most recent pointerdown event.
   Member<const HTMLElement> popover_pointerdown_target_;
-  // The mouse location for the mousedown that opened the picker, if any.
-  std::optional<gfx::PointF> popover_picker_mousedown_location_;
   // The dialog (if any) that received the most recent pointerdown event. This
   // is distinct from popover_pointerdown_target_ because the same pointer
   // action could trigger light dismiss on a containing popover and not a
   // containing dialog, or vice versa. This will be nullptr for a click on
   // the ::backdrop pseudo-element for a dialog.
   Member<const HTMLDialogElement> dialog_pointerdown_target_;
+  // The mouse target information for the event that opened the picker, if any.
+  PopoverPickerPointerdownInfo popover_picker_pointerdown_info_;
   // A set of popovers for which hidePopover() has been called, but animations
   // are still running.
   HeapHashSet<Member<HTMLElement>> popovers_waiting_to_hide_;

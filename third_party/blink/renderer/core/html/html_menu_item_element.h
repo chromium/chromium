@@ -44,6 +44,7 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
       UpdateBehavior update_behavior =
           UpdateBehavior::kStyleAndLayout) const override;
 
+  bool HandleCommandForActivation() override;
   void DefaultEventHandler(Event&) override;
 
  private:
@@ -55,7 +56,6 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   bool ShouldHaveFocusAppearance() const override;
 
-  HTMLElement* InvokesSubmenuOrPopover() const;
   HTMLMenuListElement* InvokesSubmenu() const;
   // This is generally used when a menuitem has been selected, and the "tree" of
   // menus should now close. It finds the innermost (nearest ancestor) menulist
@@ -64,7 +64,7 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   // such menulist, which (via popover close behavior) closes the tree.
   Element* CloseOutermostContainingMenuList();
   void ActivateMenuItem();
-  bool HandleMenuPointerEvents(Event&);
+  void HandleMenuPointerEvents(Event&);
   void HandleMenuKeyboardEvents(Event&);
   bool HasOwnerMenuList() const;
 
@@ -79,8 +79,9 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
 
   // Represents 'checkedness'.
   bool is_checked_;
-  // This is used to avoid double-invoking target menus and popovers.
-  bool ignore_next_dom_activate_ = false;
+  // This is used to avoid double-invoking target menus, due to custom logic
+  // that invokes sub-menus on mousedown.
+  bool ignore_next_command_ = false;
 
   friend class HTMLMenuItemElementTest;
 };

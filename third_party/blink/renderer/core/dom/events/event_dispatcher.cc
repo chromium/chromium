@@ -433,7 +433,7 @@ inline void EventDispatcher::DispatchEventPostProcess(
   }
 
   if (event_->IsMouseEvent() && event_->type() == event_type_names::kMouseup) {
-    node_->GetDocument().SetPopoverPickerMousedownLocation(std::nullopt);
+    node_->GetDocument().SetPopoverPickerPointerdown({.target = nullptr});
   }
 
   // Track the usage of sending a mousedown event to a select element to force

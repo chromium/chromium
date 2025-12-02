@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/command_event.h"
@@ -66,7 +67,8 @@ bool HTMLMenuItemElement::HasOwnerMenuList() const {
 bool HTMLMenuItemElement::IsCheckable() const {
   return HasOwnerMenuList() && nearest_ancestor_field_set_ &&
          nearest_ancestor_field_set_->FastGetAttribute(
-             html_names::kCheckableAttr);
+             html_names::kCheckableAttr) &&
+         !InvokesSubmenu();
 }
 
 bool HTMLMenuItemElement::checked() const {
@@ -96,10 +98,6 @@ bool HTMLMenuItemElement::IsKeyboardFocusableSlow(
 }
 
 int HTMLMenuItemElement::DefaultTabIndex() const {
-  // Menuitems in menulist should be traversed using arrow keys and not tabbing.
-  if (HasOwnerMenuList()) {
-    return -1;
-  }
   return 0;
 }
 
@@ -107,26 +105,19 @@ bool HTMLMenuItemElement::ShouldHaveFocusAppearance() const {
   return SelectorChecker::MatchesFocusVisiblePseudoClass(*this);
 }
 
-HTMLElement* HTMLMenuItemElement::InvokesSubmenuOrPopover() const {
-  HTMLElement* invoked_element = DynamicTo<HTMLElement>(commandForElement());
+HTMLMenuListElement* HTMLMenuItemElement::InvokesSubmenu() const {
+  auto* invoked_element = DynamicTo<HTMLMenuListElement>(commandForElement());
   if (!invoked_element || !invoked_element->IsPopover()) {
     return nullptr;
   }
   CommandEventType type = GetCommandEventType(
       FastGetAttribute(html_names::kCommandAttr), GetExecutionContext());
-  if (type != CommandEventType::kTogglePopover &&
-      type != CommandEventType::kShowPopover &&
-      type != CommandEventType::kHidePopover &&
-      type != CommandEventType::kToggleMenu &&
+  if (type != CommandEventType::kToggleMenu &&
       type != CommandEventType::kShowMenu &&
       type != CommandEventType::kHideMenu) {
     return nullptr;
   }
   return invoked_element;
-}
-
-HTMLMenuListElement* HTMLMenuItemElement::InvokesSubmenu() const {
-  return DynamicTo<HTMLMenuListElement>(InvokesSubmenuOrPopover());
 }
 
 bool HTMLMenuItemElement::CanBeCommandInvoker() const {
@@ -140,9 +131,10 @@ bool HTMLMenuItemElement::setChecked(bool checked) {
 
   if (!checkable) {
     // Not checkable - close the containing menulist unless this item invokes
-    // a sub-menu or a popover.
-    return !InvokesSubmenuOrPopover();
+    // a sub-menu.
+    return !InvokesSubmenu();
   }
+  DCHECK(!InvokesSubmenu());
 
   // Only update the exclusivity of all other menu items rooted under the same
   // fieldset *if* `this` is becoming checked under a fieldset that enforces
@@ -176,7 +168,8 @@ void HTMLMenuItemElement::ActivateMenuItem() {
     DCHECK(IsCheckable() || !InvokesSubmenu());
     CloseOutermostContainingMenuList();
   }
-  if (!IsCheckable() && InvokesSubmenuOrPopover()) {
+  if (InvokesSubmenu()) {
+    DCHECK(!IsCheckable());
     HandleCommandForActivation();
   }
 }
@@ -217,11 +210,6 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
 
   FocusParams focus_params(FocusTrigger::kUserGesture);
   const AtomicString key(keyboard_event->key());
-  if ((key == " " || key == keywords::kCapitalEnter)) {
-    // TODO(crbug.com/425682465): implement chooseItem(event).
-    // TODO: Do we need this?
-    return;
-  }
 
   // Nothing else below does anything if we're not inside an owner menu that has
   // at least one menu item.
@@ -390,78 +378,95 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
   }
 }
 
-bool HTMLMenuItemElement::HandleMenuPointerEvents(Event& event) {
+void HTMLMenuItemElement::HandleMenuPointerEvents(Event& event) {
   // This implements the special "mouse down, drag to menu item, mouse up"
-  // behavior. This is a mouse-only behavior - it should not apply to pointer
-  // events for touchscreens. Touch events will be handled by the normal input
-  // system behavior of sending a DOMActivate event. This also does not apply
-  // to checkable menu items, which also rely on DOMActivate.
+  // behavior, which is mouse-only and does not apply to touchscreens. The
+  // remainder of normal mouse/touch behavior is handled by the normal
+  // DOMActivate event system.
   const auto* mouse_event = DynamicTo<MouseEvent>(event);
   if (!mouse_event || mouse_event->FromTouch() ||
       mouse_event->button() !=
           static_cast<int16_t>(WebPointerProperties::Button::kLeft) ||
       (event.type() != event_type_names::kMouseup &&
        event.type() != event_type_names::kMousedown)) {
-    return false;
+    return;
   }
 
   if (event.type() == event_type_names::kMouseup) {
-    // We leave the picker open, and do not "pick" a menu item, iff:
-    //  1. The mousedown was on a <menuitem> that triggers a sub-menu via
-    //     `commandfor`, so we have a mousedown location stored, and
-    //  2. The mouseup on this <menuitem> was within kEpsilon layout units
-    //     (post zoom, page-relative) of the location of the mousedown. I.e.
-    //     the mouse was not dragged between mousedown and mouseup. I.e. this
-    //     was just a "click" to open the menuitem's sub-menu - it shouldn't
-    //     pick anything yet.
-    std::optional<gfx::PointF> mouse_down_loc =
-        GetDocument().PopoverPickerMousedownLocation();
-    GetDocument().SetPopoverPickerMousedownLocation(std::nullopt);
+    auto mouse_down_info = GetDocument().PopoverPickerPointerdown();
+    GetDocument().SetPopoverPickerPointerdown({.target = nullptr});
+    HTMLMenuItemElement* mouse_down_menuitem = nullptr;
+    for (Node* node = mouse_down_info.target; node;
+         node = FlatTreeTraversal::Parent(*node)) {
+      if (auto* item = DynamicTo<HTMLMenuItemElement>(node)) {
+        mouse_down_menuitem = item;
+        break;
+      }
+    }
+    bool same_element = this == mouse_down_menuitem;
     // TODO(masonf) This kEpsilon should be combined with the one in
     // html_option_element.cc.
     constexpr float kEpsilon = 5;  // 5 pixels in any direction
-    bool activate_menu_item = !mouse_down_loc.has_value() ||
-                              !mouse_down_loc->IsWithinDistance(
-                                  mouse_event->AbsoluteLocation(), kEpsilon);
-    if (activate_menu_item) {
-      // The mouse moved, so select this menu item.
-      ActivateMenuItem();
+    bool mouse_moved = !mouse_down_info.location.IsWithinDistance(
+        mouse_event->AbsoluteLocation(), kEpsilon);
+    // We "pick" a menu item here, iff:
+    //  1. This was a mouse, not touchscreen, interaction,
+    //  2. The mousedown was on a <menuitem> that triggers a sub-menu via
+    //     `commandfor`, so we have a mousedown location stored,
+    //  3. The mouseup is on a different menuitem than the mouseup, and
+    //  4. The mouseup on this <menuitem> is *not* within kEpsilon layout units
+    //  (post zoom, page-relative) of the location of the mousedown. I.e. the
+    //  mouse was dragged at least a little bit between mousedown and mouseup.
+    //  This ensures that if the new sub-menu is rendered over the top of the
+    //  triggering menuitem, and the user is just "clicking" to activate the
+    //  sub-menu, the menuitem under the cursor isn't selected.
+
+    bool activate_menu_item =
+        mouse_down_menuitem && !same_element && mouse_moved;
+    if (!activate_menu_item) {
+      return;
     }
-    // TODO(crbug.com/406566432): This is a hack, and isn't strictly correct.
-    // We need a better way to ignore the synthetic `click` that triggers the
-    // `DOMActivate` that would double-trigger the menu in this case.
-    ignore_next_dom_activate_ = true;
+    ActivateMenuItem();
+    // This activation came from a mouse-down on a submenu invoker, so we need
+    // to clear the ignore_next_command_ flag for that menuitem.
+    mouse_down_menuitem->ignore_next_command_ = false;
   } else {
     DCHECK_EQ(event.type(), event_type_names::kMousedown);
+    GetDocument().SetPopoverPickerPointerdown(
+        {.target = this, .location = mouse_event->AbsoluteLocation()});
     if (!InvokesSubmenu()) {
-      return false;
+      return;
     }
-    GetDocument().SetPopoverPickerMousedownLocation(
-        mouse_event->FromTouch()
-            ? std::nullopt
-            : std::optional(mouse_event->AbsoluteLocation()));
-    // Activate sub-menus on mouse *down*, so that the user can drag and release
-    // to choose a sub-menu item.
+    // Activate sub-menus on mouse *down*, so that the user can drag and
+    // release to choose a sub-menu item.
     ActivateMenuItem();
+    // Because we're activating this menu item here, in mousedown, we want to
+    // avoid re-triggering the same menu again in the synthetic
+    // click/DOMActivate triggered command invocation.
+    ignore_next_command_ = true;
   }
-  return true;
+}
+
+bool HTMLMenuItemElement::HandleCommandForActivation() {
+  if (ignore_next_command_) {
+    DCHECK(InvokesSubmenu());
+    ignore_next_command_ = false;
+    return false;
+  }
+  return HTMLElement::HandleCommandForActivation();
 }
 
 void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
+  if (event.type() == event_type_names::kDOMActivate && !InvokesSubmenu()) {
+    // If this isn't a submenu invoker, activate it now. If it is a command
+    // invoker of any kind, HTMLElement::DefaultEventHandler() will take care of
+    // it, so we can't early-return here.
+    ActivateMenuItem();
+  }
   if (HandleKeyboardActivation(event)) {
     return;
   }
-  if (event.type() == event_type_names::kDOMActivate) {
-    if (ignore_next_dom_activate_) {
-      ignore_next_dom_activate_ = false;
-    } else {
-      ActivateMenuItem();
-    }
-    return;
-  }
-  if (HandleMenuPointerEvents(event)) {
-    return;
-  }
+  HandleMenuPointerEvents(event);
   HandleMenuKeyboardEvents(event);
   HTMLElement::DefaultEventHandler(event);
 }
