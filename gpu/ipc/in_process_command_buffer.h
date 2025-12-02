@@ -97,6 +97,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
   gpu::ContextResult Initialize(
       mojom::ContextCreationAttribsPtr attribs,
+      bool enable_gpu_rasterization,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       gpu::raster::GrShaderCache* gr_shader_cache,
       GpuProcessShmCount* use_shader_cache_shm_count);
@@ -177,12 +178,14 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
  private:
   struct InitializeOnGpuThreadParams {
     mojom::ContextCreationAttribsPtr attribs;
+    bool enable_gpu_rasterization = false;
     raw_ptr<Capabilities> capabilities;       // Output.
     raw_ptr<GLCapabilities> gl_capabilities;  // Output.
     raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache;
     raw_ptr<GpuProcessShmCount> use_shader_cache_shm_count;
 
     InitializeOnGpuThreadParams(mojom::ContextCreationAttribsPtr attribs,
+                                bool enable_gpu_rasterization,
                                 Capabilities* capabilities,
                                 GLCapabilities* gl_capabilities,
                                 gpu::raster::GrShaderCache* gr_shader_cache,

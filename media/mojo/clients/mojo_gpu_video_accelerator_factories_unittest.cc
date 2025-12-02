@@ -440,7 +440,7 @@ class MojoGpuVideoAcceleratorFactoriesTest : public testing::Test {
         kGpuStreamPriorityDefault,
         gpu::mojom::ContextCreationAttribs::NewGles(
             gpu::mojom::GLESCreationAttribs::New()),
-        GURL());
+        /*enable_gpu_rasterization=*/false, GURL());
     ON_CALL(*mock_context_provider_, GetCommandBufferProxy())
         .WillByDefault(Return(gpu_command_buffer_proxy_.get()));
   }

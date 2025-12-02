@@ -115,6 +115,7 @@ class ContextProviderCommandBuffer
       const gpu::SharedMemoryLimits& memory_limits,
       gpu::mojom::ContextCreationAttribsPtr attributes,
       command_buffer_metrics::ContextType type,
+      bool enable_gpu_rasterization = false,
       base::SharedMemoryMapper* buffer_mapper = nullptr);
 
   // Virtual for testing.
@@ -229,6 +230,8 @@ class ContextProviderCommandBuffer
   std::unique_ptr<ContextCacheController> cache_controller_;
 
   base::ObserverList<ContextLostObserver>::Unchecked observers_;
+
+  bool enable_gpu_rasterization_ = false;
 
   // Shared memory mapper used by command buffer proxies created from this
   // provider when creating shared memory mappings.

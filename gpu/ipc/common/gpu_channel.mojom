@@ -51,7 +51,6 @@ enum SchedulingPriority {
 };
 
 struct RasterCreationAttribs {
-  bool enable_gpu_rasterization = false;
   bool lose_context_when_out_of_memory = false;
 };
 

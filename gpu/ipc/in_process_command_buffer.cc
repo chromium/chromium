@@ -97,11 +97,13 @@ class ScopedEvent {
 
 InProcessCommandBuffer::InitializeOnGpuThreadParams::
     InitializeOnGpuThreadParams(mojom::ContextCreationAttribsPtr attribs,
+                                bool enable_gpu_rasterization,
                                 Capabilities* capabilities,
                                 GLCapabilities* gl_capabilities,
                                 gpu::raster::GrShaderCache* gr_shader_cache,
                                 GpuProcessShmCount* use_shader_cache_shm_count)
     : attribs(std::move(attribs)),
+      enable_gpu_rasterization(enable_gpu_rasterization),
       capabilities(capabilities),
       gl_capabilities(gl_capabilities),
       gr_shader_cache(gr_shader_cache),
@@ -189,6 +191,7 @@ void InProcessCommandBuffer::CreateCacheUse(
 
 gpu::ContextResult InProcessCommandBuffer::Initialize(
     mojom::ContextCreationAttribsPtr attribs,
+    bool enable_gpu_rasterization,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     gpu::raster::GrShaderCache* gr_shader_cache,
     GpuProcessShmCount* use_shader_cache_shm_count) {
@@ -202,9 +205,9 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
 
   Capabilities capabilities;
   GLCapabilities gl_capabilities;
-  InitializeOnGpuThreadParams params(std::move(attribs), &capabilities,
-                                     &gl_capabilities, gr_shader_cache,
-                                     use_shader_cache_shm_count);
+  InitializeOnGpuThreadParams params(
+      std::move(attribs), enable_gpu_rasterization, &capabilities,
+      &gl_capabilities, gr_shader_cache, use_shader_cache_shm_count);
 
   base::OnceCallback<gpu::ContextResult(void)> init_task =
       base::BindOnce(&InProcessCommandBuffer::InitializeOnGpuThread,
@@ -322,7 +325,6 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
     gl_share_group_ = task_executor_->GetShareGroup();
   }
 
-  bool enable_gpu_rasterization = false;
   switch (params.attribs->which()) {
     case mojom::ContextCreationAttribs::Tag::kWebgpu: {
       if (!task_executor_->gpu_preferences().enable_webgpu) {
@@ -375,7 +377,6 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
               /*is_privileged=*/true);
 
       const auto& attribs = params.attribs->get_raster();
-      enable_gpu_rasterization = attribs->enable_gpu_rasterization;
       auto result =
           raster_decoder->Initialize(attribs->lose_context_when_out_of_memory);
       if (result != gpu::ContextResult::kSuccess) {
@@ -501,7 +502,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
   }
 
   *params.capabilities = decoder_->GetCapabilities();
-  params.capabilities->gpu_rasterization = enable_gpu_rasterization;
+  params.capabilities->gpu_rasterization = params.enable_gpu_rasterization;
   *params.gl_capabilities = decoder_->GetGLCapabilities();
 
   return gpu::ContextResult::kSuccess;

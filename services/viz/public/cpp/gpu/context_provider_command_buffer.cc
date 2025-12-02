@@ -63,6 +63,7 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
     const gpu::SharedMemoryLimits& memory_limits,
     gpu::mojom::ContextCreationAttribsPtr attributes,
     command_buffer_metrics::ContextType type,
+    bool enable_gpu_rasterization,
     base::SharedMemoryMapper* buffer_mapper)
     : base::subtle::RefCountedThreadSafeBase(
           base::subtle::GetRefCountPreference<ContextProviderCommandBuffer>()),
@@ -75,6 +76,7 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
       attributes_(std::move(attributes)),
       context_type_(type),
       channel_(std::move(channel)),
+      enable_gpu_rasterization_(enable_gpu_rasterization),
       buffer_mapper_(buffer_mapper) {
   DETACH_FROM_SEQUENCE(context_sequence_checker_);
   DCHECK(channel_);
@@ -163,7 +165,7 @@ ContextProviderCommandBuffer::CreateForWebGPU(
       /*automatic_flushes=*/true,
       /*support_locking=*/false, gpu::SharedMemoryLimits::ForWebGPUContext(),
       gpu::mojom::ContextCreationAttribs::NewWebgpu(std::move(attributes)),
-      type, buffer_mapper);
+      type, /*enable_gpu_rasterization=*/false, buffer_mapper);
 }
 
 // static
@@ -180,7 +182,6 @@ ContextProviderCommandBuffer::CreateForRaster(
     bool enable_gpu_rasterization,
     bool lose_context_when_out_of_memory) {
   auto attributes = gpu::mojom::RasterCreationAttribs::New();
-  attributes->enable_gpu_rasterization = enable_gpu_rasterization;
   attributes->lose_context_when_out_of_memory = lose_context_when_out_of_memory;
 
   return base::MakeRefCounted<ContextProviderCommandBuffer>(
@@ -188,7 +189,7 @@ ContextProviderCommandBuffer::CreateForRaster(
       stream_id, stream_priority, active_url, automatic_flushes,
       support_locking, memory_limits,
       gpu::mojom::ContextCreationAttribs::NewRaster(std::move(attributes)),
-      type);
+      type, enable_gpu_rasterization);
 }
 
 ContextProviderCommandBuffer::~ContextProviderCommandBuffer() {
@@ -257,8 +258,8 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
   command_buffer_ = std::make_unique<gpu::CommandBufferProxyImpl>(
       channel_, stream_id_, default_task_runner_, buffer_mapper_);
   bind_result_ = command_buffer_->Initialize(
-      stream_priority_, attributes_.Clone(), active_url_,
-      command_buffer_metrics::ContextTypeToString(context_type_));
+      stream_priority_, attributes_.Clone(), enable_gpu_rasterization_,
+      active_url_, command_buffer_metrics::ContextTypeToString(context_type_));
   if (bind_result_ != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "GpuChannelHost failed to create command buffer.";
     command_buffer_metrics::UmaRecordContextInitFailed(context_type_);

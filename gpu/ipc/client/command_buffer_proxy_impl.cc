@@ -68,6 +68,7 @@ CommandBufferProxyImpl::~CommandBufferProxyImpl() {
 ContextResult CommandBufferProxyImpl::Initialize(
     gpu::SchedulingPriority stream_priority,
     mojom::ContextCreationAttribsPtr attribs,
+    bool enable_gpu_rasterization,
     const GURL& active_url,
     const std::string_view label) {
   TRACE_EVENT0("gpu", "GpuChannelHost::CreateViewCommandBuffer");
@@ -75,11 +76,6 @@ ContextResult CommandBufferProxyImpl::Initialize(
   // Drop the |channel_| if this method does not succeed and early-outs, to
   // prevent cleanup on destruction.
   auto channel = std::move(channel_);
-
-  bool enable_gpu_rasterization = false;
-  if (attribs->which() == mojom::ContextCreationAttribs::Tag::kRaster) {
-    enable_gpu_rasterization = attribs->get_raster()->enable_gpu_rasterization;
-  }
 
   auto params = mojom::CreateCommandBufferParams::New();
   params->stream_id = stream_id_;
