@@ -449,6 +449,9 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  if (_settingsAreDismissed) {
+    return;
+  }
 
   self.tableView.accessibilityIdentifier = kSettingsTableViewId;
 
