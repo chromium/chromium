@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/tools/observation_delay_test_util.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
@@ -73,6 +74,11 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, CompleteWithoutLoading) {
 
 IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, CompleteWithLoading) {
   base::HistogramTester histogram_tester;
+
+  // TODO(b/447664500): Remove when fixed.
+  content::DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::DisableForTestingReason::
+                          TEST_REQUIRES_NO_CACHING);
 
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
@@ -148,6 +154,11 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, TimeoutOnPageStability) {
 
 IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, TimeoutOnLoadCompletion) {
   base::HistogramTester histogram_tester;
+
+  // TODO(b/447664500): Remove when fixed.
+  content::DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::DisableForTestingReason::
+                          TEST_REQUIRES_NO_CACHING);
 
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
