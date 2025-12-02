@@ -90,6 +90,7 @@ import org.chromium.components.webauthn.WebauthnBrowserBridge;
 import org.chromium.components.webauthn.WebauthnCredentialDetails;
 import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
+import org.chromium.components.webauthn.WebauthnRequestCallback;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content.browser.ClientDataJsonImplJni;
@@ -286,6 +287,11 @@ public class Fido2CredentialRequestTest {
                     @Override
                     public WebContents getWebContents() {
                         return mWebContents;
+                    }
+
+                    @Override
+                    public WebauthnRequestCallback getRequestCallback() {
+                        return null;
                     }
                 };
         mRequest = new Fido2CredentialRequest(mAuthenticationContextProvider);
