@@ -1345,7 +1345,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.ForegroundBatteryDrainPerScenario.30Seconds{Exclusive}{LoadingScenario}{InputScenario}"
-    units="uAh" expires_after="2026-03-26">
+    units="uAh" expires_after="2026-05-31">
   <owner>kraskevich@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
@@ -1875,7 +1875,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.SuspendResult" enum="SuspendResult"
-    expires_after="2026-03-29">
+    expires_after="2026-05-31">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1926,7 +1926,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.UserBrightnessAdjustmentsPerSessionOnBattery"
-    units="units" expires_after="2026-03-29">
+    units="units" expires_after="2026-05-31">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>

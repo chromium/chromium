@@ -189,7 +189,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.3PCD.RollbackNotice.AutomaticallyDismissed"
-    enum="Boolean" expires_after="2026-03-31">
+    enum="Boolean" expires_after="2026-05-31">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -199,7 +199,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.3PCD.RollbackNotice.ShouldShow" enum="Boolean"
-    expires_after="2026-03-31">
+    expires_after="2026-05-31">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>

@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Auth.ScanResult" enum="FingerprintScanResult"
-    expires_after="2026-03-30">
+    expires_after="2026-05-31">
   <owner>emaamari@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Enroll.NumCaptures" units="captures"
-    expires_after="2026-03-30">
+    expires_after="2026-05-31">
   <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Enroll.ScanResult" enum="FingerprintScanResult"
-    expires_after="2026-03-30">
+    expires_after="2026-05-31">
   <owner>emaamari@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.AuthSuccessful" enum="BooleanSuccess"
-    expires_after="2026-03-30">
+    expires_after="2026-05-31">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -322,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.EnrolledFingerCount" units="count"
-    expires_after="2026-03-30">
+    expires_after="2026-05-31">
   <owner>tomhughes@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -396,7 +396,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.RecentAttemptsCountBeforeSuccess"
-    units="attempts" expires_after="2026-03-30">
+    units="attempts" expires_after="2026-05-31">
   <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -426,7 +426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Result" enum="FingerprintUnlockResult"
-    expires_after="2026-03-30">
+    expires_after="2026-05-31">
   <owner>emaamari@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -438,7 +438,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.{Outcome}.Duration.{Interval}" units="ms"
-    expires_after="2026-03-30">
+    expires_after="2026-05-31">
   <owner>dawidn@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -458,7 +458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.UnlockEnabled" enum="BooleanEnabled"
-    expires_after="2026-03-30">
+    expires_after="2026-05-31">
   <owner>tomhughes@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -477,7 +477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Updater.Reason" enum="FingerprintUpdaterReason"
-    expires_after="2026-03-30">
+    expires_after="2026-05-31">
   <owner>tomhughes@chromium.org</owner>
   <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -487,7 +487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Updater.Status" enum="FingerprintUpdaterStatus"
-    expires_after="2026-03-30">
+    expires_after="2026-05-31">
   <owner>tomhughes@chromium.org</owner>
   <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>

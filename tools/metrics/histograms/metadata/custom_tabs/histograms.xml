@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTab.AdaptiveToolbarButton.FallbackUi"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2026-03-31">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2026-05-31">
   <owner>jinsukkiim@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -143,7 +143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.AdaptiveToolbarButton.Shown"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2026-03-29">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2026-05-31">
   <owner>jinsukkiim@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>

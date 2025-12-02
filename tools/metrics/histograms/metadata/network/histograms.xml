@@ -2834,7 +2834,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Eap.Event" enum="NetworkEapConnectionEvent"
-    expires_after="2026-03-31">
+    expires_after="2026-05-31">
   <owner>olsa@google.com</owner>
   <owner>chromeos-commercial-networking@google.com</owner>
   <summary>
@@ -2843,7 +2843,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Eap.EventCaCertExperiment1"
-    enum="NetworkEapConnectionEvent" expires_after="2026-03-31">
+    enum="NetworkEapConnectionEvent" expires_after="2026-05-31">
   <owner>olsa@google.com</owner>
   <owner>chromeos-commercial-networking@google.com</owner>
   <summary>
@@ -2854,7 +2854,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Eap.EventCaCertExperiment2"
-    enum="NetworkEapConnectionEvent" expires_after="2026-03-31">
+    enum="NetworkEapConnectionEvent" expires_after="2026-05-31">
   <owner>olsa@google.com</owner>
   <owner>chromeos-commercial-networking@google.com</owner>
   <summary>
