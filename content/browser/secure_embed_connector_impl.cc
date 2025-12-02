@@ -96,6 +96,11 @@ SecureEmbedConnectorImpl::GetInputEventRouter() {
       ->GetInputEventRouter();
 }
 
+TextInputManager* SecureEmbedConnectorImpl::GetTextInputManager() {
+  return static_cast<WebContentsImpl*>(embedder_web_contents_.get())
+      ->GetTextInputManager();
+}
+
 void SecureEmbedConnectorImpl::FocusInEmbedder(FocusOperation focus_op) {
   if (delegate_) {
     delegate_->FocusInEmbedder(focus_op);

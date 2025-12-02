@@ -33,6 +33,7 @@ namespace content {
 class FrameTree;
 class RenderFrameHostImpl;
 class WebContentsImpl;
+class TextInputManager;
 
 class SecureEmbedConnectorImpl : public SecureEmbedConnector,
                                  public CrossProcessFrameConnectorBase {
@@ -47,6 +48,9 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   // Returns the input event router that the WebContents this is owned by
   // should register with.
   input::RenderWidgetHostInputEventRouter* GetInputEventRouter();
+
+  // Returns the TextInputManager to use for this WebContents.
+  TextInputManager* GetTextInputManager();
 
   // Convenience wrapper for GetDelegate()->FocusInEmbedder that null-checks
   // the delegate.

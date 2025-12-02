@@ -6220,6 +6220,10 @@ TextInputManager* WebContentsImpl::GetTextInputManager() {
     return GetOuterWebContents()->GetTextInputManager();
   }
 
+  if (secure_embed_connector_) {
+    return secure_embed_connector_->GetTextInputManager();
+  }
+
   if (!text_input_manager_ && !browser_plugin_guest_) {
     text_input_manager_ = std::make_unique<TextInputManager>();
   }
