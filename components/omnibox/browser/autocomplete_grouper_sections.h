@@ -118,6 +118,14 @@ class AndroidNonZPSSection : public Section {
   static size_t num_visible_matches_;
 };
 
+// Android section for a single default match suggestion when there is one or
+// more composebox attachment.
+class AndroidComposeboxNonZPSSection : public Section {
+ public:
+  explicit AndroidComposeboxNonZPSSection(
+      omnibox::GroupConfigMap& group_configs);
+};
+
 // Android prefix section for Hub search (ZPS).
 class AndroidHubZPSSection : public Section {
  public:

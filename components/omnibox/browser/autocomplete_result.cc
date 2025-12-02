@@ -673,6 +673,10 @@ void AutocompleteResult::SortAndCull(
       if (omnibox::IsAndroidHub(page_classification)) {
         sections.push_back(
             std::make_unique<AndroidHubNonZPSSection>(suggestion_groups_map_));
+      } else if (omnibox::IsComposebox(page_classification) &&
+                 input.lens_overlay_suggest_inputs()) {
+        sections.push_back(std::make_unique<AndroidComposeboxNonZPSSection>(
+            suggestion_groups_map_));
       } else {
         bool show_only_search_suggestions =
             omnibox::IsCustomTab(page_classification);

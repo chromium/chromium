@@ -225,6 +225,13 @@ void AndroidNonZPSSection::InitFromMatches(ACMatches& matches) {
   above_keyboard_group.set_limit(above_keyboard_group.limit() - 1);
 }
 
+AndroidComposeboxNonZPSSection::AndroidComposeboxNonZPSSection(
+    omnibox::GroupConfigMap& group_configs)
+    : Section(1,
+              {// Default match Group only
+               Group(1, {{omnibox::GROUP_SEARCH, 1}})},
+              group_configs) {}
+
 AndroidHubZPSSection::AndroidHubZPSSection(
     omnibox::GroupConfigMap& group_configs)
     : Section(5,
