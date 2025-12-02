@@ -27,13 +27,21 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
       delete;
   ~OmniboxAimPopupWebUIContent() override;
 
+  // OmniboxPopupWebUIBaseContent:
+  // Called from the browser after widget has already closed. Will notify page
+  // handler and WebUI.
+  void OnWidgetClosed() override;
+
+  // Called from page handler after `OnWidgetClosed()` notified it. `input` is
+  // the possibly empty input that should replace the omnibox text.
+  void OnPageClosedWithInput(const std::string& input);
+
+ private:
   // WebUIContentsWrapper::Host:
+  // Called from WebUI code to close the widget. I.e. when user presses
+  // <escape>, presses the 'x' button, or moves focus out of the popup.
   void CloseUI() override;
   void ShowUI() override;
-
-  // Called when the popup is closed with a non-empty input value that should
-  // persist in the omnibox.
-  void OnPageClosedWithInput(const std::string& input);
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

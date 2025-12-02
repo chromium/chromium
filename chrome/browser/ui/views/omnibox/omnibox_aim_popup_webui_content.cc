@@ -37,9 +37,7 @@ OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
 
 OmniboxAimPopupWebUIContent::~OmniboxAimPopupWebUIContent() = default;
 
-void OmniboxAimPopupWebUIContent::CloseUI() {
-  OmniboxPopupWebUIBaseContent::CloseUI();
-
+void OmniboxAimPopupWebUIContent::OnWidgetClosed() {
   auto* webui_controller = contents_wrapper()->GetWebUIController();
   if (webui_controller) {
     auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
@@ -47,6 +45,17 @@ void OmniboxAimPopupWebUIContent::CloseUI() {
       omnibox_popup_ui->popup_aim_handler()->OnWidgetClosed();
     }
   }
+}
+
+void OmniboxAimPopupWebUIContent::OnPageClosedWithInput(
+    const std::string& input) {
+  location_bar_view()->GetOmniboxView()->RevertAll();
+  location_bar_view()->GetOmniboxView()->SetUserText(base::UTF8ToUTF16(input),
+                                                     /*update_popup=*/false);
+}
+
+void OmniboxAimPopupWebUIContent::CloseUI() {
+  OmniboxPopupWebUIBaseContent::CloseUI();
 }
 
 void OmniboxAimPopupWebUIContent::ShowUI() {
@@ -66,18 +75,11 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
       }
       if (!controller()->edit_model()->CurrentTextIsURL()) {
         context->text =
-          base::UTF16ToUTF8(location_bar_view()->GetOmniboxView()->GetText());
+            base::UTF16ToUTF8(location_bar_view()->GetOmniboxView()->GetText());
       }
       omnibox_popup_ui->popup_aim_handler()->OnShow(std::move(context));
     }
   }
-}
-
-void OmniboxAimPopupWebUIContent::OnPageClosedWithInput(
-    const std::string& input) {
-  location_bar_view()->GetOmniboxView()->RevertAll();
-  location_bar_view()->GetOmniboxView()->SetUserText(base::UTF8ToUTF16(input),
-                                                     /*update_popup=*/false);
 }
 
 BEGIN_METADATA(OmniboxAimPopupWebUIContent)

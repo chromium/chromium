@@ -65,6 +65,9 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   bool PreHandleGestureEvent(content::WebContents* source,
                              const blink::WebGestureEvent& event) override;
 
+  // Notifies the page the widget was closed.
+  virtual void OnWidgetClosed() {}
+
  protected:
   // Callback for cleaning up the `context_menu_` field.
   void OnMenuClosed();
