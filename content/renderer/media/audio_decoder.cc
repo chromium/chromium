@@ -13,10 +13,12 @@
 #include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/filters/audio_file_reader.h"
@@ -120,26 +122,29 @@ class Reader {
 // Decode in-memory audio file data.
 bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
                          base::span<const char> data) {
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   DCHECK(destination_bus);
   if (!destination_bus) {
     return false;
   }
 
 #if BUILDFLAG(ENABLE_FFMPEG)
-  auto reader = Reader::Create(data);
+  std::unique_ptr<Reader> reader = Reader::Create(data);
+  base::UmaHistogramBoolean("Media.ContentAudioDecoder.CreateReaderSuccess",
+                            reader != nullptr);
   if (!reader) {
     return false;
   }
 
   const size_t number_of_channels = reader->channels();
-  const double file_sample_rate = reader->sample_rate();
+  const double sample_rate = reader->sample_rate();
 
   // Apply sanity checks to make sure crazy values aren't coming out of
   // FFmpeg.
   if (!number_of_channels ||
       number_of_channels > static_cast<size_t>(media::limits::kMaxChannels) ||
-      file_sample_rate < media::limits::kMinSampleRate ||
-      file_sample_rate > media::limits::kMaxSampleRate) {
+      sample_rate < media::limits::kMinSampleRate ||
+      sample_rate > media::limits::kMaxSampleRate) {
     return false;
   }
 
@@ -152,7 +157,7 @@ bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
   // Allocate and configure the output audio channel data and then
   // copy the decoded data to the destination.
   destination_bus->Initialize(number_of_channels, number_of_frames,
-                              file_sample_rate);
+                              sample_rate);
 
   std::vector<base::SpanWriter<float>> dest_channels;
   dest_channels.reserve(number_of_channels);
@@ -168,14 +173,23 @@ bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
     }
   }
 
-  DVLOG(1) << "Decoded file data (unknown duration)-"
+  const auto duration =
+      media::AudioTimestampHelper::FramesToTime(number_of_frames, sample_rate);
+  DVLOG(1) << "Successfully decoded an audio file."
            << " data: " << base::ToString(data) << " data size: " << data.size()
-           << ", decoded duration: " << (number_of_frames / file_sample_rate)
+           << ", decoded duration: " << duration
            << ", number of frames: " << number_of_frames
            << ", estimated frames (if available): "
-           << reader->estimated_frames()
-           << ", sample rate: " << file_sample_rate
+           << reader->estimated_frames() << ", sample rate: " << sample_rate
            << ", number of channels: " << number_of_channels;
+
+  // NOTE: using the "medium timings" function to get better visibility into
+  // behavior in the [0, 3] minute range (although the distribution tail is
+  // likely to be cut off in this histogram scheme).
+  base::UmaHistogramMediumTimes("Media.ContentAudioDecoder.Duration", duration);
+  base::UmaHistogramTimes(
+      "Media.ContentAudioDecoder.DecodeTimePerFrame",
+      (base::TimeTicks::Now() - start_time) / number_of_frames);
 
   return number_of_frames > 0;
 #else
