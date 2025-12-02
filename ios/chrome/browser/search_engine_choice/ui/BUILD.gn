@@ -6,6 +6,7 @@ import("//build/config/chrome_build.gni")
 
 source_set("ui") {
   sources = [
+    "constants.h",
     "search_engine_choice_consumer.h",
     "search_engine_choice_mutator.h",
     "search_engine_choice_view_controller.h",

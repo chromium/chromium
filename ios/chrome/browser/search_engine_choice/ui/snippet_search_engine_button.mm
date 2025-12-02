@@ -11,6 +11,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/search_engine_choice/ui/constants.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_current_default_pill_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -118,11 +119,11 @@ UIColor* GetCheckedTintColor() {
   // SnippetSearchEngineButton (with the right margin).
   // `_snippetLabelOneLineConstraint` needs to be disabled.
   NSLayoutConstraint* _snippetLabelExpandedConstraint;
-  CurrentDefaultState _currentDefaultState;
+  SearchEngineCurrentDefaultState _currentDefaultState;
 }
 
 - (instancetype)initWithCurrentDefaultState:
-    (CurrentDefaultState)currentDefaultState {
+    (SearchEngineCurrentDefaultState)currentDefaultState {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     self.clipsToBounds = YES;
@@ -149,11 +150,11 @@ UIColor* GetCheckedTintColor() {
     // Add current default ship.
     UIView* currentDefaultPill = nil;
     switch (_currentDefaultState) {
-      case CurrentDefaultState::kNoCurrentDefault:
+      case SearchEngineCurrentDefaultState::kNone:
         break;
-      case CurrentDefaultState::kHasCurrentDefault:
+      case SearchEngineCurrentDefaultState::kOtherIsDefault:
         // The current default needs to be added to make sure the button
-        // has the same height than `kIsCurrentDefault`.
+        // has the same height than `kIsDefault`.
         // But the current default needs to be hidden using alpha.
         buttonLayout = &kWithCurrentDefaultButtonLayout;
         currentDefaultPill = [[SearchEngineCurrentDefaultPillView alloc] init];
@@ -161,7 +162,7 @@ UIColor* GetCheckedTintColor() {
         currentDefaultPill.alpha = 0;
         [self addSubview:currentDefaultPill];
         break;
-      case CurrentDefaultState::kIsCurrentDefault:
+      case SearchEngineCurrentDefaultState::kIsDefault:
         buttonLayout = &kWithCurrentDefaultButtonLayout;
         currentDefaultPill = [[SearchEngineCurrentDefaultPillView alloc] init];
         currentDefaultPill.translatesAutoresizingMaskIntoConstraints = NO;
@@ -231,26 +232,26 @@ UIColor* GetCheckedTintColor() {
     UILayoutGuide* textAlignmentLayoutGuide = [[UILayoutGuide alloc] init];
     [self addLayoutGuide:textAlignmentLayoutGuide];
     // This layout guide is used to compute the height of the title and snippet.
-    // Not used with `kNoCurrentDefault`.
+    // Not used with `kNone`.
     UILayoutGuide* textHeightLayoutGuideWithCurrentDefault = nil;
     // This layout guide is used to compute the height of the current default,
     // title and snippet.
-    // Not used with `kIsCurrentDefault`.
+    // Not used with `kIsDefault`.
     UILayoutGuide* textHeightLayoutGuideWithoutCurrentDefault = nil;
     switch (_currentDefaultState) {
-      case CurrentDefaultState::kNoCurrentDefault:
+      case SearchEngineCurrentDefaultState::kNone:
         textHeightLayoutGuideWithoutCurrentDefault =
             [[UILayoutGuide alloc] init];
         [self addLayoutGuide:textHeightLayoutGuideWithoutCurrentDefault];
         break;
-      case CurrentDefaultState::kHasCurrentDefault:
+      case SearchEngineCurrentDefaultState::kOtherIsDefault:
         textHeightLayoutGuideWithCurrentDefault = [[UILayoutGuide alloc] init];
         [self addLayoutGuide:textHeightLayoutGuideWithCurrentDefault];
         textHeightLayoutGuideWithoutCurrentDefault =
             [[UILayoutGuide alloc] init];
         [self addLayoutGuide:textHeightLayoutGuideWithoutCurrentDefault];
         break;
-      case CurrentDefaultState::kIsCurrentDefault:
+      case SearchEngineCurrentDefaultState::kIsDefault:
         textHeightLayoutGuideWithCurrentDefault = [[UILayoutGuide alloc] init];
         [self addLayoutGuide:textHeightLayoutGuideWithCurrentDefault];
         break;
@@ -296,7 +297,7 @@ UIColor* GetCheckedTintColor() {
       [NSLayoutConstraint activateConstraints:constraints];
     }
     switch (_currentDefaultState) {
-      case CurrentDefaultState::kNoCurrentDefault:
+      case SearchEngineCurrentDefaultState::kNone:
         [textAlignmentLayoutGuide.heightAnchor
             constraintEqualToAnchor:textHeightLayoutGuideWithoutCurrentDefault
                                         .heightAnchor]
@@ -306,7 +307,7 @@ UIColor* GetCheckedTintColor() {
                                         .centerYAnchor]
             .active = YES;
         break;
-      case CurrentDefaultState::kHasCurrentDefault:
+      case SearchEngineCurrentDefaultState::kOtherIsDefault:
         [textAlignmentLayoutGuide.heightAnchor
             constraintEqualToAnchor:textHeightLayoutGuideWithCurrentDefault
                                         .heightAnchor]
@@ -316,7 +317,7 @@ UIColor* GetCheckedTintColor() {
                                         .centerYAnchor]
             .active = YES;
         break;
-      case CurrentDefaultState::kIsCurrentDefault:
+      case SearchEngineCurrentDefaultState::kIsDefault:
         [textAlignmentLayoutGuide.heightAnchor
             constraintEqualToAnchor:textHeightLayoutGuideWithCurrentDefault
                                         .heightAnchor]
@@ -644,13 +645,13 @@ UIColor* GetCheckedTintColor() {
   CHECK_NE(self.snippetText.length, 0ul)
       << base::SysNSStringToUTF8(self.searchEngineKeyword);
   switch (_currentDefaultState) {
-    case CurrentDefaultState::kNoCurrentDefault:
-    case CurrentDefaultState::kHasCurrentDefault:
+    case SearchEngineCurrentDefaultState::kNone:
+    case SearchEngineCurrentDefaultState::kOtherIsDefault:
       return l10n_util::GetNSStringF(
           IDS_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_VOICEOVER,
           base::SysNSStringToUTF16(self.searchEngineName),
           base::SysNSStringToUTF16(self.snippetText));
-    case CurrentDefaultState::kIsCurrentDefault:
+    case SearchEngineCurrentDefaultState::kIsDefault:
       return l10n_util::GetNSStringF(
           IDS_SEARCH_ENGINE_CHOICE_CURRENT_DEFAULT_SEARCH_ENGINE_VOICEOVER,
           base::SysNSStringToUTF16(self.searchEngineName),

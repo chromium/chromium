@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/search_engine_choice/ui/snippet_search_engine_button.h"
 
+#import "ios/chrome/browser/search_engine_choice/ui/constants.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -13,7 +14,7 @@ using SnippetSearchEngineButtonTest = PlatformTest;
 TEST_F(SnippetSearchEngineButtonTest, TestHistograms) {
   SnippetSearchEngineButton* search_engine_button =
       [[SnippetSearchEngineButton alloc]
-          initWithCurrentDefaultState:CurrentDefaultState::kNoCurrentDefault];
+          initWithCurrentDefaultState:SearchEngineCurrentDefaultState::kNone];
   NSString* expected_search_engine_name = @"name";
   NSString* expected_snippet_text = @"snippet";
   NSString* expected_search_engine_keyword = @"keyword";

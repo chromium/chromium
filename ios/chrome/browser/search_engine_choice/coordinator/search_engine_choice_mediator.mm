@@ -15,6 +15,7 @@
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/search_engine_choice/ui/constants.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_consumer.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_ui_util.h"
 #import "ios/chrome/browser/search_engine_choice/ui/snippet_search_engine_element.h"
@@ -152,23 +153,22 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
   for (auto& templateURL : _choiceScreenData->search_engines()) {
     SnippetSearchEngineElement* element =
         CreateSnippetSearchEngineElementFromTemplateURL(*templateURL);
-    if (currentDefaultSearchEngineToHighlight == templateURL.get()) {
-      element.currentDefaultState = CurrentDefaultState::kIsCurrentDefault;
+    if (!currentDefaultSearchEngineToHighlight) {
+      element.currentDefaultState = SearchEngineCurrentDefaultState::kNone;
+    } else if (currentDefaultSearchEngineToHighlight == templateURL.get()) {
+      element.currentDefaultState = SearchEngineCurrentDefaultState::kIsDefault;
       currentDefaultSearchEngineToHighlightFound = YES;
-    } else if (currentDefaultSearchEngineToHighlight) {
-      element.currentDefaultState = CurrentDefaultState::kHasCurrentDefault;
+    } else {
+      element.currentDefaultState =
+          SearchEngineCurrentDefaultState::kOtherIsDefault;
     }
     [searchEngineList addObject:element];
   }
   // The current default search engine must be part of the search engine list.
-  std::u16string keyword;
-  if (currentDefaultSearchEngineToHighlight) {
-    keyword = currentDefaultSearchEngineToHighlight->keyword();
-  }
   CHECK(!currentDefaultSearchEngineToHighlight ||
             currentDefaultSearchEngineToHighlightFound,
         base::NotFatalUntil::M150)
-      << base::UTF16ToUTF8(keyword);
+      << base::UTF16ToUTF8(currentDefaultSearchEngineToHighlight->keyword());
   self.consumer.searchEngines = [searchEngineList copy];
 }
 

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/search_engine_choice/ui/snippet_search_engine_element.h"
 
 @class FaviconView;
+enum class SearchEngineCurrentDefaultState;
 
 // State of the snippet in SnippetSearchEngineButton.
 enum class SnippetButtonState {
@@ -53,7 +54,8 @@ enum class SnippetButtonState {
 @property(nonatomic, assign) BOOL horizontalSeparatorHidden;
 
 - (instancetype)initWithCurrentDefaultState:
-    (CurrentDefaultState)currentDefaultState NS_DESIGNATED_INITIALIZER;
+    (SearchEngineCurrentDefaultState)currentDefaultState
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
