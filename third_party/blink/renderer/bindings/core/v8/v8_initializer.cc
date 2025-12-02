@@ -766,8 +766,8 @@ v8::MaybeLocal<v8::Promise> HostImportModuleWithPhaseDynamically(
   ModuleRequest module_request(
       specifier, TextPosition::MinimumPosition(),
       ModuleRecord::ToBlinkImportAttributes(
-          script_state->GetContext(), v8::Local<v8::Module>(),
-          v8_import_attributes, /*v8_import_attributes_has_positions=*/false),
+          v8::Local<v8::Module>(), v8_import_attributes,
+          /*v8_import_attributes_has_positions=*/false),
       import_phase);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
