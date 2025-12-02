@@ -111,11 +111,13 @@ if (!is_android && !is_ios) {
       "caption_controller_base_unittest.cc",
       "greedy_text_stabilizer_unittest.cc",
       "live_caption_bubble_settings_unittest.cc",
+      "translation_util_unittest.cc",
     ]
 
     deps = [
       ":live_caption",
       ":live_translate",
+      ":utils",
       "//base",
       "//base/test:test_support",
       "//components/live_caption:constants",
