@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/fido/authenticator_selection_criteria.h"
+#include "device/fido/public/authenticator_selection_criteria.h"
 
 namespace device {
 

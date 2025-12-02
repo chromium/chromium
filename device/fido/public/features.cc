@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
@@ -144,8 +144,7 @@ BASE_FEATURE(kDigitalCredentialsHybridLinking,
 // M145.
 BASE_FEATURE(kWebAuthnPasskeyUpgrade,
              "WebAuthenticationPasskeyUpgrade",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Disabled by default.
 BASE_FEATURE(kWebAuthnEnclaveAttestation,

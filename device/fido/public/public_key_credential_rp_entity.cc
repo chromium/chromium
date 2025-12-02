@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/fido/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
 
 #include <algorithm>
 #include <utility>
 
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 
@@ -71,8 +71,9 @@ bool PublicKeyCredentialRpEntity::operator==(
 cbor::Value AsCBOR(const PublicKeyCredentialRpEntity& entity) {
   cbor::Value::MapValue rp_map;
   rp_map.emplace(kEntityIdMapKey, entity.id);
-  if (entity.name)
+  if (entity.name) {
     rp_map.emplace(kEntityNameMapKey, *entity.name);
+  }
 
   return cbor::Value(std::move(rp_map));
 }

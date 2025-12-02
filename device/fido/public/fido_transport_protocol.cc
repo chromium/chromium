@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 #include "base/notreached.h"
 
@@ -10,18 +10,19 @@ namespace device {
 
 std::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
     std::string_view protocol) {
-  if (protocol == kUsbHumanInterfaceDevice)
+  if (protocol == kUsbHumanInterfaceDevice) {
     return FidoTransportProtocol::kUsbHumanInterfaceDevice;
-  else if (protocol == kNearFieldCommunication)
+  } else if (protocol == kNearFieldCommunication) {
     return FidoTransportProtocol::kNearFieldCommunication;
-  else if (protocol == kBluetoothLowEnergy)
+  } else if (protocol == kBluetoothLowEnergy) {
     return FidoTransportProtocol::kBluetoothLowEnergy;
-  else if (protocol == kHybrid)
+  } else if (protocol == kHybrid) {
     return FidoTransportProtocol::kHybrid;
-  else if (protocol == kInternal)
+  } else if (protocol == kInternal) {
     return FidoTransportProtocol::kInternal;
-  else
+  } else {
     return std::nullopt;
+  }
 }
 
 std::string_view ToString(FidoTransportProtocol protocol) {

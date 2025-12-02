@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/fido/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_params.h"
 
 #include <utility>
 
@@ -18,13 +18,15 @@ bool PublicKeyCredentialParams::CredentialInfo::operator==(
 // static
 std::optional<PublicKeyCredentialParams>
 PublicKeyCredentialParams::CreateFromCBORValue(const cbor::Value& cbor_value) {
-  if (!cbor_value.is_array())
+  if (!cbor_value.is_array()) {
     return std::nullopt;
+  }
 
   std::vector<PublicKeyCredentialParams::CredentialInfo> credential_params;
   for (const auto& credential : cbor_value.GetArray()) {
-    if (!credential.is_map() || credential.GetMap().size() != 2)
+    if (!credential.is_map() || credential.GetMap().size() != 2) {
       return std::nullopt;
+    }
 
     const auto& credential_map = credential.GetMap();
     const auto credential_type_it =

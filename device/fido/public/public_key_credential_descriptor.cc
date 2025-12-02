@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "device/fido/public/public_key_credential_descriptor.h"
+
 #include <utility>
 
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 namespace device {
 
@@ -27,12 +28,14 @@ PublicKeyCredentialDescriptor::CreateFromCBORValue(const cbor::Value& cbor) {
   const cbor::Value::MapValue& map = cbor.GetMap();
   auto type = map.find(cbor::Value(kCredentialTypeKey));
   if (type == map.end() || !type->second.is_string() ||
-      type->second.GetString() != kPublicKey)
+      type->second.GetString() != kPublicKey) {
     return std::nullopt;
+  }
 
   auto id = map.find(cbor::Value(kCredentialIdKey));
-  if (id == map.end() || !id->second.is_bytestring())
+  if (id == map.end() || !id->second.is_bytestring()) {
     return std::nullopt;
+  }
 
   auto ret = PublicKeyCredentialDescriptor(CredentialType::kPublicKey,
                                            id->second.GetBytestring());
