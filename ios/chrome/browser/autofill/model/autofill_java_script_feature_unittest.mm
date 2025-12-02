@@ -144,7 +144,8 @@ class AutofillJavaScriptFeatureTest : public PlatformTest {
 // Tests that `hasBeenInjected` returns YES after `inject` call.
 TEST_F(AutofillJavaScriptFeatureTest, InitAndInject) {
   LoadHtml(@"<html></html>");
-  EXPECT_NSEQ(@"object", ExecuteJavaScript(@"typeof __gCrWeb.autofill"));
+  EXPECT_NSEQ(@"object", ExecuteJavaScript(
+                             @"typeof __gCrWeb.getRegisteredApi('autofill')"));
 }
 
 // Tests forms extraction method

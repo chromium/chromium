@@ -877,7 +877,7 @@ class AutofillControllerJsTest : public web::JavascriptTest {
   // EXPECTs `__gCrWeb.fill.webFormElementToFormData` on all the test data.
   void TestWebFormElementToFormData(NSArray* test_items);
 
-  // EXPECTs `__gCrWeb.autofill.extractNewForms` on `html`.
+  // EXPECTs `extractNewForms` function from autofill API on `html`.
   void TestExtractNewForms(NSString* html,
                            BOOL is_origin_window_location,
                            NSArray* expected_items);
@@ -1316,7 +1316,8 @@ TEST_F(AutofillControllerJsTest, FillFormField) {
         new_value,
         ExecuteJavaScript([NSString
             stringWithFormat:@"var element=%@;var data={'value':'%@'};"
-                             @"__gCrWeb.autofill.fillFormField(data, element);"
+                             @"__gCrWeb.getRegisteredApi('autofill')."
+                             @"getFunction('fillFormField')(data, element);"
                              @"element.value",
                              get_element_javascript, new_value]));
   }
@@ -1345,7 +1346,8 @@ TEST_F(AutofillControllerJsTest, FillFormField) {
         ExecuteJavaScript([NSString
             stringWithFormat:@"var element=%@; var value=element.value; "
                              @"var data={'value':value,'is_checked':%@};"
-                             @"__gCrWeb.autofill.fillFormField(data, element); "
+                             @"__gCrWeb.getRegisteredApi('autofill')."
+                             @"getFunction('fillFormField')(data, element); "
                              @"element.checked",
                              get_element_javascript,
                              is_checked ? @"true" : @"false"]));
@@ -1364,7 +1366,8 @@ TEST_F(AutofillControllerJsTest, FillFormField) {
         [NSString stringWithFormat:
                       @"var element=%@;"
                       @"var oldValue=element.value; var data={'value':'new'};"
-                      @"__gCrWeb.autofill.fillFormField(data, element);"
+                      @"__gCrWeb.getRegisteredApi('autofill')."
+                      @"getFunction('fillFormField')(data, element);"
                       @"element.value === oldValue",
                       get_element_javascript]);
     EXPECT_NSEQ(@YES, actual);
@@ -1444,14 +1447,14 @@ TEST_F(AutofillControllerJsTest, ExtractAutofillableElements) {
 
   NSString* parameter = @"window.document.getElementsByTagName('form')[0]";
   for (NSUInteger index = 0; index < [expected count]; index++) {
-    EXPECT_NSEQ(
-        @YES,
-        ExecuteJavaScript([NSString
-            stringWithFormat:
-                @"var controlElements="
-                 "__gCrWeb.autofill.extractAutofillableElementsInForm(%@);"
-                 "controlElements[%" PRIuNS "] === %@",
-                parameter, index, expected[index]]));
+    EXPECT_NSEQ(@YES,
+                ExecuteJavaScript([NSString
+                    stringWithFormat:
+                        @"var controlElements="
+                         "__gCrWeb.getRegisteredApi('autofill')."
+                         "getFunction('extractAutofillableElementsInForm')(%@);"
+                         "controlElements[%" PRIuNS "] === %@",
+                        parameter, index, expected[index]]));
   }
 }
 
@@ -1661,8 +1664,8 @@ void AutofillControllerJsTest::TestExtractNewForms(
                                    "]['origin'] === window.location.href",
                                   i]];
     }
-    // This is the extract mask used by
-    // __gCrWeb.autofill.extractNewForms.
+    // This is the extract mask used by `extractNewForms` function
+    // from autofill API.
     [verifying_javascripts
         addObject:GenerateTestItemVerifyingJavaScripts(
                       [NSString stringWithFormat:@"forms[%" PRIuNS "]", i],
@@ -1671,17 +1674,20 @@ void AutofillControllerJsTest::TestExtractNewForms(
   }
 
   NSString* actual = ExecuteJavaScript([NSString
-      stringWithFormat:@"var forms = __gCrWeb.autofill.extractNewForms("
-                        "true); %@",
+      stringWithFormat:@"var forms = "
+                       @"__gCrWeb.getRegisteredApi('autofill')."
+                       @"getFunction('extractNewForms')(true); %@",
                        [verifying_javascripts componentsJoinedByString:@"&&"]]);
 
-  EXPECT_NSEQ(@YES, actual) << base::SysNSStringToUTF8([NSString
-      stringWithFormat:@"actually forms = %@, "
-                        "but it is expected to be verified by %@",
-                       ExecuteJavaScript(
-                           @"var forms = __gCrWeb.autofill.extractNewForms("
-                            "true); __gCrWeb.stringify(forms)"),
-                       verifying_javascripts]);
+  EXPECT_NSEQ(@YES, actual) << base::SysNSStringToUTF8(
+      [NSString stringWithFormat:@"actually forms = %@, "
+                                  "but it is expected to be verified by %@",
+                                 ExecuteJavaScript(
+                                     @"var forms = "
+                                     @"__gCrWeb.getRegisteredApi('autofill')."
+                                     @"getFunction('extractNewForms')(true);"
+                                     @"__gCrWeb.stringify(forms)"),
+                                 verifying_javascripts]);
 }
 
 TEST_F(AutofillControllerJsTest, ExtractFormsAndFormElements) {
@@ -1742,11 +1748,12 @@ TEST_F(AutofillControllerJsTest,
                                    @"forms[0]['fields'][2]['label']==='3' &&"
                                    @"forms[0]['fields'][3]['name']==='name4' &&"
                                    @"forms[0]['fields'][3]['label']==='4'";
-  EXPECT_NSEQ(
-      @YES, ExecuteJavaScript([NSString
-                stringWithFormat:@"var forms = "
-                                  "__gCrWeb.autofill.extractNewForms(true); %@",
-                                 verifying_javascript]));
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScript([NSString
+                  stringWithFormat:@"var forms = "
+                                    "__gCrWeb.getRegisteredApi('autofill')."
+                                    "getFunction('extractNewForms')(true); %@",
+                                   verifying_javascript]));
 }
 
 TEST_F(AutofillControllerJsTest, ExtractForms) {
@@ -1931,7 +1938,8 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   };
 
   NSString* result = ExecuteJavaScript(
-      [NSString stringWithFormat:@"__gCrWeb.autofill.extractForms(%zu, true)",
+      [NSString stringWithFormat:@"__gCrWeb.getRegisteredApi('autofill')."
+                                 @"getFunction('extractForms')(%zu, true)",
                                  autofill::kMinRequiredFieldsForHeuristics]);
   NSArray* resultArray = [NSJSONSerialization
       JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
@@ -1948,7 +1956,8 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   // Test with Object.prototype.toJSON override.
   result = ExecuteJavaScript([NSString
       stringWithFormat:@"Object.prototype.toJSON=function(){return 'abcde';};"
-                        "__gCrWeb.autofill.extractForms(%zu, true)",
+                        "__gCrWeb.getRegisteredApi('autofill')."
+                        "getFunction('extractForms')(%zu, true)",
                        autofill::kMinRequiredFieldsForHeuristics]);
   resultArray = [NSJSONSerialization
       JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
@@ -1964,7 +1973,8 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   // Test with Array.prototype.toJSON override.
   result = ExecuteJavaScript([NSString
       stringWithFormat:@"Array.prototype.toJSON=function(){return 'abcde';};"
-                        "__gCrWeb.autofill.extractForms(%zu, true)",
+                        "__gCrWeb.getRegisteredApi('autofill').getFunction('"
+                        "extractForms')(%zu, true)",
                        autofill::kMinRequiredFieldsForHeuristics]);
   resultArray = [NSJSONSerialization
       JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
@@ -2013,12 +2023,12 @@ TEST_F(AutofillControllerJsTest, ExtractForms_UserEdited_FixEnabled) {
   // because it didn't receive any user input event.
   NSString* verifying_javascript = @"!forms[0].fields[0].is_user_edited && "
                                    @"!forms[0].fields[1].is_user_edited;";
-  EXPECT_NSEQ(
-      @YES,
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"var forms = "
-                            "__gCrWeb.autofill.extractNewForms(false); %@",
-                           verifying_javascript]));
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScript([NSString
+                  stringWithFormat:@"var forms = "
+                                    "__gCrWeb.getRegisteredApi('autofill')."
+                                    "getFunction('extractNewForms')(false); %@",
+                                   verifying_javascript]));
 }
 
 // Test that, when xframes is enabled, forms that do not have input fields but
@@ -2040,12 +2050,12 @@ TEST_F(AutofillControllerJsTest,
   NSString* verifying_javascript =
       @"forms.length === 1 && forms[0].id_attribute === 'testform' && "
       @"forms[0].child_frames.length === 1; ";
-  EXPECT_NSEQ(
-      @YES,
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"var forms = "
-                            "__gCrWeb.autofill.extractNewForms(false); %@",
-                           verifying_javascript]));
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScript([NSString
+                  stringWithFormat:@"var forms = "
+                                    "__gCrWeb.getRegisteredApi('autofill')."
+                                    "getFunction('extractNewForms')(false); %@",
+                                   verifying_javascript]));
 }
 
 // Test that, when xframes is enabled, child frames outside forms are still
@@ -2065,12 +2075,12 @@ TEST_F(AutofillControllerJsTest,
   // Verify that the form with child frames was extracted.
   NSString* verifying_javascript =
       @"forms.length === 1 && forms[0].child_frames.length === 1;";
-  EXPECT_NSEQ(
-      @YES,
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"var forms = "
-                            "__gCrWeb.autofill.extractNewForms(false); %@",
-                           verifying_javascript]));
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScript([NSString
+                  stringWithFormat:@"var forms = "
+                                    "__gCrWeb.getRegisteredApi('autofill')."
+                                    "getFunction('extractNewForms')(false); %@",
+                                   verifying_javascript]));
 }
 
 
@@ -2082,7 +2092,8 @@ TEST_F(AutofillControllerJsTest, FillActiveFormField) {
   ASSERT_TRUE(main_frame);
 
   // Simulate form parsing to set renderer IDs.
-  ExecuteJavaScript(@"__gCrWeb.autofill.extractForms(0, true)");
+  ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('autofill').getFunction('"
+                    @"extractForms')(0, true)");
 
   NSString* newValue = @"new value";
   EXPECT_NSEQ(newValue,
@@ -2093,7 +2104,8 @@ TEST_F(AutofillControllerJsTest, FillActiveFormField) {
                        "var "
                        "data={\"name\":\"lastname\",\"value\":\"%@\","
                        "\"identifier\":\"lastname\",\"renderer_id\":3};"
-                       "__gCrWeb.autofill.fillActiveFormField(data);"
+                       "__gCrWeb.getRegisteredApi('autofill')."
+                       "getFunction('fillActiveFormField')(data);"
                        "element.value",
                       newValue]));
 
@@ -2106,7 +2118,8 @@ TEST_F(AutofillControllerJsTest, FillActiveFormField) {
                             "var "
                             "data={\"name\":\"lastname\",\"value\":\"%@\","
                             "\"identifier\":\"lastname\",\"renderer_id\":3};"
-                            "__gCrWeb.autofill.fillActiveFormField(data);"
+                            "__gCrWeb.getRegisteredApi('autofill')."
+                            "getFunction('fillActiveFormField')(data);"
                             "element.value === oldValue",
                            newValue]))
       << "A non-form element's value should changed.";
@@ -2119,7 +2132,8 @@ TEST_F(AutofillControllerJsTest, FillSpecificFormField) {
   ASSERT_TRUE(main_frame);
 
   // Simulate form parsing to set renderer IDs.
-  ExecuteJavaScript(@"__gCrWeb.autofill.extractForms(0, true)");
+  ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('autofill')."
+                    @"getFunction('extractForms')(0, true)");
 
   NSString* new_value = @"new value";
   EXPECT_NSEQ(new_value,
@@ -2129,7 +2143,8 @@ TEST_F(AutofillControllerJsTest, FillSpecificFormField) {
                        "var "
                        "data={\"name\":\"lastname\",\"value\":\"%@\","
                        "\"identifier\":\"lastname\",\"renderer_id\":3};"
-                       "__gCrWeb.autofill.fillSpecificFormField(data);"
+                       "__gCrWeb.getRegisteredApi('autofill')."
+                       "getFunction('fillSpecificFormField')(data);"
                        "element.value",
                       new_value]));
 
@@ -2141,7 +2156,8 @@ TEST_F(AutofillControllerJsTest, FillSpecificFormField) {
                             "var "
                             "data={\"name\":\"lastname\",\"value\":\"%@\","
                             "\"identifier\":\"lastname\",\"renderer_id\":3};"
-                            "__gCrWeb.autofill.fillSpecificFormField(data);"
+                            "__gCrWeb.getRegisteredApi('autofill')."
+                            "getFunction('fillSpecificFormField')(data);"
                             "element.value === oldValue",
                            new_value]))
       << "A non-form element's value should changed.";
@@ -2189,7 +2205,8 @@ TEST_F(AutofillControllerJsTest, ExtractNewForms) {
     web::test::LoadHtml(testCase[@"html"], web_state());
 
     NSString* result =
-        ExecuteJavaScript(@"__gCrWeb.autofill.extractForms(true)");
+        ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('autofill')."
+                          @"getFunction('extractForms')(true)");
     NSArray* resultArray = [NSJSONSerialization
         JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
                    options:0
@@ -2211,7 +2228,8 @@ TEST_F(AutofillControllerJsTest, SanitizedFieldIsEmpty) {
   ];
   for (NSArray* test in tests) {
     NSString* result = ExecuteJavaScript([NSString
-        stringWithFormat:@"__gCrWeb.autofill.sanitizedFieldIsEmpty('%@');",
+        stringWithFormat:@"__gCrWeb.getRegisteredApi('autofill')."
+                         @"getFunction('sanitizedFieldIsEmpty')('%@');",
                          test[0]]);
     EXPECT_NSEQ(result, test[1]);
   }
