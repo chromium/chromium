@@ -2458,12 +2458,14 @@ void AXObject::SerializeComputedDetailsRelation(
   }
 
   // Add aria-details for the element anchored to this object.
-  if (AXObject* positioned_obj = GetPositionedObjectForAnchor(node_data)) {
-    node_data->AddIntListAttribute(
-        ax::mojom::blink::IntListAttribute::kDetailsIds,
-        {static_cast<int32_t>(positioned_obj->AXObjectID())});
-    node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kCssAnchor);
-    return;
+  if (!RuntimeEnabledFeatures::NoAriaDetailsForAnchorPosEnabled()) {
+    if (AXObject* positioned_obj = GetPositionedObjectForAnchor(node_data)) {
+      node_data->AddIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kDetailsIds,
+          {static_cast<int32_t>(positioned_obj->AXObjectID())});
+      node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kCssAnchor);
+      return;
+    }
   }
 
   // Add aria-details for a scroll marker pseudo-element.
@@ -2627,6 +2629,7 @@ AXObject* AXObject::GetInterestForTargetPopover() const {
 }
 
 AXObject* AXObject::GetPositionedObjectForAnchor(ui::AXNodeData* data) const {
+  CHECK(!RuntimeEnabledFeatures::NoAriaDetailsForAnchorPosEnabled());
   AXObject* positioned_obj = AXObjectCache().GetPositionedObjectForAnchor(this);
   if (!positioned_obj) {
     return nullptr;

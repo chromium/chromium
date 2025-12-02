@@ -3509,6 +3509,11 @@
       },
       base_feature: "none",
     },
+    // This is a killswitch flag, shipped in M144. It can be removed in M146.
+    {
+      name: "NoAriaDetailsForAnchorPos",
+      status: "stable",
+    },
     {
       // This turns off all font antialiasing for tests unless it is
       // explicitly required and enabled using the

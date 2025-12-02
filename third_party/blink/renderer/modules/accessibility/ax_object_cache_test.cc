@@ -485,6 +485,10 @@ class AccessibilityEnabledLaterTest : public AccessibilityTest {
 };
 
 TEST_F(AccessibilityEnabledLaterTest, CSSAnchorPositioning) {
+  if (RuntimeEnabledFeatures::NoAriaDetailsForAnchorPosEnabled()) {
+    // This test can be removed when this flag is removed.
+    return;
+  }
   SetHtmlInnerHTML(R"HTML(
     <style>
       .anchor {

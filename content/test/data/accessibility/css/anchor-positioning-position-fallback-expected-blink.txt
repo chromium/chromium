@@ -4,7 +4,7 @@ rootWebArea
 ++++++genericContainer
 ++++++++staticText name='target'
 ++++++++++inlineTextBox name='target'
-++++++button name='anchor1' detailsFrom=cssAnchor detailsIds=genericContainer
+++++++button name='anchor1'
 ++++++++staticText name='anchor1'
 ++++++++++inlineTextBox name='anchor1'
 ++++++button name='anchor2'
@@ -20,6 +20,6 @@ rootWebArea name='scroll() done'
 ++++++button name='anchor1'
 ++++++++staticText name='anchor1'
 ++++++++++inlineTextBox name='anchor1'
-++++++button name='anchor2' detailsFrom=cssAnchor detailsIds=genericContainer
+++++++button name='anchor2'
 ++++++++staticText name='anchor2'
 ++++++++++inlineTextBox name='anchor2'

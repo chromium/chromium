@@ -63,8 +63,6 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable aria-actions.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "AriaActions");
-  // Enable CSSInert, used by AccessibilityCSSInteractivityInert.
-  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "CSSInert");
   // Enable custom elements to have a default role of "none", removing them
   // from the accessibility tree.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(

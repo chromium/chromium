@@ -4,6 +4,6 @@ rootWebArea
 ++++++genericContainer
 ++++++++staticText name='target'
 ++++++++++inlineTextBox name='target'
-++++++button name='anchor' detailsFrom=cssAnchor detailsIds=genericContainer
+++++++button name='anchor'
 ++++++++staticText name='anchor'
 ++++++++++inlineTextBox name='anchor'

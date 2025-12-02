@@ -1362,6 +1362,7 @@ void AXRelationCache::UpdateCSSAnchorFor(Node* positioned_node) {
 
 AXObject* AXRelationCache::GetPositionedObjectForAnchor(
     const AXObject* anchor) {
+  CHECK(!RuntimeEnabledFeatures::NoAriaDetailsForAnchorPosEnabled());
   HashMap<AXID, AXID>::const_iterator iter =
       anchor_to_positioned_obj_mapping_.find(anchor->AXObjectID());
   if (iter == anchor_to_positioned_obj_mapping_.end()) {
