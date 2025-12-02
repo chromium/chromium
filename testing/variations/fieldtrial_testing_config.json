@@ -26604,9 +26604,8 @@
             ],
             "experiments": [
                 {
-                    "name": "HighSizeAndCpuThreshold",
+                    "name": "HighSizeThreshold",
                     "params": {
-                        "ineffective_gc_mutator_utilization_threshold": "0.2",
                         "ineffective_gc_size_threshold": "0.95"
                     },
                     "enable_features": [
