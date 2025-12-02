@@ -9,7 +9,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/metrics/metrics_pref_names.h"
-#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/browser/webauthn/public/passkey_welcome_screen_util.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
@@ -40,14 +41,12 @@
   // Handles interaction with the credential export OS libraries.
   CredentialExportMediator* _mediator;
 
-  // Used to fetch the user's saved passwords for export.
-  raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
-
   // Bridge to the PasskeyKeychainProvider that manages passkey vault keys.
   PasskeyKeychainProviderBridge* _passkeyKeychainProviderBridge;
 
-  // Provides access to stored WebAuthn credentials.
-  raw_ptr<webauthn::PasskeyModel> _passkeyModel;
+  // All credential groups that can be exported. Only valid until `start`, at
+  // which point it is moved from and should not be accessed.
+  std::vector<password_manager::AffiliatedGroup> _affiliatedGroups;
 
   // Email of the signed in user account.
   std::string _userEmail;
@@ -55,20 +54,18 @@
 
 @synthesize baseNavigationController = _baseNavigationController;
 
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-                         savedPasswordsPresenter:
-                             (password_manager::SavedPasswordsPresenter*)
-                                 savedPasswordsPresenter
-                                    passkeyModel:
-                                        (webauthn::PasskeyModel*)passkeyModel {
+- (instancetype)
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                    affiliatedGroups:
+                        (std::vector<password_manager::AffiliatedGroup>)
+                            affiliatedGroups {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
-    _savedPasswordsPresenter = savedPasswordsPresenter;
-    _passkeyModel = passkeyModel;
+    _affiliatedGroups = std::move(affiliatedGroups);
   }
   return self;
 }
@@ -77,9 +74,10 @@
   _viewController = [[CredentialExportViewController alloc] init];
 
   _mediator = [[CredentialExportMediator alloc]
-               initWithWindow:_baseNavigationController.view.window
-      savedPasswordsPresenter:_savedPasswordsPresenter
-                 passkeyModel:_passkeyModel];
+        initWithWindow:_baseNavigationController.view.window
+      affiliatedGroups:std::move(_affiliatedGroups)
+          passkeyModel:IOSPasskeyModelFactory::GetForProfile(self.profile)];
+  _affiliatedGroups = {};
   _viewController.delegate = _mediator;
   _mediator.delegate = self;
   _mediator.consumer = _viewController;

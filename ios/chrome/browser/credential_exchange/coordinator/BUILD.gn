@@ -60,6 +60,7 @@ source_set("export_coordinator") {
     "//ios/chrome/browser/settings/ui_bundled/password:ui",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/webauthn/model",
     "//ios/chrome/browser/webauthn/public",
     "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge_chrome",
     "//ios/chrome/common/credential_provider/ui",

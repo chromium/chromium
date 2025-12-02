@@ -17,24 +17,25 @@
   // Used as a presentation anchor for OS views. Must not be nil.
   UIWindow* _window;
 
-  // Used to fetch the user's saved passwords for export.
-  raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
-
   // Responsible for interaction with the credential export OS libraries.
   CredentialExporter* _credentialExporter;
+
+  // All credential groups that can be exported. Only valid until `setConsumer`,
+  // at which point it is moved from and should not be accessed.
+  std::vector<password_manager::AffiliatedGroup> _affiliatedGroups;
 
   // Provides access to stored WebAuthn credentials.
   raw_ptr<webauthn::PasskeyModel> _passkeyModel;
 }
 
 - (instancetype)initWithWindow:(UIWindow*)window
-       savedPasswordsPresenter:
-           (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter
+              affiliatedGroups:(std::vector<password_manager::AffiliatedGroup>)
+                                   affiliatedGroups
                   passkeyModel:(webauthn::PasskeyModel*)passkeyModel {
   self = [super init];
   if (self) {
     _window = window;
-    _savedPasswordsPresenter = savedPasswordsPresenter;
+    _affiliatedGroups = std::move(affiliatedGroups);
     _passkeyModel = passkeyModel;
   }
   return self;
@@ -46,8 +47,8 @@
   }
 
   _consumer = consumer;
-  [_consumer
-      setAffiliatedGroups:_savedPasswordsPresenter->GetAffiliatedGroups()];
+  [_consumer setAffiliatedGroups:std::move(_affiliatedGroups)];
+  _affiliatedGroups = {};
 }
 
 #pragma mark - CredentialExportViewControllerPresentationDelegate

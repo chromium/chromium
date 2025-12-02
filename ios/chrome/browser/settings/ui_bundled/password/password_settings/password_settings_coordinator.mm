@@ -374,9 +374,8 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
       _credentialExportCoordinator = [[CredentialExportCoordinator alloc]
           initWithBaseNavigationController:_settingsNavigationController
                                    browser:self.browser
-                   savedPasswordsPresenter:_savedPasswordsPresenter.get()
-                              passkeyModel:IOSPasskeyModelFactory::
-                                               GetForProfile(self.profile)];
+                          affiliatedGroups:_savedPasswordsPresenter
+                                               ->GetAffiliatedGroups()];
       [_credentialExportCoordinator start];
       return;
     }
