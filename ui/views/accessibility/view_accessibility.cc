@@ -215,7 +215,7 @@ void ViewAccessibility::NotifyEvent(ax::mojom::Event event_type,
     return;
   }
 
-  Widget* const widget = view_->GetWidget();
+  Widget* const widget = GetWidget();
   // If it belongs to a widget but its native widget is already destructed, do
   // not send such accessibility event as it's unexpected to send such events
   // during destruction, and is likely to lead to crashes/problems.
@@ -1404,7 +1404,7 @@ void ViewAccessibility::SetChildTreeID(ui::AXTreeID tree_id) {
   if (tree_id != ui::AXTreeIDUnknown()) {
     data_.AddChildTreeId(tree_id);
 
-    const views::Widget* widget = view_->GetWidget();
+    const views::Widget* widget = GetWidget();
     if (widget && widget->GetNativeView() && display::Screen::Get()) {
       // TODO(accessibility): There potentially could be an issue where the
       // device scale factor changes from the time the tree ID is set to the
@@ -1452,8 +1452,7 @@ gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {
 }
 
 void ViewAccessibility::AnnounceAlert(std::u16string_view text) {
-  CHECK(view_);
-  if (auto* const widget = view_->GetWidget()) {
+  if (auto* const widget = GetWidget()) {
     if (auto* const root_view =
             static_cast<internal::RootView*>(widget->GetRootView())) {
       root_view->AnnounceTextAs(std::u16string(text),
@@ -1463,8 +1462,7 @@ void ViewAccessibility::AnnounceAlert(std::u16string_view text) {
 }
 
 void ViewAccessibility::AnnouncePolitely(std::u16string_view text) {
-  CHECK(view_);
-  if (auto* const widget = view_->GetWidget()) {
+  if (auto* const widget = GetWidget()) {
     if (auto* const root_view =
             static_cast<internal::RootView*>(widget->GetRootView())) {
       root_view->AnnounceTextAs(std::u16string(text),
@@ -1648,7 +1646,7 @@ void ViewAccessibility::OnWidgetDestroyed(Widget* widget) {
 
 void ViewAccessibility::OnWidgetUpdated(Widget* widget, Widget* old_widget) {
   CHECK(widget);
-  DCHECK_EQ(widget, view_->GetWidget());
+  DCHECK_EQ(widget, GetWidget());
   if (widget == old_widget) {
     return;
   }
