@@ -2411,9 +2411,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
             // On automotive, ignore density changes to prevent Chrome from exiting fullscreen.
             // See https://crbug.com/352816133.
-            // TODO(https://crbug.com/354039289): densityDpi is overridden on the Configuration so
-            // changes to densityDpi won't show up in the newConfig. Once Chrome migrates to adapt
-            // app, test this flow again.
             if (newConfig.densityDpi != mConfig.densityDpi) {
                 if (!DeviceInfo.isAutomotive()) {
                     doRecreateActivity();
