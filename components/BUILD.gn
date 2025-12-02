@@ -60,7 +60,7 @@ if (is_ios) {
       sources = [
         "//third_party/dom_distiller_js/dist/test/data/out/domdistillerjstest.js",
         "//third_party/dom_distiller_js/dist/test/data/war/test.html",
-        "//third_party/node/node_modules/chai/chai.js",
+        "//third_party/node/node_modules/chai/index.js",
         "//third_party/node/node_modules/mocha/mocha.js",
         "dom_distiller/core/javascript/dom_distiller_viewer.js",
         "dom_distiller/core/javascript/domdistiller.js",
