@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 #import <stdint.h>
 
+#import <optional>
 #import <string>
 #import <string_view>
 #import <utility>
@@ -32,6 +33,7 @@
 #import "base/task/thread_pool.h"
 #import "base/threading/platform_thread.h"
 #import "components/application_locale_storage/application_locale_storage.h"
+#import "components/country_codes/country_codes.h"
 #import "components/crash/core/common/crash_key.h"
 #import "components/crash/core/common/crash_keys.h"
 #import "components/history/core/browser/history_service.h"
@@ -63,6 +65,8 @@
 #import "components/omnibox/browser/omnibox_metrics_provider.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "components/regional_capabilities/regional_capabilities_country_id.h"
+#import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/sync/service/passphrase_type_metrics_provider.h"
 #import "components/sync/service/sync_service.h"
@@ -85,6 +89,7 @@
 #import "ios/chrome/browser/metrics/model/ios_push_notifications_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/mobile_session_shutdown_metrics_provider.h"
 #import "ios/chrome/browser/regional_capabilities/model/ios_regional_capabilities_metrics_provider.h"
+#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -213,6 +218,38 @@ metrics::dwa::DwaService* IOSChromeMetricsServiceClient::GetDwaService() {
 metrics::private_metrics::PumaService*
 IOSChromeMetricsServiceClient::GetPumaService() {
   return puma_service_.get();
+}
+
+std::optional<regional_capabilities::CountryIdHolder>
+IOSChromeMetricsServiceClient::GetProfileCountryIdForPrivateMetricsReporting() {
+  std::vector<ProfileIOS*> profiles =
+      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
+  if (profiles.empty()) {
+    return std::nullopt;
+  }
+
+  std::optional<regional_capabilities::CountryIdHolder> first_country_id;
+  for (ProfileIOS* profile : profiles) {
+    if (profile->IsOffTheRecord()) {
+      continue;
+    }
+    regional_capabilities::RegionalCapabilitiesService* service =
+        ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile);
+    if (!service) {
+      continue;
+    }
+
+    regional_capabilities::CountryIdHolder current_id = service->GetCountryId();
+
+    if (!first_country_id.has_value()) {
+      first_country_id = current_id;
+    } else if (first_country_id.value() != current_id) {
+      // Mismatched IDs.
+      return std::nullopt;
+    }
+  }
+
+  return first_country_id;
 }
 
 void IOSChromeMetricsServiceClient::SetMetricsClientId(

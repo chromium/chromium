@@ -20,6 +20,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "chrome/browser/metrics/cached_metrics_profile.h"
 #include "chrome/browser/metrics/incognito_observer.h"
 #include "chrome/browser/metrics/metrics_memory_details.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -47,6 +48,10 @@ class BrowserActivityWatcher;
 class Profile;
 class ProfileManager;
 class PrefRegistrySimple;
+
+namespace regional_capabilities {
+class CountryIdHolder;
+}
 
 namespace network_time {
 class NetworkTimeTracker;
@@ -144,6 +149,8 @@ class ChromeMetricsServiceClient
   std::optional<bool> GetCurrentUserMetricsConsent() const override;
   std::optional<std::string> GetCurrentUserId() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  std::optional<regional_capabilities::CountryIdHolder>
+  GetProfileCountryIdForPrivateMetricsReporting() override;
 
   // ukm::HistoryDeleteObserver:
   void OnHistoryDeleted() override;
@@ -295,6 +302,9 @@ class ChromeMetricsServiceClient
   // Subscription for receiving callbacks that a URL was opened from the
   // omnibox.
   base::CallbackListSubscription omnibox_url_opened_subscription_;
+
+  // This member variable ensures the profile lookup is cached across calls.
+  metrics::CachedMetricsProfile cached_profile_;
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<BrowserActivityWatcher> browser_activity_watcher_;

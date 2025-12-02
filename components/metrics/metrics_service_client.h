@@ -24,6 +24,10 @@ namespace ukm {
 class UkmService;
 }
 
+namespace regional_capabilities {
+class CountryIdHolder;
+}
+
 namespace metrics::dwa {
 class DwaService;
 }
@@ -253,6 +257,11 @@ class MetricsServiceClient {
   // Not all platforms support per-user consent. If per-user consent is not
   // supported, this function should return std::nullopt.
   virtual std::optional<std::string> GetCurrentUserId() const;
+
+  // Returns the country ID associated with the profile used for metrics.
+  // Returns std::nullopt if it's not available.
+  virtual std::optional<regional_capabilities::CountryIdHolder>
+  GetProfileCountryIdForPrivateMetricsReporting();
 
  private:
   base::RepeatingClosure update_running_services_;

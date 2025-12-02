@@ -14,6 +14,8 @@
 #include "components/metrics/private_metrics/private_metrics_features.h"
 #include "components/metrics/private_metrics/private_metrics_pref_names.h"
 #include "components/metrics/private_metrics/puma_histogram_encoder.h"
+#include "components/regional_capabilities/access/country_access_reason.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/version_info/version_info.h"
 #include "third_party/metrics_proto/private_metrics/private_metrics.pb.h"
 #include "third_party/metrics_proto/private_metrics/private_user_metrics.pb.h"
@@ -201,6 +203,21 @@ void PumaService::RecordRcProfile(RcCoarseSystemProfile* rc_profile) {
 
   rc_profile->set_platform(GetCurrentPlatform());
   rc_profile->set_milestone(version_info::GetMajorVersionNumberAsInt());
+
+  int country_id;
+  const std::optional<regional_capabilities::CountryIdHolder>
+      profile_country_id =
+          client_->GetProfileCountryIdForPrivateMetricsReporting();
+  if (profile_country_id.has_value()) {
+    country_id = profile_country_id.value()
+                     .GetRestricted(regional_capabilities::CountryAccessKey(
+                         regional_capabilities::CountryAccessReason::
+                             kPrivateUserMetricsReporting))
+                     .Serialize();
+  } else {
+    country_id = country_codes::CountryId().Serialize();
+  }
+  rc_profile->set_profile_country_id(country_id);
 }
 
 std::optional<::private_metrics::PrivateUserMetrics>
@@ -270,6 +287,11 @@ void PumaService::BuildPrivateMetricRcReportAndStoreLog(
 
   base::UmaHistogramEnumeration(kHistogramPumaReportStoringOutcomeRc,
                                 PumaService::ReportStoringOutcome::kStored);
+}
+
+regional_capabilities::CountryIdHolder
+PumaService::GetCountryIdHolderForTesting() {
+  return client_->GetProfileCountryIdForPrivateMetricsReporting().value();
 }
 
 }  // namespace metrics::private_metrics

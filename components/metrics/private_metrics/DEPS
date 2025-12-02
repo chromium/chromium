@@ -6,3 +6,9 @@ include_rules = [
   "+services/network/public/mojom",
   "+third_party/federated_compute/src/fcp/protos/confidentialcompute",
 ]
+
+specific_include_rules = {
+  "puma_service\.cc": [
+    "+components/regional_capabilities/access/country_access_reason.h",
+  ],
+}

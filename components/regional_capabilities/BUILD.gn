@@ -54,6 +54,7 @@ source_set("country_access_reason") {
     "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/regional_capabilities_internals",
+    "//components/metrics/private_metrics",
     "//components/search_engines",
     "//ios/chrome/browser/webui/ui_bundled/regional_capabilities_internals",
   ]
@@ -79,6 +80,7 @@ source_set("switches") {
   visibility = [
     ":*",
     "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/metrics/model:eg2_tests",
     "//ios/chrome/browser/metrics/model:unit_tests",
   ]
 
