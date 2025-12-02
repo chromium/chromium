@@ -490,6 +490,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "dawn_use_swiftshader",
+    args = {
+        "dawn_use_swiftshader": True,
+    },
+)
+
+gn_args.config(
     name = "dcheck_always_on",
     args = {
         "dcheck_always_on": True,

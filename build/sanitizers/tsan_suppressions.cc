@@ -101,6 +101,12 @@ char kTSanDefaultSuppressions[] =
     // synchronized for performance.
     "race:SetIsTracing\n"
 
+    // crbug.com/462477486
+    // False positive in SwiftShader/Vulkan due to different virtual memory
+    // addresses for the same physical memory address used for cross-process
+    // mutexes.
+    "mutex:vk::OpaqueFdExternalSemaphore::\n"
+
     // End of suppressions.
     ;  // Please keep this semicolon.
 

@@ -1704,20 +1704,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "linux_nvidia_gtx_1660_obsolete",
-    # We always need this entry to be generated since it is used by
-    # //content/test/gpu/find_bad_machines.py.
-    generate_pyl_entry = targets.IGNORE_UNUSED,
-    swarming = targets.swarming(
-        dimensions = {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04",
-            "pool": "chromium.tests.gpu",
-        },
-    ),
-)
-
-targets.mixin(
     name = "linux_nvidia_gtx_1660_stable",
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.

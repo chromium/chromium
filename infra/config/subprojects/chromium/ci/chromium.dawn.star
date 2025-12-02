@@ -564,7 +564,7 @@ ci.thin_tester(
 
 gpu.ci.linux_builder(
     name = "Dawn Linux TSAN Release",
-    description_html = "Runs ToT Dawn tests on stable Linux/NVIDIA GTX 1660 configs with TSan enabled",
+    description_html = "Runs ToT Dawn tests on SwiftShader with TSan enabled",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -586,6 +586,7 @@ gpu.ci.linux_builder(
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
+            "dawn_use_swiftshader",
             "tsan",
             "release_try_builder",
             "minimal_symbols",
@@ -601,8 +602,53 @@ gpu.ci.linux_builder(
             "gpu_dawn_tsan_gtests",
         ],
         mixins = [
-            "linux_nvidia_gtx_1660_obsolete",
+            "gpu-swarming-pool",
+            "no_gpu",
+            "linux-jammy",
+            "x86-64",
         ],
+        per_test_modifications = {
+            "dawn_end2end_implicit_device_sync_tests": targets.mixin(
+                args = [
+                    # Only interested in direct SwiftShader testing at the
+                    # moment.
+                    "--adapter-vendor-id=0x1AE0",
+                ],
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "dawn_end2end_skip_validation_tests": targets.mixin(
+                args = [
+                    # Only interested in direct SwiftShader testing at the
+                    # moment.
+                    "--adapter-vendor-id=0x1AE0",
+                ],
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "dawn_end2end_tests": targets.mixin(
+                args = [
+                    # Only interested in direct SwiftShader testing at the
+                    # moment.
+                    "--adapter-vendor-id=0x1AE0",
+                ],
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "dawn_end2end_wire_tests": targets.mixin(
+                args = [
+                    # Only interested in direct SwiftShader testing at the
+                    # moment.
+                    "--adapter-vendor-id=0x1AE0",
+                ],
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+        },
     ),
     targets_settings = targets.settings(
         os_type = targets.os_type.LINUX,
