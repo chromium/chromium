@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
+
+#import "base/test/test_future.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_audience.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
-#import "ios/chrome/browser/browser_view/model/browser_view_visibility_observer_bridge.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -12,28 +14,10 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-@interface TestBrowserViewVisibilityObserver
-    : NSObject <BrowserViewVisibilityObserving>
-@property(nonatomic, assign) BrowserViewVisibilityState currentStateValue;
-@property(nonatomic, assign) BrowserViewVisibilityState previousStateValue;
-@end
-
-@implementation TestBrowserViewVisibilityObserver
-
-- (void)browserViewDidChangeToVisibilityState:
-            (BrowserViewVisibilityState)currentState
-                                    fromState:(BrowserViewVisibilityState)
-                                                  previousState {
-  self.currentStateValue = currentState;
-  self.previousStateValue = previousState;
-}
-
-@end
-
-/// Test fixfure for browser view visibility observer.
-class BrowserViewVisibilityObserverTest : public PlatformTest {
+/// Test fixture for BrowserViewVisibilityNotifierBrowserAgent.
+class BrowserViewVisibilityNotifierBrowserAgentTest : public PlatformTest {
  protected:
-  BrowserViewVisibilityObserverTest() {
+  BrowserViewVisibilityNotifierBrowserAgentTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
@@ -51,25 +35,41 @@ class BrowserViewVisibilityObserverTest : public PlatformTest {
 };
 
 /// Tests that the observer responds to browser view visibility change.
-TEST_F(BrowserViewVisibilityObserverTest,
+TEST_F(BrowserViewVisibilityNotifierBrowserAgentTest,
        TestObserverRespondsToBrowserViewVisbilityChange) {
   using enum BrowserViewVisibilityState;
+  using Future = base::test::TestFuture<BrowserViewVisibilityState,
+                                        BrowserViewVisibilityState>;
 
-  TestBrowserViewVisibilityObserver* observer =
-      [[TestBrowserViewVisibilityObserver alloc] init];
-  auto observer_bridge =
-      std::make_unique<BrowserViewVisibilityObserverBridge>(observer);
-  raw_ptr<BrowserViewVisibilityNotifierBrowserAgent> notifier =
-      visibility_notifier();
-  notifier->AddObserver(observer_bridge.get());
-
+  BrowserViewVisibilityNotifierBrowserAgent* notifier = visibility_notifier();
   id<BrowserViewVisibilityAudience> audience =
       notifier->GetBrowserViewVisibilityAudience();
+
+  // Future used to store the parameters passed to the callback when it is
+  // invoked (can be used to check they have the expected value).
+  Future future;
+
+  base::CallbackListSubscription subscription =
+      notifier->RegisterBrowserVisibilityStateChangedCallback(
+          future.GetRepeatingCallback());
+  ASSERT_FALSE(future.IsReady());
+
   [audience browserViewDidTransitionToVisibilityState:kVisible
                                             fromState:kAppearing];
-  EXPECT_EQ(observer.currentStateValue, BrowserViewVisibilityState::kVisible);
-  EXPECT_EQ(observer.previousStateValue,
-            BrowserViewVisibilityState::kAppearing);
 
-  notifier->RemoveObserver(observer_bridge.get());
+  // Verify that the callback is invoked immediately with the expected values.
+  EXPECT_TRUE(future.IsReady());
+  auto [current_state, previous_state] = future.Take();
+  EXPECT_EQ(current_state, kVisible);
+  EXPECT_EQ(previous_state, kAppearing);
+
+  // Verify that the callback is no longer called after the subcription
+  // is destroyed.
+  ASSERT_FALSE(future.IsReady());
+  subscription = {};
+
+  [audience browserViewDidTransitionToVisibilityState:kVisible
+                                            fromState:kAppearing];
+
+  EXPECT_FALSE(future.IsReady());
 }

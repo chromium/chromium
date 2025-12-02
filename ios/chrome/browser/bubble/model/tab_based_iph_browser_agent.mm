@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 
 #import "base/check.h"
+#import "base/functional/bind.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -40,8 +41,6 @@ TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
           ReadingListModelFactory::GetForProfile(browser->GetProfile())),
       url_loading_notifier_(
           UrlLoadingNotifierBrowserAgent::FromBrowser(browser)),
-      browser_view_visibility_notifier_(
-          BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser)),
       command_dispatcher_(browser->GetCommandDispatcher()),
       engagement_tracker_(feature_engagement::TrackerFactory::GetForProfile(
           browser->GetProfile())) {
@@ -53,7 +52,14 @@ TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
     reading_list_model_observation_.Observe(reading_list_model_.get());
   }
   url_loading_notifier_->AddObserver(this);
-  browser_view_visibility_notifier_->AddObserver(this);
+  // As the CallbackListSubscription is stored in a member variable, it will
+  // be destroyed (and cancel the callback) before the object is deallocated
+  // so base::Unretained(this) is safe here.
+  browser_view_visibility_changed_subscription_ =
+      BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser)
+          ->RegisterBrowserVisibilityStateChangedCallback(base::BindRepeating(
+              &TabBasedIPHBrowserAgent::BrowserViewVisibilityStateDidChange,
+              base::Unretained(this)));
 }
 
 TabBasedIPHBrowserAgent::~TabBasedIPHBrowserAgent() = default;
@@ -124,7 +130,7 @@ void TabBasedIPHBrowserAgent::BookmarkNodeAdded(
 void TabBasedIPHBrowserAgent::BrowserDestroyed(Browser* browser) {
   active_web_state_observer_.reset();
   url_loading_notifier_->RemoveObserver(this);
-  browser_view_visibility_notifier_->RemoveObserver(this);
+  browser_view_visibility_changed_subscription_ = {};
   browser->RemoveObserver(this);
 
   if (send_tab_to_self::
@@ -137,24 +143,6 @@ void TabBasedIPHBrowserAgent::BrowserDestroyed(Browser* browser) {
   url_loading_notifier_ = nil;
   command_dispatcher_ = nil;
   engagement_tracker_ = nil;
-}
-
-#pragma mark - BrowserViewVisibilityObserver
-
-void TabBasedIPHBrowserAgent::BrowserViewVisibilityStateDidChange(
-    BrowserViewVisibilityState current_state,
-    BrowserViewVisibilityState previous_state) {
-  if (current_state == BrowserViewVisibilityState::kVisible) {
-    web::WebState* current_web_state = web_state_list_->GetActiveWebState();
-    if (tapped_adjacent_tab_ && current_web_state &&
-        !current_web_state->IsLoading()) {
-      [HelpHandler()
-          presentInProductHelpWithType:InProductHelpType::kToolbarSwipe];
-      tapped_adjacent_tab_ = false;
-    }
-  } else if (previous_state == BrowserViewVisibilityState::kVisible) {
-    ResetFeatureStatesAndRemoveIPHViews();
-  }
 }
 
 #pragma mark - ReadingListModelObserver
@@ -338,4 +326,20 @@ id<HelpCommands> TabBasedIPHBrowserAgent::HelpHandler() {
 
 id<PopupMenuCommands> TabBasedIPHBrowserAgent::PopupMenuHandler() {
   return HandlerForProtocol(command_dispatcher_, PopupMenuCommands);
+}
+
+void TabBasedIPHBrowserAgent::BrowserViewVisibilityStateDidChange(
+    BrowserViewVisibilityState current_state,
+    BrowserViewVisibilityState previous_state) {
+  if (current_state == BrowserViewVisibilityState::kVisible) {
+    web::WebState* current_web_state = web_state_list_->GetActiveWebState();
+    if (tapped_adjacent_tab_ && current_web_state &&
+        !current_web_state->IsLoading()) {
+      [HelpHandler()
+          presentInProductHelpWithType:InProductHelpType::kToolbarSwipe];
+      tapped_adjacent_tab_ = false;
+    }
+  } else if (previous_state == BrowserViewVisibilityState::kVisible) {
+    ResetFeatureStatesAndRemoveIPHViews();
+  }
 }

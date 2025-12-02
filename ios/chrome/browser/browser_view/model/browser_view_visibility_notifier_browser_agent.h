@@ -5,19 +5,26 @@
 #ifndef IOS_CHROME_BROWSER_BROWSER_VIEW_MODEL_BROWSER_VIEW_VISIBILITY_NOTIFIER_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_BROWSER_VIEW_MODEL_BROWSER_VIEW_VISIBILITY_NOTIFIER_BROWSER_AGENT_H_
 
+#import "base/callback_list.h"
 #import "base/memory/weak_ptr.h"
-#import "base/observer_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 
 @protocol BrowserViewVisibilityAudience;
 @class BrowserViewVisibilityHandler;
-class BrowserViewVisibilityObserver;
 enum class BrowserViewVisibilityState;
 
 /// Browser agent that handles browser view visibility updates.
 class BrowserViewVisibilityNotifierBrowserAgent
     : public BrowserUserData<BrowserViewVisibilityNotifierBrowserAgent> {
  public:
+  /// List of callbacks invoked when the browser visibility changes.
+  using VisibilityChangedCallbackList = base::RepeatingCallbackList<void(
+      BrowserViewVisibilityState current_state,
+      BrowserViewVisibilityState previous_state)>;
+
+  // Callback invoked when the browser visibility changes.
+  using VisibilityChangedCallback = VisibilityChangedCallbackList::CallbackType;
+
   /// Not copyable or moveable
   BrowserViewVisibilityNotifierBrowserAgent(
       const BrowserViewVisibilityNotifierBrowserAgent&) = delete;
@@ -25,11 +32,10 @@ class BrowserViewVisibilityNotifierBrowserAgent
       const BrowserViewVisibilityNotifierBrowserAgent&) = delete;
   ~BrowserViewVisibilityNotifierBrowserAgent() override;
 
-  /// Adds `observer` to the list of observers.
-  void AddObserver(BrowserViewVisibilityObserver* observer);
-
-  /// Removes `observer` from the list of observers.
-  void RemoveObserver(BrowserViewVisibilityObserver* observer);
+  /// Registers `callback` to be called when the browser visibility changes.
+  [[nodiscard]] base::CallbackListSubscription
+  RegisterBrowserVisibilityStateChangedCallback(
+      const VisibilityChangedCallback& callback);
 
   /// Retrieve the `BrowserViewVisibilityAudience` object to be attached to the
   /// browser view.
@@ -50,8 +56,8 @@ class BrowserViewVisibilityNotifierBrowserAgent
   /// The object that handles visibility updates.
   BrowserViewVisibilityHandler* visibility_handler_;
 
-  /// List of observers for browser view visibility updates.
-  base::ObserverList<BrowserViewVisibilityObserver, true> observers_;
+  /// List of callbacks notified of the browser visibility changes.
+  VisibilityChangedCallbackList callbacks_;
 
   base::WeakPtrFactory<BrowserViewVisibilityNotifierBrowserAgent>
       weak_ptr_factory_{this};

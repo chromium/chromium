@@ -6,7 +6,6 @@
 
 #import "base/functional/bind.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_handler.h"
-#import "ios/chrome/browser/browser_view/model/browser_view_visibility_observer.h"
 
 BrowserViewVisibilityNotifierBrowserAgent::
     BrowserViewVisibilityNotifierBrowserAgent(Browser* browser)
@@ -20,16 +19,12 @@ BrowserViewVisibilityNotifierBrowserAgent::
 }
 
 BrowserViewVisibilityNotifierBrowserAgent::
-    ~BrowserViewVisibilityNotifierBrowserAgent() {}
+    ~BrowserViewVisibilityNotifierBrowserAgent() = default;
 
-void BrowserViewVisibilityNotifierBrowserAgent::AddObserver(
-    BrowserViewVisibilityObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void BrowserViewVisibilityNotifierBrowserAgent::RemoveObserver(
-    BrowserViewVisibilityObserver* observer) {
-  observers_.RemoveObserver(observer);
+base::CallbackListSubscription BrowserViewVisibilityNotifierBrowserAgent::
+    RegisterBrowserVisibilityStateChangedCallback(
+        const VisibilityChangedCallback& callback) {
+  return callbacks_.Add(callback);
 }
 
 id<BrowserViewVisibilityAudience>
@@ -46,7 +41,5 @@ void BrowserViewVisibilityNotifierBrowserAgent::
     BrowserViewVisibilityStateDidChange(
         BrowserViewVisibilityState current_state,
         BrowserViewVisibilityState previous_state) {
-  for (auto& observer : observers_) {
-    observer.BrowserViewVisibilityStateDidChange(current_state, previous_state);
-  }
+  callbacks_.Notify(current_state, previous_state);
 }

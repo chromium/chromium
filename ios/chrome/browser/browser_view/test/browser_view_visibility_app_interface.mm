@@ -6,30 +6,22 @@
 
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
-#import "ios/chrome/browser/browser_view/model/browser_view_visibility_observer_bridge.h"
+#import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
-@interface BrowserViewVisibilityAppInterface () <BrowserViewVisibilityObserving>
+@interface BrowserViewVisibilityAppInterface ()
 @property(nonatomic, assign) BrowserViewVisibilityState currentState;
 @end
 
 @implementation BrowserViewVisibilityAppInterface {
-  // Observes changes of the browser view visibility state.
-  raw_ptr<BrowserViewVisibilityNotifierBrowserAgent>
-      _browserViewVisibilityNotifierBrowserAgent;
-  std::unique_ptr<BrowserViewVisibilityObserverBridge>
-      _browserViewVisibilityObserverBridge;
+  // Subscription with the BrowserViewVisibilityNotifierBrowserAgent.
+  base::CallbackListSubscription _browserViewVisibilityStateChangedSubscription;
 }
 
 - (instancetype)init {
   self = [super init];
   if (self) {
     _currentState = BrowserViewVisibilityState::kNotInViewHierarchy;
-    _browserViewVisibilityNotifierBrowserAgent =
-        BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(
-            chrome_test_util::GetMainBrowser());
-    _browserViewVisibilityObserverBridge =
-        std::make_unique<BrowserViewVisibilityObserverBridge>(self);
   }
   return self;
 }
@@ -57,25 +49,23 @@
   return [BrowserViewVisibilityAppInterface sharedInstance].currentState;
 }
 
-#pragma mark - BrowserViewVisibilityObserving
-
-- (void)browserViewDidChangeToVisibilityState:
-            (BrowserViewVisibilityState)currentState
-                                    fromState:(BrowserViewVisibilityState)
-                                                  previousState {
-  self.currentState = currentState;
-}
-
 #pragma mark - Helper
 
 - (void)observeBrowserViewVisibilityState {
-  _browserViewVisibilityNotifierBrowserAgent->AddObserver(
-      _browserViewVisibilityObserverBridge.get());
+  __weak BrowserViewVisibilityAppInterface* weakSelf = self;
+  _browserViewVisibilityStateChangedSubscription =
+      BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(
+          chrome_test_util::GetMainBrowser())
+          ->RegisterBrowserVisibilityStateChangedCallback(
+              base::BindRepeating(^(BrowserViewVisibilityState current_state,
+                                    BrowserViewVisibilityState previous_state) {
+                weakSelf.currentState = current_state;
+              }));
 }
 
 - (void)unobserveBrowserViewVisibilityState {
-  _browserViewVisibilityNotifierBrowserAgent->RemoveObserver(
-      _browserViewVisibilityObserverBridge.get());
+  _browserViewVisibilityStateChangedSubscription = {};
+  _currentState = BrowserViewVisibilityState::kNotInViewHierarchy;
 }
 
 @end

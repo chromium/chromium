@@ -34,7 +34,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/aim/model/aim_availability.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
-#import "ios/chrome/browser/browser_view/model/browser_view_visibility_observer_bridge.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
@@ -161,8 +160,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 }  // namespace
 
-@interface NewTabPageMediator () <BrowserViewVisibilityObserving,
-                                  HomeBackgroundCustomizationServiceObserving,
+@interface NewTabPageMediator () <HomeBackgroundCustomizationServiceObserving,
                                   IdentityManagerObserverBridgeDelegate,
                                   PlaceholderServiceObserving,
                                   PrefObserverDelegate,
@@ -199,8 +197,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   // Observes changes of the feed visibility state.
   raw_ptr<DiscoverFeedVisibilityBrowserAgent, DanglingUntriaged>
       _discoverFeedVisibilityBrowserAgent;
-  std::unique_ptr<BrowserViewVisibilityObserverBridge>
-      _browserViewVisibilityObserverBridge;
+  // Subscription with BrowserViewVisibilityNotifierBrowserAgent.
+  base::CallbackListSubscription _browserViewVisibilityStateChangedSubscription;
   // Used to load URLs.
   raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> _URLLoader;
   raw_ptr<PrefService> _prefService;
@@ -285,8 +283,6 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
                                                                 self);
     _browserViewVisibilityNotifierBrowserAgent =
         browserViewVisibilityNotifierBrowserAgent;
-    _browserViewVisibilityObserverBridge =
-        std::make_unique<BrowserViewVisibilityObserverBridge>(self);
     // Listen for default search engine changes.
     _searchEngineObserver = std::make_unique<SearchEngineObserverBridge>(
         self, self.templateURLService);
@@ -385,8 +381,15 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   [self updateAccountImage];
   [self updateAccountErrorBadge];
   [self startObservingPrefs];
-  _browserViewVisibilityNotifierBrowserAgent->AddObserver(
-      _browserViewVisibilityObserverBridge.get());
+  __weak NewTabPageMediator* weakSelf = self;
+  _browserViewVisibilityStateChangedSubscription =
+      _browserViewVisibilityNotifierBrowserAgent
+          ->RegisterBrowserVisibilityStateChangedCallback(
+              base::BindRepeating(^(BrowserViewVisibilityState current_state,
+                                    BrowserViewVisibilityState previous_state) {
+                [weakSelf browserViewDidChangeToVisibilityState:current_state
+                                                      fromState:previous_state];
+              }));
   _discoverFeedVisibilityBrowserAgent->AddObserver(self.feedVisibilityObserver);
   if (IsNTPBackgroundCustomizationEnabled()) {
     _backgroundCustomizationServiceObserverBridge =
@@ -399,13 +402,12 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 - (void)shutdown {
   _mediatorSetUp = NO;
-  _browserViewVisibilityNotifierBrowserAgent->RemoveObserver(
-      _browserViewVisibilityObserverBridge.get());
+  _browserViewVisibilityStateChangedSubscription = {};
+  _browserViewVisibilityNotifierBrowserAgent = nullptr;
   _discoverFeedVisibilityBrowserAgent->RemoveObserver(
       self.feedVisibilityObserver);
   _searchEngineObserver.reset();
   _identityObserverBridge.reset();
-  _browserViewVisibilityObserverBridge.reset();
   self.accountManagerService = nil;
   self.discoverFeedService = nullptr;
   _prefChangeRegistrar.reset();
@@ -459,8 +461,6 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 - (void)updateBackground {
   [self updateBackgroundForInitialLoad:YES];
 }
-
-#pragma mark - BrowserViewVisibilityObserving
 
 - (void)browserViewDidChangeToVisibilityState:
             (BrowserViewVisibilityState)currentState
