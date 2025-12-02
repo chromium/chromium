@@ -52,7 +52,10 @@ source_set("picture_in_picture") {
       "//ui/views",
     ]
   } else {  # is_android
-    sources += [ "auto_picture_in_picture_tab_model_observer_helper.h" ]
+    sources += [
+      "auto_picture_in_picture_permission_controller_bridge.h",
+      "auto_picture_in_picture_tab_model_observer_helper.h",
+    ]
     public_deps += [
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/ui/android/tab_model",
@@ -99,7 +102,14 @@ source_set("impl") {
   }
 
   if (is_android) {
-    sources += [ "auto_picture_in_picture_tab_model_observer_helper.cc" ]
+    sources += [
+      "auto_picture_in_picture_permission_controller_bridge.cc",
+      "auto_picture_in_picture_tab_model_observer_helper.cc",
+    ]
+    deps += [
+      "//chrome/android:chrome_jni_headers",
+      "//components/strings:components_strings",
+    ]
   } else {
     sources += [
       "auto_picture_in_picture_tab_strip_observer_helper.cc",
