@@ -26,8 +26,6 @@
 namespace wallet {
 namespace {
 
-using enum optimization_guide::proto::PassCategory;
-
 constexpr int kBubbleWidth = 320;
 constexpr int kSubTitleBottomMargin = 16;
 
@@ -134,16 +132,18 @@ void WalletablePassConsentBubbleView::AddedToWidget() {
 
 int WalletablePassConsentBubbleView::GetHeaderImageResourceId() const {
   switch (pass_category_) {
-    case PASS_CATEGORY_LOYALTY_CARD:
+    case PassCategory::kLoyaltyCard:
       return IDR_WALLET_PASS_SAVE_LOYALTY_CARD_LOTTIE;
-    case PASS_CATEGORY_EVENT_PASS:
+    case PassCategory::kEventPass:
       return IDR_WALLET_PASS_SAVE_EVENT_TICKET_LOTTIE;
-    case PASS_CATEGORY_TRANSIT_TICKET:
+    case PassCategory::kTransitTicket:
       return IDR_WALLET_PASS_SAVE_TRANSPORT_TICKET_LOTTIE;
-    case PASS_CATEGORY_UNSPECIFIED:
+    case PassCategory::kBoardingPass:
+      return IDR_WALLET_PASS_SAVE_BOARDING_PASS_LOTTIE;
+    case PassCategory::kUnspecified:
     default:
       NOTREACHED() << "Not supported walletable pass category: "
-                   << pass_category_;
+                   << static_cast<int>(pass_category_);
   }
 }
 

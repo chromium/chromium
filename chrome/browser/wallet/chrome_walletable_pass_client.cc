@@ -71,7 +71,7 @@ GeoIpCountryCode ChromeWalletablePassClient::GetGeoIpCountryCode() {
 }
 
 void ChromeWalletablePassClient::ShowWalletablePassConsentBubble(
-    optimization_guide::proto::PassCategory pass_category,
+    PassCategory pass_category,
     WalletablePassBubbleResultCallback callback) {
   if (!consent_bubble_controller_) {
     consent_bubble_controller_ =

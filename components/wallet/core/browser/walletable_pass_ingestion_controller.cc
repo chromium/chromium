@@ -19,39 +19,32 @@
 namespace wallet {
 namespace {
 
-using optimization_guide::proto::PassCategory;
 using enum WalletablePassClient::WalletablePassBubbleResult;
-using enum optimization_guide::proto::PassCategory;
 
 PassCategory GetPassCategory(const WalletablePass& walletable_pass) {
   return std::visit(
       absl::Overload(
-          [](const LoyaltyCard&) { return PASS_CATEGORY_LOYALTY_CARD; },
-          [](const EventPass&) { return PASS_CATEGORY_EVENT_PASS; },
-          [](const TransitTicket&) { return PASS_CATEGORY_TRANSIT_TICKET; },
-          [](const BoardingPass&) {
-            // TODO(crbug.com/463515055): Create enum for boarding pass.
-            return PASS_CATEGORY_UNSPECIFIED;
-          }),
+          [](const LoyaltyCard&) { return PassCategory::kLoyaltyCard; },
+          [](const EventPass&) { return PassCategory::kEventPass; },
+          [](const TransitTicket&) { return PassCategory::kTransitTicket; },
+          [](const BoardingPass&) { return PassCategory::kBoardingPass; }),
       walletable_pass.pass_data);
 }
 
-std::string GetPassCategoryString(PassCategory pass_category) {
+optimization_guide::proto::PassCategory ToProtoPassCategory(
+    PassCategory pass_category) {
   switch (pass_category) {
-    case PASS_CATEGORY_LOYALTY_CARD:
-      return "LoyaltyCard";
-    case PASS_CATEGORY_EVENT_PASS:
-      return "EventPass";
-    case PASS_CATEGORY_TRANSIT_TICKET:
-      return "TransitTicket";
-    case PASS_CATEGORY_UNSPECIFIED:
-    default:
-      NOTREACHED();
+    case PassCategory::kLoyaltyCard:
+      return optimization_guide::proto::PASS_CATEGORY_LOYALTY_CARD;
+    case PassCategory::kEventPass:
+      return optimization_guide::proto::PASS_CATEGORY_EVENT_PASS;
+    case PassCategory::kTransitTicket:
+      return optimization_guide::proto::PASS_CATEGORY_TRANSIT_TICKET;
+    // Boarding pass is not supported by optimization_guide proto.
+    case PassCategory::kBoardingPass:
+    case PassCategory::kUnspecified:
+      return optimization_guide::proto::PASS_CATEGORY_UNSPECIFIED;
   }
-}
-
-std::string GetPassCategoryString(const WalletablePass& walletable_pass) {
-  return GetPassCategoryString(GetPassCategory(walletable_pass));
 }
 
 }  // namespace
@@ -109,7 +102,7 @@ WalletablePassIngestionController::GetPassCategoryForURL(
               WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST,
           /*optimization_metadata=*/nullptr) ==
       optimization_guide::OptimizationGuideDecision::kTrue) {
-    return PASS_CATEGORY_LOYALTY_CARD;
+    return PassCategory::kLoyaltyCard;
   }
 
   // TODO(crbug.com/455680372): Check more allowlists.
@@ -163,7 +156,7 @@ void WalletablePassIngestionController::MaybeStartExtraction(
     PassCategory pass_category) {
   if (save_strike_db_->ShouldBlockFeature(
           WalletablePassSaveStrikeDatabaseByHost::GetId(
-              GetPassCategoryString(pass_category), url.GetHost()))) {
+              PassCategoryToString(pass_category), url.GetHost()))) {
     // TODO(crbug.com/452779539): Report save bubble blocked to UMA
     return;
   }
@@ -192,7 +185,7 @@ void WalletablePassIngestionController::ExtractWalletablePass(
     optimization_guide::proto::AnnotatedPageContent annotated_page_content) {
   // Construct request
   optimization_guide::proto::WalletablePassExtractionRequest request;
-  request.set_pass_category(pass_category);
+  request.set_pass_category(ToProtoPassCategory(pass_category));
   request.mutable_page_context()->set_url(url.spec());
   request.mutable_page_context()->set_title(GetPageTitle());
   *request.mutable_page_context()->mutable_annotated_page_content() =
@@ -248,7 +241,8 @@ void WalletablePassIngestionController::OnExtractWalletablePass(
 void WalletablePassIngestionController::ShowSaveBubble(
     const GURL& url,
     WalletablePass walletable_pass) {
-  const std::string category = GetPassCategoryString(walletable_pass);
+  const std::string category =
+      PassCategoryToString(GetPassCategory(walletable_pass));
 
   // Create a copy of walletable_pass for the callback to avoid use-after-move.
   WalletablePass walletable_pass_for_callback = walletable_pass;
@@ -264,7 +258,8 @@ void WalletablePassIngestionController::OnGetSaveBubbleResult(
     const GURL& url,
     WalletablePass walletable_pass,
     WalletablePassClient::WalletablePassBubbleResult result) {
-  const std::string category = GetPassCategoryString(walletable_pass);
+  const std::string category =
+      PassCategoryToString(GetPassCategory(walletable_pass));
   switch (result) {
     case kAccepted:
       // TODO(crbug.com/452579752): Save pass to Wallet.

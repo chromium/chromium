@@ -4,9 +4,26 @@
 
 #include "components/wallet/core/browser/data_models/walletable_pass.h"
 
+#include "base/notreached.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 
 namespace wallet {
+
+std::string PassCategoryToString(PassCategory category) {
+  switch (category) {
+    case PassCategory::kLoyaltyCard:
+      return "LoyaltyCard";
+    case PassCategory::kEventPass:
+      return "EventPass";
+    case PassCategory::kTransitTicket:
+      return "TransitTicket";
+    case PassCategory::kBoardingPass:
+      return "BoardingPass";
+    case PassCategory::kUnspecified:
+      return "Unspecified";
+  }
+  NOTREACHED();
+}
 
 // static
 LoyaltyCard LoyaltyCard::FromProto(

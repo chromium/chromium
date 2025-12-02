@@ -35,7 +35,6 @@ using testing::_;
 using testing::Eq;
 using testing::Return;
 using testing::WithArgs;
-using enum optimization_guide::proto::PassCategory;
 
 namespace wallet {
 namespace {
@@ -53,7 +52,7 @@ class MockWalletablePassClient : public WalletablePassClient {
   MOCK_METHOD(
       void,
       ShowWalletablePassConsentBubble,
-      (optimization_guide::proto::PassCategory pass_category,
+      (PassCategory pass_category,
        WalletablePassClient::WalletablePassBubbleResultCallback callback),
       (override));
   MOCK_METHOD(
@@ -155,7 +154,7 @@ class WalletablePassIngestionControllerTest : public testing::Test {
   }
 
   void ExpectConsentBubbleOnClient(
-      optimization_guide::proto::PassCategory expected_category,
+      PassCategory expected_category,
       WalletablePassClient::WalletablePassBubbleResultCallback* out_callback) {
     EXPECT_CALL(mock_client(),
                 ShowWalletablePassConsentBubble(Eq(expected_category), _))
@@ -201,7 +200,7 @@ TEST_F(WalletablePassIngestionControllerTest,
       .WillOnce(Return(kTrue));
 
   EXPECT_EQ(test_api(controller()).GetPassCategoryForURL(https_url),
-            PASS_CATEGORY_LOYALTY_CARD);
+            PassCategory::kLoyaltyCard);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
@@ -224,7 +223,8 @@ TEST_F(WalletablePassIngestionControllerTest,
   content.set_tab_id(123);
 
   optimization_guide::proto::WalletablePassExtractionRequest expected_request;
-  expected_request.set_pass_category(PASS_CATEGORY_LOYALTY_CARD);
+  expected_request.set_pass_category(
+      optimization_guide::proto::PASS_CATEGORY_LOYALTY_CARD);
   expected_request.mutable_page_context()->set_url(url.spec());
   expected_request.mutable_page_context()->set_title("title");
   *expected_request.mutable_page_context()->mutable_annotated_page_content() =
@@ -236,7 +236,7 @@ TEST_F(WalletablePassIngestionControllerTest,
                            EqualsProto(expected_request), _, _));
 
   test_api(controller())
-      .ExtractWalletablePass(url, PASS_CATEGORY_LOYALTY_CARD, content);
+      .ExtractWalletablePass(url, PassCategory::kLoyaltyCard, content);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
@@ -251,7 +251,7 @@ TEST_F(WalletablePassIngestionControllerTest,
 
   // Expect ShowWalletablePassConsentBubble to be called.
   WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
-  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
+  ExpectConsentBubbleOnClient(PassCategory::kLoyaltyCard, &consent_callback);
 
   test_api(controller()).StartWalletablePassDetectionFlow(url);
   ASSERT_TRUE(consent_callback);
@@ -359,9 +359,9 @@ TEST_F(WalletablePassIngestionControllerTest,
 
   // Expect ShowWalletablePassConsentBubble to be called.
   WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
-  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
+  ExpectConsentBubbleOnClient(PassCategory::kLoyaltyCard, &consent_callback);
 
-  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
+  test_api(controller()).ShowConsentBubble(url, PassCategory::kLoyaltyCard);
   ASSERT_TRUE(consent_callback);
 
   // Expect GetAnnotatedPageContent to be called when consent is accepted.
@@ -379,7 +379,7 @@ TEST_F(WalletablePassIngestionControllerTest,
 
   EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble(_, _)).Times(0);
 
-  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
+  test_api(controller()).ShowConsentBubble(url, PassCategory::kLoyaltyCard);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
@@ -388,9 +388,9 @@ TEST_F(WalletablePassIngestionControllerTest,
   test_strike_database().SetStrikeData("WalletablePassConsent__shared_id", 1);
 
   WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
-  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
+  ExpectConsentBubbleOnClient(PassCategory::kLoyaltyCard, &consent_callback);
 
-  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
+  test_api(controller()).ShowConsentBubble(url, PassCategory::kLoyaltyCard);
   ASSERT_TRUE(consent_callback);
 
   EXPECT_CALL(*controller(), GetAnnotatedPageContent(_));
@@ -407,9 +407,9 @@ TEST_F(WalletablePassIngestionControllerTest,
   test_strike_database().SetStrikeData("WalletablePassConsent__shared_id", 0);
 
   WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
-  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
+  ExpectConsentBubbleOnClient(PassCategory::kLoyaltyCard, &consent_callback);
 
-  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
+  test_api(controller()).ShowConsentBubble(url, PassCategory::kLoyaltyCard);
   ASSERT_TRUE(consent_callback);
 
   std::move(consent_callback)
@@ -425,9 +425,9 @@ TEST_F(WalletablePassIngestionControllerTest,
   test_strike_database().SetStrikeData("WalletablePassConsent__shared_id", 0);
 
   WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
-  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
+  ExpectConsentBubbleOnClient(PassCategory::kLoyaltyCard, &consent_callback);
 
-  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
+  test_api(controller()).ShowConsentBubble(url, PassCategory::kLoyaltyCard);
   ASSERT_TRUE(consent_callback);
 
   std::move(consent_callback)
@@ -443,9 +443,9 @@ TEST_F(WalletablePassIngestionControllerTest,
   test_strike_database().SetStrikeData("WalletablePassConsent__shared_id", 0);
 
   WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
-  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
+  ExpectConsentBubbleOnClient(PassCategory::kLoyaltyCard, &consent_callback);
 
-  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
+  test_api(controller()).ShowConsentBubble(url, PassCategory::kLoyaltyCard);
   ASSERT_TRUE(consent_callback);
 
   std::move(consent_callback)
@@ -461,9 +461,9 @@ TEST_F(WalletablePassIngestionControllerTest,
   test_strike_database().SetStrikeData("WalletablePassConsent__shared_id", 0);
 
   WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
-  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
+  ExpectConsentBubbleOnClient(PassCategory::kLoyaltyCard, &consent_callback);
 
-  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
+  test_api(controller()).ShowConsentBubble(url, PassCategory::kLoyaltyCard);
   ASSERT_TRUE(consent_callback);
 
   std::move(consent_callback)
@@ -479,9 +479,9 @@ TEST_F(WalletablePassIngestionControllerTest,
 
   // Expect ShowWalletablePassConsentBubble to be called.
   WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
-  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
+  ExpectConsentBubbleOnClient(PassCategory::kLoyaltyCard, &consent_callback);
 
-  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
+  test_api(controller()).ShowConsentBubble(url, PassCategory::kLoyaltyCard);
   ASSERT_TRUE(consent_callback);
 
   // Expect GetAnnotatedPageContent NOT to be called when consent is declined.
@@ -500,14 +500,14 @@ TEST_F(WalletablePassIngestionControllerTest,
 
   EXPECT_CALL(*controller(), GetAnnotatedPageContent).Times(0);
 
-  test_api(controller()).MaybeStartExtraction(url, PASS_CATEGORY_LOYALTY_CARD);
+  test_api(controller()).MaybeStartExtraction(url, PassCategory::kLoyaltyCard);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
        MaybeStartExtraction_NoStrikes_ExtractionStarted) {
   GURL url("https://example.com");
   EXPECT_CALL(*controller(), GetAnnotatedPageContent);
-  test_api(controller()).MaybeStartExtraction(url, PASS_CATEGORY_LOYALTY_CARD);
+  test_api(controller()).MaybeStartExtraction(url, PassCategory::kLoyaltyCard);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,

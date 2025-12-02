@@ -58,7 +58,7 @@ class ChromeWalletablePassClient : public WalletablePassClient {
   GeoIpCountryCode GetGeoIpCountryCode() override;
 
   void ShowWalletablePassConsentBubble(
-      optimization_guide::proto::PassCategory pass_category,
+      PassCategory pass_category,
       WalletablePassBubbleResultCallback callback) override;
   void ShowWalletablePassSaveBubble(
       WalletablePass pass,

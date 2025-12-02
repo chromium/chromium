@@ -90,4 +90,13 @@ TEST(WalletablePassTest, FromProto_Invalid) {
   EXPECT_FALSE(result.has_value());
 }
 
+TEST(WalletablePassTest, PassCategoryToString) {
+  EXPECT_EQ(PassCategoryToString(PassCategory::kLoyaltyCard), "LoyaltyCard");
+  EXPECT_EQ(PassCategoryToString(PassCategory::kEventPass), "EventPass");
+  EXPECT_EQ(PassCategoryToString(PassCategory::kTransitTicket),
+            "TransitTicket");
+  EXPECT_EQ(PassCategoryToString(PassCategory::kBoardingPass), "BoardingPass");
+  EXPECT_EQ(PassCategoryToString(PassCategory::kUnspecified), "Unspecified");
+}
+
 }  // namespace wallet

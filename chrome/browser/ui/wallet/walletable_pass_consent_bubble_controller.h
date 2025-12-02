@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_controller_base.h"
+#include "components/wallet/core/browser/data_models/walletable_pass.h"
 
 namespace tabs {
 class TabInterface;
@@ -37,10 +38,10 @@ class WalletablePassConsentBubbleController
   // Shows the consent bubble. `callback` will be run when the user makes a
   // decision.
   void SetUpAndShowConsentBubble(
-      optimization_guide::proto::PassCategory pass_category,
+      PassCategory pass_category,
       WalletablePassClient::WalletablePassBubbleResultCallback callback);
 
-  optimization_guide::proto::PassCategory pass_category() const;
+  PassCategory pass_category() const;
 
   base::WeakPtr<WalletablePassConsentBubbleController> GetWeakPtr();
 
@@ -50,7 +51,7 @@ class WalletablePassConsentBubbleController
   void ShowBubble() override;
 
  private:
-  std::optional<optimization_guide::proto::PassCategory> pass_category_;
+  std::optional<PassCategory> pass_category_;
 
   base::WeakPtrFactory<WalletablePassConsentBubbleController> weak_ptr_factory_{
       this};

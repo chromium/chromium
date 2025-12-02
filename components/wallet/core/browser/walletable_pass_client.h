@@ -69,7 +69,7 @@ class WalletablePassClient {
   virtual GeoIpCountryCode GetGeoIpCountryCode() = 0;
 
   virtual void ShowWalletablePassConsentBubble(
-      optimization_guide::proto::PassCategory pass_category,
+      PassCategory pass_category,
       WalletablePassBubbleResultCallback callback) = 0;
 
   virtual void ShowWalletablePassSaveBubble(

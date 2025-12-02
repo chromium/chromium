@@ -60,8 +60,7 @@ class WalletablePassIngestionController {
   //
   // Returns the matching PassCategory if found, or std::nullopt if the `url`
   // is not in any pass allowlist.
-  std::optional<optimization_guide::proto::PassCategory> GetPassCategoryForURL(
-      const GURL& url) const;
+  std::optional<PassCategory> GetPassCategoryForURL(const GURL& url) const;
 
   // Gets the title of current page.
   virtual std::string GetPageTitle() const = 0;
@@ -75,13 +74,12 @@ class WalletablePassIngestionController {
   // invokes the Optimization Guide's model executor to perform the extraction.
   void ExtractWalletablePass(
       const GURL& url,
-      optimization_guide::proto::PassCategory pass_category,
+      PassCategory pass_category,
       optimization_guide::proto::AnnotatedPageContent annotated_page_content);
 
   // Shows the "Consent" bubble to the user, allowing them to agree to use the
   // feature.
-  void ShowConsentBubble(const GURL& url,
-                         optimization_guide::proto::PassCategory pass_category);
+  void ShowConsentBubble(const GURL& url, PassCategory pass_category);
 
   // Shows the "Save" bubble to the user, allowing them to save the provided
   // pass.
@@ -89,14 +87,12 @@ class WalletablePassIngestionController {
 
  private:
   friend class WalletablePassIngestionControllerTestApi;
-  void MaybeStartExtraction(
-      const GURL& url,
-      optimization_guide::proto::PassCategory pass_category);
+  void MaybeStartExtraction(const GURL& url, PassCategory pass_category);
 
   // Callback for when the annotated page content is available.
   void OnGetAnnotatedPageContent(
       const GURL& url,
-      optimization_guide::proto::PassCategory pass_category,
+      PassCategory pass_category,
       std::optional<optimization_guide::proto::AnnotatedPageContent>
           annotated_page_content);
 
@@ -110,7 +106,7 @@ class WalletablePassIngestionController {
   // accepts, declines, or dismisses).
   void OnGetConsentBubbleResult(
       const GURL& url,
-      optimization_guide::proto::PassCategory pass_category,
+      PassCategory pass_category,
       WalletablePassClient::WalletablePassBubbleResult result);
 
   // Callback invoked when the user interacts with the save bubble (e.g.,

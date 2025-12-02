@@ -20,6 +20,19 @@ class WalletablePass;
 
 namespace wallet {
 
+// Represents the category of a walletable pass.
+enum class PassCategory {
+  kUnspecified = 0,
+  kLoyaltyCard = 1,
+  kEventPass = 2,
+  kTransitTicket = 3,
+  kBoardingPass = 4,
+  kMaxValue = kBoardingPass,
+};
+
+// Returns the string name of the pass category.
+std::string PassCategoryToString(PassCategory category);
+
 // Represents a loyalty card with its relevant details.
 struct LoyaltyCard {
   static LoyaltyCard FromProto(
