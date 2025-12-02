@@ -10,11 +10,12 @@
 #import "build/build_config.h"
 #import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
 
-/// *******
+/// ****************************************************************************
 /// Import `symbols.h` and not this file directly.
-/// *******
+/// ****************************************************************************
 
-// Branded symbol names.
+// Branded image names.
+// TODO(crbug.com/465345831): Move image names out of this file.
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kChromeAIHubHeaderImage;
 extern NSString* const kChromeDefaultBrowserIllustrationImage;
@@ -60,7 +61,9 @@ extern NSString* const kChromiumSigninPromoLogoImage;
 extern NSString* const kGeminiNonBrandedLogoImage;
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 
+// ****************************************************************************
 // Custom symbol names.
+// ****************************************************************************
 extern NSString* const kPrivacySymbol;
 extern NSString* const kSafetyCheckSymbol;
 extern NSString* const kArrowClockWiseSymbol;
@@ -71,17 +74,14 @@ extern NSString* const kPasswordManagerSymbol;
 extern NSString* const kEnterpriseSigninBannerSymbol;
 extern NSString* const kEnterpriseSymbol;
 extern NSString* const kPopupBadgeMinusSymbol;
-extern NSString* const kPhotoSymbol;
-extern NSString* const kPhotoBadgeArrowDownSymbol;
 extern NSString* const kPhotoBadgePlusSymbol;
 extern NSString* const kPhotoBadgeMagnifyingglassSymbol;
+extern NSString* const kLocationSymbol;
+extern NSString* const kShieldSymbol;
 extern NSString* const kReadingListSymbol;
 extern NSString* const kRecentTabsSymbol;
-extern NSString* const kTabGroupsSymbol;
 extern NSString* const kLanguageSymbol;
-extern NSString* const kLocationSymbol;
 extern NSString* const kPasswordSymbol;
-extern NSString* const kCropSymbol;
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
 extern NSString* const kMulticolorPasswordSymbol;
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
@@ -89,7 +89,6 @@ extern NSString* const kVoiceSymbol;
 extern NSString* const kCameraLensSymbol;
 extern NSString* const kDownTrendSymbol;
 extern NSString* const kUpTrendSymbol;
-extern NSString* const kShieldSymbol;
 extern NSString* const kCloudSlashSymbol;
 extern NSString* const kCloudAndArrowUpSymbol;
 extern NSString* const kDinoSymbol;
@@ -99,8 +98,6 @@ extern NSString* const kMoveFolderSymbol;
 extern NSString* const kTopOmniboxOptionSymbol;
 extern NSString* const kBottomOmniboxOptionSymbol;
 extern NSString* const kDangerousOmniboxSymbol;
-extern NSString* const kArrowDownSymbol;
-extern NSString* const kArrowUpSymbol;
 extern NSString* const kFamilylinkSymbol;
 extern NSString* const kMyDriveSymbol;
 extern NSString* const kSharedDrivesSymbol;
@@ -111,35 +108,30 @@ extern NSString* const kPasswordManagerTrustedVaultWidgetPromoDisabledImage;
 extern NSString* const kPhoneSparkleSymbol;
 extern NSString* const kTextSearchSymbol;
 extern NSString* const kIncognitoRectangle;
-
-// Custom symbol names which can be configured with a color palette. iOS 15+
-// only.
+extern NSString* const kTextSparkSymbol;
 extern NSString* const kIncognitoCircleFillSymbol;
 extern NSString* const kPlusCircleFillSymbol;
-
-// Symbols available on iOS 18.0+.
-extern NSString* const kClockArrowTriangleheadCounterclockwiseRotate90Symbol
-    API_AVAILABLE(ios(18.0));
-
-// Custom symbols added for compatibility with iOS 15.0. These symbols are
-// available as system symbols on iOS 15.1+.
-extern NSString* const kCustomMovePlatterToBottomPhoneSymbol;
-extern NSString* const kCustomMovePlatterToTopPhoneSymbol;
-
-// Custom symbol to replace "palette" symbols on iOS 14. Cannot be used with a
-// palette.
-extern NSString* const kIncognitoCircleFilliOS14Symbol;
 
 // Use custom symbol for camera because the default video icon in iOS should
 // always represent “Apple Facetime”.
 extern NSString* const kCameraSymbol;
 extern NSString* const kCameraFillSymbol;
 
+// ****************************************************************************
 // Default symbol names.
+// ****************************************************************************
 extern NSString* const kChartBarXAxisSymbol;
 extern NSString* const kChartLineDowntrendXYAxisSymbol;
 extern NSString* const kCircleSymbol;
 extern NSString* const kCircleFillSymbol;
+extern NSString* const kPhotoSymbol;
+extern NSString* const kPhotoBadgeArrowDownSymbol;
+extern NSString* const kTabGroupsSymbol;
+extern NSString* const kCropSymbol;
+extern NSString* const kArrowDownSymbol;
+extern NSString* const kArrowUpSymbol;
+extern NSString* const kClockArrowTriangleheadCounterclockwiseRotate90Symbol
+    API_AVAILABLE(ios(18.0));
 extern NSString* const kGearshape2Symbol;
 extern NSString* const kSyncEnabledSymbol;
 extern NSString* const kDefaultBrowserSymbol;
@@ -317,7 +309,6 @@ extern NSString* const kShieldedEnvelope;
 extern NSString* const kReaderModeSymbolPreIOS18;
 extern NSString* const kReaderModeSymbolPostIOS18;
 extern NSString* const kCircleBadgeFill;
-extern NSString* const kTextSparkSymbol;
 extern NSString* const kBookSymbol;
 extern NSString* const kKeySymbol;
 extern NSString* const kTextDocument;

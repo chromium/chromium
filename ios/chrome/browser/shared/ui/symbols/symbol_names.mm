@@ -6,7 +6,6 @@
 
 // Branded symbol names.
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-// TODO(crbug.com/1489185): Move PNG images out of this file.
 NSString* const kChromeDefaultBrowserIllustrationImage =
     @"chrome_default_browser_illustration";
 NSString* const kChromeDefaultBrowserScreenBannerImage =
@@ -63,7 +62,9 @@ NSString* const kChromiumSigninPromoLogoImage = @"chromium_signin_promo_logo";
 NSString* const kGeminiNonBrandedLogoImage = @"sparkle";
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 
+// ****************************************************************************
 // Custom symbol names.
+// ****************************************************************************
 NSString* const kPrivacySymbol = @"checkerboard_shield";
 NSString* const kSafetyCheckSymbol = @"checkermark_shield";
 NSString* const kArrowClockWiseSymbol = @"arrow_clockwise";
@@ -74,18 +75,15 @@ NSString* const kEnterpriseSigninBannerSymbol = @"enterprise_signin_banner";
 NSString* const kEnterpriseSymbol = @"enterprise";
 NSString* const kPasswordManagerSymbol = @"password_manager";
 NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";
-NSString* const kPhotoSymbol = @"photo";
-NSString* const kPhotoBadgeArrowDownSymbol = @"photo.badge.arrow.down";
 NSString* const kPhotoBadgePlusSymbol = @"photo_badge_plus";
 NSString* const kPhotoBadgeMagnifyingglassSymbol =
     @"photo_badge_magnifyingglass";
+NSString* const kLocationSymbol = @"location";
+NSString* const kShieldSymbol = @"shield";
 NSString* const kReadingListSymbol = @"square_bullet_square";
 NSString* const kRecentTabsSymbol = @"laptopcomputer_and_phone";
-NSString* const kTabGroupsSymbol = @"square.grid.2x2";
 NSString* const kLanguageSymbol = @"language";
-NSString* const kLocationSymbol = @"location";
 NSString* const kPasswordSymbol = @"password";
-NSString* const kCropSymbol = @"crop";
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
 NSString* const kMulticolorPasswordSymbol = @"multicolor_password";
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
@@ -93,9 +91,6 @@ NSString* const kVoiceSymbol = @"voice";
 NSString* const kCameraLensSymbol = @"camera_lens";
 NSString* const kDownTrendSymbol = @"line_downtrend";
 NSString* const kUpTrendSymbol = @"line_uptrend";
-NSString* const kIncognitoCircleFilliOS14Symbol =
-    @"incognito_circle_fill_ios14";
-NSString* const kShieldSymbol = @"shield";
 NSString* const kCloudSlashSymbol = @"cloud_slash";
 NSString* const kCloudAndArrowUpSymbol = @"cloud_and_arrow_up";
 NSString* const kDinoSymbol = @"dino";
@@ -105,8 +100,6 @@ NSString* const kMoveFolderSymbol = @"folder_badge_arrow_forward";
 NSString* const kTopOmniboxOptionSymbol = @"top_omnibox_option";
 NSString* const kBottomOmniboxOptionSymbol = @"bottom_omnibox_option";
 NSString* const kDangerousOmniboxSymbol = @"dangerous_omnibox";
-NSString* const kArrowDownSymbol = @"arrow.down";
-NSString* const kArrowUpSymbol = @"arrow.up";
 NSString* const kFamilylinkSymbol = @"familylink";
 NSString* const kMyDriveSymbol = @"my_drive";
 NSString* const kSharedDrivesSymbol = @"shared_drives";
@@ -119,29 +112,29 @@ NSString* const kPasswordManagerTrustedVaultWidgetPromoDisabledImage =
 NSString* const kPhoneSparkleSymbol = @"phone_sparkle";
 NSString* const kTextSearchSymbol = @"text_search";
 NSString* const kIncognitoRectangle = @"incognito_rectangle";
-
-// Custom symbol names which can be configured with a color palette.
+NSString* const kTextSparkSymbol = @"text_spark";
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
 NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
-
-// Custom symbols added for compatibility with iOS 15.0. These symbols are
-// available as system symbols on iOS 15.1+.
-NSString* const kCustomMovePlatterToBottomPhoneSymbol =
-    @"custom_platter_filled_bottom_and_arrow_down_iphone";
-NSString* const kCustomMovePlatterToTopPhoneSymbol =
-    @"custom_platter_filled_top_and_arrow_up_iphone";
 
 // Use custom symbol for camera because the default video icon in iOS should
 // always represent “Apple Facetime”.
 NSString* const kCameraSymbol = @"custom_camera";
 NSString* const kCameraFillSymbol = @"custom_camera_fill";
 
+// ****************************************************************************
 // Default symbol names.
+// ****************************************************************************
 NSString* const kChartBarXAxisSymbol = @"chart.bar.xaxis";
 NSString* const kChartLineDowntrendXYAxisSymbol =
     @"chart.line.downtrend.xyaxis";
 NSString* const kCircleSymbol = @"circle";
 NSString* const kCircleFillSymbol = @"circle.fill";
+NSString* const kPhotoSymbol = @"photo";
+NSString* const kPhotoBadgeArrowDownSymbol = @"photo.badge.arrow.down";
+NSString* const kTabGroupsSymbol = @"square.grid.2x2";
+NSString* const kCropSymbol = @"crop";
+NSString* const kArrowDownSymbol = @"arrow.down";
+NSString* const kArrowUpSymbol = @"arrow.up";
 NSString* const kGearshape2Symbol = @"gearshape.2";
 NSString* const kSyncEnabledSymbol = @"arrow.triangle.2.circlepath";
 NSString* const kDefaultBrowserSymbol = @"app.badge.checkmark";
@@ -328,7 +321,6 @@ NSString* const kReaderModeSymbolPostIOS18 = @"text.page";
 NSString* const kCircleBadgeFill = @"circlebadge.fill";
 NSString* const kCounterClockWiseSymbol =
     @"clock.arrow.trianglehead.counterclockwise.rotate.90";
-NSString* const kTextSparkSymbol = @"text_spark";
 NSString* const kBuilding2Symbol = @"building.2";
 NSString* const kBookSymbol = @"book";
 NSString* const kKeySymbol = @"key";
