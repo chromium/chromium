@@ -53,10 +53,6 @@ namespace gfx {
 struct GpuMemoryBufferHandle;
 }
 
-namespace gpu {
-class LegacyGpuMemoryBufferForVideo;
-}
-
 namespace media {
 
 class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
@@ -878,11 +874,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // In that case, shm_region_ will refer to this region.
   base::ReadOnlySharedMemoryRegion owned_shm_region_;
   base::ReadOnlySharedMemoryMapping owned_shm_mapping_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // GPU memory buffer, if this frame is STORAGE_GPU_MEMORY_BUFFER.
-  std::unique_ptr<gpu::LegacyGpuMemoryBufferForVideo> gpu_memory_buffer_;
-#endif
 
   // This field will be set by clients when using MappableSI instead of
   // GpuMemoryBuffers. Clients will set this flag while creating a VideoFrame.

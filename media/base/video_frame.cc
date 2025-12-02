@@ -41,8 +41,6 @@
 #include "ui/gfx/geometry/point.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/40263579): Remove.
-#include "gpu/ipc/common/legacy_gpu_memory_buffer_for_video.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"  // nogncheck
 #endif
 
@@ -1190,11 +1188,6 @@ bool VideoFrame::HasNativeGpuMemoryBuffer() const {
     CHECK(shared_image_);
     return !shared_image_->IsSharedMemoryForVideoFrame();
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  else if (gpu_memory_buffer_) {
-    return gpu_memory_buffer_->GetType() != gfx::SHARED_MEMORY_BUFFER;
-  }
-#endif
   return false;
 }
 
@@ -1214,14 +1207,6 @@ void VideoFrame::MapGMBOrSharedImageAsync(
                        base::Unretained(this), std::move(result_cb)));
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  if (gpu_memory_buffer_) {
-    // LegacyGpuMemoryBufferForVideo supports only synchronous mapping.
-    MakeScopedMappingForGpuMemoryBuffer(std::move(result_cb),
-                                        gpu_memory_buffer_->Map());
-    return;
-  }
-#endif
   std::move(result_cb).Run(nullptr);
 }
 
@@ -1235,7 +1220,7 @@ bool VideoFrame::AsyncMappingIsNonBlocking() const {
     return shared_image_->AsyncMappingIsNonBlocking();
   }
 #if BUILDFLAG(IS_CHROMEOS)
-  // LegacyGpuMemoryBufferForVideo supports only synchronous mapping.
+  // TODO(crbug.com/404905709): Remove this code, which is now unreachable.
   return false;
 #else
   NOTREACHED();
@@ -1251,11 +1236,6 @@ gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
     CHECK(HasSharedImage());
     return shared_image_->CloneGpuMemoryBufferHandle();
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  if (gpu_memory_buffer_) {
-    return gpu_memory_buffer_->CloneHandle();
-  }
-#endif
   return gfx::GpuMemoryBufferHandle();
 }
 
@@ -1812,33 +1792,6 @@ class ScopedMappingSIImpl : public VideoFrame::ScopedMapping {
   std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
-class ScopedMappingGMBImpl : public VideoFrame::ScopedMapping {
- public:
-  ScopedMappingGMBImpl(gpu::LegacyGpuMemoryBufferForVideo* gpu_memory_buffer)
-      : gpu_memory_buffer_(gpu_memory_buffer) {
-    CHECK(gpu_memory_buffer);
-  }
-
-  ~ScopedMappingGMBImpl() override { gpu_memory_buffer_->Unmap(); }
-
-  base::span<uint8_t> GetMemoryAsSpan(uint32_t plane_index) override {
-    return gpu_memory_buffer_->memory_span(plane_index);
-  }
-
-  size_t Stride(uint32_t plane_index) override {
-    return base::checked_cast<size_t>(gpu_memory_buffer_->stride(plane_index));
-  }
-
-  gfx::Size Size() override { return gpu_memory_buffer_->GetSize(); }
-
- private:
-  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-  RAW_PTR_EXCLUSION gpu::LegacyGpuMemoryBufferForVideo* gpu_memory_buffer_ =
-      nullptr;
-};
-#endif
-
 std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()
     const {
   if (wrapped_frame_) {
@@ -1851,24 +1804,8 @@ std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()
       return base::WrapUnique(new ScopedMappingSIImpl(std::move(mapping)));
     }
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  if (gpu_memory_buffer_ && gpu_memory_buffer_->Map()) {
-    return base::WrapUnique(new ScopedMappingGMBImpl(gpu_memory_buffer_.get()));
-  }
-#endif
   return nullptr;
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void VideoFrame::MakeScopedMappingForGpuMemoryBuffer(
-    base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
-        result_cb,
-    bool success) const {
-  std::move(result_cb).Run(success ? base::WrapUnique(new ScopedMappingGMBImpl(
-                                         gpu_memory_buffer_.get()))
-                                   : nullptr);
-}
-#endif
 
 void VideoFrame::WrapScopedSharedImageMapping(
     base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
