@@ -182,6 +182,10 @@ UIImage* SendButtonImage(BOOL highlighted) {
   /// Create image action state.
   BOOL _createImageActionsHidden;
   BOOL _createImageActionsDisabled;
+  /// Camera action state.
+  BOOL _cameraActionsDisabled;
+  /// Gallery action state.
+  BOOL _galleryActionsDisabled;
   /// Container for the omnibox.
   UIView* _omniboxContainer;
 
@@ -488,6 +492,22 @@ UIImage* SendButtonImage(BOOL highlighted) {
     return;
   }
   _createImageActionsDisabled = disabled;
+  [self updatePlusButtonItems];
+}
+
+- (void)disableCameraActions:(BOOL)disabled {
+  if (_cameraActionsDisabled == disabled) {
+    return;
+  }
+  _cameraActionsDisabled = disabled;
+  [self updatePlusButtonItems];
+}
+
+- (void)disableGalleryActions:(BOOL)disabled {
+  if (_galleryActionsDisabled == disabled) {
+    return;
+  }
+  _galleryActionsDisabled = disabled;
   [self updatePlusButtonItems];
 }
 
@@ -1048,6 +1068,18 @@ UIImage* SendButtonImage(BOOL highlighted) {
     createImageAttributes |= UIMenuElementAttributesDisabled;
   }
   createImageAction.attributes = createImageAttributes;
+
+  UIMenuElementAttributes galleryAttributes = 0;
+  if (_galleryActionsDisabled) {
+    galleryAttributes |= UIMenuElementAttributesDisabled;
+  }
+  galleryAction.attributes = galleryAttributes;
+
+  UIMenuElementAttributes cameraAttributes = 0;
+  if (_cameraActionsDisabled) {
+    cameraAttributes |= UIMenuElementAttributesDisabled;
+  }
+  cameraAction.attributes = cameraAttributes;
 
   UIMenu* attachmentMenu =
       [UIMenu menuWithTitle:@""
