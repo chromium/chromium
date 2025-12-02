@@ -421,7 +421,8 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   <summary>
     Records the outcome of attempting to upload the pending choice screen
     display state metrics. The display state data is cached when there is a
-    country mismatch at the moment the search engine choice is completed (see
+    country or program mismatch at the moment the search engine choice is
+    completed (see
     &quot;Search.ChoiceScreenShowedEngineAt.CountryMismatch&quot;).
 
     Recorded on profile load. Until a terminal state is reached and for a fixed

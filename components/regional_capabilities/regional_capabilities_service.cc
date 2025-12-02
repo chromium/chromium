@@ -376,11 +376,27 @@ bool RegionalCapabilitiesService::
 
 bool RegionalCapabilitiesService::CanRecordDisplayStateForCountry(
     CountryId display_state_country_id) {
-  // As the display state might be a proxy to pinpoint to a specific profile
-  // country, we only record it if this data would not add extra location info
-  // compared to what would be already present in the logs session (the metrics
-  // session's country is assume to be variations latest).
-  return display_state_country_id == client_->GetVariationsLatestCountryId();
+  if (!base::Contains(GetActiveProgramSettings().associated_countries,
+                      display_state_country_id)) {
+    // Choice screen completions happen in context of a given regional program.
+    // Based on the client state, the active program might change across
+    // sessions. Since the metrics upload get tagged with the active program
+    // that will be reflected in UMA filters, we avoid recording the histograms
+    // to make sure they don't get filed under the wrong program. This is only
+    // relevant when attempting to upload cached display state from a previous
+    // session, as the program can't change during a given session.
+    return false;
+  }
+
+  if (display_state_country_id != client_->GetVariationsLatestCountryId()) {
+    // As the display state might be a proxy to pinpoint to a specific profile
+    // country, we only record it if this data would not add extra location info
+    // compared to what would be already present in the logs session (the
+    // metrics session's country is assume to be variations latest).
+    return false;
+  }
+
+  return true;
 }
 
 bool RegionalCapabilitiesService::
