@@ -1124,6 +1124,9 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.ACCESSIBILITY_SEQUENTIAL_FOCUS,
                 "When enabled, keyboard focus starting point will be synchronized with"
                         + " accessibility focus."),
+        Flag.baseFeature(
+                "HttpCacheInitializeDiskCacheBackendEarly",
+                "If true, Initialize disk cache backend early for HTTP cache."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
 
