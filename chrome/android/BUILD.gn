@@ -2400,7 +2400,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/webid/internal:javatests",
       "//chrome/browser/ui/plus_addresses/android:javatests",
       "//components/embedder_support/android:virtual_structure_javatests",
-      "//components/ip_protection/android/android_auth_client_lib/javatests:ip_protection_auth_javatests",
     ]
 
     if (is_desktop_android) {
@@ -2420,7 +2419,6 @@ if (_is_default_toolchain) {
     additional_apks = [
       "//chrome/android/webapk/shell_apk:javatests_webapk",
       "//chrome/test/android/chrome_public_test_support:chrome_public_test_support_apk",
-      "//components/ip_protection/android/android_auth_client_lib/testing/mock_service:ip_protection_auth_test_service_apk",
       "//components/media_router/test/android/media_router_test_support:media_router_test_support_apk",
     ]
 
@@ -3295,7 +3293,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/supervised_user:test_support",
       "//components/crash/android:crash_android",
       "//components/external_intents/android:test_support",
-      "//components/ip_protection/android/android_auth_client_lib/cpp:ip_protection_auth_test_natives",
       "//components/minidump_uploader",
       "//components/paint_preview/player/android:test_support",
       "//components/sync",
