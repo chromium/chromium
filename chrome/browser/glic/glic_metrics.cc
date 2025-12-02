@@ -9,6 +9,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
@@ -21,9 +22,11 @@
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
@@ -217,10 +220,13 @@ enum class BrowserActiveState {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicBrowserActiveState)
 
 // Computes BrowserActiveState.
-class BrowserActivityObserver : public BrowserListObserver {
+class BrowserActivityObserver : public BrowserCollectionObserver {
  public:
-  BrowserActivityObserver() { BrowserList::AddObserver(this); }
-  ~BrowserActivityObserver() override { BrowserList::RemoveObserver(this); }
+  BrowserActivityObserver() {
+    browser_collection_observer_.Observe(
+        GlobalBrowserCollection::GetInstance());
+  }
+  ~BrowserActivityObserver() override = default;
 
   BrowserActiveState GetBrowserActiveState() const {
     if (active_browser_) {
@@ -256,17 +262,17 @@ class BrowserActivityObserver : public BrowserListObserver {
     return BrowserActiveState::kBrowserInactive;
   }
 
-  // BrowserListObserver impl.
-  void OnBrowserRemoved(Browser* browser) override {
+  // BrowserCollectionObserver impl.
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
     if (active_browser_ == browser) {
       active_browser_ = nullptr;
     }
   }
-  void OnBrowserSetLastActive(Browser* browser) override {
+  void OnBrowserActivated(BrowserWindowInterface* browser) override {
     active_browser_ = browser;
     last_browser_active_time_ = std::nullopt;
   }
-  void OnBrowserNoLongerActive(Browser* browser) override {
+  void OnBrowserDeactivated(BrowserWindowInterface* browser) override {
     if (active_browser_ == browser) {
       active_browser_ = nullptr;
     }
@@ -277,10 +283,13 @@ class BrowserActivityObserver : public BrowserListObserver {
 
  private:
   // The active browser, or null if none is active.
-  raw_ptr<Browser> active_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> active_browser_ = nullptr;
 
   // If the browser is not active, the time at which it was last active.
   std::optional<base::TimeTicks> last_browser_active_time_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observer_{this};
 };
 
 }  // namespace internal
