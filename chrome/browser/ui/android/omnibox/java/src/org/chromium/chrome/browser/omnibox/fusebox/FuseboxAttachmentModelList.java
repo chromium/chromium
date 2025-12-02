@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.text.TextUtils;
+import android.util.ArraySet;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeBoxQueryControllerBridge.FileUploadObserver;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.contextual_search.FileUploadStatus;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -18,6 +20,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -29,6 +32,7 @@ import java.util.function.Predicate;
 public class FuseboxAttachmentModelList extends ModelList implements FileUploadObserver {
 
     static final int MAX_ATTACHMENTS = 10;
+    private final Set<Integer> mAttachedTabIds = new ArraySet<>();
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private @BrandedColorScheme int mBrandedColorScheme;
     private @Nullable Runnable mAttachmentUploadFailedListener;
@@ -88,6 +92,10 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
             return false;
         }
 
+        if (attachment.type == FuseboxAttachmentType.ATTACHMENT_TAB) {
+            mAttachedTabIds.add(attachment.tabId);
+        }
+
         attachment.model.set(FuseboxAttachmentProperties.COLOR_SCHEME, mBrandedColorScheme);
         attachment.setOnRemoveCallback(() -> remove(attachment));
         super.add(attachment);
@@ -108,6 +116,10 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
      */
     public void remove(FuseboxAttachment attachment) {
         super.remove(attachment);
+
+        if (attachment.type == FuseboxAttachmentType.ATTACHMENT_TAB) {
+            mAttachedTabIds.remove(attachment.tabId);
+        }
 
         // Always try to remove from backend using the model list's bridge
         // We have previously added attachments, so the controller must be set.
@@ -163,6 +175,8 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
             attachment.removeFromBackend(assumeNonNull(mComposeBoxQueryControllerBridge));
         }
 
+        mAttachedTabIds.clear();
+
         assumeNonNull(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
         super.clear();
     }
@@ -176,6 +190,11 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
     @Override
     public FuseboxAttachment get(int index) {
         return (FuseboxAttachment) super.get(index);
+    }
+
+    /** Returns a set of currently attached Tab IDs. */
+    public Set<Integer> getAttachedTabIds() {
+        return mAttachedTabIds;
     }
 
     /** Apply a variant of the branded color scheme to Fusebox Attachment elements. */
