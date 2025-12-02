@@ -27,9 +27,6 @@ const int kForceRestartWaitTimeMs = 24 * 3600 * 1000;  // 24 hours.
 
 }  // namespace
 
-const char kKioskPrimaryAppInSessionUpdateHistogram[] =
-    "Kiosk.ChromeApp.PrimaryAppInSessionUpdate";
-
 KioskAppUpdateService::KioskAppUpdateService(
     Profile* profile,
     system::AutomaticRebootManager* automatic_reboot_manager)
@@ -57,8 +54,6 @@ void KioskAppUpdateService::Init(const std::string& app_id) {
 }
 
 void KioskAppUpdateService::StartAppUpdateRestartTimer() {
-  base::UmaHistogramCounts100(kKioskPrimaryAppInSessionUpdateHistogram, 1);
-
   if (restart_timer_.IsRunning()) {
     return;
   }

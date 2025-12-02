@@ -184,10 +184,6 @@ IN_PROC_BROWSER_TEST_F(KioskAppUpdateServiceTest, AppUpdate) {
   ExtensionTestMessageListener listener("app_update");
   FireAppUpdateAvailable();
   EXPECT_TRUE(listener.WaitUntilSatisfied());
-
-  histogram.ExpectUniqueSample(kKioskPrimaryAppInSessionUpdateHistogram,
-                               /*sample=*/1,
-                               /*expected_bucket_count=*/1);
 }
 
 // Verifies that the app is notified a reboot is required when an OS update is

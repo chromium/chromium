@@ -53,16 +53,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Kiosk.ChromeApp.PrimaryAppInSessionUpdate" units="times"
-    expires_after="2025-06-15">
-  <owner>yixie@chromium.org</owner>
-  <owner>chromeos-kiosk-eng@google.com</owner>
-  <summary>
-    ChromeOS only. Records count of in-session updates of primary Kiosk Chrome
-    app. A forced restart is scheduled in 24 hours.
-  </summary>
-</histogram>
-
 <histogram name="Kiosk.ChromeApp.PrimaryAppUpdateResult"
     enum="KioskPrimaryAppDownloadResult" expires_after="2026-02-22">
   <owner>yixie@chromium.org</owner>
