@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -28,9 +27,6 @@ public class StubTabGroupModelFilterImpl implements TabGroupModelFilterInternal 
         mTabModel = tabModel;
         mTabUngrouper = tabUngrouper;
     }
-
-    @Override
-    public void destroy() {}
 
     @Override
     public boolean closeTabs(TabClosureParams tabClosureParams) {

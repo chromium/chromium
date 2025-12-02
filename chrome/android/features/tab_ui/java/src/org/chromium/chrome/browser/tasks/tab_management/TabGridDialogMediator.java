@@ -389,16 +389,7 @@ public class TabGridDialogMediator
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        if (ChromeFeatureList.sTabCollectionAndroid.isEnabled()) return;
-
-                        onTabClose(tab);
-                    }
-
-                    @Override
                     public void didRemoveTabForClosure(Tab tab) {
-                        if (!ChromeFeatureList.sTabCollectionAndroid.isEnabled()) return;
-
                         onTabClose(tab);
                     }
 

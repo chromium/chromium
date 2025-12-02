@@ -242,18 +242,12 @@ public class StripLayoutHelper
                 public void didMoveTabGroup(
                         Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
                     mMovingGroup = false;
-                    // The sequencing of #didMoveTabGroup and #didMoveTab is different with and
-                    // without Tab Collections. With Tab Collections enabled, the final event is
-                    // #didMoveTabGroup, meaning we need to trigger a rebuild here. With it
-                    // disabled, we instead need to trigger a rebuild after the final #didMoveTab
-                    // event, which is handled in #tabMoved.
-                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_COLLECTION_ANDROID)) {
-                        // Additionally rebuild the StripLayoutTabs here as well. This was
-                        // previously maintained by #tabMoved, but the old/new indices that are
-                        // provided are different with Tab Collections enabled.
-                        rebuildStripTabs(/* deferAnimations= */ true);
-                        rebuildStripViewsAfterMove();
-                    }
+
+                    // Additionally rebuild the StripLayoutTabs here as well. This was previously
+                    // maintained by #tabMoved, but the old/new indices that are provided are
+                    // different with Tab Collections enabled.
+                    rebuildStripTabs(/* deferAnimations= */ true);
+                    rebuildStripViewsAfterMove();
                 }
 
                 @Override

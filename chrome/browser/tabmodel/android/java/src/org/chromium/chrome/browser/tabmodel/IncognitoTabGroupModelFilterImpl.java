@@ -94,11 +94,6 @@ public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInte
     }
 
     @Override
-    public void destroy() {
-        // Intentional no-op. Destruction of the mCurrentFilter is not managed by this class.
-    }
-
-    @Override
     public boolean closeTabs(TabClosureParams params) {
         // Special case. TabGroupModelFilterInternal and TabModelInternal implement TabCloser (the
         // TabGroupModelFilter implementation can be removed once TabCollection launches). For now

@@ -14,13 +14,11 @@ public final class TabStateStorageFlagHelper {
 
     /** Returns whether tab state storage functionality is enabled. */
     public static boolean isTabStorageEnabled() {
-        return ChromeFeatureList.sTabStorageSqlitePrototype.isEnabled()
-                && ChromeFeatureList.sTabCollectionAndroid.isEnabled();
+        return ChromeFeatureList.sTabStorageSqlitePrototype.isEnabled();
     }
 
     /** Returns whether tab state storage functionality is authoritative as the source of truth. */
     public static boolean isStorageAuthoritative() {
-        return ChromeFeatureList.sTabCollectionAndroid.isEnabled()
-                && ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue();
+        return ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue();
     }
 }

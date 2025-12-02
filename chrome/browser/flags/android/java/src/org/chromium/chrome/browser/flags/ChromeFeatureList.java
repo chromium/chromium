@@ -641,7 +641,6 @@ public abstract class ChromeFeatureList {
     public static final String TABLET_TAB_STRIP_ANIMATION = "TabletTabStripAnimation";
     public static final String TAB_ARCHIVAL_DRAG_DROP_ANDROID = "TabArchivalDragDropAndroid";
     public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
-    public static final String TAB_COLLECTION_ANDROID = "TabCollectionAndroid";
     public static final String TAB_FREEZING_USES_DISCARD = "TabFreezingUsesDiscard";
     public static final String TAB_GROUP_ANDROID_VISUAL_DATA_CLEANUP =
             "TabGroupAndroidVisualDataCleanup";
@@ -1033,8 +1032,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
     public static final CachedFlag sTabClosureMethodRefactor =
             newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, false);
-    public static final CachedFlag sTabCollectionAndroid =
-            newCachedFlag(TAB_COLLECTION_ANDROID, true);
     public static final CachedFlag sTabGroupAndroidVisualDataCleanup =
             newCachedFlag(TAB_GROUP_ANDROID_VISUAL_DATA_CLEANUP, true);
     public static final CachedFlag sTabModelInitFixes =
@@ -1242,7 +1239,6 @@ public abstract class ChromeFeatureList {
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
                     sTabClosureMethodRefactor,
-                    sTabCollectionAndroid,
                     sTabGroupAndroidVisualDataCleanup,
                     sTabModelInitFixes,
                     sTabStorageSqlitePrototype,

@@ -795,8 +795,7 @@ class TabListMediator implements TabListNotificationHandler {
                                     movedTab,
                                     mModelList.indexOfNthTabCard(filterIndex),
                                     currentSelectedTabId == movedTab.getId());
-                        } else if (ChromeFeatureList.sTabCollectionAndroid.isEnabled()
-                                && movedTabGroupId != null
+                        } else if (movedTabGroupId != null
                                 && movedTabGroupId.equals(previousGroupTab.getTabGroupId())) {
                             // Despite being ungrouped we are still in a tab group this could mean
                             // the previous tab card this tab was associated with no longer contains
@@ -869,10 +868,6 @@ class TabListMediator implements TabListNotificationHandler {
                                     mModelList.get(desIndex).model.get(TabProperties.TAB_ID);
                             Tab desTab = tabModel.getTabById(desIndexTabId);
                             assumeNonNull(desTab);
-                            if (!ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
-                                updateTab(desIndex, desTab, false, false);
-                                return;
-                            }
                             Token desTabGroupId = desTab.getTabGroupId();
                             Tab lastShownTab = desTab;
                             if (desTabGroupId != null) {
@@ -1224,16 +1219,7 @@ class TabListMediator implements TabListNotificationHandler {
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        if (ChromeFeatureList.sTabCollectionAndroid.isEnabled()) return;
-
-                        onTabClose(tab);
-                    }
-
-                    @Override
                     public void didRemoveTabForClosure(Tab tab) {
-                        if (!ChromeFeatureList.sTabCollectionAndroid.isEnabled()) return;
-
                         onTabClose(tab);
                     }
 

@@ -78,7 +78,6 @@ import java.util.concurrent.atomic.AtomicReference;
     ChromeSwitches.DISABLE_STARTUP_PROMOS
 })
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({ChromeFeatureList.TAB_COLLECTION_ANDROID})
 public class TabCollectionTabModelImplTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
@@ -142,19 +141,6 @@ public class TabCollectionTabModelImplTest {
     @Test
     @MediumTest
     public void testMoveTabCompatTest() {
-        moveTabCompatTest();
-    }
-
-    @Test
-    @MediumTest
-    // TODO(crbug.com/454344854): Delete this test as part of feature cleanup as the legacy version
-    // will be deleted.
-    @DisableFeatures({ChromeFeatureList.TAB_COLLECTION_ANDROID})
-    public void testMoveTabCompatTest_Legacy() {
-        moveTabCompatTest();
-    }
-
-    private void moveTabCompatTest() {
         Tab tab0 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> mRegularModel.getCurrentTabSupplier().get());
