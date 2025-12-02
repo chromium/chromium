@@ -15,7 +15,11 @@
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-#include "v8/include/v8-microtask-queue.h"
+
+namespace v8 {
+class Isolate;
+class MicrotaskQueue;
+}  // namespace v8
 
 namespace blink {
 
@@ -97,23 +101,6 @@ class PLATFORM_EXPORT EventLoop final : public RefCounted<EventLoop> {
 
   bool IsSchedulerAttachedForTest(FrameOrWorkerScheduler*);
 
-  class PauseMicrotasksHandle : public RefCounted<PauseMicrotasksHandle> {
-   public:
-    ~PauseMicrotasksHandle() = default;
-
-   private:
-    friend class EventLoop;
-    PauseMicrotasksHandle(v8::Isolate* isolate, v8::MicrotaskQueue* queue);
-
-    v8::MicrotasksScope scope_;
-    base::WeakPtrFactory<PauseMicrotasksHandle> weak_factory_{this};
-  };
-
-  // Suppresses microtask execution for the lifetime of the returned handle.
-  // Pending microtasks would be executed as soon as all issued handles go
-  // out of scope.
-  [[nodiscard]] scoped_refptr<PauseMicrotasksHandle> PauseMicrotasks();
-
  private:
   friend class RefCounted<EventLoop>;
   friend blink::Agent;
@@ -133,7 +120,6 @@ class PLATFORM_EXPORT EventLoop final : public RefCounted<EventLoop> {
   Vector<base::OnceClosure> end_of_checkpoint_tasks_;
   std::unique_ptr<v8::MicrotaskQueue> microtask_queue_;
   HashSet<FrameOrWorkerScheduler*> schedulers_;
-  base::WeakPtr<PauseMicrotasksHandle> pause_microtask_handle_;
 };
 
 }  // namespace scheduler

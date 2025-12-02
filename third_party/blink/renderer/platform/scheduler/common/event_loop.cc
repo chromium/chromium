@@ -17,12 +17,7 @@
 namespace blink {
 namespace scheduler {
 
-EventLoop::PauseMicrotasksHandle::PauseMicrotasksHandle(
-    v8::Isolate* isolate,
-    v8::MicrotaskQueue* queue)
-    : scope_(isolate, queue, v8::MicrotasksScope::kRunMicrotasks /* sic! */) {}
-
-EventLoop::EventLoop(Delegate* delegate,
+EventLoop::EventLoop(EventLoop::Delegate* delegate,
                      v8::Isolate* isolate,
                      std::unique_ptr<v8::MicrotaskQueue> microtask_queue)
     : delegate_(delegate),
@@ -99,22 +94,6 @@ void EventLoop::DetachScheduler(FrameOrWorkerScheduler* scheduler) {
 
 bool EventLoop::IsSchedulerAttachedForTest(FrameOrWorkerScheduler* scheduler) {
   return schedulers_.Contains(scheduler);
-}
-
-scoped_refptr<EventLoop::PauseMicrotasksHandle> EventLoop::PauseMicrotasks() {
-  // Note PauseMicrotasksHandle is RefCounted to limit number instances of
-  // v8::MicrotasksScope we create (which would otherwise be one per iframe),
-  // as there's legacy code that uses MicrotasksScope nesting depth as a proxy
-  // for detecting v8 (re)entry points nesting depth for guarding against
-  // stack overflows.
-  scoped_refptr<PauseMicrotasksHandle> handle =
-      base::WrapRefCounted(pause_microtask_handle_.get());
-  if (!handle) {
-    handle = base::AdoptRef(
-        new PauseMicrotasksHandle(isolate_, microtask_queue_.get()));
-    pause_microtask_handle_ = handle->weak_factory_.GetWeakPtr();
-  }
-  return handle;
 }
 
 // static
