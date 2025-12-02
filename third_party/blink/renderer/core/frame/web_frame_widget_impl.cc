@@ -3799,7 +3799,6 @@ void WebFrameWidgetImpl::ResetVirtualKeyboardVisibilityRequest() {
     return;
   controller->SetVirtualKeyboardVisibilityRequest(
       ui::mojom::blink::VirtualKeyboardVisibilityRequest::NONE);
-  ;
 }
 
 bool WebFrameWidgetImpl::GetSelectionBoundsInWindow(
