@@ -68,9 +68,10 @@ CookieStore* GlobalCookieStore::cookieStore(LocalDOMWindow& window) {
 }
 
 // static
-CookieStore* GlobalCookieStore::cookieStore(ServiceWorkerGlobalScope& worker) {
-  return GlobalCookieStoreImpl<WorkerGlobalScope>::From(worker).GetCookieStore(
-      worker);
+CookieStore* GlobalCookieStore::cookieStore(
+    ServiceWorkerGlobalScope& service_worker) {
+  return GlobalCookieStoreImpl<ServiceWorkerGlobalScope>::From(service_worker)
+      .GetCookieStore(service_worker);
 }
 
 }  // namespace blink
