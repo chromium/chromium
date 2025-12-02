@@ -1523,7 +1523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.GoogleSearch.HttpNetworkSessionQuicEnabled"
-    enum="Boolean" expires_after="2026-03-29">
+    enum="Boolean" expires_after="2026-05-31">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1931,7 +1931,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.SessionSource{ConnectionProtocolType}"
-    enum="NetworkSessionSource" expires_after="2026-03-29">
+    enum="NetworkSessionSource" expires_after="2026-05-31">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

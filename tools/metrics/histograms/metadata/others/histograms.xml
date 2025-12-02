@@ -524,7 +524,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.BidderWorkletIsolateTotalHeapSizeKilobytes"
-    units="KB" expires_after="2026-03-29">
+    units="KB" expires_after="2026-05-31">
   <owner>abigailkatcoff@google.com</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -5328,7 +5328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.Channel.WriteToReadLatencyUs" units="microseconds"
-    expires_after="2026-03-29">
+    expires_after="2026-05-31">
   <owner>lizeb@chromium.org</owner>
   <owner>rockot@google.com</owner>
   <summary>
