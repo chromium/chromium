@@ -1524,11 +1524,7 @@
     "owners": [ "arthurmilchior@google.com", "chrome-signin-mobile-team@google.com" ],
     "expiry_milestone": 150
   },
-  {
-    "name": "calculate-native-win-occlusion",
-    "owners": [ "davidbienvenu@chromium.org", "fdoray@chromium.org" ],
-    "expiry_milestone": 130
-  },  {
+ {
     "name": "camera-mic-effects",
     "owners": [
       "bryantchandler@chromium.org",

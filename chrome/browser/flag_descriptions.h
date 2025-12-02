@@ -6342,12 +6342,6 @@ inline constexpr char
 
 // Windows ---------------------------------------------------------------------
 
-inline constexpr char kCalculateNativeWinOcclusionName[] =
-    "Calculate window occlusion on Windows";
-inline constexpr char kCalculateNativeWinOcclusionDescription[] =
-    "Calculate window occlusion on Windows will be used in the future "
-    "to throttle and potentially unload foreground tabs in occluded windows";
-
 inline constexpr char kEnableMediaFoundationVideoCaptureName[] =
     "MediaFoundation Video Capture";
 inline constexpr char kEnableMediaFoundationVideoCaptureDescription[] =
