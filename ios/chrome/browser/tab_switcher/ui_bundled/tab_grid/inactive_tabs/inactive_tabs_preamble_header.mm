@@ -76,23 +76,9 @@ const CGFloat kTopPadding = 14;
 
 #pragma mark - UITextViewDelegate
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  DCHECK_EQ(textView, _textView);
-  if (interaction == UITextItemInteractionInvokeDefaultAction &&
-      _settingsLinkAction) {
-    _settingsLinkAction();
-  }
-  return NO;
-}
-#endif
-
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
-               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+               defaultAction:(UIAction*)defaultAction {
   DCHECK_EQ(textView, _textView);
   if (!_settingsLinkAction) {
     return defaultAction;
