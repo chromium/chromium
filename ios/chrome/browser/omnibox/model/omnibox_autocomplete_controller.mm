@@ -432,6 +432,7 @@ using base::UserMetricsAction;
   input.set_current_title(_omniboxClient->GetTitle());
   input.set_prevent_inline_autocomplete(preventInlineAutocomplete);
   [self attachSuggestInputsToAutocompleteInput:input];
+  [self attachAimToolModeToAutocompleteInput:input];
 
   [self startAutocompleteWithInput:input];
 }
@@ -477,6 +478,7 @@ using base::UserMetricsAction;
   input.set_current_title(_omniboxClient->GetTitle());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   [self attachSuggestInputsToAutocompleteInput:input];
+  [self attachAimToolModeToAutocompleteInput:input];
 
   [self startAutocompleteWithInput:input];
 }
@@ -584,6 +586,20 @@ using base::UserMetricsAction;
 }
 
 #pragma mark - Private
+
+- (void)attachAimToolModeToAutocompleteInput:(AutocompleteInput&)input {
+  if (_omniboxPresentationContext != OmniboxPresentationContext::kComposebox) {
+    return;
+  }
+
+  if (_omniboxClient->IsImageGenerationEnabled()) {
+    input.set_aim_tool_mode(
+        omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN);
+  } else {
+    input.set_aim_tool_mode(
+        omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED);
+  }
+}
 
 /// Attaches the client's suggest inputs if valid.
 - (void)attachSuggestInputsToAutocompleteInput:(AutocompleteInput&)input {
