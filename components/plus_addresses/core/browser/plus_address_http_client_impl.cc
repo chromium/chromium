@@ -214,8 +214,7 @@ PlusAddressHttpClientImpl::PlusAddressHttpClientImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : identity_manager_(CHECK_DEREF(identity_manager)),
       url_loader_factory_(std::move(url_loader_factory)),
-      server_url_(ValidateAndGetUrl()),
-      scopes_({features::kEnterprisePlusAddressOAuthScope.Get()}) {}
+      server_url_(ValidateAndGetUrl()) {}
 
 PlusAddressHttpClientImpl::~PlusAddressHttpClientImpl() = default;
 
@@ -481,8 +480,8 @@ void PlusAddressHttpClientImpl::GetAuthToken(TokenReadyCallback callback) {
   }
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          /*consumer_name=*/"PlusAddressHttpClientImpl",
-          &identity_manager_.get(), scopes_,
+          signin::OAuthConsumerId::kEnterprisePlusAddress,
+          &identity_manager_.get(),
           base::BindOnce(&PlusAddressHttpClientImpl::OnTokenFetched,
                          // It is safe to use base::Unretained as
                          // `this` owns `access_token_fetcher_`.

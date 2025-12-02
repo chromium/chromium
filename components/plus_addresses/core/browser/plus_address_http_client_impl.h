@@ -17,7 +17,6 @@
 #include "base/types/optional_ref.h"
 #include "components/plus_addresses/core/browser/plus_address_http_client.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "url/gurl.h"
 
 class GoogleServiceAuthError;
@@ -138,8 +137,6 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   const std::optional<GURL> server_url_;
-
-  const signin::ScopeSet scopes_;
 
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_ GUARDED_BY_CONTEXT(sequence_checker_);

@@ -112,12 +112,13 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
+    "//components/plus_addresses/core/common:features",
     "//components/prefs",
+    "//crypto",
+    "//google_apis:test_support",
 
     # TODO(b/309104936): Remove this unwanted dependency.
     "//components/signin/public/identity_manager",
-    "//crypto",
-    "//google_apis:test_support",
   ]
 
   public_deps = [

@@ -30,9 +30,7 @@ class OAuthConsumerRegistry {
   OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) const;
 
  protected:
-  // TODO(crbug.com/425896213): Add method per feature instead of a single one.
-  virtual OAuthConsumer GetOAuthConsumerFromIdInternal(
-      OAuthConsumerId oauth_consumer_id) const = 0;
+  virtual OAuthConsumer GetOAuthConsumerForEnterprisePlusAddress() const = 0;
 };
 
 }  // namespace signin

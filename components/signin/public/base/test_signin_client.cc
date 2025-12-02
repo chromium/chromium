@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/version_info/channel.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
@@ -21,9 +22,13 @@ namespace {
 
 class TestOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
  protected:
-  signin::OAuthConsumer GetOAuthConsumerFromIdInternal(
-      signin::OAuthConsumerId oauth_consumer_id) const override {
-    NOTREACHED();
+  signin::OAuthConsumer GetOAuthConsumerForEnterprisePlusAddress()
+      const override {
+    CHECK(base::FeatureList::IsEnabled(
+        plus_addresses::features::kPlusAddressesEnabled));
+    return signin::OAuthConsumer(
+        signin::oauth_consumer_name::kEnterprisePlusAddressName,
+        {plus_addresses::features::kEnterprisePlusAddressOAuthScope.Get()});
   }
 };
 

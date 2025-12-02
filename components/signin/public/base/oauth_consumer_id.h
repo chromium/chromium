@@ -7,6 +7,11 @@
 
 namespace signin {
 
+namespace oauth_consumer_name {
+inline extern const char kEnterprisePlusAddressName[] =
+    "enterprise_plus_address";
+}
+
 // LINT.IfChange(OAuthConsumerId)
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -91,7 +96,8 @@ enum class OAuthConsumerId {
   kAuthServiceTasksClient = 76,
   kYouTubeMusic = 77,
   kContextualTasks = 78,
-  kMaxValue = kContextualTasks,
+  kEnterprisePlusAddress = 79,
+  kMaxValue = kEnterprisePlusAddress,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

@@ -338,8 +338,9 @@ TEST_P(PlusAddressCreationRequests, RequestsOauthToken) {
 
   // ConfirmPlusAddress will run `callback` after an OAuth token is retrieved.
   identity_env()
-      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
-          "token", base::Time::Max(), "id", {kTestScope});
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForConsumerId(
+          "token", base::Time::Max(),
+          signin::OAuthConsumerId::kEnterprisePlusAddress);
 
   // Unblock the pending request.
   ASSERT_EQ(url_loader_factory().NumPending(), 1);
@@ -700,7 +701,6 @@ class PlusAddressAuthToken : public ::testing::Test {
 
   static constexpr base::TimeDelta kTestTokenLifetime = base::Seconds(1000);
   static constexpr char kTestToken[] = "access_token";
-  static constexpr char kTestScope[] = "https://googleapis.com/test.scope";
 
  protected:
   PlusAddressHttpClientImpl& client() { return *client_; }
@@ -721,8 +721,9 @@ class PlusAddressAuthToken : public ::testing::Test {
 
   void WaitAndRespondToTokenRequest(base::Time expiration) {
     identity_env()
-        .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
-            kTestToken, expiration, "unused", {kTestScope});
+        .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForConsumerId(
+            kTestToken, expiration,
+            signin::OAuthConsumerId::kEnterprisePlusAddress);
   }
 
  private:

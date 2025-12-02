@@ -41,6 +41,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/metrics/metrics_service.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/cookie_settings_util.h"
@@ -188,11 +189,13 @@ std::string HatsSurveyTriggerForAccessPoint(
 
 class ChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
  protected:
-  signin::OAuthConsumer GetOAuthConsumerFromIdInternal(
-      signin::OAuthConsumerId oauth_consumer_id) const override {
-    // TODO(crbug.com/425896213): Temporarily notreached until consumers are
-    // added.
-    NOTREACHED();
+  signin::OAuthConsumer GetOAuthConsumerForEnterprisePlusAddress()
+      const override {
+    CHECK(base::FeatureList::IsEnabled(
+        plus_addresses::features::kPlusAddressesEnabled));
+    return signin::OAuthConsumer(
+        signin::oauth_consumer_name::kEnterprisePlusAddressName,
+        {plus_addresses::features::kEnterprisePlusAddressOAuthScope.Get()});
   }
 };
 

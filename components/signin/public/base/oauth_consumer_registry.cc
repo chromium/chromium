@@ -473,6 +473,8 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*name=*/kContextualTasksName,
           /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope,
                       GaiaConstants::kClearCutOAuth2Scope});
+    case OAuthConsumerId::kEnterprisePlusAddress:
+      return GetOAuthConsumerForEnterprisePlusAddress();
   }
 }
 
