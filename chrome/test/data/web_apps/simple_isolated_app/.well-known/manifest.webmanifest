@@ -4,6 +4,7 @@
   "id": "/",
   "scope": "/",
   "start_url": "/index.html",
+  "update_manifest_url": "https://otterly-awesome-iwa.com/update_manifest.json",
   "permissions_policy": {
     "clipboard-read": [ "*" ],
     "clipboard-write": [ "*" ],

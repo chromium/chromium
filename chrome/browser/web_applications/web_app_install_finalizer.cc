@@ -398,6 +398,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
     UpdateIsolationDataAndResetPendingUpdateInfo(
         web_app.get(), options.iwa_options->location,
         web_app_info.isolated_web_app_version(),
+        web_app_info.iwa_update_manifest_url,
         options.iwa_options->integrity_block_data);
 
     HostContentSettingsMap* const host_content_settings_map =
@@ -517,10 +518,16 @@ void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(
     WebApp* web_app,
     const IsolatedWebAppStorageLocation& location,
     const IwaVersion& version,
+    const std::optional<GURL>& iwa_update_manifest_url,
     std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data) {
   IsolationData::Builder builder(location, version);
+
   if (web_app->isolation_data()) {
     builder.PersistFieldsForUpdate(*web_app->isolation_data());
+  }
+
+  if (iwa_update_manifest_url) {
+    builder.SetUpdateManifestUrl(*iwa_update_manifest_url);
   }
 
   if (integrity_block_data) {
@@ -567,7 +574,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidatedForUpdate(
              pending_update_info->version);
     UpdateIsolationDataAndResetPendingUpdateInfo(
         web_app.get(), pending_update_info->location,
-        pending_update_info->version,
+        pending_update_info->version, web_app_info.iwa_update_manifest_url,
         pending_update_info->integrity_block_data);
   }
 

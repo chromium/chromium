@@ -216,9 +216,6 @@ IsolationData::Builder&& IsolationData::Builder::SetIntegrityBlockData(
 
 IsolationData::Builder& IsolationData::Builder::SetUpdateManifestUrl(
     GURL update_manifest_url) & {
-  CHECK(location_.dev_mode())
-      << "This field is supposed to be used only with dev mode installs via "
-         "chrome://web-app-internals.";
   CHECK(update_manifest_url.is_valid(), base::NotFatalUntil::M138);
   update_manifest_url_ = std::move(update_manifest_url);
   return *this;
@@ -226,9 +223,6 @@ IsolationData::Builder& IsolationData::Builder::SetUpdateManifestUrl(
 
 IsolationData::Builder&& IsolationData::Builder::SetUpdateManifestUrl(
     GURL update_manifest_url) && {
-  CHECK(location_.dev_mode())
-      << "This field is supposed to be used only with dev mode installs via "
-         "chrome://web-app-internals.";
   CHECK(update_manifest_url.is_valid(), base::NotFatalUntil::M138);
   update_manifest_url_ = std::move(update_manifest_url);
   return std::move(*this);

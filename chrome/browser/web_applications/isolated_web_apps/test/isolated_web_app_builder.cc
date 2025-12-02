@@ -295,6 +295,12 @@ ManifestBuilder& ManifestBuilder::SetStartUrl(std::string_view start_url) {
   return *this;
 }
 
+ManifestBuilder& ManifestBuilder::SetUpdateManifestUrl(
+    const GURL& update_manifest_url) {
+  update_manifest_url_ = update_manifest_url;
+  return *this;
+}
+
 ManifestBuilder& ManifestBuilder::SetDisplayMode(
     blink::mojom::DisplayMode display_mode) {
   display_mode_ = display_mode;
@@ -363,6 +369,10 @@ const std::string& ManifestBuilder::start_url() const {
   return start_url_;
 }
 
+const std::optional<GURL>& ManifestBuilder::update_manifest_url() const {
+  return update_manifest_url_;
+}
+
 const std::vector<ManifestBuilder::IconMetadata>& ManifestBuilder::icons()
     const {
   return icons_;
@@ -383,6 +393,9 @@ std::string ManifestBuilder::ToJson() const {
                   .Set("display_override",
                        base::ToValueList(display_mode_override_,
                                          &blink::DisplayModeToString));
+  if (update_manifest_url_) {
+    json.Set("update_manifest_url", update_manifest_url_->spec());
+  }
 
   if (launch_handler_client_mode_) {
     json.SetByDottedPath("launch_handler.client_mode", [&] {
@@ -471,6 +484,9 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
   manifest->id = base_url;
   manifest->scope = base_url;
   manifest->start_url = base_url.Resolve(start_url_);
+  if (update_manifest_url_) {
+    manifest->update_manifest_url = update_manifest_url_;
+  }
   manifest->display = display_mode_;
   manifest->display_override = display_mode_override_;
   if (launch_handler_client_mode_) {

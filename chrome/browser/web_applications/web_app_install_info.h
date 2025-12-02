@@ -515,6 +515,11 @@ struct WebAppInstallInfo {
   // background document installs.
   std::optional<GURL> installed_by;
 
+  // The URL of the Isolated Web App's update manifest. Used to detect updates.
+  // Note that the `update_manifest_url` specified in the
+  // IsolatedWebAppInstallForceList policy takes precedence over this value.
+  std::optional<GURL> iwa_update_manifest_url;
+
  private:
   // Used this method in Clone() method. Use Clone() to deep copy explicitly.
   WebAppInstallInfo(const WebAppInstallInfo& other);

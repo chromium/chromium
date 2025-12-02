@@ -151,6 +151,7 @@ class WebAppInstallFinalizer {
       WebApp* web_app,
       const IsolatedWebAppStorageLocation& location,
       const IwaVersion& version,
+      const std::optional<GURL>& iwa_update_manifest_url,
       std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data);
 
   void OnOriginAssociationValidatedForUpdate(

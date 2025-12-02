@@ -689,6 +689,12 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
     install_info().manifest_url = manifest_->manifest_url;
   }
 
+  if (manifest_->update_manifest_url &&
+      manifest_->update_manifest_url->is_valid()) {
+    install_info().iwa_update_manifest_url =
+        manifest_->update_manifest_url.value();
+  }
+
   install_info().launch_handler = manifest_->launch_handler;
   if (manifest_->description.has_value()) {
     install_info().description = manifest_->description.value();

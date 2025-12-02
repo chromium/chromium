@@ -191,8 +191,6 @@ class IsolationData {
     Builder&& SetIntegrityBlockData(
         IsolatedWebAppIntegrityBlockData integrity_block_data) &&;
 
-    // Update manifest is supposed to be set only for selected dev-mode
-    // installs. Will `CHECK`-fail if applied to a prod-mode location.
     Builder& SetUpdateManifestUrl(GURL update_manifest_url) &;
     Builder&& SetUpdateManifestUrl(GURL update_manifest_url) &&;
 
