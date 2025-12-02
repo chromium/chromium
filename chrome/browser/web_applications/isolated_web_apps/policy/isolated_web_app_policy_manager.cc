@@ -37,6 +37,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -150,6 +151,11 @@ GetOnInstallTaskCompletedCallbackForTesting() {
   return *kCallback;
 }
 
+base::RepeatingClosure& GetPolicyFullyProcessedEventForTesting() {
+  static base::NoDestructor<base::RepeatingClosure> kCallback;
+  return *kCallback;
+}
+
 bool IsOnDemandComponentUpdateFeatureEnabled() {
   return base::FeatureList::IsEnabled(kIwaPolicyManagerOnDemandComponentUpdate);
 }
@@ -187,7 +193,14 @@ void IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
     base::RepeatingCallback<void(web_package::SignedWebBundleId,
                                  IwaInstaller::Result)> callback) {
   CHECK_IS_TEST();
-  GetOnInstallTaskCompletedCallbackForTesting() = callback;
+  GetOnInstallTaskCompletedCallbackForTesting() = std::move(callback);
+}
+
+// static
+void IsolatedWebAppPolicyManager::SetOnPolicyFullyProcessedCallbackForTesting(
+    base::RepeatingClosure callback) {
+  CHECK_IS_TEST();
+  GetPolicyFullyProcessedEventForTesting() = std::move(callback);
 }
 
 // static
@@ -339,9 +352,30 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
 
   std::vector<IsolatedWebAppExternalInstallOptions> apps_in_policy =
       GetIwaInstallForceList(*profile_);
+  debug_info.Set("apps_in_policy",
+                 base::ToValueList(apps_in_policy, [](const auto& options) {
+                   return base::ToString(options.web_bundle_id());
+                 }));
+
+  // Apps in blocklist behave like they are just not in the policy.
+  //  1. Installation is not requested.
+  //  2. The policy install source is removed if previously was there.
+  std::erase_if(
+      apps_in_policy,
+      [](const IsolatedWebAppExternalInstallOptions& install_options) {
+        return IwaKeyDistributionInfoProvider::GetInstance()
+            .IsBundleBlocklisted(install_options.web_bundle_id().id());
+      });
+
   base::flat_map<web_package::SignedWebBundleId,
                  std::reference_wrapper<const WebApp>>
       installed_iwas = GetInstalledIwas(lock.registrar());
+  debug_info.Set(
+      "installed_iwas",
+      base::ToValueList(installed_iwas, [](const auto& installed_iwa) {
+        const auto& [web_bundle_id, _] = installed_iwa;
+        return base::ToString(web_bundle_id);
+      }));
 
   AppActions app_actions;
   size_t number_of_install_tasks = 0;
@@ -424,16 +458,6 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
     }
   }
 
-  debug_info.Set("apps_in_policy",
-                 base::ToValueList(apps_in_policy, [](const auto& options) {
-                   return base::ToString(options.web_bundle_id());
-                 }));
-  debug_info.Set(
-      "installed_iwas",
-      base::ToValueList(installed_iwas, [](const auto& installed_iwa) {
-        const auto& [web_bundle_id, _] = installed_iwa;
-        return base::ToString(web_bundle_id);
-      }));
   debug_info.Set(
       "app_actions", base::ToValueList(app_actions, [](const auto& entry) {
         const auto& [web_bundle_id, app_action] = entry;
@@ -591,6 +615,11 @@ void IsolatedWebAppPolicyManager::OnPolicyProcessed() {
   if (reprocess_policy_needed_) {
     reprocess_policy_needed_ = false;
     ProcessPolicy();
+    return;
+  }
+  if (auto& policy_fully_processed_callback =
+          GetPolicyFullyProcessedEventForTesting()) {
+    policy_fully_processed_callback.Run();
   }
 }
 

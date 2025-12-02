@@ -145,33 +145,31 @@ KeyDistributionComponentBuilder::AddToSpecialAppPermissions(
 
 KeyDistributionComponentBuilder& KeyDistributionComponentBuilder::WithBlocklist(
     const std::vector<web_package::SignedWebBundleId>& bundle_ids) & {
-  // TODO(crbug.com/432446316): Implement the blocklist
-  NOTIMPLEMENTED();
+  for (const auto& bundle_id : bundle_ids) {
+    (*component_.component_data.mutable_iwa_access_control()
+          ->mutable_blocklist())[bundle_id.id()] = {};
+  }
   return *this;
 }
 
 KeyDistributionComponentBuilder&&
 KeyDistributionComponentBuilder::WithBlocklist(
     const std::vector<web_package::SignedWebBundleId>& bundle_ids) && {
-  // TODO(crbug.com/432446316): Implement the blocklist
-  NOTIMPLEMENTED();
-  return std::move(*this);
+  return std::move(WithBlocklist(bundle_ids));
 }
 
 KeyDistributionComponentBuilder&
 KeyDistributionComponentBuilder::AddToBlocklist(
     const web_package::SignedWebBundleId& bundle_id) & {
-  // TODO(crbug.com/432446316): Implement the blocklist
-  NOTIMPLEMENTED();
+  (*component_.component_data.mutable_iwa_access_control()
+        ->mutable_blocklist())[bundle_id.id()] = {};
   return *this;
 }
 
 KeyDistributionComponentBuilder&&
 KeyDistributionComponentBuilder::AddToBlocklist(
     const web_package::SignedWebBundleId& bundle_id) && {
-  // TODO(crbug.com/432446316): Implement the blocklist
-  NOTIMPLEMENTED();
-  return std::move(*this);
+  return std::move(AddToBlocklist(bundle_id));
 }
 
 KeyDistributionComponentBuilder&

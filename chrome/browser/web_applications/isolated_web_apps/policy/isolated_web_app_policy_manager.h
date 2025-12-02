@@ -41,6 +41,9 @@ class IsolatedWebAppPolicyManager
   static void SetOnInstallTaskCompletedCallbackForTesting(
       base::RepeatingCallback<void(web_package::SignedWebBundleId,
                                    IwaInstaller::Result)> callback);
+  // Fired every time policy is processed and does not need reprocessing.
+  static void SetOnPolicyFullyProcessedCallbackForTesting(
+      base::RepeatingClosure callback);
 
   static std::vector<IsolatedWebAppExternalInstallOptions>
   GetIwaInstallForceList(const Profile& profile);

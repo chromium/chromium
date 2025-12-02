@@ -129,6 +129,12 @@ IwaKeyDistributionInfoProvider::GetKeyRotationInfo(
              : nullptr;
 }
 
+bool IwaKeyDistributionInfoProvider::IsBundleBlocklisted(
+    std::string_view web_bundle_id) const {
+  return component_ &&
+         base::Contains(component_->data.blocklist, web_bundle_id);
+}
+
 bool IwaKeyDistributionInfoProvider::IsManagedInstallPermitted(
     std::string_view web_bundle_id) const {
   if (skip_managed_checks_for_testing_) {
@@ -307,14 +313,18 @@ IwaKeyDistributionInfoProvider::ParseKeyDistributionData(
   }
 
   IwaKeyDistributionInfoProvider::ManagedAllowlist managed_allowlist;
+  IwaKeyDistributionInfoProvider::Blocklist blocklist;
   if (key_distribution.has_iwa_access_control()) {
     managed_allowlist = base::MakeFlatSet<std::string>(
         key_distribution.iwa_access_control().managed_allowlist(), /*comp=*/{},
         /*proj=*/[](const auto& pair) { return pair.first; });
+    blocklist = base::MakeFlatSet<std::string>(
+        key_distribution.iwa_access_control().blocklist(), /*comp=*/{},
+        /*proj=*/[](const auto& pair) { return pair.first; });
   }
 
   return Data(std::move(key_rotations), std::move(special_app_permissions),
-              std::move(managed_allowlist));
+              std::move(managed_allowlist), std::move(blocklist));
 }
 
 void IwaKeyDistributionInfoProvider::AddObserver(Observer* observer) {
@@ -386,9 +396,16 @@ base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
     }
   }
   if (component_) {
+    // Component meta data
     debug_data.Set("component_version", component_->version.GetString());
+    if (component_->is_preloaded) {
+      debug_data.Set("is_preloaded", true);
+    }
+    // Per bundle_id permissions/prohibitions
     debug_data.Set("managed_allowlist",
                    base::ToValueList(component_->data.managed_allowlist));
+    debug_data.Set("blocklist", base::ToValueList(component_->data.blocklist));
+
     auto* key_rotations = debug_data.EnsureDict("key_rotations");
     for (const auto& [web_bundle_id, kr_info] :
          component_->data.key_rotations) {
@@ -399,10 +416,6 @@ base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
     for (const auto& [web_bundle_id, app_permissions_info] :
          component_->data.special_app_permissions) {
       app_permissions->Set(web_bundle_id, app_permissions_info.AsDebugValue());
-    }
-
-    if (component_->is_preloaded) {
-      debug_data.Set("is_preloaded", true);
     }
   } else {
     debug_data.Set("component_version", "null");
@@ -493,10 +506,12 @@ IwaKeyDistributionInfoProvider::GetComponentDataSource() const {
 IwaKeyDistributionInfoProvider::Data::Data(
     KeyRotations key_rotations,
     SpecialAppPermissions special_app_permissions,
-    ManagedAllowlist managed_allowlist)
+    ManagedAllowlist managed_allowlist,
+    Blocklist blocklist)
     : key_rotations(std::move(key_rotations)),
       special_app_permissions(std::move(special_app_permissions)),
-      managed_allowlist(std::move(managed_allowlist)) {}
+      managed_allowlist(std::move(managed_allowlist)),
+      blocklist(std::move(blocklist)) {}
 IwaKeyDistributionInfoProvider::Data::~Data() = default;
 IwaKeyDistributionInfoProvider::Data::Data(const Data&) = default;
 

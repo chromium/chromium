@@ -49,6 +49,7 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
   using KeyRotations =
       base::flat_map<std::string, IwaRuntimeDataProvider::KeyRotationInfo>;
   using ManagedAllowlist = base::flat_set<std::string>;
+  using Blocklist = base::flat_set<std::string>;
   using SpecialAppPermissions =
       base::flat_map<std::string, SpecialAppPermissionsInfo>;
 
@@ -91,6 +92,10 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
       const std::string& web_bundle_id) const;
   std::vector<std::string> GetSkipMultiCaptureNotificationBundleIds() const;
   std::optional<base::Version> GetVersion() const;
+
+  // All installations of blocklisted bundles are removed from the device.
+  // Installation is prevented.
+  bool IsBundleBlocklisted(std::string_view web_bundle_id) const;
 
   // Only bundles present in the managed allowlist can be installed and updated.
   bool IsManagedInstallPermitted(std::string_view web_bundle_id) const;
@@ -138,14 +143,15 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
   struct Data {
     Data(KeyRotations key_rotations,
          SpecialAppPermissions special_app_permissions,
-         ManagedAllowlist managed_allowlist);
+         ManagedAllowlist managed_allowlist,
+         Blocklist blocklist);
     ~Data();
     Data(const Data&);
 
     KeyRotations key_rotations;
     SpecialAppPermissions special_app_permissions;
     ManagedAllowlist managed_allowlist;
-    // TODO(crbug.com/432446316): Implement the blocklist
+    Blocklist blocklist;
   };
 
   struct Component {

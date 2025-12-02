@@ -560,8 +560,43 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
 
   run_loop.Run();
 
-  EXPECT_THAT(provider().registrar_unsafe().GetAppById(kAppId1),
-              testing::IsNull());
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(kAppId1));
+}
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
+                       AppInBlocklistNotInstalled) {
+  AddUser();
+  // Add also to allowlist to be sure that installation is blocked by blocklist
+  EXPECT_OK(test::KeyDistributionComponentBuilder(base::Version("1.0"))
+                .WithManagedAllowlist({kWebBundleId1, kWebBundleId2})
+                .WithBlocklist({kWebBundleId1})
+                .Build()
+                .UploadFromComponentFolder());
+
+  EXPECT_TRUE(
+      IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(
+          kWebBundleId1.id()));
+  EXPECT_TRUE(IwaKeyDistributionInfoProvider::GetInstance().IsBundleBlocklisted(
+      kWebBundleId1.id()));
+
+  base::RunLoop run_loop;
+  IsolatedWebAppPolicyManager::SetOnPolicyFullyProcessedCallbackForTesting(
+      base::BindLambdaForTesting([&]() {
+        // The second app was installed just to catch the final policy processed
+        // callback, both apps are processed together.
+        EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(kAppId1));
+        if (provider().registrar_unsafe().IsInRegistrar(kAppId2) == true) {
+          run_loop.Quit();
+        }
+      }));
+
+  WaitForUserAdded();
+
+  ASSERT_NO_FATAL_FAILURE(StartLogin({}));
+  WaitForSessionStart();
+  SetPolicyWithTwoApps();
+
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest, PolicyUpdate) {
@@ -723,6 +758,54 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
     EXPECT_EQ(provider().registrar_unsafe().GetInstallState(kAppId2),
               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
+                       AppsRemovedAfterBeingBlocklisted) {
+  AddUser();
+  EXPECT_OK(test::KeyDistributionComponentBuilder(base::Version("1.0"))
+                .WithManagedAllowlist({kWebBundleId1, kWebBundleId2})
+                .Build()
+                .UploadFromComponentFolder());
+  WaitForUserAdded();
+
+  // Log in to the managed guest session. There is no IWA policy set at the
+  // moment of login.
+  ASSERT_NO_FATAL_FAILURE(StartLogin());
+  WaitForSessionStart();
+
+  // Set the policy with 2 IWAs and wait for the IWAs to be installed.
+  {
+    WebAppTestInstallObserver install_observer(GetProfileForTest());
+    install_observer.BeginListening({kAppId1, kAppId2});
+
+    SetPolicyWithTwoApps();
+    CreateInitialDiscoveryUpdateWaiters({kAppId1, kAppId2});
+    install_observer.Wait();
+
+    EXPECT_EQ(provider().registrar_unsafe().GetInstallState(kAppId1),
+              proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+    EXPECT_EQ(provider().registrar_unsafe().GetInstallState(kAppId2),
+              proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  }
+
+  // Add apps to the blocklist and check if they are uninstalled
+  {
+    WebAppTestUninstallObserver uninstall_observer(GetProfileForTest());
+    uninstall_observer.BeginListening({kAppId1, kAppId2});
+
+    // Verify uninstallation takes place regardless of app allowlisting
+    EXPECT_OK(test::KeyDistributionComponentBuilder(base::Version("1.1"))
+                  .WithManagedAllowlist({kWebBundleId1})
+                  .WithBlocklist({kWebBundleId1, kWebBundleId2})
+                  .Build()
+                  .UploadFromComponentFolder());
+
+    EXPECT_THAT(uninstall_observer.Wait(), testing::AnyOf(kAppId1, kAppId2));
+
+    EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(kAppId1));
+    EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(kAppId2));
   }
 }
 
