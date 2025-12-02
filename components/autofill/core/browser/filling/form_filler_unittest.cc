@@ -1548,6 +1548,51 @@ TEST_F(FormFillerTest, FillFirstPhoneNumber_MultipleSectionFilledCorrectly) {
   EXPECT_EQ(std::u16string(), filled_fields[5].value());
 }
 
+// Tests that a prefilled country calling code does not prevent an Autofill.
+TEST_F(FormFillerTest, FillPhoneNumber_OverwriteCountryCallingCode) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillOverwriteCountryCallingCodes);
+
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
+                  {.role = PHONE_HOME_WHOLE_NUMBER,
+                   .value = u"+49",
+                   .autocomplete_attribute = "tel"}}});
+  FormsSeen({form});
+
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
+  std::vector<FormFieldData> filled_fields =
+      AutofillForm(form, form.fields().front(), &profile).fields();
+
+  ASSERT_EQ(2U, filled_fields.size());
+  EXPECT_EQ(filled_fields[0].value(), u"John H. Doe");
+  EXPECT_THAT(filled_fields[1], AutofilledWith(u"16505554567"));
+}
+
+// Tests that a overwriting of country calling codes is limited to *valid* ones.
+TEST_F(FormFillerTest,
+       FillPhoneNumber_DoNotOverwriteInvalidCountryCallingCode) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillOverwriteCountryCallingCodes);
+
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
+                  {.role = PHONE_HOME_WHOLE_NUMBER,
+                   .value = u"+12",
+                   .autocomplete_attribute = "tel"}}});
+  FormsSeen({form});
+
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
+  std::vector<FormFieldData> filled_fields =
+      AutofillForm(form, form.fields().front(), &profile).fields();
+
+  ASSERT_EQ(2U, filled_fields.size());
+  EXPECT_EQ(filled_fields[0].value(), u"John H. Doe");
+  EXPECT_EQ(filled_fields[1].value(), u"+12");
+}
+
 TEST_F(FormFillerTest, FillPassportEntity) {
   base::test::ScopedFeatureList feature_list(
       features::kAutofillAiWithDataSchema);

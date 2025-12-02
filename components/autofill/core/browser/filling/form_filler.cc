@@ -54,6 +54,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/libphonenumber/phonenumber_api.h"
 
 namespace autofill {
 
@@ -210,6 +211,23 @@ bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(const AutofillField& field,
   // attribute, don't consider the initial value to be meaningful.
   if (field.initial_value() == field.placeholder()) {
     return false;
+  }
+
+  // Pre-filled country calling codes (e.g., "+1" or "+49") may be overwritten.
+  if (field.Type().GetGroups().contains(FieldTypeGroup::kPhone) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillOverwriteCountryCallingCodes)) {
+    int maybe_country_calling_code = 0;
+    if (base::StringToInt(
+            base::TrimWhitespace(field.value(), base::TrimPositions::TRIM_ALL),
+            &maybe_country_calling_code)) {
+      std::set<int> country_codes;
+      ::i18n::phonenumbers::PhoneNumberUtil::GetInstance()
+          ->GetSupportedCallingCodes(&country_codes);
+      if (country_codes.contains(maybe_country_calling_code)) {
+        return false;
+      }
+    }
   }
 
   // If kAutofillSkipPreFilledFields is enabled:
