@@ -258,9 +258,6 @@ void HlsRenditionImpl::FetchManifestUpdates(ManifestDemuxer::DelayCallback cb,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_stopped_for_shutdown_);
   last_download_time_ = base::TimeTicks::Now();
-  TRACE_EVENT_BEGIN("media", "HLS::FetchManifestUpdates",
-                    perfetto::Track::FromPointer(this), "uri",
-                    media_playlist_uri_);
   rendition_host_->UpdateRenditionManifestUri(
       role_, media_playlist_uri_,
       base::BindOnce(&HlsRenditionImpl::OnManifestUpdate,
@@ -270,7 +267,6 @@ void HlsRenditionImpl::FetchManifestUpdates(ManifestDemuxer::DelayCallback cb,
 void HlsRenditionImpl::OnManifestUpdate(ManifestDemuxer::DelayCallback cb,
                                         base::TimeDelta delay,
                                         HlsDemuxerStatus success) {
-  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
   auto update_duration = base::TimeTicks::Now() - last_download_time_;
   if (update_duration > delay) {
     std::move(cb).Run(base::Seconds(0));
@@ -467,10 +463,6 @@ void HlsRenditionImpl::FetchNext(base::OnceClosure cb,
   // again.
   bool include_init = requires_init_segment_ || needs_init;
 
-  TRACE_EVENT_BEGIN("media", "HLS::FetchSegment",
-                    perfetto::Track::FromPointer(this), "start", segment_start,
-                    "include init", include_init);
-
   bool is_fetching_new_key = false;
   if (auto enc = segment->GetEncryptionData()) {
     is_fetching_new_key = enc->NeedsKeyFetch();
@@ -493,7 +485,6 @@ void HlsRenditionImpl::OnSegmentData(
     bool fetched_new_key,
     HlsDataSourceProvider::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
   if (is_stopped_for_shutdown_) {
     std::move(cb).Run();
     return;
