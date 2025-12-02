@@ -28,21 +28,20 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   ~OmniboxPopupAimHandler() override;
 
   // omnibox_popup_aim::mojom::PageHandler:
-  void Close() override;
+  // Forwards a close event from the page to the browser.
+  void RequestClose() override;
   void NavigateCurrentTab(const GURL& url) override;
 
-  // Forwards an OnShow() call to the page with the given `context`. This call
+  // Forwards an `OnShow()` call to the page with the given `context`. This call
   // is intended to be used to notify the page that the widget in which the AIM
   // popup view is embedded in has appeared.
   void OnShow(std::unique_ptr<SearchboxContextData::Context> context);
 
-  // Forwards an OnClose() call to the page. This call is intended to be used
-  // to notify the page that the widget in which the AIM popup view is embedded
-  // in has closed.
-  void OnClose();
+  // Forwards an `OnWidgetClosed()` call to the page.
+  void OnWidgetClosed();
 
-  // Forwards an AddContext() call to the page. This call is intended to be used
-  // to notify the page that searchbox context has been added.
+  // Forwards an `AddContext()` call to the page. This call is intended to be
+  // used to notify the page that searchbox context has been added.
   void AddContext(std::unique_ptr<SearchboxContextData::Context> context);
 
  private:

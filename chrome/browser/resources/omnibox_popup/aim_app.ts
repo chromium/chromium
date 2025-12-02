@@ -60,8 +60,10 @@ export class OmniboxAimAppElement extends CrLitElement {
     super.connectedCallback();
 
     this.listenerIds_ = [
-      this.callbackRouter_.onShow.addListener(this.onShow_.bind(this)),
-      this.callbackRouter_.onClose.addListener(this.onClose_.bind(this)),
+      this.callbackRouter_.onWidgetShown.addListener(
+          this.onWidgetShown_.bind(this)),
+      this.callbackRouter_.onWidgetClosed.addListener(
+          this.onWidgetClosed_.bind(this)),
       this.callbackRouter_.addContext.addListener(this.addContext_.bind(this)),
     ];
 
@@ -109,10 +111,10 @@ export class OmniboxAimAppElement extends CrLitElement {
   }
 
   protected onCloseComposebox_() {
-    this.pageHandler_.close();
+    this.pageHandler_.requestClose();
   }
 
-  private onShow_(context: SearchContextStub) {
+  private onWidgetShown_(context: SearchContextStub) {
     this.$.composebox.playGlowAnimation();
     this.$.composebox.setSearchContext(context);
     this.$.composebox.focusInput();
@@ -123,7 +125,7 @@ export class OmniboxAimAppElement extends CrLitElement {
     this.$.composebox.focusInput();
   }
 
-  private onClose_(): Promise<{input: string}> {
+  private onWidgetClosed_(): Promise<{input: string}> {
     const input = this.$.composebox.getInputText();
     this.$.composebox.clearAllInputs();
     this.$.composebox.clearAutocompleteMatches();
