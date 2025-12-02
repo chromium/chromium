@@ -222,12 +222,12 @@ static void JNI_WebFeedBridge_FollowWebFeed(
       std::move(callback));
 }
 
-static jboolean JNI_WebFeedBridge_IsCormorantEnabledForLocale(JNIEnv* env) {
-  return JNI_WebFeedBridge_IsWebFeedEnabled(env);
-}
-
 static jboolean JNI_WebFeedBridge_IsWebFeedEnabled(JNIEnv* env) {
   return feed::IsWebFeedEnabledForLocale(FeedServiceFactory::GetCountry());
+}
+
+static jboolean JNI_WebFeedBridge_IsCormorantEnabledForLocale(JNIEnv* env) {
+  return JNI_WebFeedBridge_IsWebFeedEnabled(env);
 }
 
 static void JNI_WebFeedBridge_FollowWebFeedById(

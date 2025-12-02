@@ -22,7 +22,7 @@ static std::string JNI_StatisticsRecorderAndroid_ToJson(
   return base::StatisticsRecorder::ToJSON(verbosityLevel);
 }
 
+DEFINE_JNI(StatisticsRecorderAndroid)
+
 }  // namespace android
 }  // namespace base
-
-DEFINE_JNI(StatisticsRecorderAndroid)

@@ -260,6 +260,13 @@ PersistedTabDataAndroid::GetDeferredRequests() {
 
 bool PersistedTabDataAndroid::deferred_startup_complete_ = false;
 
+// Forward declarations
+static void JNI_PersistedTabData_OnTabClose(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_tab);
+
+static void JNI_PersistedTabData_OnDeferredStartup(JNIEnv* env);
+
 class PersistedTabDataAndroidHelper {
  private:
   friend void ::JNI_PersistedTabData_OnTabClose(

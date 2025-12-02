@@ -87,3 +87,5 @@ void JNI_AutoPictureInPicturePermissionController_SetPermissionStatus(
 }
 
 }  // namespace picture_in_picture
+
+DEFINE_JNI(AutoPictureInPicturePermissionController)

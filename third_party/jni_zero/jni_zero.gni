@@ -513,6 +513,12 @@ template("generate_jni") {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
+    if (!defined(invoker.enable_definition_macros)) {
+      enable_definition_macros =
+          filter_include([ get_label_info(":$target_name", "dir") ],
+                         [ "//third_party/webrtc/*" ]) == []
+    }
+
     # TODO(http://crbug.com/330720762): Change to False and migrate.
     allow_private_called_by_natives = true
     metadata = {

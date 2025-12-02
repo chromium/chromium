@@ -11,6 +11,12 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/enterprise/util/jni_headers/EnterpriseInfo_jni.h"
 
+// Forward declaration
+static void JNI_EnterpriseInfo_UpdateNativeOwnedState(
+    JNIEnv* env,
+    jboolean hasProfileOwnerApp,
+    jboolean hasDeviceOwnerApp);
+
 namespace enterprise_util {
 AndroidEnterpriseInfo::AndroidEnterpriseInfo() = default;
 AndroidEnterpriseInfo::~AndroidEnterpriseInfo() = default;
