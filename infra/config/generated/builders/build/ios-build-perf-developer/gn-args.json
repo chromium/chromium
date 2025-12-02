@@ -21,6 +21,18 @@
         "use_remoteexec": true,
         "use_siso": true
       }
+    },
+    "siso_no_clang_modules": {
+      "gn_args": {
+        "is_debug": true,
+        "target_cpu": "arm64",
+        "target_environment": "simulator",
+        "target_os": "ios",
+        "use_clang_modules": false,
+        "use_reclient": false,
+        "use_remoteexec": true,
+        "use_siso": true
+      }
     }
   }
 }

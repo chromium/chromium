@@ -575,7 +575,8 @@ def developer_build_perf_builder(description_html, reclient_jobs = None, **kwarg
         },
     }
     return ci.builder(
-        description_html = description_html + "<br>Build stats are shown in <a href=\"http://shortn/_gaAdI3x6o6\">http://shortn/_gaAdI3x6o6</a>.",
+        description_html = description_html + "<br>Build stats are shown in <a href=\"http://shortn/_gaAdI3x6o6\">http://shortn/_gaAdI3x6o6</a>." +
+                           "<br>This is also used to compare build performance between w/ and w/o clang modules.",
         executable = "recipe:chrome_build/build_perf_developer",
         # developer build usually interactive and not-batch build.
         siso_disable_batch_mode = True,
@@ -616,6 +617,7 @@ This builder measures build performance for Android developer builds, by simulat
     gn_args = {
         "ninja": gn_args.config(configs = ["android_developer", "android_fastbuild", "remoteexec", "no_siso", "reclient"]),
         "siso_native": gn_args.config(configs = ["android_developer", "android_fastbuild", "remoteexec", "no_reclient"]),
+        "siso_no_clang_modules": gn_args.config(configs = ["android_developer", "android_fastbuild", "remoteexec", "no_reclient", "no_clang_modules"]),
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -649,6 +651,7 @@ This builder measures build performance for Linux developer builds, by simulatin
     gn_args = {
         "ninja": gn_args.config(configs = ["developer", "remoteexec", "no_siso", "reclient", "linux", "x64"]),
         "siso_native": gn_args.config(configs = ["developer", "remoteexec", "no_reclient", "linux", "x64"]),
+        "siso_no_clang_modules": gn_args.config(configs = ["developer", "remoteexec", "no_reclient", "linux", "x64", "no_clang_modules"]),
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -682,6 +685,7 @@ This builder measures build performance for Windows developer builds, by simulat
     gn_args = {
         "ninja": gn_args.config(configs = ["developer", "remoteexec", "no_siso", "reclient", "win", "x64"]),
         "siso_native": gn_args.config(configs = ["developer", "remoteexec", "no_reclient", "win", "x64"]),
+        # TODO(https://crbug.com/425537956): Add no clang modules build config after enabling clang modules on Windows.
     },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -715,6 +719,7 @@ This builder measures build performance for Mac developer builds, by simulating 
     gn_args = {
         "ninja": gn_args.config(configs = ["developer", "remoteexec", "no_siso", "reclient", "mac", "arm64"]),
         "siso_native": gn_args.config(configs = ["developer", "remoteexec", "no_reclient", "mac", "arm64"]),
+        "siso_no_clang_modules": gn_args.config(configs = ["developer", "remoteexec", "no_reclient", "mac", "arm64", "no_clang_modules"]),
     },
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
@@ -753,6 +758,7 @@ This builder measures build performance for iOS developer builds, by simulating 
     gn_args = {
         "ninja": gn_args.config(configs = ["ios_developer", "remoteexec", "no_siso", "reclient", "arm64"]),
         "siso_native": gn_args.config(configs = ["ios_developer", "remoteexec", "no_reclient", "arm64"]),
+        "siso_no_clang_modules": gn_args.config(configs = ["ios_developer", "remoteexec", "no_reclient", "arm64", "no_clang_modules"]),
     },
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
