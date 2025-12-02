@@ -336,13 +336,13 @@ class CardUnmaskPromptViewControllerTest
                 accessibility_identifier);
   }
 
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<autofill::TestPersonalDataManager> personal_data_manager_;
   std::unique_ptr<NiceMock<MockCardUnmaskPromptViewBridge>>
       card_unmask_prompt_bridge_;
   std::unique_ptr<NiceMock<MockCardUnmaskPromptController>>
       card_unmask_prompt_controller_;
   autofill::CardUnmaskPromptOptions challenge_option_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  std::unique_ptr<autofill::TestPersonalDataManager> personal_data_manager_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_;
   autofill::CreditCard card_ = autofill::test::GetMaskedServerCard();

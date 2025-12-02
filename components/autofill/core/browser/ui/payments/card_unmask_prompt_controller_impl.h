@@ -108,7 +108,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   void LogOnCloseEvents();
   AutofillMetrics::UnmaskPromptEvent GetCloseReasonEvent();
 
-  const raw_ref<PrefService, DanglingUntriaged> pref_service_;
+  const raw_ref<PrefService> pref_service_;
   CreditCard card_;
   CardUnmaskPromptOptions card_unmask_prompt_options_;
   base::WeakPtr<CardUnmaskDelegate> delegate_;
