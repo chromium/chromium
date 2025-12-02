@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -720,20 +719,23 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
-    public Pair<Integer, Integer> allocInstanceId(
-            int windowId, int taskId, boolean preferNew, @SupportedProfileType int profileType) {
+    public AllocatedIdInfo allocInstanceId(
+            int windowId, int taskId, boolean preferNew, boolean isIncognitoIntent) {
         removeInvalidInstanceData(/* cleanupApplicationStatus= */ true);
         // Finish excess running activities / tasks after an instance limit downgrade.
         finishExcessRunningActivities();
 
         int instanceId = getInstanceByTask(taskId);
+        @SupportedProfileType int profileType;
 
         // Explicitly specified window ID should be preferred. This comes from user selecting
         // a certain instance on UI when no task is present for it.
         // When out of range, ignore the ID and apply the normal allocation logic below.
         if (windowId >= 0 && instanceId == INVALID_WINDOW_ID) {
             Log.i(TAG_MULTI_INSTANCE, "Existing Instance - selected Id allocated: " + windowId);
-            return Pair.create(windowId, InstanceAllocationType.EXISTING_INSTANCE_UNMAPPED_TASK);
+            profileType = getProfileType(windowId, isIncognitoIntent);
+            return new AllocatedIdInfo(
+                    windowId, InstanceAllocationType.EXISTING_INSTANCE_UNMAPPED_TASK, profileType);
         }
 
         // First, see if we have instance-task ID mapping. If we do, use the instance id. This
@@ -741,7 +743,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // new one. We pair them again.
         if (instanceId != INVALID_WINDOW_ID) {
             Log.i(TAG_MULTI_INSTANCE, "Existing Instance - mapped Id allocated: " + instanceId);
-            return Pair.create(instanceId, InstanceAllocationType.EXISTING_INSTANCE_MAPPED_TASK);
+            profileType = getProfileType(instanceId, isIncognitoIntent);
+            return new AllocatedIdInfo(
+                    instanceId, InstanceAllocationType.EXISTING_INSTANCE_MAPPED_TASK, profileType);
         }
 
         // If asked to always create a fresh new instance, not from persistent state, do it here.
@@ -756,12 +760,19 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 for (int i = 0; i < TabWindowManager.MAX_SELECTORS; ++i) {
                     if (!instanceEntryExists(i)) {
                         logNewInstanceId(i);
-                        return Pair.create(i, InstanceAllocationType.PREFER_NEW_INSTANCE_NEW_TASK);
+                        profileType = getProfileType(i, isIncognitoIntent);
+                        return new AllocatedIdInfo(
+                                i,
+                                InstanceAllocationType.PREFER_NEW_INSTANCE_NEW_TASK,
+                                profileType);
                     }
                 }
             }
-            return Pair.create(
-                    INVALID_WINDOW_ID, InstanceAllocationType.PREFER_NEW_INVALID_INSTANCE);
+            profileType = getProfileType(INVALID_WINDOW_ID, isIncognitoIntent);
+            return new AllocatedIdInfo(
+                    INVALID_WINDOW_ID,
+                    InstanceAllocationType.PREFER_NEW_INVALID_INSTANCE,
+                    profileType);
         }
 
         // Search for an unassigned ID. The index is available for the assignment if:
@@ -788,7 +799,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 // months post launch.
                 if (IncognitoUtils.shouldOpenIncognitoAsWindow()
                         && readLastAccessedTime(i) != 0
-                        && readProfileType(i) != profileType) {
+                        && readProfileType(i)
+                                != (isIncognitoIntent
+                                        ? SupportedProfileType.OFF_THE_RECORD
+                                        : SupportedProfileType.REGULAR)) {
                     continue;
                 }
                 id = i;
@@ -807,8 +821,42 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     TAG_MULTI_INSTANCE,
                     "Existing Instance - persisted and unmapped Id allocated: " + id);
         }
+        profileType = getProfileType(id, isIncognitoIntent);
+        return new AllocatedIdInfo(id, allocationType, profileType);
+    }
 
-        return Pair.create(id, allocationType);
+    /**
+     * Determines the profile type for a newly created window. See {@link #allocInstanceId(int, int,
+     * boolean, boolean)} for usage.
+     *
+     * @param windowId The id allocated to the newly created window.
+     * @param isIncognito Whether the window is an incognito-only window.
+     */
+    private @SupportedProfileType int getProfileType(int windowId, boolean isIncognito) {
+        @SupportedProfileType int profileType;
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            profileType =
+                    isIncognito
+                            ? SupportedProfileType.OFF_THE_RECORD
+                            : SupportedProfileType.REGULAR;
+
+            int profileTypeFromPreferences =
+                    ChromeSharedPreferences.getInstance()
+                            .readInt(
+                                    ChromePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(
+                                            String.valueOf(windowId)),
+                                    SupportedProfileType.UNSET);
+            if (profileTypeFromPreferences != SupportedProfileType.UNSET) {
+                // The profile type based on the new window intent and the value from
+                // ChromeSharedPreferences should not conflict. The intent should only
+                // specify SupportedProfileType for the new window, which will not have value in
+                // ChromeSharedPreferences.
+                profileType = profileTypeFromPreferences;
+            }
+        } else {
+            profileType = SupportedProfileType.MIXED;
+        }
+        return profileType;
     }
 
     // This method will finish the least recently used excess running activities / tasks exactly

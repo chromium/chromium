@@ -87,7 +87,9 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.AllocatedIdInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
@@ -592,10 +594,10 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // New instantiation picks up the smallest available ID.
         // assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
-        Pair<Integer, Integer> instanceIdInfo =
+        AllocatedIdInfo instanceIdInfo =
                 mMultiInstanceManager.allocInstanceId(
-                        PASSED_ID_INVALID, TASK_ID_57, false, SupportedProfileType.REGULAR);
-        int index = instanceIdInfo.first;
+                        PASSED_ID_INVALID, TASK_ID_57, false, /* isIncognitoIntent= */ false);
+        int index = instanceIdInfo.instanceId;
 
         // Does what TabModelOrchestrator.createTabModels() would do to simulate production code.
         Pair<Integer, TabModelSelector> pair =
@@ -623,10 +625,10 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // New instantiation picks up the smallest available ID.
         // assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
-        Pair<Integer, Integer> instanceIdInfo =
+        AllocatedIdInfo instanceIdInfo =
                 mMultiInstanceManager.allocInstanceId(
-                        PASSED_ID_INVALID, TASK_ID_57, false, SupportedProfileType.REGULAR);
-        int index = instanceIdInfo.first;
+                        PASSED_ID_INVALID, TASK_ID_57, false, /* isIncognitoIntent= */ false);
+        int index = instanceIdInfo.instanceId;
 
         // Does what TabModelOrchestrator.createTabModels() would do to simulate production code.
         Pair<Integer, TabModelSelector> pair =
@@ -703,20 +705,20 @@ public class MultiInstanceManagerApi31UnitTest {
                 createMultiInstanceManager(mActivityTask59);
         MultiInstanceManagerApi31.setAppTaskIdsForTesting(
                 new HashSet<>(Arrays.asList(TASK_ID_57, TASK_ID_58, TASK_ID_59)));
-        Pair<Integer, Integer> instanceIdInfo =
+        AllocatedIdInfo instanceIdInfo =
                 multiInstanceManager.allocInstanceId(
                         PASSED_ID_INVALID,
                         TASK_ID_59,
                         /* preferNew= */ true,
-                        SupportedProfileType.REGULAR);
+                        /* isIncognitoIntent= */ false);
         assertEquals(
                 "Should not allocate valid instance id when at limit.",
                 INVALID_WINDOW_ID,
-                (int) instanceIdInfo.first);
+                (int) instanceIdInfo.instanceId);
         assertEquals(
                 "Should return PREFER_NEW_INVALID_INSTANCE.",
-                MultiWindowUtils.InstanceAllocationType.PREFER_NEW_INVALID_INSTANCE,
-                (int) instanceIdInfo.second);
+                InstanceAllocationType.PREFER_NEW_INVALID_INSTANCE,
+                (int) instanceIdInfo.allocationType);
     }
 
     @Test
@@ -737,17 +739,17 @@ public class MultiInstanceManagerApi31UnitTest {
         // instance ID outside of the mMaxInstances range as we only consider active instances.
         when(mActivityTask59.getSystemService(Context.ACTIVITY_SERVICE))
                 .thenReturn(mActivityManager);
-        Pair<Integer, Integer> instanceIdInfo =
+        AllocatedIdInfo instanceIdInfo =
                 mMultiInstanceManager.allocInstanceId(
                         PASSED_ID_INVALID,
                         TASK_ID_59,
                         /* preferNew= */ true,
-                        SupportedProfileType.REGULAR);
-        assertEquals("Should allocate a new instance id.", 3, (int) instanceIdInfo.first);
+                        /* isIncognitoIntent= */ false);
+        assertEquals("Should allocate a new instance id.", 3, (int) instanceIdInfo.instanceId);
         assertEquals(
                 "Should return PREFER_NEW_INSTANCE_NEW_TASK.",
-                MultiWindowUtils.InstanceAllocationType.PREFER_NEW_INSTANCE_NEW_TASK,
-                (int) instanceIdInfo.second);
+                InstanceAllocationType.PREFER_NEW_INSTANCE_NEW_TASK,
+                (int) instanceIdInfo.allocationType);
     }
 
     @Test
@@ -1367,10 +1369,10 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     private int allocInstanceIndex(int passedId, Activity activity, boolean preferNew) {
-        Pair<Integer, Integer> instanceIdInfo =
+        AllocatedIdInfo instanceIdInfo =
                 mMultiInstanceManager.allocInstanceId(
-                        passedId, activity.getTaskId(), preferNew, SupportedProfileType.REGULAR);
-        int index = instanceIdInfo.first;
+                        passedId, activity.getTaskId(), preferNew, /* isIncognitoIntent= */ false);
+        int index = instanceIdInfo.instanceId;
 
         // Does what TabModelOrchestrator.createTabModels() would do to simulate production code.
         Pair<Integer, TabModelSelector> pair =

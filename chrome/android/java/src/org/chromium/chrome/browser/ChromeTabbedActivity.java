@@ -167,10 +167,11 @@ import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.AllocatedIdInfo;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
@@ -3573,21 +3574,20 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             // |allocInstanceId| doesn't do any disk I/O that would add a long-running task
             // to pre-inflation startup.
             boolean preferNew = MultiWindowUtils.getExtraPreferNewFromIntent(intent);
-            Pair<Integer, Integer> instanceIdInfo =
+            AllocatedIdInfo instanceIdInfo =
                     mMultiInstanceManager.allocInstanceId(
                             windowId,
                             ApplicationStatus.getTaskId(this),
                             preferNew,
-                            mHasIncognitoExtra
-                                    ? SupportedProfileType.OFF_THE_RECORD
-                                    : SupportedProfileType.REGULAR);
-            mWindowId = instanceIdInfo.first;
-            mInstanceAllocationType = instanceIdInfo.second;
+                            mHasIncognitoExtra);
+            mWindowId = instanceIdInfo.instanceId;
+            mInstanceAllocationType = instanceIdInfo.allocationType;
+            mSupportedProfileType = instanceIdInfo.profileType;
             logIntentInfo(intent);
             // If a new instance ID was allocated for the newly created activity, potentially
             // dispatch it to an existing activity under special circumstances. See
             // |#maybeDispatchIntentInExistingActivity(Intent)| for details.
-            if (instanceIdInfo.second == InstanceAllocationType.NEW_INSTANCE_NEW_TASK
+            if (instanceIdInfo.allocationType == InstanceAllocationType.NEW_INSTANCE_NEW_TASK
                     && maybeDispatchIntentInExistingActivity(intent)) {
                 return false;
             }
@@ -3611,29 +3611,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     "Window ID allocated: " + mWindowId + ", instance-task map: " + taskMap);
         }
 
-        // TODO(crbug.com/457229225): Move the initialization of mSupportedProfileType to
-        // #allocInstanceId.
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            mSupportedProfileType =
-                    mHasIncognitoExtra
-                            ? SupportedProfileType.OFF_THE_RECORD
-                            : SupportedProfileType.REGULAR;
-
-            int profileTypeFromPreferences =
-                    ChromeSharedPreferences.getInstance()
-                            .readInt(
-                                    ChromePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(
-                                            String.valueOf(mWindowId)),
-                                    SupportedProfileType.UNSET);
-            if (profileTypeFromPreferences != SupportedProfileType.UNSET) {
-                // Intent and ChromeSharedPreferences should not conflict. Intent should only
-                // specify SupportedProfileType for the new window, which will not have value in
-                // ChromeSharedPreferences.
-                mSupportedProfileType = profileTypeFromPreferences;
-            }
-        } else {
-            mSupportedProfileType = SupportedProfileType.MIXED;
-        }
         assert mSupportedProfileType != SupportedProfileType.UNSET;
 
         if (mMultiInstanceManager != null
