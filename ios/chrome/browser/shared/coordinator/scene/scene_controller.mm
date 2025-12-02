@@ -1327,54 +1327,8 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
   // Create and start the BVC.
   [self.browserViewWrangler createMainCoordinatorAndInterface];
-  Browser* mainBrowser = self.browserViewWrangler.mainInterface.browser;
 
-  PromosManager* promosManager = PromosManagerFactory::GetForProfile(profile);
-
-  DefaultBrowserPromoSceneAgent* defaultBrowserAgent =
-      [[DefaultBrowserPromoSceneAgent alloc] init];
-  defaultBrowserAgent.promosManager = promosManager;
-  [sceneState addAgent:defaultBrowserAgent];
-  [sceneState
-      addAgent:[[NonModalDefaultBrowserPromoSchedulerSceneAgent alloc] init]];
-
-  // Add scene agents that require CommandDispatcher.
-  CommandDispatcher* mainCommandDispatcher =
-      mainBrowser->GetCommandDispatcher();
-  id<ApplicationCommands> applicationCommandsHandler =
-      HandlerForProtocol(mainCommandDispatcher, ApplicationCommands);
-  id<PolicyChangeCommands> policyChangeCommandsHandler =
-      HandlerForProtocol(mainCommandDispatcher, PolicyChangeCommands);
-
-  [sceneState
-      addAgent:[[SigninPolicySceneAgent alloc]
-                       initWithSceneUIProvider:self
-                    applicationCommandsHandler:applicationCommandsHandler
-                   policyChangeCommandsHandler:policyChangeCommandsHandler]];
-
-  enterprise_idle::IdleService* idleService =
-      enterprise_idle::IdleServiceFactory::GetForProfile(profile);
-  id<SnackbarCommands> snackbarCommandsHandler =
-      static_cast<id<SnackbarCommands>>(mainCommandDispatcher);
-
-  [sceneState addAgent:[[IdleTimeoutPolicySceneAgent alloc]
-                              initWithSceneUIProvider:self
-                           applicationCommandsHandler:applicationCommandsHandler
-                              snackbarCommandsHandler:snackbarCommandsHandler
-                                          idleService:idleService
-                                          mainBrowser:mainBrowser]];
-
-  // Now that the main browser's command dispatcher is created and the newly
-  // started UI coordinators have registered with it, inject it into the
-  // PolicyWatcherBrowserAgent so it can start monitoring UI-impacting policy
-  // changes.
-  PolicyWatcherBrowserAgent* policyWatcherAgent =
-      PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser);
-  _policyWatcherObserver = std::make_unique<base::ScopedObservation<
-      PolicyWatcherBrowserAgent, PolicyWatcherBrowserAgentObserverBridge>>(
-      _policyWatcherObserverBridge.get());
-  _policyWatcherObserver->Observe(policyWatcherAgent);
-  policyWatcherAgent->Initialize(policyChangeCommandsHandler);
+  [self addAgents];
 
   self.screenshotDelegate = [[ScreenshotDelegate alloc]
       initWithBrowserProviderInterface:self.browserViewWrangler];
@@ -1386,44 +1340,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
   // Make sure the GeolocationManager is created to observe permission events.
   [GeolocationManager sharedInstance];
-
-  if (ShouldPromoManagerDisplayPromos()) {
-    [sceneState addAgent:[[PromosManagerSceneAgent alloc]
-                             initWithCommandDispatcher:mainCommandDispatcher]];
-  }
-
-  if (IsAppStoreRatingEnabled()) {
-    [sceneState addAgent:[[AppStoreRatingSceneAgent alloc]
-                             initWithPromosManager:promosManager]];
-  }
-
-  [sceneState addAgent:[[WhatsNewSceneAgent alloc]
-                           initWithPromosManager:promosManager]];
-
-  // Do not gate by feature flag so it can run for enabled -> disabled
-  // scenarios.
-  [sceneState addAgent:[[CredentialProviderPromoSceneAgent alloc]
-                           initWithPromosManager:promosManager]];
-
-  if (IsFullscreenSigninPromoManagerMigrationEnabled()) {
-    AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForProfile(profile);
-    PrefService* prefService = profile->GetPrefs();
-    [sceneState
-        addAgent:
-            [[FullscreenSigninPromoSceneAgent alloc]
-                initWithPromosManager:promosManager
-                          authService:authService
-                      identityManager:IdentityManagerFactory::GetForProfile(
-                                          profile)
-                          syncService:SyncServiceFactory::GetForProfile(profile)
-                          prefService:prefService]];
-  }
-
-  if (IsPageActionMenuEnabled()) {
-    [sceneState addAgent:[[BWGPromoSceneAgent alloc]
-                             initWithPromosManager:promosManager]];
-  }
 }
 
 // Determines the mode (normal or incognito) the initial UI should be in.
@@ -1867,6 +1783,98 @@ void RecordIfNeededSigninFullscreenPromoEvent(
       }
     }
   }];
+}
+
+// Add scene agents that are not dependent on profileState.
+- (void)addAgents {
+  SceneState* sceneState = self.sceneState;
+  ProfileIOS* profile = self.profile;
+  Browser* mainBrowser = self.browserViewWrangler.mainInterface.browser;
+
+  PromosManager* promosManager = PromosManagerFactory::GetForProfile(profile);
+
+  DefaultBrowserPromoSceneAgent* defaultBrowserAgent =
+      [[DefaultBrowserPromoSceneAgent alloc] init];
+  defaultBrowserAgent.promosManager = promosManager;
+  [sceneState addAgent:defaultBrowserAgent];
+  [sceneState
+      addAgent:[[NonModalDefaultBrowserPromoSchedulerSceneAgent alloc] init]];
+
+  // Add scene agents that require CommandDispatcher.
+  CommandDispatcher* mainCommandDispatcher =
+      mainBrowser->GetCommandDispatcher();
+  id<ApplicationCommands> applicationCommandsHandler =
+      HandlerForProtocol(mainCommandDispatcher, ApplicationCommands);
+  id<PolicyChangeCommands> policyChangeCommandsHandler =
+      HandlerForProtocol(mainCommandDispatcher, PolicyChangeCommands);
+
+  [sceneState
+      addAgent:[[SigninPolicySceneAgent alloc]
+                       initWithSceneUIProvider:self
+                    applicationCommandsHandler:applicationCommandsHandler
+                   policyChangeCommandsHandler:policyChangeCommandsHandler]];
+
+  enterprise_idle::IdleService* idleService =
+      enterprise_idle::IdleServiceFactory::GetForProfile(profile);
+  id<SnackbarCommands> snackbarCommandsHandler =
+      static_cast<id<SnackbarCommands>>(mainCommandDispatcher);
+
+  [sceneState addAgent:[[IdleTimeoutPolicySceneAgent alloc]
+                              initWithSceneUIProvider:self
+                           applicationCommandsHandler:applicationCommandsHandler
+                              snackbarCommandsHandler:snackbarCommandsHandler
+                                          idleService:idleService
+                                          mainBrowser:mainBrowser]];
+
+  // Now that the main browser's command dispatcher is created and the newly
+  // started UI coordinators have registered with it, inject it into the
+  // PolicyWatcherBrowserAgent so it can start monitoring UI-impacting policy
+  // changes.
+  PolicyWatcherBrowserAgent* policyWatcherAgent =
+      PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser);
+  _policyWatcherObserver = std::make_unique<base::ScopedObservation<
+      PolicyWatcherBrowserAgent, PolicyWatcherBrowserAgentObserverBridge>>(
+      _policyWatcherObserverBridge.get());
+  _policyWatcherObserver->Observe(policyWatcherAgent);
+  policyWatcherAgent->Initialize(policyChangeCommandsHandler);
+
+  if (ShouldPromoManagerDisplayPromos()) {
+    [sceneState addAgent:[[PromosManagerSceneAgent alloc]
+                             initWithCommandDispatcher:mainCommandDispatcher]];
+  }
+
+  if (IsAppStoreRatingEnabled()) {
+    [sceneState addAgent:[[AppStoreRatingSceneAgent alloc]
+                             initWithPromosManager:promosManager]];
+  }
+
+  [sceneState addAgent:[[WhatsNewSceneAgent alloc]
+                           initWithPromosManager:promosManager]];
+
+  // Do not gate by feature flag so it can run for enabled -> disabled
+  // scenarios.
+  [sceneState addAgent:[[CredentialProviderPromoSceneAgent alloc]
+                           initWithPromosManager:promosManager]];
+
+  if (IsFullscreenSigninPromoManagerMigrationEnabled()) {
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForProfile(profile);
+    PrefService* prefService = profile->GetPrefs();
+    [sceneState
+        addAgent:
+            [[FullscreenSigninPromoSceneAgent alloc]
+                initWithPromosManager:promosManager
+                          authService:authService
+                      identityManager:IdentityManagerFactory::GetForProfile(
+                                          profile)
+                          syncService:SyncServiceFactory::GetForProfile(profile)
+                          prefService:prefService]];
+  }
+
+  if (IsPageActionMenuEnabled()) {
+    [sceneState addAgent:[[BWGPromoSceneAgent alloc]
+                             initWithPromosManager:promosManager]];
+  }
 }
 
 // Adds agents that may depend on profileState. Called after a profileState has
