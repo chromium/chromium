@@ -201,6 +201,12 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
                                        TabStorageType type,
                                        std::vector<uint8_t> payload,
                                        std::vector<uint8_t> children) {
+  // TODO(crbug.com/451614469): Add support for OTR.
+  if (is_off_the_record) {
+    DLOG(ERROR) << "OTR saves are not supported yet.";
+    // Pretend we succeeded to avoid rollback.
+    return true;
+  }
   DCHECK(OpenTransaction::IsValid(transaction));
 
   static constexpr char kInsertNodeSql[] =
