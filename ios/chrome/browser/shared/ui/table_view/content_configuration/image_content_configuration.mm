@@ -23,6 +23,13 @@
   return [[ImageContentView alloc] initWithConfiguration:self];
 }
 
+- (CGSize)contentSize {
+  if (!CGSizeEqualToSize(_imageSize, CGSizeZero)) {
+    return _imageSize;
+  }
+  return _image.size;
+}
+
 #pragma mark - UIContentConfiguration
 
 - (id<UIContentView>)makeContentView {

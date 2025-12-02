@@ -7,12 +7,20 @@
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/favicon_content_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 
+namespace {
+constexpr CGFloat kFaviconContainerWidth = 30;
+}
+
 @implementation FaviconContentConfiguration
 
 #pragma mark - ChromeContentConfiguration
 
 - (UIView<ChromeContentView>*)makeChromeContentView {
   return [[FaviconContentView alloc] initWithConfiguration:self];
+}
+
+- (CGSize)contentSize {
+  return CGSizeMake(kFaviconContainerWidth, kFaviconContainerWidth);
 }
 
 #pragma mark - UIContentConfiguration

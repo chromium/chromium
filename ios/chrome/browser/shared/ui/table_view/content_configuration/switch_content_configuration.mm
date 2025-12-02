@@ -24,6 +24,20 @@
   return [[SwitchContentView alloc] initWithConfiguration:self];
 }
 
+- (CGSize)contentSize {
+  // Static variable to store the size once calculated
+  static CGSize _cachedSize;
+  static dispatch_once_t onceToken;
+
+  dispatch_once(&onceToken, ^{
+    UIView* view = [self makeContentView];
+    _cachedSize =
+        [view systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+  });
+
+  return _cachedSize;
+}
+
 #pragma mark - UIContentConfiguration
 
 - (id<UIContentView>)makeContentView {

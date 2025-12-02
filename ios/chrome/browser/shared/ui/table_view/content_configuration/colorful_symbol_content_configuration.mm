@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
 
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_view.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 
 @implementation ColorfulSymbolContentConfiguration
 
@@ -12,6 +13,10 @@
 
 - (UIView<ChromeContentView>*)makeChromeContentView {
   return [[ColorfulSymbolContentView alloc] initWithConfiguration:self];
+}
+
+- (CGSize)contentSize {
+  return CGSizeMake(kTableViewIconImageSize, kTableViewIconImageSize);
 }
 
 #pragma mark - UIContentConfiguration

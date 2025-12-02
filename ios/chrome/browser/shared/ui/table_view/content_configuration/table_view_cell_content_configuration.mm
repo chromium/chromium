@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_view.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 
 @implementation TableViewCellContentConfiguration
 
@@ -67,6 +68,15 @@
   contentView.accessibilityUserInputLabels =
       [self accessibilityUserInputLabels];
   return contentView;
+}
+
+- (UIEdgeInsets)separatorInsets {
+  CGFloat leadingInset = kTableViewHorizontalSpacing;
+  if (_leadingConfiguration) {
+    leadingInset += kTableViewHorizontalSpacing;
+    leadingInset += [_leadingConfiguration contentSize].width;
+  }
+  return UIEdgeInsetsMake(0, leadingInset, 0, 0);
 }
 
 #pragma mark - UIContentConfiguration

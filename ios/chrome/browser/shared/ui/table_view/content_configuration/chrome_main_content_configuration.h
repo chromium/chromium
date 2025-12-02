@@ -14,6 +14,9 @@
 // accessory view.
 - (void)setHasAccessoryView:(BOOL)hasAccessoryView;
 
+// Returns the insets for the separator.
+- (UIEdgeInsets)separatorInsets;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CONTENT_CONFIGURATION_CHROME_MAIN_CONTENT_CONFIGURATION_H_

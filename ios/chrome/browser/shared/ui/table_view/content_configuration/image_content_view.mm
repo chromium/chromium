@@ -20,6 +20,7 @@
     (ImageContentConfiguration*)configuration {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+    self.translatesAutoresizingMaskIntoConstraints = NO;
     _widthConstraint = [self.widthAnchor
         constraintEqualToConstant:configuration.imageSize.width];
     _heightConstraint = [self.heightAnchor

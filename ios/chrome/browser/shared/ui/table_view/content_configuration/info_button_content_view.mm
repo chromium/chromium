@@ -13,6 +13,7 @@
 
 namespace {
 const CGFloat kInfoSymbolSize = 22;
+const CGFloat kButtonSize = 27;
 }
 
 @implementation InfoButtonContentView {
@@ -47,7 +48,12 @@ const CGFloat kInfoSymbolSize = 22;
     _configuration = [configuration copy];
     [self applyConfiguration];
 
-    AddSameConstraints(_infoButton, self);
+    [NSLayoutConstraint activateConstraints:@[
+      [self.widthAnchor constraintEqualToConstant:kButtonSize],
+      [self.heightAnchor constraintEqualToAnchor:self.widthAnchor],
+      [_infoButton.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+      [_infoButton.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+    ]];
   }
   return self;
 }

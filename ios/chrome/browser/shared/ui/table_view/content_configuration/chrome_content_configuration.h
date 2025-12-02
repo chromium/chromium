@@ -15,6 +15,9 @@
 // This is the same method as `makeContentView`, but with a more specific type.
 - (UIView<ChromeContentView>*)makeChromeContentView;
 
+// Returns the size of the content of this view.
+- (CGSize)contentSize;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CONTENT_CONFIGURATION_CHROME_CONTENT_CONFIGURATION_H_

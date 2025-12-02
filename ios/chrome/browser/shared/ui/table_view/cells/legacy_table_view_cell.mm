@@ -84,6 +84,7 @@ const CGFloat kTableViewCustomSeparatorHeight = 0.5;
         self.accessoryView != nil;
     [configuration setHasAccessoryView:hasAccessoryView];
     self.contentConfiguration = configuration;
+    self.separatorInset = [configuration separatorInsets];
   }
   [super updateConfigurationUsingState:state];
 }

@@ -50,3 +50,19 @@ source_set("generic_content") {
     "chrome_main_content_configuration.h",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "colorful_symbol_content_configuration_unittest.mm",
+    "favicon_content_configuration_unittest.mm",
+    "image_content_configuration_unittest.mm",
+    "info_button_content_configuration_unittest.mm",
+    "switch_content_configuration_unittest.mm",
+  ]
+  deps = [
+    ":content_configuration",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//testing/gtest",
+  ]
+}

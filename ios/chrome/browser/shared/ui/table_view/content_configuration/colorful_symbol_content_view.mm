@@ -26,6 +26,7 @@ const CGFloat kSymbolContainerCornerRadius = 7;
     (ColorfulSymbolContentConfiguration*)configuration {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+    self.translatesAutoresizingMaskIntoConstraints = NO;
     _configuration = [configuration copy];
 
     _symbolImageView = [[UIImageView alloc] init];

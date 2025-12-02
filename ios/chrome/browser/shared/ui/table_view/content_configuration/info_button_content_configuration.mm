@@ -8,6 +8,10 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+namespace {
+const CGFloat kButtonSize = 27;
+}
+
 @implementation InfoButtonContentConfiguration
 
 - (instancetype)init {
@@ -23,6 +27,10 @@
 
 - (UIView<ChromeContentView>*)makeChromeContentView {
   return [[InfoButtonContentView alloc] initWithConfiguration:self];
+}
+
+- (CGSize)contentSize {
+  return CGSizeMake(kButtonSize, kButtonSize);
 }
 
 #pragma mark - UIContentConfiguration
