@@ -54,8 +54,6 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
     @VisibleForTesting
     public static final int ESCAPE_HATCH_BLOCK_LIMIT = 10;
 
-    // TODO(b/365100489): Refactor this coordinator to implement the dialog's custom view fully
-    // using the standard chromium MVC patterns. This class is a temporary shortcut.
     interface ViewHolder {
         View getView();
 
@@ -84,8 +82,6 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                 public void onDialogDismissed(PropertyModel model) {
                     if (model != mModel) return;
 
-                    // TODO(b/365100489): Look into moving this (and maybe action button click?) to
-                    // the `ModalDialogProperties.CONTROLLER` instead.
                     mMediator.onDialogDismissed();
                     RecordUserAction.record("OsDefaultsChoiceDialogClosed");
                 }
