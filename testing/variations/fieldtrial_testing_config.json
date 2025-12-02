@@ -901,6 +901,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "search_box_movement": "true",
+                        "search_box_squish_animation": "true"
+                    },
                     "enable_features": [
                         "AndroidPinnedTabs"
                     ]
