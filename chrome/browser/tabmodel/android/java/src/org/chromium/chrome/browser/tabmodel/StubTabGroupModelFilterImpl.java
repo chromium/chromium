@@ -29,11 +29,6 @@ public class StubTabGroupModelFilterImpl implements TabGroupModelFilterInternal 
     }
 
     @Override
-    public boolean closeTabs(TabClosureParams tabClosureParams) {
-        return mTabModel.closeTabs(tabClosureParams);
-    }
-
-    @Override
     public void markTabStateInitialized() {}
 
     @Override

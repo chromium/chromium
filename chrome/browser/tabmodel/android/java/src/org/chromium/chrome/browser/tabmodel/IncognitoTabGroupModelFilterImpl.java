@@ -94,16 +94,6 @@ public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInte
     }
 
     @Override
-    public boolean closeTabs(TabClosureParams params) {
-        // Special case. TabGroupModelFilterInternal and TabModelInternal implement TabCloser (the
-        // TabGroupModelFilter implementation can be removed once TabCollection launches). For now
-        // we need to be careful to call the method on the IncognitoTabModelImpl as it has some
-        // additional logic to prevent the delegate model from being destroyed during a tab closure
-        // operation.
-        return mIncognitoTabModel.closeTabs(params);
-    }
-
-    @Override
     public void addObserver(TabModelObserver observer) {
         mIncognitoTabModel.addObserver(observer);
     }

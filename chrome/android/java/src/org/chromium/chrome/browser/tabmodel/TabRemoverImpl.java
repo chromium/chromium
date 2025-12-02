@@ -82,7 +82,7 @@ public class TabRemoverImpl implements TabRemover {
     @Override
     public void forceCloseTabs(TabClosureParams tabClosureParams) {
         PassthroughTabRemover.doCloseTabs(
-                mTabModelRemover.getTabGroupModelFilter(), tabClosureParams);
+                mTabModelRemover.getTabGroupModelFilter().getTabModel(), tabClosureParams);
     }
 
     @Override
