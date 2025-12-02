@@ -7,6 +7,8 @@ import("//build/config/chrome_build.gni")
 source_set("ui") {
   sources = [
     "constants.h",
+    "expandable_label_view.h",
+    "expandable_label_view.mm",
     "search_engine_choice_consumer.h",
     "search_engine_choice_mutator.h",
     "search_engine_choice_view_controller.h",
