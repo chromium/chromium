@@ -3424,7 +3424,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Document.BeforeUnloadDialog" enum="BeforeUnloadDialogResult"
-    expires_after="2026-03-01">
+    expires_after="2026-12-01">
   <owner>panicker@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <summary>
@@ -3436,7 +3436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DocumentEventTiming.BeforeUnloadDialogDuration.ByNavigation"
-    units="ms" expires_after="2023-10-01">
+    units="ms" expires_after="2026-12-01">
   <owner>sullivan@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <summary>
@@ -3444,8 +3444,8 @@ chromium-metrics-reviews@google.com.
     beforeunload event in JavaScript. Recorded immediately after closing dialog,
     upon user confirmation to navigate away from the page.
 
-    Warning: this histogram was expired from 2020-09-05 to M108; data may be
-    missing.
+    Warning: this histogram was expired from 2020-09-05 to M108, and from
+    2023-10-01 to M144; data may be missing.
   </summary>
 </histogram>
 
@@ -5103,7 +5103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LoadingPredictor.IsSlowNetwork" enum="Boolean"
-    expires_after="2025-12-14">
+    expires_after="2026-12-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -5167,7 +5167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LoadingPredictor.SetLCPPNavigationHint.Time" units="ms"
-    expires_after="2026-05-03">
+    expires_after="2026-12-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
