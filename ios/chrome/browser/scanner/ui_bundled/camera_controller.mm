@@ -44,11 +44,6 @@
 - (void)stopReceivingNotifications;
 // Returns the camera attached to `_captureSession`.
 - (AVCaptureDevice*)camera;
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-// Returns the AVCaptureVideoOrientation to compensate for the current
-// UIInterfaceOrientation. Defaults to AVCaptureVideoOrientationPortrait.
-- (AVCaptureVideoOrientation)videoOrientationForCurrentInterfaceOrientation;
-#endif
 
 @end
 
@@ -329,18 +324,6 @@
   DCHECK(captureSessionInput != nil);
   return [captureSessionInput device];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (AVCaptureVideoOrientation)videoOrientationForCurrentInterfaceOrientation {
-  UIInterfaceOrientation orientation = GetInterfaceOrientation();
-  switch (orientation) {
-    case UIInterfaceOrientationUnknown:
-      return AVCaptureVideoOrientationPortrait;
-    default:
-      return static_cast<AVCaptureVideoOrientation>(orientation);
-  }
-}
-#endif
 
 #pragma mark - Notification Handlers
 
