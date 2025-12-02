@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/media_switches.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_color_space.h"
@@ -548,6 +549,9 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     DCHECK_EQ(options_.bitrate->mode(), Bitrate::Mode::kExternal);
     // Convert double quantizer to an integer within codec's supported range.
     int qp = static_cast<int>(std::lround(encode_options.quantizer.value()));
+    if (base::FeatureList::IsEnabled(kStandardizeVP9AndAV1Quantizer)) {
+      qp = QIndexToQuantizer(VideoCodec::kAV1, qp);
+    }
     qp = std::clamp(qp, static_cast<int>(config_.rc_min_quantizer),
                     static_cast<int>(config_.rc_max_quantizer));
     aom_codec_control(codec_.get(), AV1E_SET_QUANTIZER_ONE_PASS, qp);

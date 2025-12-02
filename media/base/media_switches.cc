@@ -677,6 +677,9 @@ BASE_FEATURE(kGlobalMediaControlsSeamlessTransfer,
 // CanPlayThrough issued according to standard.
 BASE_FEATURE(kSpecCompliantCanPlayThrough, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Standardize the quantization range for VP9 and AV1 encoders to 0-255.
+BASE_FEATURE(kStandardizeVP9AndAV1Quantizer, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Suspends WebMediaPlayerImpl instances when the containing RenderFrame is
 // frozen. TODO(crbug.com/41161335): Remove in M143 after it goes stable.
 BASE_FEATURE(kSuspendMediaForFrozenFrames, base::FEATURE_ENABLED_BY_DEFAULT);

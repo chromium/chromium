@@ -13,6 +13,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "media/base/media_switches.h"
+#include "media/base/video_encoder.h"
 #include "media/gpu/windows/d3d12_video_helpers.h"
 #include "media/gpu/windows/format_utils.h"
 #include "third_party/libaom/source/libaom/av1/ratectrl_rtc.h"
@@ -69,16 +71,6 @@ constexpr std::array<int16_t, 256> kAcQuantizerLookup = {
     1369, 1396, 1423, 1451, 1479, 1508, 1537, 1567, 1597, 1628, 1660, 1692,
     1725, 1759, 1793, 1828,
 };
-
-uint8_t AV1QPtoQindex(uint8_t avenc_qp) {
-  uint8_t q_index = avenc_qp * 4;
-  if (q_index == 248) {
-    q_index = 249;
-  } else if (q_index == 252) {
-    q_index = 255;
-  }
-  return q_index;
-}
 
 AV1BitstreamBuilder::SequenceHeader FillAV1BuilderSequenceHeader(
     uint8_t num_temporal_layers,
@@ -939,12 +931,18 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
     software_brc_->ComputeQP(frame_params);
     qindex = software_brc_->GetQP();
   } else if (options.quantizer.has_value()) {
-    qindex = AV1QPtoQindex(
-        std::clamp(static_cast<uint8_t>(options.quantizer.value()),
-                   kAV1MinQuantizer, kAV1MaxQuantizer));
+    int q_val = options.quantizer.value();
+    if (base::FeatureList::IsEnabled(kStandardizeVP9AndAV1Quantizer)) {
+      qindex = q_val;
+    } else {
+      qindex = QuantizerToQIndex(
+          VideoCodec::kAV1, std::clamp(static_cast<uint8_t>(q_val),
+                                       kAV1MinQuantizer, kAV1MaxQuantizer));
+    }
   }
-  const int base_q_idx =
-      std::clamp(qindex.value_or(AV1QPtoQindex(kAV1MaxQuantizer)), 0, 255);
+  const int base_q_idx = std::clamp(
+      qindex.value_or(QuantizerToQIndex(VideoCodec::kAV1, kAV1MaxQuantizer)), 0,
+      255);
   picture_params_.Quantization.BaseQIndex = base_q_idx;
   DVLOG(4) << base::StringPrintf(
       "Encoding picture: %d, is_keyframe = %d, QP = %d", picture_id_,

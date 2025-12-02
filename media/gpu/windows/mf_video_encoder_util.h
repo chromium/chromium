@@ -123,13 +123,6 @@ static constexpr uint8_t kH265MinQuantizer = 10;
 static constexpr uint8_t kH265MaxQuantizer = 42;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
-// Converts AV1/VP9 qindex (0-255) to the quantizer parameter input in MF
-// AVEncVideoEncodeQP.
-uint8_t QindextoAVEncQP(VideoCodec codec, uint8_t q_index);
-
-// Converts AV1/VP9 AVEncVideoEncodeQP values to qindex (0-255) range.
-uint8_t AVEncQPtoQindex(VideoCodec codec, uint8_t avenc_qp);
-
 // Returns true if |qp| is a valid quantizer parameter for |codec|.
 bool IsValidQp(VideoCodec codec, uint64_t qp);
 

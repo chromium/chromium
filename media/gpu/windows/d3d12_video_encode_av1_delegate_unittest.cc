@@ -8,6 +8,9 @@
 #include "media/gpu/windows/d3d12_video_encode_av1_delegate.h"
 
 #include "base/rand_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "media/base/media_switches.h"
+#include "media/base/video_encoder.h"
 #include "media/base/win/d3d12_mocks.h"
 #include "media/base/win/d3d12_video_mocks.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate_unittest.h"
@@ -25,16 +28,6 @@ namespace media {
 constexpr uint32_t kInputFrameWidth = 1280;
 constexpr uint32_t kInputFrameHeight = 720;
 constexpr VideoCodecProfile kAV1Profile = AV1PROFILE_PROFILE_MAIN;
-
-uint8_t AV1QPtoQindex(uint8_t avenc_qp) {
-  uint8_t q_index = avenc_qp * 4;
-  if (q_index == 248) {
-    q_index = 249;
-  } else if (q_index == 252) {
-    q_index = 255;
-  }
-  return q_index;
-}
 
 class MockD3D12VideoEncodeAV1Delegate : public D3D12VideoEncodeAV1Delegate {
  public:
@@ -55,6 +48,7 @@ class D3D12VideoEncodeAV1DelegateTest
   ~D3D12VideoEncodeAV1DelegateTest() override = default;
 
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(kStandardizeVP9AndAV1Quantizer);
     device_ = MakeComPtr<NiceMock<D3D12DeviceMock>>();
     video_device3_ = MakeComPtr<NiceMock<D3D12VideoDevice3Mock>>();
     ON_CALL(*video_device3_.Get(), QueryInterface(IID_ID3D12Device, _))
@@ -151,6 +145,9 @@ class D3D12VideoEncodeAV1DelegateTest
   Microsoft::WRL::ComPtr<D3D12DeviceMock> device_;
   Microsoft::WRL::ComPtr<D3D12VideoDevice3Mock> video_device3_;
   AV1BitstreamBuilder::FrameHeader frame_header_{};
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(D3D12VideoEncodeAV1DelegateTest, GetSupportedProfiles) {
@@ -311,7 +308,7 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, ExternalRateControl) {
         gfx::ColorSpace::CreateSRGB(), bitstream_buffer, options);
     EXPECT_EQ(result.has_value(), true);
     auto [bitstream_buffer_id, metadata] = std::move(result).value();
-    EXPECT_EQ(metadata.qp, AV1QPtoQindex(quantizers[i]));
+    EXPECT_EQ(metadata.qp, quantizers[i]);
   }
 }
 

@@ -24,45 +24,6 @@
 
 namespace media {
 
-// AVEncVideoEncodeQP maps QP to libvpx qp tuning parameter
-// and thus the range is 0-63.
-uint8_t QindextoAVEncQP(VideoCodec codec, uint8_t q_index) {
-  if (codec == VideoCodec::kAV1 || codec == VideoCodec::kVP9) {
-    // The following computation is based on the table in
-    // //third_party/libvpx/source/libvpx/vp9/encoder/vp9_quantize.c.
-    // //third_party/libaom/source/libaom/av1/encoder/av1_quantize.c
-    // {
-    //   0,   4,   8,   12,  16,  20,  24,  28,  32,  36,  40,  44,  48,
-    //   52,  56,  60,  64,  68,  72,  76,  80,  84,  88,  92,  96,  100,
-    //   104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152,
-    //   156, 160, 164, 168, 172, 176, 180, 184, 188, 192, 196, 200, 204,
-    //   208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 249, 255,
-    // };
-    if (q_index <= 244) {
-      return (q_index + 3) / 4;
-    }
-    if (q_index <= 249) {
-      return 62;
-    }
-    return 63;
-  }
-  return q_index;
-}
-
-// This is the inverse of QindextoAVEncQP() function.
-uint8_t AVEncQPtoQindex(VideoCodec codec, uint8_t avenc_qp) {
-  if (codec == VideoCodec::kAV1 || codec == VideoCodec::kVP9) {
-    uint8_t q_index = avenc_qp * 4;
-    if (q_index == 248) {
-      q_index = 249;
-    } else if (q_index == 252) {
-      q_index = 255;
-    }
-    return q_index;
-  }
-  return avenc_qp;
-}
-
 // According to AV1/VP9's bitstream specification, the valid range of qp
 // value (defined as base_q_idx) should be 0-255.
 bool IsValidQp(VideoCodec codec, uint64_t qp) {

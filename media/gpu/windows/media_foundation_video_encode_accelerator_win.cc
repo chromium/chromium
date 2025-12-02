@@ -43,6 +43,7 @@
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
+#include "media/base/video_encoder.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/base/win/color_space_util_win.h"
@@ -1785,13 +1786,15 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
       input_since_keyframe_count_ = 0;
     }
 
-    int max_quantizer = AVEncQPtoQindex(codec_, GetMaxQuantizer(codec_));
+    int max_quantizer = QuantizerToQIndex(codec_, GetMaxQuantizer(codec_));
     std::optional<uint8_t> quantizer;
     int temporal_id = 0;
     if (input.options.quantizer.has_value()) {
-      quantizer = std::clamp(static_cast<int>(AVEncQPtoQindex(
-                                 codec_, input.options.quantizer.value())),
-                             1, max_quantizer);
+      int q_val = input.options.quantizer.value();
+      if (!base::FeatureList::IsEnabled(kStandardizeVP9AndAV1Quantizer)) {
+        q_val = QuantizerToQIndex(codec_, q_val);
+      }
+      quantizer = std::clamp(q_val, 1, max_quantizer);
     } else if (rate_ctrl_ && !input.discard_output) {
       VideoRateControlWrapper::FrameParams frame_params{};
       frame_params.frame_type =
@@ -1830,7 +1833,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
       hr = codec_api_->SetValue(&CODECAPI_AVEncVideoSelectLayer, &var);
       RETURN_ON_HR_FAILURE(hr, "Couldn't set select temporal layer", hr);
       var.vt = VT_UI8;
-      var.ullVal = QindextoAVEncQP(codec_, quantizer.value());
+      var.ullVal = QIndexToQuantizer(codec_, quantizer.value());
       DVLOG(3) << "Setting CODECAPI_AVEncVideoEncodeQP to " << var.ullVal;
       hr = codec_api_->SetValue(&CODECAPI_AVEncVideoEncodeQP, &var);
       RETURN_ON_HR_FAILURE(hr, "Couldn't set frame QP", hr);
@@ -2366,7 +2369,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
     }
     // Bits 0-15: Default QP.
     if (SUCCEEDED(hr)) {
-      frame_qp = AVEncQPtoQindex(codec_, frame_qp_from_sample & 0xfffful);
+      frame_qp = QuantizerToQIndex(codec_, frame_qp_from_sample & 0xfffful);
     }
   }
   if (should_notify_reports_average_qp_change) {
