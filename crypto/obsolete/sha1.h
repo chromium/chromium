@@ -43,7 +43,15 @@ std::vector<uint8_t> Sha1ForPkcs11Id(base::span<const uint8_t> data);
 
 namespace net {
 std::string ComputeSecWebSocketAccept(std::string_view key);
+std::array<uint8_t, crypto::obsolete::kSha1Size> Sha1ForNSSTrust(
+    base::span<const uint8_t> data);
+std::array<uint8_t, crypto::obsolete::kSha1Size> Sha1ForWinTrust(
+    base::span<const uint8_t> data);
 }  // namespace net
+
+namespace net::ct {
+std::string Sha1ForOCSP(std::string_view data);
+}  // namespace net::ct
 
 namespace policy {
 std::array<uint8_t, crypto::obsolete::kSha1Size> Sha1ForDmTokenFilePath(
@@ -99,6 +107,11 @@ class CRYPTO_EXPORT Sha1 {
   friend std::string ash::quick_start::GetHashedAuthToken(
       std::string_view authentication_token);
   friend std::string net::ComputeSecWebSocketAccept(std::string_view key);
+  friend std::array<uint8_t, crypto::obsolete::kSha1Size> net::Sha1ForNSSTrust(
+      base::span<const uint8_t> data);
+  friend std::array<uint8_t, crypto::obsolete::kSha1Size> net::Sha1ForWinTrust(
+      base::span<const uint8_t> data);
+  friend std::string net::ct::Sha1ForOCSP(std::string_view data);
 
   // TODO(crbug.com/457771366): Remove once play_terms_of_service_hash is
   // migrated to use SHA-256.

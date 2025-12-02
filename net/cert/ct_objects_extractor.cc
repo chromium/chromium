@@ -9,10 +9,11 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
-#include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/hash.h"
+#include "crypto/obsolete/sha1.h"
 #include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/signed_certificate_timestamp.h"
@@ -21,6 +22,10 @@
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace net::ct {
+
+std::string Sha1ForOCSP(std::string_view data) {
+  return std::string(base::as_string_view(crypto::obsolete::Sha1::Hash(data)));
+}
 
 namespace {
 
@@ -199,8 +204,7 @@ bool FindMatchingSingleResponse(CBS* responses,
   // necessary.
   // TODO(ekasper): only compute the hashes on demand.
   std::string issuer_key_sha256_hash = crypto::SHA256HashString(issuer_spk);
-  std::string issuer_key_sha1_hash =
-      base::SHA1HashString(std::string(issuer_spk));
+  std::string issuer_key_sha1_hash = Sha1ForOCSP(issuer_spk);
 
   while (CBS_len(responses) > 0) {
     CBS single_response, cert_id;

@@ -10,12 +10,12 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/hash/sha1.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "crypto/obsolete/sha1.h"
 #include "net/base/features.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_win.h"
@@ -24,6 +24,11 @@
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 namespace net {
+
+std::array<uint8_t, crypto::obsolete::Sha1::kSize> Sha1ForWinTrust(
+    base::span<const uint8_t> data) {
+  return crypto::obsolete::Sha1::Hash(data);
+}
 
 namespace {
 
@@ -322,7 +327,8 @@ class TrustStoreWin::Impl {
     }
 
     base::span<const uint8_t> cert_span = cert->der_cert();
-    base::SHA1Digest cert_hash = base::SHA1Hash(cert_span);
+    std::array<uint8_t, crypto::obsolete::Sha1::kSize> cert_hash =
+        Sha1ForWinTrust(cert_span);
     CRYPT_HASH_BLOB cert_hash_blob;
     cert_hash_blob.cbData = static_cast<DWORD>(cert_hash.size());
     cert_hash_blob.pbData = cert_hash.data();
