@@ -196,7 +196,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
 // identity. And finally the remove identity confirmation dialog is opened a
 // third time to remove a second identity.
 // The goal of this test is to confirm the dialog can be opened several times.
-- (void)testRemoveAccountSeveralTime {
+// TODO(crbug.com/460742009): Test is flaky.
+- (void)FLAKY_testRemoveAccountSeveralTime {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   FakeSystemIdentity* fakeIdentity3 = [FakeSystemIdentity fakeIdentity3];
@@ -218,12 +219,13 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Cancel it.
   if ([ChromeEarlGrey isIPadIdiom] || iOS26_OR_ABOVE()) {
-    // Cancel it by tapping on the backgrounded item.
+    // There is no Cancel button on ipad and on newer iOS versions.
+    // Tap on Remove fakeIdentity1 button to dismiss the alert.
     [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
-                                                fakeIdentity1.userEmail),
-                                            grey_text(fakeIdentity1.userEmail),
-                                            grey_sufficientlyVisible(), nil)]
+        selectElementWithMatcher:
+            grey_accessibilityID(
+                [kSettingsAccountsRemoveAccountButtonAccessibilityIdentifier
+                    stringByAppendingString:fakeIdentity1.userEmail])]
         performAction:grey_tap()];
   } else {
     [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
