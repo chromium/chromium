@@ -37,6 +37,18 @@ OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
 
 OmniboxAimPopupWebUIContent::~OmniboxAimPopupWebUIContent() = default;
 
+void OmniboxAimPopupWebUIContent::CloseUI() {
+  OmniboxPopupWebUIBaseContent::CloseUI();
+
+  auto* webui_controller = contents_wrapper()->GetWebUIController();
+  if (webui_controller) {
+    auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
+    if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
+      omnibox_popup_ui->popup_aim_handler()->OnClose();
+    }
+  }
+}
+
 void OmniboxAimPopupWebUIContent::ShowUI() {
   OmniboxPopupWebUIBaseContent::ShowUI();
 
@@ -57,18 +69,6 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
           base::UTF16ToUTF8(location_bar_view()->GetOmniboxView()->GetText());
       }
       omnibox_popup_ui->popup_aim_handler()->OnShow(std::move(context));
-    }
-  }
-}
-
-void OmniboxAimPopupWebUIContent::CloseUI() {
-  OmniboxPopupWebUIBaseContent::CloseUI();
-
-  auto* webui_controller = contents_wrapper()->GetWebUIController();
-  if (webui_controller) {
-    auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
-    if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
-      omnibox_popup_ui->popup_aim_handler()->OnClose();
     }
   }
 }
