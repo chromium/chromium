@@ -11,10 +11,7 @@
 
 namespace variations::internal {
 
-// A feature to allow removing the finch seed data from memory when it is no
-// longer needed.
-COMPONENT_EXPORT(VARIATIONS_FEATURES)
-BASE_DECLARE_FEATURE(kPurgeVariationsSeedFromMemory);
+// Add Variations Features here...
 
 }  // namespace variations::internal
 

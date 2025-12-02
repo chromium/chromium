@@ -20432,26 +20432,6 @@
             ]
         }
     ],
-    "PurgeVariationsSeedFromMemory": [
-        {
-            "platforms": [
-                "android",
-                "ios",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PurgeVariationsSeedFromMemory"
-                    ]
-                }
-            ]
-        }
-    ],
     "PushMessagingDisallowSenderIDs": [
         {
             "platforms": [

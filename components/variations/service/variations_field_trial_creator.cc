@@ -377,9 +377,7 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
 
   base::FeatureList::SetInstance(std::move(feature_list));
 
-  if (base::FeatureList::IsEnabled(internal::kPurgeVariationsSeedFromMemory)) {
-    GetSeedStore()->AllowToPurgeSeedsDataFromMemory();
-  }
+  GetSeedStore()->AllowToPurgeSeedsDataFromMemory();
 
   // For testing Variations Safe Mode, maybe crash here.
   if (base::FeatureList::IsEnabled(kForceFieldTrialSetupCrashForTesting)) {

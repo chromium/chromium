@@ -6,6 +6,4 @@
 
 namespace variations::internal {
 
-BASE_FEATURE(kPurgeVariationsSeedFromMemory, base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace variations::internal
