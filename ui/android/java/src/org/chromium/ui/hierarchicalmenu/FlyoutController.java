@@ -328,4 +328,12 @@ public class FlyoutController<T> implements Destroyable {
     public void setMainPopupForTest(T popupWindow) {
         mPopups.set(0, new FlyoutPopupEntry(null, popupWindow));
     }
+
+    public List<T> getPopupsForTest() {
+        List<T> popups = new ArrayList<>();
+        for (FlyoutPopupEntry<T> entry : mPopups) {
+            popups.add(entry.popupWindow);
+        }
+        return popups;
+    }
 }

@@ -72,6 +72,16 @@ public class HierarchicalMenuController<T> {
 
     private @Nullable Boolean mDrillDownOverrideValue;
 
+    /**
+     * Sets the drill-down override value.
+     *
+     * @param drillDownOverrideValue If not null, forces the menu behavior to be drill-down ({@code
+     *     true}) or flyout ({@code false}), overriding the default.
+     */
+    public void setDrillDownOverrideValueForTesting(@Nullable Boolean drillDownOverrideValue) {
+        mDrillDownOverrideValue = drillDownOverrideValue;
+    }
+
     private final SubmenuHeaderFactory mSubmenuHeaderFactory;
 
     private @Nullable FlyoutController<T> mFlyoutController;

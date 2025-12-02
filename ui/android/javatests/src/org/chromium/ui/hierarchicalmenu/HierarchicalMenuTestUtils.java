@@ -18,9 +18,9 @@ import java.util.List;
 /** A utility class for testing hierarchical menus. */
 public class HierarchicalMenuTestUtils {
 
-    public static final int MENU_ITEM = 1;
-    public static final int MENU_ITEM_WITH_SUBMENU = 2;
-    public static final int MENU_ITEM_SUBMENU_HEADER = 3;
+    public static final int MENU_ITEM = 0;
+    public static final int MENU_ITEM_WITH_SUBMENU = 1;
+    public static final int MENU_ITEM_SUBMENU_HEADER = 2;
 
     public static final WritableObjectPropertyKey<CharSequence> TITLE =
             new WritableObjectPropertyKey<>();
@@ -39,12 +39,21 @@ public class HierarchicalMenuTestUtils {
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_MENU_ITEM_KEYS =
-            new PropertyKey[] {TITLE, CLICK_LISTENER, ENABLED, IS_HIGHLIGHTED, MENU_ITEM_ID};
+            new PropertyKey[] {
+                TITLE,
+                CLICK_LISTENER,
+                HOVER_LISTENER,
+                KEY_LISTENER,
+                ENABLED,
+                IS_HIGHLIGHTED,
+                MENU_ITEM_ID
+            };
 
     public static final PropertyKey[] ALL_SUBMENU_ITEM_KEYS =
             new PropertyKey[] {
                 TITLE,
                 CLICK_LISTENER,
+                HOVER_LISTENER,
                 ENABLED,
                 IS_HIGHLIGHTED,
                 MENU_ITEM_ID,
