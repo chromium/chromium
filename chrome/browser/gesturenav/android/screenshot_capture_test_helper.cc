@@ -8,7 +8,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/test_support_jni_headers/ScreenshotCaptureTestHelper_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace {
 base::android::ScopedJavaGlobalRef<jobject> java_handler_for_testing_;
@@ -39,7 +39,7 @@ void OnNavScreenshotAvailableForTesting(int nav_entry_index,
 
 static void JNI_ScreenshotCaptureTestHelper_SetNavScreenshotCallbackForTesting(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jhandler) {
+    const JavaRef<jobject>& jhandler) {
   java_handler_for_testing_ =
       base::android::ScopedJavaGlobalRef<jobject>(jhandler);
   content::NavigationTransitionTestUtils::SetNavScreenshotCallbackForTesting(

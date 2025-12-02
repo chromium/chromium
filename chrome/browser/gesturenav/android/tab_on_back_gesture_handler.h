@@ -14,7 +14,6 @@
 #include "chrome/browser/android/tab_android.h"
 #include "ui/events/back_gesture_event.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace gesturenav {

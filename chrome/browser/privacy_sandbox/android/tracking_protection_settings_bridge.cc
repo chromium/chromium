@@ -12,7 +12,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/privacy_sandbox/android/jni_headers/TrackingProtectionSettingsBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace {
 
@@ -28,7 +28,7 @@ syncer::SyncService* GetSyncService(
 
 static void JNI_TrackingProtectionSettingsBridge_MaybeSetRollbackPrefsModeB(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile) {
+    const JavaRef<jobject>& j_profile) {
   privacy_sandbox::MaybeSetRollbackPrefsModeB(GetSyncService(j_profile),
                                               GetPrefService(j_profile));
 }

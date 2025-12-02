@@ -15,7 +15,7 @@
 
 class NtpCustomBackgroundService;
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 // The C++ counterpart to NtpSyncedThemeBridge.java. This class serves as
 // a bridge to the NTP theme services, handling theme collections and custom
@@ -26,7 +26,7 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
   // Creates an instance of NtpSyncedThemeBridge.
   NtpSyncedThemeBridge(JNIEnv* env,
                        Profile* profile,
-                       const base::android::JavaParamRef<jobject>& j_java_obj);
+                       const base::android::JavaRef<jobject>& j_java_obj);
 
   NtpSyncedThemeBridge(const NtpSyncedThemeBridge&) = delete;
   NtpSyncedThemeBridge& operator=(const NtpSyncedThemeBridge&) = delete;

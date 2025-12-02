@@ -14,7 +14,7 @@ class DeviceAuthenticatorBridgeImpl : public DeviceAuthenticatorBridge {
  public:
   explicit DeviceAuthenticatorBridgeImpl(const gfx::NativeWindow window);
   explicit DeviceAuthenticatorBridgeImpl(
-      const base::android::JavaParamRef<jobject>& activity);
+      const base::android::JavaRef<jobject>& activity);
   ~DeviceAuthenticatorBridgeImpl() override;
 
   DeviceAuthenticatorBridgeImpl(const DeviceAuthenticatorBridgeImpl&) = delete;

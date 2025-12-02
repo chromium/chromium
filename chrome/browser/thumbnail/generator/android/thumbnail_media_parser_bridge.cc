@@ -46,9 +46,9 @@ void OnMediaParsed(ThumbnailMediaParser*,
 // static
 static void JNI_ThumbnailMediaParserBridge_Parse(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jmime_type,
-    const base::android::JavaParamRef<jstring>& jfile_path,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jstring>& jmime_type,
+    const base::android::JavaRef<jstring>& jfile_path,
+    const base::android::JavaRef<jobject>& jcallback) {
   base::FilePath file_path(
       base::android::ConvertJavaStringToUTF8(env, jfile_path));
   std::string mime_type =

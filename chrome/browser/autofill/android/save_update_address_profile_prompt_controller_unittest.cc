@@ -112,7 +112,7 @@ class SaveUpdateAddressProfilePromptControllerTest
   base::MockCallback<base::OnceCallback<void()>> dismissal_callback_;
   std::unique_ptr<SaveUpdateAddressProfilePromptController> controller_;
   raw_ptr<JNIEnv> env_ = base::android::AttachCurrentThread();
-  base::android::JavaParamRef<jobject> mock_caller_{nullptr};
+  base::android::JavaRef<jobject> mock_caller_{nullptr};
 
  private:
   base::test::ScopedFeatureList feature_{

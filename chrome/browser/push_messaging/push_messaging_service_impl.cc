@@ -94,7 +94,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 #endif
 
 using instance_id::InstanceID;

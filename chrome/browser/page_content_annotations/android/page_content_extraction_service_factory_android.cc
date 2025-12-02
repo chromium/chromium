@@ -11,7 +11,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/page_content_annotations/factory_jni_headers/PageContentExtractionServiceFactory_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace page_content_annotations {

@@ -26,7 +26,7 @@
 // offline_items_collection::FailState.
 #include "chrome/android/chrome_jni_headers/DownloadUtils_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {

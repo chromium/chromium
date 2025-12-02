@@ -33,7 +33,7 @@ class ImageServiceBridge {
                         const bool is_account_data,
                         const jint client_id,
                         const GURL& page_url,
-                        const base::android::JavaParamRef<jobject>& j_callback);
+                        const base::android::JavaRef<jobject>& j_callback);
 
   // Returns whether the client has consented to fetch images.
   jboolean HasConsentToFetchImages(JNIEnv* env, const bool is_account_data);

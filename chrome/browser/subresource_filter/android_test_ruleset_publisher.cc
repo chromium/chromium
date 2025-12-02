@@ -39,7 +39,7 @@ void OnRulesetPublished(
 static void
 JNI_TestRulesetPublisher_CreateAndPublishRulesetDisallowingSuffixForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& publisher_param,
+    const base::android::JavaRef<jobject>& publisher_param,
     std::string& suffix) {
   subresource_filter::testing::TestRulesetPair test_ruleset_pair;
   auto creator =

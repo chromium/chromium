@@ -39,7 +39,7 @@
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::MethodID;
 using base::android::ScopedJavaLocalRef;
 using content::BrowserContext;
@@ -515,7 +515,7 @@ static ScopedJavaLocalRef<jobject>
 JNI_WebContentsState_RestoreContentsFromByteBuffer(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& state,
+    const JavaRef<jobject>& state,
     int saved_state_version,
     jboolean initially_hidden,
     jboolean no_renderer) {
@@ -526,7 +526,7 @@ JNI_WebContentsState_RestoreContentsFromByteBuffer(
 static ScopedJavaLocalRef<jobject>
 JNI_WebContentsState_GetContentsStateAsByteBuffer(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   return WebContentsState::GetContentsStateAsByteBuffer(env, web_contents);
@@ -535,7 +535,7 @@ JNI_WebContentsState_GetContentsStateAsByteBuffer(
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_WebContentsState_DeleteNavigationEntries(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& state,
+    const base::android::JavaRef<jobject>& state,
     int saved_state_version,
     jlong predicate_ptr) {
   base::span<const uint8_t> span =
@@ -565,7 +565,7 @@ JNI_WebContentsState_CreateSingleNavigationStateAsByteBuffer(
 static ScopedJavaLocalRef<jobject> JNI_WebContentsState_AppendPendingNavigation(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& state,
+    const JavaRef<jobject>& state,
     int saved_state_version,
     jboolean clobber_current_entry,
     std::optional<std::u16string>& title,
@@ -584,7 +584,7 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsState_AppendPendingNavigation(
 static std::optional<std::u16string>
 JNI_WebContentsState_GetDisplayTitleFromByteBuffer(
     JNIEnv* env,
-    const JavaParamRef<jobject>& state,
+    const JavaRef<jobject>& state,
     int saved_state_version) {
   base::span<const uint8_t> span =
       base::android::JavaByteBufferToSpan(env, state);
@@ -594,10 +594,9 @@ JNI_WebContentsState_GetDisplayTitleFromByteBuffer(
 }
 
 static std::optional<std::string>
-JNI_WebContentsState_GetVirtualUrlFromByteBuffer(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& state,
-    int saved_state_version) {
+JNI_WebContentsState_GetVirtualUrlFromByteBuffer(JNIEnv* env,
+                                                 const JavaRef<jobject>& state,
+                                                 int saved_state_version) {
   base::span<const uint8_t> span =
       base::android::JavaByteBufferToSpan(env, state);
 

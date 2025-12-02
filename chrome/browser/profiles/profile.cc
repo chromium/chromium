@@ -205,7 +205,7 @@ Profile::OTRProfileID Profile::OTRProfileID::ConvertFromJavaOTRProfileID(
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_OtrProfileId_CreateUniqueOtrProfileId(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_profile_id_prefix) {
+    const base::android::JavaRef<jstring>& j_profile_id_prefix) {
   Profile::OTRProfileID profile_id = Profile::OTRProfileID::CreateUnique(
       base::android::ConvertJavaStringToUTF8(env, j_profile_id_prefix));
   return profile_id.ConvertToJavaOTRProfileID(env);

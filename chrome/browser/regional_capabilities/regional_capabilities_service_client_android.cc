@@ -47,7 +47,7 @@ static void
 JNI_RegionalCapabilitiesServiceClientAndroid_ProcessDeviceCountryResponse(
     JNIEnv* env,
     jlong ptr_to_native_callback,
-    const base::android::JavaParamRef<jstring>& j_device_country) {
+    const base::android::JavaRef<jstring>& j_device_country) {
   // Using base::WrapUnique ensures that the callback is deleted when this goes
   // out of scope.
   using CountryIdCallback =

@@ -15,7 +15,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/download/android/jni_headers/OfflineContentAggregatorFactory_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 // Takes a Java Profile and returns a Java OfflineContentAggregatorBridge.
 static base::android::ScopedJavaLocalRef<jobject>

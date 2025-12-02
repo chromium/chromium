@@ -146,7 +146,7 @@ AuxiliarySearchProvider::~AuxiliarySearchProvider() = default;
 void AuxiliarySearchProvider::GetNonSensitiveTabs(
     JNIEnv* env,
     std::vector<TabAndroid*> tabs,
-    const base::android::JavaParamRef<jobject>& j_callback_obj) const {
+    const base::android::JavaRef<jobject>& j_callback_obj) const {
   GetNonSensitiveTabsInternal(
       std::move(tabs),
       base::BindOnce(
@@ -156,7 +156,7 @@ void AuxiliarySearchProvider::GetNonSensitiveTabs(
 
 void AuxiliarySearchProvider::GetNonSensitiveHistoryData(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_callback_obj) const {
+    const base::android::JavaRef<jobject>& j_callback_obj) const {
   CHECK(ranking_service_ != nullptr);
   scoped_refptr<FetchAndRankHelper> helper =
       base::MakeRefCounted<FetchAndRankHelper>(
@@ -170,9 +170,9 @@ void AuxiliarySearchProvider::GetNonSensitiveHistoryData(
 
 void AuxiliarySearchProvider::GetCustomTabs(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_url,
+    const base::android::JavaRef<jobject>& j_url,
     jlong j_begin_time,
-    const base::android::JavaParamRef<jobject>& j_callback_obj) const {
+    const base::android::JavaRef<jobject>& j_callback_obj) const {
   CHECK(ranking_service_ != nullptr);
   scoped_refptr<FetchAndRankHelper> helper =
       base::MakeRefCounted<FetchAndRankHelper>(

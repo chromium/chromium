@@ -17,7 +17,7 @@
 class NtpBackgroundService;
 class NtpCustomBackgroundService;
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 // The C++ counterpart to NtpThemeCollectionBridge.java. This class serves as a
 // bridge to the NTP theme services, handling theme collections and custom
@@ -28,10 +28,9 @@ class NtpThemeCollectionBridge : public NtpBackgroundServiceObserver,
                                  public NtpCustomBackgroundServiceObserver {
  public:
   // Creates an instance of NtpThemeCollectionBridge.
-  NtpThemeCollectionBridge(
-      JNIEnv* env,
-      Profile* profile,
-      const base::android::JavaParamRef<jobject>& j_java_obj);
+  NtpThemeCollectionBridge(JNIEnv* env,
+                           Profile* profile,
+                           const base::android::JavaRef<jobject>& j_java_obj);
 
   NtpThemeCollectionBridge(const NtpThemeCollectionBridge&) = delete;
   NtpThemeCollectionBridge& operator=(const NtpThemeCollectionBridge&) = delete;
@@ -43,14 +42,14 @@ class NtpThemeCollectionBridge : public NtpBackgroundServiceObserver,
   // invoked with the list of `BackgroundCollection` objects.
   void GetBackgroundCollections(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_callback);
+      const base::android::JavaRef<jobject>& j_callback);
 
   // Fetches the list of images for a given collection. The `j_callback` will be
   // invoked with the list of `CollectionImage` objects.
   void GetBackgroundImages(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_collection_id,
-      const base::android::JavaParamRef<jobject>& j_callback);
+      const base::android::JavaRef<jstring>& j_collection_id,
+      const base::android::JavaRef<jobject>& j_callback);
 
   // Sets the New Tab Page background to a specific image from a theme
   // collection.
@@ -63,18 +62,18 @@ class NtpThemeCollectionBridge : public NtpBackgroundServiceObserver,
   // @param j_attribution_url A URL associated with the attribution text.
   void SetThemeCollectionImage(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_collection_id,
-      const base::android::JavaParamRef<jobject>& j_image_url,
-      const base::android::JavaParamRef<jobject>& j_preview_image_url,
-      const base::android::JavaParamRef<jstring>& j_attribution_line_1,
-      const base::android::JavaParamRef<jstring>& j_attribution_line_2,
-      const base::android::JavaParamRef<jobject>& j_attribution_url);
+      const base::android::JavaRef<jstring>& j_collection_id,
+      const base::android::JavaRef<jobject>& j_image_url,
+      const base::android::JavaRef<jobject>& j_preview_image_url,
+      const base::android::JavaRef<jstring>& j_attribution_line_1,
+      const base::android::JavaRef<jstring>& j_attribution_line_2,
+      const base::android::JavaRef<jobject>& j_attribution_url);
 
   // Sets the New Tab Page background to a theme collection with daily refresh
   // enabled.
   void SetThemeCollectionDailyRefreshed(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_collection_id);
+      const base::android::JavaRef<jstring>& j_collection_id);
 
   // Fetches the current custom background information (e.g., URL, collection
   // ID) from the NtpCustomBackgroundService.

@@ -12,7 +12,6 @@
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/query_clusters_state.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 

@@ -31,12 +31,11 @@ class TouchToFillViewImpl : public TouchToFillView {
       const password_manager::UiCredential& credential) override;
   void OnDismiss() override;
 
-  void OnCredentialSelected(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& credential);
+  void OnCredentialSelected(JNIEnv* env,
+                            const base::android::JavaRef<jobject>& credential);
   void OnWebAuthnCredentialSelected(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& credential);
+      const base::android::JavaRef<jobject>& credential);
   void OnManagePasswordsSelected(JNIEnv* env, jboolean passkeys_shown);
   void OnHybridSignInSelected(JNIEnv* env);
   void OnShowCredManSelected(JNIEnv* env);

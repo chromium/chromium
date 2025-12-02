@@ -693,7 +693,7 @@ void HistoryTabHelper::SetClearAppIdAfterFirstCommit() {
 static void JNI_HistoryTabHelper_SetAppIdNative(
     JNIEnv* env,
     std::optional<std::string>& app_id,
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
+    const base::android::JavaRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   auto* history_tab_helper = HistoryTabHelper::FromWebContents(web_contents);
   history_tab_helper->SetAppId(app_id);
@@ -701,7 +701,7 @@ static void JNI_HistoryTabHelper_SetAppIdNative(
 static void JNI_HistoryTabHelper_SetAppIdForViewIntentNative(
     JNIEnv* env,
     std::optional<std::string>& app_id,
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
+    const base::android::JavaRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   auto* history_tab_helper = HistoryTabHelper::FromWebContents(web_contents);
   history_tab_helper->SetClearAppIdAfterFirstCommit();
@@ -710,7 +710,7 @@ static void JNI_HistoryTabHelper_SetAppIdForViewIntentNative(
 static base::android::ScopedJavaLocalRef<jstring>
 JNI_HistoryTabHelper_GetAppIdForTestingNative(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
+    const base::android::JavaRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   auto* history_tab_helper = HistoryTabHelper::FromWebContents(web_contents);
   auto appId = history_tab_helper->GetAppId();

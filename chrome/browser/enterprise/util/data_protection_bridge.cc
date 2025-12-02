@@ -19,7 +19,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/enterprise/util/jni_headers/DataProtectionBridge_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -67,8 +66,8 @@ ClipboardEndpoint CreateClipboardEndpoint(RenderFrameHost* render_frame_host) {
 }
 
 void VerifyCopyIsAllowedByPolicy(
-    const base::android::JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jobject>& j_callback,
+    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const JavaRef<jobject>& j_callback,
     const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data) {
   RenderFrameHost* render_frame_host =
@@ -91,8 +90,8 @@ void VerifyCopyIsAllowedByPolicy(
 }
 
 void VerifyShareIsAllowedByPolicy(
-    const base::android::JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jobject>& j_callback,
+    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const JavaRef<jobject>& j_callback,
     const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data) {
   RenderFrameHost* render_frame_host =
@@ -115,8 +114,8 @@ void VerifyShareIsAllowedByPolicy(
 }
 
 void VerifyGenericCopyActionIsAllowedByPolicy(
-    const base::android::JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jobject>& j_callback,
+    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const JavaRef<jobject>& j_callback,
     const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data) {
   RenderFrameHost* render_frame_host =
@@ -143,9 +142,9 @@ void VerifyGenericCopyActionIsAllowedByPolicy(
 // TODO(crbug.com/387484337) Add instrumentation tests
 static void JNI_DataProtectionBridge_VerifyCopyTextIsAllowedByPolicy(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_text,
-    const base::android::JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jstring>& j_text,
+    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const JavaRef<jobject>& j_callback) {
   std::u16string text = base::android::ConvertJavaStringToUTF16(env, j_text);
 
   ClipboardPasteData data;
@@ -163,9 +162,9 @@ static void JNI_DataProtectionBridge_VerifyCopyTextIsAllowedByPolicy(
 // TODO(crbug.com/387484337) Add instrumentation tests
 static void JNI_DataProtectionBridge_VerifyCopyUrlIsAllowedByPolicy(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_url,
-    const base::android::JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jstring>& j_url,
+    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const JavaRef<jobject>& j_callback) {
   std::u16string url = base::android::ConvertJavaStringToUTF16(env, j_url);
 
   ClipboardPasteData data;
@@ -183,9 +182,9 @@ static void JNI_DataProtectionBridge_VerifyCopyUrlIsAllowedByPolicy(
 // TODO(crbug.com/387484337) Add instrumentation tests
 static void JNI_DataProtectionBridge_VerifyCopyImageIsAllowedByPolicy(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_image_uri,
-    const base::android::JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jstring>& j_image_uri,
+    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const JavaRef<jobject>& j_callback) {
   std::u16string image_uri =
       base::android::ConvertJavaStringToUTF16(env, j_image_uri);
 
@@ -205,9 +204,9 @@ static void JNI_DataProtectionBridge_VerifyCopyImageIsAllowedByPolicy(
 // TODO(crbug.com/387484337) Add instrumentation tests
 static void JNI_DataProtectionBridge_VerifyShareTextIsAllowedByPolicy(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_text,
-    const base::android::JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jstring>& j_text,
+    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const JavaRef<jobject>& j_callback) {
   std::u16string text = base::android::ConvertJavaStringToUTF16(env, j_text);
 
   ClipboardPasteData data;
@@ -225,9 +224,9 @@ static void JNI_DataProtectionBridge_VerifyShareTextIsAllowedByPolicy(
 // TODO(crbug.com/387484337) Add instrumentation tests
 static void JNI_DataProtectionBridge_VerifyShareUrlIsAllowedByPolicy(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_url,
-    const base::android::JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jstring>& j_url,
+    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const JavaRef<jobject>& j_callback) {
   std::u16string url = base::android::ConvertJavaStringToUTF16(env, j_url);
 
   ClipboardPasteData data;
@@ -245,9 +244,9 @@ static void JNI_DataProtectionBridge_VerifyShareUrlIsAllowedByPolicy(
 // TODO(crbug.com/387484337) Add instrumentation tests
 static void JNI_DataProtectionBridge_VerifyShareImageIsAllowedByPolicy(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_image_uri,
-    const base::android::JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jstring>& j_image_uri,
+    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const JavaRef<jobject>& j_callback) {
   std::u16string image_uri =
       base::android::ConvertJavaStringToUTF16(env, j_image_uri);
 
@@ -268,9 +267,9 @@ static void JNI_DataProtectionBridge_VerifyShareImageIsAllowedByPolicy(
 static void
 JNI_DataProtectionBridge_VerifyGenericCopyImageActionIsAllowedByPolicy(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_image_uri,
-    const base::android::JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jstring>& j_image_uri,
+    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const JavaRef<jobject>& j_callback) {
   std::u16string image_uri =
       base::android::ConvertJavaStringToUTF16(env, j_image_uri);
 

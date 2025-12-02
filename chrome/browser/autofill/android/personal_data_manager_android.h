@@ -79,14 +79,13 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // a new profile.  Else we are updating an existing profile.  Always returns
   // the GUID for this profile; the GUID it may have just been created.
   std::string SetProfile(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& jprofile,
+                         const base::android::JavaRef<jobject>& jprofile,
                          std::string& guid);
   // Adds or modifies a profile like SetProfile interface if `jprofile` is
   // local. Otherwise it creates a local copy of it.
-  std::string SetProfileToLocal(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jprofile,
-      std::string& guid);
+  std::string SetProfileToLocal(JNIEnv* env,
+                                const base::android::JavaRef<jobject>& jprofile,
+                                std::string& guid);
 
   // Gets the labels for all known profiles. These labels are useful for
   // distinguishing the profiles from one another.
@@ -112,7 +111,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // fields are included in the label.
   std::u16string GetShippingAddressLabelForPaymentRequest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jprofile,
+      const base::android::JavaRef<jobject>& jprofile,
       std::string& guid,
       bool include_country_in_label);
 
@@ -147,12 +146,12 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // are creating a new card. Else we are updating an existing card. Always
   // returns the GUID for this card; the GUID it may have just been created.
   std::string SetCreditCard(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& jcard);
+                            const base::android::JavaRef<jobject>& jcard);
 
   // Updates the billing address of a server credit card `jcard`.
   void UpdateServerCardBillingAddress(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcard);
+      const base::android::JavaRef<jobject>& jcard);
 
   // Removes the credit card or IBAN represented by `guid`.
   void RemoveByGUID(JNIEnv* env, const std::string& guid);
@@ -190,7 +189,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
 
   // Add a server IBAN. Used only in tests.
   void AddServerIbanForTest(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& jiban);
+                            const base::android::JavaRef<jobject>& jiban);
 
   // Return IBAN with the specified `guid`, or Null if there is no IBAN with
   // the specified `guid`.
@@ -206,7 +205,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // the GUID for this IBAN; the GUID may have just been created.
   std::string AddOrUpdateLocalIban(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jiban);
+      const base::android::JavaRef<jobject>& jiban);
 
   // Checks if `jiban_value` is a valid IBAN.
   static jboolean IsValidIban(JNIEnv* env, std::u16string& jiban_value);
@@ -233,7 +232,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // Create an object of native BankAccount from Java BankAccount.
   static BankAccount CreateNativeBankAccountFromJava(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jbank_account);
+      const base::android::JavaRef<jobject>& jbank_account);
 
   // Returns an array of Ewallet objects retrieved from the PersonalDataManager.
   base::android::ScopedJavaLocalRef<jobjectArray> GetEwallets(JNIEnv* env);
@@ -246,7 +245,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // Create an object of native Ewallet from Java Ewallet.
   static Ewallet CreateNativeEwalletFromJava(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jewallet);
+      const base::android::JavaRef<jobject>& jewallet);
 
   // Returns whether a card with the specified `guid` is eligible for card
   // benefits.

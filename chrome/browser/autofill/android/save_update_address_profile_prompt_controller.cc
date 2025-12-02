@@ -306,7 +306,7 @@ void SaveUpdateAddressProfilePromptController::OnUserDeclined(JNIEnv* env) {
 
 void SaveUpdateAddressProfilePromptController::OnUserEdited(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jprofile) {
+    const base::android::JavaRef<jobject>& jprofile) {
   had_user_interaction_ = true;
   AutofillProfile* existing_profile = nullptr;
   // For Home and Work profiles, edits can happen, so we treat this flow as a

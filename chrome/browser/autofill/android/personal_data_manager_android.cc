@@ -68,7 +68,6 @@ using ::base::android::ConvertJavaStringToUTF16;
 using ::base::android::ConvertJavaStringToUTF8;
 using ::base::android::ConvertUTF16ToJavaString;
 using ::base::android::ConvertUTF8ToJavaString;
-using ::base::android::JavaParamRef;
 using ::base::android::JavaRef;
 using ::base::android::ScopedJavaGlobalRef;
 using ::base::android::ScopedJavaLocalRef;
@@ -248,7 +247,7 @@ std::string PersonalDataManagerAndroid::GetDefaultCountryCodeForNewAddress(
 
 std::string PersonalDataManagerAndroid::SetProfile(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile,
+    const JavaRef<jobject>& jprofile,
     std::string& guid) {
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
       jprofile, address_data_manager().GetProfileByGUID(guid),
@@ -273,7 +272,7 @@ std::string PersonalDataManagerAndroid::SetProfile(
 
 std::string PersonalDataManagerAndroid::SetProfileToLocal(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile,
+    const JavaRef<jobject>& jprofile,
     std::string& guid) {
   const AutofillProfile* target_profile =
       address_data_manager().GetProfileByGUID(guid);
@@ -315,7 +314,7 @@ PersonalDataManagerAndroid::GetProfileLabelsToSuggest(JNIEnv* env) {
 std::u16string
 PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile,
+    const JavaRef<jobject>& jprofile,
     std::string& guid,
     bool include_country_in_label) {
   // The full name is not included in the label for shipping address. It is
@@ -370,7 +369,7 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetCreditCardForNumber(
 
 std::string PersonalDataManagerAndroid::SetCreditCard(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcard) {
+    const JavaRef<jobject>& jcard) {
   std::string guid = Java_CreditCard_getGUID(env, jcard);
 
   CreditCard card;
@@ -387,7 +386,7 @@ std::string PersonalDataManagerAndroid::SetCreditCard(
 
 void PersonalDataManagerAndroid::UpdateServerCardBillingAddress(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcard) {
+    const JavaRef<jobject>& jcard) {
   CreditCard card;
   PopulateNativeCreditCardFromJava(jcard, env, &card);
 
@@ -474,7 +473,7 @@ PersonalDataManagerAndroid::CreateJavaBankAccountFromNative(
 // static
 BankAccount PersonalDataManagerAndroid::CreateNativeBankAccountFromJava(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jbank_account) {
+    const JavaRef<jobject>& jbank_account) {
   int64_t instrument_id = static_cast<int64_t>(
       Java_PaymentInstrument_getInstrumentId(env, jbank_account));
   const ScopedJavaLocalRef<jstring>& jnickname =
@@ -569,7 +568,7 @@ PersonalDataManagerAndroid::CreateJavaEwalletFromNative(
 // static
 Ewallet PersonalDataManagerAndroid::CreateNativeEwalletFromJava(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jewallet) {
+    const JavaRef<jobject>& jewallet) {
   int64_t instrument_id = static_cast<int64_t>(
       Java_PaymentInstrument_getInstrumentId(env, jewallet));
 
@@ -720,7 +719,7 @@ void PersonalDataManagerAndroid::PopulateNativeIbanFromJava(
 // TODO(crbug.com/369626137): Move test functions to a new test helper file.
 void PersonalDataManagerAndroid::AddServerIbanForTest(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jiban) {
+    const JavaRef<jobject>& jiban) {
   std::unique_ptr<Iban> iban = std::make_unique<Iban>();
   iban->set_nickname(Java_Iban_getNickname(env, jiban));
   iban->set_identifier(
@@ -755,7 +754,7 @@ PersonalDataManagerAndroid::GetIbansForSettings(JNIEnv* env) {
 
 std::string PersonalDataManagerAndroid::AddOrUpdateLocalIban(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jiban) {
+    const JavaRef<jobject>& jiban) {
   Iban iban;
   PopulateNativeIbanFromJava(jiban, env, &iban);
 
@@ -826,7 +825,7 @@ static std::string JNI_PersonalDataManager_ToCountryCode(
 }
 
 static jlong JNI_PersonalDataManager_Init(JNIEnv* env,
-                                          const JavaParamRef<jobject>& obj,
+                                          const JavaRef<jobject>& obj,
                                           Profile* profile) {
   CHECK(profile);
   PersonalDataManagerAndroid* personal_data_manager_android =

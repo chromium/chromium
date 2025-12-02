@@ -141,9 +141,8 @@ void TabOnBackGestureHandler::Destroy(JNIEnv* env) {
 // ----------------------------------------------------------------------------
 
 // static
-static jlong JNI_TabOnBackGestureHandler_Init(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jtab) {
+static jlong JNI_TabOnBackGestureHandler_Init(JNIEnv* env,
+                                              const JavaRef<jobject>& jtab) {
   TabOnBackGestureHandler* handler =
       new TabOnBackGestureHandler(TabAndroid::GetNativeTab(env, jtab));
   return reinterpret_cast<intptr_t>(handler);

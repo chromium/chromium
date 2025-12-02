@@ -123,8 +123,8 @@ void FacilitatedPaymentsController::OnEwalletSelected(JNIEnv* env,
 
 void FacilitatedPaymentsController::OnPaymentAppSelected(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_package_name,
-    const base::android::JavaParamRef<jstring>& j_activity_name) {
+    const base::android::JavaRef<jstring>& j_package_name,
+    const base::android::JavaRef<jstring>& j_activity_name) {
   if (on_fop_selected_) {
     std::move(on_fop_selected_)
         .Run(payments::facilitated::SelectedFopData(

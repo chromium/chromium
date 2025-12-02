@@ -77,7 +77,7 @@ void TrustedVaultClientAndroid::FetchKeysCompleted(
     JNIEnv* env,
     jint request_id,
     std::string& gaia_id,
-    const base::android::JavaParamRef<jobjectArray>& keys) {
+    const base::android::JavaRef<jobjectArray>& keys) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);

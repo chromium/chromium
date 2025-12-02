@@ -17,7 +17,7 @@ namespace federated_identity {
 
 static void JNI_FederatedIdentityTestUtils_EmbargoFedCmForRelyingParty(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_url) {
+    const base::android::JavaRef<jobject>& j_url) {
   url::Origin origin =
       url::Origin::Create(url::GURLAndroid::ToNativeGURL(env, j_url));
   Profile* profile = ProfileManager::GetLastUsedProfile();

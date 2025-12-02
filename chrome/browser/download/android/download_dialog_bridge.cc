@@ -118,7 +118,7 @@ void DownloadDialogBridge::CompleteSelection(DownloadDialogResult result) {
 // static
 static void JNI_DownloadDialogBridge_SetDownloadAndSaveFileDefaultDirectory(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jpref_service,
+    const base::android::JavaRef<jobject>& jpref_service,
     std::string& directory) {
   PrefService* pref_service =
       PrefServiceAndroid::FromPrefServiceAndroid(jpref_service);

@@ -13,7 +13,7 @@
 #include "chrome/browser/feedback/android/jni_headers/SystemInfoFeedbackSource_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace chrome {

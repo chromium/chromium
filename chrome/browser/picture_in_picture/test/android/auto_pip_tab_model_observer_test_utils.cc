@@ -39,7 +39,7 @@ namespace picture_in_picture {
 static void JNI_AutoPiPTabModelObserverHelperTestUtils_Initialize(
     JNIEnv* env,
     content::WebContents* web_contents,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   // Ensure no previous test state is leaking.
   CHECK(!g_test_state);
 

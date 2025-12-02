@@ -77,8 +77,8 @@ class FacilitatedPaymentsController {
 
   void OnPaymentAppSelected(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& package_name,
-      const base::android::JavaParamRef<jstring>& activity_name);
+      const base::android::JavaRef<jstring>& package_name,
+      const base::android::JavaRef<jstring>& activity_name);
 
   // Asks the `view_` to show the PIX account linking prompt. Virtual for
   // overriding in tests.

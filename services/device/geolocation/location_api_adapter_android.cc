@@ -16,7 +16,7 @@
 #include "services/device/geolocation/geolocation_jni_headers/LocationProviderAdapter_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using device::LocationApiAdapterAndroid;
 
 static void JNI_LocationProviderAdapter_NewLocationAvailable(
@@ -40,7 +40,7 @@ static void JNI_LocationProviderAdapter_NewLocationAvailable(
 
 static void JNI_LocationProviderAdapter_NewErrorAvailable(
     JNIEnv* env,
-    const JavaParamRef<jstring>& message) {
+    const JavaRef<jstring>& message) {
   LocationApiAdapterAndroid::OnNewErrorAvailable(env, message);
 }
 

@@ -17,13 +17,13 @@
 #include "components/themes/ntp_background_service.h"
 #include "url/android/gurl_android.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 static jlong JNI_NtpThemeCollectionBridge_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
-    const JavaParamRef<jobject>& j_java_obj) {
+    const JavaRef<jobject>& j_profile,
+    const JavaRef<jobject>& j_java_obj) {
   Profile* profile = Profile::FromJavaObject(j_profile);
   NtpThemeCollectionBridge* ntp_theme_collection_bridge =
       new NtpThemeCollectionBridge(env, profile, j_java_obj);
@@ -33,7 +33,7 @@ static jlong JNI_NtpThemeCollectionBridge_Init(
 NtpThemeCollectionBridge::NtpThemeCollectionBridge(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_java_obj)
+    const JavaRef<jobject>& j_java_obj)
     : profile_(profile),
       ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
@@ -60,7 +60,7 @@ NtpThemeCollectionBridge::~NtpThemeCollectionBridge() = default;
 
 void NtpThemeCollectionBridge::GetBackgroundCollections(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jobject>& j_callback) {
   if (j_background_collections_callback_) {
     base::android::RunObjectCallbackAndroid(j_background_collections_callback_,
                                             nullptr);
@@ -77,8 +77,8 @@ void NtpThemeCollectionBridge::GetBackgroundCollections(
 
 void NtpThemeCollectionBridge::GetBackgroundImages(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_collection_id,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jstring>& j_collection_id,
+    const JavaRef<jobject>& j_callback) {
   if (j_background_images_callback_) {
     base::android::RunObjectCallbackAndroid(j_background_images_callback_,
                                             nullptr);
@@ -189,12 +189,12 @@ void NtpThemeCollectionBridge::OnCustomBackgroundImageUpdated() {
 
 void NtpThemeCollectionBridge::SetThemeCollectionImage(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_collection_id,
-    const JavaParamRef<jobject>& j_image_url,
-    const JavaParamRef<jobject>& j_preview_image_url,
-    const JavaParamRef<jstring>& j_attribution_line_1,
-    const JavaParamRef<jstring>& j_attribution_line_2,
-    const JavaParamRef<jobject>& j_attribution_url) {
+    const JavaRef<jstring>& j_collection_id,
+    const JavaRef<jobject>& j_image_url,
+    const JavaRef<jobject>& j_preview_image_url,
+    const JavaRef<jstring>& j_attribution_line_1,
+    const JavaRef<jstring>& j_attribution_line_2,
+    const JavaRef<jobject>& j_attribution_url) {
   if (!ntp_custom_background_service_) {
     return;
   }
@@ -210,7 +210,7 @@ void NtpThemeCollectionBridge::SetThemeCollectionImage(
 
 void NtpThemeCollectionBridge::SetThemeCollectionDailyRefreshed(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_collection_id) {
+    const JavaRef<jstring>& j_collection_id) {
   if (!ntp_custom_background_service_) {
     return;
   }

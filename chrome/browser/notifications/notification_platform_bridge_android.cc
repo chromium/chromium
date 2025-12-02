@@ -57,11 +57,11 @@
 #include "chrome/android/chrome_jni_headers/NotificationPlatformBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertJavaStringToUTF16;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
@@ -176,7 +176,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
     jboolean incognito,
     std::string& webapk_package,
     jint java_action_index,
-    const JavaParamRef<jstring>& java_reply) {
+    const JavaRef<jstring>& java_reply) {
   std::optional<std::u16string> reply;
   if (java_reply)
     reply = ConvertJavaStringToUTF16(env, java_reply);
@@ -341,7 +341,7 @@ void NotificationPlatformBridgeAndroid::OnReportUnwarnedNotificationAsSpam(
 
 void NotificationPlatformBridgeAndroid::OnNotificationShowOriginalNotification(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_object,
+    const base::android::JavaRef<jobject>& java_object,
     std::string& origin,
     std::string& profile_id,
     jboolean incognito) {

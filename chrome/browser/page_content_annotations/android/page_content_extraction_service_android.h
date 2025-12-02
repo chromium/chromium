@@ -24,9 +24,8 @@ class PageContentExtractionServiceAndroid
   ~PageContentExtractionServiceAndroid() override;
 
   // Called from Java.
-  void GetAllCachedTabIds(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_callback);
+  void GetAllCachedTabIds(JNIEnv* env,
+                          const base::android::JavaRef<jobject>& j_callback);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 

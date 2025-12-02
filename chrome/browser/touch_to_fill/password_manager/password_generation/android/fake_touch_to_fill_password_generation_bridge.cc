@@ -33,7 +33,7 @@ void FakeTouchToFillPasswordGenerationBridge::OnDismissed(
 
 void FakeTouchToFillPasswordGenerationBridge::OnGeneratedPasswordAccepted(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& password) {}
+    const base::android::JavaRef<jstring>& password) {}
 
 void FakeTouchToFillPasswordGenerationBridge::OnGeneratedPasswordRejected(
     JNIEnv* env) {}

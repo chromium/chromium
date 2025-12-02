@@ -16,7 +16,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "services/device/time_zone_monitor/time_zone_monitor_jni_headers/TimeZoneMonitor_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace device {
 

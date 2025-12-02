@@ -19,7 +19,7 @@
 // static
 static void JNI_NotificationSchedulerTask_OnStartTask(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   ProfileKey* profile_key = ::android::GetLastUsedRegularProfileKey();
   auto* service = NotificationScheduleServiceFactory::GetForKey(profile_key);
   auto* handler = service->GetBackgroundTaskSchedulerHandler();

@@ -14,7 +14,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "mojo/public/java/system/mojo_javatests_jni/ValidationTestUtil_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace mojo {
@@ -22,7 +22,7 @@ namespace android {
 
 static ScopedJavaLocalRef<jobject> JNI_ValidationTestUtil_ParseData(
     JNIEnv* env,
-    const JavaParamRef<jstring>& data_as_string) {
+    const JavaRef<jstring>& data_as_string) {
   std::string input =
       base::android::ConvertJavaStringToUTF8(env, data_as_string);
   std::vector<uint8_t> data;

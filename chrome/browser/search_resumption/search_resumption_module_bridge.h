@@ -32,7 +32,7 @@ class SearchResumptionModuleBridge {
   void Destroy(JNIEnv* env);
 
   void FetchSuggestions(JNIEnv* env,
-                        const jni_zero::JavaParamRef<jstring>& j_page_url);
+                        const jni_zero::JavaRef<jstring>& j_page_url);
 
  private:
   ~SearchResumptionModuleBridge();

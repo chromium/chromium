@@ -196,7 +196,7 @@ static void JNI_AiCoreSessionWrapper_OnComplete(JNIEnv* env,
 static void JNI_AiCoreSessionWrapper_OnResponse(
     JNIEnv* env,
     jlong backend_session,
-    const jni_zero::JavaParamRef<jstring>& j_response) {
+    const jni_zero::JavaRef<jstring>& j_response) {
   reinterpret_cast<BackendSessionImplAndroid*>(backend_session)
       ->OnResponse(base::android::ConvertJavaStringToUTF8(env, j_response));
 }

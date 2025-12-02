@@ -23,7 +23,7 @@ namespace {
 
 using ::base::android::ConvertJavaStringToUTF16;
 using ::base::android::ConvertJavaStringToUTF8;
-using ::base::android::JavaParamRef;
+using ::base::android::JavaRef;
 
 PersonalDataManager* GetPersonalDataManagerForLastUsedProfile() {
   return PersonalDataManagerFactory::GetForBrowserContext(
@@ -40,7 +40,7 @@ static jlong JNI_AutofillTestHelper_GetDateNDaysAgo(JNIEnv* env, jint days) {
 // static
 static void JNI_AutofillTestHelper_AddServerCreditCard(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcard) {
+    const base::android::JavaRef<jobject>& jcard) {
   std::unique_ptr<CreditCard> card = std::make_unique<CreditCard>();
   PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(jcard, env,
                                                                card.get());
@@ -55,7 +55,7 @@ static void JNI_AutofillTestHelper_AddServerCreditCard(
 // static
 static void JNI_AutofillTestHelper_AddServerCreditCardWithAdditionalFields(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcard,
+    const base::android::JavaRef<jobject>& jcard,
     std::u16string& nickname,
     jint jcard_issuer) {
   std::unique_ptr<CreditCard> card = std::make_unique<CreditCard>();
@@ -112,7 +112,7 @@ static jlong JNI_AutofillTestHelper_GetProfileUseDate(JNIEnv* env,
 // static
 static std::string JNI_AutofillTestHelper_AddCreditCardWithUseStats(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcard,
+    const JavaRef<jobject>& jcard,
     jint count,
     jint days_since_last_used) {
   DCHECK(count >= 0 && days_since_last_used >= 0);
@@ -175,7 +175,7 @@ static void JNI_AutofillTestHelper_SetSyncService(JNIEnv* env) {
 // static
 static void JNI_AutofillTestHelper_AddMaskedBankAccount(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jbank_account) {
+    const JavaRef<jobject>& jbank_account) {
   BankAccount bank_account =
       PersonalDataManagerAndroid::CreateNativeBankAccountFromJava(
           env, jbank_account);
@@ -189,7 +189,7 @@ static void JNI_AutofillTestHelper_AddMaskedBankAccount(
 // static
 static void JNI_AutofillTestHelper_AddEwallet(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jewallet) {
+    const JavaRef<jobject>& jewallet) {
   Ewallet ewallet =
       PersonalDataManagerAndroid::CreateNativeEwalletFromJava(env, jewallet);
   PersonalDataManager* personal_data_manager =

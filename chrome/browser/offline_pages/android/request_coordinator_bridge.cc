@@ -18,7 +18,6 @@
 #include "chrome/android/chrome_jni_headers/RequestCoordinatorBridge_jni.h"
 #include "chrome/android/chrome_jni_headers/SavePageRequest_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -110,7 +109,7 @@ ScopedJavaLocalRef<jobjectArray> CreateJavaSavePageRequests(
 static JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_callback_obj,
+    const JavaRef<jobject>& j_callback_obj,
     std::string& url_spec,
     std::string& namespace_str,
     std::string& client_id_str,
@@ -147,7 +146,7 @@ static JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
 static JNI_EXPORT void JNI_RequestCoordinatorBridge_GetRequestsInQueue(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_callback_obj) {
+    const JavaRef<jobject>& j_callback_obj) {
   ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);
 
   RequestCoordinator* coordinator =
@@ -155,7 +154,7 @@ static JNI_EXPORT void JNI_RequestCoordinatorBridge_GetRequestsInQueue(
 
   if (!coordinator) {
     // Callback with null to signal that results are unavailable.
-    const JavaParamRef<jobject> empty_result(nullptr);
+    const JavaRef<jobject> empty_result(nullptr);
     base::android::RunObjectCallbackAndroid(j_callback_obj, empty_result);
     return;
   }
@@ -167,8 +166,8 @@ static JNI_EXPORT void JNI_RequestCoordinatorBridge_GetRequestsInQueue(
 static JNI_EXPORT void JNI_RequestCoordinatorBridge_RemoveRequestsFromQueue(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jlongArray>& j_request_ids_array,
-    const JavaParamRef<jobject>& j_callback_obj) {
+    const JavaRef<jlongArray>& j_request_ids_array,
+    const JavaRef<jobject>& j_callback_obj) {
   std::vector<int64_t> request_ids;
   base::android::JavaLongArrayToInt64Vector(env, j_request_ids_array,
                                             &request_ids);
@@ -179,7 +178,7 @@ static JNI_EXPORT void JNI_RequestCoordinatorBridge_RemoveRequestsFromQueue(
 
   if (!coordinator) {
     // Callback with null to signal that results are unavailable.
-    const JavaParamRef<jobject> empty_result(nullptr);
+    const JavaRef<jobject> empty_result(nullptr);
     base::android::RunObjectCallbackAndroid(j_callback_obj, empty_result);
     return;
   }

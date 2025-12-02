@@ -34,14 +34,14 @@ using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using password_manager::PasskeyCredential;
 using password_manager::UiCredential;
 
 namespace {
 
 UiCredential ConvertJavaCredential(JNIEnv* env,
-                                   const JavaParamRef<jobject>& credential) {
+                                   const JavaRef<jobject>& credential) {
   return UiCredential(
       ConvertJavaStringToUTF16(env,
                                Java_Credential_getUsername(env, credential)),
@@ -61,7 +61,7 @@ UiCredential ConvertJavaCredential(JNIEnv* env,
 
 PasskeyCredential ConvertJavaWebauthnCredential(
     JNIEnv* env,
-    const JavaParamRef<jobject>& credential) {
+    const JavaRef<jobject>& credential) {
   std::vector<uint8_t> credential_id;
   base::android::JavaByteArrayToByteVector(
       env, Java_WebauthnCredential_getCredentialId(env, credential),
@@ -163,13 +163,13 @@ void TouchToFillViewImpl::OnDismiss() {
 
 void TouchToFillViewImpl::OnCredentialSelected(
     JNIEnv* env,
-    const JavaParamRef<jobject>& credential) {
+    const JavaRef<jobject>& credential) {
   OnCredentialSelected(ConvertJavaCredential(env, credential));
 }
 
 void TouchToFillViewImpl::OnWebAuthnCredentialSelected(
     JNIEnv* env,
-    const JavaParamRef<jobject>& credential) {
+    const JavaRef<jobject>& credential) {
   controller_->OnPasskeyCredentialSelected(
       ConvertJavaWebauthnCredential(env, credential));
 }

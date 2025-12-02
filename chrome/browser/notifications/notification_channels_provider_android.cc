@@ -42,7 +42,7 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
@@ -204,7 +204,7 @@ class ChannelsRuleIterator : public content_settings::RuleIterator {
 static void JNI_NotificationSettingsBridge_OnGetSiteChannelsDone(
     JNIEnv* env,
     jlong callback_id,
-    const JavaParamRef<jobjectArray>& j_channels) {
+    const JavaRef<jobjectArray>& j_channels) {
   std::vector<NotificationChannel> channels;
   for (auto jchannel : j_channels.ReadElements<jobject>()) {
     channels.emplace_back(Java_SiteChannel_getId(env, jchannel),
@@ -225,8 +225,8 @@ static void JNI_NotificationSettingsBridge_OnGetSiteChannelsDone(
 
 static void JNI_NotificationSettingsBridge_OnChannelStateChanged(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_channel_id,
-    const JavaParamRef<jstring>& j_origin,
+    const JavaRef<jstring>& j_channel_id,
+    const JavaRef<jstring>& j_origin,
     jboolean blocked) {
   if (GetChannelStateChangedCallback().is_null()) {
     return;

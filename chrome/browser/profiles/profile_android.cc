@@ -18,10 +18,8 @@
 #include "chrome/browser/profiles/android/jni_headers/Profile_jni.h"
 
 using jni_zero::AttachCurrentThread;
-using jni_zero::JavaParamRef;
 using jni_zero::JavaRef;
 using jni_zero::ScopedJavaLocalRef;
-
 
 // static
 Profile* Profile::FromJavaObject(const JavaRef<jobject>& obj) {
@@ -74,7 +72,7 @@ static jboolean JNI_Profile_IsInitialProfile(JNIEnv* env, jlong ptr) {
 static ScopedJavaLocalRef<jobject> JNI_Profile_GetOffTheRecordProfile(
     JNIEnv* env,
     jlong ptr,
-    const JavaParamRef<jobject>& j_otr_profile_id,
+    const JavaRef<jobject>& j_otr_profile_id,
     const jboolean j_create_if_needed) {
   Profile* self = reinterpret_cast<Profile*>(ptr);
   Profile::OTRProfileID otr_profile_id =
@@ -104,7 +102,7 @@ static ScopedJavaLocalRef<jobject> JNI_Profile_GetPrimaryOtrProfile(
 static jboolean JNI_Profile_HasOffTheRecordProfile(
     JNIEnv* env,
     jlong ptr,
-    const JavaParamRef<jobject>& j_otr_profile_id) {
+    const JavaRef<jobject>& j_otr_profile_id) {
   Profile* self = reinterpret_cast<Profile*>(ptr);
   Profile::OTRProfileID otr_profile_id =
       Profile::OTRProfileID::ConvertFromJavaOTRProfileID(env, j_otr_profile_id);
@@ -137,7 +135,7 @@ static void JNI_Profile_Wipe(JNIEnv* env, jlong ptr) {
 
 static ScopedJavaLocalRef<jobject> JNI_Profile_FromWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents) {
     return nullptr;

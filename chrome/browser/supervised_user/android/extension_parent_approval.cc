@@ -16,7 +16,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/supervised_user/extension_parent_approval_jni_headers/ExtensionParentApproval_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 // Stores the callback passed in to an ongoing RequestExtensionApproval call.
 // We can only have a single extension approval in progress at a time on Android

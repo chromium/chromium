@@ -10,7 +10,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/content_extraction/android/jni_headers/InnerTextBridge_jni.h"
 
-using ::base::android::JavaParamRef;
+using ::base::android::JavaRef;
 
 namespace {
 void OnGotInnerText(
@@ -31,8 +31,8 @@ void OnGotInnerText(
 
 static void JNI_InnerTextBridge_GetInnerText(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const JavaRef<jobject>& jcallback) {
   CHECK(jcallback);
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);

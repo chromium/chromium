@@ -56,7 +56,7 @@
 #include "chrome/android/chrome_jni_headers/DownloadManagerService_jni.h"
 #include "chrome/browser/download/android/jni_headers/DownloadInfo_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using offline_items_collection::android::OfflineItemBridge;
 
@@ -171,7 +171,7 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
 }
 
 static jlong JNI_DownloadManagerService_Init(JNIEnv* env,
-                                             const JavaParamRef<jobject>& jobj,
+                                             const JavaRef<jobject>& jobj,
                                              jboolean is_full_browser_started) {
   DownloadManagerService* service = DownloadManagerService::GetInstance();
   service->Init(env, jobj, is_full_browser_started);
@@ -239,11 +239,10 @@ void DownloadManagerService::HandleOMADownload(download::DownloadItem* download,
                                                 system_download_id);
 }
 
-void DownloadManagerService::OpenDownload(
-    JNIEnv* env,
-    std::string& download_guid,
-    const JavaParamRef<jobject>& j_profile_key,
-    jint source) {
+void DownloadManagerService::OpenDownload(JNIEnv* env,
+                                          std::string& download_guid,
+                                          const JavaRef<jobject>& j_profile_key,
+                                          jint source) {
   if (!is_manager_initialized_)
     return;
 
@@ -276,7 +275,7 @@ void DownloadManagerService::OpenDownloadsPage(
 void DownloadManagerService::ResumeDownload(
     JNIEnv* env,
     std::string& download_guid,
-    const JavaParamRef<jobject>& j_profile_key) {
+    const JavaRef<jobject>& j_profile_key) {
   ProfileKey* profile_key =
       ProfileKeyAndroid::FromProfileKeyAndroid(j_profile_key);
   if (is_pending_downloads_loaded_ || profile_key->IsOffTheRecord()) {
@@ -289,7 +288,7 @@ void DownloadManagerService::ResumeDownload(
 void DownloadManagerService::PauseDownload(
     JNIEnv* env,
     std::string& download_guid,
-    const JavaParamRef<jobject>& j_profile_key) {
+    const JavaRef<jobject>& j_profile_key) {
   ProfileKey* profile_key =
       ProfileKeyAndroid::FromProfileKeyAndroid(j_profile_key);
   if (is_pending_downloads_loaded_ || profile_key->IsOffTheRecord())
@@ -301,7 +300,7 @@ void DownloadManagerService::PauseDownload(
 void DownloadManagerService::RemoveDownload(
     JNIEnv* env,
     std::string& download_guid,
-    const JavaParamRef<jobject>& j_profile_key) {
+    const JavaRef<jobject>& j_profile_key) {
   ProfileKey* profile_key =
       ProfileKeyAndroid::FromProfileKeyAndroid(j_profile_key);
   if (is_manager_initialized_ || profile_key->IsOffTheRecord())
@@ -312,7 +311,7 @@ void DownloadManagerService::RemoveDownload(
 
 void DownloadManagerService::GetAllDownloads(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile_key) {
+    const JavaRef<jobject>& j_profile_key) {
   ProfileKey* profile_key =
       ProfileKeyAndroid::FromProfileKeyAndroid(j_profile_key);
   if (is_manager_initialized_) {
@@ -356,7 +355,7 @@ void DownloadManagerService::GetAllDownloadsInternal(ProfileKey* profile_key) {
 
 void DownloadManagerService::CheckForExternallyRemovedDownloads(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile_key) {
+    const JavaRef<jobject>& j_profile_key) {
   // Once the DownloadManager is initlaized, DownloadHistory will check for the
   // removal of history files. If the history query is not yet complete, ignore
   // requests to check for externally removed downloads.
@@ -373,7 +372,7 @@ void DownloadManagerService::CheckForExternallyRemovedDownloads(
 void DownloadManagerService::UpdateLastAccessTime(
     JNIEnv* env,
     std::string& download_guid,
-    const JavaParamRef<jobject>& j_profile_key) {
+    const JavaRef<jobject>& j_profile_key) {
   ProfileKey* profile_key =
       ProfileKeyAndroid::FromProfileKeyAndroid(j_profile_key);
   download::DownloadItem* item = GetDownload(download_guid, profile_key);
@@ -384,7 +383,7 @@ void DownloadManagerService::UpdateLastAccessTime(
 void DownloadManagerService::CancelDownload(
     JNIEnv* env,
     std::string& download_guid,
-    const JavaParamRef<jobject>& j_profile_key) {
+    const JavaRef<jobject>& j_profile_key) {
   ProfileKey* profile_key =
       ProfileKeyAndroid::FromProfileKeyAndroid(j_profile_key);
   if (is_pending_downloads_loaded_ || profile_key->IsOffTheRecord())
@@ -638,8 +637,8 @@ void DownloadManagerService::RenameDownload(
     JNIEnv* env,
     std::string& download_guid,
     std::string& target_name,
-    const JavaParamRef<jobject>& j_callback,
-    const JavaParamRef<jobject>& j_profile_key) {
+    const JavaRef<jobject>& j_callback,
+    const JavaRef<jobject>& j_profile_key) {
   ProfileKey* profile_key =
       ProfileKeyAndroid::FromProfileKeyAndroid(j_profile_key);
   download::DownloadItem* item = GetDownload(download_guid, profile_key);

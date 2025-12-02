@@ -274,8 +274,8 @@ void LongScreenshotsTabService::DeleteAllLongScreenshotFiles() {
 void LongScreenshotsTabService::CaptureTabAndroid(
     JNIEnv* env,
     jint j_tab_id,
-    const base::android::JavaParamRef<jobject>& j_gurl,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jobject>& j_gurl,
+    const base::android::JavaRef<jobject>& j_web_contents,
     jint clip_x,
     jint clip_y,
     jint clip_width,

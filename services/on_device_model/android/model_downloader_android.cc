@@ -112,8 +112,8 @@ void ModelDownloaderAndroid::OnUnavailableOnSequence(
 static void JNI_AiCoreModelDownloaderWrapper_OnAvailable(
     JNIEnv* env,
     jlong model_downloader_android,
-    const jni_zero::JavaParamRef<jstring>& j_name,
-    const jni_zero::JavaParamRef<jstring>& j_version) {
+    const jni_zero::JavaRef<jstring>& j_name,
+    const jni_zero::JavaRef<jstring>& j_version) {
   reinterpret_cast<ModelDownloaderAndroid*>(model_downloader_android)
       ->OnAvailable(base::android::ConvertJavaStringToUTF8(env, j_name),
                     base::android::ConvertJavaStringToUTF8(env, j_version));

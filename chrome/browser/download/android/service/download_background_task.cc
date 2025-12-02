@@ -18,13 +18,12 @@
 #include "chrome/android/chrome_jni_headers/DownloadBackgroundTaskCallback_jni.h"
 #include "chrome/android/chrome_jni_headers/DownloadBackgroundTask_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace download {
 namespace android {
 
-BackgroundDownloadService* GetDownloadService(
-    const JavaParamRef<jobject>& jkey) {
+BackgroundDownloadService* GetDownloadService(const JavaRef<jobject>& jkey) {
   ProfileKey* key = ProfileKeyAndroid::FromProfileKeyAndroid(jkey);
   DCHECK(key);
   return BackgroundDownloadServiceFactory::GetForKey(key);
@@ -61,9 +60,9 @@ void RunTaskNotifyCallback(
 // static
 static void JNI_DownloadBackgroundTask_StartBackgroundTask(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jkey,
+    const JavaRef<jobject>& jkey,
     jint task_type,
-    const JavaParamRef<jobject>& j_callback_wrapper) {
+    const JavaRef<jobject>& j_callback_wrapper) {
   base::android::ScopedJavaGlobalRef<jobject> j_callback =
       base::android::ScopedJavaGlobalRef<jobject>(j_callback_wrapper);
   TaskFinishedCallback finish_callback =
@@ -90,7 +89,7 @@ static void JNI_DownloadBackgroundTask_StartBackgroundTask(
 // static
 static jboolean JNI_DownloadBackgroundTask_StopBackgroundTask(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jkey,
+    const JavaRef<jobject>& jkey,
     jint task_type) {
   auto type = static_cast<DownloadTaskType>(task_type);
   switch (type) {

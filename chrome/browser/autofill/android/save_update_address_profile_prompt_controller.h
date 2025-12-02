@@ -67,7 +67,7 @@ class SaveUpdateAddressProfilePromptController {
   void OnUserAccepted(JNIEnv* env);
   void OnUserDeclined(JNIEnv* env);
   void OnUserEdited(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& jprofile);
+                    const base::android::JavaRef<jobject>& jprofile);
   // Called whenever the prompt is dismissed (e.g. because the user already
   // accepted/declined/edited the profile (after OnUserAccepted/Declined/Edited
   // is called) or it was closed without interaction).

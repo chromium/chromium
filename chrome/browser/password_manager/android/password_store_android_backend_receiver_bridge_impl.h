@@ -38,7 +38,7 @@ class PasswordStoreAndroidBackendReceiverBridgeImpl
   void OnCompleteWithLogins(
       JNIEnv* env,
       jint job_id,
-      const base::android::JavaParamRef<jbyteArray>& passwords);
+      const base::android::JavaRef<jbyteArray>& passwords);
 
   // Implements consumer interface
   // Called via JNI. Called when the api call with `job_id` finished and
@@ -46,7 +46,7 @@ class PasswordStoreAndroidBackendReceiverBridgeImpl
   virtual void OnCompleteWithBrandedLogins(
       JNIEnv* env,
       jint job_id,
-      const base::android::JavaParamRef<jbyteArray>& passwords);
+      const base::android::JavaRef<jbyteArray>& passwords);
 
   // Implements consumer interface
   // Called via JNI. Called when the api call with `job_id` finished and
@@ -54,7 +54,7 @@ class PasswordStoreAndroidBackendReceiverBridgeImpl
   void OnCompleteWithAffiliatedLogins(
       JNIEnv* env,
       jint job_id,
-      const base::android::JavaParamRef<jbyteArray>& passwords);
+      const base::android::JavaRef<jbyteArray>& passwords);
 
   // Called via JNI. Called when the api call with `job_id` finished that could
   // have added, modified or deleted a login.

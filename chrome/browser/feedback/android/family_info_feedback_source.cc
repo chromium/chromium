@@ -22,14 +22,14 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace chrome::android {
 
 static void JNI_FamilyInfoFeedbackSource_Start(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaRef<jobject>& obj,
     Profile* profile) {
   FamilyInfoFeedbackSource* feedback_source =
       new FamilyInfoFeedbackSource(obj, profile);
@@ -37,7 +37,7 @@ static void JNI_FamilyInfoFeedbackSource_Start(
 }
 
 FamilyInfoFeedbackSource::FamilyInfoFeedbackSource(
-    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaRef<jobject>& obj,
     Profile* profile)
     : supervised_user_service_(
           SupervisedUserServiceFactory::GetForProfile(profile)),

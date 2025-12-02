@@ -19,7 +19,7 @@
 #include "chrome/android/chrome_jni_headers/TaskTabHelper_jni.h"
 #include "chrome/browser/android/tab_android.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -125,7 +125,7 @@ int64_t TaskTabHelper::GetParentRootTaskId() {
 #if BUILDFLAG(IS_ANDROID)
 static jlong JNI_TaskTabHelper_GetTaskId(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   sessions::NavigationTaskId* navigation_task_id =
       TaskTabHelper::GetCurrentTaskId(
           content::WebContents::FromJavaWebContents(jweb_contents));
@@ -137,7 +137,7 @@ static jlong JNI_TaskTabHelper_GetTaskId(
 
 static jlong JNI_TaskTabHelper_GetRootTaskId(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   sessions::NavigationTaskId* navigation_task_id =
       TaskTabHelper::GetCurrentTaskId(
           content::WebContents::FromJavaWebContents(jweb_contents));

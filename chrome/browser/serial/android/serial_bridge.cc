@@ -9,7 +9,7 @@
 
 static jboolean JNI_SerialBridge_IsWebContentsConnectedToSerialPort(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_web_contents) {
+    const base::android::JavaRef<jobject>& java_web_contents) {
   return content::WebContents::FromJavaWebContents(java_web_contents)
       ->IsCapabilityActive(content::WebContentsCapabilityType::kSerial);
 }

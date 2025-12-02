@@ -11,7 +11,7 @@
 #include "chrome/browser/page_content_annotations/service_jni_headers/PageContentExtractionService_jni.h"
 #include "components/page_content_annotations/core/page_content_cache.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace page_content_annotations {
@@ -54,7 +54,7 @@ PageContentExtractionServiceAndroid::~PageContentExtractionServiceAndroid() {
 
 void PageContentExtractionServiceAndroid::GetAllCachedTabIds(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   if (!service_ || !service_->GetPageContentCache()) {
     base::android::RunObjectCallbackAndroid(
         j_callback,

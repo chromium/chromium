@@ -15,7 +15,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/SigninBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 void SigninBridge::StartAddAccountFlow(ui::WindowAndroid* window,
                                        const std::string& prefilled_email,

@@ -37,26 +37,26 @@ class PersistedStateDB {
 
   // Save byte array for key.
   void Save(JNIEnv* env,
-            const base::android::JavaParamRef<jstring>& jkey,
-            const base::android::JavaParamRef<jbyteArray>& byte_array,
+            const base::android::JavaRef<jstring>& jkey,
+            const base::android::JavaRef<jbyteArray>& byte_array,
             const base::android::JavaRef<jobject>& jcallback);
 
   // Load byte array corresponding to key.
   void Load(JNIEnv* env,
-            const base::android::JavaParamRef<jstring>& jkey,
+            const base::android::JavaRef<jstring>& jkey,
             const base::android::JavaRef<jobject>& jcallback);
 
   // Delete entry corresponding to key.
   void Delete(JNIEnv* env,
-              const base::android::JavaParamRef<jstring>& jkey,
+              const base::android::JavaRef<jstring>& jkey,
               const base::android::JavaRef<jobject>& jcallback);
 
   // Delete entries which have keys which match jsubstring_to_match
   // except for those in jkeys_to_keep.
   void PerformMaintenance(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& jkeys_to_keep,
-      const base::android::JavaParamRef<jstring>& jsubstring_to_match,
+      const base::android::JavaRef<jobjectArray>& jkeys_to_keep,
+      const base::android::JavaRef<jstring>& jsubstring_to_match,
       const base::android::JavaRef<jobject>& joncomplete_for_testing);
 
   // Destroy PersistedStateDB object.

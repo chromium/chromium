@@ -18,7 +18,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/history_clusters/jni_headers/HistoryClustersBridge_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;

@@ -44,11 +44,10 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   // Called from Java to notify the completion of a FetchKeys() operation
   // previously initiated from C++ and identified by |request_id|. |gaia_id|
   // must match the user's ID.
-  void FetchKeysCompleted(
-      JNIEnv* env,
-      jint request_id,
-      std::string& gaia_id,
-      const base::android::JavaParamRef<jobjectArray>& keys);
+  void FetchKeysCompleted(JNIEnv* env,
+                          jint request_id,
+                          std::string& gaia_id,
+                          const base::android::JavaRef<jobjectArray>& keys);
 
   // Called from Java to notify the completion of a MarkLocalKeysAsStale()
   // operation previously initiated from C++ and identified by |request_id|.

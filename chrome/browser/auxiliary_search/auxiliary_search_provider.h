@@ -43,18 +43,18 @@ class AuxiliarySearchProvider : public KeyedService {
   void GetNonSensitiveTabs(
       JNIEnv* env,
       std::vector<TabAndroid*> tabs,
-      const base::android::JavaParamRef<jobject>& j_callback_obj) const;
+      const base::android::JavaRef<jobject>& j_callback_obj) const;
 
   void GetNonSensitiveHistoryData(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_callback_obj) const;
+      const base::android::JavaRef<jobject>& j_callback_obj) const;
 
   // Fetches CCTs after the given begin time from the history database.
   void GetCustomTabs(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_url,
+      const base::android::JavaRef<jobject>& j_url,
       jlong j_begin_time,
-      const base::android::JavaParamRef<jobject>& j_callback_obj) const;
+      const base::android::JavaRef<jobject>& j_callback_obj) const;
 
   static void EnsureFactoryBuilt();
 

@@ -223,12 +223,12 @@ void PaintPreviewTabService::AuditArtifacts(
 void PaintPreviewTabService::CaptureTabAndroid(
     JNIEnv* env,
     jint j_tab_id,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jobject>& j_web_contents,
     jboolean j_accessibility_enabled,
     jfloat j_page_scale_factor,
     jint j_x,
     jint j_y,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   CaptureTab(static_cast<int>(j_tab_id), web_contents,
@@ -253,7 +253,7 @@ jboolean PaintPreviewTabService::HasCaptureForTabAndroid(JNIEnv* env,
 
 void PaintPreviewTabService::AuditArtifactsAndroid(
     JNIEnv* env,
-    const base::android::JavaParamRef<jintArray>& j_tab_ids) {
+    const base::android::JavaRef<jintArray>& j_tab_ids) {
   std::vector<int> tab_ids;
   base::android::JavaIntArrayToIntVector(env, j_tab_ids, &tab_ids);
   AuditArtifacts(tab_ids);

@@ -18,7 +18,7 @@ class CollaborationControllerDelegateAndroid
     : public CollaborationControllerDelegate {
  public:
   explicit CollaborationControllerDelegateAndroid(
-      const base::android::JavaParamRef<jobject>& j_object);
+      const base::android::JavaRef<jobject>& j_object);
   ~CollaborationControllerDelegateAndroid() override;
 
   // CollaborationControllerDelegate.

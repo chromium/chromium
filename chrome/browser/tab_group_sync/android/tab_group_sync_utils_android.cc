@@ -20,7 +20,7 @@
 static void JNI_TabGroupSyncUtils_OnDidFinishNavigation(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_group_id,
+    const jni_zero::JavaRef<jobject>& j_group_id,
     jint j_tab_id,
     jlong navigation_handle_ptr) {
   CHECK(profile);
@@ -49,7 +49,7 @@ static void JNI_TabGroupSyncUtils_OnDidFinishNavigation(
 static void JNI_TabGroupSyncUtils_UpdateTabRedirectChain(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_group_id,
+    const jni_zero::JavaRef<jobject>& j_group_id,
     jint j_tab_id,
     jlong navigation_handle_ptr) {
   CHECK(profile);
@@ -75,7 +75,7 @@ static void JNI_TabGroupSyncUtils_UpdateTabRedirectChain(
 static jboolean JNI_TabGroupSyncUtils_IsUrlInTabRedirectChain(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_group_id,
+    const jni_zero::JavaRef<jobject>& j_group_id,
     jint j_tab_id,
     GURL& url) {
   CHECK(profile);

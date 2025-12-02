@@ -30,7 +30,7 @@ namespace chrome::android {
 // asynchronously.
 class FamilyInfoFeedbackSource {
  public:
-  FamilyInfoFeedbackSource(const base::android::JavaParamRef<jobject>& obj,
+  FamilyInfoFeedbackSource(const base::android::JavaRef<jobject>& obj,
                            Profile* profile);
 
   FamilyInfoFeedbackSource(const FamilyInfoFeedbackSource&) = delete;

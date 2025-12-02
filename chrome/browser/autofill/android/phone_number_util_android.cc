@@ -16,7 +16,7 @@ namespace autofill {
 namespace {
 using ::base::android::ConvertJavaStringToUTF8;
 using ::base::android::ConvertUTF8ToJavaString;
-using ::base::android::JavaParamRef;
+using ::base::android::JavaRef;
 using ::base::android::ScopedJavaLocalRef;
 
 // Formats the `phone_number` to the specified `format` for the given country
@@ -60,7 +60,7 @@ std::string FormatPhoneNumber(
 static std::string JNI_PhoneNumberUtil_FormatForDisplay(
     JNIEnv* env,
     std::string& phone_number,
-    const JavaParamRef<jstring>& jcountry_code) {
+    const JavaRef<jstring>& jcountry_code) {
   return jcountry_code.is_null()
              ? FormatPhoneNumber(phone_number,
                                  ::i18n::phonenumbers::PhoneNumberUtil::
@@ -90,7 +90,7 @@ static std::string JNI_PhoneNumberUtil_FormatForResponse(
 static jboolean JNI_PhoneNumberUtil_IsPossibleNumber(
     JNIEnv* env,
     std::string& phone_number,
-    const JavaParamRef<jstring>& jcountry_code) {
+    const JavaRef<jstring>& jcountry_code) {
   const std::string country_code =
       jcountry_code.is_null() ? autofill::AutofillCountry::CountryCodeForLocale(
                                     g_browser_process->GetApplicationLocale())

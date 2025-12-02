@@ -23,7 +23,7 @@
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 // static
 DuplicateDownloadDialogBridgeDelegate*

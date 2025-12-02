@@ -14,10 +14,10 @@ class AccessibilitySettingsBridge {
  public:
   static jboolean IsCaretBrowsingEnabled(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_profile);
+      const base::android::JavaRef<jobject>& j_profile);
   static void SetCaretBrowsingEnabled(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_profile,
+      const base::android::JavaRef<jobject>& j_profile,
       jboolean enabled);
 };
 
