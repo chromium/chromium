@@ -8,7 +8,7 @@
 namespace one_time_tokens {
 
 // Do not change or reuse values.
-enum class OneTimeTokenType { kSmsOtp = 0, kMaxValue = kSmsOtp };
+enum class OneTimeTokenType { kSmsOtp = 0, kGmail = 1, kMaxValue = kGmail };
 
 }  // namespace one_time_tokens
 
