@@ -122,13 +122,13 @@ class Reader {
 // Decode in-memory audio file data.
 bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
                          base::span<const char> data) {
-  const base::TimeTicks start_time = base::TimeTicks::Now();
-  DCHECK(destination_bus);
   if (!destination_bus) {
     return false;
   }
 
 #if BUILDFLAG(ENABLE_FFMPEG)
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+
   std::unique_ptr<Reader> reader = Reader::Create(data);
   base::UmaHistogramBoolean("Media.ContentAudioDecoder.CreateReaderSuccess",
                             reader != nullptr);
