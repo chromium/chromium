@@ -2250,7 +2250,8 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
           frame_tree_node->current_frame_host());
   devtools_params.Run(/*is_navigation=*/true,
                       /*is_download=*/false, factory_builder,
-                      /*factory_override=*/nullptr);
+                      /*factory_override=*/nullptr, &header_client);
+
   net::CookieSettingOverrides devtools_cookie_overrides;
   devtools_instrumentation::ApplyNetworkCookieControlsOverrides(
       devtools_params.agent_host(), devtools_cookie_overrides);

@@ -234,7 +234,7 @@ CreatePendingSharedURLLoaderFactory(StoragePartitionImpl* storage_partition,
         static_cast<RenderFrameHostImpl*>(rfh))
         .Run(/*is_navigation=*/true,
              /*is_download=*/true, factory_builder,
-             nullptr /* factory_override */);
+             nullptr /* factory_override */, /*header_client=*/nullptr);
 
     // Also allow the Content embedder to inject itself if it wants to.
     GetContentClient()->browser()->WillCreateURLLoaderFactory(

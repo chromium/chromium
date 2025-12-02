@@ -176,7 +176,9 @@ class WillCreateURLLoaderFactoryParams final {
   bool Run(bool is_navigation,
            bool is_download,
            network::URLLoaderFactoryBuilder& factory_builder,
-           network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+           network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+           mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+               header_client);
 
   DevToolsAgentHostImpl* agent_host() { return agent_host_; }
 

@@ -245,8 +245,11 @@ template <typename OutType, typename... FinishArgs>
 
   if (devtools_params) {
     auto [is_navigation, is_download] = GetIsNavigationAndDownload(type);
-    devtools_params->Run(is_navigation, is_download, factory_builder,
-                         factory_override_ptr);
+    devtools_params->Run(
+        is_navigation, is_download, factory_builder, factory_override_ptr,
+        terminal_params.header_client_option() == HeaderClientOption::kAllow
+            ? &header_client
+            : nullptr);
   }
 
   if (auto terminal_url_loader_factory =

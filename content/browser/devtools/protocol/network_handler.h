@@ -48,6 +48,7 @@ struct ResourceRequest;
 struct URLLoaderCompletionStatus;
 namespace mojom {
 class URLLoaderFactoryOverride;
+class TrustedURLLoaderHeaderClient;
 }
 }  // namespace network
 
@@ -227,7 +228,9 @@ class NetworkHandler : public DevToolsDomainHandler,
       const base::UnguessableToken& frame_token,
       bool is_navigation,
       bool is_download,
-      network::mojom::URLLoaderFactoryOverride* intercepting_factory);
+      network::mojom::URLLoaderFactoryOverride* intercepting_factory,
+      mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+          header_client);
 
   void ApplyOverrides(
       net::HttpRequestHeaders* headers,

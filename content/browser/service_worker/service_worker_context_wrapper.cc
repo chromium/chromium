@@ -1896,7 +1896,7 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
           ForServiceWorkerMainScript(this, version_id)) {
     params->Run(
         /*is_navigation=*/true, /*is_download=*/false, factory_builder,
-        /*factory_override=*/nullptr);
+        /*factory_override=*/nullptr, &header_client);
   }
 
   bool use_client_header_factory = header_client.is_valid();

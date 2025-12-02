@@ -11,11 +11,13 @@
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/fetch.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
 namespace network {
 namespace mojom {
 class URLLoaderFactoryOverride;
+class TrustedURLLoaderHeaderClient;
 }
 }  // namespace network
 
@@ -51,7 +53,9 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
       const base::UnguessableToken& frame_token,
       bool is_navigation,
       bool is_download,
-      network::mojom::URLLoaderFactoryOverride* intercepting_factory);
+      network::mojom::URLLoaderFactoryOverride* intercepting_factory,
+      mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+          header_client);
 
  private:
   // DevToolsDomainHandler
