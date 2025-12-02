@@ -93,7 +93,6 @@ public class LogoViewBinderUnitTest {
 
     @Before
     public void setUp() {
-        LogoBridgeJni.setInstanceForTesting(mLogoBridgeJniMock);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mLogoView = new LogoView(mActivity, null);
         LayoutParams params =
@@ -260,11 +259,11 @@ public class LogoViewBinderUnitTest {
     @Test
     @SmallTest
     public void testShowSearchProviderInitialView() {
-        PropertyModel LogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(LogoModel, mMockLogoView, new LogoViewBinder());
-        LogoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
+        PropertyModel logoModel = new PropertyModel(LogoProperties.ALL_KEYS);
+        PropertyModelChangeProcessor.create(logoModel, mMockLogoView, new LogoViewBinder());
+        logoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
         verify(mMockLogoView).showSearchProviderInitialView();
-        LogoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
+        logoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
         verify(mMockLogoView, times(2)).showSearchProviderInitialView();
     }
 
@@ -292,5 +291,15 @@ public class LogoViewBinderUnitTest {
         assertEquals(DoodleSize.REGULAR, mLogoView.getDoodleSizeForTesting());
         mLogoModel.set(LogoProperties.DOODLE_SIZE, DoodleSize.TABLET_SPLIT_SCREEN);
         assertEquals(DoodleSize.TABLET_SPLIT_SCREEN, mLogoView.getDoodleSizeForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testShowDefaultGoogleLogo() {
+        PropertyModel logoModel = new PropertyModel(LogoProperties.ALL_KEYS);
+        PropertyModelChangeProcessor.create(logoModel, mMockLogoView, new LogoViewBinder());
+
+        logoModel.set(LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO, true);
+        verify(mMockLogoView).maybeShowDefaultLogoDrawable();
     }
 }

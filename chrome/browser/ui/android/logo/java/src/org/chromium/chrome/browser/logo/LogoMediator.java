@@ -94,7 +94,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     private boolean mHasLogoLoadedForCurrentSearchEngine;
     private final LogoCoordinator.@Nullable VisibilityObserver mVisibilityObserver;
     private final CachedTintedBitmap mDefaultGoogleLogo;
-    private final @Nullable Drawable mDefaultGoogleLogoDrawable;
+    private @Nullable Drawable mDefaultGoogleLogoDrawable;
     private final boolean mIsRefactorEnabled;
     private boolean mShouldShowLogo;
     private boolean mIsLoadPending;
@@ -235,6 +235,13 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         return mShouldShowLogo && mLogoModel.get(LogoProperties.VISIBILITY);
     }
 
+    /** Returns whether the default Google Logo is shown. */
+    boolean isDefaultGoogleLogoShown() {
+        return mShouldShowLogo
+                && mLogoModel.get(LogoProperties.VISIBILITY)
+                && mLogoModel.get(LogoProperties.LOGO) == null;
+    }
+
     /**
      * Load the search provider logo on Start surface.
      *
@@ -336,6 +343,18 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         }
 
         return mDefaultGoogleLogoDrawable;
+    }
+
+    /**
+     * Updates the drawable of the LogoView and show it.
+     *
+     * @param drawable The updated drawable for default Google logo.
+     */
+    void updateDefaultGoogleLogo(Drawable drawable) {
+        mDefaultGoogleLogoDrawable = drawable;
+
+        mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE, mDefaultGoogleLogoDrawable);
+        mLogoModel.set(LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO, true);
     }
 
     public void onLogoClicked(boolean isAnimatedLogoShowing) {
@@ -483,15 +502,11 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         mSearchEngineKeyword = null;
     }
 
-    @Nullable ImageFetcher getImageFetcherForTesting() {
-        return mImageFetcher;
-    }
-
-    @Nullable LogoBridge getLogoBridgeForTesting() {
-        return mLogoBridge;
-    }
-
     boolean getIsLoadPendingForTesting() {
         return mIsLoadPending;
+    }
+
+    public void setShouldShowLogoForTesting(boolean shouldShowLogo) {
+        mShouldShowLogo = shouldShowLogo;
     }
 }

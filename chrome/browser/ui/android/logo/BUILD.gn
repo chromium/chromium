@@ -73,6 +73,7 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.logo"
   sources = [
     "java/src/org/chromium/chrome/browser/logo/CachedTintedBitmapUnitTest.java",
+    "java/src/org/chromium/chrome/browser/logo/LogoCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoViewBinderUnitTest.java",
@@ -87,9 +88,11 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/ntp_customization:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/search_engines/android:java",
+    "//components/browser_ui/theme/android:java_resources",
     "//components/image_fetcher:java",
     "//components/search_engines/android:java",
     "//content/public/android:content_full_java",

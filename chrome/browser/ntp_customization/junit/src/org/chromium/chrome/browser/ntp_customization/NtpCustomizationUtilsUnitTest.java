@@ -466,25 +466,21 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    public void testSetTintForDefaultGoogleLogo() {
+    public void testGetTintedGoogleLogoDrawable_nonChromeColor() {
         ColorUtils.setInNightModeForTesting(false);
-        NtpCustomizationConfigManager customizationConfigManager =
-                new NtpCustomizationConfigManager();
-        NtpCustomizationConfigManager.setInstanceForTesting(customizationConfigManager);
-
         Drawable mutateDrawable = mock(Drawable.class);
         when(mDrawable.mutate()).thenReturn(mutateDrawable);
+        @ColorInt int primaryColor = Color.RED;
 
         // Test cases in light mode:
-
         // Verifies that no tint color is set for the default theme in light mode.
-        customizationConfigManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.DEFAULT);
-        NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
+        NtpCustomizationUtils.getTintedGoogleLogoDrawableImpl(
+                mContext, mDrawable, NtpBackgroundImageType.DEFAULT, primaryColor);
         verify(mutateDrawable, never()).setTint(anyInt());
 
         // Verifies that color white is set for customized background images.
-        customizationConfigManager.setBackgroundImageTypeForTesting(IMAGE_FROM_DISK);
-        NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
+        NtpCustomizationUtils.getTintedGoogleLogoDrawableImpl(
+                mContext, mDrawable, NtpBackgroundImageType.IMAGE_FROM_DISK, primaryColor);
         verify(mutateDrawable).setTint(eq(Color.WHITE));
 
         // Test cases in dark mode:
@@ -492,69 +488,64 @@ public class NtpCustomizationUtilsUnitTest {
         clearInvocations(mutateDrawable);
 
         // Verifies that color white is set for customized background images.
-        customizationConfigManager.setBackgroundImageTypeForTesting(IMAGE_FROM_DISK);
-        NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
+        NtpCustomizationUtils.getTintedGoogleLogoDrawableImpl(
+                mContext, mDrawable, NtpBackgroundImageType.IMAGE_FROM_DISK, primaryColor);
         verify(mutateDrawable).setTint(eq(Color.WHITE));
 
         // Verifies that color white is set for the default theme.
-        customizationConfigManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.DEFAULT);
-        NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
+        NtpCustomizationUtils.getTintedGoogleLogoDrawableImpl(
+                mContext, mDrawable, NtpBackgroundImageType.DEFAULT, primaryColor);
         verify(mutateDrawable, times(2)).setTint(eq(Color.WHITE));
-
-        // Cleans up.
-        customizationConfigManager.resetForTesting();
     }
 
     @Test
     @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testSetTintForDefaultGoogleLogo_chromeColor() {
+    public void testGetTintedGoogleLogoDrawable_chromeColor_lightMode() {
+        // Test cases in light mode.
         ColorUtils.setInNightModeForTesting(false);
-        NtpCustomizationConfigManager customizationConfigManager =
-                new NtpCustomizationConfigManager();
-        NtpCustomizationConfigManager.setInstanceForTesting(customizationConfigManager);
+        @ColorInt int primaryColor = mContext.getColor(R.color.ntp_color_blue_primary);
+        Drawable mutateDrawable = mock(Drawable.class);
+        when(mDrawable.mutate()).thenReturn(mutateDrawable);
+
+        // Verifies that the saved primary color is set for customized color themes if exists.
+        assertEquals(
+                mutateDrawable,
+                NtpCustomizationUtils.getTintedGoogleLogoDrawableImpl(
+                        mContext, mDrawable, NtpBackgroundImageType.CHROME_COLOR, primaryColor));
+        verify(mutateDrawable).setTint(eq(primaryColor));
+
+        clearInvocations(mutateDrawable);
+        // Verifies that if primary color is missing, no tint color is set in light mode.
+        assertEquals(
+                mDrawable,
+                NtpCustomizationUtils.getTintedGoogleLogoDrawableImpl(
+                        mContext,
+                        mDrawable,
+                        NtpBackgroundImageType.CHROME_COLOR,
+                        /* primaryColor= */ null));
+        verify(mutateDrawable, never()).setTint(eq(primaryColor));
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testGetTintedGoogleLogoDrawable_chromeColor_darkMode() {
+        // Test cases in dark mode.
+        ColorUtils.setInNightModeForTesting(true);
+        @ColorInt int primaryColor = mContext.getColor(R.color.ntp_color_blue_primary);
 
         Drawable mutateDrawable = mock(Drawable.class);
         when(mDrawable.mutate()).thenReturn(mutateDrawable);
 
-        // Test cases in light mode:
-
-        // Verifies that when the primary color is missing, no tint color is set in light mode.
-        @NtpThemeColorId int colorId = NtpThemeColorId.NTP_COLORS_AQUA;
-        NtpThemeColorInfo ntpThemeColorInfo =
-                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorId);
-        @ColorInt int primaryColor = mContext.getColor(ntpThemeColorInfo.primaryColorResId);
-        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
-                NtpBackgroundImageType.CHROME_COLOR);
-        customizationConfigManager.setBackgroundImageTypeForTesting(
-                NtpBackgroundImageType.CHROME_COLOR);
-        assertEquals(
-                NtpThemeColorId.DEFAULT,
-                NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
-        NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
-        verify(mutateDrawable, never()).setTint(anyInt());
-
-        // Verifies that the saved primary color is set for customized color themes if exists.
-        NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
-        assertEquals(colorId, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
-        NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
-        verify(mutateDrawable).setTint(eq(primaryColor));
-
-        // Test cases in dark mode:
-        ColorUtils.setInNightModeForTesting(true);
-        clearInvocations(mutateDrawable);
-
         // Verifies that the saved primary color is set for customized color themes.
-        NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
+        NtpCustomizationUtils.getTintedGoogleLogoDrawableImpl(
+                mContext, mDrawable, NtpBackgroundImageType.CHROME_COLOR, primaryColor);
         verify(mutateDrawable).setTint(eq(primaryColor));
 
+        clearInvocations(mutateDrawable);
         // Verifies when the primary color is missing, color white is set in dark mode.
-        NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext));
-        NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
+        NtpCustomizationUtils.getTintedGoogleLogoDrawableImpl(
+                mContext, mDrawable, NtpBackgroundImageType.CHROME_COLOR, /* primaryColor= */ null);
         verify(mutateDrawable).setTint(eq(Color.WHITE));
-
-        // Cleans up.
-        customizationConfigManager.resetForTesting();
     }
 
     @Test

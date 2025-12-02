@@ -522,7 +522,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
      *
      * @return Whether the default search engine logo drawable is available.
      */
-    private boolean maybeShowDefaultLogoDrawable() {
+    boolean maybeShowDefaultLogoDrawable() {
         if (mDefaultGoogleLogoDrawable != null) {
             updateLogoDrawableImpl(
                     mDefaultGoogleLogoDrawable,

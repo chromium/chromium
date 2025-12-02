@@ -106,6 +106,14 @@ public class NtpCustomizationUtils {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NtpBackgroundImageType)
 
+    /** An interface to get the current NTP's theme color. */
+    interface PrimaryColorProvider {
+        // Returns the current primary theme color if exists.
+        @Nullable
+        @ColorInt
+        Integer getPrimaryColor();
+    }
+
     @VisibleForTesting static final String NTP_BACKGROUND_IMAGE_FILE = "ntp_background_image";
     private static final String TAG = "NtpCustomization";
     private static final String DELIMITER = "|";
@@ -716,30 +724,68 @@ public class NtpCustomizationUtils {
      * Sets tint color for the default Google logo.
      *
      * @param context Used to look up current day/night mode status.
+     * @param defaultGoogleLogoDrawable The drawable instance for default Google Logo.
      */
     public static void setTintForDefaultGoogleLogo(
             Context context, Drawable defaultGoogleLogoDrawable) {
+        @NtpBackgroundImageType
+        int backgroundType = NtpCustomizationConfigManager.getInstance().getBackgroundImageType();
+        getTintedGoogleLogoDrawableImpl(
+                context,
+                defaultGoogleLogoDrawable,
+                backgroundType,
+                () -> NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(context));
+    }
+
+    /**
+     * Returns the default Google logo with tint.
+     *
+     * @param context Used to look up current day/night mode status.
+     * @param defaultGoogleLogoDrawable The drawable instance for default Google Logo.
+     * @param backgroundType backgroundType The NTP's background theme type.
+     * @param primaryColor The primary theme color.
+     */
+    public static Drawable getTintedGoogleLogoDrawableImpl(
+            Context context,
+            Drawable defaultGoogleLogoDrawable,
+            @NtpBackgroundImageType int backgroundType,
+            @Nullable @ColorInt Integer primaryColor) {
+        return getTintedGoogleLogoDrawableImpl(
+                context, defaultGoogleLogoDrawable, backgroundType, () -> primaryColor);
+    }
+
+    /**
+     * Returns the default Google logo with tint.
+     *
+     * @param context Used to look up current day/night mode status.
+     * @param defaultGoogleLogoDrawable The drawable instance for default Google Logo.
+     * @param backgroundType backgroundType The NTP's background theme type.
+     * @param primaryColorProvider The interface to get primary theme color.
+     */
+    private static Drawable getTintedGoogleLogoDrawableImpl(
+            Context context,
+            Drawable defaultGoogleLogoDrawable,
+            @NtpBackgroundImageType int backgroundType,
+            PrimaryColorProvider primaryColorProvider) {
         // Check the mode before applying a tinted color. A transparent tint in light mode will
         // cause the logo's color to disappear.
         boolean isNightMode = ColorUtils.inNightMode(context);
-        @NtpBackgroundImageType
-        int defaultBackgroundType =
-                NtpCustomizationConfigManager.getInstance().getBackgroundImageType();
-
         // The colorful Google logo is shown for default theme in light mode.
-        if (!isNightMode && defaultBackgroundType == NtpBackgroundImageType.DEFAULT) {
-            return;
+        if (!isNightMode && backgroundType == NtpBackgroundImageType.DEFAULT) {
+            return defaultGoogleLogoDrawable;
         }
 
         @ColorInt int tintColor;
-        if (defaultBackgroundType == NtpBackgroundImageType.CHROME_COLOR
-                || defaultBackgroundType == NtpBackgroundImageType.COLOR_FROM_HEX) {
-            @ColorInt Integer primaryColor = getPrimaryColorFromCustomizedThemeColor(context);
+        if (backgroundType == NtpBackgroundImageType.CHROME_COLOR
+                || backgroundType == NtpBackgroundImageType.COLOR_FROM_HEX) {
+            @Nullable
+            @ColorInt
+            Integer primaryColor = primaryColorProvider.getPrimaryColor();
             if (primaryColor != null) {
                 tintColor = primaryColor.intValue();
             } else if (!isNightMode) {
                 // When primary color is missing, falls back to colorful Google logo in light mode.
-                return;
+                return defaultGoogleLogoDrawable;
             } else {
                 // When primary color is missing, falls back to white Google logo in light mode.
                 tintColor = Color.WHITE;
@@ -751,7 +797,9 @@ public class NtpCustomizationUtils {
             tintColor = Color.WHITE;
         }
 
-        defaultGoogleLogoDrawable.mutate().setTint(tintColor);
+        Drawable tintedDrawable = defaultGoogleLogoDrawable.mutate();
+        tintedDrawable.setTint(tintColor);
+        return tintedDrawable;
     }
 
     /**

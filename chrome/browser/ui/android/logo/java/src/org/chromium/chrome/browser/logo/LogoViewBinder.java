@@ -55,6 +55,8 @@ class LogoViewBinder
             logoView.setLogoAvailableCallback(model.get(LogoProperties.LOGO_AVAILABLE_CALLBACK));
         } else if (LogoProperties.DOODLE_SIZE == propertyKey) {
             logoView.setDoodleSize(model.get(LogoProperties.DOODLE_SIZE));
+        } else if (LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO == propertyKey) {
+            logoView.maybeShowDefaultLogoDrawable();
         } else {
             assert false : "Unhandled property detected in LogoViewBinder!";
         }

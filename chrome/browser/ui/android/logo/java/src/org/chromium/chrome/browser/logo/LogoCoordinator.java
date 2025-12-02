@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.logo;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View.MeasureSpec;
 
+import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
@@ -15,7 +17,12 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -24,9 +31,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Coordinator used to fetch and load logo image for Start surface and NTP. */
 @NullMarked
 public class LogoCoordinator {
-    private final LogoMediator mMediator;
     private final PropertyModel mLogoModel;
+    private LogoMediator mMediator;
     private LogoView mLogoView;
+    private NtpCustomizationConfigManager.@Nullable HomepageStateListener mHomepageStateListener;
 
     // The default google logo that is shared across all NTPs.
     static final CachedTintedBitmap sDefaultGoogleLogo =
@@ -62,7 +70,10 @@ public class LogoCoordinator {
         if (ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled()) {
             defaultGoogleLogoDrawable =
                     ContextCompat.getDrawable(context, R.drawable.ic_google_logo);
-            NtpCustomizationUtils.setTintForDefaultGoogleLogo(context, defaultGoogleLogoDrawable);
+            if (ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+                NtpCustomizationUtils.setTintForDefaultGoogleLogo(
+                        context, defaultGoogleLogoDrawable);
+            }
         }
 
         mMediator =
@@ -74,6 +85,50 @@ public class LogoCoordinator {
                         visibilityObserver,
                         sDefaultGoogleLogo,
                         defaultGoogleLogoDrawable);
+
+        // Should be called after mMediator is created.
+        maybeInitHomepageStateListener(context);
+    }
+
+    private void maybeInitHomepageStateListener(Context context) {
+        if (!ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled()
+                || !ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+            return;
+        }
+
+        mHomepageStateListener =
+                new NtpCustomizationConfigManager.HomepageStateListener() {
+                    @Override
+                    public void onBackgroundImageChanged(
+                            Bitmap originalBitmap,
+                            @Nullable BackgroundImageInfo backgroundImageInfo,
+                            boolean fromInitialization,
+                            int oldType,
+                            int newType) {
+                        maybeUpdateTintForDefaultGoogleLogo(
+                                context, newType, /* primaryColor= */ null);
+                    }
+
+                    @Override
+                    public void onBackgroundColorChanged(
+                            @Nullable NtpThemeColorInfo ntpThemeColorInfo,
+                            int backgroundColor,
+                            boolean fromInitialization,
+                            int oldType,
+                            int newType) {
+                        @ColorInt
+                        Integer primaryColor =
+                                ntpThemeColorInfo == null
+                                        ? null
+                                        : NtpThemeColorUtils.getPrimaryColorFromColorInfo(
+                                                context, ntpThemeColorInfo);
+                        maybeUpdateTintForDefaultGoogleLogo(context, newType, primaryColor);
+                    }
+                };
+        // Skips being notified from NtpCustomizationConfigManager since the drawable has been
+        // tinted if necessary when the initial logo view is shown.
+        NtpCustomizationConfigManager.getInstance()
+                .addListener(mHomepageStateListener, context, /* skipNotify= */ true);
     }
 
     /**
@@ -108,6 +163,10 @@ public class LogoCoordinator {
         mMediator.destroy();
         mLogoView.destroy();
         mLogoView = null;
+        if (mHomepageStateListener != null) {
+            NtpCustomizationConfigManager.getInstance().removeListener(mHomepageStateListener);
+            mHomepageStateListener = null;
+        }
     }
 
     /**
@@ -162,10 +221,25 @@ public class LogoCoordinator {
     }
 
     /**
-     * @see LogoMediator#isLogoVisible
+     * Updates the default Google logo with a tint color if it is shown.
+     *
+     * @param context The context to get themed color.
+     * @param backgroundType The NTP's background theme type.
+     * @param primaryColor The primary color is selected.
      */
-    public boolean isLogoVisible() {
-        return mMediator.isLogoVisible();
+    private void maybeUpdateTintForDefaultGoogleLogo(
+            Context context,
+            @NtpBackgroundImageType int backgroundType,
+            @Nullable @ColorInt Integer primaryColor) {
+        // If the default Google logo isn't shown, returns here.
+        if (!mMediator.isDefaultGoogleLogoShown()) return;
+
+        Drawable defaultGoogleLogoDrawable =
+                ContextCompat.getDrawable(context, R.drawable.ic_google_logo);
+        Drawable tintedDrawable =
+                NtpCustomizationUtils.getTintedGoogleLogoDrawableImpl(
+                        context, defaultGoogleLogoDrawable, backgroundType, primaryColor);
+        mMediator.updateDefaultGoogleLogo(tintedDrawable);
     }
 
     /**
@@ -187,5 +261,9 @@ public class LogoCoordinator {
 
     public void setOnLogoClickUrlForTesting(String onLogoClickUrl) {
         mMediator.setOnLogoClickUrlForTesting(onLogoClickUrl);
+    }
+
+    void setMediatorForTesting(LogoMediator mediator) {
+        mMediator = mediator;
     }
 }

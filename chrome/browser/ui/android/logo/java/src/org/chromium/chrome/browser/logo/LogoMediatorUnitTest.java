@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.logo;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,7 +43,6 @@ import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -57,8 +59,6 @@ public class LogoMediatorUnitTest {
     @Mock LogoBridge.Natives mLogoBridgeJniMock;
 
     @Mock LogoBridge mLogoBridge;
-
-    @Mock ImageFetcher mImageFetcher;
 
     @Mock TemplateUrlService mTemplateUrlService;
 
@@ -184,13 +184,13 @@ public class LogoMediatorUnitTest {
         LogoMediator logoMediator = createMediatorWithoutNative();
         logoMediator.updateVisibility(/* animationEnabled= */ false);
 
-        Assert.assertTrue(logoMediator.isLogoVisible());
+        assertTrue(logoMediator.isLogoVisible());
         // When parent surface is shown while native library isn't loaded, calling
         // updateVisibilityAndMaybeCleanUp() will add a pending load task.
-        Assert.assertTrue(logoMediator.getIsLoadPendingForTesting());
+        assertTrue(logoMediator.getIsLoadPendingForTesting());
         logoMediator.initWithNative(mProfile);
 
-        Assert.assertTrue(logoMediator.isLogoVisible());
+        assertTrue(logoMediator.isLogoVisible());
         verify(mLogoBridge, times(1)).getCurrentLogo(any());
         verify(mTemplateUrlService).addObserver(logoMediator);
     }
@@ -222,7 +222,7 @@ public class LogoMediatorUnitTest {
         // destroyed.
         logoMediator.setLogoBridgeForTesting(mLogoBridge);
         logoMediator.updateVisibility(/* animationEnabled= */ false);
-        Assert.assertTrue(logoMediator.isLogoVisible());
+        assertTrue(logoMediator.isLogoVisible());
         verify(mLogoBridge).getCurrentLogo(any());
         verify(mLogoBridge, never()).destroy();
         Assert.assertFalse(mLogoModel.get(LogoProperties.ANIMATION_ENABLED));
@@ -230,7 +230,7 @@ public class LogoMediatorUnitTest {
         // Attached the test for animationEnabled.
         logoMediator.setHasLogoLoadedForCurrentSearchEngineForTesting(false);
         logoMediator.updateVisibility(/* animationEnabled= */ true);
-        Assert.assertTrue(mLogoModel.get(LogoProperties.ANIMATION_ENABLED));
+        assertTrue(mLogoModel.get(LogoProperties.ANIMATION_ENABLED));
     }
 
     @Test
@@ -239,6 +239,39 @@ public class LogoMediatorUnitTest {
         logoMediator.setLogoBridgeForTesting(null);
         logoMediator.destroy();
         verify(mTemplateUrlService).removeObserver(logoMediator);
+    }
+
+    @Test
+    public void testIsDefaultGoogleLogoShown() {
+        LogoMediator logoMediator = createMediator();
+        Logo logo = mock(Logo.class);
+
+        logoMediator.setShouldShowLogoForTesting(true);
+        mLogoModel.set(LogoProperties.VISIBILITY, true);
+        mLogoModel.set(LogoProperties.LOGO, null);
+        assertTrue(logoMediator.isDefaultGoogleLogoShown());
+
+        logoMediator.setShouldShowLogoForTesting(false);
+        Assert.assertFalse(logoMediator.isDefaultGoogleLogoShown());
+
+        logoMediator.setShouldShowLogoForTesting(true);
+        mLogoModel.set(LogoProperties.VISIBILITY, false);
+        Assert.assertFalse(logoMediator.isDefaultGoogleLogoShown());
+
+        logoMediator.setShouldShowLogoForTesting(true);
+        mLogoModel.set(LogoProperties.VISIBILITY, true);
+        mLogoModel.set(LogoProperties.LOGO, logo);
+        Assert.assertFalse(logoMediator.isDefaultGoogleLogoShown());
+    }
+
+    @Test
+    public void testUpdateDefaultGoogleLogo() {
+        LogoMediator logoMediator = createMediator();
+        Drawable drawable = mock(Drawable.class);
+        logoMediator.updateDefaultGoogleLogo(drawable);
+
+        assertEquals(drawable, logoMediator.getDefaultGoogleLogoDrawable());
+        assertTrue(mLogoModel.get(LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO));
     }
 
     private LogoMediator createMediator() {
