@@ -11,6 +11,8 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --cr-composebox-input-placeholder-color:
+      var(--color-new-tab-page-common-input-placeholder);
   --cr-focus-outline-color: var(--color-new-tab-page-focus-ring);
   --cr-searchbox-height: 48px;
   --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);

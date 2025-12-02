@@ -28,7 +28,6 @@
 }
 
 cr-composebox {
-  --cr-composebox-background-color: var(--color-omnibox-results-background);
   --color-composebox-background: var(--color-omnibox-results-background);
   --color-composebox-cancel-button: unset; /* Lens only */
   --color-composebox-cancel-button-light: var(--color-omnibox-text-dimmed);
@@ -51,6 +50,8 @@ cr-composebox {
   --color-composebox-type-ahead-chip: var(--color-omnibox-composebox-foreground-disabled);
   --color-composebox-upload-button: var(--omnibox-results-chip-background);
   --color-composebox-upload-button-disabled: var(--color-omnibox-composebox-foreground-disabled);
+  --cr-composebox-background-color: var(--color-omnibox-results-background);
+  --cr-composebox-input-placeholder-color: var(--color-omnibox-text-dimmed);
   --cr-composebox-outline-hcm: none;
   --cr-composebox-submit-button-margin-inline-start: auto;
   --cr-composebox-suggestion-activity-bottom: 0;
