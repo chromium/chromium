@@ -4222,12 +4222,6 @@ inline constexpr char kTabSearchPositionSettingName[] =
 inline constexpr char kTabSearchPositionSettingDescription[] =
     "Whether to show the tab search position options in the settings page.";
 
-inline constexpr char kTearOffWebAppAppTabOpensWebAppWindowName[] =
-    "Tear Off Web App Tab";
-inline constexpr char kTearOffWebAppAppTabOpensWebAppWindowDescription[] =
-    "Open Web App window when tearing off a tab that's displaying a url "
-    "handled by an installed Web App.";
-
 inline constexpr char kTextSafetyClassifierName[] = "Text Safety Classifier";
 inline constexpr char kTextSafetyClassifierDescription[] =
     "Enables text safety classifier for on-device models";
