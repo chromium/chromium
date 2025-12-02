@@ -251,27 +251,30 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _locationBarModel = std::make_unique<LocationBarModelImpl>(
       _locationBarModelDelegate.get(), kMaxURLDisplayChars);
 
-  self.omniboxCoordinator = [[OmniboxCoordinator alloc]
-      initWithBaseViewController:nil
-                         browser:self.browser
-                   omniboxClient:std::make_unique<ChromeOmniboxClientIOS>(
-                                     _locationBar.get(), self.browser,
-                                     feature_engagement::TrackerFactory::
-                                         GetForProfile(self.profile))
-             presentationContext:OmniboxPresentationContext::kLocationBar];
-  self.omniboxCoordinator.focusDelegate = self.delegate;
+  if (!IsComposeboxIOSEnabled()) {
+    self.omniboxCoordinator = [[OmniboxCoordinator alloc]
+        initWithBaseViewController:nil
+                           browser:self.browser
+                     omniboxClient:std::make_unique<ChromeOmniboxClientIOS>(
+                                       _locationBar.get(), self.browser,
+                                       feature_engagement::TrackerFactory::
+                                           GetForProfile(self.profile))
+               presentationContext:OmniboxPresentationContext::kLocationBar];
+    self.omniboxCoordinator.focusDelegate = self.delegate;
 
-  self.omniboxCoordinator.presenterDelegate = self.popupPresenterDelegate;
-  [self.omniboxCoordinator start];
+    self.omniboxCoordinator.presenterDelegate = self.popupPresenterDelegate;
+    [self.omniboxCoordinator start];
 
-  [self.omniboxCoordinator.managedViewController
-      willMoveToParentViewController:self.viewController];
-  [self.viewController
-      addChildViewController:self.omniboxCoordinator.managedViewController];
-  [self.viewController setEditView:self.omniboxCoordinator.editView];
-  [self.omniboxCoordinator.managedViewController
-      didMoveToParentViewController:self.viewController];
-  self.viewController.offsetProvider = [self.omniboxCoordinator offsetProvider];
+    [self.omniboxCoordinator.managedViewController
+        willMoveToParentViewController:self.viewController];
+    [self.viewController
+        addChildViewController:self.omniboxCoordinator.managedViewController];
+    [self.viewController setEditView:self.omniboxCoordinator.editView];
+    [self.omniboxCoordinator.managedViewController
+        didMoveToParentViewController:self.viewController];
+    self.viewController.offsetProvider =
+        [self.omniboxCoordinator offsetProvider];
+  }
 
   if (IsAskGeminiChipEnabled() || IsProactiveSuggestionsFrameworkEnabled() ||
       IsLocationBarBadgeMigrationEnabled()) {
@@ -626,6 +629,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
     [commands hideComposeboxImmediately:NO];
+    return;
   }
   if (self.isCancellingOmniboxEdit) {
     return;
