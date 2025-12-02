@@ -96,7 +96,7 @@ mojom("mojom") {
     "//services/network/public/mojom:cookies_mojom",
     "//services/network/public/mojom:mojom_storage_access_api",
     "//services/service_manager/public/mojom",
-    "//services/viz/public/mojom:shared_image_format",
+    "//services/viz/public/mojom/compositing:shared_image_format",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
     "//ui/gfx/mojom:hdr_metadata",

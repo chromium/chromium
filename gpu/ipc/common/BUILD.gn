@@ -205,7 +205,7 @@ mojom("gpu_channel_mojom") {
     ":shared_image_pool_client_interface",
     ":surface_handle",
     "//mojo/public/mojom/base",
-    "//services/viz/public/mojom:shared_image_format",
+    "//services/viz/public/mojom/compositing:shared_image_format",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
@@ -336,7 +336,7 @@ mojom("interfaces") {
     ":shared_image_pool_client_interface",
     ":surface_handle",
     "//mojo/public/mojom/base",
-    "//services/viz/public/mojom:shared_image_format",
+    "//services/viz/public/mojom/compositing:shared_image_format",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
@@ -644,7 +644,8 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "shared_image_metadata_mojom_traits.h" ]
-      traits_public_deps = [ "//services/viz/public/mojom:shared_image_format" ]
+      traits_public_deps =
+          [ "//services/viz/public/mojom/compositing:shared_image_format" ]
     },
     {
       types = [
