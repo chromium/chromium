@@ -898,7 +898,7 @@ def _AddHistogramOrExpandedVariants(
     new_histogram_name = histogram_name.format(**token_name_pairings)
     if new_histogram_name in new_histograms_dict:
       errors.AppendAndLog(
-          f'Duplicate histogram name {new_histogram_name} generated.'
+          f'Duplicate histogram name {new_histogram_name} generated. '
           'Please remove identical variants in different tokens in '
           f'{histogram_name}.')
       continue
