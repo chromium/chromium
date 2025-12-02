@@ -25,9 +25,8 @@ enum class MV2ExperimentStage {
   // re-enable them.
   kUnsupported,
 
-  // TODO(https://crbug.com/337191307): Continue adding more experiment stages
-  // here. For each new entry, update Mv2ExperimentStage in
-  // chrome/browser/resources/extensions/mv2_deprecation_util.ts.
+  // Continue adding more experiment stages here. For each new entry, update
+  // Mv2ExperimentStage in chrome/browser/resources/extensions/mv2_deprecation_util.ts.
 };
 
 }  // namespace extensions
