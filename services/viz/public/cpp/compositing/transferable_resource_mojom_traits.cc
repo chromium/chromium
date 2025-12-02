@@ -16,6 +16,19 @@
 namespace mojo {
 
 // static
+bool StructTraits<viz::mojom::MetadataOverrideDataView,
+                  viz::TransferableResource::MetadataOverride>::
+    Read(viz::mojom::MetadataOverrideDataView data,
+         viz::TransferableResource::MetadataOverride* out) {
+  out->is_overlay_candidate = data.is_overlay_candidate();
+  if (!data.ReadColorSpace(&out->color_space) ||
+      !data.ReadOrigin(&out->origin) || !data.ReadAlphaType(&out->alpha_type)) {
+    return false;
+  }
+  return true;
+}
+
+// static
 viz::mojom::SynchronizationType
 EnumTraits<viz::mojom::SynchronizationType,
            viz::TransferableResource::SynchronizationType>::

@@ -24,6 +24,33 @@
 namespace mojo {
 
 template <>
+struct StructTraits<viz::mojom::MetadataOverrideDataView,
+                    viz::TransferableResource::MetadataOverride> {
+  static const std::optional<bool>& is_overlay_candidate(
+      const viz::TransferableResource::MetadataOverride& input) {
+    return input.is_overlay_candidate;
+  }
+
+  static const std::optional<gfx::ColorSpace>& color_space(
+      const viz::TransferableResource::MetadataOverride& input) {
+    return input.color_space;
+  }
+
+  static const std::optional<GrSurfaceOrigin>& origin(
+      const viz::TransferableResource::MetadataOverride& input) {
+    return input.origin;
+  }
+
+  static const std::optional<SkAlphaType>& alpha_type(
+      const viz::TransferableResource::MetadataOverride& input) {
+    return input.alpha_type;
+  }
+
+  static bool Read(viz::mojom::MetadataOverrideDataView data,
+                   viz::TransferableResource::MetadataOverride* out);
+};
+
+template <>
 struct EnumTraits<viz::mojom::SynchronizationType,
                   viz::TransferableResource::SynchronizationType> {
   static viz::mojom::SynchronizationType ToMojom(
