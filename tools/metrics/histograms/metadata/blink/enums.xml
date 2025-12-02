@@ -8258,6 +8258,15 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="ForceDefer (Deprecated 2023)"/>
 </enum>
 
+<!-- LINT.IfChange(SharedDictionaryHintType)-->
+
+<enum name="SharedDictionaryHintType">
+  <int value="0" label="HTML Link Tag"/>
+  <int value="1" label="HTTP Header"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/loader/shared_dictionary_hint_type.h:SharedDictionaryHintType) -->
+
 <!-- LINT.IfChange(SharedStorageGetInFencedFrameOutcome) -->
 
 <enum name="SharedStorageGetInFencedFrameOutcome">

@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/loader/link_loader.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/loader/prerender_handle.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
+#include "third_party/blink/renderer/core/loader/shared_dictionary_hint_type.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -137,6 +139,10 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
     PreloadHelper::PrefetchIfNeeded(params, document, pending_preload_);
   PreloadHelper::ModulePreloadIfNeeded(
       params, document, nullptr /* viewport_description */, pending_preload_);
+  if (params.rel.IsCompressionDictionary()) {
+    base::UmaHistogramEnumeration("Blink.SharedDictionary.Hint.Discovery",
+                                  SharedDictionaryHintType::kHtmlLinkTag);
+  }
   PreloadHelper::FetchCompressionDictionaryIfNeeded(params, document,
                                                     pending_preload_);
 

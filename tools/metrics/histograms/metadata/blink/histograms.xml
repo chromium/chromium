@@ -5200,6 +5200,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.SharedDictionary.Hint.Discovery"
+    enum="SharedDictionaryHintType" expires_after="2026-11-11">
+  <owner>wbjacksonjr@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records how often a shared dictionary hint is discovered by the renderer,
+    either via an HTML &quot;link&quot; tag or an HTTP Link header.
+
+    The UMA is recorded before fetching the compression dictionary.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Sms.BackendAvailability"
     enum="WebOTPBackendAvailability" expires_after="2026-04-12">
   <owner>yigu@chromium.org</owner>

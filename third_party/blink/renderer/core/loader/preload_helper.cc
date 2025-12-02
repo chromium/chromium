@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/loader/resource/link_dictionary_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/link_prefetch_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
+#include "third_party/blink/renderer/core/loader/shared_dictionary_hint_type.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
@@ -949,6 +950,10 @@ void PreloadHelper::LoadLinksFromHeader(
                               pending_preload);
       }
       if (is_compression_dictionary_load_allowed) {
+        if (params.rel.IsCompressionDictionary()) {
+          base::UmaHistogramEnumeration("Blink.SharedDictionary.Hint.Discovery",
+                                        SharedDictionaryHintType::kHttpHeader);
+        }
         FetchCompressionDictionaryIfNeeded(params, *document, pending_preload);
       }
     }

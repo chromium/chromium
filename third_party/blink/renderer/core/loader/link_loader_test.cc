@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/pending_link_preload.h"
 #include "third_party/blink/renderer/core/loader/resource/link_dictionary_resource.h"
+#include "third_party/blink/renderer/core/loader/shared_dictionary_hint_type.h"
 #include "third_party/blink/renderer/core/testing/dummy_modulator.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
@@ -751,6 +753,7 @@ class DictionaryLinkTest : public testing::Test {
 
 TEST_F(DictionaryLinkTest, LoadDictionaryFromLink) {
   static constexpr char href[] = "http://example.test/test.dict";
+  base::HistogramTester histogram_tester;
 
   // Test the cases with a single header
   auto dummy_page_holder =
@@ -777,6 +780,9 @@ TEST_F(DictionaryLinkTest, LoadDictionaryFromLink) {
   EXPECT_TRUE(resource);
   URLLoaderMockFactory::GetSingletonInstance()
       ->UnregisterAllURLsAndClearMemoryCache();
+  histogram_tester.ExpectUniqueSample("Blink.SharedDictionary.Hint.Discovery",
+                                      SharedDictionaryHintType::kHtmlLinkTag,
+                                      1);
 }
 
 }  // namespace
@@ -812,6 +818,9 @@ class DictionaryLoadFromHeaderTest : public SimTest {
 };
 
 TEST_F(DictionaryLoadFromHeaderTest, LoadDictionaryFromHeader) {
+  base::HistogramTester histogram_tester;
+
+  // Test the cases with a single header
   KURL dict_url = KURL(NullURL(), dict_href_);
   ResourceResponse dict_response(dict_url);
   dict_response.SetHttpStatusCode(200);
@@ -830,6 +839,8 @@ TEST_F(DictionaryLoadFromHeaderTest, LoadDictionaryFromHeader) {
   ASSERT_TRUE(dictionary_resource->IsLoaded());
   URLLoaderMockFactory::GetSingletonInstance()
       ->UnregisterAllURLsAndClearMemoryCache();
+  histogram_tester.ExpectUniqueSample("Blink.SharedDictionary.Hint.Discovery",
+                                      SharedDictionaryHintType::kHttpHeader, 1);
 }
 
 }  // namespace blink
