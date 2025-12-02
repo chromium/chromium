@@ -89,8 +89,6 @@ struct StringSlice {
     return std::string_view(lhs) <=> std::string_view(rhs);
   }
   constexpr operator std::string_view() const {
-    // Note 1: using as_string_view() or span() can cause issues with constexpr
-    // evaluation limits.
     return base::MakeStringViewWithNulChars(kData).substr(offset, length);
   }
 };

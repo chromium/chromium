@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "components/cbor/constants.h"
 
 namespace cbor {
@@ -232,10 +233,7 @@ const Value::BinaryValue& Value::GetBytestring() const {
 
 std::string_view Value::GetBytestringAsString() const {
   CHECK(is_bytestring());
-  const auto& bytestring_value = GetBytestring();
-  return std::string_view(
-      reinterpret_cast<const char*>(bytestring_value.data()),
-      bytestring_value.size());
+  return base::as_string_view(GetBytestring());
 }
 
 const Value::ArrayValue& Value::GetArray() const {

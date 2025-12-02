@@ -89,18 +89,16 @@ void AppendReportingIdForSelectedReportingKeyKAnonKey(
     base::optional_ref<const std::string> reporting_id,
     std::string& k_anon_key) {
   if (!reporting_id.has_value()) {
-    base::StrAppend(&k_anon_key,
-                    {"\n", std::string_view("\x00\x00\x00\x00\x00", 5)});
+    base::StrAppend(
+        &k_anon_key,
+        {base::MakeStringViewWithNulChars("\n\x00\x00\x00\x00\x00")});
     return;
   }
 
   std::array<uint8_t, 4u> size_in_bytes =
       base::U32ToBigEndian(reporting_id->size());
-  base::StrAppend(
-      &k_anon_key,
-      {"\n", std::string_view("\x01", 1),
-       base::as_string_view(base::as_chars(base::span(size_in_bytes))),
-       *reporting_id});
+  base::StrAppend(&k_anon_key, {"\n\x01", base::as_string_view(size_in_bytes),
+                                *reporting_id});
 }
 
 std::string InternalPlainTextKAnonKeyForAdNameReporting(

@@ -692,9 +692,7 @@ String ParkableStringImpl::UnparkInternal() {
   }
 
   TRACE_EVENT("blink", "ParkableStringImpl::Decompress");
-  std::string_view compressed_string_piece(
-      reinterpret_cast<const char*>(metadata_->compressed_->data()),
-      metadata_->compressed_->size() * sizeof(uint8_t));
+  auto compressed_string_piece = base::as_string_view(*metadata_->compressed_);
   String uncompressed;
   base::span<char> chars;
   if (is_8bit()) {

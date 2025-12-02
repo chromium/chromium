@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
@@ -54,8 +55,10 @@ std::string Base64UrlEncode(std::string_view data) {
 }
 
 std::string Base64UrlEncode(base::span<const uint8_t> data) {
-  return Base64UrlEncode(std::string_view(
-      reinterpret_cast<const char*>(data.data()), data.size()));
+  std::string output;
+  base::Base64UrlEncode(data, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &output);
+  return output;
 }
 
 base::Value::Dict CreatePublicKeyInfo(base::span<const uint8_t> pubkey) {

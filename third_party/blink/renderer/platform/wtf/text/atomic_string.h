@@ -27,6 +27,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -216,8 +217,7 @@ class WTF_EXPORT AtomicString {
   // This function should be removed after enabling C++23 because
   // std::u16string_view(Span16()) will work with C++23.
   std::u16string_view View16() const LIFETIME_BOUND {
-    auto chars = Span16();
-    return std::u16string_view(chars.begin(), chars.end());
+    return base::as_string_view(Span16());
   }
 
   size_t CharactersSizeInBytes() const {

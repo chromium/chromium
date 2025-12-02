@@ -382,7 +382,7 @@ scoped_refptr<CRLSet> CRLSet::BuiltinCRLSet() {
   constexpr char kCRLSet[] =
       "\x31\x00{\"ContentType\":\"CRLSet\",\"Sequence\":0,\"Version\":0}";
   scoped_refptr<CRLSet> ret;
-  bool parsed = CRLSet::Parse({kCRLSet, sizeof(kCRLSet) - 1}, &ret);
+  bool parsed = CRLSet::Parse(base::MakeStringViewWithNulChars(kCRLSet), &ret);
   DCHECK(parsed);
   return ret;
 }

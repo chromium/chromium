@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_view_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -160,13 +161,9 @@ void PassthroughProgramCache::Set(Key&& key,
     CacheProgramCallback callback_with_fallback =
         callback ? callback : cache_program_callback_;
     if (callback_with_fallback) {
-      // Convert the key and binary to string form.
-      std::string_view key_string(reinterpret_cast<const char*>(key.data()),
-                                  key.size());
-      std::string_view value_string(reinterpret_cast<const char*>(value.data()),
-                                    value.size());
-      std::string key_string_64 = base::Base64Encode(key_string);
-      std::string value_string_64 = base::Base64Encode(value_string);
+      // Convert the key and binary to base-64 string form.
+      std::string key_string_64 = base::Base64Encode(key);
+      std::string value_string_64 = base::Base64Encode(value);
       callback_with_fallback.Run(key_string_64, value_string_64);
     }
 

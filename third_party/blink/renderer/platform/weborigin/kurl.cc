@@ -72,10 +72,9 @@ std::string_view AsURLChar8Subtle(const String& spec) {
   DCHECK(spec.Is8Bit());
   // Span8() really return characters in Latin-1, but because we
   // canonicalize URL strings, we know that everything before the fragment
-  // identifier will actually be ASCII, which means this cast is safe as long as
+  // identifier will actually be ASCII, which means this is safe as long as
   // you don't look at the fragment component.
-  base::span<const char> span = base::as_chars(spec.Span8());
-  return std::string_view(span.begin(), span.end());
+  return base::as_string_view(spec.Span8());
 }
 
 // Returns a string_view on the given string, or a string_view on a static empty

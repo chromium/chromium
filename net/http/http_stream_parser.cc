@@ -545,7 +545,8 @@ int HttpStreamParser::DoSendRequestReadBodyComplete(int result) {
       sent_last_chunk_ = true;
     }
     // Encode the buffer as 1 chunk.
-    const std::string_view payload(request_body_read_buf_->data(), result);
+    const std::string_view payload =
+        base::as_string_view(request_body_read_buf_->first(result));
     request_body_send_buf_->Clear();
     result = EncodeChunk(payload, request_body_send_buf_->span());
   }

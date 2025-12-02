@@ -229,7 +229,7 @@ uint16_t DnsQuery::qtype() const {
 std::string_view DnsQuery::question() const {
   auto s = base::as_chars(io_buffer_->span());
   s = s.subspan(kHeaderSize, QuestionSize(qname_size_));
-  return std::string_view(s.begin(), s.end());
+  return base::as_string_view(s);
 }
 
 size_t DnsQuery::question_size() const {

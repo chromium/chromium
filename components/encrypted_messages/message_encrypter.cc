@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/logging.h"
+#include "base/strings/string_view_util.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "crypto/aead.h"
 #include "crypto/hkdf.h"
@@ -26,8 +27,7 @@ bool GetHkdfSubkeySecret(size_t subkey_length,
   if (!X25519(shared_secret, private_key, public_key))
     return false;
 
-  std::string_view hkdf_input(reinterpret_cast<char*>(shared_secret),
-                              sizeof(shared_secret));
+  auto hkdf_input = base::as_string_view(shared_secret);
   *secret = crypto::HkdfSha256(hkdf_input, "", hkdf_label, subkey_length);
   return true;
 }

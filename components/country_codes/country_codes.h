@@ -14,6 +14,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/strings/string_view_util.h"
 
 namespace country_codes {
 
@@ -74,7 +75,7 @@ class CountryId {
   // will return a country code associated with unknown or invalid territory,
   // when `IsValid()` returns `false`.
   constexpr std::string_view CountryCode() const {
-    return std::string_view(country_code_.data(), country_code_.size());
+    return base::as_string_view(country_code_);
   }
 
  private:

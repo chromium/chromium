@@ -14,6 +14,7 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_view_util.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
@@ -251,8 +252,7 @@ class SkottieWrapperImpl : public SkottieWrapper {
                 base::BindRepeating(
                     &SkottieWrapperImpl::RunCurrentFrameDataCallback,
                     base::Unretained(this)),
-                std::string_view(reinterpret_cast<const char*>(data.data()),
-                                 data.size()))) {}
+                base::as_string_view(data))) {}
 
   SkottieWrapperImpl(const SkottieWrapperImpl&) = delete;
   SkottieWrapperImpl& operator=(const SkottieWrapperImpl&) = delete;

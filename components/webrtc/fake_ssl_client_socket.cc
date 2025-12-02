@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
@@ -85,13 +86,11 @@ scoped_refptr<net::DrainableIOBuffer> NewDrainableIOBufferWithSize(int size) {
 }  // namespace
 
 std::string_view FakeSSLClientSocket::GetSslClientHello() {
-  return std::string_view(reinterpret_cast<const char*>(kSslClientHello),
-                          std::size(kSslClientHello));
+  return base::as_string_view(kSslClientHello);
 }
 
 std::string_view FakeSSLClientSocket::GetSslServerHello() {
-  return std::string_view(reinterpret_cast<const char*>(kSslServerHello.data()),
-                          std::size(kSslServerHello));
+  return base::as_string_view(kSslServerHello);
 }
 
 FakeSSLClientSocket::FakeSSLClientSocket(

@@ -146,10 +146,8 @@ bool CheckCertRevocation(const bssl::ParsedCertificateList& certs,
       bssl::OCSPVerifyResult::ResponseStatus response_details;
 
       bssl::OCSPRevocationStatus ocsp_status = bssl::CheckOCSP(
-          std::string_view(
-              reinterpret_cast<const char*>(ocsp_response_bytes.data()),
-              ocsp_response_bytes.size()),
-          cert, issuer_cert, time_now, max_age_seconds, &response_details);
+          base::as_string_view(ocsp_response_bytes), cert, issuer_cert,
+          time_now, max_age_seconds, &response_details);
 
       switch (ocsp_status) {
         case bssl::OCSPRevocationStatus::REVOKED:
@@ -235,11 +233,8 @@ bool CheckCertRevocation(const bssl::ParsedCertificateList& certs,
             continue;
 
           bssl::CRLRevocationStatus crl_status = CheckCRL(
-              std::string_view(
-                  reinterpret_cast<const char*>(crl_response_bytes.data()),
-                  crl_response_bytes.size()),
-              certs, target_cert_index, distribution_point, time_now,
-              max_age_seconds);
+              base::as_string_view(crl_response_bytes), certs,
+              target_cert_index, distribution_point, time_now, max_age_seconds);
 
           switch (crl_status) {
             case bssl::CRLRevocationStatus::REVOKED:

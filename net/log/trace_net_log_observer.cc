@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -206,9 +207,9 @@ void TraceNetLogObserver::AddEntryVerbose(
   const uint64_t thread_flow_id =
       entry.phase == NetLogEventPhase::NONE
           ? base::RandUint64()
-          : track.uuid + std::hash<std::string_view>()(std::string_view(
-                             reinterpret_cast<const char*>(&entry.type),
-                             sizeof(entry.type)));
+          : track.uuid + std::hash<std::string_view>()(base::as_string_view(
+                             base::byte_span_from_ref(entry.type)));
+
   if (entry.phase != NetLogEventPhase::END) {
     TRACE_EVENT_INSTANT(kNetLogTracingCategory, thread_event_name,
                         perfetto::Flow::ProcessScoped(thread_flow_id));
