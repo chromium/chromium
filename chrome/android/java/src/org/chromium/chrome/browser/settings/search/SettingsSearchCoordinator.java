@@ -172,6 +172,7 @@ public class SettingsSearchCoordinator {
         LayoutInflater.from(mActivity).inflate(R.layout.settings_search_box, searchBoxParent, true);
         LayoutInflater.from(mActivity).inflate(R.layout.settings_search_query, actionBar, true);
         View searchBox = mActivity.findViewById(R.id.search_box);
+        setSearchBoxBottomMargin(searchBox, mUseMultiColumn);
         searchBox.setOnClickListener(v -> enterSearchState());
 
         if (mMultiColumnSettings != null) {
@@ -515,6 +516,7 @@ public class SettingsSearchCoordinator {
         View query = mActivity.findViewById(R.id.search_query_container);
         if (mUseMultiColumn) {
             ViewGroup actionBar = mActivity.findViewById(R.id.action_bar);
+            setSearchBoxBottomMargin(searchBox, true);
             assumeNonNull(actionBar).addView(searchBox);
             if (mFragmentState == FS_RESULTS) {
                 // Make the query edit UI visible which was hidden in single-column mode.
@@ -523,6 +525,7 @@ public class SettingsSearchCoordinator {
         } else {
             // Search bar goes beneath the toolbar (app_bar_layout) in single-column layout.
             ViewGroup appBarLayout = mActivity.findViewById(R.id.app_bar_layout);
+            setSearchBoxBottomMargin(searchBox, false);
             appBarLayout.addView(searchBox);
 
             // Query edit UI should be hidden while we're browsing results.
@@ -537,6 +540,12 @@ public class SettingsSearchCoordinator {
                 }
             }
         }
+    }
+
+    private void setSearchBoxBottomMargin(View searchBox, boolean multiColumn) {
+        var lp = (ViewGroup.MarginLayoutParams) searchBox.getLayoutParams();
+        lp.bottomMargin = multiColumn ? 0 : getPixelSize(R.dimen.settings_search_ui_bottom_margin);
+        searchBox.setLayoutParams(lp);
     }
 
     private void setUpQueryEdit(EditText queryEdit) {
