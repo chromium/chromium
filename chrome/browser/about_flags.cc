@@ -10922,11 +10922,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          chrome::android::kAndroidTabDeclutterPerformanceImprovements)},
 
-    {"android-tab-groups-color-update-gm3",
-     flag_descriptions::kAndroidTabGroupsColorUpdateGM3Name,
-     flag_descriptions::kAndroidTabGroupsColorUpdateGM3Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidTabGroupsColorUpdateGM3)},
-
     {"android-tab-highlighting", flag_descriptions::kAndroidTabHighlightingName,
      flag_descriptions::kAndroidTabHighlightingDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidTabHighlighting,

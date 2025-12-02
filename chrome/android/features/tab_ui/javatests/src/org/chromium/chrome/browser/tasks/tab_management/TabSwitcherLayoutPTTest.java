@@ -759,7 +759,6 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3})
     public void testRenderGrid_TabGroupColor_2TabsInGroup() throws IOException {
         doTestRenderGrid_TabGroupColor_Parameterized(
                 /* isIncognito= */ false,
@@ -770,7 +769,6 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3})
     public void testRenderGrid_TabGroupColor_Incognito_2TabsInGroup() throws IOException {
         doTestRenderGrid_TabGroupColor_Parameterized(
                 /* isIncognito= */ true,
@@ -781,7 +779,6 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3})
     public void testRenderGrid_TabGroupColor_5TabsInGroup() throws IOException {
         doTestRenderGrid_TabGroupColor_Parameterized(
                 /* isIncognito= */ false,
@@ -792,7 +789,6 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3})
     public void testRenderGrid_TabGroupColor_Incognito_5TabsInGroup() throws IOException {
         doTestRenderGrid_TabGroupColor_Parameterized(
                 /* isIncognito= */ true,

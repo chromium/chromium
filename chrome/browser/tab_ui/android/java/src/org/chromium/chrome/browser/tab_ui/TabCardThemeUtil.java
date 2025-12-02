@@ -17,8 +17,6 @@ import com.google.android.material.color.MaterialColors;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
@@ -31,12 +29,6 @@ import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 @NullMarked
 public class TabCardThemeUtil {
     private static final String TAG = "TabCardThemeUtil";
-
-    /** Whether new GM3 colors are being used for the tab group colors. */
-    public static boolean useNewGm3GtsTabGroupColors() {
-        return ChromeFeatureList.sAndroidTabGroupsColorUpdateGm3.isEnabled()
-                || ThemeModuleUtils.isForceEnableDependencies();
-    }
 
     /**
      * Returns the tint color for Chrome owned favicon based on the incognito mode or selected.
@@ -83,7 +75,7 @@ public class TabCardThemeUtil {
                     ? ContextCompat.getColor(context, R.color.incognito_tab_title_selected_color)
                     : MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG);
         } else {
-            if (useNewGm3GtsTabGroupColors() && colorId != null) {
+            if (colorId != null) {
                 return TabGroupColorPickerUtils.getTabGroupCardTextColor(
                         context, colorId, isIncognito);
             }
@@ -118,7 +110,7 @@ public class TabCardThemeUtil {
             @ColorInt int baseColor = SemanticColorUtils.getColorOnPrimary(context);
             return MaterialColors.compositeARGBWithAlpha(baseColor, alpha);
         }
-        if (useNewGm3GtsTabGroupColors() && colorId != null) {
+        if (colorId != null) {
             return TabGroupColorPickerUtils.getTabGroupCardMiniThumbnailPlaceholderColor(
                     context, colorId, isIncognito);
         }
@@ -148,7 +140,7 @@ public class TabCardThemeUtil {
                     ? ContextCompat.getColor(context, R.color.incognito_tab_bg_selected_color)
                     : MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
         } else {
-            if (useNewGm3GtsTabGroupColors() && colorId != null) {
+            if (colorId != null) {
                 return TabGroupColorPickerUtils.getTabGroupCardColor(context, colorId, isIncognito);
             }
             return isIncognito
@@ -203,7 +195,7 @@ public class TabCardThemeUtil {
                     ? context.getColor(R.color.incognito_tab_tile_number_selected_color)
                     : MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG);
         }
-        if (useNewGm3GtsTabGroupColors() && colorId != null) {
+        if (colorId != null) {
             return TabGroupColorPickerUtils.getTabGroupCardTextColor(context, colorId, isIncognito);
         }
         return isIncognito
@@ -232,7 +224,7 @@ public class TabCardThemeUtil {
                     : ColorStateList.valueOf(
                             MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG));
         }
-        if (useNewGm3GtsTabGroupColors() && colorId != null) {
+        if (colorId != null) {
             return ColorStateList.valueOf(
                     TabGroupColorPickerUtils.getTabGroupCardTextColor(
                             context, colorId, isIncognito));

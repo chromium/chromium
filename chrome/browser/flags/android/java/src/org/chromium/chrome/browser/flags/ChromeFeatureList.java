@@ -218,8 +218,6 @@ public abstract class ChromeFeatureList {
             "AndroidTabDeclutterPerformanceImprovements";
     public static final String ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH =
             "AndroidTabDeclutterRescueKillswitch";
-    public static final String ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3 =
-            "AndroidTabGroupsColorUpdateGM3";
     public static final String ANDROID_TAB_HIGHLIGHTING = "AndroidTabHighlighting";
     public static final String ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH =
             "AndroidTabSkipSaveTabsTaskKillswitch";
@@ -770,8 +768,6 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidTabDeclutterDedupeTabIdsKillSwitch =
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
-    public static final CachedFlag sAndroidTabGroupsColorUpdateGm3 =
-            newCachedFlag(ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3, true);
     public static final CachedFlag sAndroidTabSkipSaveTabsKillswitch =
             newCachedFlag(ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH, true, true);
     public static final CachedFlag sAndroidThemeModule = newCachedFlag(ANDROID_THEME_MODULE, true);
@@ -1135,7 +1131,6 @@ public abstract class ChromeFeatureList {
                     sAndroidSettingsContainment,
                     sAndroidSurfaceColorUpdate,
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
-                    sAndroidTabGroupsColorUpdateGm3,
                     sAndroidTabSkipSaveTabsKillswitch,
                     sAndroidThemeModule,
                     sAndroidThemeResourceProvider,

@@ -5075,12 +5075,6 @@ inline constexpr char kAndroidTabDeclutterPerformanceImprovementsName[] =
 inline constexpr char kAndroidTabDeclutterPerformanceImprovementsDescription[] =
     "Enables performance improvements to the android tab declutter process.";
 
-inline constexpr char kAndroidTabGroupsColorUpdateGM3Name[] =
-    "Android tab groups color update";
-inline constexpr char kAndroidTabGroupsColorUpdateGM3Description[] =
-    "If enabled, allows tab groups to have display the color chosen by the "
-    "user.";
-
 inline constexpr char kAndroidTabHighlightingName[] =
     "Android tab strip tab highlighting";
 inline constexpr char kAndroidTabHighlightingDescription[] =
