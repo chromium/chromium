@@ -4834,7 +4834,7 @@ CSSValue* ComputedStyleUtils::ValueForIntrinsicLength(
   CSSIdentifierValue* option = nullptr;
   if (intrinsic_length.HasAuto()) {
     option = CSSIdentifierValue::Create(CSSValueID::kAuto);
-  } else if (intrinsic_length.MatchesElement()) {
+  } else if (intrinsic_length.IsFromElement()) {
     DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
     option = CSSIdentifierValue::Create(CSSValueID::kFromElement);
   } else {

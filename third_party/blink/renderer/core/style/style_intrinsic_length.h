@@ -17,10 +17,10 @@ class StyleIntrinsicLength {
   // Style data for contain-intrinsic-size:
   //  none | <length> | auto && <length> | auto && none | from-element.
   StyleIntrinsicLength(bool has_auto,
-                       bool matches_element,
+                       bool is_from_element,
                        const std::optional<Length>& length)
       : has_auto_(has_auto),
-        matches_element_(matches_element),
+        is_from_element_(is_from_element),
         length_(length) {}
 
   StyleIntrinsicLength() = default;
@@ -28,24 +28,24 @@ class StyleIntrinsicLength {
   // This returns true if the value is "none" without auto. It's not named
   // "IsNone" to avoid confusion with "auto none" grammar.
   bool IsNoOp() const {
-    return !has_auto_ && !matches_element_ && !length_.has_value();
+    return !has_auto_ && !is_from_element_ && !length_.has_value();
   }
 
   bool HasAuto() const { return has_auto_; }
-  bool MatchesElement() const { return matches_element_; }
+  bool IsFromElement() const { return is_from_element_; }
 
   void SetHasAuto() { has_auto_ = true; }
 
   const std::optional<Length>& GetLength() const { return length_; }
 
   bool operator==(const StyleIntrinsicLength& o) const {
-    return has_auto_ == o.has_auto_ && matches_element_ == o.matches_element_ &&
+    return has_auto_ == o.has_auto_ && is_from_element_ == o.is_from_element_ &&
            length_ == o.length_;
   }
 
  private:
   bool has_auto_ = false;
-  bool matches_element_ = false;
+  bool is_from_element_ = false;
   std::optional<Length> length_;
 };
 
