@@ -5,6 +5,7 @@
 #include "components/contextual_search/contextual_search_service.h"
 
 #include "base/test/task_environment.h"
+#include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/variations_client.h"
@@ -18,6 +19,7 @@ namespace contextual_search {
 
 namespace {
 
+using testing::_;
 using testing::IsNull;
 using testing::NotNull;
 
@@ -50,6 +52,20 @@ class ContextualSearchServiceTest : public testing::Test {
         &fake_variations_client_, version_info::Channel::UNKNOWN, "en-US");
   }
 
+  lens::ClientToAimMessage CaptureClientToAimRequest(
+      std::unique_ptr<
+          ContextualSearchContextController::CreateClientToAimRequestInfo>
+          create_client_to_aim_request_info) {
+    captured_client_to_aim_message_ =
+        std::move(create_client_to_aim_request_info);
+    return lens::ClientToAimMessage();
+  }
+
+  ContextualSearchContextController::CreateClientToAimRequestInfo*
+  GetCapturedClientToAimRequest() {
+    return captured_client_to_aim_message_.get();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -58,6 +74,9 @@ class ContextualSearchServiceTest : public testing::Test {
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   FakeVariationsClient fake_variations_client_;
   std::unique_ptr<ContextualSearchService> service_;
+  std::unique_ptr<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>
+      captured_client_to_aim_message_;
 };
 
 TEST_F(ContextualSearchServiceTest, Session) {
@@ -127,6 +146,88 @@ TEST_F(ContextualSearchServiceTest, Session) {
             session1_handle1->GetController());
   EXPECT_EQ(session1_handle2->GetMetricsRecorder(),
             session1_handle1->GetMetricsRecorder());
+}
+
+TEST_F(ContextualSearchServiceTest, PendingContextTokens) {
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  auto metrics_recorder = std::make_unique<ContextualSearchMetricsRecorder>(
+      ContextualSearchSource::kUnknown);
+
+  MockContextualSearchContextController* mock_controller_ptr =
+      mock_controller.get();
+
+  auto session_handle = service_->CreateSessionForTesting(
+      std::move(mock_controller), std::move(metrics_recorder));
+
+  // Add some dummy tokens.
+  base::UnguessableToken token1 = base::UnguessableToken::Create();
+  base::UnguessableToken token2 = base::UnguessableToken::Create();
+  session_handle->GetUploadedContextTokensForTesting().push_back(token1);
+  session_handle->GetUploadedContextTokensForTesting().push_back(token2);
+
+  // Capture the tokens before they are moved.
+  std::vector<base::UnguessableToken> expected_request_tokens1;
+  expected_request_tokens1.push_back(token1);
+  expected_request_tokens1.push_back(token2);
+
+  // Expect CreateClientToAimRequest to be called and capture the message.
+  EXPECT_CALL(*mock_controller_ptr, CreateClientToAimRequest(_))
+      .WillOnce(testing::Invoke(
+          this, &ContextualSearchServiceTest::CaptureClientToAimRequest));
+
+  // Call CreateClientToAimRequest to move tokens to pending.
+  auto create_client_to_aim_request_info = std::make_unique<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>();
+  session_handle->CreateClientToAimRequest(
+      std::move(create_client_to_aim_request_info));
+
+  // Verify that the request contains the correct unguessable tokens.
+  EXPECT_THAT(GetCapturedClientToAimRequest()->file_tokens,
+              testing::UnorderedElementsAreArray(expected_request_tokens1));
+
+  // Verify that submitted context tokens contains the moved tokens.
+  std::vector<base::UnguessableToken> expected_submitted_tokens;
+  expected_submitted_tokens.push_back(token1);
+  expected_submitted_tokens.push_back(token2);
+  EXPECT_THAT(session_handle->GetSubmittedContextTokens(),
+              testing::UnorderedElementsAreArray(expected_submitted_tokens));
+  EXPECT_TRUE(session_handle->GetUploadedContextTokens().empty());
+
+  // Add more tokens and call CreateClientToAimRequest again.
+  base::UnguessableToken token3 = base::UnguessableToken::Create();
+  session_handle->GetUploadedContextTokensForTesting().push_back(token3);
+
+  // Capture the tokens for the second request.
+  std::vector<base::UnguessableToken> expected_request_tokens2;
+  expected_request_tokens2.push_back(token3);
+
+  // Expect CreateClientToAimRequest to be called again and capture the message.
+  EXPECT_CALL(*mock_controller_ptr, CreateClientToAimRequest(_))
+      .WillOnce(testing::Invoke(
+          this, &ContextualSearchServiceTest::CaptureClientToAimRequest));
+
+  auto create_client_to_aim_request_info2 = std::make_unique<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>();
+  session_handle->CreateClientToAimRequest(
+      std::move(create_client_to_aim_request_info2));
+
+  // Verify that the second request contains only the newly added token.
+  EXPECT_THAT(GetCapturedClientToAimRequest()->file_tokens,
+              testing::UnorderedElementsAreArray(expected_request_tokens2));
+
+  // Verify that the submitted context tokens has both the previous and the new
+  // tokens.
+  expected_submitted_tokens.push_back(token3);
+  EXPECT_THAT(session_handle->GetSubmittedContextTokens(),
+              testing::UnorderedElementsAreArray(expected_submitted_tokens));
+  EXPECT_TRUE(session_handle->GetUploadedContextTokens().empty());
+
+  // Clear the pending tokens.
+  session_handle->ClearSubmittedContextTokens();
+
+  // Verify that the submitted context tokens are empty.
+  EXPECT_TRUE(session_handle->GetSubmittedContextTokens().empty());
 }
 
 }  // namespace contextual_search

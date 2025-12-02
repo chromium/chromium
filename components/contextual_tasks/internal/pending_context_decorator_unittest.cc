@@ -113,6 +113,21 @@ TEST_F(PendingContextDecoratorTest, DecorateWithContextualSearchData) {
                },
                &token));
 
+  // Move the token to the submitted state.
+  session_handle->CreateClientToAimRequest(
+      std::make_unique<contextual_search::ContextualSearchContextController::
+                           CreateClientToAimRequestInfo>());
+
+  // Add a second tab context that will remain in the uploaded state.
+  base::UnguessableToken token2;
+  session_handle->AddTabContext(
+      456, base::BindOnce(
+               [](base::UnguessableToken* out_token,
+                  const base::UnguessableToken& new_token) {
+                 *out_token = new_token;
+               },
+               &token2));
+
   // Mock the controller to return valid file info for the token.
   contextual_search::FileInfo file_info;
   file_info.tab_url = GURL("https://example.com/");
@@ -120,6 +135,13 @@ TEST_F(PendingContextDecoratorTest, DecorateWithContextualSearchData) {
   file_info.tab_session_id = SessionID::FromSerializedValue(123);
   EXPECT_CALL(*mock_controller_ptr, GetFileInfo(token))
       .WillOnce(testing::Return(&file_info));
+
+  contextual_search::FileInfo file_info2;
+  file_info2.tab_url = GURL("https://example2.com/");
+  file_info2.tab_title = "Test Title 2";
+  file_info2.tab_session_id = SessionID::FromSerializedValue(456);
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(token2))
+      .WillOnce(testing::Return(&file_info2));
 
   // Set up the decoration params with the session handle.
   ContextDecorationParams params;
@@ -137,12 +159,18 @@ TEST_F(PendingContextDecoratorTest, DecorateWithContextualSearchData) {
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              std::unique_ptr<ContextualTaskContext> context) {
-            ASSERT_EQ(1u, context->GetUrlAttachments().size());
+            ASSERT_EQ(2u, context->GetUrlAttachments().size());
             auto& attachment = context->GetMutableUrlAttachmentsForTesting()[0];
-            EXPECT_EQ("https://example.com/", attachment.GetURL());
-            EXPECT_EQ(u"Test Title", attachment.GetTitle());
-            EXPECT_EQ(SessionID::FromSerializedValue(123),
+            EXPECT_EQ("https://example2.com/", attachment.GetURL());
+            EXPECT_EQ(u"Test Title 2", attachment.GetTitle());
+            EXPECT_EQ(SessionID::FromSerializedValue(456),
                       attachment.GetTabSessionId());
+            auto& attachment2 =
+                context->GetMutableUrlAttachmentsForTesting()[1];
+            EXPECT_EQ("https://example.com/", attachment2.GetURL());
+            EXPECT_EQ(u"Test Title", attachment2.GetTitle());
+            EXPECT_EQ(SessionID::FromSerializedValue(123),
+                      attachment2.GetTabSessionId());
             std::move(quit_closure).Run();
           },
           run_loop.QuitClosure()));

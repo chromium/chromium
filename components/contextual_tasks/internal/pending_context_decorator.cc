@@ -40,6 +40,8 @@ void PendingContextDecorator::DecorateContext(
   }
 
   auto tokens = handle->GetUploadedContextTokens();
+  auto submitted_tokens = handle->GetSubmittedContextTokens();
+  tokens.insert(tokens.end(), submitted_tokens.begin(), submitted_tokens.end());
   for (const auto& token : tokens) {
     const auto* file_info = controller->GetFileInfo(token);
     if (!file_info || !file_info->tab_url.has_value()) {
