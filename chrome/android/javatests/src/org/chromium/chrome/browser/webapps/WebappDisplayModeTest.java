@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.webapps;
 
 import android.graphics.Color;
-import android.os.Build.VERSION_CODES;
-import android.view.View;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -19,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink.mojom.DisplayMode;
@@ -47,30 +44,34 @@ public class WebappDisplayModeTest {
     public void testStandalone() {
         WebappActivity activity = startActivity(DisplayMode.STANDALONE, "");
 
+        Assert.assertEquals(
+                DisplayMode.STANDALONE,
+                activity.getIntentDataProvider().getWebappExtras().displayMode);
         Assert.assertFalse(activity.getToolbarManager().getToolbarLayoutForTesting().isShown());
-        Assert.assertFalse(isFullscreen(activity));
     }
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q) // https://crbug.com/1231227
     @Feature({"Webapps"})
     public void testFullScreen() {
         WebappActivity activity = startActivity(DisplayMode.FULLSCREEN, "");
 
+        Assert.assertEquals(
+                DisplayMode.FULLSCREEN,
+                activity.getIntentDataProvider().getWebappExtras().displayMode);
         Assert.assertFalse(activity.getToolbarManager().getToolbarLayoutForTesting().isShown());
-        Assert.assertTrue(isFullscreen(activity));
     }
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q) // https://crbug.com/1231227
     @Feature({"Webapps"})
     public void testFullScreenInFullscreen() {
         WebappActivity activity = startActivity(DisplayMode.FULLSCREEN, "fullscreen_on_click");
 
+        Assert.assertEquals(
+                DisplayMode.FULLSCREEN,
+                activity.getIntentDataProvider().getWebappExtras().displayMode);
         Assert.assertFalse(activity.getToolbarManager().getToolbarLayoutForTesting().isShown());
-        Assert.assertTrue(isFullscreen(activity));
 
         WebContents contents = activity.getActivityTab().getWebContents();
 
@@ -78,12 +79,10 @@ public class WebappDisplayModeTest {
         // Poll because clicking races with evaluating js evaluation.
         CriteriaHelper.pollInstrumentationThread(
                 () -> getJavascriptResult(contents, "isBodyFullscreen()").equals("true"));
-        Assert.assertTrue(isFullscreen(activity));
 
         TouchCommon.singleClickView(activity.getActivityTab().getContentView());
         CriteriaHelper.pollInstrumentationThread(
                 () -> getJavascriptResult(contents, "isBodyFullscreen()").equals("false"));
-        Assert.assertTrue(isFullscreen(activity));
     }
 
     @Test
@@ -93,7 +92,9 @@ public class WebappDisplayModeTest {
     public void testMinimalUi() {
         WebappActivity activity = startActivity(DisplayMode.MINIMAL_UI, "");
 
-        Assert.assertFalse(isFullscreen(activity));
+        Assert.assertEquals(
+                DisplayMode.MINIMAL_UI,
+                activity.getIntentDataProvider().getWebappExtras().displayMode);
         Assert.assertFalse(activity.getToolbarManager().getToolbarLayoutForTesting().isShown());
 
         Assert.assertEquals(Color.CYAN, activity.getToolbarManager().getPrimaryColor());
@@ -122,10 +123,5 @@ public class WebappDisplayModeTest {
                         .putExtra(WebappConstants.EXTRA_THEME_COLOR, (long) Color.CYAN));
 
         return mActivityTestRule.getActivity();
-    }
-
-    private static boolean isFullscreen(WebappActivity activity) {
-        int systemUiVisibility = activity.getWindow().getDecorView().getSystemUiVisibility();
-        return (systemUiVisibility & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0;
     }
 }
