@@ -46,16 +46,16 @@ TEST_F(RouteMapTest, ParseAndMatch) {
   const Route* route2 = route_map.FindRoute("route2");
   ASSERT_TRUE(route2);
 
-  EXPECT_TRUE(route1->Matches(RoutePreposition::kAt));
-  EXPECT_FALSE(route2->Matches(RoutePreposition::kAt));
+  EXPECT_TRUE(route1->Matches(NavigationPreposition::kAt));
+  EXPECT_FALSE(route2->Matches(NavigationPreposition::kAt));
 
   SetURL("https://example.com/bar");
-  EXPECT_FALSE(route1->Matches(RoutePreposition::kAt));
-  EXPECT_TRUE(route2->Matches(RoutePreposition::kAt));
+  EXPECT_FALSE(route1->Matches(NavigationPreposition::kAt));
+  EXPECT_TRUE(route2->Matches(NavigationPreposition::kAt));
 
   SetURL("https://example.com/baz");
-  EXPECT_FALSE(route1->Matches(RoutePreposition::kAt));
-  EXPECT_TRUE(route2->Matches(RoutePreposition::kAt));
+  EXPECT_FALSE(route1->Matches(NavigationPreposition::kAt));
+  EXPECT_TRUE(route2->Matches(NavigationPreposition::kAt));
 }
 
 TEST_F(RouteMapTest, GetActiveRoutes) {
@@ -80,11 +80,11 @@ TEST_F(RouteMapTest, GetActiveRoutes) {
   })");
 
   RouteMatchState::MatchCollection collection;
-  route_map.GetActiveRoutes(RoutePreposition::kAt, &collection);
+  route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
   EXPECT_EQ(2u, collection.size());
 
   SetURL("https://example.com/bar");
-  route_map.GetActiveRoutes(RoutePreposition::kAt, &collection);
+  route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
   EXPECT_EQ(1u, collection.size());
 }
 

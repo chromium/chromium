@@ -674,7 +674,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kContainer:
       case StyleRuleBase::kMedia:
       case StyleRuleBase::kLayerBlock:
-      case StyleRuleBase::kRoute:
+      case StyleRuleBase::kNavigation:
       case StyleRuleBase::kScope:
       case StyleRuleBase::kStartingStyle:
         if (ChildRulesHaveFailedOrCanceledSubresources(

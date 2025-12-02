@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_ROUTE_H_
 
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/route_matching/route_preposition.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_preposition.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -26,13 +26,13 @@ class Route : public EventTarget {
   URLPattern* pattern() const;
   bool matches() const { return matches_at_; }
 
-  bool Matches(RoutePreposition preposition) const {
+  bool Matches(NavigationPreposition preposition) const {
     switch (preposition) {
-      case RoutePreposition::kAt:
+      case NavigationPreposition::kAt:
         return matches_at_;
-      case RoutePreposition::kFrom:
+      case NavigationPreposition::kFrom:
         return matches_from_;
-      case RoutePreposition::kTo:
+      case NavigationPreposition::kTo:
         return matches_to_;
     }
   }

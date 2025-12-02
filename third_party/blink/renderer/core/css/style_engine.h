@@ -780,9 +780,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void RevisitStyleSheetForInspector(StyleSheetContents* contents,
                                      const RuleFeatureSet* features) const;
 
-  // Call when @route rules may need to be re-evaluated, because the current URL
-  // has changed.
-  void RoutesMayHaveChanged() { SetNeedsActiveStyleUpdate(GetDocument()); }
+  // Call when @navigation rules may need to be re-evaluated, because the
+  // current URL has changed.
+  void NavigationsMayHaveChanged() { SetNeedsActiveStyleUpdate(GetDocument()); }
 
   // Returns a random base value for CSS random() function.
   // @param random_value_sharing <random-value-sharing> parameter of CSS

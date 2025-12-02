@@ -791,6 +791,9 @@ interface CSSNamespaceRule : CSSRule
     getter namespaceURI
     getter prefix
     method constructor
+interface CSSNavigationRule : CSSConditionRule
+    attribute @@toStringTag
+    method constructor
 interface CSSNestedDeclarations : CSSRule
     attribute @@toStringTag
     getter style
@@ -1022,9 +1025,6 @@ interface CSSRotate : CSSTransformComponent
     setter x
     setter y
     setter z
-interface CSSRouteRule : CSSConditionRule
-    attribute @@toStringTag
-    method constructor
 interface CSSRule
     attribute @@toStringTag
     attribute CHARSET_RULE

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_ROUTE_QUERY_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_ROUTE_QUERY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_NAVIGATION_QUERY_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_NAVIGATION_QUERY_H_
 
 #include "third_party/blink/renderer/core/css/conditional_exp_node.h"
-#include "third_party/blink/renderer/core/route_matching/route_preposition.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_preposition.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -17,15 +17,15 @@ class Document;
 class Route;
 class URLPattern;
 
-// <route-location>
+// <navigation-location>
 //
-// https://wicg.github.io/declarative-partial-updates/css-route-matching/#at-route
-class RouteLocation : public GarbageCollected<RouteLocation> {
+// https://drafts.csswg.org/css-navigation-1/#typedef-navigation-location
+class NavigationLocation : public GarbageCollected<NavigationLocation> {
  public:
-  explicit RouteLocation(const AtomicString& route_name)
-      : string_(route_name) {}
-  RouteLocation(URLPattern* url_pattern,
-                const AtomicString& original_url_pattern_string)
+  explicit NavigationLocation(const AtomicString& navigation_name)
+      : string_(navigation_name) {}
+  NavigationLocation(URLPattern* url_pattern,
+                     const AtomicString& original_url_pattern_string)
       : url_pattern_(url_pattern), string_(original_url_pattern_string) {}
 
   void Trace(Visitor*) const;
@@ -63,47 +63,51 @@ class RouteLocation : public GarbageCollected<RouteLocation> {
   AtomicString string_;
 };
 
-// <route-test>
+// <navigation-test>
 //
-// https://wicg.github.io/declarative-partial-updates/css-route-matching/#at-route
-class RouteTest : public GarbageCollected<RouteTest> {
+// https://drafts.csswg.org/css-navigation-1/#typedef-navigation-test
+class NavigationTestExpression
+    : public GarbageCollected<NavigationTestExpression> {
  public:
-  RouteTest(RouteLocation& location, RoutePreposition preposition)
-      : route_location_(&location), preposition_(preposition) {}
+  NavigationTestExpression(NavigationLocation& location,
+                           NavigationPreposition preposition)
+      : navigation_location_(&location), preposition_(preposition) {}
 
-  void Trace(Visitor* v) const { v->Trace(route_location_); }
+  void Trace(Visitor* v) const { v->Trace(navigation_location_); }
 
-  RouteLocation& GetLocation() const { return *route_location_; }
-  RoutePreposition GetPreposition() const { return preposition_; }
+  NavigationLocation& GetLocation() const { return *navigation_location_; }
+  NavigationPreposition GetPreposition() const { return preposition_; }
 
   bool Matches(Document&) const;
 
   void SerializeTo(StringBuilder&) const;
 
  private:
-  Member<RouteLocation> route_location_;
-  RoutePreposition preposition_;
+  Member<NavigationLocation> navigation_location_;
+  NavigationPreposition preposition_;
 };
 
-class RouteQueryExpNode : public ConditionalExpNode {
+class NavigationExpNode : public ConditionalExpNode {
  public:
-  explicit RouteQueryExpNode(RouteTest& route_test)
-      : route_test_(&route_test) {}
+  explicit NavigationExpNode(NavigationTestExpression& test)
+      : navigation_test_(&test) {}
 
   void Trace(Visitor*) const override;
 
-  const RouteTest& GetRouteTest() const { return *route_test_; }
+  const NavigationTestExpression& NavigationTest() const {
+    return *navigation_test_;
+  }
 
   KleeneValue Evaluate(ConditionalExpNodeVisitor&) const override;
   void SerializeTo(StringBuilder&) const override;
 
  private:
-  Member<RouteTest> route_test_;
+  Member<NavigationTestExpression> navigation_test_;
 };
 
-class RouteQuery : public GarbageCollected<RouteQuery> {
+class NavigationQuery : public GarbageCollected<NavigationQuery> {
  public:
-  explicit RouteQuery(const ConditionalExpNode& root_exp)
+  explicit NavigationQuery(const ConditionalExpNode& root_exp)
       : root_exp_(&root_exp) {}
 
   void Trace(Visitor*) const;
@@ -117,4 +121,4 @@ class RouteQuery : public GarbageCollected<RouteQuery> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_ROUTE_QUERY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_NAVIGATION_QUERY_H_

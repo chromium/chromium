@@ -198,12 +198,12 @@ void RouteMap::UpdateActiveRoutes() {
     changed = route.UpdateMatchStatus(previous_url_, next_url_) || changed;
   }
   if (changed) {
-    GetDocument().GetStyleEngine().RoutesMayHaveChanged();
+    GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
   }
 }
 
 void RouteMap::GetActiveRoutes(
-    RoutePreposition preposition,
+    NavigationPreposition preposition,
     RouteMatchState::MatchCollection* collection) const {
   collection->clear();
   for (const auto& entry : routes_) {

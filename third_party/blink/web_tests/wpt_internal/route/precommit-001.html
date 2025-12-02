@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>@route(to) and @route(at) in onnavigate, precommitHandler, and handler()</title>
-<link rel="help" href="https://wicg.github.io/declarative-partial-updates/css-route-matching/#typedef-route-test">
+<title>@navigation(to) and @navigation(at) in onnavigate, precommitHandler, and handler()</title>
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
 <script type="routemap">
   {
     "routes":
@@ -10,12 +10,12 @@
   }
 </script>
 <style>
-  @route(to: a) {
+  @navigation(to: a) {
     body {
       background: #00ff00;
     }
   }
-  @route(at: a) {
+  @navigation(at: a) {
     body {
       color: #ff00ff;
     }

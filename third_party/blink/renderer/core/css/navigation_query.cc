@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/route_query.h"
+#include "third_party/blink/renderer/core/css/navigation_query.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/route_matching/route.h"
@@ -12,11 +12,11 @@
 
 namespace blink {
 
-void RouteLocation::Trace(Visitor* v) const {
+void NavigationLocation::Trace(Visitor* v) const {
   v->Trace(url_pattern_);
 }
 
-const Route* RouteLocation::FindOrCreateRoute(Document& document) const {
+const Route* NavigationLocation::FindOrCreateRoute(Document& document) const {
   if (url_pattern_) {
     // A URLPattern becomes an anonymous route. One route for each unique
     // URLPattern.
@@ -32,7 +32,7 @@ const Route* RouteLocation::FindOrCreateRoute(Document& document) const {
   return route_map->FindRoute(GetRouteName());
 }
 
-void RouteLocation::SerializeTo(StringBuilder& builder) const {
+void NavigationLocation::SerializeTo(StringBuilder& builder) const {
   DCHECK(!string_.IsNull());
   if (url_pattern_) {
     builder.Append("urlpattern(\"");
@@ -43,54 +43,54 @@ void RouteLocation::SerializeTo(StringBuilder& builder) const {
   }
 }
 
-bool RouteTest::Matches(Document& document) const {
-  const Route* route = route_location_->FindOrCreateRoute(document);
+bool NavigationTestExpression::Matches(Document& document) const {
+  const Route* route = navigation_location_->FindOrCreateRoute(document);
   return route && route->Matches(preposition_);
 }
 
-void RouteTest::SerializeTo(StringBuilder& builder) const {
+void NavigationTestExpression::SerializeTo(StringBuilder& builder) const {
   switch (preposition_) {
-    case RoutePreposition::kAt:
+    case NavigationPreposition::kAt:
       builder.Append("at: ");
       break;
-    case RoutePreposition::kFrom:
+    case NavigationPreposition::kFrom:
       builder.Append("from: ");
       break;
-    case RoutePreposition::kTo:
+    case NavigationPreposition::kTo:
       builder.Append("to: ");
       break;
   }
-  route_location_->SerializeTo(builder);
+  navigation_location_->SerializeTo(builder);
 }
 
-void RouteQueryExpNode::Trace(Visitor* v) const {
+void NavigationExpNode::Trace(Visitor* v) const {
   ConditionalExpNode::Trace(v);
-  v->Trace(route_test_);
+  v->Trace(navigation_test_);
 }
 
-KleeneValue RouteQueryExpNode::Evaluate(
+KleeneValue NavigationExpNode::Evaluate(
     ConditionalExpNodeVisitor& visitor) const {
-  return visitor.EvaluateRouteQueryExpNode(*this);
+  return visitor.EvaluateNavigationExpNode(*this);
 }
 
-void RouteQueryExpNode::SerializeTo(StringBuilder& builder) const {
-  route_test_->SerializeTo(builder);
+void NavigationExpNode::SerializeTo(StringBuilder& builder) const {
+  navigation_test_->SerializeTo(builder);
 }
 
-void RouteQuery::Trace(Visitor* v) const {
+void NavigationQuery::Trace(Visitor* v) const {
   v->Trace(root_exp_);
 }
 
-bool RouteQuery::Evaluate(Document* document) const {
+bool NavigationQuery::Evaluate(Document* document) const {
   class Handler : public ConditionalExpNodeVisitor {
     STACK_ALLOCATED();
 
    public:
     explicit Handler(Document& document) : document_(document) {}
 
-    KleeneValue EvaluateRouteQueryExpNode(
-        const RouteQueryExpNode& node) override {
-      const RouteTest& test = node.GetRouteTest();
+    KleeneValue EvaluateNavigationExpNode(
+        const NavigationExpNode& node) override {
+      const NavigationTestExpression& test = node.NavigationTest();
       return test.Matches(document_) ? KleeneValue::kTrue : KleeneValue::kFalse;
     }
 

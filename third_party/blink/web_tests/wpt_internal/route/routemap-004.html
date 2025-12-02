@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<title>Test @route(to:foo) and @route(from:foo)</title>
+<title>Test @navigation(to:foo) and @navigation(from:foo)</title>
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
-<link rel="help" href="https://github.com/WICG/declarative-partial-updates?tab=readme-ov-file#part-2-route-matching">
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
 <!-- Assuming here that "route" is part of the test path but no other parts of the URL. -->
 <script type="routemap">
   {
@@ -31,36 +31,36 @@
     height: 7px;
   }
 
-  @route (at: r1) {
+  @navigation (at: r1) {
     #target { width: 100px; }
   }
 
-  @route (from: r1) {
+  @navigation (from: r1) {
     #target { padding-top: 20px; }
   }
 
-  @route (to: r2) {
+  @navigation (to: r2) {
     #target { padding-bottom: 30px; }
   }
 
-  @route (at: r2) {
+  @navigation (at: r2) {
     #target { height: 90px; }
   }
 
-  @route (from: r2) {
+  @navigation (from: r2) {
     #target { margin-left: 70px; }
   }
 
-  @route (to: r4) {
+  @navigation (to: r4) {
     #target { margin-right: 80px; }
   }
 
   /* These should never match in the test. */
-  @route (to: r1) {
+  @navigation (to: r1) {
     #target { padding-left: 666px; }
   }
 
-  @route (from: r4) {
+  @navigation (from: r4) {
     #target { padding-right: 666px; }
   }
 </style>

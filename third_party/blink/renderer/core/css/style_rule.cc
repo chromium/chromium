@@ -42,11 +42,11 @@
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
 #include "third_party/blink/renderer/core/css/css_mixin_rule.h"
 #include "third_party/blink/renderer/core/css/css_namespace_rule.h"
+#include "third_party/blink/renderer/core/css/css_navigation_rule.h"
 #include "third_party/blink/renderer/core/css/css_nested_declarations_rule.h"
 #include "third_party/blink/renderer/core/css/css_page_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
-#include "third_party/blink/renderer/core/css/css_route_rule.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_starting_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/css/css_view_transition_rule.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
+#include "third_party/blink/renderer/core/css/navigation_query.h"
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -63,7 +64,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_supports_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
-#include "third_party/blink/renderer/core/css/route_query.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
@@ -121,8 +121,8 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kProperty:
       To<StyleRuleProperty>(this)->TraceAfterDispatch(visitor);
       return;
-    case kRoute:
-      To<StyleRuleRoute>(this)->TraceAfterDispatch(visitor);
+    case kNavigation:
+      To<StyleRuleNavigation>(this)->TraceAfterDispatch(visitor);
       return;
     case kFontFace:
       To<StyleRuleFontFace>(this)->TraceAfterDispatch(visitor);
@@ -220,8 +220,8 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kProperty:
       To<StyleRuleProperty>(this)->~StyleRuleProperty();
       return;
-    case kRoute:
-      To<StyleRuleRoute>(this)->~StyleRuleRoute();
+    case kNavigation:
+      To<StyleRuleNavigation>(this)->~StyleRuleNavigation();
       return;
     case kFontFace:
       To<StyleRuleFontFace>(this)->~StyleRuleFontFace();
@@ -325,9 +325,9 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
       rule = MakeGarbageCollected<CSSMarginRule>(To<StyleRulePageMargin>(self),
                                                  parent_sheet);
       break;
-    case kRoute:
-      rule = MakeGarbageCollected<CSSRouteRule>(To<StyleRuleRoute>(self),
-                                                parent_sheet);
+    case kNavigation:
+      rule = MakeGarbageCollected<CSSNavigationRule>(
+          To<StyleRuleNavigation>(self), parent_sheet);
       break;
     case kProperty:
       rule = MakeGarbageCollected<CSSPropertyRule>(To<StyleRuleProperty>(self),
@@ -637,8 +637,8 @@ StyleRuleBase* StyleRuleBase::Clone(
     case kMedia:
       return CloneGroupRule(To<StyleRuleMedia>(this), new_parent,
                             mixin_parameter_bindings);
-    case kRoute:
-      return CloneGroupRule(To<StyleRuleRoute>(this), new_parent,
+    case kNavigation:
+      return CloneGroupRule(To<StyleRuleNavigation>(this), new_parent,
                             mixin_parameter_bindings);
     case kSupports:
       return CloneGroupRule(To<StyleRuleSupports>(this), new_parent,
@@ -1034,17 +1034,20 @@ void StyleRuleContainer::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleCondition::TraceAfterDispatch(visitor);
 }
 
-StyleRuleRoute::StyleRuleRoute(RouteQuery* query,
-                               HeapVector<Member<StyleRuleBase>> child_rules)
-    : StyleRuleCondition(kRoute, std::move(child_rules)), route_query_(query) {}
+StyleRuleNavigation::StyleRuleNavigation(
+    NavigationQuery* query,
+    HeapVector<Member<StyleRuleBase>> child_rules)
+    : StyleRuleCondition(kNavigation, std::move(child_rules)),
+      navigation_query_(query) {}
 
-StyleRuleRoute::StyleRuleRoute(const StyleRuleRoute& other,
-                               HeapVector<Member<StyleRuleBase>> child_rules)
-    : StyleRuleCondition(kRoute, std::move(child_rules)),
-      route_query_(other.route_query_) {}
+StyleRuleNavigation::StyleRuleNavigation(
+    const StyleRuleNavigation& other,
+    HeapVector<Member<StyleRuleBase>> child_rules)
+    : StyleRuleCondition(kNavigation, std::move(child_rules)),
+      navigation_query_(other.navigation_query_) {}
 
-void StyleRuleRoute::TraceAfterDispatch(Visitor* v) const {
-  v->Trace(route_query_);
+void StyleRuleNavigation::TraceAfterDispatch(Visitor* v) const {
+  v->Trace(navigation_query_);
   StyleRuleCondition::TraceAfterDispatch(v);
 }
 

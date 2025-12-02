@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_ROUTE_MAP_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_preposition.h"
 #include "third_party/blink/renderer/core/route_matching/route_match_state.h"
-#include "third_party/blink/renderer/core/route_matching/route_preposition.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -88,7 +88,7 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   // changed.
   void UpdateActiveRoutes();
 
-  void GetActiveRoutes(RoutePreposition,
+  void GetActiveRoutes(NavigationPreposition,
                        RouteMatchState::MatchCollection*) const;
 
   // Set the URLs that we're navigating between at the start of navigation. This

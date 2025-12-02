@@ -42,8 +42,8 @@
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
+#include "third_party/blink/renderer/core/css/navigation_query.h"
 #include "third_party/blink/renderer/core/css/robin_hood_map-inl.h"
-#include "third_party/blink/renderer/core/css/route_query.h"
 #include "third_party/blink/renderer/core/css/seeker.h"
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
@@ -900,9 +900,9 @@ void RuleSet::AddPageRule(StyleRulePage* rule, const CascadeLayer* layer) {
   page_rules_.push_back(CascadeLayered<StyleRulePage>(rule, layer));
 }
 
-void RuleSet::AddRouteRule(StyleRuleRoute* rule) {
+void RuleSet::AddNavigationRule(StyleRuleNavigation* rule) {
   need_compaction_ = true;
-  route_rules_.push_back(rule);
+  navigation_rules_.push_back(rule);
 }
 
 void RuleSet::AddFontFaceRule(StyleRuleFontFace* rule,
@@ -978,11 +978,11 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                    style_scope);
     } else if (auto* page_rule = DynamicTo<StyleRulePage>(rule)) {
       AddPageRule(page_rule, cascade_layer);
-    } else if (auto* route_rule = DynamicTo<StyleRuleRoute>(rule)) {
-      const RouteQuery& query = route_rule->GetRouteQuery();
+    } else if (auto* navigation_rule = DynamicTo<StyleRuleNavigation>(rule)) {
+      const NavigationQuery& query = navigation_rule->GetNavigationQuery();
       if (query.Evaluate(medium.GetMediaValues().GetDocument())) {
-        AddChildRules(parent_rule, route_rule->ChildRules(), medium, mixins,
-                      add_rule_flags, container_query, cascade_layer,
+        AddChildRules(parent_rule, navigation_rule->ChildRules(), medium,
+                      mixins, add_rule_flags, container_query, cascade_layer,
                       style_scope, apply_mixins_stack);
       }
     } else if (auto* media_rule = DynamicTo<StyleRuleMedia>(rule)) {
@@ -1791,7 +1791,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(view_transition_rules_);
   visitor->Trace(keyframes_rules_);
   visitor->Trace(property_rules_);
-  visitor->Trace(route_rules_);
+  visitor->Trace(navigation_rules_);
   visitor->Trace(counter_style_rules_);
   visitor->Trace(position_try_rules_);
   visitor->Trace(function_rules_);

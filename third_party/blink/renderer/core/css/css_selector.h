@@ -46,7 +46,7 @@ namespace blink {
 class CSSParserContext;
 class CSSSelectorList;
 class Document;
-class RouteLocation;
+class NavigationLocation;
 class StyleRule;
 
 // This class represents a simple selector for a StyleRule.
@@ -410,8 +410,9 @@ class CORE_EXPORT CSSSelector {
     kPseudoOverscrollAreaParent,
     kPseudoOverscrollClientArea,
 
-    // :route-match(<route-location>)
-    kPseudoRouteMatch,
+    // :link-to(<navigation-location>)
+    // TODO(crbug.com/436805487): Should be :link-to(<link-condition>)
+    kPseudoLinkTo,
   };
 
   enum class AttributeMatchType : int {
@@ -508,8 +509,11 @@ class CORE_EXPORT CSSSelector {
   const CSSSelectorList* SelectorList() const {
     return HasRareData() ? data_.rare_data_->selector_list_.Get() : nullptr;
   }
-  const RouteLocation* GetRouteLocation() const {
-    return HasRareData() ? data_.rare_data_->route_location_.Get() : nullptr;
+  const NavigationLocation* GetNavigationLocation() const {
+    if (!HasRareData()) {
+      return nullptr;
+    }
+    return data_.rare_data_->navigation_location_.Get();
   }
   // Similar to SelectorList(), but also works for kPseudoParent
   // (i.e., nested selectors); on &, will give the parent's selector list.
@@ -542,7 +546,7 @@ class CORE_EXPORT CSSSelector {
   void SetValue(const AtomicString&, bool match_lower_case);
   void SetArgument(const AtomicString&);
   void SetSelectorList(CSSSelectorList*);
-  void SetRouteLocation(RouteLocation*);
+  void SetNavigationLocation(NavigationLocation*);
   void SetIdentList(std::unique_ptr<Vector<AtomicString>>);
   void SetContainsPseudoInsideHasPseudoClass();
   void SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
@@ -791,7 +795,7 @@ class CORE_EXPORT CSSSelector {
     AtomicString argument_;    // Used for :contains, :lang, :dir, etc.
     Member<CSSSelectorList>
         selector_list_;  // Used :is, :not, :-webkit-any, etc.
-    Member<RouteLocation> route_location_;  // Used for :route-match().
+    Member<NavigationLocation> navigation_location_;  // Used for :link-to().
     std::unique_ptr<Vector<AtomicString>>
         ident_list_;  // Used for ::part(), :active-view-transition-type().
 

@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
-#include "third_party/blink/renderer/core/css/route_query.h"
+#include "third_party/blink/renderer/core/css/navigation_query.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -458,30 +458,33 @@ TEST_F(StyleRuleTest, CloneStyleRuleStartingStyle) {
                 ->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
 }
 
-TEST_F(StyleRuleTest, RouteRuleDisabled) {
+TEST_F(StyleRuleTest, NavigationRuleDisabled) {
   ScopedRouteMatchingForTest enabled(false);
   // Test both old and new syntax.
   StyleRuleBase* rule =
-      css_test_helpers::ParseRule(GetDocument(), "@route sixtysix {}");
+      css_test_helpers::ParseRule(GetDocument(), "@navigation pun_ruined {}");
   EXPECT_FALSE(rule);
-  rule = css_test_helpers::ParseRule(GetDocument(), "@route (sixtysix) {}");
+  rule =
+      css_test_helpers::ParseRule(GetDocument(), "@navigation (pun_ruined) {}");
   EXPECT_FALSE(rule);
 }
 
-TEST_F(StyleRuleTest, RouteRule) {
+TEST_F(StyleRuleTest, NavigationRule) {
   ScopedRouteMatchingForTest enabled(true);
 
-  // Parse the specified CSS into a rule, and extract its RouteTest.
-  auto GetRouteTest = [this](const char* css) -> const RouteTest* {
-    using Callback = base::FunctionRef<void(const RouteTest&)>;
+  // Parse the specified CSS into a rule, and extract its
+  // NavigationTestExpression.
+  auto GetNavigationTest =
+      [this](const char* css) -> const NavigationTestExpression* {
+    using Callback = base::FunctionRef<void(const NavigationTestExpression&)>;
     class TestExtractor : public ConditionalExpNodeVisitor {
      public:
       explicit TestExtractor(Callback callback) : callback_(callback) {}
 
      private:
-      KleeneValue EvaluateRouteQueryExpNode(
-          const RouteQueryExpNode& node) override {
-        callback_(node.GetRouteTest());
+      KleeneValue EvaluateNavigationExpNode(
+          const NavigationExpNode& node) override {
+        callback_(node.NavigationTest());
         return KleeneValue::kFalse;
       }
 
@@ -489,49 +492,50 @@ TEST_F(StyleRuleTest, RouteRule) {
     };
 
     StyleRuleBase* rule = css_test_helpers::ParseRule(GetDocument(), css);
-    auto* route_rule = DynamicTo<StyleRuleRoute>(rule);
-    if (!route_rule) {
+    auto* navigation_rule = DynamicTo<StyleRuleNavigation>(rule);
+    if (!navigation_rule) {
       return nullptr;
     }
     const ConditionalExpNode* root_exp =
-        route_rule->GetRouteQuery().GetRootExp();
+        navigation_rule->GetNavigationQuery().GetRootExp();
     if (!root_exp) {
       return nullptr;
     }
-    const RouteTest* route_test = nullptr;
-    auto set_test = [&route_test](const RouteTest& test) {
-      route_test = &test;
+    const NavigationTestExpression* navigation_test = nullptr;
+    auto set_test = [&navigation_test](const NavigationTestExpression& test) {
+      navigation_test = &test;
     };
     TestExtractor extractor(set_test);
     root_exp->Evaluate(extractor);
-    return route_test;
+    return navigation_test;
   };
 
-  const RouteTest* route_test = GetRouteTest("@route (sixtysix) {}");
-  ASSERT_TRUE(route_test);
-  EXPECT_EQ(route_test->GetLocation().GetRouteName(), "sixtysix");
-  EXPECT_EQ(route_test->GetPreposition(), RoutePreposition::kAt);
+  const NavigationTestExpression* navigation_test =
+      GetNavigationTest("@navigation (pun_ruined) {}");
+  ASSERT_TRUE(navigation_test);
+  EXPECT_EQ(navigation_test->GetLocation().GetRouteName(), "pun_ruined");
+  EXPECT_EQ(navigation_test->GetPreposition(), NavigationPreposition::kAt);
 
-  route_test = GetRouteTest("@route (from: sixtysix) {}");
-  ASSERT_TRUE(route_test);
-  EXPECT_EQ(route_test->GetLocation().GetRouteName(), "sixtysix");
-  EXPECT_EQ(route_test->GetPreposition(), RoutePreposition::kFrom);
+  navigation_test = GetNavigationTest("@navigation (from: pun_ruined) {}");
+  ASSERT_TRUE(navigation_test);
+  EXPECT_EQ(navigation_test->GetLocation().GetRouteName(), "pun_ruined");
+  EXPECT_EQ(navigation_test->GetPreposition(), NavigationPreposition::kFrom);
 
-  route_test = GetRouteTest("@route (to: sixtysix) {}");
-  ASSERT_TRUE(route_test);
-  EXPECT_EQ(route_test->GetLocation().GetRouteName(), "sixtysix");
-  EXPECT_EQ(route_test->GetPreposition(), RoutePreposition::kTo);
+  navigation_test = GetNavigationTest("@navigation (to: pun_ruined) {}");
+  ASSERT_TRUE(navigation_test);
+  EXPECT_EQ(navigation_test->GetLocation().GetRouteName(), "pun_ruined");
+  EXPECT_EQ(navigation_test->GetPreposition(), NavigationPreposition::kTo);
 
-  route_test = GetRouteTest("@route (at: sixtysix) {}");
-  ASSERT_TRUE(route_test);
-  EXPECT_EQ(route_test->GetLocation().GetRouteName(), "sixtysix");
-  EXPECT_EQ(route_test->GetPreposition(), RoutePreposition::kAt);
+  navigation_test = GetNavigationTest("@navigation (at: pun_ruined) {}");
+  ASSERT_TRUE(navigation_test);
+  EXPECT_EQ(navigation_test->GetLocation().GetRouteName(), "pun_ruined");
+  EXPECT_EQ(navigation_test->GetPreposition(), NavigationPreposition::kAt);
 
-  route_test = GetRouteTest("@route (below: sixtysix) {}");
-  EXPECT_FALSE(route_test);
+  navigation_test = GetNavigationTest("@navigation (below: pun_ruined) {}");
+  EXPECT_FALSE(navigation_test);
 
-  route_test = GetRouteTest("@route (at: ) {}");
-  EXPECT_FALSE(route_test);
+  navigation_test = GetNavigationTest("@navigation (at: ) {}");
+  EXPECT_FALSE(navigation_test);
 }
 
 }  // namespace blink

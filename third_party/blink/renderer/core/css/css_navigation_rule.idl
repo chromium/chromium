@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/436805487): Link to spec, once it surfaces.
+// https://drafts.csswg.org/css-navigation-1/#at-ruledef-navigation
 
 [Exposed=Window, RuntimeEnabled=RouteMatching]
-interface CSSRouteRule : CSSConditionRule {};
+interface CSSNavigationRule : CSSConditionRule {};

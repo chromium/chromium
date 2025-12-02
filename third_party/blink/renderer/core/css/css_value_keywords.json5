@@ -1813,8 +1813,8 @@
     // Layered @import rule
     "layer",
 
-    // if(route())
-    "route",
+    // if(navigation())
+    "navigation",
 
     // supports in import rule: @import supports()
     "supports",

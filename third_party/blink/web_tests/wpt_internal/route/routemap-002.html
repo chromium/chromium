@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <title>Set new URL, then go back</title>
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
-<link rel="help" href="https://github.com/WICG/declarative-partial-updates?tab=readme-ov-file#part-2-route-matching">
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
 <script type="routemap">
   {
     "routes": [
@@ -22,13 +22,13 @@
     height: 7px;
   }
 
-  @route (r1) {
+  @navigation (r1) {
     #target {
       width: 100px;
     }
   }
 
-  @route (r2) {
+  @navigation (r2) {
     #target {
       height: 100px;
     }

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_syntax_string_parser.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
+#include "third_party/blink/renderer/core/css/navigation_query.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_at_rule_id.h"
@@ -39,10 +40,9 @@
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/parser/find_length_of_declaration_list-inl.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
-#include "third_party/blink/renderer/core/css/parser/route_parser.h"
+#include "third_party/blink/renderer/core/css/parser/navigation_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
-#include "third_party/blink/renderer/core/css/route_query.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
@@ -900,8 +900,9 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
       return ConsumePageRule(stream);
     case CSSAtRuleID::kCSSAtRuleProperty:
       return ConsumePropertyRule(stream);
-    case CSSAtRuleID::kCSSAtRuleRoute:
-      return ConsumeRouteRule(stream, nesting_type, parent_rule_for_nesting);
+    case CSSAtRuleID::kCSSAtRuleNavigation:
+      return ConsumeNavigationRule(stream, nesting_type,
+                                   parent_rule_for_nesting);
     case CSSAtRuleID::kCSSAtRuleScope:
       return ConsumeScopeRule(stream, nesting_type, parent_rule_for_nesting);
     case CSSAtRuleID::kCSSAtRuleCounterStyle:
@@ -1922,19 +1923,20 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
   return rule;
 }
 
-StyleRuleRoute* CSSParserImpl::ConsumeRouteRule(
+StyleRuleNavigation* CSSParserImpl::ConsumeNavigationRule(
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting) {
   // Parse the prelude.
   wtf_size_t header_start_offset = stream.LookAheadOffset();
-  RouteQuery* query = RouteParser::ParseQuery(stream, *context_->GetDocument());
+  NavigationQuery* query =
+      NavigationParser::ParseQuery(stream, *context_->GetDocument());
   if (!query) {
-    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleRoute);
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleNavigation);
     return nullptr;
   }
-  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
-                                             CSSAtRuleID::kCSSAtRuleRoute)) {
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(
+          stream, CSSAtRuleID::kCSSAtRuleNavigation)) {
     return nullptr;
   }
   wtf_size_t header_end_offset = stream.LookAheadOffset();
@@ -1942,7 +1944,7 @@ StyleRuleRoute* CSSParserImpl::ConsumeRouteRule(
   // Parse the actual block.
   CSSParserTokenStream::BlockGuard body_guard(stream);
   if (observer_) {
-    observer_->StartRuleHeader(StyleRule::kRoute, header_start_offset);
+    observer_->StartRuleHeader(StyleRule::kNavigation, header_start_offset);
     observer_->EndRuleHeader(header_end_offset);
     observer_->StartRuleBody(stream.Offset());
   }
@@ -1955,7 +1957,7 @@ StyleRuleRoute* CSSParserImpl::ConsumeRouteRule(
     observer_->EndRuleBody(stream.Offset());
   }
 
-  return MakeGarbageCollected<StyleRuleRoute>(query, std::move(rules));
+  return MakeGarbageCollected<StyleRuleNavigation>(query, std::move(rules));
 }
 
 StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(

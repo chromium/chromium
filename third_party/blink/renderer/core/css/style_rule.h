@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_lazy_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
-#include "third_party/blink/renderer/core/route_matching/route_preposition.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_preposition.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -48,7 +48,7 @@ class CSSRule;
 class CSSStyleSheet;
 class MixinParameterBindings;
 class ExecutionContext;
-class RouteQuery;
+class NavigationQuery;
 
 class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
  public:
@@ -64,7 +64,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kPage,
     kPageMargin,
     kProperty,
-    kRoute,
+    kNavigation,
     kKeyframes,
     kKeyframe,
     kLayerBlock,
@@ -120,7 +120,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsPageRule() const { return GetType() == kPage; }
   bool IsPageRuleMargin() const { return GetType() == kPageMargin; }
   bool IsPropertyRule() const { return GetType() == kProperty; }
-  bool IsRouteRule() const { return GetType() == kRoute; }
+  bool IsNavigationRule() const { return GetType() == kNavigation; }
   bool IsStyleRule() const { return GetType() == kStyle; }
   bool IsScopeRule() const { return GetType() == kScope; }
   bool IsSupportsRule() const { return GetType() == kSupports; }
@@ -615,18 +615,22 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
   Member<ContainerQuery> container_query_;
 };
 
-class StyleRuleRoute : public StyleRuleCondition {
+class StyleRuleNavigation : public StyleRuleCondition {
  public:
-  StyleRuleRoute(RouteQuery*, HeapVector<Member<StyleRuleBase>> child_rules);
-  StyleRuleRoute(const StyleRuleRoute&) = delete;
-  StyleRuleRoute(const StyleRuleRoute&, HeapVector<Member<StyleRuleBase>>);
+  StyleRuleNavigation(NavigationQuery*,
+                      HeapVector<Member<StyleRuleBase>> child_rules);
+  StyleRuleNavigation(const StyleRuleNavigation&) = delete;
+  StyleRuleNavigation(const StyleRuleNavigation&,
+                      HeapVector<Member<StyleRuleBase>>);
 
   void TraceAfterDispatch(Visitor*) const;
 
-  const RouteQuery& GetRouteQuery() const { return *route_query_; }
+  const NavigationQuery& GetNavigationQuery() const {
+    return *navigation_query_;
+  }
 
  private:
-  Member<RouteQuery> route_query_;
+  Member<NavigationQuery> navigation_query_;
 };
 
 class StyleRuleStartingStyle : public StyleRuleGroup {
@@ -852,9 +856,9 @@ struct DowncastTraits<StyleRuleProperty> {
 };
 
 template <>
-struct DowncastTraits<StyleRuleRoute> {
+struct DowncastTraits<StyleRuleNavigation> {
   static bool AllowFrom(const StyleRuleBase& rule) {
-    return rule.IsRouteRule();
+    return rule.IsNavigationRule();
   }
 };
 

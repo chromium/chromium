@@ -11,9 +11,9 @@ namespace blink {
 
 RouteMatchState* RouteMatchState::Create(const RouteMap& map) {
   RouteMatchState* state = MakeGarbageCollected<RouteMatchState>();
-  map.GetActiveRoutes(RoutePreposition::kAt, &state->at_routes_);
-  map.GetActiveRoutes(RoutePreposition::kFrom, &state->from_routes_);
-  map.GetActiveRoutes(RoutePreposition::kTo, &state->to_routes_);
+  map.GetActiveRoutes(NavigationPreposition::kAt, &state->at_routes_);
+  map.GetActiveRoutes(NavigationPreposition::kFrom, &state->from_routes_);
+  map.GetActiveRoutes(NavigationPreposition::kTo, &state->to_routes_);
   return state;
 }
 

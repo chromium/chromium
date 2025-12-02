@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_supports_parser.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
-#include "third_party/blink/renderer/core/css/parser/route_parser.h"
+#include "third_party/blink/renderer/core/css/parser/navigation_parser.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -28,7 +28,7 @@ const ConditionalExpNode* CSSIfParser::ConsumeLeaf(CSSParserTokenStream&) {
 //   supports( [ <supports-condition> | <ident> : <declaration-value> ] ) |
 //   media( <media-feature> | <media-condition> ) |
 //   style( <style-query> ) |
-//   route( <route-condition> )
+//   navigation( <navigation-condition> )
 const ConditionalExpNode* CSSIfParser::ConsumeFunction(
     CSSParserTokenStream& stream) {
   DCHECK_EQ(stream.Peek().GetType(), kFunctionToken);
@@ -83,20 +83,20 @@ const ConditionalExpNode* CSSIfParser::ConsumeFunction(
       return ConditionalExpNode::Function(query, AtomicString("style"));
     }
   }
-  if (stream.Peek().FunctionId() == CSSValueID::kRoute &&
+  if (stream.Peek().FunctionId() == CSSValueID::kNavigation &&
       RuntimeEnabledFeatures::RouteMatchingEnabled()) {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
-    RouteParser route_parser(*parser_context_.GetDocument());
+    NavigationParser navigation_parser(*parser_context_.GetDocument());
     CSSParserTokenStream::State savepoint = stream.Save();
     // We're inside the function's parentheses. Don't require any additional
-    // ones. Look for <route-test>.
-    const ConditionalExpNode* node = route_parser.ConsumeLeaf(stream);
+    // ones. Look for <navigation-test>.
+    const ConditionalExpNode* node = navigation_parser.ConsumeLeaf(stream);
     if (!node) {
-      // If that fails, though, look for <route-condition>, to handle additional
-      // parentheses and expressions.
+      // If that fails, though, look for <navigation-condition>, to handle
+      // additional parentheses and expressions.
       stream.Restore(savepoint);
-      node = route_parser.ConsumeCondition(stream);
+      node = navigation_parser.ConsumeCondition(stream);
     }
     if (node) {
       guard.Release();

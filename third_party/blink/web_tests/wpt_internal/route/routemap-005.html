@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<title>@route with urlpattern()</title>
+<title>@navigation with urlpattern()</title>
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
-<link rel="help" href="https://wicg.github.io/declarative-partial-updates/css-route-matching/#urlpattern-function">
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
 <style>
   #target {
     width: 7px;
@@ -9,36 +9,36 @@
   }
 
   /* Assuming here that "route" is part of the test path but no other parts of the URL. */
-  @route (at: urlpattern("*route*")) {
+  @navigation (at: urlpattern("*route*")) {
     #target { width: 100px; }
   }
 
-  @route (from: urlpattern("*route*")) {
+  @navigation (from: urlpattern("*route*")) {
     #target { padding-top: 20px; }
   }
 
-  @route (to: urlpattern("match-later-r2")) {
+  @navigation (to: urlpattern("match-later-r2")) {
     #target { padding-bottom: 30px; }
   }
 
-  @route (at: urlpattern("match-later-r2")) {
+  @navigation (at: urlpattern("match-later-r2")) {
     #target { height: 90px; }
   }
 
-  @route (from: urlpattern("match-later-r2")) {
+  @navigation (from: urlpattern("match-later-r2")) {
     #target { margin-left: 70px; }
   }
 
-  @route (to: urlpattern("match-later-r4")) {
+  @navigation (to: urlpattern("match-later-r4")) {
     #target { margin-right: 80px; }
   }
 
   /* These should never match in the test. */
-  @route (to: urlpattern("*route*")) {
+  @navigation (to: urlpattern("*route*")) {
     #target { padding-left: 666px; }
   }
 
-  @route (from: urlpattern("match-later-r4")) {
+  @navigation (from: urlpattern("match-later-r4")) {
     #target { padding-right: 666px; }
   }
 </style>

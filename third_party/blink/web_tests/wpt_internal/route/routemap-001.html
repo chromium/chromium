@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <title>Simple routemap with one matching and one non-matching route</title>
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
-<link rel="help" href="https://github.com/WICG/declarative-partial-updates?tab=readme-ov-file#part-2-route-matching">
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
 <!-- Assuming here that "route" is part of the test path. -->
 <script type="routemap">
   {
@@ -21,7 +21,7 @@
   #target {
     display: none;
   }
-  @route (r1) {
+  @navigation (r1) {
     #target {
       display: block;
       width: 100px;
@@ -29,7 +29,7 @@
       background: green;
     }
   }
-  @route (r2) {
+  @navigation (r2) {
     #target {
       border: 10px solid red;
     }

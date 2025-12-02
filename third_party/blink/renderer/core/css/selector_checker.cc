@@ -34,9 +34,9 @@
 #include "third_party/blink/renderer/core/css/check_pseudo_has_argument_context.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/navigation_query.h"
 #include "third_party/blink/renderer/core/css/part_names.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
-#include "third_party/blink/renderer/core/css/route_query.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_scope_data.h"
@@ -586,7 +586,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoResizer:
     case CSSSelector::kPseudoRightPage:
     case CSSSelector::kPseudoRoot:
-    case CSSSelector::kPseudoRouteMatch:
+    case CSSSelector::kPseudoLinkTo:
     case CSSSelector::kPseudoScrollbar:
     case CSSSelector::kPseudoScrollbarButton:
     case CSSSelector::kPseudoScrollbarCorner:
@@ -2056,18 +2056,18 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
   return false;
 }
 
-bool SelectorChecker::CheckPseudoRouteMatch(
-    const SelectorCheckingContext& context,
-    MatchResult& result) const {
+bool SelectorChecker::CheckPseudoLinkTo(const SelectorCheckingContext& context,
+                                        MatchResult& result) const {
   DCHECK(context.selector);
-  DCHECK(context.selector->GetRouteLocation());
+  DCHECK(context.selector->GetNavigationLocation());
   Element& element = GetCandidateElement(context, result);
   const auto* anchor = DynamicTo<HTMLAnchorElement>(&element);
   if (!anchor) {
     return false;
   }
-  const Route* route = context.selector->GetRouteLocation()->FindOrCreateRoute(
-      element.GetDocument());
+  const Route* route =
+      context.selector->GetNavigationLocation()->FindOrCreateRoute(
+          element.GetDocument());
   return route && route->MatchesUrl(anchor->Href());
 }
 
@@ -2651,9 +2651,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     }
     case CSSSelector::kPseudoRoot:
       return element == element.GetDocument().documentElement();
-    case CSSSelector::kPseudoRouteMatch:
+    case CSSSelector::kPseudoLinkTo:
       DCHECK(RuntimeEnabledFeatures::RouteMatchingEnabled());
-      return CheckPseudoRouteMatch(context, result);
+      return CheckPseudoLinkTo(context, result);
     case CSSSelector::kPseudoLang: {
       auto* vtt_element = DynamicTo<VTTElement>(element);
       AtomicString value = vtt_element ? vtt_element->Language()

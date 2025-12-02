@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/parser/route_parser.h"
+#include "third_party/blink/renderer/core/css/parser/navigation_parser.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
+#include "third_party/blink/renderer/core/css/navigation_query.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
-#include "third_party/blink/renderer/core/css/route_query.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
@@ -61,16 +61,16 @@ URLPatternParseResult ParseURLPattern(CSSParserTokenStream& stream,
       pattern_str);
 }
 
-// https://wicg.github.io/declarative-partial-updates/css-route-matching/#at-route
+// https://drafts.csswg.org/css-navigation-1/#typedef-navigation-test
 //
-// <route-test> = <route-location> | <route-keyword> : <route-location>
-// <route-keyword> = at | from | to
-// <route-location> = <route-name> | <urlpattern()>
-// <route-name> = <custom-ident>
-RouteTest* ParseRouteTest(CSSParserTokenStream& stream,
-                          const Document& document) {
+// <navigation-test> = <navigation-location> | <navigation-keyword> :
+// <navigation-location> <navigation-keyword> = at | from | to
+// <navigation-location> = <route-name> | <url-pattern()>
+// <route-name> = <dashed-ident>
+NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream& stream,
+                                              const Document& document) {
   AtomicString route_name;
-  RoutePreposition preposition = RoutePreposition::kAt;
+  auto preposition = NavigationPreposition::kAt;
   URLPatternParseResult url_pattern_result;
 
   bool header_valid = [&]() {
@@ -79,11 +79,11 @@ RouteTest* ParseRouteTest(CSSParserTokenStream& stream,
           stream.ConsumeIncludingWhitespace().Value().ToString());
       if (stream.Peek().GetType() == kColonToken) {
         if (first_string == "at") {
-          preposition = RoutePreposition::kAt;
+          preposition = NavigationPreposition::kAt;
         } else if (first_string == "from") {
-          preposition = RoutePreposition::kFrom;
+          preposition = NavigationPreposition::kFrom;
         } else if (first_string == "to") {
-          preposition = RoutePreposition::kTo;
+          preposition = NavigationPreposition::kTo;
         } else {
           return false;
         }
@@ -114,61 +114,64 @@ RouteTest* ParseRouteTest(CSSParserTokenStream& stream,
     return nullptr;
   }
 
-  RouteLocation* route_location;
+  NavigationLocation* navigation_location;
   if (url_pattern_result.IsSuccess()) {
-    route_location = MakeGarbageCollected<RouteLocation>(
+    navigation_location = MakeGarbageCollected<NavigationLocation>(
         url_pattern_result.url_pattern, url_pattern_result.original_string);
   } else {
     DCHECK(!route_name.empty());
-    route_location = MakeGarbageCollected<RouteLocation>(route_name);
+    navigation_location = MakeGarbageCollected<NavigationLocation>(route_name);
   }
 
-  return MakeGarbageCollected<RouteTest>(*route_location, preposition);
+  return MakeGarbageCollected<NavigationTestExpression>(*navigation_location,
+                                                        preposition);
 }
 
 }  // anonymous namespace
 
-RouteQuery* RouteParser::ParseQuery(CSSParserTokenStream& stream,
-                                    const Document& document) {
-  RouteParser parser(document);
+NavigationQuery* NavigationParser::ParseQuery(CSSParserTokenStream& stream,
+                                              const Document& document) {
+  NavigationParser parser(document);
   const ConditionalExpNode* root = parser.ConsumeCondition(stream);
   if (!root) {
     return nullptr;
   }
-  return MakeGarbageCollected<RouteQuery>(*root);
+  return MakeGarbageCollected<NavigationQuery>(*root);
 }
 
-RouteLocation* RouteParser::ParseLocation(CSSParserTokenStream& stream,
-                                          const Document& document) {
+NavigationLocation* NavigationParser::ParseLocation(
+    CSSParserTokenStream& stream,
+    const Document& document) {
   if (stream.Peek().GetType() == kIdentToken) {
     AtomicString route_name(
         stream.ConsumeIncludingWhitespace().Value().ToString());
     if (stream.AtEnd()) {
-      return MakeGarbageCollected<RouteLocation>(route_name);
+      return MakeGarbageCollected<NavigationLocation>(route_name);
     }
   } else {
     URLPatternParseResult result = ParseURLPattern(stream, document);
     if (result.IsSuccess()) {
       stream.ConsumeWhitespace();
       if (stream.AtEnd()) {
-        return MakeGarbageCollected<RouteLocation>(result.url_pattern,
-                                                   result.original_string);
+        return MakeGarbageCollected<NavigationLocation>(result.url_pattern,
+                                                        result.original_string);
       }
     }
   }
   return nullptr;
 }
 
-const ConditionalExpNode* RouteParser::ConsumeLeaf(
+const ConditionalExpNode* NavigationParser::ConsumeLeaf(
     CSSParserTokenStream& stream) {
-  RouteTest* route_test = ParseRouteTest(stream, document_);
-  if (!route_test) {
+  NavigationTestExpression* navigation_test =
+      ParseNavigationTest(stream, document_);
+  if (!navigation_test) {
     return nullptr;
   }
-  return MakeGarbageCollected<RouteQueryExpNode>(*route_test);
+  return MakeGarbageCollected<NavigationExpNode>(*navigation_test);
 }
 
-const ConditionalExpNode* RouteParser::ConsumeFunction(
+const ConditionalExpNode* NavigationParser::ConsumeFunction(
     CSSParserTokenStream& stream) {
   return nullptr;
 }
