@@ -32,8 +32,8 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     return {
       composeboxHeight_: {type: Number},
       composeboxDropdownHeight_: {type: Number},
-      isComposeboxFocused: {type: Boolean, reflect: true},
-      showContextMenu: {
+      isComposeboxFocused_: {type: Boolean, reflect: true},
+      showContextMenu_: {
         reflect: true,
         type: Boolean,
         value: loadTimeData.getBoolean('composeboxShowContextMenu'),
@@ -43,8 +43,9 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
 
   protected accessor composeboxHeight_: number = 0;
   protected accessor composeboxDropdownHeight_: number = 0;
-  protected accessor isComposeboxFocused: boolean = false;
-  protected accessor showContextMenu: boolean = loadTimeData.getBoolean('composeboxShowContextMenu');
+  protected accessor isComposeboxFocused_: boolean = false;
+  protected accessor showContextMenu_: boolean =
+      loadTimeData.getBoolean('composeboxShowContextMenu');
   private eventTracker_: EventTracker = new EventTracker();
   private composeboxResizeObserver_: ResizeObserver|null = null;
   private composeboxDropdownResizeObserver_: ResizeObserver|null = null;
@@ -55,10 +56,10 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     const composebox = this.$.composebox;
     if (composebox) {
       this.eventTracker_.add(composebox, 'composebox-focus-in', () => {
-        this.isComposeboxFocused = true;
+        this.isComposeboxFocused_ = true;
       });
       this.eventTracker_.add(composebox, 'composebox-focus-out', () => {
-        this.isComposeboxFocused = false;
+        this.isComposeboxFocused_ = false;
         composebox.animationState = GlowAnimationState.NONE;
       });
       this.eventTracker_.add(composebox, 'composebox-submit', () => {
