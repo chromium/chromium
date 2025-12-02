@@ -385004,6 +385004,10 @@
       []
      ],
      "animations": {
+      "WEB_FEATURES.yml": [
+       "c320f09cdf58c8de915e84b039588434da2f7839",
+       []
+      ],
       "hyphen-limit-chars-interpolation-expected.txt": [
        "c9b7a6a3abf65c6ce391dacdc3bb7add1d623340",
        []
@@ -386845,7 +386849,7 @@
      },
      "parsing": {
       "WEB_FEATURES.yml": [
-       "0eb14b30a7b976d0e66ef3b4035e2c76832a34ff",
+       "e8ff8f52e0204a1a241b6b0082f7e3cd44582c2b",
        []
       ],
       "hanging-punctuation-valid-expected.txt": [
@@ -387176,6 +387180,10 @@
       ]
      },
      "tab-size": {
+      "WEB_FEATURES.yml": [
+       "c1210929e40c6658edde2ec9d9343363f75d1ace",
+       []
+      ],
       "tab-min-rendered-width-1-ref.html": [
        "e154e0ca6265c9c1a30119448d69d241c5257f42",
        []
@@ -418192,7 +418200,7 @@
         []
        ],
        "the-canvas-state.yaml": [
-        "63a41a73b3e15e1f3ece30269202a1973635e6da",
+        "ecd11b39323e95c8ecd5409b2bd6be29577f2266",
         []
        ],
        "the-canvas.yaml": [
@@ -646702,56 +646710,56 @@
         ]
        ],
        "2d.state.saverestore.fillStyle.html": [
-        "f29b8364969fb98e392ee80e720736552f9ef4df",
+        "40710fd53e94fa40fe4f06210369c3d279bac91e",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.font.html": [
-        "0308f3d568763d352fd815aa150ddb40ee3337d6",
+        "ba5f062d116f46ab81fbbaf917f944947b55ca22",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.globalAlpha.html": [
-        "8b82bc9f440e30ed8150b9fe49a756af54978b1f",
+        "1bbf7997cb0f8caae74128b2ade60bf9bf80dae9",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.globalCompositeOperation.html": [
-        "85050fefb29a24d396b9575f03b09fe3a7a1f086",
+        "e33029beddf219f0aa17c9dcc970742e144e32ec",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.lineCap.html": [
-        "38c770bc0403b102ca1736e45aa0e4451309ae08",
+        "361168517954b071cd7895fb7c944ad39150a950",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.lineJoin.html": [
-        "4ac4e784e2d0421107aa531d406ec15e38dc8c9a",
+        "95292fb76f9a51b7c99332ad488d12cf8772c792",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.lineWidth.html": [
-        "5802fb2b243de56a696554dbd1e6a2208573acab",
+        "2571fc6ba5448a4310ff5dd53d9991b692b27e18",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.miterLimit.html": [
-        "6ef1889648924db7d194a0b67cc9f1e247015148",
+        "fdcc2f03ba4e2e3f1c4edd769e453cbd66066cf9",
         [
          null,
          {}
@@ -646765,28 +646773,28 @@
         ]
        ],
        "2d.state.saverestore.shadowBlur.html": [
-        "671115370c649fb6e95a225e35ce57804fbc494c",
+        "28d885b97d4f755df0198b7b7bb051a68115c2b9",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.shadowColor.html": [
-        "53a643194b153edf9355f53d1ae11f6d5169d21d",
+        "03cb498c6e919585d2e596e41774604d61cc2116",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.shadowOffsetX.html": [
-        "b66f65c7398d6478698c83b7d3d6382d9c38d973",
+        "f539043e941c0c5700fb07381936bdab2f2b13aa",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.shadowOffsetY.html": [
-        "3df58e2b550b2f20e5834aa2daec8fbbc6eca853",
+        "e1d8b05dfb1013c8c7297259e8cec9136f8db1be",
         [
          null,
          {}
@@ -646807,21 +646815,21 @@
         ]
        ],
        "2d.state.saverestore.strokeStyle.html": [
-        "d978c965075e41917aac44f2a73d6565e4448a8e",
+        "8dbf1bb47d72b6cab99dc706cc2e312ff759958f",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.textAlign.html": [
-        "0e5c1060fc9067b167b90c640862f71bdde84f31",
+        "271864c88f7fe238dbc757626fecdbd87f737321",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.textBaseline.html": [
-        "a2430f7d9d905cdf406847fb2e7c615a429e80cf",
+        "a6f19e77ed1aecd756a24ecd1508fdcdb42b92fe",
         [
          null,
          {}
@@ -660942,98 +660950,98 @@
         ]
        ],
        "2d.state.saverestore.fillStyle.html": [
-        "49a8e8a6d1eeea5bc11fc30c21f40c2dc499fb83",
+        "18c54142ebc080741e7f9d94043c5ff3dfc7351e",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.fillStyle.worker.js": [
-        "6990cdc7a49cb8602dcfa389e90d246c551d5925",
+        "53b987ff2eae105155758e4121bc7cd0411e7f66",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.fillStyle.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.globalAlpha.html": [
-        "e7cf0bac07a2a32c76918a928904245bccefddbf",
+        "39b8b1df592c3297d2a1c04266c18b72ee7ada0b",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.globalAlpha.worker.js": [
-        "a896dfa663d923b89e8141b78c356c865b1493a0",
+        "7634ca52aa18b9fcdb66db8405abd0c7dd6841b9",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.globalAlpha.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.globalCompositeOperation.html": [
-        "41b92a0765bc536421fd436b079edd7a1cf067a6",
+        "03e1aa65a914dc71626ff7ed2f7e83c58cfd8fcd",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.globalCompositeOperation.worker.js": [
-        "9d11fa349f304b6ec7f939809ea80044a8ba43bb",
+        "c4ab3ea7da88ef26797bb8903365b09e974b4179",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.globalCompositeOperation.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.lineCap.html": [
-        "89fece2fd78b5da9365c5cc74f552c02c474a7f0",
+        "31e2798c77c73e0122f65f3b65276533b4873e4e",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.lineCap.worker.js": [
-        "26e043dfa662cc93ed1b05d3005fcec08f299da9",
+        "cb78a34b72d296a857c86a3a862c42fab9734134",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.lineCap.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.lineJoin.html": [
-        "81e181fea9ce9b377c29da2ca864e9b6d5699d8f",
+        "fa496f0e27720fcd392a025c842a4a71ba4bd963",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.lineJoin.worker.js": [
-        "9d3f7f67d6b39ef711eea93cdb6d0249ce3afe2d",
+        "d1a556033837c98fabc53547a26de30cef96f002",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.lineJoin.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.lineWidth.html": [
-        "6a90432030bbbeafc89ee3fa928208cd2b069512",
+        "f13c48e9c4656bb48629b0796610023534b1b20d",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.lineWidth.worker.js": [
-        "0b387701e3e40f8123b2aef6471c99c9fb1dd4f9",
+        "a717a3c9d7f9d3ab1089253f09ee9f6b2951ac3e",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.lineWidth.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.miterLimit.html": [
-        "89af35e8be20456712665180d39c32bd0dcdc07f",
+        "aea7021bc630ed6f3b179d47b65cd737441e835f",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.miterLimit.worker.js": [
-        "d6519e0d4c7d2647a9e6fdee870a7258c60d1b28",
+        "d60ff6cf7453fe53da7b225fed7682eb8a3b36c6",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.miterLimit.worker.html",
          {}
@@ -661054,56 +661062,56 @@
         ]
        ],
        "2d.state.saverestore.shadowBlur.html": [
-        "20af285f7b3187ca35e11837957bfb42db2a53a1",
+        "1e0b0d88c1fed2749bc2a52a1e88df17b61fdefc",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.shadowBlur.worker.js": [
-        "1ad95fdafbcc454ce7da6f4973001605da32d8b3",
+        "cd72c68bd8dd9140ee7c63edc4fc81778b58dd41",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.shadowBlur.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.shadowColor.html": [
-        "29387704bd92a8491a1f23df3c53220821ac1663",
+        "40ba7b5915918336687256afb7dfb41f80546db3",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.shadowColor.worker.js": [
-        "df89b4913c92af1d84f8767712346e9a51d12f1c",
+        "529a2bc9a04abf29ef8246cd72a42135e90c8ed4",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.shadowColor.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.shadowOffsetX.html": [
-        "78faef2ce249b84d9713e0eecbc3cdb9061b63b8",
+        "71f109648a27d8ce6f1448c3ad6b3ffac0d24e50",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.shadowOffsetX.worker.js": [
-        "6cd5577f6133c42b3875a4eac8aec630addf518a",
+        "f3a4031a86c963f8d6e75a06d6d4a6bc476d0389",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.shadowOffsetX.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.shadowOffsetY.html": [
-        "d4fb7767c293172b2d6b02191c1310d6ab8a6462",
+        "eaf6c53a90307842cbc92446081a2d5bbca6a183",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.shadowOffsetY.worker.js": [
-        "7280e9f14eb62fc166088e17c6e6870006a0d006",
+        "b00f76d6882b4773650c27ecb6ca30e5a9b96a8b",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.shadowOffsetY.worker.html",
          {}
@@ -661138,14 +661146,14 @@
         ]
        ],
        "2d.state.saverestore.strokeStyle.html": [
-        "385ef9596965410db467cf42a7627eb6971a2f73",
+        "58a94aac742635df3ed53022615b98fe2788240d",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.strokeStyle.worker.js": [
-        "5c75fd49d40a1009a0af8fff7b8d744152f47fab",
+        "bb10ee9dcd98a27c10d05fdf19401fff7108b9a3",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.strokeStyle.worker.html",
          {}
@@ -804504,7 +804512,7 @@
       ]
      ],
      "cos.https.any.js": [
-      "57e7d9904eff21e1e68008e37bcdc916adc6e3b3",
+      "8f65703c2e11b5cf00461449ce40e7debf07e19c",
       [
        "webnn/conformance_tests/cos.https.any.html?cpu",
        {
@@ -814923,7 +814931,7 @@
       ]
      ],
      "sin.https.any.js": [
-      "e363d74535482d5f7ce7e3c00644e2ad53e08da2",
+      "28ba7c92827b5b2e3587e627ae58db8cc90e000c",
       [
        "webnn/conformance_tests/sin.https.any.html?cpu",
        {

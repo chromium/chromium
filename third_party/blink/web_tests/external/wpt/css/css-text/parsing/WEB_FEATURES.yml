@@ -26,3 +26,6 @@ features:
 - name: word-spacing
   files:
   - word-spacing-*
+- name: tab-size
+  files:
+  - tab-size-*
