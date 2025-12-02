@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import android.util.Pair;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -60,6 +61,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.blink_public.common.BlinkFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webauthn.cred_man.CredManHelper;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.components.webauthn.cred_man.ShadowCredentialManager;
@@ -195,11 +197,13 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.overrideBrowserBridgeForTesting(mBrowserBridgeMock);
         mRequest.setCredManHelperForTesting(mCredManHelperMock);
         mRequest.setBarrierForTesting(mBarrierMock);
+        GmsCoreUtils.setGmsCoreVersionForTesting(2024000000);
     }
 
     @After
     public void tearDown() {
         WebauthnModeProvider.setInstanceForTesting(null);
+        GmsCoreUtils.setGmsCoreVersionForTesting(0);
     }
 
     @Test
@@ -335,6 +339,45 @@ public class Fido2CredentialRequestRobolectricTest {
                         any(),
                         any());
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
+    }
+
+    @Test
+    @SmallTest
+    public void testGetCredential_hybridCancel_parallelMode_failsRequest() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
+        CredManSupportProvider.setupForTesting(
+                /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
+                /* overrideForcesGpm= */ false);
+
+        handleGetCredentialRequest();
+
+        // Verify parallel execution
+        verifyGetCredentialsAndTriggerSuccess(
+                GmsCoreGetCredentialsHelper.Reason.GET_ASSERTION_NON_GOOGLE,
+                Collections.emptyList());
+
+        runFido2ApiSuccessfulCallback();
+
+        ArgumentCaptor<Runnable> hybridCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mBrowserBridgeMock)
+                .onCredentialsDetailsListReceived(
+                        eq(mFrameHost),
+                        eq(Collections.emptyList()),
+                        eq(AssertionMediationType.MODAL),
+                        any(),
+                        hybridCallbackCaptor.capture(),
+                        any());
+
+        // Trigger hybrid
+        hybridCallbackCaptor.getValue().run();
+        assertThat(mFido2ApiCallHelper.mHybridGetAssertionCalled).isTrue();
+
+        // Simulate Cancel
+        mRequest.onResult(new Pair<>(Activity.RESULT_CANCELED, null));
+
+        // Should return error
+        assertThat(mCallback.getStatus())
+                .isEqualTo(Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
     }
 
     @Test
@@ -846,6 +889,7 @@ public class Fido2CredentialRequestRobolectricTest {
         public Bundle mBrowserOptions;
         public boolean mFido2GetCredentialsCalled;
         public boolean mPasskeyCacheGetCredentialsCalled;
+        public boolean mHybridGetAssertionCalled;
 
         private boolean mArePlayServicesAvailable = true;
 
@@ -944,6 +988,24 @@ public class Fido2CredentialRequestRobolectricTest {
                 OnSuccessListener<PendingIntent> successCallback,
                 OnFailureListener failureCallback) {
             mGetAssertionCalled = true;
+            mClientDataHash = clientDataHash;
+
+            if (mCredentialsError != null) {
+                failureCallback.onFailure(mCredentialsError);
+                return;
+            }
+            // Don't make any actual calls to Play Services.
+        }
+
+        @Override
+        public void invokeFido2HybridGetAssertion(
+                AuthenticationContextProvider authenticationContextProvider,
+                PublicKeyCredentialRequestOptions options,
+                Uri uri,
+                byte @Nullable [] clientDataHash,
+                OnSuccessListener<PendingIntent> successCallback,
+                OnFailureListener failureCallback) {
+            mHybridGetAssertionCalled = true;
             mClientDataHash = clientDataHash;
 
             if (mCredentialsError != null) {

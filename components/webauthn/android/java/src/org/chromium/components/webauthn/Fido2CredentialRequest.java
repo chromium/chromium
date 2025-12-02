@@ -187,6 +187,7 @@ public class Fido2CredentialRequest
     }
 
     private void returnErrorAndResetCallback(int error) {
+        log(TAG, "returnErrorAndResetCallback: %d", error);
         recordOutcomeMetric();
         stopImmediateTimer();
         assert mErrorCallback != null;
@@ -979,7 +980,10 @@ public class Fido2CredentialRequest
             hybridCallback =
                     () ->
                             dispatchHybridGetAssertionRequest(
-                                    publicKeyOptions, callerOriginString, clientDataHash);
+                                    publicKeyOptions,
+                                    callerOriginString,
+                                    clientDataHash,
+                                    isConditionalRequest);
         }
 
         @AssertionMediationType int mediationType = AssertionMediationType.MODAL;
@@ -1218,7 +1222,8 @@ public class Fido2CredentialRequest
     private void dispatchHybridGetAssertionRequest(
             PublicKeyCredentialRequestOptions options,
             String callerOriginString,
-            byte @Nullable [] clientDataHash) {
+            byte @Nullable [] clientDataHash,
+            boolean isConditional) {
         log(TAG, "dispatchHybridGetAssertionRequest");
         assert mCancellableUiState == CancellableUiState.NONE
                 || mCancellableUiState == CancellableUiState.REQUEST_SENT_TO_PLATFORM
@@ -1230,35 +1235,20 @@ public class Fido2CredentialRequest
                     "Received a second credential selection while the first still in progress.");
             return;
         }
-        mCancellableUiState = CancellableUiState.REQUEST_SENT_TO_PLATFORM;
+        if (isConditional) {
+            mCancellableUiState = CancellableUiState.REQUEST_SENT_TO_PLATFORM;
+        } else {
+            mCancellableUiState = CancellableUiState.NONE;
+        }
 
-        Fido2ApiCallParams params =
-                WebauthnModeProvider.getInstance()
-                        .getFido2ApiCallParams(mAuthenticationContextProvider.getWebContents());
-        assertNonNull(mAuthenticationContextProvider.getContext());
-        assertNonNull(params);
-        Fido2ApiCall call = new Fido2ApiCall(mAuthenticationContextProvider.getContext(), params);
-        Parcel args = call.start();
-        String callbackDescriptor = params.mCallbackDescriptor;
-        Fido2ApiCall.PendingIntentResult result =
-                new Fido2ApiCall.PendingIntentResult(callbackDescriptor);
-        args.writeStrongBinder(result);
-        args.writeInt(1); // This indicates that the following options are present.
-        Fido2Api.appendBrowserGetAssertionOptionsToParcel(
-                options,
-                Uri.parse(callerOriginString),
-                clientDataHash,
-                /* tunnelId= */ null,
-                /* resultReceiver= */ null,
-                args);
-        Task<PendingIntent> task =
-                call.run(
-                        Fido2ApiCall.METHOD_BROWSER_HYBRID_SIGN,
-                        Fido2ApiCall.TRANSACTION_HYBRID_SIGN,
-                        args,
-                        result);
-        task.addOnSuccessListener(this::onGotPendingIntent);
-        task.addOnFailureListener(this::onBinderCallException);
+        Fido2ApiCallHelper.getInstance()
+                .invokeFido2HybridGetAssertion(
+                        mAuthenticationContextProvider,
+                        options,
+                        Uri.parse(callerOriginString),
+                        clientDataHash,
+                        this::onGotPendingIntent,
+                        this::onBinderCallException);
     }
 
     // Handles a PendingIntent from the GMSCore FIDO library.
