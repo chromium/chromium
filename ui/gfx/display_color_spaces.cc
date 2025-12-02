@@ -14,7 +14,6 @@
 
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "skia/ext/skcolorspace_primaries.h"
 
 namespace gfx {
@@ -27,16 +26,16 @@ const ContentColorUsage kAllColorUsages[] = {
     ContentColorUsage::kHDR,
 };
 
-gfx::BufferFormat DefaultBufferFormat() {
-  // ChromeOS expects the default buffer format be BGRA_8888 in several places.
+viz::SharedImageFormat DefaultFormat() {
+  // ChromeOS expects the default format be BGRA_8888 in several places.
   // https://crbug.com/1057501, https://crbug.com/1073237
   // The default format on Mac is BGRA in screen_mac.cc, so we set it here
   // too so that it matches with --ensure-forced-color-profile.
   // https://crbug.com/1478708
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-  return gfx::BufferFormat::BGRA_8888;
+  return viz::SinglePlaneFormat::kBGRA_8888;
 #else
-  return gfx::BufferFormat::RGBA_8888;
+  return viz::SinglePlaneFormat::kRGBA_8888;
 #endif
 }
 
@@ -57,7 +56,7 @@ DisplayColorSpaces::DisplayColorSpaces() {
   // TODO(crbug.com/40219387): Revert back to range-based for loops if possible
   for (size_t i = 0; i < kConfigCount; i++) {
     color_spaces_[i] = gfx::ColorSpace::CreateSRGB();
-    buffer_formats_[i] = DefaultBufferFormat();
+    formats_[i] = DefaultFormat();
   }
 }
 
@@ -79,9 +78,8 @@ DisplayColorSpaces::DisplayColorSpaces(const gfx::ColorSpace& c)
 DisplayColorSpaces::DisplayColorSpaces(const ColorSpace& c,
                                        viz::SharedImageFormat f)
     : DisplayColorSpaces(c) {
-  auto buffer_format = viz::SinglePlaneSharedImageFormatToBufferFormat(f);
   for (size_t i = 0; i < kConfigCount; i++) {
-    buffer_formats_[i] = buffer_format;
+    formats_[i] = f;
   }
 }
 
@@ -91,10 +89,8 @@ void DisplayColorSpaces::SetOutputFormats(
   for (const auto& color_usage : kAllColorUsages) {
     size_t i_no_alpha = GetIndex(color_usage, false);
     size_t i_needs_alpha = GetIndex(color_usage, true);
-    buffer_formats_[i_no_alpha] =
-        viz::SinglePlaneSharedImageFormatToBufferFormat(format_no_alpha);
-    buffer_formats_[i_needs_alpha] =
-        viz::SinglePlaneSharedImageFormatToBufferFormat(format_with_alpha);
+    formats_[i_no_alpha] = format_no_alpha;
+    formats_[i_needs_alpha] = format_with_alpha;
   }
 }
 
@@ -105,7 +101,7 @@ void DisplayColorSpaces::SetOutputColorSpaceAndFormat(
     viz::SharedImageFormat format) {
   size_t i = GetIndex(color_usage, needs_alpha);
   color_spaces_[i] = color_space;
-  buffer_formats_[i] = viz::SinglePlaneSharedImageFormatToBufferFormat(format);
+  formats_[i] = format;
 }
 
 ColorSpace DisplayColorSpaces::GetOutputColorSpace(
@@ -117,8 +113,7 @@ ColorSpace DisplayColorSpaces::GetOutputColorSpace(
 viz::SharedImageFormat DisplayColorSpaces::GetOutputFormat(
     ContentColorUsage color_usage,
     bool needs_alpha) const {
-  return viz::GetSharedImageFormat(
-      buffer_formats_[GetIndex(color_usage, needs_alpha)]);
+  return formats_[GetIndex(color_usage, needs_alpha)];
 }
 
 ColorSpace DisplayColorSpaces::GetRasterAndCompositeColorSpace(
@@ -203,15 +198,15 @@ void DisplayColorSpaces::ToStrings(
 
   // We don't want to take up 6 lines (one for each config) if we don't need to.
   // To avoid this, build up half-open intervals [i, j) which have the same
-  // color space and buffer formats, and group them together. The above "special
+  // color space and formats, and group them together. The above "special
   // configs" give groups that have a common name.
   size_t i = 0;
   size_t j = 0;
   while (i != kConfigCount) {
     // Keep growing the interval [i, j) until entry j is different, or past the
     // end.
-    if (color_spaces_[i] == color_spaces_[j] &&
-        buffer_formats_[i] == buffer_formats_[j] && j != kConfigCount) {
+    if (color_spaces_[i] == color_spaces_[j] && formats_[i] == formats_[j] &&
+        j != kConfigCount) {
       j += 1;
       continue;
     }
@@ -236,7 +231,7 @@ void DisplayColorSpaces::ToStrings(
 
     // Add an entry, and continue with the interval [j, j).
     out_names->push_back(name);
-    out_formats->push_back(viz::GetSharedImageFormat(buffer_formats_[i]));
+    out_formats->push_back(formats_[i]);
     out_color_spaces->push_back(color_spaces_[i]);
     i = j;
   };
@@ -267,8 +262,9 @@ bool DisplayColorSpaces::operator==(const DisplayColorSpaces& other) const {
   for (size_t i = 0; i < kConfigCount; ++i) {
     if (color_spaces_[i] != other.color_spaces_[i])
       return false;
-    if (buffer_formats_[i] != other.buffer_formats_[i])
+    if (formats_[i] != other.formats_[i]) {
       return false;
+    }
   }
   if (primaries_ != other.primaries_)
     return false;

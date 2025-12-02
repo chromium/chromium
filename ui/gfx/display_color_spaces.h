@@ -56,9 +56,9 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   DisplayColorSpaces& operator=(const DisplayColorSpaces& display_color_space);
 
   // Initialize as |color_space| for all settings. If |color_space| is the
-  // default (invalid) color space, then initialize to sRGB. The BufferFormat
-  // will be set to a default value (BGRA_8888 or RGBA_8888) depending on
-  // build configuration.
+  // default (invalid) color space, then initialize to sRGB. The format will be
+  // set to a default value (BGRA_8888 or RGBA_8888) depending on build
+  // configuration.
   explicit DisplayColorSpaces(const ColorSpace& color_space);
 
   // Initialize as |color_space| and |format| (which must be single-plane) for
@@ -153,7 +153,7 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
                                    gfx::DisplayColorSpaces>;
 
   gfx::ColorSpace color_spaces_[kConfigCount];
-  gfx::BufferFormat buffer_formats_[kConfigCount];
+  viz::SharedImageFormat formats_[kConfigCount];
   SkColorSpacePrimaries primaries_ = SkNamedPrimariesExt::kSRGB;
   float sdr_max_luminance_nits_ = ColorSpace::kDefaultSDRWhiteLevel;
   float hdr_max_luminance_relative_ = 1.f;
