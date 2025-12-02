@@ -258,7 +258,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
@@ -617,9 +616,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     private CookiesFetcher mIncognitoCookiesFetcher;
 
-    // Manager for tab group visual data lifecycle updates.
-    private @Nullable TabGroupVisualDataManager mTabGroupVisualDataManager;
-
     private SuggestionEventObserver mSuggestionEventObserver;
     private GroupSuggestionsPromotionCoordinator mGroupSuggestionsPromotionCoordinator;
     private @Nullable ArchivedTabsAutoDeletePromoManager mArchivedTabsAutoDeletePromoManager;
@@ -798,18 +794,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             // Initialize TabModel.
             mTabModelOrchestrator.onNativeLibraryReady(getTabContentManager());
-
-            // With tab collections this is managed internally to {@link TabCollectionTabModelImpl}.
-            if (!ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
-                TabModelUtils.runOnTabStateInitialized(
-                        mTabModelSelector,
-                        mCallbackController.makeCancelable(
-                                (tabModelSelector) -> {
-                                    assert tabModelSelector != null;
-                                    mTabGroupVisualDataManager =
-                                            new TabGroupVisualDataManager(tabModelSelector);
-                                }));
-            }
 
             mTabModelNotificationDotManager.initWithNative(mTabModelSelector);
             TabModel currentTabModel = mTabModelSelector.getCurrentModel();
@@ -4475,11 +4459,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (mCleanUpHubOverviewColorObserver != null) {
             mCleanUpHubOverviewColorObserver.run();
             mCleanUpHubOverviewColorObserver = null;
-        }
-
-        if (mTabGroupVisualDataManager != null) {
-            mTabGroupVisualDataManager.destroy();
-            mTabGroupVisualDataManager = null;
         }
 
         if (mDseNewTabUrlManager != null) {
