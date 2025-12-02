@@ -117,7 +117,9 @@ void ExtractVersionNumbers(const std::string& version,
 bool MicroarchitectureHasCyclesPPPEvent(const std::string& uarch) {
   return uarch == "Goldmont" || uarch == "GoldmontPlus" || uarch == "Tremont" ||
          uarch == "Broadwell" || uarch == "Kabylake" || uarch == "Tigerlake" ||
-         uarch == "AlderLake" || uarch == "RaptorLake" || uarch == "Gracemont";
+         uarch == "AlderLake" || uarch == "RaptorLake" ||
+         uarch == "Gracemont" || uarch == "CannonLake" ||
+         uarch == "CometLake" || uarch == "RocketLake";
 }
 
 // Returns if a kernel release properly flushes PEBS on a context switch. The
@@ -285,7 +287,7 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
   }
   if (cpu_uarch == "Skylake" || cpu_uarch == "Kabylake" ||
       cpu_uarch == "Tigerlake" || cpu_uarch == "IceLake" ||
-      cpu_uarch == "CometLake") {
+      cpu_uarch == "CometLake" || cpu_uarch == "CannonLake") {
     dap_dtlb_miss_cmd = kPerfDTLBMissesDAPSkylake;
   } else if (cpu_uarch == "Goldmont" || cpu_uarch == "GoldmontPlus") {
     dap_dtlb_miss_cmd = kPerfDTLBMissesDAPGoldmont;
@@ -338,7 +340,8 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
       cpu_uarch == "Airmont" || cpu_uarch == "Goldmont" ||
       cpu_uarch == "GoldmontPlus" || cpu_uarch == "Tremont" ||
       cpu_uarch == "AlderLake" || cpu_uarch == "RaptorLake" ||
-      cpu_uarch == "Gracemont") {
+      cpu_uarch == "Gracemont" || cpu_uarch == "CannonLake" ||
+      cpu_uarch == "CometLake" || cpu_uarch == "RocketLake") {
     cmds.emplace_back(15.0, lbr_cmd);
     cmds.emplace_back(5.0, itlb_miss_cycles_cmd);
     cmds.emplace_back(5.0, dtlb_miss_cycles_cmd);
