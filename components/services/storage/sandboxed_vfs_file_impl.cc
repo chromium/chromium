@@ -4,10 +4,14 @@
 
 #include "components/services/storage/sandboxed_vfs_file_impl.h"
 
+#include <algorithm>
 #include <cstring>
+#include <optional>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "sql/sandboxed_vfs.h"
 
 namespace storage {
@@ -49,19 +53,19 @@ int SandboxedVfsFileImpl::Read(void* buffer, int size, sqlite3_int64 offset) {
       << "Read from database file with lock mode " << sqlite_lock_mode_
       << "of size" << size << " at offset " << offset;
 
-  char* data = reinterpret_cast<char*>(buffer);
+  const base::span<uint8_t> data = UNSAFE_TODO(base::span(
+      reinterpret_cast<uint8_t*>(buffer), base::checked_cast<size_t>(size)));
 
   // If we supported mmap()ed files, we'd check for a memory mapping here,
   // and try to fill as much of the request as possible from the mmap()ed
   // region.
 
-  int bytes_read = UNSAFE_TODO(file_.Read(offset, data, size));
-  DCHECK_LE(bytes_read, size);
+  const std::optional<size_t> bytes_read = file_.Read(offset, data);
   if (bytes_read == size) {
     return SQLITE_OK;
   }
 
-  if (bytes_read < 0) {
+  if (!bytes_read) {
     // SQLite first reads the database header without locking the file. On
     // Windows, this read will fail if there is an exclusive lock on the file,
     // even if the current process owns that lock.
@@ -69,7 +73,7 @@ int SandboxedVfsFileImpl::Read(void* buffer, int size, sqlite3_int64 offset) {
       // The unlocked read is considered an optimization. SQLite can continue
       // even if the read fails, as long as failure is communicated by zeroing
       // out the output buffer.
-      UNSAFE_TODO(std::memset(data, 0, size));
+      std::ranges::fill(data, 0);
       return SQLITE_OK;
     }
 
@@ -78,7 +82,7 @@ int SandboxedVfsFileImpl::Read(void* buffer, int size, sqlite3_int64 offset) {
   }
 
   // SQLite requires that we fill the unread bytes in the buffer with zeros.
-  UNSAFE_TODO(std::memset(data + bytes_read, 0, size - bytes_read));
+  std::ranges::fill(data.subspan(*bytes_read), 0);
   return SQLITE_IOERR_SHORT_READ;
 }
 
@@ -95,15 +99,15 @@ int SandboxedVfsFileImpl::Write(const void* buffer,
          file_type_ != sql::SandboxedVfsFileType::kDatabase)
       << "Write to database file with lock mode " << sqlite_lock_mode_;
 
-  const char* data = reinterpret_cast<const char*>(buffer);
+  base::span<const uint8_t> data =
+      UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(buffer),
+                             base::checked_cast<size_t>(size)));
 
   // If we supported mmap()ed files, we'd check for a memory mapping here,
   // and try to fill as much of the request as possible by copying to the
   // mmap()ed region.
 
-  int bytes_written = UNSAFE_TODO(file_.Write(offset, data, size));
-  DCHECK_LE(bytes_written, size);
-  if (bytes_written >= size) {
+  if (file_.Write(offset, data) >= size) {
     return SQLITE_OK;
   }
 
