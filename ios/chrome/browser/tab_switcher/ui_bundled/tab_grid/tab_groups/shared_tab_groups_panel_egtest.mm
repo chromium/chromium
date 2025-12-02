@@ -156,9 +156,8 @@ void AddSharedGroup(BOOL owner,
       performAction:grey_tap()];
 
   // Check that the group with `kGroupTitle` exists.
-  [[EarlGrey selectElementWithMatcher:TabGroupsPanelCellWithName(
-                                          kGroupTitle, 1, /*shared=*/true)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForMatcher:TabGroupsPanelCellWithName(kGroupTitle, 1,
+                                                            /*shared=*/true)];
 
   // Long press the group.
   [[EarlGrey selectElementWithMatcher:TabGroupsPanelCellWithName(
