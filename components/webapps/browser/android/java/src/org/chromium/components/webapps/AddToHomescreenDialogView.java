@@ -254,6 +254,9 @@ public class AddToHomescreenDialogView
                 mAppOriginView.setVisibility(View.VISIBLE);
                 mAppOriginView.setVisibility(View.VISIBLE);
                 break;
+            case AppType.TWA:
+                // This dialog should not be created for auto-minted TWAs.
+                assert false;
         }
 
         if (mAppType == AppType.SHORTCUT) {
@@ -358,6 +361,7 @@ public class AddToHomescreenDialogView
             case AppType.NATIVE:
                 return mAppNameView;
             default:
+                // This dialog should not be created for auto-minted TWAs.
                 assert false;
                 return assumeNonNull(null);
         }

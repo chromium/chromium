@@ -99,7 +99,7 @@ bool AddToHomescreenCoordinator::ShowForAppBanner(
   // Don't start if app info is not available.
   if ((params->app_type == AddToHomescreenParams::AppType::NATIVE &&
        params->native_app_data.is_null()) ||
-      (params->app_type == AddToHomescreenParams::AppType::WEBAPK &&
+      (params->app_type != AddToHomescreenParams::AppType::NATIVE &&
        !params->shortcut_info)) {
     return false;
   }

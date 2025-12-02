@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 
@@ -37,6 +38,10 @@ void AddToHomescreenInstaller::Install(
     case AddToHomescreenParams::AppType::SHORTCUT:
       WebappsClient::Get()->InstallShortcut(web_contents, params);
       break;
+    case AddToHomescreenParams::AppType::TWA:
+      // Auto-minted TWAs will be handled separately, as the install UX is shown
+      // by the WebApp service on the Android side.
+      NOTREACHED();
   }
   event_callback.Run(AddToHomescreenEvent::INSTALL_REQUEST_FINISHED, params);
 }

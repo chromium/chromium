@@ -203,7 +203,7 @@ AppBannerManagerAndroid::CreateAddToHomescreenParams(
     CHECK(config.mode == AppBannerMode::kWebApp);
     const WebAppBannerData& web_app_data = config.web_app_data;
     return std::make_unique<AddToHomescreenParams>(
-        AddToHomescreenParams::AppType::WEBAPK,
+        AddToHomescreenParams::GetWebAppInstallType(/* has_manifest= */ true),
         ShortcutInfo::CreateShortcutInfo(
             config.validated_url, web_app_data.manifest_url,
             web_app_data.manifest(), web_app_data.web_page_metadata(),
@@ -480,6 +480,7 @@ void AppBannerManagerAndroid::OnInstallEvent(
           TrackUserResponse(USER_RESPONSE_NATIVE_APP_ACCEPTED);
           break;
         case AddToHomescreenParams::AppType::WEBAPK:
+        case AddToHomescreenParams::AppType::TWA:
           TrackUserResponse(USER_RESPONSE_WEB_APP_ACCEPTED);
           AppBannerSettingsHelper::RecordBannerInstallEvent(
               web_contents(), a2hs_params.shortcut_info->url.spec());
@@ -487,9 +488,9 @@ void AppBannerManagerAndroid::OnInstallEvent(
         default:
           // a2hs_params should be the one created by
           // CreateAddToHomescreenParams(), which only returns
-          // AddToHomescreenParams::AppType::NATIVE or
-          // AddToHomescreenParams::AppType::WEBAPK, so this shouldn't be
-          // reached.
+          // AddToHomescreenParams::AppType::NATIVE,
+          // AddToHomescreenParams::AppType::WEBAPK, or
+          // AddToHomescreenParams::AppType::TWA, so this shouldn't be reached.
           NOTREACHED();
       }
       break;
@@ -510,7 +511,7 @@ void AppBannerManagerAndroid::OnInstallEvent(
 
     case AddToHomescreenEvent::INSTALL_REQUEST_FINISHED:
       SendBannerAccepted();
-      if (a2hs_params.app_type == AddToHomescreenParams::AppType::WEBAPK) {
+      if (a2hs_params.app_type != AddToHomescreenParams::AppType::NATIVE) {
         OnInstall(a2hs_params.shortcut_info->display,
                   /*set_current_web_app_not_installable=*/false);
       }
