@@ -38,8 +38,12 @@ CHROME_OPTIONS = [
     "--enable-logging=stderr",
     # Sets the default verbose logging level to 1.
     "--v=1",
+    # Disables the sandbox, often necessary in automated test environments.
     "--no-sandbox",
+    # Disables the GPU sandbox, used to prevent issues with GPU crashes.
     "--disable-gpu-sandbox",
+    # Launches Chrome in fullscreen mode to prevent scrollbar clipping.
+    "--start-fullscreen",
 ]
 
 def connect_to_remote_driver(chrome_options, binary_location):

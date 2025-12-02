@@ -49,7 +49,9 @@ CHROME_OPTIONS = [
     # Skips the first-run experience modal.
     "--no-first-run",
     # Prevents the "Set as default browser" prompt from appearing.
-    "--no-default-browser-check"
+    "--no-default-browser-check",
+    # Launches Chrome in fullscreen mode to prevent scrollbar clipping.
+    "--start-fullscreen",
 ]
 
 
