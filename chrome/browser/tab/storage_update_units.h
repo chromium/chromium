@@ -17,6 +17,13 @@
 
 namespace tabs {
 
+enum class UnitType {
+  kSaveNode = 0,
+  kSavePayload = 1,
+  kSaveChildren = 2,
+  kRemoveNode = 3,
+};
+
 // StorageUpdateUnit to save a node.
 class SaveNodeUpdateUnit : public StorageUpdateUnit {
  public:
@@ -30,9 +37,9 @@ class SaveNodeUpdateUnit : public StorageUpdateUnit {
   // StorageUpdateUnit
   bool Execute(TabStateStorageDatabase* db,
                TabStateStorageDatabase::OpenTransaction* transaction) override;
+  UnitType type() const override;
 
  private:
-  const StorageId id_;
   std::string window_tag_;
   const bool is_off_the_record_;
   const TabStorageType type_;
@@ -48,9 +55,9 @@ class SavePayloadUpdateUnit : public StorageUpdateUnit {
   // StorageUpdateUnit
   bool Execute(TabStateStorageDatabase* db,
                TabStateStorageDatabase::OpenTransaction* transaction) override;
+  UnitType type() const override;
 
  private:
-  const StorageId id_;
   std::unique_ptr<Payload> payload_;
 };
 
@@ -63,9 +70,9 @@ class SaveChildrenUpdateUnit : public StorageUpdateUnit {
   // StorageUpdateUnit
   bool Execute(TabStateStorageDatabase* db,
                TabStateStorageDatabase::OpenTransaction* transaction) override;
+  UnitType type() const override;
 
  private:
-  const StorageId id_;
   std::unique_ptr<Payload> children_;
 };
 
@@ -78,9 +85,7 @@ class RemoveNodeUpdateUnit : public StorageUpdateUnit {
   // StorageUpdateUnit
   bool Execute(TabStateStorageDatabase* db,
                TabStateStorageDatabase::OpenTransaction* transaction) override;
-
- private:
-  const StorageId id_;
+  UnitType type() const override;
 };
 
 }  // namespace tabs

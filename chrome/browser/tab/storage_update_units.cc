@@ -24,13 +24,17 @@ SaveNodeUpdateUnit::SaveNodeUpdateUnit(StorageId id,
                                        bool is_off_the_record,
                                        TabStorageType type,
                                        std::unique_ptr<StoragePackage> package)
-    : id_(id),
+    : StorageUpdateUnit(id),
       window_tag_(std::move(window_tag)),
       is_off_the_record_(is_off_the_record),
       type_(type),
       package_(std::move(package)) {}
 
 SaveNodeUpdateUnit::~SaveNodeUpdateUnit() = default;
+
+UnitType SaveNodeUpdateUnit::type() const {
+  return UnitType::kSaveNode;
+}
 
 bool SaveNodeUpdateUnit::Execute(TabStateStorageDatabase* db,
                                  OpenTransaction* transaction) {
@@ -47,9 +51,13 @@ bool SaveNodeUpdateUnit::Execute(TabStateStorageDatabase* db,
 
 SavePayloadUpdateUnit::SavePayloadUpdateUnit(StorageId id,
                                              std::unique_ptr<Payload> payload)
-    : id_(id), payload_(std::move(payload)) {}
+    : StorageUpdateUnit(id), payload_(std::move(payload)) {}
 
 SavePayloadUpdateUnit::~SavePayloadUpdateUnit() = default;
+
+UnitType SavePayloadUpdateUnit::type() const {
+  return UnitType::kSavePayload;
+}
 
 bool SavePayloadUpdateUnit::Execute(TabStateStorageDatabase* db,
                                     OpenTransaction* transaction) {
@@ -64,9 +72,13 @@ bool SavePayloadUpdateUnit::Execute(TabStateStorageDatabase* db,
 SaveChildrenUpdateUnit::SaveChildrenUpdateUnit(
     StorageId id,
     std::unique_ptr<Payload> children)
-    : id_(id), children_(std::move(children)) {}
+    : StorageUpdateUnit(id), children_(std::move(children)) {}
 
 SaveChildrenUpdateUnit::~SaveChildrenUpdateUnit() = default;
+
+UnitType SaveChildrenUpdateUnit::type() const {
+  return UnitType::kSaveChildren;
+}
 
 bool SaveChildrenUpdateUnit::Execute(TabStateStorageDatabase* db,
                                      OpenTransaction* transaction) {
@@ -78,9 +90,14 @@ bool SaveChildrenUpdateUnit::Execute(TabStateStorageDatabase* db,
   return success;
 }
 
-RemoveNodeUpdateUnit::RemoveNodeUpdateUnit(StorageId id) : id_(id) {}
+RemoveNodeUpdateUnit::RemoveNodeUpdateUnit(StorageId id)
+    : StorageUpdateUnit(id) {}
 
 RemoveNodeUpdateUnit::~RemoveNodeUpdateUnit() = default;
+
+UnitType RemoveNodeUpdateUnit::type() const {
+  return UnitType::kRemoveNode;
+}
 
 bool RemoveNodeUpdateUnit::Execute(TabStateStorageDatabase* db,
                                    OpenTransaction* transaction) {
