@@ -70,18 +70,6 @@ class MerchantPromoCodeManager : public KeyedService {
       MerchantPromoCodeManagerTest,
       DoesNotShowPromoCodeOffersIfPaymentsDataManagerDoesNotExist);
 
-  // Generates suggestions from the `promo_code_offers` and return them via
-  // `on_suggestions_returned`. If suggestions were sent, this function also
-  // logs metrics for promo code suggestions shown. Data is filtered based on
-  // the `field`'s value`. For metrics, this ensures we log the correct
-  // histogram, as we have separate histograms for unique shows and repetitive
-  // shows.
-  void SendPromoCodeSuggestions(
-      std::vector<const AutofillOfferData*> promo_code_offers,
-      const FormFieldData& field,
-      SingleFieldFillRouter::OnSuggestionsReturnedCallback
-          on_suggestions_returned);
-
   raw_ptr<PaymentsDataManager> payments_data_manager_;
   bool is_off_the_record_;
 };

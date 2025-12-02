@@ -169,11 +169,6 @@ Suggestion CreateManageCreditCardsSuggestion(bool with_gpay_logo);
 Suggestion CreateSaveAndFillSuggestion(const AutofillClient& client,
                                        bool& display_gpay_logo);
 
-// Converts the vector of promo code offers that is passed in to a vector of
-// suggestions that can be displayed to the user for a promo code field.
-std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
-    const std::vector<const AutofillOfferData*>& promo_code_offers);
-
 // Returns true if the suggestion created from the card can be accepted by the
 // user. Returns false when merchant does not accept the given card for example
 // when merchants opt-out of VCNs.
