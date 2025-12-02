@@ -55,6 +55,7 @@ class UpdaterAppStateImpl : public IDispatchImpl<IUpdaterAppState> {
   UpdaterAppStateImpl& operator=(const UpdaterAppStateImpl&) = delete;
 
   HRESULT RuntimeClassInitialize(const UpdateService::AppState& app_state) {
+    VLOG(2) << __func__;
     app_id_ = base::UTF8ToWide(app_state.app_id);
     version_ = base::UTF8ToWide(app_state.version);
     ap_ = base::UTF8ToWide(app_state.ap);
@@ -228,11 +229,13 @@ UpdaterImpl::UpdaterImpl()
           {IID_MAP_ENTRY_SYSTEM(IUpdater), IID_MAP_ENTRY_SYSTEM(IUpdater2)}) {}
 
 HRESULT UpdaterImpl::RuntimeClassInitialize() {
+  VLOG(2) << __func__;
   LogComCaller(__FUNCTION__);
   return S_OK;
 }
 
 HRESULT UpdaterImpl::GetVersion(BSTR* version) {
+  VLOG(2) << __func__;
   if (!version) {
     return E_INVALIDARG;
   }
@@ -246,6 +249,7 @@ HRESULT UpdaterImpl::GetVersion(BSTR* version) {
 }
 
 HRESULT UpdaterImpl::FetchPolicies(IUpdaterCallback* callback) {
+  VLOG(2) << __func__;
   if (!callback) {
     return E_INVALIDARG;
   }
@@ -283,6 +287,7 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
                                  const wchar_t* version,
                                  const wchar_t* existence_checker_path,
                                  IUpdaterCallback* callback) {
+  VLOG(2) << __func__;
   return RegisterApp2(app_id, brand_code, brand_path, ap, version,
                       existence_checker_path, nullptr, callback);
 }
@@ -295,6 +300,7 @@ HRESULT UpdaterImpl::RegisterApp2(const wchar_t* app_id,
                                   const wchar_t* existence_checker_path,
                                   const wchar_t* install_id,
                                   IUpdaterCallback* callback) {
+  VLOG(2) << __func__;
   if (FAILED(IsCOMCallerAllowed())) {
     return E_ACCESSDENIED;
   }
@@ -340,6 +346,7 @@ HRESULT UpdaterImpl::RegisterApp2(const wchar_t* app_id,
 // `update_service` on the main sequence. The callbacks received from
 // `update_service` arrive in the main sequence too.
 HRESULT UpdaterImpl::RunPeriodicTasks(IUpdaterCallback* callback) {
+  VLOG(2) << __func__;
   if (!callback) {
     return E_INVALIDARG;
   }
@@ -415,6 +422,7 @@ HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id,
                                     LONG priority,
                                     BOOL same_version_update_allowed,
                                     IUpdaterObserver* observer) {
+  VLOG(2) << __func__;
   return CheckForUpdate2(app_id, priority, same_version_update_allowed,
                          /*language=*/L"", observer);
 }
@@ -424,6 +432,7 @@ HRESULT UpdaterImpl::CheckForUpdate2(const wchar_t* app_id,
                                      BOOL same_version_update_allowed,
                                      const wchar_t* language,
                                      IUpdaterObserver* observer) {
+  VLOG(2) << __func__;
   if (!observer) {
     return E_INVALIDARG;
   }
@@ -491,6 +500,7 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
                             LONG priority,
                             BOOL same_version_update_allowed,
                             IUpdaterObserver* observer) {
+  VLOG(2) << __func__;
   return Update2(app_id, install_data_index, priority,
                  same_version_update_allowed, /*language=*/L"", observer);
 }
@@ -507,6 +517,7 @@ HRESULT UpdaterImpl::Update2(const wchar_t* app_id,
                              BOOL same_version_update_allowed,
                              const wchar_t* language,
                              IUpdaterObserver* observer) {
+  VLOG(2) << __func__;
   if (!observer) {
     return E_INVALIDARG;
   }
@@ -578,6 +589,7 @@ HRESULT UpdaterImpl::Update2(const wchar_t* app_id,
 
 // See the comment for the UpdaterImpl::Update.
 HRESULT UpdaterImpl::UpdateAll(IUpdaterObserver* observer) {
+  VLOG(2) << __func__;
   if (!observer) {
     return E_INVALIDARG;
   }
@@ -624,6 +636,7 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
                              const wchar_t* install_data_index,
                              LONG priority,
                              IUpdaterObserver* observer) {
+  VLOG(2) << __func__;
   return Install2(app_id, brand_code, brand_path, ap, version,
                   existence_checker_path, client_install_data,
                   install_data_index, /*install_id=*/L"", priority,
@@ -642,6 +655,7 @@ HRESULT UpdaterImpl::Install2(const wchar_t* app_id,
                               LONG priority,
                               const wchar_t* language,
                               IUpdaterObserver* observer) {
+  VLOG(2) << __func__;
   if (FAILED(IsCOMCallerAllowed())) {
     return E_ACCESSDENIED;
   }
@@ -721,6 +735,7 @@ HRESULT UpdaterImpl::Install2(const wchar_t* app_id,
 }
 
 HRESULT UpdaterImpl::CancelInstalls(const wchar_t* app_id) {
+  VLOG(2) << __func__;
   const std::optional<std::string> app_id_validated = ValidateAppId(app_id);
   if (!app_id_validated) {
     return E_INVALIDARG;
@@ -744,6 +759,7 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
                                   const wchar_t* install_data,
                                   const wchar_t* install_settings,
                                   IUpdaterObserver* observer) {
+  VLOG(2) << __func__;
   return RunInstaller2(app_id, installer_path, install_args, install_data,
                        install_settings, /*language=*/L"", observer);
 }
@@ -755,11 +771,10 @@ HRESULT UpdaterImpl::RunInstaller2(const wchar_t* app_id,
                                    const wchar_t* install_settings,
                                    const wchar_t* language,
                                    IUpdaterObserver* observer) {
+  VLOG(2) << __func__;
   if (FAILED(IsCOMCallerAllowed())) {
     return E_ACCESSDENIED;
   }
-
-  VLOG(1) << __func__;
 
   if (!observer) {
     return E_INVALIDARG;
@@ -842,6 +857,7 @@ HRESULT UpdaterImpl::RunInstaller2(const wchar_t* app_id,
 }
 
 HRESULT UpdaterImpl::GetAppStates(IUpdaterAppStatesCallback* callback) {
+  VLOG(2) << __func__;
   if (!callback) {
     return E_INVALIDARG;
   }
@@ -886,12 +902,14 @@ HRESULT UpdaterImpl::GetAppStates(IUpdaterAppStatesCallback* callback) {
 }
 
 HRESULT UpdaterInternalImpl::RuntimeClassInitialize() {
+  VLOG(2) << __func__;
   LogComCaller(__FUNCTION__);
   return S_OK;
 }
 
 // See the comment for the UpdaterImpl::Update.
 HRESULT UpdaterInternalImpl::Run(IUpdaterInternalCallback* callback) {
+  VLOG(2) << __func__;
   if (!callback) {
     return E_INVALIDARG;
   }
@@ -923,6 +941,7 @@ HRESULT UpdaterInternalImpl::Run(IUpdaterInternalCallback* callback) {
 }
 
 HRESULT UpdaterInternalImpl::Hello(IUpdaterInternalCallback* callback) {
+  VLOG(2) << __func__;
   if (!callback) {
     return E_INVALIDARG;
   }

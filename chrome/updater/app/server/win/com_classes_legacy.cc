@@ -121,6 +121,7 @@ class AppVersionWebImpl : public IDispatchImpl<IAppVersionWeb> {
   AppVersionWebImpl& operator=(const AppVersionWebImpl&) = delete;
 
   HRESULT RuntimeClassInitialize(const std::wstring& version) {
+    VLOG(2) << __func__;
     version_ = version;
 
     return S_OK;
@@ -179,6 +180,7 @@ class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
       const std::wstring& post_install_launch_command_line,
       const std::wstring& post_install_url,
       LONG post_install_action) {
+    VLOG(2) << __func__;
     state_value_ = state_value;
     available_version_ = available_version;
     bytes_downloaded_ = bytes_downloaded;
@@ -403,6 +405,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
       const std::wstring& ap,
       const std::wstring& language,
       UpdateService::PolicySameVersionUpdate policy_same_version_update) {
+    VLOG(2) << __func__;
     if (is_install && FAILED(IsCOMCallerAllowed())) {
       VLOG(1) << __func__ << ": admin rights required for installs";
       return E_ACCESSDENIED;
@@ -556,6 +559,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   // For backward-compatibility purposes, the `CheckForUpdate` call assumes
   // foreground priority and disallows same version updates.
   HRESULT CheckForUpdate() {
+    VLOG(2) << __func__;
     current_operation_ = CurrentOperation::kCheckingForUpdates;
     return DoOperation(
         base::BindOnce(&AppWebImpl::CheckForUpdateImpl, AppWebImplPtr(this)));
@@ -566,6 +570,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           state_change_callback,
       base::OnceCallback<void(UpdateService::Result)> complete_callback,
       scoped_refptr<UpdateService> update_service) {
+    VLOG(2) << __func__;
     CHECK(update_service);
 
     update_service->CheckForUpdate(
@@ -575,6 +580,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   HRESULT UpdateOrInstall() {
+    VLOG(2) << __func__;
     current_operation_ = CurrentOperation::kUpdatingOrInstalling;
     return DoOperation(base::BindOnce(
         is_install_ ? &AppWebImpl::InstallImpl : &AppWebImpl::UpdateImpl,
@@ -698,6 +704,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   IFACEMETHODIMP cancel() override {
+    VLOG(2) << __func__;
     AppServerWin::PostRpcTask(base::BindOnce(
         [](const std::string& app_id) {
           scoped_refptr<UpdateService> update_service =
@@ -958,6 +965,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
                            BSTR brand_code,
                            BSTR language,
                            BSTR ap) override {
+    VLOG(2) << __func__;
     if (!ValidateAppId(app_id) || !ValidateBrandCode(brand_code) ||
         !ValidateLanguage(language) || !ValidateAP(ap)) {
       return E_INVALIDARG;
@@ -975,6 +983,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   }
 
   IFACEMETHODIMP createInstalledApp(BSTR app_id) override {
+    VLOG(2) << __func__;
     if (!ValidateAppId(app_id)) {
       return E_INVALIDARG;
     }
@@ -1026,6 +1035,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   IFACEMETHODIMP initialize() override { return S_OK; }
 
   IFACEMETHODIMP checkForUpdate() override {
+    VLOG(2) << __func__;
     base::AutoLock lock{lock_};
     if (!app_web_) {
       return E_UNEXPECTED;
@@ -1046,6 +1056,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   }
 
   IFACEMETHODIMP install() override {
+    VLOG(2) << __func__;
     base::AutoLock lock{lock_};
 
     if (!app_web_) {
@@ -1066,6 +1077,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   }
 
   IFACEMETHODIMP cancel() override {
+    VLOG(2) << __func__;
     base::AutoLock lock{lock_};
     return app_web_ ? app_web_->cancel() : E_UNEXPECTED;
   }
@@ -1098,6 +1110,7 @@ LegacyOnDemandImpl::~LegacyOnDemandImpl() = default;
 
 STDMETHODIMP LegacyOnDemandImpl::createAppBundleWeb(
     IDispatch** app_bundle_web) {
+  VLOG(2) << __func__;
   if (!app_bundle_web) {
     return E_INVALIDARG;
   }
@@ -1124,6 +1137,7 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
     const WCHAR* command_id,
     DWORD caller_proc_id,
     ULONG_PTR* proc_handle) {
+  VLOG(2) << __func__;
   if (!ValidateAppId(app_id) || !ValidateCommandId(command_id) ||
       !proc_handle) {
     return E_INVALIDARG;
@@ -1191,6 +1205,7 @@ HRESULT LegacyAppCommandWebImpl::RuntimeClassInitialize(
     const std::wstring& app_id,
     const std::wstring& command_id,
     PingSender ping_sender) {
+  VLOG(2) << __func__;
   app_command_runner_ =
       AppCommandRunner::LoadAppCommand(scope, app_id, command_id);
   scope_ = scope;
@@ -1336,6 +1351,7 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
                                        const std::string& command_id,
                                        ErrorParams error_params,
                                        update_client::Callback callback) {
+  VLOG(2) << __func__;
   if (!AnyAppEnablesUsageStats(scope)) {
     AppServerWin::PostRpcTask(
         base::BindOnce(std::move(callback), update_client::Error::NONE));
@@ -1392,6 +1408,7 @@ PolicyStatusImpl::PolicyStatusImpl()
 PolicyStatusImpl::~PolicyStatusImpl() = default;
 
 HRESULT PolicyStatusImpl::RuntimeClassInitialize() {
+  VLOG(2) << __func__;
   LogComCaller(__FUNCTION__);
   return S_OK;
 }
@@ -1662,6 +1679,7 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
 }
 
 STDMETHODIMP PolicyStatusImpl::refreshPolicies() {
+  VLOG(2) << __func__;
   // Capture `this` object throughout the policy fetch to have an outstanding
   // self reference of the COM object, otherwise the server could shutdown if
   // the caller releases its interface pointer when this function returns.
@@ -1927,6 +1945,7 @@ HRESULT PolicyStatusValueImpl::RuntimeClassInitialize(
     bool has_conflict,
     const std::string& conflict_source,
     const std::string& conflict_value) {
+  VLOG(2) << __func__;
   source_ = base::UTF8ToWide(source);
   value_ = base::UTF8ToWide(value);
   has_conflict_ = has_conflict ? VARIANT_TRUE : VARIANT_FALSE;
