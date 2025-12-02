@@ -1344,6 +1344,11 @@ def main():
             'CMAKE_SYSROOT=%s' % sysroot_arm64,
             # Can't run tests on x86 host.
             'LLVM_INCLUDE_TESTS=OFF',
+
+            # Make sure libraries are compiled with PAC/BTI enabled
+            'CMAKE_C_FLAGS=-mbranch-protection=standard',
+            'CMAKE_CXX_FLAGS=-mbranch-protection=standard',
+            'CMAKE_ASM_FLAGS=-mbranch-protection=standard',
         ],
         "profile":
         True,
