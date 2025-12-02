@@ -137,21 +137,6 @@ using base::UserMetricsAction;
   [_handler hidePromo];
 }
 
-- (void)confirmationAlertDismissAction {
-  if (!_firstInteractionRecorded) {
-    _firstInteractionRecorded = YES;
-    RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
-    // TODO(crbug.com/443766830): Instead of kSwipeDown, use a dedicated value
-    // for the close button.
-    base::UmaHistogramEnumeration(
-        "IOS.DefaultBrowserVideoPromo.Fullscreen",
-        IOSDefaultBrowserVideoPromoAction::kSwipeDown);
-    RecordAction(
-        UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
-  }
-  [self hidePromoAndRecordDismissal];
-}
-
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
@@ -179,26 +164,52 @@ using base::UserMetricsAction;
 
 #pragma mark - Private
 
+// Dismisses the promo.
+- (void)dismissPromo {
+  if (!_firstInteractionRecorded) {
+    _firstInteractionRecorded = YES;
+    RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
+    // TODO(crbug.com/443766830): Instead of kSwipeDown, use a dedicated value
+    // for the close button.
+    base::UmaHistogramEnumeration(
+        "IOS.DefaultBrowserVideoPromo.Fullscreen",
+        IOSDefaultBrowserVideoPromoAction::kSwipeDown);
+    RecordAction(
+        UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
+  }
+  [self hidePromoAndRecordDismissal];
+}
+
 - (void)showPromo {
   BOOL hasRemindMeLater =
       base::FeatureList::IsEnabled(
           feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature) &&
       !_promoWasFromRemindMeLater;
-  BOOL hasCloseButton = IsPersistentDefaultBrowserPromoEnabled();
   _viewController = [[DefaultBrowserInstructionsViewController alloc]
           initWithDismissButton:YES
-                 hasCloseButton:hasCloseButton
                hasRemindMeLater:hasRemindMeLater
       useDefaultAppsDestination:_promoWasFromOffCycleTrigger
                        hasSteps:NO
                   actionHandler:self
                       titleText:nil];
 
-  CHECK(_viewController);
+  UIViewController* viewControllerToPresent = _viewController;
+  if (IsPersistentDefaultBrowserPromoEnabled()) {
+    UINavigationController* navigationController =
+        [[UINavigationController alloc]
+            initWithRootViewController:_viewController];
+    _viewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                             target:self
+                             action:@selector(dismissPromo)];
+    viewControllerToPresent = navigationController;
+  }
+
+  CHECK(viewControllerToPresent);
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Impression"));
-  _viewController.presentationController.delegate = self;
-  [self.baseViewController presentViewController:_viewController
+  viewControllerToPresent.presentationController.delegate = self;
+  [self.baseViewController presentViewController:viewControllerToPresent
                                         animated:YES
                                       completion:nil];
 }

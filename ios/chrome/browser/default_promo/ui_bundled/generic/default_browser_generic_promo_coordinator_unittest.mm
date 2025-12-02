@@ -164,9 +164,12 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
       "IOS.DefaultBrowserVideoPromo.PersistedDuration", 0);
 
   // Tap the primary button.
+  UINavigationController* navigation_controller =
+      base::apple::ObjCCastStrict<UINavigationController>(
+          view_controller_.presentedViewController);
   DefaultBrowserInstructionsViewController* promo_view_controller =
       base::apple::ObjCCastStrict<DefaultBrowserInstructionsViewController>(
-          view_controller_.presentedViewController);
+          navigation_controller.topViewController);
   UIView* primary_button_view =
       FindByID(promo_view_controller.view,
                kButtonStackPrimaryActionAccessibilityIdentifier);

@@ -32,6 +32,10 @@
   viewController.actionHandler = self;
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:viewController];
+  viewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(didTapCancelButton)];
   _navigationController.delegate = self;
   _navigationController.modalInPresentation = YES;
   [self.baseViewController presentViewController:_navigationController
@@ -70,12 +74,6 @@
   [_importCoordinator start];
 }
 
-- (void)confirmationAlertDismissAction {
-  RecordActionOnSafariExportEducationScreen(
-      SafariDataImportExportEducationAction::kCancel);
-  [self.delegate safariDataImportCoordinatorWillDismissWorkflow:self];
-}
-
 #pragma mark - UINavigationControllerDelegate
 
 - (void)navigationController:(UINavigationController*)navigationController
@@ -89,6 +87,15 @@
     [_importCoordinator stop];
     _importCoordinator = nil;
   }
+}
+
+#pragma mark - Private
+
+// Dismisses the sheet.
+- (void)didTapCancelButton {
+  RecordActionOnSafariExportEducationScreen(
+      SafariDataImportExportEducationAction::kCancel);
+  [self.delegate safariDataImportCoordinatorWillDismissWorkflow:self];
 }
 
 @end

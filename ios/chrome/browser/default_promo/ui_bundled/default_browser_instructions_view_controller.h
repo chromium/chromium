@@ -24,7 +24,6 @@ extern NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId;
 // Creates the view with specified `titleText` based on provided parameters.
 // If `titleText` is nil, default title will be used.
 - (instancetype)initWithDismissButton:(BOOL)hasDismissButton
-                       hasCloseButton:(BOOL)hasCloseButton
                      hasRemindMeLater:(BOOL)hasRemindMeLater
             useDefaultAppsDestination:(BOOL)useDefaultAppsDestination
                              hasSteps:(BOOL)hasSteps

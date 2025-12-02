@@ -129,7 +129,7 @@ TEST_F(PromosManagerCoordinatorTest,
 
   OCMExpect([provider standardPromoDismissAction]);
 
-  [coordinator_ confirmationAlertDismissAction];
+  [coordinator_ dismissPromo];
 
   [provider verify];
 }
@@ -145,7 +145,7 @@ TEST_F(PromosManagerCoordinatorTest,
 
   OCMExpect([banneredProvider standardPromoDismissAction]);
 
-  [coordinator_ confirmationAlertDismissAction];
+  [coordinator_ dismissPromo];
 
   [banneredProvider verify];
 }

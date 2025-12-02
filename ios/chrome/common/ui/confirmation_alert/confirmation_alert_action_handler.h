@@ -14,9 +14,6 @@
 
 @optional
 
-// The "Dismiss" button was touched.
-- (void)confirmationAlertDismissAction;
-
 // The "Secondary Action" was touched.
 - (void)confirmationAlertSecondaryAction;
 
