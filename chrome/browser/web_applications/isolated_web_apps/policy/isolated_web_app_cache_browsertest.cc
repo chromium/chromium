@@ -507,12 +507,10 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
   void SetIwasAllowlist(
       const std::vector<SignedWebBundleId>& bundle_ids,
       base::Version key_distribution_version = base::Version("1.0.1")) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-
-    EXPECT_THAT(test::UpdateKeyDistributionInfoWithAllowlist(
-                    key_distribution_version,
-                    /*managed_allowlist=*/bundle_ids),
-                base::test::HasValue());
+    EXPECT_OK(test::KeyDistributionComponentBuilder(key_distribution_version)
+                  .WithManagedAllowlist(bundle_ids)
+                  .Build()
+                  .UploadFromComponentFolder());
   }
 
   void CheckCacheManagerDebugOperationResult(const std::string& operation_name,

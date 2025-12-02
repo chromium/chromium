@@ -11,7 +11,6 @@
 #include "base/task/current_thread.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
@@ -89,10 +88,11 @@ class KioskIwaAllowlistTest : public MixinBasedInProcessBrowserTest {
 
   void SetIwaAllowlist(
       const std::vector<web_package::SignedWebBundleId>& managed_allowlist) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_THAT(web_app::test::UpdateKeyDistributionInfoWithAllowlist(
-                    base::Version("1.0"), std::move(managed_allowlist)),
-                base::test::HasValue());
+    EXPECT_OK(
+        web_app::test::KeyDistributionComponentBuilder(base::Version("1.0"))
+            .WithManagedAllowlist(managed_allowlist)
+            .Build()
+            .UploadFromComponentFolder());
   }
 
  protected:

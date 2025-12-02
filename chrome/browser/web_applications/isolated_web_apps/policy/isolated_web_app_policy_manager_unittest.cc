@@ -529,10 +529,10 @@ TEST_F(IsolatedWebAppManagedAllowlistTest, AllowedAppInstalled) {
       future.GetRepeatingCallback());
 
   // Update allowlist
-  EXPECT_THAT(test::UpdateKeyDistributionInfoWithAllowlist(
-                  base::Version("1.0.1"),
-                  /*managed_allowlist=*/{web_bundle_id_1()}),
-              HasValue());
+  EXPECT_OK(test::KeyDistributionComponentBuilder(base::Version("1.0.1"))
+                .AddToManagedAllowlist(web_bundle_id_1())
+                .Build()
+                .UploadFromComponentFolder());
 
   EXPECT_TRUE(
       IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(
@@ -571,10 +571,10 @@ TEST_F(IsolatedWebAppManagedAllowlistTest, NotAllowedAppInstallationRefused) {
       future.GetRepeatingCallback());
 
   // Ensure allowlist is empty
-  EXPECT_THAT(
-      test::UpdateKeyDistributionInfoWithAllowlist(base::Version("1.0.1"),
-                                                   /*managed_allowlist=*/{}),
-      HasValue());
+  EXPECT_OK(test::KeyDistributionComponentBuilder(base::Version("1.0.1"))
+                .WithManagedAllowlist({})  // For clarity only
+                .Build()
+                .UploadFromComponentFolder());
 
   EXPECT_FALSE(
       IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(

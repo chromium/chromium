@@ -102,7 +102,7 @@ KeyDistributionComponentBuilder::~KeyDistributionComponentBuilder() = default;
 KeyDistributionComponentBuilder&
 KeyDistributionComponentBuilder::AddToKeyRotations(
     const web_package::SignedWebBundleId& web_bundle_id,
-    std::optional<std::vector<uint8_t>> expected_key) & {
+    std::optional<base::span<const uint8_t>> expected_key) & {
   IwaKeyRotations::KeyRotationInfo kr_info_proto;
   if (expected_key.has_value()) {
     kr_info_proto.set_expected_key(base::Base64Encode(*expected_key));
@@ -116,7 +116,7 @@ KeyDistributionComponentBuilder::AddToKeyRotations(
 KeyDistributionComponentBuilder&&
 KeyDistributionComponentBuilder::AddToKeyRotations(
     const web_package::SignedWebBundleId& web_bundle_id,
-    std::optional<std::vector<uint8_t>> expected_key) && {
+    std::optional<base::span<const uint8_t>> expected_key) && {
   return std::move(AddToKeyRotations(web_bundle_id, std::move(expected_key)));
 }
 
@@ -228,36 +228,6 @@ base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
   auto path = component_install_dir.GetPath().AppendASCII("krc");
   CHECK(base::WriteFile(path, kd_proto.SerializeAsString()));
   return UpdateKeyDistributionInfo(version, path);
-}
-
-base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
-    const base::Version& version,
-    const std::string& web_bundle_id,
-    std::optional<base::span<const uint8_t>> expected_key) {
-  IwaKeyDistribution key_distribution;
-  IwaKeyRotations key_rotations;
-  IwaKeyRotations::KeyRotationInfo kr_info;
-  if (expected_key) {
-    kr_info.set_expected_key(base::Base64Encode(*expected_key));
-  }
-  key_rotations.mutable_key_rotations()->emplace(web_bundle_id,
-                                                 std::move(kr_info));
-  *key_distribution.mutable_key_rotation_data() = std::move(key_rotations);
-  return UpdateKeyDistributionInfo(version, key_distribution);
-}
-
-base::expected<void, IwaComponentUpdateError>
-UpdateKeyDistributionInfoWithAllowlist(
-    const base::Version& version,
-    const std::vector<web_package::SignedWebBundleId>& managed_allowlist) {
-  IwaKeyDistribution key_distribution;
-  for (const auto& bundle_id : managed_allowlist) {
-    auto& managed_allowlist_proto =
-        *key_distribution.mutable_iwa_access_control()
-             ->mutable_managed_allowlist();
-    managed_allowlist_proto[bundle_id.id()] = {};
-  }
-  return UpdateKeyDistributionInfo(version, key_distribution);
 }
 
 base::expected<void, IwaComponentUpdateError>

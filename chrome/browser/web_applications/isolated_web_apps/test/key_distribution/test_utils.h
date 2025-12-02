@@ -62,10 +62,10 @@ class KeyDistributionComponentBuilder {
   // used many times when several key rotations are required.
   KeyDistributionComponentBuilder& AddToKeyRotations(
       const web_package::SignedWebBundleId& web_bundle_id,
-      std::optional<std::vector<uint8_t>> expected_key) &;
+      std::optional<base::span<const uint8_t>> expected_key) &;
   KeyDistributionComponentBuilder&& AddToKeyRotations(
       const web_package::SignedWebBundleId& web_bundle_id,
-      std::optional<std::vector<uint8_t>> expected_key) &&;
+      std::optional<base::span<const uint8_t>> expected_key) &&;
 
   // Sets the special permissions for a specific app
   KeyDistributionComponentBuilder& AddToSpecialAppPermissions(
@@ -113,25 +113,6 @@ base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
 base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
     const base::Version& version,
     const IwaKeyDistribution& kd_proto);
-
-// Synchronously updates the key distribution info provider with a protobuf that
-// maps `web_bundle_id` to `expected_key`. If `expected_key` is a nullopt, then
-// the IWA with `web_bundle_id` will fail signature verification.
-// TODO(crbug.com/460419755): Remove and replace with
-// KeyDistributionComponentBuilder.Build().UploadFromComponentFolder()
-base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
-    const base::Version& version,
-    const std::string& web_bundle_id,
-    std::optional<base::span<const uint8_t>> expected_key);
-
-// Synchronously updates the key distribution info provider with a protobuf that
-// only contains bundle ids in the managed allowlist
-// TODO(crbug.com/460419755): Remove and replace with
-// KeyDistributionComponentBuilder.Build().UploadFromComponentFolder()
-base::expected<void, IwaComponentUpdateError>
-UpdateKeyDistributionInfoWithAllowlist(
-    const base::Version& version,
-    const std::vector<web_package::SignedWebBundleId>& managed_allowlist);
 
 // Writes `kd_proto` into `DIR_COMPONENT_USER/IwaKeyDistribution/{version}` and
 // triggers the registration process with the component updater. The directory

@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -266,10 +267,10 @@ void CommitPendingIsolatedWebAppNavigation(content::WebContents* web_contents) {
 void IsolatedWebAppBrowserTestHarness::SetIwaManagedAllowlist(
     const std::vector<web_package::SignedWebBundleId>& managed_allowlist,
     const base::Version& component_version) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  ASSERT_TRUE(test::UpdateKeyDistributionInfoWithAllowlist(
-                  component_version, std::move(managed_allowlist))
-                  .has_value());
+  ASSERT_OK(test::KeyDistributionComponentBuilder(component_version)
+                .WithManagedAllowlist(managed_allowlist)
+                .Build()
+                .UploadFromComponentFolder());
 }
 
 }  // namespace web_app

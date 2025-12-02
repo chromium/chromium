@@ -764,11 +764,12 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, KeyRotationUpdateRetry) {
       capture_discovery_task_result([&] {
         // Rotate the signing key from ed25519 to ecdsaP256. This will
         // trigger an unsuccessful update.
-        ASSERT_THAT(
-            test::UpdateKeyDistributionInfo(
-                base::Version(kInitialIwaVersion), GetIwa1WebBundleId().id(),
-                test::GetDefaultEcdsaP256KeyPair().public_key.bytes()),
-            base::test::HasValue());
+        ASSERT_OK(test::KeyDistributionComponentBuilder(base::Version("1.0.1"))
+                      .AddToKeyRotations(
+                          GetIwa1WebBundleId(),
+                          test::GetDefaultEcdsaP256KeyPair().public_key.bytes())
+                      .Build()
+                      .UploadFromComponentFolder());
       }),
       ErrorIs(_));
 
@@ -823,10 +824,13 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, SubsequentKeyRotations) {
     WebAppTestManifestUpdatedObserver manifest_updated_observer(
         &provider().install_manager());
     manifest_updated_observer.BeginListening({app_id});
-    ASSERT_THAT(test::UpdateKeyDistributionInfo(
-                    base::Version(base::StringPrintf("%d.0.0", comp_v)),
-                    web_bundle_id.id(), key_pair.public_key.bytes()),
-                base::test::HasValue());
+
+    ASSERT_OK(test::KeyDistributionComponentBuilder(
+                  base::Version(base::StringPrintf("%d.0.0", comp_v)))
+                  .AddToKeyRotations(web_bundle_id, key_pair.public_key.bytes())
+                  .Build()
+                  .UploadFromComponentFolder());
+
     manifest_updated_observer.Wait();
 
     ASSERT_THAT(provider().registrar_unsafe().GetAppById(app_id),
@@ -1083,20 +1087,20 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
       .SkipManagedAllowlistChecksForTesting(false);
 
   // Add both app to allowlist for installing them
-  EXPECT_THAT(
-      test::UpdateKeyDistributionInfoWithAllowlist(
-          base::Version("1.0.1"),
-          /*managed_allowlist=*/{GetIwa1WebBundleId(), GetIwa2WebBundleId()}),
-      base::test::HasValue());
+  EXPECT_OK(
+      test::KeyDistributionComponentBuilder(base::Version("1.0.1"))
+          .WithManagedAllowlist({GetIwa1WebBundleId(), GetIwa2WebBundleId()})
+          .Build()
+          .UploadFromComponentFolder());
 
   InitialIwaBundleForceInstall(CreateIwa1Bundle(kUpdateIwaVersion));
   InitialIwaBundleForceInstall(CreateIwa2Bundle("3.0.0"));
 
   // Remove the first app from the allowlist
-  EXPECT_THAT(test::UpdateKeyDistributionInfoWithAllowlist(
-                  base::Version("1.0.2"),
-                  /*managed_allowlist=*/{GetIwa2WebBundleId()}),
-              base::test::HasValue());
+  EXPECT_OK(test::KeyDistributionComponentBuilder(base::Version("1.0.2"))
+                .WithManagedAllowlist({GetIwa2WebBundleId()})
+                .Build()
+                .UploadFromComponentFolder());
 
   EXPECT_FALSE(
       IwaKeyDistributionInfoProvider::GetInstance().IsManagedUpdatePermitted(

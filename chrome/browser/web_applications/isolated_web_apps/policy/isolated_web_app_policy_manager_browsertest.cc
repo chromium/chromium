@@ -309,10 +309,10 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
 
   void SetIwaAllowlist(
       const std::vector<web_package::SignedWebBundleId>& managed_allowlist) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_THAT(test::UpdateKeyDistributionInfoWithAllowlist(
-                    base::Version("1.0.0"), std::move(managed_allowlist)),
-                base::test::HasValue());
+    EXPECT_OK(test::KeyDistributionComponentBuilder(base::Version("1.0.0"))
+                  .WithManagedAllowlist(managed_allowlist)
+                  .Build()
+                  .UploadFromComponentFolder());
   }
 
   void SetPolicyWithOneApp() {
