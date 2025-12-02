@@ -12565,16 +12565,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFieldClassificationModelCachingDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kFieldClassificationModelCaching)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"android-restore-tabs-promo-on-fre-bypassed-kill-switch",
-     flag_descriptions::kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitchName,
-     flag_descriptions::
-         kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitchDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitch)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"disable-autofill-strike-system",
      flag_descriptions::kDisableAutofillStrikeSystemName,
      flag_descriptions::kDisableAutofillStrikeSystemDescription, kOsAll,

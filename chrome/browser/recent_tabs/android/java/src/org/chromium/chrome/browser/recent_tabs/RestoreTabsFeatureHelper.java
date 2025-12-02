@@ -13,7 +13,6 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -208,13 +207,11 @@ public class RestoreTabsFeatureHelper {
     }
 
     void updateTrackerIfFirstStartIsRecent(Profile profile, Tracker tracker) {
-        if (ChromeFeatureList.sAndroidShowRestoreTabsPromoOnFreBypassedKillSwitch.isEnabled()) {
-            long firstInitialized =
-                    ChromeSharedPreferences.getInstance()
-                            .readLong(ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, -1L);
-            if (firstInitialized == -1L || isTimestampRecent(firstInitialized)) {
-                tracker.notifyEvent(EventConstants.RESTORE_TABS_ON_FIRST_RUN_SHOW_PROMO);
-            }
+        long firstInitialized =
+                ChromeSharedPreferences.getInstance()
+                        .readLong(ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, -1L);
+        if (firstInitialized == -1L || isTimestampRecent(firstInitialized)) {
+            tracker.notifyEvent(EventConstants.RESTORE_TABS_ON_FIRST_RUN_SHOW_PROMO);
         }
     }
 

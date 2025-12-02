@@ -5048,14 +5048,6 @@ inline constexpr char kAndroidPinnedTabsTabletTabStripDescription[] =
     "Enables the ability to pin tabs through tab context menu on tablet tab "
     "strip in the tabbed layout. This is M1 of Android Pinned Tabs";
 
-inline constexpr char
-    kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitchName[] =
-        "Android Show Restore Tab Promo On FRE Bypassed Kill Switch";
-inline constexpr char
-    kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitchDescription[] =
-        "Allows Restore Tabs Promo to run even FRE is bypassed, based on a "
-        "time stamp set when the user had first initialized the app.";
-
 inline constexpr char kAndroidSpellcheckFullApiBlinkName[] =
     "Enable full Android Spellchecker API support for Blink";
 inline constexpr char kAndroidSpellcheckFullApiBlinkDescription[] =
