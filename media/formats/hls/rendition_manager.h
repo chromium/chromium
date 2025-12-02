@@ -21,6 +21,7 @@
 #include "media/base/demuxer.h"
 #include "media/base/limits.h"
 #include "media/base/media_export.h"
+#include "media/base/sequence.h"
 #include "media/formats/hls/abr_algorithm.h"
 #include "media/formats/hls/rendition_group.h"
 #include "media/formats/hls/types.h"
@@ -101,8 +102,17 @@ class MEDIA_EXPORT RenditionManager {
 
   bool HasSelectableVariants() const { return !selectable_variants_.empty(); }
 
-  std::vector<MediaTrack> GetSelectableVideoRenditions() const;
-  std::vector<MediaTrack> GetSelectableAudioRenditions() const;
+  sequence::Sequence<MediaTrack> auto GetSelectableVideoRenditions() const {
+    return sequence::Reference(selectable_variant_tracks_);
+  }
+
+  sequence::Sequence<MediaTrack> auto GetSelectableAudioRenditions() const {
+    static const std::vector<MediaTrack> kEmpty;
+    if (active_variant_) {
+      return active_variant_->GetAudioRenditionGroup()->GetTracks();
+    }
+    return sequence::Reference(kEmpty);
+  }
 
  private:
   const VariantStream* SelectBestVariant() const;

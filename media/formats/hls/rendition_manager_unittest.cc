@@ -708,11 +708,11 @@ TEST_F(HlsRenditionManagerTest, AudioOnlyRenditionSelectionOverrides) {
 TEST_F(HlsRenditionManagerTest, VariantNames) {
   {
     // Differentiated by resolution
-    auto variants =
-        GetRenditionManager(
-            MakeVariantStr(1234, "1920x1080", std::nullopt), "playlist1.m3u8",
-            MakeVariantStr(1234, "1366x768", std::nullopt), "playlist2.m3u8")
-            .GetSelectableVideoRenditions();
+    auto rm = GetRenditionManager(
+        MakeVariantStr(1234, "1920x1080", std::nullopt), "playlist1.m3u8",
+        MakeVariantStr(1234, "1366x768", std::nullopt), "playlist2.m3u8");
+    auto sequence = rm.GetSelectableVideoRenditions();
+    std::vector<MediaTrack> variants(sequence.begin(), sequence.end());
     ASSERT_EQ(variants.size(), 2u);
     ASSERT_EQ(variants[0].label().value(), "1920x1080");
     ASSERT_EQ(variants[1].label().value(), "1366x768");
@@ -720,11 +720,12 @@ TEST_F(HlsRenditionManagerTest, VariantNames) {
 
   {
     // No differentiation
-    auto variants =
-        GetRenditionManager(
-            MakeVariantStr(1234, "1920x1080", std::nullopt), "playlist1.m3u8",
-            MakeVariantStr(1234, "1920x1080", std::nullopt), "playlist2.m3u8")
-            .GetSelectableVideoRenditions();
+    auto rm = GetRenditionManager(
+        MakeVariantStr(1234, "1920x1080", std::nullopt), "playlist1.m3u8",
+        MakeVariantStr(1234, "1920x1080", std::nullopt), "playlist2.m3u8");
+    sequence::Sequence<MediaTrack> auto sequence =
+        rm.GetSelectableVideoRenditions();
+    std::vector<MediaTrack> variants(sequence.begin(), sequence.end());
     ASSERT_EQ(variants.size(), 2u);
     ASSERT_EQ(variants[0].label().value(), "Stream: 1");
     ASSERT_EQ(variants[1].label().value(), "Stream: 2");
@@ -732,11 +733,11 @@ TEST_F(HlsRenditionManagerTest, VariantNames) {
 
   {
     // Same resolution, differentiated by framerate
-    auto variants =
-        GetRenditionManager(
-            MakeVariantStr(1234, "1920x1080", "24.00"), "playlist1.m3u8",
-            MakeVariantStr(1234, "1920x1080", "60.00"), "playlist2.m3u8")
-            .GetSelectableVideoRenditions();
+    auto rm = GetRenditionManager(
+        MakeVariantStr(1234, "1920x1080", "24.00"), "playlist1.m3u8",
+        MakeVariantStr(1234, "1920x1080", "60.00"), "playlist2.m3u8");
+    auto sequence = rm.GetSelectableVideoRenditions();
+    std::vector<MediaTrack> variants(sequence.begin(), sequence.end());
     ASSERT_EQ(variants.size(), 2u);
     ASSERT_EQ(variants[0].label().value(), "24fps");
     ASSERT_EQ(variants[1].label().value(), "60fps");
@@ -744,11 +745,11 @@ TEST_F(HlsRenditionManagerTest, VariantNames) {
 
   {
     // No differentiation
-    auto variants =
-        GetRenditionManager(
-            MakeVariantStr(1234, "1920x1080", "60.00"), "playlist1.m3u8",
-            MakeVariantStr(1234, "1920x1080", "60.00"), "playlist2.m3u8")
-            .GetSelectableVideoRenditions();
+    auto rm = GetRenditionManager(
+        MakeVariantStr(1234, "1920x1080", "60.00"), "playlist1.m3u8",
+        MakeVariantStr(1234, "1920x1080", "60.00"), "playlist2.m3u8");
+    auto sequence = rm.GetSelectableVideoRenditions();
+    std::vector<MediaTrack> variants(sequence.begin(), sequence.end());
     ASSERT_EQ(variants.size(), 2u);
     ASSERT_EQ(variants[0].label().value(), "Stream: 1");
     ASSERT_EQ(variants[1].label().value(), "Stream: 2");
@@ -756,11 +757,11 @@ TEST_F(HlsRenditionManagerTest, VariantNames) {
 
   {
     // Only bandwidth differentiation
-    auto variants =
-        GetRenditionManager(
-            MakeVariantStr(831270, "1920x1080", "60.00"), "playlist1.m3u8",
-            MakeVariantStr(1144430, "1920x1080", "60.00"), "playlist2.m3u8")
-            .GetSelectableVideoRenditions();
+    auto rm = GetRenditionManager(
+        MakeVariantStr(831270, "1920x1080", "60.00"), "playlist1.m3u8",
+        MakeVariantStr(1144430, "1920x1080", "60.00"), "playlist2.m3u8");
+    auto sequence = rm.GetSelectableVideoRenditions();
+    std::vector<MediaTrack> variants(sequence.begin(), sequence.end());
     ASSERT_EQ(variants.size(), 2u);
     ASSERT_EQ(variants[0].label().value(), "831 Kbps");
     ASSERT_EQ(variants[1].label().value(), "1.1 Mbps");
@@ -768,11 +769,11 @@ TEST_F(HlsRenditionManagerTest, VariantNames) {
 
   {
     // Bandwidth differentiation greater than 0.1Mbps, but less than 1 Mbps.
-    auto variants =
-        GetRenditionManager(
-            MakeVariantStr(1144430, "1920x1080", "60.00"), "playlist1.m3u8",
-            MakeVariantStr(1344430, "1920x1080", "60.00"), "playlist2.m3u8")
-            .GetSelectableVideoRenditions();
+    auto rm = GetRenditionManager(
+        MakeVariantStr(1144430, "1920x1080", "60.00"), "playlist1.m3u8",
+        MakeVariantStr(1344430, "1920x1080", "60.00"), "playlist2.m3u8");
+    auto sequence = rm.GetSelectableVideoRenditions();
+    std::vector<MediaTrack> variants(sequence.begin(), sequence.end());
     ASSERT_EQ(variants.size(), 2u);
     ASSERT_EQ(variants[0].label().value(), "1.1 Mbps");
     ASSERT_EQ(variants[1].label().value(), "1.3 Mbps");
@@ -780,11 +781,11 @@ TEST_F(HlsRenditionManagerTest, VariantNames) {
 
   {
     // Bandwidth differentiation resolution too small to differentiate names
-    auto variants =
-        GetRenditionManager(
-            MakeVariantStr(1144430, "1920x1080", "60.00"), "playlist1.m3u8",
-            MakeVariantStr(1144432, "1920x1080", "60.00"), "playlist2.m3u8")
-            .GetSelectableVideoRenditions();
+    auto rm = GetRenditionManager(
+        MakeVariantStr(1144430, "1920x1080", "60.00"), "playlist1.m3u8",
+        MakeVariantStr(1144432, "1920x1080", "60.00"), "playlist2.m3u8");
+    auto sequence = rm.GetSelectableVideoRenditions();
+    std::vector<MediaTrack> variants(sequence.begin(), sequence.end());
     ASSERT_EQ(variants.size(), 2u);
     ASSERT_EQ(variants[0].label().value(), "Stream: 1");
     ASSERT_EQ(variants[1].label().value(), "Stream: 2");
@@ -792,13 +793,13 @@ TEST_F(HlsRenditionManagerTest, VariantNames) {
 
   {
     // Differentiated by cross prodoct of resolution and bandwidth
-    auto variants =
-        GetRenditionManager(
-            MakeVariantStr(831270, "1920x1080", "60.00"), "playlist1.m3u8",
-            MakeVariantStr(1144430, "1920x1080", "24.00"), "playlist2.m3u8",
-            MakeVariantStr(1234, "1366x768", "60.00"), "playlist3.m3u8",
-            MakeVariantStr(67989, "1366x768", "24.00"), "playlist4.m3u8")
-            .GetSelectableVideoRenditions();
+    auto rm = GetRenditionManager(
+        MakeVariantStr(831270, "1920x1080", "60.00"), "playlist1.m3u8",
+        MakeVariantStr(1144430, "1920x1080", "24.00"), "playlist2.m3u8",
+        MakeVariantStr(1234, "1366x768", "60.00"), "playlist3.m3u8",
+        MakeVariantStr(67989, "1366x768", "24.00"), "playlist4.m3u8");
+    auto sequence = rm.GetSelectableVideoRenditions();
+    std::vector<MediaTrack> variants(sequence.begin(), sequence.end());
     ASSERT_EQ(variants.size(), 4u);
     ASSERT_EQ(variants[0].label().value(), "1366x768 60fps");
     ASSERT_EQ(variants[1].label().value(), "1366x768 24fps");

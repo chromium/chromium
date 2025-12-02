@@ -16,6 +16,7 @@
 #include "base/types/pass_key.h"
 #include "media/base/media_export.h"
 #include "media/base/media_track.h"
+#include "media/base/sequence.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
@@ -79,7 +80,9 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
     return renditions_;
   }
 
-  const std::vector<MediaTrack>& GetTracks() const { return tracks_; }
+  sequence::Sequence<MediaTrack> auto GetTracks() const {
+    return sequence::Reference(tracks_);
+  }
 
   bool HasTracks() const { return !tracks_.empty(); }
 

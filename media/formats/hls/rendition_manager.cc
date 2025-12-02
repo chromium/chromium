@@ -280,15 +280,4 @@ void RenditionManager::SetAbrAlgorithmForTesting(
   abr_algorithm_ = std::move(abr_algorithm);
 }
 
-std::vector<MediaTrack> RenditionManager::GetSelectableAudioRenditions() const {
-  if (active_variant_) {
-    return active_variant_->GetAudioRenditionGroup()->GetTracks();
-  }
-  return {};
-}
-
-std::vector<MediaTrack> RenditionManager::GetSelectableVideoRenditions() const {
-  return selectable_variant_tracks_;
-}
-
 }  // namespace media::hls
