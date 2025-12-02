@@ -158,10 +158,10 @@ Transaction::~Transaction() {
   TRACE_EVENT_END("IndexedDB", perfetto::Track::FromPointer(this));
   // It shouldn't be possible for this object to get deleted until it's either
   // complete or aborted.
-  DCHECK_EQ(state_, FINISHED);
-  DCHECK(preemptive_task_queue_.empty());
-  DCHECK_EQ(pending_preemptive_events_, 0);
-  DCHECK(task_queue_.empty());
+  CHECK_EQ(state_, FINISHED);
+  CHECK(preemptive_task_queue_.empty());
+  CHECK_EQ(pending_preemptive_events_, 0);
+  CHECK(task_queue_.empty());
 }
 
 void Transaction::BindReceiver(
@@ -342,14 +342,14 @@ void Transaction::Start() {
   // The transaction has the potential to be aborted after the Start() task was
   // posted.
   if (state_ == FINISHED) {
-    DCHECK(locks_receiver_.locks.empty());
+    CHECK(locks_receiver_.locks.empty());
     return;
   }
-  DCHECK_EQ(CREATED, state_);
+  CHECK_EQ(CREATED, state_);
   std::optional scheduling_priority_at_last_state_change =
       scheduling_priority_at_last_state_change_;
   SetState(STARTED);
-  DCHECK(!locks_receiver_.locks.empty());
+  CHECK(!locks_receiver_.locks.empty());
   diagnostics_.start_time = base::Time::Now();
 
   // If the client is in BFCache, the transaction will get stuck, so evict it if
@@ -526,13 +526,13 @@ Status Transaction::DoPut(int64_t object_store_id,
                           std::vector<IndexedDBIndexKeys> index_keys,
                           blink::mojom::IDBTransaction::PutCallback callback,
                           Transaction* txn) {
-  DCHECK_EQ(this, txn);
+  CHECK_EQ(this, txn);
   TRACE_EVENT2("IndexedDB", "Database::PutOperation", "txn.id", id(), "size",
                value.SizeEstimate());
-  DCHECK_NE(mode(), blink::mojom::IDBTransactionMode::ReadOnly);
+  CHECK_NE(mode(), blink::mojom::IDBTransactionMode::ReadOnly);
   bool key_was_generated = false;
   in_flight_memory_ -= value.SizeEstimate();
-  DCHECK(in_flight_memory_.IsValid());
+  CHECK(in_flight_memory_.IsValid());
 
   auto on_put_error = [&txn](blink::mojom::IDBTransaction::PutCallback callback,
                              blink::mojom::IDBException code,
@@ -551,7 +551,7 @@ Status Transaction::DoPut(int64_t object_store_id,
 
   const IndexedDBObjectStoreMetadata& object_store =
       connection()->database()->GetObjectStoreMetadata(object_store_id);
-  DCHECK(object_store.auto_increment || key.IsValid());
+  CHECK(object_store.auto_increment || key.IsValid());
   if (put_mode != blink::mojom::IDBPutMode::CursorUpdate &&
       object_store.auto_increment && !key.IsValid()) {
     IndexedDBKey auto_inc_key = GenerateAutoIncrementKey(object_store_id);
@@ -669,10 +669,10 @@ Status Transaction::DoSetIndexKeys(int64_t object_store_id,
                                    IndexedDBKey primary_key,
                                    IndexedDBIndexKeys index_keys,
                                    Transaction* transaction) {
-  DCHECK_EQ(this, transaction);
+  CHECK_EQ(this, transaction);
   TRACE_EVENT1("IndexedDB", "Database::SetIndexKeysOperation", "txn.id",
                transaction->id());
-  DCHECK_EQ(mode(), blink::mojom::IDBTransactionMode::VersionChange);
+  CHECK_EQ(mode(), blink::mojom::IDBTransactionMode::VersionChange);
 
   ASSIGN_OR_RETURN(std::optional<BackingStore::RecordIdentifier> found_record,
                    BackingStoreTransaction()->KeyExistsInObjectStore(
@@ -813,7 +813,7 @@ Status Transaction::BlobWriteComplete(StatusOr<BlobWriteResult> result) {
   if (state_ == FINISHED) {  // aborted
     return Status::OK();
   }
-  DCHECK_EQ(state_, COMMITTING);
+  CHECK_EQ(state_, COMMITTING);
 
   if (!result.has_value()) {
     LogStatus(result.error(), kHistogramName, bucket_context_->in_memory());
@@ -853,7 +853,7 @@ Status Transaction::DoPendingCommit() {
   if (state_ == FINISHED) {
     return Status::OK();
   }
-  DCHECK_NE(state_, COMMITTING);
+  CHECK_NE(state_, COMMITTING);
 
   // Front-end has requested a commit, but this transaction is blocked by
   // other transactions. The commit will be initiated when the transaction
@@ -932,7 +932,7 @@ Status Transaction::CommitPhaseTwo() {
     return Status::OK();
   }
 
-  DCHECK_EQ(state_, COMMITTING);
+  CHECK_EQ(state_, COMMITTING);
 
   std::optional scheduling_priority_at_last_state_change =
       scheduling_priority_at_last_state_change_;
@@ -1268,7 +1268,7 @@ void Transaction::CloseOpenCursors() {
 void Transaction::OnSchedulingPriorityUpdated(int new_priority) {
   auto* lock_request_data = static_cast<LockRequestData*>(
       locks_receiver_.GetUserData(LockRequestData::kKey));
-  DCHECK(lock_request_data);
+  CHECK(lock_request_data);
   lock_request_data->scheduling_priority = new_priority;
 }
 
