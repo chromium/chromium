@@ -117,14 +117,6 @@ bool ThreadedPreloadScannerEnabled(
   return kEnabled;
 }
 
-bool CheckParserBudgetLessOften() {
-  // Cache the feature value since checking for each parser regresses some micro
-  // benchmarks.
-  static const bool kEnabled =
-      base::FeatureList::IsEnabled(features::kCheckHTMLParserBudgetLessOften);
-  return kEnabled;
-}
-
 bool PrecompileInlineScriptsEnabled(
     FeatureResetMode reset_mode = FeatureResetMode::kUseCached) {
   // Cache the feature value since checking for each parser regresses some micro
@@ -736,7 +728,6 @@ bool HTMLDocumentParser::PumpTokenizer() {
   base::ElapsedTimer chunk_parsing_timer;
   base::TimeDelta elapsed_time;
   unsigned tokens_parsed = 0;
-  int characters_consumed_before_token = 0;
   base::TimeDelta time_executing_script;
   v8::Isolate* isolate = GetDocument()->GetAgent().isolate();
   while (true) {
@@ -783,23 +774,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
       DCHECK_EQ(task_runner_state_->GetMode(), kAllowDeferredParsing);
       if (!RuntimeEnabledFeatures::
               HTMLParserYieldAndDelayOftenForTestingEnabled()) {
-        if (CheckParserBudgetLessOften()) {
-          int newly_consumed_characters =
-              input_.Current().NumberOfCharactersConsumed() -
-              characters_consumed_before_token;
-          characters_consumed_before_token =
-              input_.Current().NumberOfCharactersConsumed();
-          // On android calling chunk_parsing_timer.Elapsed seems fairly slow
-          // compared to the parsing time of small tokens. Only update the
-          // timer occasionally.
-          if (ShouldCheckTimeBudget(next_token_status,
-                                    atomic_html_token.GetHTMLTag(),
-                                    newly_consumed_characters, tokens_parsed)) {
-            elapsed_time = chunk_parsing_timer.Elapsed();
-          }
-        } else {
-          elapsed_time = chunk_parsing_timer.Elapsed();
-        }
+        elapsed_time = chunk_parsing_timer.Elapsed();
         should_yield = elapsed_time >= timed_budget;
       } else {
         should_yield = budget <= 0;

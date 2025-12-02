@@ -365,9 +365,6 @@ BASE_FEATURE(kCanvas2DHibernationNoSmallCanvas,
 // of the renderer eviction reasons for Back/Forward Cache.
 BASE_FEATURE(kCaptureJSExecutionLocation, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCheckHTMLParserBudgetLessOften,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kClearSiteDataPrefetchPrerenderCache,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

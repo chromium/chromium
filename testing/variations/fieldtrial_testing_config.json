@@ -4910,26 +4910,6 @@
             ]
         }
     ],
-    "CheckHTMLParserBudgetLessOften": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Nonstable_20230320",
-                    "enable_features": [
-                        "CheckHTMLParserBudgetLessOften"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeCompose": [
         {
             "platforms": [
