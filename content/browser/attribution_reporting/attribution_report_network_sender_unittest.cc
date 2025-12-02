@@ -514,8 +514,6 @@ TEST_F(AttributionReportNetworkSenderTest,
        EventLevelReportSent_MetricsRecorded) {
   static constexpr char kErrorCodeMetric[] =
       "Conversions.HttpResponseOrNetErrorCodeEventLevel";
-  static constexpr char kReportSizeMetric[] =
-      "Conversions.EventLevelReport.ReportBodySize";
 
   // All OK
   {
@@ -526,7 +524,6 @@ TEST_F(AttributionReportNetworkSenderTest,
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kEventLevelReportUrl, ""));
     histograms.ExpectUniqueSample(kErrorCodeMetric, net::HTTP_OK, 1);
-    histograms.ExpectTotalCount(kReportSizeMetric, 1);
   }
 
   // Internal error
@@ -540,7 +537,6 @@ TEST_F(AttributionReportNetworkSenderTest,
         GURL(kEventLevelReportUrl), completion_status,
         network::mojom::URLResponseHead::New(), ""));
     histograms.ExpectUniqueSample(kErrorCodeMetric, net::ERR_FAILED, 1);
-    histograms.ExpectTotalCount(kReportSizeMetric, 1);
   }
   // External error
   {
@@ -551,7 +547,6 @@ TEST_F(AttributionReportNetworkSenderTest,
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kEventLevelReportUrl, "", net::HTTP_UNAUTHORIZED));
     histograms.ExpectUniqueSample(kErrorCodeMetric, net::HTTP_UNAUTHORIZED, 1);
-    histograms.ExpectTotalCount(kReportSizeMetric, 1);
   }
   // Retried network change error
   {
@@ -567,8 +562,6 @@ TEST_F(AttributionReportNetworkSenderTest,
 
     ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kEventLevelReportUrl, ""));
-
-    histograms.ExpectTotalCount(kReportSizeMetric, 1);
   }
 }
 
@@ -649,8 +642,6 @@ TEST_F(AttributionReportNetworkSenderTest,
 
   static constexpr char kErrorCodeMetric[] =
       "HttpResponseOrNetErrorCodeAggregatable2";
-  static constexpr char kReportSizeMetric[] =
-      "Conversions.AggregatableReport.ReportBodySize";
 
   for (const bool has_trigger_context_id : {false, true}) {
     SCOPED_TRACE(has_trigger_context_id);
@@ -670,7 +661,6 @@ TEST_F(AttributionReportNetworkSenderTest,
           kAggregatableReportUrl, ""));
       verify_histogram(histograms, kErrorCodeMetric, has_trigger_context_id,
                        net::HTTP_OK, 1);
-      histograms.ExpectTotalCount(kReportSizeMetric, 1);
     }
 
     // Internal error
@@ -685,7 +675,6 @@ TEST_F(AttributionReportNetworkSenderTest,
           network::mojom::URLResponseHead::New(), ""));
       verify_histogram(histograms, kErrorCodeMetric, has_trigger_context_id,
                        net::ERR_FAILED, 1);
-      histograms.ExpectTotalCount(kReportSizeMetric, 1);
     }
     // External error
     {
@@ -697,7 +686,6 @@ TEST_F(AttributionReportNetworkSenderTest,
           kAggregatableReportUrl, "", net::HTTP_UNAUTHORIZED));
       verify_histogram(histograms, kErrorCodeMetric, has_trigger_context_id,
                        net::HTTP_UNAUTHORIZED, 1);
-      histograms.ExpectTotalCount(kReportSizeMetric, 1);
     }
     // Retried network change error
     {
@@ -713,8 +701,6 @@ TEST_F(AttributionReportNetworkSenderTest,
 
       ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
           kAggregatableReportUrl, ""));
-
-      histograms.ExpectTotalCount(kReportSizeMetric, 1);
     }
   }
 }
@@ -958,8 +944,6 @@ TEST_F(AttributionReportNetworkSenderTest,
         kAggregatableReportUrl, ""));
     verify_histogram(histograms, "HttpResponseOrNetErrorCodeAggregatable2",
                      has_trigger_context_id, net::HTTP_OK, 1);
-    histograms.ExpectTotalCount("Conversions.AggregatableReport.ReportBodySize",
-                                1);
   }
 }
 
