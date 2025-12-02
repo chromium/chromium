@@ -597,6 +597,7 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
       pending_request.request.exclude_self_browser_surface;
   picker_params.exclude_monitor_type_surfaces =
       pending_request.request.exclude_monitor_type_surfaces;
+  picker_params.allowed_capture_level = capture_level;
   picker_params.includable_web_contents_filter = includable_web_contents_filter;
 #endif
 

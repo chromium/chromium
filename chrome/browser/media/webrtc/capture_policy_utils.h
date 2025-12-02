@@ -22,13 +22,17 @@ class WebContents;
 // restrictive to least restrictive, to which capture may be restricted by
 // enterprise policy. It should not be used in Logs, so that it's order may be
 // changed as needed.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.media
+// GENERATED_JAVA_PREFIX_TO_STRIP: k
 enum class AllowedScreenCaptureLevel {
   kDisallowed = 0,
   kSameOrigin = 1,
   kTab = 2,
   kWindow = 3,
   kDesktop = 4,
-  kUnrestricted = kDesktop,
+  // kUnrestricted should be set to the value of the most permissive element
+  // (kDesktop), but using the actual symbol breaks Java enum generation.
+  kUnrestricted = 4,
 };
 
 namespace capture_policy {

@@ -56,7 +56,8 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
             @PreferredDisplaySurface.EnumType int preferredDisplaySurface,
             boolean captureThisTab,
             boolean excludeSelfBrowserSurface,
-            boolean excludeMonitorTypeSurfaces) {
+            boolean excludeMonitorTypeSurfaces,
+            @AllowedScreenCaptureLevel int allowedCaptureLevel) {
         MediaCapturePickerManager.Params params =
                 new MediaCapturePickerManager.Params(
                         webContents,
@@ -68,7 +69,8 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
                         preferredDisplaySurface,
                         captureThisTab,
                         excludeSelfBrowserSurface,
-                        excludeMonitorTypeSurfaces);
+                        excludeMonitorTypeSurfaces,
+                        allowedCaptureLevel);
         MediaCapturePickerManager.showDialog(params, /* delegate= */ this);
     }
 

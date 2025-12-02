@@ -323,3 +323,11 @@ source_set("test_support") {
     "//testing/gmock",
   ]
 }
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  java_cpp_enum("java_enums") {
+    sources = [ "capture_policy_utils.h" ]
+  }
+}

@@ -76,6 +76,9 @@ public class MediaCapturePickerManager {
         /** True if screen sharing should be excluded. From MediaStreamRequest. */
         public final boolean excludeMonitorTypeSurfaces;
 
+        /** The allowed capture level. From DesktopMediaPicker::Params. */
+        public final @AllowedScreenCaptureLevel int allowedCaptureLevel;
+
         /**
          * @param webContents The {@link WebContents} to show the dialog on behalf of.
          * @param appName Name of the app that wants to share content.
@@ -87,6 +90,7 @@ public class MediaCapturePickerManager {
          * @param captureThisTab True if we are just capturing this tab.
          * @param excludeSelfBrowserSurface True if the current tab should be excluded.
          * @param excludeMonitorTypeSurfaces True if screen sharing should be excluded.
+         * @param allowedCaptureLevel The allowed capture level.
          */
         public Params(
                 WebContents webContents,
@@ -98,7 +102,8 @@ public class MediaCapturePickerManager {
                 @PreferredDisplaySurface.EnumType int preferredDisplaySurface,
                 boolean captureThisTab,
                 boolean excludeSelfBrowserSurface,
-                boolean excludeMonitorTypeSurfaces) {
+                boolean excludeMonitorTypeSurfaces,
+                @AllowedScreenCaptureLevel int allowedCaptureLevel) {
             this.webContents = webContents;
             this.appName = appName;
             this.targetName = targetName;
@@ -109,6 +114,7 @@ public class MediaCapturePickerManager {
             this.captureThisTab = captureThisTab;
             this.excludeSelfBrowserSurface = excludeSelfBrowserSurface;
             this.excludeMonitorTypeSurfaces = excludeMonitorTypeSurfaces;
+            this.allowedCaptureLevel = allowedCaptureLevel;
         }
     }
 

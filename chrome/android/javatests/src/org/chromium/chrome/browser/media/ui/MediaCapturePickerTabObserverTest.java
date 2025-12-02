@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.media.AllowedScreenCaptureLevel;
 import org.chromium.chrome.browser.media.MediaCapturePickerManager;
 import org.chromium.chrome.browser.media.MediaCapturePickerTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -68,7 +69,8 @@ public class MediaCapturePickerTabObserverTest {
                     /* preferredDisplaySurface= */ 0,
                     mCaptureThisTab,
                     /* excludeSelfBrowserSurface= */ false,
-                    /* excludeMonitorTypeSurfaces= */ false);
+                    /* excludeMonitorTypeSurfaces= */ false,
+                    AllowedScreenCaptureLevel.DESKTOP);
         }
     }
 

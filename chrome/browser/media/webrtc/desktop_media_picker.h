@@ -125,6 +125,9 @@ class DesktopMediaPicker {
     bool exclude_self_browser_surface = false;
     // On Android, this indicates that screen sharing should be excluded.
     bool exclude_monitor_type_surfaces = false;
+    // On Android, this indicates the allowed capture level for this request.
+    AllowedScreenCaptureLevel allowed_capture_level =
+        AllowedScreenCaptureLevel::kUnrestricted;
     // On Android, this filter is used to filter the tabs that can be captured.
     DesktopMediaList::WebContentsFilter includable_web_contents_filter;
 #endif

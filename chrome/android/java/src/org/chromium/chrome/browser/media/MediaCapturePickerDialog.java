@@ -134,7 +134,8 @@ public class MediaCapturePickerDialog implements MediaCapturePickerTabObserver.D
         mPositiveButton = mButtonsView.findViewById(R.id.positive_button);
         mScreenButton = mButtonsView.findViewById(R.id.screen_button);
 
-        if (params.captureThisTab) {
+        if (params.captureThisTab
+                || params.allowedCaptureLevel < AllowedScreenCaptureLevel.WINDOW) {
             mScreenButton.setVisibility(View.GONE);
         }
 
