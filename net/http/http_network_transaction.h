@@ -531,8 +531,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   base::TimeTicks initialize_stream_end_time_;
 
   base::TimeTicks blocked_initialize_stream_start_time_;
-  base::TimeTicks blocked_generate_proxy_auth_token_start_time_;
-  base::TimeTicks blocked_generate_server_auth_token_start_time_;
 
   // Timing information for the connected callback.
   base::TimeTicks connected_callback_start_time_;
