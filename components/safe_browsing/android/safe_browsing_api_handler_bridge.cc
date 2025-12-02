@@ -36,7 +36,7 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaIntArrayToIntVector;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaIntArray;
 using content::BrowserThread;
@@ -524,7 +524,7 @@ static void JNI_SafeBrowsingApiBridge_OnUrlCheckDoneBySafeBrowsingApi(
     jlong callback_id,
     jint j_lookup_result,
     jint j_threat_type,
-    const JavaParamRef<jintArray>& j_threat_attributes,
+    const JavaRef<jintArray>& j_threat_attributes,
     jint j_response_status,
     jlong check_delta_microseconds) {
   SafeBrowsingApiLookupResult lookup_result =
@@ -604,7 +604,7 @@ void OnGetSafetyNetIdDone(const std::string& result) {
 
 static void JNI_SafeBrowsingApiBridge_OnGetSafetyNetIdDone(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jstring>& result) {
+    const jni_zero::JavaRef<jstring>& result) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&OnGetSafetyNetIdDone,
                                 base::android::ConvertJavaStringToUTF8(

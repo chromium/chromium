@@ -48,7 +48,6 @@ namespace {
 using ::base::android::AttachCurrentThread;
 using ::base::android::ConvertJavaStringToUTF8;
 using ::base::android::ConvertUTF8ToJavaString;
-using ::base::android::JavaParamRef;
 using ::base::android::JavaRef;
 using ::base::android::ScopedJavaGlobalRef;
 using ::payments::mojom::PaymentMethodDataPtr;
@@ -102,16 +101,16 @@ void SetOptOutOffered(const JavaRef<jobject>& jcallback) {
 /* static */
 static void JNI_PaymentAppServiceBridge_Create(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jstring>& jtop_origin,
-    const JavaParamRef<jobject>& jpayment_request_spec,
-    const JavaParamRef<jstring>& jtwa_package_name,
+    const JavaRef<jobject>& jrender_frame_host,
+    const JavaRef<jstring>& jtop_origin,
+    const JavaRef<jobject>& jpayment_request_spec,
+    const JavaRef<jstring>& jtwa_package_name,
     // TODO(crbug.com/40182225): Remove jmay_crawl_for_installable_payment_apps,
     // as it is no longer used.
     jboolean jmay_crawl_for_installable_payment_apps,
     jboolean jis_off_the_record,
     jlong native_csp_checker_android,
-    const JavaParamRef<jobject>& jcallback) {
+    const JavaRef<jobject>& jcallback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto* render_frame_host =

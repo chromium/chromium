@@ -82,13 +82,13 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // Java versions of query methods.
   base::android::ScopedJavaLocalRef<jobjectArray> GetValues(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& pref_name,
+      const base::android::JavaRef<jstring>& pref_name,
       std::optional<int> os_type,
       std::optional<int> form_factor,
       std::optional<jlong> max_sync_recency_microseconds) const override;
   base::android::ScopedJavaLocalRef<jobject> GetMostRecentValue(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& pref_name,
+      const base::android::JavaRef<jstring>& pref_name,
       std::optional<int> os_type,
       std::optional<int> form_factor,
       std::optional<jlong> max_sync_recency_microseconds) const override;

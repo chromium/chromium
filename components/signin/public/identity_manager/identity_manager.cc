@@ -512,7 +512,7 @@ IdentityManager::GetPrimaryAccountInfo(JNIEnv* env, jint consent_level) const {
 base::android::ScopedJavaLocalRef<jobject>
 IdentityManager::FindExtendedAccountInfoByEmailAddress(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_email) const {
+    const base::android::JavaRef<jstring>& j_email) const {
   AccountInfo account_info = FindExtendedAccountInfoByEmailAddress(
       base::android::ConvertJavaStringToUTF8(env, j_email));
   if (account_info.IsEmpty()) {

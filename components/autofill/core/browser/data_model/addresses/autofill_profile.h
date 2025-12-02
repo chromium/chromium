@@ -167,7 +167,7 @@ class AutofillProfile : public FormGroup {
   // substructure by creating AutofillProfile from scratch based only on the
   // available Java fields.
   static AutofillProfile CreateFromJavaObject(
-      const base::android::JavaParamRef<jobject>& jprofile,
+      const base::android::JavaRef<jobject>& jprofile,
       const AutofillProfile* existing_profile,
       std::string_view app_locale);
 #endif  // BUILDFLAG(IS_ANDROID)

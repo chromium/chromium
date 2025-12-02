@@ -35,10 +35,10 @@ class SiteEngagementServiceAndroid {
   ~SiteEngagementServiceAndroid();
 
   double GetScore(JNIEnv* env,
-                  const base::android::JavaParamRef<jstring>& jurl) const;
+                  const base::android::JavaRef<jstring>& jurl) const;
 
   void ResetBaseScoreForURL(JNIEnv* env,
-                            const base::android::JavaParamRef<jstring>& jurl,
+                            const base::android::JavaRef<jstring>& jurl,
                             double score);
 
  private:

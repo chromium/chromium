@@ -10,8 +10,8 @@
 // Records the HashMetric of |value| in the sparse histogram |histogramName|.
 static void JNI_AndroidLanguageMetricsBridge_ReportHashMetricName(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& histogramName,
-    const base::android::JavaParamRef<jstring>& value) {
+    const base::android::JavaRef<jstring>& histogramName,
+    const base::android::JavaRef<jstring>& value) {
   base::UmaHistogramSparse(
       base::android::ConvertJavaStringToUTF8(histogramName),
       base::HashMetricName(base::android::ConvertJavaStringToUTF8(value)));

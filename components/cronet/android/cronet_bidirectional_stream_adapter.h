@@ -90,7 +90,7 @@ class CronetBidirectionalStreamAdapter
   CronetBidirectionalStreamAdapter(
       CronetContextAdapter* context,
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jbidi_stream,
+      const base::android::JavaRef<jobject>& jbidi_stream,
       bool jsend_request_headers_automatically,
       bool traffic_stats_tag_set,
       int32_t traffic_stats_tag,
@@ -113,10 +113,10 @@ class CronetBidirectionalStreamAdapter
   // Returns position of invalid header value in |jheaders| if header name is
   // not valid.
   jint Start(JNIEnv* env,
-             const base::android::JavaParamRef<jstring>& jurl,
+             const base::android::JavaRef<jstring>& jurl,
              jint jpriority,
-             const base::android::JavaParamRef<jstring>& jmethod,
-             const base::android::JavaParamRef<jobjectArray>& jheaders,
+             const base::android::JavaRef<jstring>& jmethod,
+             const base::android::JavaRef<jobjectArray>& jheaders,
              jboolean jend_of_stream);
 
   // Sends request headers to server.
@@ -135,7 +135,7 @@ class CronetBidirectionalStreamAdapter
   // exceeding |jlimit|. Arguments are preserved to ensure that |jbyte_buffer|
   // is not modified by the application during read.
   jboolean ReadData(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& jbyte_buffer,
+                    const base::android::JavaRef<jobject>& jbyte_buffer,
                     jint jposition,
                     jint jlimit);
 
@@ -145,12 +145,11 @@ class CronetBidirectionalStreamAdapter
   // Arguments are preserved to ensure that |jbyte_buffer|
   // is not modified by the application during write. The |jend_of_stream| is
   // passed to remote to indicate end of stream.
-  jboolean WritevData(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& jbyte_buffers,
-      const base::android::JavaParamRef<jintArray>& jpositions,
-      const base::android::JavaParamRef<jintArray>& jlimits,
-      jboolean jend_of_stream);
+  jboolean WritevData(JNIEnv* env,
+                      const base::android::JavaRef<jobjectArray>& jbyte_buffers,
+                      const base::android::JavaRef<jintArray>& jpositions,
+                      const base::android::JavaRef<jintArray>& jlimits,
+                      jboolean jend_of_stream);
 
   // Releases all resources for the request and deletes the object itself.
   // Responsible for collecting the metrics before destroying the object and

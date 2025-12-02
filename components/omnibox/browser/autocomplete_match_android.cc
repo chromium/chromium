@@ -158,7 +158,7 @@ void AutocompleteMatch::DestroyJavaObject() {
 
 void AutocompleteMatch::UpdateWithClipboardContent(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   DCHECK(provider) << "No provider available";
   DCHECK(provider->type() == AutocompleteProvider::TYPE_CLIPBOARD)
       << "Invalid provider type: " << provider->type();

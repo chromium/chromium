@@ -16,7 +16,7 @@
 
 namespace site_engagement {
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 // static
 const base::android::ScopedJavaGlobalRef<jobject>&
@@ -48,7 +48,7 @@ SiteEngagementServiceAndroid::~SiteEngagementServiceAndroid() {
 
 double SiteEngagementServiceAndroid::GetScore(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jurl) const {
+    const JavaRef<jstring>& jurl) const {
   if (!jurl)
     return 0;
 
@@ -58,7 +58,7 @@ double SiteEngagementServiceAndroid::GetScore(
 
 void SiteEngagementServiceAndroid::ResetBaseScoreForURL(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jurl,
+    const JavaRef<jstring>& jurl,
     double score) {
   if (jurl) {
     service_->ResetBaseScoreForURL(
@@ -73,7 +73,7 @@ static void JNI_SiteEngagementService_SetParamValuesForTesting(JNIEnv* env) {
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_SiteEngagementService_SiteEngagementServiceForBrowserContext(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jhandle) {
+    const base::android::JavaRef<jobject>& jhandle) {
   SiteEngagementService* service = SiteEngagementService::Get(
       content::BrowserContextFromJavaHandle(jhandle));
   DCHECK(service);

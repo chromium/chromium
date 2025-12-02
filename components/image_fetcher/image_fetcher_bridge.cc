@@ -27,7 +27,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/image_fetcher/jni_headers/ImageFetcherBridge_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -73,8 +72,8 @@ ImageFetcherBridge::~ImageFetcherBridge() = default;
 // static
 ScopedJavaLocalRef<jstring> ImageFetcherBridge::GetFilePath(
     JNIEnv* j_env,
-    const JavaParamRef<jobject>& j_simple_factory_key,
-    const JavaParamRef<jstring>& j_url) {
+    const JavaRef<jobject>& j_simple_factory_key,
+    const JavaRef<jstring>& j_url) {
   std::string url = base::android::ConvertJavaStringToUTF8(j_url);
   SimpleFactoryKey* key =
       simple_factory_key::SimpleFactoryKeyFromJavaHandle(j_simple_factory_key);
@@ -92,12 +91,12 @@ ScopedJavaLocalRef<jstring> ImageFetcherBridge::GetFilePath(
 // static
 void ImageFetcherBridge::FetchImageData(
     JNIEnv* j_env,
-    const JavaParamRef<jobject>& j_simple_factory_key,
+    const JavaRef<jobject>& j_simple_factory_key,
     const jint j_image_fetcher_config,
-    const JavaParamRef<jstring>& j_url,
-    const JavaParamRef<jstring>& j_client_name,
+    const JavaRef<jstring>& j_url,
+    const JavaRef<jstring>& j_client_name,
     const jint j_expiration_interval_mins,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
   ImageFetcherConfig config =
       static_cast<ImageFetcherConfig>(j_image_fetcher_config);
@@ -133,14 +132,14 @@ void ImageFetcherBridge::FetchImageData(
 // static
 void ImageFetcherBridge::FetchImage(
     JNIEnv* j_env,
-    const JavaParamRef<jobject>& j_simple_factory_key,
+    const JavaRef<jobject>& j_simple_factory_key,
     const jint j_image_fetcher_config,
-    const JavaParamRef<jstring>& j_url,
-    const JavaParamRef<jstring>& j_client_name,
+    const JavaRef<jstring>& j_url,
+    const JavaRef<jstring>& j_client_name,
     const jint j_frame_width,
     const jint j_frame_height,
     const jint j_expiration_interval_mins,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
   ImageFetcherConfig config =
       static_cast<ImageFetcherConfig>(j_image_fetcher_config);
@@ -174,7 +173,7 @@ void ImageFetcherBridge::FetchImage(
 // static
 void ImageFetcherBridge::ReportEvent(
     JNIEnv* j_env,
-    const base::android::JavaParamRef<jstring>& j_client_name,
+    const base::android::JavaRef<jstring>& j_client_name,
     const jint j_event_id) {
   std::string client_name =
       base::android::ConvertJavaStringToUTF8(j_client_name);
@@ -185,7 +184,7 @@ void ImageFetcherBridge::ReportEvent(
 // static
 void ImageFetcherBridge::ReportCacheHitTime(
     JNIEnv* j_env,
-    const base::android::JavaParamRef<jstring>& j_client_name,
+    const base::android::JavaRef<jstring>& j_client_name,
     const jlong start_time_millis) {
   std::string client_name =
       base::android::ConvertJavaStringToUTF8(j_client_name);
@@ -198,7 +197,7 @@ void ImageFetcherBridge::ReportCacheHitTime(
 // static
 void ImageFetcherBridge::ReportTotalFetchTimeFromNative(
     JNIEnv* j_env,
-    const base::android::JavaParamRef<jstring>& j_client_name,
+    const base::android::JavaRef<jstring>& j_client_name,
     const jlong start_time_millis) {
   std::string client_name =
       base::android::ConvertJavaStringToUTF8(j_client_name);
@@ -212,20 +211,20 @@ void ImageFetcherBridge::ReportTotalFetchTimeFromNative(
 // static
 static ScopedJavaLocalRef<jstring> JNI_ImageFetcherBridge_GetFilePath(
     JNIEnv* j_env,
-    const JavaParamRef<jobject>& j_simple_factory_key,
-    const JavaParamRef<jstring>& j_url) {
+    const JavaRef<jobject>& j_simple_factory_key,
+    const JavaRef<jstring>& j_url) {
   return ImageFetcherBridge::GetFilePath(j_env, j_simple_factory_key, j_url);
 }
 
 // static
 static void JNI_ImageFetcherBridge_FetchImageData(
     JNIEnv* j_env,
-    const JavaParamRef<jobject>& j_simple_factory_key,
+    const JavaRef<jobject>& j_simple_factory_key,
     const jint j_image_fetcher_config,
-    const JavaParamRef<jstring>& j_url,
-    const JavaParamRef<jstring>& j_client_name,
+    const JavaRef<jstring>& j_url,
+    const JavaRef<jstring>& j_client_name,
     const jint j_expiration_interval_mins,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jobject>& j_callback) {
   ImageFetcherBridge::FetchImageData(
       j_env, j_simple_factory_key, j_image_fetcher_config, j_url, j_client_name,
       j_expiration_interval_mins, j_callback);
@@ -234,14 +233,14 @@ static void JNI_ImageFetcherBridge_FetchImageData(
 // static
 static void JNI_ImageFetcherBridge_FetchImage(
     JNIEnv* j_env,
-    const JavaParamRef<jobject>& j_simple_factory_key,
+    const JavaRef<jobject>& j_simple_factory_key,
     const jint j_image_fetcher_config,
-    const JavaParamRef<jstring>& j_url,
-    const JavaParamRef<jstring>& j_client_name,
+    const JavaRef<jstring>& j_url,
+    const JavaRef<jstring>& j_client_name,
     const jint j_frame_width,
     const jint j_frame_height,
     const jint j_expiration_interval_mins,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jobject>& j_callback) {
   ImageFetcherBridge::FetchImage(
       j_env, j_simple_factory_key, j_image_fetcher_config, j_url, j_client_name,
       j_frame_width, j_frame_height, j_expiration_interval_mins, j_callback);
@@ -250,7 +249,7 @@ static void JNI_ImageFetcherBridge_FetchImage(
 // static
 static void JNI_ImageFetcherBridge_ReportEvent(
     JNIEnv* j_env,
-    const base::android::JavaParamRef<jstring>& j_client_name,
+    const base::android::JavaRef<jstring>& j_client_name,
     const jint j_event_id) {
   ImageFetcherBridge::ReportEvent(j_env, j_client_name, j_event_id);
 }
@@ -258,7 +257,7 @@ static void JNI_ImageFetcherBridge_ReportEvent(
 // static
 static void JNI_ImageFetcherBridge_ReportCacheHitTime(
     JNIEnv* j_env,
-    const base::android::JavaParamRef<jstring>& j_client_name,
+    const base::android::JavaRef<jstring>& j_client_name,
     const jlong start_time_millis) {
   ImageFetcherBridge::ReportCacheHitTime(j_env, j_client_name,
                                          start_time_millis);
@@ -267,7 +266,7 @@ static void JNI_ImageFetcherBridge_ReportCacheHitTime(
 // static
 static void JNI_ImageFetcherBridge_ReportTotalFetchTimeFromNative(
     JNIEnv* j_env,
-    const base::android::JavaParamRef<jstring>& j_client_name,
+    const base::android::JavaRef<jstring>& j_client_name,
     const jlong start_time_millis) {
   ImageFetcherBridge::ReportTotalFetchTimeFromNative(j_env, j_client_name,
                                                      start_time_millis);
@@ -295,7 +294,7 @@ ScopedJavaLocalRef<jobject> ImageFetcherBridge::CreateJavaImageDataFetchResult(
     JNIEnv* j_env,
     const JavaRef<jbyteArray>& j_image_data,
     const JavaRef<jobject>& j_request_metadata) {
-  // Wrap raw JNI types with JavaParamRef for the jni_zero helper.
+  // Wrap raw JNI types with JavaRef for the jni_zero helper.
   return Java_ImageFetcherBridge_createImageDataFetchResult(j_env, j_image_data,
                                                             j_request_metadata);
 }
@@ -305,7 +304,7 @@ ScopedJavaLocalRef<jobject> ImageFetcherBridge::CreateJavaImageFetchResult(
     JNIEnv* j_env,
     const JavaRef<jobject>& j_bitmap,
     const JavaRef<jobject>& j_request_metadata) {
-  // Wrap raw JNI types with JavaParamRef for the jni_zero helper.
+  // Wrap raw JNI types with JavaRef for the jni_zero helper.
   return Java_ImageFetcherBridge_createImageFetchResult(j_env, j_bitmap,
                                                         j_request_metadata);
 }

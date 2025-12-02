@@ -17,7 +17,7 @@ namespace signin {
 static base::android::ScopedJavaLocalRef<jstring>
 JNI_AccountInfoSerializer_AccountInfoToJsonString(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_account_info) {
+    const base::android::JavaRef<jobject>& j_account_info) {
   // Convert the Java AccountInfo to the C++ AccountInfo struct.
   AccountInfo account_info = ConvertFromJavaAccountInfo(env, j_account_info);
 

@@ -11,8 +11,7 @@ class AutocompleteSchemeClassifier;
 class AutocompleteSchemeClassifierAndroid {
  public:
   static AutocompleteSchemeClassifier* FromJavaObj(
-      const base::android::JavaParamRef<jobject>&
-          jautocomplete_scheme_classifier);
+      const base::android::JavaRef<jobject>& jautocomplete_scheme_classifier);
 
  private:
   AutocompleteSchemeClassifierAndroid() = default;

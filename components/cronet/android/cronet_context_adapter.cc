@@ -60,7 +60,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace cronet {
@@ -93,7 +93,7 @@ CronetContextAdapter::~CronetContextAdapter() = default;
 
 void CronetContextAdapter::InitRequestContextOnInitThread(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller) {
+    const JavaRef<jobject>& jcaller) {
   jcronet_url_request_context_.Reset(env, jcaller);
   context_->InitRequestContextOnInitThread();
 }
@@ -217,20 +217,18 @@ bool CronetContextAdapter::IsOnNetworkThread() const {
   return context_->IsOnNetworkThread();
 }
 
-bool CronetContextAdapter::StartNetLogToFile(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jfile_name,
-    jboolean jlog_all) {
+bool CronetContextAdapter::StartNetLogToFile(JNIEnv* env,
+                                             const JavaRef<jstring>& jfile_name,
+                                             jboolean jlog_all) {
   std::string file_name(
       base::android::ConvertJavaStringToUTF8(env, jfile_name));
   return context_->StartNetLogToFile(file_name, jlog_all == JNI_TRUE);
 }
 
-void CronetContextAdapter::StartNetLogToDisk(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jdir_name,
-    jboolean jlog_all,
-    jint jmax_size) {
+void CronetContextAdapter::StartNetLogToDisk(JNIEnv* env,
+                                             const JavaRef<jstring>& jdir_name,
+                                             jboolean jlog_all,
+                                             jint jmax_size) {
   std::string dir_name(base::android::ConvertJavaStringToUTF8(env, jdir_name));
   context_->StartNetLogToDisk(dir_name, jlog_all == JNI_TRUE, jmax_size);
 }
@@ -250,7 +248,7 @@ int CronetContextAdapter::default_load_flags() const {
 // Create a URLRequestContextConfig from the given parameters.
 static jlong JNI_CronetUrlRequestContext_CreateRequestContextConfig(
     JNIEnv* env,
-    const JavaParamRef<jbyteArray>& javaSerializedProto) {
+    const JavaRef<jbyteArray>& javaSerializedProto) {
   const int serializedProtoLength =
       env->GetArrayLength(javaSerializedProto.obj());
   cronet::proto::RequestContextConfigOptions configOptions;
@@ -293,7 +291,7 @@ static jlong JNI_CronetUrlRequestContext_CreateRequestContextConfig(
 static void JNI_CronetUrlRequestContext_AddQuicHint(
     JNIEnv* env,
     jlong jurl_request_context_config,
-    const JavaParamRef<jstring>& jhost,
+    const JavaRef<jstring>& jhost,
     jint jport,
     jint jalternate_port) {
   URLRequestContextConfig* config =
@@ -313,8 +311,8 @@ static void JNI_CronetUrlRequestContext_AddQuicHint(
 static void JNI_CronetUrlRequestContext_AddPkp(
     JNIEnv* env,
     jlong jurl_request_context_config,
-    const JavaParamRef<jstring>& jhost,
-    const JavaParamRef<jobjectArray>& jhashes,
+    const JavaRef<jstring>& jhost,
+    const JavaRef<jobjectArray>& jhashes,
     jboolean jinclude_subdomains,
     jlong jexpiration_time) {
   URLRequestContextConfig* config =

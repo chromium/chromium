@@ -49,7 +49,7 @@ class MessagingBackendServiceBridge
       jint j_type);
   base::android::ScopedJavaLocalRef<jobject> GetMessagesForGroup(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_local_group_id,
+      const base::android::JavaRef<jobject>& j_local_group_id,
       const base::android::JavaRef<jstring>& j_sync_group_id,
       jint j_type);
   base::android::ScopedJavaLocalRef<jobject> GetMessages(

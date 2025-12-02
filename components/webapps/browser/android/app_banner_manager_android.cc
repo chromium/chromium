@@ -55,7 +55,7 @@ using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace webapps {
 
@@ -138,10 +138,10 @@ int AppBannerManagerAndroid::GetBadgeStatusForTesting(JNIEnv* env) {
 void AppBannerManagerAndroid::OnAppDetailsRetrieved(
     JNIEnv* env,
     int request_id,
-    const JavaParamRef<jobject>& japp_data,
-    const JavaParamRef<jstring>& japp_title,
-    const JavaParamRef<jstring>& japp_package,
-    const JavaParamRef<jstring>& jicon_url) {
+    const JavaRef<jobject>& japp_data,
+    const JavaRef<jstring>& japp_title,
+    const JavaRef<jstring>& japp_package,
+    const JavaRef<jstring>& jicon_url) {
   // If the state isn't fetching native data, that means the page must have
   // navigated or reset in some way.
   if (state() != State::FETCHING_NATIVE_DATA) {
@@ -698,7 +698,7 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(AppBannerManagerAndroid);
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_AppBannerManager_GetJavaBannerManagerForWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_web_contents) {
+    const JavaRef<jobject>& java_web_contents) {
   auto* manager =
       static_cast<AppBannerManagerAndroid*>(AppBannerManager::FromWebContents(
           content::WebContents::FromJavaWebContents(java_web_contents)));
@@ -710,7 +710,7 @@ JNI_AppBannerManager_GetJavaBannerManagerForWebContents(
 static base::android::ScopedJavaLocalRef<jstring>
 JNI_AppBannerManager_GetInstallableWebAppManifestId(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_web_contents) {
+    const base::android::JavaRef<jobject>& java_web_contents) {
   return base::android::ConvertUTF8ToJavaString(
       env, AppBannerManager::GetInstallableWebAppManifestId(
                content::WebContents::FromJavaWebContents(java_web_contents)));
@@ -719,7 +719,7 @@ JNI_AppBannerManager_GetInstallableWebAppManifestId(
 // static
 static jboolean JNI_AppBannerManager_IsProbablyPromotable(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_web_contents) {
+    const base::android::JavaRef<jobject>& java_web_contents) {
   auto* manager =
       static_cast<AppBannerManagerAndroid*>(AppBannerManager::FromWebContents(
           content::WebContents::FromJavaWebContents(java_web_contents)));

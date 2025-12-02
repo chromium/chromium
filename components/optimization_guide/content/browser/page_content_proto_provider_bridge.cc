@@ -18,7 +18,7 @@ namespace optimization_guide::android {
 static void JNI_PageContentProtoProviderBridge_GetAiPageContent(
     JNIEnv* env,
     content::WebContents* web_contents,
-    const jni_zero::JavaParamRef<jobject>& j_callback) {
+    const jni_zero::JavaRef<jobject>& j_callback) {
   blink::mojom::AIPageContentOptionsPtr extraction_options =
       optimization_guide::DefaultAIPageContentOptions(
           /* on_critical_path =*/true);

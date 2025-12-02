@@ -39,8 +39,8 @@ class AddToHomescreenMediator {
   // After initialization, SetWebAppInfo and SetIcon should be called to update
   // the UI accordingly.
   AddToHomescreenMediator(
-      const base::android::JavaParamRef<jobject>& java_ref,
-      const base::android::JavaParamRef<jobject>& java_web_contents);
+      const base::android::JavaRef<jobject>& java_ref,
+      const base::android::JavaRef<jobject>& java_web_contents);
 
   void StartForAppBanner(std::unique_ptr<AddToHomescreenParams> params,
                          AddToHomescreenEventCallback event_callback);
@@ -55,9 +55,8 @@ class AddToHomescreenMediator {
 
   // Called from the Java side when the user accepts app installation from the
   // dialog.
-  void AddToHomescreen(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_user_title);
+  void AddToHomescreen(JNIEnv* env,
+                       const base::android::JavaRef<jstring>& j_user_title);
 
   // Called from the Java side when the installation UI is dismissed.
   void OnUiDismissed(JNIEnv* env);

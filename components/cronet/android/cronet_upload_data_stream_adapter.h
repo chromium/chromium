@@ -37,7 +37,7 @@ class CronetUploadDataStreamAdapter : public CronetUploadDataStream::Delegate {
  public:
   CronetUploadDataStreamAdapter(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jupload_data_stream);
+      const base::android::JavaRef<jobject>& jupload_data_stream);
 
   CronetUploadDataStreamAdapter(const CronetUploadDataStreamAdapter&) = delete;
   CronetUploadDataStreamAdapter& operator=(

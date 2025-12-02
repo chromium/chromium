@@ -14,7 +14,7 @@ namespace payments {
 namespace android {
 
 PaymentRequestUpdateEventListener::PaymentRequestUpdateEventListener(
-    const base::android::JavaParamRef<jobject>& listener)
+    const base::android::JavaRef<jobject>& listener)
     : listener_(listener) {}
 
 PaymentRequestUpdateEventListener::~PaymentRequestUpdateEventListener() =

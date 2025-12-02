@@ -28,7 +28,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/cronet/android/cronet_test_apk_jni/QuicTestServer_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace cronet {
@@ -125,8 +125,8 @@ void ShutdownOnServerThread() {
 // the device.
 static void JNI_QuicTestServer_StartQuicTestServer(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jtest_files_root,
-    const JavaParamRef<jstring>& jtest_data_dir) {
+    const JavaRef<jstring>& jtest_files_root,
+    const JavaRef<jstring>& jtest_data_dir) {
   CHECK(!g_quic_server_thread);
   base::FilePath test_data_dir(
       base::android::ConvertJavaStringToUTF8(env, jtest_data_dir));
@@ -159,7 +159,7 @@ static int JNI_QuicTestServer_GetServerPort(JNIEnv* env) {
 }
 
 static void JNI_QuicTestServer_DelayResponse(JNIEnv* env,
-                                             const JavaParamRef<jstring>& jpath,
+                                             const JavaRef<jstring>& jpath,
                                              int delayInSeconds) {
   CHECK(!g_quic_server_thread->task_runner()->BelongsToCurrentThread());
   std::string path = base::android::ConvertJavaStringToUTF8(env, jpath);

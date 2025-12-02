@@ -32,7 +32,7 @@ jint JniIdentityMutator::SetPrimaryAccount(
     const CoreAccountId& primary_account_id,
     jint j_consent_level,
     jint j_access_point,
-    const base::android::JavaParamRef<jobject>& j_prefs_committed_callback) {
+    const base::android::JavaRef<jobject>& j_prefs_committed_callback) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
@@ -73,8 +73,8 @@ void JniIdentityMutator::RevokeSyncConsent(JNIEnv* env, jint source_metric) {
 
 void JniIdentityMutator::SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& j_account_infos,
-    const base::android::JavaParamRef<jobject>& j_primary_account_id) {
+    const base::android::JavaRef<jobjectArray>& j_account_infos,
+    const base::android::JavaRef<jobject>& j_primary_account_id) {
   std::vector<AccountInfo> accounts;
   for (size_t i = 0;
        i < base::android::SafeGetArrayLength(env, j_account_infos); i++) {

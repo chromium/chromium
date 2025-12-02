@@ -12,7 +12,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/browser_ui/device_lock/android/device_lock_bridge_jni_headers/DeviceLockBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 DeviceLockBridge::DeviceLockBridge() {
   java_object_ = Java_DeviceLockBridge_create(

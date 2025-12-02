@@ -10,7 +10,7 @@
 #include "components/page_info/android/jni_headers/CertificateViewer_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 static ScopedJavaLocalRef<jstring> JNI_CertificateViewer_GetCertIssuedToText(

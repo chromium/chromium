@@ -53,12 +53,12 @@ class AddressNormalizerImpl : public AddressNormalizer {
 
   void LoadRulesForAddressNormalization(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& region_code);
+      const base::android::JavaRef<jstring>& region_code);
   void StartAddressNormalization(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jprofile,
+      const base::android::JavaRef<jobject>& jprofile,
       jint jtimeout_seconds,
-      const base::android::JavaParamRef<jobject>& jdelegate);
+      const base::android::JavaRef<jobject>& jdelegate);
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:

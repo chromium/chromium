@@ -37,7 +37,7 @@ using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace syncer {
@@ -57,7 +57,7 @@ ScopedJavaLocalRef<jintArray> DataTypeSetToJavaIntArray(JNIEnv* env,
 }
 
 DataTypeSet JavaIntArrayToDataTypeSet(JNIEnv* env,
-                                      const JavaParamRef<jintArray>& types) {
+                                      const JavaRef<jintArray>& types) {
   std::vector<int> types_vector;
   base::android::JavaIntArrayToIntVector(env, types, &types_vector);
   DataTypeSet data_type_set;
@@ -253,7 +253,7 @@ ScopedJavaLocalRef<jintArray> SyncServiceAndroidBridge::GetSelectedTypes(
 
 void SyncServiceAndroidBridge::GetTypesWithUnsyncedData(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& callback) {
+    const base::android::JavaRef<jobject>& callback) {
   base::android::ScopedJavaGlobalRef<jobject> java_callback;
   java_callback.Reset(env, callback);
   native_sync_service_->GetTypesWithUnsyncedData(
@@ -264,8 +264,8 @@ void SyncServiceAndroidBridge::GetTypesWithUnsyncedData(
 
 void SyncServiceAndroidBridge::GetLocalDataDescriptions(
     JNIEnv* env,
-    const base::android::JavaParamRef<jintArray>& types,
-    const base::android::JavaParamRef<jobject>& callback) {
+    const base::android::JavaRef<jintArray>& types,
+    const base::android::JavaRef<jobject>& callback) {
   base::android::ScopedJavaGlobalRef<jobject> java_callback;
   java_callback.Reset(env, callback);
 
@@ -277,7 +277,7 @@ void SyncServiceAndroidBridge::GetLocalDataDescriptions(
 
 void SyncServiceAndroidBridge::TriggerLocalDataMigration(
     JNIEnv* env,
-    const JavaParamRef<jintArray>& types) {
+    const JavaRef<jintArray>& types) {
   native_sync_service_->TriggerLocalDataMigration(
       JavaIntArrayToDataTypeSet(env, types));
 }
@@ -297,7 +297,7 @@ jboolean SyncServiceAndroidBridge::IsTypeManagedByCustodian(JNIEnv* env,
 void SyncServiceAndroidBridge::SetSelectedTypes(
     JNIEnv* env,
     jboolean sync_everything,
-    const JavaParamRef<jintArray>& user_selectable_type_array) {
+    const JavaRef<jintArray>& user_selectable_type_array) {
   if (native_sync_service_->GetAccountInfo().account_id.empty()) {
     // This function shouldn't be called while signed out, but evidence suggests
     // it sometimes does get called.
@@ -392,14 +392,14 @@ jint SyncServiceAndroidBridge::GetUserActionableError(JNIEnv* env) {
 
 void SyncServiceAndroidBridge::SetEncryptionPassphrase(
     JNIEnv* env,
-    const JavaParamRef<jstring>& passphrase) {
+    const JavaRef<jstring>& passphrase) {
   native_sync_service_->GetUserSettings()->SetEncryptionPassphrase(
       ConvertJavaStringToUTF8(env, passphrase));
 }
 
 jboolean SyncServiceAndroidBridge::SetDecryptionPassphrase(
     JNIEnv* env,
-    const JavaParamRef<jstring>& passphrase) {
+    const JavaRef<jstring>& passphrase) {
   return native_sync_service_->GetUserSettings()->SetDecryptionPassphrase(
       ConvertJavaStringToUTF8(env, passphrase));
 }
@@ -410,9 +410,8 @@ jlong SyncServiceAndroidBridge::GetExplicitPassphraseTime(JNIEnv* env) {
       .InMillisecondsSinceUnixEpoch();
 }
 
-void SyncServiceAndroidBridge::GetAllNodes(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& callback) {
+void SyncServiceAndroidBridge::GetAllNodes(JNIEnv* env,
+                                           const JavaRef<jobject>& callback) {
   base::android::ScopedJavaGlobalRef<jobject> java_callback;
   java_callback.Reset(env, callback);
   native_sync_service_->GetAllNodesForDebugging(
@@ -471,7 +470,7 @@ jlong SyncServiceAndroidBridge::GetLastSyncedTimeForDebugging(JNIEnv* env) {
 
 void SyncServiceAndroidBridge::KeepAccountSettingsPrefsOnlyForUsers(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& gaia_ids_array) {
+    const base::android::JavaRef<jobjectArray>& gaia_ids_array) {
   std::vector<std::string> gaia_id_strings;
   AppendJavaStringArrayToStringVector(env, gaia_ids_array, &gaia_id_strings);
   std::vector<GaiaId> gaia_ids;

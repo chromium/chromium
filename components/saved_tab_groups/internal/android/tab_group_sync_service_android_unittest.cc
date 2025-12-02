@@ -25,7 +25,7 @@
 #include "components/saved_tab_groups/internal/native_j_unittests_jni_headers/TabGroupSyncServiceAndroidUnitTest_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using testing::_;
 using testing::Eq;
 using testing::Return;

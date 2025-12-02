@@ -23,10 +23,10 @@ namespace payments {
 // static
 static jboolean JNI_HasEnrolledInstrumentQuery_CanQuery(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
-    const base::android::JavaParamRef<jstring>& jtop_level_origin,
-    const base::android::JavaParamRef<jstring>& jframe_origin,
-    const base::android::JavaParamRef<jobject>& jquery_map) {
+    const base::android::JavaRef<jobject>& jweb_contents,
+    const base::android::JavaRef<jstring>& jtop_level_origin,
+    const base::android::JavaRef<jstring>& jframe_origin,
+    const base::android::JavaRef<jobject>& jquery_map) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents)
     return false;

@@ -21,13 +21,13 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
  public:
   PlayerCompositorDelegateAndroid(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_object,
+      const base::android::JavaRef<jobject>& j_object,
       PaintPreviewBaseService* paint_preview_service,
       jlong j_capture_result_ptr,
-      const base::android::JavaParamRef<jstring>& j_url_spec,
-      const base::android::JavaParamRef<jstring>& j_directory_key,
+      const base::android::JavaRef<jstring>& j_url_spec,
+      const base::android::JavaRef<jstring>& j_directory_key,
       jboolean j_main_frame_mode,
-      const base::android::JavaParamRef<jobject>& j_compositor_error_callback,
+      const base::android::JavaRef<jobject>& j_compositor_error_callback,
       jboolean j_is_low_mem);
 
   void OnCompositorReady(
@@ -44,16 +44,15 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
   // Called from Java when there is a request for a new bitmap. When the bitmap
   // is ready, it will be passed to j_bitmap_callback. In case of any failure,
   // j_error_callback will be called.
-  jint RequestBitmap(
-      JNIEnv* env,
-      std::optional<base::UnguessableToken>& frame_guid,
-      const base::android::JavaParamRef<jobject>& j_bitmap_callback,
-      const base::android::JavaParamRef<jobject>& j_error_callback,
-      jfloat j_scale_factor,
-      jint j_clip_x,
-      jint j_clip_y,
-      jint j_clip_width,
-      jint j_clip_height);
+  jint RequestBitmap(JNIEnv* env,
+                     std::optional<base::UnguessableToken>& frame_guid,
+                     const base::android::JavaRef<jobject>& j_bitmap_callback,
+                     const base::android::JavaRef<jobject>& j_error_callback,
+                     jfloat j_scale_factor,
+                     jint j_clip_x,
+                     jint j_clip_y,
+                     jint j_clip_width,
+                     jint j_clip_height);
 
   jboolean CancelBitmapRequest(JNIEnv* env, jint j_request_id);
 

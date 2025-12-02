@@ -60,9 +60,8 @@ class PwaBottomSheetController {
   void OnSheetExpanded(JNIEnv* env);
 
   // Called from the Java side when the user opts to install.
-  void OnAddToHomescreen(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jweb_contents);
+  void OnAddToHomescreen(JNIEnv* env,
+                         const base::android::JavaRef<jobject>& jweb_contents);
 
  private:
   PwaBottomSheetController(const WebAppBannerData& web_app_banner_data,

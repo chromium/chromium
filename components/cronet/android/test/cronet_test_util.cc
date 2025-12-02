@@ -34,7 +34,7 @@ namespace {
 
 using ::base::MessagePump;
 using ::base::MessagePumpType;
-using ::base::android::JavaParamRef;
+using ::base::android::JavaRef;
 using ::base::sequence_manager::SequenceManager;
 
 SequenceManager* g_sequence_manager = nullptr;

@@ -15,12 +15,12 @@
 namespace content_settings {
 
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 AndroidObserver::AndroidObserver(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jbrowser_context_handle)
+    const base::android::JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jbrowser_context_handle)
     : jobject_(obj) {
   content::BrowserContext* browser_context =
       content::BrowserContextFromJavaHandle(jbrowser_context_handle);
@@ -50,8 +50,8 @@ void AndroidObserver::Destroy(JNIEnv* env) {
 
 static jlong JNI_ContentSettingsObserver_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& jbrowser_context_handle) {
+    const base::android::JavaRef<jobject>& obj,
+    const base::android::JavaRef<jobject>& jbrowser_context_handle) {
   return reinterpret_cast<intptr_t>(
       new AndroidObserver(env, obj, jbrowser_context_handle));
 }

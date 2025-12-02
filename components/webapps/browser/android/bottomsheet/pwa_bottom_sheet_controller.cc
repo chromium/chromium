@@ -28,7 +28,7 @@
 
 using base::ASCIIToUTF16;
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace webapps {
@@ -58,7 +58,7 @@ PwaBottomSheetController::~PwaBottomSheetController() = default;
 static jboolean
 JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jweb_contents,
     int install_trigger) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
@@ -143,7 +143,7 @@ void PwaBottomSheetController::OnSheetExpanded(JNIEnv* env) {
 
 void PwaBottomSheetController::OnAddToHomescreen(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents)

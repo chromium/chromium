@@ -109,7 +109,7 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
 
   void OnSubframeAsyncActionTaken(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_gurl);
+      const base::android::JavaRef<jobject>& j_gurl);
 
  private:
   void LoaderCallback(

@@ -173,7 +173,7 @@ content::RenderFrameHost* InternalAuthenticatorAndroid::GetRenderFrameHost() {
 void InternalAuthenticatorAndroid::InvokeMakeCredentialResponse(
     JNIEnv* env,
     jint status,
-    const base::android::JavaParamRef<jobject>& byte_buffer) {
+    const base::android::JavaRef<jobject>& byte_buffer) {
   blink::mojom::MakeCredentialAuthenticatorResponsePtr response;
 
   // |byte_buffer| may be null if authentication failed.
@@ -195,7 +195,7 @@ void InternalAuthenticatorAndroid::InvokeMakeCredentialResponse(
 void InternalAuthenticatorAndroid::InvokeGetAssertionResponse(
     JNIEnv* env,
     jint status,
-    const base::android::JavaParamRef<jobject>& byte_buffer) {
+    const base::android::JavaRef<jobject>& byte_buffer) {
   blink::mojom::GetAssertionAuthenticatorResponsePtr response;
 
   // |byte_buffer| may be null if authentication failed.
@@ -223,7 +223,7 @@ void InternalAuthenticatorAndroid::
 
 void InternalAuthenticatorAndroid::InvokeGetMatchingCredentialIdsResponse(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& credential_ids_array) {
+    const base::android::JavaRef<jobjectArray>& credential_ids_array) {
   std::vector<std::vector<uint8_t>> credential_ids;
   JavaArrayOfByteArrayToBytesVector(env, credential_ids_array, &credential_ids);
   std::move(get_matching_credential_ids_callback_)

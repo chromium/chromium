@@ -15,14 +15,14 @@ namespace payments {
 namespace {
 
 using ::base::android::ConvertJavaStringToUTF8;
-using ::base::android::JavaParamRef;
+using ::base::android::JavaRef;
 
 }  // namespace
 
 // static
 static jboolean JNI_OriginSecurityChecker_IsOriginSecure(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_url) {
+    const JavaRef<jobject>& j_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   return url.is_valid() && network::IsUrlPotentiallyTrustworthy(url);
 }
@@ -30,7 +30,7 @@ static jboolean JNI_OriginSecurityChecker_IsOriginSecure(
 // static
 static jboolean JNI_OriginSecurityChecker_IsSchemeCryptographic(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_url) {
+    const JavaRef<jobject>& j_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   return url.is_valid() && url.SchemeIsCryptographic();
 }

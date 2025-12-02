@@ -14,7 +14,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/webapps/browser/android/webapps_jni_headers/PwaUniversalInstallBottomSheetCoordinator_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace {
 
@@ -26,7 +26,7 @@ class AppDataFetcher : public webapps::AddToHomescreenDataFetcher::Observer {
  public:
   AppDataFetcher(content::WebContents* web_contents,
                  JNIEnv* env,
-                 const JavaParamRef<jobject>& jcaller) {
+                 const JavaRef<jobject>& jcaller) {
     env_ = env;
     java_watcher_.Reset(env, jcaller);
 
@@ -69,8 +69,8 @@ namespace webapps {
 
 static void JNI_PwaUniversalInstallBottomSheetCoordinator_FetchAppData(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jobject>& java_web_contents) {
+    const JavaRef<jobject>& jcaller,
+    const base::android::JavaRef<jobject>& java_web_contents) {
   // This class manages its own lifetime:
   new AppDataFetcher(
       content::WebContents::FromJavaWebContents(java_web_contents), env,

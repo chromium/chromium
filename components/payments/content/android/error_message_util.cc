@@ -22,7 +22,7 @@ namespace android {
 static base::android::ScopedJavaLocalRef<jstring>
 JNI_ErrorMessageUtil_GetNotSupportedErrorMessage(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& jmethods) {
+    const base::android::JavaRef<jobjectArray>& jmethods) {
   std::vector<std::string> method_vector;
   base::android::AppendJavaStringArrayToStringVector(env, jmethods,
                                                      &method_vector);

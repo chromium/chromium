@@ -14,7 +14,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/dom_distiller/core/android/jni_headers/DomDistillerUrlUtils_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace dom_distiller {
@@ -26,9 +26,9 @@ namespace android {
 static ScopedJavaLocalRef<jstring>
 JNI_DomDistillerUrlUtils_GetDistillerViewUrlFromUrl(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_scheme,
-    const JavaParamRef<jstring>& j_url,
-    const JavaParamRef<jstring>& j_title) {
+    const JavaRef<jstring>& j_scheme,
+    const JavaRef<jstring>& j_url,
+    const JavaRef<jstring>& j_title) {
   GURL url(base::android::ConvertJavaStringToUTF8(env, j_url));
   if (!url.is_valid()) {
     return ScopedJavaLocalRef<jstring>();
@@ -46,7 +46,7 @@ JNI_DomDistillerUrlUtils_GetDistillerViewUrlFromUrl(
 static ScopedJavaLocalRef<jobject>
 JNI_DomDistillerUrlUtils_GetOriginalUrlFromDistillerUrl(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_url) {
+    const JavaRef<jstring>& j_url) {
   GURL url(base::android::ConvertJavaStringToUTF8(env, j_url));
   if (!url.is_valid())
     return url::GURLAndroid::EmptyGURL(env);
@@ -61,15 +61,15 @@ JNI_DomDistillerUrlUtils_GetOriginalUrlFromDistillerUrl(
 
 static jboolean JNI_DomDistillerUrlUtils_IsDistilledPage(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_url) {
+    const JavaRef<jstring>& j_url) {
   GURL url(base::android::ConvertJavaStringToUTF8(env, j_url));
   return dom_distiller::url_utils::IsDistilledPage(url);
 }
 
 static ScopedJavaLocalRef<jstring> JNI_DomDistillerUrlUtils_GetValueForKeyInUrl(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_url,
-    const JavaParamRef<jstring>& j_key) {
+    const JavaRef<jstring>& j_url,
+    const JavaRef<jstring>& j_key) {
   GURL url(base::android::ConvertJavaStringToUTF8(env, j_url));
   std::string key = base::android::ConvertJavaStringToUTF8(env, j_key);
   return base::android::ConvertUTF8ToJavaString(

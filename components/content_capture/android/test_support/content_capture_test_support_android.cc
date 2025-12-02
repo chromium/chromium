@@ -41,8 +41,8 @@ static void JNI_ContentCaptureTestSupport_DisableGetFaviconFromWebContents(
 
 static void JNI_ContentCaptureTestSupport_SimulateDidUpdateFaviconURL(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jwebContents,
-    const base::android::JavaParamRef<jstring>& jfaviconJson) {
+    const base::android::JavaRef<jobject>& jwebContents,
+    const base::android::JavaRef<jstring>& jfaviconJson) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jwebContents);
   CHECK(web_contents);

@@ -29,7 +29,6 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -463,7 +462,7 @@ namespace signin {
 // It is set to 0 if there's no known expiration time.
 static void JNI_ProfileOAuth2TokenServiceDelegate_OnOAuth2TokenFetched(
     JNIEnv* env,
-    const JavaParamRef<jstring>& authToken,
+    const JavaRef<jstring>& authToken,
     const jlong expiration_time_secs,
     GoogleServiceAuthError& authError,
     jlong nativeCallback) {

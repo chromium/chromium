@@ -223,7 +223,7 @@ void GetFieldsForDistinguishingProfiles(
 // with a unique identifier (GUID) corresponding to the Java profile
 // (`jprofile`) is initialized.
 AutofillProfile CreateStarterProfile(
-    const base::android::JavaParamRef<jobject>& jprofile,
+    const base::android::JavaRef<jobject>& jprofile,
     JNIEnv* env,
     const AutofillProfile* existing_profile) {
   std::string guid = Java_AutofillProfile_getGUID(env, jprofile);
@@ -359,7 +359,7 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
 
 // static
 AutofillProfile AutofillProfile::CreateFromJavaObject(
-    const base::android::JavaParamRef<jobject>& jprofile,
+    const base::android::JavaRef<jobject>& jprofile,
     const AutofillProfile* existing_profile,
     std::string_view app_locale) {
   JNIEnv* env = base::android::AttachCurrentThread();

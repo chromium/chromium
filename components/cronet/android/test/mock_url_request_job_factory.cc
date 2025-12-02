@@ -19,7 +19,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/cronet/android/cronet_test_apk_jni/MockUrlRequestJobFactory_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace cronet {
@@ -110,10 +110,9 @@ JNI_MockUrlRequestJobFactory_GetMockUrlWithFailure(JNIEnv* jenv,
 }
 
 static ScopedJavaLocalRef<jstring>
-JNI_MockUrlRequestJobFactory_GetMockUrlForData(
-    JNIEnv* jenv,
-    const JavaParamRef<jstring>& jdata,
-    jint jdata_repeat_count) {
+JNI_MockUrlRequestJobFactory_GetMockUrlForData(JNIEnv* jenv,
+                                               const JavaRef<jstring>& jdata,
+                                               jint jdata_repeat_count) {
   std::string data(base::android::ConvertJavaStringToUTF8(jenv, jdata));
   GURL url(net::URLRequestMockDataJob::GetMockHttpUrl(data,
                                                       jdata_repeat_count));

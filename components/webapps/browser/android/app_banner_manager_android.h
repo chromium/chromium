@@ -105,10 +105,10 @@ class AppBannerManagerAndroid
   // determined (and blank if not).
   base::android::ScopedJavaLocalRef<jstring> GetInstallableWebAppName(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_web_contents);
+      const base::android::JavaRef<jobject>& java_web_contents);
   base::android::ScopedJavaLocalRef<jstring> GetInstallableWebAppManifestId(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_web_contents);
+      const base::android::JavaRef<jobject>& java_web_contents);
 
   // Returns true if the banner pipeline is currently running.
   bool IsRunningForTesting(JNIEnv* env);
@@ -123,10 +123,10 @@ class AppBannerManagerAndroid
   void OnAppDetailsRetrieved(
       JNIEnv* env,
       int request_id,
-      const base::android::JavaParamRef<jobject>& japp_data,
-      const base::android::JavaParamRef<jstring>& japp_title,
-      const base::android::JavaParamRef<jstring>& japp_package,
-      const base::android::JavaParamRef<jstring>& jicon_url);
+      const base::android::JavaRef<jobject>& japp_data,
+      const base::android::JavaRef<jstring>& japp_title,
+      const base::android::JavaRef<jstring>& japp_package,
+      const base::android::JavaRef<jstring>& jicon_url);
 
   void ShowBannerFromBadge(const InstallBannerConfig& config);
 

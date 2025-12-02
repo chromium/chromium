@@ -41,7 +41,7 @@ class ConnectionInfoViewAndroid : public PageInfoUI {
   // on this page.
   void ResetCertDecisions(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_web_contents);
+      const base::android::JavaRef<jobject>& java_web_contents);
 
   // PageInfoUI implementations.
   void SetIdentityInfo(const IdentityInfo& identity_info) override;

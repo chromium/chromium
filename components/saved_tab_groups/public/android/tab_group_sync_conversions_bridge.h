@@ -9,7 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace tab_groups {
@@ -24,9 +24,8 @@ class TabGroupSyncConversionsBridge {
       const SavedTabGroup& group);
 
   // Converts a Java local tab group ID to its native representation.
-  static LocalTabGroupID FromJavaTabGroupId(
-      JNIEnv* env,
-      const JavaParamRef<jobject>& j_group_id);
+  static LocalTabGroupID FromJavaTabGroupId(JNIEnv* env,
+                                            const JavaRef<jobject>& j_group_id);
 
   // Converts a local tab group ID in native to Java. If the tab group ID isn't
   // present, null will be returned.
@@ -39,7 +38,7 @@ class TabGroupSyncConversionsBridge {
   static void FillNativeSavedTabGroup(
       JNIEnv* env,
       const jlong native_saved_tab_group_ptr,
-      const JavaParamRef<jobject>& j_saved_tab_group);
+      const JavaRef<jobject>& j_saved_tab_group);
 
  private:
   TabGroupSyncConversionsBridge() = default;

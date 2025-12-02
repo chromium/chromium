@@ -37,10 +37,10 @@ namespace installedapp {
 static void
 JNI_InstalledAppProviderImpl_CheckDigitalAssetLinksRelationshipForWebApk(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jhandle,
-    const base::android::JavaParamRef<jstring>& jwebDomain,
-    const base::android::JavaParamRef<jstring>& jmanifestUrl,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jobject>& jhandle,
+    const base::android::JavaRef<jstring>& jwebDomain,
+    const base::android::JavaRef<jstring>& jmanifestUrl,
+    const base::android::JavaRef<jobject>& jcallback) {
   content::BrowserContext* browser_context =
       content::BrowserContextFromJavaHandle(jhandle);
 

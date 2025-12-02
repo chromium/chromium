@@ -17,10 +17,9 @@ class CurrencyFormatter;
 // Forwarding calls to payments::CurrencyFormatter.
 class CurrencyFormatterAndroid {
  public:
-  CurrencyFormatterAndroid(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& currency_code,
-      const base::android::JavaParamRef<jstring>& locale_name);
+  CurrencyFormatterAndroid(JNIEnv* env,
+                           const base::android::JavaRef<jstring>& currency_code,
+                           const base::android::JavaRef<jstring>& locale_name);
 
   CurrencyFormatterAndroid(const CurrencyFormatterAndroid&) = delete;
   CurrencyFormatterAndroid& operator=(const CurrencyFormatterAndroid&) = delete;
@@ -36,7 +35,7 @@ class CurrencyFormatterAndroid {
   // Refer to CurrencyFormatter::Format documentation.
   base::android::ScopedJavaLocalRef<jstring> Format(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& amount);
+      const base::android::JavaRef<jstring>& amount);
 
   base::android::ScopedJavaLocalRef<jstring> GetFormattedCurrencyCode(
       JNIEnv* env);

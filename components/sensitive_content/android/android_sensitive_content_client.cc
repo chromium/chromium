@@ -61,7 +61,7 @@ void AndroidSensitiveContentClient::OnDelegateSet() {
 static ScopedJavaLocalRef<jobject>
 JNI_SensitiveContentClient_GetJavaSensitiveContentClientFromWebContents(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_web_contents) {
+    const base::android::JavaRef<jobject>& java_web_contents) {
   AndroidSensitiveContentClient* android_sensitive_content_client =
       AndroidSensitiveContentClient::FromWebContents(
           content::WebContents::FromJavaWebContents(java_web_contents));

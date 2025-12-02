@@ -38,7 +38,7 @@ AutofillManager* GetAutofillManager(content::WebContents* web_contents,
 }
 
 AutofillManager* ToMainFrameAutofillManager(
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
+    const base::android::JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents);
@@ -53,9 +53,9 @@ AutofillManager* ToMainFrameAutofillManager(
 static jboolean
 JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
-    const base::android::JavaParamRef<jobjectArray>& jfield_ids,
-    const base::android::JavaParamRef<jintArray>& jfield_types) {
+    const base::android::JavaRef<jobject>& jweb_contents,
+    const base::android::JavaRef<jobjectArray>& jfield_ids,
+    const base::android::JavaRef<jintArray>& jfield_types) {
   std::vector<std::u16string> field_ids;
   base::android::AppendJavaStringArrayToStringVector(env, jfield_ids,
                                                      &field_ids);
@@ -106,9 +106,9 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
 static jboolean
 JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerResponseForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
-    const base::android::JavaParamRef<jobjectArray>& jfield_ids,
-    const base::android::JavaParamRef<jobjectArray>& jfield_types) {
+    const base::android::JavaRef<jobject>& jweb_contents,
+    const base::android::JavaRef<jobjectArray>& jfield_ids,
+    const base::android::JavaRef<jobjectArray>& jfield_types) {
   std::vector<std::u16string> field_ids;
   base::android::AppendJavaStringArrayToStringVector(env, jfield_ids,
                                                      &field_ids);

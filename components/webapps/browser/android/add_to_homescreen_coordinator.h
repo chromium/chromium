@@ -30,7 +30,7 @@ class AddToHomescreenCoordinator : public AddToHomescreenDataFetcher::Observer {
   AddToHomescreenCoordinator(
       content::WebContents* web_contents,
       int app_menu_type,
-      const base::android::JavaParamRef<jobject>& java_coordinator);
+      const base::android::JavaRef<jobject>& java_coordinator);
 
   // Called from the Java side and destructs this object.
   void Destroy(JNIEnv* env);

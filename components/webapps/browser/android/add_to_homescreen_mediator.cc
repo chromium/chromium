@@ -22,7 +22,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/webapps/browser/android/webapps_jni_headers/AddToHomescreenMediator_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace webapps {
@@ -30,15 +30,15 @@ namespace webapps {
 // static
 static jlong JNI_AddToHomescreenMediator_Initialize(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_ref,
-    const JavaParamRef<jobject>& java_web_contents) {
+    const JavaRef<jobject>& java_ref,
+    const JavaRef<jobject>& java_web_contents) {
   return reinterpret_cast<intptr_t>(
       new AddToHomescreenMediator(java_ref, java_web_contents));
 }
 
 AddToHomescreenMediator::AddToHomescreenMediator(
-    const JavaParamRef<jobject>& java_ref,
-    const JavaParamRef<jobject>& java_web_contents) {
+    const JavaRef<jobject>& java_ref,
+    const JavaRef<jobject>& java_web_contents) {
   java_ref_.Reset(java_ref);
 
   web_contents_ = content::WebContents::FromJavaWebContents(java_web_contents)
@@ -91,7 +91,7 @@ void AddToHomescreenMediator::OnFullAppDataAvailable(
 
 void AddToHomescreenMediator::AddToHomescreen(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_user_title) {
+    const JavaRef<jstring>& j_user_title) {
   if (!params_ || !web_contents_) {
     return;
   }

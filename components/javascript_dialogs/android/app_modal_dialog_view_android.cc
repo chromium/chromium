@@ -22,7 +22,7 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -110,7 +110,7 @@ void AppModalDialogViewAndroid::AcceptAppModalDialog() {
 
 void AppModalDialogViewAndroid::DidAcceptAppModalDialog(
     JNIEnv* env,
-    const JavaParamRef<jstring>& prompt,
+    const JavaRef<jstring>& prompt,
     bool should_suppress_js_dialogs) {
   std::u16string prompt_text =
       base::android::ConvertJavaStringToUTF16(env, prompt);

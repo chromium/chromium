@@ -550,7 +550,7 @@ class IdentityManager : public KeyedService,
   base::android::ScopedJavaLocalRef<jobject>
   FindExtendedAccountInfoByEmailAddress(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_email) const;
+      const base::android::JavaRef<jstring>& j_email) const;
 
   base::android::ScopedJavaLocalRef<jobjectArray> GetAccountsWithRefreshTokens(
       JNIEnv* env) const;

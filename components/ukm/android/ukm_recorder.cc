@@ -58,9 +58,9 @@ void ConvertJavaMetricsArrayToVector(
 // Called by Java org.chromium.chrome.browser.metrics.UkmRecorder.
 static void JNI_UkmRecorder_RecordEventWithMultipleMetrics(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
-    const base::android::JavaParamRef<jstring>& j_event_name,
-    const base::android::JavaParamRef<jobjectArray>& j_metrics) {
+    const base::android::JavaRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jstring>& j_event_name,
+    const base::android::JavaRef<jobjectArray>& j_metrics) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   const std::string event_name(

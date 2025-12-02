@@ -27,8 +27,7 @@ class TestUploadDataStreamHandler {
   TestUploadDataStreamHandler(
       std::unique_ptr<net::UploadDataStream> upload_data_stream,
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>&
-          jtest_upload_data_stream_handler,
+      const base::android::JavaRef<jobject>& jtest_upload_data_stream_handler,
       jlong jcontext_adapter);
 
   TestUploadDataStreamHandler(const TestUploadDataStreamHandler&) = delete;

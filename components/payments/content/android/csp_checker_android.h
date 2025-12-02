@@ -18,8 +18,7 @@ namespace payments {
 // Forwarding calls to a Java implementation.
 class CSPCheckerAndroid : public CSPChecker {
  public:
-  explicit CSPCheckerAndroid(
-      const base::android::JavaParamRef<jobject>& jbridge);
+  explicit CSPCheckerAndroid(const base::android::JavaRef<jobject>& jbridge);
   ~CSPCheckerAndroid() override;
 
   CSPCheckerAndroid(const CSPCheckerAndroid&) = delete;

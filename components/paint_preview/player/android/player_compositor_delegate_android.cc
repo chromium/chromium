@@ -29,7 +29,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/paint_preview/player/android/jni_headers/PlayerCompositorDelegateImpl_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -52,13 +52,13 @@ constexpr std::
 
 static jlong JNI_PlayerCompositorDelegateImpl_Initialize(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_object,
+    const JavaRef<jobject>& j_object,
     jlong paint_preview_service,
     jlong j_capture_result_ptr,
-    const JavaParamRef<jstring>& j_url_spec,
-    const JavaParamRef<jstring>& j_directory_key,
+    const JavaRef<jstring>& j_url_spec,
+    const JavaRef<jstring>& j_directory_key,
     jboolean j_main_frame_mode,
-    const JavaParamRef<jobject>& j_compositor_error_callback,
+    const JavaRef<jobject>& j_compositor_error_callback,
     jboolean j_is_low_mem) {
   TRACE_EVENT0("paint_preview", "JNI_PlayerCompositorDelegateImpl_Initialize");
   PlayerCompositorDelegateAndroid* delegate =
@@ -72,13 +72,13 @@ static jlong JNI_PlayerCompositorDelegateImpl_Initialize(
 
 PlayerCompositorDelegateAndroid::PlayerCompositorDelegateAndroid(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_object,
+    const JavaRef<jobject>& j_object,
     PaintPreviewBaseService* paint_preview_service,
     jlong j_capture_result_ptr,
-    const JavaParamRef<jstring>& j_url_spec,
-    const JavaParamRef<jstring>& j_directory_key,
+    const JavaRef<jstring>& j_url_spec,
+    const JavaRef<jstring>& j_directory_key,
     jboolean j_main_frame_mode,
-    const JavaParamRef<jobject>& j_compositor_error_callback,
+    const JavaRef<jobject>& j_compositor_error_callback,
     jboolean j_is_low_mem)
     : PlayerCompositorDelegate(),
       request_id_(0),
@@ -220,8 +220,8 @@ void PlayerCompositorDelegateAndroid::CompositeResponseFramesToVectors(
 jint PlayerCompositorDelegateAndroid::RequestBitmap(
     JNIEnv* env,
     std::optional<base::UnguessableToken>& frame_guid,
-    const JavaParamRef<jobject>& j_bitmap_callback,
-    const JavaParamRef<jobject>& j_error_callback,
+    const JavaRef<jobject>& j_bitmap_callback,
+    const JavaRef<jobject>& j_error_callback,
     jfloat j_scale_factor,
     jint j_clip_x,
     jint j_clip_y,

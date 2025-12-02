@@ -12,7 +12,7 @@
 #include "components/saved_tab_groups/internal/android/versioning_message_controller_android.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -44,112 +44,109 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
 
   // Mutation methods (Java -> native).
   // Mutator methods that result in group metadata mutation.
-  void AddGroup(JNIEnv* env,
-                const JavaParamRef<jobject>& j_saved_tab_group);
+  void AddGroup(JNIEnv* env, const JavaRef<jobject>& j_saved_tab_group);
 
   void RemoveGroupByLocalId(JNIEnv* env,
-                            const JavaParamRef<jobject>& j_local_group_id);
+                            const JavaRef<jobject>& j_local_group_id);
 
   void RemoveGroupBySyncId(JNIEnv* env,
-                           const JavaParamRef<jstring>& j_sync_group_id);
+                           const JavaRef<jstring>& j_sync_group_id);
 
   void UpdateVisualData(JNIEnv* env,
-                        const JavaParamRef<jobject>& j_group_id,
-                        const JavaParamRef<jstring>& j_title,
+                        const JavaRef<jobject>& j_group_id,
+                        const JavaRef<jstring>& j_title,
                         jint j_color);
 
   void MakeTabGroupShared(JNIEnv* env,
-                          const JavaParamRef<jobject>& j_group_id,
-                          const JavaParamRef<jstring>& j_collaboration_id,
-                          const JavaParamRef<jobject>& j_boolean_callback);
+                          const JavaRef<jobject>& j_group_id,
+                          const JavaRef<jstring>& j_collaboration_id,
+                          const JavaRef<jobject>& j_boolean_callback);
 
   void AboutToUnShareTabGroup(JNIEnv* env,
-                              const JavaParamRef<jobject>& j_group_id,
-                              const JavaParamRef<jobject>& j_callback);
+                              const JavaRef<jobject>& j_group_id,
+                              const JavaRef<jobject>& j_callback);
 
   void OnTabGroupUnShareComplete(JNIEnv* env,
-                                 const JavaParamRef<jobject>& j_group_id,
+                                 const JavaRef<jobject>& j_group_id,
                                  const jboolean j_success);
 
   // Mutator methods that result in tab metadata mutation.
   void AddTab(JNIEnv* env,
-              const JavaParamRef<jobject>& j_group_id,
+              const JavaRef<jobject>& j_group_id,
               jint j_tab_id,
-              const JavaParamRef<jstring>& j_title,
-              const JavaParamRef<jobject>& j_url,
+              const JavaRef<jstring>& j_title,
+              const JavaRef<jobject>& j_url,
               jint j_position);
 
   void UpdateTab(JNIEnv* env,
-                 const JavaParamRef<jobject>& j_group_id,
+                 const JavaRef<jobject>& j_group_id,
                  jint j_tab_id,
-                 const JavaParamRef<jstring>& j_title,
-                 const JavaParamRef<jobject>& j_url,
+                 const JavaRef<jstring>& j_title,
+                 const JavaRef<jobject>& j_url,
                  jint j_position);
 
   void RemoveTab(JNIEnv* env,
-                 const JavaParamRef<jobject>& j_group_id,
+                 const JavaRef<jobject>& j_group_id,
                  jint j_tab_id);
 
   void MoveTab(JNIEnv* env,
-               const JavaParamRef<jobject>& j_group_id,
+               const JavaRef<jobject>& j_group_id,
                jint j_tab_id,
                int j_new_index_in_group);
 
   void SetTabSelected(JNIEnv* env,
-                      const JavaParamRef<jobject>& j_group_id,
+                      const JavaRef<jobject>& j_group_id,
                       jint j_tab_id,
-                      const JavaParamRef<jstring>& j_tab_title);
+                      const JavaRef<jstring>& j_tab_title);
 
   // Accessor methods.
   ScopedJavaLocalRef<jobjectArray> GetAllGroupIds(JNIEnv* env);
 
   ScopedJavaLocalRef<jobject> GetGroupBySyncGroupId(
       JNIEnv* env,
-      const JavaParamRef<jstring>& j_sync_group_id);
+      const JavaRef<jstring>& j_sync_group_id);
 
   ScopedJavaLocalRef<jobject> GetGroupByLocalGroupId(
       JNIEnv* env,
-      const JavaParamRef<jobject>& j_group_id);
+      const JavaRef<jobject>& j_group_id);
 
   ScopedJavaLocalRef<jobjectArray> GetDeletedGroupIds(JNIEnv* env);
 
   // Book-keeping methods to maintain in-memory mapping of sync and local IDs.
   void UpdateLocalTabGroupMapping(JNIEnv* env,
-                                  const JavaParamRef<jstring>& j_sync_id,
-                                  const JavaParamRef<jobject>& j_local_id,
+                                  const JavaRef<jstring>& j_sync_id,
+                                  const JavaRef<jobject>& j_local_id,
                                   jint j_opening_source);
   void RemoveLocalTabGroupMapping(JNIEnv* env,
-                                  const JavaParamRef<jobject>& j_local_id,
+                                  const JavaRef<jobject>& j_local_id,
                                   jint j_closing_source);
   void UpdateLocalTabId(JNIEnv* env,
-                        const JavaParamRef<jobject>& j_group_id,
-                        const JavaParamRef<jstring>& j_sync_tab_id,
+                        const JavaRef<jobject>& j_group_id,
+                        const JavaRef<jstring>& j_sync_tab_id,
                         jint j_local_tab_id);
-  bool WasTabGroupClosedLocally(
-      JNIEnv* env,
-      const JavaParamRef<jstring>& j_sync_tab_group_id);
+  bool WasTabGroupClosedLocally(JNIEnv* env,
+                                const JavaRef<jstring>& j_sync_tab_group_id);
 
   // Helper methods for attributions.
-  bool IsRemoteDevice(JNIEnv* env,
-                      const JavaParamRef<jstring>& j_sync_cache_guid);
+  bool IsRemoteDevice(JNIEnv* env, const JavaRef<jstring>& j_sync_cache_guid);
   void RecordTabGroupEvent(JNIEnv* env,
                            jint j_event_type,
-                           const JavaParamRef<jobject>& j_local_group_id,
+                           const JavaRef<jobject>& j_local_group_id,
                            jint j_local_tab_id,
                            jint j_opening_source,
                            jint j_closing_source);
 
   void UpdateArchivalStatus(JNIEnv* env,
-                            const JavaParamRef<jstring>& j_sync_group_id,
+                            const JavaRef<jstring>& j_sync_group_id,
                             const jboolean j_archival_status);
 
   ScopedJavaLocalRef<jobject> GetVersioningMessageController(
       JNIEnv* env,
-      const JavaParamRef<jobject>& j_caller);
+      const JavaRef<jobject>& j_caller);
 
   void SetCollaborationAvailableInFinderForTesting(
       JNIEnv* env,
-      const JavaParamRef<jstring>& j_collaboration_id);
+      const JavaRef<jstring>& j_collaboration_id);
 
  private:
   // A reference to the Java counterpart of this class.  See

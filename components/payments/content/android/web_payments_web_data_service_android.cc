@@ -45,8 +45,8 @@ void WebPaymentsWebDataServiceAndroid::Destroy(JNIEnv* env) {
 
 void WebPaymentsWebDataServiceAndroid::AddPaymentMethodManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jmethod_name,
-    const base::android::JavaParamRef<jobjectArray>& japps_package_names) {
+    const base::android::JavaRef<jstring>& jmethod_name,
+    const base::android::JavaRef<jobjectArray>& japps_package_names) {
   std::vector<std::string> apps_package_names;
   base::android::AppendJavaStringArrayToStringVector(env, japps_package_names,
                                                      &apps_package_names);
@@ -64,7 +64,7 @@ void WebPaymentsWebDataServiceAndroid::AddPaymentMethodManifest(
 
 void WebPaymentsWebDataServiceAndroid::AddPaymentWebAppManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& jmanifest_sections) {
+    const base::android::JavaRef<jobjectArray>& jmanifest_sections) {
   scoped_refptr<payments::WebPaymentsWebDataService> web_data_service =
       GetWebPaymentsWebDataService();
   if (web_data_service == nullptr) {
@@ -98,8 +98,8 @@ void WebPaymentsWebDataServiceAndroid::AddPaymentWebAppManifest(
 
 bool WebPaymentsWebDataServiceAndroid::GetPaymentMethodManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jmethod_name,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jstring>& jmethod_name,
+    const base::android::JavaRef<jobject>& jcallback) {
   scoped_refptr<payments::WebPaymentsWebDataService> web_data_service =
       GetWebPaymentsWebDataService();
   if (web_data_service == nullptr) {
@@ -120,8 +120,8 @@ bool WebPaymentsWebDataServiceAndroid::GetPaymentMethodManifest(
 
 bool WebPaymentsWebDataServiceAndroid::GetPaymentWebAppManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& japp_package_name,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jstring>& japp_package_name,
+    const base::android::JavaRef<jobject>& jcallback) {
   scoped_refptr<payments::WebPaymentsWebDataService> web_data_service =
       GetWebPaymentsWebDataService();
   if (web_data_service == nullptr) {
@@ -225,8 +225,8 @@ void WebPaymentsWebDataServiceAndroid::OnPaymentMethodManifestRequestDone(
 
 static jlong JNI_WebPaymentsWebDataService_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
+    const base::android::JavaRef<jobject>& obj,
+    const base::android::JavaRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents) {
     return 0;

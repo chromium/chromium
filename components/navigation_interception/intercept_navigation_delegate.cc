@@ -361,7 +361,7 @@ void InterceptNavigationDelegate::OnResourceRequestWithGesture() {
 
 void InterceptNavigationDelegate::OnSubframeAsyncActionTaken(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_gurl) {
+    const base::android::JavaRef<jobject>& j_gurl) {
   // subframe_redirect_url_ no longer empty indicates the async action has been
   // taken.
   subframe_redirect_url_ =
@@ -373,7 +373,7 @@ void InterceptNavigationDelegate::OnSubframeAsyncActionTaken(
 
 static void JNI_InterceptNavigationDelegate_OnShouldIgnoreNavigationResult(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
+    const base::android::JavaRef<jobject>& jweb_contents,
     jboolean should_ignore) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);

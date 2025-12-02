@@ -10,7 +10,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/dom_distiller/core/android/jni_headers/DistilledPagePrefs_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace dom_distiller {
 
@@ -61,7 +61,7 @@ jfloat DistilledPagePrefsAndroid::GetFontScaling(JNIEnv* env) {
 }
 
 static jlong JNI_DistilledPagePrefs_Init(JNIEnv* env,
-                                         const JavaParamRef<jobject>& obj,
+                                         const JavaRef<jobject>& obj,
                                          jlong distilled_page_prefs_ptr) {
   DistilledPagePrefs* distilled_page_prefs =
       reinterpret_cast<DistilledPagePrefs*>(distilled_page_prefs_ptr);
@@ -120,7 +120,7 @@ void DistilledPagePrefsObserverAndroid::OnChangeFontScaling(float scaling) {
 
 static jlong JNI_DistilledPagePrefs_InitObserverAndroid(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    const JavaRef<jobject>& obj) {
   DistilledPagePrefsObserverAndroid* observer_android =
       new DistilledPagePrefsObserverAndroid(env, obj);
   return reinterpret_cast<intptr_t>(observer_android);

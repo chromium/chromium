@@ -23,7 +23,7 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::RunBooleanCallbackAndroid;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -70,26 +70,24 @@ ScopedJavaLocalRef<jobject> CommentsServiceBridge::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_ref_);
 }
 
-bool CommentsServiceBridge::IsInitialized(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller) {
+bool CommentsServiceBridge::IsInitialized(JNIEnv* env,
+                                          const JavaRef<jobject>& j_caller) {
   return service_->IsInitialized();
 }
 
-bool CommentsServiceBridge::IsEmptyService(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller) {
+bool CommentsServiceBridge::IsEmptyService(JNIEnv* env,
+                                           const JavaRef<jobject>& j_caller) {
   return service_->IsEmptyService();
 }
 
 ScopedJavaLocalRef<jstring> CommentsServiceBridge::AddComment(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller,
-    const JavaParamRef<jstring>& j_collaboration_id,
-    const JavaParamRef<jobject>& j_url,
-    const JavaParamRef<jstring>& j_content,
-    const JavaParamRef<jstring>& j_parent_comment_id,
-    const JavaParamRef<jobject>& j_success_callback) {
+    const JavaRef<jobject>& j_caller,
+    const JavaRef<jstring>& j_collaboration_id,
+    const JavaRef<jobject>& j_url,
+    const JavaRef<jstring>& j_content,
+    const JavaRef<jstring>& j_parent_comment_id,
+    const JavaRef<jobject>& j_success_callback) {
   std::optional<base::Uuid> parent_comment_id;
   if (j_parent_comment_id) {
     parent_comment_id = tab_groups::JavaStringToUuid(env, j_parent_comment_id);
@@ -109,10 +107,10 @@ ScopedJavaLocalRef<jstring> CommentsServiceBridge::AddComment(
 
 void CommentsServiceBridge::EditComment(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller,
-    const JavaParamRef<jstring>& j_comment_id,
-    const JavaParamRef<jstring>& j_new_content,
-    const JavaParamRef<jobject>& j_success_callback) {
+    const JavaRef<jobject>& j_caller,
+    const JavaRef<jstring>& j_comment_id,
+    const JavaRef<jstring>& j_new_content,
+    const JavaRef<jobject>& j_success_callback) {
   auto callback =
       base::BindOnce(&RunBooleanCallbackAndroid,
                      ScopedJavaGlobalRef<jobject>(j_success_callback));
@@ -123,9 +121,9 @@ void CommentsServiceBridge::EditComment(
 
 void CommentsServiceBridge::DeleteComment(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller,
-    const JavaParamRef<jstring>& j_comment_id,
-    const JavaParamRef<jobject>& j_success_callback) {
+    const JavaRef<jobject>& j_caller,
+    const JavaRef<jstring>& j_comment_id,
+    const JavaRef<jobject>& j_success_callback) {
   auto callback =
       base::BindOnce(&RunBooleanCallbackAndroid,
                      ScopedJavaGlobalRef<jobject>(j_success_callback));
@@ -135,25 +133,24 @@ void CommentsServiceBridge::DeleteComment(
 
 void CommentsServiceBridge::QueryComments(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller,
-    const JavaParamRef<jobject>& j_filter_criteria,
-    const JavaParamRef<jobject>& j_pagination_criteria,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jobject>& j_caller,
+    const JavaRef<jobject>& j_filter_criteria,
+    const JavaRef<jobject>& j_pagination_criteria,
+    const JavaRef<jobject>& j_callback) {
   // TODO(crbug.com/435005417): Implement this.
 }
 
 void CommentsServiceBridge::AddObserver(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller,
-    const JavaParamRef<jobject>& j_observer,
-    const JavaParamRef<jobject>& j_filter_criteria) {
+    const JavaRef<jobject>& j_caller,
+    const JavaRef<jobject>& j_observer,
+    const JavaRef<jobject>& j_filter_criteria) {
   // TODO(crbug.com/435005417): Implement this.
 }
 
-void CommentsServiceBridge::RemoveObserver(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller,
-    const JavaParamRef<jobject>& j_observer) {
+void CommentsServiceBridge::RemoveObserver(JNIEnv* env,
+                                           const JavaRef<jobject>& j_caller,
+                                           const JavaRef<jobject>& j_observer) {
   // TODO(crbug.com/435005417): Implement this.
 }
 

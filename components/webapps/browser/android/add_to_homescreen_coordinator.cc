@@ -21,7 +21,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/webapps/browser/android/webapps_jni_headers/AddToHomescreenCoordinator_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace webapps {
 
@@ -36,7 +36,7 @@ const int kDataTimeoutInMilliseconds = 8000;
 AddToHomescreenCoordinator::AddToHomescreenCoordinator(
     content::WebContents* web_contents,
     int app_menu_type,
-    const JavaParamRef<jobject>& java_coordinator) {
+    const JavaRef<jobject>& java_coordinator) {
   app_menu_type_ = app_menu_type;
   java_coordinator_ = java_coordinator;
 
@@ -160,8 +160,8 @@ void AddToHomescreenCoordinator::RecordEventForAppMenu(
 // static
 jlong JNI_AddToHomescreenCoordinator_StartForAppMenu(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_coordinator,
-    const base::android::JavaParamRef<jobject>& java_web_contents,
+    const JavaRef<jobject>& java_coordinator,
+    const base::android::JavaRef<jobject>& java_web_contents,
     int app_menu_type) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);

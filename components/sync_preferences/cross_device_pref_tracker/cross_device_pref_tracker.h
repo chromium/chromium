@@ -120,7 +120,7 @@ class CrossDevicePrefTracker : public KeyedService {
   // name.
   virtual base::android::ScopedJavaLocalRef<jobjectArray> GetValues(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& pref_name,
+      const base::android::JavaRef<jstring>& pref_name,
       std::optional<int> os_type,
       std::optional<int> form_factor,
       std::optional<jlong> max_sync_recency_microseconds) const = 0;
@@ -128,7 +128,7 @@ class CrossDevicePrefTracker : public KeyedService {
   // name.
   virtual base::android::ScopedJavaLocalRef<jobject> GetMostRecentValue(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& pref_name,
+      const base::android::JavaRef<jstring>& pref_name,
       std::optional<int> os_type,
       std::optional<int> form_factor,
       std::optional<jlong> max_sync_recency_microseconds) const = 0;

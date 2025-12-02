@@ -23,7 +23,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/omnibox/browser/jni_headers/AutocompleteResult_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaBooleanArray;
 using base::android::ToJavaByteArray;
@@ -149,7 +149,7 @@ ScopedJavaLocalRef<jobjectArray> AutocompleteResult::BuildJavaMatches(
 
 bool AutocompleteResult::VerifyCoherency(
     JNIEnv* env,
-    const JavaParamRef<jlongArray>& j_matches_array,
+    const JavaRef<jlongArray>& j_matches_array,
     jint match_index,
     jint verification_point) {
   DCHECK(j_matches_array);

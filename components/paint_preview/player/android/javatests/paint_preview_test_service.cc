@@ -37,7 +37,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/paint_preview/player/android/javatests_jni_headers/PaintPreviewTestService_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace paint_preview {
 
@@ -109,7 +109,7 @@ bool WriteSkp(sk_sp<SkPicture> skp,
 
 static jlong JNI_PaintPreviewTestService_GetInstance(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_path) {
+    const JavaRef<jstring>& j_path) {
   base::FilePath file_path(base::android::ConvertJavaStringToUTF8(env, j_path));
   PaintPreviewTestService* service = new PaintPreviewTestService(file_path);
   return reinterpret_cast<intptr_t>(service);
@@ -136,9 +136,9 @@ PaintPreviewTestService::CreateSingleSkp(
     jint j_id,
     jint j_width,
     jint j_height,
-    const JavaParamRef<jintArray>& j_link_rects,
-    const JavaParamRef<jobjectArray>& j_link_urls,
-    const JavaParamRef<jintArray>& j_child_rects) {
+    const JavaRef<jintArray>& j_link_rects,
+    const JavaRef<jobjectArray>& j_link_urls,
+    const JavaRef<jintArray>& j_child_rects) {
   const int id = static_cast<int>(j_id);
   uint32_t width = static_cast<uint32_t>(j_width);
   uint32_t height = static_cast<uint32_t>(j_height);
@@ -226,8 +226,8 @@ PaintPreviewTestService::CreateSingleSkp(
 
 jboolean PaintPreviewTestService::SerializeFrames(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_key,
-    const base::android::JavaParamRef<jstring>& j_url) {
+    const base::android::JavaRef<jstring>& j_key,
+    const base::android::JavaRef<jstring>& j_url) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   if (!base::PathExists(test_data_dir_)) {
     base::File::Error error;

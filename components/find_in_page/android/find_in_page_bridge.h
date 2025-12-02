@@ -23,7 +23,7 @@ class FindInPageBridge {
   void Destroy(JNIEnv*);
 
   void StartFinding(JNIEnv* env,
-                    const base::android::JavaParamRef<jstring>& search_string,
+                    const base::android::JavaRef<jstring>& search_string,
                     jboolean forward_direction,
                     jboolean case_sensitive);
 

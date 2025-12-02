@@ -24,7 +24,7 @@ base::LazyInstance<base::android::ScopedJavaGlobalRef<jobject>>::
 
 /* static */ void JNI_OmniboxActionFactory_SetFactory(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& factory) {
+    const base::android::JavaRef<jobject>& factory) {
   if (factory) {
     g_java_factory.Get().Reset(factory);
   } else {

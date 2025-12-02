@@ -17,7 +17,7 @@ namespace android {
 // static
 static jboolean JNI_UrlUtil_IsOriginAllowedToUseWebPaymentApis(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_url) {
+    const base::android::JavaRef<jobject>& j_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   return UrlUtil::IsOriginAllowedToUseWebPaymentApis(url);
 }
@@ -25,7 +25,7 @@ static jboolean JNI_UrlUtil_IsOriginAllowedToUseWebPaymentApis(
 // static
 static jboolean JNI_UrlUtil_IsValidUrlBasedPaymentMethodIdentifier(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_url) {
+    const base::android::JavaRef<jobject>& j_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   return UrlUtil::IsValidUrlBasedPaymentMethodIdentifier(url);
 }
@@ -33,7 +33,7 @@ static jboolean JNI_UrlUtil_IsValidUrlBasedPaymentMethodIdentifier(
 // static
 static jboolean JNI_UrlUtil_IsLocalDevelopmentUrl(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_url) {
+    const base::android::JavaRef<jobject>& j_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   return UrlUtil::IsLocalDevelopmentUrl(url);
 }

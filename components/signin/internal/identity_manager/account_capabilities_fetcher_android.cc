@@ -54,7 +54,7 @@ void AccountCapabilitiesFetcherAndroid::StartImpl() {
 namespace signin {
 static void JNI_AccountCapabilitiesFetcher_OnCapabilitiesFetchComplete(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& account_capabilities,
+    const base::android::JavaRef<jobject>& account_capabilities,
     jlong native_callback) {
   std::unique_ptr<OnAccountCapabilitiesFetchedCallback> heap_callback(
       reinterpret_cast<OnAccountCapabilitiesFetchedCallback*>(native_callback));

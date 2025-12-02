@@ -13,7 +13,7 @@
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/web_contents_observer.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace content {
 class WebContents;

@@ -27,7 +27,6 @@
 #include "components/visited_url_ranking/public/jni_headers/UserResponseMetadata_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -232,12 +231,11 @@ void GroupSuggestionsServiceAndroid::DidAddTab(JNIEnv* env,
                                                               tab_launch_type);
 }
 
-void GroupSuggestionsServiceAndroid::DidSelectTab(
-    JNIEnv* env,
-    int tab_id,
-    const JavaParamRef<jobject>& url,
-    int tab_selection_type,
-    int last_id) {
+void GroupSuggestionsServiceAndroid::DidSelectTab(JNIEnv* env,
+                                                  int tab_id,
+                                                  const JavaRef<jobject>& url,
+                                                  int tab_selection_type,
+                                                  int last_id) {
   group_suggestions_service_->GetTabEventTracker()->DidSelectTab(
       tab_id, url::GURLAndroid::ToNativeGURL(env, url),
       ConvertIntToTabSelectionType(tab_selection_type), last_id);

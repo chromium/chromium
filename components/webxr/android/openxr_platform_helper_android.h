@@ -53,7 +53,7 @@ class OpenXrPlatformHelperAndroid : public device::OpenXrPlatformHelper {
   void OnInstanceCreateFailure() override;
 
   void OnXrActivityReady(PlatformCreateInfoReadyCallback callback,
-                         const base::android::JavaParamRef<jobject>& activity);
+                         const base::android::JavaRef<jobject>& activity);
 
   std::unique_ptr<XrSessionCoordinator> session_coordinator_;
 

@@ -20,7 +20,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/spellcheck/browser/android/jni_headers/SpellCheckerSessionBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 SpellCheckerSessionBridge::SpellCheckerSessionBridge()
     : java_object_initialization_failed_(false) {}
@@ -87,11 +87,11 @@ void SpellCheckerSessionBridge::RequestTextCheck(
 
 void SpellCheckerSessionBridge::ProcessSpellCheckResults(
     JNIEnv* env,
-    const JavaParamRef<jintArray>& offset_array,
-    const JavaParamRef<jintArray>& length_array,
-    const JavaParamRef<jobjectArray>& suggestions_array,
-    const JavaParamRef<jintArray>& spellcheck_result_decorations_array,
-    const JavaParamRef<jbooleanArray>& hide_suggestion_menu_booleans_array) {
+    const JavaRef<jintArray>& offset_array,
+    const JavaRef<jintArray>& length_array,
+    const JavaRef<jobjectArray>& suggestions_array,
+    const JavaRef<jintArray>& spellcheck_result_decorations_array,
+    const JavaRef<jbooleanArray>& hide_suggestion_menu_booleans_array) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::vector<int> offsets;
   std::vector<int> lengths;

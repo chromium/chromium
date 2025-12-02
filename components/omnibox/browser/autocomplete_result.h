@@ -97,7 +97,7 @@ class AutocompleteResult {
   // bounds of valid AutocompleteResult indices, where every other aspect of the
   // AutocompleteResult is correct.
   bool VerifyCoherency(JNIEnv* env,
-                       const base::android::JavaParamRef<jlongArray>& matches,
+                       const base::android::JavaRef<jlongArray>& matches,
                        jint match_index,
                        jint verification_point);
 #endif

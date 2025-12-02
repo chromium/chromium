@@ -302,8 +302,8 @@ void WriteAnrAsMime(crashpad::FileReader* anr_reader,
 
 static void JNI_CrashReportMimeWriter_RewriteAnrsAsMIMEs(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& j_anrs,
-    const base::android::JavaParamRef<jstring>& j_dest_dir) {
+    const base::android::JavaRef<jobjectArray>& j_anrs,
+    const base::android::JavaRef<jstring>& j_dest_dir) {
   std::vector<std::string> anr_strings;
   base::android::AppendJavaStringArrayToStringVector(env, j_anrs, &anr_strings);
   std::string dest_dir =
@@ -337,8 +337,8 @@ static void JNI_CrashReportMimeWriter_RewriteAnrsAsMIMEs(
 
 static void JNI_CrashReportMimeWriter_RewriteMinidumpsAsMIMEs(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_src_dir,
-    const base::android::JavaParamRef<jstring>& j_dest_dir) {
+    const base::android::JavaRef<jstring>& j_src_dir,
+    const base::android::JavaRef<jstring>& j_dest_dir) {
   std::string src_dir = base::android::ConvertJavaStringToUTF8(env, j_src_dir);
   std::string dest_dir =
       base::android::ConvertJavaStringToUTF8(env, j_dest_dir);
@@ -350,8 +350,8 @@ static void JNI_CrashReportMimeWriter_RewriteMinidumpsAsMIMEs(
 static base::android::ScopedJavaLocalRef<jobjectArray>
 JNI_CrashReportMimeWriter_RewriteMinidumpsAsMIMEsAndGetCrashKeys(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_src_dir,
-    const base::android::JavaParamRef<jstring>& j_dest_dir) {
+    const base::android::JavaRef<jstring>& j_src_dir,
+    const base::android::JavaRef<jstring>& j_dest_dir) {
   std::string src_dir = base::android::ConvertJavaStringToUTF8(env, j_src_dir);
   std::string dest_dir =
       base::android::ConvertJavaStringToUTF8(env, j_dest_dir);

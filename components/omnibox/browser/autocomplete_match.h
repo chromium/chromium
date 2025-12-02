@@ -340,7 +340,7 @@ struct AutocompleteMatch {
   // Update the clipboard match with the current clipboard data.
   void UpdateWithClipboardContent(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_callback);
+      const base::android::JavaRef<jobject>& j_callback);
 
   // Called when the match is updated with the clipboard content.
   void OnClipboardSuggestionContentUpdated(

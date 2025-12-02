@@ -80,33 +80,31 @@ class PenguinClient {
 #if BUILDFLAG(IS_ANDROID)
   // Android equivalent methods that are called through JNI (cannot be
   // overloaded).
-  void PerformAPICall_var1(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_image_data,
-      const base::android::JavaParamRef<jstring>& j_text_input,
-      const base::android::JavaParamRef<jobject>& j_callback,
-      jboolean j_include_full_response);
+  void PerformAPICall_var1(JNIEnv* env,
+                           const base::android::JavaRef<jstring>& j_image_data,
+                           const base::android::JavaRef<jstring>& j_text_input,
+                           const base::android::JavaRef<jobject>& j_callback,
+                           jboolean j_include_full_response);
 
   void PerformAPICall_var2(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_web_contents,
-      const base::android::JavaParamRef<jstring>& j_text_input,
-      const base::android::JavaParamRef<jobject>& j_callback,
+      const base::android::JavaRef<jobject>& j_web_contents,
+      const base::android::JavaRef<jstring>& j_text_input,
+      const base::android::JavaRef<jobject>& j_callback,
       jboolean j_include_full_response);
 
   void PerformAPICall_var3(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_web_contents,
-      const base::android::JavaParamRef<jstring>& j_text_input,
-      const base::android::JavaParamRef<jobject>& j_callback,
-      const base::android::JavaParamRef<jobject>& j_source_rect,
+      const base::android::JavaRef<jobject>& j_web_contents,
+      const base::android::JavaRef<jstring>& j_text_input,
+      const base::android::JavaRef<jobject>& j_callback,
+      const base::android::JavaRef<jobject>& j_source_rect,
       jboolean j_include_full_response);
 
-  void PerformAPICall_var4(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_text_input,
-      const base::android::JavaParamRef<jobject>& j_callback,
-      jboolean j_include_full_response);
+  void PerformAPICall_var4(JNIEnv* env,
+                           const base::android::JavaRef<jstring>& j_text_input,
+                           const base::android::JavaRef<jobject>& j_callback,
+                           jboolean j_include_full_response);
 #endif
 };
 

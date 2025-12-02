@@ -45,28 +45,28 @@ class WebPaymentsWebDataServiceAndroid {
   // cache.
   void AddPaymentMethodManifest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jmethod_name,
-      const base::android::JavaParamRef<jobjectArray>& japp_package_names);
+      const base::android::JavaRef<jstring>& jmethod_name,
+      const base::android::JavaRef<jobjectArray>& japp_package_names);
 
   // Adds the web app |jmanifest_sections|.
   void AddPaymentWebAppManifest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& jmanifest_sections);
+      const base::android::JavaRef<jobjectArray>& jmanifest_sections);
 
   // Gets the payment |jmethod_name|'s manifest asynchronously from the web data
   // service. Return true if the result will be returned through |jcallback|.
   bool GetPaymentMethodManifest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jmethod_name,
-      const base::android::JavaParamRef<jobject>& jcallback);
+      const base::android::JavaRef<jstring>& jmethod_name,
+      const base::android::JavaRef<jobject>& jcallback);
 
   // Gets the payment |japp_package_name|'s manifest asynchronously from the web
   // data service. Return true if the result will be returned through
   // |jcallback|.
   bool GetPaymentWebAppManifest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& japp_package_name,
-      const base::android::JavaParamRef<jobject>& jcallback);
+      const base::android::JavaRef<jstring>& japp_package_name,
+      const base::android::JavaRef<jobject>& jcallback);
 
  private:
   void OnWebDataServiceRequestDone(WebDataServiceBase::Handle h,

@@ -29,7 +29,7 @@ class TestChildFrameNavigationObserver
   static void CreateForWebContents(
       WebContents* web_contents,
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_test_observer);
+      const base::android::JavaRef<jobject>& java_test_observer);
 
  private:
   friend WebContentsUserData<TestChildFrameNavigationObserver>;
@@ -39,7 +39,7 @@ class TestChildFrameNavigationObserver
   explicit TestChildFrameNavigationObserver(
       WebContents* web_contents,
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_test_observer);
+      const base::android::JavaRef<jobject>& java_test_observer);
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
 

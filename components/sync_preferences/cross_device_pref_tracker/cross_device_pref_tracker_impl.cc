@@ -1113,7 +1113,7 @@ ScopedJavaLocalRef<jobject> CrossDevicePrefTrackerImpl::GetJavaObject() {
 // Java versions of query methods.
 ScopedJavaLocalRef<jobjectArray> CrossDevicePrefTrackerImpl::GetValues(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& pref_name,
+    const base::android::JavaRef<jstring>& pref_name,
     std::optional<int> os_type,
     std::optional<int> form_factor,
     std::optional<jlong> max_sync_recency_microseconds) const {
@@ -1130,7 +1130,7 @@ ScopedJavaLocalRef<jobjectArray> CrossDevicePrefTrackerImpl::GetValues(
 
 ScopedJavaLocalRef<jobject> CrossDevicePrefTrackerImpl::GetMostRecentValue(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& pref_name,
+    const base::android::JavaRef<jstring>& pref_name,
     std::optional<int> os_type,
     std::optional<int> form_factor,
     std::optional<jlong> max_sync_recency_microseconds) const {
