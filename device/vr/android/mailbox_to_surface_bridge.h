@@ -9,7 +9,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 
 namespace gfx {
-enum class BufferFormat : uint8_t;
 class ColorSpace;
 class GpuFence;
 struct GpuMemoryBufferHandle;
