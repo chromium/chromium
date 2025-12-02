@@ -1948,7 +1948,7 @@
       "hchao@chromium.org",
       "chrome-secure-web-and-net@chromium.org"
     ],
-    "expires": "Dec 2, 2025"
+    "expires": "June 1, 2026"
   },
   {
     "prefix": "log-dns-prefetch-and-preconnect",
