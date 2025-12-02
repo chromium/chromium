@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_METRICS_FIELD_TRIALS_PROVIDER_H_
 #define COMPONENTS_METRICS_FIELD_TRIALS_PROVIDER_H_
 
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"

@@ -8,12 +8,12 @@
 #include <string_view>
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace variations {
-
 namespace {
 
 void WriteFieldTrials(const std::vector<ActiveGroupId>& field_trial_ids,
@@ -32,13 +32,6 @@ FieldTrialsProvider::FieldTrialsProvider(SyntheticTrialRegistry* registry,
                                          std::string_view suffix)
     : registry_(registry), suffix_(suffix) {}
 FieldTrialsProvider::~FieldTrialsProvider() = default;
-
-void FieldTrialsProvider::GetFieldTrialIds(
-    std::vector<ActiveGroupId>* field_trial_ids) const {
-  // As the trial groups are included in metrics reports, we must not include
-  // the low anonymity trials.
-  variations::GetFieldTrialActiveGroupIds(suffix_, field_trial_ids);
-}
 
 void FieldTrialsProvider::ProvideSystemProfileMetrics(
     metrics::SystemProfileProto* system_profile_proto) {
@@ -77,6 +70,13 @@ void FieldTrialsProvider::ProvideCurrentSessionData(
 
 void FieldTrialsProvider::SetLogCreationTimeForTesting(base::TimeTicks time) {
   log_creation_time_ = time;
+}
+
+void FieldTrialsProvider::GetFieldTrialIds(
+    std::vector<ActiveGroupId>* field_trial_ids) const {
+  // As the trial groups are included in metrics reports, we must not include
+  // the low anonymity trials.
+  variations::GetFieldTrialActiveGroupIds(suffix_, field_trial_ids);
 }
 
 void FieldTrialsProvider::GetAndWriteFieldTrials(
