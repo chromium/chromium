@@ -82,6 +82,13 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   // This is used to avoid double-invoking target menus, due to custom logic
   // that invokes sub-menus on mousedown.
   bool ignore_next_command_ = false;
+  // This is similar to the input element's `dirty_checkedness_` flag, but
+  // better named. When only the default checkedness is set or unset, this will
+  // remain true. When checkedness finally gets set in any other way after the
+  // default checkedness has been processed, this becomes true. Then, future
+  // changes to the `defaultchecked` content attribute and `defaultChecked` IDL
+  // attribute will do nothing.
+  bool is_default_checkedness_overridden_;
 
   friend class HTMLMenuItemElementTest;
 };

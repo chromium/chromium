@@ -923,6 +923,7 @@ html element menuitem
     property checked
     property command
     property commandForElement
+    property defaultChecked
     property disabled
 html element menulist
 html element meta

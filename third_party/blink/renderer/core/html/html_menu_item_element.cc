@@ -37,9 +37,7 @@ void HTMLMenuItemElement::Trace(Visitor* visitor) const {
 }
 
 bool HTMLMenuItemElement::MatchesDefaultPseudoClass() const {
-  // TODO(406566432): This should consider the `defaultchecked` when
-  // implemented.
-  return false;
+  return FastHasAttribute(html_names::kDefaultcheckedAttr);
 }
 
 bool HTMLMenuItemElement::MatchesEnabledPseudoClass() const {
@@ -54,6 +52,20 @@ void HTMLMenuItemElement::ParseAttribute(
       PseudoStateChanged(CSSSelector::kPseudoDisabled);
       PseudoStateChanged(CSSSelector::kPseudoEnabled);
     }
+  } else if (name == html_names::kDefaultcheckedAttr) {
+    // If the default value has not been overridden yet, then allow setting the
+    // `defaultchecked` attribute to influence the checkedness.
+    //
+    // Keep this logic in sync with the logic at the bottom of `InsertedInto()`.
+    if (!is_default_checkedness_overridden_) {
+      setChecked(!params.new_value.IsNull());
+      // Re-unset this flag, since `SetChecked()` set it to true by default.
+      is_default_checkedness_overridden_ = false;
+    }
+    // The `:default` pseudo-class should match the default checkedness,
+    // regardless of whether the default checkedness controls the underlying
+    // checked state anymore.
+    PseudoStateChanged(CSSSelector::kPseudoDefault);
   } else {
     HTMLElement::ParseAttribute(params);
   }
@@ -135,6 +147,8 @@ bool HTMLMenuItemElement::setChecked(bool checked) {
     return !InvokesSubmenu();
   }
   DCHECK(!InvokesSubmenu());
+
+  is_default_checkedness_overridden_ = true;
 
   // Only update the exclusivity of all other menu items rooted under the same
   // fieldset *if* `this` is becoming checked under a fieldset that enforces
@@ -498,6 +512,15 @@ Node::InsertionNotificationRequest HTMLMenuItemElement::InsertedInto(
 
   // Run various ancestor/state resets.
   ResetAncestorElementCache();
+
+  // Keep this logic in sync with the checkedness logic in `ParseAttribute()`.
+  if (!is_default_checkedness_overridden_) {
+    const bool default_checked =
+        FastHasAttribute(html_names::kDefaultcheckedAttr);
+    setChecked(default_checked);
+    // Re-unset this flag, since `SetChecked()` set it to true by default.
+    is_default_checkedness_overridden_ = false;
+  }
   return return_value;
 }
 
