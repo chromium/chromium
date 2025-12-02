@@ -11,6 +11,7 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"

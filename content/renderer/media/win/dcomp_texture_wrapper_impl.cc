@@ -5,6 +5,7 @@
 #include "content/renderer/media/win/dcomp_texture_wrapper_impl.h"
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"

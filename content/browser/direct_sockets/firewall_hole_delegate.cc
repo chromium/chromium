@@ -10,6 +10,7 @@
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "chromeos/components/firewall_hole/firewall_hole.h"
 #include "net/base/ip_address.h"

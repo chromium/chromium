@@ -4,6 +4,7 @@
 
 #include "content/browser/media/cdm_storage_manager.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"

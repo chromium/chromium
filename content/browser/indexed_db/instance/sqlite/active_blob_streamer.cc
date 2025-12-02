@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"

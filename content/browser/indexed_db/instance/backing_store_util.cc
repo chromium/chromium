@@ -5,6 +5,7 @@
 #include "content/browser/indexed_db/instance/backing_store_util.h"
 
 #include "base/containers/to_vector.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "content/browser/indexed_db/indexed_db_value.h"

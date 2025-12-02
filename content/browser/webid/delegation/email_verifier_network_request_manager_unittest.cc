@@ -4,6 +4,7 @@
 
 #include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "content/public/test/browser_task_environment.h"

@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "media/cdm/cdm_type.h"
