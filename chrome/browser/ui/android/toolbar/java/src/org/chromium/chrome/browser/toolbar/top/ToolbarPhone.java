@@ -245,7 +245,6 @@ public class ToolbarPhone extends ToolbarLayout
     private final int mToolbarSidePadding;
     private final int mToolbarSidePaddingForNtp;
     private final int mBackgroundHeightIncreaseWhenFocus;
-    private final int mVerticalPaddingWhenFocused;
     private int mTopPaddingForEdgeToEdgeNtp;
 
     private @Nullable ValueAnimator mBrandColorTransitionAnimation;
@@ -340,10 +339,6 @@ public class ToolbarPhone extends ToolbarLayout
         mToolbarSidePaddingForNtp = OmniboxResourceProvider.getToolbarSidePaddingForNtp(context);
         mBackgroundHeightIncreaseWhenFocus =
                 OmniboxResourceProvider.getLocationBarBackgroundOnFocusHeightIncrease(context);
-        mVerticalPaddingWhenFocused =
-                getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.toolbar_vertical_padding_when_bottom_focused);
         mToolbarBackgroundColorForNtp =
                 ContextCompat.getColor(getContext(), R.color.home_surface_background_color);
         float locationBarBackgroundColorAlphaForNtp =
@@ -2245,16 +2240,6 @@ public class ToolbarPhone extends ToolbarLayout
         if (OmniboxFeatures.allowMultilineEditField()
                 || ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled()) {
             updateLayoutParamsForMultiline();
-        }
-
-        if (ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled()) {
-            int verticalPadding = hasFocus ? mVerticalPaddingWhenFocused : 0;
-            setPaddingRelative(
-                    getPaddingStart(),
-                    verticalPadding + mTopPaddingForEdgeToEdgeNtp,
-                    getPaddingEnd(),
-                    verticalPadding);
-            updateBackgroundHairline(hasFocus, AutocompleteRequestType.SEARCH);
         }
 
         // If the refactored animations are enabled, we want to update the bg only after we've
