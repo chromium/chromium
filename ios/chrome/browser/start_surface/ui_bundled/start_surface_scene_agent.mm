@@ -204,13 +204,14 @@ bool IsEmptyNTP(const web::WebState* web_state) {
     }
   } else if (startUpRemediationFeatureType ==
              StartupRemediationsType::kSaveNewNTPWebState) {
-    // If the tab at index kIOSLastKnownNTPWebStateIndex is still a valid NTP
-    // page, activate it and return early.
+    // If the tab at index kIOSLastKnownNTPWebStateIndex is still a valid
+    // ungrouped NTP page, activate it and return early.
     PrefService* prefService = browser->GetProfile()->GetPrefs();
     int knownNTPWebStateIndex =
         prefService->GetInteger(prefs::kIOSLastKnownNTPWebStateIndex);
     prefService->ClearPref(prefs::kIOSLastKnownNTPWebStateIndex);
-    if (webStateList->ContainsIndex(knownNTPWebStateIndex)) {
+    if (webStateList->ContainsIndex(knownNTPWebStateIndex) &&
+        !webStateList->GetGroupOfWebStateAt(knownNTPWebStateIndex)) {
       if ([self activateNTPForWebStateList:webStateList
                                    atIndex:knownNTPWebStateIndex]) {
         return;

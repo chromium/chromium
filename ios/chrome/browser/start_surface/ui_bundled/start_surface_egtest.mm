@@ -8,11 +8,14 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "build/branding_buildflags.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/public/tab_resumption_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -51,9 +54,9 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
   }
 }
 
-NSString* const kGroupName = @"group";
-const char kZeroSecondsTreshold[] = "0";
-const char kThreeSecondsTreshold[] = "3";
+NSString* const kGroupName = @"1group";
+const char kZeroSecondsThreshold[] = "0";
+const char kThreeSecondsThreshold[] = "3";
 
 }  // namespace
 
@@ -77,18 +80,18 @@ const char kThreeSecondsTreshold[] = "3";
     config.features_enabled_and_params.push_back(
         {kShowTabGroupInGridOnStart,
          {{{kShowTabGroupInGridInactiveDurationInSeconds,
-            kZeroSecondsTreshold}}}});
+            kZeroSecondsThreshold}}}});
     config.features_enabled_and_params.push_back(
         {kStartSurface,
          {{{kReturnToStartSurfaceInactiveDurationInSeconds,
-            kThreeSecondsTreshold}}}});
+            kThreeSecondsThreshold}}}});
     return config;
   }
 
   config.features_enabled_and_params.push_back(
       {kStartSurface,
        {{{kReturnToStartSurfaceInactiveDurationInSeconds,
-          kZeroSecondsTreshold}}}});
+          kZeroSecondsThreshold}}}});
 
   return config;
 }
@@ -98,6 +101,15 @@ const char kThreeSecondsTreshold[] = "3";
   [[self class] closeAllTabs];
   [ChromeEarlGrey openNewTab];
 }
+
+// Loads the first tab with an URL.
+- (void)loadFirstTabURL {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL destinationURL = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:destinationURL];
+}
+
+#pragma mark - Tests
 
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile.
@@ -115,9 +127,7 @@ const char kThreeSecondsTreshold[] = "3";
     EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad device.");
   }
 #endif
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL destinationUrl = self.testServer->GetURL("/pony.html");
-  [ChromeEarlGrey loadURL:destinationUrl];
+  [self loadFirstTabURL];
 
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithConfiguration:[self appConfigurationForTestCase]];
@@ -140,9 +150,8 @@ const char kThreeSecondsTreshold[] = "3";
 #define MAYBE_testWarmStartOpenStartSurface testWarmStartOpenStartSurface
 #endif
 - (void)MAYBE_testWarmStartOpenStartSurface {
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL destinationUrl = self.testServer->GetURL("/pony.html");
-  [ChromeEarlGrey loadURL:destinationUrl];
+  [self loadFirstTabURL];
+
   [ChromeEarlGrey
       waitForWebStateContainingText:"Anyone know any good pony jokes?"];
 
@@ -161,9 +170,7 @@ const char kThreeSecondsTreshold[] = "3";
 // also removes the tile while that NTP is still being shown.
 // TODO(crbug.com/441260657): Re-enable when fixed.
 - (void)DISABLED_testRemoveRecentTabRemovesReturnToRecentTabTile {
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL destinationUrl = self.testServer->GetURL("/pony.html");
-  [ChromeEarlGrey loadURL:destinationUrl];
+  [self loadFirstTabURL];
 
   int non_start_tab_index = [ChromeEarlGrey indexOfActiveNormalTab];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
@@ -292,6 +299,49 @@ const char kThreeSecondsTreshold[] = "3";
   // Check that the tab group in grid view is not open.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the created NTP is ungrouped, even if a group was active when
+// backgrounded.
+- (void)testOpenNTPOutsideTheActiveGroupAfterFourHoursInBackground {
+  [self loadFirstTabURL];
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  chrome_test_util::CreateTabGroupAtIndex(0, kGroupName);
+
+  // Open the group.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridGroupCellAtIndex(
+                                          0)] performAction:grey_tap()];
+
+  // Open the tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 1UL,
+                  @"One tab was expected to be open");
+
+  // Simulate background then foreground activation.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Assert NTP is visible by checking that the fake omnibox is here.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
+                  @"Two tabs were expected to be open");
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check that the NTP is not in the group and visible in the Tab Grid view.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(l10n_util::GetNSString(
+                                          IDS_NEW_TAB_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the group has only 1 tab.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridGroupCellWithName(
+                                   kGroupName, 1)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end
