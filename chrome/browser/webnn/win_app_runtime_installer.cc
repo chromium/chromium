@@ -14,7 +14,6 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/functional/concurrent_callbacks.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -100,14 +99,14 @@ void UpdatePrefs(const std::wstring& dependency_id) {
                          kWinAppRuntimePackageMinVersionString);
 }
 
-// Called after all `AppInstallItems` reach the complete state (succeeded,
+// Called after `AppInstallItem` reaches the complete state (succeeded,
 // canceled or failed). `app_install_manager` is kept alive by this function to
 // ensure the registered status change callbacks will be invoked.
 void OnInstallationCompleted(
     Microsoft::WRL::ComPtr<
         abi_install::IAppInstallManager> /*app_install_manager*/,
-    std::vector<bool> results) {
-  if (std::ranges::any_of(results, [](bool success) { return !success; })) {
+    bool success) {
+  if (!success) {
     return;
   }
 
@@ -119,39 +118,41 @@ void OnInstallationCompleted(
   UpdatePrefs(dependency_id);
 }
 
-// Called after `StartProductInstallAsync()` completes. Adds a callback for each
-// `AppInstallItem` to track their status change.
+// Called after `StartProductInstallAsync()` completes. Adds a callback for
+// `AppInstallItem` to track the installation status.
 void OnInstallationStarted(
     Microsoft::WRL::ComPtr<abi_install::IAppInstallManager> app_install_manager,
     Microsoft::WRL::ComPtr<AppInstallItems> items) {
   uint32_t count = 0;
   HRESULT hr = items->get_Size(&count);
   CHECK_EQ(hr, S_OK);
-  if (count == 0) {
-    RecordInstallState(
-        WinAppRuntimeInstallStateUma::kInstallationFailedToStart);
-    return;
-  }
-
-  // Wait for all the app install items to complete.
-  base::ConcurrentCallbacks<bool> concurrent_callbacks;
 
   for (uint32_t i = 0; i < count; ++i) {
     Microsoft::WRL::ComPtr<abi_install::IAppInstallItem> item;
     hr = items->GetAt(i, &item);
     CHECK_EQ(hr, S_OK);
 
+    // Checks if the install item is the package that we want.
+    base::win::ScopedHString product_id(nullptr);
+    hr = item->get_ProductId(
+        base::win::ScopedHString::Receiver(product_id).get());
+    CHECK_EQ(hr, S_OK);
+    if (product_id.Get() != kWinAppRuntimeProductId) {
+      continue;
+    }
+
     // `token` receives the value assigned by `add_StatusChanged()` below.
     // It is used to unregister the status change event handler.
     auto token = std::make_unique<EventRegistrationToken>();
     auto* token_ptr = token.get();
 
+    auto callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
+        &OnInstallationCompleted, std::move(app_install_manager)));
+
     // Register the status change event handler for `item`.
     item->add_StatusChanged(
         Microsoft::WRL::Callback<AppInstallStatusChangedHandler>(
-            [token = std::move(token),
-             callback = base::BindPostTaskToCurrentDefault(
-                 concurrent_callbacks.CreateCallback())](
+            [token = std::move(token), callback = std::move(callback)](
                 abi_install::IAppInstallItem* item,
                 IInspectable* args) mutable {
               Microsoft::WRL::ComPtr<abi_install::IAppInstallStatus> status;
@@ -216,11 +217,11 @@ void OnInstallationStarted(
             })
             .Get(),
         token_ptr);
+
+    return;
   }
 
-  std::move(concurrent_callbacks)
-      .Done(base::BindOnce(&OnInstallationCompleted,
-                           std::move(app_install_manager)));
+  RecordInstallState(WinAppRuntimeInstallStateUma::kInstallationFailedToStart);
 }
 
 // Activates and returns the IAppInstallManager instance.
