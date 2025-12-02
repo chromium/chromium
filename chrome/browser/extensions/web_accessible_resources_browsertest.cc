@@ -34,11 +34,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
-#endif
-
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
@@ -290,10 +285,7 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Navigate to a web page and then try to load an extension subresource.
-// TODO(crbug.com/390687767): Port to desktop Android. Currently the redirect
-// doesn't happen.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
                        SubresourceReachabilityAfterServerRedirect) {
   // Load extension.
@@ -327,7 +319,9 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.title);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+    // Some test cases have net errors, so NavigateToURL() may return true or
+    // false.
+    (void)NavigateToURL(GetActiveWebContents(), gurl);
 
     // Navigate to a web page and then fetch the supplied subresource.
     static constexpr char kScriptTemplate[] = R"(
@@ -372,8 +366,6 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
 }
 
 // Server redirect to a web accessible resource whereby `matches` doesn't match.
-// TODO(crbug.com/390687767): Port to desktop Android. Currently the redirect
-// doesn't happen.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
                        ServerRedirectSubresource) {
   // Load extension.
@@ -397,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
   const char* filename = "accessible.html";
   net::Error error = net::ERR_BLOCKED_BY_CLIENT;
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), gurl));
 
   // Navigate to a web page and then fetch the supplied subresource.
   static constexpr char kScriptTemplate[] = R"(
@@ -441,8 +433,6 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
 }
 
 // Server redirect to a web accessible resource whereby `matches` doesn't match.
-// TODO(crbug.com/390687767): Port to desktop Android. Currently the redirect
-// doesn't happen.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
                        ServerRedirectMainframe) {
   // Load extension.
@@ -469,12 +459,12 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
 
   auto* web_contents = GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents);
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  // Navigation should be blocked, so NavigateToURL() returns false.
+  EXPECT_FALSE(NavigateToURL(web_contents, gurl));
   observer.WaitForNavigationFinished();
   EXPECT_FALSE(observer.last_navigation_succeeded());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, observer.last_net_error_code());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // DNR, WAR, and use_dynamic_url with the extension feature. DNR does not
 // currently succeed when redirecting to a resource using use_dynamic_url with
