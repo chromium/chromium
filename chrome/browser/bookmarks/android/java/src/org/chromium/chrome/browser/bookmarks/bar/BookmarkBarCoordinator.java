@@ -181,9 +181,6 @@ public class BookmarkBarCoordinator
         mViewResourceAdapter = mViewResourceFrameLayout.getResourceAdapter();
         registerResource();
 
-        mBookmarkBarSceneLayer = new BookmarkBarSceneLayer(mResourceManager);
-        mBookmarkBarSceneLayer.setVisibility(true);
-
         mHeightChangeCallback = heightChangeCallback;
         mContentContainer.addOnLayoutChangeListener(this);
         mShouldBookmarkBarBeShown = true;
@@ -248,12 +245,14 @@ public class BookmarkBarCoordinator
         PropertyModelChangeProcessor.create(model, mView, BookmarkBarViewBinder::bind);
 
         // All dimensions and offsets require the first layout pass to complete, so don't set here.
+        // Do not set visibility to true by default in case we are in web fullscreen mode.
+        mBookmarkBarSceneLayer = new BookmarkBarSceneLayer(mResourceManager);
+        updateSceneLayerVisibility();
         mBookmarkBarSceneLayerModel =
                 new PropertyModel.Builder(BookmarkBarSceneLayerProperties.ALL_KEYS)
                         .with(
                                 BookmarkBarSceneLayerProperties.RESOURCE_ID,
                                 mViewResourceFrameLayout.getId())
-                        .with(BookmarkBarSceneLayerProperties.VISIBILITY, true)
                         .with(BookmarkBarSceneLayerProperties.HAIRLINE_HEIGHT, mHairlineHeight)
                         .build();
 

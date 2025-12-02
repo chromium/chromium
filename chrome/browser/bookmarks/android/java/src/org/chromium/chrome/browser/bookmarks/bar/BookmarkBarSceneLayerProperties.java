@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.bookmarks.bar;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -17,9 +16,6 @@ class BookmarkBarSceneLayerProperties {
 
     /** The resource ID for the current snapshot */
     public static final WritableIntPropertyKey RESOURCE_ID = new WritableIntPropertyKey();
-
-    /** Whether or not the SceneLayer/snapshot should be visible, true only during scrolls. */
-    public static final WritableBooleanPropertyKey VISIBILITY = new WritableBooleanPropertyKey();
 
     /** SceneLayer width, which is the full bookmarks bar. */
     public static final WritableIntPropertyKey SCENE_LAYER_WIDTH = new WritableIntPropertyKey();
@@ -55,7 +51,6 @@ class BookmarkBarSceneLayerProperties {
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 RESOURCE_ID,
-                VISIBILITY,
                 SCENE_LAYER_WIDTH,
                 SCENE_LAYER_HEIGHT,
                 SCENE_LAYER_OFFSET_HEIGHT,
