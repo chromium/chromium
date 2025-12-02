@@ -5241,16 +5241,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "file-transfer-enterprise-connector",
-    "owners": [ "sseckler@google.com", "marcgrimme@chromium.org", "poromov@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "file-transfer-enterprise-connector-ui",
-    "owners": [ "sseckler@google.com", "marcgrimme@chromium.org", "poromov@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "files-conflict-dialog",
     "owners": [ "simmonsjosh@google.com", "//ui/file_manager/OWNERS" ],
     "expiry_milestone": 135

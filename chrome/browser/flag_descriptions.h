@@ -7400,16 +7400,6 @@ inline constexpr char kFastDrmMasterDropDescription[] =
     "rather than disabling all the displays. Will not work on AMD devices as "
     "they are unable to accept commits without a primary plane.";
 
-inline constexpr char kFileTransferEnterpriseConnectorName[] =
-    "Enable Files Transfer Enterprise Connector.";
-inline constexpr char kFileTransferEnterpriseConnectorDescription[] =
-    "Enable the File Transfer Enterprise Connector.";
-
-inline constexpr char kFileTransferEnterpriseConnectorUIName[] =
-    "Enable UI for Files Transfer Enterprise Connector.";
-inline constexpr char kFileTransferEnterpriseConnectorUIDescription[] =
-    "Enable the UI for the File Transfer Enterprise Connector.";
-
 inline constexpr char kFilesConflictDialogName[] = "Files app conflict dialog";
 inline constexpr char kFilesConflictDialogDescription[] =
     "When enabled, the conflict dialog will be shown during file transfers "
