@@ -219,13 +219,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 (item) -> {
                     RecordUserAction.record("MobileMenuWindowManagerCloseInstance");
                     closeWindow(item.instanceId, CloseWindowAppSource.WINDOW_MANAGER);
-                    if (getCurrentInstanceId() != item.instanceId) {
-                        // Initiate synced tab groups cleanup only if the closed instance is not the
-                        // current one. If after closure of the current, second to last instance, a
-                        // single instance remains, this cleanup will be initiated on activity
-                        // startup of that instance.
-                        cleanupSyncedTabGroupsIfLastInstance();
-                    }
                 },
                 mRenameCallback,
                 () ->
@@ -1488,6 +1481,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         }
         Activity activity = getActivityById(instanceId);
         if (activity != null) activity.finishAndRemoveTask();
+
+        if (!isUserInitiatedClosure(source) && mInstanceId != instanceId) {
+            // Initiate synced tab groups cleanup only if the closed instance is not the
+            // current one. If after closure of the current, second to last instance, a
+            // single instance remains, this cleanup will be initiated on activity
+            // startup of that instance.
+            cleanupSyncedTabGroupsIfLastInstance();
+        }
     }
 
     /**
@@ -1856,12 +1857,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
      */
     @VisibleForTesting
     void cleanupSyncedTabGroupsIfLastInstance() {
-        List<InstanceInfo> info = getInstanceInfo();
+        Set<Integer> info = getPersistedInstanceIds(PersistedInstanceType.ANY);
         if (info.size() != 1) return;
 
         TabModelSelector selector =
                 TabWindowManagerSingleton.getInstance()
-                        .getTabModelSelectorById(info.get(0).instanceId);
+                        .getTabModelSelectorById(info.iterator().next());
         if (selector == null) return;
 
         cleanupSyncedTabGroups(selector);

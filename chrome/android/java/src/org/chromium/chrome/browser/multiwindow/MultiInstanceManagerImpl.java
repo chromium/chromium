@@ -560,7 +560,9 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
         TabGroupModelFilter filter =
                 selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
 
-        assumeNonNull(filter);
+        // Skip if there is no regular/normal windows.
+        if (filter == null) return;
+
         Profile profile = filter.getTabModel().getProfile();
         if (profile == null || !TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) return;
 

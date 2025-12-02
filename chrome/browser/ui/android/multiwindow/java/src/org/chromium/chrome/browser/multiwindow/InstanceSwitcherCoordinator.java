@@ -329,8 +329,11 @@ public class InstanceSwitcherCoordinator {
         UiUtils.closeOpenDialogs();
         sPrevInstance = this;
         for (int i = 0; i < items.size(); ++i) {
+            InstanceInfo instanceInfo = items.get(i);
+            // Do not show instances that are closed by user.
+            if (instanceInfo.closedByUser) continue;
             // An active instance should have an associated live task.
-            boolean isActiveInstance = items.get(i).taskId != INVALID_TASK_ID;
+            boolean isActiveInstance = instanceInfo.taskId != INVALID_TASK_ID;
             PropertyModel itemModel = generateListItem(items.get(i));
             if (UiUtils.isInstanceSwitcherV2Enabled()) {
                 if (isActiveInstance) {
