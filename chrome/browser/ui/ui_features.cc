@@ -130,7 +130,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    kSideBySideShowDropTargetDelay,
                    &kSideBySide,
                    "drop_target_show_delay",
-                   base::Milliseconds(1400));
+                   base::Milliseconds(500));
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kSideBySideShowDropTargetForLinkDelay,
                    &kSideBySide,
