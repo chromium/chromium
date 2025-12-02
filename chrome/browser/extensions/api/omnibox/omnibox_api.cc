@@ -380,8 +380,6 @@ ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
             // The image data should have been verified by the pre-validation
             // param update.
             CHECK(!image_data.empty());
-            // TODO(crbug.com/408069174): Move ParseIconFromCanvasDictionary
-            // outside `ExtensionAction` into a common file.
             if (extensions::ParseIconFromCanvasDictionary(image_data,
                                                           &image_skia) !=
                 extensions::IconParseResult::kSuccess) {
