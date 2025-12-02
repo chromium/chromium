@@ -389,4 +389,9 @@ interface Page {
   // Adds a contextual input to the UI.
   AddFileContext(mojo_base.mojom.UnguessableToken token,
                  SelectedFileInfo file_info);
+
+  // Updates the suggested tab context on the UI. This call will replace the
+  // previously suggested tab with the new tab. If the provided tab is null, the
+  // suggested tab should be removed from the UI.
+  UpdateSuggestedTabContext(TabInfo? tab);
 };

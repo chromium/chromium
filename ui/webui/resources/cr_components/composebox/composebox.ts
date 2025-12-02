@@ -261,6 +261,8 @@ export class ComposeboxElement extends I18nMixinLit
           this.refreshTabSuggestions_.bind(this)),
       this.searchboxCallbackRouter_.addFileContext.addListener(
           this.addFileContextFromBrowser_.bind(this)),
+      this.searchboxCallbackRouter_.updateSuggestedTabContext.addListener(
+          this.updateSuggestedTabContext_.bind(this)),
     ];
 
     this.eventTracker_.add(this.$.input, 'input', () => {
@@ -582,6 +584,10 @@ export class ComposeboxElement extends I18nMixinLit
     };
 
     this.$.context.onFileContextAdded(attachment);
+  }
+
+  private updateSuggestedTabContext_(tab: TabInfo|null) {
+    this.$.context.updateSuggestedTabContext(tab);
   }
 
   protected async addTabContext_(e: CustomEvent<{

@@ -32,9 +32,6 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler {
           pending_searchbox_handler);
   ~ContextualTasksComposeboxHandler() override;
 
-  // Called to update the suggested tab context chip in the compose box.
-  virtual void UpdateSuggestedTabContext(searchbox::mojom::TabInfoPtr tab_info);
-
   // composebox::mojom::PageHandler:
   void SubmitQuery(const std::string& query_text,
                    uint8_t mouse_button,

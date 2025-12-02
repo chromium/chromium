@@ -279,3 +279,8 @@ void ComposeboxHandler::SubmitQuery(
   ComputeAndOpenQueryUrl(query_text, disposition, aim_entrypoint,
                          std::move(additional_params));
 }
+
+void ComposeboxHandler::UpdateSuggestedTabContext(
+    searchbox::mojom::TabInfoPtr tab_info) {
+  SearchboxHandler::page_->UpdateSuggestedTabContext(std::move(tab_info));
+}
