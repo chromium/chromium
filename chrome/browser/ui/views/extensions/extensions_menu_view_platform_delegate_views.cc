@@ -353,7 +353,8 @@ void ExtensionsMenuViewPlatformDelegateViews::OnToolbarPinnedActionsChanged() {
   }
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnPermissionsSettingsChanged() {
+void ExtensionsMenuViewPlatformDelegateViews::
+    OnUserPermissionsSettingsChanged() {
   CHECK(current_page_);
 
   if (GetSitePermissionsPage(current_page_.view())) {

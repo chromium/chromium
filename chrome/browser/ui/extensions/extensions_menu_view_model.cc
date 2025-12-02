@@ -667,7 +667,7 @@ void ExtensionsMenuViewModel::OnShowAccessRequestsInToolbarChanged(
 
 void ExtensionsMenuViewModel::OnUserPermissionsSettingsChanged(
     const extensions::PermissionsManager::UserPermissionsSettings& settings) {
-  platform_delegate_->OnPermissionsSettingsChanged();
+  platform_delegate_->OnUserPermissionsSettingsChanged();
 }
 
 void ExtensionsMenuViewModel::OnToolbarActionAdded(

@@ -68,7 +68,7 @@ class ExtensionsMenuViewPlatformDelegateViews
   void OnToolbarActionUpdated() override;
   void OnToolbarModelInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
-  void OnPermissionsSettingsChanged() override;
+  void OnUserPermissionsSettingsChanged() override;
 
   // ExtensionsMenuHandler:
   void OpenMainPage() override;

@@ -50,7 +50,7 @@ class TestPlatformDelegate : public ExtensionsMenuViewPlatformDelegate {
   void OnShowHostAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override {}
-  void OnPermissionsSettingsChanged() override {}
+  void OnUserPermissionsSettingsChanged() override {}
   void OnToolbarActionAdded(
       const ToolbarActionsModel::ActionId& action_id) override {}
   void OnToolbarActionRemoved(
