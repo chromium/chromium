@@ -8797,17 +8797,17 @@
   {
     "name": "read-anything-docs-integration",
     "owners": [ "abigailbklein@google.com", "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 155
   },
   {
     "name": "read-anything-docs-load-more-button",
     "owners": [ "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 155
   },
   {
     "name": "read-anything-images-via-algorithm",
     "owners": [ "lwinston@google.com", "kristslee@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 155
   },
   {
     "name": "read-anything-immersive-reading-mode",
@@ -8825,7 +8825,7 @@
   {
     "name": "read-anything-read-aloud",
     "owners": [ "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 147
   },
   {
     "name": "read-anything-read-aloud-phrase-highlighting",
