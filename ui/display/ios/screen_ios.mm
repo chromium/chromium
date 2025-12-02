@@ -67,6 +67,24 @@ class ScreenNotification {
 namespace display {
 namespace {
 
+// Return all screens associated with scenes of the application.
+NSArray<UIScreen*>* GetAllActiveScreens() {
+#if BUILDFLAG(IS_IOS_APP_EXTENSION)
+  return [NSArray<UIScreen*> array];
+#else
+  NSMutableSet<UIScreen*>* screens = [NSMutableSet set];
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    auto* window_scene = base::apple::ObjCCastStrict<UIWindowScene>(scene);
+    for (UIWindow* window in window_scene.windows) {
+      if (UIScreen* screen = window.screen) {
+        [screens addObject:screen];
+      }
+    }
+  }
+  return [screens allObjects];
+#endif
+}
+
 class ScreenIos : public ScreenBase, public ScreenNotification {
  public:
   ScreenIos() {
@@ -140,24 +158,6 @@ class ScreenIos : public ScreenBase, public ScreenNotification {
   }
 
  private:
-  // Return all screens associated with scenes of the application.
-  NSArray<UIScreen*>* GetAllActiveScreens() const {
-#if BUILDFLAG(IS_IOS_APP_EXTENSION)
-    return [NSArray<UIScreen*> array];
-#else
-    NSMutableSet<UIScreen*>* screens = [NSMutableSet set];
-    for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
-      UIWindowScene* windowScene =
-          base::apple::ObjCCastStrict<UIWindowScene>(scene);
-      UIScreen* screen = windowScene.keyWindow.screen;
-      if (screen) {
-        [screens addObject:screen];
-      }
-    }
-    return [screens allObjects];
-#endif
-  }
-
   ScreenObserver* __strong observer_;
 };
 
@@ -176,15 +176,8 @@ float GetInternalDisplayDeviceScaleFactor() {
 #if BUILDFLAG(IS_IOS_APP_EXTENSION)
   return 1.0f;
 #else
-  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
-    UIWindowScene* windowScene =
-        base::apple::ObjCCastStrict<UIWindowScene>(scene);
-    UIScreen* screen = windowScene.keyWindow.screen;
-    if (screen) {
-      return [screen scale];
-    }
-  }
-  return 1.0f;
+  UIScreen* screen = GetAllActiveScreens().firstObject;
+  return screen ? screen.scale : 1.0f;
 #endif
 }
 
