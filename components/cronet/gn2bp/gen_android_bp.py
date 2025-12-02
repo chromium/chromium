@@ -878,13 +878,11 @@ class Module:
     self.jni_zero_target_type = None
     self.unstable = ""
     self.path = ""
-    self.post_processed = False
     # In the case of Java "top-level" modules, this points to the corresponding
     # "unfiltered" module. The top-level module is just a dependency holder;
     # it's the unfiltered module that does the actual compiling. For more
     # details, see `create_java_module()`.
     self.java_unfiltered_module = None
-    self.transitive_generated_headers_modules = collections.defaultdict(set)
     self.cargo_env_compat = None
     self.cargo_pkg_version = None
     self.whole_program_vtables = False
@@ -2638,46 +2636,6 @@ def _set_linker_script(module, libs):
       module.ldflags.add(get_linker_script_ldflag(gn_utils.label_to_path(lib)))
 
 
-def create_concatenated_generated_headers_module(bp_module_name,
-                                                 headers_modules, blueprint,
-                                                 gn_target_name):
-  """Aggregates the output of multiple generated_headers genrules into a single
-  one. This is created to shorten the command-line length of the build command
-  as to not exceed the allowed length. Instead of exposing each generated header
-  individually, they're combined into a single target and only that target is
-  exposed.
-
-  Args:
-    bp_module_name: Name of the aggregated module generated.
-    headers_modules: Set of generated headers modules that will be aggregated.
-    gn_target_name: Name of the original GN target. This is usually the name
-    of the cc_library_static that is being processed.
-
-  Returns:
-    A Soong Module that aggregates all of the headers.
-  """
-  module = Module("cc_genrule", bp_module_name, gn_target_name)
-  module.cmd = [
-      "python $(location components/cronet/gn2bp/headers_copy.py) --gen-dir $(genDir) --headers"
-  ]
-  module.tool_files.add("components/cronet/gn2bp/headers_copy.py")
-  for headers_module_name in sorted(headers_modules):
-    headers_module_str = f":{headers_module_name}"
-    headers_module = blueprint.modules[headers_module_name]
-    module.tool_files.add(headers_module_str)
-    module.export_include_dirs.update(headers_module.export_include_dirs)
-    module.cmd.append(f"$(locations {headers_module_str})")
-    # We have to copy-over some .cc files due to some C++ code doing #include "file.cc". See
-    # crbug.com/421139881 for more information.
-    module.out.update([
-        output for output in headers_module.out
-        if output.endswith(".h") or output.endswith(".cc")
-    ])
-  module.apex_available.add(tethering_apex)
-  blueprint.add_module(module)
-  return module
-
-
 def _get_cpp_std(cflags: List[str]) -> Union[str, None]:
   cpp_stds = [
       cflag.removeprefix('-std=') for cflag in cflags
@@ -3081,6 +3039,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
       # filegroups because they are not compiled in the traditional sense.
       module.defaults = [cc_defaults_module]
 
+    if module.type == 'cc_library_static':
+      module.export_generated_headers = module.generated_headers
+
     if module.type == 'cc_library_shared':
       output_name = target.output_name
       if output_name is None:
@@ -3160,21 +3121,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
           ]:
             if module.type != 'cc_library_static':
               module_target.whole_static_libs.add(dep_module.name)
-            module.transitive_generated_headers_modules[arch_name].update(
-                dep_module.transitive_generated_headers_modules[arch_name])
-            # Deduplicating attributes from arch-specific ones into "common" is done on a
-            # per-target basis: matching values from attributes are deduplicated via 'common' if they're present in all
-            # architectures supported by a target. This leads to a deduplication which is
-            # stable on a "per-target basis", but not "globally": being a common
-            # attribute for a target X does not guarantee that it will also be for a target Y that depends on X
-            # (Y could support more architecture than X).
-            # A common scenario is a target that also build for hosts, but depend on targets
-            # which do not: this dependency will not be present for arch_name == host,
-            # but will be there for others. Now, due to the "deduplication mismatch"
-            # mentioned above, module_target will be oblivious to the common attributes
-            # which should be propagated into the arch-specific variants.
-            module.transitive_generated_headers_modules[arch_name].update(
-                dep_module.transitive_generated_headers_modules["common"])
+            else:
+              module_target.generated_headers.update(
+                  dep_module.generated_headers)
             module_target.shared_libs.update(dep_module.shared_libs)
             module_target.header_libs.update(dep_module.header_libs)
           elif module.type in ('rust_ffi_static', 'rust_bindgen'):
@@ -3223,8 +3172,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
           if module.type.startswith("cc_"):
             module.srcs.add(f":{dep_module.name}-ndk-source")
             module.generated_headers.add(f"{dep_module.name}-ndk-source")
-            module.transitive_generated_headers_modules[arch_name].add(
-                f"{dep_module.name}-ndk-source")
+            module.export_generated_headers.add(f"{dep_module.name}-ndk-source")
           elif module.type.startswith("java_"):
             module.srcs.add(f":{dep_module.name}-java-source")
           elif module.type.startswith("rust_"):
@@ -3249,8 +3197,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
                   create_generated_headers_export_module(blueprint,
                                                          dep_module).name)
             else:
-              module.transitive_generated_headers_modules[arch_name].update(
-                  dep_module.genrule_headers)
+              module_target.generated_headers.update(dep_module.genrule_headers)
           module_target.srcs.update(dep_module.genrule_srcs)
           module_target.shared_libs.update(dep_module.genrule_shared_libs)
           module_target.header_libs.update(dep_module.genrule_header_libs)
@@ -3371,49 +3318,11 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
               'Unsupported arch-specific dependency %s of target %s with type %s'
               % (dep_module.name, target.name, dep_module.type))
 
-    for arch_name, arch_generated_headers in module.transitive_generated_headers_modules.items(
-    ):
-      # We are capable of concatenating only internal dependencies (We don't know
-      # what the output of external dependencies are).
-      external_dependencies = {
-          header_module
-          for header_module in arch_generated_headers
-          if header_module not in blueprint.modules.keys()
-      }
-      # Headers that are not generated via gn2bp should not be concatenated (e.g. aidl_interface).
-      # Remove those from the set sent to `create_concatenated_generated_headers_module` while
-      # keeping them in the transitive headers set to be propagated upward.
-      headers_to_concatenate = arch_generated_headers - external_dependencies
-      module.variant(arch_name).generated_headers.update(external_dependencies)
-      if len(headers_to_concatenate) == 0:
-        continue
-
-      concatenated_hdrs_module = create_concatenated_generated_headers_module(
-          f"{bp_module_name}__concatenated_headers_{arch_name}",
-          headers_to_concatenate, blueprint, gn_target_name)
-      concatenated_hdrs_module.host_supported = (arch_name == 'host'
-                                                 or (arch_name == 'common'
-                                                     and module.host_supported))
-      # Disable cross host support for concatenated headers. By default all cc_genrule
-      # modules disables this. However, this module is created manually which follows
-      # a different codepath.
-      if concatenated_hdrs_module.host_supported:
-        concatenated_hdrs_module.host_cross_supported = False
-      module.variant(arch_name).generated_headers.add(
-          concatenated_hdrs_module.name)
-
     if module.is_java_top_level_module():
       # The Java top-level module is not the one doing the actual compiling; the
       # unfiltered module is, so it should get the srcs.
       module.java_unfiltered_module.srcs = module.srcs
       module.srcs = ()
-
-    # post_processing has to be applied here as we need to ensure that the modules have the
-    # correct properties in order to propagate them upward the tree. A common example is the
-    # merging of intermediate headers into a single cc_genrule, the merging copies the `export_include_dirs`
-    # of the descendant modules. However, if we apply the post_processing after we're done then it won't be
-    # copied to the merged modules.
-    apply_post_processing(module)
 
   return modules
 
@@ -3506,8 +3415,6 @@ def create_cc_defaults_module():
 
 
 def apply_post_processing(module):
-  if module.post_processed:
-    return
   for key, add_val in additional_args.get(module.name, []):
     curr = getattr(module, key)
     if add_val and isinstance(add_val, set) and isinstance(curr, set):
@@ -3558,11 +3465,6 @@ def create_blueprint_for_targets(gn, targets, test_targets):
 
   # Merge in additional hardcoded arguments.
   for module in blueprint.modules.values():
-    # post_processing is applied here again after we have finished creating all the modules as
-    # some modules shortcut the `create_modules_from_target` which means that the previous
-    # post processing does not apply to them. Re-apply the post-processing here.
-    # It's safe to reapply the post processing more than once as it appends to sets or
-    # overwrite previous values.
     apply_post_processing(module)
 
   return blueprint
