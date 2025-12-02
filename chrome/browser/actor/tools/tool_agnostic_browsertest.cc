@@ -27,6 +27,10 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using base::test::TestFuture;
 using content::ChildFrameAt;
 using content::EvalJs;
@@ -44,7 +48,13 @@ class ActorToolAgnosticBrowserTest : public ActorToolsTest {
   ActorToolAgnosticBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{kGlicCrossOriginNavigationGating});
+        /*disabled_features=*/{
+#if BUILDFLAG(IS_CHROMEOS)
+            // TODO(crbug.com/465305046): Investigate how the rounded windows
+            // feature affects the hit test.
+            chromeos::features::kFeatureManagementRoundedWindows,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+            kGlicCrossOriginNavigationGating});
   }
   ~ActorToolAgnosticBrowserTest() override = default;
 
@@ -210,16 +220,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
 
 // Basic test to ensure sending a click to a coordinate in cross origin subframe
 // works.
-// TODO(crbug.com/460824293): Reenable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_InvokeToolCrossSiteSubframeWithCoordinateTarget \
-  DISABLED_InvokeToolCrossSiteSubframeWithCoordinateTarget
-#else
-#define MAYBE_InvokeToolCrossSiteSubframeWithCoordinateTarget \
-  InvokeToolCrossSiteSubframeWithCoordinateTarget
-#endif
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
-                       MAYBE_InvokeToolCrossSiteSubframeWithCoordinateTarget) {
+                       InvokeToolCrossSiteSubframeWithCoordinateTarget) {
   const GURL url = embedded_https_test_server().GetURL(
       "/actor/positioned_iframe_no_scroll.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
