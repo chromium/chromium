@@ -20,6 +20,7 @@
 
 @class ComposeboxMetricsRecorder;
 @protocol ComposeboxURLLoader;
+class AimEligibilityService;
 class FaviconLoader;
 class GURL;
 class PersistTabContextBrowserAgent;
@@ -67,7 +68,9 @@ class ContextualSearchSessionHandle;
                  (PersistTabContextBrowserAgent*)persistTabContextAgent
                         isIncognito:(BOOL)isIncognito
                          modeHolder:(ComposeboxModeHolder*)modeHolder
-                 templateURLService:(TemplateURLService*)templateURLService;
+                 templateURLService:(TemplateURLService*)templateURLService
+              aimEligibilityService:
+                  (AimEligibilityService*)aimEligibilityService;
 
 - (void)disconnect;
 

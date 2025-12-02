@@ -19,10 +19,14 @@
 - (void)updateState:(ComposeboxInputItemState)state
     forItemWithIdentifier:(const base::UnguessableToken&)identifier;
 
+// Sets whether AI Mode is currently eligible.
+- (void)setEligibleToAIMode:(BOOL)eligibleToAIMode;
+
 // Sets whether to show the Send button vs the other enabled controls.
 - (void)setShowsSendButton:(BOOL)showsSendButton;
 
-// Sets whether to show the extended controls (Plus button and Lens button).
+// Sets whether to show the extended controls (Plus button and Lens button),
+// based on the current default search engine.
 - (void)setShowsExtendedControls:(BOOL)showsExtendedControls;
 
 // Sets whether AI mode is enabled.
