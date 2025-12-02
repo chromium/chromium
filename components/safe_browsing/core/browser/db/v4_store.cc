@@ -12,6 +12,7 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -233,9 +234,10 @@ class BaseFileOutputStream
       if (!file_.IsValid()) {
         return false;
       }
-      int bytes_written = UNSAFE_TODO(
-          file_.WriteAtCurrentPos(reinterpret_cast<const char*>(buffer), size));
-      if (bytes_written == size) {
+      std::optional<size_t> bytes_written = file_.WriteAtCurrentPos(
+          UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(buffer),
+                                 base::checked_cast<size_t>(size))));
+      if (bytes_written == base::checked_cast<size_t>(size)) {
         return true;
       }
       file_ = base::File(base::File::GetLastFileError());
@@ -295,10 +297,11 @@ class BaseFileInputStream : public google::protobuf::io::ZeroCopyInputStream {
       if (!file_.IsValid()) {
         return -1;
       }
-      const int bytes_read = UNSAFE_TODO(
-          file_.ReadAtCurrentPos(reinterpret_cast<char*>(buffer), size));
-      if (bytes_read >= 0) {
-        return bytes_read;
+      const std::optional<size_t> bytes_read = file_.ReadAtCurrentPos(
+          UNSAFE_TODO(base::span(reinterpret_cast<uint8_t*>(buffer),
+                                 base::checked_cast<size_t>(size))));
+      if (bytes_read) {
+        return base::checked_cast<int>(*bytes_read);
       }
       file_ = base::File(base::File::GetLastFileError());
       return -1;
