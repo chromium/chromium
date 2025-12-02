@@ -61,9 +61,23 @@ GURL BundleVersionsStorage::GetUpdateManifestUrl(
   return base_url.Resolve(GetRelativeUpdateManifestUrl(web_bundle_id));
 }
 
+// static
+GURL BundleVersionsStorage::GetBundleUrl(
+    const GURL& base_url,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const IwaVersion& version) {
+  return base_url.Resolve(GetRelativeWebBundleUrl(web_bundle_id, version));
+}
+
 GURL BundleVersionsStorage::GetUpdateManifestUrl(
     const web_package::SignedWebBundleId& web_bundle_id) const {
   return GetUpdateManifestUrl(*base_url_, web_bundle_id);
+}
+
+GURL BundleVersionsStorage::GetBundleUrl(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const IwaVersion& version) const {
+  return GetBundleUrl(*base_url_, web_bundle_id, version);
 }
 
 base::Value::Dict BundleVersionsStorage::GetUpdateManifest(

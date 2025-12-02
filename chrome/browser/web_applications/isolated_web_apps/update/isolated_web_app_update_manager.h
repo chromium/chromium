@@ -80,6 +80,8 @@ enum class IsolatedWebAppUpdateError {
 };
 
 struct IsolatedWebAppUpdateOptions {
+  IsolatedWebAppUpdateOptions();
+  explicit IsolatedWebAppUpdateOptions(const GURL& update_manifest_url);
   IsolatedWebAppUpdateOptions(const GURL& update_manifest_url,
                               UpdateChannel update_channel,
                               bool allow_downgrades,
@@ -90,17 +92,13 @@ struct IsolatedWebAppUpdateOptions {
   ~IsolatedWebAppUpdateOptions();
 
   GURL update_manifest_url;
-  UpdateChannel update_channel;
-  bool allow_downgrades;
+  UpdateChannel update_channel = UpdateChannel::default_channel();
+  bool allow_downgrades = false;
   std::optional<IwaVersion> pinned_version;
 };
 
 // The `IsolatedWebAppUpdateManager` is responsible for discovery, download, and
-// installation of Isolated Web App updates. Currently, it is only updating
-// policy-installed IWAs on ChromeOS.
-//
-// TODO(crbug.com/40274186): Implement updates for unmanaged IWAs once we have
-// designed that process.
+// installation of Isolated Web App updates.
 class IsolatedWebAppUpdateManager
     : public WebAppInstallManagerObserver,
       public IwaKeyDistributionInfoProvider::Observer {
@@ -162,9 +160,9 @@ class IsolatedWebAppUpdateManager
       const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
 
-  // Queues an update discovery task for the provided `app_id`, assuming that
-  // the corresponding app is policy-installed (prod mode). Returns a boolean
-  // indicating whether an update discovery task was queued successfully.
+  // Queues an update discovery task for the provided `app_id`. Returns a
+  // boolean indicating whether an update discovery task was queued
+  // successfully.
   bool MaybeDiscoverUpdatesForApp(const webapps::AppId& app_id);
 
   // Queues an update discovery task (and potentially an apply update task

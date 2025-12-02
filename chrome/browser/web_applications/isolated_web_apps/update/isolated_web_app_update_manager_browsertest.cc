@@ -202,17 +202,42 @@ class IsolatedWebAppUpdateManagerBrowserTest
             .BuildBundle(GetWebBundleId(), {kKeyPair1}),
         update_channels);
   }
+
+  GURL GetBundleUpdateManifestUrl(
+      const web_package::SignedWebBundleId& web_bundle_id) {
+    return iwa_test_update_server_.GetUpdateManifestUrl(web_bundle_id);
+  }
+
+  std::unique_ptr<ScopedBundledIsolatedWebApp> CreateBundle(
+      const web_package::SignedWebBundleId& web_bundle_id,
+      std::string_view version,
+      std::optional<std::string_view> update_manifest_url = std::nullopt) {
+    auto manifest = ManifestBuilder().SetVersion(version);
+    if (update_manifest_url) {
+      manifest.SetUpdateManifestUrl(GURL(*update_manifest_url));
+    }
+
+    std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+        IsolatedWebAppBuilder(manifest).BuildBundle(
+            web_bundle_id, {test::GetDefaultEd25519KeyPair()});
+    app->TrustSigningKey();
+    return app;
+  }
+
   url::Origin GetAppOrigin() const {
     return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(GetWebBundleId())
         .origin();
   }
+
   webapps::AppId GetAppId() const {
     return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(GetWebBundleId())
         .app_id();
   }
+
   web_package::SignedWebBundleId GetWebBundleId() const {
     return kWebBundleId1;
   }
+
   const WebApp* GetIsolatedWebApp(const webapps::AppId& app_id) {
     return provider().registrar_unsafe().GetAppById(app_id);
   }
@@ -1185,6 +1210,42 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   content::TitleWatcher title_watcher(web_contents, u"7.0.6");
   title_watcher.AlsoWaitForTitle(u"3.0.4");
   EXPECT_THAT(title_watcher.WaitAndGetTitle(), Eq(u"7.0.6"));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
+                       SuccessfulUnmanagedUpdate) {
+  webapps::AppId app_id =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(kWebBundleId1)
+          .app_id();
+  auto update_manifest_url = GetBundleUpdateManifestUrl(kWebBundleId1);
+
+  // Install initial version.
+  CreateBundle(kWebBundleId1, "1.0.0", update_manifest_url.spec())
+      ->InstallChecked(profile());
+  EXPECT_EQ(provider()
+                .registrar_unsafe()
+                .GetAppById(app_id)
+                ->isolation_data()
+                ->version(),
+            *IwaVersion::Create("1.0.0"));
+
+  // Add newer version to the server.
+  iwa_test_update_server_.AddBundle(
+      CreateBundle(kWebBundleId1, "4.0.0", update_manifest_url.spec()));
+
+  WebAppTestManifestUpdatedObserver manifest_updated_observer(
+      &provider().install_manager());
+  manifest_updated_observer.BeginListening({app_id});
+  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  manifest_updated_observer.Wait();
+
+  // Verify the app is updated.
+  EXPECT_EQ(provider()
+                .registrar_unsafe()
+                .GetAppById(app_id)
+                ->isolation_data()
+                ->version(),
+            *IwaVersion::Create("4.0.0"));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,

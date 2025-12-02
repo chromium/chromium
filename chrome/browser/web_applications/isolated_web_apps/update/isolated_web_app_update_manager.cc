@@ -68,6 +68,12 @@
 
 namespace web_app {
 
+IsolatedWebAppUpdateOptions::IsolatedWebAppUpdateOptions() = default;
+
+IsolatedWebAppUpdateOptions::IsolatedWebAppUpdateOptions(
+    const GURL& update_manifest_url)
+    : update_manifest_url(update_manifest_url) {}
+
 IsolatedWebAppUpdateOptions::IsolatedWebAppUpdateOptions(
     const GURL& update_manifest_url,
     UpdateChannel update_channel,
@@ -181,16 +187,43 @@ IwaBundleIdToUpdateOptionsMap GetKioskPolicyIsolatedWebApps() {
   std::optional<ash::KioskIwaUpdateData> kiosk_iwa_policy_data =
       ash::GetCurrentKioskIwaUpdateData();
   if (kiosk_iwa_policy_data) {
-    result.emplace(
-        kiosk_iwa_policy_data->web_bundle_id,
+    result[kiosk_iwa_policy_data->web_bundle_id] =
         IsolatedWebAppUpdateOptions(kiosk_iwa_policy_data->update_manifest_url,
                                     kiosk_iwa_policy_data->update_channel,
                                     kiosk_iwa_policy_data->allow_downgrades,
-                                    kiosk_iwa_policy_data->pinned_version));
+                                    kiosk_iwa_policy_data->pinned_version);
   }
   return result;
 }
 #endif
+
+IwaBundleIdToUpdateOptionsMap GetIsolatedWebAppsWithOnlyUserManagement(
+    Profile* profile) {
+  IwaBundleIdToUpdateOptionsMap result;
+  for (const WebApp& web_app : web_app::WebAppProvider::GetForWebApps(profile)
+                                   ->registrar_unsafe()
+                                   .GetApps()) {
+    if (!web_app.isolation_data() ||
+        web_app.GetSources().HasAny({web_app::WebAppManagement::kKiosk,
+                                     web_app::WebAppManagement::kIwaShimlessRma,
+                                     web_app::WebAppManagement::kIwaPolicy})) {
+      continue;
+    }
+
+    auto url_info = IsolatedWebAppUrlInfo::Create(web_app.start_url());
+    if (!url_info.has_value()) {
+      continue;
+    }
+
+    if (!web_app.isolation_data()->update_manifest_url()) {
+      continue;
+    }
+
+    result[url_info->web_bundle_id()] = IsolatedWebAppUpdateOptions(
+        web_app.isolation_data().value().update_manifest_url().value());
+  }
+  return result;
+}
 
 IwaBundleIdToUpdateOptionsMap GetBundleIdToIsolatedWebAppsUpdateOptionsMap(
     Profile* profile) {
@@ -201,7 +234,15 @@ IwaBundleIdToUpdateOptionsMap GetBundleIdToIsolatedWebAppsUpdateOptionsMap(
     return GetKioskPolicyIsolatedWebApps();
   }
 #endif
-  return GetForceInstalledPolicyIsolatedWebApps(profile);
+  IwaBundleIdToUpdateOptionsMap result =
+      GetIsolatedWebAppsWithOnlyUserManagement(profile);
+
+  // Data coming from IWA policy source takes precedence.
+  for (auto& [id, options] : GetForceInstalledPolicyIsolatedWebApps(profile)) {
+    result.insert_or_assign(id, std::move(options));
+  }
+
+  return result;
 }
 
 bool ShouldProceedWithVersionChange(
@@ -551,7 +592,6 @@ size_t IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
       ++num_new_tasks;
     }
   }
-
   task_queue_.MaybeStartNextTask();
 
   MaybeScheduleUpdateDiscoveryCheck();
@@ -563,12 +603,6 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
     const base::flat_map<web_package::SignedWebBundleId,
                          IsolatedWebAppUpdateOptions>&
         id_to_update_options_map) {
-  // TODO(crbug.com/40274186): In the future, we also need to automatically
-  // update IWAs not installed via policy.
-  if (!web_app.IsIwaPolicyInstalledApp() && !web_app.IsKioskInstalledApp()) {
-    return false;
-  }
-
   const std::optional<IsolationData>& isolation_data = web_app.isolation_data();
   if (!isolation_data) {
     return false;

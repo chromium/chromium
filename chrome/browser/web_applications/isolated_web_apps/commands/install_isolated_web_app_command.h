@@ -171,8 +171,11 @@ class InstallIsolatedWebAppCommand
       base::OnceCallback<void(PrepareInstallInfoJob::InstallInfoOrFailure)>
           next_step_callback);
 
-  void FinalizeInstall(PrepareInstallInfoJob::InstallInfoOrFailure result);
+  void ProcessInstallInfoResultAndProceed(
+      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
+      PrepareInstallInfoJob::InstallInfoOrFailure result);
 
+  void FinalizeInstall(WebAppInstallInfo install_info);
   void OnFinalizeInstall(const IwaVersion& attempted_version,
                          const webapps::AppId& unused_app_id,
                          webapps::InstallResultCode install_result_code);

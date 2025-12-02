@@ -31,6 +31,10 @@ class BundleVersionsStorage {
       const GURL& base_url,
       const web_package::SignedWebBundleId& web_bundle_id);
 
+  static GURL GetBundleUrl(const GURL& base_url,
+                           const web_package::SignedWebBundleId& web_bundle_id,
+                           const IwaVersion& version);
+
   // Must be called once at startup.
   void SetBaseUrl(const GURL& base_url);
 
@@ -51,8 +55,12 @@ class BundleVersionsStorage {
   GURL GetUpdateManifestUrl(
       const web_package::SignedWebBundleId& web_bundle_id) const;
 
-  // Returns the update manifest for `web_bundle_id`. Will CHECK if there are no
-  // bundles served for this `web_bundle_id`.
+  // Returns the full URL to the bundle for `web_bundle_id` and `version`.
+  GURL GetBundleUrl(const web_package::SignedWebBundleId& web_bundle_id,
+                    const IwaVersion& version) const;
+
+  // Returns the update manifest for `web_bundle_id`. Will CHECK if there
+  // are no bundles served for this `web_bundle_id`.
   base::Value::Dict GetUpdateManifest(
       const web_package::SignedWebBundleId& web_bundle_id) const;
 
