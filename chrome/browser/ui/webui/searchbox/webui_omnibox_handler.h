@@ -47,6 +47,7 @@ class WebuiOmniboxHandler : public SearchboxHandler,
                        bool is_mouse_event) override;
   void OnThumbnailRemoved() override {}
   void ShowContextMenu(const gfx::Point& point) override;
+  void OnShow();
 
   // SearchboxHandler:
   std::optional<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatch(

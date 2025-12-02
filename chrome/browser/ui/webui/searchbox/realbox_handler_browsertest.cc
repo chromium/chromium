@@ -85,6 +85,7 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
       searchbox::mojom::SelectedFileInfoPtr file_info) override {}
   void UpdateSuggestedTabContext(
       searchbox::mojom::TabInfoPtr tab_info) override {}
+  void OnShow() override {}
   MOCK_METHOD(void, SetKeywordSelected, (bool is_keyword_selected), (override));
 
   mojo::PendingRemote<searchbox::mojom::Page> GetRemotePage() {

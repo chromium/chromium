@@ -177,6 +177,10 @@ void WebuiOmniboxHandler::ShowContextMenu(const gfx::Point& point) {
   }
 }
 
+void WebuiOmniboxHandler::OnShow() {
+  page_->OnShow();
+}
+
 std::optional<searchbox::mojom::AutocompleteMatchPtr>
 WebuiOmniboxHandler::CreateAutocompleteMatch(
     const AutocompleteMatch& match,
