@@ -66,7 +66,9 @@ import android.content.IntentFilter;
 import android.content.ReceiverCallNotAllowedException;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -80,6 +82,7 @@ import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.autofill.AutofillManager;
 import android.view.inputmethod.EditorInfo;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
@@ -121,6 +124,7 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -989,6 +993,43 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mImageDataRequestedNodes.remove(virtualViewId);
     }
 
+    /**
+     * Deep equality check of two {@link AccessibilityNodeInfoCompat} nodes.
+     *
+     * <p>Requires API level 33 (Tiramisu) for deprecation of {@link
+     * AccessibilityNodeInfo.recycle()}, prior to which the serialization used by this check was
+     * destructive.
+     *
+     * @return true if both are null or both are non-null and have all fields equal.
+     */
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private boolean nodesAreEqual(
+            @Nullable AccessibilityNodeInfoCompat a, @Nullable AccessibilityNodeInfoCompat b) {
+        if (a == null && b == null) return true;
+        if (a == null || b == null) return false;
+
+        // Checks only ANICompat fields not stored in ANI or Extras bundle
+        if (!a.equals(b)) return false;
+
+        // Parcel serialization gets all fields, including IDs for parent, child, labeled-by, and
+        // traversal before & after nodes which would otherwise only be accessible on sealed nodes
+        // and which create unnecessary AccessibilityNodeInfoCompat objects in their public
+        // accessors. In particular, the Extras bundle where ANICompat stores fields not in the base
+        // ANI object is also serialized by ANI.writeToParcel(), and the relevant fields of the
+        // wrapper types AccessibilityActionCompat, CollectionInfoCompat, CollectionItemInfoCompat,
+        // RangeInfoCompat, and TouchDelegateInfoCompat are also serialized.
+        //
+        // Though the AccessibilityNodeInfo parcel format is not guaranteed to be stable, it should
+        // be consistently-ordered within a single run of the same build of Chrome (some fields are
+        // ArrayMaps of objects, but ArrayMap is sorted by hash code, and hash codes of equal
+        // objects should be equal in the same program run).
+        Parcel aParcel = Parcel.obtain();
+        a.unwrap().writeToParcel(aParcel, 0);
+        Parcel bParcel = Parcel.obtain();
+        b.unwrap().writeToParcel(bParcel, 0);
+        return Arrays.equals(aParcel.marshall(), bParcel.marshall());
+    }
+
     @Override
     public @Nullable AccessibilityNodeInfoCompat createAccessibilityNodeInfo(int virtualViewId) {
         if (!isAccessibilityEnabled()) {
@@ -1039,6 +1080,26 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
                 mHistogramRecorder.incrementNodeWasReturnedFromCache();
                 mHistogramRecorder.endAccessibilityNodeInfoConstruction();
+
+                // Check cache freshness by drawing from C++ (Finch experiment).
+                if (ContentFeatureList.enabledAccessibilityCheckJavaNodeCacheFreshness()) {
+                    final AccessibilityNodeInfoCompat freshNode =
+                            AccessibilityNodeInfoCompat.obtain(mView);
+                    freshNode.setPackageName(mContext.getPackageName());
+                    freshNode.setSource(mView, virtualViewId);
+
+                    if (virtualViewId == mCurrentRootId) {
+                        freshNode.setParent(mView);
+                    }
+
+                    if (WebContentsAccessibilityImplJni.get()
+                            .populateAccessibilityNodeInfo(mNativeObj, freshNode, virtualViewId)) {
+                        if (nodesAreEqual(cachedNode, freshNode)) {
+                            mHistogramRecorder.incrementNodeWasFreshInCache();
+                        }
+                    } // If node is still in the cache when it's not in C++, treat as stale
+                }
+
                 return cachedNode;
             } else {
                 // If the node is no longer valid, wipe it from the cache and return null

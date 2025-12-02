@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser;
 
+import android.os.Build;
+
 import org.chromium.base.MutableBooleanParamWithSafeDefault;
 import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.MutableIntParamWithSafeDefault;
@@ -74,6 +76,21 @@ public class ContentFeatureList {
             "WebIdentityDigitalCredentialsCreation";
 
     public static final String DIPS_TTL = "DIPSTtl";
+
+    private static final MutableFlagWithSafeDefault sAccessibilityCheckJavaNodeCacheFreshness =
+            new MutableFlagWithSafeDefault(
+                    ContentFeatureMap.getInstance(),
+                    ContentFeatures.ACCESSIBILITY_CHECK_JAVA_NODE_CACHE_FRESHNESS,
+                    false);
+
+    /**
+     * Checks "AccessibilityCheckJavaNodeCacheFreshness" feature flag, including that current
+     * environment is at least required Android SDK 33 (Tiramisu).
+     */
+    public static boolean enabledAccessibilityCheckJavaNodeCacheFreshness() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && sAccessibilityCheckJavaNodeCacheFreshness.isEnabled();
+    }
 
     public static final MutableFlagWithSafeDefault sAccessibilityDeprecateJavaNodeCache =
             new MutableFlagWithSafeDefault(
