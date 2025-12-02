@@ -31,14 +31,12 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -420,20 +418,6 @@ public class TabSuspensionTest {
 
         startLoadingUrl(tab2, mStartingUrl);
         waitForSuspendedTabToShow(tab2, STARTING_FQDN);
-    }
-
-    @Test
-    @MediumTest
-    // TODO(crbug.com/454344854): Remove this test as part of feature cleanup. This is not a valid
-    // state anymore.
-    @DisableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID)
-    public void testSuspendUninitializedCurrentTab() {
-        mActivityTestRule.skipWindowAndTabStateCleanup();
-        mActivityTestRule.loadUrl(mStartingUrl);
-        ThreadUtils.runOnUiThreadBlocking(() -> mTab.destroy());
-
-        doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
-        suspendDomain(STARTING_FQDN);
     }
 
     private void startLoadingUrl(Tab tab, String url) {

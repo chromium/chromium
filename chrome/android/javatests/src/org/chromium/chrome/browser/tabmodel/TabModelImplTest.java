@@ -79,7 +79,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tests for the legacy {@link TabModelImpl} that also apply to {@link TabCollectionTabModelImpl}.
+ * Legacy tests for the precursor to {@link TabCollectionTabModelImpl} that are still applicable.
+ *
+ * <p>Prefer adding new tests to {@link TabCollectionTabModelImplTest}.
  */
 // TODO(crbug.com/454298057): Migrate these tests to TabCollectionTabModelImplTest.
 @RunWith(ChromeJUnit4ClassRunner.class)

@@ -10,16 +10,15 @@ import org.chromium.base.Holder;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 
 /**
- * Helper to create {@link TabModelHolder} and {@link IncognitoTabModelHolder}. This is a shim class
- * to allow seamlessly swapping the implementation between legacy {@link TabModelImpl} and {@link
- * TabGroupModelImpl} and the new {@link TabCollectionTabModelImpl}.
+ * Helper to create {@link TabModelHolder} and {@link IncognitoTabModelHolder}. This was a shim
+ * class to allow seamlessly swapping the implementation between legacy implementation and {@link
+ * TabCollectionTabModelImpl}. It remains convenient for testing, but could be inlined.
  */
 @NullMarked
 public class TabModelHolderFactory {
@@ -40,36 +39,20 @@ public class TabModelHolderFactory {
             boolean supportUndo,
             boolean isArchivedTabModel,
             TabUngrouperFactory tabUngrouperFactory) {
-        if (ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
-            return createCollectionTabModelHolder(
-                    profile,
-                    activityType,
-                    isArchivedTabModel,
-                    regularTabCreator,
-                    incognitoTabCreator,
-                    orderController,
-                    tabContentManager,
-                    nextTabPolicySupplier,
-                    modelDelegate,
-                    asyncTabParamsManager,
-                    tabRemover,
-                    tabUngrouperFactory,
-                    supportUndo);
-        }
-        return createLegacyTabModelHolder(
+        return createCollectionTabModelHolder(
                 profile,
                 activityType,
+                isArchivedTabModel,
                 regularTabCreator,
                 incognitoTabCreator,
                 orderController,
                 tabContentManager,
                 nextTabPolicySupplier,
-                asyncTabParamsManager,
                 modelDelegate,
+                asyncTabParamsManager,
                 tabRemover,
-                supportUndo,
-                isArchivedTabModel,
-                tabUngrouperFactory);
+                tabUngrouperFactory,
+                supportUndo);
     }
 
     /**
@@ -88,21 +71,7 @@ public class TabModelHolderFactory {
             TabModelDelegate modelDelegate,
             TabRemover tabRemover,
             TabUngrouperFactory tabUngrouperFactory) {
-        if (ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
-            return createCollectionIncognitoTabModelHolder(
-                    profileProvider,
-                    regularTabCreator,
-                    incognitoTabCreator,
-                    orderController,
-                    tabContentManager,
-                    nextTabPolicySupplier,
-                    asyncTabParamsManager,
-                    activityType,
-                    modelDelegate,
-                    tabRemover,
-                    tabUngrouperFactory);
-        }
-        return createLegacyIncognitoTabModelHolder(
+        return createCollectionIncognitoTabModelHolder(
                 profileProvider,
                 regularTabCreator,
                 incognitoTabCreator,
@@ -190,82 +159,6 @@ public class TabModelHolderFactory {
                 incognitoTabModel, new IncognitoTabGroupModelFilterImpl(incognitoTabModel));
     }
 
-    private static TabModelHolder createLegacyTabModelHolder(
-            Profile profile,
-            @ActivityType int activityType,
-            TabCreator regularTabCreator,
-            TabCreator incognitoTabCreator,
-            TabModelOrderController orderController,
-            TabContentManager tabContentManager,
-            NextTabPolicySupplier nextTabPolicySupplier,
-            AsyncTabParamsManager asyncTabParamsManager,
-            TabModelDelegate modelDelegate,
-            TabRemover tabRemover,
-            boolean supportUndo,
-            boolean isArchivedTabModel,
-            TabUngrouperFactory tabUngrouperFactory) {
-        TabModelImpl regularTabModel =
-                new TabModelImpl(
-                        profile,
-                        activityType,
-                        regularTabCreator,
-                        incognitoTabCreator,
-                        orderController,
-                        tabContentManager,
-                        nextTabPolicySupplier,
-                        asyncTabParamsManager,
-                        modelDelegate,
-                        tabRemover,
-                        supportUndo,
-                        isArchivedTabModel);
-
-        return new TabModelHolder(
-                regularTabModel,
-                createLegacyTabGroupModelFilterInternal(regularTabModel, tabUngrouperFactory));
-    }
-
-    private static IncognitoTabModelHolder createLegacyIncognitoTabModelHolder(
-            ProfileProvider profileProvider,
-            TabCreator regularTabCreator,
-            TabCreator incognitoTabCreator,
-            TabModelOrderController orderController,
-            TabContentManager tabContentManager,
-            NextTabPolicySupplier nextTabPolicySupplier,
-            AsyncTabParamsManager asyncTabParamsManager,
-            @ActivityType int activityType,
-            TabModelDelegate modelDelegate,
-            TabRemover tabRemover,
-            TabUngrouperFactory tabUngrouperFactory) {
-        IncognitoTabModelImplCreator incognitoCreator =
-                new IncognitoTabModelImplCreator(
-                        profileProvider,
-                        regularTabCreator,
-                        incognitoTabCreator,
-                        orderController,
-                        tabContentManager,
-                        nextTabPolicySupplier,
-                        asyncTabParamsManager,
-                        activityType,
-                        modelDelegate,
-                        tabRemover,
-                        tabUngrouperFactory);
-        IncognitoTabModelImpl incognitoTabModel = new IncognitoTabModelImpl(incognitoCreator);
-
-        return new IncognitoTabModelHolder(
-                incognitoTabModel,
-                createLegacyTabGroupModelFilterInternal(incognitoTabModel, tabUngrouperFactory));
-    }
-
-    private static TabGroupModelFilterInternal createLegacyTabGroupModelFilterInternal(
-            TabModelInternal tabModel, TabUngrouperFactory tabUngrouperFactory) {
-        boolean isIncognitoBranded = tabModel.isIncognitoBranded();
-        Holder<@Nullable TabGroupModelFilter> filterHolder = new Holder<>(null);
-        TabUngrouper tabUngrouper = tabUngrouperFactory.create(isIncognitoBranded, filterHolder);
-        TabGroupModelFilterInternal filter =
-                new StubTabGroupModelFilterImpl(tabModel, tabUngrouper);
-        filterHolder.value = filter;
-        return filter;
-    }
 
     /**
      * Creates a {@link TabModelHolder} for testing. The {@link TabGroupModelFilter} mostly no-ops.

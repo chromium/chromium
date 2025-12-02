@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Common utility class for {@link TabModelImpl} and {@link TabCollectionTabModelImpl}. Allows
- * extracting common logic out of the two models.
+ * Utility class for {@link TabCollectionTabModelImpl}. Permits easier testing of some static
+ * helpers.
  */
 @NullMarked
 class TabModelImplUtil {

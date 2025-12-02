@@ -257,9 +257,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     /**
      * Returns the {@link TabCreator} for the given {@link Profile}.
      *
-     * <p>Please note that, the {@link TabCreator} and {@TabModelImpl} are separate instances for
-     * {@link ChromeTabbedActivity} and {@link CustomTabActivity} across both regular and Incognito
-     * modes which allows us to pass the boolean directly.
+     * <p>Please note that, the {@link TabCreator} and {@link TabCollectionTabModelImpl} are
+     * separate instances for {@link ChromeTabbedActivity} and {@link CustomTabActivity} across both
+     * regular and Incognito modes which allows us to pass the boolean directly.
      *
      * @param incognito A boolean to indicate whether to return IncognitoTabCreator or
      *     RegularTabCreator.
