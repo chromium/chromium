@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -42,6 +43,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/window/hit_test_utils.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -108,6 +110,34 @@ BEGIN_METADATA(ShowBrowserFrameRegionsView)
 END_METADATA
 }  // namespace
 
+// Tracks the browser view and clears out the pointer when it is destroyed.
+// Because of the way widgets are torn down, there will be a brief moment where
+// the frame exists but the contents view does not, so maintaining a reference
+// from the frame to the contents view that is never cleared is unsafe.
+//
+// Dereferences of `BrowserFrameView::browser_view()` would have previously
+// been UAFs in this situation; now they will be explicit null dereferences
+// (which is safer).
+//
+// See https://crbug.com/465209325 for an example of this happening.
+class BrowserFrameView::BrowserViewWatcher : public views::ViewObserver {
+ public:
+  BrowserViewWatcher(BrowserFrameView& frame, BrowserView* browser_view)
+      : frame_(frame) {
+    observation_.Observe(browser_view);
+  }
+  ~BrowserViewWatcher() override = default;
+
+  void OnViewIsDeleting(View* observed_view) override {
+    frame_->browser_view_ = nullptr;
+    observation_.Reset();
+  }
+
+ private:
+  const raw_ref<BrowserFrameView> frame_;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+
 gfx::Rect BrowserFrameView::BoundsAndMargins::ToEnclosingRect() const {
   gfx::RectF temp = bounds;
   temp.Outset(margins);
@@ -116,7 +146,10 @@ gfx::Rect BrowserFrameView::BoundsAndMargins::ToEnclosingRect() const {
 
 BrowserFrameView::BrowserFrameView(BrowserWidget* browser_widget,
                                    BrowserView* browser_view)
-    : browser_widget_(browser_widget), browser_view_(browser_view) {
+    : browser_widget_(browser_widget),
+      browser_view_(browser_view),
+      browser_view_watcher_(
+          std::make_unique<BrowserViewWatcher>(*this, browser_view)) {
   DCHECK(browser_widget_);
   DCHECK(browser_view_);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
