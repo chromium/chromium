@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/safety_list.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 
@@ -23,7 +24,7 @@ constexpr std::string_view kAllowedFieldName = "navigation_allowed";
 constexpr std::string_view kBlockedFieldName = "navigation_blocked";
 
 void MaybeAppendHardcodedPatterns(SafetyList::Patterns& patterns) {
-  if (base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating) &&
+  if (IsNavigationGatingEnabled() &&
       kGlicIncludeHardcodedBlockListEntries.Get()) {
     patterns.emplace_back(
         ContentSettingsPattern::FromString("*"),

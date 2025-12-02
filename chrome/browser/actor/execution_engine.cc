@@ -29,6 +29,7 @@
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/safety_list_manager.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -100,7 +101,7 @@ void PostTaskForActCallback(
 // to a new origin. See note on `kGlicNavigationGatingUseSiteNotOrigin`.
 bool IsSameForNewOriginNavigationGating(const url::Origin& reference_origin,
                                         const GURL& navigation_url) {
-  CHECK(base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating));
+  CHECK(IsNavigationGatingEnabled());
 
   if (kGlicNavigationGatingUseSiteNotOrigin.Get()) {
     return net::SchemefulSite::IsSameSite(reference_origin.GetURL(),
@@ -223,7 +224,7 @@ std::string ExecutionEngine::StateToString(State state) {
 bool ExecutionEngine::ShouldGateNavigation(
     content::NavigationHandle& navigation_handle,
     ExecutionEngine::NavigationDecisionCallback callback) {
-  if (!base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating)) {
+  if (!IsNavigationGatingEnabled()) {
     return false;
   }
 
@@ -601,14 +602,12 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   absl::flat_hash_set<int32_t> acting_tab_handles;
 
   action_sequence_ = std::move(actions);
-  bool origin_gating_enabled =
-      base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating);
   for (const std::unique_ptr<ToolRequest>& action : action_sequence_) {
     CHECK(action);
     if (action->GetTabHandle() != tabs::TabHandle::Null()) {
       acting_tab_handles.insert(action->GetTabHandle().raw_value());
     }
-    if (origin_gating_enabled) {
+    if (IsNavigationGatingEnabled()) {
       if (std::optional<url::Origin> maybe_origin =
               action->AssociatedOriginGrant();
           maybe_origin) {
@@ -669,7 +668,7 @@ void ExecutionEngine::OnMayActOnTabDecision(
       DidFinishAsyncSafetyChecks(evaluated_origin, /*may_act=*/true);
       return;
     case MayActOnUrlBlockReason::kOptimizationGuideBlock:
-      if (base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating) &&
+      if (IsNavigationGatingEnabled() &&
           kGlicPromptUserForSensitiveNavigations.Get()) {
         SendUserConfirmationDialogRequest(
             evaluated_origin,
@@ -966,7 +965,7 @@ void ExecutionEngine::UninterruptFromTool() {
 
 void ExecutionEngine::AddWritableMainframeOrigins(
     const ExecutionEngine::AllowedOriginSet& added_writable_mainframe_origins) {
-  if (!base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating)) {
+  if (!IsNavigationGatingEnabled()) {
     return;
   }
   for (const auto& origin : added_writable_mainframe_origins) {
