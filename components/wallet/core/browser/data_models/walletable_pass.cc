@@ -105,19 +105,6 @@ TransitTicket::TransitTicket(TransitTicket&&) = default;
 TransitTicket& TransitTicket::operator=(TransitTicket&&) = default;
 TransitTicket::~TransitTicket() = default;
 
-// static
-std::optional<BoardingPass> BoardingPass::FromBCBP(
-    const WalletBarcode& barcode) {
-  // TODO(crbug.com/463515055): Decode BCBP barcode to boarding pass.
-  return std::nullopt;
-}
-
-BoardingPass::BoardingPass() = default;
-BoardingPass::BoardingPass(const BoardingPass&) = default;
-BoardingPass& BoardingPass::operator=(const BoardingPass&) = default;
-BoardingPass::BoardingPass(BoardingPass&&) = default;
-BoardingPass& BoardingPass::operator=(BoardingPass&&) = default;
-BoardingPass::~BoardingPass() = default;
 
 // static
 std::optional<WalletablePass> WalletablePass::FromProto(
@@ -148,7 +135,8 @@ std::optional<WalletablePass> WalletablePass::FromProto(
 // static
 std::optional<WalletablePass> WalletablePass::CreateBoardingPass(
     const WalletBarcode& barcode) {
-  std::optional<BoardingPass> boarding_pass = BoardingPass::FromBCBP(barcode);
+  std::optional<BoardingPass> boarding_pass =
+      BoardingPass::FromBarcode(barcode);
   if (boarding_pass) {
     WalletablePass pass;
     pass.pass_data = std::move(*boarding_pass);

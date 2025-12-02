@@ -9,6 +9,7 @@
 #include <string>
 #include <variant>
 
+#include "components/wallet/core/browser/data_models/boarding_pass.h"
 #include "components/wallet/core/browser/data_models/wallet_barcode.h"
 
 namespace optimization_guide::proto {
@@ -82,29 +83,6 @@ struct EventPass {
   std::string address;
   std::string owner_name;
   std::string issuer_name;
-
-  // The detected barcode.
-  std::optional<WalletBarcode> barcode;
-};
-
-// Represents a simplified boarding pass.
-struct BoardingPass {
-  static std::optional<BoardingPass> FromBCBP(const WalletBarcode& barcode);
-
-  BoardingPass();
-  BoardingPass(const BoardingPass&);
-  BoardingPass& operator=(const BoardingPass&);
-  BoardingPass(BoardingPass&&);
-  BoardingPass& operator=(BoardingPass&&);
-  ~BoardingPass();
-
-  bool operator==(const BoardingPass& other) const = default;
-
-  std::string airline;
-  std::string flight_code;
-  std::string origin;
-  std::string destination;
-  std::string date;
 
   // The detected barcode.
   std::optional<WalletBarcode> barcode;
