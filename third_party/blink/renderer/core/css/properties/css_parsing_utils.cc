@@ -6691,7 +6691,7 @@ bool ConsumeGridTrackRepeatFunction(
         //
         // [1] https://github.com/w3c/csswg-drafts/issues/10915
         if (is_auto_repeat &&
-            RuntimeEnabledFeatures::CSSMasonryLayoutEnabled()) {
+            RuntimeEnabledFeatures::CSSGridLanesLayoutEnabled()) {
           all_tracks_are_intrinsic_repeat_or_fixed_sized =
               IsGridTrackFixedOrIntrinsicSized(*track_size);
         } else {

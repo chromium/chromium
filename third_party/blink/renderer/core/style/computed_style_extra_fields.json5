@@ -52,7 +52,7 @@
         "layout-custom", "inline-layout-custom", "math", "block math",
         "inline list-item", "flow-root list-item", "inline flow-root list-item",
         "ruby", "block ruby", "ruby-text",
-        // Available only if CSSMasonryLayout is enabled:
+        // Available only if CSSGridLanesLayout is enabled:
         "grid-lanes", "inline-grid-lanes"
       ],
       default_value: "inline",

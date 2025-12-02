@@ -378,13 +378,14 @@ inline constexpr char kCssGamutMappingName[] = "CSS Gamut Mapping";
 inline constexpr char kCssGamutMappingDescription[] =
     "Enable experimental CSS gamut mapping implementation.";
 
-inline constexpr char kCssMasonryLayoutName[] = "CSS Masonry Layout";
-inline constexpr char kCssMasonryLayoutDescription[] =
-    "Enable experimental CSS Masonry Layout implementation. Simple layouts "
-    "with masonry are supported. Subgrid, fragmentation, and out-of-flow items "
-    "are not supported yet. The syntax to use CSS Masonry is `display: "
-    "masonry` together with grid properties (i.e. `grid-column`, `grid-row`, "
-    "etc.). More details on masonry syntax can be found at "
+inline constexpr char kCSSGridLanesLayoutName[] = "CSS Grid Lanes Layout";
+inline constexpr char kCSSGridLanesLayoutDescription[] =
+    "Enable experimental CSS Grid Lanes Layout implementation. Simple layouts "
+    "with grid-lanes are supported. Subgrid and fragmentation "
+    "are not supported yet. The syntax to use CSS Grid Lanes is `display: "
+    "grid-lanes` together with grid properties (i.e. `grid-column`, "
+    "`grid-row`, "
+    "etc.). More details on grid-lanes syntax can be found at "
     "https://www.w3.org/TR/css-grid-3/#masonry-model.";
 
 inline constexpr char kCustomizeChromeSidePanelExtensionsCardName[] =

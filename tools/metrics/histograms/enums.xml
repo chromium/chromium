@@ -16198,6 +16198,7 @@ from previous Chrome versions.
   <int value="685406951" label="UseNotificationCompatBuilder:disabled"/>
   <int value="685571935"
       label="FencedFramesCrossOriginAutomaticBeacons:disabled"/>
+  <int value="685861269" label="CSSGridLanesLayout:enabled"/>
   <int value="685916283" label="enable-zip-archiver-on-file-manager"/>
   <int value="686371937" label="ResponsiveIframes:disabled"/>
   <int value="686822618" label="DefaultSiteInstanceGroups:enabled"/>
@@ -18676,6 +18677,7 @@ from previous Chrome versions.
   <int value="1539166258" label="AutofillEnableAmountExtraction:enabled"/>
   <int value="1539225325" label="AndroidOpenPdfInlineBackport:enabled"/>
   <int value="1539399467" label="PerAppLanguage:disabled"/>
+  <int value="1539670463" label="CSSGridLanesLayout:disabled"/>
   <int value="1539795906" label="LensOverlaySimplifiedSelection:disabled"/>
   <int value="1540395380" label="WebContentsOcclusion:enabled"/>
   <int value="1540487070" label="ContextualSearchDebug:enabled"/>

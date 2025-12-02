@@ -1448,6 +1448,11 @@
       depends_on: ["CSSGapDecoration"],
     },
     {
+      name: "CSSGridLanesLayout",
+      status: "experimental",
+      public: true,
+    },
+    {
       // This needs to be kept as a runtime flag as long as we need to forcibly
       // disable it for WebView on Android versions older than P. See
       // https://crrev.com/f311a84728272e30979432e8474089b3db3c67df
@@ -1528,11 +1533,6 @@
     {
       name: "CSSMarkerNestedPseudoElement",
       status: "stable",
-    },
-    {
-      name: "CSSMasonryLayout",
-      status: "experimental",
-      public: true,
     },
     // https://drafts.csswg.org/css-values-5/#progress
     // media-progress()

@@ -742,7 +742,7 @@
       "external/wpt/css/css-grid/parsing"
     ],
     "args": [
-      "--disable-blink-features=CSSMasonryLayout"
+      "--disable-blink-features=CSSGridLanesLayout"
     ],
     "owners": [
       "almaher@microsoft.com"

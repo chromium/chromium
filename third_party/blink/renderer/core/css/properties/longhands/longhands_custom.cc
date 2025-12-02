@@ -3858,7 +3858,7 @@ static bool IsDisplayOutside(CSSValueID id) {
 
 static bool IsDisplayInside(CSSValueID id) {
   if (id == CSSValueID::kGridLanes) {
-    return RuntimeEnabledFeatures::CSSMasonryLayoutEnabled();
+    return RuntimeEnabledFeatures::CSSGridLanesLayoutEnabled();
   }
   return (id >= CSSValueID::kFlowRoot && id <= CSSValueID::kGridLanes) ||
          id == CSSValueID::kMath || id == CSSValueID::kRuby;
@@ -3875,7 +3875,7 @@ static bool IsDisplayInternal(CSSValueID id) {
 
 static bool IsDisplayLegacy(CSSValueID id) {
   if (id == CSSValueID::kInlineGridLanes) {
-    return RuntimeEnabledFeatures::CSSMasonryLayoutEnabled();
+    return RuntimeEnabledFeatures::CSSGridLanesLayoutEnabled();
   }
   return id >= CSSValueID::kInlineBlock && id <= CSSValueID::kWebkitInlineFlex;
 }

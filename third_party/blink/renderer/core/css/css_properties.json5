@@ -3501,7 +3501,7 @@
       keywords: ["row", "row-reverse", "column", "column-reverse"],
       default_value: "column",
       invalidate: ["layout", "paint"],
-      runtime_flag: "CSSMasonryLayout",
+      runtime_flag: "CSSGridLanesLayout",
     },
     {
       name: "grid-lanes-fill",
@@ -3512,7 +3512,7 @@
       typedom_types: ["Keyword"],
       default_value: "normal",
       invalidate: ["layout", "paint"],
-      runtime_flag: "CSSMasonryLayout",
+      runtime_flag: "CSSGridLanesLayout",
     },
     {
       name: "grid-row-end",
@@ -4103,7 +4103,7 @@
       typedom_types: ["Length", "Percentage", "Keyword"],
       keywords: ["normal", "infinite"],
       invalidate: ["layout", "paint"],
-      runtime_flag: "CSSMasonryLayout",
+      runtime_flag: "CSSGridLanesLayout",
     },
     {
       name: "math-shift",
@@ -8734,13 +8734,13 @@
       longhands: [ "grid-template-areas", "grid-template-columns", "grid-lanes-direction", "grid-lanes-fill"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
-      runtime_flag: "CSSMasonryLayout",
+      runtime_flag: "CSSGridLanesLayout",
     },
     {
       name: "grid-lanes-flow",
       longhands: ["grid-lanes-direction", "grid-lanes-fill"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSMasonryLayout",
+      runtime_flag: "CSSGridLanesLayout",
     },
     {
       name: "grid-row",
