@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "build/build_config.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -53,8 +54,14 @@ AXVirtualView* AXVirtualView::GetFromId(int32_t id) {
 
 AXVirtualView::AXVirtualView() : ViewAccessibility(nullptr) {
   GetIdMap()[ViewAccessibility::GetUniqueId()] = this;
-  ax_platform_node_ = ui::AXPlatformNode::Create(*this);
-  DCHECK(ax_platform_node_);
+  // When AccessibilityTreeForViews is enabled, entries in the platform
+  // accessibility tree are created from the WidgetAXManager serialization
+  // of that virtual node. Avoid creating one here as that would be a
+  // duplicate.
+  if (!::features::IsAccessibilityTreeForViewsEnabled()) {
+    ax_platform_node_ = ui::AXPlatformNode::Create(*this);
+    DCHECK(ax_platform_node_);
+  }
   SetClassName(GetViewClassName());
 }
 
