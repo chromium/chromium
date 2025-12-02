@@ -15,7 +15,9 @@ use std::simd::prelude::*;
 use std::simd::Simd;
 
 use bytemuck::cast_slice;
+use bytemuck::cast_slice_mut;
 
+use crate::decoder::decode_etc1_block;
 use crate::dither::dither;
 use crate::quant::{quantize_averages, QuantResult};
 use crate::selectors::search_table_and_selectors;
@@ -199,26 +201,48 @@ pub fn compress_etc1(
 ///   pixels out of bounds will be discarded. The number is truncated.
 /// - `src_row_width` should be the width of ETC1 image `dst_row_width` should
 ///   be the width of RGBA image
-///
-///
-/// This is a stub.
-/// TODO: b/393495436 - Implement ETC1 decoding logic.
 pub fn decompress_etc1(
-    _src: &[u8],
+    src: &[u8],
     dst: &mut [u32],
     dst_width: u32,
     dst_height: u32,
-    _src_row_width: u32,
+    src_row_width: u32,
     dst_row_width: u32,
 ) {
-    for y in 0..dst_height {
-        for x in 0..dst_width {
-            let r = (x % 256) as u32;
-            let b = (y % 256) as u32;
-            let pixel_value: u32 = 0xFF000000 // Alpha: 0xFF
-                    | ((r & 0xFF) << 16) // Red
-                    |  (b & 0xFF); // Blue
-            dst[(y * dst_row_width + x) as usize] = pixel_value;
+    // We access 'src' as array of u64s, but 'src' is not always aligned to 8-byte
+    // because of constrains at the callsite.(b/464139989) To solve the
+    // alignment issue, we copy the data from `src` into a temporary buffer that
+    // is guaranteed to be 8-byte aligned. To balance between copying overhead
+    // and memory overhead, we copy one row at a time.
+
+    let mut staging_row_u64 = vec![0u64; src_row_width as usize];
+    let bytes_per_row = src_row_width as usize * ETC1_BLOCK_BYTES;
+    for y in (0..dst_height).step_by(4) {
+        let src_y = (y / 4) as usize;
+        let copy_start_idx = src_y * bytes_per_row;
+        let copy_end_idx = (src_y + 1) * bytes_per_row;
+        let staging_row_bytes: &mut [u8] = cast_slice_mut(&mut staging_row_u64);
+        staging_row_bytes[..bytes_per_row].copy_from_slice(&src[copy_start_idx..copy_end_idx]);
+
+        for x in (0..dst_width).step_by(4) {
+            // The ETC1 specification ("Khronos Data Format Specification v1.1 rev 9")
+            // defines the 64-bit block data as big endian.
+            let src_x = (x / 4) as usize;
+            let output_rgba_block =
+                decode_etc1_block(u64::from_be(staging_row_u64[src_x as usize]));
+            for y_in_block in 0..4 {
+                for x_in_block in 0..4 {
+                    let dst_x = x + x_in_block;
+                    let dst_y = y + y_in_block;
+
+                    if dst_y < dst_height && dst_x < dst_width {
+                        let dst_idx = dst_y * dst_row_width + dst_x;
+
+                        dst[dst_idx as usize] =
+                            output_rgba_block[y_in_block as usize][x_in_block as usize];
+                    }
+                }
+            }
         }
     }
 }

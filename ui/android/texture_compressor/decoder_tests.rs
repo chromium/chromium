@@ -4,6 +4,8 @@
 
 use rust_gtest_interop::expect_eq;
 use rust_gtest_interop::prelude::*;
+use ui_sandroid_ctexture_ucompressor::decoder::apply_modifier;
+use ui_sandroid_ctexture_ucompressor::decoder::decode_etc1_block;
 use ui_sandroid_ctexture_ucompressor::decoder::parse_block_metadata;
 use ui_sandroid_ctexture_ucompressor::decoder::read_delta_bits;
 use ui_sandroid_ctexture_ucompressor::decoder::scale_4bit_to_8bit;
@@ -71,12 +73,12 @@ fn test() {
     expect_eq!(expected, result);
 }
 
-#[gtest(TextureCompressorTest, SignExtend3bitNegative)]
+#[gtest(TextureCompressorTest, ReadDeltaBitsNegative)]
 fn test() {
     expect_eq!(-4, read_delta_bits(0b100));
 }
 
-#[gtest(TextureCompressorTest, SignExtend3bitNonNegative)]
+#[gtest(TextureCompressorTest, ReadDeltaBitsNonNegative)]
 fn test() {
     expect_eq!(0, read_delta_bits(0b000));
     expect_eq!(1, read_delta_bits(0b001));
@@ -90,4 +92,83 @@ fn test() {
 #[gtest(TextureCompressorTest, Expand5bitto8bit)]
 fn test() {
     expect_eq!(0b11100111, scale_5bit_to_8bit(0b11100));
+}
+
+#[gtest(TextureCompressorTest, ApplyModifier)]
+fn test() {
+    // In this tast case, we use the modifier table: [-8, -2, 2, 8](table codeword
+    // is 0b000), and base color: [R, G, B] = [16, 16, 16] Input format is [R,
+    // G, B], and Output format is 0xAABBGGRR.
+    let base = [16, 16, 16];
+    // If negative = true, large = true, then the modifier value is -8. Therefore,
+    // the expected components is [16-8, 16-8, 16-8]
+    expect_eq!(0x_FF_08_08_08, apply_modifier(base, 0b000, true, true));
+
+    // If negative = true, large = false, then the modifier value is -2. Therefore,
+    // the expected components is [16-2, 16-2, 16-2]
+    expect_eq!(0x_FF_0E_0E_0E, apply_modifier(base, 0b000, true, false));
+
+    // If negative = false, large = false, then the modifier value is 2. Therefore,
+    // the expected components is [16+2, 16+2, 16+2]
+    expect_eq!(0x_FF_12_12_12, apply_modifier(base, 0b000, false, false));
+
+    // If negative = false, large = true, then the modifier value is 8. So expected
+    // components is [16+8, 16+8, 16+8]
+    expect_eq!(0x_FF_18_18_18, apply_modifier(base, 0b000, false, true));
+}
+
+#[gtest(TextureCompressorTest, ApplyModifierClampToMax)]
+fn test() {
+    let base = [231, 8, 16];
+    // If negative = false, large = true, and the modifier table [-29, -9, 9, 29]
+    // is used, then the modifier value is +29. So expected components is
+    // [231+29, 8+29, 16+29], resulting in the color[255, 37, 45]
+    expect_eq!(0b_11111111_00101101_00100101_11111111, apply_modifier(base, 0b010, false, true));
+}
+
+#[gtest(TextureCompressorTest, ApplyModifierClampToMin)]
+fn test() {
+    let base = [231, 8, 16];
+    // If negative = true, large = true, and the modifier table [-29, -9, 9, 29] is
+    // used, then the modifier value is -29. So expected components is [231-29,
+    // 8-29, 16-29], resulting in the color[202, 0, 0]
+    expect_eq!(0b_11111111_00000000_00000000_11001010, apply_modifier(base, 0b010, true, true));
+}
+
+#[gtest(TextureCompressorTest, DecodeETC1BlockFlipFalse)]
+fn test() {
+    // If flip is false, the block is divided into two 2x4 subblocks side-by-side.
+    // basecolor1 fills the left one, and basecolor2 fills the right one.
+    // Input (upper 32 bits): 0b_RRRR_RRRR_GGGG_GGGG_BBBB_BBBB_TTT_TTT_D_F
+    // basecolor_1: FF0000FF
+    // basecolor_2: 0000FFFF
+    // offset: 2 (table codeword = 0, pixel index value = 00)
+    // Note: Output format is 0xAABBGGRR.
+    let input = 0b_1111_0000_0000_0000_0000_1111_000_000_0_0 << 32;
+
+    let expected = [
+        [0xff0202ff, 0xff0202ff, 0xffff0202, 0xffff0202],
+        [0xff0202ff, 0xff0202ff, 0xffff0202, 0xffff0202],
+        [0xff0202ff, 0xff0202ff, 0xffff0202, 0xffff0202],
+        [0xff0202ff, 0xff0202ff, 0xffff0202, 0xffff0202],
+    ];
+
+    expect_eq!(expected, decode_etc1_block(input));
+}
+
+#[gtest(TextureCompressorTest, DecodeETC1BlockFlipTrue)]
+fn test() {
+    // If flip is true, the block is divided into two 4x2 subblocks on top of each
+    // other. basecolor1 fills the top one, and basecolor2 fills the bottom one.
+    // `input` is same as above.
+    let input = 0b_1111_0000_0000_0000_0000_1111_000_000_0_1 << 32;
+
+    let expected = [
+        [0xff0202ff, 0xff0202ff, 0xff0202ff, 0xff0202ff],
+        [0xff0202ff, 0xff0202ff, 0xff0202ff, 0xff0202ff],
+        [0xffff0202, 0xffff0202, 0xffff0202, 0xffff0202],
+        [0xffff0202, 0xffff0202, 0xffff0202, 0xffff0202],
+    ];
+
+    expect_eq!(expected, decode_etc1_block(input));
 }
