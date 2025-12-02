@@ -2209,6 +2209,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.PendingUpdateData.ReadResult"
+    units="WebAppUpdateDataReadResult" expires_after="2026-11-12">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of reading pending update information to be shown on the
+    app update dialog if there is a pending update for the app. This is recorded
+    whenever the user clicks on the three dot menu and clicks on &quot;Review
+    App Update&quot;.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.PredictableUpdateDialog.Result"
     enum="WebAppIdentityUpdateResult" expires_after="2026-09-25">
   <owner>dibyapal@chromium.org</owner>

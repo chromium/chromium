@@ -156,7 +156,6 @@ GetIconSizesPerPurposeForBitmaps(const IconBitmaps& icon_bitmaps) {
 
 bool IsAppUpdated(ManifestSilentUpdateCheckResult result) {
   switch (result) {
-    case ManifestSilentUpdateCheckResult::kAppNotInstalled:
     case ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall:
     case ManifestSilentUpdateCheckResult::kSystemShutdown:
     case ManifestSilentUpdateCheckResult::kAppUpToDate:
@@ -167,6 +166,7 @@ bool IsAppUpdated(ManifestSilentUpdateCheckResult result) {
     case ManifestSilentUpdateCheckResult::kInvalidPendingUpdateInfo:
     case ManifestSilentUpdateCheckResult::kUserNavigated:
     case ManifestSilentUpdateCheckResult::kManifestToWebAppInstallInfoError:
+    case ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate:
       return false;
     case ManifestSilentUpdateCheckResult::kAppSilentlyUpdated:
     case ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate:
@@ -207,8 +207,6 @@ std::ostream& operator<<(std::ostream& os,
 std::ostream& operator<<(std::ostream& os,
                          ManifestSilentUpdateCheckResult result) {
   switch (result) {
-    case ManifestSilentUpdateCheckResult::kAppNotInstalled:
-      return os << "kAppNotInstalled";
     case ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall:
       return os << "kAppUpdateFailedDuringInstall";
     case ManifestSilentUpdateCheckResult::kSystemShutdown:
@@ -237,6 +235,8 @@ std::ostream& operator<<(std::ostream& os,
       return os << "kManifestToWebAppInstallInfoError";
     case ManifestSilentUpdateCheckResult::kAppHasSecurityUpdateDueToThrottle:
       return os << "kAppHasSecurityUpdateDueToThrottle";
+    case ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate:
+      return os << "kAppNotAllowedToUpdate";
   }
 }
 
@@ -395,10 +395,17 @@ void ManifestSilentUpdateCommand::StartManifestToInstallInfoJob(
     blink::mojom::ManifestPtr opt_manifest) {
   CHECK_EQ(stage_, ManifestSilentUpdateCommandStage::kAcquiringAppLock);
   CHECK(app_lock_->IsGranted());
-  if (!app_lock_->registrar().AppMatches(app_id_,
-                                         WebAppFilter::InstalledInChrome())) {
+
+  bool is_trusted_app_for_manifest_installs =
+      app_lock_->registrar().AppMatches(app_id_, WebAppFilter::IsTrusted());
+
+  // Only allow apps that are either trusted, or they open in a dedicated
+  // window.
+  if (!is_trusted_app_for_manifest_installs &&
+      !app_lock_->registrar().AppMatches(
+          app_id_, WebAppFilter::OpensInDedicatedWindow())) {
     CompleteCommandAndSelfDestruct(
-        FROM_HERE, ManifestSilentUpdateCheckResult::kAppNotInstalled);
+        FROM_HERE, ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate);
     return;
   }
 
@@ -407,7 +414,7 @@ void ManifestSilentUpdateCommand::StartManifestToInstallInfoJob(
   construct_options.defer_icon_fetching = true;
   construct_options.record_icon_results_on_update = true;
   construct_options.use_manifest_icons_as_trusted =
-      app_lock_->registrar().AppMatches(app_id_, WebAppFilter::IsTrusted());
+      is_trusted_app_for_manifest_installs;
 
   // The `background_installation` and `install_source` fields here don't matter
   // because this is not logged anywhere.
@@ -948,13 +955,13 @@ void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(
       break;
     case ManifestSilentUpdateCheckResult::kAppUpToDate:
     case ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate:
-    case ManifestSilentUpdateCheckResult::kAppNotInstalled:
     case ManifestSilentUpdateCheckResult::kWebContentsDestroyed:
     case ManifestSilentUpdateCheckResult::kIconReadFromDiskFailed:
     case ManifestSilentUpdateCheckResult::kPendingIconWriteToDiskFailed:
     case ManifestSilentUpdateCheckResult::kInvalidManifest:
     case ManifestSilentUpdateCheckResult::kUserNavigated:
     case ManifestSilentUpdateCheckResult::kAppHasSecurityUpdateDueToThrottle:
+    case ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate:
       record_update = false;
       command_result = CommandResult::kSuccess;
       break;

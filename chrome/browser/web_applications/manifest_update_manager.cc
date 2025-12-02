@@ -357,7 +357,6 @@ void ManifestUpdateManager::OnManifestSilentUpdateComplete(
   update_stages_.erase(update_stage_it);
   bool update_silent_or_pending;
   switch (completion_info.result) {
-    case ManifestSilentUpdateCheckResult::kAppNotInstalled:
     case ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall:
     case ManifestSilentUpdateCheckResult::kSystemShutdown:
     case ManifestSilentUpdateCheckResult::kAppUpToDate:
@@ -368,6 +367,7 @@ void ManifestUpdateManager::OnManifestSilentUpdateComplete(
     case ManifestSilentUpdateCheckResult::kInvalidPendingUpdateInfo:
     case ManifestSilentUpdateCheckResult::kUserNavigated:
     case ManifestSilentUpdateCheckResult::kManifestToWebAppInstallInfoError:
+    case ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate:
       update_silent_or_pending = false;
       break;
     case ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate:
