@@ -601,6 +601,50 @@ std::unique_ptr<AccessibilityStructureElement> PDFiumPage::GetStructureTree() {
   return tree_root;
 }
 
+void PDFiumPage::AssociateMarkedContentWithStructureElement(
+    FPDF_STRUCTELEMENT element,
+    AccessibilityStructureElement* tree_node) {
+  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
+    return;
+  }
+
+  int marked_content_id = -1;
+  if (FPDF_StructElement_GetMarkedContentIdCount(element) > 0) {
+    marked_content_id =
+        FPDF_StructElement_GetMarkedContentIdAtIndex(element, 0);
+  }
+  if (marked_content_id < 0) {
+    return;
+  }
+
+  // Associate text runs for this MCID.
+  auto text_runs_iter =
+      marked_content_id_to_text_runs_map_.find(marked_content_id);
+  if (text_runs_iter != marked_content_id_to_text_runs_map_.end()) {
+    const std::vector<size_t>& text_run_indices = text_runs_iter->second;
+    for (size_t text_run_index : text_run_indices) {
+      tree_node->associated_text_runs_if_available.push_back(
+          &text_runs_[text_run_index]);
+    }
+  }
+
+  // Associate image for this MCID.
+  auto image_iter = marked_content_id_to_images_map_.find(marked_content_id);
+  if (image_iter != marked_content_id_to_images_map_.end()) {
+    const Image& img = images_[image_iter->second];
+
+    auto accessibility_image = std::make_unique<AccessibilityImageInfo>();
+    accessibility_image->alt_text = img.alt_text;
+    // text_run_index is unused in structure tree mode (image positioning
+    // is determined by structure tree location, not text run proximity).
+    accessibility_image->text_run_index = 0;
+    accessibility_image->bounds = gfx::RectF(img.bounding_rect);
+    accessibility_image->page_object_index = img.page_object_index;
+
+    tree_node->associated_image_if_available = std::move(accessibility_image);
+  }
+}
+
 std::unique_ptr<AccessibilityStructureElement> PDFiumPage::GetStructureSubtree(
     FPDF_STRUCTELEMENT element,
     std::set<FPDF_STRUCTELEMENT>& visited_elements) {
@@ -626,41 +670,7 @@ std::unique_ptr<AccessibilityStructureElement> PDFiumPage::GetStructureSubtree(
       base::BindRepeating(&FPDF_StructElement_GetLang, element),
       /*check_expected_size=*/true));
 
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
-    int marked_content_id = -1;
-    if (FPDF_StructElement_GetMarkedContentIdCount(element) > 0) {
-      marked_content_id =
-          FPDF_StructElement_GetMarkedContentIdAtIndex(element, 0);
-    }
-    if (marked_content_id >= 0) {
-      auto text_runs_iter =
-          marked_content_id_to_text_runs_map_.find(marked_content_id);
-      if (text_runs_iter != marked_content_id_to_text_runs_map_.end()) {
-        const std::vector<size_t>& text_run_indices = text_runs_iter->second;
-        for (size_t text_run_index : text_run_indices) {
-          tree_node->associated_text_runs_if_available.push_back(
-              &text_runs_[text_run_index]);
-        }
-      }
-
-      auto image_iter =
-          marked_content_id_to_images_map_.find(marked_content_id);
-      if (image_iter != marked_content_id_to_images_map_.end()) {
-        const Image& img = images_[image_iter->second];
-
-        auto accessibility_image = std::make_unique<AccessibilityImageInfo>();
-        accessibility_image->alt_text = img.alt_text;
-        // text_run_index is unused in structure tree mode (image positioning
-        // is determined by structure tree location, not text run proximity).
-        accessibility_image->text_run_index = 0;
-        accessibility_image->bounds = gfx::RectF(img.bounding_rect);
-        accessibility_image->page_object_index = img.page_object_index;
-
-        tree_node->associated_image_if_available =
-            std::move(accessibility_image);
-      }
-    }
-  }
+  AssociateMarkedContentWithStructureElement(element, tree_node.get());
 
   int children_count = FPDF_StructElement_CountChildren(element);
   CHECK_GE(children_count, 0);

@@ -486,6 +486,12 @@ class PDFiumPage {
       FPDF_STRUCTELEMENT current_element,
       std::set<FPDF_STRUCTELEMENT>& visited_elements);
 
+  // Looks up marked content IDs from the structure element and associates the
+  // corresponding text runs and images with the provided tree node.
+  void AssociateMarkedContentWithStructureElement(
+      FPDF_STRUCTELEMENT element,
+      AccessibilityStructureElement* tree_node);
+
   // Traverses a structure element and its subtree recursively and extracts all
   // information, storing it in a corresponding hierarchy of
   // `AccessibilityStructureElement`s. Also, extracts the text run type or the
