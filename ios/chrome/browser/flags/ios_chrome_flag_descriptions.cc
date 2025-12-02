@@ -1404,6 +1404,10 @@ const char kProactiveSuggestionsFrameworkDescription[] =
     "Translate, Price History, etc.) into a unified badge system with "
     "centralized settings access through the AI Hub Page Tools.";
 
+const char kProactiveSuggestionsFrameworkPopupBlockerName[] = "Popup Blocker";
+const char kProactiveSuggestionsFrameworkPopupBlockerDescription[] =
+    "Enables the popup blocker feature row in the Page Action Menu.";
+
 const char kProvisionalNotificationAlertName[] =
     "Provisional notifiation alert on iOS";
 const char kProvisionalNotificationAlertDescription[] =

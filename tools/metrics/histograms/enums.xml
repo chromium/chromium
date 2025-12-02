@@ -9399,6 +9399,7 @@ from previous Chrome versions.
   <int value="-1694900665" label="HandwritingGestureEditing:enabled"/>
   <int value="-1694420704"
       label="BrowserInitiatedAutomaticPictureInPicture:disabled"/>
+  <int value="-1693513289" label="proactive-suggestions-framework:enabled"/>
   <int value="-1693498375" label="CdmFactoryDaemon:enabled"/>
   <int value="-1693140558" label="FiltersInRecentsV2:disabled"/>
   <int value="-1692974246" label="FilesGoogleDriveSettingsPage:enabled"/>
@@ -19672,6 +19673,7 @@ from previous Chrome versions.
   <int value="1882177465" label="JourneysKeywordFiltering:enabled"/>
   <int value="1882197308" label="UseChromeOSDirectVideoDecoder:disabled"/>
   <int value="1883000826" label="IsolatedSandboxedIframesName:disabled"/>
+  <int value="1883057900" label="proactive-suggestions-framework:disabled"/>
   <int value="1883558610" label="GalleryAppPdfEditNotification:disabled"/>
   <int value="1883856892" label="SupportToolCopyTokenButton:disabled"/>
   <int value="1883998150" label="WebAppsCrosapi:disabled"/>

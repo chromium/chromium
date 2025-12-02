@@ -25,6 +25,11 @@ BASE_DECLARE_FEATURE(kProactiveSuggestionsFramework);
 // Returns true if the proactive suggestions framework is enabled.
 bool IsProactiveSuggestionsFrameworkEnabled();
 
+// Returns true if the popup blocker feature is enabled within the proactive
+// suggestions framework.
+bool IsProactiveSuggestionsFrameworkPopupBlockerEnabled();
+extern const char kProactiveSuggestionsFrameworkPopupBlocker[];
+
 // Feature flag controlling the page action menu.
 BASE_DECLARE_FEATURE(kPageActionMenu);
 

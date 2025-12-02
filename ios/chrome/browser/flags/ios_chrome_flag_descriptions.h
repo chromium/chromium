@@ -839,6 +839,9 @@ extern const char kPrivacyGuideIosDescription[];
 extern const char kProactiveSuggestionsFrameworkName[];
 extern const char kProactiveSuggestionsFrameworkDescription[];
 
+extern const char kProactiveSuggestionsFrameworkPopupBlockerName[];
+extern const char kProactiveSuggestionsFrameworkPopupBlockerDescription[];
+
 extern const char kProvisionalNotificationAlertName[];
 extern const char kProvisionalNotificationAlertDescription[];
 

@@ -1308,6 +1308,14 @@ const FeatureEntry::FeatureVariation kPageActionMenuVariations[] = {
      std::size(kPageActionMenuBWGSessionValidityDuration), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kProactiveSuggestionsFrameworkPopupBlockerParam[] = {
+        {kProactiveSuggestionsFrameworkPopupBlocker, "true"}};
+const FeatureEntry::FeatureVariation
+    kProactiveSuggestionsFrameworkVariations[] = {
+        {"Popup Blocker", kProactiveSuggestionsFrameworkPopupBlockerParam,
+         std::size(kProactiveSuggestionsFrameworkPopupBlockerParam), nullptr}};
+
 const FeatureEntry::FeatureParam kAskGeminiChipUseSnackbarVariation[] = {
     {kAskGeminiChipUseSnackbar, "true"},
 };
@@ -2377,7 +2385,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"proactive-suggestions-framework",
      flag_descriptions::kProactiveSuggestionsFrameworkName,
      flag_descriptions::kProactiveSuggestionsFrameworkDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kProactiveSuggestionsFramework)},
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kProactiveSuggestionsFramework,
+                                    kProactiveSuggestionsFrameworkVariations,
+                                    "ProactiveSuggestionsFramework")},
     {"ask-gemini-chip", flag_descriptions::kAskGeminiChipName,
      flag_descriptions::kAskGeminiChipDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kAskGeminiChip,

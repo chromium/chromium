@@ -173,7 +173,8 @@ const CGFloat kFeatureRowIconSize = 20;
       return state == web::PermissionStateAllowed;
     }
     case PageActionMenuPopupBlocker: {
-      if (!_hostContentSettingsMap) {
+      if (!IsProactiveSuggestionsFrameworkPopupBlockerEnabled() ||
+          !_hostContentSettingsMap) {
         return NO;
       }
       GURL url = _webState->GetLastCommittedURL();
@@ -312,7 +313,8 @@ const CGFloat kFeatureRowIconSize = 20;
   }
 
   // Popup blocker feature.
-  if ([self isFeatureAvailable:PageActionMenuPopupBlocker]) {
+  if (IsProactiveSuggestionsFrameworkPopupBlockerEnabled() &&
+      [self isFeatureAvailable:PageActionMenuPopupBlocker]) {
     RecordPageActionMenuFeatureRowShown(
         IOSPageActionMenuFeatureType::kPopupBlocker);
     PageActionMenuFeature* popupFeature = [[PageActionMenuFeature alloc]

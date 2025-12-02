@@ -34,6 +34,14 @@ bool IsProactiveSuggestionsFrameworkEnabled() {
   return base::FeatureList::IsEnabled(kProactiveSuggestionsFramework);
 }
 
+const char kProactiveSuggestionsFrameworkPopupBlocker[] = "PopupBlocker";
+
+bool IsProactiveSuggestionsFrameworkPopupBlockerEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kProactiveSuggestionsFramework,
+      kProactiveSuggestionsFrameworkPopupBlocker, false);
+}
+
 BASE_FEATURE(kAskGeminiChip, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kAskGeminiChipUseSnackbar[] = "AskGeminiChipUseSnackbar";

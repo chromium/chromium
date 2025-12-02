@@ -968,6 +968,7 @@ const CGFloat kDividerWidth = 1.0;
       break;
     case PageActionMenuPopupBlocker:
       [self.mutator allowBlockedPopups];
+      [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
       break;
     case PageActionMenuPriceTracking: {
       // Capture the mutator before dismissal.
