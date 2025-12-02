@@ -10,45 +10,53 @@
 
 #include "base/logging.h"
 #include "chrome/browser/tab/payload.h"
+#include "chrome/browser/tab/storage_pending_updates.h"
 #include "chrome/browser/tab/storage_update_unit.h"
-#include "chrome/browser/tab/storage_update_units.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
 #include "chrome/browser/tab/tab_state_storage_updater.h"
 #include "chrome/browser/tab/tab_storage_package.h"
+#include "components/tabs/public/tab_collection.h"
 
 namespace tabs {
 
-TabStateStorageUpdaterBuilder::TabStateStorageUpdaterBuilder()
-    : updater_(std::make_unique<TabStateStorageUpdater>()) {}
+TabStateStorageUpdaterBuilder::TabStateStorageUpdaterBuilder(
+    StorageIdMapping& mapping,
+    TabStoragePackager* packager)
+    : mapping_(mapping),
+      packager_(packager),
+      updater_(std::make_unique<TabStateStorageUpdater>()) {}
 
 TabStateStorageUpdaterBuilder::~TabStateStorageUpdaterBuilder() = default;
 
-void TabStateStorageUpdaterBuilder::SaveNode(
-    StorageId id,
-    std::string window_tag,
-    bool is_off_the_record,
-    TabStorageType type,
-    std::unique_ptr<StoragePackage> package) {
-  updater_->Add(std::make_unique<SaveNodeUpdateUnit>(
-      id, std::move(window_tag), is_off_the_record, type, std::move(package)));
+void TabStateStorageUpdaterBuilder::SaveNode(StorageId id,
+                                             std::string window_tag,
+                                             bool is_off_the_record,
+                                             TabStorageType type,
+                                             TabCollectionNodeHandle handle) {
+  SaveNodePendingUpdate request(id, std::move(window_tag), is_off_the_record,
+                                type, packager_, mapping_.get(),
+                                std::move(handle));
+  updater_->Add(request.CreateUnit());
 }
 
 void TabStateStorageUpdaterBuilder::SaveNodePayload(
     StorageId id,
-    std::unique_ptr<Payload> payload) {
-  updater_->Add(
-      std::make_unique<SavePayloadUpdateUnit>(id, std::move(payload)));
+    TabCollectionNodeHandle handle) {
+  SavePayloadPendingUpdate request(id, packager_, mapping_.get(),
+                                   std::move(handle));
+  updater_->Add(request.CreateUnit());
 }
 
-void TabStateStorageUpdaterBuilder::SaveChildren(
-    StorageId id,
-    std::unique_ptr<Payload> children) {
-  updater_->Add(
-      std::make_unique<SaveChildrenUpdateUnit>(id, std::move(children)));
+void TabStateStorageUpdaterBuilder::SaveChildren(StorageId id,
+                                                 TabCollectionHandle handle) {
+  SaveChildrenPendingUpdate request(id, packager_, mapping_.get(),
+                                    std::move(handle));
+  updater_->Add(request.CreateUnit());
 }
 
 void TabStateStorageUpdaterBuilder::RemoveNode(StorageId id) {
-  updater_->Add(std::make_unique<RemoveNodeUpdateUnit>(id));
+  RemoveNodePendingUpdate request(id);
+  updater_->Add(request.CreateUnit());
 }
 
 std::unique_ptr<TabStateStorageUpdater> TabStateStorageUpdaterBuilder::Build() {

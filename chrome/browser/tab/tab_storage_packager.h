@@ -64,11 +64,9 @@ class TabStoragePackager {
 
  private:
   std::unique_ptr<Payload> PackageTabGroupTabCollectionData(
-      const TabGroupTabCollection* collection,
-      StorageIdMapping& mapping);
+      const TabGroupTabCollection* collection);
   std::unique_ptr<Payload> PackageSplitTabCollectionData(
-      const SplitTabCollection* collection,
-      StorageIdMapping& mapping);
+      const SplitTabCollection* collection);
 };
 
 }  // namespace tabs

@@ -16,19 +16,14 @@ enum class UnitType;
 // Represents a single update operation to the storage layer.
 class StorageUpdateUnit {
  public:
-  explicit StorageUpdateUnit(StorageId id);
+  StorageUpdateUnit() = default;
   virtual ~StorageUpdateUnit() = default;
 
-  StorageId id() const { return id_; }
-  virtual UnitType type() const = 0;
-
-  // Returns false if the update operation failed.
+  // Returns false if the update operation failed. Should be called on the
+  // database task runner.
   virtual bool Execute(
       TabStateStorageDatabase* db,
       TabStateStorageDatabase::OpenTransaction* transaction) = 0;
-
- protected:
-  const StorageId id_;
 };
 
 }  // namespace tabs

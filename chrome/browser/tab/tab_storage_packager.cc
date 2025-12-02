@@ -142,10 +142,10 @@ std::unique_ptr<Payload> TabStoragePackager::PackagePayload(
   TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
   if (type == TabStorageType::kSplit) {
     return PackageSplitTabCollectionData(
-        static_cast<const SplitTabCollection*>(collection), mapping);
+        static_cast<const SplitTabCollection*>(collection));
   } else if (type == TabStorageType::kGroup) {
     return PackageTabGroupTabCollectionData(
-        static_cast<const TabGroupTabCollection*>(collection), mapping);
+        static_cast<const TabGroupTabCollection*>(collection));
   } else if (type == TabStorageType::kTabStrip) {
     return PackageTabStripCollectionData(
         static_cast<const TabStripCollection*>(collection), mapping);
@@ -175,8 +175,7 @@ const TabCollection* TabStoragePackager::GetRootCollection(
 }
 
 std::unique_ptr<Payload> TabStoragePackager::PackageTabGroupTabCollectionData(
-    const TabGroupTabCollection* collection,
-    StorageIdMapping& mapping) {
+    const TabGroupTabCollection* collection) {
   tabs_pb::TabGroupCollectionState state;
   const base::Token group_id = collection->GetTabGroupId().token();
   state.set_group_id_high(group_id.high());
@@ -192,8 +191,7 @@ std::unique_ptr<Payload> TabStoragePackager::PackageTabGroupTabCollectionData(
 }
 
 std::unique_ptr<Payload> TabStoragePackager::PackageSplitTabCollectionData(
-    const SplitTabCollection* collection,
-    StorageIdMapping& mapping) {
+    const SplitTabCollection* collection) {
   tabs_pb::SplitCollectionState state;
   const base::Token split_tab_id = collection->GetSplitTabId().token();
   state.set_split_tab_id_high(split_tab_id.high());
