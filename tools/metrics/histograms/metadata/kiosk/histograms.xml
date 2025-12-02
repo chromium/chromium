@@ -53,16 +53,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Kiosk.ChromeApp.ExternalUpdateSuccess" enum="BooleanYesNo"
-    expires_after="2025-06-15">
-  <owner>yixie@chromium.org</owner>
-  <owner>chromeos-kiosk-eng@google.com</owner>
-  <summary>
-    ChromeOS only. Records whether Kiosk Chrome app update via external USB
-    drive is successful.
-  </summary>
-</histogram>
-
 <histogram name="Kiosk.ChromeApp.PrimaryAppInSessionUpdate" units="times"
     expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
@@ -70,16 +60,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     ChromeOS only. Records count of in-session updates of primary Kiosk Chrome
     app. A forced restart is scheduled in 24 hours.
-  </summary>
-</histogram>
-
-<histogram name="Kiosk.ChromeApp.PrimaryAppInstallError"
-    enum="KioskPrimaryAppDownloadResult" expires_after="2025-06-15">
-  <owner>yixie@chromium.org</owner>
-  <owner>chromeos-kiosk-eng@google.com</owner>
-  <summary>
-    ChromeOS only. Records error for failed initial install of primary Chrome
-    app in Kiosk.
   </summary>
 </histogram>
 

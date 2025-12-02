@@ -883,11 +883,6 @@ TEST_F(StartupAppLauncherTest, PrimaryAppDownloadFailure) {
 
   EXPECT_EQ(KioskAppLaunchError::Error::kUnableToDownload,
             startup_launch_delegate_.launch_error());
-
-  histogram.ExpectUniqueSample(
-      kKioskPrimaryAppInstallErrorHistogram,
-      KioskChromeAppManager::PrimaryAppDownloadResult::kCrxFetchFailed,
-      /*expected_bucket_count=*/1);
 }
 
 TEST_F(StartupAppLauncherTest, PrimaryAppCrxInstallFailure) {

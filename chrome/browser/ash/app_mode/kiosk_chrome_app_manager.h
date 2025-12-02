@@ -49,9 +49,7 @@ class KioskAppData;
 class KioskExternalUpdater;
 class KioskCryptohomeRemover;
 
-extern const char kKioskPrimaryAppInstallErrorHistogram[];
 extern const char kKioskPrimaryAppUpdateResultHistogram[];
-extern const char kKioskExternalUpdateSuccessHistogram[];
 
 // KioskChromeAppManager manages cached app data.
 class KioskChromeAppManager : public KioskAppManagerBase,

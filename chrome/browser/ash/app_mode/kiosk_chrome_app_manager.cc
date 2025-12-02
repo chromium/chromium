@@ -164,12 +164,8 @@ PrimaryAppDownloadResultFromError(
 // static
 const char KioskChromeAppManager::kKioskDictionaryName[] = "kiosk";
 
-const char kKioskPrimaryAppInstallErrorHistogram[] =
-    "Kiosk.ChromeApp.PrimaryAppInstallError";
 const char kKioskPrimaryAppUpdateResultHistogram[] =
     "Kiosk.ChromeApp.PrimaryAppUpdateResult";
-const char kKioskExternalUpdateSuccessHistogram[] =
-    "Kiosk.ChromeApp.ExternalUpdateSuccess";
 
 namespace {
 // This class is owned by `ChromeBrowserMainPartsAsh`.
@@ -439,7 +435,6 @@ void KioskChromeAppManager::OnKioskAppCacheUpdated(const std::string& app_id) {
 }
 
 void KioskChromeAppManager::OnKioskAppExternalUpdateComplete(bool success) {
-  base::UmaHistogramBoolean(kKioskExternalUpdateSuccessHistogram, success);
   for (auto& observer : observers_) {
     observer.OnKioskAppExternalUpdateComplete(success);
   }
@@ -663,8 +658,6 @@ void KioskChromeAppManager::OnExtensionDownloadFailed(
 
   if (!external_cache_->GetExtension(id, nullptr, nullptr)) {
     // Initial install fail.
-    base::UmaHistogramEnumeration(kKioskPrimaryAppInstallErrorHistogram,
-                                  PrimaryAppDownloadResultFromError(error));
     return;
   }
   base::UmaHistogramEnumeration(kKioskPrimaryAppUpdateResultHistogram,
