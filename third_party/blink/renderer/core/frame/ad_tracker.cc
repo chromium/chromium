@@ -567,7 +567,7 @@ bool AdTracker::WasApiCalledByNonAdScript(v8::Isolate* isolate,
 
     v8::Local<v8::String> barrier_func_name =
         ad_barrier_frame->GetFunctionName();
-    v8::Local<v8::Value> api_func_name_value = api_function->GetInferredName();
+    v8::Local<v8::Value> api_func_name_value = api_function->GetDebugName();
 
     if (!barrier_func_name.IsEmpty() && !barrier_func_name->IsUndefined() &&
         api_func_name_value->IsString()) {
