@@ -1110,18 +1110,13 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     const auto& main_surfaces =
         surface_manager_->GetSurfacesReferencedByParent(current_surface_id_);
 
-    const bool interactive_only_adpf_renderer = base::FeatureList::IsEnabled(
-        features::kEnableInteractiveOnlyADPFRenderer);
     bool has_interactive_surface = false;
-    if (interactive_only_adpf_renderer) {
-      for (const auto& surface_id :
-           aggregator_->previous_contained_surfaces()) {
-        surface = surface_manager_->GetSurfaceForId(surface_id);
-        if (surface && surface->HasActiveFrame() &&
-            surface->GetActiveFrameMetadata().is_handling_interaction) {
-          has_interactive_surface = true;
-          break;
-        }
+    for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
+      surface = surface_manager_->GetSurfaceForId(surface_id);
+      if (surface && surface->HasActiveFrame() &&
+          surface->GetActiveFrameMetadata().is_handling_interaction) {
+        has_interactive_surface = true;
+        break;
       }
     }
 
@@ -1137,8 +1132,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         const bool is_for_main_frame =
             surface_id == current_surface_id_ ||
             main_surfaces.find(surface_id) != main_surfaces.end();
-        if (interactive_only_adpf_renderer &&
-            surface_id != current_surface_id_) {
+        if (surface_id != current_surface_id_) {
           const bool is_handling_interaction =
               surface->HasActiveFrame() &&
               surface->GetActiveFrameMetadata().is_handling_interaction;

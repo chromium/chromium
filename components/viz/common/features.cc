@@ -272,14 +272,6 @@ const base::FeatureParam<base::TimeDelta> kADPFBoostTimeout{
     &kEnableADPFScrollBoost, "adpf_boost_mode_timeout",
     base::Milliseconds(200)};
 
-// If enabled, Chrome's ADPF(Android Dynamic Performance Framework) hint
-// session includes Renderer threads only if:
-// - The Renderer is handling an interacton
-// - The Renderer is the main frame's Renderer, and there no Renderers handling
-//   an interaction.
-BASE_FEATURE(kEnableInteractiveOnlyADPFRenderer,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, Chrome puts Renderer Main threads into a separate
 // ADPF(Android Dynamic Performance Framework) hint session, and does not
 // report any timing hints from this session.
