@@ -116,10 +116,6 @@ void ConvertToDawnType(const GPUTextureViewDescriptor* webgpu_desc,
 // Validate swizzle must be a four-character string that only includes "r", "g",
 // "b", "a", "0", or "1".
 bool ValidateSwizzle(const String& swizzle, ExceptionState& exception_state) {
-  if (!RuntimeEnabledFeatures::WebGPUTextureComponentSwizzleEnabled()) {
-    return true;
-  }
-
   if (swizzle.length() != 4) {
     exception_state.ThrowTypeError(String::Format(
         "Swizzle ('%s') must be exactly a four-character string.",

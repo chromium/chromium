@@ -7,13 +7,13 @@
 dictionary GPUTextureViewDescriptor : GPUObjectDescriptorBase {
     GPUTextureFormat format;
     GPUTextureViewDimension dimension;
+    GPUTextureUsageFlags usage = 0;
     GPUTextureAspect aspect = "all";
     GPUIntegerCoordinate baseMipLevel = 0;
     GPUIntegerCoordinate mipLevelCount;
     GPUIntegerCoordinate baseArrayLayer = 0;
     GPUIntegerCoordinate arrayLayerCount;
-    GPUTextureUsageFlags usage = 0;
-    [RuntimeEnabled=WebGPUTextureComponentSwizzle] DOMString swizzle = "rgba";
+    DOMString swizzle = "rgba";
 };
 
 enum GPUTextureViewDimension {
