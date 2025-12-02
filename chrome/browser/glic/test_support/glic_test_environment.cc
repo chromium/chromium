@@ -142,7 +142,7 @@ GlicTestEnvironment::~GlicTestEnvironment() = default;
 
 void GlicTestEnvironment::SetForceSigninAndModelExecutionCapability(
     bool force) {
-  internal::GetConfig().force_signin_and_model_execution_capability = force;
+  internal::GetConfig().force_signin_and_glic_capability = force;
 }
 
 void GlicTestEnvironment::SetFreStatusForNewProfiles(
@@ -157,7 +157,7 @@ GlicTestEnvironmentService* GlicTestEnvironment::GetService(Profile* profile,
 }
 
 void GlicTestEnvironmentService::SetModelExecutionCapability(bool enabled) {
-  ::glic::SetModelExecutionCapability(profile_, enabled);
+  ::glic::SetGlicCapability(profile_, enabled);
 }
 
 void GlicTestEnvironment::OnWillCreateBrowserContextKeyedServices(
@@ -168,7 +168,7 @@ void GlicTestEnvironment::OnWillCreateBrowserContextKeyedServices(
                     "ineligible profile.";
     return;
   }
-  if (internal::GetConfig().force_signin_and_model_execution_capability) {
+  if (internal::GetConfig().force_signin_and_glic_capability) {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
@@ -202,7 +202,7 @@ GlicTestEnvironmentService::GlicTestEnvironmentService(Profile* profile)
   if (config.fre_status) {
     SetFRECompletion(*config.fre_status);
   }
-  if (config.force_signin_and_model_execution_capability) {
+  if (config.force_signin_and_glic_capability) {
 #if BUILDFLAG(IS_CHROMEOS)
     // SigninWithPrimaryAccount below internally runs RunLoop to wait for an
     // async task completion. This is the test only behavior.
@@ -255,8 +255,8 @@ GlicUnitTestEnvironment::GlicUnitTestEnvironment(
 GlicUnitTestEnvironment::~GlicUnitTestEnvironment() = default;
 
 void GlicUnitTestEnvironment::SetupProfile(Profile* profile) {
-  if (config_.force_signin_and_model_execution_capability) {
-    ::glic::ForceSigninAndModelExecutionCapability(profile);
+  if (config_.force_signin_and_glic_capability) {
+    ::glic::ForceSigninAndGlicCapability(profile);
   }
   if (config_.fre_status) {
     glic::SetFRECompletion(profile, *config_.fre_status);

@@ -85,7 +85,7 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorTest, EntryAdded) {
-  ForceSigninAndModelExecutionCapability(profile());
+  ForceSigninAndGlicCapability(profile());
   EXPECT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
 
   CallOnGlicEnabledChanged();
@@ -125,14 +125,14 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorTest,
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic)));
 
   // Change state - glic is not enabled. Verify entry is added.
-  ForceSigninAndModelExecutionCapability(profile());
+  ForceSigninAndGlicCapability(profile());
 
   EXPECT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
   EXPECT_TRUE(registry()->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic)));
 
   // Change state - glic is not enabled. Verify entry is still there.
-  SetModelExecutionCapability(profile(), false);
+  SetGlicCapability(profile(), false);
 
   EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
   EXPECT_TRUE(registry()->GetEntryForKey(

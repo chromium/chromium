@@ -35,9 +35,9 @@ class GlicTestEnvironmentService;
 
 // Configuration of GlicTestEnvironment.
 struct GlicTestEnvironmentConfig {
-  // If enabled, forces sign-in and enables model execution capability, which
+  // If enabled, forces sign-in and enables the relevant capability, which
   // are prerequisites for using Glic.
-  bool force_signin_and_model_execution_capability = true;
+  bool force_signin_and_glic_capability = true;
   // The default FRE status saved to prefs after profile creation.
   std::optional<prefs::FreStatus> fre_status = prefs::FreStatus::kCompleted;
 };

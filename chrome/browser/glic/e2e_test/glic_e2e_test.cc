@@ -176,7 +176,7 @@ void GlicE2ETest::LoginTestAccountOrForceFakeSignin() {
     sign_in_functions.TurnOnSync(*test_account, 0);
   } else {
     SigninWithPrimaryAccount(browser()->profile());
-    SetModelExecutionCapability(browser()->profile(), true);
+    SetGlicCapability(browser()->profile(), true);
   }
 }
 

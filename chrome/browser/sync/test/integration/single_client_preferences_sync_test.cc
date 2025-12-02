@@ -2039,7 +2039,7 @@ class SingleClientPreferencesGlicTieredRolloutTest
 
  private:
   glic::GlicTestEnvironment glic_test_env_{
-      {.force_signin_and_model_execution_capability = false}};
+      {.force_signin_and_glic_capability = false}};
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -2053,7 +2053,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesGlicTieredRolloutTest, E2E) {
 
   // Have user be eligible for Glic from an account perspective.
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  glic::SetModelExecutionCapability(GetProfile(0), /*enabled=*/true);
+  glic::SetGlicCapability(GetProfile(0), /*enabled=*/true);
 
   // Should not be enabled as profile not eligible for tiered rollout.
   EXPECT_FALSE(glic::GlicEnabling::IsEnabledForProfile(GetProfile(0)));

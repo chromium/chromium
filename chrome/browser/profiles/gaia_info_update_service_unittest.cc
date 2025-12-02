@@ -56,6 +56,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #endif
 
 using ::signin::constants::kNoHostedDomainFound;
@@ -530,7 +531,7 @@ class GAIAInfoUpdateServiceWithGlicEnablingTest
     CHECK(!primary_account_info.IsEmpty());
 
     AccountCapabilitiesTestMutator mutator(&primary_account_info.capabilities);
-    mutator.set_can_use_model_execution_features(true);
+    glic::SetGlicCapability(mutator, true);
 
     signin::UpdateAccountInfoForAccount(identity_manager(),
                                         primary_account_info);

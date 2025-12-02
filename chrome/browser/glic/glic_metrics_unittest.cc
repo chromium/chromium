@@ -148,7 +148,7 @@ class GlicMetricsTestBase : public testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     profile_ = testing_profile_manager_->CreateTestingProfile("profile");
-    ForceSigninAndModelExecutionCapability(profile_);
+    ForceSigninAndGlicCapability(profile_);
   }
 
   void TearDown() override {

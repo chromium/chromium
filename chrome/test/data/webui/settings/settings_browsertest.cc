@@ -68,7 +68,7 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
  private:
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicTestEnvironment glic_test_environment_{
-      {.force_signin_and_model_execution_capability = false }};
+      {.force_signin_and_glic_capability = false }};
 #endif
   base::test::ScopedFeatureList scoped_feature_list_;
 };

@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -103,7 +104,8 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
         static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
 
 #if !BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/460830699): Evaluate whether this is necessary on ChromeOS.
+    // TODO(crbug.com/460830699): Evaluate whether this is necessary on
+    // ChromeOS.
     disclaimer_service_resetter_ =
         enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
             profile());
@@ -147,7 +149,7 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
         account->email, signin::ConsentLevel::kSignin);
 
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_can_use_model_execution_features(true);
+    SetGlicCapability(mutator, true);
     mutator.set_is_subject_to_enterprise_features(
         !account->host_domain.empty());
     identity_test_env_->UpdateAccountInfoForAccount(account_info);
@@ -505,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(
       enterpriseAccount.email, signin::ConsentLevel::kSignin);
   enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_can_use_model_execution_features(true);
+  SetGlicCapability(mutator, true);
   identity_test_env_->UpdateAccountInfoForAccount(account_info);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetCachedStatusDict().has_value());

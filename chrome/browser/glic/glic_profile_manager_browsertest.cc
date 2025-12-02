@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
   }
   ResetMemoryPressure();
   GlicProfileManager::ForceProfileForLaunchForTesting(std::nullopt);
-  SetModelExecutionCapability(browser()->profile(), false);
+  SetGlicCapability(browser()->profile(), false);
   EXPECT_EQ(WaitForShouldPreload(),
             GlicPrewarmingChecksResult::kProfileNotEligible);
 }

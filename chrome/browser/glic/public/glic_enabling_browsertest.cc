@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingTest, EnabledForProfileTest) {
   ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(nullptr));
 
   ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
-  ForceSigninAndModelExecutionCapability(profile());
+  ForceSigninAndGlicCapability(profile());
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
 }
 
@@ -92,11 +92,38 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingTest, AttributeEntryUpdatesOnChange) {
   EXPECT_FALSE(entry->IsGlicEligible());
 
   // Setting the model execution capability updates the glic AttributeEntry.
-  SetModelExecutionCapability(profile(), true);
+  SetGlicCapability(profile(), true);
 
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
   ASSERT_FALSE(GlicEnabling::IsEnabledAndConsentForProfile(profile()));
   EXPECT_TRUE(entry->IsGlicEligible());
+}
+
+class GlicEnablingWithSeparateAccountCapabilityTest : public GlicEnablingTest {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeatures(
+        {
+            features::kGlic,
+            features::kTabstripComboButton,
+            features::kGlicRollout,
+            features::kGlicEligibilitySeparateAccountCapability,
+#if BUILDFLAG(IS_CHROMEOS)
+            chromeos::features::kFeatureManagementGlic,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        },
+        {});
+  }
+  ~GlicEnablingWithSeparateAccountCapabilityTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
+                       EnabledForProfileTest) {
+  ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(nullptr));
+
+  ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
+  ForceSigninAndGlicCapability(profile());
+  ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
 }
 
 class GlicEnablingTieredRolloutTest : public GlicEnablingTest {
@@ -138,7 +165,7 @@ class GlicEnablingTieredRolloutTest : public GlicEnablingTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingTieredRolloutTest, EnabledForProfileTest) {
-  ForceSigninAndModelExecutionCapability(profile());
+  ForceSigninAndGlicCapability(profile());
 
   // Should not be enabled as profile not eligible for tiered rollout.
   EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
@@ -187,7 +214,7 @@ class GlicEnablingSimultaneousRolloutTest
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingSimultaneousRolloutTest,
                        EnabledForProfileTest) {
-  ForceSigninAndModelExecutionCapability(profile());
+  ForceSigninAndGlicCapability(profile());
 
   // Eligible for tiered rollout. Profile enabled for GLIC.
   SetTieredRolloutEligibilityForProfile(/*is_eligible=*/true);
@@ -210,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingSimultaneousRolloutTest,
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
   Profile* second_profile =
       &profiles::testing::CreateProfileSync(profile_manager, new_path);
-  ForceSigninAndModelExecutionCapability(second_profile);
+  ForceSigninAndGlicCapability(second_profile);
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(second_profile));
 
   {

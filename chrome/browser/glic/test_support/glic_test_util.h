@@ -12,6 +12,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/views/widget/widget.h"
 
+class AccountCapabilitiesTestMutator;
 class BrowserWindowInterface;
 class Profile;
 
@@ -139,12 +140,13 @@ class GlicInstanceTracker {
   bool track_only_glic_instance_ = false;
 };
 
-// Signs in a primary account, accepts the FRE, and enables model execution
+// Signs in a primary account, accepts the FRE, and enables the relevant
 // capability for that profile. browser_tests and interactive_ui_tests should
 // use GlicTestEnvironment. These methods are for unit_tests.
-void ForceSigninAndModelExecutionCapability(Profile* profile);
+void ForceSigninAndGlicCapability(Profile* profile);
 void SigninWithPrimaryAccount(Profile* profile);
-void SetModelExecutionCapability(Profile* profile, bool enabled);
+void SetGlicCapability(Profile* profile, bool enabled);
+void SetGlicCapability(AccountCapabilitiesTestMutator& mutator, bool enabled);
 void SetFRECompletion(Profile* profile, prefs::FreStatus fre_status);
 
 void InvalidateAccount(Profile* profile);

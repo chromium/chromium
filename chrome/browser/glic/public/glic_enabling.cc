@@ -95,11 +95,18 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
 
     // Not having a primary account is considered ineligible, as is kUnknown
     // for the required account capability.
-    if (primary_account.IsEmpty() ||
-        primary_account.capabilities.can_use_model_execution_features() !=
-            signin::Tribool::kTrue) {
+    if (primary_account.IsEmpty()) {
       result.primary_account_not_capable = true;
     }
+
+    // Check account capabilities.
+    signin::Tribool capability_value =
+        base::FeatureList::IsEnabled(
+            features::kGlicEligibilitySeparateAccountCapability)
+            ? primary_account.capabilities.can_use_gemini_in_chrome()
+            : primary_account.capabilities.can_use_model_execution_features();
+    result.primary_account_not_capable =
+        (capability_value != signin::Tribool::kTrue);
   }
 
   if (profile->GetPrefs()->GetInteger(::prefs::kGeminiSettings) !=

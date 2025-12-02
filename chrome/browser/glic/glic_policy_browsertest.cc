@@ -232,7 +232,7 @@ class GlicPolicyTest : public PolicyTest {
       profile_2_ =
           &profiles::testing::CreateProfileSync(profile_manager, new_path);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-      ForceSigninAndModelExecutionCapability(profile_2_);
+      ForceSigninAndGlicCapability(profile_2_);
     }
   }
 
