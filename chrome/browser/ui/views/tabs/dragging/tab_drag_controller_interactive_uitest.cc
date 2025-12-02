@@ -6183,32 +6183,32 @@ class TabDragControllerTabletModeTest
       TabStrip* source_tab_strip,
       std::optional<gfx::Point> destination_in_screen,
       bool release = true) {
-    ASSERT_TRUE(TabDragController::IsActive());
+    EXPECT_TRUE(TabDragController::IsActive());
 
     // Source tab strip drag session is already finished.
-    ASSERT_FALSE(source_tab_strip->GetDragContext()->IsDragSessionActive());
-    ASSERT_TRUE(IsTabDraggingInfoCleared(source_tab_strip));
+    EXPECT_FALSE(source_tab_strip->GetDragContext()->IsDragSessionActive());
+    EXPECT_TRUE(IsTabDraggingInfoCleared(source_tab_strip));
 
     BrowserWindowInterface* source_browser =
         source_tab_strip->GetBrowserWindowInterface();
     BrowserWindowInterface* drag_browser =
         GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-    ASSERT_NE(source_browser, drag_browser);
+    EXPECT_NE(source_browser, drag_browser);
 
     aura::Window* drag_window = drag_browser->GetWindow()->GetNativeWindow();
     aura::Window* source_window =
         source_browser->GetWindow()->GetNativeWindow();
-    ASSERT_EQ(source_window,
+    EXPECT_EQ(source_window,
               ash::window_util::GetTabDraggingSourceWindowState(drag_window)
                   ->window());
 
     TabStrip* drag_tab_strip =
         GetTabStripForBrowser(drag_browser->GetBrowserForMigrationOnly());
-    ASSERT_TRUE(drag_tab_strip->GetDragContext()->IsDragSessionActive());
-    ASSERT_TRUE(IsTabDraggingInfoSet(drag_tab_strip));
+    EXPECT_TRUE(drag_tab_strip->GetDragContext()->IsDragSessionActive());
+    EXPECT_TRUE(IsTabDraggingInfoSet(drag_tab_strip));
 
-    ASSERT_EQ(source_browser->GetTabStripModel()->count(), 1);
-    ASSERT_EQ(drag_browser->GetTabStripModel()->count(), 1);
+    EXPECT_EQ(source_browser->GetTabStripModel()->count(), 1);
+    EXPECT_EQ(drag_browser->GetTabStripModel()->count(), 1);
 
     if (destination_in_screen.has_value()) {
       ASSERT_TRUE(DragInputTo(*destination_in_screen, gfx::NativeWindow()));
@@ -6225,11 +6225,11 @@ class TabDragControllerTabletModeTest
 // tab strip. The drag browser persists and becomes maximized.
 IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest, DragFromMaximized) {
   AddTabsAndResetBrowser(browser(), 1);
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   Tab* first_tab = tab_strip->tab_at(0);
-  ASSERT_TRUE(browser()->IsActive());
+  EXPECT_TRUE(browser()->IsActive());
   ASSERT_TRUE(PressInputAtCenter(first_tab));
 
   ASSERT_TRUE(DragInputToCenterNotifyWhenDone(
@@ -6239,25 +6239,25 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest, DragFromMaximized) {
       gfx::Vector2d(0, GetDetachY(tab_strip))));
   ASSERT_TRUE(base::test::RunUntil([&] { return DragInactive(2); }));
 
-  ASSERT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
+  EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
   BrowserWindowInterface* drag_browser =
       ui_test_utils::GetBrowserNotInSet({browser()});
-  ASSERT_TRUE(IsDraggingInfoCleared(drag_browser));
-  ASSERT_TRUE(browser()->GetWindow()->IsMaximized());
-  ASSERT_TRUE(drag_browser->GetWindow()->IsMaximized());
-  ASSERT_TRUE(drag_browser->IsActive());
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "1");
-  ASSERT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
+  EXPECT_TRUE(IsDraggingInfoCleared(drag_browser));
+  EXPECT_TRUE(browser()->GetWindow()->IsMaximized());
+  EXPECT_TRUE(drag_browser->GetWindow()->IsMaximized());
+  EXPECT_TRUE(drag_browser->IsActive());
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "1");
+  EXPECT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
 }
 
 // In tablet mode, drag a tab out of a fullscreen browser and drop it below the
 // tab strip. The drag browser persists and becomes fullscreen.
 IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest, DragFromFullscreen) {
   AddTabsAndResetBrowser(browser(), 1);
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
 
   chrome::ToggleFullscreenMode(browser());
-  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
+  EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
 
   // Forcibly reveal the tabstrip immediately.
   // TODO(crbug.com/464354169): Use focus to reveal the immersive frame.
@@ -6271,7 +6271,7 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest, DragFromFullscreen) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   EXPECT_TRUE(tab_strip->GetVisible());
   Tab* first_tab = tab_strip->tab_at(0);
-  ASSERT_TRUE(browser()->IsActive());
+  EXPECT_TRUE(browser()->IsActive());
   ASSERT_TRUE(PressInputAtCenter(first_tab));
 
   ASSERT_TRUE(DragInputToCenterNotifyWhenDone(
@@ -6279,32 +6279,32 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest, DragFromFullscreen) {
       base::BindOnce(&TabDragControllerTabletModeTest::MaybeDragThenRelease,
                      base::Unretained(this), tab_strip, std::nullopt),
       gfx::Vector2d(0, GetDetachY(tab_strip))));
-  ASSERT_TRUE(base::test::RunUntil([&] { return DragInactive(2); }));
+  EXPECT_TRUE(base::test::RunUntil([&] { return DragInactive(2); }));
 
-  ASSERT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
+  EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
   BrowserWindowInterface* drag_browser =
       ui_test_utils::GetBrowserNotInSet({browser()});
-  ASSERT_TRUE(IsDraggingInfoCleared(drag_browser));
-  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
-  ASSERT_TRUE(drag_browser->GetWindow()->IsFullscreen());
-  ASSERT_TRUE(drag_browser->IsActive());
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "1");
-  ASSERT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
+  EXPECT_TRUE(IsDraggingInfoCleared(drag_browser));
+  EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+  EXPECT_TRUE(drag_browser->GetWindow()->IsFullscreen());
+  EXPECT_TRUE(drag_browser->IsActive());
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "1");
+  EXPECT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
 }
 
 // In tablet mode, drag a tab out of a floated browser and drop it below the tab
 // strip. The drag browser persists and becomes maximized.
 IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest, DragFromFloated) {
   AddTabsAndResetBrowser(browser(), 1);
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
 
   ash::Shell::Get()->float_controller()->ToggleFloat(
       browser()->GetWindow()->GetNativeWindow());
-  ASSERT_TRUE(IsFloated(browser()));
+  EXPECT_TRUE(IsFloated(browser()));
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   Tab* first_tab = tab_strip->tab_at(0);
-  ASSERT_TRUE(browser()->IsActive());
+  EXPECT_TRUE(browser()->IsActive());
   ASSERT_TRUE(PressInputAtCenter(first_tab));
 
   ASSERT_TRUE(DragInputToCenterNotifyWhenDone(
@@ -6314,15 +6314,15 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest, DragFromFloated) {
       gfx::Vector2d(0, GetDetachY(tab_strip))));
   ASSERT_TRUE(base::test::RunUntil([&] { return DragInactive(2); }));
 
-  ASSERT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
+  EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
   BrowserWindowInterface* drag_browser =
       ui_test_utils::GetBrowserNotInSet({browser()});
-  ASSERT_TRUE(IsDraggingInfoCleared(drag_browser));
-  ASSERT_TRUE(IsFloated(browser()));
-  ASSERT_TRUE(drag_browser->GetWindow()->IsMaximized());
-  ASSERT_TRUE(drag_browser->IsActive());
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "1");
-  ASSERT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
+  EXPECT_TRUE(IsDraggingInfoCleared(drag_browser));
+  EXPECT_TRUE(IsFloated(browser()));
+  EXPECT_TRUE(drag_browser->GetWindow()->IsMaximized());
+  EXPECT_TRUE(drag_browser->IsActive());
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "1");
+  EXPECT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
 }
 
 // In tablet mode, drag a tab out of a maximized browser and drop it on the edge
@@ -6331,11 +6331,11 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest, DragFromFloated) {
 IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
                        DragFromMaximizedToSnapTriggerArea) {
   AddTabsAndResetBrowser(browser(), 1);
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   Tab* first_tab = tab_strip->tab_at(0);
-  ASSERT_TRUE(browser()->IsActive());
+  EXPECT_TRUE(browser()->IsActive());
   ASSERT_TRUE(PressInputAtCenter(first_tab));
 
   gfx::Rect work_area =
@@ -6350,19 +6350,19 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
       gfx::Vector2d(0, GetDetachY(tab_strip))));
   ASSERT_TRUE(base::test::RunUntil([&] { return DragInactive(2); }));
 
-  ASSERT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
+  EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
   BrowserWindowInterface* drag_browser =
       ui_test_utils::GetBrowserNotInSet({browser()});
-  ASSERT_TRUE(IsDraggingInfoCleared(drag_browser));
+  EXPECT_TRUE(IsDraggingInfoCleared(drag_browser));
 
-  ASSERT_TRUE(browser()->GetWindow()->IsMaximized());
-  ASSERT_TRUE(drag_browser->IsActive());
+  EXPECT_TRUE(browser()->GetWindow()->IsMaximized());
+  EXPECT_TRUE(drag_browser->IsActive());
   ASSERT_TRUE(base::test::RunUntil([&] {
     return InTabletSplitViewModeWithOverviewAsSecondary(drag_browser);
   }));
-  ASSERT_TRUE(IsInOverview(browser()));
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "1");
-  ASSERT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
+  EXPECT_TRUE(IsInOverview(browser()));
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "1");
+  EXPECT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
 }
 
 // In tablet mode, drag a tab out of a fullscreen browser and drop it on the
@@ -6371,10 +6371,10 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
 IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
                        DragFromFullscreenToSnapTriggerArea) {
   AddTabsAndResetBrowser(browser(), 1);
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
 
   chrome::ToggleFullscreenMode(browser());
-  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
+  EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
 
   // Forcibly reveal the tabstrip immediately.
   ImmersiveModeController* immersive_controller =
@@ -6387,7 +6387,7 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   EXPECT_TRUE(tab_strip->GetVisible());
   Tab* first_tab = tab_strip->tab_at(0);
-  ASSERT_TRUE(browser()->IsActive());
+  EXPECT_TRUE(browser()->IsActive());
   ASSERT_TRUE(PressInputAtCenter(first_tab));
 
   gfx::Rect work_area =
@@ -6402,19 +6402,19 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
       gfx::Vector2d(0, GetDetachY(tab_strip))));
   ASSERT_TRUE(base::test::RunUntil([&] { return DragInactive(2); }));
 
-  ASSERT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
+  EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
   BrowserWindowInterface* drag_browser =
       ui_test_utils::GetBrowserNotInSet({browser()});
-  ASSERT_TRUE(IsDraggingInfoCleared(drag_browser));
+  EXPECT_TRUE(IsDraggingInfoCleared(drag_browser));
 
-  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
-  ASSERT_TRUE(drag_browser->IsActive());
+  EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+  EXPECT_TRUE(drag_browser->IsActive());
   ASSERT_TRUE(base::test::RunUntil([&] {
     return InTabletSplitViewModeWithOverviewAsSecondary(drag_browser);
   }));
-  ASSERT_TRUE(IsInOverview(browser()));
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "1");
-  ASSERT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
+  EXPECT_TRUE(IsInOverview(browser()));
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "1");
+  EXPECT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
 }
 
 // In tablet mode, drag a tab out of a floated browser and drop it on the
@@ -6423,16 +6423,16 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
 IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
                        DragFromFloatedToSnapTriggerArea) {
   AddTabsAndResetBrowser(browser(), 1);
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
 
   ash::Shell::Get()->float_controller()->ToggleFloat(
       browser()->GetWindow()->GetNativeWindow());
-  ASSERT_TRUE(IsFloated(browser()));
+  EXPECT_TRUE(IsFloated(browser()));
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   EXPECT_TRUE(tab_strip->GetVisible());
   Tab* first_tab = tab_strip->tab_at(0);
-  ASSERT_TRUE(browser()->IsActive());
+  EXPECT_TRUE(browser()->IsActive());
   ASSERT_TRUE(PressInputAtCenter(first_tab));
 
   gfx::Rect work_area =
@@ -6447,19 +6447,19 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
       gfx::Vector2d(0, GetDetachY(tab_strip))));
   ASSERT_TRUE(base::test::RunUntil([&] { return DragInactive(2); }));
 
-  ASSERT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
+  EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
   BrowserWindowInterface* drag_browser =
       ui_test_utils::GetBrowserNotInSet({browser()});
-  ASSERT_TRUE(IsDraggingInfoCleared(drag_browser));
+  EXPECT_TRUE(IsDraggingInfoCleared(drag_browser));
 
-  ASSERT_TRUE(IsFloated(browser()));
-  ASSERT_TRUE(drag_browser->IsActive());
+  EXPECT_TRUE(IsFloated(browser()));
+  EXPECT_TRUE(drag_browser->IsActive());
   ASSERT_TRUE(base::test::RunUntil([&] {
     return InTabletSplitViewModeWithOverviewAsSecondary(drag_browser);
   }));
-  ASSERT_TRUE(IsInOverview(browser()));
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "1");
-  ASSERT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
+  EXPECT_TRUE(IsInOverview(browser()));
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "1");
+  EXPECT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
 }
 
 // In tablet mode, drag a tab out of a maximized browser and drop it on an
@@ -6468,15 +6468,15 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
 IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
                        DragFromMaximizedToFloatedTabStrip) {
   AddTabsAndResetBrowser(browser(), 1);
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
-  ASSERT_TRUE(browser()->IsActive());
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
+  EXPECT_TRUE(browser()->IsActive());
 
   Browser* browser2 = CreateBrowser(browser()->profile());
   ResetIDs(browser2->GetTabStripModel(), 10);
-  ASSERT_EQ(IDString(browser2->GetTabStripModel()), "10");
+  EXPECT_EQ(IDString(browser2->GetTabStripModel()), "10");
   ash::Shell::Get()->float_controller()->ToggleFloat(
       browser2->GetWindow()->GetNativeWindow());
-  ASSERT_TRUE(IsFloated(browser2));
+  EXPECT_TRUE(IsFloated(browser2));
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   Tab* first_tab = tab_strip->tab_at(0);
@@ -6497,12 +6497,12 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
       gfx::Vector2d(0, GetDetachY(tab_strip))));
   ASSERT_TRUE(base::test::RunUntil([&] { return DragInactive(2); }));
 
-  ASSERT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
-  ASSERT_TRUE(browser()->GetWindow()->IsMaximized());
-  ASSERT_TRUE(IsFloated(browser2));
-  ASSERT_TRUE(browser2->IsActive());
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "1");
-  ASSERT_EQ(IDString(browser2->GetTabStripModel()), "0 10");
+  EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
+  EXPECT_TRUE(browser()->GetWindow()->IsMaximized());
+  EXPECT_TRUE(IsFloated(browser2));
+  EXPECT_TRUE(browser2->IsActive());
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "1");
+  EXPECT_EQ(IDString(browser2->GetTabStripModel()), "0 10");
 }
 
 // In tablet mode, drag a tab out of a fullscreen browser and drop it on an
@@ -6511,16 +6511,16 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
 IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
                        DragFromFullscreenToFloatedTabStrip) {
   AddTabsAndResetBrowser(browser(), 1);
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
 
   Browser* browser2 = CreateBrowser(browser()->profile());
   ResetIDs(browser2->GetTabStripModel(), 10);
   ash::Shell::Get()->float_controller()->ToggleFloat(
       browser2->GetWindow()->GetNativeWindow());
-  ASSERT_TRUE(IsFloated(browser2));
+  EXPECT_TRUE(IsFloated(browser2));
 
   chrome::ToggleFullscreenMode(browser());
-  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
+  EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
 
   ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
   browser()->window()->Activate();
@@ -6537,7 +6537,7 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   EXPECT_TRUE(tab_strip->GetVisible());
   Tab* first_tab = tab_strip->tab_at(0);
-  ASSERT_TRUE(browser()->IsActive());
+  EXPECT_TRUE(browser()->IsActive());
   ASSERT_TRUE(PressInputAtCenter(first_tab));
 
   TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
@@ -6551,12 +6551,12 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
       gfx::Vector2d(0, GetDetachY(tab_strip))));
   ASSERT_TRUE(base::test::RunUntil([&] { return DragInactive(2); }));
 
-  ASSERT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
-  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
-  ASSERT_TRUE(IsFloated(browser2));
-  ASSERT_TRUE(browser2->IsActive());
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "1");
-  ASSERT_EQ(IDString(browser2->GetTabStripModel()), "0 10");
+  EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
+  EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+  EXPECT_TRUE(IsFloated(browser2));
+  EXPECT_TRUE(browser2->IsActive());
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "1");
+  EXPECT_EQ(IDString(browser2->GetTabStripModel()), "0 10");
 }
 
 // In tablet mode, drag a tab out of a snapped browser and drop it below the
@@ -6564,17 +6564,17 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
 // source browser in the split view.
 IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest, DragFromSnapped) {
   AddTabsAndResetBrowser(browser(), 1);
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
 
   Browser* browser2 = CreateBrowser(browser()->profile());
   ResetIDs(browser2->GetTabStripModel(), 10);
-  ASSERT_EQ(IDString(browser2->GetTabStripModel()), "10");
+  EXPECT_EQ(IDString(browser2->GetTabStripModel()), "10");
 
   split_view_controller()->SnapWindow(browser()->GetWindow()->GetNativeWindow(),
                                       ash::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(browser2->GetWindow()->GetNativeWindow(),
                                       ash::SnapPosition::kSecondary);
-  ASSERT_TRUE(InTabletSplitViewMode(browser(), browser2));
+  EXPECT_TRUE(InTabletSplitViewMode(browser(), browser2));
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   Tab* first_tab = tab_strip->tab_at(0);
@@ -6591,15 +6591,15 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest, DragFromSnapped) {
       gfx::Vector2d(0, GetDetachY(tab_strip))));
   ASSERT_TRUE(base::test::RunUntil([&] { return DragInactive(3); }));
 
-  ASSERT_EQ(GetAllBrowserWindowInterfaces().size(), 3u);
+  EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), 3u);
   BrowserWindowInterface* drag_browser =
       ui_test_utils::GetBrowserNotInSet({browser(), browser2});
-  ASSERT_TRUE(IsDraggingInfoCleared(drag_browser));
-  ASSERT_TRUE(InTabletSplitViewMode(drag_browser, browser2));
-  ASSERT_TRUE(drag_browser->IsActive());
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "1");
-  ASSERT_EQ(IDString(browser2->GetTabStripModel()), "10");
-  ASSERT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
+  EXPECT_TRUE(IsDraggingInfoCleared(drag_browser));
+  EXPECT_TRUE(InTabletSplitViewMode(drag_browser, browser2));
+  EXPECT_TRUE(drag_browser->IsActive());
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "1");
+  EXPECT_EQ(IDString(browser2->GetTabStripModel()), "10");
+  EXPECT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
 }
 
 // In tablet mode, drag a tab out of a snapped browser and drop it on the other
@@ -6609,17 +6609,17 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest, DragFromSnapped) {
 IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
                        DragFromSnappedToOtherSnapped) {
   AddTabsAndResetBrowser(browser(), 1);
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
 
   Browser* browser2 = CreateBrowser(browser()->profile());
   ResetIDs(browser2->GetTabStripModel(), 10);
-  ASSERT_EQ(IDString(browser2->GetTabStripModel()), "10");
+  EXPECT_EQ(IDString(browser2->GetTabStripModel()), "10");
 
   split_view_controller()->SnapWindow(browser()->GetWindow()->GetNativeWindow(),
                                       ash::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(browser2->GetWindow()->GetNativeWindow(),
                                       ash::SnapPosition::kSecondary);
-  ASSERT_TRUE(InTabletSplitViewMode(browser(), browser2));
+  EXPECT_TRUE(InTabletSplitViewMode(browser(), browser2));
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   Tab* first_tab = tab_strip->tab_at(0);
@@ -6643,15 +6643,15 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
       gfx::Vector2d(0, GetDetachY(tab_strip))));
   ASSERT_TRUE(base::test::RunUntil([&] { return DragInactive(3); }));
 
-  ASSERT_EQ(GetAllBrowserWindowInterfaces().size(), 3u);
+  EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), 3u);
   BrowserWindowInterface* drag_browser =
       ui_test_utils::GetBrowserNotInSet({browser(), browser2});
-  ASSERT_TRUE(IsDraggingInfoCleared(drag_browser));
-  ASSERT_TRUE(InTabletSplitViewMode(browser(), drag_browser));
-  ASSERT_TRUE(drag_browser->IsActive());
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "1");
-  ASSERT_EQ(IDString(browser2->GetTabStripModel()), "10");
-  ASSERT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
+  EXPECT_TRUE(IsDraggingInfoCleared(drag_browser));
+  EXPECT_TRUE(InTabletSplitViewMode(browser(), drag_browser));
+  EXPECT_TRUE(drag_browser->IsActive());
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "1");
+  EXPECT_EQ(IDString(browser2->GetTabStripModel()), "10");
+  EXPECT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
 }
 
 // In tablet mode, drag a tab out of a snapped browser and drop it on the other
@@ -6660,16 +6660,16 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
 IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
                        DragFromSnappedToOverview) {
   AddTabsAndResetBrowser(browser(), 1);
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
 
   Browser* browser2 = CreateBrowser(browser()->profile());
   ResetIDs(browser2->GetTabStripModel(), 10);
-  ASSERT_EQ(IDString(browser2->GetTabStripModel()), "10");
+  EXPECT_EQ(IDString(browser2->GetTabStripModel()), "10");
 
   split_view_controller()->SnapWindow(browser()->GetWindow()->GetNativeWindow(),
                                       ash::SnapPosition::kPrimary);
-  ASSERT_TRUE(InTabletSplitViewModeWithOverviewAsSecondary(browser()));
-  ASSERT_TRUE(IsInOverview(browser2));
+  EXPECT_TRUE(InTabletSplitViewModeWithOverviewAsSecondary(browser()));
+  EXPECT_TRUE(IsInOverview(browser2));
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   Tab* first_tab = tab_strip->tab_at(0);
@@ -6693,17 +6693,17 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
       gfx::Vector2d(0, GetDetachY(tab_strip))));
   ASSERT_TRUE(base::test::RunUntil([&] { return DragInactive(3); }));
 
-  ASSERT_EQ(GetAllBrowserWindowInterfaces().size(), 3u);
+  EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), 3u);
   BrowserWindowInterface* drag_browser =
       ui_test_utils::GetBrowserNotInSet({browser(), browser2});
-  ASSERT_TRUE(IsDraggingInfoCleared(drag_browser));
-  ASSERT_TRUE(split_view_controller()->InTabletSplitViewMode());
-  ASSERT_TRUE(InTabletSplitViewMode(browser(), drag_browser));
-  ASSERT_TRUE(drag_browser->IsActive());
-  ASSERT_FALSE(ash::GetOverviewSession());
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "1");
-  ASSERT_EQ(IDString(browser2->GetTabStripModel()), "10");
-  ASSERT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
+  EXPECT_TRUE(IsDraggingInfoCleared(drag_browser));
+  EXPECT_TRUE(split_view_controller()->InTabletSplitViewMode());
+  EXPECT_TRUE(InTabletSplitViewMode(browser(), drag_browser));
+  EXPECT_TRUE(drag_browser->IsActive());
+  EXPECT_FALSE(ash::GetOverviewSession());
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "1");
+  EXPECT_EQ(IDString(browser2->GetTabStripModel()), "10");
+  EXPECT_EQ(IDString(drag_browser->GetTabStripModel()), "0");
 }
 
 // In tablet mode, drag a tab out of a snapped browser and drop it on the tab
@@ -6712,17 +6712,17 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
 IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
                        DragFromSnappedToOtherSnappedTabStrip) {
   AddTabsAndResetBrowser(browser(), 1);
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
 
   Browser* browser2 = CreateBrowser(browser()->profile());
   ResetIDs(browser2->GetTabStripModel(), 10);
-  ASSERT_EQ(IDString(browser2->GetTabStripModel()), "10");
+  EXPECT_EQ(IDString(browser2->GetTabStripModel()), "10");
 
   split_view_controller()->SnapWindow(browser()->GetWindow()->GetNativeWindow(),
                                       ash::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(browser2->GetWindow()->GetNativeWindow(),
                                       ash::SnapPosition::kSecondary);
-  ASSERT_TRUE(InTabletSplitViewMode(browser(), browser2));
+  EXPECT_TRUE(InTabletSplitViewMode(browser(), browser2));
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   Tab* first_tab = tab_strip->tab_at(0);
@@ -6743,11 +6743,11 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
       gfx::Vector2d(0, GetDetachY(tab_strip))));
   ASSERT_TRUE(base::test::RunUntil([&] { return DragInactive(2); }));
 
-  ASSERT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
-  ASSERT_TRUE(InTabletSplitViewMode(browser(), browser2));
-  ASSERT_TRUE(browser2->IsActive());
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "1");
-  ASSERT_EQ(IDString(browser2->GetTabStripModel()), "0 10");
+  EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
+  EXPECT_TRUE(InTabletSplitViewMode(browser(), browser2));
+  EXPECT_TRUE(browser2->IsActive());
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "1");
+  EXPECT_EQ(IDString(browser2->GetTabStripModel()), "0 10");
 }
 
 // In tablet mode, drag a tab group out of a snapped browser and drop it on the
@@ -6756,17 +6756,17 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
 IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
                        DragGroupFromSnappedToOtherSnappedTabStrip) {
   AddTabsAndResetBrowser(browser(), 1);
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "0 1");
 
   Browser* browser2 = CreateBrowser(browser()->profile());
   ResetIDs(browser2->GetTabStripModel(), 10);
-  ASSERT_EQ(IDString(browser2->GetTabStripModel()), "10");
+  EXPECT_EQ(IDString(browser2->GetTabStripModel()), "10");
 
   split_view_controller()->SnapWindow(browser()->GetWindow()->GetNativeWindow(),
                                       ash::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(browser2->GetWindow()->GetNativeWindow(),
                                       ash::SnapPosition::kSecondary);
-  ASSERT_TRUE(InTabletSplitViewMode(browser(), browser2));
+  EXPECT_TRUE(InTabletSplitViewMode(browser(), browser2));
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   Tab* first_tab = tab_strip->tab_at(0);
@@ -6774,7 +6774,7 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
   ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
   browser()->window()->Activate();
   activation_waiter.WaitForActivation();
-  ASSERT_TRUE(PressInputAtCenter(first_tab));
+  EXPECT_TRUE(PressInputAtCenter(first_tab));
 
   TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
   Tab* first_tab2 = tab_strip2->tab_at(0);
@@ -6787,11 +6787,11 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
       gfx::Vector2d(0, GetDetachY(tab_strip))));
   ASSERT_TRUE(base::test::RunUntil([&] { return DragInactive(2); }));
 
-  ASSERT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
-  ASSERT_TRUE(InTabletSplitViewMode(browser(), browser2));
-  ASSERT_TRUE(browser2->IsActive());
-  ASSERT_EQ(IDString(browser()->GetTabStripModel()), "1");
-  ASSERT_EQ(IDString(browser2->GetTabStripModel()), "0 10");
+  EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), 2u);
+  EXPECT_TRUE(InTabletSplitViewMode(browser(), browser2));
+  EXPECT_TRUE(browser2->IsActive());
+  EXPECT_EQ(IDString(browser()->GetTabStripModel()), "1");
+  EXPECT_EQ(IDString(browser2->GetTabStripModel()), "0 10");
 }
 
 IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest, DoubleDetach) {
