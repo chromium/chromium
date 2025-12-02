@@ -407,7 +407,7 @@ ContextImplOrt::CreateTensorImpl(
 
   return base::MakeRefCounted<TensorImplOrt>(
       std::move(receiver), AsWeakPtr(), std::move(tensor_info), size,
-      std::move(tensor), can_access_on_cpu);
+      std::move(tensor), can_access_on_cpu, device_allocator_);
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>

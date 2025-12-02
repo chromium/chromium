@@ -22,10 +22,12 @@ TensorImplOrt::TensorImplOrt(
     mojom::TensorInfoPtr tensor_info,
     size_t size,
     ScopedOrtValue tensor,
-    bool can_access_on_cpu)
+    bool can_access_on_cpu,
+    scoped_refptr<DeviceAllocator> device_allocator)
     : WebNNTensorImpl(std::move(receiver),
                       std::move(context),
                       std::move(tensor_info)),
+      device_allocator_((std::move(device_allocator))),
       tensor_(std::move(tensor)),
       size_(size) {
   // Initialize the tensor with zeros, otherwise, reading uninitialized memory

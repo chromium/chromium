@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "services/webnn/ort/device_allocator.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -22,7 +23,8 @@ class TensorImplOrt final : public WebNNTensorImpl {
                 mojom::TensorInfoPtr tensor_info,
                 size_t size,
                 ScopedOrtValue tensor,
-                bool can_access_on_cpu);
+                bool can_access_on_cpu,
+                scoped_refptr<DeviceAllocator> device_allocator);
 
   TensorImplOrt(const TensorImplOrt&) = delete;
   TensorImplOrt& operator=(const TensorImplOrt&) = delete;
@@ -40,6 +42,14 @@ class TensorImplOrt final : public WebNNTensorImpl {
 
   base::span<uint8_t> AsSpan() const;
 
+  // The device allocator used for device tensor creation. May be nullptr if
+  // device tensor is not supported.
+  // If the device allocator is present, the tensor is allocated by the device
+  // allocator, and its destruction depends on the allocator remaining valid.
+  // Therefore, the device allocator must be referenced by `TensorImplOrt`
+  // and declared before `tensor_` to ensure correct destruction order to avoid
+  // use-after-free errors.
+  scoped_refptr<DeviceAllocator> device_allocator_;
   const ScopedOrtValue tensor_ GUARDED_BY_CONTEXT(gpu_sequence_checker_);
   const size_t size_;
 };
