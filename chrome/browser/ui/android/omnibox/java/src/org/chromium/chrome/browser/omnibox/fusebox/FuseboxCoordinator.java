@@ -335,4 +335,9 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
     public ObservableSupplier<Boolean> getOnCompactModeChangedSupplier() {
         return mOnCompactModeChangedSupplier;
     }
+
+    /** Returns whether the Fusebox Attachments list contains any user-added entries. */
+    public boolean hasUserAddedAttachments() {
+        return !mModelList.isEmpty();
+    }
 }
