@@ -554,7 +554,7 @@
     ],
 
     'official_remoteexec_minimal_symbols_android': [
-      'official', 'remoteexec', 'minimal_symbols', 'android', 'pgo_phase_0', 'no_default_afdo'
+      'official', 'remoteexec', 'minimal_symbols', 'android', 'arm', 'pgo_phase_0', 'no_default_afdo'
     ],
 
     'official_remoteexec_minimal_symbols_android_arm64_high_end': [
@@ -570,7 +570,7 @@
     ],
 
     'official_remoteexec_minimal_symbols_android_pgo': [
-      'official', 'remoteexec', 'minimal_symbols', 'android'
+      'official', 'remoteexec', 'minimal_symbols', 'android', 'arm',
     ],
 
     'official_remoteexec_minimal_symbols_android_thin_lto_opt': [
