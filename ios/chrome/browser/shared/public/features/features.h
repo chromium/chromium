@@ -900,9 +900,6 @@ BASE_DECLARE_FEATURE(kRefactorToolbarsSize);
 
 bool IsRefactorToolbarsSize();
 
-// Feature flag to enable the new share extension UI and entries.
-BASE_DECLARE_FEATURE(kNewShareExtension);
-
 // Feature that disables all IPH messages.
 BASE_DECLARE_FEATURE(kIPHAblation);
 

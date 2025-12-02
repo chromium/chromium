@@ -689,9 +689,6 @@ extern const char kNTPViewHierarchyRepairDescription[];
 extern const char kNativeFindInPageName[];
 extern const char kNativeFindInPageDescription[];
 
-extern const char kNewShareExtensionName[];
-extern const char kNewShareExtensionDescription[];
-
 extern const char kNewTabPageFieldTrialName[];
 extern const char kNewTabPageFieldTrialDescription[];
 

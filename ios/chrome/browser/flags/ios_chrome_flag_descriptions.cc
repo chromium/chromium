@@ -1144,10 +1144,6 @@ const char kNativeFindInPageDescription[] =
     "is replaced with a native implementation which also enables searching "
     "text in PDF files. Available for iOS 16 or later.";
 
-const char kNewShareExtensionName[] = "New Share Extension for iOS";
-const char kNewShareExtensionDescription[] =
-    "Update the share extension UI and add new share entries";
-
 const char kNewTabPageFieldTrialName[] =
     "New tab page features that target new users";
 const char kNewTabPageFieldTrialDescription[] =
