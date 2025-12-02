@@ -1118,7 +1118,7 @@ clang_tot_linux_builder(
             "msan",
             "release",
             "x64",
-            # TODO(crbug.com/450862240) enable "remoteexec" here
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
