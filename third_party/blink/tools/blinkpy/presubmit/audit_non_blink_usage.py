@@ -2700,18 +2700,14 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/public/platform/media/',
+            'third_party/blink/public/platform/web_media_player.h',
             'third_party/blink/public/platform/web_media_player_client.h',
+            'third_party/blink/public/web/modules/mediastream/',
         ],
         'allowed': [
+            'cc::PaintCanvas',
+            'cc::PaintFlags',
             'media::.+',
-        ]
-    },
-    {
-        'paths': [
-            'third_party/blink/public/web/modules/mediastream/media_stream_video_source.h'
-        ],
-        'allowed': [
-            'media::CaptureVersion',
         ]
     },
     {

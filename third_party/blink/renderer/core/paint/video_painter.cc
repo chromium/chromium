@@ -112,7 +112,7 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
     cc::PaintFlags video_flags = context.FillFlags();
     video_flags.setColor(SK_ColorBLACK);
     layout_video_.VideoElement()->PaintCurrentFrame(
-        context.Canvas(), snapped_replaced_rect, &video_flags);
+        context.Canvas(), snapped_replaced_rect, video_flags);
   }
 }
 

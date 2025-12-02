@@ -876,7 +876,7 @@ PaintCanvasVideoRenderer::~PaintCanvasVideoRenderer() = default;
 void PaintCanvasVideoRenderer::Paint(
     scoped_refptr<VideoFrame> video_frame,
     cc::PaintCanvas* canvas,
-    cc::PaintFlags& flags,
+    const cc::PaintFlags& flags,
     const PaintParams& params,
     viz::RasterContextProvider* raster_context_provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

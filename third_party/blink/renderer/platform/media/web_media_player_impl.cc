@@ -1500,7 +1500,7 @@ bool WebMediaPlayerImpl::DidLoadingProgress() {
 
 void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
                                const gfx::Rect& rect,
-                               cc::PaintFlags& flags) {
+                               const cc::PaintFlags& flags) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "WebMediaPlayerImpl:paint");
 

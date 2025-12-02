@@ -182,7 +182,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
 
 void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,
                               cc::PaintCanvas* canvas,
-                              cc::PaintFlags& flags,
+                              const cc::PaintFlags& flags,
                               bool ignore_video_transformation) {
   viz::RasterContextProvider* raster_context_provider = nullptr;
   if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {

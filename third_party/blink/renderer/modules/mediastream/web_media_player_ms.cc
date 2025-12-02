@@ -1107,7 +1107,7 @@ bool WebMediaPlayerMS::DidLoadingProgress() {
 
 void WebMediaPlayerMS::Paint(cc::PaintCanvas* canvas,
                              const gfx::Rect& rect,
-                             cc::PaintFlags& flags) {
+                             const cc::PaintFlags& flags) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

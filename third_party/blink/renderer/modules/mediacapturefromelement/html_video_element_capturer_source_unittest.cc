@@ -98,9 +98,7 @@ class MockWebMediaPlayer : public WebMediaPlayer {
 
   void Paint(cc::PaintCanvas* canvas,
              const gfx::Rect& rect,
-             cc::PaintFlags&) override {
-    return;
-  }
+             const cc::PaintFlags&) override {}
 
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override {
     // We could fill in |canvas| with a meaningful pattern in ARGB and verify

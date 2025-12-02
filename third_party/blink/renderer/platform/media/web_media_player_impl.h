@@ -202,7 +202,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // ImageBitmap, printing and capturing capabilities.
   void Paint(cc::PaintCanvas* canvas,
              const gfx::Rect& rect,
-             cc::PaintFlags& flags) override;
+             const cc::PaintFlags& flags) override;
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override;
   std::optional<media::VideoFrame::ID> CurrentFrameId() const override;
   media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer() override;

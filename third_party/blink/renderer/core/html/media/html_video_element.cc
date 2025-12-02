@@ -425,20 +425,11 @@ void HTMLVideoElement::RequestVisibility(
 
 void HTMLVideoElement::PaintCurrentFrame(cc::PaintCanvas* canvas,
                                          const gfx::Rect& dest_rect,
-                                         const cc::PaintFlags* flags) const {
-  if (!GetWebMediaPlayer())
+                                         const cc::PaintFlags& flags) const {
+  if (!GetWebMediaPlayer()) {
     return;
-
-  cc::PaintFlags media_flags;
-  if (flags) {
-    media_flags = *flags;
-  } else {
-    media_flags.setAlphaf(1.0f);
-    media_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
-    media_flags.setBlendMode(SkBlendMode::kSrc);
   }
-
-  GetWebMediaPlayer()->Paint(canvas, dest_rect, media_flags);
+  GetWebMediaPlayer()->Paint(canvas, dest_rect, flags);
 }
 
 bool HTMLVideoElement::HasAvailableVideoFrame() const {

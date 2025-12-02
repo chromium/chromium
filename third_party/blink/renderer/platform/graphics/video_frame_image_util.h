@@ -85,7 +85,7 @@ PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
 PLATFORM_EXPORT void DrawVideoFrameIntoCanvas(
     scoped_refptr<media::VideoFrame> frame,
     cc::PaintCanvas* canvas,
-    cc::PaintFlags& flags,
+    const cc::PaintFlags& flags,
     bool ignore_video_transformation = false);
 
 // Extract a RasterContextProvider from the current SharedGpuContext.

@@ -83,7 +83,7 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   };
   void Paint(scoped_refptr<VideoFrame> video_frame,
              cc::PaintCanvas* canvas,
-             cc::PaintFlags& flags,
+             const cc::PaintFlags& flags,
              const PaintParams& params,
              viz::RasterContextProvider* raster_context_provider);
 

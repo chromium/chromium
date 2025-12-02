@@ -152,7 +152,7 @@ class MockWebMediaPlayer : public StubWebMediaPlayer {
   MOCK_CONST_METHOD0(HasAvailableVideoFrame, bool());
   MOCK_CONST_METHOD0(HasReadableVideoFrame, bool());
   MOCK_METHOD3(Paint,
-               void(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&));
+               void(cc::PaintCanvas*, const gfx::Rect&, const cc::PaintFlags&));
 };
 
 class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
