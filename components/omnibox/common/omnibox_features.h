@@ -145,6 +145,9 @@ BASE_DECLARE_FEATURE(kMultilineEditField);
 // Whether the composebox should use the new `chrome-compose` client.
 BASE_DECLARE_FEATURE(kComposeboxUsesChromeComposeClient);
 
+// Controls whether or not contextual composebox should display suggestions.
+BASE_DECLARE_FEATURE(kComposeboxAttachmentsTypedState);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kDiagnostics);
 BASE_DECLARE_FEATURE(kJumpStartOmnibox);
