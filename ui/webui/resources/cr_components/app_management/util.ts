@@ -5,9 +5,9 @@
 import {assert, assertNotReached} from '//resources/js/assert.js';
 
 import type {App, Permission} from './app_management.mojom-webui.js';
-import {PermissionType, TriState} from './app_management.mojom-webui.js';
+import {AppType, PermissionType, TriState} from './app_management.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementUserAction, AppType} from './constants.js';
+import {AppManagementUserAction} from './constants.js';
 import type {PermissionTypeIndex} from './permission_constants.js';
 import {isBoolValue, isPermissionEnabled, isTriStateValue} from './permission_util.js';
 

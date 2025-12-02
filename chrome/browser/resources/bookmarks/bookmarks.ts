@@ -5,12 +5,16 @@
 import './app.js';
 
 export {CrRouter} from '//resources/js/cr_router.js';
-export {changeFolderOpen, clearSearch, createBookmark, deselectItems, editBookmark, moveBookmark, removeBookmark, reorderChildren, selectFolder, SelectFolderAction, selectItem, SelectItemsAction, setSearchResults, setSearchTerm, StartSearchAction, updateAnchor} from './actions.js';
+export type {SelectFolderAction, SelectItemsAction, StartSearchAction} from './actions.js';
+export {changeFolderOpen, clearSearch, createBookmark, deselectItems, editBookmark, moveBookmark, removeBookmark, reorderChildren, selectFolder, selectItem, setSearchResults, setSearchTerm, updateAnchor} from './actions.js';
 export {setDebouncerForTesting} from './api_listener.js';
 export {BookmarksAppElement, HIDE_FOCUS_RING_ATTRIBUTE} from './app.js';
-export {BookmarkManagerApiProxy, BookmarkManagerApiProxyImpl, OpenInNewTabParams} from './bookmark_manager_api_proxy.js';
-export {BookmarksApiProxy, BookmarksApiProxyImpl, Query} from './bookmarks_api_proxy.js';
-export {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
+export type {BookmarkManagerApiProxy, OpenInNewTabParams} from './bookmark_manager_api_proxy.js';
+export {BookmarkManagerApiProxyImpl} from './bookmark_manager_api_proxy.js';
+export type {BookmarksApiProxy, Query} from './bookmarks_api_proxy.js';
+export {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
+export type {BrowserProxy} from './browser_proxy.js';
+export {BrowserProxyImpl} from './browser_proxy.js';
 export {BookmarksCommandManagerElement} from './command_manager.js';
 export {ACCOUNT_HEADING_NODE_ID, Command, DropPosition, IncognitoAvailability, LOCAL_HEADING_NODE_ID, LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY, MenuSource, ROOT_NODE_ID} from './constants.js';
 export {DialogFocusManager} from './dialog_focus_manager.js';
@@ -24,5 +28,6 @@ export {BookmarksRouter} from './router.js';
 export {Store} from './store.js';
 export {StoreClientMixinLit} from './store_client_mixin_lit.js';
 export {BookmarksToolbarElement} from './toolbar.js';
-export {BookmarkElement, BookmarkNode, BookmarksPageState, FolderOpenState, NodeMap, SelectionState} from './types.js';
+export type {BookmarkNode, BookmarksPageState, FolderOpenState, NodeMap, SelectionState} from './types.js';
+export {BookmarkElement} from './types.js';
 export {canEditNode, canReorderChildren, createEmptyState, getDescendants, getDisplayedList, isRootNode, isRootOrChildOfRoot, isShowingSearch, normalizeNode, normalizeNodes, removeIdsFromObject, removeIdsFromSet} from './util.js';

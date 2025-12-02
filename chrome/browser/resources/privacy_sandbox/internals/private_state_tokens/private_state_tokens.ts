@@ -8,7 +8,8 @@ export type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_col
 export type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 export type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 export type {PrivateStateTokensAppElement} from './app.js';
-export {PrivateStateTokensApiBrowserProxy, PrivateStateTokensApiBrowserProxyImpl} from './browser_proxy.js';
+export {PrivateStateTokensApiBrowserProxyImpl} from './browser_proxy.js';
+export type {PrivateStateTokensApiBrowserProxy} from './browser_proxy.js';
 export type {PrivateStateTokensListContainerElement} from './list_container.js';
 export type {PrivateStateTokensListItemElement} from './list_item.js';
 export type {PrivateStateTokensMetadataElement} from './metadata.js';

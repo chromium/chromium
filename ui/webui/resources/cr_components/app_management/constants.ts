@@ -4,8 +4,6 @@
 
 import type {App} from './app_management.mojom-webui.js';
 
-export {AppType, InstallReason, InstallSource, RunOnOsLogin, RunOnOsLoginMode, WindowMode} from './app_management.mojom-webui.js';
-
 /**
  * The number of apps displayed in app list in the main view before expanding.
  */

@@ -7,8 +7,9 @@ import './toggle_row.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {RunOnOsLoginMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-import {AppManagementUserAction, RunOnOsLoginMode} from 'chrome://resources/cr_components/app_management/constants.js';
+import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
