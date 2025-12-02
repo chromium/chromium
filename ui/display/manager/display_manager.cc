@@ -808,15 +808,13 @@ bool DisplayManager::SetDisplayMode(int64_t display_id,
         display_property_changed = true;
       }
 
-      if (features::IsListAllDisplayModesEnabled()) {
-        if (info.refresh_rate() != display_mode.refresh_rate()) {
-          info.set_refresh_rate(display_mode.refresh_rate());
-          resolution_changed = true;
-        }
-        if (info.is_interlaced() != display_mode.is_interlaced()) {
-          info.set_is_interlaced(display_mode.is_interlaced());
-          resolution_changed = true;
-        }
+      if (info.refresh_rate() != display_mode.refresh_rate()) {
+        info.set_refresh_rate(display_mode.refresh_rate());
+        resolution_changed = true;
+      }
+      if (info.is_interlaced() != display_mode.is_interlaced()) {
+        info.set_is_interlaced(display_mode.is_interlaced());
+        resolution_changed = true;
       }
     }
     display_info_list.emplace_back(info);

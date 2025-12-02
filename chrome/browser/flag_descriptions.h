@@ -7609,10 +7609,6 @@ inline constexpr char kLimitShelfItemsToActiveDeskDescription[] =
     "Limits items on the shelf to the ones associated with windows on the "
     "active desk";
 
-inline constexpr char kListAllDisplayModesName[] = "List all display modes";
-inline constexpr char kListAllDisplayModesDescription[] =
-    "Enables listing all external displays' modes in the display settings.";
-
 inline constexpr char kHindiInscriptLayoutName[] =
     "Hindi Inscript Layout on CrOS";
 inline constexpr char kHindiInscriptLayoutDescription[] =

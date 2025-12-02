@@ -265,13 +265,10 @@ void LoadDisplayProperties(PrefService* local_state) {
     // display info.
     double refresh_rate = 60.0;
     bool is_interlaced = false;
-    if (display::features::IsListAllDisplayModesEnabled()) {
-      refresh_rate =
-          dict_value->FindDouble("refresh-rate").value_or(refresh_rate);
-      std::optional<bool> is_interlaced_opt =
-          dict_value->FindBool("interlaced");
-      is_interlaced = is_interlaced_opt.value_or(false);
-    }
+    refresh_rate =
+        dict_value->FindDouble("refresh-rate").value_or(refresh_rate);
+    std::optional<bool> is_interlaced_opt = dict_value->FindBool("interlaced");
+    is_interlaced = is_interlaced_opt.value_or(false);
 
     gfx::Insets insets;
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -614,10 +611,8 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
       property_value.Set("device-scale-factor",
                          static_cast<int>(mode.device_scale_factor() * 1000));
 
-      if (display::features::IsListAllDisplayModesEnabled()) {
-        property_value.Set("interlaced", mode.is_interlaced());
-        property_value.Set("refresh-rate", mode.refresh_rate());
-      }
+      property_value.Set("interlaced", mode.is_interlaced());
+      property_value.Set("refresh-rate", mode.refresh_rate());
     }
     if (!info.overscan_insets_in_dip().IsEmpty()) {
       InsetsToValue(info.overscan_insets_in_dip(), property_value);

@@ -200,13 +200,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         },
       },
 
-      listAllDisplayModes_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('listAllDisplayModes');
-        },
-      },
-
       excludeDisplayInMirrorModeEnabled_: {
         type: Boolean,
         value() {
@@ -338,7 +331,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private isDisplayPerformanceEnabled_: boolean;
   private readonly isDisplayPerformanceSupported_: boolean;
   private isTabletMode_: boolean;
-  private listAllDisplayModes_: boolean;
   private logicalResolutionText_: string;
   private mirroringExcludedId_: string;
   private modeToParentModeMap_: Map<number, number>;
@@ -654,33 +646,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         !resolutionPref.value!.recommended;
   }
 
-
-  /**
-   * Parses the display modes for |selectedDisplay|. |displayModeList_| will
-   * contain entries representing a combined resolution + refresh rate.
-   * Only one parse*DisplayModes_ method must be called, depending on the
-   * state of |listAllDisplayModes_|.
-   */
-  private parseCompoundDisplayModes_(selectedDisplay: DisplayUnitInfo): void {
-    assert(!this.listAllDisplayModes_);
-    const optionList: DropdownMenuOptionList = [];
-    for (let i = 0; i < selectedDisplay.modes.length; ++i) {
-      const mode = selectedDisplay.modes[i];
-
-      const id = 'displayResolutionMenuItem';
-      const refreshRate = Math.round(mode.refreshRate * 100) / 100;
-      const resolution = this.i18n(
-          id, mode.widthInNativePixels.toString(),
-          mode.heightInNativePixels.toString(), refreshRate.toString());
-
-      optionList.push({
-        name: resolution,
-        value: i,
-      });
-    }
-    this.displayModeList_ = optionList;
-  }
-
   /**
    * Uses the modes of |selectedDisplay| to build a nested map of width =>
    * height => refreshRate => modeIndex. modeIndex is the index of the
@@ -727,11 +692,9 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    * method goes through the mode list for a given display creating data
    * structures so that given a resolution, the default refresh rate is
    * selected, and other possible refresh rates at that resolution are shown
-   * in a dropdown. Only one parse*DisplayModes_ method must be called,
-   * depending on the state of |listAllDisplayModes_|.
+   * in a dropdown.
    */
-  private parseSplitDisplayModes_(selectedDisplay: DisplayUnitInfo): void {
-    assert(this.listAllDisplayModes_);
+  private parseDisplayModes_(selectedDisplay: DisplayUnitInfo): void {
     // Clear the mappings before recalculating.
     this.modeToParentModeMap_ = new Map();
     this.parentModeToRefreshRateMap_ = new Map();
@@ -801,8 +764,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    */
   private addResolution_(
       parentModeIndex: number, width: number, height: number): void {
-    assert(this.listAllDisplayModes_);
-
     // Add an entry in the outer map for |parentModeIndex|. The inner
     // array (the value at |parentModeIndex|) will be populated with all
     // possible refresh rates for the given resolution.
@@ -826,8 +787,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private addRefreshRate_(
       parentModeIndex: number, modeIndex: number, rate: number,
       isInterlaced?: boolean): void {
-    assert(this.listAllDisplayModes_);
-
     // Truncate at two decimal places for display. If the refresh rate
     // is a whole number, remove the mantissa.
     let refreshRate = Number(rate).toFixed(2);
@@ -866,16 +825,12 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
 
   /**
    * Parses display modes for |selectedDisplay|. A 'mode' is a resolution +
-   * refresh rate combo. If |listAllDisplayModes_| is on, resolution and
-   * refresh rate are parsed into separate dropdowns and
-   * |parentModeToRefreshRateMap_| + |modeToParentModeMap_| are populated.
+   * refresh rate combo. Resolution and refresh rate are parsed into separate
+   * dropdowns and |parentModeToRefreshRateMap_| + |modeToParentModeMap_| are
+   * populated.
    */
   private updateDisplayModeStructures_(selectedDisplay: DisplayUnitInfo): void {
-    if (this.listAllDisplayModes_) {
-      this.parseSplitDisplayModes_(selectedDisplay);
-    } else {
-      this.parseCompoundDisplayModes_(selectedDisplay);
-    }
+    this.parseDisplayModes_(selectedDisplay);
   }
 
   /**
@@ -950,16 +905,12 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     // This will also cause the parent mode to be updated.
     this.set('selectedModePref_.value', this.currentSelectedModeIndex_);
 
-    if (this.listAllDisplayModes_) {
-      // Now that everything is in sync, set the selected mode to its correct
-      // value right before updating the pref.
-      this.currentSelectedParentModeIndex_ =
-          this.modeToParentModeMap_.get(currentModeIndex)!;
-      this.refreshRateList_ = this.parentModeToRefreshRateMap_.get(
-          this.currentSelectedParentModeIndex_)!;
-    } else {
-      this.currentSelectedParentModeIndex_ = currentModeIndex;
-    }
+    // Now that everything is in sync, set the selected mode to its correct
+    // value right before updating the pref.
+    this.currentSelectedParentModeIndex_ =
+        this.modeToParentModeMap_.get(currentModeIndex)!;
+    this.refreshRateList_ = this.parentModeToRefreshRateMap_.get(
+        this.currentSelectedParentModeIndex_)!;
 
     this.set(
         'selectedParentModePref_.value', this.currentSelectedParentModeIndex_);
@@ -978,8 +929,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Returns true if the refresh rate setting needs to be displayed.
    */
   private showRefreshRateSetting_(display: DisplayUnitInfo): boolean {
-    return this.listAllDisplayModes_ &&
-        this.showDropDownResolutionSetting_(display);
+    return this.showDropDownResolutionSetting_(display);
   }
 
   /**

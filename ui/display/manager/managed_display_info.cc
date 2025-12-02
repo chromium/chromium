@@ -159,11 +159,7 @@ gfx::Size ManagedDisplayMode::GetSizeInDIP() const {
 }
 
 bool ManagedDisplayMode::IsEquivalent(const ManagedDisplayMode& other) const {
-  if (display::features::IsListAllDisplayModesEnabled())
-    return *this == other;
-
-  return size_ == other.size_ &&
-         IsWithinEpsilon(device_scale_factor_, other.device_scale_factor_);
+  return *this == other;
 }
 
 std::string ManagedDisplayMode::ToString() const {

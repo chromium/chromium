@@ -506,10 +506,6 @@ bool IsTouchscreenRemappingExperienceAvailable() {
          display::HasExternalTouchscreenDevice();
 }
 
-bool IsListAllDisplayModesEnabled() {
-  return display::features::IsListAllDisplayModesEnabled();
-}
-
 bool IsExcludeDisplayInMirrorModeEnabled() {
   return display::features::IsExcludeDisplayInMirrorModeEnabled();
 }
@@ -1306,7 +1302,7 @@ void DeviceSection::OnGetDisplayLayoutInfo(
   }
 
   // Refresh Rate dropdown.
-  if (has_external_display && IsListAllDisplayModesEnabled()) {
+  if (has_external_display) {
     updater.AddSearchTags(GetDisplayExternalWithRefreshSearchConcepts());
   } else {
     updater.RemoveSearchTags(GetDisplayExternalWithRefreshSearchConcepts());
@@ -1651,9 +1647,6 @@ void DeviceSection::AddDeviceDisplayStrings(
 
   html_source->AddBoolean("unifiedDesktopAvailable",
                           IsUnifiedDesktopAvailable());
-
-  html_source->AddBoolean("listAllDisplayModes",
-                          IsListAllDisplayModesEnabled());
 
   html_source->AddBoolean("deviceSupportsAmbientColor",
                           DoesDeviceSupportAmbientColor());
