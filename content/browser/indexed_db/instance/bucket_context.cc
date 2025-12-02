@@ -39,12 +39,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
-#include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -219,7 +216,6 @@ BucketContext::BucketContext(
 }
 
 BucketContext::~BucketContext() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 
@@ -228,8 +224,6 @@ BucketContext::~BucketContext() {
 }
 
 void BucketContext::ForceClose(bool doom, const std::string& message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   is_doomed_ = doom;
 
   {
@@ -312,7 +306,6 @@ int64_t BucketContext::GetInMemorySize() {
 }
 
 void BucketContext::ReportOutstandingBlobs(bool blobs_outstanding) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   has_blobs_outstanding_ = blobs_outstanding;
   MaybeStartClosing();
 }
@@ -383,12 +376,11 @@ int64_t BucketContext::GetBucketSpaceToAllot() {
 void BucketContext::CreateAllExternalObjects(
     const std::vector<IndexedDBExternalObject>& objects,
     std::vector<blink::mojom::IDBExternalObjectPtr>* mojo_objects) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!ShouldUseSqlite());
 
   TRACE_EVENT0("IndexedDB", "BucketContext::CreateAllExternalObjects");
 
-  DCHECK_EQ(objects.size(), mojo_objects->size());
+  CHECK_EQ(objects.size(), mojo_objects->size());
   if (objects.empty()) {
     return;
   }
@@ -400,7 +392,7 @@ void BucketContext::CreateAllExternalObjects(
     switch (blob_info.object_type()) {
       case IndexedDBExternalObject::ObjectType::kBlob:
       case IndexedDBExternalObject::ObjectType::kFile: {
-        DCHECK(mojo_object->is_blob_or_file());
+        CHECK(mojo_object->is_blob_or_file());
         blink::mojom::IDBBlobInfoPtr& output_info =
             mojo_object->get_blob_or_file();
 
@@ -415,7 +407,7 @@ void BucketContext::CreateAllExternalObjects(
         break;
       }
       case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle: {
-        DCHECK(mojo_object->is_file_system_access_token());
+        CHECK(mojo_object->is_file_system_access_token());
 
         mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
             mojo_token;
@@ -424,7 +416,7 @@ void BucketContext::CreateAllExternalObjects(
           blob_info.file_system_access_token_remote()->Clone(
               mojo_token.InitWithNewPipeAndPassReceiver());
         } else {
-          DCHECK(!blob_info.serialized_file_system_access_handle().empty());
+          CHECK(!blob_info.serialized_file_system_access_handle().empty());
           file_system_access_context_->DeserializeHandle(
               bucket_info_.storage_key,
               blob_info.serialized_file_system_access_handle(),
@@ -554,7 +546,6 @@ void BucketContext::Open(
         transaction_receiver,
     int64_t transaction_id,
     int scheduling_priority) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "BucketContext::Open");
 
   if (version < 1 && version != blink::IndexedDBDatabaseMetadata::NO_VERSION) {
@@ -624,7 +615,6 @@ void BucketContext::DeleteDatabase(
         pending_factory_client,
     const std::u16string& name,
     bool force_close) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "BucketContext::DeleteDatabase");
   mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client(
       std::move(pending_factory_client));
@@ -696,7 +686,6 @@ void BucketContext::NotifyOfIdbInternalsRelevantChange() {
 }
 
 BucketContext* BucketContext::GetReferenceForTesting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return this;
 }
 
@@ -710,7 +699,6 @@ void BucketContext::BindMockFailureSingletonForTesting(
 }
 
 Database* BucketContext::CreateAndAddDatabase(const std::u16string& name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!base::Contains(databases_, name));
   auto database =
       std::make_unique<Database>(next_database_id_for_locks_++, name, *this);
@@ -718,7 +706,6 @@ Database* BucketContext::CreateAndAddDatabase(const std::u16string& name) {
 }
 
 void BucketContext::OnHandleCreated() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++open_handles_;
   if (closing_stage_ != ClosingState::kNotClosing) {
     closing_stage_ = ClosingState::kNotClosing;
@@ -730,15 +717,13 @@ void BucketContext::OnHandleCreated() {
 }
 
 void BucketContext::OnHandleDestruction() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(open_handles_, 0ll);
+  CHECK_GT(open_handles_, 0ll);
   --open_handles_;
   MaybeStartClosing();
 }
 
 bool BucketContext::CanClose() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(open_handles_, 0);
+  CHECK_GE(open_handles_, 0);
 
   if (backing_store_ && !skip_closing_sequence_ &&
       !backing_store_->CanOpportunisticallyClose()) {
@@ -750,16 +735,14 @@ bool BucketContext::CanClose() {
 }
 
 void BucketContext::MaybeStartClosing() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsClosing() && CanClose()) {
     StartClosing();
   }
 }
 
 void BucketContext::StartClosing() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(CanClose());
-  DCHECK(!IsClosing());
+  CHECK(CanClose());
+  CHECK(!IsClosing());
 
   if (skip_closing_sequence_) {
     CloseNow();
@@ -768,7 +751,7 @@ void BucketContext::StartClosing() {
 
   // Start a timer to close the backing store, unless something else opens it
   // in the mean time.
-  DCHECK(!close_timer_.IsRunning());
+  CHECK(!close_timer_.IsRunning());
   closing_stage_ = ClosingState::kPreCloseGracePeriod;
   close_timer_.Start(FROM_HERE, base::Seconds(kBackingStoreGracePeriodSeconds),
                      base::BindOnce(&BucketContext::StartPreCloseTasks,
@@ -776,7 +759,6 @@ void BucketContext::StartClosing() {
 }
 
 void BucketContext::StartPreCloseTasks() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (closing_stage_ != ClosingState::kPreCloseGracePeriod) {
     return;
   }
@@ -805,8 +787,6 @@ void BucketContext::CloseNow() {
 void BucketContext::BindBlobReader(
     const IndexedDBExternalObject& blob_info,
     mojo::PendingReceiver<blink::mojom::Blob> blob_receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   const base::FilePath& path = blob_info.indexed_db_file_path();
 
   auto itr = file_reader_map_.find(path);
@@ -828,12 +808,10 @@ void BucketContext::BindBlobReader(
 }
 
 void BucketContext::RemoveBoundReaders(const base::FilePath& path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   file_reader_map_.erase(path);
 }
 
 std::string BucketContext::SanitizeErrorMessage(const std::string& message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The message may contain the database path, which may be considered
   // sensitive data, and those strings are passed to the extension, so strip it.
   std::string sanitized_message = message;
@@ -853,8 +831,6 @@ BucketContext::OverrideShouldUseSqliteForTesting(bool use_sqlite) {
 
 void BucketContext::HandleBackingStoreCorruption(
     const std::string& error_message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   std::string sanitized_error_message = SanitizeErrorMessage(error_message);
   base::OnceClosure handle_corruption =
       base::BindOnce(&level_db::BackingStore::HandleCorruption, data_path_,
@@ -873,8 +849,7 @@ void BucketContext::HandleBackingStoreCorruption(
 void BucketContext::OnDatabaseError(Database* database,
                                     Status status,
                                     const std::string& message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!status.ok());
+  CHECK(!status.ok());
 
   if (status.IsIOError()) {
     quota_manager_proxy_->OnClientWriteFailed(bucket_info_.storage_key);
@@ -906,7 +881,6 @@ void BucketContext::OnDatabaseError(Database* database,
 
 bool BucketContext::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                                  base::trace_event::ProcessMemoryDump* pmd) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!backing_store_) {
     // Nothing to report when no databases have been loaded.
     return true;
@@ -1029,7 +1003,7 @@ BucketContext::InitBackingStore(bool create_if_missing) {
       if (!create_if_missing && status.IsNotFound()) {
         return {status, DatabaseError(), data_loss_info};
       }
-      DCHECK(!backing_store);
+      CHECK(!backing_store);
       // If the disk is full, always exit immediately.
       if (disk_full) {
         break;
