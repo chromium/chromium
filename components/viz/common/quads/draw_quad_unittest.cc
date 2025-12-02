@@ -35,6 +35,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/video_types.h"
@@ -325,6 +326,42 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
   EXPECT_EQ(nearest_neighbor, copy_quad->nearest_neighbor);
   EXPECT_EQ(secure_output_only, copy_quad->secure_output_only);
   EXPECT_EQ(protected_video_type, copy_quad->protected_video_type);
+}
+
+TEST(DrawQuadTest, TextureDrawQuadNormalization) {
+  gfx::Rect rect(100, 100);
+  bool needs_blending = true;
+  const gfx::RectF uv_rect(0.0f, 0.0f, 1.0f, 1.0f);
+  const gfx::RectF unnormalized_uv_rect(0.0f, 0.0f, 50.0f, 50.0f);
+  const gfx::Size resource_size(100, 50);
+  ResourceId resource_id(1);
+  constexpr float kEpsilon = 1e-5f;
+  SharedQuadState shared_state;
+
+  TextureDrawQuad quad;
+  // Test default (normalized = true)
+  quad.SetNew(&shared_state, rect, rect, needs_blending, resource_id,
+              uv_rect.origin(), uv_rect.bottom_right(), SkColors::kTransparent,
+              false, false, gfx::ProtectedVideoType::kClear,
+              /*is_tex_coords_normalized=*/true);
+
+  EXPECT_RECTF_NEAR(uv_rect, quad.GetNormalizedTexCoords(resource_size),
+                    kEpsilon);
+  EXPECT_RECTF_NEAR(gfx::ScaleRect(uv_rect, 100.f, 50.f),
+                    quad.GetUnnormalizedTexCoords(resource_size), kEpsilon);
+
+  // Test unnormalized (normalized = false)
+  quad.SetNew(&shared_state, rect, rect, needs_blending, resource_id,
+              unnormalized_uv_rect.origin(),
+              unnormalized_uv_rect.bottom_right(), SkColors::kTransparent,
+              false, false, gfx::ProtectedVideoType::kClear,
+              /*is_tex_coords_normalized=*/false);
+
+  EXPECT_RECTF_NEAR(
+      gfx::ScaleRect(unnormalized_uv_rect, 1.f / 100.f, 1.f / 50.f),
+      quad.GetNormalizedTexCoords(resource_size), kEpsilon);
+  EXPECT_RECTF_NEAR(unnormalized_uv_rect,
+                    quad.GetUnnormalizedTexCoords(resource_size), kEpsilon);
 }
 
 TEST(DrawQuadTest, CopyTileDrawQuad) {

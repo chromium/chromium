@@ -49,7 +49,8 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               SkColor4f background,
               bool nearest,
               bool secure_output,
-              gfx::ProtectedVideoType video_type);
+              gfx::ProtectedVideoType video_type,
+              bool is_tex_coords_normalized = true);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
@@ -61,25 +62,31 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               SkColor4f background,
               bool nearest,
               bool secure_output,
-              gfx::ProtectedVideoType video_type);
+              gfx::ProtectedVideoType video_type,
+              bool is_tex_coords_normalized = true);
 
   // Returns the texture coordinates in the range [0, 1].
   gfx::RectF GetNormalizedTexCoords(const gfx::Size& resource_size) const {
-    // TODO(crbug.com/451876192): This parameter is currently unused because
-    // tex_coord_rect_ is always normalized. It is included here to prepare for
-    // the next CL where tex_coord_rect_ may be unnormalized, requiring
-    // resource_size to perform the normalization.
-    return tex_coord_rect_;
+    if (is_normalized_coords) {
+      return tex_coord_rect_;
+    }
+
+    if (resource_size.IsEmpty()) {
+      return gfx::RectF();
+    }
+
+    return gfx::ScaleRect(tex_coord_rect_, 1.0f / resource_size.width(),
+                          1.0f / resource_size.height());
   }
 
   // Returns the texture coordinates in the range [0, resource_size].
   gfx::RectF GetUnnormalizedTexCoords(const gfx::Size& resource_size) const {
-    // tex_coord_rect_ is currently always normalized, so we must scale it.
-    // In the future, if the internal storage becomes unnormalized, this will
-    // simply return tex_coord_rect_ directly.
-    return gfx::ScaleRect(tex_coord_rect_,
-                          static_cast<float>(resource_size.width()),
-                          static_cast<float>(resource_size.height()));
+    if (is_normalized_coords) {
+      return gfx::ScaleRect(tex_coord_rect_,
+                            static_cast<float>(resource_size.width()),
+                            static_cast<float>(resource_size.height()));
+    }
+    return tex_coord_rect_;
   }
 
   // Sets the texture coordinates in the range [0, 1].
@@ -90,6 +97,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
     // for the future CL where we will need to scale the input `normalized_rect`
     // by `resource_size` to store it as unnormalized coordinates.
     tex_coord_rect_ = normalized_rect;
+    is_normalized_coords = true;
   }
 
   SkColor4f background_color = SkColors::kTransparent;
@@ -172,6 +180,10 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
                                     base::Value::Dict* dict);
 
   gfx::RectF tex_coord_rect_;
+
+  // Indicates whether the texture coordinates are normalized (in [0, 1] range)
+  // or unnormalized (in [0, resource_size] range).
+  bool is_normalized_coords = true;
 
   void ExtendValue(base::trace_event::TracedValue* value) const override;
 };

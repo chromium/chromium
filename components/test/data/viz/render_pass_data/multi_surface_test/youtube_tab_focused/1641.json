@@ -1719,6 +1719,7 @@
                   "green": 0.0,
                   "red": 0.0
                },
+               "is_normalized_coords": true,
                "material": "kTextureContent",
                "nearest_neighbor": false,
                "needs_blending": true,
@@ -1753,6 +1754,7 @@
                   "green": 0.0,
                   "red": 0.0
                },
+               "is_normalized_coords": true,
                "material": "kTextureContent",
                "nearest_neighbor": false,
                "needs_blending": false,
@@ -2209,6 +2211,7 @@
                   "green": 0.0,
                   "red": 0.0
                },
+               "is_normalized_coords": true,
                "material": "kTextureContent",
                "nearest_neighbor": false,
                "needs_blending": true,
@@ -2243,6 +2246,7 @@
                   "green": 0.0,
                   "red": 0.0
                },
+               "is_normalized_coords": true,
                "material": "kTextureContent",
                "nearest_neighbor": false,
                "needs_blending": false,
@@ -2277,6 +2281,7 @@
                   "green": 0.0,
                   "red": 0.0
                },
+               "is_normalized_coords": true,
                "material": "kTextureContent",
                "nearest_neighbor": false,
                "needs_blending": true,
@@ -2311,6 +2316,7 @@
                   "green": 0.0,
                   "red": 0.0
                },
+               "is_normalized_coords": true,
                "material": "kTextureContent",
                "nearest_neighbor": false,
                "needs_blending": false,
@@ -4272,6 +4278,7 @@
                   "green": 1.0,
                   "red": 1.0
                },
+               "is_normalized_coords": true,
                "material": "kTextureContent",
                "nearest_neighbor": false,
                "needs_blending": false,

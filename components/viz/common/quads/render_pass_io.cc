@@ -1255,6 +1255,7 @@ void TextureDrawQuadToDict(const TextureDrawQuad* draw_quad,
   // data.
   dict->Set("premultiplied_alpha", true);
   dict->Set("tex_coord_rect", RectFToDict(draw_quad->tex_coord_rect_));
+  dict->Set("is_normalized_coords", draw_quad->is_normalized_coords);
   dict->Set("background_color", SkColor4fToDict(draw_quad->background_color));
   // TODO(crbug.com/40942150): Update
   // "components/test/data/viz/render_pass_data/" to reflect the deprecation of
@@ -1448,6 +1449,8 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
   const base::Value::Dict* damage_rect = dict.FindDict("damage_rect");
   std::optional<bool> nearest_neighbor = dict.FindBool("nearest_neighbor");
   std::optional<bool> secure_output_only = dict.FindBool("secure_output_only");
+  std::optional<bool> is_normalized_coords =
+      dict.FindBool("is_normalized_coords");
   const std::string* protected_video_type =
       dict.FindString("protected_video_type");
 
@@ -1472,7 +1475,8 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
       common.needs_blending, resource_id, t_tex_coord_rect.origin(),
       t_tex_coord_rect.bottom_right(), t_background_color,
       nearest_neighbor.value(), secure_output_only.value(),
-      static_cast<gfx::ProtectedVideoType>(protected_video_type_index));
+      static_cast<gfx::ProtectedVideoType>(protected_video_type_index),
+      is_normalized_coords.value_or(true));
 
   gfx::Rect t_damage_rect;
   if (damage_rect && RectFromDict(*damage_rect, &t_damage_rect)) {

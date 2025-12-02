@@ -41,7 +41,8 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                              SkColor4f background,
                              bool nearest,
                              bool secure_output,
-                             gfx::ProtectedVideoType video_type) {
+                             gfx::ProtectedVideoType video_type,
+                             bool is_tex_coords_normalized) {
   CHECK_NE(resource, kInvalidResourceId);
   this->needs_blending = needs_blending;
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
@@ -52,6 +53,7 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
   nearest_neighbor = nearest;
   secure_output_only = secure_output;
   protected_video_type = video_type;
+  is_normalized_coords = is_tex_coords_normalized;
 }
 
 void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
@@ -64,7 +66,8 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                              SkColor4f background,
                              bool nearest,
                              bool secure_output,
-                             gfx::ProtectedVideoType video_type) {
+                             gfx::ProtectedVideoType video_type,
+                             bool is_tex_coords_normalized) {
   CHECK_NE(resource, kInvalidResourceId);
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
                    visible_rect, needs_blending);
@@ -74,6 +77,7 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
   nearest_neighbor = nearest;
   secure_output_only = secure_output;
   protected_video_type = video_type;
+  is_normalized_coords = is_tex_coords_normalized;
 }
 
 const TextureDrawQuad* TextureDrawQuad::MaterialCast(const DrawQuad* quad) {
@@ -90,6 +94,7 @@ void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
   value->SetBoolean("secure_output_only", secure_output_only);
   value->SetBoolean("is_video_frame", is_video_frame);
   value->SetBoolean("force_rgbx", force_rgbx);
+  value->SetBoolean("is_normalized_coords", is_normalized_coords);
   value->SetInteger("protected_video_type",
                     static_cast<int>(protected_video_type));
   value->SetInteger("overlay_priority_hint",

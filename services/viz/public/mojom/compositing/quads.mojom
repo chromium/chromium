@@ -95,6 +95,7 @@ struct TextureQuadState {
   bool secure_output_only;
   bool is_video_frame;
   bool force_rgbx;
+  bool is_normalized_coords;
   ProtectedVideoState protected_video_type;
   gfx.mojom.Rect? damage_rect;
   OverlayPriority overlay_priority_hint;
