@@ -54,7 +54,6 @@
 #include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 #include "chrome/browser/performance_manager/metrics/metrics_provider_common.h"
-#include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_metrics_provider.h"
@@ -540,7 +539,6 @@ void ChromeMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
   metrics::dwa::DwaService::RegisterPrefs(registry);
   metrics::private_metrics::PumaService::RegisterPrefs(registry);
   metrics::StabilityMetricsHelper::RegisterPrefs(registry);
-  prefs::RegisterPrivacyBudgetPrefs(registry);
 
   RegisterFileMetricsPreferences(registry);
 

@@ -929,6 +929,14 @@ const char kFpfRulesetFormat[] =
 const char kFpfRulesetChecksum[] =
     "fingerprinting_protection_filter.ruleset_version.checksum";
 
+// Deprecated 12/2025.
+const char kPrivacyBudgetGeneration[] = "privacy_budget.generation";
+const char kPrivacyBudgetSeenSurfaces[] = "privacy_budget.seen";
+const char kPrivacyBudgetSelectedOffsets[] = "privacy_budget.selected";
+const char kPrivacyBudgetSelectedBlock[] = "privacy_budget.block_offset";
+const char kPrivacyBudgetMetaExperimentActivationSalt[] =
+    "privacy_budget.meta_experiment_activation_salt";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1017,6 +1025,13 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kFpfRulesetContent, std::string());
   registry->RegisterIntegerPref(kFpfRulesetFormat, 0);
   registry->RegisterUint64Pref(kFpfRulesetChecksum, 0);
+
+  // Deprecated 12/2025.
+  registry->RegisterIntegerPref(kPrivacyBudgetGeneration, 0);
+  registry->RegisterStringPref(kPrivacyBudgetSeenSurfaces, std::string());
+  registry->RegisterStringPref(kPrivacyBudgetSelectedOffsets, std::string());
+  registry->RegisterIntegerPref(kPrivacyBudgetSelectedBlock, -1);
+  registry->RegisterDoublePref(kPrivacyBudgetMetaExperimentActivationSalt, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2207,6 +2222,13 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kFpfRulesetContent);
   local_state->ClearPref(kFpfRulesetFormat);
   local_state->ClearPref(kFpfRulesetChecksum);
+
+  // Added 12/2025
+  local_state->ClearPref(kPrivacyBudgetGeneration);
+  local_state->ClearPref(kPrivacyBudgetSeenSurfaces);
+  local_state->ClearPref(kPrivacyBudgetSelectedOffsets);
+  local_state->ClearPref(kPrivacyBudgetSelectedBlock);
+  local_state->ClearPref(kPrivacyBudgetMetaExperimentActivationSalt);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
