@@ -241,7 +241,6 @@ struct Config {
       context_type = CONTEXT_TYPE_OPENGLES2;
     }
 #endif
-    enable_gpu_rasterization = it.GetBit();
 
 #if defined(GPU_FUZZER_USE_STUB)
     std::vector<std::string_view> enabled_extensions;
@@ -283,7 +282,6 @@ struct Config {
   }
 
   ContextType context_type = CONTEXT_TYPE_OPENGLES2;
-  bool enable_gpu_rasterization = false;
   GpuDriverBugWorkarounds workarounds;
   gl::GLContextAttribs gl_context_attribs;
 #if defined(GPU_FUZZER_USE_STUB)
@@ -431,8 +429,7 @@ class CommandBufferSetup {
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
     auto result =
-        decoder_->Initialize(config_.enable_gpu_rasterization,
-                             /*lose_context_when_out_of_memory=*/false);
+        decoder_->Initialize(/*lose_context_when_out_of_memory=*/false);
     if (result != gpu::ContextResult::kSuccess) {
       return false;
     }

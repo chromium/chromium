@@ -263,8 +263,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
         this, command_buffer_service_.get(), &outputter_, gpu_feature_info_,
         GpuPreferences(), /*memory_tracker=*/nullptr, &shared_image_manager_,
         context_state_, /*is_privileged=*/true);
-    CHECK_EQ(decoder->Initialize(/*enable_gpu_rasterization=*/true,
-                                 /*lose_context_when_out_of_memory=*/false),
+    CHECK_EQ(decoder->Initialize(/*lose_context_when_out_of_memory=*/false),
              ContextResult::kSuccess);
     return decoder;
   }

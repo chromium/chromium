@@ -376,8 +376,8 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
 
       const auto& attribs = params.attribs->get_raster();
       enable_gpu_rasterization = attribs->enable_gpu_rasterization;
-      auto result = raster_decoder->Initialize(
-          enable_gpu_rasterization, attribs->lose_context_when_out_of_memory);
+      auto result =
+          raster_decoder->Initialize(attribs->lose_context_when_out_of_memory);
       if (result != gpu::ContextResult::kSuccess) {
         DestroyOnGpuThread();
         DLOG(ERROR) << "Failed to initialize decoder.";

@@ -482,8 +482,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   ~RasterDecoderImpl() override;
 
   // RasterDecoder implementation.
-  ContextResult Initialize(bool enable_gpu_rasterization,
-                           bool lose_context_when_out_of_memory) override;
+  ContextResult Initialize(bool lose_context_when_out_of_memory) override;
   int GetRasterDecoderId() const override;
   int DecoderIdForTest() override;
   ServiceTransferCache* GetTransferCacheForTest() override;
@@ -1047,7 +1046,6 @@ base::WeakPtr<DecoderContext> RasterDecoderImpl::AsWeakPtr() {
 }
 
 ContextResult RasterDecoderImpl::Initialize(
-    bool enable_gpu_rasterization,
     bool lose_context_when_out_of_memory) {
   TRACE_EVENT0("gpu", "RasterDecoderImpl::Initialize");
   DCHECK(shared_context_state_->IsCurrent(nullptr));

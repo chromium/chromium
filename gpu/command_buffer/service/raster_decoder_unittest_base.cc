@@ -166,8 +166,7 @@ void RasterDecoderTestBase::InitDecoder(const InitState& init) {
   decoder_->DisableFlushWorkaroundForTest();
   decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
-  ASSERT_EQ(decoder_->Initialize(/*enable_gpu_rasterization=*/false,
-                                 /*lose_context_when_out_of_memory=*/init
+  ASSERT_EQ(decoder_->Initialize(/*lose_context_when_out_of_memory=*/init
                                      .lose_context_when_out_of_memory),
             gpu::ContextResult::kSuccess);
 

@@ -83,7 +83,6 @@ class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
   bool log_commands() const { return log_commands_; }
 
   virtual gpu::ContextResult Initialize(
-      bool enable_gpu_rasterization,
       bool lose_context_when_out_of_memory) = 0;
 
   virtual int DecoderIdForTest() = 0;
