@@ -123,23 +123,8 @@ public interface BottomSheetController {
     void expandSheet();
 
     /**
-     * Update the sheet height based on sheet content. If there is no content in the sheet, this is
-     * a noop.
-     */
-    void updateSheetHeight();
-
-    /**
-     * Update the sheet height based on target state, and update the sheet state if the target is
-     * different from the current state.
-     *
-     * @param sheetState The tartget state after updating the sheet height.
-     */
-    void updateSheetHeight(@SheetState int sheetState);
-
-    /**
-     * Collapse the current sheet to peek state. Sheet may not change the state if the state is not
-     * allowed.
-     *
+     * Collapse the current sheet to peek state. Sheet may not change the state if the state
+     * is not allowed.
      * @param animate {@code true} for animation effect.
      * @return {@code true} if the sheet could go to the peek state.
      */

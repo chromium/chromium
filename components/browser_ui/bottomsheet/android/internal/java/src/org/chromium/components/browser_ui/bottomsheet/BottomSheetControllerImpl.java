@@ -624,43 +624,6 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     }
 
     @Override
-    public void updateSheetHeight() {
-        if (mBottomSheet == null) {
-            return;
-        }
-
-        updateSheetHeight(mBottomSheet.getOpeningState());
-    }
-
-    @Override
-    public void updateSheetHeight(@SheetState int sheetState) {
-        if (mBottomSheet == null
-                || mSuppressionTokens.hasTokens()
-                || mBottomSheet.isHiding()
-                || mBottomSheet.getCurrentSheetContent() == null) {
-            return;
-        }
-
-        if (sheetState == SheetState.NONE || sheetState == SheetState.SCROLLING) {
-            return;
-        }
-
-        // Update the sheet to full state if the target state is half, but the sheet has half state
-        // disabled.
-        if (sheetState == SheetState.HALF && !mBottomSheet.isHalfStateEnabled()) {
-            sheetState = SheetState.FULL;
-        }
-
-        if (sheetState != mBottomSheet.getSheetState()) {
-            mBottomSheet.setSheetState(sheetState, true);
-            return;
-        }
-
-        mBottomSheet.cancelAnimation();
-        mBottomSheet.createSettleAnimation(sheetState, StateChangeReason.NONE);
-    }
-
-    @Override
     public boolean collapseSheet(boolean animate) {
         if (mBottomSheet == null || mSuppressionTokens.hasTokens() || mBottomSheet.isHiding()) {
             return false;

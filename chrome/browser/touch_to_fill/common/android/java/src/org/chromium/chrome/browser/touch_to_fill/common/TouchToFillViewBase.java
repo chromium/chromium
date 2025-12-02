@@ -76,14 +76,6 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
                     if (newState == BottomSheetController.SheetState.FULL) {
                         // The list of items should be scrollable in full state.
                         assumeNonNull(mSheetItemListView).suppressLayout(false);
-                        // The child view heights may change while an animation is running.
-                        // The target screen height will not be updated based on the new
-                        // child view heights. Request expansion again to fix this.
-                        if (mBottomSheetController.getCurrentOffset()
-                                != getMaximumSheetHeightPx()) {
-                            mBottomSheetController.updateSheetHeight(
-                                    BottomSheetController.SheetState.FULL);
-                        }
                     } else if (newState == BottomSheetController.SheetState.HALF
                             && mScrollListener.isScrolledToTop()) {
                         // The list of items should not be scrollable when the sheet transitions
@@ -404,7 +396,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     public void updateScreenHeight() {
         remeasure();
-        mBottomSheetController.updateSheetHeight();
+        mBottomSheetController.expandSheet();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
