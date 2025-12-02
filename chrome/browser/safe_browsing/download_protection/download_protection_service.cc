@@ -815,15 +815,6 @@ void DownloadProtectionService::UploadSavePackageForDeepScanning(
   DCHECK(insertion_result.second);
   insertion_result.first->get()->Start();
 }
-
-std::vector<DeepScanningRequest*>
-DownloadProtectionService::GetDeepScanningRequests() {
-  std::vector<DeepScanningRequest*> requests;
-  for (const auto& request : deep_scanning_requests_) {
-    requests.push_back(request.get());
-  }
-  return requests;
-}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 scoped_refptr<network::SharedURLLoaderFactory>
