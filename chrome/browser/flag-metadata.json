@@ -10221,7 +10221,7 @@
       "vmiura@chromium.org",
       "chrome-gpu-team@google.com"
     ],
-    "expiry_milestone": 144
+    "expiry_milestone": 160
   },
   {
     "name": "trusted-web-activity-contacts-delegation",
