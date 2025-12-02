@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/resumable_uploader.h"
 
+// TODO(crbug.com/456489971): Remove unused header files
 #include <memory>
 
 #include "base/base64.h"
@@ -14,17 +15,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/file_access/scoped_file_access_delegate.h"
-#include "components/safe_browsing/core/common/utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -36,36 +34,11 @@ namespace {
 using ::enterprise_connectors::ConnectorDataPipeGetter;
 using ::enterprise_connectors::ConnectorUploadRequest;
 
-// HTTP headers for resumable upload requests
-constexpr char kUploadProtocolHeader[] = "X-Goog-Upload-Protocol";
-constexpr char kUploadCommandHeader[] = "X-Goog-Upload-Command";
-constexpr char kUploadHeaderContentLengthHeader[] =
-    "X-Goog-Upload-Header-Content-Length";
-constexpr char kUploadHeaderContentTypeHeader[] =
-    "X-Goog-Upload-Header-Content-Type";
-constexpr char kUploadStatusHeader[] = "X-Goog-Upload-Status";
+// TODO(crbug.com/456489971): Remove copies between ResumableUploadRequest and
+// ResumableUploadRequestBase HTTP headers for resumable upload requests
 constexpr char kUploadUrlHeader[] = "X-Goog-Upload-Url";
-constexpr char kUploadOffsetHeader[] = "X-Goog-Upload-Offset";
 constexpr char kUploadIntermediateHeader[] =
     "X-Goog-Upload-Header-Cep-Response";
-// Content type of the upload contents.
-constexpr char kUploadContentType[] = "application/octet-stream";
-// Content type of metadata.
-constexpr char kMetadataContentType[] = "application/json";
-// Content type of pasted images.
-constexpr char kImageContentType[] = "image/png";
-
-std::unique_ptr<ConnectorDataPipeGetter> CreateFileDataPipeGetterBlocking(
-    const base::FilePath& path,
-    bool is_obfuscated) {
-  // FLAG_WIN_SHARE_DELETE is necessary to allow the file to be renamed by the
-  // user clicking "Open Now" without causing download errors.
-  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                            base::File::FLAG_WIN_SHARE_DELETE);
-
-  return ConnectorDataPipeGetter::CreateResumablePipeGetter(std::move(file),
-                                                            is_obfuscated);
-}
 
 bool IsSuccess(int net_error, int response_code) {
   return net_error == net::OK && response_code == net::HTTP_OK;
@@ -86,20 +59,18 @@ ResumableUploadRequest::ResumableUploadRequest(
     VerdictReceivedCallback verdict_received_callback,
     ContentUploadedCallback content_uploaded_callback,
     bool force_sync_upload)
-    : ConnectorUploadRequest(std::move(url_loader_factory),
-                             base_url,
-                             metadata,
-                             path,
-                             file_size,
-                             is_obfuscated,
-                             histogram_suffix,
-                             traffic_annotation,
-                             base::DoNothing()),
-      verdict_received_callback_(std::move(verdict_received_callback)),
-      get_data_result_(get_data_result),
-      is_obfuscated_(is_obfuscated),
-      content_uploaded_callback_(std::move(content_uploaded_callback)),
-      force_sync_upload_(force_sync_upload) {
+    : ResumableUploadRequestBase(std::move(url_loader_factory),
+                                 base_url,
+                                 metadata,
+                                 get_data_result,
+                                 path,
+                                 file_size,
+                                 is_obfuscated,
+                                 histogram_suffix,
+                                 traffic_annotation,
+                                 std::move(verdict_received_callback),
+                                 std::move(content_uploaded_callback),
+                                 force_sync_upload) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -114,17 +85,16 @@ ResumableUploadRequest::ResumableUploadRequest(
     VerdictReceivedCallback verdict_received_callback,
     ContentUploadedCallback content_uploaded_callback,
     bool force_sync_upload)
-    : ConnectorUploadRequest(std::move(url_loader_factory),
-                             base_url,
-                             metadata,
-                             std::move(page_region),
-                             histogram_suffix,
-                             traffic_annotation,
-                             base::DoNothing()),
-      verdict_received_callback_(std::move(verdict_received_callback)),
-      get_data_result_(get_data_result),
-      content_uploaded_callback_(std::move(content_uploaded_callback)),
-      force_sync_upload_(force_sync_upload) {
+    : ResumableUploadRequestBase(std::move(url_loader_factory),
+                                 base_url,
+                                 metadata,
+                                 get_data_result,
+                                 std::move(page_region),
+                                 histogram_suffix,
+                                 traffic_annotation,
+                                 std::move(verdict_received_callback),
+                                 std::move(content_uploaded_callback),
+                                 force_sync_upload) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -138,68 +108,23 @@ ResumableUploadRequest::ResumableUploadRequest(
     VerdictReceivedCallback verdict_received_callback,
     ContentUploadedCallback content_uploaded_callback,
     bool force_sync_upload)
-    : ConnectorUploadRequest(std::move(url_loader_factory),
-                             base_url,
-                             metadata,
-                             data,
-                             histogram_suffix,
-                             traffic_annotation,
-                             base::DoNothing()),
-      verdict_received_callback_(std::move(verdict_received_callback)),
-      get_data_result_(enterprise_connectors::ScanRequestUploadResult::SUCCESS),
-      content_uploaded_callback_(std::move(content_uploaded_callback)),
-      force_sync_upload_(force_sync_upload) {
+    : ResumableUploadRequestBase(std::move(url_loader_factory),
+                                 base_url,
+                                 metadata,
+                                 data,
+                                 histogram_suffix,
+                                 traffic_annotation,
+                                 std::move(verdict_received_callback),
+                                 std::move(content_uploaded_callback),
+                                 force_sync_upload) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
 ResumableUploadRequest::~ResumableUploadRequest() = default;
 
-void ResumableUploadRequest::SetMetadataRequestHeaders(
-    network::ResourceRequest* request) {
-  CHECK(request);
-
-  // Page, string and file requests should have non-zero `data_size_`.
-  DCHECK_GT(data_size_, (uint64_t)0);
-
-  request->headers.SetHeader(kUploadProtocolHeader, "resumable");
-  request->headers.SetHeader(kUploadCommandHeader, "start");
-  request->headers.SetHeader(kUploadHeaderContentLengthHeader,
-                             base::NumberToString(data_size_));
-  // `STRING` is only used for resumable requests for image pasting.
-  request->headers.SetHeader(
-      kUploadHeaderContentTypeHeader,
-      data_source_ == STRING ? kImageContentType : kUploadContentType);
-  if (!access_token_.empty()) {
-    LogAuthenticatedCookieResets(
-        *request, SafeBrowsingAuthenticatedEndpoint::kDeepScanning);
-    SetAccessToken(request, access_token_);
-  }
-  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-}
-
 void ResumableUploadRequest::Start() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   SendMetadataRequest();
-}
-
-std::string ResumableUploadRequest::GetUploadInfo() {
-  std::string scan_info;
-  switch (scan_type_) {
-    case PENDING:
-      scan_info = "Pending";
-      break;
-    case FULL_CONTENT:
-      scan_info = "Full content scan";
-      break;
-    case METADATA_ONLY:
-      scan_info = "Metadata only scan";
-      break;
-    case ASYNC:
-      scan_info = "Async content upload";
-      break;
-  }
-
-  return base::StrCat({"Resumable - ", scan_info});
 }
 
 // static
@@ -282,23 +207,6 @@ ResumableUploadRequest::CreatePageRequest(
       std::move(content_uploaded_callback), force_sync_upload);
 }
 
-void ResumableUploadRequest::SendMetadataRequest() {
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = base_url_;
-  resource_request->method = "POST";
-  SetMetadataRequestHeaders(resource_request.get());
-
-  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 traffic_annotation_);
-  url_loader_->SetAllowHttpErrorResults(true);
-  url_loader_->AttachStringForUpload(base::StrCat({metadata_, "\r\n"}),
-                                     kMetadataContentType);
-  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory_.get(),
-      base::BindOnce(&ResumableUploadRequest::OnMetadataUploadCompleted,
-                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
-}
-
 void ResumableUploadRequest::OnMetadataUploadCompleted(
     base::TimeTicks start_time,
     std::optional<std::string> response_body) {
@@ -359,99 +267,6 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
   SendContentSoon(headers->GetNormalizedHeader(kUploadUrlHeader).value());
 }
 
-bool ResumableUploadRequest::ShouldUploadEncryptedFile() {
-  return base::FeatureList::IsEnabled(
-             enterprise_connectors::kEnableEncryptedFileUpload) &&
-         scan_type_ == ASYNC;
-}
-void ResumableUploadRequest::SendContentSoon(const std::string& upload_url) {
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->method = "POST";
-  request->url = GURL(upload_url);
-  // Only sends content smaller than 50MB, in a single request.
-  request->headers.SetHeader(kUploadCommandHeader, "upload, finalize");
-  request->headers.SetHeader(kUploadOffsetHeader, "0");
-
-  // TODO(b/322005992): Add retry logics.
-  switch (data_source_) {
-    case FILE:
-      file_access::RequestFilesAccessForSystem(
-          {path_},
-          base::BindOnce(&ResumableUploadRequest::CreateDatapipe,
-                         weak_factory_.GetWeakPtr(), std::move(request)));
-      break;
-    case PAGE:
-      OnDataPipeCreated(std::move(request),
-                        ConnectorDataPipeGetter::CreateResumablePipeGetter(
-                            std::move(page_region_)));
-      break;
-    // Resumable uploads are used for pasted images, which are handled as string
-    // data. Using resumable uploads for pasted images is enabled by the
-    // `enterprise_connectors::kDlpScanPastedImages` feature flag. Text pastes
-    // use multipart uploads.
-    case STRING:
-      SendContentNow(std::move(request));
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
-// TODO(b/328415950): Move the data pipe creation logics to
-// connector_upload_request.
-void ResumableUploadRequest::CreateDatapipe(
-    std::unique_ptr<network::ResourceRequest> request,
-    file_access::ScopedFileAccess file_access) {
-  scoped_file_access_ =
-      std::make_unique<file_access::ScopedFileAccess>(std::move(file_access));
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&CreateFileDataPipeGetterBlocking, path_, is_obfuscated_),
-      base::BindOnce(&ResumableUploadRequest::OnDataPipeCreated,
-                     weak_factory_.GetWeakPtr(), std::move(request)));
-}
-
-void ResumableUploadRequest::OnDataPipeCreated(
-    std::unique_ptr<network::ResourceRequest> request,
-    std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter) {
-  scoped_file_access_.reset();
-  if (!data_pipe_getter) {
-    // TODO(329293309): Replace with meaningful net_error value since 0 does not
-    // indicate an error.
-    Finish(0, 0, std::nullopt);
-    return;
-  }
-
-  data_pipe_getter_ = std::move(data_pipe_getter);
-  SendContentNow(std::move(request));
-}
-
-void ResumableUploadRequest::SendContentNow(
-    std::unique_ptr<network::ResourceRequest> request) {
-  // `data_pipe_getter_` is null for STRING requests, which are handled by
-  // attaching the string data directly to the URL loader. For FILE and PAGE
-  // requests, `data_pipe_getter_` will be non-null.
-  if (data_pipe_getter_) {
-    mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter;
-    data_pipe_getter_->Clone(data_pipe_getter.InitWithNewPipeAndPassReceiver());
-    request->request_body = new network::ResourceRequestBody();
-    request->request_body->AppendDataPipe(std::move(data_pipe_getter));
-  }
-
-  url_loader_ =
-      network::SimpleURLLoader::Create(std::move(request), traffic_annotation_);
-  url_loader_->SetAllowHttpErrorResults(true);
-
-  if (!data_pipe_getter_) {
-    url_loader_->AttachStringForUpload(data_, kImageContentType);
-  }
-
-  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory_.get(),
-      base::BindOnce(&ResumableUploadRequest::OnSendContentCompleted,
-                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
-}
-
 void ResumableUploadRequest::OnSendContentCompleted(
     base::TimeTicks start_time,
     std::optional<std::string> response_body) {
@@ -474,50 +289,6 @@ void ResumableUploadRequest::OnSendContentCompleted(
     response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
   Finish(url_loader_->NetError(), response_code, std::move(response_body));
-}
-
-bool ResumableUploadRequest::CanUploadContent(
-    const scoped_refptr<net::HttpResponseHeaders>& headers) {
-  if (headers->response_code() != net::HTTP_OK) {
-    return false;
-  }
-  std::optional<std::string> upload_status =
-      headers->GetNormalizedHeader(kUploadStatusHeader);
-  if (!upload_status || !headers->HasHeader(kUploadUrlHeader)) {
-    return false;
-  }
-  return base::EqualsCaseInsensitiveASCII(upload_status.value_or(std::string()),
-                                          "active");
-}
-
-void ResumableUploadRequest::Finish(int net_error,
-                                    int response_code,
-                                    std::optional<std::string> response_body) {
-  if (!histogram_suffix_.empty()) {
-    std::string histogram = base::StrCat(
-        {"SafeBrowsing.ResumableUploader.NetworkResult.", histogram_suffix_});
-    RecordHttpResponseOrErrorCode(histogram.c_str(), net_error, response_code);
-  }
-
-  // The callback may have been invoked when the metadata verdict was received
-  // with the CEP header, to unblock the user initiate an async upload.
-  if (!verdict_received_callback_.is_null()) {
-    std::move(verdict_received_callback_)
-        .Run(/*success=*/IsSuccess(net_error, response_code), response_code,
-             response_body.value_or(""));
-  }
-  std::move(content_uploaded_callback_).Run();
-}
-
-std::string ResumableUploadRequest::GetRequestType() {
-  switch (data_source_) {
-    case FILE:
-      return "File";
-    case STRING:
-      return "Text";
-    case PAGE:
-      return "Print";
-  }
 }
 
 }  // namespace safe_browsing
