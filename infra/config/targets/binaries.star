@@ -803,6 +803,7 @@ targets.binaries.script(
             "--smoke-test-mode",
         ],
     ),
+    module_scheme = "flat",
 )
 
 targets.binaries.windowed_test_launcher(

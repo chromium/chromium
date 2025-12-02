@@ -1669,6 +1669,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//components:components_perftests",
+        "module_scheme": "flat",
         "name": "components_perftests",
         "swarming": {
           "dimensions": {
@@ -3563,6 +3564,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//components:components_perftests",
+        "module_scheme": "flat",
         "name": "components_perftests",
         "swarming": {
           "dimensions": {
@@ -5539,6 +5541,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//components:components_perftests",
+        "module_scheme": "flat",
         "name": "components_perftests",
         "swarming": {
           "dimensions": {
@@ -7542,6 +7545,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//components:components_perftests",
+        "module_scheme": "flat",
         "name": "components_perftests",
         "retry_only_failed_tests": true,
         "swarming": {

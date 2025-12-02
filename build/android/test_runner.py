@@ -64,7 +64,8 @@ _DEVIL_STATIC_CONFIG_FILE = os.path.abspath(os.path.join(
     host_paths.DIR_SOURCE_ROOT, 'build', 'android', 'devil_config.json'))
 
 _RERUN_FAILED_TESTS_FILE = 'rerun_failed_tests.filter'
-
+# A dictionary of a test suite and a flat test name to overwrite.
+_REWRITE_SCHEME = {'components_perftests': 'components_perftests'}
 
 def _RealPath(arg):
   if arg.startswith('//'):
@@ -1127,6 +1128,14 @@ def _CreateStructuredTestDict(test_instance, test_result):
       name = re_match.group(2)
       instantiation = ""
       case_id = ""
+
+    # Some android gtests are incompatible with the upload scheme on other
+    # test runners.
+    if test_instance.suite in _REWRITE_SCHEME:
+      struct_test_dict['caseNameComponents'] = [
+          _REWRITE_SCHEME.get(test_instance.suite)
+      ]
+      return struct_test_dict
 
     struct_test_dict['coarseName'] = None  # Not used.
     struct_test_dict['fineName'] = suite

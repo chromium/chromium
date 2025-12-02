@@ -787,6 +787,7 @@
   "components_perftests": {
     "label": "//components:components_perftests",
     "type": "script",
+    "module_scheme": "flat",
     "script": "//testing/scripts/run_performance_tests.py",
     "skip_usage_check": True,
     "args": [
