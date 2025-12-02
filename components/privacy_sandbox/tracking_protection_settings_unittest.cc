@@ -11,13 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/content_settings/core/test/content_settings_mock_provider.h"
-#include "components/content_settings/core/test/content_settings_test_utils.h"
-#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -39,7 +33,6 @@ MATCHER_P(IsSameSite, site, "") {
 class MockTrackingProtectionSettingsObserver
     : public TrackingProtectionSettingsObserver {
  public:
-  MOCK_METHOD(void, OnIpProtectionEnabledChanged, (), (override));
   MOCK_METHOD(void, OnBlockAllThirdPartyCookiesChanged, (), (override));
   MOCK_METHOD(void, OnTrackingProtection3pcdChanged, (), (override));
 };
@@ -55,28 +48,16 @@ class TrackingProtectionSettingsTest : public testing::Test {
 
   GURL GetTestUrl() { return GURL("http://cool.things.com"); }
 
-  virtual std::vector<base::test::FeatureRef> EnabledFeatures() {
-    return {privacy_sandbox::kIpProtectionUx,
-            privacy_sandbox::kFingerprintingProtectionUx};
-  }
+  virtual std::vector<base::test::FeatureRef> EnabledFeatures() { return {}; }
 
   void SetUp() override {
-    host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
-        prefs(), /*is_off_the_record=*/false, /*store_last_modified=*/false,
-        /*restore_session=*/false,
-        /*should_record_metrics=*/false);
     feature_list_.InitWithFeatures(EnabledFeatures(), {});
-    management_service_ = std::make_unique<policy::ManagementService>(
-        std::vector<std::unique_ptr<policy::ManagementStatusProvider>>());
     tracking_protection_settings_ =
-        std::make_unique<TrackingProtectionSettings>(
-            prefs(), host_content_settings_map_.get(),
-            management_service_.get(),
-            /*is_incognito=*/false);
+        std::make_unique<TrackingProtectionSettings>(prefs(),
+                                                     /*is_incognito=*/false);
   }
 
   void TearDown() override {
-    host_content_settings_map_->ShutdownOnUIThread();
     tracking_protection_settings_->Shutdown();
     feature_list_.Reset();
   }
@@ -85,34 +66,16 @@ class TrackingProtectionSettingsTest : public testing::Test {
     return tracking_protection_settings_.get();
   }
 
-  HostContentSettingsMap* host_content_settings_map() {
-    return host_content_settings_map_.get();
-  }
-
-  policy::ManagementService* management_service() {
-    return management_service_.get();
-  }
-
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
 
  private:
   sync_preferences::TestingPrefServiceSyncable prefs_;
   base::test::ScopedFeatureList feature_list_;
-  scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
-  std::unique_ptr<policy::ManagementService> management_service_;
   std::unique_ptr<TrackingProtectionSettings> tracking_protection_settings_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 // Gets prefs
-
-TEST_F(TrackingProtectionSettingsTest, ReturnsIpProtectionStatus) {
-  prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kIpProtectionEnabled));
-  EXPECT_FALSE(tracking_protection_settings()->IsIpProtectionEnabled());
-  prefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
-  EXPECT_TRUE(tracking_protection_settings()->IsIpProtectionEnabled());
-}
 
 TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
   EXPECT_FALSE(
@@ -124,12 +87,10 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
 
 TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedTrueInIncognito) {
   prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  EXPECT_TRUE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
-                                         management_service(),
+  EXPECT_TRUE(TrackingProtectionSettings(prefs(),
                                          /*is_incognito=*/true)
                   .AreAllThirdPartyCookiesBlocked());
-  EXPECT_FALSE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
-                                          management_service(),
+  EXPECT_FALSE(TrackingProtectionSettings(prefs(),
                                           /*is_incognito=*/false)
                    .AreAllThirdPartyCookiesBlocked());
 }
@@ -157,19 +118,6 @@ TEST_F(TrackingProtectionSettingsTest,
 }
 
 // Calls observers
-
-TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForIpProtection) {
-  MockTrackingProtectionSettingsObserver observer;
-  tracking_protection_settings()->AddObserver(&observer);
-
-  EXPECT_CALL(observer, OnIpProtectionEnabledChanged());
-  prefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  EXPECT_CALL(observer, OnIpProtectionEnabledChanged());
-  prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
 
 TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForBlockAll3pc) {
   MockTrackingProtectionSettingsObserver observer;

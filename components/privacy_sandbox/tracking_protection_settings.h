@@ -13,12 +13,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 
-class HostContentSettingsMap;
 class PrefService;
-
-namespace policy {
-class ManagementService;
-}  // namespace policy
 
 namespace syncer {
 class SyncService;
@@ -38,8 +33,6 @@ class TrackingProtectionSettings : public KeyedService {
  public:
   explicit TrackingProtectionSettings(
       PrefService* pref_service,
-      HostContentSettingsMap* host_content_settings_map,
-      policy::ManagementService* management_service,
       bool is_incognito);
   ~TrackingProtectionSettings() override;
 
@@ -56,29 +49,16 @@ class TrackingProtectionSettings : public KeyedService {
   // (i.e. without mitigations).
   bool AreAllThirdPartyCookiesBlocked() const;
 
-  // Returns whether IP protection is enabled.
-  bool IsIpProtectionEnabled() const;
-
-  // Returns whether IP protection is disabled, either because an enterprise
-  // policy has been set that disables the feature or, when the
-  // `kIpPrivacyDisableForEnterpriseByDefault` feature is enabled, because no
-  // policy value has been set via enterprise policy and this is a managed
-  // profile or client.
-  bool IsIpProtectionDisabledForEnterprise();
-
  private:
   void OnEnterpriseControlForPrefsChanged();
 
   // Callbacks for pref observation.
   void OnBlockAllThirdPartyCookiesPrefChanged();
   void OnTrackingProtection3pcdPrefChanged();
-  void OnIpProtectionPrefChanged();
 
   base::ObserverList<TrackingProtectionSettingsObserver>::Unchecked observers_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<PrefService> pref_service_;
-  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
-  raw_ptr<policy::ManagementService> management_service_;
 
   bool is_incognito_;
 };

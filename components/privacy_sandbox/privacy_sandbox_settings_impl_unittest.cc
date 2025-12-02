@@ -92,10 +92,8 @@ class PrivacySandboxSettingsTest : public testing::Test {
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
         false /* restore_session */, false /* should_record_metrics */);
     tracking_protection_settings_ =
-        std::make_unique<TrackingProtectionSettings>(
-            &prefs_, host_content_settings_map_.get(),
-            /*management_service=*/nullptr,
-            /*is_incognito=*/false);
+        std::make_unique<TrackingProtectionSettings>(&prefs_,
+                                                     /*is_incognito=*/false);
     cookie_settings_ = new content_settings::CookieSettings(
         host_content_settings_map_.get(), &prefs_,
         tracking_protection_settings_.get(), false,

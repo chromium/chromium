@@ -115,9 +115,7 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
         /*restore_session=*/false, /*should_record_metrics=*/false);
     tracking_protection_settings_ =
         std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
-            &prefs_, host_content_settings_map_.get(),
-            /*management_service=*/nullptr,
-            /*is_incognito=*/false);
+            &prefs_, /*is_incognito=*/false);
     cookie_settings_ = base::MakeRefCounted<content_settings::CookieSettings>(
         host_content_settings_map_.get(), &prefs_,
         tracking_protection_settings_.get(), false,

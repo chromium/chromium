@@ -5,7 +5,6 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,10 +29,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSettingsMetricsBrowserTest,
                        RecordsMetricsOnStartup) {
   histogram_tester_.ExpectUniqueSample("Settings.TrackingProtection.Enabled",
                                        false, 1);
-  histogram_tester_.ExpectUniqueSample("Settings.IpProtection.Enabled", true,
-                                       1);
-  histogram_tester_.ExpectUniqueSample(
-      "Settings.FingerprintingProtection.Enabled", true, 1);
 }
 
 class TrackingProtectionSettingsForEnterpriseBrowserTest

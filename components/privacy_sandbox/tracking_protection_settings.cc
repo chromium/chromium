@@ -9,13 +9,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/policy/core/common/management/management_service.h"
-#include "components/policy/core/common/management/platform_management_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -32,22 +29,12 @@ namespace privacy_sandbox {
 
 TrackingProtectionSettings::TrackingProtectionSettings(
     PrefService* pref_service,
-    HostContentSettingsMap* host_content_settings_map,
-    policy::ManagementService* management_service,
     bool is_incognito)
     : pref_service_(pref_service),
-      host_content_settings_map_(host_content_settings_map),
-      management_service_(management_service),
       is_incognito_(is_incognito) {
   CHECK(pref_service_);
-  CHECK(host_content_settings_map_);
 
   pref_change_registrar_.Init(pref_service_);
-  pref_change_registrar_.Add(
-      prefs::kIpProtectionEnabled,
-      base::BindRepeating(
-          &TrackingProtectionSettings::OnIpProtectionPrefChanged,
-          base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kBlockAll3pcToggleEnabled,
       base::BindRepeating(
@@ -85,8 +72,6 @@ TrackingProtectionSettings::~TrackingProtectionSettings() = default;
 
 void TrackingProtectionSettings::Shutdown() {
   observers_.Clear();
-  host_content_settings_map_ = nullptr;
-  management_service_ = nullptr;
   pref_change_registrar_.Reset();
   pref_service_ = nullptr;
 }
@@ -104,24 +89,6 @@ bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
           is_incognito_);
 }
 
-bool TrackingProtectionSettings::IsIpProtectionEnabled() const {
-  return pref_service_->GetBoolean(prefs::kIpProtectionEnabled) &&
-         base::FeatureList::IsEnabled(kIpProtectionUx);
-}
-
-bool TrackingProtectionSettings::IsIpProtectionDisabledForEnterprise() {
-  if (pref_service_->IsManagedPreference(prefs::kIpProtectionEnabled)) {
-    return !pref_service_->GetBoolean(prefs::kIpProtectionEnabled);
-  }
-  if (net::features::kIpPrivacyDisableForEnterpriseByDefault.Get()) {
-    // Disable IP Protection for managed profiles and managed devices when the
-    // admins haven't explicitly opted in to it via enterprise policy.
-    return management_service_->IsManaged() ||
-           policy::PlatformManagementService::GetInstance()->IsManaged();
-  }
-  return false;
-}
-
 // TODO(https://b/333527273): Delete with Mode B cleanup
 void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {
   if (!IsTrackingProtection3pcdEnabled()) {
@@ -132,12 +99,6 @@ void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {
       pref_service_->IsManagedPreference(
           prefs::kPrivacySandboxRelatedWebsiteSetsEnabled)) {
     pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
-  }
-}
-
-void TrackingProtectionSettings::OnIpProtectionPrefChanged() {
-  for (auto& observer : observers_) {
-    observer.OnIpProtectionEnabledChanged();
   }
 }
 
