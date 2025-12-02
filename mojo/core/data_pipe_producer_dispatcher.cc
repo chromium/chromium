@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/data_pipe_producer_dispatcher.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -149,9 +145,10 @@ MojoResult DataPipeProducerDispatcher::WriteData(
   uint32_t head_bytes_to_write = num_bytes_to_write - tail_bytes_to_write;
 
   DCHECK_GT(tail_bytes_to_write, 0u);
-  memcpy(data + write_offset_, source, tail_bytes_to_write);
+  UNSAFE_TODO(memcpy(data + write_offset_, source, tail_bytes_to_write));
   if (head_bytes_to_write > 0)
-    memcpy(data, source + tail_bytes_to_write, head_bytes_to_write);
+    UNSAFE_TODO(
+        memcpy(data, source + tail_bytes_to_write, head_bytes_to_write));
 
   DCHECK_LE(num_bytes_to_write, available_capacity_);
   available_capacity_ -= num_bytes_to_write;
@@ -191,7 +188,7 @@ MojoResult DataPipeProducerDispatcher::BeginWriteData(
 
   CHECK(ring_buffer_mapping_.IsValid());
   uint8_t* data = static_cast<uint8_t*>(ring_buffer_mapping_.memory());
-  *buffer = data + write_offset_;
+  *buffer = UNSAFE_TODO(data + write_offset_);
 
   return MOJO_RESULT_OK;
 }
@@ -269,8 +266,9 @@ bool DataPipeProducerDispatcher::EndSerialize(
     ports::PortName* ports,
     PlatformHandle* platform_handles) {
   SerializedState* state = static_cast<SerializedState*>(destination);
-  memcpy(&state->options, &options_, sizeof(MojoCreateDataPipeOptions));
-  memset(state->padding, 0, sizeof(state->padding));
+  UNSAFE_TODO(
+      memcpy(&state->options, &options_, sizeof(MojoCreateDataPipeOptions)));
+  UNSAFE_TODO(memset(state->padding, 0, sizeof(state->padding)));
 
   base::AutoLock lock(lock_);
   DCHECK(in_transit_);

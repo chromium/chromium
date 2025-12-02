@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/shared_buffer_dispatcher.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
@@ -157,7 +153,7 @@ scoped_refptr<SharedBufferDispatcher> SharedBufferDispatcher::Deserialize(
       MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_WRITABLE) {
     if (num_platform_handles != 2)
       return nullptr;
-    handles[1] = std::move(platform_handles[1]);
+    handles[1] = std::move(UNSAFE_TODO(platform_handles[1]));
   } else {
     if (num_platform_handles != 1)
       return nullptr;
@@ -384,7 +380,7 @@ bool SharedBufferDispatcher::EndSerialize(void* destination,
         region.PassPlatformHandle(), &platform_handles[0],
         &platform_handles[1]);
     handles[0] = std::move(platform_handles[0]);
-    handles[1] = std::move(platform_handles[1]);
+    UNSAFE_TODO(handles[1]) = std::move(platform_handles[1]);
     return true;
   }
 #endif

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/374320451): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 #include <string.h>
 
@@ -14,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -243,7 +239,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
                            MOJO_READ_MESSAGE_FLAG_NONE));
   EXPECT_EQ(sizeof(MojoSharedBufferGuid), guid_bytes.size());
   auto* expected_guid =
-      reinterpret_cast<MojoSharedBufferGuid*>(guid_bytes.data());
+      UNSAFE_TODO(reinterpret_cast<MojoSharedBufferGuid*>(guid_bytes.data()));
   EXPECT_EQ(expected_guid->high, mojo_guid.high);
   EXPECT_EQ(expected_guid->low, mojo_guid.low);
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));

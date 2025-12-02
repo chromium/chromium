@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/ports/port_locker.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "mojo/core/ports/port.h"
 
@@ -39,19 +35,19 @@ PortLocker::PortLocker(const PortRef** port_refs, size_t num_ports)
       num_ports_(num_ports) {
   // Sort the ports by address to lock them in a globally consistent order.
   std::sort(
-      port_refs_, port_refs_ + num_ports_,
+      port_refs_, UNSAFE_TODO(port_refs_ + num_ports_),
       [](const PortRef* a, const PortRef* b) { return a->port() < b->port(); });
 
   for (size_t i = 0; i < num_ports_; ++i) {
     // TODO(crbug.com/40522227): Remove this CHECK.
-    CHECK(port_refs_[i]->port());
-    port_refs_[i]->port()->lock_.Acquire();
+    UNSAFE_TODO(CHECK(port_refs_[i]->port()));
+    UNSAFE_TODO(port_refs_[i])->port()->lock_.Acquire();
   }
 }
 
 PortLocker::~PortLocker() {
   for (size_t i = 0; i < num_ports_; ++i)
-    port_refs_[i]->port()->lock_.Release();
+    UNSAFE_TODO(port_refs_[i])->port()->lock_.Release();
 
 #if DCHECK_IS_ON()
   DCHECK_EQ(port_locker, this);

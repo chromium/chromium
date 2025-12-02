@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/watcher_dispatcher.h"
 
 #include <algorithm>
@@ -248,12 +243,16 @@ MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
 
     for (size_t i = 0; i < *num_blocking_events; ++i) {
       const Watch* const watch = *next_ready_iter;
-      if (blocking_events[i].struct_size < sizeof(*blocking_events))
+      if (UNSAFE_TODO(blocking_events[i]).struct_size <
+          sizeof(*blocking_events)) {
         return MOJO_RESULT_INVALID_ARGUMENT;
-      blocking_events[i].flags = MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL;
-      blocking_events[i].trigger_context = watch->context();
-      blocking_events[i].result = watch->last_known_result();
-      blocking_events[i].signals_state = watch->last_known_signals_state();
+      }
+      UNSAFE_TODO(blocking_events[i]).flags =
+          MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL;
+      UNSAFE_TODO(blocking_events[i]).trigger_context = watch->context();
+      UNSAFE_TODO(blocking_events[i]).result = watch->last_known_result();
+      UNSAFE_TODO(blocking_events[i]).signals_state =
+          watch->last_known_signals_state();
 
       // Iterate and wrap around.
       last_watch_to_block_arming_ = reinterpret_cast<uintptr_t>(watch);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_BINDINGS_INTERNAL_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_BINDINGS_INTERNAL_H_
 
@@ -18,6 +13,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/handle.h"
@@ -95,7 +91,7 @@ inline void EncodePointer(const void* ptr, uint64_t* offset) {
 inline const void* DecodePointer(const uint64_t* offset) {
   if (!*offset)
     return nullptr;
-  return reinterpret_cast<const char*>(offset) + *offset;
+  return UNSAFE_TODO(reinterpret_cast<const char*>(offset) + *offset);
 }
 
 #pragma pack(push, 1)

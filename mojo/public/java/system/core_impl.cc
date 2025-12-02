@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -15,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/compiler_specific.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -138,7 +134,8 @@ static jint JNI_CoreImpl_WriteMessage(
 
   // Truncate handle values if necessary.
   std::vector<MojoHandle> handles(num_handles);
-  std::copy(java_handles, java_handles + num_handles, handles.begin());
+  std::copy(java_handles, UNSAFE_TODO(java_handles + num_handles),
+            handles.begin());
 
   // Java code will handle invalidating handles if the write succeeded.
   return WriteMessageRaw(
@@ -182,8 +179,8 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadMessage(JNIEnv* env,
   std::ranges::copy(handles, java_handles.begin());
   return Java_CoreImpl_newReadMessageResult(
       env, result,
-      base::android::ToJavaByteArray(env, static_cast<uint8_t*>(buffer),
-                                     num_bytes),
+      UNSAFE_TODO(base::android::ToJavaByteArray(
+          env, static_cast<uint8_t*>(buffer), num_bytes)),
       base::android::ToJavaLongArray(env, java_handles));
 }
 

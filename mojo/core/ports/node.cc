@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/ports/node.h"
 
 #include <string.h>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
@@ -61,7 +57,7 @@ class RandomNameGenerator {
       base::RandBytes(base::as_writable_byte_span(cache_));
       cache_index_ = 0;
     }
-    return cache_[cache_index_++];
+    return UNSAFE_TODO(cache_[cache_index_++]);
   }
 
  private:
@@ -1464,7 +1460,8 @@ void Node::ConvertToProxy(Port* port,
   port_descriptor->last_sequence_num_to_receive =
       port->last_sequence_num_to_receive;
   port_descriptor->peer_closed = port->peer_closed;
-  memset(port_descriptor->padding, 0, sizeof(port_descriptor->padding));
+  UNSAFE_TODO(
+      memset(port_descriptor->padding, 0, sizeof(port_descriptor->padding)));
 
   // Configure the local port to point to the new port.
   UpdatePortPeerAddress(local_port_name, port, to_node_name, new_port_name);
@@ -1617,7 +1614,7 @@ int Node::PrepareToForwardUserMessage(const PortRef& forwarding_port_ref,
               .from_port = attached_port_refs[i].name()};
           ConvertToProxy(port, target_node_name,
                          message->ports().subspan(i).data(),
-                         port_descriptors + i, &update_event);
+                         UNSAFE_TODO(port_descriptors + i), &update_event);
           peer_update_events.push(update_event);
         }
       }

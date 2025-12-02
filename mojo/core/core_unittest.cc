@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/core.h"
 
 #include <stdint.h>
 
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -391,8 +387,8 @@ TEST_F(CoreTest, DataPipe) {
 
   // Actually write the data, and complete it now.
   static_cast<char*>(write_ptr)[0] = 'C';
-  static_cast<char*>(write_ptr)[1] = 'D';
-  static_cast<char*>(write_ptr)[2] = 'E';
+  UNSAFE_TODO(static_cast<char*>(write_ptr)[1]) = 'D';
+  UNSAFE_TODO(static_cast<char*>(write_ptr)[2]) = 'E';
   ASSERT_EQ(MOJO_RESULT_OK, core()->EndWriteData(ph, 3u, nullptr));
 
   // Wait for the data to arrive to the consumer.
@@ -453,8 +449,8 @@ TEST_F(CoreTest, DataPipe) {
 
   // Actually check our data and end the two-phase read.
   ASSERT_EQ('C', static_cast<const char*>(read_ptr)[0]);
-  ASSERT_EQ('D', static_cast<const char*>(read_ptr)[1]);
-  ASSERT_EQ('E', static_cast<const char*>(read_ptr)[2]);
+  UNSAFE_TODO(ASSERT_EQ('D', static_cast<const char*>(read_ptr)[1]));
+  UNSAFE_TODO(ASSERT_EQ('E', static_cast<const char*>(read_ptr)[2]));
   ASSERT_EQ(MOJO_RESULT_OK, core()->EndReadData(ch, 3u, nullptr));
 
   // Consumer should now be no longer readable.

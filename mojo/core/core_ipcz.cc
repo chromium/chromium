@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/core_ipcz.h"
 
 #include <algorithm>
@@ -19,6 +14,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ptr_util.h"
@@ -656,8 +652,8 @@ MojoResult MojoWrapPlatformSharedMemoryRegionIpcz(
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
   auto buffer = ipcz_driver::SharedBuffer::CreateForMojoWrapper(
-      base::span(platform_handles, num_platform_handles), num_bytes, *guid,
-      access_mode);
+      UNSAFE_TODO(base::span(platform_handles, num_platform_handles)),
+      num_bytes, *guid, access_mode);
   if (!buffer) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
@@ -713,8 +709,8 @@ MojoResult MojoUnwrapPlatformSharedMemoryRegionIpcz(
 #endif
 
   for (size_t i = 0; i < required_handles; ++i) {
-    PlatformHandle::ToMojoPlatformHandle(std::move(handles[i]),
-                                         &platform_handles[i]);
+    PlatformHandle::ToMojoPlatformHandle(std::move(UNSAFE_TODO(handles[i])),
+                                         UNSAFE_TODO(&platform_handles[i]));
   }
 
   *num_bytes = size;
@@ -761,7 +757,8 @@ MojoResult MojoAttachMessagePipeToInvitationIpcz(
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
   return invitation->Attach(
-      base::span(static_cast<const uint8_t*>(name), name_num_bytes),
+      UNSAFE_TODO(
+          base::span(static_cast<const uint8_t*>(name), name_num_bytes)),
       message_pipe_handle);
 }
 
@@ -777,7 +774,8 @@ MojoResult MojoExtractMessagePipeFromInvitationIpcz(
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
   return invitation->Extract(
-      base::span(static_cast<const uint8_t*>(name), name_num_bytes),
+      UNSAFE_TODO(
+          base::span(static_cast<const uint8_t*>(name), name_num_bytes)),
       message_pipe_handle);
 }
 

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/channel.h"
 
 #include <atomic>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/memory/page_size.h"
@@ -85,8 +81,8 @@ class MockChannelDelegate : public Channel::Delegate {
       size_t payload_size,
       std::vector<PlatformHandle> handles,
       scoped_refptr<ipcz_driver::Envelope> envelope) override {
-    auto payload_span =
-        base::span(static_cast<const char*>(payload), payload_size);
+    auto payload_span = UNSAFE_TODO(
+        base::span(static_cast<const char*>(payload), payload_size));
     payload_ = base::HeapArray<char>::CopiedFrom(payload_span);
   }
 
@@ -105,7 +101,7 @@ Channel::MessagePtr CreateDefaultMessage(bool legacy_message) {
                      : Channel::Message::MessageType::NORMAL);
   char* payload = static_cast<char*>(message->mutable_payload());
   for (size_t i = 0; i < payload_size; i++) {
-    payload[i] = static_cast<char>(i);
+    UNSAFE_TODO(payload[i]) = static_cast<char>(i);
   }
   return message;
 }
@@ -119,7 +115,7 @@ void TestMemoryEqual(const void* data1,
   const unsigned char* data2_char = static_cast<const unsigned char*>(data2);
   for (size_t i = 0; i < data1_size; i++) {
     // ASSERT so we don't log tons of errors if the data is different.
-    ASSERT_EQ(data1_char[i], data2_char[i]);
+    UNSAFE_TODO(ASSERT_EQ(data1_char[i], data2_char[i]));
   }
 }
 
@@ -175,7 +171,7 @@ TEST(ChannelTest, OnReadLegacyMessage) {
   ASSERT_LT(message->data_num_bytes(),
             buffer_size);  // Bad test. Increase buffer
                            // size.
-  memcpy(read_buffer, message->data(), message->data_num_bytes());
+  UNSAFE_TODO(memcpy(read_buffer, message->data(), message->data_num_bytes()));
 
   size_t next_read_size_hint = 0;
   EXPECT_TRUE(channel->OnReadCompleteTest(message->data_num_bytes(),
@@ -197,7 +193,7 @@ TEST(ChannelTest, OnReadNonLegacyMessage) {
   ASSERT_LT(message->data_num_bytes(),
             buffer_size);  // Bad test. Increase buffer
                            // size.
-  memcpy(read_buffer, message->data(), message->data_num_bytes());
+  UNSAFE_TODO(memcpy(read_buffer, message->data(), message->data_num_bytes()));
 
   size_t next_read_size_hint = 0;
   EXPECT_TRUE(channel->OnReadCompleteTest(message->data_num_bytes(),
@@ -378,7 +374,7 @@ TEST(ChannelTest, DeserializeMessage_BadExtraHeaderSize) {
   constexpr uint32_t kEmptyPayloadSize = 8;
   constexpr uint32_t kMessageSize = kTotalHeaderSize + kEmptyPayloadSize;
   char message[kMessageSize];
-  memset(message, 0, kMessageSize);
+  UNSAFE_TODO(memset(message, 0, kMessageSize));
 
   Channel::Message::Header* header =
       reinterpret_cast<Channel::Message::Header*>(&message[0]);
@@ -402,7 +398,7 @@ TEST(ChannelTest, DeserializeMessage_NonZeroExtraHeaderSize) {
   constexpr uint32_t kEmptyPayloadSize = 8;
   constexpr uint32_t kMessageSize = kTotalHeaderSize + kEmptyPayloadSize;
   char message[kMessageSize];
-  memset(message, 0, kMessageSize);
+  UNSAFE_TODO(memset(message, 0, kMessageSize));
 
   Channel::Message::Header* header =
       reinterpret_cast<Channel::Message::Header*>(&message[0]);
@@ -618,7 +614,7 @@ TEST(ChannelTest, MessageSizeTest) {
         }));
 
     auto message = Channel::Message::CreateMessage(i, 0);
-    memset(message->mutable_payload(), 0xAB, i);
+    UNSAFE_TODO(memset(message->mutable_payload(), 0xAB, i));
     sender->Write(std::move(message));
 
     loop.Run();
@@ -879,8 +875,8 @@ TEST(ChannelTest, IpczHeaderCompatibilityTest) {
     bool got_message = false;
     size_t size_hint = 0;
     std::vector<char> message(actual_header_size + 100, 'a');
-    auto* header =
-        reinterpret_cast<Channel::Message::IpczHeader*>(message.data());
+    auto* header = UNSAFE_TODO(
+        reinterpret_cast<Channel::Message::IpczHeader*>(message.data()));
 
     header->size = actual_header_size;
     header->num_handles = 0;
@@ -900,8 +896,9 @@ TEST(ChannelTest, IpczHeaderCompatibilityTest) {
                           scoped_refptr<ipcz_driver::Envelope> envelope) {
       got_message = true;
       EXPECT_EQ(100u, payload_size);
-      EXPECT_EQ(0, memcmp(payload, message.data() + actual_header_size,
-                          payload_size));
+      UNSAFE_TODO(EXPECT_EQ(
+          0,
+          memcmp(payload, message.data() + actual_header_size, payload_size)));
     };
     receiver_delegate.set_on_message(base::BindLambdaForTesting(on_message));
 
@@ -959,8 +956,8 @@ TEST(ChannelTest, TryDispatchMessageWithEnvelope) {
     bool got_message = false;
     size_t size_hint = 0;
     std::vector<char> message(Channel::Message::kMinIpczHeaderSize + 100, 'a');
-    auto* header =
-        reinterpret_cast<Channel::Message::IpczHeader*>(message.data());
+    auto* header = UNSAFE_TODO(
+        reinterpret_cast<Channel::Message::IpczHeader*>(message.data()));
 
     header->size = Channel::Message::kMinIpczHeaderSize;
     header->num_handles = 0;
@@ -973,9 +970,10 @@ TEST(ChannelTest, TryDispatchMessageWithEnvelope) {
                           scoped_refptr<ipcz_driver::Envelope> envelope) {
       got_message = true;
       EXPECT_EQ(100u, payload_size);
-      EXPECT_EQ(0, memcmp(payload,
-                          message.data() + Channel::Message::kMinIpczHeaderSize,
-                          payload_size));
+      UNSAFE_TODO(EXPECT_EQ(
+          0,
+          memcmp(payload, message.data() + Channel::Message::kMinIpczHeaderSize,
+                 payload_size)));
       EXPECT_EQ(envelope.get(), weak_envelope.get());
     };
     receiver_delegate.set_on_message(base::BindLambdaForTesting(on_message));

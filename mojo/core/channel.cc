@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/channel.h"
 
 #include <stddef.h>
@@ -572,7 +567,8 @@ Channel::MessagePtr Channel::Message::Deserialize(
   std::vector<PlatformHandleInTransit> handles(num_handles);
   for (size_t i = 0; i < num_handles; i++) {
     HANDLE handle = base::win::Uint32ToHandle(
-        static_cast<ComplexMessage*>(message.get())->handles_[i].handle);
+        UNSAFE_TODO(static_cast<ComplexMessage*>(message.get())->handles_[i])
+            .handle);
     if (PlatformHandleInTransit::IsPseudoHandle(handle))
       return nullptr;
     if (from_process == base::kNullProcessHandle) {
@@ -751,14 +747,15 @@ ComplexMessage::ComplexMessage(size_t capacity,
     handles_ = reinterpret_cast<HandleEntry*>(mutable_extra_header());
     // Initialize all handles to invalid values.
     for (size_t i = 0; i < max_handles_; ++i)
-      handles_[i].handle = base::win::HandleToUint32(INVALID_HANDLE_VALUE);
+      UNSAFE_TODO(handles_[i]).handle =
+          base::win::HandleToUint32(INVALID_HANDLE_VALUE);
 #elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
     mach_ports_header_ =
         reinterpret_cast<MachPortsExtraHeader*>(mutable_extra_header());
     mach_ports_header_->num_ports = 0;
     // Initialize all handles to invalid values.
     for (size_t i = 0; i < max_handles_; ++i) {
-      mach_ports_header_->entries[i] = {0};
+      UNSAFE_TODO(mach_ports_header_->entries[i]) = {0};
     }
 #endif
   }
@@ -832,22 +829,22 @@ void ComplexMessage::SetHandles(
   header()->num_handles = static_cast<uint16_t>(new_handles.size());
   std::swap(handle_vector_, new_handles);
 #if BUILDFLAG(IS_WIN)
-  memset(handles_, 0, extra_header_size());
+  UNSAFE_TODO(memset(handles_, 0, extra_header_size()));
   for (size_t i = 0; i < handle_vector_.size(); i++) {
     HANDLE handle = handle_vector_[i].remote_handle();
     if (handle == INVALID_HANDLE_VALUE)
       handle = handle_vector_[i].handle().GetHandle().Get();
-    handles_[i].handle = base::win::HandleToUint32(handle);
+    UNSAFE_TODO(handles_[i]).handle = base::win::HandleToUint32(handle);
   }
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
   if (mach_ports_header_) {
     for (size_t i = 0; i < max_handles_; ++i) {
-      mach_ports_header_->entries[i] = {0};
+      UNSAFE_TODO(mach_ports_header_->entries[i]) = {0};
     }
     for (size_t i = 0; i < handle_vector_.size(); i++) {
-      mach_ports_header_->entries[i].type =
+      UNSAFE_TODO(mach_ports_header_->entries[i]).type =
           static_cast<uint8_t>(handle_vector_[i].handle().type());
     }
     mach_ports_header_->num_ports = handle_vector_.size();
@@ -1092,10 +1089,10 @@ bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {
       read_buffer_->Realign();
     }
 
-    DispatchResult result =
-        TryDispatchMessage(base::span(read_buffer_->occupied_bytes(),
-                                      read_buffer_->num_occupied_bytes()),
-                           next_read_size_hint);
+    DispatchResult result = TryDispatchMessage(
+        UNSAFE_TODO(base::span(read_buffer_->occupied_bytes(),
+                               read_buffer_->num_occupied_bytes())),
+        next_read_size_hint);
     if (result == DispatchResult::kOK) {
       if (ShouldRecordSubsampledHistograms()) {
         RecordReceivedMessageProcessType();
@@ -1244,7 +1241,7 @@ Channel::DispatchResult Channel::TryDispatchMessage(
       return DispatchResult::kError;
     }
     extra_header_size = header->num_header_bytes - sizeof(Message::Header);
-    extra_header = extra_header_size ? header + 1 : nullptr;
+    extra_header = extra_header_size ? UNSAFE_TODO(header + 1) : nullptr;
     payload_size = header->num_bytes - header->num_header_bytes;
     payload = payload_size
                   ? reinterpret_cast<Message::Header*>(const_cast<char*>(
@@ -1252,9 +1249,10 @@ Channel::DispatchResult Channel::TryDispatchMessage(
                   : nullptr;
   } else {
     payload_size = legacy_header->num_bytes - sizeof(Message::LegacyHeader);
-    payload = payload_size
-                  ? const_cast<Message::LegacyHeader*>(&legacy_header[1])
-                  : nullptr;
+    payload =
+        payload_size
+            ? const_cast<Message::LegacyHeader*>(UNSAFE_TODO(&legacy_header[1]))
+            : nullptr;
   }
 
   const uint16_t num_handles =
@@ -1340,8 +1338,9 @@ bool Channel::DispatchDelayedMessages() {
     DelayedMessage delayed_message = std::move(it->second);
     delayed_messages_.erase(it);
     dispatched_message_count_++;
-    const auto& header = *reinterpret_cast<const Message::IpczHeader*>(
-        delayed_message.data.data());
+    const auto& header =
+        *UNSAFE_TODO(reinterpret_cast<const Message::IpczHeader*>(
+            delayed_message.data.data()));
     auto data =
         base::span<const char>(delayed_message.data).subspan(header.size);
 

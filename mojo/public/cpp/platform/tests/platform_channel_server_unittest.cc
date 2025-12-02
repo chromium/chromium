@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/platform/platform_channel_server.h"
 
 #include <optional>
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
@@ -72,8 +68,8 @@ class TestChannel : public core::Channel::Delegate {
   }
 
   void SendMessage(const std::string& message) {
-    auto data = base::span(reinterpret_cast<const uint8_t*>(message.data()),
-                           message.size());
+    auto data = UNSAFE_TODO(base::span(
+        reinterpret_cast<const uint8_t*>(message.data()), message.size()));
     channel_->WriteNextIpczMessage(data, {});
   }
 

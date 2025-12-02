@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_NATIVE_ENUM_SERIALIZATION_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_NATIVE_ENUM_SERIALIZATION_H_
 
@@ -16,6 +11,7 @@
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/pickle.h"
 #include "ipc/param_traits.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
@@ -40,8 +36,9 @@ struct NativeEnumSerializerImpl {
 
     CHECK_GE(sizeof(int32_t), pickle.payload_size());
     *output = 0;
-    memcpy(reinterpret_cast<char*>(output), pickle.payload_bytes().data(),
-           pickle.payload_bytes().size());
+    UNSAFE_TODO(memcpy(reinterpret_cast<char*>(output),
+                       pickle.payload_bytes().data(),
+                       pickle.payload_bytes().size()));
   }
 
   struct PickleData {

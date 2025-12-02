@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef MOJO_CORE_BROKER_MESSAGES_H_
 #define MOJO_CORE_BROKER_MESSAGES_H_
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "mojo/core/channel.h"
 
@@ -59,7 +55,7 @@ inline bool GetBrokerMessageData(Channel::Message* message, T** out_data) {
     return false;
 
   auto* header = static_cast<BrokerMessageHeader*>(message->mutable_payload());
-  *out_data = reinterpret_cast<T*>(header + 1);
+  *out_data = reinterpret_cast<T*>(UNSAFE_TODO(header + 1));
   return true;
 }
 
@@ -78,9 +74,9 @@ inline Channel::MessagePtr CreateBrokerMessage(
       reinterpret_cast<BrokerMessageHeader*>(message->mutable_payload());
   header->type = type;
   header->padding = 0;
-  *out_message_data = reinterpret_cast<T*>(header + 1);
+  *out_message_data = reinterpret_cast<T*>(UNSAFE_TODO(header + 1));
   if (out_extra_data)
-    *out_extra_data = *out_message_data + 1;
+    *out_extra_data = UNSAFE_TODO(*out_message_data + 1);
   return message;
 }
 

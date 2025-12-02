@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/node_controller.h"
 
 #include <algorithm>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -92,7 +88,7 @@ ports::ScopedEvent DeserializeEventMessage(
   auto message_event = ports::Event::Cast<ports::UserMessageEvent>(&event);
   auto message = UserMessageImpl::CreateFromChannelMessage(
       message_event.get(), std::move(channel_message),
-      static_cast<uint8_t*>(data) + event_size, size - event_size);
+      UNSAFE_TODO(static_cast<uint8_t*>(data) + event_size), size - event_size);
   if (!message)
     return nullptr;
 

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/node_channel.h"  // nogncheck
 
 #include <stdint.h>
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
@@ -98,7 +94,7 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
       environment->main_thread_task_executor.task_runner());
   sender->Start();
   auto message = Channel::Message::CreateMessage(size, 0 /* num_handles */);
-  std::copy(data, data + size,
+  std::copy(data, UNSAFE_TODO(data + size),
             static_cast<unsigned char*>(message->mutable_payload()));
   sender->Write(std::move(message));
 

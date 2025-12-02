@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/ipcz_driver/transport.h"
 
 #include <algorithm>
@@ -17,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
@@ -202,8 +198,10 @@ class TransportListener {
                                IpczTransportActivityFlags flags,
                                const struct IpczTransportActivityOptions*) {
     auto* listener = reinterpret_cast<TransportListener*>(transport);
-    auto bytes = base::span(static_cast<const uint8_t*>(data), num_bytes);
-    listener->HandleActivity(bytes, base::span(handles, num_handles), flags);
+    auto bytes =
+        UNSAFE_TODO(base::span(static_cast<const uint8_t*>(data), num_bytes));
+    listener->HandleActivity(
+        bytes, UNSAFE_TODO(base::span(handles, num_handles)), flags);
     return IPCZ_RESULT_OK;
   }
 
@@ -482,8 +480,8 @@ TEST_F(MojoIpczTransportTest, TransmitHandle) {
         MakeHandleFromEndpoint(channel2.TakeRemoteEndpoint());
     {
       TransportListener listener(*transport);
-      TestMessage("!", {&handle1, 1u}).Transmit(*transport);
-      TestMessage("!", {&handle2, 1u}).Transmit(*transport);
+      TestMessage("!", UNSAFE_TODO({&handle1, 1u})).Transmit(*transport);
+      TestMessage("!", UNSAFE_TODO({&handle2, 1u})).Transmit(*transport);
       listener.WaitForDisconnect();
     }
 
@@ -551,7 +549,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransmitFileClient,
       DeserializeFileFrom(*transport, listener.WaitForNextMessage());
 
   std::vector<char> data(file.GetLength());
-  file.Read(0, data.data(), data.size());
+  UNSAFE_TODO(file.Read(0, data.data(), data.size()));
   EXPECT_EQ(kMessage1, std::string(data.begin(), data.end()));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
@@ -594,7 +592,7 @@ TEST_P(MojoIpczTransportSecurityTest, TransmitFile) {
       flags = base::File::AddFlagsForPassingToUntrustedProcess(flags);
     }
     base::File new_file(temp_dir.GetPath().AppendASCII("testfile"), flags);
-    new_file.Write(0, kMessage1.data(), kMessage1.size());
+    UNSAFE_TODO(new_file.Write(0, kMessage1.data(), kMessage1.size()));
 
     TransportListener listener(*transport);
     if (IsEnforcementEnabled() && !ShouldMarkNoExecute()) {
@@ -652,7 +650,8 @@ TEST_F(MojoIpczTransportTest, TransmitMemory) {
 
     auto region = base::UnsafeSharedMemoryRegion::Create(kMemoryMessage.size());
     auto mapping = region.Map();
-    memcpy(mapping.memory(), kMemoryMessage.data(), kMemoryMessage.size());
+    UNSAFE_TODO(
+        memcpy(mapping.memory(), kMemoryMessage.data(), kMemoryMessage.size()));
     auto buffer = SharedBuffer::MakeForRegion(std::move(region));
 
     TransportListener listener(*transport);
