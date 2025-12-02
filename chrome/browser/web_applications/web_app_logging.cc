@@ -296,6 +296,14 @@ const base::circular_deque<base::DictValue>& PersistableLog::GetEntries()
   return log_;
 }
 
+base::ListValue PersistableLog::CloneToList() const {
+  base::ListValue log_entries = base::ListValue::with_capacity(log_.size());
+  for (const base::DictValue& entry : log_) {
+    log_entries.Append(entry.Clone());
+  }
+  return log_entries;
+}
+
 void PersistableLog::OnLatestLogLoaded(
     std::optional<base::ListValue> loaded_log) {
   if (loaded_log.has_value()) {

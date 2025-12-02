@@ -231,6 +231,10 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
 
   WebAppDatabase* GetDatabaseForTesting() const { return database_.get(); }
 
+  // Returns the log for the database, or nullptr if Init() has not been called
+  // yet.
+  const PersistableLog* database_log() const;
+
   // TODO(crbug.com/41490924): Remove this and make it so tests can
   // install via sync instead to reach this state.
   // Note: This doesn't synchronize the OS integration manager, so the os

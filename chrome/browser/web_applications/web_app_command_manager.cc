@@ -171,13 +171,6 @@ void WebAppCommandManager::Shutdown() {
 }
 
 base::Value WebAppCommandManager::ToDebugValue() {
-  base::Value::List command_log;
-  if (log_) {
-    for (const auto& command_value : log_->GetEntries()) {
-      command_log.Append(command_value.Clone());
-    }
-  }
-
   base::Value::List queued;
   for (const auto& [command, location] : commands_waiting_for_start_) {
     queued.Append(command->GetDebugValue().Clone());
@@ -187,7 +180,9 @@ base::Value WebAppCommandManager::ToDebugValue() {
   }
 
   base::Value::Dict state;
-  state.Set("command_log", std::move(command_log));
+  if (log_) {
+    state.Set("command_log", log_->CloneToList());
+  }
   state.Set("command_queue", base::Value(std::move(queued)));
   return base::Value(std::move(state));
 }

@@ -29,11 +29,13 @@ class MetadataChangeList;
 namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
+class PersistableLog;
 class WebApp;
+struct RegistryUpdateData;
+
 namespace proto {
 class WebApp;
 }  // namespace proto
-struct RegistryUpdateData;
 
 // Exclusively used from the UI thread.
 class WebAppDatabase {
@@ -49,6 +51,10 @@ class WebAppDatabase {
   WebAppDatabase& operator=(const WebAppDatabase&) = delete;
   ~WebAppDatabase();
 
+  // Returns nullptr if OpenDatabase() has not been called yet.
+  const PersistableLog* log() const;
+
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   using RegistryOpenedCallback = base::OnceCallback<void(
       Registry registry,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch)>;
@@ -162,6 +168,9 @@ class WebAppDatabase {
   const raw_ptr<AbstractWebAppDatabaseFactory, DanglingUntriaged>
       database_factory_;
   ReportErrorCallback error_callback_;
+
+  raw_ptr<WebAppProvider> provider_ = nullptr;
+  std::unique_ptr<PersistableLog> log_;
 
   // Database is opened if store is created and all data read.
   bool opened_ = false;

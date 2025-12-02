@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -16,12 +17,15 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/proto/web_app.to_value.h"
 #include "chrome/browser/web_applications/proto/web_app_launch_handler.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_database_serialization.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -79,9 +83,23 @@ WebAppDatabase::~WebAppDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+const PersistableLog* WebAppDatabase::log() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return log_.get();
+}
+
+void WebAppDatabase::SetProvider(base::PassKey<WebAppProvider> pass_key,
+                                 WebAppProvider& provider) {
+  provider_ = &provider;
+}
+
 void WebAppDatabase::OpenDatabase(RegistryOpenedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!store_);
+  log_ = PersistableLog::Create(
+      PersistableLog::GetLogPath(provider_->profile(), "WebAppDatabase.log"),
+      PersistableLog::GetMode(), PersistableLog::GetMaxInMemoryLogEntries(),
+      provider_->file_utils());
 
   syncer::OnceDataTypeStoreFactory store_factory =
       database_factory_->GetStoreFactory();
@@ -144,8 +162,9 @@ WebAppDatabase::ProtobufState WebAppDatabase::ParseProtobufs(
     if (record.id == kDatabaseMetadataKey) {
       bool success = state.metadata.ParseFromString(record.value);
       if (!success) {
-        DLOG(ERROR)
-            << "WebApps LevelDB parse error: can't parse metadata proto.";
+        log_->Append(base::DictValue()
+                         .Set("error", "Cannot parse metadata proto.")
+                         .Set("record", base::Base64Encode(record.value)));
         // TODO: Consider logging a histogram
       }
       continue;
@@ -154,7 +173,9 @@ WebAppDatabase::ProtobufState WebAppDatabase::ParseProtobufs(
     proto::WebApp app_proto;
     bool success = app_proto.ParseFromString(record.value);
     if (!success) {
-      DLOG(ERROR) << "WebApps LevelDB parse error: can't parse app proto.";
+      log_->Append(base::DictValue()
+                       .Set("error", "Cannot parse app proto.")
+                       .Set("record", base::Base64Encode(record.value)));
       // TODO: Consider logging a histogram
     }
     state.apps.emplace(record.id, std::move(app_proto));
@@ -292,15 +313,19 @@ void WebAppDatabase::MigrateShortcutAppsToDiyApps(
     }
     // Populate the scope if it was empty or invalid.
     if (!app_proto.has_sync_data() || !app_proto.sync_data().has_start_url()) {
-      DLOG(ERROR) << "Missing sync data or start_url for shortcut app "
-                  << app_id;
+      log_->Append(
+          base::DictValue()
+              .Set("migration_error", "Missing sync data or start_url.")
+              .Set("app_id", app_id));
       continue;
     }
     GURL start_url(app_proto.sync_data().start_url());
     if (!start_url.is_valid()) {
       // Cannot recover scope, mark for potential cleanup later if needed.
-      DLOG(ERROR) << "Invalid start_url for shortcut app " << app_id << ":"
-                  << start_url.possibly_invalid_spec();
+      log_->Append(base::DictValue()
+                       .Set("migration_error", "Invalid start_url.")
+                       .Set("app_id", app_id)
+                       .Set("start_url", start_url.possibly_invalid_spec()));
       continue;
     }
     app_proto.set_scope(start_url.GetWithoutFilename().spec());
@@ -621,8 +646,10 @@ void WebAppDatabase::OnDatabaseOpened(
     std::unique_ptr<syncer::DataTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
+    log_->Append(base::DictValue()
+                     .Set("message", "WebApps LevelDB open error")
+                     .Set("error", error->ToString()));
     error_callback_.Run(*error);
-    DLOG(ERROR) << "WebApps LevelDB opening error: " << error->ToString();
     return;
   }
 
@@ -640,8 +667,10 @@ void WebAppDatabase::OnAllDataAndMetadataRead(
   TRACE_EVENT0("ui", "WebAppDatabase::OnAllMetadataRead");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
+    log_->Append(base::DictValue()
+                     .Set("message", "WebApps LevelDB read error")
+                     .Set("error", error->ToString()));
     error_callback_.Run(*error);
-    DLOG(ERROR) << "WebApps LevelDB read error: " << error->ToString();
     return;
   }
 
@@ -653,6 +682,12 @@ void WebAppDatabase::OnAllDataAndMetadataRead(
     std::unique_ptr<WebApp> web_app = ParseWebAppProto(app_proto);
     base::UmaHistogramBoolean("WebApp.Database.ValidProto", web_app != nullptr);
     if (!web_app) {
+      // TODO(https://crbug.com/40224498): Have ParseWebAppProto return a string
+      // or the error enum to output here.
+      log_->Append(base::DictValue()
+                       .Set("message", "Failed to parse web app proto")
+                       .Set("app_id", app_id)
+                       .Set("proto", proto::ToValue(app_proto)));
       continue;
     }
 
@@ -661,9 +696,11 @@ void WebAppDatabase::OnAllDataAndMetadataRead(
     base::UmaHistogramBoolean("WebApp.Database.AppIdMatch", !mismatch);
 
     if (mismatch) {
-      DLOG(ERROR) << "WebApps LevelDB error: app_id doesn't match storage key "
-                  << app_id << " vs " << web_app->app_id() << ", from "
-                  << web_app->manifest_id();
+      log_->Append(base::DictValue()
+                       .Set("message", "App ID doesn't match storage key")
+                       .Set("expected_app_id", app_id)
+                       .Set("parsed_app_id", web_app->app_id())
+                       .Set("proto", proto::ToValue(app_proto)));
       continue;
     }
     registry.emplace(app_id, std::move(web_app));
@@ -680,8 +717,10 @@ void WebAppDatabase::OnDataWritten(
     const std::optional<syncer::ModelError>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
+    log_->Append(base::DictValue()
+                     .Set("message", "WebApps LevelDB write error")
+                     .Set("error", error->ToString()));
     error_callback_.Run(*error);
-    DLOG(ERROR) << "WebApps LevelDB write error: " << error->ToString();
   }
 
   std::move(callback).Run(!error);

@@ -95,6 +95,9 @@ class PersistableLog {
   // front).
   const base::circular_deque<base::DictValue>& GetEntries() const;
 
+  // Helper method to convert the log entries to a ListValue.
+  base::ListValue CloneToList() const;
+
  private:
   PersistableLog(
       const base::FilePath& log_file,

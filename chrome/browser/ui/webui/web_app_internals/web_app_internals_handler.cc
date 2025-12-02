@@ -32,6 +32,7 @@
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -63,6 +64,7 @@ constexpr char kShouldGarbageCollectStoragePartitions[] =
     "ShouldGarbageCollectStoragePartitions";
 constexpr char kLockManager[] = "LockManager";
 constexpr char kCommandManager[] = "CommandManager";
+constexpr char kDatabaseLog[] = "DatabaseLog";
 constexpr char kIconErrorLog[] = "IconErrorLog";
 #if BUILDFLAG(IS_MAC)
 constexpr char kAppShimRegistryLocalStorage[] = "AppShimRegistryLocalStorage";
@@ -84,27 +86,33 @@ constexpr char kNeedsRecordWebAppDebugInfo[] =
 base::Value::Dict BuildIndexJson() {
   return base::Value::Dict().Set(
       "Index", base::Value::List()
+                   // App state
                    .Append(kInstalledWebApps)
+#if BUILDFLAG(IS_MAC)
+                   .Append(kAppShimRegistryLocalStorage)
+#endif
+                   // Core component logs.
+                   .Append(kLockManager)
+                   .Append(kCommandManager)
+                   .Append(kDatabaseLog)
+                   .Append(kNavigationCapturing)
+                   .Append(kIconErrorLog)
+                   // Preferences.
                    .Append(kPreinstalledWebAppConfigs)
                    .Append(kUserUninstalledPreinstalledWebAppPrefs)
                    .Append(kWebAppPreferences)
                    .Append(kWebAppIphPreferences)
                    .Append(kWebAppMlPreferences)
                    .Append(kWebAppIphLcPreferences)
+                   // Isolated Web App Systems.
                    .Append(kShouldGarbageCollectStoragePartitions)
-                   .Append(kLockManager)
-                   .Append(kNavigationCapturing)
-                   .Append(kCommandManager)
-                   .Append(kIconErrorLog)
-#if BUILDFLAG(IS_MAC)
-                   .Append(kAppShimRegistryLocalStorage)
-#endif
                    .Append(kIsolatedWebAppUpdateManager)
                    .Append(kIsolatedWebAppPolicyManager)
                    .Append(kIwaKeyDistributionInfoProvider)
 #if BUILDFLAG(IS_CHROMEOS)
                    .Append(kIwaBundleCacheManager)
 #endif  //  BUILDFLAG(IS_CHROMEOS)
+        // Disk state is at the end because it is populated asynchronously.
                    .Append(kWebAppDirectoryDiskState));
 }
 
@@ -218,6 +226,15 @@ base::Value::Dict BuildCommandManagerJson(web_app::WebAppProvider& provider) {
                                  provider.command_manager().ToDebugValue());
 }
 
+base::Value::Dict BuildDatabaseLogJson(web_app::WebAppProvider& provider) {
+  const web_app::PersistableLog* log =
+      provider.sync_bridge_unsafe().database_log();
+  if (!log) {
+    return base::Value::Dict();
+  }
+  return base::DictValue().Set(kDatabaseLog, log->CloneToList());
+}
+
 base::Value::Dict BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
   base::Value::Dict root;
 
@@ -322,27 +339,33 @@ void WebAppInternalsHandler::BuildDebugInfo(
   base::Value::List root =
       base::Value::List()
           .Append(BuildIndexJson())
+          // App state
           .Append(BuildInstalledWebAppsJson(*provider))
+#if BUILDFLAG(IS_MAC)
+          .Append(BuildAppShimRegistryLocalStorageJson())
+#endif
+          // Core components
+          .Append(BuildLockManagerJson(*provider))
+          .Append(BuildNavigationCapturingLog(*provider))
+          .Append(BuildCommandManagerJson(*provider))
+          .Append(BuildDatabaseLogJson(*provider))
+          .Append(BuildIconErrorLogJson(*provider))
+          // Preferences
           .Append(BuildPreinstalledWebAppConfigsJson(*provider))
           .Append(BuildUserUninstalledPreinstalledWebAppPrefsJson(profile))
           .Append(BuildWebAppsPrefsJson(profile))
           .Append(BuildWebAppIphPrefsJson(profile))
           .Append(BuildWebAppMlPrefsJson(profile))
           .Append(BuildWebAppLinkCapturingIphPrefsJson(profile))
+          // Isolated Web App Systems.
           .Append(BuildShouldGarbageCollectStoragePartitionsPrefsJson(profile))
-          .Append(BuildLockManagerJson(*provider))
-          .Append(BuildNavigationCapturingLog(*provider))
-          .Append(BuildCommandManagerJson(*provider))
-          .Append(BuildIconErrorLogJson(*provider))
-#if BUILDFLAG(IS_MAC)
-          .Append(BuildAppShimRegistryLocalStorageJson())
-#endif
           .Append(BuildIsolatedWebAppUpdaterManagerJson(*provider))
           .Append(BuildIsolatedWebAppPolicyManagerJson(*provider))
 #if BUILDFLAG(IS_CHROMEOS)
           .Append(BuildIwaCacheManagerJson(*provider))
 #endif  //  BUILDFLAG(IS_CHROMEOS)
           .Append(BuildIwaKeyDistributionInfoProviderJson());
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&BuildWebAppDiskStateJson,

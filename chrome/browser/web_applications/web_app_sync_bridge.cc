@@ -221,13 +221,14 @@ WebAppSyncBridge::WebAppSyncBridge(
 
 WebAppSyncBridge::~WebAppSyncBridge() = default;
 
-void WebAppSyncBridge::SetProvider(base::PassKey<WebAppProvider>,
+void WebAppSyncBridge::SetProvider(base::PassKey<WebAppProvider> pass_key,
                                    WebAppProvider& provider) {
   database_ = std::make_unique<WebAppDatabase>(
       &(provider.database_factory()),
       base::BindRepeating(&WebAppSyncBridge::ReportErrorToChangeProcessor,
                           base::Unretained(this)));
   provider_ = &provider;
+  database_->SetProvider(pass_key, *provider_);
 }
 
 [[nodiscard]] ScopedRegistryUpdate WebAppSyncBridge::BeginUpdate(
@@ -943,6 +944,10 @@ bool WebAppSyncBridge::IsEntityDataValid(
   DLOG(ERROR) << "Cannot parse sync entity: "
               << base::ToString(manifest_id.error());
   return false;
+}
+
+const PersistableLog* WebAppSyncBridge::database_log() const {
+  return database_->log();
 }
 
 void WebAppSyncBridge::SetAppNotLocallyInstalledForTesting(

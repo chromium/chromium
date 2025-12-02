@@ -264,6 +264,8 @@ class WebAppProvider : public KeyedService {
   // is repeating so tests can test the throttle logic.
   base::RepeatingClosure DisableDelayedPostStartupWorkForTesting();
 
+  Profile* profile() const { return profile_.get(); }
+
  protected:
   virtual void StartImpl();
 
