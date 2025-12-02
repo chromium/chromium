@@ -216,6 +216,11 @@ component("capture_lib") {
       "video/mac/video_capture_metrics_mac.mm",
     ]
     deps += [ "//third_party/decklink" ]
+    frameworks += [
+      # Needed for the logging of camera information for
+      # https://crbug.com/461717105; remove when that logging is removed.
+      "CoreMediaIO.framework",
+    ]
   }
 
   if (is_ios) {

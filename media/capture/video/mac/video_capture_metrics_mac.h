@@ -19,6 +19,10 @@ void LogFirstCapturedVideoFrame(const AVCaptureDeviceFormat* bestCaptureFormat,
                                 const CMSampleBufferRef buffer);
 CAPTURE_EXPORT void LogReactionEffectsGesturesState();
 
+// Logs the implementation details of the given device. See
+// https://crbug.com/461717105.
+CAPTURE_EXPORT void LogAVCaptureDeviceInfo(AVCaptureDevice* device);
+
 }  // namespace media
 
 #endif  // MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_METRICS_MAC_H_

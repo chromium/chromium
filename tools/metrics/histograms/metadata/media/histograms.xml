@@ -7399,6 +7399,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Mac.Device.ImplementationClassification"
+    enum="ImplementationClassification" expires_after="2026-06-01">
+  <owner>avi@chromium.org</owner>
+  <owner>mark@chromium.org</owner>
+  <summary>
+    A classification of the type of AVCaptureDevice being used for capture. This
+    UMA is recorded once per opening of the device.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Mac.Device.ReactionEffectsGesturesState"
     enum="ReactionEffectsGesturesState" expires_after="2026-09-21">
   <owner>guidou@chromium.org</owner>
