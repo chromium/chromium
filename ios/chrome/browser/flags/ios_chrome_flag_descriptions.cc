@@ -445,6 +445,10 @@ const char kDefaultBrowserPromoPropensityModelDescription[] =
     "When enabled, a propensity model will help make the determination of "
     "whether to show a default browser promo";
 
+const char kDefaultBrowserPromoRefreshName[] = "Default Browser Promo Refresh";
+const char kDefaultBrowserPromoRefreshDescription[] =
+    "When enabled, the default browser promo will be updated.";
+
 const char kDetectMainThreadFreezeName[] = "Detect freeze in the main thread.";
 const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "

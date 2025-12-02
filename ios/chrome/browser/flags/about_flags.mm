@@ -416,6 +416,30 @@ const FeatureEntry::FeatureVariation kDownloadListVariations[] = {
      std::size(kDownloadListCustomUIParam), nullptr},
 };
 
+// Default browser promo refresh feature flag parameters.
+const FeatureEntry::FeatureParam kDefaultBrowserPromoRefreshArm1[] = {
+    {kDefaultBrowserPromoRefreshParam,
+     kDefaultBrowserPromoRefreshParamNoInstructions}};
+const FeatureEntry::FeatureParam kDefaultBrowserPromoRefreshArm2[] = {
+    {kDefaultBrowserPromoRefreshParam,
+     kDefaultBrowserPromoRefreshParamSystemAlertInstructions}};
+const FeatureEntry::FeatureParam kDefaultBrowserPromoRefreshArm3[] = {
+    {kDefaultBrowserPromoRefreshParam,
+     kDefaultBrowserPromoRefreshParamPictureInPictureInstructions}};
+const FeatureEntry::FeatureParam kDefaultBrowserPromoRefreshArm4[] = {
+    {kDefaultBrowserPromoRefreshParam,
+     kDefaultBrowserPromoRefreshParamCarouselInstructions}};
+const FeatureEntry::FeatureVariation kDefaultBrowserPromoRefreshVariations[] = {
+    {"No instructions", kDefaultBrowserPromoRefreshArm1,
+     std::size(kDefaultBrowserPromoRefreshArm1), nullptr},
+    {"Instructions in Systems Alert", kDefaultBrowserPromoRefreshArm2,
+     std::size(kDefaultBrowserPromoRefreshArm2), nullptr},
+    {"Instructions in Picture-in-picture", kDefaultBrowserPromoRefreshArm3,
+     std::size(kDefaultBrowserPromoRefreshArm3), nullptr},
+    {"Instructions in Carousel", kDefaultBrowserPromoRefreshArm4,
+     std::size(kDefaultBrowserPromoRefreshArm4), nullptr},
+};
+
 const FeatureEntry::FeatureParam kIOSDockingPromoDisplayedAfterFRE[] = {
     {kIOSDockingPromoExperimentType, "0"}};
 const FeatureEntry::FeatureParam kIOSDockingPromoDisplayedAtAppLaunch[] = {
@@ -1773,6 +1797,13 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kDefaultBrowserPromoIpadInstructionsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDefaultBrowserPromoIpadInstructions)},
+    {"default-browser-promo-refresh",
+     flag_descriptions::kDefaultBrowserPromoRefreshName,
+     flag_descriptions::kDefaultBrowserPromoRefreshDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kDefaultBrowserPromoRefresh,
+                                    kDefaultBrowserPromoRefreshVariations,
+                                    "DefaultBrowserPromoRefresh")},
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
     {"feed-background-refresh-ios",
      flag_descriptions::kFeedBackgroundRefreshName,
