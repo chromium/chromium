@@ -118,7 +118,7 @@ class CounterDirectives {
         .ValueOrDefault(reset_value_.value_or(0));
   }
 
-  friend bool operator==(const CounterDirectives&, const CounterDirectives&);
+  bool operator==(const CounterDirectives&) const = default;
 
  private:
   std::optional<int> reset_value_;

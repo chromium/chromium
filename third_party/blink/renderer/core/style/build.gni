@@ -23,7 +23,6 @@ blink_core_sources_style = [
   "content_data.cc",
   "content_data.h",
   "coord_box_offset_path_operation.h",
-  "counter_directives.cc",
   "counter_directives.h",
   "cursor_data.h",
   "cursor_list.h",
