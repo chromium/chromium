@@ -21,7 +21,7 @@ test(t => {
   ctx.fillStyle = "#ff0000";
   old = ctx.fillStyle;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against "#ff0000".
+  // from rounding), so compare against `old` instead of against "#ff0000".
   ctx.save();
   _assertSame(ctx.fillStyle, old, "ctx.fillStyle", "old");
   ctx.restore();
@@ -42,7 +42,7 @@ test(t => {
   ctx.fillStyle = "#ff0000";
   old = ctx.fillStyle;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against "#ff0000".
+  // from rounding), so compare against `old` instead of against "#ff0000".
   ctx.save();
   _assertSame(ctx.fillStyle, old, "ctx.fillStyle", "old");
   ctx.restore();

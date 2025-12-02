@@ -21,7 +21,7 @@ test(t => {
   ctx.globalCompositeOperation = "copy";
   old = ctx.globalCompositeOperation;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against "copy".
+  // from rounding), so compare against `old` instead of against "copy".
   ctx.save();
   _assertSame(ctx.globalCompositeOperation, old, "ctx.globalCompositeOperation", "old");
   ctx.restore();
@@ -42,7 +42,7 @@ test(t => {
   ctx.globalCompositeOperation = "copy";
   old = ctx.globalCompositeOperation;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against "copy".
+  // from rounding), so compare against `old` instead of against "copy".
   ctx.save();
   _assertSame(ctx.globalCompositeOperation, old, "ctx.globalCompositeOperation", "old");
   ctx.restore();

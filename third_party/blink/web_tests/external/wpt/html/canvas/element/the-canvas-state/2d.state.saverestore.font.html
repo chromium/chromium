@@ -28,7 +28,7 @@ test(t => {
   ctx.font = "25px serif";
   old = ctx.font;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against "25px serif".
+  // from rounding), so compare against `old` instead of against "25px serif".
   ctx.save();
   _assertSame(ctx.font, old, "ctx.font", "old");
   ctx.restore();
@@ -51,7 +51,7 @@ test(t => {
   ctx.font = "25px serif";
   old = ctx.font;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against "25px serif".
+  // from rounding), so compare against `old` instead of against "25px serif".
   ctx.save();
   _assertSame(ctx.font, old, "ctx.font", "old");
   ctx.restore();

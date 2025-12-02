@@ -25,7 +25,7 @@ test(t => {
   ctx.shadowBlur = 5;
   old = ctx.shadowBlur;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against 5.
+  // from rounding), so compare against `old` instead of against 5.
   ctx.save();
   _assertSame(ctx.shadowBlur, old, "ctx.shadowBlur", "old");
   ctx.restore();
@@ -46,7 +46,7 @@ test(t => {
   ctx.shadowBlur = 5;
   old = ctx.shadowBlur;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against 5.
+  // from rounding), so compare against `old` instead of against 5.
   ctx.save();
   _assertSame(ctx.shadowBlur, old, "ctx.shadowBlur", "old");
   ctx.restore();

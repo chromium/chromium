@@ -646710,56 +646710,56 @@
         ]
        ],
        "2d.state.saverestore.fillStyle.html": [
-        "40710fd53e94fa40fe4f06210369c3d279bac91e",
+        "1bd686ea4e07079c9caf43907d5c180b28f7acc7",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.font.html": [
-        "ba5f062d116f46ab81fbbaf917f944947b55ca22",
+        "787b8f2ce2bd0e3cdba9baeab58c11cd35b2aa0f",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.globalAlpha.html": [
-        "1bbf7997cb0f8caae74128b2ade60bf9bf80dae9",
+        "f743a0432faac3e66bc0d97b613a22ebd9bd3372",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.globalCompositeOperation.html": [
-        "e33029beddf219f0aa17c9dcc970742e144e32ec",
+        "73e50a8a64b2df5cd15599b9534e30fa48419d39",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.lineCap.html": [
-        "361168517954b071cd7895fb7c944ad39150a950",
+        "94a56c590a686e9592e66839f96c20f5d1046076",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.lineJoin.html": [
-        "95292fb76f9a51b7c99332ad488d12cf8772c792",
+        "fececcf1d5d6ece864552f5e4b0e5da81bf590b3",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.lineWidth.html": [
-        "2571fc6ba5448a4310ff5dd53d9991b692b27e18",
+        "f1949acc7b39495effa2bc828b2bc64789221efb",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.miterLimit.html": [
-        "fdcc2f03ba4e2e3f1c4edd769e453cbd66066cf9",
+        "e3e53bf453f2a3e6c21b2b895d49562867834c03",
         [
          null,
          {}
@@ -646773,28 +646773,28 @@
         ]
        ],
        "2d.state.saverestore.shadowBlur.html": [
-        "28d885b97d4f755df0198b7b7bb051a68115c2b9",
+        "32ebe729155803d3430a8859f783cb13f90ca2a0",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.shadowColor.html": [
-        "03cb498c6e919585d2e596e41774604d61cc2116",
+        "7b1e3cc89ca1e5bd4b61d46ed59b7d9a1ef96d69",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.shadowOffsetX.html": [
-        "f539043e941c0c5700fb07381936bdab2f2b13aa",
+        "266906e368f1b9ca997a2388fdfb161894025b94",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.shadowOffsetY.html": [
-        "e1d8b05dfb1013c8c7297259e8cec9136f8db1be",
+        "3abc969f15e483cd8923d2a86293facbdeb82cf3",
         [
          null,
          {}
@@ -646815,21 +646815,21 @@
         ]
        ],
        "2d.state.saverestore.strokeStyle.html": [
-        "8dbf1bb47d72b6cab99dc706cc2e312ff759958f",
+        "ff6bdedc4e0401604ccb447a05d8ee0d5085ac6e",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.textAlign.html": [
-        "271864c88f7fe238dbc757626fecdbd87f737321",
+        "296d54f0be556e40fec726362eae4fd23aa5eb23",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.textBaseline.html": [
-        "a6f19e77ed1aecd756a24ecd1508fdcdb42b92fe",
+        "e49a8b5efe23983e15ae85bd80227854044181bf",
         [
          null,
          {}
@@ -660950,98 +660950,98 @@
         ]
        ],
        "2d.state.saverestore.fillStyle.html": [
-        "18c54142ebc080741e7f9d94043c5ff3dfc7351e",
+        "7540678a6649c36bc5a3197a6ba4bc8b9ea799f3",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.fillStyle.worker.js": [
-        "53b987ff2eae105155758e4121bc7cd0411e7f66",
+        "e7cbf3346ca3605a9c29461c299410c92e6e2af1",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.fillStyle.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.globalAlpha.html": [
-        "39b8b1df592c3297d2a1c04266c18b72ee7ada0b",
+        "893799c56a4e8a4ebdb75d82dfca303fccad7165",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.globalAlpha.worker.js": [
-        "7634ca52aa18b9fcdb66db8405abd0c7dd6841b9",
+        "f1b6731ecc1923e6b9420c66f3a61de5fc9c310e",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.globalAlpha.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.globalCompositeOperation.html": [
-        "03e1aa65a914dc71626ff7ed2f7e83c58cfd8fcd",
+        "045f70ecb98b178e15f680f900abb7544d0cf8b4",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.globalCompositeOperation.worker.js": [
-        "c4ab3ea7da88ef26797bb8903365b09e974b4179",
+        "09d60a272d1726ad93e0d37045f8552a6321cbfe",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.globalCompositeOperation.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.lineCap.html": [
-        "31e2798c77c73e0122f65f3b65276533b4873e4e",
+        "bf25667eb2381b56b36add95a9b08aed6c0f915b",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.lineCap.worker.js": [
-        "cb78a34b72d296a857c86a3a862c42fab9734134",
+        "60815127af01e2c64742e0c07c43edcd6faffa8e",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.lineCap.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.lineJoin.html": [
-        "fa496f0e27720fcd392a025c842a4a71ba4bd963",
+        "a0aa6102e958caffe29ea988e16e03eb95318a1b",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.lineJoin.worker.js": [
-        "d1a556033837c98fabc53547a26de30cef96f002",
+        "ae6f1e47b446ae71ecadbdc562c51f9172492247",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.lineJoin.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.lineWidth.html": [
-        "f13c48e9c4656bb48629b0796610023534b1b20d",
+        "f6a18a17e3015153439baa7864d293f0781dfb23",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.lineWidth.worker.js": [
-        "a717a3c9d7f9d3ab1089253f09ee9f6b2951ac3e",
+        "5a7ed6ad22425c412dc74b9c04aa724dafa9c521",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.lineWidth.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.miterLimit.html": [
-        "aea7021bc630ed6f3b179d47b65cd737441e835f",
+        "3703e345f7713f63e06ac3b861c7e87be545ed66",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.miterLimit.worker.js": [
-        "d60ff6cf7453fe53da7b225fed7682eb8a3b36c6",
+        "39c9e423b57bd1671c210b3bc68821cfa6ac968a",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.miterLimit.worker.html",
          {}
@@ -661062,56 +661062,56 @@
         ]
        ],
        "2d.state.saverestore.shadowBlur.html": [
-        "1e0b0d88c1fed2749bc2a52a1e88df17b61fdefc",
+        "d753e4eb1d0657683b599ecfe6b990fe49caffd5",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.shadowBlur.worker.js": [
-        "cd72c68bd8dd9140ee7c63edc4fc81778b58dd41",
+        "d6eb35344727081678b14cd6ebc4b75be6f837c3",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.shadowBlur.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.shadowColor.html": [
-        "40ba7b5915918336687256afb7dfb41f80546db3",
+        "4c9e9454d44a24d8919350068a23227526af0ce6",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.shadowColor.worker.js": [
-        "529a2bc9a04abf29ef8246cd72a42135e90c8ed4",
+        "b8d3460366cb06b482224fdeefc45151ec25842a",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.shadowColor.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.shadowOffsetX.html": [
-        "71f109648a27d8ce6f1448c3ad6b3ffac0d24e50",
+        "3b778c298b38c13110a89db770c0de6191fdcab3",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.shadowOffsetX.worker.js": [
-        "f3a4031a86c963f8d6e75a06d6d4a6bc476d0389",
+        "749a8f9ecaee207ba82ca195a090d97e7eedc9d2",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.shadowOffsetX.worker.html",
          {}
         ]
        ],
        "2d.state.saverestore.shadowOffsetY.html": [
-        "eaf6c53a90307842cbc92446081a2d5bbca6a183",
+        "e0dc0c66e4fda2c547f8e56178889f4a8c6ee945",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.shadowOffsetY.worker.js": [
-        "b00f76d6882b4773650c27ecb6ca30e5a9b96a8b",
+        "23cfe4767b81f65a578b429678fd184165ab8f38",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.shadowOffsetY.worker.html",
          {}
@@ -661146,14 +661146,14 @@
         ]
        ],
        "2d.state.saverestore.strokeStyle.html": [
-        "58a94aac742635df3ed53022615b98fe2788240d",
+        "d5d0b22fc17096893a4c8937f645dae0a3eab219",
         [
          null,
          {}
         ]
        ],
        "2d.state.saverestore.strokeStyle.worker.js": [
-        "bb10ee9dcd98a27c10d05fdf19401fff7108b9a3",
+        "57199178e2fd09134ecba03b888534c6684fa46d",
         [
          "html/canvas/offscreen/the-canvas-state/2d.state.saverestore.strokeStyle.worker.html",
          {}
@@ -790913,6 +790913,13 @@
       ]
      },
      "the-mediastreamaudiodestinationnode-interface": {
+      "closed-audiocontext-construction.html": [
+       "23bc9dc81b18bf0adb1b9d6f766029fb05d09b44",
+       [
+        null,
+        {}
+       ]
+      ],
       "ctor-mediastreamaudiodestination.html": [
        "7d67c1e6897c43090cd460f344ebed591f4ffe7a",
        [
@@ -808379,7 +808386,7 @@
       ]
      ],
      "layer_normalization.https.any.js": [
-      "7ac8139a88beeb83f793dd39542cfb7391d9d96b",
+      "3588afd678bd8182f0864034b2b2b924932289fb",
       [
        "webnn/conformance_tests/layer_normalization.https.any.html?cpu",
        {

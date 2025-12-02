@@ -21,7 +21,7 @@ test(t => {
   ctx.lineJoin = "round";
   old = ctx.lineJoin;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against "round".
+  // from rounding), so compare against `old` instead of against "round".
   ctx.save();
   _assertSame(ctx.lineJoin, old, "ctx.lineJoin", "old");
   ctx.restore();
@@ -42,7 +42,7 @@ test(t => {
   ctx.lineJoin = "round";
   old = ctx.lineJoin;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against "round".
+  // from rounding), so compare against `old` instead of against "round".
   ctx.save();
   _assertSame(ctx.lineJoin, old, "ctx.lineJoin", "old");
   ctx.restore();

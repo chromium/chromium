@@ -28,7 +28,7 @@ test(t => {
   ctx.textBaseline = "bottom";
   old = ctx.textBaseline;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against "bottom".
+  // from rounding), so compare against `old` instead of against "bottom".
   ctx.save();
   _assertSame(ctx.textBaseline, old, "ctx.textBaseline", "old");
   ctx.restore();
@@ -51,7 +51,7 @@ test(t => {
   ctx.textBaseline = "bottom";
   old = ctx.textBaseline;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against "bottom".
+  // from rounding), so compare against `old` instead of against "bottom".
   ctx.save();
   _assertSame(ctx.textBaseline, old, "ctx.textBaseline", "old");
   ctx.restore();

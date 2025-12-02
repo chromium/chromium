@@ -21,7 +21,7 @@ test(t => {
   ctx.lineWidth = 0.5;
   old = ctx.lineWidth;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against 0.5.
+  // from rounding), so compare against `old` instead of against 0.5.
   ctx.save();
   _assertSame(ctx.lineWidth, old, "ctx.lineWidth", "old");
   ctx.restore();
@@ -42,7 +42,7 @@ test(t => {
   ctx.lineWidth = 0.5;
   old = ctx.lineWidth;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against 0.5.
+  // from rounding), so compare against `old` instead of against 0.5.
   ctx.save();
   _assertSame(ctx.lineWidth, old, "ctx.lineWidth", "old");
   ctx.restore();

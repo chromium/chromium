@@ -21,7 +21,7 @@ test(t => {
   ctx.miterLimit = 0.5;
   old = ctx.miterLimit;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against 0.5.
+  // from rounding), so compare against `old` instead of against 0.5.
   ctx.save();
   _assertSame(ctx.miterLimit, old, "ctx.miterLimit", "old");
   ctx.restore();
@@ -42,7 +42,7 @@ test(t => {
   ctx.miterLimit = 0.5;
   old = ctx.miterLimit;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against 0.5.
+  // from rounding), so compare against `old` instead of against 0.5.
   ctx.save();
   _assertSame(ctx.miterLimit, old, "ctx.miterLimit", "old");
   ctx.restore();

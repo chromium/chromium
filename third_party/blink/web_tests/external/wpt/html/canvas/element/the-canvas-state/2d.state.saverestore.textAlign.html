@@ -28,7 +28,7 @@ test(t => {
   ctx.textAlign = "center";
   old = ctx.textAlign;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against "center".
+  // from rounding), so compare against `old` instead of against "center".
   ctx.save();
   _assertSame(ctx.textAlign, old, "ctx.textAlign", "old");
   ctx.restore();
@@ -51,7 +51,7 @@ test(t => {
   ctx.textAlign = "center";
   old = ctx.textAlign;
   // We're not interested in failures caused by get(set(x)) != x (e.g.
-  // from rounding), so compare against 'old' instead of against "center".
+  // from rounding), so compare against `old` instead of against "center".
   ctx.save();
   _assertSame(ctx.textAlign, old, "ctx.textAlign", "old");
   ctx.restore();
