@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -99,7 +100,7 @@ BASE_EXPORT bool ReadProcMaps(std::string* proc_maps);
 
 // Parses /proc/<pid>/maps input data and stores in |regions|. Returns true
 // and updates |regions| if and only if all of |input| was successfully parsed.
-BASE_EXPORT bool ParseProcMaps(const std::string& input,
+BASE_EXPORT bool ParseProcMaps(std::string_view input,
                                std::vector<MappedMemoryRegion>* regions);
 
 struct SmapsRollup {

@@ -13,6 +13,7 @@
 #include <stddef.h>
 #include <unistd.h>
 
+#include <string_view>
 #include <unordered_map>
 
 #include "base/files/scoped_file.h"
@@ -102,7 +103,7 @@ bool ReadProcMaps(std::string* proc_maps) {
   return true;
 }
 
-bool ParseProcMaps(const std::string& input,
+bool ParseProcMaps(std::string_view input,
                    std::vector<MappedMemoryRegion>* regions_out) {
   CHECK(regions_out);
   std::vector<MappedMemoryRegion> regions;
