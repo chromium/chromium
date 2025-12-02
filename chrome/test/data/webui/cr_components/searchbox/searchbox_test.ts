@@ -23,7 +23,7 @@ enum Attributes {
   SELECTED = 'selected',
 }
 
-interface ComposeClickEventDetail {
+interface ClickEventDetail {
   button: number;
   ctrlKey: boolean;
   metaKey: boolean;
@@ -348,7 +348,7 @@ suite('NewTabPageRealboxTest', () => {
     // listens for. This simulates the `cr-searchbox-compose-button`
     // child `cr-button` being clicked and its `onClick_` function being
     // called.
-    const eventDetail: ComposeClickEventDetail = {
+    const eventDetail: ClickEventDetail = {
       button: 0,
       ctrlKey: false,
       metaKey: false,
@@ -3108,10 +3108,24 @@ suite('NewTabPageRealboxTest', () => {
   });
 
   suite('NtpRealboxNext', () => {
-    setup(async () => {
-      realbox.ntpRealboxNextEnabled = true;
-      await microtasksFinished();
-    });
+    test(
+        'Contextual component empty area click focuses search input',
+        async () => {
+          // Arrange.
+          realbox = await createAndAppendRealbox({
+            composeButtonEnabled: true,
+            composeboxEnabled: true,
+            searchboxLayoutMode: 'TallTopContext',
+            ntpRealboxNextEnabled: true,
+          });
+          const contextElement = realbox.shadowRoot.querySelector(
+              'contextual-entrypoint-and-carousel');
+          assertTrue(!!contextElement);
+          contextElement.dispatchEvent(
+              new CustomEvent('context-menu-container-click'));
+          assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
+          assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+        });
 
     test('pasting files adds them to contextual entrypoint', async () => {
       loadTimeData.overrideValues({composeboxFileMaxCount: 2});
@@ -3188,6 +3202,8 @@ suite('NewTabPageRealboxTest', () => {
     });
 
     test('pasting unsupported files shows error', async () => {
+      realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});
+
       let errorMessage: string|null = null;
       realbox.$.errorScrim.setErrorMessage = (message: string) => {
         errorMessage = message;
@@ -3212,6 +3228,9 @@ suite('NewTabPageRealboxTest', () => {
     });
 
     test('pasting text sets pastedInInput flag', async () => {
+      // Re-create realbox to pick up new loadTimeData.
+      realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});
+
       let addFilesCalled = false;
       realbox.$.context.addFiles = (_files: FileList|null) => {
         addFilesCalled = true;

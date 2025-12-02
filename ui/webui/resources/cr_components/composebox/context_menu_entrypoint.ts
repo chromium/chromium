@@ -172,11 +172,12 @@ export class ContextMenuEntrypointElement extends
     return noNewContextAllowed || isTabInContext;
   }
 
-  protected onEntrypointClick_() {
+  protected onEntrypointClick_(e: Event) {
+    e.stopPropagation();
+
     const metricName =
         'ContextualSearch.ContextMenuEntry.Clicked.' + this.metricsSource_;
     chrome.metricsPrivate.recordBoolean(metricName, true);
-
     if (this.entrypointName === 'Omnibox') {
       const entrypoint =
           this.shadowRoot.querySelector<HTMLElement>('#entrypoint');

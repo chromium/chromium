@@ -320,6 +320,10 @@ cr-searchbox-icon {
   display: none;
 }
 
+:host([searchbox-layout-mode^='Tall']) contextual-entrypoint-and-carousel {
+  z-index: 100;
+}
+
 :-webkit-any(input, cr-searchbox-icon, .searchbox-icon-button) {
   z-index: 100;
 }
@@ -409,6 +413,10 @@ search-animated-glow {
 
 :host([ntp-realbox-next-enabled][searchbox-layout-mode^='Tall']) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
   --cr-icon-button-icon-size: 20px;
+}
+
+:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel {
+  position: relative;
 }
 
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(composebox-entrypoint) {

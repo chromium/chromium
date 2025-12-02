@@ -27,6 +27,7 @@ ${this.ntpRealboxNextEnabled ? html`
       placeholder="${this.computePlaceholderText_(this.placeholderText)}"
       @copy="${this.onInputCutCopy_}"
       @cut="${this.onInputCutCopy_}" @focus="${this.onInputFocus_}"
+      @focusout="${this.onInputFocusout_}"
       @input="${this.onInputInput_}" @keydown="${this.onInputKeydown_}"
       @keyup="${this.onInputKeyup_}" @mousedown="${this.onInputMouseDown_}"
       @paste="${this.onInputPaste_}">
@@ -69,6 +70,7 @@ ${this.ntpRealboxNextEnabled ? html`
           @set-create-image-mode="${this.setCreateImageMode_}"
           @open-voice-search="${this.onVoiceSearchClick_}"
           @get-tab-preview="${this.getTabPreview_}"
+          @context-menu-container-click="${this.onContextMenuContainerClick_}"
           ?show-dropdown="${this.dropdownIsVisible}"
           ?show-voice-search="${this.shouldShowVoiceSearch_}"
           searchbox-layout-mode="${this.searchboxLayoutMode}"

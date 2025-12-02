@@ -50,7 +50,9 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         `;
 
   const contextMenu = html`
-      <div class="context-menu-container" part="context-menu-and-tools">
+      <div class="context-menu-container" part="context-menu-and-tools"
+          @mousedown="${this.preventFocus_}"
+          @click="${this.onContextMenuContainerClick_}">
         <cr-composebox-context-menu-entrypoint id="contextEntrypoint"
             part="composebox-entrypoint"
             exportparts="context-menu-entrypoint-icon"
@@ -112,7 +114,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   <!-- Suggestions are slotted in from the parent component. -->
   <slot id="dropdownMatches"></slot>
   ${this.searchboxLayoutMode === 'Compact' && toolChipsVisible ? html`
-    <div class="context-menu-container" id='toolChipsContainer'
+    <div class="context-menu-container" id="toolChipsContainer"
         part="tool-chips-container">${toolChips}</div>
   ` : ''}
   ${this.searchboxLayoutMode === 'TallBottomContext' || this.searchboxLayoutMode === '' ? html`

@@ -441,6 +441,27 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
   }
 
+  protected preventFocus_(e: FocusEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  protected onContextMenuContainerClick_(e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Ignore non-primary button clicks.
+    if (e.button !== 0) {
+      return;
+    }
+
+    if (this.shadowRoot.activeElement === null) {
+      // If focus did not move to an inner element from this click event,
+      // the user clicked on some non-focusable area.
+      this.fire('context-menu-container-click');
+    }
+  }
+
   protected onDeleteFile_(e: CustomEvent) {
     if (!e.detail.uuid || !this.files_.has(e.detail.uuid)) {
       return;

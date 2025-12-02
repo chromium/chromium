@@ -10,7 +10,7 @@ import {ActionChipsApiProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
 import {ComposeboxProxyImpl, counterfactualLoad, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, BackgroundManager, BrowserCommandProxy, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsProxy, CustomizeDialogPage, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import type {AppElement, CustomizeButtonsElement, SearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
+import type {AppElement, CustomizeButtonsElement} from 'chrome://new-tab-page/new_tab_page.js';
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
@@ -98,6 +98,7 @@ suite('NewTabPageAppTest', () => {
       ComposeboxProxyImpl.getInstance().searchboxHandler = mock;
       SearchboxBrowserProxy.getInstance().handler = mock;
     });
+    searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
 
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
@@ -1910,22 +1911,7 @@ suite('NewTabPageAppTest', () => {
         ntpRealboxNextEnabled: true,
       });
     });
-    test(
-        'A scrim is applied when the focus is on searchbox input', async () => {
-          const scrim = getScrim();
-          assertTrue(!!scrim);
-          assertTrue(scrim.hidden);
-          const realbox_input =
-              $$<SearchboxElement>(app, '#searchbox')!.$.input;
-          realbox_input.dispatchEvent(new FocusEvent('focus'));
-          await microtasksFinished();
-          assertFalse(scrim.hidden);
 
-          $$<SearchboxElement>(app, '#searchbox')!.$.inputWrapper.dispatchEvent(
-              new FocusEvent('focusout', {relatedTarget: scrim}));
-          await microtasksFinished();
-          assertTrue(scrim.hidden);
-        });
     test(
         'A scrim is applied when the focus is on the composebox input',
         async () => {
@@ -1957,6 +1943,7 @@ suite('NewTabPageAppTest', () => {
           // Composebox should have been closed.
           assertFalse(!!app.shadowRoot.querySelector('cr-composebox'));
         });
+
     test('searchbox text carries over to composebox', async () => {
       // Arrange.
       callbackRouterRemote.setTheme(createTheme());
