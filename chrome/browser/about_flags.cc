@@ -6364,10 +6364,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHubSlideAnimationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kHubSlideAnimation)},
 
-    {"tab-collection-android", flag_descriptions::kTabCollectionAndroidName,
-     flag_descriptions::kTabCollectionAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabCollectionAndroid)},
-
     {"tab-freezing-uses-discard",
      flag_descriptions::kTabFreezingUsesDiscardName,
      flag_descriptions::kTabFreezingUsesDiscardDescription, kOsAndroid,

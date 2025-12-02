@@ -4142,11 +4142,6 @@ inline constexpr char kTabArchivalDragDropAndroidName[] =
 inline constexpr char kTabArchivalDragDropAndroidDescription[] =
     "Enables drag-and-drop tabs in the tab switcher to archive tabs.";
 
-inline constexpr char kTabCollectionAndroidName[] = "Tab Collection Android";
-inline constexpr char kTabCollectionAndroidDescription[] =
-    "A data layer refactoring to use tab collections rather than a list to "
-    "store tabs on Chrome Android.";
-
 inline constexpr char kTabFreezingUsesDiscardName[] =
     "Tab Freezing Uses Discard";
 inline constexpr char kTabFreezingUsesDiscardDescription[] =
