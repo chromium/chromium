@@ -102,6 +102,9 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided URL is to an AI page.
   bool IsAiUrl(const GURL& url);
 
+  // Returns whether the provided URL is for the search results page.
+  bool IsSearchResultsPage(const GURL& url);
+
   // Associates a WebContents with a task, assuming the URL of the WebContents'
   // main frame or side panel is a contextual task URL.
   void AssociateWebContentsToTask(content::WebContents* web_contents,

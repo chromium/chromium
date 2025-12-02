@@ -41,6 +41,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
@@ -305,6 +306,7 @@ void ContextualTasksUI::OnInnerWebContentsCreated(
   nav_observer_ = std::make_unique<FrameNavObserver>(
       inner_contents, ui_service_, context_controller_, this);
   inner_web_contents_creation_observer_.reset();
+  embedded_web_contents_ = inner_contents->GetWeakPtr();
 }
 
 void ContextualTasksUI::OnSidePanelStateChanged() {
@@ -343,6 +345,22 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged(
   tab_data->last_active = std::max(web_contents->GetLastActiveTimeTicks(),
                                    web_contents->GetLastInteractionTimeTicks());
   composebox_handler_->UpdateSuggestedTabContext(std::move(tab_data));
+}
+
+void ContextualTasksUI::TransferNavigationToEmbeddedPage(
+    content::OpenURLParams params) {
+  bool is_allowed_url = ui_service_->IsSearchResultsPage(params.url) ||
+                        ui_service_->IsAiUrl(params.url);
+  if (!embedded_web_contents_ || !is_allowed_url) {
+    return;
+  }
+
+  // TODO(465498890): Consider clearning source_site_instance in this case
+  //                  since the navigation may be targeting a different storage
+  //                  partition.
+  params.frame_tree_node_id =
+      embedded_web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId();
+  embedded_web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 ContextualTasksUI::FrameNavObserver::FrameNavObserver(

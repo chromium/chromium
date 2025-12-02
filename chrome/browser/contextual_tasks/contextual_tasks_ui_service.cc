@@ -32,6 +32,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -394,7 +395,7 @@ void ContextualTasksUiService::MoveTaskUiToToNewTab(
 
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() ||
-      !base::EndsWith(url.host(), ai_page_host_.host())) {
+      !net::SchemefulSite::IsSameSite(url, ai_page_host_)) {
     return false;
   }
 
@@ -409,6 +410,15 @@ bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
   }
 
   return udm_value == "50";
+}
+
+bool ContextualTasksUiService::IsSearchResultsPage(const GURL& url) {
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() ||
+      !net::SchemefulSite::IsSameSite(url, ai_page_host_)) {
+    return false;
+  }
+
+  return base::StartsWith(url.path(), "/search");
 }
 
 void ContextualTasksUiService::AssociateWebContentsToTask(
