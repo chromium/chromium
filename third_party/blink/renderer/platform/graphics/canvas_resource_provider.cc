@@ -335,13 +335,6 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
           ContextProviderWrapper()->ContextProvider().RasterContextProvider())),
       is_accelerated_(is_accelerated),
       shared_image_usage_flags_(shared_image_usage_flags) {
-  if (is_accelerated_) {
-    CHECK(ContextProviderWrapper()
-              ->ContextProvider()
-              .GetCapabilities()
-              .gpu_rasterization);
-  }
-
   if (ContextProviderWrapper()) {
     // Graphite can handle a large buffer size.
     if (ContextProviderWrapper()

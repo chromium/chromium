@@ -35,10 +35,6 @@ bool DrawVideoFrameIntoResourceProvider(
   DCHECK(frame);
   DCHECK(resource_provider);
 
-  // This method should only be called with context providers supporting OOP-R.
-  CHECK(!raster_context_provider ||
-        raster_context_provider->ContextCapabilities().gpu_rasterization);
-
   if (frame->HasSharedImage()) {
     if (!raster_context_provider) {
       DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
