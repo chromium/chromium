@@ -259,6 +259,12 @@ UITextView* SecondParagraph() {
   ]];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.navigationController.navigationBar);
+}
+
 #pragma mark - UITextViewDelegate
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {
