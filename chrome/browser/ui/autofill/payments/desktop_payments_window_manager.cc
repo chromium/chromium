@@ -31,6 +31,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
+#endif  // BUILDFLAG(IS_LINUX)
+
 namespace autofill::payments {
 
 namespace {
@@ -59,7 +63,9 @@ DesktopPaymentsWindowManager::DesktopPaymentsWindowManager(
     ContentAutofillClient* client)
     : client_(CHECK_DEREF(client)) {
 #if BUILDFLAG(IS_LINUX)
-  scoped_observation_.Observe(BrowserList::GetInstance());
+  scoped_observation_.Observe(
+      ProfileBrowserCollection::GetForProfile(Profile::FromBrowserContext(
+          client_->GetWebContents().GetBrowserContext())));
 #endif  // BUILDFLAG(IS_LINUX)
 }
 
@@ -152,7 +158,8 @@ void DesktopPaymentsWindowManager::WebContentsDestroyed() {
 }
 
 #if BUILDFLAG(IS_LINUX)
-void DesktopPaymentsWindowManager::OnBrowserSetLastActive(Browser* browser) {
+void DesktopPaymentsWindowManager::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
   // If there is an ongoing payments window manager pop-up flow, and the
   // original tab's WebContents become active, activate the pop-up's
   // WebContents. This functionality is only required on Linux, as on
@@ -161,7 +168,7 @@ void DesktopPaymentsWindowManager::OnBrowserSetLastActive(Browser* browser) {
   if (web_contents()) {
     CHECK(flow_state_.has_value());
     CHECK_NE(flow_state_->flow_type, FlowType::kNoFlow);
-    if (browser->tab_strip_model()->GetActiveWebContents() ==
+    if (browser->GetTabStripModel()->GetActiveWebContents() ==
         &client_->GetWebContents()) {
       web_contents()->GetDelegate()->ActivateContents(web_contents());
     }

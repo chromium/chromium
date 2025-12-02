@@ -16,8 +16,10 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"  // nogncheck
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"  // nogncheck
+
+class BrowserWindowInterface;
 #endif  // BUILDFLAG(IS_LINUX)
 
 class GURL;
@@ -40,7 +42,7 @@ class PaymentsWindowUserConsentDialogControllerImpl;
 // pop-up currently present, `this` will observe the WebContents of that pop-up.
 class DesktopPaymentsWindowManager : public PaymentsWindowManager,
 #if BUILDFLAG(IS_LINUX)
-                                     public BrowserListObserver,
+                                     public BrowserCollectionObserver,
 #endif  // BUILDFLAG(IS_LINUX)
                                      public content::WebContentsObserver {
  public:
@@ -60,8 +62,8 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   void WebContentsDestroyed() override;
 
 #if BUILDFLAG(IS_LINUX)
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
 #endif  // BUILDFLAG(IS_LINUX)
 
  private:
@@ -131,8 +133,8 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   base::RepeatingClosure popup_closed_closure_for_testing_;
 
 #if BUILDFLAG(IS_LINUX)
-  base::ScopedObservation<BrowserList, BrowserListObserver> scoped_observation_{
-      this};
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      scoped_observation_{this};
 #endif  // BUILDFLAG(IS_LINUX)
 
   base::WeakPtrFactory<DesktopPaymentsWindowManager> weak_ptr_factory_{this};

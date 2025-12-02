@@ -31,6 +31,10 @@ source_set("payments") {
     "//ui/gfx/geometry",
   ]
 
+  if (is_linux) {
+    public_deps += [ "//chrome/browser/ui/browser_window" ]
+  }
+
   if (is_android) {
     sources += [
       "android_bnpl_ui_delegate.h",
