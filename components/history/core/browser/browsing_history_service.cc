@@ -265,23 +265,40 @@ void BrowsingHistoryService::QueryHistoryInternal(
 
   WebHistoryService* web_history = driver_->GetWebHistoryService();
   if (web_history) {
-    // Run WebHistory query for full history. App-specific history uses the
-    // results from the local database only, since the legacy json API service
-    // WebHistory relies on can't be updated to process app_id.
-    if (state->original_options.app_id == kNoAppIdFilter) {
-      if (state->remote_results.size() < desired_count &&
-          state->remote_status != REACHED_BEGINNING) {
-        // Start a timer with timeout before we make the actual query, otherwise
-        // tests get confused when completion callback is run synchronously.
-        web_history_timer_->Start(
-            FROM_HERE, base::Seconds(kWebHistoryTimeoutSeconds),
-            base::BindOnce(&BrowsingHistoryService::WebHistoryTimeout,
-                           weak_factory_.GetWeakPtr(), state));
+    // Test the existence of other forms of browsing history, to display the
+    // privacy disclaimer in the UI. This needs to happen independently of
+    // whether an actual remote history query is happening (yet).
+    driver_->ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
+        sync_service_, web_history,
+        base::BindOnce(
+            &BrowsingHistoryService::OtherFormsOfBrowsingHistoryQueryComplete,
+            weak_factory_.GetWeakPtr()));
 
-        net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
-            net::DefinePartialNetworkTrafficAnnotation("web_history_query",
-                                                       "web_history_service",
-                                                       R"(
+    // If necessary, run a WebHistory query for remote history.
+    bool should_query_remote = state->remote_results.size() < desired_count &&
+                               state->remote_status != REACHED_BEGINNING;
+
+    // App-specific history uses the results from the local database only, since
+    // the legacy json API service WebHistory relies on can't be updated to
+    // process app_id.
+    // TODO(crbug.com/460361854): Once migrated to a non-legacy API, also query
+    // remote app-specific history.
+    if (state->original_options.app_id != kNoAppIdFilter) {
+      should_query_remote = false;
+    }
+
+    if (should_query_remote) {
+      // Start a timer with timeout before we make the actual query, otherwise
+      // tests get confused when completion callback is run synchronously.
+      web_history_timer_->Start(
+          FROM_HERE, base::Seconds(kWebHistoryTimeoutSeconds),
+          base::BindOnce(&BrowsingHistoryService::WebHistoryTimeout,
+                         weak_factory_.GetWeakPtr(), state));
+
+      net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
+          net::DefinePartialNetworkTrafficAnnotation("web_history_query",
+                                                     "web_history_service",
+                                                     R"(
             semantics {
               description:
                 "If history sync is enabled, this downloads the synced "
@@ -305,23 +322,15 @@ void BrowsingHistoryService::QueryHistoryInternal(
                 }
               }
             })");
-        should_return_results_immediately = false;
-        web_history_request_ = web_history->QueryHistory(
-            state->search_text,
-            OptionsWithEndTime(state->original_options,
-                               state->remote_end_time_for_continuation),
-            base::BindOnce(&BrowsingHistoryService::WebHistoryQueryComplete,
-                           weak_factory_.GetWeakPtr(), state, clock_->Now()),
-            partial_traffic_annotation);
-      }
+      should_return_results_immediately = false;
+      web_history_request_ = web_history->QueryHistory(
+          state->search_text,
+          OptionsWithEndTime(state->original_options,
+                             state->remote_end_time_for_continuation),
+          base::BindOnce(&BrowsingHistoryService::WebHistoryQueryComplete,
+                         weak_factory_.GetWeakPtr(), state, clock_->Now()),
+          partial_traffic_annotation);
     }
-    // Test the existence of other forms of browsing history. Performed for both
-    // full/app-specific history to display the privacy disclaimer on UI.
-    driver_->ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
-        sync_service_, web_history,
-        base::BindOnce(
-            &BrowsingHistoryService::OtherFormsOfBrowsingHistoryQueryComplete,
-            weak_factory_.GetWeakPtr()));
   } else {
     state->remote_status = NO_DEPENDENCY;
     // The notice could not have been shown, because there is no web history.
@@ -695,6 +704,7 @@ void BrowsingHistoryService::ReturnResultsToDriver(
           state->local_results.rbegin()->time;
     }
     results = std::move(state->local_results);
+    state->local_results.clear();
   }
 
   QueryResultsInfo info;
