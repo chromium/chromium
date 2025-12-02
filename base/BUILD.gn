@@ -2034,6 +2034,7 @@ component("base") {
       "apple/scoped_objc_class_swizzler.h",
       "apple/scoped_objc_class_swizzler.mm",
       "apple/scoped_typeref.h",
+      "apple/swift_interop_util.h",
       "file_version_info_apple.h",
       "file_version_info_apple.mm",
       "files/file_util_apple.mm",

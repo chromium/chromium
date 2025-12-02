@@ -20,14 +20,14 @@ class SharedPointerTest: XCTestCase {
   }
 
   func testSharedObject() throws {
-    let object = SharedObject.create(42)
+    let object = SharedObject.MakeForSwift(42)
     XCTAssertEqual(object!.IsValid(), true, "Object should be valid")
     XCTAssertEqual(object!.GetValue(), 42, "The value is wrong")
     XCTAssertEqual(GetSharedObjectLiveCount(), 1, "The count of living objects is wrong")
   }
 
   func testLifetimeManagedByARC() throws {
-    var object: SharedObject? = SharedObject.create(42)
+    var object: SharedObject? = SharedObject.MakeForSwift(42)
     XCTAssertEqual(object!.IsValid(), true, "Object should be valid")
     XCTAssertEqual(object!.GetValue(), 42, "The value is wrong")
     XCTAssertEqual(GetSharedObjectLiveCount(), 1, "The count of living objects is wrong")
@@ -54,7 +54,7 @@ class SharedPointerTest: XCTestCase {
 
   func testLifetimeByAutoreleasePool() {
     autoreleasepool {
-      let object = SharedObject.create(42)
+      let object = SharedObject.MakeForSwift(42)
       XCTAssertEqual(object!.IsValid(), true, "Object should be valid")
       XCTAssertEqual(object!.GetValue(), 42, "The value is wrong")
       XCTAssertEqual(GetSharedObjectLiveCount(), 1, "The count of living objects is wrong")

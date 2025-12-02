@@ -5,10 +5,7 @@
 #ifndef IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_SHARED_PTR_H_
 #define IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_SHARED_PTR_H_
 
-#if __swift__
-#include <swift/bridging>
-#endif  // __swift__
-
+#include "base/apple/swift_interop_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "ios/chrome/test/swift_interop/include/unique_ptr.h"
@@ -27,11 +24,7 @@ class SharedObject : public base::RefCounted<SharedObject> {
  public:
   SharedObject(const SharedObject&) = delete;  // non-copyable
   explicit SharedObject(int value);
-#if __swift__
-  static SharedObject* create(int value) SWIFT_RETURNS_RETAINED;
-#else
-  static SharedObject* create(int value);
-#endif  // __swift__
+  static SharedObject* MakeForSwift(int value) SWIFT_RETURNS_RETAINED;
 
   bool IsValid();
   int GetValue();
@@ -41,10 +34,6 @@ class SharedObject : public base::RefCounted<SharedObject> {
   ~SharedObject();
 
   int value_;
-#if __swift__
 } SWIFT_SHARED_REFERENCE(RetainSharedObject, ReleaseSharedObject);
-#else
-};
-#endif  // __swift__
 
 #endif  // IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_SHARED_PTR_H_

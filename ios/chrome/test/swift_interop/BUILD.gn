@@ -36,6 +36,8 @@ source_set("swift_interop_tests_support_files") {
   testonly = true
   sources = [
     "classes/outlined_impl.cc",
+    "closure/closure.cc",
+    "include/closure.h",
     "include/enum.h",
     "include/inlined_class.h",
     "include/namespace.h",
@@ -62,6 +64,7 @@ swift_source_set("swift_interop_tests") {
     "classes/inlined_xctest.swift",
     "classes/outlined_xctest.swift",
     "classes/polymorphism_xctest.swift",
+    "closure/closure_xctest.swift",
     "enum/enum_xctest.swift",
     "namespace/namespace_xctest.swift",
     "pointer/object_passing_xctest.swift",
