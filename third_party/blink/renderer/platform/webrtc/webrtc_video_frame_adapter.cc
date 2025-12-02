@@ -383,8 +383,17 @@ void WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync(
     {
       // Blocking is necessary to create the GpuMemoryBuffer from this thread.
       base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+      gfx::ColorSpace color_space = frame->ColorSpace();
+      // RGB formats will be converted to YUV, so original color space
+      // can't be used for scaled frame.
+      if (frame->format() == media::PIXEL_FORMAT_ARGB ||
+          frame->format() == media::PIXEL_FORMAT_ABGR ||
+          frame->format() == media::PIXEL_FORMAT_XRGB ||
+          frame->format() == media::PIXEL_FORMAT_XBGR) {
+        color_space = gfx::ColorSpace::CreateREC601();
+      }
       dst_frame = accelerated_frame_pool_->MaybeCreateVideoFrame(
-          frame->natural_size(), gfx::ColorSpace::CreateREC709());
+          frame->natural_size(), color_space);
     }
 
     if (dst_frame) {
