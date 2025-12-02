@@ -423,15 +423,17 @@ void ProfilePickerHandler::TryLaunchLockedProfile(
   if (entry.GetActiveTime().is_null()) {
     // Triggers a fresh sign in via profile picker without existing email
     // address.
+    std::vector<StepSwitchFinishedCallback> callbacks;
+    callbacks.emplace_back(
+        base::BindOnce(&ProfilePickerHandler::OnLoadSigninFinished,
+                       weak_factory_.GetWeakPtr()));
+    callbacks.emplace_back(
+        base::BindOnce(&ProfilePickerHandler::OnResetPickerButtons,
+                       weak_factory_.GetWeakPtr()));
     ProfilePicker::SwitchToSignIn(
-        entry.GetPath(), CombineCallbacks<StepSwitchFinishedCallback, bool>(
-                             StepSwitchFinishedCallback(base::BindOnce(
-                                 &ProfilePickerHandler::OnLoadSigninFinished,
-                                 weak_factory_.GetWeakPtr())),
-                             StepSwitchFinishedCallback(base::BindOnce(
-                                 &ProfilePickerHandler::OnResetPickerButtons,
-                                 weak_factory_.GetWeakPtr())))
-                             .value());
+        entry.GetPath(),
+        CombineCallbacks<StepSwitchFinishedCallback, bool>(std::move(callbacks))
+            .value());
     return;
   }
 
@@ -811,15 +813,15 @@ void ProfilePickerHandler::HandleSelectNewAccount(
     // profile color. Generate a new profile color here.
     profile_color = GenerateNewProfileColor().color;
   }
+  std::vector<StepSwitchFinishedCallback> callbacks;
+  callbacks.emplace_back(base::BindOnce(
+      &ProfilePickerHandler::OnLoadSigninFinished, weak_factory_.GetWeakPtr()));
+  callbacks.emplace_back(base::BindOnce(
+      &ProfilePickerHandler::OnResetPickerButtons, weak_factory_.GetWeakPtr()));
   ProfilePicker::SwitchToSignIn(
-      profile_color, CombineCallbacks<StepSwitchFinishedCallback, bool>(
-                         StepSwitchFinishedCallback(base::BindOnce(
-                             &ProfilePickerHandler::OnLoadSigninFinished,
-                             weak_factory_.GetWeakPtr())),
-                         StepSwitchFinishedCallback(base::BindOnce(
-                             &ProfilePickerHandler::OnResetPickerButtons,
-                             weak_factory_.GetWeakPtr())))
-                         .value());
+      profile_color,
+      CombineCallbacks<StepSwitchFinishedCallback, bool>(std::move(callbacks))
+          .value());
 }
 
 void ProfilePickerHandler::OnLoadSigninFinished(bool success) {

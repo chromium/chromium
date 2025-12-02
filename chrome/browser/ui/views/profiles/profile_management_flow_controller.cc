@@ -81,10 +81,11 @@ void ProfileManagementFlowController::SwitchToStep(
           base::BindOnce(&FlowTracker::FinishedStepSwitch,
                          base::Unretained(&flow_tracker_), step));
 
+  std::vector<StepSwitchFinishedCallback> callbacks;
+  callbacks.push_back(std::move(internal_step_switch_finished_callback));
+  callbacks.push_back(std::move(step_switch_finished_callback));
   StepSwitchFinishedCallback combined_step_switch_callbacks =
-      CombineCallbacks<StepSwitchFinishedCallback, bool>(
-          std::move(internal_step_switch_finished_callback),
-          std::move(step_switch_finished_callback));
+      CombineCallbacks<StepSwitchFinishedCallback, bool>(std::move(callbacks));
 
   auto* new_step_controller = initialized_steps_.at(step).get();
   DCHECK(new_step_controller);
