@@ -51,7 +51,6 @@
 
 namespace gfx {
 struct GpuMemoryBufferHandle;
-class ClientNativePixmapFactory;
 }
 
 namespace gpu {
@@ -333,20 +332,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       base::span<const uint8_t> y_data,
       base::span<const uint8_t> uv_data,
       base::TimeDelta timestamp);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Wraps |handle|. For use in contexts where the GPUMemoryBufferHandle has no
-  // SharedImage associated with it.
-  static scoped_refptr<VideoFrame> WrapExternalGpuMemoryBufferHandle(
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
-      gfx::GpuMemoryBufferHandle handle,
-      const gfx::Size& coded_size,
-      viz::SharedImageFormat format,
-      gfx::BufferUsage usage,
-      base::TimeDelta timestamp);
-#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Wraps provided dmabufs
@@ -809,12 +794,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       base::TimeDelta timestamp);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  static scoped_refptr<VideoFrame> CreateFrameForGpuMemoryBufferInternal(
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      std::unique_ptr<gpu::LegacyGpuMemoryBufferForVideo> gpu_memory_buffer,
-      base::TimeDelta timestamp);
-
   void MakeScopedMappingForGpuMemoryBuffer(
       base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
           result_cb,

@@ -122,25 +122,6 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     // STORAGE_GPU_MEMORY_BUFFER may carry meaningful or dummy shared_image.
     std::optional<gpu::ExportedSharedImage> shared_image;
     gpu::SyncToken sync_token;
-#if BUILDFLAG(IS_CHROMEOS)
-    if (input->HasSharedImage()) {
-      shared_image = input->shared_image()->Export(
-          /*with_buffer_handle=*/is_mappable_si_enabled);
-      sync_token = input->acquire_sync_token();
-
-      if (is_mappable_si_enabled) {
-        return media::mojom::VideoFrameData::NewSharedImageData(
-            media::mojom::SharedImageVideoFrameData::New(
-                std::move(shared_image.value()), std::move(sync_token),
-                /*is_mappable_si_enabled=*/true));
-      }
-    }
-
-    return media::mojom::VideoFrameData::NewGpuMemoryBufferSharedImageData(
-        media::mojom::GpuMemoryBufferSharedImageVideoFrameData::New(
-            std::move(gpu_memory_buffer_handle), std::move(shared_image),
-            std::move(sync_token)));
-#else
     CHECK(input->HasSharedImage());
     CHECK(is_mappable_si_enabled);
     shared_image = input->shared_image()->Export(
@@ -156,7 +137,6 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image.value()), std::move(sync_token),
             /*is_mappable_si_enabled=*/true));
-#endif
 #endif
   }
 
@@ -359,46 +339,6 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     if (frame) {
       frame->BackWithOwnedSharedMemory(std::move(region), std::move(mapping));
     }
-  } else if (data.is_gpu_memory_buffer_shared_image_data()) {
-#if BUILDFLAG(IS_CHROMEOS)
-    media::mojom::GpuMemoryBufferSharedImageVideoFrameDataDataView
-        gpu_memory_buffer_data;
-    data.GetGpuMemoryBufferSharedImageDataDataView(&gpu_memory_buffer_data);
-
-    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
-    if (!gpu_memory_buffer_data.ReadGpuMemoryBufferHandle(
-            &gpu_memory_buffer_handle)) {
-      DLOG(ERROR) << "Failed to read GpuMemoryBufferHandle";
-      return false;
-    }
-
-    std::optional<viz::SharedImageFormat> si_format =
-        VideoPixelFormatToSharedImageFormat(format);
-    if (!si_format || !viz::HasEquivalentBufferFormat(*si_format)) {
-      return false;
-    }
-
-    if (gpu_memory_buffer_handle.type !=
-        gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
-      return false;
-    }
-
-    gfx::BufferUsage buffer_usage;
-    if (metadata.protected_video) {
-      buffer_usage = gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE;
-    } else {
-      buffer_usage = gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
-    }
-
-    auto client_native_pixmap_factory =
-        ui::CreateClientNativePixmapFactoryOzone();
-    frame = media::VideoFrame::WrapExternalGpuMemoryBufferHandle(
-        visible_rect, natural_size, client_native_pixmap_factory.get(),
-        std::move(gpu_memory_buffer_handle), coded_size, *si_format,
-        buffer_usage, timestamp);
-#else
-    return false;
-#endif  // BUILDFLAG(IS_CHROMEOS)
   } else if (data.is_shared_image_data()) {
     media::mojom::SharedImageVideoFrameDataDataView shared_image_data;
     data.GetSharedImageDataDataView(&shared_image_data);

@@ -483,7 +483,6 @@ struct VideoFrame {
 union VideoFrameData {
   EosVideoFrameData eos_data;
   SharedMemoryVideoFrameData shared_memory_data;
-  GpuMemoryBufferSharedImageVideoFrameData gpu_memory_buffer_shared_image_data;
   SharedImageVideoFrameData shared_image_data;
   OpaqueVideoFrameData opaque_data;
   [EnableIf=is_chromeos|is_linux]
@@ -503,12 +502,6 @@ struct SharedMemoryVideoFrameData {
   // of |frame_data|.
   array<int32> strides;
   array<uint32> offsets;
-};
-
-struct GpuMemoryBufferSharedImageVideoFrameData {
-  gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
-  gpu.mojom.ExportedSharedImage? shared_image;
-  gpu.mojom.SyncToken sync_token;
 };
 
 // This defines video frame data stored in texture shared images.

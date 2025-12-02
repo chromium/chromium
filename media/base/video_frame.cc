@@ -362,82 +362,6 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameForNativeTexturesInternal(
   return frame;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-scoped_refptr<VideoFrame> VideoFrame::CreateFrameForGpuMemoryBufferInternal(
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    std::unique_ptr<gpu::LegacyGpuMemoryBufferForVideo> gpu_memory_buffer,
-    base::TimeDelta timestamp) {
-  CHECK(gpu_memory_buffer);
-
-  auto si_format = gpu_memory_buffer->GetFormat();
-  auto format = SharedImageFormatToVideoPixelFormat(si_format);
-  if (!format) {
-    return nullptr;
-  }
-  constexpr StorageType storage = STORAGE_GPU_MEMORY_BUFFER;
-  const gfx::Size& coded_size = gpu_memory_buffer->GetSize();
-  if (!IsValidConfig(*format, storage, coded_size, visible_rect,
-                     natural_size)) {
-    DLOG(ERROR) << __func__ << " Invalid config"
-                << ConfigToString(*format, storage, coded_size, visible_rect,
-                                  natural_size);
-    return nullptr;
-  }
-
-  const size_t num_planes = si_format.NumberOfPlanes();
-  std::vector<ColorPlaneLayout> planes(num_planes);
-  for (size_t plane = 0; plane < num_planes; ++plane) {
-    planes[plane].stride = gpu_memory_buffer->stride(plane);
-    gfx::Size plane_size = PlaneSizeInSamples(*format, plane, coded_size);
-    planes[plane].size =
-        (plane_size.height() - 1) * planes[plane].stride +
-        plane_size.width() * VideoFrame::BytesPerElement(*format, plane);
-  }
-  uint64_t modifier = gfx::NativePixmapHandle::kNoModifier;
-  const auto gmb_handle = gpu_memory_buffer->CloneHandle();
-  if (gmb_handle.is_null() ||
-      gmb_handle.native_pixmap_handle().planes.empty()) {
-    DLOG(ERROR) << "Failed to clone the GpuMemoryBufferHandle";
-    return nullptr;
-  }
-  const gfx::NativePixmapHandle& native_pixmap_handle =
-      gmb_handle.native_pixmap_handle();
-  if (native_pixmap_handle.planes.size() != num_planes) {
-    DLOG(ERROR) << "Invalid number of planes="
-                << native_pixmap_handle.planes.size()
-                << ", expected num_planes=" << num_planes;
-    return nullptr;
-  }
-  for (size_t i = 0; i < num_planes; ++i) {
-    const auto& plane = native_pixmap_handle.planes[i];
-    planes[i].stride = plane.stride;
-    planes[i].offset = plane.offset;
-    planes[i].size = plane.size;
-  }
-  modifier = native_pixmap_handle.modifier;
-
-  const auto layout = VideoFrameLayout::CreateWithPlanes(
-      *format, coded_size, std::move(planes),
-      VideoFrameLayout::kBufferAddressAlignment, modifier);
-  if (!layout) {
-    DLOG(ERROR) << __func__ << " Invalid layout";
-    return nullptr;
-  }
-
-  auto frame = base::MakeRefCounted<VideoFrame>(base::PassKey<VideoFrame>(),
-                                                *layout, storage, visible_rect,
-                                                natural_size, timestamp);
-  if (!frame) {
-    DLOG(ERROR) << __func__ << " Couldn't create VideoFrame instance";
-    return nullptr;
-  }
-  frame->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
-  frame->is_mappable_si_enabled_ = false;
-  return frame;
-}
-#endif
-
 // static
 scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
     VideoPixelFormat format,
@@ -777,28 +701,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvaData(
   }
   return frame;
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-// static
-scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBufferHandle(
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
-    gfx::GpuMemoryBufferHandle handle,
-    const gfx::Size& coded_size,
-    viz::SharedImageFormat format,
-    gfx::BufferUsage usage,
-    base::TimeDelta timestamp) {
-  CHECK(viz::HasEquivalentBufferFormat(format));
-  CHECK_EQ(handle.type, gfx::GpuMemoryBufferType::NATIVE_PIXMAP);
-  auto gpu_memory_buffer =
-      gpu::LegacyGpuMemoryBufferForVideo::CreateFromHandleForVideoFrame(
-          client_native_pixmap_factory, std::move(handle), coded_size, format,
-          usage);
-  return CreateFrameForGpuMemoryBufferInternal(
-      visible_rect, natural_size, std::move(gpu_memory_buffer), timestamp);
-}
-#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // static
