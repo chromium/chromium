@@ -111,6 +111,14 @@ class MultipartUploadRequestBase : public ConnectorUploadRequest {
   void set_boundary(const std::string& boundary) { boundary_ = boundary; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestBaseTest,
+                           GeneratesCorrectBody);
+  FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestBaseTest, RetriesCorrectly);
+  FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest, Retries);
+  FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest, DataControls);
+  FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest,
+                           EquivalentToStringRequest);
+
   virtual scoped_refptr<base::TaskRunner> GetTaskRunner() = 0;
 
   // Called by SendFileRequest and SendPageRequest after `data_pipe_getter_`
