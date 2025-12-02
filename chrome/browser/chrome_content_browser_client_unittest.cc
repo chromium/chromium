@@ -60,7 +60,6 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/site_isolation/features.h"
 #include "components/variations/variations_associated_data.h"
@@ -349,15 +348,16 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
 }
 
 // Test that automatic beacon credentials (automatic beacons sent with cookie
-// data) are disallowed if the 3PCD preference is enabled.
+// data) are disallowed if the 3PCs are blocked.
 TEST_F(ChromeContentBrowserClientWindowTest, AutomaticBeaconCredentials) {
   ChromeContentBrowserClient client;
 
   EXPECT_TRUE(client.AreDeprecatedAutomaticBeaconCredentialsAllowed(
       browser()->profile(), GURL("a.test"),
       url::Origin::Create(GURL("c.test"))));
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kTrackingProtection3pcdEnabled, true);
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
   EXPECT_FALSE(client.AreDeprecatedAutomaticBeaconCredentialsAllowed(
       browser()->profile(), GURL("a.test"),
       url::Origin::Create(GURL("c.test"))));
@@ -1824,13 +1824,10 @@ TEST_F(WillComputeSiteForNavigationTest,
 }
 
 class GrantCookieAccessDueToHeuristicTest
-    : public ChromeContentBrowserClientTest,
+    : public testing::Test,
       public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
-    profile_.GetPrefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled,
-                                    true);
-
     scoped_refptr<content::SiteInstance> site_instance =
         content::SiteInstance::Create(&profile_);
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
@@ -1843,6 +1840,10 @@ class GrantCookieAccessDueToHeuristicTest
   content::WebContents* web_contents() { return web_contents_.get(); }
 
  private:
+  content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_{
+      content_settings::features::kTrackingProtection3pcd};
+  TestingProfile profile_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<content::WebContents> web_contents_;
 };
