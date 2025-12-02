@@ -65,7 +65,7 @@ export namespace LocaleInfo {
   export const alwaysEnableCommandsForTesting = false;
 
   export const SMART_CAP_AND_SPACING_LANGUAGES_ =
-      new Set(['en', 'fr', 'it', 'de', 'es']);
+      new Set(['en', 'fr', 'it', 'de', 'es', 'pl']);
 
   /** All RTL locales from Dictation::GetAllSupportedLocales. */
   export const RTL_LOCALES_ = new Set([
