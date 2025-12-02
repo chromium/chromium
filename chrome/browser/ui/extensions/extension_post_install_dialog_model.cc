@@ -96,14 +96,11 @@ ExtensionPostInstallDialogModel::ExtensionPostInstallDialogModel(
 
   const bool toolbar_action = !!action_info;
 
-  anchor_to_action_ = toolbar_action;
-  anchor_to_omnibox_ = !toolbar_action && !keyword.empty();
-
   show_how_to_use_ =
       (toolbar_action && !action_info->synthesized) || !keyword.empty();
   // If there's a shortcut, don't show the how-to-manage text because it
   // clutters the bubble.
-  show_how_to_manage_ = !command.has_value() || anchor_to_omnibox_;
+  show_how_to_manage_ = !command.has_value();
   show_key_binding_ = command.has_value();
 
   if (show_how_to_use_) {

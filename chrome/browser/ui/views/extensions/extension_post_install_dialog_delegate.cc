@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/extensions/extension_post_install_dialog_model.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -44,7 +43,6 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -164,25 +162,8 @@ void ShowExtensionPostInstallDialog(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   std::unique_ptr<ui::DialogModel> dialog_model = dialog_model_builder.Build();
-
-  // TODO(crbug.com/460843305): Decide how to handle the dialog anchored to
-  // omnibox case. Getting the browser view is just temporary as we are moving
-  // away from using browser.
-  if (weak_delegate->model()->anchor_to_omnibox()) {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForNativeWindow(native_window);
-    views::View* anchor_view =
-        browser_view->GetLocationBarView()->location_icon_view();
-    auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-        std::move(dialog_model), std::move(anchor_view),
-        views::BubbleBorder::TOP_LEFT);
-    views::Widget* widget =
-        views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
-    widget->Show();
-  } else {
     ShowDialog(native_window, weak_delegate->model()->extension_id(),
                std::move(dialog_model));
-  }
 }
 
 ExtensionPostInstallDialogDelegate::ExtensionPostInstallDialogDelegate(

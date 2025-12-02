@@ -31,9 +31,6 @@ class ExtensionPostInstallDialogModel {
   ExtensionPostInstallDialogModel& operator=(
       const ExtensionPostInstallDialogModel& other) = delete;
 
-  bool anchor_to_action() const { return anchor_to_action_; }
-  bool anchor_to_omnibox() const { return anchor_to_omnibox_; }
-
   bool show_how_to_use() const { return show_how_to_use_; }
   bool show_how_to_manage() const { return show_how_to_manage_; }
   bool show_key_binding() const { return show_key_binding_; }
@@ -46,11 +43,6 @@ class ExtensionPostInstallDialogModel {
   const std::string& extension_name() const { return extension_name_; }
 
  private:
-  // Whether the install bubble should anchor to the extension's action button
-  // or to the omnibox.  At most one of these is true.
-  bool anchor_to_action_ = false;
-  bool anchor_to_omnibox_ = false;
-
   // Whether to show the how-to-use and how-to-manage text in the install
   // bubble.
   bool show_how_to_use_ = false;

@@ -67,34 +67,9 @@ TEST_F(ExtensionPostInstallDialogModelTest, SyntheticPageActionExtension) {
 
   ExtensionPostInstallDialogModel model(profile(), extension.get(), SkBitmap());
 
-  // It should anchor to the synthesized action...
-  EXPECT_TRUE(model.anchor_to_action());
-  EXPECT_FALSE(model.anchor_to_omnibox());
-
-  // ... but there should not be how-to-use text, since it has no actual way to
+  // There should not be how-to-use text, since it has no actual way to
   // activate it other than that synthesized action.
   EXPECT_FALSE(model.show_how_to_use());
-  EXPECT_TRUE(model.show_how_to_manage());
-  EXPECT_FALSE(model.show_key_binding());
-}
-
-TEST_F(ExtensionPostInstallDialogModelTest, OmniboxExtension) {
-  // An extension with a regular action and an omnibox keyword...
-  auto builder = extensions::ExtensionBuilder("Foo");
-  AddOmniboxKeyword(&builder, "fookey");
-  builder.AddFlags(extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
-  auto extension = builder.Build();
-  registrar()->AddExtension(extension);
-
-  ExtensionPostInstallDialogModel model(profile(), extension.get(), SkBitmap());
-
-  // ... should be anchored to the omnibox, not to the action ...
-  EXPECT_FALSE(model.anchor_to_action());
-  EXPECT_TRUE(model.anchor_to_omnibox());
-
-  // ... and should have how-to-use and how-to-manage text, but not show a key
-  // binding, since it doesn't have one.
-  EXPECT_TRUE(model.show_how_to_use());
   EXPECT_TRUE(model.show_how_to_manage());
   EXPECT_FALSE(model.show_key_binding());
 }
@@ -109,12 +84,8 @@ TEST_F(ExtensionPostInstallDialogModelTest, PageActionExtension) {
 
   ExtensionPostInstallDialogModel model(profile(), extension.get(), SkBitmap());
 
-  // should anchor to that action
-  EXPECT_TRUE(model.anchor_to_action());
-  EXPECT_FALSE(model.anchor_to_omnibox());
-
-  // and have how-to-use and how-to-manage but no key binding, since it doesn't
-  // have one.
+  // should have how-to-use and how-to-manage but no key binding, since it
+  // doesn't have one.
   EXPECT_TRUE(model.show_how_to_use());
   EXPECT_TRUE(model.show_how_to_manage());
   EXPECT_FALSE(model.show_key_binding());
@@ -130,11 +101,7 @@ TEST_F(ExtensionPostInstallDialogModelTest, ActionExtension) {
 
   ExtensionPostInstallDialogModel model(profile(), extension.get(), SkBitmap());
 
-  // should anchor to that action
-  EXPECT_TRUE(model.anchor_to_action());
-  EXPECT_FALSE(model.anchor_to_omnibox());
-
-  // and have how-to-manage but no how-to-use and key binding.
+  // should have how-to-manage but no how-to-use and key binding.
   EXPECT_FALSE(model.show_how_to_use());
   EXPECT_TRUE(model.show_how_to_manage());
   EXPECT_FALSE(model.show_key_binding());
@@ -177,8 +144,7 @@ TEST_F(ExtensionPostInstallDialogModelTest, OmniboxKeywordAndSyntheticAction) {
 
   ExtensionPostInstallDialogModel model(profile(), extension.get(), SkBitmap());
 
-  // This extension has a synthesized action and an omnibox keyword. It should
-  // have how-to-use text, and be anchored to its (synthesized) page action.
+  // This extension has a synthesized action and an omnibox keyword – it should
+  // have how-to-use text.
   EXPECT_TRUE(model.show_how_to_use());
-  EXPECT_TRUE(model.anchor_to_action());
 }
