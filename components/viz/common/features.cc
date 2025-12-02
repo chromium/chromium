@@ -262,16 +262,6 @@ const base::FeatureParam<std::string> kADPFSocManufacturerAllowlist{
 const base::FeatureParam<std::string> kADPFSocManufacturerBlocklist{
     &kAdpf, "soc_manufacturer_blocklist", ""};
 
-// Used to enable the HintSession::Mode::BOOST mode. BOOST mode try to force
-// the ADPF(Android Dynamic Performance Framework) to give Chrome more CPU
-// resources during a scroll.
-BASE_FEATURE(kEnableADPFScrollBoost, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Specifies how long after the boost mode is set, it will expire.
-const base::FeatureParam<base::TimeDelta> kADPFBoostTimeout{
-    &kEnableADPFScrollBoost, "adpf_boost_mode_timeout",
-    base::Milliseconds(200)};
-
 // If enabled, Chrome puts Renderer Main threads into a separate
 // ADPF(Android Dynamic Performance Framework) hint session, and does not
 // report any timing hints from this session.

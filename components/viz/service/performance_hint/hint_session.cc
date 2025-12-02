@@ -233,9 +233,8 @@ void AdpfHintSession::ReportCpuCompletionTime(base::TimeDelta actual_duration,
     return;
   }
 
-  base::TimeDelta frame_duration =
-      boost_manager_.GetFrameDurationAndMaybeUpdateBoostType(
-          target_duration_, actual_duration, draw_start, preferable_boost_type);
+  base::TimeDelta frame_duration = boost_manager_.GetFrameDuration(
+      target_duration_, actual_duration, draw_start, preferable_boost_type);
   TRACE_EVENT_INSTANT("android.adpf", "ReportCpuCompletionTime",
                       "frame_duration_ms", frame_duration.InMillisecondsF(),
                       "target_duration_ms", target_duration_.InMillisecondsF());

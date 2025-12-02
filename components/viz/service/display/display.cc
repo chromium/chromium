@@ -1158,14 +1158,10 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
       }
     }
 
-    HintSession::BoostType boost_type = HintSession::BoostType::kDefault;
-    if (IsScroll(frame.latency_info)) {
-      boost_type = HintSession::BoostType::kScrollBoost;
-    }
     presentation_group_timing.OnDraw(
         params.frame_time, draw_timer->start_time(),
         std::move(animation_thread_ids), std::move(renderer_main_thread_ids),
-        boost_type);
+        /*boost_type=*/HintSession::BoostType::kDefault);
 
     bool has_interactive_frame = false;
     bool has_animated_frame = false;

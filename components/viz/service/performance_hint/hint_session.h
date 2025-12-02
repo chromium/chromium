@@ -27,7 +27,6 @@ class VIZ_SERVICE_EXPORT HintSession {
  public:
   enum class BoostType {
     kDefault,
-    kScrollBoost,
     kWakeUpBoost,
   };
 

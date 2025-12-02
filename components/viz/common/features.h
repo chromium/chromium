@@ -112,9 +112,6 @@ VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kADPFSocManufacturerAllowlist;
 VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kADPFSocManufacturerBlocklist;
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFScrollBoost);
-VIZ_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kADPFBoostTimeout;
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFSeparateRendererMainSession);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFSetThreads);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFWorkloadIncreaseOnPageLoad);
