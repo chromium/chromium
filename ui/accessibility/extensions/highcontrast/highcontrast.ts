@@ -93,9 +93,7 @@ const cssTemplate: string = `
   html[hc] .docs-menubar,
   html[hc] .docs-titlebar-buttons,
   html[hc] .kix-appview-editor-toolbar,
-  html[hc] .goog-toolbar,
-  html[hc] header[role="banner"],
-  html[hc] [role="toolbar"] {
+  html[hc] .goog-toolbar {
     z-index: 2147483647 !important;
     will-change: transform;
     transform: translateZ(0);
