@@ -30,8 +30,10 @@ rust_static_library("mojo_ffi") {
 rust_static_library("mojo_rust_system_api") {
   crate_root = "system/lib.rs"
   sources = [
+    "system/data_pipe.rs",
     "system/lib.rs",
     "system/mojo_types.rs",
+    "system/trap.rs",
   ]
   allow_unsafe = true
   deps = [

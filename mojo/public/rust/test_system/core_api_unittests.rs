@@ -59,3 +59,24 @@ fn test_basic_message_write_and_send() {
     // FOR_RELEASE: Implement all the above.
     assert_eq!(0, 0);
 }
+
+#[gtest(RustSystemAPITestSuite, DataPipeWriteAndSendTest)]
+fn test_data_pipe_write_and_send() {
+    test_util::init_mojo_if_needed();
+
+    let (consumer, mut producer) = system::data_pipe::create(5).unwrap();
+
+    let hello = b"hello";
+    let bytes_written =
+        producer.write_with_flags(hello, system::data_pipe::WriteFlags::empty()).unwrap();
+    expect_eq!(bytes_written, hello.len());
+
+    let mut read_buffer = [0u8; 5];
+    let bytes_read =
+        consumer.read_with_flags(&mut read_buffer, system::data_pipe::ReadFlags::empty()).unwrap();
+    expect_eq!(&read_buffer[..bytes_read], hello);
+
+    // TODO: implement and test two-phase read-write.
+
+    assert_eq!(0, 0);
+}

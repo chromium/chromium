@@ -12,6 +12,11 @@
 // sure they describe distinct things: "how to use this function safely" vs
 // "why this instance is OK.")
 
+// FOR_RELEASE: Define `enum MojoErrorCode` (**without** `Okay` variant) and
+// use `Result<T, MojoErrorCode>` in all public APIs.  Maybe also provide some
+// internal convenience helpers and a public
+// `pub type MojoResult<T> = std::result::Result<T, MojoErrorCode>`.
+
 use std::ffi::c_void;
 use std::fmt;
 use std::ptr;
@@ -115,6 +120,78 @@ impl fmt::Display for MojoResult {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.as_str())
     }
+}
+
+bitflags::bitflags! {
+    #[derive(Clone, Copy, Default)]
+    #[repr(transparent)]
+    pub struct HandleSignals: types::MojoHandleSignals {
+        /// FOR_RELEASE(https://crbug.com/458796903): It'd be nicer to access
+        /// MOJO_HANDLE_SIGNAL_READABLE here, but the bindings we
+        /// have right now don't export that. We should change that.
+        const READABLE = 1 << 0;
+        const WRITABLE = 1 << 1;
+        const PEER_CLOSED = 1 << 2;
+        const NEW_DATA_READABLE = 1 << 3;
+        const PEER_REMOTE = 1 << 4;
+        const QUOTA_EXCEEDED = 1 << 5;
+    }
+}
+
+/// Represents the signals state of a handle: which signals are satisfied,
+/// and which are satisfiable.
+#[repr(transparent)]
+#[derive(Clone, Copy, Debug)]
+pub struct SignalsState(pub types::MojoHandleSignalsState);
+
+impl SignalsState {
+    /// Generates a new SignalsState
+    pub fn new(satisfied: HandleSignals, satisfiable: HandleSignals) -> SignalsState {
+        SignalsState(types::MojoHandleSignalsState {
+            satisfied_signals: satisfied.bits(),
+            satisfiable_signals: satisfiable.bits(),
+        })
+    }
+
+    /// Returns the bitfield of the satisfied signals
+    pub fn satisfied(&self) -> HandleSignals {
+        HandleSignals::from_bits_truncate(self.0.satisfied_signals)
+    }
+
+    /// Returns the bitfield of the satisfiable signals
+    pub fn satisfiable(&self) -> HandleSignals {
+        HandleSignals::from_bits_truncate(self.0.satisfiable_signals)
+    }
+
+    /// Return the wrapped Mojo FFI struct.
+    pub fn to_raw(self) -> types::MojoHandleSignalsState {
+        self.0
+    }
+
+    /// Get a pointer to the inner struct for FFI calls.
+    pub fn as_mut_ptr(&mut self) -> *mut types::MojoHandleSignalsState {
+        &mut self.0 as *mut _
+    }
+}
+
+impl std::default::Default for SignalsState {
+    fn default() -> Self {
+        SignalsState(types::MojoHandleSignalsState { satisfied_signals: 0, satisfiable_signals: 0 })
+    }
+}
+
+/// The result of `wait`ing on a handle. There are three possible outcomes:
+///     * A requested signal was satisfied
+///     * A requested signal became unsatisfiable due to a change on the handle
+///     * The handle was closed
+#[derive(Clone, Copy, Debug)]
+pub enum WaitResult {
+    /// The handle had a signal satisfied.
+    Satisfied(SignalsState),
+    /// A requested signal became unsatisfiable for the handle.
+    Unsatisfiable(SignalsState),
+    /// The handle was closed.
+    Closed,
 }
 
 /// THE MOJO HANDLE EXTENDED UNIVERSE

@@ -45,6 +45,7 @@ pub mod types {
 
 pub use raw_ffi::MojoAppendMessageData;
 pub use raw_ffi::MojoClose;
+pub use raw_ffi::MojoCreateDataPipe;
 pub use raw_ffi::MojoCreateMessage;
 pub use raw_ffi::MojoCreateMessagePipe;
 pub use raw_ffi::MojoDestroyMessage;
@@ -52,7 +53,14 @@ pub use raw_ffi::MojoGetMessageData;
 pub use raw_ffi::MojoGetTimeTicksNow;
 pub use raw_ffi::MojoHandleSignalsState as SignalsState;
 pub use raw_ffi::MojoQueryHandleSignalsState;
+// SAFETY: The `num_bytes` argument to this function must not be null.
+pub use raw_ffi::MojoReadData;
 pub use raw_ffi::MojoReadMessage;
+// SAFETY: The `num_bytes` argument to this function must not be null.
+// Additionally the `data` argument must have at least `num_bytes` of
+// valid memory. Additionally, for thread safety, one must have exclusive
+// access to `data_pipe_producer_handle`.
+pub use raw_ffi::MojoWriteData;
 pub use raw_ffi::MojoWriteMessage;
 pub use types::MojoResultCode;
 
@@ -113,3 +121,14 @@ macro_rules! declare_mojo_options {
 declare_mojo_options!(MojoAppendMessageDataOptions, flags: types::MojoAppendMessageDataFlags);
 declare_mojo_options!(MojoCreateMessagePipeOptions, flags: types::MojoCreateMessagePipeFlags);
 declare_mojo_options!(MojoWriteMessageOptions, flags: types::MojoWriteMessageFlags);
+
+declare_mojo_options!(MojoReadDataOptions, flags: types::MojoReadDataFlags);
+
+declare_mojo_options!(MojoWriteDataOptions, flags: types::MojoWriteDataFlags);
+
+declare_mojo_options!(
+    MojoCreateDataPipeOptions,
+    flags: types::MojoCreateDataPipeFlags,
+    element_num_bytes: u32,
+    capacity_num_bytes: u32
+);
