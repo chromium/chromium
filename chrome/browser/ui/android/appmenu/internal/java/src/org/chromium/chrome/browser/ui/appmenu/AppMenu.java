@@ -253,6 +253,7 @@ class AppMenu implements OnKeyListener {
     private final int mChipHighlightExtension;
     private final int[] mTempLocation;
     private final AppMenuVisibilityDelegate mVisibilityDelegate;
+    private final boolean mDisableVerticalScrollbar;
 
     private @Nullable Context mContext;
     private @Nullable ListView mListView;
@@ -276,8 +277,10 @@ class AppMenu implements OnKeyListener {
     AppMenu(
             AppMenuVisibilityDelegate visibilityDelegate,
             Resources res,
-            HierarchicalMenuController hierarchicalMenuController) {
+            HierarchicalMenuController hierarchicalMenuController,
+            boolean disableVerticalScrollbar) {
         mVisibilityDelegate = visibilityDelegate;
+        mDisableVerticalScrollbar = disableVerticalScrollbar;
 
         mNegativeSoftwareVerticalOffset =
                 res.getDimensionPixelSize(R.dimen.menu_negative_software_vertical_offset);
@@ -416,6 +419,11 @@ class AppMenu implements OnKeyListener {
         }
 
         mListView = contentView.findViewById(R.id.app_menu_list);
+        if (mDisableVerticalScrollbar) {
+            // TODO(crbug.com/465107697) Move code to xml file once the feature is launched.
+            // Cleanup AppMenuDelegate too.
+            mListView.setVerticalScrollBarEnabled(false);
+        }
 
         int footerHeight = attachFooter(footer, (ViewGroup) contentView, menuWidth);
         int headerHeight = attachHeader(header, menuWidth);
