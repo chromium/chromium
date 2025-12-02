@@ -27,6 +27,7 @@
 #include "components/viz/service/gl/exit_code.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/shm_count.h"
+#include "gpu/command_buffer/service/gpu_persistent_cache.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -520,6 +521,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 #endif
 
   std::unique_ptr<webnn::WebNNContextProviderImpl> webnn_context_provider_;
+
+  gpu::GpuPersistentCacheCollection persistent_caches_;
 
   // An event that will be signalled when we shutdown. On some platforms it
   // comes from external sources.

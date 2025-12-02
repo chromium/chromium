@@ -27,6 +27,7 @@
 #include "components/persistent_cache/persistent_cache.h"
 #include "components/persistent_cache/transaction_error.h"
 #include "gpu/command_buffer/service/memory_cache.h"
+#include "ipc/common/gpu_client_ids.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace gpu {
@@ -101,6 +102,19 @@ void GL_APIENTRY GLBlobCacheSetCallback(const void* key,
       static_cast<GpuPersistentCache*>(const_cast<void*>(user_param));
 
   cache->GLBlobCacheSet(key, key_size, value, value_size);
+}
+
+// Cache prefix name used in all histograms, eg:
+// GPU.PersistentCache.{CachePrefix}.MetricName
+// Do not modify without changing
+// tools/metrics/histograms/metadata/gpu/histograms.xml
+const char* GetCacheHistogramPrefix(GpuDiskCacheType type) {
+  switch (type) {
+    case GpuDiskCacheType::kDawnGraphite:
+      return "GraphiteDawn";
+    default:
+      NOTREACHED();
+  }
 }
 
 std::string GetHistogramName(std::string_view prefix, std::string_view metric) {
@@ -409,6 +423,7 @@ void GpuPersistentCache::InitializeCache(
   }
 }
 
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
 size_t GpuPersistentCache::LoadData(const void* key,
                                     size_t key_size,
                                     void* value,
@@ -443,6 +458,7 @@ size_t GpuPersistentCache::LoadData(const void* key,
 
   return static_cast<GLsizeiptr>(discovered_size);
 }
+#endif
 
 sk_sp<SkData> GpuPersistentCache::load(const SkData& key) {
   std::string_view key_str(static_cast<const char*>(key.data()), key.size());
@@ -611,6 +627,7 @@ GpuPersistentCache::CacheLoadResult GpuPersistentCache::LoadImpl(
   return CacheLoadResult::kHitDisk;
 }
 
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
 void GpuPersistentCache::StoreData(const void* key,
                                    size_t key_size,
                                    const void* value,
@@ -620,6 +637,7 @@ void GpuPersistentCache::StoreData(const void* key,
       base::span(static_cast<const uint8_t*>(value), value_size));
   StoreImpl(key_str, value_span);
 }
+#endif
 
 void GpuPersistentCache::store(const SkData& key, const SkData& data) {
   std::string_view key_str(static_cast<const char*>(key.data()), key.size());
@@ -695,6 +713,32 @@ void UnbindCacheFromCurrentOpenGLContext() {
   }
 
   glBlobCacheCallbacksANGLE(nullptr, nullptr, nullptr);
+}
+
+GpuPersistentCacheCollection::GpuPersistentCacheCollection(
+    size_t max_in_memory_cache_size,
+    GpuPersistentCache::AsyncDiskWriteOpts async_write_options)
+    : max_in_memory_cache_size_(max_in_memory_cache_size),
+      async_write_options_(async_write_options) {}
+
+GpuPersistentCacheCollection::~GpuPersistentCacheCollection() = default;
+
+scoped_refptr<GpuPersistentCache> GpuPersistentCacheCollection::GetCache(
+    const GpuDiskCacheHandle& handle) {
+  base::AutoLock lock(mutex_);
+  if (auto iter = caches_.find(handle); iter != caches_.end()) {
+    return iter->second.get();
+  }
+
+  auto memory_cache =
+      base::MakeRefCounted<MemoryCache>(max_in_memory_cache_size_);
+
+  auto [iter, inserted] = caches_.emplace(
+      handle, base::MakeRefCounted<GpuPersistentCache>(
+                  GetCacheHistogramPrefix(GetHandleType(handle)),
+                  std::move(memory_cache), async_write_options_));
+  DCHECK(inserted);
+  return iter->second;
 }
 
 }  // namespace gpu

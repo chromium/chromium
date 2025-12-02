@@ -88,8 +88,6 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   void SetCachingInterface(
       std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
 
-  webgpu::DawnCachingInterface* GetCachingInterface() const;
-
   bool use_thread_safe_shared_context() const;
 
   void InitializeThreadSafeGraphiteContext(

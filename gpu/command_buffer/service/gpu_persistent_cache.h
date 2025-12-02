@@ -5,9 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GPU_PERSISTENT_CACHE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GPU_PERSISTENT_CACHE_H_
 
-#include <dawn/platform/DawnPlatform.h>
-
 #include <atomic>
+#include <map>
 #include <memory>
 #include <string_view>
 
@@ -19,7 +18,14 @@
 #include "components/persistent_cache/pending_backend.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/gpu_gles2_export.h"
+#include "gpu/ipc/common/gpu_disk_cache_type.h"
+#include "skia/buildflags.h"
 #include "third_party/skia/include/gpu/ganesh/GrContextOptions.h"
+#include "ui/gl/buildflags.h"
+
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+#include <dawn/platform/DawnPlatform.h>
+#endif
 
 namespace persistent_cache {
 class PersistentCache;
@@ -33,10 +39,12 @@ class MemoryCache;
 // cache. Entries are always stored in a MemoryCache and PersistentCache as well
 // once it is initialized. Entries loaded before the PersistentCache is
 // initialized are copied into it on initialization.
-class GPU_GLES2_EXPORT GpuPersistentCache
-    : public dawn::platform::CachingInterface,
-      public GrContextOptions::PersistentCache,
-      public base::RefCountedThreadSafe<GpuPersistentCache> {
+class GPU_GLES2_EXPORT GpuPersistentCache :
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+    public dawn::platform::CachingInterface,
+#endif
+    public GrContextOptions::PersistentCache,
+    public base::RefCountedThreadSafe<GpuPersistentCache> {
  public:
   struct GPU_GLES2_EXPORT AsyncDiskWriteOpts {
     AsyncDiskWriteOpts();
@@ -69,6 +77,7 @@ class GPU_GLES2_EXPORT GpuPersistentCache
                        scoped_refptr<RefCountedGpuProcessShmCount>
                            use_shader_cache_shm_count = nullptr);
 
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
   // dawn::platform::CachingInterface implementation.
   size_t LoadData(const void* key,
                   size_t key_size,
@@ -78,6 +87,7 @@ class GPU_GLES2_EXPORT GpuPersistentCache
                  size_t key_size,
                  const void* value,
                  size_t value_size) override;
+#endif
 
   // GrContextOptions::PersistentCache implementation.
   sk_sp<SkData> load(const SkData& key) override;
@@ -144,6 +154,24 @@ class GPU_GLES2_EXPORT GpuPersistentCache
 
 void BindCacheToCurrentOpenGLContext(GpuPersistentCache* cache);
 void UnbindCacheFromCurrentOpenGLContext();
+
+class GPU_GLES2_EXPORT GpuPersistentCacheCollection {
+ public:
+  explicit GpuPersistentCacheCollection(
+      size_t max_in_memory_cache_size,
+      GpuPersistentCache::AsyncDiskWriteOpts async_write_options);
+  ~GpuPersistentCacheCollection();
+
+  scoped_refptr<GpuPersistentCache> GetCache(const GpuDiskCacheHandle& handle);
+
+ private:
+  const size_t max_in_memory_cache_size_;
+  const GpuPersistentCache::AsyncDiskWriteOpts async_write_options_;
+
+  base::Lock mutex_;
+  std::map<GpuDiskCacheHandle, scoped_refptr<GpuPersistentCache>> caches_
+      GUARDED_BY(mutex_);
+};
 
 }  // namespace gpu
 
