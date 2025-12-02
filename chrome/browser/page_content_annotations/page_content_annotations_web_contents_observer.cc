@@ -85,7 +85,10 @@ PageContentAnnotationsWebContentsObserver::GetAnnotatedPageContentRequest() {
 }
 
 PageContentAnnotationsWebContentsObserver::
-    ~PageContentAnnotationsWebContentsObserver() = default;
+    ~PageContentAnnotationsWebContentsObserver() {
+  page_content_annotations_service_->RemoveObserver(
+      AnnotationType::kContentVisibility, this);
+}
 
 void PageContentAnnotationsWebContentsObserver::
     DocumentOnLoadCompletedInPrimaryMainFrame() {
