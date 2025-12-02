@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** This class provides information for the auxiliary search. */
 @NullMarked
@@ -99,7 +100,8 @@ public class AuxiliarySearchProvider {
             return;
         }
 
-        long minAccessTime = System.currentTimeMillis() - DEFAULT_TAB_AGE_HOURS;
+        long minAccessTime =
+                System.currentTimeMillis() - TimeUnit.HOURS.toMillis(DEFAULT_TAB_AGE_HOURS);
         List<Tab> listTab = getTabsByMinimalAccessTime(minAccessTime);
 
         // We will get up to 100 tabs as default. This is controlled by feature
