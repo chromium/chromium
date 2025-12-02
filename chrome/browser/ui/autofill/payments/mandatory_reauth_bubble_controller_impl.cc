@@ -281,7 +281,7 @@ void MandatoryReauthBubbleControllerImpl::DoShowBubble() {
 }
 
 bool MandatoryReauthBubbleControllerImpl::CanBeReshown() const {
-  return current_bubble_type_ != MandatoryReauthBubbleType::kInactive;
+  return current_bubble_type_ == MandatoryReauthBubbleType::kOptIn;
 }
 
 BubbleType MandatoryReauthBubbleControllerImpl::GetBubbleType() const {
