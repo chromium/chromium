@@ -11,6 +11,7 @@
 
 class LocationBarView;
 class OmniboxController;
+class OmniboxPopupAimHandler;
 class OmniboxPopupPresenterBase;
 
 // The content WebView for the popup of a WebUI Omnibox.
@@ -42,6 +43,9 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   // <escape>, presses the 'x' button, or moves focus out of the popup.
   void CloseUI() override;
   void ShowUI() override;
+
+  // Can return null.
+  OmniboxPopupAimHandler* popup_aim_handler();
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
