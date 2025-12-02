@@ -2068,6 +2068,26 @@
     Doesn’t warn you for private sites, such as your company’s intranet
   </message>
 
+  <!-- Secure Connections (in bundled version of security settings page) -->
+  <message name="IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_TOGGLE_LABEL" desc="Label for the HTTPS-First Mode toggle in the Security settings page">
+    Secure connections
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_TOGGLE_SUBLABEL" desc="Sublabel explaining HTTPS-First Mode in the Security settings page">
+    Upgrades connections to HTTPS when possible and warns you before making insecure connections
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_BALANCED_LABEL" desc="Label for radio button to enable the less-strict form of HTTPS-First Mode">
+    On open internet connections
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_BALANCED_SUBLABEL" desc="Sublabel explaining the less-strict form of HTTPS-First Mode">
+    Warns you about insecure connections on the open internet
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_STRICT_LABEL" desc="Label for radio button to enable the stricter form of HTTPS-First Mode">
+    On all connections
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_STRICT_SUBLABEL" desc="Sublabel explaining the stricter form of HTTPS-First Mode">
+    Warns you about all insecure connections, including private intranets
+  </message>
+
   <message name="IDS_SETTINGS_MANAGE_CERTIFICATES" desc="Text for manage certificates button in Privacy options">
     Manage certificates
   </message>
