@@ -524,6 +524,11 @@ BASE_FEATURE_PARAM(int,
                    &kDeviceBoundSessions,
                    "SchemaVersion",
                    2);
+BASE_FEATURE_PARAM(bool,
+                   kDeviceBoundSessionsIncludeAudFieldInJwt,
+                   &kDeviceBoundSessions,
+                   "IncludeAudFieldInJwt",
+                   false);
 
 BASE_FEATURE(kDeviceBoundSessionsFederatedRegistration,
              base::FEATURE_DISABLED_BY_DEFAULT);
