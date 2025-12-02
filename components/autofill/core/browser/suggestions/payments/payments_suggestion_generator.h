@@ -31,7 +31,6 @@ class AutofillOfferData;
 class BrowserAutofillManager;
 class CreditCard;
 class FormFieldData;
-class Iban;
 
 // Describes the suggestions returned by
 // `GetCreditCardOrCvcFieldSuggestions()`.
@@ -162,14 +161,6 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
 // `SuggestionType`. This distinction is needed for metrics recording.
 Suggestion CreateManageCreditCardsSuggestion(bool with_gpay_logo);
 
-// Generates a footer suggestion "Manage payment methods..." menu item which
-// will redirect to Chrome payment settings page.
-//
-// The difference between `CreateManageCreditCardsSuggestion()` and
-// `CreateManageIbansSuggestion()` is that they use a different
-// `SuggestionType`. This distinction is needed for metrics recording.
-Suggestion CreateManageIbansSuggestion();
-
 // Generates a "Save and Fill" suggestion for users who don't have any cards
 // saved in Autofill. This suggestion is shown above the footer.
 // `display_gpay_logo` is an  output parameter that is set to true if credit
@@ -177,9 +168,6 @@ Suggestion CreateManageIbansSuggestion();
 // with the suggestion.
 Suggestion CreateSaveAndFillSuggestion(const AutofillClient& client,
                                        bool& display_gpay_logo);
-
-// Generates suggestions for all available IBANs.
-std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans);
 
 // Converts the vector of promo code offers that is passed in to a vector of
 // suggestions that can be displayed to the user for a promo code field.

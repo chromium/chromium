@@ -13,6 +13,8 @@
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/payments/iban_manager.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
+#include "components/grit/components_scaled_resources.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace autofill {
 namespace {
@@ -20,6 +22,69 @@ namespace {
 // absent and the length of the input field is less than
 // `kFieldLengthLimitOnServerIbanSuggestion` characters.
 constexpr int kFieldLengthLimitOnServerIbanSuggestion = 6;
+
+// Generates a footer suggestion "Manage payment methods..." menu item which
+// will redirect to Chrome payment settings page.
+//
+// The difference between `CreateManageCreditCardsSuggestion()` and
+// `CreateManageIbansSuggestion()` is that they use a different
+// `SuggestionType`. This distinction is needed for metrics recording.
+Suggestion CreateManageIbansSuggestion() {
+  return CreateManagePaymentMethodsEntry(SuggestionType::kManageIban,
+                                         /*with_gpay_logo=*/false);
+}
+
+// Generates suggestions for all available IBANs.
+std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans) {
+  if (ibans.empty()) {
+    return {};
+  }
+  std::vector<Suggestion> suggestions;
+  suggestions.reserve(ibans.size() + 2);
+  for (const Iban& iban : ibans) {
+    Suggestion suggestion(SuggestionType::kIbanEntry);
+    suggestion.custom_icon =
+        ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+            ShouldUseNewFopDisplay() ? IDR_AUTOFILL_IBAN
+                                     : IDR_AUTOFILL_IBAN_OLD);
+    suggestion.icon = Suggestion::Icon::kIban;
+    if (iban.record_type() == Iban::kLocalIban) {
+      suggestion.payload = Suggestion::Guid(iban.guid());
+    } else {
+      CHECK(iban.record_type() == Iban::kServerIban);
+      suggestion.payload = Suggestion::InstrumentId(iban.instrument_id());
+    }
+
+    std::u16string iban_identifier =
+        iban.GetIdentifierStringForAutofillDisplay();
+    if constexpr (BUILDFLAG(IS_ANDROID)) {
+      // For Android keyboard accessory, the displayed value will be nickname +
+      // identifier string, if the nickname is too long to fit due to bubble
+      // width limitation, it will be truncated.
+      if (!iban.nickname().empty()) {
+        suggestion.main_text.value = iban.nickname();
+        suggestion.minor_texts.emplace_back(iban_identifier);
+      } else {
+        suggestion.main_text.value = std::move(iban_identifier);
+      }
+    } else {
+      if (iban.nickname().empty()) {
+        suggestion.main_text = Suggestion::Text(
+            iban_identifier, Suggestion::Text::IsPrimary(true));
+      } else {
+        suggestion.main_text = Suggestion::Text(
+            iban.nickname(), Suggestion::Text::IsPrimary(true));
+        suggestion.labels = {{Suggestion::Text(iban_identifier)}};
+      }
+    }
+    suggestions.push_back(suggestion);
+  }
+
+  suggestions.emplace_back(SuggestionType::kSeparator);
+  suggestions.push_back(CreateManageIbansSuggestion());
+  return suggestions;
+}
+
 }  // namespace
 
 IbanSuggestionGenerator::IbanSuggestionGenerator() = default;
