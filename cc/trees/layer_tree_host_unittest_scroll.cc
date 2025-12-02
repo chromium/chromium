@@ -75,7 +75,13 @@ ScrollState UpdateState(const gfx::Point& point, const gfx::Vector2dF& delta) {
 
 class LayerTreeHostScrollTest : public LayerTreeTest, public ScrollCallbacks {
  protected:
-  LayerTreeHostScrollTest() { SetUseLayerLists(); }
+  LayerTreeHostScrollTest() {
+    // This test has precise frame-by-frame assertions that are not playing well
+    // with throttling, as the simulated framerate is 200Hz (see
+    // LayertTreeTest::RequestNewLayerTreeFrameSink()), thus throttled.
+    feature_list_.InitAndDisableFeature(features::kThrottleMainFrameTo60Hz);
+    SetUseLayerLists();
+  }
 
   void SetupTree() override {
     LayerTreeTest::SetupTree();
@@ -124,6 +130,7 @@ class LayerTreeHostScrollTest : public LayerTreeTest, public ScrollCallbacks {
   int num_outer_viewport_scrolls_ = 0;
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::WeakPtrFactory<LayerTreeHostScrollTest> weak_ptr_factory_{this};
 };
 

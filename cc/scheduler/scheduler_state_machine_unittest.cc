@@ -1309,19 +1309,29 @@ TEST(SchedulerStateMachineTest, TestProactiveMainFrameThrottling) {
     return begin_main_frame_count;
   };
 
-  // No throttling by default.
-  EXPECT_EQ(GetFrameCountFor10Intervals(120), 10);
-  EXPECT_EQ(state.MainFrameThrottledInterval(), base::TimeDelta());
+  // Prior to enabling proactive throttling, we are maybe throttled when at
+  // 120fps.
+  int expected_count = 10;
+  base::TimeDelta expected_interval = state.MainFrameThrottledInterval();
+  if (base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz)) {
+    expected_count = 5;
+    EXPECT_GT(expected_interval, base::Hertz(120));
+  } else {
+    EXPECT_EQ(expected_interval, base::TimeDelta());
+  }
+
+  EXPECT_EQ(GetFrameCountFor10Intervals(120), expected_count);
+  EXPECT_EQ(state.MainFrameThrottledInterval(), expected_interval);
 
   // Throttling after starting the throttle.
   state.SetShouldThrottleFrameRate(true);
   EXPECT_EQ(GetFrameCountFor10Intervals(120), 2);
   EXPECT_EQ(state.MainFrameThrottledInterval(), throttled_interval);
 
-  // Not throttling after stopping the throttle.
+  // Restore the previous behavior.
   state.SetShouldThrottleFrameRate(false);
-  EXPECT_EQ(GetFrameCountFor10Intervals(120), 10);
-  EXPECT_EQ(state.MainFrameThrottledInterval(), base::TimeDelta());
+  EXPECT_EQ(GetFrameCountFor10Intervals(120), expected_count);
+  EXPECT_EQ(state.MainFrameThrottledInterval(), expected_interval);
 }
 
 TEST(SchedulerStateMachineTest, TestMainFrameThrottlingIsNotSensitiveToDelays) {
