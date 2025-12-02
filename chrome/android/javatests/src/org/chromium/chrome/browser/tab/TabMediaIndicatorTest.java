@@ -20,7 +20,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -42,6 +44,7 @@ import java.util.List;
 })
 @Batch(Batch.PER_CLASS)
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+@EnableFeatures({ChromeFeatureList.MEDIA_INDICATORS_ANDROID})
 public class TabMediaIndicatorTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
