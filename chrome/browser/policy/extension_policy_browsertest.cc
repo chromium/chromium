@@ -133,7 +133,7 @@ const base::FilePath::CharType kSimpleWithIconCrxName[] =
 const char kGoodCrxId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
 const char kSimpleWithIconCrxId[] = "dehdlahnlebladnfleagmjdapdjdcnlp";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 const base::FilePath::CharType kHostedAppCrxName[] =
     FILE_PATH_LITERAL("hosted_app.crx");
 const char kHostedAppCrxId[] = "kbmnembihfiondgfjekmnmcbddelicoi";
@@ -1936,15 +1936,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   EXPECT_FALSE(registrar->IsExtensionEnabled(kGoodCrxId));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/394876083): Support ExtensionAllowedTypes policy on desktop
-// Android.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionAllowedTypes) {
   // Verifies that extensions are blocked if policy specifies an allowed types
   // list and the extension's type is not on that list.
   extensions::ExtensionRegistry* registry = extension_registry();
   ASSERT_FALSE(registry->GetExtensionById(
       kGoodCrxId, extensions::ExtensionRegistry::EVERYTHING));
+  // Hosted apps are deprecated, but for the purposes of this test we just need
+  // a CRX of a type other than "extension" to compare with kGoodCrx. A hosted
+  // app works fine for that.
   ASSERT_FALSE(registry->GetExtensionById(
       kHostedAppCrxId, extensions::ExtensionRegistry::EVERYTHING));
 
@@ -1971,7 +1971,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionAllowedTypes) {
   // The user can remove the extension.
   UninstallExtension(kHostedAppCrxId, true);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Checks that a click on an extension CRX download triggers the extension
 // installation prompt without further user interaction when the source is

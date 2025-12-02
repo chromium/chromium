@@ -28,6 +28,8 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- android
 items:
 - caption: Extension
   name: extension
