@@ -5,16 +5,15 @@
 #ifndef CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_EXTRACTION_SERVICE_H_
 #define CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_EXTRACTION_SERVICE_H_
 
+#include <memory>
+#include <optional>
 #include <set>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
-#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/page_content_annotations/core/web_state_wrapper.h"
-#include "content/public/browser/visibility.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -27,7 +26,12 @@ class FilePath;
 namespace content {
 class Page;
 class WebContents;
+enum class Visibility;
 }  // namespace content
+
+namespace optimization_guide::proto {
+class AnnotatedPageContent;
+}  // namespace optimization_guide::proto
 
 namespace os_crypt_async {
 class OSCryptAsync;
