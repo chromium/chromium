@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "device/fido/mac/util.h"
 
 #import <Foundation/Foundation.h>
@@ -22,8 +21,8 @@
 #include "components/cbor/writer.h"
 #include "crypto/apple/keychain_v2.h"
 #include "crypto/hash.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/p256_public_key.h"
+#include "device/fido/public/fido_constants.h"
 #include "device/fido/public_key.h"
 
 namespace device::fido::mac {

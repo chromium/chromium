@@ -16,9 +16,9 @@
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 #include "third_party/microsoft_webauthn/src/webauthn.h"
 
 namespace device {

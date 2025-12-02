@@ -22,8 +22,8 @@
 #include "device/fido/enclave/attestation.h"
 #include "device/fido/enclave/enclave_protocol_utils.h"
 #include "device/fido/enclave/enclave_websocket_client.h"
-#include "device/fido/features.h"
 #include "device/fido/network_context_factory.h"
+#include "device/fido/public/features.h"
 
 namespace device::enclave {
 

@@ -14,7 +14,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "crypto/hash.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "url/gurl.h"
 
 namespace sync_pb {

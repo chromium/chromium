@@ -16,8 +16,8 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "device/fido/cable/v2_constants.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/network_context_factory.h"
+#include "device/fido/public/fido_constants.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
 namespace device::cablev2::authenticator {

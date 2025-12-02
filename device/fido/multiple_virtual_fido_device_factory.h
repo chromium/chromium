@@ -10,8 +10,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "device/fido/fido_discovery_factory.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_fido_device_discovery.h"

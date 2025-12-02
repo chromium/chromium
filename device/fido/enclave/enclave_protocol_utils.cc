@@ -31,15 +31,15 @@
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/types.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/json_request.h"
 #include "device/fido/p256_public_key.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "device/fido/public_key.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_user_entity.h"
 
 namespace device::enclave {
 

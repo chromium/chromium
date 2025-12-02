@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
-#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 #include "url/origin.h"
 

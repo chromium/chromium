@@ -8,9 +8,9 @@
 #include "base/containers/span.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/fido_constants.h"
 #include "third_party/boringssl/src/include/openssl/hmac.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 

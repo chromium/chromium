@@ -20,14 +20,14 @@
 #include "components/cbor/diagnostic_writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/hash.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/filter.h"
 #include "device/fido/make_credential_task.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"

@@ -8,10 +8,10 @@
 
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/cable/v2_constants.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)

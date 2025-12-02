@@ -16,12 +16,12 @@
 #include "base/containers/span.h"
 #include "crypto/sha2.h"
 #include "device/fido/cable/cable_discovery_data.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/json_request.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
 #include "device/fido/prf_input.h"
-#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
 
 namespace cbor {
 class Value;

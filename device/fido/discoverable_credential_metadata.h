@@ -10,8 +10,8 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
-#include "device/fido/fido_types.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 
 namespace device {
 

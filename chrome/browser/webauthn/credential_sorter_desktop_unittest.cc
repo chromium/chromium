@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "device/fido/fido_types.h"
+#include "device/fido/public/fido_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using Mechanism = AuthenticatorRequestDialogModel::Mechanism;

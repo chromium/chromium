@@ -23,7 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/l10n/l10n_util.h"
 

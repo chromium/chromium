@@ -13,7 +13,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/grit/generated_resources.h"
-#include "device/fido/fido_types.h"
+#include "device/fido/public/fido_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"

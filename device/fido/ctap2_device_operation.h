@@ -24,8 +24,8 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/device_operation.h"
 #include "device/fido/device_response_converter.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

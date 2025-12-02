@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

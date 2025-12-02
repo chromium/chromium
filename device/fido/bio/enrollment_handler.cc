@@ -9,8 +9,8 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/bio/enrollment.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

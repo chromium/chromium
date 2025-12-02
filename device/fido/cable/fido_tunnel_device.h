@@ -16,9 +16,9 @@
 #include "base/timer/timer.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/websocket_adapter.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/network_context_factory.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device::cablev2 {
 

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_TRANSPORT_H_
 #define CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_TRANSPORT_H_
 
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 using AuthenticatorTransport = device::FidoTransportProtocol;
 

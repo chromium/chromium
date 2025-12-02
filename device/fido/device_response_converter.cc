@@ -23,11 +23,11 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_supported_options.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/opaque_attestation_statement.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 namespace device {
 

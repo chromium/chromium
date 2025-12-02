@@ -20,7 +20,7 @@
 #include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/webauthn_security_utils.h"
 #include "content/public/common/content_client.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

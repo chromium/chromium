@@ -9,7 +9,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "device/fido/enclave/types.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device::enclave {
 

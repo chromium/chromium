@@ -21,9 +21,9 @@
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
 #include "device/fido/virtual_fido_device.h"
 
 namespace device {

@@ -12,9 +12,9 @@
 #include "device/base/features.h"
 #include "device/fido/ctap2_device_operation.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/fido_constants.h"
 #include "device/fido/u2f_command_constructor.h"
 #include "device/fido/u2f_register_operation.h"
 

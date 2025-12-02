@@ -9,9 +9,9 @@
 #import <vector>
 
 #import "components/webauthn/core/browser/passkey_model.h"
-#import "device/fido/public_key_credential_descriptor.h"
-#import "device/fido/public_key_credential_rp_entity.h"
-#import "device/fido/public_key_credential_user_entity.h"
+#import "device/fido/public/public_key_credential_descriptor.h"
+#import "device/fido/public/public_key_credential_rp_entity.h"
+#import "device/fido/public/public_key_credential_user_entity.h"
 
 namespace webauthn {
 

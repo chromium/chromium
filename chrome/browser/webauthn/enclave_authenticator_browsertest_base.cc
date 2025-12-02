@@ -48,7 +48,7 @@
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/enclave/enclave_protocol_utils.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "enclave_authenticator_browsertest_base.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"

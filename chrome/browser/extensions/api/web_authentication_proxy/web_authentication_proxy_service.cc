@@ -16,7 +16,7 @@
 #include "chrome/common/extensions/api/web_authentication_proxy.h"
 #include "components/webauthn/json/value_conversions.h"
 #include "content/public/browser/browser_context.h"
-#include "device/fido/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_event_histogram_value.h"

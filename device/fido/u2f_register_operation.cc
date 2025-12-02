@@ -16,8 +16,8 @@
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/device_response_converter.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
+#include "device/fido/public/fido_constants.h"
 #include "device/fido/u2f_command_constructor.h"
 
 namespace device {

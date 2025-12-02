@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PASSKEY_DETAIL_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PASSKEY_DETAIL_VIEW_H_
 
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 

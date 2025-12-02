@@ -17,11 +17,11 @@
 #include "crypto/apple/keychain_v2.h"
 #include "device/base/features.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/mac/authenticator.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_store.h"
+#include "device/fido/public/fido_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

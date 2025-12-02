@@ -16,7 +16,7 @@
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "device/fido/enclave/types.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "net/base/port_util.h"
 #include "url/gurl.h"
 

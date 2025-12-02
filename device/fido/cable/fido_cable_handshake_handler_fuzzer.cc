@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/cable/fido_cable_device.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

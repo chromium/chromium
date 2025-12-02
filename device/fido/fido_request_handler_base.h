@@ -24,11 +24,11 @@
 #include "base/scoped_observation_traits.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 
 namespace device {
 

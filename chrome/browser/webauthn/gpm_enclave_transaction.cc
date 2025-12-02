@@ -24,8 +24,8 @@
 #include "components/webauthn/core/browser/passkey_model_utils.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/enclave/types.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace {
 

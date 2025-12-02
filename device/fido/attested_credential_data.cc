@@ -15,9 +15,9 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cbor_extract.h"
 #include "device/fido/ed25519_public_key.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/p256_public_key.h"
+#include "device/fido/public/fido_constants.h"
 #include "device/fido/public_key.h"
 #include "device/fido/rsa_public_key.h"
 

@@ -22,7 +22,7 @@
 #include "device/fido/fake_fido_discovery.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

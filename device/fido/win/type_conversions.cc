@@ -25,12 +25,12 @@
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/get_assertion_request_handler.h"
 #include "device/fido/make_credential_request_handler.h"
 #include "device/fido/opaque_attestation_statement.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 #include "third_party/microsoft_webauthn/src/webauthn.h"
 
 namespace device {

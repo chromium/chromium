@@ -15,8 +15,8 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_types.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace webauthn::user_actions {

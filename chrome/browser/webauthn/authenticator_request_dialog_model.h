@@ -26,11 +26,11 @@
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 
 namespace content {
 class RenderFrameHost;

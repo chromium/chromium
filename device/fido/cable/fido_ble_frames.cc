@@ -12,8 +12,8 @@
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

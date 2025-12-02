@@ -11,7 +11,7 @@
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
 #include "device/fido/enclave/constants.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/webauthn/enclave_manager.h"

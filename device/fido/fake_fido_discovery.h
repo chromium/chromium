@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "device/fido/fido_discovery_factory.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 namespace device {
 

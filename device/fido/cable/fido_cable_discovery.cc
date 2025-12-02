@@ -33,8 +33,8 @@
 #include "device/fido/cable/fido_cable_device.h"
 #include "device/fido/cable/fido_cable_handshake_handler.h"
 #include "device/fido/cable/fido_tunnel_device.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/public/features.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/util.h"

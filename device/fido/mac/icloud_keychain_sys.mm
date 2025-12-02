@@ -12,9 +12,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
-#include "device/fido/features.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/mac/icloud_keychain_internals.h"
+#include "device/fido/public/features.h"
 
 namespace {
 

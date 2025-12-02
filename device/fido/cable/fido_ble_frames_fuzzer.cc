@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* raw_data, size_t size) {
   auto data_span = UNSAFE_TODO(base::span(raw_data, size));

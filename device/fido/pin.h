@@ -19,7 +19,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "components/cbor/values.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 namespace pin {

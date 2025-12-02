@@ -27,7 +27,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"

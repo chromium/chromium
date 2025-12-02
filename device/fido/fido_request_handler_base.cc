@@ -22,11 +22,11 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/ble_adapter_manager.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"

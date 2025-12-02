@@ -13,16 +13,16 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "device/fido/authenticator_selection_criteria.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/json_request.h"
 #include "device/fido/pin.h"
 #include "device/fido/prf_input.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_params.h"
-#include "device/fido/public_key_credential_rp_entity.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/authenticator_selection_criteria.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 
 namespace cbor {
 class Value;

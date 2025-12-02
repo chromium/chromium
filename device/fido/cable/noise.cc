@@ -11,7 +11,7 @@
 #include "crypto/aead.h"
 #include "crypto/hash.h"
 #include "crypto/kdf.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 

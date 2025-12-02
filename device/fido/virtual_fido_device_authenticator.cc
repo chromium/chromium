@@ -6,12 +6,12 @@
 
 #include "crypto/hash.h"
 #include "device/fido/ctap_get_assertion_request.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_types.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 
 namespace device {
 

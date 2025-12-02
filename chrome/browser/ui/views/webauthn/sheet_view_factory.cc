@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"

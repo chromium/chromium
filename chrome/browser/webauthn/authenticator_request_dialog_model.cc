@@ -30,7 +30,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/fido_types.h"
+#include "device/fido/public/fido_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 

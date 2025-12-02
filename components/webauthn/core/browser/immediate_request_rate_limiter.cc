@@ -9,7 +9,7 @@
 
 #include "base/time/time.h"
 #include "components/webauthn/core/browser/rate_limiter_slide_window.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/origin.h"
 

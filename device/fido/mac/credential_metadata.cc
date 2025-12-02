@@ -17,7 +17,7 @@
 #include "crypto/hash.h"
 #include "crypto/kdf.h"
 #include "crypto/random.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 
 namespace device::fido::mac {
 

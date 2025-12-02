@@ -25,7 +25,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/webauthn/android/jni_headers/WebauthnBrowserBridge_jni.h"

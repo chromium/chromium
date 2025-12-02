@@ -28,14 +28,14 @@
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/mac/fake_icloud_keychain_sys.h"
 #include "device/fido/mac/icloud_keychain_sys.h"
-#include "device/fido/public_key_credential_params.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device::fido::icloud_keychain {

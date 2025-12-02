@@ -9,7 +9,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
-#include "device/fido/fido_types.h"
+#include "device/fido/public/fido_types.h"
 
 namespace device {
 

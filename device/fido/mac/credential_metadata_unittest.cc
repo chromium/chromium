@@ -6,7 +6,7 @@
 
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device::fido::mac {

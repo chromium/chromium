@@ -14,9 +14,9 @@
 #include "components/apdu/apdu_response.h"
 #include "components/cbor/writer.h"
 #include "device/fido/device_response_converter.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

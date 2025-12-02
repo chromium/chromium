@@ -21,7 +21,7 @@
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_handshake.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using cablev2::KnownDevices;

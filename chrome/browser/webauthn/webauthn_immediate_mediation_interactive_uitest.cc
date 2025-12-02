@@ -25,7 +25,7 @@
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"

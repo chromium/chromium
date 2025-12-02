@@ -15,8 +15,8 @@
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/fido_tunnel_device.h"
 #include "device/fido/cable/v2_handshake.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/public/features.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 
 namespace device::cablev2 {

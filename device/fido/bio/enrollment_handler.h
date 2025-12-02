@@ -17,9 +17,9 @@
 #include "base/sequence_checker.h"
 #include "device/fido/bio/enroller.h"
 #include "device/fido/bio/enrollment.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

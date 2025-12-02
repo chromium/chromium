@@ -6,8 +6,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/hid/fido_hid_packet.h"
+#include "device/fido/public/fido_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

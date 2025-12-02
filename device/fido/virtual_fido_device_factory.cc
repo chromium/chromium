@@ -5,7 +5,7 @@
 #include "device/fido/virtual_fido_device_factory.h"
 
 #include "device/fido/cable/cable_discovery_data.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/virtual_fido_device_discovery.h"
 
 namespace device::test {

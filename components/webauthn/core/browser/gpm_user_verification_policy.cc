@@ -5,7 +5,7 @@
 #include "components/webauthn/core/browser/gpm_user_verification_policy.h"
 
 #include "build/build_config.h"
-#include "device/fido/fido_types.h"
+#include "device/fido/public/fido_types.h"
 
 namespace webauthn {
 

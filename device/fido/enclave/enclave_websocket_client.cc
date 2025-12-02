@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "components/device_event_log/device_event_log.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/network_context_factory.h"
+#include "device/fido/public/fido_constants.h"
 #include "net/http/http_request_headers.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

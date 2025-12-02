@@ -29,7 +29,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"

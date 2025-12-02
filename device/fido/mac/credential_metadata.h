@@ -16,7 +16,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "crypto/aead.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 
 namespace device {
 

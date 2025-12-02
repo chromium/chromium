@@ -11,7 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "device/fido/fido_device_discovery.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 namespace device {
 class VirtualFidoDevice;
