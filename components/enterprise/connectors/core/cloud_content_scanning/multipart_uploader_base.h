@@ -24,11 +24,7 @@
 
 namespace enterprise_connectors {
 
-class BrowserThreadGuard {
- public:
-  virtual void AssertCalledOnUIThread() = 0;
-  virtual ~BrowserThreadGuard() = default;
-};
+class BrowserThreadGuard;
 
 // This class encapsulates the upload of a file with metadata using the
 // multipart protocol. This class is neither movable nor copyable.

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/browser_thread_guard_impl.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/multipart_uploader_base.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -15,15 +16,7 @@ namespace safe_browsing {
 
 namespace {
 
-using ::enterprise_connectors::BrowserThreadGuard;
 using ::enterprise_connectors::ConnectorUploadRequest;
-
-class BrowserThreadGuardImpl : public BrowserThreadGuard {
- public:
-  void AssertCalledOnUIThread() override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  }
-};
 
 }  // namespace
 

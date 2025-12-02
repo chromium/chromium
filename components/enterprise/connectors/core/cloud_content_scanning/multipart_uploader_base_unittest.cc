@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/browser_thread_guard.h"
 #include "components/enterprise/connectors/core/uploader_test_utils.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
