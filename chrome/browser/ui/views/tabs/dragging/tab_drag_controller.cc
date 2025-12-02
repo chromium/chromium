@@ -1534,6 +1534,10 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+  dragged_widget->GetNativeWindow()->SetProperty(
+      ash::kTabDraggingSourceWindowKey,
+      attached_context_->GetWidget()->GetNativeWindow());
+
   // On ChromeOS, Detach should release capture; `can_release_capture_` is
   // false on ChromeOS because it can cancel touches, but for this cases
   // the touches are already transferred, so releasing is fine. Without

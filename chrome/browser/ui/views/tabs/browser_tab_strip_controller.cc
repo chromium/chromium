@@ -589,11 +589,6 @@ void BrowserTabStripController::OnStartedDragging(bool dragging_window) {
   BrowserView* source_browser_view = GetSourceBrowserViewInTabDragging();
   if (source_browser_view && source_browser_view != browser_view_) {
     source_browser_view->browser_widget()->SetTabDragKind(TabDragKind::kTab);
-#if BUILDFLAG(IS_CHROMEOS)
-    browser_view_->GetWidget()->GetNativeWindow()->SetProperty(
-        ash::kTabDraggingSourceWindowKey,
-        source_browser_view->GetNativeWindow());
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
