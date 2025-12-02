@@ -58,6 +58,11 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     // tab switching surfaces.
     private static final String LEGACY_TAB_ATTRIBUTE_CACHE_FILE = "tab_attribute_cache";
 
+    // This shared prefs file was used for migration to TabCollectionTabModelImpl. It is no longer
+    // in use.
+    private static final String LEGACY_TAB_COLLECTION_MIGRATION_FILE =
+            "tab_collection_migration_util_shared_prefs";
+
     /** <M53 The name of the file where the old tab metadata file is saved per directory. */
     @VisibleForTesting static final String LEGACY_SAVED_STATE_FILE = "tab_state";
 
@@ -485,6 +490,8 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
                     .deleteSharedPreferences(LEGACY_TAB_GROUP_PREFS_FILE);
             ContextUtils.getApplicationContext()
                     .deleteSharedPreferences(LEGACY_TAB_ATTRIBUTE_CACHE_FILE);
+            ContextUtils.getApplicationContext()
+                    .deleteSharedPreferences(LEGACY_TAB_COLLECTION_MIGRATION_FILE);
 
             return null;
         }

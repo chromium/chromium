@@ -10,7 +10,6 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -70,10 +69,6 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
                 new TabPersistentStoreObserver() {
                     @Override
                     public void onStateLoaded() {
-                        if (!ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
-                            TabCollectionMigrationUtil.setTabCollectionsActiveForMetadataFile(
-                                    policy.getMetadataFileName());
-                        }
                         mTabModelSelector.markTabStateInitialized();
                         mTabPersistentStore.removeObserver(this);
                     }
@@ -90,10 +85,6 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
 
         mTabPersistentStore.onNativeLibraryReady();
         mTabPersistentStore.loadState(/* ignoreIncognitoFiles= */ false);
-        if (ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
-            TabCollectionMigrationUtil.setTabCollectionsActiveForMetadataFile(
-                    policy.getMetadataFileName());
-        }
         mTabPersistentStore.restoreTabs(/* setActiveTab= */ true);
 
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
