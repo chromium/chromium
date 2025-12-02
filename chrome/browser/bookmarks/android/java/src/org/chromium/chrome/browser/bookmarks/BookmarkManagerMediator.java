@@ -22,8 +22,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -370,7 +370,7 @@ class BookmarkManagerMediator
     private final DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
     // Whether we're showing in a dialog UI which is only true for phones.
     private final boolean mIsDialogUi;
-    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier;
     private final Profile mProfile;
     private final @Nullable BookmarkPromoHeader mPromoHeaderManager;
     private final BookmarkUndoController mBookmarkUndoController;
@@ -418,7 +418,7 @@ class BookmarkManagerMediator
             RecyclerView recyclerView,
             DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter,
             boolean isDialogUi,
-            ObservableSupplierImpl<Boolean> backPressStateSupplier,
+            SettableNonNullObservableSupplier<Boolean> backPressStateSupplier,
             Profile profile,
             BookmarkUndoController bookmarkUndoController,
             ModelList modelList,

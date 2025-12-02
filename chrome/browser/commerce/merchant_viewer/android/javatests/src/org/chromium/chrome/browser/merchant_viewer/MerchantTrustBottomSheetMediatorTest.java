@@ -35,7 +35,7 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -91,8 +91,6 @@ public class MerchantTrustBottomSheetMediatorTest {
 
     @Mock SecurityStateModel.Natives mSecurityStateMocks;
 
-    @Mock private ObservableSupplier<Profile> mMockProfileSupplier;
-
     @Mock private Profile mMockProfile;
 
     @Mock private FaviconHelper mMockFaviconHelper;
@@ -129,7 +127,6 @@ public class MerchantTrustBottomSheetMediatorTest {
         doReturn(true).when(mMockNavigationHandle).isInPrimaryMainFrame();
         doReturn(false).when(mMockNavigationHandle).isSameDocument();
         doReturn(mMockUrl).when(mMockNavigationHandle).getUrl();
-        doReturn(mMockProfile).when(mMockProfileSupplier).get();
         doAnswer(
                         (Answer<Void>)
                                 invocation -> {
@@ -153,7 +150,7 @@ public class MerchantTrustBottomSheetMediatorTest {
                         mMockContext,
                         mMockWindowAndroid,
                         mMockMetrics,
-                        mMockProfileSupplier,
+                        ObservableSuppliers.createNonNull(mMockProfile),
                         mMockFaviconHelper);
         mMediator.setWebContentsForTesting(mMockWebContents);
         mMediator.setFaviconDrawableForTesting(mMockDrawable);

@@ -53,6 +53,8 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
+import java.util.function.Supplier;
+
 /**
  * The activity that host post-UNO sign-in flows. This activity is semi-transparent, and views for
  * different sign-in flow steps will be hosted by it, according to the account's state and the flow
@@ -156,7 +158,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
                         this,
                         DeviceLockActivityLauncherImpl.get(),
                         mProfileSupplier,
-                        getModalDialogManagerSupplier(),
+                        (Supplier<@Nullable ModalDialogManager>) getModalDialogManagerSupplier(),
                         /* snackbarManager= */ null,
                         config,
                         signinAccessPoint);

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -72,7 +74,7 @@ public interface TabModelSelector {
     int getCurrentTabId();
 
     /** Returns a supplier for the current tab in the current model. */
-    ObservableSupplier<@Nullable Tab> getCurrentTabSupplier();
+    NullableObservableSupplier<Tab> getCurrentTabSupplier();
 
     /**
      * Returns a supplier for the current tab count in the current model. This will update as the
@@ -80,7 +82,7 @@ public interface TabModelSelector {
      * the tab count of a specific model is desired add an observer to that {@link TabModel}
      * directly.
      */
-    ObservableSupplier<Integer> getCurrentModelTabCountSupplier();
+    NonNullObservableSupplier<Integer> getCurrentModelTabCountSupplier();
 
     /**
      * Convenience function to get the {@link TabModel} for a {@link Tab} specified by {@code id}.

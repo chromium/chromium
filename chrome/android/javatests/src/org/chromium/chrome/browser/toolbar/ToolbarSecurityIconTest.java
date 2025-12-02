@@ -28,7 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
@@ -134,7 +134,8 @@ public final class ToolbarSecurityIconTest {
                                             NewTabPageDelegate.EMPTY,
                                             (url) -> url.getSpec(),
                                             ToolbarUnitTestUtils.OFFLINE_STATUS,
-                                            new ObservableSupplierImpl(ControlsPosition.TOP)));
+                                            ObservableSuppliers.createNonNull(
+                                                    ControlsPosition.TOP)));
                     ProfileManager.setLastUsedProfileForTesting(mMockProfile);
                     mLocationBarModel.initializeWithNative();
                     UserDataHost userDataHost = new UserDataHost();

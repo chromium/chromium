@@ -95,6 +95,7 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
     }
 
     @SuppressWarnings("NullAway")
+    @Override
     public void destroy() {
         mCurrentTabObserver.destroy();
         mCurrentTabObserver = null;
@@ -105,6 +106,7 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
             mShoppingService.removeSubscriptionsObserver(mSubscriptionObserver);
             mShoppingService = null;
         }
+        super.destroy();
     }
 
     private void onProfileUpdated(Profile profile) {
@@ -168,7 +170,7 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
     }
 
     @Override
-    public @Nullable Boolean addObserver(Callback<Boolean> obs) {
+    public Boolean addObserver(Callback<Boolean> obs) {
         return addSyncObserver(obs);
     }
 }

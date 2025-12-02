@@ -5,7 +5,6 @@
 package org.chromium.base.supplier;
 
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -18,49 +17,53 @@ import java.util.function.Function;
  * single observable supplier that holds the current target value, greatly simplifying the client's
  * job.
  *
- * <p>Attempts to only maintain observers on the relevant observers when there's an observer on this
- * class. Clients should still remove themselves as observers from this class when done.
+ * <p><ParentT>Attempts to only maintain observers on the relevant observers when there's an
+ * observer on this class. Clients should still remove themselves as observers from this class when
+ * done.
  *
- * @param <P> The parent object that's holding a reference to the target.
- * @param <T> The target type that the client wants to observe.
+ * @param <ParentT> The parent object that's holding a reference to the target.
+ * @param <ChildT> The target type that the client wants to observe.
  */
-@NullMarked
-class TransitiveObservableSupplier<P extends @Nullable Object, T extends @Nullable Object>
-        implements ObservableSupplier<T> {
-    // Used to hold observers and current state. However the current value is only valid when there
-    // are observers, otherwise is may be stale.
-    private final ObservableSupplierImpl<T> mDelegateSupplier = new ObservableSupplierImpl<>();
-    private final Callback<P> mOnParentSupplierChangeCallback = this::onParentSupplierChange;
-    private final Callback<T> mOnTargetSupplierChangeCallback = this::onTargetSupplierChange;
-    private final ObservableSupplier<P> mParentSupplier;
-    private final Function<P, ObservableSupplier<T>> mUnwrapFunction;
+@NullUnmarked // Null-correctness is similar to that of ObservableSupplierImpl.
+class TransitiveObservableSupplier<
+                ParentT, ChildT, FuncT extends @Nullable NullableObservableSupplier<ChildT>>
+        extends ObservableSupplierImpl<ChildT> {
+    private final Callback<ParentT> mOnParentSupplierChangeCallback = this::onParentSupplierChange;
+    private final Callback<ChildT> mOnTargetSupplierChangeCallback = this::set;
+    private final NullableObservableSupplier<ParentT> mParentSupplier;
+    private final Function<ParentT, FuncT> mUnwrapFunction;
 
     // When this is set, then mOnTargetSupplierChangeCallback is an observer of the object
     // referenced by mCurrentTargetSupplier. When this value is changed, the observer must be
     // removed.
-    private @Nullable ObservableSupplier<T> mCurrentTargetSupplier;
+    private @Nullable NullableObservableSupplier<ChildT> mCurrentTargetSupplier;
+    private boolean mHasNonDefaultValue;
 
     // Create using ObservableSuppliers.createTransitive().
     TransitiveObservableSupplier(
-            ObservableSupplier<P> parentSupplier,
-            Function<P, ObservableSupplier<T>> unwrapFunction) {
+            NullableObservableSupplier<ParentT> parentSupplier,
+            Function<ParentT, FuncT> unwrapFunction,
+            ChildT initialValue,
+            boolean allowSetToNull) {
+        super(initialValue, allowSetToNull);
         mParentSupplier = parentSupplier;
         mUnwrapFunction = unwrapFunction;
+        assertCompatibleSupplier(parentSupplier);
     }
 
     @Override
-    public @Nullable T addObserver(Callback<T> obs, @NotifyBehavior int behavior) {
-        if (!mDelegateSupplier.hasObservers()) {
+    public ChildT addObserver(Callback<ChildT> obs, @NotifyBehavior int behavior) {
+        if (!super.hasObservers()) {
             onParentSupplierChange(
                     mParentSupplier.addSyncObserver(mOnParentSupplierChangeCallback));
         }
-        return mDelegateSupplier.addObserver(obs, behavior);
+        return super.addObserver(obs, behavior);
     }
 
     @Override
-    public void removeObserver(Callback<T> obs) {
-        mDelegateSupplier.removeObserver(obs);
-        if (!mDelegateSupplier.hasObservers()) {
+    public void removeObserver(Callback<ChildT> obs) {
+        super.removeObserver(obs);
+        if (!super.hasObservers()) {
             mParentSupplier.removeObserver(mOnParentSupplierChangeCallback);
             if (mCurrentTargetSupplier != null) {
                 mCurrentTargetSupplier.removeObserver(mOnTargetSupplierChangeCallback);
@@ -69,22 +72,40 @@ class TransitiveObservableSupplier<P extends @Nullable Object, T extends @Nullab
         }
     }
 
+    @NullUnmarked // Needs to work where ChildT is non-null or nullable.
     @Override
-    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1209
-    public @Nullable T get() {
-        if (mDelegateSupplier.hasObservers()) {
-            return mDelegateSupplier.get();
-        }
-
-        // If we have no observers, the value stored by mDelegateSupplier might not be current.
-        P parentValue = mParentSupplier.get();
-        if (parentValue != null) {
-            ObservableSupplier<T> targetSupplier = mUnwrapFunction.apply(parentValue);
-            if (targetSupplier != null) {
-                return targetSupplier.get();
+    public ChildT get() {
+        // If we have no observers, our copy of the value is not kept current.
+        if (!super.hasObservers()) {
+            ChildT ret = null;
+            ParentT parentValue = mParentSupplier.get();
+            if (parentValue != null) {
+                NullableObservableSupplier<ChildT> targetSupplier =
+                        mUnwrapFunction.apply(parentValue);
+                if (targetSupplier != null) {
+                    assertCompatibleSupplier(targetSupplier);
+                    ret = targetSupplier.get();
+                }
             }
+            // Special case: Monotonic supplier that has not yet transitioned from null.
+            if (ret == null && !mHasNonDefaultValue && Boolean.FALSE.equals(mAllowSetToNull)) {
+                return super.get();
+            }
+            // Call super.set() for null checks.
+            mHasNonDefaultValue = true;
+            set(ret);
         }
-        return null;
+        // Call super.get() for thread checks.
+        return super.get();
+    }
+
+    private void assertCompatibleSupplier(NullableObservableSupplier<?> other) {
+        // Ensure that if we are non-null or monotonic, that the transitive supplier is non-null or
+        // monotonic.
+        assert !Boolean.FALSE.equals(mAllowSetToNull)
+                        || !Boolean.TRUE.equals(
+                                ((BaseObservableSupplierImpl<?>) other).mAllowSetToNull)
+                : "Root supplier set as non-null, but the transitive one is not.";
     }
 
     /**
@@ -93,18 +114,24 @@ class TransitiveObservableSupplier<P extends @Nullable Object, T extends @Nullab
      * sure we keep our delegate supplier's value up to date, which is also what drives client
      * observations.
      */
-    @NullUnmarked // Needs to work where P is non-null or nullable.
-    private void onParentSupplierChange(@Nullable P parentValue) {
+    @NullUnmarked // Needs to work where ChildT is non-null or nullable.
+    private void onParentSupplierChange(ParentT parentValue) {
+        ChildT targetValue = null;
         if (mCurrentTargetSupplier != null) {
             mCurrentTargetSupplier.removeObserver(mOnTargetSupplierChangeCallback);
+            targetValue = null;
+        } else if (!mHasNonDefaultValue) {
+            // Use default value if there was one.
+            targetValue = super.get();
         }
 
         // Keep track of the current target supplier, because if this ever changes, we'll need to
         // remove our observer from it.
         mCurrentTargetSupplier = parentValue == null ? null : mUnwrapFunction.apply(parentValue);
 
-        @Nullable T targetValue = null;
         if (mCurrentTargetSupplier != null) {
+            assertCompatibleSupplier(mCurrentTargetSupplier);
+
             // While addObserver will call us if a value is already set, we do not want to depend on
             // that for two reasons. If there is no value set, we need to null out our supplier now.
             // And if there is a value set, we're going to get invoked asynchronously, which means
@@ -112,11 +139,9 @@ class TransitiveObservableSupplier<P extends @Nullable Object, T extends @Nullab
             // our delegate eagerly we avoid both problems.
             targetValue = mCurrentTargetSupplier.addSyncObserver(mOnTargetSupplierChangeCallback);
         }
-        onTargetSupplierChange(targetValue);
-    }
-
-    @NullUnmarked // Needs to work where T is non-null or nullable.
-    private void onTargetSupplierChange(T targetValue) {
-        mDelegateSupplier.set(targetValue);
+        if (targetValue != mObject) {
+            mHasNonDefaultValue = true;
+            set(targetValue);
+        }
     }
 }

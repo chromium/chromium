@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -40,7 +41,7 @@ public class HubBottomToolbarMediatorUnitTest {
         mDelegate =
                 new EmptyHubBottomToolbarDelegate() {
                     @Override
-                    public ObservableSupplierImpl<Boolean> getBottomToolbarVisibilitySupplier() {
+                    public NonNullObservableSupplier<Boolean> getBottomToolbarVisibilitySupplier() {
                         return mVisibilitySupplier;
                     }
                 };

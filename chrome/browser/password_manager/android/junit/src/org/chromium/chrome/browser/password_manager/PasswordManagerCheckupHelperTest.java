@@ -679,7 +679,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
 
@@ -695,7 +695,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
 
@@ -713,7 +713,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
 
@@ -731,7 +731,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
 
@@ -750,7 +750,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
 
@@ -769,7 +769,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
 
@@ -787,7 +787,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
 
@@ -808,7 +808,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
 
@@ -827,7 +827,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
 
@@ -848,7 +848,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
 
@@ -869,7 +869,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
     }
@@ -886,7 +886,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
 
@@ -907,7 +907,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
     }
@@ -924,7 +924,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
 
@@ -947,7 +947,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
 
@@ -966,7 +966,7 @@ public class PasswordManagerCheckupHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 ContextUtils.getApplicationContext(),
                 mSettingsCustomTabLauncher);
 

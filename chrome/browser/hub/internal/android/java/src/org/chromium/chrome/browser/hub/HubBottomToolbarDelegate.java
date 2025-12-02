@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.hub;
 import android.content.Context;
 import android.view.ViewGroup;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -54,7 +54,7 @@ public interface HubBottomToolbarDelegate {
      *
      * @return ObservableSupplier that emits Boolean values indicating toolbar visibility.
      */
-    ObservableSupplier<Boolean> getBottomToolbarVisibilitySupplier();
+    NonNullObservableSupplier<Boolean> getBottomToolbarVisibilitySupplier();
 
     /** Cleans up resources and unregisters any observers or callbacks. */
     void destroy();

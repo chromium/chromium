@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -30,7 +31,7 @@ public class ArchivedTabCountSupplier extends ObservableSupplierImpl<Integer>
                 updateArchivedTabCount();
             };
     private @Nullable TabModel mArchivedTabModel;
-    private @Nullable ObservableSupplier<Integer> mArchivedTabModelTabCountSupplier;
+    private @Nullable NonNullObservableSupplier<Integer> mArchivedTabModelTabCountSupplier;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
 
     private final TabGroupSyncService.Observer mTabGroupSyncObserver =

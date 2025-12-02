@@ -8,8 +8,9 @@ import androidx.activity.BackEventCompat;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
@@ -140,8 +141,8 @@ public interface BackPressHandler {
      *     intercept the back gesture; otherwise, it should yield false to prevent {@link
      *     #handleBackPress()} from being called.
      */
-    default ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
-        return new ObservableSupplierImpl<>();
+    default NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return ObservableSuppliers.alwaysFalse();
     }
 
     /**

@@ -34,7 +34,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -47,8 +46,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
-
-import java.util.function.Supplier;
 
 /** Tests for {@link MerchantTrustBottomSheetCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -69,8 +66,6 @@ public class MerchantTrustBottomSheetCoordinatorTest {
     @Mock private BottomSheetController mMockBottomSheetController;
 
     @Mock private View mMockDecorView;
-
-    @Mock private Supplier<Tab> mMockTabProvider;
 
     @Mock private MerchantTrustMetrics mMockMetrics;
 
@@ -104,7 +99,6 @@ public class MerchantTrustBottomSheetCoordinatorTest {
                                     sActivity,
                                     mWindowAndroid,
                                     mMockBottomSheetController,
-                                    mMockTabProvider,
                                     mMockDecorView,
                                     mMockMetrics,
                                     IntentRequestTracker.createFromActivity(sActivity),

@@ -25,6 +25,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
@@ -152,7 +153,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private TopInsetCoordinator.@Nullable Observer mTopInsetCoordinatorObserver;
     private int mTopInset;
 
-    ObservableSupplierImpl<@ControlsPosition Integer> mCurrentPosition;
+    private final SettableNonNullObservableSupplier<Integer> mCurrentPosition;
     private final ObservableSupplier<Integer> mKeyboardHeightSupplier;
     private final WindowAndroid mWindowAndroid;
     private final int mHairlineHeight;
@@ -205,7 +206,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
             Handler handler,
             Context context,
-            ObservableSupplierImpl<@ControlsPosition Integer> controlsPosition,
+            SettableNonNullObservableSupplier<Integer> controlsPosition,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<Integer> keyboardHeightSupplier,
             WindowAndroid windowAndroid) {
@@ -481,7 +482,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                         isFindInPageShowing,
                         isFormFieldFocusedWithKeyboardVisible,
                         isToolbarConfiguredToShowOnTop(),
-                        assumeNonNull(mCurrentPosition.get()));
+                        mCurrentPosition.get());
         @ControlsPosition
         int newControlsPosition =
                 switch (stateTransition) {
@@ -664,8 +665,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             layerYOffset += chinHeight;
         }
 
-        if (mIsOmniboxFocusedSupplier.get()
-                && assumeNonNull(mCurrentPosition.get()) == ControlsPosition.BOTTOM) {
+        if (mIsOmniboxFocusedSupplier.get() && mCurrentPosition.get() == ControlsPosition.BOTTOM) {
             WindowInsetsCompat windowInsetsCompat =
                     WindowInsetsCompat.toWindowInsetsCompat(
                             mControlContainer.getView().getRootWindowInsets(),

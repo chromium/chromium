@@ -320,6 +320,9 @@ public class TabModelOrchestrator {
             TabModelSelectorBase tabModelSelector,
             TabPersistentStore tabPersistentStore,
             TabPersistencePolicy tabPersistencePolicy) {
+        assert tabModelSelector != null;
+        assert tabPersistentStore != null;
+        assert tabPersistencePolicy != null;
         mTabModelSelector = tabModelSelector;
         mTabPersistentStore = tabPersistentStore;
         mTabPersistencePolicy = tabPersistencePolicy;

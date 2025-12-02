@@ -56,6 +56,8 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.function.Supplier;
+
 /** Provides dependencies to fragments in the settings activity. */
 @NullMarked
 public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycleCallbacks {
@@ -67,14 +69,14 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
     // Therefore we use suppliers to provide them once they become available.
     private final OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private final OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
-    private final ObservableSupplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     public FragmentDependencyProvider(
             Context context,
             Profile profile,
             OneshotSupplier<SnackbarManager> snackbarManagerSupplier,
             OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier,
-            ObservableSupplier<@Nullable ModalDialogManager> modalDialogManagerSupplier) {
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mContext = context;
         mProfile = profile;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
@@ -170,7 +172,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         if (fragment instanceof AutofillOptionsFragment) {
             AutofillOptionsCoordinator.createFor(
                     (AutofillOptionsFragment) fragment,
-                    mModalDialogManagerSupplier,
+                    (Supplier<@Nullable ModalDialogManager>) mModalDialogManagerSupplier,
                     () -> ApplicationLifetime.terminate(true));
         }
         if (fragment instanceof TrackingProtectionSettings) {
@@ -180,21 +182,24 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         }
         if (fragment instanceof AutofillCreditCardEditor) {
             ((AutofillCreditCardEditor) fragment)
-                    .setModalDialogManagerSupplier(mModalDialogManagerSupplier);
+                    .setModalDialogManagerSupplier(
+                            (Supplier<@Nullable ModalDialogManager>) mModalDialogManagerSupplier);
         }
         if (fragment instanceof TopicsManageFragment) {
             ((TopicsManageFragment) fragment)
-                    .setModalDialogManagerSupplier(mModalDialogManagerSupplier);
+                    .setModalDialogManagerSupplier(
+                            (Supplier<@Nullable ModalDialogManager>) mModalDialogManagerSupplier);
         }
         if (fragment instanceof AutofillLocalIbanEditor) {
             ((AutofillLocalIbanEditor) fragment)
-                    .setModalDialogManagerSupplier(mModalDialogManagerSupplier);
+                    .setModalDialogManagerSupplier(
+                            (Supplier<@Nullable ModalDialogManager>) mModalDialogManagerSupplier);
         }
         if (fragment instanceof SafetyHubFragment safetyHubFragment) {
             safetyHubFragment.setDelegate(
                     new SafetyHubModuleDelegateImpl(
                             mProfile,
-                            mModalDialogManagerSupplier,
+                            mModalDialogManagerSupplier.asNonNull(),
                             SigninAndHistorySyncActivityLauncherImpl.get(),
                             new SettingsCustomTabLauncherImpl()));
         }

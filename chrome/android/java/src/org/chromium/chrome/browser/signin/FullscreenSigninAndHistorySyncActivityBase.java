@@ -10,8 +10,8 @@ import android.os.SystemClock;
 import androidx.annotation.CallSuper;
 
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -34,13 +34,6 @@ public abstract class FullscreenSigninAndHistorySyncActivityBase extends AsyncIn
         implements BackPressHandler {
     private final AppRestrictionSupplier mAppRestrictionSupplier;
     private final OneshotSupplierImpl<PolicyService> mPolicyServiceSupplier;
-    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
-            new ObservableSupplierImpl<>() {
-                // Always intercept back press.
-                {
-                    set(true);
-                }
-            };
     private final PolicyLoadListener mPolicyLoadListener;
     private final long mStartTime;
 
@@ -135,8 +128,8 @@ public abstract class FullscreenSigninAndHistorySyncActivityBase extends AsyncIn
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
-        return mBackPressStateSupplier;
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return ObservableSuppliers.alwaysTrue();
     }
 
     /** Called when back press is intercepted. */

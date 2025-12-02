@@ -23,8 +23,10 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -41,7 +43,7 @@ public class DesktopPopupHeaderLayoutCoordinatorUnitTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
-    @Mock private ObservableSupplier<Tab> mTabSupplier;
+    private final ObservableSupplier<@Nullable Tab> mTabSupplier = ObservableSuppliers.alwaysNull();
 
     private Activity mActivity;
     private FrameLayout mParentView;

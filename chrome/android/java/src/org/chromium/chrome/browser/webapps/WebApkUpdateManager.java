@@ -434,8 +434,10 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     protected void showIconOrNameUpdateDialog(
             boolean iconChanging, boolean shortNameChanging, boolean nameChanging) {
         // Show the dialog to confirm name and/or icon update.
-        WindowAndroid windowAndroid = mTabProvider.get().getWindowAndroid();
-        assert windowAndroid != null;
+        Tab tab = mTabProvider.get();
+        assumeNonNull(tab);
+        WindowAndroid windowAndroid = tab.getWindowAndroid();
+        assumeNonNull(windowAndroid);
         ModalDialogManager dialogManager = windowAndroid.getModalDialogManager();
         assert dialogManager != null;
         WebApkIconNameUpdateDialog dialog = new WebApkIconNameUpdateDialog();

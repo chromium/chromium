@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.toolbar.settings.AddressBarPreference.setToolbarPositionAndSource;
 
@@ -212,7 +213,8 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
 
         // Notify the IPH that the User has interacted with the Bottom Toolbar menu.
         // This effectively disables the IPH bubble.
-        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
+        Tracker tracker =
+                TrackerFactory.getTrackerForProfile(assertNonNull(mProfileSupplier.get()));
         tracker.notifyEvent(EventConstants.BOTTOM_TOOLBAR_MENU_TRIGGERED);
     }
 

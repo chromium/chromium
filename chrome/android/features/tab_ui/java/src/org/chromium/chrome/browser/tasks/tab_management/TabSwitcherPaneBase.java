@@ -34,8 +34,14 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
@@ -89,10 +95,9 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
 
     protected final ObservableSupplierImpl<@Nullable DisplayButtonData>
             mReferenceButtonDataSupplier = new ObservableSupplierImpl<>();
-    protected final ObservableSupplierImpl<FullButtonData> mNewTabButtonDataSupplier =
-            new ObservableSupplierImpl<>();
-    protected final ObservableSupplierImpl<Boolean> mHairlineVisibilitySupplier =
-            new ObservableSupplierImpl<>();
+    protected final SettableObservableSupplier<FullButtonData> mNewTabButtonDataSupplier =
+            ObservableSuppliers.createMonotonic();
+
     protected final UserEducationHelper mUserEducationHelper;
     protected final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     protected final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
@@ -100,10 +105,10 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
             new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<@Nullable View> mOverlayViewSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mHubSearchBoxVisibilitySupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<View> mOverlayViewSupplier =
+            ObservableSuppliers.createNullable();
+    private final SettableNonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
     private final Callback<Boolean> mVisibilityObserver = this::onVisibilityChanged;
     private final Handler mHandler = new Handler();
     private final Runnable mSoftCleanupRunnable = this::softCleanupInternal;
@@ -117,8 +122,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                 @Override
                 public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
                     if (id == R.id.menu_select_tabs) {
-                        @Nullable
-                        TabSwitcherPaneCoordinator coordinator =
+                        @Nullable TabSwitcherPaneCoordinator coordinator =
                                 mTabSwitcherPaneCoordinatorSupplier.get();
                         if (coordinator == null) return false;
 
@@ -136,13 +140,12 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                     return false;
                 }
             };
-    private final ObservableSupplierImpl<@Nullable TabSwitcherPaneCoordinator>
-            mTabSwitcherPaneCoordinatorSupplier = new ObservableSupplierImpl<>();
+    private final SettableObservableSupplier<TabSwitcherPaneCoordinator>
+            mTabSwitcherPaneCoordinatorSupplier = ObservableSuppliers.createMonotonic();
 
-    @SuppressWarnings("NullAway") // Generics are not null propagated nicely.
-    private final ObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
-            mTabSwitcherPaneCoordinatorSupplier.createTransitive(
-                    TabSwitcherPaneCoordinator::getHandleBackPressChangedSupplier);
+    private final NonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
+            mTabSwitcherPaneCoordinatorSupplier.createTransitiveNonNull(
+                    false, TabSwitcherPaneCoordinator::getHandleBackPressChangedSupplier);
 
     private final FrameLayout mRootView;
     private final TabSwitcherPaneCoordinatorFactory mFactory;
@@ -210,7 +213,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mUiFlow = tabGroupCreationUiDelegate;
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
-        mHairlineVisibilitySupplier.set(false);
     }
 
     @Override
@@ -303,12 +305,12 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
      * Check {@link TabSwitcherPaneCoordinator} for more details.
      */
     @Override
-    public ObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
-        return mHairlineVisibilitySupplier;
+    public NonNullObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
+        return ObservableSuppliers.alwaysFalse();
     }
 
     @Override
-    public ObservableSupplier<@Nullable View> getHubOverlayViewSupplier() {
+    public NullableObservableSupplier<View> getHubOverlayViewSupplier() {
         return mOverlayViewSupplier;
     }
 
@@ -389,12 +391,12 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
         SyncOneshotSupplierImpl<List<View>> animationDataSupplier = new SyncOneshotSupplierImpl<>();
         hubContainerView.runOnNextLayout(
                 () -> {
-                    final RecyclerView tab_list_recycler_view =
+                    final RecyclerView tabListRecyclerView =
                             hubContainerView.findViewById(R.id.tab_list_recycler_view);
-                    if (tab_list_recycler_view == null) return;
+                    if (tabListRecyclerView == null) return;
 
                     GridLayoutManager lm =
-                            (GridLayoutManager) tab_list_recycler_view.getLayoutManager();
+                            (GridLayoutManager) tabListRecyclerView.getLayoutManager();
                     assumeNonNull(lm);
                     int first = lm.findFirstVisibleItemPosition();
                     int last = lm.findLastVisibleItemPosition();
@@ -518,7 +520,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mHandleBackPressChangedSupplier;
     }
 
@@ -654,7 +656,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     }
 
     /** Returns an observable supplier that hold the current coordinator. */
-    protected ObservableSupplier<@Nullable TabSwitcherPaneCoordinator>
+    protected ObservableSupplier<TabSwitcherPaneCoordinator>
             getTabSwitcherPaneCoordinatorSupplier() {
         return mTabSwitcherPaneCoordinatorSupplier;
     }
@@ -674,7 +676,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                         mIsIncognito,
                         getOnTabGroupCreationRunnable(),
                         mEdgeToEdgeSupplier,
-                        (view) -> mOverlayViewSupplier.set(assumeNonNull(view)),
+                        mOverlayViewSupplier::set,
                         mHubSearchBoxVisibilitySupplier);
         mTabSwitcherPaneCoordinatorSupplier.set(coordinator);
         mTabSwitcherCustomViewManager.setDelegate(
@@ -685,7 +687,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHubSearchBoxVisibilitySupplier() {
+    public NonNullObservableSupplier<Boolean> getHubSearchBoxVisibilitySupplier() {
         return mHubSearchBoxVisibilitySupplier;
     }
 
@@ -697,8 +699,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     void destroyTabSwitcherPaneCoordinator() {
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         if (coordinator == null) return;
-        assumeNonNull(coordinator);
-        mTabSwitcherPaneCoordinatorSupplier.set(null);
+        mTabSwitcherPaneCoordinatorSupplier.destroy();
         mRootView.removeAllViews();
         mTabSwitcherCustomViewManager.setDelegate(null);
         coordinator.destroy();

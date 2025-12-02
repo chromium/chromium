@@ -12,8 +12,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -27,7 +30,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
 /** Implement methods shared across the different model implementations. */
 @NullMarked
@@ -50,10 +52,10 @@ public abstract class TabModelSelectorBase
 
     private final TabGroupModelFilterProvider mTabGroupModelFilterProvider =
             new TabGroupModelFilterProvider();
-    private final ObservableSupplierImpl<TabModel> mTabModelSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
-    private final ObservableSupplier<Integer> mCurrentModelTabCountSupplier;
+    private final SettableObservableSupplier<TabModel> mTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
+    private final NonNullObservableSupplier<Integer> mCurrentModelTabCountSupplier;
 
     private final ObserverList<TabModelSelectorObserver> mObservers = new ObserverList<>();
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
@@ -80,11 +82,9 @@ public abstract class TabModelSelectorBase
                 };
         mTabModelSupplier.addObserver(mIncognitoReauthDialogDelegateCallback);
         mCurrentTabSupplier =
-                mTabModelSupplier.createTransitive(
-                        (Function<TabModel, ObservableSupplier<@Nullable Tab>>)
-                                TabModel::getCurrentTabSupplier);
+                mTabModelSupplier.createTransitiveNullable(TabModel::getCurrentTabSupplier);
         mCurrentModelTabCountSupplier =
-                mTabModelSupplier.createTransitive(TabModel::getTabCountSupplier);
+                mTabModelSupplier.createTransitiveNonNull(0, TabModel::getTabCountSupplier);
     }
 
     // Do not use @Initializer. Not called immediately after constructor.
@@ -211,12 +211,12 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
-    public ObservableSupplier<@Nullable Tab> getCurrentTabSupplier() {
+    public NullableObservableSupplier<Tab> getCurrentTabSupplier() {
         return mCurrentTabSupplier;
     }
 
     @Override
-    public ObservableSupplier<Integer> getCurrentModelTabCountSupplier() {
+    public NonNullObservableSupplier<Integer> getCurrentModelTabCountSupplier() {
         return mCurrentModelTabCountSupplier;
     }
 

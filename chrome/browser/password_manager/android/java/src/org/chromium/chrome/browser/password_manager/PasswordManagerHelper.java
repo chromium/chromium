@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
@@ -122,7 +120,7 @@ public class PasswordManagerHelper {
     public void showPasswordSettings(
             Context context,
             @ManagePasswordsReferrer int referrer,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             boolean managePasskeys,
             @Nullable String account,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
@@ -133,17 +131,10 @@ public class PasswordManagerHelper {
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
 
         if (!showPwmUnavailableOrDownloadCsvDialog(
-                context, modalDialogManagerSupplier, settingsCustomTabLauncher)) {
+                context, modalDialogManagerSupplier.get(), settingsCustomTabLauncher)) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
-                    LoadingModalDialogCoordinator.create(
-                            () -> assertNonNull(modalDialogManagerSupplier.get()), context);
-            launchTheCredentialManager(
-                    referrer,
-                    syncService,
-                    loadingDialogCoordinator,
-                    modalDialogManagerSupplier,
-                    context,
-                    account);
+                    LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
+            launchTheCredentialManager(referrer, syncService, loadingDialogCoordinator, account);
         }
     }
 
@@ -170,7 +161,7 @@ public class PasswordManagerHelper {
 
     private boolean showPwmUnavailableOrDownloadCsvDialog(
             Context context,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            ModalDialogManager modalDialogManager,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
         // Automotive doesn't support the export flow.
         if (!DeviceInfo.isAutomotive()
@@ -183,7 +174,7 @@ public class PasswordManagerHelper {
             new PasswordManagerUnavailableDialogCoordinator()
                     .showDialog(
                             context,
-                            assertNonNull(modalDialogManagerSupplier.get()),
+                            modalDialogManager,
                             PasswordManagerUtilBridge.isGooglePlayServicesUpdatable()
                                     ? GmsUpdateLauncher::launch
                                     : null);
@@ -218,20 +209,18 @@ public class PasswordManagerHelper {
     public void showPasswordCheckup(
             Context context,
             @PasswordCheckReferrer int referrer,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable String accountEmail,
             @Nullable SettingsCustomTabLauncher settingsCustomTabLauncher) {
         assert accountEmail == null || !accountEmail.isEmpty();
-
         LoadingModalDialogCoordinator loadingDialogCoordinator =
-                LoadingModalDialogCoordinator.create(
-                        () -> assertNonNull(modalDialogManagerSupplier.get()), context);
+                LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
 
         launchPasswordCheckup(
                 referrer,
                 accountEmail,
                 loadingDialogCoordinator,
-                modalDialogManagerSupplier,
+                modalDialogManagerSupplier.get(),
                 context,
                 settingsCustomTabLauncher);
     }
@@ -410,8 +399,6 @@ public class PasswordManagerHelper {
             @ManagePasswordsReferrer int referrer,
             @Nullable SyncService syncService,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
-            Context context,
             @Nullable String account) {
         assert syncService != null;
         assert PasswordManagerUtilBridge.isPasswordManagerAvailable();
@@ -451,7 +438,7 @@ public class PasswordManagerHelper {
             @PasswordCheckReferrer int referrer,
             @Nullable String account,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            ModalDialogManager modalDialogManager,
             Context context,
             @Nullable SettingsCustomTabLauncher settingsCustomTabLauncher) {
         PasswordCheckupClientHelper checkupClient;
@@ -460,7 +447,7 @@ public class PasswordManagerHelper {
         } catch (PasswordManagerUnavailableException exception) {
             assert settingsCustomTabLauncher != null;
             showPwmUnavailableOrDownloadCsvDialog(
-                    context, modalDialogManagerSupplier, settingsCustomTabLauncher);
+                    context, modalDialogManager, settingsCustomTabLauncher);
             return;
         }
 

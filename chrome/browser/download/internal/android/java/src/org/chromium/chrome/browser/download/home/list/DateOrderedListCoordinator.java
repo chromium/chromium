@@ -18,7 +18,7 @@ import android.widget.ScrollView;
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.Log;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.dialogs.DownloadWarningBypassDialog;
@@ -202,7 +202,8 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
                         }
 
                         @Override
-                        public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+                        public NonNullObservableSupplier<Boolean>
+                                getHandleBackPressChangedSupplier() {
                             return mSearchBarCoordinator.getHasTextSupplier();
                         }
                     };

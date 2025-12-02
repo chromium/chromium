@@ -13,8 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -47,12 +50,6 @@ public class BookmarkPane implements Pane {
     // Below are dependencies of the pane itself.
     private final DoubleConsumer mOnToolbarAlphaChange;
     private final ObservableSupplierImpl<@Nullable DisplayButtonData> mReferenceButtonSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplier<FullButtonData> mEmptyActionButtonSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mHairlineVisibilitySupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<@Nullable View> mHubOverlayViewSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
             new ObservableSupplierImpl<>();
@@ -159,7 +156,7 @@ public class BookmarkPane implements Pane {
 
     @Override
     public ObservableSupplier<FullButtonData> getActionButtonDataSupplier() {
-        return mEmptyActionButtonSupplier;
+        return ObservableSuppliers.alwaysNull();
     }
 
     @Override
@@ -168,13 +165,13 @@ public class BookmarkPane implements Pane {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
-        return mHairlineVisibilitySupplier;
+    public NonNullObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
+        return ObservableSuppliers.alwaysFalse();
     }
 
     @Override
-    public ObservableSupplier<@Nullable View> getHubOverlayViewSupplier() {
-        return mHubOverlayViewSupplier;
+    public NullableObservableSupplier<View> getHubOverlayViewSupplier() {
+        return ObservableSuppliers.alwaysNull();
     }
 
     @Override

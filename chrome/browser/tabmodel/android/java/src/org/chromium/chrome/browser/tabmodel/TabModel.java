@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -109,7 +110,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * the model or selected. The contained tab should always match the result of {@code
      * getTabAt(index())}.
      */
-    ObservableSupplier<@Nullable Tab> getCurrentTabSupplier();
+    NullableObservableSupplier<Tab> getCurrentTabSupplier();
 
     /**
      * Selects a tab by its index.
@@ -169,7 +170,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * Returns a supplier for the number of tabs in this tab model. This does not count tabs that
      * are pending closure.
      */
-    ObservableSupplier<Integer> getTabCountSupplier();
+    NonNullObservableSupplier<Integer> getTabCountSupplier();
 
     /** Returns the tab creator for this tab model. */
     TabCreator getTabCreator();

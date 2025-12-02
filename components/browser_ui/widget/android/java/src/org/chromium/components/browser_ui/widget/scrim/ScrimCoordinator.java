@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
@@ -105,7 +105,7 @@ public class ScrimCoordinator {
      * no active scrim or the scrim doesn't affect the status bar, then a fully transparent color
      * will be returned.
      */
-    public ObservableSupplier<Integer> getStatusBarColorSupplier() {
+    public NonNullObservableSupplier<Integer> getStatusBarColorSupplier() {
         return mMediator.getStatusBarColorSupplier();
     }
 
@@ -114,7 +114,7 @@ public class ScrimCoordinator {
      * active scrim or the scrim doesn't affect the nav bar, then a fully transparent color will be
      * returned.
      */
-    public ObservableSupplier<Integer> getNavigationBarColorSupplier() {
+    public NonNullObservableSupplier<Integer> getNavigationBarColorSupplier() {
         return mMediator.getNavigationBarColorSupplier();
     }
 

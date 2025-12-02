@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -62,11 +62,11 @@ public interface FullscreenManager {
     /**
      * @return Supplier of whether the activity is in persistent fullscreen mode.
      */
-    ObservableSupplier<Boolean> getPersistentFullscreenModeSupplier();
+    NonNullObservableSupplier<Boolean> getPersistentFullscreenModeSupplier();
 
     /**
-     * Exits persistent fullscreen mode.  In this mode, the browser controls will be
-     * permanently hidden until this mode is exited.
+     * Exits persistent fullscreen mode. In this mode, the browser controls will be permanently
+     * hidden until this mode is exited.
      */
     void exitPersistentFullscreenMode();
 

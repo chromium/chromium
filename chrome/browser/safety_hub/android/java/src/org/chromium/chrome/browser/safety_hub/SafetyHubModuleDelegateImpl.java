@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     private static final int INVALID_PASSWORD_COUNT = -1;
     private final Profile mProfile;
-    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final SigninAndHistorySyncActivityLauncher mSigninLauncher;
     private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
@@ -48,7 +48,7 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
      */
     public SafetyHubModuleDelegateImpl(
             Profile profile,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             SigninAndHistorySyncActivityLauncher signinLauncher,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
         mProfile = profile;

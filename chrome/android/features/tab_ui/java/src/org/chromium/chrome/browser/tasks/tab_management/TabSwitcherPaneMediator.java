@@ -27,8 +27,11 @@ import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubUtils;
@@ -65,8 +68,8 @@ public class TabSwitcherPaneMediator
 
     private static final int PINNED_TABS_SHOW_SEARCH_BOX_DURATION = 10;
     private static final int PINNED_TABS_HIDE_SEARCH_BOX_DURATION = 100;
-    private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final ObservableSupplierImpl<Boolean> mIsDialogVisibleSupplier =
             new ObservableSupplierImpl<>();
     private final TabActionListener mTabGridDialogOpener =
@@ -167,8 +170,9 @@ public class TabSwitcherPaneMediator
     private final Runnable mAddOnLayoutChangedAfterInitialScrollListener;
     private final AnimationHandler mSupplementaryContainerAnimationHandler = new AnimationHandler();
     private @Nullable ObservableSupplier<TabListEditorController> mTabListEditorControllerSupplier;
-    private final ObservableSupplierImpl<Boolean> mHubSearchBoxVisibilitySupplier;
-    private @Nullable ObservableSupplier<Boolean> mCurrentTabListEditorControllerBackSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier;
+    private @Nullable NonNullObservableSupplier<Boolean>
+            mCurrentTabListEditorControllerBackSupplier;
     private @Nullable View mCustomView;
     private @Nullable Runnable mCustomViewBackPressRunnable;
     private final @Px int mSearchBoxGapPx;
@@ -208,7 +212,7 @@ public class TabSwitcherPaneMediator
             TabIndexLookup tabIndexLookup,
             BottomSheetController bottomSheetController,
             Runnable addOnLayoutChangedAfterInitialScrollListener,
-            ObservableSupplierImpl<Boolean> hubSearchBoxVisibilitySupplier) {
+            SettableNonNullObservableSupplier<Boolean> hubSearchBoxVisibilitySupplier) {
         mContext = context;
         mResetHandler = resetHandler;
         mTabIndexLookup = tabIndexLookup;
@@ -329,7 +333,7 @@ public class TabSwitcherPaneMediator
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressChangedSupplier;
     }
 
@@ -405,8 +409,8 @@ public class TabSwitcherPaneMediator
                 : "setTabListEditorControllerSupplier should be called only once.";
         mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
         mCurrentTabListEditorControllerBackSupplier =
-                tabListEditorControllerSupplier.createTransitive(
-                        BackPressHandler::getHandleBackPressChangedSupplier);
+                tabListEditorControllerSupplier.createTransitiveNonNull(
+                        false, BackPressHandler::getHandleBackPressChangedSupplier);
         mCurrentTabListEditorControllerBackSupplier.addObserver(mNotifyBackPressedCallback);
     }
 

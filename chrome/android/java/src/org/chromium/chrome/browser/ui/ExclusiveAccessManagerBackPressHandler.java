@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ui;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -45,7 +45,7 @@ public class ExclusiveAccessManagerBackPressHandler implements BackPressHandler 
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mExclusiveAccessManager.getExclusiveAccessStateSupplier();
     }
 }

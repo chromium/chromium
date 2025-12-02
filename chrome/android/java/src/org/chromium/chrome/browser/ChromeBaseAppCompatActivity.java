@@ -43,8 +43,10 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -121,8 +123,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         int NONE = -1;
     }
 
-    private final ObservableSupplierImpl<@Nullable ModalDialogManager> mModalDialogManagerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier =
+            ObservableSuppliers.createMonotonic();
     protected final OneshotSupplierImpl<SystemBarColorHelper> mSystemBarColorHelperSupplier =
             new OneshotSupplierImpl<>();
     // TODO(crbug.com/435269657): Update this and the ChromeActivity equivalent to OneShotSupplier
@@ -195,7 +197,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
         mEdgeToEdgeStateProvider = new EdgeToEdgeStateProvider(getWindow());
 
-        mModalDialogManagerSupplier.set(createModalDialogManager());
+        ModalDialogManager modalDialogManager = createModalDialogManager();
+        if (modalDialogManager != null) {
+            mModalDialogManagerSupplier.set(modalDialogManager);
+        }
 
         initializeNightModeStateProvider();
         mNightModeStateProvider.addObserver(this);
@@ -310,8 +315,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         mNightModeStateProvider.removeObserver(this);
         if (mModalDialogManagerSupplier.get() != null) {
             mModalDialogManagerSupplier.get().destroy();
-            mModalDialogManagerSupplier.set(null);
         }
+        mModalDialogManagerSupplier.destroy();
         if (mEdgeToEdgeLayoutCoordinator != null) {
             mEdgeToEdgeLayoutCoordinator.destroy();
             mEdgeToEdgeLayoutCoordinator = null;
@@ -401,7 +406,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     /**
      * Returns the supplier of {@link ModalDialogManager} that manages the display of modal dialogs.
      */
-    public ObservableSupplier<@Nullable ModalDialogManager> getModalDialogManagerSupplier() {
+    public ObservableSupplier<ModalDialogManager> getModalDialogManagerSupplier() {
         return mModalDialogManagerSupplier;
     }
 

@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.tab.Tab;
  * thread.
  */
 @NullMarked
-public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<@Nullable Profile>
+public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<Profile>
         implements Destroyable {
     private final TabModelSelectorObserver mSelectorObserver;
     private final ObservableSupplier<TabModelSelector> mSelectorSupplier;
@@ -32,6 +32,7 @@ public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<@Nul
     private @Nullable TabModelSelector mSelector;
 
     public TabModelSelectorProfileSupplier(ObservableSupplier<TabModelSelector> selectorSupplier) {
+        super(null, /* allowSetToNull= */ false);
         mSelectorObserver =
                 new TabModelSelectorObserver() {
                     @Override
@@ -110,7 +111,7 @@ public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<@Nul
     }
 
     @Override
-    public @Nullable Profile get() {
+    public Profile get() {
         Profile profile = super.get();
         // TODO(365814339): Convert to checked exception once all callsites are fixed.
         assert profile == null || !profile.shutdownStarted()

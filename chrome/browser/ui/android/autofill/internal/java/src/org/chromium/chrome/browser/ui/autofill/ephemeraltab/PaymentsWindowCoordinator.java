@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.autofill.ephemeraltab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -50,6 +52,7 @@ class PaymentsWindowCoordinator implements EphemeralTabObserver {
                 EphemeralTabCoordinatorSupplier.from(windowAndroid);
         if (supplier == null) return;
         mEphemeralTabCoordinator = supplier.get();
+        assumeNonNull(mEphemeralTabCoordinator);
         mEphemeralTabCoordinator.addObserver(this);
         Profile profile = Profile.fromWebContents(merchantWebContents);
         assert profile != null;

@@ -36,6 +36,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.FileUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -289,6 +290,7 @@ public class DownloadUtils {
      * @param tab Tab displaying the page that will be downloaded.
      * @return Whether the "Download Page" button should be enabled.
      */
+    @Contract("null -> false")
     public static boolean isAllowedToDownloadPage(@Nullable Tab tab) {
         if (tab == null) return false;
 

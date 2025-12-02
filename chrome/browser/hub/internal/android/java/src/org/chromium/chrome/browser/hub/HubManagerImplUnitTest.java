@@ -36,7 +36,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -97,10 +99,10 @@ public class HubManagerImplUnitTest {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIncognitoHubSearchEnabledStateSupplier =
             new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mRegularHubSearchVisibilitySupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mIncognitoHubSearchVisibilitySupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mRegularHubSearchVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean> mIncognitoHubSearchVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
     private static final int SNACKBAR_OVERRIDE_TOKEN = 1;
 
     private Activity mActivity;

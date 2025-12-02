@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
@@ -124,11 +123,11 @@ public class AppLanguagePromoDialog {
     public AppLanguagePromoDialog(
             Activity activity,
             Profile profile,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            ModalDialogManager modalDialogManager,
             RestartAction restartAction) {
         mActivity = activity;
         mProfile = profile;
-        mModalDialogManager = modalDialogManagerSupplier.get();
+        mModalDialogManager = modalDialogManager;
         mRestartAction = restartAction;
 
         Resources resources = mActivity.getResources();
@@ -639,19 +638,18 @@ public class AppLanguagePromoDialog {
      *
      * @param activity The current activity to display the prompt into.
      * @param profile The current {@link Profile} for this session.
-     * @param modalDialogManagerSupplier Supplier of {@link ModalDialogManager}.
+     * @param modalDialogManager The {@link ModalDialogManager}.
      * @return Whether the prompt was shown or not.
      */
     public static boolean maybeShowPrompt(
             Activity activity,
             Profile profile,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            ModalDialogManager modalDialogManager,
             RestartAction restartAction) {
         if (!shouldShowPrompt(profile, NetworkChangeNotifier.isOnline())) return false;
 
         AppLanguagePromoDialog prompt =
-                new AppLanguagePromoDialog(
-                        activity, profile, modalDialogManagerSupplier, restartAction);
+                new AppLanguagePromoDialog(activity, profile, modalDialogManager, restartAction);
         prompt.showAppLanguageModal();
         return true;
     }

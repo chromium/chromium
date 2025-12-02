@@ -120,10 +120,7 @@ class LoadingModalDialogMediator
     void show(PropertyModel model) {
         assert mState == LoadingModalDialogCoordinator.State.READY;
 
-        ModalDialogManager dialogManager = mDialogManagerSupplier.get();
-        if (dialogManager == null) return;
-
-        mDialogManager = dialogManager;
+        mDialogManager = mDialogManagerSupplier.get();
         mModel = model;
         mState = LoadingModalDialogCoordinator.State.PENDING;
         postDelayed(mShowingTask, SHOW_DELAY_TIME_MS);

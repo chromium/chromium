@@ -12,15 +12,16 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /** Implementation of {@link PaneManager} for managing {@link Pane}s. */
 @NullMarked
 public class PaneManagerImpl implements PaneManager {
-    private final ObservableSupplierImpl<Pane> mCurrentPaneSupplierImpl =
-            new ObservableSupplierImpl<>();
+    private final SettableObservableSupplier<Pane> mCurrentPaneSupplierImpl =
+            ObservableSuppliers.createMonotonic();
     private final ImmutableMap<Integer, LazyOneshotSupplier<Pane>> mPanes;
     private final ObservableSupplier<Boolean> mHubVisibilitySupplier;
     private final Callback<Boolean> mHubVisibilityObserver;

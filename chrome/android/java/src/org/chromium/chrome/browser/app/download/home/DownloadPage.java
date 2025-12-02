@@ -9,8 +9,9 @@ import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -140,7 +141,8 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
                     return null;
                 };
 
-        final ObservableSupplierImpl<Boolean> combinedSupplier = new ObservableSupplierImpl<>();
+        final SettableNonNullObservableSupplier<Boolean> combinedSupplier =
+                ObservableSuppliers.createNonNull(false);
 
         final Callback<Boolean> recalculateState =
                 (ignored) -> {
@@ -159,7 +161,7 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
                     }
 
                     @Override
-                    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+                    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
                         return combinedSupplier;
                     }
                 };

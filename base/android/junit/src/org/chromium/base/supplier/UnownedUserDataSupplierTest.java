@@ -151,15 +151,4 @@ public class UnownedUserDataSupplierTest {
                         .isAttachedToHost(mHost));
         mIsDestroyed = true;
     }
-
-    @Test
-    public void testDestroy_DoubleDestroy() {
-        mSupplier.destroy();
-        try {
-            mSupplier.destroy();
-            throw new Error("Expected an assert to be triggered.");
-        } catch (AssertionError e) {
-        }
-        mIsDestroyed = true;
-    }
 }

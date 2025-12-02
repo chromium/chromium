@@ -38,7 +38,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDisplay;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -87,7 +87,6 @@ public class TabItemPickerCoordinatorUnitTest {
     @Mock private WebContents mWebContents;
 
     @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegateMock;
-    @Mock private ObservableSupplier<Boolean> mBackPressChangedSupplierMock;
     @Captor private ArgumentCaptor<List<Tab>> mTabListCaptor;
     private OneshotSupplierImpl<Profile> mProfileSupplierImpl;
     private TabItemPickerCoordinator mItemPickerCoordinator;
@@ -130,7 +129,7 @@ public class TabItemPickerCoordinatorUnitTest {
 
         when(mTabListEditorCoordinator.getSelectionDelegate()).thenReturn(mSelectionDelegateMock);
         when(mTabListEditorController.getHandleBackPressChangedSupplier())
-                .thenReturn(mBackPressChangedSupplierMock);
+                .thenReturn(ObservableSuppliers.alwaysFalse());
 
         PageContentExtractionServiceFactory.setForTesting(mPageContentExtractionService);
     }

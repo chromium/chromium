@@ -10,7 +10,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -59,7 +59,7 @@ public class SuggestionMetricsTracker implements Destroyable {
     private final Map<@GroupCreationSource Integer, GroupTypeMetricsCounts>
             mSuggestionTypeToCounts = new HashMap<>();
     private final Callback<@Nullable Tab> mOnCurrentTabChangedCallback = this::onChangeCurrentTab;
-    private final ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
+    private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
 
     private long mCurrentTabForegroundTime;
     private @Nullable Token mCurrentTabGroupId;

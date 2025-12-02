@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
@@ -16,9 +17,8 @@ import org.chromium.ui.base.WindowAndroid;
  * ContextualSearchManager}.
  */
 @NullMarked
-public class ContextualSearchManagerSupplier
-        extends UnownedUserDataSupplier<ContextualSearchManager> {
-    private static final UnownedUserDataKey<ContextualSearchManagerSupplier> KEY =
+public class ContextualSearchManagerSupplier {
+    private static final UnownedUserDataKey<ObservableSupplier<ContextualSearchManager>> KEY =
             new UnownedUserDataKey<>();
 
     /**
@@ -30,8 +30,19 @@ public class ContextualSearchManagerSupplier
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
-    /** Constructs a ContextualSearchManagerSupplier and attaches it to the {@link WindowAndroid} */
-    public ContextualSearchManagerSupplier() {
-        super(KEY);
+    /**
+     * Attach to the specified host.
+     *
+     * @param host The host to attach the supplier to.
+     */
+    public static void attach(
+            UnownedUserDataHost host, ObservableSupplier<ContextualSearchManager> supplier) {
+        KEY.attachToHost(host, supplier);
     }
+
+    public static void destroy(ObservableSupplier<ContextualSearchManager> supplier) {
+        KEY.detachFromAllHosts(supplier);
+    }
+
+    private ContextualSearchManagerSupplier() {}
 }

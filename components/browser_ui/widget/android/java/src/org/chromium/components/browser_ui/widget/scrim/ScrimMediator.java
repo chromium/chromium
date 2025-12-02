@@ -16,8 +16,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -37,16 +38,16 @@ class ScrimMediator implements TouchEventDelegate {
 
     private final @ColorInt int mDefaultScrimColor;
     // TODO(skym): Re-implement to not have legacy suppliers.
-    private final ObservableSupplierImpl<Integer> mFullScrimColorSupplier =
-            new ObservableSupplierImpl<>(ScrimProperties.INVALID_COLOR);
-    private final ObservableSupplierImpl<Integer> mStatusBarColorSupplier =
-            new ObservableSupplierImpl<>(ScrimProperties.INVALID_COLOR);
-    private final ObservableSupplierImpl<Integer> mNavigationBarColorSupplier =
-            new ObservableSupplierImpl<>(ScrimProperties.INVALID_COLOR);
-    private final ObservableSupplierImpl<Float> mStatusBarScrimFractionSupplier =
-            new ObservableSupplierImpl<>(0f);
-    private final ObservableSupplierImpl<Float> mNavigationBarScrimFractionSupplier =
-            new ObservableSupplierImpl<>(0f);
+    private final SettableNonNullObservableSupplier<Integer> mFullScrimColorSupplier =
+            ObservableSuppliers.createNonNull(ScrimProperties.INVALID_COLOR);
+    private final SettableNonNullObservableSupplier<Integer> mStatusBarColorSupplier =
+            ObservableSuppliers.createNonNull(ScrimProperties.INVALID_COLOR);
+    private final SettableNonNullObservableSupplier<Integer> mNavigationBarColorSupplier =
+            ObservableSuppliers.createNonNull(ScrimProperties.INVALID_COLOR);
+    private final SettableNonNullObservableSupplier<Float> mStatusBarScrimFractionSupplier =
+            ObservableSuppliers.createNonNull(0f);
+    private final SettableNonNullObservableSupplier<Float> mNavigationBarScrimFractionSupplier =
+            ObservableSuppliers.createNonNull(0f);
 
     /** The animator for fading the view in. */
     private @Nullable ValueAnimator mOverlayFadeInAnimator;
@@ -111,11 +112,11 @@ class ScrimMediator implements TouchEventDelegate {
         return mModel;
     }
 
-    /* package */ ObservableSupplier<Integer> getStatusBarColorSupplier() {
+    /* package */ NonNullObservableSupplier<Integer> getStatusBarColorSupplier() {
         return mStatusBarColorSupplier;
     }
 
-    /* package */ ObservableSupplier<Integer> getNavigationBarColorSupplier() {
+    /* package */ NonNullObservableSupplier<Integer> getNavigationBarColorSupplier() {
         return mNavigationBarColorSupplier;
     }
 

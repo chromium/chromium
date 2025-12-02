@@ -160,7 +160,9 @@ public class TabStoragePackager {
         assert windowId != TabWindowManager.INVALID_WINDOW_ID;
 
         return TabModelInfo.createForWindowScopedModel(
-                windowId, tabModel.isOffTheRecord(), tabModel.getCurrentTabSupplier());
+                windowId,
+                tabModel.isOffTheRecord(),
+                (Supplier<@Nullable Tab>) tabModel.getCurrentTabSupplier());
     }
 
     @Nullable

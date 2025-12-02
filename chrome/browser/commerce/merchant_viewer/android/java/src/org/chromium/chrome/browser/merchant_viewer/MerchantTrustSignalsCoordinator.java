@@ -13,6 +13,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -75,7 +76,7 @@ public class MerchantTrustSignalsCoordinator
     private final MerchantTrustMetrics mMetrics;
     private final MerchantTrustSignalsDataProvider mDataProvider;
     private final MerchantTrustSignalsStorageFactory mStorageFactory;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final NonNullObservableSupplier<Profile> mProfileSupplier;
     private final WindowAndroid mWindowAndroid;
     private final ObservableSupplier<@Nullable Tab> mTabSupplier;
     private @Nullable OmniboxIconController mOmniboxIconController;
@@ -88,7 +89,7 @@ public class MerchantTrustSignalsCoordinator
             View layoutView,
             MessageDispatcher messageDispatcher,
             ObservableSupplier<@Nullable Tab> tabSupplier,
-            ObservableSupplier<Profile> profileSupplier,
+            NonNullObservableSupplier<Profile> profileSupplier,
             MerchantTrustMetrics metrics,
             IntentRequestTracker intentRequestTracker) {
         this(
@@ -103,7 +104,6 @@ public class MerchantTrustSignalsCoordinator
                         context,
                         windowAndroid,
                         bottomSheetController,
-                        tabSupplier,
                         layoutView,
                         metrics,
                         intentRequestTracker,
@@ -118,7 +118,7 @@ public class MerchantTrustSignalsCoordinator
             MerchantTrustMessageScheduler messageScheduler,
             ObservableSupplier<@Nullable Tab> tabSupplier,
             MerchantTrustSignalsDataProvider dataProvider,
-            ObservableSupplier<Profile> profileSupplier,
+            NonNullObservableSupplier<Profile> profileSupplier,
             MerchantTrustMetrics metrics,
             MerchantTrustBottomSheetCoordinator detailsTabCoordinator,
             MerchantTrustSignalsStorageFactory storageFactory) {

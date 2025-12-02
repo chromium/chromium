@@ -46,10 +46,12 @@ import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
@@ -166,8 +168,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             new TabModelObserver() {
                 @Override
                 public void didChangePinState(Tab tab) {
-                    if (mPinnedTabsCoordinator == null
-                            || mHubSearchBoxVisibilitySupplier.get() == null) {
+                    if (mPinnedTabsCoordinator == null) {
                         return;
                     }
                     if (isAnyTabPinned()) {
@@ -233,7 +234,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             new ObservableSupplierImpl<>();
     private final Callback<Boolean> mOnContextMenuFocusableChanged =
             this::onContextMenuFocusableChanged;
-    private final ObservableSupplierImpl<Boolean> mHubSearchBoxVisibilitySupplier;
+    private final NonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier;
     private final @Nullable ImageView mPaneHairline;
     private @Nullable TabGridContextMenuCoordinator mContextMenuCoordinator;
     private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
@@ -308,7 +309,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             UndoBarThrottle undoBarThrottle,
             Callback<@Nullable View> setOverlayViewCallback,
             @Nullable TabSwitcherDragHandler tabSwitcherDragHandler,
-            ObservableSupplierImpl<Boolean> hubSearchBoxVisibilitySupplier) {
+            SettableNonNullObservableSupplier<Boolean> hubSearchBoxVisibilitySupplier) {
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherPaneCoordinator.constructor")) {
             mProfileProvider = profileProvider;
             mIsVisibleSupplier = isVisibleSupplier;
@@ -880,7 +881,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mMediator.getHandleBackPressChangedSupplier();
     }
 

@@ -16,8 +16,9 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -65,8 +66,8 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     private final TokenHolder mSuppressionTokens;
 
     /** A supplier indicating whether back press should be handled by the bottom sheet. */
-    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     /**
      * A {@link BackPressHandler} to handle back press when the bottom sheet is open and/or has
@@ -180,7 +181,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                     }
 
                     @Override
-                    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+                    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
                         return mBackPressStateChangedSupplier;
                     }
                 };

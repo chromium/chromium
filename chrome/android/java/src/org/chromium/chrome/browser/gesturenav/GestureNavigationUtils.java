@@ -13,7 +13,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.UiUtils;
 
@@ -29,8 +28,7 @@ public class GestureNavigationUtils {
      * @param forward True if navigating forward; false if navigating back.
      * @return True if the transition should be enabled for this tab when navigating..
      */
-    public static boolean allowTransition(@Nullable Tab tab, boolean forward) {
-        if (tab == null) return false;
+    public static boolean allowTransition(Tab tab, boolean forward) {
         if (!shouldAnimateBackForwardTransitions()) return false;
         // If in gesture mode, only U and above support transition.
         Window window = tab.getWindowAndroidChecked().getWindow();

@@ -73,7 +73,8 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -217,7 +218,6 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private Tracker mTracker;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
-    @Mock private ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private View mCardView;
@@ -236,8 +236,10 @@ public class TabGridDialogMediatorUnitTest {
 
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
-    private final ObservableSupplierImpl<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier =
-            new ObservableSupplierImpl<>();
+    private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
+            ObservableSuppliers.alwaysNull();
+    private final SettableObservableSupplier<TabGroupModelFilter>
+            mCurrentTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
 
     private UserActionTester mActionTester;
     private Tab mTab1;

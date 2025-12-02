@@ -8,7 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -22,9 +22,9 @@ class MerchantTrustSignalsStorageFactory {
     protected static @MonotonicNonNull ProfileKeyedMap<MerchantTrustSignalsEventStorage>
             sProfileToStorage;
 
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final NonNullObservableSupplier<Profile> mProfileSupplier;
 
-    MerchantTrustSignalsStorageFactory(ObservableSupplier<Profile> profileSupplier) {
+    MerchantTrustSignalsStorageFactory(NonNullObservableSupplier<Profile> profileSupplier) {
         if (sProfileToStorage == null) {
             // TODO(crbug.com/40259781): MerchantTrustSignalsEventStorage has a native counterpart
             // that is

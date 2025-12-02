@@ -8,10 +8,12 @@ import android.annotation.SuppressLint;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -61,11 +63,13 @@ public class BottomControlsCoordinator implements BackPressHandler {
     private final OneshotSupplierImpl<Boolean> mNativeInitializedSupplier =
             new OneshotSupplierImpl<>();
 
-    private final ObservableSupplierImpl<BottomControlsContentDelegate> mContentDelegateWrapper =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
-            mContentDelegateWrapper.createTransitive(
-                    BackPressHandler::getHandleBackPressChangedSupplier);
+    // TODO(agrieve): Rather than use two ObservableSuppliers here, create a
+    // ObservableSupplier.mirror(otherSupplier) or similar.
+    private final SettableObservableSupplier<BottomControlsContentDelegate>
+            mContentDelegateWrapper = ObservableSuppliers.createMonotonic();
+    private final NonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
+            mContentDelegateWrapper.createTransitiveNonNull(
+                    false, BackPressHandler::getHandleBackPressChangedSupplier);
 
     private final ScrollingBottomViewResourceFrameLayout mRootFrameLayout;
     private final ScrollingBottomViewSceneLayer mSceneLayer;
@@ -211,7 +215,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mHandleBackPressChangedSupplier;
     }
 

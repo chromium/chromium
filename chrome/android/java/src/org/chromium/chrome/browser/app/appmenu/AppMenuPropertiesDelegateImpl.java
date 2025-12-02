@@ -35,6 +35,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -520,6 +521,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @return Whether the reader mode preferences menu item should be displayed.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    @Contract("null -> false")
     public boolean shouldShowReaderModePrefs(@Nullable Tab currentTab) {
         return currentTab != null
                 && DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl())
@@ -531,6 +533,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @return Whether reader mode is currently showing.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    @Contract("null -> false")
     public boolean isReaderModeShowing(@Nullable Tab currentTab) {
         return currentTab != null && DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl());
     }
@@ -563,6 +566,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      *     page menu item should be enabled.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    @Contract("null -> false")
     public boolean shouldEnableDownloadPage(@Nullable Tab currentTab) {
         return DownloadUtils.isAllowedToDownloadPage(currentTab);
     }
@@ -608,6 +612,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @return Whether the translate menu item should be displayed.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    @Contract("null -> false")
     public boolean shouldShowTranslateMenuItem(@Nullable Tab currentTab) {
         return currentTab != null && TranslateUtils.canTranslateCurrentTab(currentTab, true);
     }
@@ -624,6 +629,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     /** Return whether the current tab should show the "Open with..." item. */
+    @Contract("null -> false")
     protected boolean shouldShowOpenWithItem(@Nullable Tab currentTab) {
         return currentTab != null
                 && currentTab.isNativePage()
@@ -678,7 +684,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      *
      * @param currentTab Current tab being displayed.
      */
-    protected boolean shouldShowDownloadPageMenuItem(Tab currentTab) {
+    @Contract("null -> false")
+    protected boolean shouldShowDownloadPageMenuItem(@Nullable Tab currentTab) {
         return isTabletSizeScreen() && shouldEnableDownloadPage(currentTab);
     }
 
@@ -822,7 +829,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         return null;
     }
 
-    private void observeReadabilityUpdates(Tab currentTab) {
+    private void observeReadabilityUpdates(@Nullable Tab currentTab) {
         ReadAloudController readAloudController = mReadAloudControllerSupplier.get();
         if (readAloudController == null) return;
 
@@ -841,7 +848,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         readAloudController.addReadabilityUpdateListener(mReadAloudAppMenuResetter);
     }
 
-    private boolean isTabReadable(Tab tab) {
+    private boolean isTabReadable(@Nullable Tab tab) {
         ReadAloudController readAloudController = mReadAloudControllerSupplier.get();
         return tab != null && readAloudController != null && readAloudController.isReadable(tab);
     }
@@ -853,7 +860,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @param modelList The list where the read aloud option should be added if conditions allow.
      * @param currentTab The currently selected tab.
      */
-    protected void observeAndMaybeAddReadAloud(ModelList modelList, Tab currentTab) {
+    protected void observeAndMaybeAddReadAloud(ModelList modelList, @Nullable Tab currentTab) {
         mReadAloudPos = modelList.size();
         observeReadabilityUpdates(currentTab);
         if (isTabReadable(currentTab)) {
@@ -1176,6 +1183,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
 
     /** Return whether auto darkening is enabled for the current Tab. */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    @Contract("null, _-> false")
     public boolean shouldShowAutoDarkItem(@Nullable Tab currentTab, boolean isNativePage) {
         Profile profile = mTabModelSelector.getCurrentModel().getProfile();
         assert profile != null;

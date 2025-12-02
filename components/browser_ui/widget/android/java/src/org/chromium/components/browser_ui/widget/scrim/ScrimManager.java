@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Public interface to create/display/observer multiple simultaneous scrims. Clients should use
@@ -284,11 +285,11 @@ public class ScrimManager {
     }
 
     private void updateColorSupplier(
-            Function<ScrimCoordinator, ObservableSupplier<Integer>> unwrap,
+            Function<ScrimCoordinator, Supplier<Integer>> unwrap,
             ObservableSupplierImpl<Integer> targetSupplier) {
         @ColorInt int color = Color.TRANSPARENT;
         for (ScrimCoordinator coordinator : orderedScrims()) {
-            ObservableSupplier<Integer> inputSupplier = unwrap.apply(coordinator);
+            Supplier<Integer> inputSupplier = unwrap.apply(coordinator);
             color = ColorUtils.compositeColors(inputSupplier.get(), color);
         }
         targetSupplier.set(color);

@@ -103,7 +103,7 @@ class SafetyCheckMediator {
      */
     private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
-    private final ObservableSupplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     /** Callbacks and related objects to show the checking state for at least 1 second. */
     private Handler mHandler;
@@ -193,7 +193,7 @@ class SafetyCheckMediator {
             PasswordStoreBridge passwordStoreBridge,
             PasswordCheckControllerFactory passwordCheckControllerFactory,
             PasswordManagerHelper passwordManagerHelper,
-            ObservableSupplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
         mSafetyCheckModel = safetyCheckModel;
         mPasswordsCheckAccountStorageModel = passwordsCheckAccountModel;
@@ -479,7 +479,7 @@ class SafetyCheckMediator {
                         mPasswordManagerHelper.showPasswordSettings(
                                 p.getContext(),
                                 ManagePasswordsReferrer.SAFETY_CHECK,
-                                mModalDialogManagerSupplier,
+                                mModalDialogManagerSupplier.asNonNull(),
                                 /* managePasskeys= */ false,
                                 account,
                                 mSettingsCustomTabLauncher);
@@ -506,7 +506,7 @@ class SafetyCheckMediator {
                         mPasswordManagerHelper.showPasswordCheckup(
                                 p.getContext(),
                                 PasswordCheckReferrer.SAFETY_CHECK,
-                                mModalDialogManagerSupplier,
+                                mModalDialogManagerSupplier.asNonNull(),
                                 account,
                                 mSettingsCustomTabLauncher);
                         return true;

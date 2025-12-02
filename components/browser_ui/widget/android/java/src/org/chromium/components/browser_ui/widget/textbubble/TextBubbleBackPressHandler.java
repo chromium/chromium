@@ -5,15 +5,18 @@
 package org.chromium.components.browser_ui.widget.textbubble;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /** Back gesture handler for {@link TextBubble}. */
 @NullMarked
 public class TextBubbleBackPressHandler implements BackPressHandler {
-    private final ObservableSupplierImpl<Boolean> mSupplier = new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mSupplier =
+            ObservableSuppliers.createNonNull(false);
+
     private final Callback<Integer> mCallback = (count) -> mSupplier.set(count != 0);
 
     public TextBubbleBackPressHandler() {
@@ -28,7 +31,7 @@ public class TextBubbleBackPressHandler implements BackPressHandler {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mSupplier;
     }
 

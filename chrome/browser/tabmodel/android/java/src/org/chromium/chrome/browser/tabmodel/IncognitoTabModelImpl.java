@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.tabmodel;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -50,11 +53,11 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     private final ObserverList<Callback<TabModelInternal>> mDelegateModelObservers =
             new ObserverList<>();
     private final Callback<@Nullable Tab> mDelegateModelCurrentTabSupplierObserver;
-    private final ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
+            ObservableSuppliers.createNullable();
     private final Callback<Integer> mDelegateModelTabCountSupplierObserver;
-    private final ObservableSupplierImpl<Integer> mTabCountSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Integer> mTabCountSupplier =
+            ObservableSuppliers.createNonNull(0);
     private final TabRemover mTabRemoverProxy =
             new TabRemover() {
                 @Override
@@ -104,7 +107,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
         mDelegateModel = EmptyTabModel.getInstance(true);
         mDelegateModelCurrentTabSupplierObserver = mCurrentTabSupplier::set;
         mDelegateModelTabCountSupplierObserver = mTabCountSupplier::set;
-        mTabCountSupplier.set(0);
     }
 
     /** Ensures that the real TabModel has been created. */
@@ -251,7 +253,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public ObservableSupplier<@Nullable Tab> getCurrentTabSupplier() {
+    public NullableObservableSupplier<Tab> getCurrentTabSupplier() {
         return mCurrentTabSupplier;
     }
 
@@ -324,7 +326,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public ObservableSupplier<Integer> getTabCountSupplier() {
+    public NonNullObservableSupplier<Integer> getTabCountSupplier() {
         return mTabCountSupplier;
     }
 

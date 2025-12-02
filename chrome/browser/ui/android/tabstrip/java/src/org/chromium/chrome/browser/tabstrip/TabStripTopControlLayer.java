@@ -115,8 +115,10 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
     }
 
     /** Destroy the instance and remove all dependencies. */
+    @Override
     public void destroy() {
         mTopControlsStacker.removeControl(this);
+        super.destroy();
     }
 
     /**

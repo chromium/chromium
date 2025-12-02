@@ -54,7 +54,9 @@ public class DeviceLockBridge {
         final Context context = windowAndroid.getContext().get();
         if (context != null) {
             DeviceLockActivityLauncher deviceLockActivityLauncher =
-                    assumeNonNull(DeviceLockActivityLauncherSupplier.from(windowAndroid)).get();
+                    assumeNonNull(DeviceLockActivityLauncherSupplier.from(windowAndroid))
+                            .asNonNull()
+                            .get();
             deviceLockActivityLauncher.launchDeviceLockActivity(
                     context,
                     null,

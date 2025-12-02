@@ -9,8 +9,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -142,9 +143,9 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public ObservableSupplier<@Nullable Tab> getCurrentTabSupplier() {
+    public NullableObservableSupplier<Tab> getCurrentTabSupplier() {
         assert false : "This should be unreachable in production, it may be mocked for testing.";
-        return new ObservableSupplierImpl<>();
+        return ObservableSuppliers.alwaysNull();
     }
 
     @Override
@@ -195,9 +196,9 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public ObservableSupplier<Integer> getTabCountSupplier() {
+    public NonNullObservableSupplier<Integer> getTabCountSupplier() {
         assert false : "This should be unreachable in production, it may be mocked for testing.";
-        return new ObservableSupplierImpl<>();
+        return assumeNonNull(null);
     }
 
     @Override

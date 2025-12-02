@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -26,7 +27,7 @@ public class CustomTabCount extends ObservableSupplierImpl<Integer> implements D
             this::onTabModelSelectorAvailable;
     private final Callback<Integer> mTabCountObserver = this::onUpdateTabCount;
     private final TokenHolder mTokenHolder;
-    private @Nullable ObservableSupplier<Integer> mTabModelSelectorTabCountSupplier;
+    private @Nullable NonNullObservableSupplier<Integer> mTabModelSelectorTabCountSupplier;
 
     /**
      * Creates an instance of {@link CustomTabCount}.

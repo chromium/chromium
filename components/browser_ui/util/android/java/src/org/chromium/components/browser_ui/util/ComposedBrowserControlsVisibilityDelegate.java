@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 
 import java.util.ArrayList;
@@ -48,7 +47,7 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
     }
 
     @Override
-    public @Nullable @BrowserControlsState Integer addObserver(
+    public @BrowserControlsState Integer addObserver(
             Callback<@BrowserControlsState Integer> obs, @NotifyBehavior int behavior) {
         if (!hasObservers()) {
             for (BrowserControlsVisibilityDelegate delegate : mDelegates) {
@@ -74,7 +73,7 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
     }
 
     @Override
-    public @Nullable @BrowserControlsState Integer get() {
+    public @BrowserControlsState Integer get() {
         // When there are no observers, we don't actively update the set() value and calculate a
         // fresh value on demand.
         if (!hasObservers()) {

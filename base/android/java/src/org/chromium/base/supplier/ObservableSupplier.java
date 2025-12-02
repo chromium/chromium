@@ -4,15 +4,11 @@
 
 package org.chromium.base.supplier;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * ObservableSupplier wraps an asynchronously provided object E, notifying observers when the
@@ -26,131 +22,98 @@ import java.util.function.Supplier;
  * {@link ObservableSupplierImpl}.
  *
  * <p>The behavior of the observer is different depending on which method is called.
- *
- * @param <E> The type of the wrapped object.
  */
-@NullMarked
-public interface ObservableSupplier<E extends @Nullable Object> extends Supplier<E> {
-    /**
-     * A bitmask of flags that control the notification behavior of {@link #addObserver(Callback,
-     * int)}.
-     */
-    @IntDef(
-            flag = true,
-            value = {
-                NotifyBehavior.NOTIFY_ON_ADD,
-                NotifyBehavior.POST_ON_ADD,
-                NotifyBehavior.NONE,
-            })
+@NullUnmarked // TODO(455874046): Change to NullMarked once warnings are fixed.
+public interface ObservableSupplier<T> extends NullableObservableSupplier<T> {
+
+    /** Defines the behavior of the notification when an observer is added. */
     @interface NotifyBehavior {
-
-        /**
-         * If set, the observer in {@link #addObserver(Callback, int)} method will be called upon
-         * being added.
-         */
-        int NOTIFY_ON_ADD = 1 << 0;
-
-        /**
-         * If set, the observer in {@link #addObserver(Callback, int)} method will be called
-         * asynchronously upon being added. This flag only has an effect if {@link #NOTIFY_ON_ADD}
-         * is set.
-         */
-        int POST_ON_ADD = 1 << 1;
-
-        /** All flags disabled. */
         int NONE = 0;
+        int NOTIFY_ON_ADD = 1;
+        int POST_ON_ADD = 1 << 1;
     }
 
-    /**
-     * Adds an observer, which is then notified upon the dependency being modified. Additional
-     * behaviors are specified through |behavior|.
-     *
-     * @param obs An observer to be added.
-     * @param behavior A bitmask of {@link NotifyBehavior} flags that control the notification
-     *     behavior.
-     * @return The current object or null if it hasn't been set yet.
-     */
-    @Nullable E addObserver(Callback<E> obs, @NotifyBehavior int behavior);
+    @Override
+    @Nullable T addObserver(Callback<T> obs, @NotifyBehavior int behavior);
 
-    /**
-     * Adds a synchronous observer. Equivalent to calling {@link #addObserver(Callback, int)} with
-     * {@link NotifyBehavior#NONE}.
-     *
-     * @param obs The observer to add.
-     * @return The current object if available, otherwise null.
-     */
-    default @Nullable E addSyncObserver(Callback<E> obs) {
+    @Override
+    void removeObserver(Callback<T> obs);
+
+    @Override
+    default @Nullable T addSyncObserver(Callback<T> obs) {
         return addObserver(obs, NotifyBehavior.NONE);
     }
 
-    /**
-     * Adds an observer that is called immediately, if the value is non-null.
-     *
-     * <p>Equivalent to calling {@link #addObserver(Callback, int)} with {@link
-     * NotifyBehavior#NOTIFY_ON_ADD}.
-     *
-     * @param obs The observer to add.
-     * @return The current object if available, otherwise null.
-     */
-    default @Nullable E addSyncObserverAndCallIfNonNull(Callback<E> obs) {
+    @Override
+    default @Nullable T addSyncObserverAndCallIfNonNull(Callback<T> obs) {
         return addObserver(obs, NotifyBehavior.NOTIFY_ON_ADD);
     }
 
-    /**
-     * Adds an observer that is asynchronously called immediately, if the value is non-null.
-     *
-     * <p>Equivalent to calling {@link #addObserver(Callback, int)} with {@link
-     * NotifyBehavior#NOTIFY_ON_ADD} | {@link NotifyBehavior#POST_ON_ADD}.
-     *
-     * @param obs The observer to add.
-     * @return The current object if available, otherwise null.
-     */
-    default @Nullable E addSyncObserverAndPostIfNonNull(Callback<E> obs) {
+    @Override
+    default @Nullable T addSyncObserverAndPostIfNonNull(Callback<T> obs) {
         return addObserver(obs, NotifyBehavior.NOTIFY_ON_ADD | NotifyBehavior.POST_ON_ADD);
     }
 
-    /**
-     * Adds a synchronous observer, which will be notified when the object owned by this supplier is
-     * available. If the object is already available, the callback will be notified asynchronously
-     * at the end of the current message loop (so long as the object hasn't changed).
-     *
-     * <p>Equivalent to calling {@link #addObserver(Callback, int)} with {@link
-     * NotifyBehavior#NOTIFY_ON_ADD} | {@link NotifyBehavior#POST_ON_ADD}.
-     *
-     * @param obs An observer to be added.
-     * @return The current object or null if it hasn't been set yet.
-     */
-    default @Nullable E addObserver(Callback<E> obs) {
+    @Override
+    default @Nullable T addObserver(Callback<T> obs) {
         return addSyncObserverAndPostIfNonNull(obs);
     }
 
     /**
-     * @param obs The observer to remove.
+     * @return A {@link NonNullObservableSupplier} if the supplied value is not null.
      */
-    void removeObserver(Callback<E> obs);
-
-    /**
-     * This should be @Nullable even for non-@Nullable T, since the constructor does not guarantee
-     * the value is set.
-     *
-     * <p>For now, this is marked with @NullUnmarked in order to suppress warnings.
-     * https://crbug.com/430320400 will track figuring out the nullability properly.
-     */
-    @Override
-    @NullUnmarked
-    E get();
+    @SuppressWarnings("Unchecked")
+    // Should be able to use "@NonNull E": https://github.com/uber/NullAway/issues/1354
+    default NonNullObservableSupplier<T> asNonNull() {
+        // Cast from monotonic non-null -> non-null.
+        assert !Boolean.TRUE.equals(((BaseObservableSupplierImpl<?>) this).mAllowSetToNull)
+                : "Cannot cast a non-monotonic supplier to a NonNull one.";
+        assert get() != null : "Supplier is monotonic, but does not yet have a value.";
+        return (NonNullObservableSupplier<T>) this;
+    }
 
     /**
      * Creates an ObservableSupplier that tracks an ObservableSupplier of this ObservableSupplier.
      */
-    default <T extends @Nullable Object> ObservableSupplier<T> createTransitive(
-            Function<E, ObservableSupplier<T>> unwrapFunction) {
-        return new TransitiveObservableSupplier<>(this, unwrapFunction);
+    @SuppressWarnings("Unchecked")
+    default <ChildT, FuncT extends ObservableSupplier<ChildT>>
+            ObservableSupplier<ChildT> createTransitiveMonotonic(
+                    Function<T, FuncT> unwrapFunction) {
+        return new TransitiveObservableSupplier<>(
+                this,
+                (Function) unwrapFunction,
+                /* initialValue= */ null,
+                /* allowSetToNull= */ false);
     }
 
-    /** Creates an ObservableSupplier that tracks a value derived from this ObservableSupplier. */
-    default <T extends @Nullable Object> ObservableSupplier<T> createDerived(
-            Function<@Nullable E, T> unwrapFunction) {
-        return new UnwrapObservableSupplier<>(this, unwrapFunction);
+    /**
+     * Creates an ObservableSupplier that tracks an ObservableSupplier of this ObservableSupplier.
+     * The current and transitive suppliers must both be non-null or monotonic.
+     */
+    @SuppressWarnings("Unchecked")
+    default <ChildT> NonNullObservableSupplier<ChildT> createTransitiveNonNull(
+            Function<T, NonNullObservableSupplier<ChildT>> unwrapFunction) {
+        // asNonNull() will call get(), which will update the initial value to be non-null.
+        return new TransitiveObservableSupplier<>(
+                        (NullableObservableSupplier) this,
+                        unwrapFunction,
+                        /* initialValue= */ null,
+                        /* allowSetToNull= */ false)
+                .asNonNull();
+    }
+
+    /**
+     * Creates an ObservableSupplier that tracks an ObservableSupplier of this ObservableSupplier.
+     * If either supplier has not yet been initialized, uses the given default value. The current
+     * and transitive suppliers must both be non-null or monotonic.
+     */
+    @SuppressWarnings("Unchecked")
+    default <ChildT> NonNullObservableSupplier<ChildT> createTransitiveNonNull(
+            ChildT initialValue, Function<T, NonNullObservableSupplier<ChildT>> unwrapFunction) {
+        return new TransitiveObservableSupplier<>(
+                (NullableObservableSupplier) this,
+                unwrapFunction,
+                initialValue,
+                /* allowSetToNull= */ false);
     }
 }

@@ -136,7 +136,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private ChromeBasePreference mManageSync;
-    private ObservableSupplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     // TODO(crbug.com/354927682): This should be removed when the snackbar issue is addressed.
     // Will be true if `onSignedOut()` was called when the current activity state is not
     // `Lifecycle.State.STARTED`.
@@ -576,7 +576,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                             getActivity(),
                             getProfile(),
                             ManagePasswordsReferrer.CHROME_SETTINGS,
-                            mModalDialogManagerSupplier,
+                            mModalDialogManagerSupplier.asNonNull(),
                             /* managePasskeys= */ false);
                     return true;
                 });
@@ -810,7 +810,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
     @Initializer
     public void setModalDialogManagerSupplier(
-            ObservableSupplier<@Nullable ModalDialogManager> modalDialogManagerSupplier) {
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 

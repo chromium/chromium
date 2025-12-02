@@ -12,8 +12,9 @@ import android.view.View;
 import android.widget.EditText;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.internal.R;
 
@@ -24,8 +25,8 @@ public class SearchBarCoordinator {
     private final EditText mEditText;
     private final View mClearButton;
     private final Callback<String> mQueryCallback;
-    private final ObservableSupplierImpl<Boolean> mHasTextSupplier =
-            new ObservableSupplierImpl<>(false);
+    private final SettableNonNullObservableSupplier<Boolean> mHasTextSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     public SearchBarCoordinator(
             Context context, Callback<String> queryCallback, boolean autoFocusSearchBox) {
@@ -81,7 +82,7 @@ public class SearchBarCoordinator {
     /**
      * @return An observable supplier that broadcasts whether the search box has text.
      */
-    public ObservableSupplier<Boolean> getHasTextSupplier() {
+    public NonNullObservableSupplier<Boolean> getHasTextSupplier() {
         return mHasTextSupplier;
     }
 

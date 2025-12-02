@@ -56,10 +56,12 @@ public class KeyboardAccessoryStateSupplier extends ObservableSupplierImpl<Integ
         mManualFillingComponentSupplier.removeObserver(mManualFillingAvailableCallback);
     }
 
+    @Override
     public void destroy() {
         if (mManualFillingComponent != null) {
             mManualFillingComponent.getBottomInsetSupplier().removeObserver(mInsetChangeCallback);
         }
+        super.destroy();
     }
 
     public ObservableSupplierImpl<Boolean> getIsSheetShowingSupplier() {

@@ -44,10 +44,13 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -344,8 +347,8 @@ public class ToolbarManager
     private final ToolbarLongPressMenuHandler mToolbarLongPressMenuHandler;
     private final OverrideUrlLoadingDelegateImpl mOverrideUrlLoadingDelegate;
     private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
-    private final ObservableSupplierImpl<@ControlsPosition Integer> mToolbarPositionSupplier;
-
+    private final SettableNonNullObservableSupplier<@ControlsPosition Integer>
+            mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.NONE);
     private @MonotonicNonNull HomeButtonCoordinator mHomeButtonCoordinator;
     private @MonotonicNonNull HomePageButtonsCoordinator mHomePageButtonsCoordinator;
     private @MonotonicNonNull ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
@@ -382,8 +385,9 @@ public class ToolbarManager
     private @Nullable TabGroupUiOneshotSupplier mTabGroupUiOneshotSupplier;
 
     private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
-    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
+            ObservableSuppliers.createNonNull(false);
+
     private final ObservableSupplierImpl<Boolean> mToolbarNavControlsEnabledSupplier =
             new ObservableSupplierImpl<>(true);
 
@@ -482,11 +486,13 @@ public class ToolbarManager
             }
         }
 
+        @Override
         public void destroy() {
             if (mCurrentConstraintDelegate != null) {
                 mCurrentConstraintDelegate.removeObserver(this);
                 mCurrentConstraintDelegate = null;
             }
+            super.destroy();
         }
 
         @Override
@@ -522,7 +528,9 @@ public class ToolbarManager
 
             if (isRightEdgeGoesForwardGestureNavEnabled() && !mBackGestureInProgress) {
                 // When the user swipes semantically backward and canGoBack == false.
-                if (isInvalidSwipeWhenNavigatingBack()) {
+                Tab tab = mActivityTabProvider.get();
+                assert tab != null;
+                if (isInvalidSwipeWhenNavigatingBack(tab)) {
                     return BackPressResult.FAILURE;
                 }
                 if (mOverscrollGlowCoordinator != null && mOverscrollGlowCoordinator.isShowing()) {
@@ -547,7 +555,7 @@ public class ToolbarManager
         }
 
         @Override
-        public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
             return ToolbarManager.this.mBackPressStateSupplier;
         }
 
@@ -606,10 +614,12 @@ public class ToolbarManager
             mIsInProgress = true;
             mIsGestureMode = UiUtils.isGestureNavigationMode(mActivity.getWindow());
             mInitialEdge = backEvent.getSwipeEdge();
+            Tab tab = mActivityTabProvider.get();
+            assert tab != null;
             // For 3-button mode, record metrics only when back is triggered by swiping.
             // See NavigationHandler.java.
             if (mIsGestureMode) {
-                WebContents webContents = mActivityTabProvider.get().getWebContents();
+                WebContents webContents = tab.getWebContents();
                 assumeNonNull(webContents);
                 BackPressMetrics.recordNavStatusOnGestureStart(
                         webContents.hasUncommittedNavigationInPrimaryMainFrame(),
@@ -620,13 +630,14 @@ public class ToolbarManager
             mBackGestureInProgress = true;
 
             if (isRightEdgeGoesForwardGestureNavEnabled()) {
-                assert !(isInvalidSwipeWhenNavigatingForward()
-                                && isInvalidSwipeWhenNavigatingBack())
+                assert !(isInvalidSwipeWhenNavigatingForward(tab)
+                                && isInvalidSwipeWhenNavigatingBack(tab))
                         : "isInvalidSwipeWhenNavigatingForward and isInvalidSwipeWhenNavigatingBack"
                                 + " cannot be true at the same time.";
                 // Do not proceed if: 1. swiping semantically forward with no forward history. 2.
                 // swiping semantically backward and canGoBack == false.
-                if (isInvalidSwipeWhenNavigatingForward() || isInvalidSwipeWhenNavigatingBack()) {
+                if (isInvalidSwipeWhenNavigatingForward(tab)
+                        || isInvalidSwipeWhenNavigatingBack(tab)) {
                     if (mOverscrollGlowCoordinator == null) {
                         assumeNonNull(mLayoutManager);
                         Layout activeLayout = mLayoutManager.getActiveLayout();
@@ -640,7 +651,7 @@ public class ToolbarManager
                                                 activeLayout::requestUpdate));
                     }
 
-                    if (!mActivityTabProvider.get().isNativePage()) {
+                    if (!tab.isNativePage()) {
                         mOverscrollGlowCoordinator.showGlow(
                                 backEvent.getTouchX(), backEvent.getTouchY());
                     }
@@ -648,7 +659,7 @@ public class ToolbarManager
                     return;
                 }
             } else {
-                assert mActivityTabProvider.get().canGoBack()
+                assert tab.canGoBack()
                         : String.format(
                                 "Should be able to navigate back; edge %s; gesture mode %s",
                                 backEvent.getSwipeEdge(), mIsGestureMode);
@@ -665,7 +676,7 @@ public class ToolbarManager
                         mLocationBarModel.getTab(),
                         BrowserControlsState.SHOWN,
                         /* animate= */ true);
-                mHandler = TabOnBackGestureHandler.from(mActivityTabProvider.get());
+                mHandler = TabOnBackGestureHandler.from(tab);
                 mHandler.onBackStarted(
                         backEvent.getProgress(),
                         backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
@@ -681,12 +692,12 @@ public class ToolbarManager
         }
 
         private boolean shouldStartTransition(BackEventCompat backEvent) {
-            if (!mIsGestureMode) return false;
-            if (!GestureNavigationUtils.allowTransition(mActivityTabProvider.get(), false)) {
+            Tab tab = mActivityTabProvider.get();
+            if (!mIsGestureMode || tab == null) return false;
+            if (!GestureNavigationUtils.allowTransition(tab, false)) {
                 return false;
             }
 
-            final Tab tab = mActivityTabProvider.get();
             final boolean navigateForward = isForward();
             final boolean navigable = navigateForward ? tab.canGoForward() : tab.canGoBack();
             return navigable
@@ -702,24 +713,24 @@ public class ToolbarManager
             return mInitialEdge;
         }
 
-        public boolean isInvalidSwipeWhenNavigatingForward() {
+        boolean isInvalidSwipeWhenNavigatingForward(Tab tab) {
             // If the UI uses an RTL layout, it may be necessary to flip the meaning of each edge so
             // that the left edge goes forward and the right goes back.
             int forwardEdge =
                     LocalizationUtils.shouldMirrorBackForwardGestures()
                             ? BackEventCompat.EDGE_LEFT
                             : BackEventCompat.EDGE_RIGHT;
-            return mInitialEdge == forwardEdge && !mActivityTabProvider.get().canGoForward();
+            return mInitialEdge == forwardEdge && !tab.canGoForward();
         }
 
-        public boolean isInvalidSwipeWhenNavigatingBack() {
+        boolean isInvalidSwipeWhenNavigatingBack(Tab tab) {
             // If the UI uses an RTL layout, it may be necessary to flip the meaning of each edge so
             // that the left edge goes forward and the right goes back.
             int backEdge =
                     LocalizationUtils.shouldMirrorBackForwardGestures()
                             ? BackEventCompat.EDGE_RIGHT
                             : BackEventCompat.EDGE_LEFT;
-            return mInitialEdge == backEdge && !mActivityTabProvider.get().canGoBack();
+            return mInitialEdge == backEdge && !tab.canGoBack();
         }
     }
 
@@ -880,7 +891,6 @@ public class ToolbarManager
                         && ChromeFeatureList.sNewTabPageCustomizationToolbarButton.isEnabled();
 
         mToolbarLayout = mActivity.findViewById(R.id.toolbar);
-        mToolbarPositionSupplier = new ObservableSupplierImpl<>(ControlsPosition.NONE);
         mNtpDelegate = createNewTabPageDelegate();
         mIsCustomTab = mToolbarLayout instanceof CustomTabToolbar;
 
@@ -3379,7 +3389,7 @@ public class ToolbarManager
         return ret ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressStateSupplier;
     }
 

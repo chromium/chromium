@@ -25,9 +25,11 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -146,7 +148,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     private final @Nullable LazyOneshotSupplier<DialogController> mTabGridDialogControllerSupplier;
     private final Callback<TabModel> mCurrentTabModelObserver;
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
-    private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier;
     private final ThemeColorProvider mThemeColorProvider;
     private final Callback<Object> mOnSnapshotTokenChange;
     private final ObservableSupplier<Object> mChildTokenSupplier;
@@ -168,15 +170,14 @@ public class TabGroupUiMediator implements BackPressHandler {
 
     TabGroupUiMediator(
             BottomControlsVisibilityController visibilityController,
-            ObservableSupplierImpl<Boolean> handleBackPressChangedSupplier,
+            SettableNonNullObservableSupplier<Boolean> handleBackPressChangedSupplier,
             ResetHandler resetHandler,
             PropertyModel model,
             TabModelSelector tabModelSelector,
             TabContentManager tabContentManager,
             TabCreatorManager tabCreatorManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            @Nullable LazyOneshotSupplier<TabGridDialogMediator.DialogController>
-                    dialogControllerSupplier,
+            @Nullable LazyOneshotSupplier<DialogController> dialogControllerSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator,
             SharedImageTilesConfig.@Nullable Builder sharedImageTilesConfigBuilder,
@@ -573,7 +574,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mHandleBackPressChangedSupplier;
     }
 

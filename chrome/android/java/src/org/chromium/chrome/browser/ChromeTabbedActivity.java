@@ -58,6 +58,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
@@ -344,7 +345,6 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.ui.edge_to_edge.TabbedSystemBarColorHelper;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionInitializer;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
@@ -954,10 +954,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             return (ViewGroup) stub.inflate();
                         });
 
-        ObservableSupplier<Boolean> incognitoSupplier =
+        NonNullObservableSupplier<Boolean> incognitoSupplier =
                 mTabModelSelector
                         .getCurrentTabModelSupplier()
-                        .createDerived(tabModel -> tabModel != null && tabModel.isIncognito());
+                        .createDerivedNonNull(
+                                tabModel -> tabModel != null && tabModel.isIncognito());
         HubLayoutDependencyHolder hubLayoutDependencyHolder =
                 new HubLayoutDependencyHolder(
                         mHubProvider.getHubManagerSupplier(),
@@ -2925,15 +2926,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mBookmarkManagerOpenerSupplier,
                 getXrSpaceModeObservableSupplier(),
                 mInactivityTrackerSupplier);
-    }
-
-    /**
-     * Guaranteed to supply a non-null ModalDialogManager since {@link #createModalDialogManager()}
-     * returns non-null.
-     */
-    @Override
-    public ObservableSupplier<ModalDialogManager> getModalDialogManagerSupplier() {
-        return (ObservableSupplier<ModalDialogManager>) super.getModalDialogManagerSupplier();
     }
 
     @Override

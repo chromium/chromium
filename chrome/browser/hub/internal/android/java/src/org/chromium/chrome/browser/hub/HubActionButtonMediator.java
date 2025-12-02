@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.hub.HubActionButtonProperties.ACTION_B
 import static org.chromium.chrome.browser.hub.HubActionButtonProperties.ACTION_BUTTON_VISIBLE;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -19,9 +20,9 @@ public class HubActionButtonMediator {
 
     private final PropertyModel mPropertyModel;
 
-    private final Callback<FullButtonData> mOnActionButtonChangeCallback =
+    private final Callback<@Nullable FullButtonData> mOnActionButtonChangeCallback =
             this::onActionButtonChange;
-    private @Nullable ObservableSupplier<FullButtonData> mActionButtonDataSupplier;
+    private final NullableObservableSupplier<FullButtonData> mActionButtonDataSupplier;
 
     /** Creates the mediator. */
     public HubActionButtonMediator(PropertyModel propertyModel, PaneManager paneManager) {
@@ -30,16 +31,13 @@ public class HubActionButtonMediator {
         ObservableSupplier<Pane> focusedPaneSupplier = paneManager.getFocusedPaneSupplier();
 
         mActionButtonDataSupplier =
-                focusedPaneSupplier.createTransitive(Pane::getActionButtonDataSupplier);
+                focusedPaneSupplier.createTransitiveNullable(Pane::getActionButtonDataSupplier);
         mActionButtonDataSupplier.addObserver(mOnActionButtonChangeCallback);
     }
 
     /** Cleans up observers. */
     public void destroy() {
-        if (mActionButtonDataSupplier != null) {
-            mActionButtonDataSupplier.removeObserver(mOnActionButtonChangeCallback);
-            mActionButtonDataSupplier = null;
-        }
+        mActionButtonDataSupplier.removeObserver(mOnActionButtonChangeCallback);
     }
 
     /**

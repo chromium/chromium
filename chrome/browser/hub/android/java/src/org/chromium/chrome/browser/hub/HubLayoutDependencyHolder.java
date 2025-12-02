@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubColorMixer.OverviewModeAlphaObserver;
@@ -53,7 +53,7 @@ public class HubLayoutDependencyHolder {
             LazyOneshotSupplier<ViewGroup> hubRootViewGroupSupplier,
             ScrimManager scrimManager,
             Supplier<View> scrimAnchorViewSupplier,
-            ObservableSupplier<Boolean> isIncognitoSupplier,
+            NonNullObservableSupplier<Boolean> isIncognitoSupplier,
             OverviewModeAlphaObserver onOverviewAlphaChange,
             @Nullable Supplier<Boolean> xrFullSpaceModeSupplier) {
         this(

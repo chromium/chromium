@@ -24,6 +24,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -365,6 +366,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         // Universal Install / Open Web APK
         if (shouldShowHomeScreenMenuItem(
                 isNativePage, isFileScheme, isContentScheme, isIncognitoShowing(), url)) {
+            assert currentTab != null;
             modelList.add(buildAddToHomescreenListItem(currentTab, shouldShowIconBeforeItem()));
         }
 
@@ -561,7 +563,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         || mTabModelSelector.isTabStateInitialized());
     }
 
-    private MVCListAdapter.ListItem buildAddToGroupItem(Tab currentTab) {
+    private MVCListAdapter.ListItem buildAddToGroupItem(@Nullable Tab currentTab) {
         assert shouldShowAddToGroup();
         PropertyModel model =
                 buildModelForStandardMenuItem(
@@ -726,7 +728,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                 : Resources.ID_NULL));
     }
 
-    private boolean shouldShowPageZoomItem(Tab currentTab) {
+    @Contract("null -> false")
+    private boolean shouldShowPageZoomItem(@Nullable Tab currentTab) {
         return currentTab != null
                 && shouldShowWebContentsDependentMenuItem(currentTab)
                 && PageZoomUtils.shouldShowZoomMenuItem();
@@ -782,6 +785,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     /** Determines whether the "Print" menu item should be shown for a given tab. */
+    @Contract("null -> false")
     private boolean shouldShowPrintItem(@Nullable Tab currentTab) {
         // A tab must exist to print from it.
         if (currentTab == null) {
@@ -814,6 +818,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem() ? R.drawable.sharing_print : 0));
     }
 
+    @Contract("null -> false")
     private boolean shouldShowReaderModeItem(@Nullable Tab currentTab) {
         if (currentTab == null) {
             return false;
@@ -833,6 +838,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 || DomDistillerFeatures.sReaderModeDistillInApp.isEnabled());
     }
 
+    @Contract("null -> false")
     private boolean shouldShowGetImageDescriptionsItem(@Nullable Tab currentTab) {
         return currentTab != null
                 && shouldShowWebContentsDependentMenuItem(currentTab)
@@ -931,6 +937,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem() ? R.drawable.settings_cog : 0));
     }
 
+    @Contract("null -> false")
     private boolean shouldShowListenToFeedItem(@Nullable Tab currentTab) {
         if (currentTab == null
                 || isIncognitoShowing()
@@ -964,6 +971,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
      * <p>This entry is shown only when the corresponding feature flag is enabled and the user is on
      * the regular Ntp.
      */
+    @Contract("null -> false")
     private boolean shouldShowNtpCustomizations(@Nullable Tab currentTab) {
         return ChromeFeatureList.sNewTabPageCustomization.isEnabled()
                 && !isIncognitoShowing()
@@ -1073,6 +1081,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
      * @return Whether the paint preview menu item should be displayed.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    @Contract("_, null -> false")
     public boolean shouldShowPaintPreview(boolean isNativePage, @Nullable Tab currentTab) {
         return currentTab != null
                 && ChromeFeatureList.sPaintPreviewDemo.isEnabled()
@@ -1170,7 +1179,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         LayoutInflater.from(mContext)
                                 .inflate(R.layout.web_feed_main_menu_item, null);
         footer.initialize(
-                mActivityTabProvider.get(),
+                mActivityTabProvider.asNonNull().get(),
                 appMenuHandler,
                 WebFeedFaviconFetcher.createDefault(),
                 mFeedLauncher,
@@ -1181,10 +1190,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     @VisibleForTesting
+    @Contract("null -> false")
     protected boolean shouldShowManagedByMenuItem(@Nullable Tab currentTab) {
         return currentTab != null && ManagedBrowserUtils.isBrowserManaged(currentTab.getProfile());
     }
 
+    @Contract("null -> false")
     protected boolean shouldShowContentFilterHelpCenterMenuItem(@Nullable Tab currentTab) {
         return currentTab != null
                 && SupervisedUserServiceBridge.isSupervisedLocally(currentTab.getProfile());

@@ -13,7 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -28,7 +29,8 @@ import java.util.concurrent.TimeoutException;
 public class BackPressManagerTest {
 
     private static class EmptyBackPressHandler implements BackPressHandler {
-        private final ObservableSupplierImpl<Boolean> mSupplier = new ObservableSupplierImpl<>();
+        private final SettableNonNullObservableSupplier<Boolean> mSupplier =
+                ObservableSuppliers.createNonNull(false);
         protected final CallbackHelper mCallbackHelper = new CallbackHelper();
 
         public CallbackHelper getCallbackHelper() {
@@ -42,7 +44,7 @@ public class BackPressManagerTest {
         }
 
         @Override
-        public ObservableSupplierImpl<Boolean> getHandleBackPressChangedSupplier() {
+        public SettableNonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
             return mSupplier;
         }
     }

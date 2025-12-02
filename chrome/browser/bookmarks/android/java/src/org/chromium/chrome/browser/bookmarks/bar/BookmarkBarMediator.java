@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -86,7 +87,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     private final PropertyModel mAllBookmarksButtonModel;
     private final Supplier<Pair<Integer, Integer>> mControlsHeightSupplier;
     private final ModelList mItemsModel;
-    private final ObservableSupplier<Boolean> mItemsOverflowSupplier;
+    private final NonNullObservableSupplier<Boolean> mItemsOverflowSupplier;
     private final BookmarkBarItemsLayoutManager mBookmarkBarItemsLayoutManager;
     private final Callback<Boolean> mItemsOverflowSupplierObserver;
     private final PropertyModel mModel;

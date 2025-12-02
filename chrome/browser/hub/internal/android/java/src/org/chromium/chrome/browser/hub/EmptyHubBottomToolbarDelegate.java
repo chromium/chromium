@@ -8,8 +8,9 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -23,8 +24,8 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public class EmptyHubBottomToolbarDelegate implements HubBottomToolbarDelegate {
     /** Visibility supplier that always emits false. */
-    private final ObservableSupplierImpl<Boolean> mVisibilitySupplier =
-            new ObservableSupplierImpl<>(false);
+    private final SettableNonNullObservableSupplier<Boolean> mVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
 
     @Override
     public @Nullable HubBottomToolbarView initializeBottomToolbarView(
@@ -51,7 +52,7 @@ public class EmptyHubBottomToolbarDelegate implements HubBottomToolbarDelegate {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getBottomToolbarVisibilitySupplier() {
+    public NonNullObservableSupplier<Boolean> getBottomToolbarVisibilitySupplier() {
         // Return a supplier that always indicates the toolbar is not visible
         return mVisibilitySupplier;
     }

@@ -10,7 +10,8 @@ import android.app.Activity;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -52,8 +53,8 @@ public class TabListEditorManager {
     private final TabContentManager mTabContentManager;
     private final TabListCoordinator mTabListCoordinator;
     private final @TabListMode int mMode;
-    private final ObservableSupplierImpl<TabListEditorController> mControllerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableObservableSupplier<TabListEditorController> mControllerSupplier =
+            ObservableSuppliers.createMonotonic();
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;

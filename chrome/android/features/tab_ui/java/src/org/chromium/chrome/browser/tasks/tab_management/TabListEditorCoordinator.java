@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -284,7 +285,7 @@ public class TabListEditorCoordinator {
                 }
 
                 @Override
-                public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+                public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
                     return mTabListEditorMediator.getHandleBackPressChangedSupplier();
                 }
 

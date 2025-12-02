@@ -17,8 +17,9 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.R;
@@ -38,7 +39,7 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
     private static int @Nullable [] sDesiredWidthsForTesting;
 
     private final int mItemSpacing;
-    private final ObservableSupplierImpl<Boolean> mItemsOverflowSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mItemsOverflowSupplier;
 
     private int mItemMinWidth;
     private int mItemMaxWidth;
@@ -54,7 +55,7 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
         mItemMaxWidth = resources.getDimensionPixelSize(R.dimen.bookmark_bar_item_max_width);
         mItemMinWidth = resources.getDimensionPixelSize(R.dimen.bookmark_bar_item_min_width);
         mItemSpacing = resources.getDimensionPixelSize(R.dimen.bookmark_bar_item_spacing);
-        mItemsOverflowSupplier = new ObservableSupplierImpl<>(false);
+        mItemsOverflowSupplier = ObservableSuppliers.createNonNull(false);
     }
 
     @Override
@@ -65,7 +66,7 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
     /**
      * @return The supplier for the current state of items overflow.
      */
-    public ObservableSupplier<Boolean> getItemsOverflowSupplier() {
+    public NonNullObservableSupplier<Boolean> getItemsOverflowSupplier() {
         return mItemsOverflowSupplier;
     }
 

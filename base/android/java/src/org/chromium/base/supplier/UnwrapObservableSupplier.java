@@ -5,8 +5,7 @@
 package org.chromium.base.supplier;
 
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.NullUnmarked;
 
 import java.util.function.Function;
 
@@ -15,12 +14,12 @@ import java.util.function.Function;
  * has one {@link ObservableSupplier}, but still needs unwrapping to get at the target value. Care
  * should be taken to make sure null is handled in unwrap.
  *
- * <p> For example, suppose we have an ObservableSupplier giving us a Car object. Car objects
+ * <ParentT> For example, suppose we have an ObservableSupplier giving us a Car object. Car objects
  * contain an Engine object. We're going to construct a helper class that really wants to operate on
  * an Engine. Giving it a Car object doesn't really make sense, it shouldn't be aware of what a Car
  * is. Our usage could look something like:
  *
- * <pre> {@code
+ * <ParentTre> {@code
  * public class Mechanic {
  *     private static class EngineTester {
  *         EngineTester(ObservableSupplier<Engine> engineSupplier) {}
@@ -39,57 +38,58 @@ import java.util.function.Function;
  *     }
  * } </pre>
  *
- * @param <P> The parent object that's holding the target value somehow.
- * @param <T> The target type that the client wants to observe.
+ * @param <ParentT> The parent object that's holding the target value somehow.
+ * @param <ChildT> The target type that the client wants to observe.
  */
-@NullMarked
-class UnwrapObservableSupplier<P extends @Nullable Object, T extends @Nullable Object>
-        implements ObservableSupplier<T> {
-    private final ObservableSupplierImpl<T> mDelegateSupplier = new ObservableSupplierImpl<>();
-    private final Callback<P> mOnParentSupplierChangeCallback = this::onParentSupplierChange;
-    private final ObservableSupplier<P> mParentSupplier;
-    private final Function<@Nullable P, T> mUnwrapFunction;
+@NullUnmarked // Null-correctness is similar to that of ObservableSupplierImpl.
+class UnwrapObservableSupplier<ParentT, ChildT> extends ObservableSupplierImpl<ChildT> {
+    private final Callback<ParentT> mOnParentSupplierChangeCallback = this::onParentSupplierChange;
+    private final NullableObservableSupplier<ParentT> mParentSupplier;
+    private final Function<ParentT, ChildT> mUnwrapFunction;
 
     /**
      * @param parentSupplier The parent observable supplier.
      * @param unwrapFunction Converts the parent value to target value. Should handle null values.
      */
     UnwrapObservableSupplier(
-            ObservableSupplier<P> parentSupplier, Function<@Nullable P, T> unwrapFunction) {
+            NullableObservableSupplier<ParentT> parentSupplier,
+            Function<ParentT, ChildT> unwrapFunction,
+            boolean allowSetToNull) {
+        super(null, allowSetToNull);
         mParentSupplier = parentSupplier;
         mUnwrapFunction = unwrapFunction;
     }
 
     @Override
-    public T get() {
+    public ChildT get() {
         return mUnwrapFunction.apply(mParentSupplier.get());
     }
 
     @Override
-    public @Nullable T addObserver(Callback<T> obs, @NotifyBehavior int behavior) {
-        // Can use mDelegateSupplier.hasObservers() to tell if we are subscribed or not to
+    public ChildT addObserver(Callback<ChildT> obs, @NotifyBehavior int behavior) {
+        // Can use hasObservers() to tell if we are subscribed or not to
         // mParentSupplier. This is safe because we never expose outside callers, and completely
         // control when we add/remove observers to it.
-        if (!mDelegateSupplier.hasObservers()) {
+        if (!hasObservers()) {
             // The value in mDelegateSupplier is stale or has never been set, and so we update it
             // by passing through the current parent value to our on change method.
             mParentSupplier.addSyncObserverAndCallIfNonNull(mOnParentSupplierChangeCallback);
         }
-        return mDelegateSupplier.addObserver(obs, behavior);
+        return super.addObserver(obs, behavior);
     }
 
     @Override
-    public void removeObserver(Callback<T> obs) {
-        mDelegateSupplier.removeObserver(obs);
+    public void removeObserver(Callback<ChildT> obs) {
+        super.removeObserver(obs);
         // If no one is observing, we do not need to observe parent. This allows our callers to
         // destroy themselves, unsubscribe from us, and we remove our observer from the parent,
         // fully cleaning everything up.
-        if (!mDelegateSupplier.hasObservers()) {
+        if (!super.hasObservers()) {
             mParentSupplier.removeObserver(mOnParentSupplierChangeCallback);
         }
     }
 
-    private void onParentSupplierChange(@Nullable P parentValue) {
-        mDelegateSupplier.set(mUnwrapFunction.apply(parentValue));
+    private void onParentSupplierChange(ParentT parentValue) {
+        set(mUnwrapFunction.apply(parentValue));
     }
 }

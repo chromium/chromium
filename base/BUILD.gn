@@ -5026,13 +5026,20 @@ if (is_android) {
 
   android_library("supplier_java") {
     sources = [
+      "android/java/src/org/chromium/base/supplier/BaseObservableSupplierImpl.java",
       "android/java/src/org/chromium/base/supplier/LazyOneshotSupplier.java",
       "android/java/src/org/chromium/base/supplier/LazyOneshotSupplierImpl.java",
+      "android/java/src/org/chromium/base/supplier/NonNullObservableSupplier.java",
+      "android/java/src/org/chromium/base/supplier/NullableObservableSupplier.java",
       "android/java/src/org/chromium/base/supplier/ObservableSupplier.java",
       "android/java/src/org/chromium/base/supplier/ObservableSupplierImpl.java",
+      "android/java/src/org/chromium/base/supplier/ObservableSuppliers.java",
       "android/java/src/org/chromium/base/supplier/OneShotCallback.java",
       "android/java/src/org/chromium/base/supplier/OneshotSupplier.java",
       "android/java/src/org/chromium/base/supplier/OneshotSupplierImpl.java",
+      "android/java/src/org/chromium/base/supplier/SettableNonNullObservableSupplier.java",
+      "android/java/src/org/chromium/base/supplier/SettableNullableObservableSupplier.java",
+      "android/java/src/org/chromium/base/supplier/SettableObservableSupplier.java",
       "android/java/src/org/chromium/base/supplier/SupplierUtils.java",
       "android/java/src/org/chromium/base/supplier/SyncOneshotSupplier.java",
       "android/java/src/org/chromium/base/supplier/SyncOneshotSupplierImpl.java",
@@ -5047,6 +5054,7 @@ if (is_android) {
       ":resetters_java",
       ":tasks_java",
       ":unowned_user_data_java",
+      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }

@@ -4,8 +4,11 @@
 
 package org.chromium.base.supplier;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -32,8 +35,9 @@ public class SupplierUtils {
                 if (value != null) continue;
 
                 waitingSupplierCount++;
-                if (supplier instanceof ObservableSupplier) {
-                    ObservableSupplier<?> observableSupplier = ((ObservableSupplier) supplier);
+                if (supplier instanceof NullableObservableSupplier<?>) {
+                    NullableObservableSupplier<?> observableSupplier =
+                            ((NullableObservableSupplier<?>) supplier);
                     new OneShotCallback(observableSupplier, supplierCallback);
                 } else if (supplier instanceof OneshotSupplier) {
                     ((OneshotSupplier) supplier).onAvailable(supplierCallback);
@@ -82,5 +86,14 @@ public class SupplierUtils {
     public static void waitForAll(Runnable callback, Supplier<?>... suppliers) {
         assert callback != null;
         new Barrier().waitForAll(callback, suppliers);
+    }
+
+    /** Casts a Supplier<@Nullable T> -> Supplier<@NonNull T> */
+    public static <T> Supplier<T> asNonNull(Supplier<@Nullable T> supplier) {
+        assert supplier.get() != null;
+        if (BuildConfig.ENABLE_ASSERTS) {
+            return () -> assertNonNull(supplier.get());
+        }
+        return (Supplier<T>) supplier;
     }
 }

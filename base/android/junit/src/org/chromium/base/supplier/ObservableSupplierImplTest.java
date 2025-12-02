@@ -7,6 +7,7 @@ package org.chromium.base.supplier;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import android.os.Handler;
@@ -29,8 +30,8 @@ public class ObservableSupplierImplTest {
     private static final String TEST_STRING_1 = "Test";
     private static final String TEST_STRING_2 = "Test2";
 
-    private final ObservableSupplierImpl<@Nullable String> mSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<@Nullable String> mSupplier =
+            ObservableSuppliers.createNullable();
 
     private int mCallCount;
     private String mLastSuppliedString;
@@ -303,6 +304,15 @@ public class ObservableSupplierImplTest {
 
         mSupplier.removeObserver(observer2);
         assertFalse("Both observers should be gone", mSupplier.hasObservers());
+    }
+
+    @Test
+    public void testMonotonicNonNull() {
+        SettableObservableSupplier<String> supplier = ObservableSuppliers.createMonotonic();
+        assertThrows(AssertionError.class, () -> supplier.set(null));
+        assertThrows(AssertionError.class, () -> supplier.asNonNull());
+        supplier.set("some value");
+        assertEquals("some value", supplier.asNonNull().get());
     }
 
     private void checkState(

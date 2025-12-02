@@ -177,8 +177,6 @@ import java.util.List;
 })
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Constants defining flags that determines multi-window menu items visibility.
-    private static final boolean TAB_M = true; // multiple tabs
-    private static final boolean TAB_S = false;
     private static final boolean WIN_M = true; // in multi-window mode
     private static final boolean WIN_S = false;
     private static final boolean INST_M = true; // in multi-instance mode
@@ -207,7 +205,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public FakeExtensionUiBackendRule mFakeExtensionUiBackendRule =
             new FakeExtensionUiBackendRule();
 
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private NativePage mNativePage;
@@ -252,6 +249,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     private ShadowPackageManager mShadowPackageManager;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<IncognitoReauthController>
@@ -1789,7 +1787,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
-        when(mActivityTabProvider.get()).thenReturn(ntpTab);
+        mActivityTabProvider.set(ntpTab);
 
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
@@ -1805,7 +1803,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
-        when(mActivityTabProvider.get()).thenReturn(ntpTab);
+        mActivityTabProvider.set(ntpTab);
         when(mReadAloudController.isAvailable()).thenReturn(true);
         when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
@@ -1823,7 +1821,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
-        when(mActivityTabProvider.get()).thenReturn(mTab);
+        mActivityTabProvider.set(mTab);
         when(mReadAloudController.isAvailable()).thenReturn(true);
         when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
@@ -1841,7 +1839,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
-        when(mActivityTabProvider.get()).thenReturn(ntpTab);
+        mActivityTabProvider.set(ntpTab);
         when(mReadAloudController.isAvailable()).thenReturn(true);
         when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(false);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
@@ -1859,7 +1857,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
-        when(mActivityTabProvider.get()).thenReturn(ntpTab);
+        mActivityTabProvider.set(ntpTab);
         when(mReadAloudController.isAvailable()).thenReturn(true);
         when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
@@ -1877,7 +1875,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
-        when(mActivityTabProvider.get()).thenReturn(ntpTab);
+        mActivityTabProvider.set(ntpTab);
         when(mReadAloudController.isAvailable()).thenReturn(false);
         when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
@@ -2529,7 +2527,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     private void setUpMocksForWebFeedFooter() {
-        when(mActivityTabProvider.get()).thenReturn(mTab);
+        mActivityTabProvider.set(mTab);
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mOfflinePageUtils.isOfflinePage(mTab)).thenReturn(false);
@@ -2538,7 +2536,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     private void setUpMocksForPageMenu() {
-        when(mActivityTabProvider.get()).thenReturn(mTab);
+        mActivityTabProvider.set(mTab);
         when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(false);
         doReturn(false)
                 .when(mTabbedAppMenuPropertiesDelegate)

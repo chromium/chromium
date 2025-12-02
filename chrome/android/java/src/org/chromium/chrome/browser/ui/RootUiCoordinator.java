@@ -36,11 +36,14 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -260,8 +263,8 @@ public class RootUiCoordinator
     private final UnownedUserDataSupplier<DeviceLockActivityLauncher>
             mDeviceLockActivityLauncherSupplier = new DeviceLockActivityLauncherSupplier();
 
-    protected final UnownedUserDataSupplier<ContextualSearchManager>
-            mContextualSearchManagerSupplier = new ContextualSearchManagerSupplier();
+    protected final SettableObservableSupplier<ContextualSearchManager>
+            mContextualSearchManagerSupplier = ObservableSuppliers.createMonotonic();
 
     protected final UnownedUserDataSupplier<ReadAloudController> mReadAloudControllerSupplier =
             new ReadAloudControllerSupplier();
@@ -342,7 +345,8 @@ public class RootUiCoordinator
     private @Nullable ScrollCaptureManager mScrollCaptureManager;
     protected final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     protected final ObservableSupplier<LayoutManagerImpl> mLayoutManagerImplSupplier;
-    protected final ObservableSupplier<@StripVisibilityState Integer> mTabStripVisibilitySupplier;
+    protected final NullableObservableSupplier<@StripVisibilityState Integer>
+            mTabStripVisibilitySupplier;
     protected final ObservableSupplierImpl<LayoutManager> mLayoutManagerSupplier;
     protected final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final AppMenuBlocker mAppMenuBlocker;
@@ -538,7 +542,7 @@ public class RootUiCoordinator
         mLayoutManagerImplSupplier = layoutManagerSupplier;
         mLayoutManagerImplSupplier.addObserver(mLayoutManagerSupplierCallback);
         mTabStripVisibilitySupplier =
-                mLayoutManagerImplSupplier.createTransitive(
+                mLayoutManagerImplSupplier.createTransitiveNullable(
                         layoutManagerImpl -> {
                             StripLayoutHelperManager stripLayoutHelperManager =
                                     layoutManagerImpl.getStripLayoutHelperManager();
@@ -910,7 +914,7 @@ public class RootUiCoordinator
         var manager = mContextualSearchManagerSupplier.get();
         if (manager != null) {
             manager.destroy();
-            mContextualSearchManagerSupplier.set(null);
+            mContextualSearchManagerSupplier.destroy();
         }
 
         if (mEdgeToEdgeController != null) {
@@ -971,7 +975,7 @@ public class RootUiCoordinator
         var userDataHost = mWindowAndroid.getUnownedUserDataHost();
         mTabObscuringHandlerSupplier.attach(userDataHost);
         mDeviceLockActivityLauncherSupplier.attach(userDataHost);
-        mContextualSearchManagerSupplier.attach(userDataHost);
+        ContextualSearchManagerSupplier.attach(userDataHost, mContextualSearchManagerSupplier);
         mReadAloudControllerSupplier.attach(userDataHost);
     }
 
@@ -979,7 +983,7 @@ public class RootUiCoordinator
         // TabObscuringHandler doesn't have a destroy method.
         mTabObscuringHandlerSupplier.destroy();
         mDeviceLockActivityLauncherSupplier.destroy();
-        mContextualSearchManagerSupplier.destroy();
+        ContextualSearchManagerSupplier.destroy(mContextualSearchManagerSupplier);
         mReadAloudControllerSupplier.destroy();
     }
 
@@ -1402,7 +1406,7 @@ public class RootUiCoordinator
                             mActivity.getWindow().getDecorView(),
                             MessageDispatcherProvider.from(mWindowAndroid),
                             mActivityTabProvider,
-                            mProfileSupplier,
+                            mProfileSupplier.asNonNull(),
                             new MerchantTrustMetrics(),
                             mIntentRequestTracker);
             mMerchantTrustSignalsCoordinatorSupplier.set(merchantTrustSignalsCoordinator);
@@ -1717,7 +1721,7 @@ public class RootUiCoordinator
                                         mActivity,
                                         mProfileSupplier.get(),
                                         ManagePasswordsReferrer.CHROME_SETTINGS,
-                                        mModalDialogManagerSupplier,
+                                        mModalDialogManagerSupplier.asNonNull(),
                                         /* managePasskeys= */ false);
                             },
                             // Open Quick Delete Dialog callback:

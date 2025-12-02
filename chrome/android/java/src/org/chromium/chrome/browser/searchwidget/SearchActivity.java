@@ -91,6 +91,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.function.Supplier;
 
 /** Queries the user's default search engine and shows autocomplete suggestions. */
 @NullMarked
@@ -322,7 +323,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         null,
                         assertNonNull(getWindowAndroid()),
                         /* activityTabSupplier= */ () -> null,
-                        getModalDialogManagerSupplier(),
+                        (Supplier<@Nullable ModalDialogManager>) getModalDialogManagerSupplier(),
                         /* shareDelegateSupplier= */ null,
                         /* incognitoStateProvider= */ null,
                         getLifecycleDispatcher(),
@@ -363,7 +364,7 @@ public class SearchActivity extends AsyncInitializationActivity
                                                 assumeNonNull(getProfileProviderSupplier().get())
                                                         .getOriginalProfile(),
                                                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                                                () -> getModalDialogManager(),
+                                                getModalDialogManagerSupplier().asNonNull(),
                                                 /* managePasskeys= */ false),
                                 // Open Quick Delete Dialog callback:
                                 null,

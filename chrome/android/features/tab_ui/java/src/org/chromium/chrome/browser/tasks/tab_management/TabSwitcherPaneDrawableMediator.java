@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneDr
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -27,7 +28,7 @@ public class TabSwitcherPaneDrawableMediator {
     private final ObservableSupplier<TabModelDotInfo> mNotificationDotSupplier;
     private final PropertyModel mModel;
 
-    private @Nullable ObservableSupplier<Integer> mTabCountSupplier;
+    private @Nullable NonNullObservableSupplier<Integer> mTabCountSupplier;
 
     public TabSwitcherPaneDrawableMediator(
             TabModelSelector tabModelSelector,

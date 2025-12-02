@@ -5,8 +5,9 @@
 package org.chromium.chrome.browser.hub;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -26,7 +27,9 @@ import java.util.ArrayDeque;
 @NullMarked
 public class PaneBackStackHandler implements BackPressHandler {
     private final PaneManager mPaneManager;
-    private final ObservableSupplierImpl<Boolean> mHandleBackPressSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressSupplier =
+            ObservableSuppliers.createNonNull(false);
+
     private final ArrayDeque<Pane> mBackStack;
     private final Callback<Pane> mOnPaneFocusedCallback;
     private @Nullable Pane mCurrentPane;
@@ -38,9 +41,6 @@ public class PaneBackStackHandler implements BackPressHandler {
      */
     public PaneBackStackHandler(PaneManager paneManager) {
         mPaneManager = paneManager;
-        mHandleBackPressSupplier = new ObservableSupplierImpl<>();
-        mHandleBackPressSupplier.set(false);
-
         mBackStack = new ArrayDeque<>();
 
         mOnPaneFocusedCallback = this::onPaneFocused;
@@ -91,7 +91,7 @@ public class PaneBackStackHandler implements BackPressHandler {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mHandleBackPressSupplier;
     }
 

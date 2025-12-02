@@ -25,7 +25,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -42,9 +43,10 @@ public class BackPressHelperTest {
     private BackPressHelper.OnKeyDownHandler mOnKeyDownHandler;
 
     private OnBackPressedDispatcher mDispatcher;
+    private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
+            ObservableSuppliers.createNonNull(true);
 
     @Mock private BackPressHandler mMockHandler;
-    @Mock private ObservableSupplier<Boolean> mMockHandleBackPressChangedSupplier;
     @Mock private KeyEvent mMockKeyEvent;
     @Mock private LifecycleOwner mLifecycleOwner;
     @Mock private Lifecycle mMockLifecycle;
@@ -55,8 +57,7 @@ public class BackPressHelperTest {
         when(mLifecycleOwner.getLifecycle()).thenReturn(mMockLifecycle);
 
         when(mMockHandler.getHandleBackPressChangedSupplier())
-                .thenReturn(mMockHandleBackPressChangedSupplier);
-        when(mMockHandleBackPressChangedSupplier.get()).thenReturn(true);
+                .thenReturn(mHandleBackPressChangedSupplier);
 
         when(mMockKeyEvent.getRepeatCount()).thenReturn(0);
         when(mMockKeyEvent.isShiftPressed()).thenReturn(false);
@@ -85,7 +86,7 @@ public class BackPressHelperTest {
 
     @Test
     public void onKeyDown_whenHandlerIsNotActive_returnsFalse() {
-        when(mMockHandleBackPressChangedSupplier.get()).thenReturn(false);
+        mHandleBackPressChangedSupplier.set(false);
         boolean result = mOnKeyDownHandler.onKeyDown(KeyEvent.KEYCODE_ESCAPE, mMockKeyEvent);
         assertFalse(result);
         verify(mMockHandler, never()).invokeBackActionOnEscape();

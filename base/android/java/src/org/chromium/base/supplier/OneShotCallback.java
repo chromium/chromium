@@ -5,8 +5,7 @@
 package org.chromium.base.supplier;
 
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.NullUnmarked;
 
 import java.lang.ref.WeakReference;
 import java.util.function.Supplier;
@@ -25,32 +24,32 @@ import java.util.function.Supplier;
  * <p>This class does not hold a strong reference to the {@link ObservableSupplier}, but does hold a
  * strong reference to the {@link Callback}.
  *
- * @param <E> The type of the wrapped object.
+ * @param <T> The type of the wrapped object.
  */
-@NullMarked
-public class OneShotCallback<E extends @Nullable Object> {
-    private final Callback<E> mCallbackWrapper = new CallbackWrapper();
-    private final WeakReference<ObservableSupplier<E>> mWeakSupplier;
-    private final Callback<E> mCallback;
+@NullUnmarked // Callback can be nullable or non-nullable.
+public class OneShotCallback<T> {
+    private final Callback<T> mCallbackWrapper = new CallbackWrapper();
+    private final WeakReference<NullableObservableSupplier<T>> mWeakSupplier;
+    private final Callback<T> mCallback;
 
     /**
      * Creates a {@link OneShotCallback} instance, automatically registering as an observer to
      * {@code supplier} and waiting to trigger {@code callback}.
+     *
      * @param supplier The {@link ObservableSupplier} to wait for.
      * @param callback The {@link Callback} to notify with a valid value.
      */
-    public OneShotCallback(ObservableSupplier<E> supplier, Callback<E> callback) {
+    public OneShotCallback(NullableObservableSupplier<T> supplier, Callback<T> callback) {
         mWeakSupplier = new WeakReference<>(supplier);
         mCallback = callback;
-
         supplier.addObserver(mCallbackWrapper);
     }
 
-    private class CallbackWrapper implements Callback<E> {
+    private class CallbackWrapper implements Callback<T> {
         @Override
-        public void onResult(E result) {
+        public void onResult(T result) {
             mCallback.onResult(result);
-            ObservableSupplier<E> supplier = mWeakSupplier.get();
+            NullableObservableSupplier<T> supplier = mWeakSupplier.get();
             assert supplier != null
                     : "This can only be called by supplier, which should not be null.";
             supplier.removeObserver(mCallbackWrapper);

@@ -270,8 +270,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
 
         verify(mLoadingModalDialogCoordinator).show();
@@ -287,8 +285,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
 
         verify(mLoadingModalDialogCoordinator).dismiss();
@@ -305,8 +301,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
 
         verify(mLoadingModalDialogCoordinator).dismiss();
@@ -322,8 +316,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
 
         verify(mLoadingModalDialogCoordinator).dismiss();
@@ -341,8 +333,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
 
         verify(mPendingIntentMock, never()).send();
@@ -360,8 +350,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
 
         verify(mPendingIntentMock, never()).send();
@@ -378,8 +366,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
 
         verify(mPendingIntentMock, never()).send();
@@ -399,8 +385,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
 
         verify(mLoadingModalDialogCoordinator).dismiss();
@@ -419,8 +403,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -440,8 +422,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
 
         mLoadingDialogCoordinatorObserver.onDismissable();
@@ -462,8 +442,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
     }
 
@@ -479,8 +457,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
 
         when(mLoadingModalDialogCoordinator.getState())
@@ -500,8 +476,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
     }
 
@@ -517,8 +491,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
 
         when(mLoadingModalDialogCoordinator.getState())
@@ -539,8 +511,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
 
         verify(mLoadingModalDialogCoordinator).dismiss();
@@ -559,8 +529,6 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
-                mModalDialogManagerSupplier,
-                ContextUtils.getApplicationContext(),
                 TEST_EMAIL_ADDRESS);
 
         verify(mLoadingModalDialogCoordinator).dismiss();

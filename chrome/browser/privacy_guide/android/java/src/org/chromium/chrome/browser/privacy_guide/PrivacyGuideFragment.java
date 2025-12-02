@@ -26,9 +26,10 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -88,7 +89,9 @@ public class PrivacyGuideFragment extends Fragment
                             FragmentType.DONE));
 
     private OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
-    private ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
+
     private PrivacyGuidePagerAdapter mPagerAdapter;
     private View mView;
     private ViewPager2 mViewPager;
@@ -111,7 +114,6 @@ public class PrivacyGuideFragment extends Fragment
         if (savedInstanceState != null) {
             mPrivacyGuideMetricsDelegate.restoreState(savedInstanceState);
         }
-        mHandleBackPressChangedSupplier = new ObservableSupplierImpl<>();
     }
 
     @Override
@@ -354,7 +356,7 @@ public class PrivacyGuideFragment extends Fragment
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mHandleBackPressChangedSupplier;
     }
 

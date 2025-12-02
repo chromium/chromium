@@ -39,7 +39,7 @@ class SafetyHubUtils {
     static void showPasswordCheckUi(
             Context context,
             Profile profile,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SettingsCustomTabLauncher settingsCustomTabLauncher) {
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
         String account = getAccountEmail(profile);
@@ -61,7 +61,7 @@ class SafetyHubUtils {
     static void showLocalPasswordCheckUi(
             Context context,
             Profile profile,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
         passwordManagerHelper.showPasswordCheckup(

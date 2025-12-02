@@ -60,7 +60,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -983,7 +983,7 @@ public class HistoryUiTest {
                     }
 
                     @Override
-                    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+                    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
                         return mHistoryManager.getHandleBackPressChangedSupplier();
                     }
                 };
@@ -1031,7 +1031,7 @@ public class HistoryUiTest {
                     }
 
                     @Override
-                    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+                    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
                         return historyManager.getHandleBackPressChangedSupplier();
                     }
                 };

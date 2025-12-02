@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.hub;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -60,10 +62,10 @@ public interface Pane extends BackPressHandler {
     ObservableSupplier<@Nullable DisplayButtonData> getReferenceButtonDataSupplier();
 
     /** Returns whether to show the hairline for the pane. */
-    ObservableSupplier<Boolean> getHairlineVisibilitySupplier();
+    NonNullObservableSupplier<Boolean> getHairlineVisibilitySupplier();
 
     /** Returns a supplier for a view to overlay the hub with. */
-    ObservableSupplier<@Nullable View> getHubOverlayViewSupplier();
+    NullableObservableSupplier<View> getHubOverlayViewSupplier();
 
     /** Returns an optional listener for animation progress. */
     @Nullable HubLayoutAnimationListener getHubLayoutAnimationListener();

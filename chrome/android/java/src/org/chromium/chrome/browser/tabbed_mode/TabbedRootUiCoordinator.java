@@ -1025,7 +1025,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 groupSuggestionsButtonControllerSupplier,
                 mTabModelSelectorSupplier,
                 mModalDialogManagerSupplier,
-                mTabStripVisibilitySupplier);
+                // TODO(agrieve): See if this can be changed to a NonNullObservableSupplier.
+                (ObservableSupplier<Integer>) mTabStripVisibilitySupplier);
     }
 
     @Override
@@ -1883,7 +1884,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return AppLanguagePromoDialog.maybeShowPrompt(
                 mActivity,
                 profile,
-                mModalDialogManagerSupplier,
+                mModalDialogManagerSupplier.asNonNull().get(),
                 () -> ApplicationLifetime.terminate(true));
     }
 

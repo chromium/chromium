@@ -102,10 +102,6 @@ public class HubActionButtonMediatorUnitTest {
         // Set action button data
         mActionButtonSupplier.set(mFullButtonData);
         assertEquals(mFullButtonData, mModel.get(ACTION_BUTTON_DATA));
-
-        // Clear action button data
-        mActionButtonSupplier.set(null);
-        assertNull(mModel.get(ACTION_BUTTON_DATA));
     }
 
     @Test
@@ -119,8 +115,8 @@ public class HubActionButtonMediatorUnitTest {
         assertEquals(mFullButtonData, mModel.get(ACTION_BUTTON_DATA));
 
         // Switch to incognito tab switcher pane
-        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
         mIncognitoActionButtonSupplier.set(mIncognitoFullButtonData);
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
         assertEquals(mIncognitoFullButtonData, mModel.get(ACTION_BUTTON_DATA));
 
         // Switch back to tab switcher pane

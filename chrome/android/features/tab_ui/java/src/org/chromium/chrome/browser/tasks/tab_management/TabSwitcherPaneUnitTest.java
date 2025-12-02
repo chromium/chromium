@@ -49,9 +49,12 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -184,10 +187,10 @@ public class TabSwitcherPaneUnitTest {
     private final Token mToken = new Token(1L, 2L);
 
     private Context mContext;
-    private final ObservableSupplierImpl<Boolean> mHandleBackPressChangeSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mIsScrollingSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangeSupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean> mIsScrollingSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final OneshotSupplierImpl<ObservableSupplier<Boolean>> mIsScrollingSupplierSupplier =
             new OneshotSupplierImpl<>();
     private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
@@ -510,9 +513,9 @@ public class TabSwitcherPaneUnitTest {
 
     @Test
     public void testBackPress() {
-        ObservableSupplier<Boolean> handlesBackPressSupplier =
+        NonNullObservableSupplier<Boolean> handlesBackPressSupplier =
                 mTabSwitcherPane.getHandleBackPressChangedSupplier();
-        assertNull(handlesBackPressSupplier.get());
+        assertFalse(handlesBackPressSupplier.get());
         assertEquals(BackPressResult.FAILURE, mTabSwitcherPane.handleBackPress());
 
         mTabSwitcherPane.initWithNative();

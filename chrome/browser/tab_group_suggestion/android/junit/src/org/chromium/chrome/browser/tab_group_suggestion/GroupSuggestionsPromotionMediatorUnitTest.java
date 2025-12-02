@@ -39,10 +39,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
@@ -112,21 +111,8 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
         doReturn(mTab2).when(mTabModel).getTabById(TAB_2_ID);
         doReturn(null).when(mTabModel).getTabById(INVALID_TAB_ID_1);
         doReturn(null).when(mTabModel).getTabById(INVALID_TAB_ID_2);
-        ObservableSupplier<Tab> currentTabSupplier =
-                new ObservableSupplier<>() {
-                    @Override
-                    public @Nullable Tab addObserver(Callback<Tab> obs, int behavior) {
-                        return null;
-                    }
-
-                    @Override
-                    public void removeObserver(Callback<Tab> obs) {}
-
-                    @Override
-                    public Tab get() {
-                        return mTab1;
-                    }
-                };
+        SettableNullableObservableSupplier<Tab> currentTabSupplier =
+                ObservableSuppliers.createNullable(mTab1);
         doReturn(currentTabSupplier).when(mTabModel).getCurrentTabSupplier();
         doReturn(true).when(mBottomSheetController).requestShowContent(any(), anyBoolean());
     }
