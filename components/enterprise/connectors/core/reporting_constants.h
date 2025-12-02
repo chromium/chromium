@@ -238,7 +238,7 @@ inline constexpr char kKeySourceWebAppSignedInAccount[] =
 inline constexpr char kKeyWebAppSignedInAccount[] = "webAppSignedInAccount";
 inline constexpr char kKeyUserJustification[] = "userJustification";
 
-enum EnterpriseRealTimeUrlCheckMode {
+enum EnterpriseRealTimeUrlCheckMode : int {
   REAL_TIME_CHECK_DISABLED = 0,
   REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED = 1,
 };
