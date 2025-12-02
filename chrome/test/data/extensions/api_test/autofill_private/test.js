@@ -1417,12 +1417,23 @@ var availableTests = [
   },
 
   async function optIntoWalletablePassDetection() {
-    await chrome.autofillPrivate.setWalletablePassDetectionOptInStatus(true);
+    chrome.test.assertTrue(
+        await chrome.autofillPrivate.setWalletablePassDetectionOptInStatus(
+            true));
     chrome.test.succeed();
   },
 
   async function optOutOfWalletablePassDetection() {
-    await chrome.autofillPrivate.setWalletablePassDetectionOptInStatus(false);
+    chrome.test.assertTrue(
+        await chrome.autofillPrivate.setWalletablePassDetectionOptInStatus(
+            false));
+    chrome.test.succeed();
+  },
+
+  async function optIntoWalletablePassDetectionExpectingFailure() {
+    chrome.test.assertFalse(
+        await chrome.autofillPrivate.setWalletablePassDetectionOptInStatus(
+            true));
     chrome.test.succeed();
   },
 
@@ -1493,7 +1504,7 @@ var TESTS_FOR_CONFIG = {
   'getEntityInstanceByGuid': ['getEntityInstanceByGuid'],
   'getWritableEntityTypes': ['getWritableEntityTypes'],
   'verifyWritableEntityTypesDoesNotIncludeReadOnlyTypes':
-    ['verifyWritableEntityTypesDoesNotIncludeReadOnlyTypes'],
+      ['verifyWritableEntityTypesDoesNotIncludeReadOnlyTypes'],
   'getAllAttributeTypesForEntityTypeName':
       ['getAllAttributeTypesForEntityTypeName'],
   'testExpectedLabelsAreGenerated': ['testExpectedLabelsAreGenerated'],
@@ -1504,6 +1515,8 @@ var TESTS_FOR_CONFIG = {
   'optOutOfAutofillAi': ['optOutOfAutofillAi'],
   'verifyUserOptedIntoAutofillAi': ['verifyUserOptedIntoAutofillAi'],
   'verifyUserOptedOutOfAutofillAi': ['verifyUserOptedOutOfAutofillAi'],
+  'optIntoWalletablePassDetectionExpectingFailure':
+      ['optIntoWalletablePassDetectionExpectingFailure'],
 };
 
 var testConfig = window.location.search.substring(1);

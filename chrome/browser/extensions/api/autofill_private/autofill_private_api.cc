@@ -1189,10 +1189,13 @@ AutofillPrivateSetWalletablePassDetectionOptInStatusFunction::Run() {
       params = autofill_private::SetWalletablePassDetectionOptInStatus::Params::
           Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  wallet::SetWalletablePassDetectionOptInStatus(
+
+  const bool success = wallet::SetWalletablePassDetectionOptInStatus(
       autofill_client()->GetPrefs(), autofill_client()->GetIdentityManager(),
+      wallet::GeoIpCountryCode(
+          autofill_client()->GetVariationConfigCountryCode().value()),
       params->opted_in);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments(success));
 }
 
 }  // namespace extensions

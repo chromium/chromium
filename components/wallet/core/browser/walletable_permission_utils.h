@@ -24,9 +24,10 @@ namespace wallet {
     const signin::IdentityManager* identity_manager);
 
 // Sets the walletable pass detection opt-in status for the profile and account.
-void SetWalletablePassDetectionOptInStatus(
+bool SetWalletablePassDetectionOptInStatus(
     PrefService* pref_service,
     const signin::IdentityManager* identity_manager,
+    const GeoIpCountryCode& country_code,
     bool opt_in_status);
 
 // Checks whether the user is eligible for walletable pass detection.

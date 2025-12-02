@@ -289,7 +289,7 @@ TEST_F(WalletablePassIngestionControllerTest,
   // Set OptIn status to true.
   SetWalletablePassDetectionOptInStatus(
       &test_pref_service(), test_identity_environment().identity_manager(),
-      true);
+      GeoIpCountryCode("US"), true);
 
   // Expect GetAnnotatedPageContent to be called directly.
   EXPECT_CALL(*controller(), GetAnnotatedPageContent)

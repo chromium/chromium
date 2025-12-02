@@ -137,6 +137,7 @@ void WalletablePassIngestionController::OnGetConsentBubbleResult(
     case kAccepted:
       SetWalletablePassDetectionOptInStatus(client_->GetPrefService(),
                                             client_->GetIdentityManager(),
+                                            client_->GetGeoIpCountryCode(),
                                             /*opt_in_status=*/true);
       consent_strike_db_->ClearStrikes();
       MaybeStartExtraction(url, pass_category);

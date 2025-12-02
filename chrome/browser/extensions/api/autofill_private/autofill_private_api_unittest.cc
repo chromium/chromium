@@ -37,6 +37,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/wallet/core/browser/walletable_permission_utils.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "components/wallet/core/common/wallet_prefs.h"
 #include "content/public/test/browser_test.h"
@@ -188,13 +189,14 @@ INSTANTIATE_TEST_SUITE_P(,
 class AutofillPrivateApiUnitTest : public extensions::ExtensionApiTest {
  public:
   AutofillPrivateApiUnitTest() {
-    feature_list_.InitWithFeatures(
+    feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
-            autofill::features::kAutofillAiWithDataSchema,
-            autofill::features::kAutofillAiWalletFlightReservation,
-            autofill::features::kAutofillAiWalletVehicleRegistration,
-            wallet::kWalletablePassDetection,
+            {autofill::features::kAutofillAiWithDataSchema, {}},
+            {autofill::features::kAutofillAiWalletFlightReservation, {}},
+            {autofill::features::kAutofillAiWalletVehicleRegistration, {}},
+            {wallet::kWalletablePassDetection,
+             {{wallet::kWalletablePassDetectionCountryAllowlist.name, "US"}}},
         },
         /*disabled_features=*/
         {autofill::features::kAutofillAiIgnoreLocale,
@@ -492,6 +494,43 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
   EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedIntoWalletablePassDetection"));
 
   EXPECT_TRUE(RunAutofillSubtest("optOutOfWalletablePassDetection"));
+  EXPECT_TRUE(
+      RunAutofillSubtest("verifyUserOptedOutOfWalletablePassDetection"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutofillPrivateApiUnitTest,
+    SetWalletablePassDetectionOptInStatus_SwitchEligibility) {
+  autofill_client()->GetPrefs()->registry()->RegisterDictionaryPref(
+      wallet::prefs::kWalletablePassDetectionOptInStatus);
+  autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
+
+  // Ensure we are eligible initially (US is usually supported).
+  autofill_client()->SetVariationConfigCountryCode(
+      autofill::GeoIpCountryCode("US"));
+  ASSERT_TRUE(wallet::IsEligibleForWalletablePassDetection(
+      autofill_client()->GetIdentityManager(),
+      wallet::GeoIpCountryCode(
+          autofill_client()->GetVariationConfigCountryCode().value())));
+
+  EXPECT_TRUE(RunAutofillSubtest("optIntoWalletablePassDetection"));
+  EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedIntoWalletablePassDetection"));
+
+  EXPECT_TRUE(RunAutofillSubtest("optOutOfWalletablePassDetection"));
+  EXPECT_TRUE(
+      RunAutofillSubtest("verifyUserOptedOutOfWalletablePassDetection"));
+
+  // Become ineligible.
+  autofill_client()->SetVariationConfigCountryCode(
+      autofill::GeoIpCountryCode("XX"));
+  ASSERT_FALSE(wallet::IsEligibleForWalletablePassDetection(
+      autofill_client()->GetIdentityManager(),
+      wallet::GeoIpCountryCode(
+          autofill_client()->GetVariationConfigCountryCode().value())));
+
+  // Verify that we cannot opt into Walletable Pass Detection anymore.
+  EXPECT_TRUE(
+      RunAutofillSubtest("optIntoWalletablePassDetectionExpectingFailure"));
   EXPECT_TRUE(
       RunAutofillSubtest("verifyUserOptedOutOfWalletablePassDetection"));
 }

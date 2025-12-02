@@ -5015,6 +5015,7 @@ if (!is_android) {
         "//components/media_router/browser:test_support",
         "//components/media_router/common:test_support",
         "//components/optimization_guide/optimization_guide_internals/webui",
+        "//components/wallet/core/browser",
         "//components/wallet/core/common:features",
         "//components/wallet/core/common:prefs",
         "//components/web_package",

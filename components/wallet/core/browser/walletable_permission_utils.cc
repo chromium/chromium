@@ -106,20 +106,26 @@ bool GetWalletablePassDetectionOptInStatus(
   return value && value->GetIfBool().value_or(false);
 }
 
-void SetWalletablePassDetectionOptInStatus(
+bool SetWalletablePassDetectionOptInStatus(
     PrefService* prefs,
     const IdentityManager* identity_manager,
+    const GeoIpCountryCode& country_code,
     bool opt_in_status) {
-  if (!prefs) {
-    return;
+  if (!prefs ||
+      !IsEligibleForWalletablePassDetection(identity_manager, country_code)) {
+    return false;
   }
+
   const std::optional<GaiaIdHash> signed_in_hash =
       GetAccountGaiaIdHash(identity_manager);
-  if (signed_in_hash) {
-    syncer::SetAccountKeyedPrefValue(
-        prefs, prefs::kWalletablePassDetectionOptInStatus, *signed_in_hash,
-        base::Value(opt_in_status));
-  }
+  // IsEligibleForWalletablePassDetection guarantees that the account hash is
+  // present.
+  CHECK(signed_in_hash);
+
+  syncer::SetAccountKeyedPrefValue(prefs,
+                                   prefs::kWalletablePassDetectionOptInStatus,
+                                   *signed_in_hash, base::Value(opt_in_status));
+  return true;
 }
 
 }  // namespace wallet

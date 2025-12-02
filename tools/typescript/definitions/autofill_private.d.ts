@@ -331,7 +331,7 @@ declare global {
           Promise<boolean>;
       export function getWalletablePassDetectionOptInStatus(): Promise<boolean>;
       export function setWalletablePassDetectionOptInStatus(optedIn: boolean):
-          Promise<void>;
+          Promise<boolean>;
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
            ibans: IbanEntry[], payOverTimeIssuers: PayOverTimeIssuerEntry[],

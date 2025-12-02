@@ -473,7 +473,7 @@ namespace autofillPrivate {
   callback GetAutofillAiOptInStatusCallback = void(boolean optedIn);
   callback SetAutofillAiOptInStatusCallback = void(boolean success);
   callback GetWalletablePassDetectionOptInStatusCallback = void(boolean optedIn);
-  callback SetWalletablePassDetectionOptInStatusCallback = void();
+  callback SetWalletablePassDetectionOptInStatusCallback = void(boolean success);
   callback GetPayOverTimeIssuerListCallback = void(PayOverTimeIssuerEntry[] entries);
 
   interface Functions {
