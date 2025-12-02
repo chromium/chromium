@@ -1069,25 +1069,14 @@ CGFloat GetSubtitleMarginDistance() {
 
 #pragma mark - UITextViewDelegate
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  [self.actionDelegate showLearnMore];
-  return NO;
-}
-
-#else
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
-               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+               defaultAction:(UIAction*)defaultAction {
   __weak __typeof(self) weakSelf = self;
   return [UIAction actionWithHandler:^(UIAction* action) {
     [weakSelf.actionDelegate showLearnMore];
   }];
 }
-#endif
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {
   // Always force the `selectedTextRange` to `nil` to prevent users from
