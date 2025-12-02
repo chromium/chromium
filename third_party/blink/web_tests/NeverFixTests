@@ -1849,11 +1849,6 @@ external/wpt/speculation-rules/prefetch/cross-origin-cookies-anonymous-client-ip
 # EchoCancellation mode "all" is not supported on Linux
 [ Linux ] external/wpt/mediacapture-streams/GUM-echoCancellation-all.https.html [ Skip ]
 
-# Soft navigation heuristics tests that only work with pre-paint-based attribution.
-virtual/soft-navs-pre-paint-attribution-disabled/external/wpt/soft-navigation-heuristics/smoke/tentative/late-url-change.html [ Skip ]
-virtual/soft-navs-pre-paint-attribution-disabled/external/wpt/soft-navigation-heuristics/detection/tentative/overwriting-text.html [ Skip ]
-virtual/soft-navs-pre-paint-attribution-disabled/external/wpt/soft-navigation-heuristics/detection/tentative/overwriting-text-once-per-interaction.html [ Skip ]
-
 # Tests below expects SVG1.1 <use> cascade behavior, which is different from SVG2
 crbug.com/40550039 svg/css/use-replicates-changes-class.html [ Skip ]
 crbug.com/40550039 svg/css/use-replicates-changes-pseudo.html [ Skip ]

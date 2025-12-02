@@ -19,11 +19,8 @@ namespace blink {
 
 uint64_t SoftNavigationContext::last_context_id_ = 0;
 
-SoftNavigationContext::SoftNavigationContext(
-    LocalDOMWindow& window,
-    features::SoftNavigationHeuristicsMode mode)
-    : paint_attribution_mode_(mode),
-      window_(&window),
+SoftNavigationContext::SoftNavigationContext(LocalDOMWindow& window)
+    : window_(&window),
       lcp_calculator_(MakeGarbageCollected<LargestContentfulPaintCalculator>(
           DOMWindowPerformance::performance(window),
           this)) {
@@ -34,13 +31,6 @@ SoftNavigationContext::SoftNavigationContext(
 }
 
 void SoftNavigationContext::AddModifiedNode(Node* node) {
-  if (paint_attribution_mode_ !=
-      features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution) {
-    auto add_result = modified_nodes_.insert(node);
-    if (!add_result.is_new_entry) {
-      return;
-    }
-  }
   ++num_modified_dom_nodes_;
   TRACE_EVENT_INSTANT(
       "loading", "SoftNavigationContext::AddedModifiedNodeInAnimationFrame",
@@ -48,36 +38,6 @@ void SoftNavigationContext::AddModifiedNode(Node* node) {
       node->GetDomNodeId(), "nodeDebugName", node->DebugName(),
       "domModificationsThisAnimationFrame",
       num_modified_dom_nodes_ - num_modified_dom_nodes_last_animation_frame_);
-}
-
-bool SoftNavigationContext::IsNeededForTiming(Node* node) {
-  CHECK_NE(paint_attribution_mode_,
-           features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution);
-  if (!node) {
-    return false;
-  }
-  for (Node* current_node = node; current_node;
-       current_node = current_node->parentNode()) {
-    if (current_node == known_not_related_parent_) {
-      return false;
-    }
-    // If the current_node is known modified, it is a container root.
-    if (modified_nodes_.Contains(current_node)) {
-      return true;
-    }
-    // For now, do not "tree walk" when in basic mode.
-    if (paint_attribution_mode_ ==
-        features::SoftNavigationHeuristicsMode::kBasic) {
-      break;
-    }
-  }
-  // This node was not part of a container root for this context.
-  // Let's cache this node's parent node, so if any of this node's siblings
-  // paint next, we can finish this check quicker for them.
-  if (Node* parent = node->parentNode()) {
-    known_not_related_parent_ = parent;
-  }
-  return false;
 }
 
 bool SoftNavigationContext::AddPaintedArea(PaintTimingRecord* record) {
@@ -94,19 +54,6 @@ bool SoftNavigationContext::AddPaintedArea(PaintTimingRecord* record) {
   // Change this back to a CHECK when the root cause is understood and fixed.
   if (!node) {
     return false;
-  }
-
-  if (paint_attribution_mode_ !=
-      features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution) {
-    DCHECK(IsNeededForTiming(node));
-    if (already_painted_modified_nodes_.Contains(node)) {
-      // We are sometimes observing paints for the same node.
-      // Until we fix first-contentful-paint-only observation, let's ignore
-      // these.
-      repainted_area_ += painted_area;
-      return false;
-    }
-    already_painted_modified_nodes_.insert(node);
   }
 
   painted_area_ += painted_area;
@@ -152,26 +99,17 @@ bool SoftNavigationContext::SatisfiesSoftNavPaintCriteria(
 }
 
 bool SoftNavigationContext::OnPaintFinished() {
-  // Reset this with each paint, since the conditions might change.
-  known_not_related_parent_ = nullptr;
-
   auto num_modded_new_nodes =
       num_modified_dom_nodes_ - num_modified_dom_nodes_last_animation_frame_;
-  auto num_gced_old_nodes = num_live_nodes_last_animation_frame_ +
-                            num_modded_new_nodes - modified_nodes_.size();
   auto new_painted_area = painted_area_ - painted_area_last_animation_frame_;
-  auto new_repainted_area =
-      repainted_area_ - repainted_area_last_animation_frame_;
 
   // TODO(crbug.com/353218760): Consider reporting if any of the values change
   // if we have an extra loud tracing debug mode.
   if (num_modded_new_nodes || new_painted_area) {
     TRACE_EVENT_INSTANT("loading", "SoftNavigationContext::OnPaintFinished",
                         perfetto::Track::FromPointer(this), "context", this,
-                        "numModdenNewNodes", num_modded_new_nodes,
-                        "numGcedOldNodes", num_gced_old_nodes, "newPaintedArea",
-                        new_painted_area, "newRepaintedArea",
-                        new_repainted_area);
+                        "numModdedNewNodes", num_modded_new_nodes,
+                        "newPaintedArea", new_painted_area);
   }
 
   if (new_painted_area > 0) {
@@ -182,9 +120,7 @@ bool SoftNavigationContext::OnPaintFinished() {
   }
 
   num_modified_dom_nodes_last_animation_frame_ = num_modified_dom_nodes_;
-  num_live_nodes_last_animation_frame_ = modified_nodes_.size();
   painted_area_last_animation_frame_ = painted_area_;
-  repainted_area_last_animation_frame_ = repainted_area_;
 
   return new_painted_area > 0;
 }
@@ -281,13 +217,9 @@ void SoftNavigationContext::WriteIntoTrace(
 
   dict.Add("domModifications", num_modified_dom_nodes_);
   dict.Add("paintedArea", painted_area_);
-  dict.Add("repaintedArea", repainted_area_);
 }
 
 void SoftNavigationContext::Trace(Visitor* visitor) const {
-  visitor->Trace(modified_nodes_);
-  visitor->Trace(already_painted_modified_nodes_);
-  visitor->Trace(known_not_related_parent_);
   visitor->Trace(lcp_calculator_);
   visitor->Trace(largest_text_);
   visitor->Trace(largest_image_);
@@ -296,8 +228,6 @@ void SoftNavigationContext::Trace(Visitor* visitor) const {
 }
 
 void SoftNavigationContext::Shutdown() {
-  modified_nodes_.clear();
-  already_painted_modified_nodes_.clear();
   lcp_calculator_ = nullptr;
   largest_text_ = nullptr;
   largest_image_ = nullptr;

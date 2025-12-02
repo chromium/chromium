@@ -2252,21 +2252,6 @@ BASE_FEATURE_PARAM(bool,
                    "bypass_subresource",
                    false);
 
-// 'Mode' parameter for blink::features::kSoftNavigationHeuristics.
-const base::FeatureParam<SoftNavigationHeuristicsMode>::Option
-    kSoftNavigationHeuristicsModes[] = {
-        {SoftNavigationHeuristicsMode::kBasic, "basic"},
-        {SoftNavigationHeuristicsMode::kAdvancedPaintAttribution,
-         "advanced_paint_attribution"},
-        {SoftNavigationHeuristicsMode::kPrePaintBasedAttribution,
-         "pre_paint_based_attribution"}};
-BASE_FEATURE_ENUM_PARAM(SoftNavigationHeuristicsMode,
-                        kSoftNavigationHeuristicsModeParam,
-                        &kSoftNavigationHeuristics,
-                        "mode",
-                        SoftNavigationHeuristicsMode::kBasic,
-                        &kSoftNavigationHeuristicsModes);
-
 // If enabled, force renderer process foregrounded from CommitNavigation to
 // DOMContentLoad (crbug/351953350).
 BASE_FEATURE(

@@ -41,8 +41,7 @@ class CORE_EXPORT SoftNavigationContext
   // differentiate new interactions from previous ones.
   static uint64_t NextContextId() { return last_context_id_ + 1; }
 
-  SoftNavigationContext(LocalDOMWindow& window,
-                        features::SoftNavigationHeuristicsMode);
+  explicit SoftNavigationContext(LocalDOMWindow& window);
 
   // LargestContentfulPaintCalculator::Delegate:
   void EmitPerformanceEntry(const DOMPaintTimingInfo& paint_timing_info,
@@ -108,9 +107,6 @@ class CORE_EXPORT SoftNavigationContext
   uint64_t PaintedArea() const { return painted_area_; }
   uint64_t ContextId() const { return context_id_; }
 
-  // Returns true if this Context is involved in modifying the container root
-  // for this Node*.
-  bool IsNeededForTiming(Node* node);
   // Reports a new contentful paint area to this context, and the Node painted.
   bool AddPaintedArea(PaintTimingRecord*);
   // Returns true if we update the total attributed area this animation frame.
@@ -142,7 +138,6 @@ class CORE_EXPORT SoftNavigationContext
   const uint64_t context_id_ = ++last_context_id_;
 
   uint32_t navigation_id_ = kNavigationIdAbsentValue;
-  const features::SoftNavigationHeuristicsMode paint_attribution_mode_;
   bool was_emitted_ = false;
 
   base::TimeTicks user_interaction_timestamp_;
@@ -152,27 +147,17 @@ class CORE_EXPORT SoftNavigationContext
   base::UnguessableToken same_document_metrics_token_;
   String most_recent_url_;
 
-  blink::HeapHashSet<WeakMember<Node>> modified_nodes_;
-  blink::HeapHashSet<WeakMember<Node>> already_painted_modified_nodes_;
-
   Member<LocalDOMWindow> window_;
   Member<LargestContentfulPaintCalculator> lcp_calculator_;
   Member<TextRecord> largest_text_;
   Member<ImageRecord> largest_image_;
   Member<PaintTimingRecord> first_image_or_text_;
 
-  // Elements of `modified_nodes_` can get GC-ed, so we need to keep a count of
-  // the total nodes modified.
   size_t num_modified_dom_nodes_ = 0;
   uint64_t painted_area_ = 0;
-  uint64_t repainted_area_ = 0;
 
   size_t num_modified_dom_nodes_last_animation_frame_ = 0;
-  size_t num_live_nodes_last_animation_frame_ = 0;
   uint64_t painted_area_last_animation_frame_ = 0;
-  uint64_t repainted_area_last_animation_frame_ = 0;
-
-  WeakMember<Node> known_not_related_parent_;
 };
 
 }  // namespace blink

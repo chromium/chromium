@@ -953,25 +953,6 @@ const FeatureEntry::FeatureVariation
         {"for prerendering page", kEnableLazyLoadImageForPrerenderPage,
          std::size(kEnableLazyLoadImageForPrerenderPage), nullptr}};
 
-const FeatureEntry::FeatureParam kSoftNavigationHeuristicsBasic[] = {
-    {"mode", "basic"}};
-const FeatureEntry::FeatureParam
-    kSoftNavigationHeuristicsAdvancedPaintAttribution[] = {
-        {"mode", "advanced_paint_attribution"}};
-const FeatureEntry::FeatureParam
-    kSoftNavigationHeuristicsPrePaintBasedAttribution[] = {
-        {"mode", "pre_paint_based_attribution"}};
-
-const FeatureEntry::FeatureVariation kSoftNavigationHeuristicsVariations[] = {
-    {"Basic (default)", kSoftNavigationHeuristicsBasic,
-     std::size(kSoftNavigationHeuristicsBasic), nullptr},
-    {"Advanced Paint Attribution (Lazy Uncached Paint Walk)",
-     kSoftNavigationHeuristicsAdvancedPaintAttribution,
-     std::size(kSoftNavigationHeuristicsAdvancedPaintAttribution), nullptr},
-    {"Advanced Paint Attribution (Eager Cached Pre-Paint Walk)",
-     kSoftNavigationHeuristicsPrePaintBasedAttribution,
-     std::size(kSoftNavigationHeuristicsPrePaintBasedAttribution), nullptr}};
-
 const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceAutomatic, switches::kTopChromeTouchUi,
@@ -5368,9 +5349,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"soft-navigation-heuristics",
      flag_descriptions::kSoftNavigationHeuristicsName,
      flag_descriptions::kSoftNavigationHeuristicsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kSoftNavigationHeuristics,
-                                    kSoftNavigationHeuristicsVariations,
-                                    "SoftNavigationHeuristics")},
+     FEATURE_VALUE_TYPE(blink::features::kSoftNavigationHeuristics)},
     {"enable-quic", flag_descriptions::kQuicName,
      flag_descriptions::kQuicDescription, kOsAll,
      ENABLE_DISABLE_VALUE_TYPE(switches::kEnableQuic, switches::kDisableQuic)},

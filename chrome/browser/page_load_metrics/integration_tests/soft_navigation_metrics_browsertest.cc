@@ -64,8 +64,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
     std::vector<base::test::FeatureRef> enabled_feature_list = {
         blink::features::kSoftNavigationDetection,
-        blink::features::kNavigationId,
-        blink::features::kSoftNavigationDetectionAdvancedPaintAttribution};
+        blink::features::kNavigationId};
     if (GetParam()) {
       enabled_feature_list.push_back(
           blink::features::kSoftNavigationHeuristics);

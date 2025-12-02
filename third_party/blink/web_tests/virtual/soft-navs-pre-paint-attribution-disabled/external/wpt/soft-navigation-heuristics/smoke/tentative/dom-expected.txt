@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Soft Navigation Detection supports Element.innerText when it overrides existing text.
-  promise_test: Unhandled rejection with value: object "Error: Soft navigation event not fired."
-Harness: the test ran to completion.
-

@@ -1896,10 +1896,9 @@ inline constexpr char kSoftNavigationHeuristicsName[] =
     "Soft Navigation Heuristics";
 inline constexpr char kSoftNavigationHeuristicsDescription[] =
     "Enables the soft navigation heuristics, including support for "
-    "PerformanceObserver. This setting overrides other experimental settings. "
-    "See the documentation for our earlier experiment at "
-    "https://developer.chrome.com/docs/web-platform/soft-navigations-experiment"
-    " (to be updated soon).";
+    "PerformanceObserver. See the documentation at "
+    "https://developer.chrome.com/docs/web-platform/"
+    "soft-navigations-experiment.";
 
 inline constexpr char kEnableSiteSearchAllowUserOverridePolicyName[] =
     "Enable allow_user_override field for SiteSearchSettings policy";

@@ -38,7 +38,6 @@ Object: {
 			mostRecentURL: string
 			paintedArea: number
 			performanceTimelineNavigationId: number
-			repaintedArea: number
 			softNavContextId: number
 		}
 		frame: string
