@@ -3511,7 +3511,17 @@ bool SelectorChecker::MatchesFocusVisiblePseudoClass(const Element& element) {
   }
 
   const Settings* settings = document.GetSettings();
-  bool always_show_focus = settings->GetAccessibilityAlwaysShowFocus();
+  const FocusOptions* focus_options = element.GetDocument().GetFocusOptions();
+  const bool force_focus_invisible =
+      !settings->GetAccessibilityAlwaysShowFocus() && focus_options &&
+      focus_options->hasFocusVisible() && !focus_options->focusVisible();
+  if (force_focus_invisible) {
+    return false;
+  }
+
+  bool always_show_focus = settings->GetAccessibilityAlwaysShowFocus() ||
+                           (focus_options && focus_options->hasFocusVisible() &&
+                            focus_options->focusVisible());
   bool is_text_input = element.MayTriggerVirtualKeyboard();
   bool last_focus_from_mouse =
       document.GetFrame() &&
