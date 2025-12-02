@@ -6,6 +6,10 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+if (!is_fuchsia) {
+  import("//pdf/features.gni")
+}
+
 source_set("identity_manager") {
   sources = [
     "access_token_fetcher.cc",
@@ -68,6 +72,10 @@ source_set("identity_manager") {
     "//components/signin/public/webdata",
     "//services/network/public/cpp",
   ]
+
+  if (!is_fuchsia) {
+    deps += [ "//pdf:buildflags" ]
+  }
 
   if (is_chromeos) {
     deps += [ "//components/user_manager" ]
@@ -160,6 +168,10 @@ source_set("unit_tests") {
       "//components/account_manager_core",
       "//components/account_manager_core:test_support",
     ]
+  }
+
+  if (!is_fuchsia) {
+    deps += [ "//pdf:buildflags" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

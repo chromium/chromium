@@ -11,6 +11,10 @@
 #include "components/plus_addresses/core/common/features.h"
 #include "google_apis/gaia/gaia_constants.h"
 
+#if !BUILDFLAG(IS_FUCHSIA)
+#include "pdf/buildflags.h"  // nogncheck
+#endif                       // !BUILDFLAG(IS_FUCHSIA)
+
 namespace signin {
 
 namespace {
@@ -33,10 +37,11 @@ bool IsUnrestrictedOAuth2Scopes(const std::string& scope) {
       // sign in.
       GaiaConstants::kSecureConnectOAuth2Scope,
 
-      // TODO(crbug.com/446152335): Consider wrapping this in
-      // `ENABLE_PDF_SAVE_TO_DRIVE` build flag.
-      // Required for save to Drive.
+#if !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
       GaiaConstants::kDriveOAuth2Scope,
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
       // TODO(b/321900823): Fix tests and move below scopes to require the
       // browser to be signed in.
