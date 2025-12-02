@@ -168,7 +168,9 @@ assert(!enable_profiling || !is_component_build,
 
 # The Abseil .def lists for Windows component builds are created expecting sized
 # deallocation. Disabling it leads to symbol mismatches and build failures.
-assert(!is_win || !is_component_build || use_sized_deallocation,
+# This assertion is restricted to Clang builds. ANGLE MSVC builds, where
+# is_clang is false, do not use Abseil that requires this assertion.
+assert(!is_clang || !is_win || !is_component_build || use_sized_deallocation,
        "Sized deallocation must be enabled in component builds on Windows.")
 assert(is_clang || !use_sized_deallocation,
        "Sized deallocation is supported on clang.")
