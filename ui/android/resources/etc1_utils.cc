@@ -4,6 +4,7 @@
 
 #include "ui/android/resources/etc1_utils.h"
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/memory/aligned_memory.h"
 #include "base/numerics/byte_conversions.h"
@@ -180,26 +181,23 @@ bool Etc1::WriteToFile(base::File* file,
   }
 
   // Write ETC1 header.
-  CHECK(compressed_data->width() >= 0);
-  CHECK(compressed_data->height() >= 0);
+  CHECK_GE(compressed_data->width(), 0);
+  CHECK_GE(compressed_data->height(), 0);
   unsigned width = static_cast<unsigned>(compressed_data->width());
   unsigned height = static_cast<unsigned>(compressed_data->height());
 
-  unsigned char etc1_buffer[ETC_PKM_HEADER_SIZE];
+  uint8_t etc1_buffer[ETC_PKM_HEADER_SIZE];
   etc1_pkm_format_header(etc1_buffer, width, height);
 
-  // SAFETY: buffer interacts with external API.
-  int header_bytes_written = UNSAFE_BUFFERS(file->WriteAtCurrentPos(
-      reinterpret_cast<char*>(etc1_buffer), ETC_PKM_HEADER_SIZE));
-  if (header_bytes_written != ETC_PKM_HEADER_SIZE) {
+  if (file->WriteAtCurrentPos(etc1_buffer) != ETC_PKM_HEADER_SIZE) {
     return false;
   }
 
-  int data_size = etc1_get_encoded_data_size(width, height);
+  const size_t data_size = etc1_get_encoded_data_size(width, height);
   // SAFETY: buffer interacts with external API.
-  int pixel_bytes_written = UNSAFE_BUFFERS(file->WriteAtCurrentPos(
-      reinterpret_cast<char*>(compressed_data->pixels()), data_size));
-  if (pixel_bytes_written != data_size) {
+  auto pixels = UNSAFE_BUFFERS(base::span(
+      reinterpret_cast<const uint8_t*>(compressed_data->pixels()), data_size));
+  if (file->WriteAtCurrentPos(pixels) != data_size) {
     return false;
   }
 
@@ -254,12 +252,8 @@ bool Etc1::ReadFromFile(base::File* file,
   out_content_size->SetSize(content_width, content_height);
 
   // Read ETC1 header.
-  int header_bytes_read = 0;
-  unsigned char etc1_buffer[ETC_PKM_HEADER_SIZE];
-  // SAFETY: buffer interacts with external API.
-  header_bytes_read = UNSAFE_BUFFERS(file->ReadAtCurrentPos(
-      reinterpret_cast<char*>(etc1_buffer), ETC_PKM_HEADER_SIZE));
-  if (header_bytes_read != ETC_PKM_HEADER_SIZE) {
+  uint8_t etc1_buffer[ETC_PKM_HEADER_SIZE];
+  if (file->ReadAtCurrentPos(etc1_buffer) != ETC_PKM_HEADER_SIZE) {
     return false;
   }
 
@@ -267,14 +261,12 @@ bool Etc1::ReadFromFile(base::File* file,
     return false;
   }
 
-  int raw_width = 0;
-  raw_width = etc1_pkm_get_width(etc1_buffer);
+  int raw_width = etc1_pkm_get_width(etc1_buffer);
   if (raw_width <= 0) {
     return false;
   }
 
-  int raw_height = 0;
-  raw_height = etc1_pkm_get_height(etc1_buffer);
+  int raw_height = etc1_pkm_get_height(etc1_buffer);
   if (raw_height <= 0) {
     return false;
   }
