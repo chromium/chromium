@@ -150,7 +150,8 @@ bool IsEligibleForSeedFileTrial(version_info::Channel channel,
     return false;
   }
   return channel == version_info::Channel::CANARY ||
-         channel == version_info::Channel::DEV;
+         channel == version_info::Channel::DEV ||
+         channel == version_info::Channel::BETA;
 }
 
 // Sets up the seed file experiment which only some clients are eligible for
