@@ -1939,7 +1939,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.InputToAcceptNonAction" units="ms"
+<histogram name="Omnibox.InputToAcceptNonAction" units="microseconds"
     expires_after="2026-11-12">
   <owner>kouhei@google.com</owner>
   <owner>chrome-loading@google.com</owner>
@@ -1953,10 +1953,12 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Omnibox.SuggestionUsed.Search.InputToNavigationStart2. See also
     Omnibox.InputToOpenSelection for the breakdown of input routing latency. See
     also Omnibox.InputToExecuteAction which covers the other branch.
+
+    This histogram only records metrics on machines with high-resolution clocks.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.InputToExecuteAction" units="ms"
+<histogram name="Omnibox.InputToExecuteAction" units="microseconds"
     expires_after="2026-11-12">
   <owner>kouhei@google.com</owner>
   <owner>chrome-loading@google.com</owner>
@@ -1970,10 +1972,12 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Omnibox.SuggestionUsed.Search.InputToNavigationStart2. See also
     Omnibox.InputToOpenSelection for the breakdown of input routing latency. See
     also Omnibox.InputToAcceptNonAction which covers the other branch.
+
+    This histogram only records metrics on machines with high-resolution clocks.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.InputToOpenSelection" units="ms"
+<histogram name="Omnibox.InputToOpenSelection" units="microseconds"
     expires_after="2026-11-12">
   <owner>kouhei@google.com</owner>
   <owner>chrome-loading@google.com</owner>
@@ -1987,6 +1991,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Omnibox.SuggestionUsed.Search.InputToNavigationStart2. See also
     Omnibox.InputToExecuteAction and Omnibox.InputToAcceptNonAction for other
     breakdowns of the metric.
+
+    This histogram only records metrics on machines with high-resolution clocks.
   </summary>
 </histogram>
 
