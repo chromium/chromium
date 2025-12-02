@@ -79,4 +79,7 @@ BASE_DECLARE_FEATURE(kLensStrokesAPIEnabled);
 // Whether to enable the Shader V2 for Lens Omnient.
 BASE_DECLARE_FEATURE(kLensOmnientShaderV2Enabled);
 
+// Whether to enable the stream service web channel transport.
+BASE_DECLARE_FEATURE(kLensStreamServiceWebChannelTransportEnabled);
+
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_FEATURES_H_
