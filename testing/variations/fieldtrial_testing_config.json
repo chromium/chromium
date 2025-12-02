@@ -12724,10 +12724,16 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledBloomFilter_20250925",
+                    "//0": "Gathers metrics on the Heap Profiler, which has known overhead that affects benchmarks.",
+                    "//1": "HeapProfilerReporting is an existing feature that forces the profiler on/off.",
+                    "//2": "UseLockFreeBloomFilter is a new feature that modifies the profiler behaviour, so needs it to be on.",
+                    "//3": "HeapProfilerReporting will never go beyond 1% stable.",
+                    "name": "EnabledBloomFilter_20251203",
                     "enable_features": [
+                        "HeapProfilerReporting",
                         "UseLockFreeBloomFilter"
-                    ]
+                    ],
+                    "disable_benchmarking": "true"
                 }
             ]
         }
