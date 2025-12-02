@@ -22,6 +22,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -159,6 +160,7 @@ public class GetMatchingCredentialsDelegateTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/465421209")
     public void testGetMatchingCredentialIds_success() {
         String relyingPartyId = "subdomain.example.test";
         byte[][] allowCredentialIds =
@@ -182,6 +184,7 @@ public class GetMatchingCredentialsDelegateTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/465421209")
     public void testGetMatchingCredentialIds_requireThirdPartyBit() {
         String relyingPartyId = "subdomain.example.test";
         byte[][] allowCredentialIds =
