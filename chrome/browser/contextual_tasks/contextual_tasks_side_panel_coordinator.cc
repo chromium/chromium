@@ -386,9 +386,16 @@ void ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
 
 void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
     BrowserWindowInterface* browser_interface) {
+  bool is_side_panel_open = IsSidePanelOpenForContextualTask();
   UpdateWebContentsForActiveTab();
   UpdateSidePanelVisibility();
-  UpdateContextualTaskUI();
+  // If side panel was previously not open, it could have been opened
+  // by the UpdateSidePanelVisibility() call above. Since
+  // UpdateSidePanelVisibility() will call UpdateContextualTaskUI(),
+  // there is no need to call it here again.
+  if (is_side_panel_open) {
+    UpdateContextualTaskUI();
+  }
   ObserveWebContentsOnActiveTab();
 
   browser_window_->GetFeatures()
