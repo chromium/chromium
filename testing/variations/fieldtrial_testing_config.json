@@ -6553,6 +6553,21 @@
             ]
         }
     ],
+    "CloudProfileReporting": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CloudProfileReporting"
+                    ]
+                }
+            ]
+        }
+    ],
     "CoalesceSelectionchangeEvent": [
         {
             "platforms": [
