@@ -22,6 +22,7 @@ enum MediaState {
 };
 }  // namespace
 
+// TODO(crbug.com/454045510): Add tests.
 MediaStateObserver::MediaStateObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<MediaStateObserver>(*web_contents),
