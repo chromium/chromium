@@ -71,9 +71,7 @@ WebInstallFromUrlCommand::WebInstallFromUrlCommand(
       install_url_(install_url),
       web_contents_(web_contents),
       last_committed_url_(last_committed_url),
-      dialog_callback_(std::move(dialog_callback)),
-      install_error_log_entry_(/*background_installation=*/false,
-                               kInstallSource) {
+      dialog_callback_(std::move(dialog_callback)) {
   if (manifest_id_.has_value()) {
     GetMutableDebugValue().Set("manifest_id_param", manifest_id_->spec());
   }
@@ -125,9 +123,6 @@ void WebInstallFromUrlCommand::OnUrlLoadedFetchManifest(
   GetMutableDebugValue().Set("url_loading_result", base::ToString(result));
 
   if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
-    install_error_log_entry_.LogUrlLoaderError("OnUrlLoadedFetchManifest",
-                                               install_url_.spec(), result);
-
     webapps::InstallResultCode install_result =
         (result == webapps::WebAppUrlLoaderResult::kFailedPageTookTooLong)
             ? webapps::InstallResultCode::kInstallURLLoadTimeOut

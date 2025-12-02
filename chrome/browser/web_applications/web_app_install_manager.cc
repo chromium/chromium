@@ -39,26 +39,9 @@ void WebAppInstallManager::SetProvider(base::PassKey<WebAppProvider>,
   provider_ = &provider;
 }
 
-void WebAppInstallManager::Start() {
-  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
-    error_log_ = std::make_unique<PersistableLog>(
-        PersistableLog::GetLogPath(profile_, "InstallManager.log"),
-        PersistableLog::GetMode(), PersistableLog::GetMaxInMemoryLogEntries(),
-        provider_->file_utils());
-  }
-}
+void WebAppInstallManager::Start() {}
 
 void WebAppInstallManager::Shutdown() {}
-
-PersistableLog* WebAppInstallManager::error_log() const {
-  return error_log_.get();
-}
-
-void WebAppInstallManager::TakeCommandErrorLog(
-    base::PassKey<WebAppCommandManager>,
-    base::Value log) {
-  error_log_->Append(std::move(log));
-}
 
 void WebAppInstallManager::AddObserver(WebAppInstallManagerObserver* observer) {
   observers_.AddObserver(observer);

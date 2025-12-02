@@ -57,7 +57,7 @@ void WebAppCommandManager::SetProvider(base::PassKey<WebAppProvider>,
 
 void WebAppCommandManager::Start() {
   started_ = true;
-  log_ = std::make_unique<PersistableLog>(
+  log_ = PersistableLog::Create(
       PersistableLog::GetLogPath(profile_, "CommandManager.log"),
       PersistableLog::GetMode(), PersistableLog::GetMaxInMemoryLogEntries(),
       provider_->file_utils());
@@ -197,15 +197,6 @@ const PersistableLog& WebAppCommandManager::log() const {
   return *log_;
 }
 
-void WebAppCommandManager::LogToInstallManager(base::Value log) {
-#if DCHECK_IS_ON()
-  // This is wrapped with DCHECK_IS_ON() to prevent calling DebugString() in
-  // production builds.
-  DVLOG(1) << log.DebugString();
-#endif
-  provider_->install_manager().TakeCommandErrorLog(PassKey(), std::move(log));
-}
-
 bool WebAppCommandManager::IsInstallingForWebContents(
     const content::WebContents* web_contents) const {
   for (const auto& [id, command] : commands_) {
@@ -312,13 +303,15 @@ void WebAppCommandManager::ClearSharedWebContentsIfUnused() {
 
 void WebAppCommandManager::AddCommandToLog(
     const internal::CommandBase& command) {
-  AddValueToLog(base::Value(command.GetDebugValue().Clone()));
+  if (log_) {
+    log_->Append(command.GetDebugValue().Clone());
+  }
 }
 
 void WebAppCommandManager::AddValueToLog(base::Value value) {
   DCHECK(!value.is_none());
   if (log_) {
-    log_->Append(std::move(value));
+    log_->AppendValue(std::move(value));
   }
 }
 

@@ -71,9 +71,7 @@ FetchInstallInfoFromInstallUrlCommand::FetchInstallInfoFromInstallUrlCommand(
           std::make_tuple(FetchInstallInfoResult::kShutdown, nullptr)),
       manifest_id_(manifest_id),
       install_url_(install_url),
-      parent_manifest_id_(parent_manifest_id),
-      install_error_log_entry_(/*background_installation=*/true,
-                               webapps::WebappInstallSource::SUB_APP) {
+      parent_manifest_id_(parent_manifest_id) {
   CHECK(manifest_id_.is_valid());
   CHECK(install_url_.is_valid());
 
@@ -122,8 +120,6 @@ void FetchInstallInfoFromInstallUrlCommand::
   GetMutableDebugValue().Set("url_loading_result", base::ToString(result));
 
   if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
-    install_error_log_entry_.LogUrlLoaderError(
-        "OnWebAppUrlLoadedGetWebAppInstallInfo", install_url_.spec(), result);
     CompleteCommandAndSelfDestruct(FetchInstallInfoResult::kUrlLoadingFailure,
                                    /*install_info=*/nullptr);
     return;
@@ -209,7 +205,15 @@ void FetchInstallInfoFromInstallUrlCommand::OnIconsRetrievedForNoManifest(
   CHECK(web_app_info);
   PopulateProductIcons(web_app_info.get(), &icons_map);
   PopulateOtherIcons(web_app_info.get(), icons_map);
+  if (web_app_info->is_generated_icon) {
+    GetMutableDebugValue().Set("is_generated_icon", true);
+  }
   RecordDownloadedIconsResultAndHttpStatusCodes(result, icons_http_results);
+  base::DictValue icon_errors =
+      LogDownloadedIconsErrors(result, icons_map, icons_http_results);
+  if (!icon_errors.empty()) {
+    GetMutableDebugValue().Set("icon_errors", std::move(icon_errors));
+  }
   CompleteCommandAndSelfDestruct(FetchInstallInfoResult::kAppInfoObtained,
                                  std::move(web_app_info));
 }
@@ -225,10 +229,10 @@ void FetchInstallInfoFromInstallUrlCommand::OnInstallInfoFetched(
                                   info_from_manifest->parent_app_manifest_id);
   const webapps::AppId expected_app_id = GenerateAppIdFromManifestId(
       manifest_id_, info_from_manifest->parent_app_manifest_id);
+
+  GetMutableDebugValue().Set("app_id", app_id);
+  GetMutableDebugValue().Set("expected_app_id", expected_app_id);
   if (app_id != expected_app_id) {
-    install_error_log_entry_.LogExpectedAppIdError(
-        "OnManifestRetrieved", info_from_manifest->start_url().spec(), app_id,
-        expected_app_id);
     CompleteCommandAndSelfDestruct(FetchInstallInfoResult::kWrongManifestId,
                                    /*install_info=*/nullptr);
     return;
@@ -251,12 +255,6 @@ void FetchInstallInfoFromInstallUrlCommand::CompleteCommandAndSelfDestruct(
         return CommandResult::kFailure;
     }
   }();
-
-  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo) &&
-      install_error_log_entry_.HasErrorDict()) {
-    command_manager()->LogToInstallManager(
-        install_error_log_entry_.TakeErrorDict());
-  }
 
   CompleteAndSelfDestruct(command_result, result, std::move(install_info));
 }

@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/barrier_closure.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
@@ -22,9 +23,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/to_string.h"
-#include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected_macros.h"
@@ -55,16 +58,6 @@ static constexpr base::TimeDelta kLogWriteDelay = base::Seconds(5);
 static constexpr int kMaxRotatedLogFileIndex = 100;
 
 int g_max_log_file_size_bytes = kMaxLogFileSizeBytes;
-
-// This task runner is used to read or write log files to disk.
-base::LazyThreadPoolSequencedTaskRunner g_log_writing_task_runner =
-    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits({base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
-base::LazyThreadPoolSequencedTaskRunner g_log_deletion_task_runner =
-    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits({base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-                          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
 
 bool IsEmptyIconBitmapsForIconUrl(const IconsMap& icons_map,
                                   const GURL& icon_url) {
@@ -112,21 +105,23 @@ std::optional<base::ListValue> ReadLogFileBlocking(
 }
 
 void RotateLogFileBlocking(scoped_refptr<FileUtilsWrapper> utils,
-                           const base::FilePath& current_log_file) {
+                           const base::FilePath& current_log_file,
+                           const base::Clock* clock) {
   if (!utils->PathExists(current_log_file)) {
     DLOG(ERROR) << "Current log file does not exist: " << current_log_file;
     return;
   }
   std::optional<base::FilePath> rotated_filename;
   std::string date_str =
-      base::UnlocalizedTimeFormatWithPattern(base::Time::Now(), "y-MM-dd");
+      base::UnlocalizedTimeFormatWithPattern(clock->Now(), "y-MM-dd");
   for (int free_index = -1; free_index < kMaxRotatedLogFileIndex;
        ++free_index) {
-    std::string index_str =
-        free_index >= 0 ? base::NumberToString(free_index) : "";
+    std::string suffix = date_str;
+    if (free_index >= 0) {
+      base::StrAppend(&suffix, {".", base::NumberToString(free_index)});
+    }
     base::FilePath candidate_filename =
-        current_log_file.InsertBeforeExtensionASCII(
-            base::StrCat({date_str, ".", index_str}));
+        current_log_file.InsertBeforeExtensionASCII(suffix);
     if (!utils->PathExists(candidate_filename)) {
       rotated_filename = candidate_filename;
       break;
@@ -173,14 +168,51 @@ base::AutoReset<int> PersistableLog::SetMaxLogFileSizeBytesForTesting(
   return base::AutoReset<int>(&g_max_log_file_size_bytes, size);
 }
 
-PersistableLog::PersistableLog(const base::FilePath& log_file,
-                               PersistableLogMode mode,
-                               int max_log_entries_in_memory,
-                               scoped_refptr<FileUtilsWrapper> file_utils)
+std::unique_ptr<PersistableLog> PersistableLog::Create(
+    const base::FilePath& log_file,
+    PersistableLogMode mode,
+    int max_log_entries_in_memory,
+    scoped_refptr<FileUtilsWrapper> file_utils) {
+  return base::WrapUnique(new PersistableLog(
+      log_file, mode, max_log_entries_in_memory, std::move(file_utils),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
+      base::DefaultClock::GetInstance()));
+}
+
+std::unique_ptr<PersistableLog> PersistableLog::CreateForTesting(
+    const base::FilePath& log_file,
+    PersistableLogMode mode,
+    int max_log_entries_in_memory,
+    scoped_refptr<FileUtilsWrapper> file_utils,
+    scoped_refptr<base::SequencedTaskRunner> log_writing_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> log_deletion_task_runner,
+    const base::Clock* clock) {
+  return base::WrapUnique(new PersistableLog(
+      log_file, mode, max_log_entries_in_memory, std::move(file_utils),
+      std::move(log_writing_task_runner), std::move(log_deletion_task_runner),
+      clock));
+}
+
+PersistableLog::PersistableLog(
+    const base::FilePath& log_file,
+    PersistableLogMode mode,
+    int max_log_entries_in_memory,
+    scoped_refptr<FileUtilsWrapper> file_utils,
+    scoped_refptr<base::SequencedTaskRunner> log_writing_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> log_deletion_task_runner,
+    const base::Clock* clock)
     : log_file_(log_file),
       mode_(mode),
       file_utils_(std::move(file_utils)),
       max_log_entries_in_memory_(max_log_entries_in_memory),
+      log_writing_task_runner_(std::move(log_writing_task_runner)),
+      log_deletion_task_runner_(std::move(log_deletion_task_runner)),
+      clock_(CHECK_DEREF(clock)),
       log_write_timer_(FROM_HERE,
                        kLogWriteDelay,
                        this,
@@ -195,7 +227,7 @@ PersistableLog::PersistableLog(const base::FilePath& log_file,
       // For in-memory, we only do one file-related task here to delete old
       // logs.
       // TODO(crbug.com/40224498): Clean up logs older than X days on startup.
-      g_log_deletion_task_runner.Get()->PostTask(
+      log_deletion_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(
               base::IgnoreResult(&FileUtilsWrapper::DeleteFileRecursively),
@@ -205,7 +237,7 @@ PersistableLog::PersistableLog(const base::FilePath& log_file,
       on_load_complete_.Signal();
       return;
     case PersistableLogMode::kPersistToDisk:
-      g_log_writing_task_runner.Get()->PostTaskAndReplyWithResult(
+      log_writing_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,
           base::BindOnce(&ReadLogFileBlocking, file_utils_, log_file_),
           base::BindOnce(&PersistableLog::OnLatestLogLoaded,
@@ -218,7 +250,12 @@ PersistableLog::~PersistableLog() {
   MaybeWriteCurrentLog();
 }
 
-void PersistableLog::Append(base::Value object) {
+void PersistableLog::Append(base::DictValue object) {
+  if (!object.contains("timestamp_ms")) {
+    object.Set("timestamp_ms",
+               base::saturated_cast<int>(
+                   clock_->Now().ToDeltaSinceWindowsEpoch().InMilliseconds()));
+  }
 #if DCHECK_IS_ON()
   // This is wrapped with DCHECK_IS_ON() to prevent calling DebugString() in
   // production builds.
@@ -250,31 +287,13 @@ void PersistableLog::Append(base::Value object) {
   }
 }
 
-const base::circular_deque<base::Value>& PersistableLog::GetEntries() const {
-  return log_;
+void PersistableLog::AppendValue(base::Value object) {
+  Append(base::DictValue().Set("value", std::move(object)));
 }
 
-void PersistableLog::WaitForLoadAndFlushForTesting(
-    base::OnceClosure done) const {
-  // First wait for the log to load, and call this method again.
-  if (!on_load_complete_.is_signaled()) {
-    on_load_complete_.Post(
-        FROM_HERE,
-        base::BindOnce(&PersistableLog::WaitForLoadAndFlushForTesting,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(done)));
-    return;
-  }
-  // Const_cast seems like the least-disruptive way to allow tests to flush
-  // the log to disk without adding a way for tests to access a non-const
-  // version of the log.
-  const_cast<PersistableLog*>(this)->MaybeWriteCurrentLog();
-  // Post a task to the log writing sequence to ensure that the log is written
-  // before running the callback.
-  base::RepeatingClosure barrier = base::BarrierClosure(2, std::move(done));
-  g_log_writing_task_runner.Get()->PostTaskAndReply(FROM_HERE,
-                                                    base::DoNothing(), barrier);
-  g_log_deletion_task_runner.Get()->PostTaskAndReply(
-      FROM_HERE, base::DoNothing(), barrier);
+const base::circular_deque<base::DictValue>& PersistableLog::GetEntries()
+    const {
+  return log_;
 }
 
 void PersistableLog::OnLatestLogLoaded(
@@ -285,7 +304,11 @@ void PersistableLog::OnLatestLogLoaded(
     // newest to oldest.
     log_.reserve(current_log_for_disk_.size());
     for (base::Value& value : current_log_for_disk_) {
-      log_.push_front(value.Clone());
+      // Ignore non-dict entries, which are not expected.
+      if (!value.is_dict()) {
+        continue;
+      }
+      log_.push_front(value.GetDict().Clone());
     }
   }
   on_load_complete_.Signal();
@@ -310,78 +333,21 @@ void PersistableLog::MaybeWriteCurrentLog() {
   // Possibly do a log rotation.
   if (current_disk_log_entry_count_ * kEstimatedBytesPerLogEntry >
       g_max_log_file_size_bytes) {
-    log_write_task =
-        base::BindOnce(&RotateLogFileBlocking, file_utils_, log_file_)
-            .Then(std::move(log_write_task));
+    log_write_task = base::BindOnce(&RotateLogFileBlocking, file_utils_,
+                                    log_file_, base::Unretained(&clock_.get()))
+                         .Then(std::move(log_write_task));
     current_log_for_disk_.clear();
   }
 
-  g_log_writing_task_runner.Get()->PostTask(FROM_HERE,
-                                            std::move(log_write_task));
+  log_writing_task_runner_->PostTask(FROM_HERE, std::move(log_write_task));
   current_disk_log_entry_count_ = current_log_for_disk_.size();
 }
 
-InstallErrorLogEntry::InstallErrorLogEntry(
-    bool background_installation,
-    webapps::WebappInstallSource install_surface)
-    : background_installation_(background_installation),
-      install_surface_(install_surface) {
-  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
-    error_dict_ = std::make_unique<base::Value::Dict>();
-  }
-}
-
-InstallErrorLogEntry::~InstallErrorLogEntry() = default;
-
-bool InstallErrorLogEntry::HasErrorDict() const {
-  return error_dict_ && !error_dict_->empty();
-}
-
-base::Value InstallErrorLogEntry::TakeErrorDict() {
-  DCHECK(error_dict_);
-  base::Value::Dict error_dict = std::move(*error_dict_);
-  *error_dict_ = base::Value::Dict();
-  return base::Value(std::move(error_dict));
-}
-
-void InstallErrorLogEntry::LogUrlLoaderError(
-    const char* stage,
-    const std::string& url,
-    webapps::WebAppUrlLoaderResult result) {
-  if (!error_dict_)
-    return;
-
-  base::Value::Dict url_loader_error;
-
-  url_loader_error.Set("WebAppUrlLoader::Result", base::ToString(result));
-
-  LogErrorObject(stage, url, std::move(url_loader_error));
-}
-
-void InstallErrorLogEntry::LogExpectedAppIdError(
-    const char* stage,
-    const std::string& url,
-    const webapps::AppId& app_id,
-    const webapps::AppId& expected_app_id) {
-  if (!error_dict_)
-    return;
-
-  base::Value::Dict expected_app_id_error;
-  expected_app_id_error.Set("expected_app_id", expected_app_id);
-  expected_app_id_error.Set("app_id", app_id);
-
-  LogErrorObject(stage, url, std::move(expected_app_id_error));
-}
-
-void InstallErrorLogEntry::LogDownloadedIconsErrors(
-    const WebAppInstallInfo& web_app_info,
+base::DictValue LogDownloadedIconsErrors(
     IconsDownloadedResult icons_downloaded_result,
     const IconsMap& icons_map,
     const DownloadedIconsHttpResults& icons_http_results) {
-  if (!error_dict_)
-    return;
-
-  base::Value::Dict icon_errors;
+  base::DictValue icon_errors;
   {
     // Reports errors only, omits successful entries.
     base::Value::List icons_http_errors;
@@ -395,7 +361,7 @@ void InstallErrorLogEntry::LogDownloadedIconsErrors(
       // If the SkBitmap for`icon_url` is missing in `icons_map` then we report
       // this miss as an error, even for net::HttpStatusCode::HTTP_OK.
       if (IsEmptyIconBitmapsForIconUrl(icons_map, icon_url)) {
-        base::Value::Dict icon_http_error;
+        base::DictValue icon_http_error;
 
         icon_http_error.Set("icon_url", icon_url.spec());
         icon_http_error.Set("icon_size",
@@ -417,35 +383,7 @@ void InstallErrorLogEntry::LogDownloadedIconsErrors(
       icon_errors.Set("icons_http_results", std::move(icons_http_errors));
   }
 
-  if (web_app_info.is_generated_icon)
-    icon_errors.Set("is_generated_icon", true);
-
-  if (!icon_errors.empty()) {
-    LogErrorObject("OnIconsRetrieved", web_app_info.start_url().spec(),
-                   std::move(icon_errors));
-  }
-}
-
-void InstallErrorLogEntry::LogHeaderIfLogEmpty(const std::string& url) {
-  if (!error_dict_ || !error_dict_->empty())
-    return;
-
-  error_dict_->Set("!url", url);
-  error_dict_->Set("install_surface", static_cast<int>(install_surface_));
-  error_dict_->Set("background_installation", background_installation_);
-  error_dict_->Set("stages", base::Value::List());
-}
-
-void InstallErrorLogEntry::LogErrorObject(const char* stage,
-                                          const std::string& url,
-                                          base::Value::Dict object) {
-  if (!error_dict_)
-    return;
-
-  LogHeaderIfLogEmpty(url);
-
-  object.Set("!stage", stage);
-  error_dict_->FindList("stages")->Append(std::move(object));
+  return icon_errors;
 }
 
 }  // namespace web_app

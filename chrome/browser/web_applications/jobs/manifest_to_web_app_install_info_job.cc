@@ -461,14 +461,6 @@ ManifestToWebAppInstallInfoJob::CreateAndStart(
   return job;
 }
 
-base::Value
-ManifestToWebAppInstallInfoJob::GetManifestToWebAppInfoGenerationErrors() {
-  if (!install_error_log_entry_.HasErrorDict()) {
-    return base::Value();
-  }
-  return install_error_log_entry_.TakeErrorDict();
-}
-
 void ManifestToWebAppInstallInfoJob::FetchIcons(
     WebAppInstallInfo& install_info,
     content::WebContents& web_contents,
@@ -505,7 +497,6 @@ ManifestToWebAppInstallInfoJob::ManifestToWebAppInstallInfoJob(
       creation_callback_(std::move(creation_callback)),
       options_(options),
       fallback_info_(std::move(fallback_info)),
-      install_error_log_entry_(background_installation, install_source),
       debug_data_(debug_data) {
   // These are the pre-requisites for constructing a WebAppInstallInfo from a
   // valid manifest id and start url.
@@ -515,6 +506,8 @@ ManifestToWebAppInstallInfoJob::ManifestToWebAppInstallInfoJob(
 
   debug_data_->Set("manifest_id", manifest_->id.spec());
   debug_data_->Set("start_url", manifest_->start_url.spec());
+  debug_data_->Set("background_installation", background_installation);
+  debug_data_->Set("install_source", base::ToString(install_source));
   if (manifest_->name && !manifest_->name->empty()) {
     debug_data_->Set("manifest_name", *manifest_->name);
   }
@@ -748,6 +741,9 @@ void ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo(
   // Bypass populating product icons, even generated ones, if icons have not
   // been downloaded.
   PopulateProductIcons(&install_info(), &icons_map);
+  if (install_info().is_generated_icon) {
+    debug_data_->Set("is_generated_icon", true);
+  }
   if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
     if (options_.use_manifest_icons_as_trusted) {
       install_info().trusted_icon_bitmaps = install_info().icon_bitmaps;
@@ -757,8 +753,12 @@ void ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo(
   }
   PopulateOtherIcons(&install_info(), icons_map);
   RecordDownloadedIconsResultAndHttpStatusCodes(result, icons_http_results);
-  install_error_log_entry_.LogDownloadedIconsErrors(
-      install_info(), result, icons_map, icons_http_results);
+
+  base::DictValue icon_errors =
+      LogDownloadedIconsErrors(result, icons_map, icons_http_results);
+  if (!icon_errors.empty()) {
+    debug_data_->Set("icon_errors", std::move(icon_errors));
+  }
   CompleteJobAndRunCallback();
 }
 

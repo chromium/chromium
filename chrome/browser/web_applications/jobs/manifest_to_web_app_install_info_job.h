@@ -96,8 +96,6 @@ class ManifestToWebAppInstallInfoJob {
           WebAppInstallInfoConstructOptions{},
       std::optional<WebAppInstallInfo> fallback_info = std::nullopt);
 
-  base::Value GetManifestToWebAppInfoGenerationErrors();
-
   // Manually fetch icons, for use when the
   // `WebAppInstallInfoConstructOptions::defer_icon_fetching` option is set to
   // `true`. After the `CreateAndStart` completes, call this function to fetches
@@ -161,7 +159,6 @@ class ManifestToWebAppInstallInfoJob {
 
   IconsDownloadedResult icon_fetch_result_ =
       IconsDownloadedResult::kAbortedDueToFailure;
-  InstallErrorLogEntry install_error_log_entry_;
   raw_ref<base::DictValue> debug_data_;
 
   base::WeakPtrFactory<ManifestToWebAppInstallInfoJob> weak_ptr_factory_{this};

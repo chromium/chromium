@@ -108,8 +108,6 @@ class FetchInstallInfoFromInstallUrlCommand
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
 
-  InstallErrorLogEntry install_error_log_entry_;
-
   base::WeakPtrFactory<FetchInstallInfoFromInstallUrlCommand> weak_ptr_factory_{
       this};
 };

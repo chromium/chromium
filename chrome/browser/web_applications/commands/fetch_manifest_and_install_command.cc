@@ -184,18 +184,16 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
       web_contents_(contents),
       dialog_callback_(std::move(dialog_callback)),
       fallback_behavior_(fallback_behavior),
-      ui_manager_(ui_manager),
-      install_error_log_entry_(/*background_installation=*/false,
-                               install_surface_) {
+      ui_manager_(ui_manager) {
   Observe(web_contents_.get());
   GetMutableDebugValue().Set("visible_url",
                              web_contents_->GetVisibleURL().spec());
   GetMutableDebugValue().Set("last_committed_url",
                              web_contents_->GetLastCommittedURL().spec());
   GetMutableDebugValue().Set("initial_visibility",
-                             static_cast<int>(web_contents()->GetVisibility()));
+                             base::ToString(web_contents()->GetVisibility()));
   GetMutableDebugValue().Set("install_surface",
-                             static_cast<int>(install_surface_));
+                             base::ToString(install_surface_));
   GetMutableDebugValue().Set("fallback_behavior",
                              base::ToString(fallback_behavior_));
 }
@@ -619,9 +617,15 @@ void FetchManifestAndInstallCommand::OnIconsDownloadedForFallbackInfoShowDialog(
 
   PopulateProductIcons(web_app_info_.get(), &icons_map);
   PopulateOtherIcons(web_app_info_.get(), icons_map);
+  if (web_app_info_->is_generated_icon) {
+    GetMutableDebugValue().Set("is_generated_icon", true);
+  }
   RecordDownloadedIconsResultAndHttpStatusCodes(result, icons_http_results);
-  install_error_log_entry_.LogDownloadedIconsErrors(
-      *web_app_info_, result, icons_map, icons_http_results);
+  base::DictValue icon_errors =
+      LogDownloadedIconsErrors(result, icons_map, icons_http_results);
+  if (!icon_errors.empty()) {
+    GetMutableDebugValue().Set("icon_errors", std::move(icon_errors));
+  }
   ShowInstallDialog();
 }
 
@@ -724,18 +728,6 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
 void FetchManifestAndInstallCommand::OnInstallCompleted(
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
-  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
-    if (install_error_log_entry_.HasErrorDict()) {
-      command_manager()->LogToInstallManager(
-          install_error_log_entry_.TakeErrorDict());
-    }
-    base::Value install_info_dict =
-        manifest_to_install_info_job_
-            ->GetManifestToWebAppInfoGenerationErrors();
-    if (!install_info_dict.is_none()) {
-      command_manager()->LogToInstallManager(std::move(install_info_dict));
-    }
-  }
   GetMutableDebugValue().Set("result_code", base::ToString(code));
 
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code),

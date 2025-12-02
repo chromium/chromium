@@ -80,8 +80,6 @@ class WebAppCommandManager {
   // This will CHECK-fail if the system has not been started.
   const PersistableLog& log() const;
 
-  void LogToInstallManager(base::Value);
-
   // Returns whether an installation is already scheduled with the same web
   // contents.
   bool IsInstallingForWebContents(

@@ -108,9 +108,7 @@ ExternalAppResolutionCommand::ExternalAppResolutionCommand(
       install_options_(install_options),
       installed_placeholder_app_id_(std::move(installed_placeholder_app_id)),
       install_surface_(ConvertExternalInstallSourceToInstallSource(
-          install_options_.install_source)),
-      install_error_log_entry_(/*background_installation=*/true,
-                               install_surface_) {
+          install_options_.install_source)) {
   GetMutableDebugValue().Set("external_install_options",
                              install_options_.AsDebugValue());
   GetMutableDebugValue().Set(
@@ -420,11 +418,17 @@ void ExternalAppResolutionCommand::OnIconsRetrievedUpgradeLockDescription(
   PopulateProductIcons(web_app_info_.get(), &icons_map);
   PopulateTrustedIconBitmaps(*web_app_info_.get(), icons_map);
   PopulateOtherIcons(web_app_info_.get(), icons_map);
+  if (web_app_info_->is_generated_icon) {
+    GetMutableDebugValue().Set("is_generated_icon", true);
+  }
 
   RecordDownloadedIconsResultAndHttpStatusCodes(result, icons_http_results);
 
-  install_error_log_entry_.LogDownloadedIconsErrors(
-      *web_app_info_, result, icons_map, icons_http_results);
+  base::DictValue icon_errors =
+      LogDownloadedIconsErrors(result, icons_map, icons_http_results);
+  if (!icon_errors.empty()) {
+    GetMutableDebugValue().Set("icon_errors", std::move(icon_errors));
+  }
   UpdateInfoWithParamsAndUpgradeLock(result !=
                                      IconsDownloadedResult::kCompleted);
 }
@@ -508,13 +512,6 @@ void ExternalAppResolutionCommand::OnInstallFinalized(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext())
           ->GetPrefs(),
       app_id_, install_surface_);
-
-  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
-    if (install_error_log_entry_.HasErrorDict()) {
-      command_manager()->LogToInstallManager(
-          install_error_log_entry_.TakeErrorDict());
-    }
-  }
 
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code),
                                                   install_surface_);

@@ -12,9 +12,11 @@
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -28,8 +30,10 @@
 class Profile;
 
 namespace base {
+class Clock;
 class ListValue;
 class Value;
+class DictValue;
 class DelayTimer;
 }  // namespace base
 
@@ -55,6 +59,22 @@ enum class PersistableLogMode {
 // chrome://web-app-internals page.
 class PersistableLog {
  public:
+  static std::unique_ptr<PersistableLog> Create(
+      const base::FilePath& log_file,
+      PersistableLogMode mode,
+      int max_log_entries_in_memory,
+      scoped_refptr<FileUtilsWrapper> file_utils);
+
+  // `clock` must be non-null and outlive the log.
+  static std::unique_ptr<PersistableLog> CreateForTesting(
+      const base::FilePath& log_file,
+      PersistableLogMode mode,
+      int max_log_entries_in_memory,
+      scoped_refptr<FileUtilsWrapper> file_utils,
+      scoped_refptr<base::SequencedTaskRunner> log_writing_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> log_deletion_task_runner,
+      const base::Clock* clock);
+
   static base::FilePath GetLogPath(Profile* profile,
                                    std::string_view log_filename);
   static int GetMaxInMemoryLogEntries();
@@ -62,24 +82,29 @@ class PersistableLog {
 
   static base::AutoReset<int> SetMaxLogFileSizeBytesForTesting(int size);
 
-  PersistableLog(const base::FilePath& log_file,
-                 PersistableLogMode mode,
-                 int max_log_entries_in_memory,
-                 scoped_refptr<FileUtilsWrapper> file_utils);
   ~PersistableLog();
 
-  // Appends a value to the log.
-  void Append(base::Value object);
+  // Appends a value to the log, always populating a timestamp under the key
+  // "timestamp_ms" if it is not already present.
+  void Append(base::DictValue object);
+  // Shortcut method for calling Append with "value" set to `value`, and
+  // "timestamp_ms" set to the current time.
+  void AppendValue(base::Value value);
 
   // Returns the log entries in descending order of time (newest entry is at the
   // front).
-  const base::circular_deque<base::Value>& GetEntries() const;
-
-  // Runs the callback when the logs are finished loading, deleting, or writing
-  // to disk.
-  void WaitForLoadAndFlushForTesting(base::OnceClosure done) const;
+  const base::circular_deque<base::DictValue>& GetEntries() const;
 
  private:
+  PersistableLog(
+      const base::FilePath& log_file,
+      PersistableLogMode mode,
+      int max_log_entries_in_memory,
+      scoped_refptr<FileUtilsWrapper> file_utils,
+      scoped_refptr<base::SequencedTaskRunner> log_writing_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> log_deletion_task_runner,
+      const base::Clock* clock);
+
   void OnLatestLogLoaded(std::optional<base::ListValue> loaded_log);
   void MaybeWriteCurrentLog();
 
@@ -88,12 +113,19 @@ class PersistableLog {
   const scoped_refptr<FileUtilsWrapper> file_utils_;
   const int max_log_entries_in_memory_;
 
+  // Task runners for file operations. Injected for testing.
+  const scoped_refptr<base::SequencedTaskRunner> log_writing_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> log_deletion_task_runner_;
+
+  // Clock for timestamping. Injected for testing.
+  const raw_ref<const base::Clock> clock_;
+
   base::OneShotEvent on_load_complete_;
   base::DelayTimer log_write_timer_;
 
   // This is the log that is currently in memory, and is in descending order of
   // time (newest entry is at the front).
-  base::circular_deque<base::Value> log_;
+  base::circular_deque<base::DictValue> log_;
 
   // This is the log that is currently being written to disk. The log is in
   // descending order of time (newest entry is at the end).
@@ -103,59 +135,12 @@ class PersistableLog {
   base::WeakPtrFactory<PersistableLog> weak_ptr_factory_{this};
 };
 
-// Helper class to accumulate structured error information during a web app
-// installation process. This is only enabled if the
-// |kRecordWebAppDebugInfo| feature flag is enabled. The logs are sent to the
-// WebAppInstallManager and are exposed in chrome://web-app-internals.
-//
-// An InstallErrorLogEntry is typically created at the beginning of an install
-// command and is passed around. Various stages of the installation process can
-// log errors to it. At the end of the command, if any errors were logged, the
-// entire log entry is sent to the install manager. This is done by the command
-// calling `WebAppCommandManager::LogToInstallManager`, which then calls
-// `WebAppInstallManager::TakeCommandErrorLog`.
-class InstallErrorLogEntry {
- public:
-  explicit InstallErrorLogEntry(bool background_installation,
-                                webapps::WebappInstallSource install_surface);
-  ~InstallErrorLogEntry();
-
-  // The InstallWebAppTask determines this after construction, so a setter is
-  // required.
-  void set_background_installation(bool background_installation) {
-    background_installation_ = background_installation;
-  }
-
-  bool HasErrorDict() const;
-
-  // Collects install errors (unbounded) if the |kRecordWebAppDebugInfo|
-  // flag is enabled to be used by: chrome://web-app-internals
-  base::Value TakeErrorDict();
-
-  void LogUrlLoaderError(const char* stage,
-                         const std::string& url,
-                         webapps::WebAppUrlLoaderResult result);
-  void LogExpectedAppIdError(const char* stage,
-                             const std::string& url,
-                             const webapps::AppId& app_id,
-                             const webapps::AppId& expected_app_id);
-  void LogDownloadedIconsErrors(
-      const WebAppInstallInfo& web_app_info,
-      IconsDownloadedResult icons_downloaded_result,
-      const IconsMap& icons_map,
-      const DownloadedIconsHttpResults& icons_http_results);
-
- private:
-  void LogHeaderIfLogEmpty(const std::string& url);
-
-  void LogErrorObject(const char* stage,
-                      const std::string& url,
-                      base::DictValue object);
-
-  std::unique_ptr<base::DictValue> error_dict_;
-  bool background_installation_;
-  webapps::WebappInstallSource install_surface_;
-};
+// Returns a dictionary value containing errors from the downloaded icons. If
+// there are no errors, returns a an empty dict.
+base::DictValue LogDownloadedIconsErrors(
+    IconsDownloadedResult icons_downloaded_result,
+    const IconsMap& icons_map,
+    const DownloadedIconsHttpResults& icons_http_results);
 
 }  // namespace web_app
 

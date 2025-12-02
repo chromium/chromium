@@ -113,7 +113,6 @@ class WebInstallFromUrlCommand
   // The last committed URL of the page that initiated the install.
   GURL last_committed_url_;
   WebAppInstallDialogCallback dialog_callback_;
-  InstallErrorLogEntry install_error_log_entry_;
 
   std::unique_ptr<SharedWebContentsLock> web_contents_lock_;
   std::unique_ptr<SharedWebContentsWithAppLock>

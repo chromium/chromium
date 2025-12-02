@@ -29,7 +29,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -65,7 +64,6 @@ constexpr char kShouldGarbageCollectStoragePartitions[] =
 constexpr char kLockManager[] = "LockManager";
 constexpr char kCommandManager[] = "CommandManager";
 constexpr char kIconErrorLog[] = "IconErrorLog";
-constexpr char kInstallationProcessErrorLog[] = "InstallationProcessErrorLog";
 #if BUILDFLAG(IS_MAC)
 constexpr char kAppShimRegistryLocalStorage[] = "AppShimRegistryLocalStorage";
 #endif
@@ -98,7 +96,6 @@ base::Value::Dict BuildIndexJson() {
                    .Append(kNavigationCapturing)
                    .Append(kCommandManager)
                    .Append(kIconErrorLog)
-                   .Append(kInstallationProcessErrorLog)
 #if BUILDFLAG(IS_MAC)
                    .Append(kAppShimRegistryLocalStorage)
 #endif
@@ -237,24 +234,6 @@ base::Value::Dict BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
   return root;
 }
 
-base::Value::Dict BuildInstallProcessErrorLogJson(
-    web_app::WebAppProvider& provider) {
-  base::Value::Dict root;
-
-  const web_app::PersistableLog* error_log =
-      provider.install_manager().error_log();
-
-  if (!error_log) {
-    root.Set(kInstallationProcessErrorLog, kNeedsRecordWebAppDebugInfo);
-    return root;
-  }
-
-  root.Set(kInstallationProcessErrorLog,
-           base::ToValueList(error_log->GetEntries(), &base::Value::Clone));
-
-  return root;
-}
-
 #if BUILDFLAG(IS_MAC)
 base::Value::Dict BuildAppShimRegistryLocalStorageJson() {
   return base::Value::Dict().Set(kAppShimRegistryLocalStorage,
@@ -355,7 +334,6 @@ void WebAppInternalsHandler::BuildDebugInfo(
           .Append(BuildNavigationCapturingLog(*provider))
           .Append(BuildCommandManagerJson(*provider))
           .Append(BuildIconErrorLogJson(*provider))
-          .Append(BuildInstallProcessErrorLogJson(*provider))
 #if BUILDFLAG(IS_MAC)
           .Append(BuildAppShimRegistryLocalStorageJson())
 #endif
