@@ -12753,6 +12753,7 @@ from previous Chrome versions.
   <int value="-529896675" label="SmartLockSignInRemoved:disabled"/>
   <int value="-528927088" label="AutofillCreditCardPopupLayout:disabled"/>
   <int value="-528759276" label="ShoppingCollection:disabled"/>
+  <int value="-528469511" label="EnableShouldShowPromotion:enabled"/>
   <int value="-528441522" label="AppsShortcutDefaultOff:disabled"/>
   <int value="-528149352" label="WebRtcUseEchoCanceller3:enabled"/>
   <int value="-527990339" label="ForceEnableFaceAe:enabled"/>
@@ -16919,6 +16920,7 @@ from previous Chrome versions.
   <int value="937805280"
       label="ApplyClientsideModelPredictionsForPasswordTypes:disabled"/>
   <int value="938191241" label="VrShell:enabled"/>
+  <int value="938846889" label="EnableShouldShowPromotion:disabled"/>
   <int value="939050961" label="OnTheFlyMhtmlHashComputation:disabled"/>
   <int value="939366135" label="DownloadsLocationChange:disabled"/>
   <int value="939509221" label="AndroidPinnedTabsTabletTabStrip:enabled"/>

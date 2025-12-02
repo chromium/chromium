@@ -6044,6 +6044,11 @@ inline constexpr char kEnableCrOSSodaConchLanguagesName[] =
 inline constexpr char kEnableCrOSSodaConchLanguagesDescription[] =
     "Enable Conch specific SODA language models.";
 
+inline constexpr char kEnableShouldShowPromotionName[] =
+    "Enable Chrome Web Store Promotion Banner";
+inline constexpr char kEnableShouldShowPromotionDescription[] =
+    "Enables showing the promotion banner on chromewebstore page.";
+
 inline constexpr char kFreezingOnEnergySaverName[] =
     "Freeze CPU intensive background tabs on Energy Saver";
 inline constexpr char kFreezingOnEnergySaverDescription[] =

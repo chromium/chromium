@@ -13574,6 +13574,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(autofill::features::kYourSavedInfoSettingsPage)},
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"cws-promotion-banner-flag",
+     flag_descriptions::kEnableShouldShowPromotionName,
+     flag_descriptions::kEnableShouldShowPromotionDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(extensions_features::kEnableShouldShowPromotion)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
