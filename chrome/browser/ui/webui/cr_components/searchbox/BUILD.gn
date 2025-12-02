@@ -10,6 +10,7 @@ source_set("searchbox") {
     "contextual_searchbox_handler.h",
     "searchbox_handler.h",
     "searchbox_omnibox_client.h",
+    "searchbox_utils.h",
   ]
   deps = [
     "//base",
@@ -34,6 +35,7 @@ source_set("searchbox_impl") {
     "contextual_searchbox_handler.cc",
     "searchbox_handler.cc",
     "searchbox_omnibox_client.cc",
+    "searchbox_utils.cc",
   ]
   deps = [
     ":searchbox",

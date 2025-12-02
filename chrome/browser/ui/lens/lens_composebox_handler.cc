@@ -97,6 +97,7 @@ void LensComposeboxOmniboxClient::OnAutocompleteAccept(
     const AutocompleteMatch& alternative_nav_match) {
   std::string query_text;
   net::GetValueForKeyInQuery(destination_url, "q", &query_text);
+  /* TODO(crbug.com/465154864): Add `aep` param value in lens AIM queries. */
   lens_composebox_controller_->IssueComposeboxQuery(query_text);
 }
 
