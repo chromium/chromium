@@ -1580,9 +1580,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndPreloading,
 }
 
 // TODO(crbug.com/457010934): Flaky on Linux.
-// TODO(crbug.com/460828109): Enable on ChromeOS.
-// Also flaky on linux-win-cross-rel.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_testNoExtractionWhileHidden DISABLED_testNoExtractionWhileHidden
 #else
 #define MAYBE_testNoExtractionWhileHidden testNoExtractionWhileHidden
@@ -1592,28 +1590,28 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndPreloading,
   // Attempt to extract focused tab context with the preloaded client.
   ExecuteJsTest();
 
-  // TODO(b/450923405): Metrics checks fail on win-rel.
-#if !BUILDFLAG(IS_WIN) && !defined(DEBUG)
+  // TODO(b/450923405): Hidden metrics off by one on win and chromeos.
+  int expected_count_hidden = 1;
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+  expected_count_hidden = 0;
+#endif
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
-      GlicRequestEvent::kRequestReceivedWhileHidden, 1);
+      GlicRequestEvent::kRequestReceivedWhileHidden, expected_count_hidden);
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
       GlicRequestEvent::kRequestHandlerException, 1);
   histogram_tester->ExpectTotalCount("Glic.Api.RequestCounts.GetContextFromTab",
                                      0);
-#endif
 
   // Open the glic panel and attempt to extract focused and arbitrary tab
   // context.
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
   ContinueJsTest();
-  // TODO(b/450923405): Metrics checks fail on win-rel.
-#if !BUILDFLAG(IS_WIN) && !defined(DEBUG)
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
-      GlicRequestEvent::kRequestReceivedWhileHidden, 1);
+      GlicRequestEvent::kRequestReceivedWhileHidden, expected_count_hidden);
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
       GlicRequestEvent::kRequestHandlerException, 1);
@@ -1623,17 +1621,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndPreloading,
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromTab",
       GlicRequestEvent::kRequestHandlerException, 0);
-#endif
 
   // Hide the glic panel again and attempt to extract focused and arbitrary tab
   // context.
   RunTestSequence(CloseGlic());
   ContinueJsTest();
-  // TODO(b/450923405): Metrics checks fail on win-rel.
-#if !BUILDFLAG(IS_WIN) && !defined(DEBUG)
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
-      GlicRequestEvent::kRequestReceivedWhileHidden, 2);
+      GlicRequestEvent::kRequestReceivedWhileHidden, ++expected_count_hidden);
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
       GlicRequestEvent::kRequestHandlerException, 2);
@@ -1643,7 +1638,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndPreloading,
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromTab",
       GlicRequestEvent::kRequestHandlerException, 1);
-#endif
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetFocusedTabStateV2) {
