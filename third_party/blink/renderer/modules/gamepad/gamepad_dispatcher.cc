@@ -73,9 +73,13 @@ void GamepadDispatcher::DidDisconnectGamepad(uint32_t index,
   DispatchDidConnectOrDisconnectGamepad(index, gamepad, false);
 }
 
-void GamepadDispatcher::ButtonOrAxisDidChange(uint32_t index,
-                                              const device::Gamepad& gamepad) {
-  DCHECK_LT(index, device::Gamepads::kItemsLengthCap);
+void GamepadDispatcher::DidChangeGamepadRawInput(
+    uint32_t index,
+    const device::Gamepad& gamepad) {
+  CHECK_LT(index, device::Gamepads::kItemsLengthCap);
+  CHECK_EQ(true, gamepad.connected);
+  // TODO(https://crbug.com/438906421): Queue gamepad input changes in the
+  // renderer.
   NotifyControllers();
 }
 

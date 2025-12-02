@@ -503,6 +503,7 @@ html element body
     property onbeforeunload
     property ongamepadconnected
     property ongamepaddisconnected
+    property ongamepadrawinputchanged
     property onhashchange
     property onlanguagechange
     property onmessage
@@ -673,6 +674,7 @@ html element frameset
     property onbeforeunload
     property ongamepadconnected
     property ongamepaddisconnected
+    property ongamepadrawinputchanged
     property onhashchange
     property onlanguagechange
     property onmessage

@@ -42,7 +42,9 @@ void GamepadMonitor::OnGamepadDisconnected(uint32_t index,
 
 void GamepadMonitor::OnGamepadRawInputChanged(uint32_t index,
                                               const Gamepad& gamepad) {
-  // TODO(crbug.com/40582297): Add events for gamepad button and axis inputs.
+  if (gamepad_observer_remote_) {
+    gamepad_observer_remote_->GamepadRawInputChanged(index, gamepad);
+  }
 }
 
 void GamepadMonitor::GamepadStartPolling(GamepadStartPollingCallback callback) {

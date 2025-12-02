@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_DISPATCHER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_DISPATCHER_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "device/gamepad/public/mojom/gamepad.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/platform_event_dispatcher.h"
@@ -49,7 +50,8 @@ class GamepadDispatcher final : public GarbageCollected<GamepadDispatcher>,
   // GamepadListener
   void DidConnectGamepad(uint32_t index, const device::Gamepad&) override;
   void DidDisconnectGamepad(uint32_t index, const device::Gamepad&) override;
-  void ButtonOrAxisDidChange(uint32_t index, const device::Gamepad&) override;
+  void DidChangeGamepadRawInput(uint32_t index,
+                                const device::Gamepad&) override;
 
   // PlatformEventDispatcher
   void StartListening(LocalDOMWindow*) override;

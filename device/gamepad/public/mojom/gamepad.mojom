@@ -94,6 +94,12 @@ interface GamepadObserver {
   // gamepad in the gamepad array, and |gamepad| is a reference to the
   // connected gamepad.
   GamepadDisconnected(uint32 index, Gamepad gamepad);
+
+  // Called when a gamepad's input state changes, such as button presses,
+  // axis movements, or touch events, but not connection or disconnection.
+  // |index| is the index of the gamepad in the gamepad array, and |gamepad|
+  // is a reference to the gamepad with updated input data.
+  GamepadRawInputChanged(uint32 index, Gamepad gamepad);
 };
 
 // Asks the browser process to start polling, and return a shared memory

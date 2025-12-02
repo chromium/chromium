@@ -32,10 +32,20 @@ class MODULES_EXPORT GamepadStateCompareResult {
   // True if the corresponding gamepad event should be dispatched.
   bool IsGamepadConnected(size_t pad_index) const;
   bool IsGamepadDisconnected(size_t pad_index) const;
+  bool HasGamepadInputChanged(size_t pad_index) const;
   bool IsAxisChanged(size_t pad_index, size_t axis_index) const;
   bool IsButtonChanged(size_t pad_index, size_t button_index) const;
   bool IsButtonDown(size_t pad_index, size_t button_index) const;
   bool IsButtonUp(size_t pad_index, size_t button_index) const;
+  bool IsTouchChanged(size_t pad_index, size_t touch_index) const;
+
+  // Returns indices of all axes/buttons/touches that changed for the given
+  // gamepad.
+  Vector<int> GetChangedAxes(size_t pad_index) const;
+  Vector<int> GetChangedButtons(size_t pad_index) const;
+  Vector<int> GetButtonsPressed(size_t pad_index) const;
+  Vector<int> GetButtonsReleased(size_t pad_index) const;
+  Vector<int> GetChangedTouches(size_t pad_index) const;
 
  private:
   bool CompareGamepads(const HeapVector<Member<Gamepad>> old_gamepads,
@@ -50,11 +60,14 @@ class MODULES_EXPORT GamepadStateCompareResult {
                       Gamepad* new_gamepad,
                       size_t gamepad_index,
                       bool compare_all);
-  bool CompareTouches(Gamepad* old_gamepad, Gamepad* new_gamepad);
+  bool CompareTouches(Gamepad* old_gamepad,
+                      Gamepad* new_gamepad,
+                      size_t gamepad_index);
 
   bool any_change_ = false;
   std::bitset<device::Gamepads::kItemsLengthCap> gamepad_connected_;
   std::bitset<device::Gamepads::kItemsLengthCap> gamepad_disconnected_;
+  std::bitset<device::Gamepads::kItemsLengthCap> gamepad_input_changed_;
   std::array<std::bitset<device::Gamepad::kAxesLengthCap>,
              device::Gamepads::kItemsLengthCap>
       axis_changed_;
@@ -67,6 +80,9 @@ class MODULES_EXPORT GamepadStateCompareResult {
   std::array<std::bitset<device::Gamepad::kButtonsLengthCap>,
              device::Gamepads::kItemsLengthCap>
       button_up_;
+  std::array<std::bitset<device::Gamepad::kTouchEventsLengthCap>,
+             device::Gamepads::kItemsLengthCap>
+      touch_changed_;
 };
 
 class MODULES_EXPORT GamepadComparisons {

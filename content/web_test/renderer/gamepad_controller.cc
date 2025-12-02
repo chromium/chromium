@@ -70,6 +70,7 @@ class GamepadControllerBindings final
   void Connect(int index);
   void DispatchConnected(int index);
   void Disconnect(int index);
+  void DispatchRawInputChanged(int index);
   void SetId(int index, const std::u16string& src);
   void SetButtonCount(int index, int buttons);
   void SetButtonData(int index, int button, double data);
@@ -120,6 +121,8 @@ gin::ObjectTemplateBuilder GamepadControllerBindings::GetObjectTemplateBuilder(
       .SetMethod("dispatchConnected",
                  &GamepadControllerBindings::DispatchConnected)
       .SetMethod("disconnect", &GamepadControllerBindings::Disconnect)
+      .SetMethod("dispatchRawInputChanged",
+                 &GamepadControllerBindings::DispatchRawInputChanged)
       .SetMethod("setId", &GamepadControllerBindings::SetId)
       .SetMethod("setButtonCount", &GamepadControllerBindings::SetButtonCount)
       .SetMethod("setButtonData", &GamepadControllerBindings::SetButtonData)
@@ -146,6 +149,12 @@ void GamepadControllerBindings::DispatchConnected(int index) {
 void GamepadControllerBindings::Disconnect(int index) {
   if (controller_)
     controller_->Disconnect(index);
+}
+
+void GamepadControllerBindings::DispatchRawInputChanged(int index) {
+  if (controller_) {
+    controller_->DispatchRawInputChanged(index);
+  }
 }
 
 void GamepadControllerBindings::SetId(int index, const std::u16string& src) {
@@ -264,6 +273,14 @@ void GamepadController::MonitorImpl::DispatchDisconnected(
     observer_remote_->GamepadDisconnected(index, pad);
 }
 
+void GamepadController::MonitorImpl::DispatchRawInputChanged(
+    int index,
+    const device::Gamepad& pad) {
+  if (observer_remote_) {
+    observer_remote_->GamepadRawInputChanged(index, pad);
+  }
+}
+
 void GamepadController::MonitorImpl::Reset() {
   missed_dispatches_.reset();
 }
@@ -377,6 +394,22 @@ void GamepadController::Disconnect(int index) {
   pad.timestamp = now;
   for (auto& monitor : monitors_)
     monitor->DispatchDisconnected(index, pad);
+  gamepads_->seqlock.WriteEnd();
+}
+
+void GamepadController::DispatchRawInputChanged(int index) {
+  if (index < 0 || index >= static_cast<int>(Gamepads::kItemsLengthCap)) {
+    return;
+  }
+
+  const int64_t now = CurrentTimeInMicroseconds();
+  gamepads_->seqlock.WriteBegin();
+  Gamepad& pad = gamepads_->data.items[index];
+  pad.timestamp = now;
+
+  for (auto& monitor : monitors_) {
+    monitor->DispatchRawInputChanged(index, pad);
+  }
   gamepads_->seqlock.WriteEnd();
 }
 

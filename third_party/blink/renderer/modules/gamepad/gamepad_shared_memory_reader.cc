@@ -153,4 +153,12 @@ void GamepadSharedMemoryReader::GamepadDisconnected(
     listener_->DidDisconnectGamepad(index, gamepad);
 }
 
+void GamepadSharedMemoryReader::GamepadRawInputChanged(
+    uint32_t index,
+    const device::Gamepad& gamepad) {
+  if (listener_) {
+    listener_->DidChangeGamepadRawInput(index, gamepad);
+  }
+}
+
 }  // namespace blink

@@ -142,6 +142,7 @@
     "fullscreenerror",
     "gamepadconnected",
     "gamepaddisconnected",
+    "gamepadrawinputchanged",
     "gatheringstatechange",
     "gattserverdisconnected",
     "geofenceenter",

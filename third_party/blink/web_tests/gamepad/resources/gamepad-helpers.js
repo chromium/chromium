@@ -22,12 +22,26 @@ function connectGamepads(gamepadCount) {
         gamepadController.setId(i, "MockStick 3000");
         gamepadController.setButtonCount(i, 2);
         gamepadController.setAxisCount(i, 2);
+        gamepadController.setTouchCount(i, 0);
         gamepadController.setButtonData(i, 0, 1);
         gamepadController.setButtonData(i, 1, 0);
         gamepadController.setAxisData(i, 0, .5);
         gamepadController.setAxisData(i, 1, -1.0);
+        gamepadController.setTouchData(i, 0, 0, 0, 0);
         gamepadController.dispatchConnected(i);
     }
+}
+
+function dispatchRawInputChanged(index) {
+  gamepadController.dispatchRawInputChanged(index);
+}
+
+function setButtonInput(index, buttonIndex, value) {
+  gamepadController.setButtonData(index, buttonIndex, value);
+}
+
+function setAxisInput(index, axisIndex, value) {
+  gamepadController.setAxisData(index, axisIndex, value);
 }
 
 function testGamepadStateAllDisconnected() {
@@ -83,4 +97,8 @@ async function ongamepadconnected() {
 
 async function ongamepaddisconnected() {
   return onGamepadEvent('gamepaddisconnected');
+}
+
+async function ongamepadrawinputchanged() {
+  return onGamepadEvent('gamepadrawinputchanged');
 }

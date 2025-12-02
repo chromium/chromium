@@ -15,6 +15,8 @@ class DOMWindowGamepad {
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(gamepadconnected, kGamepadconnected)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(gamepaddisconnected,
                                          kGamepaddisconnected)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(gamepadrawinputchanged,
+                                         kGamepadrawinputchanged)
 };
 
 }  // namespace blink

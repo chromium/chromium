@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 [
-    RuntimeEnabled=GamepadWindowEventHandlers,
     ImplementedAs=DOMWindowGamepad
 ] partial interface mixin WindowEventHandlers {
-    attribute EventHandler ongamepadconnected;
-    attribute EventHandler ongamepaddisconnected;
+    [RuntimeEnabled=GamepadWindowEventHandlers] attribute EventHandler ongamepadconnected;
+    [RuntimeEnabled=GamepadWindowEventHandlers] attribute EventHandler ongamepaddisconnected;
+    [RuntimeEnabled=GamepadRawInputChangeEvent] attribute EventHandler ongamepadrawinputchanged;
 };

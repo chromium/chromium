@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<body>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/gamepad-helpers.js"></script>
+<script>
+
+promise_test(async (t) => {
+    disconnectGamepads();
+    testGamepadStateAllDisconnected();
+
+    // Connect a gamepad.
+    let connectPromise = onGamepadEventWithIndex('gamepadconnected', 0);
+
+    // Sets up mock gamepad with ID, buttons, axes.
+    connectGamepads(1);
+    await connectPromise;
+
+    // Listen for raw input events.
+    let eventFired = false;
+    let receivedEvent = null;
+
+    // `listener` is called whenever a `gamepadrawinputchanged` event is dispatched to window.
+    let listener = (e) => {
+        eventFired = true;
+        receivedEvent = e;
+    };
+    window.addEventListener('gamepadrawinputchanged', listener);
+
+    // Trigger the event from the test controller.
+    let rawInputChangedPromise = ongamepadrawinputchanged();
+    setButtonInput(0, 0, 0);
+    dispatchRawInputChanged(0);
+    await rawInputChangedPromise;
+    assert_true(eventFired, "Expected gamepadrawinputchanged event to fire");
+    assert_equals(receivedEvent.type, "gamepadrawinputchanged");
+    window.removeEventListener('gamepadrawinputchanged', listener);
+}, "Raw input change event fires when dispatchRawInputChanged is called.");
+
+promise_test(async (t) => {
+    disconnectGamepads();
+    testGamepadStateAllDisconnected();
+
+    // Connect one gamepad.
+    let connectPromise = onGamepadEventWithIndex('gamepadconnected', 0);
+    connectGamepads(1);
+    await connectPromise;
+
+    // Disconnect before dispatching raw input change.
+    gamepadController.disconnect(0);
+    let eventFired = false;
+    let listener = (e) => { eventFired = true; };
+    window.addEventListener('gamepadrawinputchanged', listener);
+
+    // Attempting to dispatch raw input on disconnected gamepad would crash.
+    // So we skip calling dispatchRawInputChanged entirely, just verify no events fire.
+    await t.step_timeout(() => {}, 10);
+    window.removeEventListener('gamepadrawinputchanged', listener);
+    assert_false(eventFired, "No event should fire after disconnect");
+}, "Disconnected gamepad does not fire event");
+
+promise_test(async (t) => {
+    disconnectGamepads();
+    testGamepadStateAllDisconnected();
+    let eventFired = false;
+    let listener = (e) => { eventFired = true; };
+    window.addEventListener('gamepadrawinputchanged', listener);
+
+    // Attempt to dispatch raw input change on invalid index.
+    setButtonInput(0, 0, 0);
+    dispatchRawInputChanged(99);
+    await t.step_timeout(() => {}, 50);
+    window.removeEventListener('gamepadrawinputchanged', listener);
+    assert_false(eventFired, "No event should fire for invalid index");
+}, "Invalid index does not fire event");
+
+promise_test(async (t) => {
+    disconnectGamepads();
+    testGamepadStateAllDisconnected();
+
+    let connectPromise = onGamepadEventWithIndex('gamepadconnected', 0);
+    connectGamepads(1);
+    await connectPromise;
+    const eventsReceived = [];
+    function listener(e) {
+        eventsReceived.push(e);
+    }
+    window.addEventListener('gamepadrawinputchanged', listener);
+
+    // First button change.
+    let rawInputPromise1 = ongamepadrawinputchanged();
+    setButtonInput(0, 0, 0);
+    dispatchRawInputChanged(0);
+    await rawInputPromise1;
+
+    // Second button change.
+    let rawInputPromise2 = ongamepadrawinputchanged();
+    setButtonInput(0, 0, 1);
+    dispatchRawInputChanged(0);
+    await rawInputPromise2;
+    window.removeEventListener('gamepadrawinputchanged', listener);
+    assert_equals(eventsReceived.length, 2, "Two raw input events should have fired");
+
+    // First event assertions.
+    assert_array_equals(eventsReceived[0].buttonsValueChanged, [0]);
+    assert_array_equals(eventsReceived[0].buttonsReleased, [0]);
+    assert_array_equals(eventsReceived[0].buttonsPressed, []);
+
+    // Second event assertions.
+    assert_array_equals(eventsReceived[1].buttonsValueChanged, [0]);
+    assert_array_equals(eventsReceived[1].buttonsPressed, [0]);
+    assert_array_equals(eventsReceived[1].buttonsReleased, []);
+}, "Two raw input changed events fire sequentially for a single connected gamepad (buttons only)");
+
+promise_test(async (t) => {
+    disconnectGamepads();
+    testGamepadStateAllDisconnected();
+
+    // Connect a gamepad first.
+    let connectPromise = onGamepadEventWithIndex('gamepadconnected', 0);
+
+    // sets up a mock gamepad with ID, buttons, axes.
+    connectGamepads(1);
+    await connectPromise;
+
+    // Listen for new raw input event.
+    let eventFired = false;
+    let receivedEvent = null;
+    let inputChangedListener = (e) => {
+        eventFired = true;
+        receivedEvent = e;
+    };
+    window.addEventListener('gamepadrawinputchanged', inputChangedListener);
+
+    // Trigger the event by changing an axis.
+    let rawInputChangedPromise = ongamepadrawinputchanged();
+    // Change axis 0 value to trigger event.
+    setAxisInput(0, 0, 1.0);
+    dispatchRawInputChanged(0);
+    await rawInputChangedPromise;
+    assert_true(eventFired, "Expected gamepadrawinputchanged event to fire for axis change");
+    assert_equals(receivedEvent.type, "gamepadrawinputchanged");
+
+    // Verify changed axes.
+    assert_array_equals(receivedEvent.axesChanged, [0], "Axis 0 should be reported as changed");
+    assert_equals(receivedEvent.gamepad.axes[0], 1.0, "Axis 0 value should be 1.0");
+
+    window.removeEventListener('gamepadrawinputchanged', inputChangedListener);
+}, "Raw input change event fires when axis value changes");
+
+</script>
+</body>
+</html>

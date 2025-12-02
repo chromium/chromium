@@ -3466,6 +3466,14 @@ interface GamepadHapticActuator
     method constructor
     method playEffect
     method reset
+interface GamepadRawInputChangeEvent : GamepadEvent
+    attribute @@toStringTag
+    getter axesChanged
+    getter buttonsPressed
+    getter buttonsReleased
+    getter buttonsValueChanged
+    getter touchesChanged
+    method constructor
 interface GamepadTouch
     attribute @@toStringTag
     getter position
@@ -3692,6 +3700,7 @@ interface HTMLBodyElement : HTMLElement
     getter onfocus
     getter ongamepadconnected
     getter ongamepaddisconnected
+    getter ongamepadrawinputchanged
     getter onhashchange
     getter onlanguagechange
     getter onload
@@ -3725,6 +3734,7 @@ interface HTMLBodyElement : HTMLElement
     setter onfocus
     setter ongamepadconnected
     setter ongamepaddisconnected
+    setter ongamepadrawinputchanged
     setter onhashchange
     setter onlanguagechange
     setter onload
@@ -4259,6 +4269,7 @@ interface HTMLFrameSetElement : HTMLElement
     getter onfocus
     getter ongamepadconnected
     getter ongamepaddisconnected
+    getter ongamepadrawinputchanged
     getter onhashchange
     getter onlanguagechange
     getter onload
@@ -4288,6 +4299,7 @@ interface HTMLFrameSetElement : HTMLElement
     setter onfocus
     setter ongamepadconnected
     setter ongamepaddisconnected
+    setter ongamepadrawinputchanged
     setter onhashchange
     setter onlanguagechange
     setter onload
@@ -13447,6 +13459,7 @@ namespace console
     getter onformdata
     getter ongamepadconnected
     getter ongamepaddisconnected
+    getter ongamepadrawinputchanged
     getter ongotpointercapture
     getter onhashchange
     getter oninput
@@ -13680,6 +13693,7 @@ namespace console
     setter onformdata
     setter ongamepadconnected
     setter ongamepaddisconnected
+    setter ongamepadrawinputchanged
     setter ongotpointercapture
     setter onhashchange
     setter oninput

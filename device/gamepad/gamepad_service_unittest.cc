@@ -14,10 +14,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "device/gamepad/gamepad_consumer.h"
 #include "device/gamepad/gamepad_test_helpers.h"
+#include "device/gamepad/public/cpp/gamepad_features.h"
 #include "device/gamepad/simulated_gamepad_data_fetcher.h"
 #include "device/gamepad/simulated_gamepad_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -575,6 +577,40 @@ class GamepadServiceSimulationTest : public GamepadServiceTest {
     poll_loop_.emplace();
     poll_loop_.value().Run();
     poll_loop_.reset();
+  }
+
+ protected:
+  // Helper to create a gamepad with specified capabilities and establish user
+  // gesture.
+  base::UnguessableToken SetupRawInputGamepad(MockGamepadConsumer* consumer,
+                                              SimulatedGamepadParams params) {
+    params.name = "Raw input test gamepad";
+    auto token = service()->AddSimulatedGamepad(std::move(params));
+
+    // Establish user gesture with initial button press.
+    TestFuture<uint32_t, const Gamepad&> connected_future;
+    EXPECT_CALL(*consumer, OnGamepadConnected)
+        .WillOnce(InvokeFuture(connected_future));
+    service()->SimulateButtonInput(token, /*index=*/0, /*logical_value=*/1.0,
+                                   /*pressed=*/std::nullopt,
+                                   /*touched=*/std::nullopt);
+    service()->SimulateInputFrame(token);
+
+    EXPECT_EQ(connected_future.Get<0>(), 0u);
+    EXPECT_TRUE(connected_future.Get<1>().connected);
+
+    return token;
+  }
+
+  // Helper to clean up gamepad.
+  void CleanupRawInputGamepad(MockGamepadConsumer* consumer,
+                              base::UnguessableToken token) {
+    TestFuture<uint32_t, const Gamepad&> disconnected_future;
+    EXPECT_CALL(*consumer, OnGamepadDisconnected)
+        .WillOnce(InvokeFuture(disconnected_future));
+    service()->RemoveSimulatedGamepad(token);
+    EXPECT_EQ(disconnected_future.Get<0>(), 0u);
+    EXPECT_FALSE(disconnected_future.Get<1>().connected);
   }
 
  private:
@@ -1214,6 +1250,269 @@ TEST_F(GamepadServiceSimulationTest, SurfaceIdNotFound) {
   EXPECT_EQ(disconnected_future.Get<0>(), 0u);
   const Gamepad& disconnected_gamepad = disconnected_future.Get<1>();
   EXPECT_EQ(disconnected_gamepad.touch_events_length, 0u);
+}
+
+TEST_F(GamepadServiceSimulationTest, RawInputChangeDetectionButton) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kGamepadRawInputChangeEvent);
+
+  auto* consumer = CreateConsumer();
+  EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
+
+  SimulatedGamepadParams params;
+  params.name = "Raw input test gamepad";
+  params.button_bounds = {std::nullopt};
+  auto token = SetupRawInputGamepad(consumer, std::move(params));
+
+  TestFuture<uint32_t, const Gamepad&> future;
+  EXPECT_CALL(*consumer, OnGamepadRawInputChanged)
+      .WillOnce(InvokeFuture(future));
+
+  service()->SimulateButtonInput(token, /*index=*/0, /*logical_value=*/0.5,
+                                 /*pressed=*/std::nullopt,
+                                 /*touched=*/std::nullopt);
+  service()->SimulateInputFrame(token);
+
+  const auto [id, gamepad] = future.Take();
+  EXPECT_EQ(gamepad.buttons_length, 1u);
+  EXPECT_EQ(gamepad.buttons[0].value, 0.5);
+
+  CleanupRawInputGamepad(consumer, token);
+}
+
+TEST_F(GamepadServiceSimulationTest, RawInputChangeDetectionAxis) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kGamepadRawInputChangeEvent);
+
+  auto* consumer = CreateConsumer();
+  EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
+
+  // Set up a simulated gamepad with axis.
+  SimulatedGamepadParams params;
+  params.name = "Raw input test gamepad";
+  params.button_bounds = {std::nullopt};
+  params.axis_bounds = {GamepadLogicalBounds(-1.0, 1.0)};
+  params.touch_surface_bounds = {std::nullopt};
+  auto token = SetupRawInputGamepad(consumer, std::move(params));
+
+  TestFuture<uint32_t, const Gamepad&> future;
+  EXPECT_CALL(*consumer, OnGamepadRawInputChanged)
+      .WillOnce(InvokeFuture(future));
+
+  service()->SimulateAxisInput(token, /*index=*/0, /*logical_value=*/0.5);
+  service()->SimulateInputFrame(token);
+
+  const auto [id, gamepad] = future.Take();
+  EXPECT_EQ(gamepad.axes_length, 1u);
+  EXPECT_EQ(gamepad.axes[0], 0.5);
+
+  CleanupRawInputGamepad(consumer, token);
+}
+
+TEST_F(GamepadServiceSimulationTest, RawInputChangeDetectionTouch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kGamepadRawInputChangeEvent);
+
+  auto* consumer = CreateConsumer();
+  EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
+
+  SimulatedGamepadParams params;
+  params.name = "Raw input test gamepad";
+  params.button_bounds = {std::nullopt};
+  params.axis_bounds = {};
+  params.touch_surface_bounds = {std::nullopt};
+  auto token = SetupRawInputGamepad(consumer, std::move(params));
+
+  // Test touch add.
+  std::optional<uint32_t> touch_id;
+  {
+    TestFuture<uint32_t, const Gamepad&> future;
+    EXPECT_CALL(*consumer, OnGamepadRawInputChanged)
+        .WillOnce(InvokeFuture(future));
+
+    touch_id = service()->SimulateTouchInput(token, /*surface_id=*/0,
+                                             /*logical_x=*/0.3,
+                                             /*logical_y=*/0.7);
+    ASSERT_TRUE(touch_id.has_value());
+    service()->SimulateInputFrame(token);
+
+    const auto [id, gamepad] = future.Take();
+    EXPECT_EQ(gamepad.touch_events_length, 1u);
+    EXPECT_EQ(gamepad.touch_events[0].touch_id, touch_id.value());
+    EXPECT_FLOAT_EQ(gamepad.touch_events[0].x, 0.3f);
+    EXPECT_FLOAT_EQ(gamepad.touch_events[0].y, 0.7f);
+  }
+  WaitForPoll();
+
+  // Test touch move.
+  {
+    TestFuture<uint32_t, const Gamepad&> future;
+    EXPECT_CALL(*consumer, OnGamepadRawInputChanged)
+        .WillOnce(InvokeFuture(future));
+
+    service()->SimulateTouchMove(token, touch_id.value(), /*logical_x=*/0.6,
+                                 /*logical_y=*/0.4);
+    service()->SimulateInputFrame(token);
+
+    const auto [id, gamepad] = future.Take();
+    EXPECT_EQ(gamepad.touch_events_length, 1u);
+    EXPECT_EQ(gamepad.touch_events[0].touch_id, touch_id.value());
+    EXPECT_FLOAT_EQ(gamepad.touch_events[0].x, 0.6f);
+    EXPECT_FLOAT_EQ(gamepad.touch_events[0].y, 0.4f);
+  }
+  WaitForPoll();
+
+  // Test touch end.
+  {
+    TestFuture<uint32_t, const Gamepad&> future;
+    EXPECT_CALL(*consumer, OnGamepadRawInputChanged)
+        .WillOnce(InvokeFuture(future));
+
+    service()->SimulateTouchEnd(token, touch_id.value());
+    service()->SimulateInputFrame(token);
+
+    const auto [id, gamepad] = future.Take();
+    EXPECT_EQ(gamepad.touch_events_length, 0u);
+  }
+  WaitForPoll();
+
+  CleanupRawInputGamepad(consumer, token);
+}
+
+TEST_F(GamepadServiceSimulationTest,
+       RawInputChangeDetectionMultipleInputTypes) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kGamepadRawInputChangeEvent);
+
+  auto* consumer = CreateConsumer();
+  EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
+
+  SimulatedGamepadParams params;
+  params.button_bounds = {std::nullopt, std::nullopt};
+  params.axis_bounds = {GamepadLogicalBounds(-1.0, 1.0)};
+  params.touch_surface_bounds = {std::nullopt};
+
+  auto token = SetupRawInputGamepad(consumer, std::move(params));
+
+  std::optional<uint32_t> touch_id;
+  base::RunLoop loop;
+  TestFuture<uint32_t, const Gamepad&> future;
+  EXPECT_CALL(*consumer, OnGamepadRawInputChanged)
+      .WillOnce(InvokeFuture(future));
+
+  // Change multiple inputs in the same frame.
+  service()->SimulateButtonInput(token, /*index=*/1, /*logical_value=*/0.8,
+                                 /*pressed=*/std::nullopt,
+                                 /*touched=*/std::nullopt);
+  service()->SimulateAxisInput(token, /*index=*/0, /*logical_value=*/0.5);
+  touch_id = service()->SimulateTouchInput(token, /*surface_id=*/0,
+                                           /*logical_x=*/0.2,
+                                           /*logical_y=*/0.9);
+  ASSERT_TRUE(touch_id.has_value());
+
+  service()->SimulateInputFrame(token);
+
+  const auto [id, gamepad] = future.Take();
+  EXPECT_EQ(gamepad.buttons_length, 2u);
+  EXPECT_EQ(gamepad.buttons[1].value, 0.8);
+  EXPECT_EQ(gamepad.axes_length, 1u);
+  EXPECT_EQ(gamepad.axes[0], 0.5);
+  EXPECT_EQ(gamepad.touch_events_length, 1u);
+  EXPECT_EQ(gamepad.touch_events[0].touch_id, touch_id.value());
+  EXPECT_FLOAT_EQ(gamepad.touch_events[0].x, 0.2f);
+  EXPECT_FLOAT_EQ(gamepad.touch_events[0].y, 0.9f);
+  CleanupRawInputGamepad(consumer, token);
+}
+
+TEST_F(GamepadServiceSimulationTest, RawInputChangeRequiresUserGesture) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kGamepadRawInputChangeEvent);
+
+  auto* consumer = CreateConsumer();
+  EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
+
+  // Create gamepad without establishing user gesture.
+  SimulatedGamepadParams params;
+  params.name = "1 button";
+  params.button_bounds = {std::nullopt};
+  auto token = service()->AddSimulatedGamepad(std::move(params));
+
+  // Expect no callbacks without user gesture.
+  EXPECT_CALL(*consumer, OnGamepadRawInputChanged).Times(0);
+  EXPECT_CALL(*consumer, OnGamepadConnected).Times(0);
+
+  service()->SimulateButtonInput(token, /*index=*/0, /*logical_value=*/1.0,
+                                 /*pressed=*/std::nullopt,
+                                 /*touched=*/std::nullopt);
+  service()->SimulateInputFrame(token);
+
+  service()->SimulateButtonInput(token, /*index=*/0, /*logical_value=*/0.5,
+                                 /*pressed=*/std::nullopt,
+                                 /*touched=*/std::nullopt);
+  service()->SimulateInputFrame(token);
+
+  // Establish user gesture.
+  TestFuture<uint32_t, const Gamepad&> connected_future;
+  EXPECT_CALL(*consumer, OnGamepadConnected)
+      .WillOnce(InvokeFuture(connected_future));
+
+  service()->SimulateButtonInput(token, /*index=*/0, /*logical_value=*/1.0,
+                                 /*pressed=*/std::nullopt,
+                                 /*touched=*/std::nullopt);
+  service()->SimulateInputFrame(token);
+  EXPECT_EQ(connected_future.Get<0>(), 0u);
+
+  WaitForPoll();
+
+  TestFuture<uint32_t, const Gamepad&> input_future;
+  EXPECT_CALL(*consumer, OnGamepadRawInputChanged)
+      .WillOnce(InvokeFuture(input_future));
+
+  service()->SimulateButtonInput(token, /*index=*/0, /*logical_value=*/0.7,
+                                 /*pressed=*/std::nullopt,
+                                 /*touched=*/std::nullopt);
+  service()->SimulateInputFrame(token);
+
+  const auto [id, gamepad] = input_future.Take();
+  EXPECT_EQ(gamepad.buttons[0].value, 0.7);
+
+  CleanupRawInputGamepad(consumer, token);
+}
+
+TEST_F(GamepadServiceSimulationTest, RawInputChangeDisabledByFeatureFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kGamepadRawInputChangeEvent);
+
+  auto* consumer = CreateConsumer();
+  EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
+
+  SimulatedGamepadParams params;
+  params.name = "Raw input test gamepad";
+  params.button_bounds = {std::nullopt};
+  auto token = SetupRawInputGamepad(consumer, std::move(params));
+
+  // Even with user gesture, raw input changes should not trigger.
+  EXPECT_CALL(*consumer, OnGamepadRawInputChanged).Times(0);
+
+  service()->SimulateButtonInput(token, /*index=*/0, /*logical_value=*/0.5,
+                                 /*pressed=*/std::nullopt,
+                                 /*touched=*/std::nullopt);
+  service()->SimulateInputFrame(token);
+
+  service()->SimulateButtonInput(token, /*index=*/0, /*logical_value=*/0.8,
+                                 /*pressed=*/std::nullopt,
+                                 /*touched=*/std::nullopt);
+  service()->SimulateInputFrame(token);
+
+  WaitForPoll();
+
+  CleanupRawInputGamepad(consumer, token);
 }
 
 }  // namespace device
