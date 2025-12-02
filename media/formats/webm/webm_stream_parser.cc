@@ -101,13 +101,13 @@ bool WebMStreamParser::AppendToParseBuffer(base::span<const uint8_t> buf) {
   // could lead to memory corruption, preferring CHECK.
   CHECK_EQ(uninspected_pending_bytes_, 0);
 
-  uninspected_pending_bytes_ = base::checked_cast<int>(buf.size());
   if (!byte_queue_.Push(buf)) {
     DVLOG(2) << "AppendToParseBuffer(): Failed to push buf of size "
              << buf.size();
     return false;
   }
 
+  uninspected_pending_bytes_ = base::checked_cast<int>(buf.size());
   return true;
 }
 
