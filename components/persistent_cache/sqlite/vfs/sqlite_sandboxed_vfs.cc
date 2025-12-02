@@ -13,8 +13,10 @@
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
+#include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 #include "sql/sandboxed_vfs.h"
 #include "sql/sandboxed_vfs_file.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -120,14 +122,18 @@ int SqliteSandboxedVfsDelegate::DeleteFile(const base::FilePath& file_path,
   base::AutoLock lock(files_map_lock_);
 
   // Sandboxed processes are not capable of deleting files, so deletion is
-  // simulated by truncating the file to zero. This operation is not permitted
-  // if the file is currently open.
+  // simulated by truncating the file to zero.
   auto it = sandboxed_files_map_.find(file_path);
   if (it != sandboxed_files_map_.end()) {
-    if (it->second->IsValid()) {
-      return SQLITE_IOERR_DELETE;
-    }
-    if (!it->second->GetFile().SetLength(0)) {
+    auto& file = it->second->GetFile();
+    if (!file.SetLength(0)) {
+      const base::File::Error file_error = base::File::GetLastFileError();
+      base::UmaHistogramExactLinear(
+          base::StrCat(
+              {"PersistentCache.Sqlite.",
+               SqliteVfsFileSet::GetVirtualFileHistogramVariant(file_path),
+               ".SetLengthError"}),
+          -file_error, -base::File::FILE_ERROR_MAX);
       return SQLITE_IOERR_DELETE;
     }
     return SQLITE_OK;

@@ -24,6 +24,10 @@ namespace {
 
 std::atomic<uint64_t> g_file_set_id_generator(0);
 
+// The base name of the virtual database files served by a file set.
+constexpr base::FilePath::StringViewType kDbFileName =
+    FILE_PATH_LITERAL("data");
+
 }  // namespace
 
 namespace persistent_cache {
@@ -59,9 +63,6 @@ SqliteVfsFileSet& SqliteVfsFileSet::operator=(SqliteVfsFileSet&& other) =
 SqliteVfsFileSet::~SqliteVfsFileSet() = default;
 
 base::FilePath SqliteVfsFileSet::GetDbVirtualFilePath() const {
-  static constexpr base::FilePath::StringViewType kDbFileName =
-      FILE_PATH_LITERAL("data");
-
   return virtual_fs_path_.Append(kDbFileName);
 }
 
@@ -71,6 +72,23 @@ base::FilePath SqliteVfsFileSet::GetJournalVirtualFilePath() const {
 
 base::FilePath SqliteVfsFileSet::GetWalJournalVirtualFilePath() const {
   return sql::Database::WriteAheadLogPath(GetDbVirtualFilePath());
+}
+
+// static
+std::string_view SqliteVfsFileSet::GetVirtualFileHistogramVariant(
+    const base::FilePath& virtual_file_path) {
+  auto base_name = virtual_file_path.BaseName();
+  if (base_name.value() == kDbFileName) {
+    return "DbFile";
+  }
+  auto db_path = base::FilePath(kDbFileName);
+  if (base_name == sql::Database::JournalPath(db_path)) {
+    return "JournalFile";
+  }
+  if (base_name == sql::Database::WriteAheadLogPath(db_path)) {
+    return "WalJournalFile";
+  }
+  NOTREACHED();
 }
 
 const base::File& SqliteVfsFileSet::GetDbFile() const {

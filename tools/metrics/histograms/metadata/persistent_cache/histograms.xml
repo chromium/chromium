@@ -121,15 +121,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PersistentCache.Sqlite.{FileType}.CreateError"
+<histogram name="PersistentCache.Sqlite.{FileType}.{Operation}"
     enum="PlatformFileError" expires_after="2026-11-06">
   <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Reports the error recevied when creating or opening a PersistentCache's
-    primary database file.
+    Reports the error recevied when {Operation} a PersistentCache's {FileType}.
   </summary>
   <token key="FileType" variants="FileType"/>
+  <token key="Operation">
+    <variant name="CreateError" summary="creating or opening"/>
+    <variant name="SetLengthError" summary="deleting"/>
+  </token>
 </histogram>
 
 </histograms>
