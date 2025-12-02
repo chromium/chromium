@@ -52,6 +52,8 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
   FontDataManager& operator=(const FontDataManager&) = delete;
   ~FontDataManager() override;
 
+  static void CreateAndInitialize();
+
   // SkFontMgr:
   int onCountFamilies() const override;
   void onGetFamilyName(int index, SkString* familyName) const override;

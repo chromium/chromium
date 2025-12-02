@@ -156,6 +156,7 @@ target(link_target_type, "child") {
     sources += [
       "font_data/font_data_manager.cc",
       "font_data/font_data_manager.h",
+      "font_integration_init.cc",
     ]
     deps += [
       # For font_data_manager

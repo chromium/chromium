@@ -27,6 +27,10 @@ source_set("child_sources") {
     sources += [ "dwrite_font_proxy_init_win.h" ]
   }
 
+  if (is_win || is_linux) {
+    sources += [ "font_integration_init.h" ]
+  }
+
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//content:content_implementation",

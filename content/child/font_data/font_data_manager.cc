@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "content/common/features.h"
 #include "content/public/child/child_thread.h"
+#include "skia/ext/font_utils.h"
 #if BUILDFLAG(IS_WIN)
 #include "third_party/skia/src/ports/SkTypeface_win_dw.h"  // nogncheck
 #endif
@@ -78,6 +79,13 @@ FontDataManager::FontDataManager()
 }
 
 FontDataManager::~FontDataManager() = default;
+
+// static
+void FontDataManager::CreateAndInitialize() {
+  sk_sp<FontDataManager> font_data_manager = sk_make_sp<FontDataManager>();
+
+  skia::OverrideDefaultSkFontMgr(font_data_manager);
+}
 
 int FontDataManager::onCountFamilies() const {
   base::AutoLock locked(family_names_lock_);
