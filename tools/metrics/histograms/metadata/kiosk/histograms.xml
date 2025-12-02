@@ -53,30 +53,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Kiosk.ChromeApp.ExtensionUpdateDuration.{Result}" units="ms"
-    expires_after="2025-06-15">
-  <owner>yixie@chromium.org</owner>
-  <owner>chromeos-kiosk-eng@google.com</owner>
-  <summary>
-    ChromeOS only. Records the duration for checking updates of secondary apps
-    and extensions for a Kiosk Chrome app while launching.
-  </summary>
-  <token key="Result">
-    <variant name="HasUpdate" summary="found updates"/>
-    <variant name="NoUpdate" summary="no update found"/>
-  </token>
-</histogram>
-
-<histogram name="Kiosk.ChromeApp.ExtensionUpdateError"
-    enum="ExtensionInstallationFailureReason" expires_after="2025-06-15">
-  <owner>yixie@chromium.org</owner>
-  <owner>chromeos-kiosk-eng@google.com</owner>
-  <summary>
-    ChromeOS only. Records the reason for failed secondary apps and extensions
-    updates while a Kiosk Chrome app is launching.
-  </summary>
-</histogram>
-
 <histogram name="Kiosk.ChromeApp.ExternalUpdateSuccess" enum="BooleanYesNo"
     expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>

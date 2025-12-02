@@ -55,11 +55,6 @@ class ChromeKioskAppInstaller
                           const extensions::Extension* extension,
                           bool success) override;
 
-  // extensions::InstallStageTracker::Observer overrides.
-  void OnExtensionInstallationFailed(
-      const extensions::ExtensionId& id,
-      extensions::InstallStageTracker::FailureReason reason) override;
-
   void ReportInstallSuccess();
   void ReportInstallFailure(InstallResult result);
 

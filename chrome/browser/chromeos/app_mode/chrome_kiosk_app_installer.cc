@@ -17,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
@@ -38,15 +37,6 @@
 namespace chromeos {
 
 namespace {
-
-const std::string_view kChromeKioskExtensionUpdateErrorHistogram =
-    "Kiosk.ChromeApp.ExtensionUpdateError";
-
-const std::string_view kChromeKioskExtensionHasUpdateDurationHistogram =
-    "Kiosk.ChromeApp.ExtensionUpdateDuration.HasUpdate";
-
-const std::string_view kChromeKioskExtensionNoUpdateDurationHistogram =
-    "Kiosk.ChromeApp.ExtensionUpdateDuration.NoUpdate";
 
 // Returns true if the app with `id` is pending an install or update.
 bool IsExtensionInstallPending(content::BrowserContext& browser_context,
@@ -260,11 +250,6 @@ void ChromeKioskAppInstaller::OnExtensionUpdateCheckFinished(
     SYSLOG(INFO) << "Reloaded extension with id " << primary_app_id();
   }
 
-  base::UmaHistogramMediumTimes(
-      update_found ? kChromeKioskExtensionHasUpdateDurationHistogram
-                   : kChromeKioskExtensionNoUpdateDurationHistogram,
-      base::Time::Now() - extension_update_start_time_);
-
   FinalizeAppInstall();
 }
 
@@ -358,13 +343,6 @@ void ChromeKioskAppInstaller::OnFinishCrxInstall(
   } else {
     MaybeCheckExtensionUpdate();
   }
-}
-
-void ChromeKioskAppInstaller::OnExtensionInstallationFailed(
-    const extensions::ExtensionId& id,
-    extensions::InstallStageTracker::FailureReason reason) {
-  base::UmaHistogramEnumeration(kChromeKioskExtensionUpdateErrorHistogram,
-                                reason);
 }
 
 void ChromeKioskAppInstaller::ReportInstallSuccess() {
