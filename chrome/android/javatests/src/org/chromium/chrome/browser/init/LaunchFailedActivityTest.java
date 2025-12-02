@@ -20,6 +20,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -47,6 +48,7 @@ public class LaunchFailedActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "This test is flaky. See crbug.com/465393381.")
     public void testLaunchFailedWithoutCallbackRaisesProcessInitException() {
         LibraryLoader.getInstance().resetForTesting();
 
