@@ -259,4 +259,26 @@ public class NtpCustomizationMetricsUtilsUnitTest {
         NtpCustomizationMetricsUtils.recordChromeColorTurnOnDailyRefresh(false);
         histogramWatcher.assertExpected();
     }
+
+    @Test
+    public void testRecordThemeCollectionDailyRefreshTurnOn() {
+        int themeCollectionHash = 123; // Mock hash value for testing
+        String histogramNameOn =
+                "NewTabPage.Customization.Theme.ThemeCollection.DailyRefresh.TurnOn";
+        HistogramWatcher histogramWatcherOn =
+                HistogramWatcher.newSingleRecordWatcher(histogramNameOn, themeCollectionHash);
+        NtpCustomizationMetricsUtils.recordThemeCollectionDailyRefresh(themeCollectionHash, true);
+        histogramWatcherOn.assertExpected();
+    }
+
+    @Test
+    public void testRecordThemeCollectionDailyRefreshTurnOff() {
+        int themeCollectionHash = 123; // Mock hash value for testing
+        String histogramNameOff =
+                "NewTabPage.Customization.Theme.ThemeCollection.DailyRefresh.TurnOff";
+        HistogramWatcher histogramWatcherOff =
+                HistogramWatcher.newSingleRecordWatcher(histogramNameOff, themeCollectionHash);
+        NtpCustomizationMetricsUtils.recordThemeCollectionDailyRefresh(themeCollectionHash, false);
+        histogramWatcherOff.assertExpected();
+    }
 }
