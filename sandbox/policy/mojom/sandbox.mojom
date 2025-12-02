@@ -92,8 +92,9 @@ enum Sandbox {
   // |kXrCompositing| hosts XR Device Service on Windows.
   [EnableIf=is_win] kXrCompositing,
 
-  // Allows access to OS system proxy resolver APIs.
-  [EnableIf=is_win] kProxyResolver,
+  // Allows access to OS system proxy resolver APIs (WinHTTP on Windows,
+  // SystemConfiguration/CFNetwork on macOS).
+  [EnableIf=is_win|is_mac] kProxyResolver,
 
   // Used to protect processes that perform hardware video decode acceleration.
   // Currently uses the same policy as the GPU process sandbox. Warm-up does

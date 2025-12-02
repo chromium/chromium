@@ -45,12 +45,15 @@ constexpr char kPdfConversionSandbox[] = "pdf_conversion";
 constexpr char kXrCompositingSandbox[] = "xr_compositing";
 constexpr char kIconReaderSandbox[] = "icon_reader";
 constexpr char kMediaFoundationCdmSandbox[] = "mf_cdm";
-constexpr char kProxyResolverSandbox[] = "proxy_resolver";
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
 constexpr char kMirroringSandbox[] = "mirroring";
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+constexpr char kProxyResolverSandbox[] = "proxy_resolver";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_FUCHSIA)
 constexpr char kVideoCaptureSandbox[] = "video_capture";
@@ -133,7 +136,6 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case Sandbox::kPdfConversion:
     case Sandbox::kIconReader:
     case Sandbox::kMediaFoundationCdm:
-    case Sandbox::kProxyResolver:
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case Sandbox::kShapeDetection:
@@ -150,6 +152,9 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
 #if BUILDFLAG(IS_MAC)
     case Sandbox::kMirroring:
 #endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    case Sandbox::kProxyResolver:
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
     case Sandbox::kPrintBackend:
@@ -265,13 +270,15 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
       return kIconReaderSandbox;
     case Sandbox::kMediaFoundationCdm:
       return kMediaFoundationCdmSandbox;
-    case Sandbox::kProxyResolver:
-      return kProxyResolverSandbox;
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_MAC)
     case Sandbox::kMirroring:
       return kMirroringSandbox;
-#endif
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    case Sandbox::kProxyResolver:
+      return kProxyResolverSandbox;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case Sandbox::kShapeDetection:
       return kShapeDetectionSandbox;
@@ -353,13 +360,15 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
   if (sandbox_string == kMediaFoundationCdmSandbox) {
     return Sandbox::kMediaFoundationCdm;
   }
-  if (sandbox_string == kProxyResolverSandbox) {
-    return Sandbox::kProxyResolver;
-  }
 #endif
 #if BUILDFLAG(IS_MAC)
   if (sandbox_string == kMirroringSandbox) {
     return Sandbox::kMirroring;
+  }
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (sandbox_string == kProxyResolverSandbox) {
+    return Sandbox::kProxyResolver;
   }
 #endif
   if (sandbox_string == kAudioSandbox) {

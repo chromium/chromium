@@ -14,6 +14,7 @@ sb_files = [
   "on_device_model_execution.sb",
   "print_backend.sb",
   "print_compositor.sb",
+  "proxy_resolver.sb",
   "renderer.sb",
   "screen_ai.sb",
   "speech_recognition.sb",

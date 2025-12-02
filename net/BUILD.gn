@@ -1393,6 +1393,7 @@ component("net") {
       "cert/test_keychain_search_list_mac.cc",
       "cert/test_keychain_search_list_mac.h",
       "cert/test_root_certs_builtin.cc",
+      "proxy_resolution/mac/mac_proxy_resolution_status.h",
       "proxy_resolution/proxy_config_service_mac.cc",
       "proxy_resolution/proxy_config_service_mac.h",
       "ssl/client_cert_identity_mac.cc",

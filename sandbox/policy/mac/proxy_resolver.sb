@@ -1,0 +1,49 @@
+; Copyright 2025 The Chromium Authors
+; Use of this source code is governed by a BSD-style license that can be
+; found in the LICENSE file.
+
+; --- The contents of common.sb implicitly included here. ---
+
+; Injected parameters.
+; When true, grants additional allowances needed for PAC/WPAD fetching and
+; execution. This is intentionally off by default and must be explicitly
+; enabled by the embedder.
+(define system-proxy-network-access "SYSTEM_PROXY_NETWORK_ACCESS")
+
+; ===== REQUIRED: Basic proxy configuration reading =====
+; These permissions are always needed for basic proxy resolution via
+; SystemConfiguration APIs. Avoid direct reads of private on-disk config and
+; rely on configd instead.
+
+; Essential Mach services for proxy configuration.
+(allow mach-lookup
+  (global-name "com.apple.SystemConfiguration.configd")
+  (global-name "com.apple.SystemConfiguration.DNSConfiguration"))
+
+; ===== CONDITIONALLY REQUIRED: PAC script support =====
+; PAC-related permissions are disabled by default and can be enabled by the
+; embedder by setting SYSTEM_PROXY_NETWORK_ACCESS after evaluating system
+; configuration.
+
+(if (param-true? system-proxy-network-access)
+  (begin
+    ; Network access for PAC script fetching and execution. This includes:
+    ; - com.apple.netsrc: Network source control for outbound connections
+    ; - mDNSResponder: Local DNS resolver socket
+    ; - remote tcp: HTTP/HTTPS PAC script fetches
+    ; - remote udp: DNS queries (DNS may also use TCP)
+    ; CFNetworkExecuteProxyAutoConfigurationURL performs its own network and
+    ; DNS I/O internally when enabled.
+    (allow network-outbound
+      (control-name "com.apple.netsrc")
+      (literal "/private/var/run/mDNSResponder")
+      (remote tcp)
+      (remote udp))
+
+    ; TLS trust and certificate validation for HTTPS PAC fetches.
+    (allow mach-lookup
+      (global-name "com.apple.SecurityServer")
+      (global-name "com.apple.networkd")
+      (global-name "com.apple.ocspd")
+      (global-name "com.apple.trustd.agent"))
+  ))
