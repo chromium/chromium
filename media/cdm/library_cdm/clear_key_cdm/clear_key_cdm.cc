@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <utility>
 
@@ -274,18 +275,17 @@ bool VerifyCdmHost_0(const cdm::HostFile* host_files, uint32_t num_files) {
 
   int num_opened_files = 0;
   for (uint32_t i = 0; i < num_files; ++i) {
-    const int kBytesToRead = 10;
-    std::vector<char> buffer(kBytesToRead);
-
     base::File file(static_cast<base::PlatformFile>(host_files[i].file));
     if (!file.IsValid())
       continue;
 
     num_opened_files++;
 
-    int bytes_read = file.Read(0, buffer.data(), buffer.size());
-    if (bytes_read != kBytesToRead) {
-      LOG(ERROR) << "File bytes read: " << bytes_read;
+    constexpr int kBytesToRead = 10;
+    uint8_t buffer[kBytesToRead];
+    if (const std::optional<size_t> bytes_read = file.Read(0, buffer);
+        bytes_read != kBytesToRead) {
+      LOG(ERROR) << "File bytes read: " << bytes_read.value_or(-1);
       g_verify_host_files_result = false;
       return true;
     }
