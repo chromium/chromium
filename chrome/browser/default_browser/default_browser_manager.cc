@@ -40,7 +40,17 @@ class ShellDelegateImpl
   void StartCheckDefaultClientProgId(
       const std::string& scheme,
       base::OnceCallback<void(const std::u16string&)> callback) override {
-    // TODO(crbug.com/454597910): Implement this feature in shell_integration.
+    auto worker =
+        base::MakeRefCounted<shell_integration::DefaultSchemeClientWorker>(
+            scheme);
+    worker->StartCheckIsDefaultAndGetDefaultClientProgId(base::BindOnce(
+        [](base::OnceCallback<void(const std::u16string&)>
+               prog_id_handle_callback,
+           shell_integration::DefaultWebClientState,
+           const std::u16string& prog_id) {
+          std::move(prog_id_handle_callback).Run(prog_id);
+        },
+        std::move(callback)));
   }
 #endif
 };

@@ -74,6 +74,13 @@ bool CanSetAsDefaultBrowser();
 // Returns an empty string on failure.
 std::u16string GetApplicationNameForScheme(const GURL& url);
 
+#if BUILDFLAG(IS_WIN)
+// Returns a string representing the ProgID of the default handler for the
+// scheme of the requested url.
+// Returns an empty string on failure.
+std::u16string GetProgIdForScheme(const GURL& url);
+#endif
+
 #if BUILDFLAG(IS_MAC)
 // Returns a vector which containing all the application paths that can be used
 // to launch the requested URL.
@@ -325,6 +332,14 @@ class DefaultSchemeClientWorker : public DefaultWebClientWorker {
   void StartCheckIsDefaultAndGetDefaultClientName(
       DefaultSchemeHandlerWorkerCallback callback);
 
+#if BUILDFLAG(IS_WIN)
+  // Checks to see if Chrome is the default application for the |url_|.
+  // The provided callback will be run to communicate the default state to the
+  // caller, and also return the program ID of the default client if available.
+  void StartCheckIsDefaultAndGetDefaultClientProgId(
+      DefaultSchemeHandlerWorkerCallback callback);
+#endif
+
   const std::string& scheme() const { return scheme_; }
   const GURL& url() const { return url_; }
 
@@ -332,9 +347,9 @@ class DefaultSchemeClientWorker : public DefaultWebClientWorker {
   ~DefaultSchemeClientWorker() override;
 
   // Communicates the result via |callback|.
-  void OnCheckIsDefaultAndGetDefaultClientNameComplete(
+  void OnCheckIsDefaultAndGetDefaultClientValueComplete(
       DefaultWebClientState state,
-      std::u16string program_name,
+      std::u16string client_value,
       DefaultSchemeHandlerWorkerCallback callback);
 
  private:
@@ -343,12 +358,25 @@ class DefaultSchemeClientWorker : public DefaultWebClientWorker {
   void CheckIsDefaultAndGetDefaultClientName(
       DefaultSchemeHandlerWorkerCallback callback);
 
+#if BUILDFLAG(IS_WIN)
+  // Checks whether Chrome is the default client for |url_|. This also returns
+  // the default client's program ID if available.
+  void CheckIsDefaultAndGetDefaultClientProgId(
+      DefaultSchemeHandlerWorkerCallback callback);
+#endif
+
   // Check if Chrome is the default handler for this scheme.
   DefaultWebClientState CheckIsDefaultImpl() override;
 
   // Gets the default client name for |scheme_|. Always called on a blocking
   // sequence.
   virtual std::u16string GetDefaultClientNameImpl();
+
+#if BUILDFLAG(IS_WIN)
+  // Gets the default client program ID for |scheme_|. Always called on a
+  // blocking sequence.
+  std::u16string GetDefaultClientProgIdImpl();
+#endif
 
   // Set Chrome as the default handler for this scheme.
   void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override;

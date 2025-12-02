@@ -164,23 +164,19 @@ bool IsValidCustomScheme(const std::wstring& scheme) {
 // Windows 8 introduced a new scheme->executable binding system which cannot
 // be retrieved in the HKCR registry subkey method implemented below. We call
 // AssocQueryString with the new Win8-only flag ASSOCF_IS_PROTOCOL instead.
-std::u16string GetAppForSchemeUsingAssocQuery(const GURL& url) {
+std::u16string GetForSchemeUsingAssocQuery(const GURL& url,
+                                           ASSOCSTR assoc_str) {
   const std::wstring url_scheme = base::ASCIIToWide(url.GetScheme());
   if (!IsValidCustomScheme(url_scheme)) {
     return std::u16string();
   }
 
-  // Query AssocQueryString for a human-readable description of the program
-  // that will be invoked given the provided URL spec. This is used only to
-  // populate the external scheme dialog box the user sees when invoking
-  // an unknown external scheme.
   wchar_t out_buffer[1024];
   DWORD buffer_size = std::size(out_buffer);
   HRESULT hr =
-      AssocQueryString(ASSOCF_IS_PROTOCOL, ASSOCSTR_FRIENDLYAPPNAME,
-                       url_scheme.c_str(), NULL, out_buffer, &buffer_size);
+      AssocQueryString(ASSOCF_IS_PROTOCOL, assoc_str, url_scheme.c_str(), NULL,
+                       out_buffer, &buffer_size);
   if (FAILED(hr)) {
-    DLOG(WARNING) << "AssocQueryString failed!";
     return std::u16string();
   }
   return base::AsString16(std::wstring(out_buffer));
@@ -663,12 +659,21 @@ bool SetAsDefaultClientForScheme(const std::string& scheme) {
 }
 
 std::u16string GetApplicationNameForScheme(const GURL& url) {
-  std::u16string application_name = GetAppForSchemeUsingAssocQuery(url);
+  // Query AssocQueryString for a human-readable description of the program
+  // that will be invoked given the provided URL spec. This is used only to
+  // populate the external scheme dialog box the user sees when invoking
+  // an unknown external scheme.
+  std::u16string application_name =
+      GetForSchemeUsingAssocQuery(url, ASSOCSTR_FRIENDLYAPPNAME);
   if (!application_name.empty()) {
     return application_name;
   }
 
   return GetAppForSchemeUsingRegistry(url);
+}
+
+std::u16string GetProgIdForScheme(const GURL& url) {
+  return GetForSchemeUsingAssocQuery(url, ASSOCSTR_PROGID);
 }
 
 DefaultWebClientState GetDefaultBrowser() {
