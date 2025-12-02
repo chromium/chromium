@@ -11,9 +11,13 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -22,9 +26,11 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -111,6 +117,7 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
               browser_window->GetProfile())),
       ui_service_(ContextualTasksUiServiceFactory::GetForBrowserContext(
           browser_window->GetProfile())),
+      pref_service_(browser_window->GetProfile()->GetPrefs()),
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
   CreateAndRegisterEntry(SidePanelRegistry::From(browser_window_));
@@ -154,6 +161,24 @@ void ContextualTasksSidePanelCoordinator::CreateAndRegisterEntry(
 }
 
 void ContextualTasksSidePanelCoordinator::Show(bool transition_from_tab) {
+  // Increment the impression count and attempt to show the HaTS survey.
+  int impression_count =
+      pref_service_->GetInteger(prefs::kContextualTasksNextPanelOpenCount);
+  if (base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForDesktopNextPanel) &&
+      impression_count >= 1) {
+    HatsService* hats_service =
+        HatsServiceFactory::GetForProfile(browser_window_->GetProfile(),
+                                          /* create_if_necessary = */ true);
+    if (hats_service) {
+      hats_service->LaunchDelayedSurvey(
+          kHatsSurveyTriggerNextPanel, 90000, {},
+          {{"Experiment ID", "4R1Q1L4GennVNwyF88Ccc6"}});
+    }
+  }
+  pref_service_->SetInteger(prefs::kContextualTasksNextPanelOpenCount,
+                            impression_count + 1);
+
   if (!GetCurrentTask()) {
     // If no task is found, create a new task and associate it with the active
     // tab.
