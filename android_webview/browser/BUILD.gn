@@ -79,8 +79,6 @@ source_set("browser") {
     "aw_feature_list_creator.h",
     "aw_field_trials.cc",
     "aw_field_trials.h",
-    "aw_form_database_service.cc",
-    "aw_form_database_service.h",
     "aw_http_auth_handler.cc",
     "aw_http_auth_handler.h",
     "aw_javascript_dialog_manager.cc",

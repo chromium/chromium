@@ -360,10 +360,6 @@ class VirtualCardUsageData;
 // -----------------------------------------------------------------------------
 class PaymentsAutofillTable : public WebDatabaseTable {
  public:
-  // Drops the tables created by PaymentsAutofillTable.
-  // TODO(crbug.com/390473673): Remove after M143.
-  class Dropper;
-
   PaymentsAutofillTable();
 
   PaymentsAutofillTable(const PaymentsAutofillTable&) = delete;
@@ -638,18 +634,6 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool InitBenefitMerchantDomainsTable();
   bool InitGenericPaymentInstrumentsTable();
   bool InitPaymentInstrumentCreationOptionsTable();
-};
-
-class PaymentsAutofillTable::Dropper : public WebDatabaseTable {
- public:
-  Dropper();
-  Dropper(const Dropper&) = delete;
-  Dropper& operator=(const Dropper&) = delete;
-  ~Dropper() override;
-
-  TypeKey GetTypeKey() const override;
-  bool CreateTablesIfNecessary() override;
-  bool MigrateToVersion(int version, bool* update_compatible_version) override;
 };
 
 }  // namespace autofill

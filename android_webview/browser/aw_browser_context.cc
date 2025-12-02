@@ -21,7 +21,6 @@
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_download_manager_delegate.h"
-#include "android_webview/browser/aw_form_database_service.h"
 #include "android_webview/browser/aw_origin_matched_header.h"
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/browser/aw_quota_manager_bridge.h"
@@ -223,9 +222,6 @@ AwBrowserContext::AwBrowserContext(std::string name,
   visitedlink_writer_ =
       std::make_unique<visitedlink::VisitedLinkWriter>(this, this, false);
   visitedlink_writer_->Init();
-
-  form_database_service_ =
-      std::make_unique<AwFormDatabaseService>(context_storage_path_);
 
   EnsureResourceContextInitialized();
   prefetch_manager_ = std::make_unique<AwPrefetchManager>(this);

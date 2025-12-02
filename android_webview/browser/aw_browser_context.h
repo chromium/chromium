@@ -58,7 +58,6 @@ class VisitedLinkWriter;
 namespace android_webview {
 
 class AwBrowserContextIoThreadHandle;
-class AwFormDatabaseService;
 class AwQuotaManagerBridge;
 class CookieManager;
 
@@ -107,7 +106,6 @@ class AwBrowserContext : public content::BrowserContext,
   AwQuotaManagerBridge* GetQuotaManagerBridge();
   jlong GetQuotaManagerBridge(JNIEnv* env);
 
-  AwFormDatabaseService* GetFormDatabaseService();
   CookieManager* GetCookieManager();
 
   bool IsDefaultBrowserContext() const;
@@ -268,11 +266,6 @@ class AwBrowserContext : public content::BrowserContext,
   base::FilePath http_cache_path_;
 
   scoped_refptr<AwQuotaManagerBridge> quota_manager_bridge_;
-
-  // Cleans up the database tables created by the AwFormDatabaseService
-  // until M132.
-  // TODO(crbug.com/390473673): Remove after M143.
-  std::unique_ptr<AwFormDatabaseService> form_database_service_;
 
   std::unique_ptr<visitedlink::VisitedLinkWriter> visitedlink_writer_;
 
