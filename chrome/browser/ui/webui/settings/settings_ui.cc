@@ -194,6 +194,10 @@
 #include "chrome/browser/ui/webui/settings/glic_handler.h"
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/webui/batch_upload_promo/batch_upload_promo_handler.h"
+#endif
+
 namespace settings {
 
 using optimization_guide::UserVisibleFeatureKey;
@@ -691,7 +695,9 @@ void SettingsUI::BindInterface(
   theme_color_picker_handler_factory_receiver_.Bind(
       std::move(pending_receiver));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void SettingsUI::BindInterface(
     mojo::PendingReceiver<batch_upload_promo::mojom::PageHandlerFactory>
         pending_receiver) {
@@ -700,7 +706,7 @@ void SettingsUI::BindInterface(
   }
   batch_upload_promo_factory_receiver_.Bind(std::move(pending_receiver));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void SettingsUI::BindInterface(
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
@@ -743,7 +749,9 @@ void SettingsUI::CreateThemeColorPickerHandler(
           Profile::FromWebUI(web_ui())),
       web_ui()->GetWebContents());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void SettingsUI::CreateBatchUploadPromoHandler(
     mojo::PendingRemote<batch_upload_promo::mojom::Page> pending_page,
     mojo::PendingReceiver<batch_upload_promo::mojom::PageHandler>
@@ -752,7 +760,7 @@ void SettingsUI::CreateBatchUploadPromoHandler(
       std::move(pending_page_handler), std::move(pending_page),
       Profile::FromWebUI(web_ui()), web_ui()->GetWebContents());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void SettingsUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
