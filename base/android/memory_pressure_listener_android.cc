@@ -13,7 +13,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/memory_jni/MemoryPressureListener_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 // Defined and called by JNI.
 static void JNI_MemoryPressureListener_OnMemoryPressure(

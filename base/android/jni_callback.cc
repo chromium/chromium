@@ -111,7 +111,7 @@ static void JNI_JniCallbackImpl_OnResult(
     JNIEnv* env,
     jboolean isRepeating,
     jlong callbackPtr,
-    const jni_zero::JavaParamRef<jobject>& j_result) {
+    const jni_zero::JavaRef<jobject>& j_result) {
   if (isRepeating) {
     auto* callback =
         reinterpret_cast<JniRepeatingWrappedCallbackType*>(callbackPtr);

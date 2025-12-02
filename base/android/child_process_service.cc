@@ -19,7 +19,7 @@
 #include "base/process_launcher_jni/ChildProcessService_jni.h"
 
 using base::android::JavaIntArrayToIntVector;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace base {
 namespace android {
@@ -51,11 +51,11 @@ void RegisterFileDescriptors(std::vector<std::optional<std::string>>& keys,
 
 static void JNI_ChildProcessService_RegisterFileDescriptors(
     JNIEnv* env,
-    const JavaParamRef<jobjectArray>& j_keys,
-    const JavaParamRef<jintArray>& j_ids,
-    const JavaParamRef<jintArray>& j_fds,
-    const JavaParamRef<jlongArray>& j_offsets,
-    const JavaParamRef<jlongArray>& j_sizes) {
+    const JavaRef<jobjectArray>& j_keys,
+    const JavaRef<jintArray>& j_ids,
+    const JavaRef<jintArray>& j_fds,
+    const JavaRef<jlongArray>& j_offsets,
+    const JavaRef<jlongArray>& j_sizes) {
   std::vector<std::optional<std::string>> keys;
   JavaObjectArrayReader<jstring> keys_array(j_keys);
   keys.reserve(checked_cast<size_t>(keys_array.size()));

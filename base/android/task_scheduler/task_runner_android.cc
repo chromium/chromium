@@ -46,8 +46,8 @@ TaskRunnerAndroid::UiThreadTaskRunnerCallback& GetUiThreadTaskRunnerCallback() {
 class JavaLocation {
  public:
   JavaLocation(JNIEnv* env,
-               const android::JavaParamRef<jstring>& file_name,
-               const android::JavaParamRef<jstring>& function_name,
+               const android::JavaRef<jstring>& file_name,
+               const android::JavaRef<jstring>& function_name,
                int line_number)
       : JavaLocation(base::android::ConvertJavaStringToUTF8(env, file_name),
                      base::android::ConvertJavaStringToUTF8(env, function_name),
@@ -116,8 +116,8 @@ void TaskRunnerAndroid::PostDelayedTaskWithLocation(
     JNIEnv* env,
     jlong delay,
     jint task_index,
-    const android::JavaParamRef<jstring>& file_name,
-    const android::JavaParamRef<jstring>& function_name,
+    const android::JavaRef<jstring>& file_name,
+    const android::JavaRef<jstring>& function_name,
     jint line_number) {
   // This could be run on any java thread, so we can't cache |env| in the
   // BindOnce because JNIEnv is thread specific.

@@ -10,7 +10,7 @@
 #include "base/command_line_jni/CommandLine_jni.h"
 
 using base::CommandLine;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {

@@ -74,9 +74,8 @@ void InputHintChecker::InitializeFeatures() {
   }
 }
 
-void InputHintChecker::SetView(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& root_view) {
+void InputHintChecker::SetView(JNIEnv* env,
+                               const jni_zero::JavaRef<jobject>& root_view) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   InitState state = FetchState();
   if (state == InitState::kFailedToInitialize) {
@@ -314,9 +313,8 @@ void InputHintChecker::RecordInputHintResult(InputHintResult result) {
   UMA_HISTOGRAM_ENUMERATION("Android.InputHintChecker.InputHintResult", result);
 }
 
-static void JNI_InputHintChecker_SetView(
-    _JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& v) {
+static void JNI_InputHintChecker_SetView(_JNIEnv* env,
+                                         const jni_zero::JavaRef<jobject>& v) {
   InputHintChecker::GetInstance().SetView(env, v);
 }
 

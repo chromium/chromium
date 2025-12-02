@@ -17,7 +17,6 @@
 #include "base/content_uri_utils_jni/ContentUriUtils_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 

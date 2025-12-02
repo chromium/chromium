@@ -37,8 +37,8 @@ class BASE_EXPORT TaskRunnerAndroid {
       JNIEnv* env,
       jlong delay,
       jint taskIndex,
-      const android::JavaParamRef<jstring>& fileName,
-      const android::JavaParamRef<jstring>& functionName,
+      const android::JavaRef<jstring>& fileName,
+      const android::JavaRef<jstring>& functionName,
       jint lineNumber);
 
   bool BelongsToCurrentThread(JNIEnv* env);

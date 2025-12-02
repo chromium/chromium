@@ -310,7 +310,7 @@ static void JNI_NativeUmaRecorder_DestroyHistogramSnapshotForTesting(
 
 static jlong JNI_NativeUmaRecorder_AddActionCallbackForTesting(
     JNIEnv* env,
-    const JavaParamRef<jobject>& callback) {
+    const JavaRef<jobject>& callback) {
   // Create a wrapper for the ActionCallback, so it can life on the heap until
   // RemoveActionCallbackForTesting() is called.
   auto* wrapper = new ActionCallbackWrapper{base::BindRepeating(
