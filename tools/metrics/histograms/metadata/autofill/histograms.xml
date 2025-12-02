@@ -6950,6 +6950,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.SaveCvcPromptOffer.IOS.{AutofillSaveCreditCardPromptDestination}"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
+  <owner>yiwenqian@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The relative frequency with which the Autofill save CVC prompt is shown or
+    not to save CVC {AutofillSaveCreditCardPromptDestination} on iOS. Logged
+    when the flow is triggered and the prompt should be shown.
+  </summary>
+  <token key="AutofillSaveCreditCardPromptDestination"
+      variants="AutofillSaveCreditCardPromptDestination"/>
+</histogram>
+
+<histogram
     name="Autofill.SaveCvcPromptOffer.{AutofillSaveCreditCardPromptDestination}.{ShowType}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
   <owner>siyua@chromium.org</owner>
@@ -6962,6 +6976,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="AutofillSaveCreditCardPromptDestination"
       variants="AutofillSaveCreditCardPromptDestination"/>
   <token key="ShowType" variants="FirstShowOrReshow"/>
+</histogram>
+
+<histogram
+    name="Autofill.SaveCvcPromptResult.IOS.{AutofillSaveCreditCardPromptDestination}"
+    enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2026-06-01">
+  <owner>yiwenqian@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The relative frequency with which users accept or deny the Autofill save CVC
+    prompt on iOS to save CVC {AutofillSaveCreditCardPromptDestination}. Logged
+    when the prompt closes.
+  </summary>
+  <token key="AutofillSaveCreditCardPromptDestination"
+      variants="AutofillSaveCreditCardPromptDestination"/>
 </histogram>
 
 <histogram

@@ -103,7 +103,7 @@ void LogSaveCreditCardPromptResultIOS(
 
 void LogSaveCvcPromptOfferedIOS(bool is_uploading) {
   base::UmaHistogramEnumeration(
-      SaveCvcPromptSaveDestinationSuffix("Autofill.SaveCvcPromptOffer",
+      SaveCvcPromptSaveDestinationSuffix("Autofill.SaveCvcPromptOffer.IOS",
                                          is_uploading),
       SaveCardPromptOffer::kShown);
 }
@@ -113,7 +113,7 @@ void LogSaveCvcPromptResultIOS(
     bool is_uploading,
     const payments::PaymentsAutofillClient::SaveCreditCardOptions& options) {
   base::UmaHistogramEnumeration(
-      SaveCvcPromptSaveDestinationSuffix("Autofill.SaveCvcPromptResult",
+      SaveCvcPromptSaveDestinationSuffix("Autofill.SaveCvcPromptResult.IOS",
                                          is_uploading),
       metric);
 }
