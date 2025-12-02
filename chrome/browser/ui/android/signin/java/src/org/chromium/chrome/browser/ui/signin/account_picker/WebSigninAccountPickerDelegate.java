@@ -78,9 +78,9 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
             CoreAccountInfo accountInfo, AccountPickerDelegate.SigninStateController controller) {
         // Create WebSigninBridge and wait for redirect to the continue url.
         mWebSigninBridge =
-                mWebSigninBridgeFactory.createWithCoreAccountId(
+                mWebSigninBridgeFactory.create(
                         mProfile,
-                        accountInfo.getId(),
+                        accountInfo,
                         createWebSigninBridgeCallback(mCurrentTab, mContinueUrl, controller));
     }
 

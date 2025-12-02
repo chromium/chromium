@@ -83,7 +83,7 @@ public class WebSigninAccountPickerDelegateTest {
         mDelegate =
                 new WebSigninAccountPickerDelegate(
                         mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
-        when(mWebSigninBridgeFactoryMock.createWithCoreAccountId(eq(mProfileMock), any(), any()))
+        when(mWebSigninBridgeFactoryMock.create(eq(mProfileMock), any(), any()))
                 .thenReturn(mWebSigninBridgeMock);
     }
 
@@ -98,9 +98,9 @@ public class WebSigninAccountPickerDelegateTest {
         mDelegate.onSignInComplete(TestAccounts.ACCOUNT1, mSigninStateControllerMock);
 
         verify(mWebSigninBridgeFactoryMock)
-                .createWithCoreAccountId(
+                .create(
                         eq(mProfileMock),
-                        eq(TestAccounts.ACCOUNT1.getId()),
+                        eq(TestAccounts.ACCOUNT1),
                         mWebSigninCallbackCaptor.capture());
 
         mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
@@ -117,9 +117,9 @@ public class WebSigninAccountPickerDelegateTest {
         mDelegate.onSignInComplete(TestAccounts.ACCOUNT1, mSigninStateControllerMock);
 
         verify(mWebSigninBridgeFactoryMock)
-                .createWithCoreAccountId(
+                .create(
                         eq(mProfileMock),
-                        eq(TestAccounts.ACCOUNT1.getId()),
+                        eq(TestAccounts.ACCOUNT1),
                         mWebSigninCallbackCaptor.capture());
 
         mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.OTHER_ERROR);
@@ -139,9 +139,9 @@ public class WebSigninAccountPickerDelegateTest {
         mDelegate.onSignInComplete(TestAccounts.ACCOUNT1, mSigninStateControllerMock);
 
         verify(mWebSigninBridgeFactoryMock)
-                .createWithCoreAccountId(
+                .create(
                         eq(mProfileMock),
-                        eq(TestAccounts.ACCOUNT1.getId()),
+                        eq(TestAccounts.ACCOUNT1),
                         mWebSigninCallbackCaptor.capture());
 
         mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.AUTH_ERROR);

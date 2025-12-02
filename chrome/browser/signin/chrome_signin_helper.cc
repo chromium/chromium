@@ -30,7 +30,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -360,20 +359,8 @@ void ProcessMirrorHeader(
 
   if (service_type == signin::GAIA_SERVICE_TYPE_ADDSESSION &&
       base::FeatureList::IsEnabled(switches::kSupportWebSigninAddSession)) {
-    signin::IdentityManager* const identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
-    for (CoreAccountInfo account :
-         identity_manager->GetAccountsWithRefreshTokens()) {
-      if (gaia::AreEmailsSame(account.email, manage_accounts_params.email)) {
-        // If account is already on device don't start the add account flow.
-        // TODO(crbug.com/456445865): Consider adding a reauth flow or a wait
-        // for cookies in this scenario.
-        return;
-      }
-    }
     SigninBridgeFactory::GetForProfile(profile)->StartAddAccountFlow(
-        TabAndroid::FromWebContents(web_contents), manage_accounts_params.email,
-        continue_url);
+        window, manage_accounts_params.email, continue_url);
     return;
   }
 
