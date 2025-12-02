@@ -14,26 +14,15 @@ namespace {
 const CGFloat kPadding = 10.0;
 // The leading icon size.
 const CGFloat kLeadingIconSize = 16;
-// The close icon size.
-const CGFloat kCloseIconSize = 20;
 // The leading icon corner radius.
 const CGFloat kLeadingIconCornerRadius = 6.0;
 // Labels font size.
 const CGFloat kLabelFontSize = 13.0;
 // The fade view width.
 const CGFloat kFadeViewWidth = 20.0f;
-// The title to button padding.
-const CGFloat kTitleCloseButtonPadding = 6.0;
 /// The close button trailing.
-const CGFloat kCloseButtonTrailing = 8.0;
+const CGFloat kTrailingMargin = 8.0;
 }  // namespace
-
-@interface ComposeboxInputItemView ()
-
-/// Redefined internally as readwrite.
-@property(nonatomic, strong, readwrite) UIButton* closeButton;
-
-@end
 
 @implementation ComposeboxInputItemView {
   // The leading icon for file/tab type of items.
@@ -82,13 +71,6 @@ const CGFloat kCloseButtonTrailing = 8.0;
   _titleLabel.hidden = isImageItem;
 
   [self updateGradient];
-
-  UIImage* image = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseIconSize), @[
-        [UIColor colorNamed:kTextSecondaryColor],
-        [theme.inputItemBackgroundColor colorWithAlphaComponent:0.9]
-      ]);
-  [_closeButton setImage:image forState:UIControlStateNormal];
 
   if (isImageItem) {
     _previewImageView.image = item.previewImage;
@@ -165,16 +147,6 @@ const CGFloat kCloseButtonTrailing = 8.0;
   _previewImageView.clipsToBounds = YES;
   [self addSubview:_previewImageView];
 
-  // Close Button
-
-  _closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-
-  [_closeButton
-      setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                      forAxis:UILayoutConstraintAxisHorizontal];
-  [self addSubview:_closeButton];
-
   self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   self.layer.cornerRadius =
       composeboxAttachments::kTabFileInputItemSize.height / 2;
@@ -199,18 +171,13 @@ const CGFloat kCloseButtonTrailing = 8.0;
     [_leadingIconImageView.heightAnchor
         constraintEqualToConstant:kLeadingIconSize],
 
-    // Close Button
-    [_closeButton.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
-                                                constant:-kCloseButtonTrailing],
-    [_closeButton.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-
     // Title Label
     [_titleLabel.leadingAnchor
         constraintEqualToAnchor:_leadingIconImageView.trailingAnchor
                        constant:kPadding],
     [_titleLabel.trailingAnchor
-        constraintLessThanOrEqualToAnchor:_closeButton.leadingAnchor
-                                 constant:-kTitleCloseButtonPadding],
+        constraintLessThanOrEqualToAnchor:self.trailingAnchor
+                                 constant:-kTrailingMargin],
     [_titleLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
 
     // Fade view
