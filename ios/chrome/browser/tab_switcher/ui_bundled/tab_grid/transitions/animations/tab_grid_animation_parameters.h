@@ -51,6 +51,9 @@
 // Whether the active cell is from a pinned tab.
 @property(nonatomic, assign, readonly) BOOL activeCellPinned;
 
+// Whether the top toolbar is hidden during the animation.
+@property(nonatomic, assign, readonly) BOOL topToolbarHidden;
+
 - (instancetype)initWithDestinationFrame:(CGRect)destinationFrame
                              originFrame:(CGRect)originFrame
                               activeGrid:(UIViewController*)activeGrid
@@ -64,6 +67,7 @@
                bottomToolbarSnapshotView:(UIView*)bottomToolbarSnapshotView
                    shouldScaleTopToolbar:(BOOL)shouldScaleTopToolbar
                                incognito:(BOOL)incognito
+                        topToolbarHidden:(BOOL)topToolbarHidden
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

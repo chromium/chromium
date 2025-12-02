@@ -41,6 +41,7 @@
   UIView* activeGridView = _animationParameters.activeGrid.view;
   UIView* pinnedTabsView = _animationParameters.pinnedTabs.view;
   BOOL isActiveCellPinned = _animationParameters.activeCellPinned;
+  BOOL isTopToolbarHidden = _animationParameters.topToolbarHidden;
 
   // Ratio of destination frame width over the current frame width.
   CGFloat destinationOverCurrentFrameRatio =
@@ -192,7 +193,11 @@
 
   // Toolbars animation.
   void (^toolbarsAnimation)() = ^{
-    topToolbarSnapshotView.alpha = 0;
+    if (!isTopToolbarHidden) {
+      // If the top toolbar is hidden, the snapshot should not be fade out as
+      // the toolbar background behind it should not appear.
+      topToolbarSnapshotView.alpha = 0;
+    }
     bottomToolbarSnapshotView.alpha = 0;
   };
 
