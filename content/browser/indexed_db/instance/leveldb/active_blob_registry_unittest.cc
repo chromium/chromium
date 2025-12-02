@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/instance/active_blob_registry.h"
+#include "content/browser/indexed_db/instance/leveldb/active_blob_registry.h"
 
 #include <stdint.h>
 
@@ -14,7 +14,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content::indexed_db {
+namespace content::indexed_db::level_db {
 namespace {
 
 struct ReportOutstandingState {
@@ -257,4 +257,4 @@ TEST_F(ActiveBlobRegistryTest, ForceShutdown) {
 }
 
 }  // namespace
-}  // namespace content::indexed_db
+}  // namespace content::indexed_db::level_db

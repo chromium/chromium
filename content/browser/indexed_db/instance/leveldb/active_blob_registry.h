@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INDEXED_DB_INSTANCE_ACTIVE_BLOB_REGISTRY_H_
-#define CONTENT_BROWSER_INDEXED_DB_INSTANCE_ACTIVE_BLOB_REGISTRY_H_
+#ifndef CONTENT_BROWSER_INDEXED_DB_INSTANCE_LEVELDB_ACTIVE_BLOB_REGISTRY_H_
+#define CONTENT_BROWSER_INDEXED_DB_INSTANCE_LEVELDB_ACTIVE_BLOB_REGISTRY_H_
 
 #include <stdint.h>
 
@@ -13,10 +13,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 
-namespace content::indexed_db {
+namespace content::indexed_db::level_db {
 
 // Keeps track of blobs that have been sent to clients as database responses,
 // and determines when Blob files can be deleted. The database entry that links
@@ -83,8 +82,6 @@ class CONTENT_EXPORT ActiveBlobRegistry {
   // Removes a reference to the given blob.
   void MarkBlobInactive(int64_t database_id, int64_t blob_number);
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
   // This stores, for every database, the blobs that are currently being used in
   // that database.
   std::map<int64_t, SingleDBMap> blob_reference_tracker_;
@@ -96,6 +93,6 @@ class CONTENT_EXPORT ActiveBlobRegistry {
   base::WeakPtrFactory<ActiveBlobRegistry> weak_factory_{this};
 };
 
-}  // namespace content::indexed_db
+}  // namespace content::indexed_db::level_db
 
-#endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_ACTIVE_BLOB_REGISTRY_H_
+#endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_LEVELDB_ACTIVE_BLOB_REGISTRY_H_

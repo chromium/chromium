@@ -51,7 +51,6 @@ struct IndexedDBDatabaseMetadata;
 
 namespace content::indexed_db {
 
-class ActiveBlobRegistry;
 class BucketContext;
 class LevelDBWriteBatch;
 class PartitionedLockManager;
@@ -63,6 +62,7 @@ struct IndexedDBValue;
 
 namespace level_db {
 
+class ActiveBlobRegistry;
 class AutoDidCommitTransaction;
 
 class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
