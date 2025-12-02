@@ -41,10 +41,6 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/debug/dump_without_crashing.h"
-#endif
-
 namespace cc {
 
 struct SameSizeAsLayer : public base::RefCounted<SameSizeAsLayer>,
@@ -74,9 +70,6 @@ struct SameSizeAsLayer : public base::RefCounted<SameSizeAsLayer>,
   bool allow_remove_for_readd;
 #endif
   uint8_t bit_fields[2];
-#if BUILDFLAG(IS_CHROMEOS)
-  bool is_valid_to_destroy_;
-#endif
 };
 
 static_assert(sizeof(Layer) == sizeof(SameSizeAsLayer),
@@ -134,15 +127,6 @@ Layer::~Layer() {
 
   // Remove the parent reference from all children and dependents.
   RemoveAllChildren();
-#if BUILDFLAG(IS_CHROMEOS)
-  // `is_valid_to_destroy_` should never be false at this point.
-  // DCHECK to catch this issue in bots and reports the stack if this ever
-  // happened in production.
-  DCHECK(is_valid_to_destroy_);
-  if (!is_valid_to_destroy_) {
-    base::debug::DumpWithoutCrashing();
-  }
-#endif
 }
 
 Layer::LayerTreeInputs& Layer::EnsureLayerTreeInputs() {

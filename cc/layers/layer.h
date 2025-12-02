@@ -874,12 +874,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // surface, returns the ID of that resource.
   virtual viz::ViewTransitionElementResourceId ViewTransitionResourceId() const;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  bool is_valid_to_destroy() const { return is_valid_to_destroy_; }
-
-  void set_is_valid_to_destroy(bool enable) { is_valid_to_destroy_ = enable; }
-#endif
-
  protected:
   friend class LayerImpl;
   friend class TreeSynchronizer;
@@ -1202,10 +1196,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   };
   ProtectedSequenceReadable<uint8_t> bitflags_;
   ProtectedSequenceWritable<uint8_t> changed_properties_;
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/443811562): Remove this once the crash is fixed.
-  bool is_valid_to_destroy_ = true;
-#endif
 
 #if DCHECK_IS_ON()
   class AllowRemoveForReadd {

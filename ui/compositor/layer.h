@@ -620,10 +620,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
     compositor_ = compositor;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void EnableLayerDestructionCheck();
-#endif
-
  private:
   friend class LayerOwner;
   class LayerMirror;
