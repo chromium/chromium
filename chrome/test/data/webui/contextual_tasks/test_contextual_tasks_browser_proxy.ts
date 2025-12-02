@@ -6,9 +6,12 @@ import {PageCallbackRouter} from 'chrome://contextual-tasks/contextual_tasks.moj
 import type {PageHandlerInterface, PageInterface, PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {PostMessageHandler} from 'chrome://contextual-tasks/post_message_handler.js';
+import type {PageHandler as ComposeboxPageHandler, PageHandlerFactory as ComposeboxPageHandlerFactory} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+import {TestSearchboxPageHandler} from './test_searchbox_page_handler.js';
 
 const BASE64_HANDSHAKE_RESPONSE = 'CgIIAA==';
 
@@ -90,6 +93,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'onWebviewMessage',
       'getHandshakeMessage',
       'submitQuery',
+      'getRecentTabs',
     ]);
 
     this.url_ = {url};
@@ -161,6 +165,11 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     return Promise.resolve({tabs: []});
   }
 
+  getRecentTabs() {
+    this.methodCalled('getRecentTabs');
+    return Promise.resolve({tabs: []});
+  }
+
   onTabClickedFromSourcesMenu(tabId: number, url: Url) {
     this.methodCalled('onTabClickedFromSourcesMenu', tabId, url);
   }
@@ -204,6 +213,11 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       metaKey: boolean, shiftKey: boolean) {
     this.methodCalled(
         'submitQuery', query, mouseButton, altKey, ctrlKey, metaKey, shiftKey);
+    return Promise.resolve();
+  }
+
+  postMessageToWebview(message: number[]) {
+    this.methodCalled('postMessageToWebview', message);
   }
 }
 
@@ -212,9 +226,11 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
  * Tasks page to the browser on start up.
  */
 export class TestContextualTasksBrowserProxy extends TestBrowserProxy implements
-    BrowserProxy {
+    BrowserProxy, ComposeboxPageHandlerFactory {
   callbackRouter: PageCallbackRouter;
   handler: TestContextualTasksPageHandler;
+  composeboxHandler: TestBrowserProxy&ComposeboxPageHandler;
+  searchboxHandler: TestSearchboxPageHandler;
   page: MockPage;
   callbackRouterRemote: PageRemote;
 
@@ -222,11 +238,24 @@ export class TestContextualTasksBrowserProxy extends TestBrowserProxy implements
    * @param url The URL to load in the webview.
    */
   constructor(url: string) {
-    super([]);
+    super([
+      'createPageHandler',
+    ]);
     this.callbackRouter = new PageCallbackRouter();
     this.page = new MockPage();
     this.handler = new TestContextualTasksPageHandler(url, this.page);
+    this.composeboxHandler = new TestBrowserProxy();
+    this.searchboxHandler = new TestSearchboxPageHandler();
     this.callbackRouterRemote =
         this.callbackRouter.$.bindNewPipeAndPassRemote();
+  }
+
+  createPageHandler() {
+    this.methodCalled('createPageHandler');
+    return {
+      handler: this.handler,
+      composeboxHandler: this.composeboxHandler,
+      searchboxHandler: this.searchboxHandler,
+    };
   }
 }
