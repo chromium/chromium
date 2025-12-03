@@ -1772,12 +1772,12 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "3.52.0"
+        "version": "3.52.1"
     },
     {
         "name": "checker-util",
         "group": "org.checkerframework",
-        "version": "3.52.0"
+        "version": "3.52.1"
     },
     {
         "name": "animal-sniffer-annotations",
