@@ -519,24 +519,28 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       "Number of Google Accounts", "Sign-in Status"};
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyAddressBubbleSignin,
-      kHatsSurveyTriggerIdentityAddressBubbleSignin, std::nullopt,
-      std::vector<std::string>{}, identity_string_psd_fields);
+      kHatsSurveyTriggerIdentityAddressBubbleSignin,
+      "QLEtVmyw80ugnJ3q1cK0UGdNayod", std::vector<std::string>{},
+      identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyDiceWebSigninAccepted,
-      kHatsSurveyTriggerIdentityDiceWebSigninAccepted, std::nullopt,
-      std::vector<std::string>{}, identity_string_psd_fields);
+      kHatsSurveyTriggerIdentityDiceWebSigninAccepted,
+      "xEt7e5g7R0ugnJ3q1cK0VZ7N4MUU", std::vector<std::string>{},
+      identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyDiceWebSigninDeclined,
-      kHatsSurveyTriggerIdentityDiceWebSigninDeclined, std::nullopt,
+      kHatsSurveyTriggerIdentityDiceWebSigninDeclined,
+      "2LBpsLxW40ugnJ3q1cK0YRjYGpmV", std::vector<std::string>{},
+      identity_string_psd_fields);
+  survey_configs.emplace_back(
+      &switches::kChromeIdentitySurveyFirstRunSignin,
+      kHatsSurveyTriggerIdentityFirstRunSignin, "RyaBY3Nkt0ugnJ3q1cK0NsYdHNN6",
       std::vector<std::string>{}, identity_string_psd_fields);
-  survey_configs.emplace_back(&switches::kChromeIdentitySurveyFirstRunSignin,
-                              kHatsSurveyTriggerIdentityFirstRunSignin,
-                              std::nullopt, std::vector<std::string>{},
-                              identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyPasswordBubbleSignin,
-      kHatsSurveyTriggerIdentityPasswordBubbleSignin, std::nullopt,
-      std::vector<std::string>{}, identity_string_psd_fields);
+      kHatsSurveyTriggerIdentityPasswordBubbleSignin,
+      "Y6Y4fzSar0ugnJ3q1cK0WNKdFDWW", std::vector<std::string>{},
+      identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyProfileMenuDismissed,
       kHatsSurveyTriggerIdentityProfileMenuDismissed,
@@ -544,16 +548,19 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       identity_string_psd_fields);
   survey_configs.emplace_back(&switches::kChromeIdentitySurveyProfileMenuSignin,
                               kHatsSurveyTriggerIdentityProfileMenuSignin,
-                              std::nullopt, std::vector<std::string>{},
+                              "5BV1ygFHd0ugnJ3q1cK0WVqeKyud",
+                              std::vector<std::string>{},
                               identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyProfilePickerAddProfileSignin,
-      kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin, std::nullopt,
-      std::vector<std::string>{}, identity_string_psd_fields);
+      kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin,
+      "dQhvVytAT0ugnJ3q1cK0WmcCsZxn", std::vector<std::string>{},
+      identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveySigninInterceptProfileSeparation,
-      kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation, std::nullopt,
-      std::vector<std::string>{}, identity_string_psd_fields);
+      kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation,
+      "EpkbgSho80ugnJ3q1cK0XfvvYoum", std::vector<std::string>{},
+      identity_string_psd_fields);
   std::vector<std::string> identity_dismissed_signin_bubble_string_psd_fields{
       "Channel",
       "Chrome Version",
@@ -563,8 +570,8 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       "Sign-in Status"};
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveySigninPromoBubbleDismissed,
-      kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed, std::nullopt,
-      std::vector<std::string>{},
+      kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
+      "LSwnpVNg60ugnJ3q1cK0Uj5JGisJ", std::vector<std::string>{},
       identity_dismissed_signin_bubble_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveySwitchProfileFromProfileMenu,
@@ -573,8 +580,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker,
-      kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker, std::nullopt,
-      std::vector<std::string>{}, identity_string_psd_fields);
+      kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker,
+      "b5zoUGRaf0ugnJ3q1cK0RaxK8yrp", std::vector<std::string>{},
+      identity_string_psd_fields);
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
