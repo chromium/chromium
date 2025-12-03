@@ -281,21 +281,15 @@ public class UpdateMenuItemHelperTest {
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
                 });
         mMenuObserver.menuShownCallback.waitForCallback(currentCallCount);
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        AppMenuTestSupport.finishAnimationsForTests(
-                                mActivityTestRule.getAppMenuCoordinator()));
     }
 
     private void hideAppMenuAndAssertMenuShown() throws TimeoutException {
+        int currentCallCount = mMenuObserver.menuHiddenCallback.getCallCount();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler().hideAppMenu());
-        CriteriaHelper.pollUiThread(
-                () ->
-                        !mActivityTestRule
-                                .getAppMenuCoordinator()
-                                .getAppMenuHandler()
-                                .isAppMenuShowing());
+
+        mMenuObserver.menuHiddenCallback.waitForCallback(currentCallCount);
     }
 
     private void waitForAppMenuDimissedRunnable() {

@@ -1304,14 +1304,10 @@ public class AppMenuTest {
 
     private void waitForMenuToShow(int currentCallCount, AppMenuHandlerImpl handler)
             throws TimeoutException {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    boolean appMenuShowing = handler.isAppMenuShowing();
-                    boolean callbackFired =
-                            mMenuObserver.menuShownCallback.getCallCount() > currentCallCount;
-                    return appMenuShowing && callbackFired;
-                },
-                "Menu was not shown or the show callback was not fired.");
+        mMenuObserver.menuShownCallback.waitForCallback(currentCallCount);
+        Assert.assertTrue("Menu should be showing", handler.isAppMenuShowing());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> handler.getAppMenu().finishAnimationsForTests());
     }
 
     private static class TestActivityLifecycleDispatcher implements ActivityLifecycleDispatcher {

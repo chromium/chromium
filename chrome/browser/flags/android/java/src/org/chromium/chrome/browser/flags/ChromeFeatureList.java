@@ -775,7 +775,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidWebAppLaunchHandler =
             newCachedFlag(ANDROID_WEB_APP_LAUNCH_HANDLER, false, true);
     public static final CachedFlag sAndroidWebAppMenuButton =
-            newCachedFlag(ANDROID_WEB_APP_MENU_BUTTON, true);
+            newCachedFlag(ANDROID_WEB_APP_MENU_BUTTON, false);
     public static final CachedFlag sAndroidWindowControlsOverlay =
             newCachedFlag(ANDROID_WINDOW_CONTROLS_OVERLAY, true);
     public static final CachedFlag sAndroidWindowManagementWebApi =
