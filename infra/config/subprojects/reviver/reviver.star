@@ -93,13 +93,16 @@ polymorphic.launcher(
     ],
 )
 
+# TODO(https://crbug.com/465771089): Merge two x64 builders together.
 polymorphic.launcher(
-    name = "android-x64-launcher",
+    name = "android-12l-x64-dbg-launcher",
+    description_html = "Reviver launcher for Android 12L on x64 dbg",
     # To avoid peak hours, we run it at 2 AM, 5 AM, 8 AM, 11AM, 2 PM UTC.
     schedule = "0 2,5,8,11,14 * * *",
     pool = ci_constants.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
+    contact_team_email = "clank-engprod@google.com",
     runner = "reviver/runner",
     target_builders = [
         polymorphic.target_builder(
@@ -114,6 +117,34 @@ polymorphic.launcher(
             ),
             testers = [
                 "ci/android-12l-x64-dbg-tests",
+            ],
+        ),
+    ],
+)
+
+# TODO(https://crbug.com/465771089): Merge two x64 builders together.
+polymorphic.launcher(
+    name = "android-16-x64-dbg-launcher",
+    description_html = "Reviver launcher for Android 16 on x64 dbg",
+    # To avoid peak hours, we run it at 2 AM, 5 AM, 8 AM, 11AM, 2 PM UTC.
+    schedule = "0 2,5,8,11,14 * * *",
+    pool = ci_constants.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    contact_team_email = "clank-engprod@google.com",
+    runner = "reviver/runner",
+    target_builders = [
+        polymorphic.target_builder(
+            builder = "ci/Android x64 Builder (dbg)",
+            dimensions = dimensions.dimensions(
+                builderless = "",
+                cores = "",
+                os = os.LINUX_DEFAULT,
+                ssd = "",
+                free_space = "",
+                builder = "Android x64 Builder (dbg)",
+            ),
+            testers = [
                 "ci/android-16-x64-dbg-tests",
             ],
         ),

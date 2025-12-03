@@ -98,7 +98,6 @@ infra/autosharder
 reviver/android-coverage-launcher
 reviver/android-device-launcher
 reviver/android-launcher
-reviver/android-x64-launcher
 reviver/coverage-runner
 reviver/fuchsia-coordinator
 reviver/linux-launcher
