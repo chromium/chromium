@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/metrics_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -17,17 +18,24 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-// Returns 'true' if the Best Features screen is last in the FRE sequence.
-bool IsBestFeaturesLast() {
+// Returns the secondary action string based on the current variation.
+NSString* ConfigureSecondaryActionString() {
+  if (IsWelcomeBackEnabled()) {
+    return l10n_util::GetNSString(IDS_IOS_WELCOME_BACK_KEEP_BROWSING_BUTTON);
+  }
+
   using enum first_run::BestFeaturesScreenVariationType;
   switch (first_run::GetBestFeaturesScreenVariationType()) {
     case kGeneralScreenAfterDBPromo:
     case kGeneralScreenWithPasswordItemAfterDBPromo:
     case kShoppingUsersWithFallbackAfterDBPromo:
     case kSignedInUsersOnlyAfterDBPromo:
-      return YES;
+      // Best Features screen is last in the FRE sequence
+      return l10n_util::GetNSString(
+          IDS_IOS_BEST_FEATURES_START_BROWSING_BUTTON);
     case kGeneralScreenBeforeDBPromo:
-      return NO;
+      // Best Features screen is not last in the FRE sequence
+      return l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_CONTINUE_BUTTON);
     case kAddressBarPromoInsteadOfBestFeaturesScreen:
     case kDisabled:
       NOTREACHED();
@@ -60,9 +68,7 @@ bool IsBestFeaturesLast() {
   self.subtitleString = _bestFeaturesItem.subtitle;
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_SHOW_ME_HOW_FIRST_RUN_TITLE);
-  self.secondaryActionString = l10n_util::GetNSString(
-      IsBestFeaturesLast() ? IDS_IOS_BEST_FEATURES_START_BROWSING_BUTTON
-                           : IDS_IOS_BEST_FEATURES_CONTINUE_BUTTON);
+  self.secondaryActionString = ConfigureSecondaryActionString();
   self.animationName = _bestFeaturesItem.animationName;
   if (_bestFeaturesItem.lightModeColorProvider) {
     self.useLegacyDarkMode = NO;
