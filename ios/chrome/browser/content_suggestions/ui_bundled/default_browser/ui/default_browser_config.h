@@ -7,7 +7,7 @@
 
 @protocol DefaultBrowserCommands;
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_module.h"
 
 // Item containing the configurations for the Default Browser view.
 @interface DefaultBrowserConfig : MagicStackModule

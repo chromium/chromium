@@ -16,7 +16,7 @@ source_set("ui") {
   ]
   public_deps = [
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:most_visited_action",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:public",
   ]
   deps = [
     "//base",

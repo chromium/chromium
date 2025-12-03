@@ -12,6 +12,9 @@ source_set("ui") {
     "tab_resumption_view.h",
     "tab_resumption_view.mm",
   ]
+  public_deps = [
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:public",
+  ]
   deps = [
     "//base",
     "//base:i18n",
@@ -19,7 +22,6 @@ source_set("ui") {
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
     "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui:card_data",
     "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/public:constants",
     "//ios/chrome/browser/price_notifications/ui_bundled/cells",

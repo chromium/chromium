@@ -11,7 +11,7 @@
 @protocol ShortcutsConsumerSource;
 @class ShortcutsActionItem;
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_module.h"
 
 // Config object for the Shortcuts module.
 @interface ShortcutsConfig : MagicStackModule

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_APP_BUNDLE_PROMO_UI_APP_BUNDLE_PROMO_CONFIG_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_APP_BUNDLE_PROMO_UI_APP_BUNDLE_PROMO_CONFIG_H_
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_module.h"
 
 @protocol AppBundlePromoAudience;
 

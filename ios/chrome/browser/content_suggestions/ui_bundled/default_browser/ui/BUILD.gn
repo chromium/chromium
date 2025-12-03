@@ -11,13 +11,13 @@ source_set("ui") {
     "default_browser_view.mm",
   ]
   public_deps = [
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:public",
   ]
   deps = [
     "//ios/chrome/app/strings:ios_branded_strings_grit",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public:constants",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",

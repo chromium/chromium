@@ -18,7 +18,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/public:constants",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/recent_tabs/public:ui_constants",

@@ -10,7 +10,7 @@
 #import <string>
 
 #import "components/segmentation_platform/public/trigger.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_module.h"
 #import "ios/web/public/web_state.h"
 
 namespace base {

@@ -17,7 +17,7 @@ source_set("coordinator") {
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled:public",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:public",
     "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model:prefs",
     "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model:utils",
     "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/public:constants",

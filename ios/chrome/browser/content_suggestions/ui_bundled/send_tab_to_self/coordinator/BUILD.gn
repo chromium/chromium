@@ -14,7 +14,7 @@ source_set("coordinator") {
     "//components/send_tab_to_self",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled:promo_module_ui",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:public",
     "//ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/ui",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/common/ui/favicon",

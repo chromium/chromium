@@ -23,7 +23,7 @@ source_set("ui") {
   ]
   public_deps = [
     "//base",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:public",
     "//ios/chrome/browser/ntp/ui_bundled:theme",
   ]
   deps = [
