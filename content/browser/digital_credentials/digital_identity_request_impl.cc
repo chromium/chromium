@@ -10,6 +10,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/base64url.h"
+#include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

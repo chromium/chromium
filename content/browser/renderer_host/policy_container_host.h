@@ -10,10 +10,9 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "content/browser/child_process_host_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/child_process_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
