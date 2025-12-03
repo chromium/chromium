@@ -481,6 +481,30 @@ def _CheckUIGraphicsBeginImageContextWithOptions(input_api, output_api):
 
     return [output_api.PresubmitError(error_message)]
 
+
+def _CheckOmniboxTextInEgtest(input_api, output_api):
+    """Checks use of OmniboxText or chrome_test_util::OmniboxText in egtests.
+    """
+    pattern = input_api.re.compile(r'(OmniboxText)')
+
+    errors = []
+    for f in input_api.AffectedFiles():
+        if not f.LocalPath().endswith('_egtest.mm'):
+            continue
+        for line_num, line in f.ChangedContents():
+            if pattern.search(line):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+
+    if not errors:
+        return []
+    warning_message = '\n'.join([
+        'Please use [ChromeEarlGrey waitForWebStateVisibleURL:] to check for '
+        'URL load in the browser'
+    ] + errors) + '\n'
+
+    return [output_api.PresubmitPromptWarning(warning_message)]
+
+
 def CheckChange(input_api, output_api):
     results = []
     results.extend(_CheckBugInToDo(input_api, output_api))
@@ -497,6 +521,7 @@ def CheckChange(input_api, output_api):
     results.extend(_CheckStyleESLint(input_api, output_api))
     results.extend(
         _CheckUIGraphicsBeginImageContextWithOptions(input_api, output_api))
+    results.extend(_CheckOmniboxTextInEgtest(input_api, output_api))
     return results
 
 def CheckChangeOnUpload(input_api, output_api):
