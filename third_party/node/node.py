@@ -24,16 +24,16 @@ def GetBinaryPath():
   }[platform.system()])
 
 
-def RunNodeRaw(cmd_parts, cwd=os.getcwd()):
+def RunNodeRaw(cmd_parts, stdout=None):
   cmd = [GetBinaryPath()] + cmd_parts
   process = subprocess.Popen(
-      cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+      cmd, cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
       universal_newlines=True, encoding='utf-8')
   stdout, stderr = process.communicate()
   return process.returncode, stdout, stderr
 
-def RunNode(cmd_parts, stdout=None, cwd=os.getcwd()):
-  code, stdout, stderr = RunNodeRaw(cmd_parts, cwd)
+def RunNode(cmd_parts, stdout=None):
+  code, stdout, stderr = RunNodeRaw(cmd_parts, stdout)
   if code != 0:
     errs = []
     if len(stderr) > 0:

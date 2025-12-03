@@ -24,13 +24,13 @@ def Run(os_path=None, args=None):
   # 'ignorePatterns' (v8 config) or 'ignores' (v9 config), and cannot correctly
   # navigate parent directories via '../'. We must set the repository's root as
   # the cwd.
+  os.chdir(_SRC_PATH)
   return node.RunNodeRaw([
       node_modules.PathToEsLint(),
       '--quiet',
       '--config',
       os_path.join(_HERE_PATH, 'eslint.config.mjs'),
-  ] + args,
-                         cwd=_SRC_PATH)
+  ] + args)
 
 
 if __name__ == '__main__':
