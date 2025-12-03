@@ -13,6 +13,7 @@ export function getHtml(this: ContextualTasksAppElement) {
   return html`<!--_html_template_start_-->
   ${this.isShownInTab_ ? '' : html`
       <top-toolbar .title="${this.threadTitle_}"
+          .attachedTabs="${this.contextTabs_}"
           @signin-click="${this.removeGsc_}"
           @new-thread-click="${this.onNewThreadClick_}"
           @thread-history-click="${this.onThreadHistoryClick_}">

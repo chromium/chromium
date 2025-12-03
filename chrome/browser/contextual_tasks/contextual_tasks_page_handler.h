@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -24,6 +26,7 @@ class Uuid;
 class ContextualTasksUI;
 
 namespace contextual_tasks {
+class ContextualTasksContextController;
 class ContextualTasksUiService;
 }  // namespace contextual_tasks
 
@@ -32,12 +35,15 @@ class AccessTokenFetcher;
 struct AccessTokenInfo;
 }  // namespace signin
 
-class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
+class ContextualTasksPageHandler
+    : public contextual_tasks::mojom::PageHandler,
+      public contextual_tasks::ContextualTasksService::Observer {
  public:
   ContextualTasksPageHandler(
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> receiver,
       ContextualTasksUI* web_ui_controller,
-      contextual_tasks::ContextualTasksUiService* ui_service);
+      contextual_tasks::ContextualTasksUiService* ui_service,
+      contextual_tasks::ContextualTasksContextController* context_controller);
   ~ContextualTasksPageHandler() override;
 
   // contextual_tasks::mojom::PageHandler:
@@ -54,13 +60,19 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
   void OpenHelpUi() override;
   void MoveTaskUiToNewTab() override;
   void GetOAuthToken(GetOAuthTokenCallback callback) override;
-  void GetAttachedTabs(GetAttachedTabsCallback callback) override;
   void OnTabClickedFromSourcesMenu(int32_t tab_id, const GURL& url) override;
   void OnWebviewMessage(const std::vector<uint8_t>& message) override;
   void GetHandshakeMessage(GetHandshakeMessageCallback callback) override;
   void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
+  // contextual_tasks::ContextualTasksService::Observer:
+  void OnTaskUpdated(
+      const contextual_tasks::ContextualTask& task,
+      contextual_tasks::ContextualTasksService::TriggerSource source) override;
+
  private:
+  void UpdateContextForTask(const base::Uuid& task_id);
+
   void OnOAuthTokenReceived(GetOAuthTokenCallback callback,
                             GoogleServiceAuthError error,
                             signin::AccessTokenInfo access_token_info);
@@ -69,6 +81,14 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
   mojo::Receiver<contextual_tasks::mojom::PageHandler> receiver_;
   raw_ptr<ContextualTasksUI> web_ui_controller_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
+  raw_ptr<contextual_tasks::ContextualTasksContextController>
+      context_controller_;
+
+  base::ScopedObservation<contextual_tasks::ContextualTasksService,
+                          contextual_tasks::ContextualTasksService::Observer>
+      context_controller_observation_{this};
+
+  base::WeakPtrFactory<ContextualTasksPageHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PAGE_HANDLER_H_
