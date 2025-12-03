@@ -18,7 +18,6 @@ class Label;
 
 namespace ash {
 
-// TODO(b/216696664): Add unit tests for this class.
 class ASH_EXPORT AnimatedAuthFactorsLabelWrapper : public views::View {
   METADATA_HEADER(AnimatedAuthFactorsLabelWrapper, views::View)
 
