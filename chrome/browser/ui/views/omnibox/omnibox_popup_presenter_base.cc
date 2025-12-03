@@ -38,6 +38,7 @@ OmniboxPopupPresenterBase::~OmniboxPopupPresenterBase() {
 
 void OmniboxPopupPresenterBase::Show() {
   EnsureWidgetCreated();
+  SynchronizePopupBounds();
 
   widget_->ShowInactive();
 
@@ -68,7 +69,12 @@ bool OmniboxPopupPresenterBase::IsShown() const {
   return widget_ && widget_->IsVisible();
 }
 
-void OmniboxPopupPresenterBase::SetWidgetBounds(int content_height) {
+void OmniboxPopupPresenterBase::OnContentHeightChanged(int content_height) {
+  content_height_ = content_height;
+  SynchronizePopupBounds();
+}
+
+void OmniboxPopupPresenterBase::SynchronizePopupBounds() {
   if (widget_) {
     // The width is known, and is the basis for consistent web content rendering
     // so width is specified exactly; then only height adjusts dynamically.
@@ -76,10 +82,10 @@ void OmniboxPopupPresenterBase::SetWidgetBounds(int content_height) {
     widget_bounds.Inset(
         -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
     if (ShouldShowLocationBarCutout()) {
-      widget_bounds.set_height(widget_bounds.height() + content_height);
+      widget_bounds.set_height(widget_bounds.height() + content_height_);
     } else {
       widget_bounds.set_height(
-          std::max(content_height, widget_bounds.height()));
+          std::max(content_height_, widget_bounds.height()));
     }
     widget_bounds.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
     widget_->SetBounds(widget_bounds);

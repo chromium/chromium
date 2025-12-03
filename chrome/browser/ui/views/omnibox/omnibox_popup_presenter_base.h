@@ -47,10 +47,9 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver {
   // Tells whether the popup widget exists.
   bool IsShown() const;
 
-  // Updates the widget's bounds to anchor it to the LocationBarView. The width
-  // is determined by the location bar's width, while the height is
-  // provided by the WebUI content.
-  void SetWidgetBounds(int content_height);
+  // Caches the height of the WebUI content, which is then used to compute the
+  // popup widget bounds.
+  void OnContentHeightChanged(int content_height);
 
   // Returns the currently "active" Popup content, whichever one is visible or
   // going to be visible within the popup.
@@ -85,6 +84,9 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver {
   friend class OmniboxPopupViewWebUITest;
   friend class OmniboxWebUiInteractiveTest;
 
+  // Synchronize the popup widget's bounds to its anchor (location bar view).
+  void SynchronizePopupBounds();
+
   void OnWidgetClosed(views::Widget::ClosedReason closed_reason);
 
   // Remove observation and reset widget, optionally requesting it to close.
@@ -99,6 +101,9 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver {
 
   // The location bar view that owns `this`.
   const raw_ptr<LocationBarView> location_bar_view_;
+
+  // The height of the popup content. Can be 0 if not specified.
+  int content_height_ = 0;
 
   // The container for both the WebUI suggestions list and other WebUI
   // containers
