@@ -237,7 +237,7 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
         return null;
     }
 
-    private int getRemainingAttachments() {
+    int getRemainingAttachments() {
         return MAX_ATTACHMENTS - size();
     }
 
