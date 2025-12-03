@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
@@ -53,6 +54,8 @@ import java.util.Set;
  */
 @NullMarked
 public class MediaSessionHelper implements MediaImageCallback {
+    private static final String TAG = "MediaSessionHelper";
+
     private static final String UNICODE_PLAY_CHARACTER = "\u25B6";
     @VisibleForTesting public static final int HIDE_NOTIFICATION_DELAY_MILLIS = 2500;
 
@@ -288,6 +291,25 @@ public class MediaSessionHelper implements MediaImageCallback {
 
             @Override
             public void mediaSessionPositionChanged(@Nullable MediaPosition position) {
+                if (position != null) {
+                    long now = android.os.SystemClock.elapsedRealtime();
+                    long updateTime = position.getLastUpdatedTime();
+                    long age = now - updateTime;
+
+                    // TODO(crbug.com/465571421): remove logs once the bug is fixed.
+                    Log.i(
+                            TAG,
+                            "Received Update: Speed=%.1f Pos=%d TimestampAge=%d ms (Now=%d,"
+                                    + " Upd=%d)",
+                            position.getPlaybackRate(),
+                            position.getPosition(),
+                            age,
+                            now,
+                            updateTime);
+                } else {
+                    Log.w(TAG, "Received Update: NULL");
+                }
+
                 mMediaPosition = position;
                 updateNotificationPosition();
             }
