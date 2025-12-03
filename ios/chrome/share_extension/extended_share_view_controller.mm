@@ -485,6 +485,25 @@ const NSUInteger kSearchCharacterLimit = 1000;
     [self displayErrorView];
     return;
   }
+
+  if ([URL isFileURL]) {
+    UTType* imageType = [UTType typeWithIdentifier:UTTypeImage.identifier];
+    NSError* attributesError = nil;
+    NSDictionary* values =
+        [URL resourceValuesForKeys:@[ NSURLTypeIdentifierKey ]
+                             error:&attributesError];
+    if (!attributesError) {
+      NSString* fileIdentifier = values[NSURLTypeIdentifierKey];
+      if (fileIdentifier) {
+        UTType* fileUTType = [UTType typeWithIdentifier:fileIdentifier];
+        if ([fileUTType conformsToType:imageType]) {
+          [self handleSharedImage:URL forItem:item withError:error];
+          return;
+        }
+      }
+    }
+  }
+
   [self initiateHeaderCheckForURL:URL forItem:item withError:error];
 }
 
@@ -493,7 +512,6 @@ const NSUInteger kSearchCharacterLimit = 1000;
 - (void)initiateHeaderCheckForURL:(NSURL*)URL
                           forItem:(NSExtensionItem*)item
                         withError:(NSError*)error {
-  // TODO(crbug.com/40278725): Add image with a file path handling.
   if (![[URL scheme] isEqualToString:@"http"] &&
       ![[URL scheme] isEqualToString:@"https"]) {
     [self displayErrorView];
