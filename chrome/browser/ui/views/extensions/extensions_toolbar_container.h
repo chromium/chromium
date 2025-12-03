@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_container_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
@@ -163,7 +164,9 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
     return extension_with_open_context_menu_id_;
   }
 
-  int GetNumberOfActionsForTesting() { return actions_.size(); }
+  int GetNumberOfActionsForTesting() {
+    return view_model_->GetActions().size();
+  }
 
   ToolbarButton* GetCloseSidePanelButtonForTesting() {
     return close_side_panel_button_;
@@ -329,11 +332,9 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   std::unique_ptr<ToolbarActionHoverCardController>
       action_hover_card_controller_;
 
-  // TODO(pbos): Create actions and icons only for pinned / popped out actions
-  // (lazily). Currently code expects GetActionForId() to return actions for
-  // extensions that aren't visible.
-  // Actions for all extensions.
-  std::vector<std::unique_ptr<ToolbarActionViewModel>> actions_;
+  // The view model for this container.
+  std::unique_ptr<ExtensionsToolbarContainerViewModel> view_model_;
+
   // View for every action, does not imply pinned or currently shown.
   ToolbarIcons icons_;
 

@@ -102,7 +102,8 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
                                       extensions_menu_coordinator_.get())),
       display_mode_(display_mode),
       action_hover_card_controller_(
-          std::make_unique<ToolbarActionHoverCardController>(this)) {
+          std::make_unique<ToolbarActionHoverCardController>(this)),
+      view_model_(std::make_unique<ExtensionsToolbarContainerViewModel>()) {
   SetProperty(views::kElementIdentifierKey,
               kToolbarExtensionsContainerElementId);
 
@@ -224,7 +225,7 @@ ExtensionsToolbarContainer::~ExtensionsToolbarContainer() {
 
 void ExtensionsToolbarContainer::CreateActions() {
   DCHECK(icons_.empty());
-  DCHECK(actions_.empty());
+  DCHECK(view_model_->GetActions().empty());
 
   // If the model isn't initialized, wait for it.
   if (!model_->actions_initialized()) {
@@ -257,16 +258,12 @@ void ExtensionsToolbarContainer::AddAction(
 
 void ExtensionsToolbarContainer::RemoveAction(
     const ToolbarActionsModel::ActionId& action_id) {
-  // TODO(pbos): Handle extension upgrades, see ToolbarActionsBar. Arguably this
-  // could be handled inside the model and be invisible to the container when
-  // permissions are unchanged.
-
-  auto iter =
-      std::ranges::find(actions_, action_id, &ToolbarActionViewModel::GetId);
-  CHECK(iter != actions_.end());
-  // Ensure the action outlives the UI element to perform any cleanup.
-  std::unique_ptr<ToolbarActionViewModel> model = std::move(*iter);
-  actions_.erase(iter);
+  // The returned pointer ensures that the action outlives the UI element to
+  // perform any cleanup.
+  // TODO(crbug.com/461981075): Remove `view_model_` modification from this
+  // file.
+  std::unique_ptr<ToolbarActionViewModel> model =
+      view_model_->RemoveAction(action_id);
 
   // Undo the popout, if necessary. Actions expect to not be popped out while
   // destroying.
@@ -329,7 +326,7 @@ void ExtensionsToolbarContainer::UpdateExtensionsButton(
     extensions_button_state =
         ExtensionsToolbarButton::State::kAllExtensionsBlocked;
   } else if (ExtensionActionViewModel::AnyActionHasCurrentSiteAccess(
-                 actions_, web_contents)) {
+                 view_model_->GetActions(), web_contents)) {
     extensions_button_state =
         ExtensionsToolbarButton::State::kAnyExtensionHasAccess;
   }
@@ -369,7 +366,7 @@ void ExtensionsToolbarContainer::UpdateRequestAccessButton(
     auto site_permissions_helper =
         extensions::SitePermissionsHelper(browser_->profile());
 
-    for (const auto& action : actions_) {
+    for (const auto& action : view_model_->GetActions()) {
       std::string action_id = action->GetId();
       bool has_active_request =
           permissions_manager->HasActiveHostAccessRequest(tab_id, action_id);
@@ -554,7 +551,7 @@ void ExtensionsToolbarContainer::AnchorAndShowWidgetImmediately(
 
 ToolbarActionViewModel* ExtensionsToolbarContainer::GetActionForId(
     const std::string& action_id) {
-  for (const auto& action : actions_) {
+  for (const auto& action : view_model_->GetActions()) {
     if (action->GetId() == action_id) {
       return action.get();
     }
@@ -644,7 +641,7 @@ void ExtensionsToolbarContainer::ToggleExtensionsMenu() {
 }
 
 bool ExtensionsToolbarContainer::HasAnyExtensions() const {
-  return !actions_.empty();
+  return !view_model_->GetActions().empty();
 }
 
 void ExtensionsToolbarContainer::ReorderAllChildViews() {
@@ -681,11 +678,14 @@ void ExtensionsToolbarContainer::ReorderAllChildViews() {
 
 void ExtensionsToolbarContainer::CreateActionForId(
     const ToolbarActionsModel::ActionId& action_id) {
-  actions_.push_back(ExtensionActionViewModel::Create(
-      action_id, browser_,
-      std::make_unique<ExtensionActionPlatformDelegateViews>(browser_.get(),
-                                                             this)));
-  auto icon = std::make_unique<ToolbarActionView>(actions_.back().get(), this);
+  // TODO(crbug.com/461981075): Remove `view_model_` modification from this
+  // file.
+  view_model_->AddAction(action_id, browser_,
+                         std::make_unique<ExtensionActionPlatformDelegateViews>(
+                             browser_.get(), this));
+
+  auto icon = std::make_unique<ToolbarActionView>(
+      view_model_->GetActions().back().get(), this);
   // Set visibility before adding to prevent extraneous animation.
   icon->SetVisible(ToolbarActionsModel::CanShowActionsInToolbar(*browser_) &&
                    model_->IsActionPinned(action_id));
@@ -914,7 +914,7 @@ size_t ExtensionsToolbarContainer::WidthToIconCount(int x_offset) {
       std::max((x_offset + element_padding) /
                    (GetToolbarActionSize().width() + element_padding),
                0);
-  return std::min(unclamped_count, actions_.size());
+  return std::min(unclamped_count, view_model_->GetActions().size());
 }
 
 ui::ImageModel ExtensionsToolbarContainer::GetExtensionIcon(
