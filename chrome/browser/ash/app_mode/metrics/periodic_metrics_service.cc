@@ -5,13 +5,9 @@
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/path_service.h"
-#include "base/process/process_iterator.h"
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -72,8 +68,6 @@ std::optional<ResultType> GetSavedEnumFromKioskMetrics(
 
 const char kKioskRamUsagePercentageHistogram[] = "Kiosk.RamUsagePercentage";
 const char kKioskSwapUsagePercentageHistogram[] = "Kiosk.SwapUsagePercentage";
-const char kKioskDiskUsagePercentageHistogram[] = "Kiosk.DiskUsagePercentage";
-const char kKioskChromeProcessCountHistogram[] = "Kiosk.ChromeProcessCount";
 const char kKioskSessionRestartInternetAccessHistogram[] =
     "Kiosk.SessionRestart.InternetAccess";
 const char kKioskSessionRestartUserActivityHistogram[] =
@@ -86,47 +80,8 @@ const base::TimeDelta kPeriodicMetricsInterval = base::Hours(1);
 const base::TimeDelta kFirstIdleTimeout = base::Minutes(5);
 const base::TimeDelta kRegularIdleTimeout = kPeriodicMetricsInterval;
 
-// This class is calculating amount of available and total disk space and
-// reports the percentage of available disk space to the histogram. Since the
-// calculation contains a blocking call, this is done asynchronously.
-class DiskSpaceCalculator {
- public:
-  struct DiskSpaceInfo {
-    int64_t free_bytes;
-    int64_t total_bytes;
-  };
-  void StartCalculation() {
-    base::FilePath path;
-    if (!base::PathService::Get(base::DIR_HOME, &path)) {
-      NOTREACHED();
-    }
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&DiskSpaceCalculator::GetDiskSpaceBlocking, path),
-        base::BindOnce(&DiskSpaceCalculator::OnReceived,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  static DiskSpaceInfo GetDiskSpaceBlocking(const base::FilePath& mount_path) {
-    int64_t free_bytes =
-        base::SysInfo::AmountOfFreeDiskSpace(mount_path).value_or(-1);
-    int64_t total_bytes =
-        base::SysInfo::AmountOfTotalDiskSpace(mount_path).value_or(-1);
-    return DiskSpaceInfo{free_bytes, total_bytes};
-  }
-
- private:
-  void OnReceived(const DiskSpaceInfo& disk_info) {
-    ReportUsedPercentage(kKioskDiskUsagePercentageHistogram,
-                         disk_info.free_bytes, disk_info.total_bytes);
-  }
-
-  base::WeakPtrFactory<DiskSpaceCalculator> weak_ptr_factory_{this};
-};
-
 PeriodicMetricsService::PeriodicMetricsService(PrefService* prefs)
-    : prefs_(prefs),
-      disk_space_calculator_(std::make_unique<DiskSpaceCalculator>()) {}
+    : prefs_(prefs) {}
 
 PeriodicMetricsService::~PeriodicMetricsService() = default;
 
@@ -151,8 +106,6 @@ void PeriodicMetricsService::RecordPeriodicMetrics(
     const base::TimeDelta& idle_timeout) {
   RecordRamUsage();
   RecordSwapUsage();
-  RecordDiskSpaceUsage();
-  RecordChromeProcessCount();
   SaveInternetAccessInfo();
   SaveUserActivity(idle_timeout);
 }
@@ -174,21 +127,6 @@ void PeriodicMetricsService::RecordSwapUsage() const {
   int64_t swap_total = memory.swap_total.InKiB();
   ReportUsedPercentage(kKioskSwapUsagePercentageHistogram, swap_free,
                        swap_total);
-}
-
-void PeriodicMetricsService::RecordDiskSpaceUsage() const {
-  DCHECK(disk_space_calculator_);
-  disk_space_calculator_->StartCalculation();
-}
-
-void PeriodicMetricsService::RecordChromeProcessCount() const {
-  base::FilePath chrome_path;
-  if (!base::PathService::Get(base::FILE_EXE, &chrome_path)) {
-    NOTREACHED();
-  }
-  base::FilePath::StringType exe_name = chrome_path.BaseName().value();
-  int process_count = base::GetProcessCount(exe_name, nullptr);
-  base::UmaHistogramCounts100(kKioskChromeProcessCountHistogram, process_count);
 }
 
 void PeriodicMetricsService::RecordPreviousInternetAccessInfo() const {

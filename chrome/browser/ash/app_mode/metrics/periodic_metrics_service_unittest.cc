@@ -102,9 +102,8 @@ class PeriodicMetricsServiceTest : public BasePeriodicMetricsServiceTest,
 };
 
 TEST_F(PeriodicMetricsServiceTest, PeriodicMetrics) {
-  const char* const kPeriodicMetrics[] = {
-      kKioskRamUsagePercentageHistogram, kKioskSwapUsagePercentageHistogram,
-      kKioskDiskUsagePercentageHistogram, kKioskChromeProcessCountHistogram};
+  const char* const kPeriodicMetrics[] = {kKioskRamUsagePercentageHistogram,
+                                          kKioskSwapUsagePercentageHistogram};
   for (const char* metric : kPeriodicMetrics) {
     histogram_tester()->ExpectTotalCount(metric, 0);
   }

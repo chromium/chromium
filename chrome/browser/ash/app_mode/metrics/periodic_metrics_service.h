@@ -44,7 +44,6 @@ enum class KioskUserActivity {
   kMaxValue = kIdle,
 };
 
-class DiskSpaceCalculator;
 
 // This class save and record kiosk UMA metrics every
 // `kPeriodicMetricsInterval`.
@@ -70,7 +69,6 @@ class PeriodicMetricsService {
 
   void RecordDiskSpaceUsage() const;
 
-  void RecordChromeProcessCount() const;
 
   void RecordPreviousInternetAccessInfo() const;
 
@@ -95,7 +93,6 @@ class PeriodicMetricsService {
 
   raw_ptr<PrefService> prefs_;
 
-  const std::unique_ptr<DiskSpaceCalculator> disk_space_calculator_;
   base::WeakPtrFactory<PeriodicMetricsService> weak_ptr_factory_{this};
 };
 
