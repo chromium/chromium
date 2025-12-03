@@ -10,8 +10,8 @@
 
 @protocol Credential;
 
-typedef void (^FetchSecurityDomainSecretCompletionBlock)(
-    NSArray<NSData*>* security_domain_secrets);
+typedef void (^FetchTrustedVaultKeysCompletionBlock)(
+    NSArray<NSData*>* trustedVaultKeys);
 
 // Delegate for the PasskeyKeychainProviderBridge.
 @protocol PasskeyKeychainProviderBridgeDelegate
@@ -51,15 +51,14 @@ typedef void (^FetchSecurityDomainSecretCompletionBlock)(
 
 @property(nonatomic, weak) id<PasskeyKeychainProviderBridgeDelegate> delegate;
 
-// Initiates the process to fetch the security domain secret and calls the
-// completion block with the security domain secret the input argument.
-// "credential" will be used to validate the security domain secret.
-- (void)
-    fetchSecurityDomainSecretForGaia:(NSString*)gaia
+// Initiates the process to fetch the trusted vault key and calls the completion
+// block with the trusted vault key the input argument. "credential" will be
+// used to validate the trusted vault key.
+- (void)fetchTrustedVaultKeysForGaia:(NSString*)gaia
                           credential:(id<Credential>)credential
                              purpose:(webauthn::ReauthenticatePurpose)purpose
-                          completion:(FetchSecurityDomainSecretCompletionBlock)
-                                         fetchSecurityDomainSecretCompletion;
+                          completion:(FetchTrustedVaultKeysCompletionBlock)
+                                         fetchTrustedVaultKeysCompletionBlock;
 
 @end
 

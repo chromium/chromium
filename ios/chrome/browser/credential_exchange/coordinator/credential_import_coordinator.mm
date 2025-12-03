@@ -137,9 +137,9 @@
   switch (_mediator.importStage) {
     case CredentialImportStage::kNotStarted: {
       // If no passkeys are being imported, there is no point in fetching the
-      // security domain secret. Proceed to start the importing process.
+      // trusted vault keys Proceed to start the importing process.
       if (!_mediator.importingPasskeys) {
-        [_mediator startImportingCredentialsWithSecurityDomainSecrets:nil];
+        [_mediator startImportingCredentialsWithTrustedVaultKeys:nil];
         break;
       }
 
@@ -159,15 +159,13 @@
               ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
       __weak __typeof(self) weakSelf = self;
       [_passkeyKeychainProviderBridge
-          fetchSecurityDomainSecretForGaia:account.gaia.ToNSString()
-                                credential:nil
-                                   purpose:webauthn::ReauthenticatePurpose::
-                                               kEncrypt
-                                completion:^(
-                                    NSArray<NSData*>* securityDomainSecrets) {
-                                  [weakSelf onSecurityDomainSecretsFetched:
-                                                securityDomainSecrets];
-                                }];
+          fetchTrustedVaultKeysForGaia:account.gaia.ToNSString()
+                            credential:nil
+                               purpose:webauthn::ReauthenticatePurpose::kEncrypt
+                            completion:^(NSArray<NSData*>* trustedVaultKeys) {
+                              [weakSelf
+                                  onTrustedVaultKeysFetched:trustedVaultKeys];
+                            }];
       break;
     }
     case CredentialImportStage::kImporting:
@@ -222,19 +220,17 @@
 
 #pragma mark - Private
 
-// Called when fetching security domain secrets for passkeys finishes. Dismisses
+// Called when fetching trusted vault keys for passkeys finishes. Dismisses
 // screens that were presented for the fetching (if any). Informs mediator to
 // start importing credentials.
-- (void)onSecurityDomainSecretsFetched:
-    (NSArray<NSData*>*)securityDomainSecrets {
+- (void)onTrustedVaultKeysFetched:(NSArray<NSData*>*)trustedVaultKeys {
   [_navigationController popToViewController:_viewController animated:YES];
-  if (securityDomainSecrets.count == 0) {
+  if (trustedVaultKeys.count == 0) {
     // TODO(crbug.com/450982128): Handle error.
     return;
   }
 
-  [_mediator
-      startImportingCredentialsWithSecurityDomainSecrets:securityDomainSecrets];
+  [_mediator startImportingCredentialsWithTrustedVaultKeys:trustedVaultKeys];
 }
 
 // Presents `viewController` and returns `YES` if no other view controller is

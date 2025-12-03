@@ -62,10 +62,10 @@ enum class CredentialImportStage;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Notifies the model to starts importing credentials to the user's account.
-// `securityDomainSecrets` is needed to encrypt passkeys if there are any to be
+// `trustedVaultKeys` are needed to encrypt passkeys if there are any to be
 // imported.
-- (void)startImportingCredentialsWithSecurityDomainSecrets:
-    (NSArray<NSData*>*)securityDomainSecrets;
+- (void)startImportingCredentialsWithTrustedVaultKeys:
+    (NSArray<NSData*>*)trustedVaultKeys;
 
 @end
 

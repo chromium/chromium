@@ -41,13 +41,13 @@
                         passkeys:
                             (std::vector<sync_pb::WebauthnCredentialSpecifics>)
                                 passkeys
-           securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
+                trustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys
     API_AVAILABLE(ios(26.0)) {
   NSArray<CredentialExchangePassword*>* exportedPasswords =
       [self transformPasswords:std::move(passwords)];
   NSArray<CredentialExchangePasskey*>* exportedPasskeys =
       [self transformPasskeys:std::move(passkeys)
-                 usingSecrets:securityDomainSecrets];
+          usingTrustedVaultKeys:trustedVaultKeys];
 
   [_credentialExportManager startExportWithPasswords:exportedPasswords
                                             passkeys:exportedPasskeys
@@ -80,15 +80,15 @@
 
 // Returns an array of passkeys formatted for the credential export API.
 - (NSArray<CredentialExchangePasskey*>*)
-    transformPasskeys:
-        (std::vector<sync_pb::WebauthnCredentialSpecifics>)passkeys
-         usingSecrets:(NSArray<NSData*>*)secrets {
+        transformPasskeys:
+            (std::vector<sync_pb::WebauthnCredentialSpecifics>)passkeys
+    usingTrustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys {
   NSMutableArray<CredentialExchangePasskey*>* exportedPasskeys =
       [NSMutableArray arrayWithCapacity:passkeys.size()];
 
   for (const sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {
     NSData* privateKey = [self decryptPrivateKeyForPasskey:passkey
-                                              usingSecrets:secrets];
+                                     usingTrustedVaultKeys:trustedVaultKeys];
 
     if (!privateKey) {
       continue;
@@ -116,18 +116,17 @@
   return exportedPasskeys;
 }
 
-// Attempts to decrypt the private key for a given passkey using the available
-// security domain secrets.
+// Attempts to decrypt the private key for a given `passkey` with
+// `trustedVaultKeys`.
 - (NSData*)decryptPrivateKeyForPasskey:
                (const sync_pb::WebauthnCredentialSpecifics&)passkey
-                          usingSecrets:(NSArray<NSData*>*)secrets {
-  sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted_data;
-  for (NSData* securityDomainSecret in secrets) {
+                 usingTrustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys {
+  sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
+  for (NSData* trustedVaultKey in trustedVaultKeys) {
     if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-            base::apple::NSDataToSpan(securityDomainSecret), passkey,
-            &decrypted_data)) {
-      return [NSData dataWithBytes:decrypted_data.private_key().data()
-                            length:decrypted_data.private_key().size()];
+            base::apple::NSDataToSpan(trustedVaultKey), passkey, &decrypted)) {
+      return [NSData dataWithBytes:decrypted.private_key().data()
+                            length:decrypted.private_key().size()];
     }
   }
   return nil;

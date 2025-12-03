@@ -28,9 +28,9 @@ class FaviconLoader;
 // Protocol for the Mediator to request UI actions from the Coordinator.
 @protocol CredentialExportMediatorDelegate <NSObject>
 
-// Asks the delegate to fetch security domain secrets. This is only called if
+// Asks the delegate to fetch trusted vault keys. This is only called if
 // passkeys are detected in the export list.
-- (void)fetchSecurityDomainSecretsWithCompletion:
+- (void)fetchTrustedVaultKeysWithCompletion:
     (void (^)(NSArray<NSData*>*))completion;
 
 @end

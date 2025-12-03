@@ -60,13 +60,13 @@ class SavedPasswordsPresenter;
 // data to be imported.
 - (void)prepareImport:(NSUUID*)UUID;
 
-// Called when the user confirms the import. `securityDomainSecrets` is needed
-// to encrypt passkeys if there are any to be imported. Triggers initial
-// processing of the data for all supported credential types. Processing each
-// credential type is handled in a separate async task. Results are analyzed
-// once all tasks complete.
-- (void)startImportingCredentialsWithSecurityDomainSecrets:
-    (NSArray<NSData*>*)securityDomainSecrets;
+// Called when the user confirms the import. `trustedVaultKeys` are needed to
+// encrypt passkeys if there are any to be imported. Triggers initial processing
+// of the data for all supported credential types. Processing each credential
+// type is handled in a separate async task. Results are analyzed once all tasks
+// complete.
+- (void)startImportingCredentialsWithTrustedVaultKeys:
+    (NSArray<NSData*>*)trustedVaultKeys;
 
 // Triggers storing data for all supported credential types in the user's
 // account. This should be called after conflicts with existing credential data

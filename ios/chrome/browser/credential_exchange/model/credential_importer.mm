@@ -99,8 +99,8 @@ std::string DataToString(NSData* data) {
 
 #pragma mark - Public
 
-- (void)startImportingCredentialsWithSecurityDomainSecrets:
-    (NSArray<NSData*>*)securityDomainSecrets {
+- (void)startImportingCredentialsWithTrustedVaultKeys:
+    (NSArray<NSData*>*)trustedVaultKeys {
   __weak __typeof(self) weakSelf = self;
   _allCredentialTypesProcessedClosure =
       base::BarrierClosure(kSupportedCredentialTypesCount, base::BindOnce(^{
@@ -108,8 +108,7 @@ std::string DataToString(NSData* data) {
                            }));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE}, base::BindOnce(^{
-        return [weakSelf
-            translateCredentialExchangePasskeys:securityDomainSecrets];
+        return [weakSelf translateCredentialExchangePasskeys:trustedVaultKeys];
       }),
       base::BindOnce(
           ^(std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys) {
@@ -231,16 +230,15 @@ std::string DataToString(NSData* data) {
 
 // Converts `_passkeys` into structures used by `_passkeyImporter`.
 - (std::vector<sync_pb::WebauthnCredentialSpecifics>)
-    translateCredentialExchangePasskeys:
-        (NSArray<NSData*>*)securityDomainSecrets {
+    translateCredentialExchangePasskeys:(NSArray<NSData*>*)trustedVaultKeys {
   if (_passkeys.count == 0) {
     return {};
   }
 
-  // `hw_protected` security domain currently supports a single secret.
-  CHECK(securityDomainSecrets.count == 1);
-  base::span<const uint8_t> securityDomainSecret =
-      base::apple::NSDataToSpan(securityDomainSecrets[0]);
+  // `hw_protected` security domain currently supports a single key.
+  CHECK(trustedVaultKeys.count == 1);
+  base::span<const uint8_t> trustedVaultKey =
+      base::apple::NSDataToSpan(trustedVaultKeys[0]);
   int64_t timeNow = base::Time::Now().InMillisecondsSinceUnixEpoch();
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
 
@@ -256,7 +254,7 @@ std::string DataToString(NSData* data) {
     // TODO(crbug.com/458337350): Consider passing CredentialExchangePasskey or
     // NSData instead or just log failure here.
     webauthn::passkey_model_utils::EncryptWebauthnCredentialSpecificsData(
-        securityDomainSecret, encrypted, &specifics);
+        trustedVaultKey, encrypted, &specifics);
 
     specifics.set_sync_id(
         base::RandBytesAsString(webauthn::passkey_model_utils::kSyncIdLength));

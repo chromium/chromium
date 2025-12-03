@@ -29,7 +29,7 @@
                         passkeys:
                             (std::vector<sync_pb::WebauthnCredentialSpecifics>)
                                 passkeys
-           securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
+                trustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys
     API_AVAILABLE(ios(26.0));
 
 @end

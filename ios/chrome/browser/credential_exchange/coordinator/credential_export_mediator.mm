@@ -94,9 +94,9 @@ const CGFloat kMinFaviconSize = 16.0;
   }
 
   if (passkeysToExport.empty()) {
-    [self startExportWithSecurityDomainSecrets:nil
-                                     passwords:std::move(passwordsToExport)
-                                      passkeys:std::move(passkeysToExport)];
+    [self startExportWithTrustedVaultKeys:nil
+                                passwords:std::move(passwordsToExport)
+                                 passkeys:std::move(passkeysToExport)];
   } else {
     __weak __typeof(self) weakSelf = self;
 
@@ -105,11 +105,10 @@ const CGFloat kMinFaviconSize = 16.0;
             [](__weak CredentialExportMediator* mediator,
                std::vector<password_manager::CredentialUIEntry> passwords,
                std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
-               NSArray<NSData*>* secrets) {
-              [mediator
-                  startExportWithSecurityDomainSecrets:secrets
-                                             passwords:std::move(passwords)
-                                              passkeys:std::move(passkeys)];
+               NSArray<NSData*>* trustedVaultKeys) {
+              [mediator startExportWithTrustedVaultKeys:trustedVaultKeys
+                                              passwords:std::move(passwords)
+                                               passkeys:std::move(passkeys)];
             },
             weakSelf, std::move(passwordsToExport),
             std::move(passkeysToExport));
@@ -117,21 +116,18 @@ const CGFloat kMinFaviconSize = 16.0;
     void (^completionBlock)(NSArray<NSData*>*) =
         base::CallbackToBlock(std::move(fetchSecretsCallback));
 
-    [self.delegate fetchSecurityDomainSecretsWithCompletion:completionBlock];
+    [self.delegate fetchTrustedVaultKeysWithCompletion:completionBlock];
   }
 }
 
 #pragma mark - Private
 
 - (void)
-    startExportWithSecurityDomainSecrets:
-        (NSArray<NSData*>*)securityDomainSecrets
-                               passwords:
-                                   (std::vector<
-                                       password_manager::CredentialUIEntry>)
-                                       passwords
-                                passkeys:
-                                    (std::vector<
+    startExportWithTrustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys
+                          passwords:
+                              (std::vector<password_manager::CredentialUIEntry>)
+                                  passwords
+                           passkeys:(std::vector<
                                         sync_pb::WebauthnCredentialSpecifics>)
                                         passkeys {
   if (@available(iOS 26, *)) {
@@ -139,7 +135,7 @@ const CGFloat kMinFaviconSize = 16.0;
 
     [_credentialExporter startExportWithPasswords:std::move(passwords)
                                          passkeys:std::move(passkeys)
-                            securityDomainSecrets:securityDomainSecrets];
+                                 trustedVaultKeys:trustedVaultKeys];
   }
 }
 

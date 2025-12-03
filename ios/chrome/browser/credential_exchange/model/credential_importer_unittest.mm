@@ -139,7 +139,7 @@ TEST_F(CredentialImporterTest, ImportsValidPassword) {
   FakePasswordStoreObserver observer;
   GetAccountStore().AddObserver(&observer);
 
-  [importer_ startImportingCredentialsWithSecurityDomainSecrets:nil];
+  [importer_ startImportingCredentialsWithTrustedVaultKeys:nil];
 
   ASSERT_TRUE(observer.WaitForLoginsChanged());
   GetAccountStore().RemoveObserver(&observer);
@@ -164,7 +164,7 @@ TEST_F(CredentialImporterTest, ImportsPasswordWithoutHttpsScheme) {
   FakePasswordStoreObserver observer;
   GetAccountStore().AddObserver(&observer);
 
-  [importer_ startImportingCredentialsWithSecurityDomainSecrets:nil];
+  [importer_ startImportingCredentialsWithTrustedVaultKeys:nil];
 
   ASSERT_TRUE(observer.WaitForLoginsChanged());
   GetAccountStore().RemoveObserver(&observer);
@@ -195,7 +195,7 @@ TEST_F(CredentialImporterTest, DoesNotImportPasswordWithoutUrl) {
   FakePasswordStoreObserver observer;
   GetAccountStore().AddObserver(&observer);
 
-  [importer_ startImportingCredentialsWithSecurityDomainSecrets:nil];
+  [importer_ startImportingCredentialsWithTrustedVaultKeys:nil];
 
   ASSERT_TRUE(observer.WaitForLoginsChanged());
   GetAccountStore().RemoveObserver(&observer);

@@ -41,7 +41,7 @@ NSData* ClientDataHash() {
   return Sha256(StringToData("ClientDataHash"));
 }
 
-NSArray<NSData*>* SecurityDomainSecrets() {
+NSArray<NSData*>* TrustedVaultKeys() {
   std::vector<uint8_t> sds;
   base::HexStringToBytes(
       "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF", &sds);
@@ -60,8 +60,8 @@ NSArray<NSData*>* PRFInputs() {
 
 ArchivableCredential* TestPasskeyCredential() {
   std::vector<uint8_t> trusted_vault_key;
-  NSArray<NSData*>* security_domain_secrets = SecurityDomainSecrets();
-  Append(trusted_vault_key, security_domain_secrets[0]);
+  NSArray<NSData*>* trusted_vault_keys = TrustedVaultKeys();
+  Append(trusted_vault_key, trusted_vault_keys[0]);
 
   std::vector<uint8_t> user_id;
   Append(user_id, StringToData("userId"));
@@ -114,7 +114,7 @@ TEST_F(PasskeyUtilTest, AssertionAuthenticatorDataIsValid) {
 
   PasskeyAssertionOutput passkeyAssertionOutput =
       PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials,
-                              SecurityDomainSecrets(), /*prf_inputs=*/nil,
+                              TrustedVaultKeys(), /*prf_inputs=*/nil,
                               /*did_complete_uv=*/true);
 
   EXPECT_NSEQ(clientDataHash, passkeyAssertionOutput.credential.clientDataHash);
@@ -136,7 +136,7 @@ TEST_F(PasskeyUtilTest, PerformPasskeyAssertionPropagatesUVBit) {
   for (bool did_complete_uv : std::vector<bool>{true, false}) {
     PasskeyAssertionOutput passkeyAssertionOutput = PerformPasskeyAssertion(
         TestPasskeyCredential(), ClientDataHash(), /*allowed_credentials=*/@[],
-        SecurityDomainSecrets(), /*prf_inputs=*/nil, did_complete_uv);
+        TrustedVaultKeys(), /*prf_inputs=*/nil, did_complete_uv);
 
     std::optional<device::AuthenticatorData> auth_data =
         device::AuthenticatorData::DecodeAuthenticatorData(
@@ -160,7 +160,7 @@ TEST_F(PasskeyUtilTest, AssertionFailsOnCredentialId) {
   NSArray<NSData*>* allowedCredentials =
       [NSArray arrayWithObject:StringToData("otherCredentialId")];
   PasskeyAssertionOutput passkeyAssertionOutput = PerformPasskeyAssertion(
-      credential, clientDataHash, allowedCredentials, SecurityDomainSecrets(),
+      credential, clientDataHash, allowedCredentials, TrustedVaultKeys(),
       /*prf_inputs=*/nil, /*did_complete_uv=*/true);
   EXPECT_NSEQ(passkeyAssertionOutput.credential, nil);
 }
@@ -173,7 +173,7 @@ TEST_F(PasskeyUtilTest, AssertionSucceedsOnCredentialId) {
   NSArray<NSData*>* allowedCredentials =
       [NSArray arrayWithObject:credential.credentialId];
   PasskeyAssertionOutput passkeyAssertionOutput = PerformPasskeyAssertion(
-      credential, clientDataHash, allowedCredentials, SecurityDomainSecrets(),
+      credential, clientDataHash, allowedCredentials, TrustedVaultKeys(),
       /*prf_inputs=*/nil, /*did_complete_uv=*/true);
   EXPECT_NSNE(passkeyAssertionOutput.credential, nil);
 }
@@ -185,7 +185,7 @@ TEST_F(PasskeyUtilTest, CreationSucceeds) {
 
   PasskeyCreationOutput passkeyCreationOutput = PerformPasskeyCreation(
       clientDataHash, credential.rpId, credential.username, credential.userId,
-      /*gaia=*/nil, SecurityDomainSecrets(), /*prf_inputs=*/nil,
+      /*gaia=*/nil, TrustedVaultKeys(), /*prf_inputs=*/nil,
       /*did_complete_uv=*/true);
 
   EXPECT_NSEQ(clientDataHash, passkeyCreationOutput.credential.clientDataHash);
@@ -203,7 +203,7 @@ TEST_F(PasskeyUtilTest, PerformPasskeyCreationPropagatesUVBit) {
     PasskeyCreationOutput passkeyCreationOutput = PerformPasskeyCreation(
         ClientDataHash(), credential.rpId, credential.username,
         credential.userId,
-        /*gaia=*/nil, SecurityDomainSecrets(), /*prf_inputs=*/nil,
+        /*gaia=*/nil, TrustedVaultKeys(), /*prf_inputs=*/nil,
         /*did_complete_uv=*/did_complete_uv);
 
     NSData* attestationObjectData =
@@ -234,7 +234,7 @@ TEST_F(PasskeyUtilTest, AssertionSucceedsWithPRF) {
 
     PasskeyAssertionOutput passkeyAssertionOutput = PerformPasskeyAssertion(
         credential, clientDataHash, /*allowedCredentials=*/nil,
-        SecurityDomainSecrets(), PRFInputs(),
+        TrustedVaultKeys(), PRFInputs(),
         /*did_complete_uv=*/true);
     EXPECT_NSNE(passkeyAssertionOutput.credential, nil);
     ASSERT_EQ(passkeyAssertionOutput.prf_outputs.count, 2u);
@@ -251,7 +251,7 @@ TEST_F(PasskeyUtilTest, CreationSucceedsWithPRF) {
 
     PasskeyCreationOutput passkeyCreationOutput = PerformPasskeyCreation(
         clientDataHash, credential.rpId, credential.username, credential.userId,
-        /*gaia=*/nil, SecurityDomainSecrets(), PRFInputs(),
+        /*gaia=*/nil, TrustedVaultKeys(), PRFInputs(),
         /*did_complete_uv=*/true);
 
     EXPECT_NSEQ(clientDataHash,
@@ -334,7 +334,7 @@ TEST_F(PasskeyUtilTest, LargeBlobRegistrationIsSupportedWorks) {
 
     PasskeyCreationOutput passkeyCreationOutput = PerformPasskeyCreation(
         clientDataHash, seed.rpId, seed.username, seed.userId,
-        /*gaia=*/nil, SecurityDomainSecrets(), /*prf_inputs=*/nil,
+        /*gaia=*/nil, TrustedVaultKeys(), /*prf_inputs=*/nil,
         /*did_complete_uv=*/true);
     ASSERT_NSNE(passkeyCreationOutput.credential, nil);
     // By default there should be no Large Blob support marked.

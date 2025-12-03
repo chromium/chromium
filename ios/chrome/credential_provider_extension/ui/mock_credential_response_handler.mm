@@ -9,7 +9,7 @@
 
 namespace {
 
-NSArray<NSData*>* SecurityDomainSecrets() {
+NSArray<NSData*>* TrustedVaultKeys() {
   std::vector<uint8_t> sds;
   base::HexStringToBytes(
       "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF", &sds);
@@ -38,11 +38,10 @@ NSArray<NSData*>* SecurityDomainSecrets() {
 
 - (void)userSelectedPasskey:(id<Credential>)passkey
       passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails {
-  [self
-      userSelectedPasskey:
-          [passkeyRequestDetails assertPasskeyCredential:passkey
-                                   securityDomainSecrets:SecurityDomainSecrets()
-                             didCompleteUserVerification:NO]];
+  [self userSelectedPasskey:[passkeyRequestDetails
+                                    assertPasskeyCredential:passkey
+                                           trustedVaultKeys:TrustedVaultKeys()
+                                didCompleteUserVerification:NO]];
 }
 
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode {

@@ -64,12 +64,12 @@
 
 #pragma mark - Public
 
-- (void)startImportingCredentialsWithSecurityDomainSecrets:
-    (NSArray<NSData*>*)securityDomainSecrets {
+- (void)startImportingCredentialsWithTrustedVaultKeys:
+    (NSArray<NSData*>*)trustedVaultKeys {
   self.importStage = CredentialImportStage::kImporting;
   [_consumer transitionToImportStage:self.importStage];
   [_credentialImporter
-      startImportingCredentialsWithSecurityDomainSecrets:securityDomainSecrets];
+      startImportingCredentialsWithTrustedVaultKeys:trustedVaultKeys];
 }
 
 #pragma mark - CredentialImporterDelegate

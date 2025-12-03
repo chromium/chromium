@@ -134,7 +134,7 @@
 
 #pragma mark - CredentialExportMediatorDelegate
 
-- (void)fetchSecurityDomainSecretsWithCompletion:
+- (void)fetchTrustedVaultKeysWithCompletion:
     (void (^)(NSArray<NSData*>*))completion {
   bool metricsReportingEnabled =
       GetApplicationContext()->GetLocalState()->GetBoolean(
@@ -153,15 +153,14 @@
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
   [_passkeyKeychainProviderBridge
-      fetchSecurityDomainSecretForGaia:account.gaia.ToNSString()
-                            credential:nil
-                               purpose:webauthn::ReauthenticatePurpose::kDecrypt
-                            completion:^(
-                                NSArray<NSData*>* securityDomainSecrets) {
-                              if (completion) {
-                                completion(securityDomainSecrets);
-                              }
-                            }];
+      fetchTrustedVaultKeysForGaia:account.gaia.ToNSString()
+                        credential:nil
+                           purpose:webauthn::ReauthenticatePurpose::kDecrypt
+                        completion:^(NSArray<NSData*>* trustedVaultKeys) {
+                          if (completion) {
+                            completion(trustedVaultKeys);
+                          }
+                        }];
 }
 
 @end

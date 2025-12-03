@@ -300,23 +300,23 @@ enum class PasskeyUserVerificationStatus {
 - (void)prepareInterfaceForExtensionConfiguration {
   if (HasSavedPasskeys(self.credentialStore.credentials)) {
     __weak __typeof__(self) weakSelf = self;
-    auto completion = ^(NSArray<NSData*>* securityDomainSecrets) {
-      [weakSelf completeSecurityDomainSecretFetchForExtensionConfiguration];
+    auto completion = ^(NSArray<NSData*>* trustedVaultKeys) {
+      [weakSelf completeTrustedVaultKeyFetchForExtensionConfiguration];
     };
 
-    // Trigger a security domain secret fetch to know whether the user needs to
+    // Trigger trusted vault keys fetch to know whether the user needs to
     // bootstrap (create/enter their GPM pin) to use passkeys on their device.
     // If bootstrapping is needed, then the fetching flow will take care of
     // presenting the relevant UI. The `completion` will then take care of
     // dismissing the bootstrapping UI if it was presented. If it wasn't
     // presented, it means that the user was already bootstrapped. In this case,
     // `completion` will present the ConsentViewController.
-    [self fetchSecurityDomainSecretForGaia:[self gaia]
-                                credential:nil
-                                   purpose:webauthn::ReauthenticatePurpose::
-                                               kUnspecified
-                  userVerificationRequired:NO
-                                completion:completion];
+    [self fetchTrustedVaultKeysForGaia:[self gaia]
+                            credential:nil
+                               purpose:webauthn::ReauthenticatePurpose::
+                                           kUnspecified
+              userVerificationRequired:NO
+                            completion:completion];
   } else {
     [self presentConsentViewController];
   }
@@ -597,19 +597,18 @@ enum class PasskeyUserVerificationStatus {
 - (void)userSelectedPasskey:(id<Credential>)credential
       passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails {
   __weak __typeof(self) weakSelf = self;
-  auto completion = ^(NSArray<NSData*>* securityDomainSecrets) {
+  auto completion = ^(NSArray<NSData*>* trustedVaultKeys) {
     [weakSelf passkeyAssertionWithCredential:credential
                        passkeyRequestDetails:passkeyRequestDetails
-                       securityDomainSecrets:securityDomainSecrets];
+                            trustedVaultKeys:trustedVaultKeys];
   };
 
-  [self
-      fetchSecurityDomainSecretForGaia:credential.gaia
-                            credential:credential
-                               purpose:webauthn::ReauthenticatePurpose::kDecrypt
-              userVerificationRequired:passkeyRequestDetails
-                                           .userVerificationRequired
-                            completion:completion];
+  [self fetchTrustedVaultKeysForGaia:credential.gaia
+                          credential:credential
+                             purpose:webauthn::ReauthenticatePurpose::kDecrypt
+            userVerificationRequired:passkeyRequestDetails
+                                         .userVerificationRequired
+                          completion:completion];
 }
 
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode {
@@ -1185,8 +1184,8 @@ enum class PasskeyUserVerificationStatus {
 // Attempts to create a passkey.
 - (void)createPasskeyWithDetails:(PasskeyRequestDetails*)passkeyRequestDetails
                             gaia:(NSString*)gaia
-           securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets {
-  if (!securityDomainSecrets.count) {
+                trustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys {
+  if (!trustedVaultKeys.count) {
     [self exitWithErrorCode:ASExtensionErrorCodeFailed];
     return;
   }
@@ -1200,7 +1199,7 @@ enum class PasskeyUserVerificationStatus {
 
   ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
       [passkeyRequestDetails createPasskeyForGaia:gaia
-                            securityDomainSecrets:securityDomainSecrets
+                                 trustedVaultKeys:trustedVaultKeys
                       didCompleteUserVerification:didCompleteUserVerification];
   if (passkeyRegistrationCredential) {
     [self completeRegistrationRequestWithSelectedPasskeyCredential:
@@ -1210,32 +1209,31 @@ enum class PasskeyUserVerificationStatus {
   }
 }
 
-// Fetches the security domain secret in order to use it in the passkey creation
+// Fetches the trusted vault key in order to use it in the passkey creation
 // process.
 - (void)createPasskeyWithDetails:(PasskeyRequestDetails*)passkeyRequestDetails
                             gaia:(NSString*)gaia {
   __weak __typeof(self) weakSelf = self;
-  auto completion = ^(NSArray<NSData*>* securityDomainSecrets) {
+  auto completion = ^(NSArray<NSData*>* trustedVaultKeys) {
     [weakSelf createPasskeyWithDetails:passkeyRequestDetails
                                   gaia:gaia
-                 securityDomainSecrets:securityDomainSecrets];
+                      trustedVaultKeys:trustedVaultKeys];
   };
 
-  [self
-      fetchSecurityDomainSecretForGaia:gaia
-                            credential:nil
-                               purpose:webauthn::ReauthenticatePurpose::kEncrypt
-              userVerificationRequired:passkeyRequestDetails
-                                           .userVerificationRequired
-                            completion:completion];
+  [self fetchTrustedVaultKeysForGaia:gaia
+                          credential:nil
+                             purpose:webauthn::ReauthenticatePurpose::kEncrypt
+            userVerificationRequired:passkeyRequestDetails
+                                         .userVerificationRequired
+                          completion:completion];
 }
 
 // Attempts to perform passkey assertion and retry on failure if allowed.
-- (void)
-    passkeyAssertionWithCredential:(id<Credential>)credential
-             passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails
-             securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets {
-  if (!securityDomainSecrets.count) {
+- (void)passkeyAssertionWithCredential:(id<Credential>)credential
+                 passkeyRequestDetails:
+                     (PasskeyRequestDetails*)passkeyRequestDetails
+                      trustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys {
+  if (!trustedVaultKeys.count) {
     [self exitWithErrorCode:ASExtensionErrorCodeFailed];
     return;
   }
@@ -1249,23 +1247,22 @@ enum class PasskeyUserVerificationStatus {
 
   ASPasskeyAssertionCredential* passkeyCredential = [passkeyRequestDetails
           assertPasskeyCredential:credential
-            securityDomainSecrets:securityDomainSecrets
+                 trustedVaultKeys:trustedVaultKeys
       didCompleteUserVerification:didCompleteUserVerification];
   [self userSelectedPasskey:passkeyCredential];
 }
 
-// Triggers the process to fetch the security domain secret and calls the
-// completion block with the security domain secret as input.
-// "credential" will be used to validate the security domain secret.
-- (void)
-    fetchSecurityDomainSecretForGaia:(NSString*)gaia
+// Triggers the process to fetch the trusted vault keys and calls the completion
+// block with the trusted vault key as input. "credential" will be used to
+// validate the trusted vault key.
+- (void)fetchTrustedVaultKeysForGaia:(NSString*)gaia
                           credential:(id<Credential>)credential
                              purpose:(webauthn::ReauthenticatePurpose)purpose
             userVerificationRequired:(BOOL)userVerificationRequired
-                          completion:(FetchSecurityDomainSecretCompletionBlock)
-                                         completion {
+                          completion:
+                              (FetchTrustedVaultKeysCompletionBlock)completion {
   // Store `userVerificationRequired` here as it will be needed at a later stage
-  // in the process of fetching the security domain secret.
+  // in the process of fetching the trusted vault key.
   if (userVerificationRequired) {
     _userVerificationStatus = PasskeyUserVerificationStatus::kRequired;
     // Since UV is required, do not allow a previous reauth to be reused.
@@ -1274,11 +1271,10 @@ enum class PasskeyUserVerificationStatus {
     _userVerificationStatus = PasskeyUserVerificationStatus::kNotRequired;
   }
 
-  [self.passkeyKeychainProviderBridge
-      fetchSecurityDomainSecretForGaia:gaia
-                            credential:credential
-                               purpose:purpose
-                            completion:completion];
+  [self.passkeyKeychainProviderBridge fetchTrustedVaultKeysForGaia:gaia
+                                                        credential:credential
+                                                           purpose:purpose
+                                                        completion:completion];
 }
 
 - (BOOL)metricsAreEnabled {
@@ -1406,18 +1402,17 @@ enum class PasskeyUserVerificationStatus {
   [self.consentCoordinator start];
 }
 
-// Completes the security domain secret fetch that happens when enabling the app
-// as a credential provider in iOS Settings. Dismisses the
+// Completes the trusted vault key fetch that happens when enabling the app as a
+// credential provider in iOS Settings. Dismisses the
 // `passkeyNavigationController` if presented for passkey bootstrapping purposes
 // during the fetching process. Otherwise, presents the ConsentViewController.
-- (void)completeSecurityDomainSecretFetchForExtensionConfiguration {
+- (void)completeTrustedVaultKeyFetchForExtensionConfiguration {
   // If the `passkeyNavigationController` has a `visibleViewController`, it
   // means that the bootstrapping UI has been presented to the user through the
-  // security domain secret fetch (see
-  // `-prepareInterfaceForExtensionConfiguration`). In this case, all that's
-  // left to do is dismiss the bootstrapping UI. Otherwise, it means that the
-  // bootstrapping UI hasn't been shown, hence the ConsentViewController needs
-  // to be presented.
+  // trusted vault key fetch (see `-prepareInterfaceForExtensionConfiguration`).
+  // In this case, all that's left to do is dismiss the bootstrapping UI.
+  // Otherwise, it means that the bootstrapping UI hasn't been shown, hence the
+  // ConsentViewController needs to be presented.
   if (self.passkeyNavigationController.visibleViewController) {
     [self.passkeyNavigationController.presentingViewController
         dismissViewControllerAnimated:YES
