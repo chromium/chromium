@@ -83,7 +83,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/browser_container/ui_bundled",
     "//ios/chrome/browser/browser_container/ui_bundled:ui",
     "//ios/chrome/browser/browser_view/model",
-    "//ios/chrome/browser/browser_view/model:audience",
     "//ios/chrome/browser/browser_view/public",
     "//ios/chrome/browser/bubble/ui_bundled",
     "//ios/chrome/browser/collaboration/model",

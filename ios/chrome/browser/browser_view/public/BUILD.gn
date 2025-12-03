@@ -3,5 +3,9 @@
 # found in the LICENSE file.
 
 source_set("public") {
-  sources = [ "browser_view_visibility_state.h" ]
+  sources = [
+    "browser_view_visibility_state.h",
+    "browser_view_visibility_state_changed_callback.h",
+  ]
+  deps = [ "//base" ]
 }

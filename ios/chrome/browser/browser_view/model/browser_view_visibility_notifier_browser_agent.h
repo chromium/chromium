@@ -7,24 +7,15 @@
 
 #import "base/callback_list.h"
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/browser_view/public/browser_view_visibility_state_changed_callback.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 
-@protocol BrowserViewVisibilityAudience;
-@class BrowserViewVisibilityHandler;
 enum class BrowserViewVisibilityState;
 
 /// Browser agent that handles browser view visibility updates.
 class BrowserViewVisibilityNotifierBrowserAgent
     : public BrowserUserData<BrowserViewVisibilityNotifierBrowserAgent> {
  public:
-  /// List of callbacks invoked when the browser visibility changes.
-  using VisibilityChangedCallbackList = base::RepeatingCallbackList<void(
-      BrowserViewVisibilityState current_state,
-      BrowserViewVisibilityState previous_state)>;
-
-  // Callback invoked when the browser visibility changes.
-  using VisibilityChangedCallback = VisibilityChangedCallbackList::CallbackType;
-
   /// Not copyable or moveable
   BrowserViewVisibilityNotifierBrowserAgent(
       const BrowserViewVisibilityNotifierBrowserAgent&) = delete;
@@ -35,11 +26,12 @@ class BrowserViewVisibilityNotifierBrowserAgent
   /// Registers `callback` to be called when the browser visibility changes.
   [[nodiscard]] base::CallbackListSubscription
   RegisterBrowserVisibilityStateChangedCallback(
-      const VisibilityChangedCallback& callback);
+      const BrowserViewVisibilityStateChangedCallback& callback);
 
-  /// Retrieve the `BrowserViewVisibilityAudience` object to be attached to the
-  /// browser view.
-  id<BrowserViewVisibilityAudience> GetBrowserViewVisibilityAudience();
+  /// Returns a BrowserViewVisibilityStateChangedCallback that can be used
+  /// to notify registered observers of the browser view visibility state
+  /// changes.
+  BrowserViewVisibilityStateChangedCallback GetNotificationCallback();
 
  private:
   friend class BrowserUserData<BrowserViewVisibilityNotifierBrowserAgent>;
@@ -48,16 +40,16 @@ class BrowserViewVisibilityNotifierBrowserAgent
 
   explicit BrowserViewVisibilityNotifierBrowserAgent(Browser* browser);
 
-  /// Browser visibility has changed from `previous_state` to `current_state`.
+  /// Notify registered callbacks that the Browser visibility has changed from
+  /// `previous_state` to `current_state`.
   void BrowserViewVisibilityStateDidChange(
       BrowserViewVisibilityState current_state,
       BrowserViewVisibilityState previous_state);
 
-  /// The object that handles visibility updates.
-  BrowserViewVisibilityHandler* visibility_handler_;
-
   /// List of callbacks notified of the browser visibility changes.
-  VisibilityChangedCallbackList callbacks_;
+  base::RepeatingCallbackList<
+      BrowserViewVisibilityStateChangedCallback::RunType>
+      callbacks_;
 
   base::WeakPtrFactory<BrowserViewVisibilityNotifierBrowserAgent>
       weak_ptr_factory_{this};

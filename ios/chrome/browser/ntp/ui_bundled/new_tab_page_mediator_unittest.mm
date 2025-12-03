@@ -17,7 +17,6 @@
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/test/test_sync_service.h"
-#import "ios/chrome/browser/browser_view/model/browser_view_visibility_audience.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
@@ -261,8 +260,6 @@ TEST_F(NewTabPageMediatorTest, TestShowAndHideFeed) {
 // Tests that the mediator updates the Discover feed with the visibility state
 // of the feed.
 TEST_F(NewTabPageMediatorTest, TestUpdateVisibilityStateOfFeed) {
-  using enum BrowserViewVisibilityState;
-
   CreateMediator();
   [mediator_ setUp];
 
@@ -271,35 +268,37 @@ TEST_F(NewTabPageMediatorTest, TestUpdateVisibilityStateOfFeed) {
       collectionViewLayout:[[UICollectionViewLayout alloc] init]];
   mediator_.contentCollectionView = collection_view;
 
-  id<BrowserViewVisibilityAudience> audience =
-      browser_view_visibility_notifier_->GetBrowserViewVisibilityAudience();
+  BrowserViewVisibilityStateChangedCallback callback =
+      browser_view_visibility_notifier_->GetNotificationCallback();
 
   // User is on new tab page.
   mediator_.NTPVisible = YES;
-  [audience browserViewDidTransitionToVisibilityState:kAppearing
-                                            fromState:kNotInViewHierarchy];
+  callback.Run(BrowserViewVisibilityState::kAppearing,
+               BrowserViewVisibilityState::kNotInViewHierarchy);
   EXPECT_EQ(test_discover_feed_service_->collection_view(), collection_view);
-  EXPECT_EQ(test_discover_feed_service_->visibility_state(), kAppearing);
+  EXPECT_EQ(test_discover_feed_service_->visibility_state(),
+            BrowserViewVisibilityState::kAppearing);
 
   // User turns off the feed.
   eligibility_handler_.enabled = false;
-  [audience browserViewDidTransitionToVisibilityState:kVisible
-                                            fromState:kAppearing];
-  EXPECT_EQ(test_discover_feed_service_->visibility_state(), kAppearing);
+  callback.Run(BrowserViewVisibilityState::kVisible,
+               BrowserViewVisibilityState::kAppearing);
+  EXPECT_EQ(test_discover_feed_service_->visibility_state(),
+            BrowserViewVisibilityState::kAppearing);
 
   // User turns the feed back on.
   eligibility_handler_.enabled = true;
-  [audience browserViewDidTransitionToVisibilityState:kCoveredByOmniboxPopup
-                                            fromState:kVisible];
+  callback.Run(BrowserViewVisibilityState::kCoveredByOmniboxPopup,
+               BrowserViewVisibilityState::kVisible);
   EXPECT_EQ(test_discover_feed_service_->visibility_state(),
-            kCoveredByOmniboxPopup);
+            BrowserViewVisibilityState::kCoveredByOmniboxPopup);
 
   // User has navigated away.
   mediator_.NTPVisible = NO;
-  [audience browserViewDidTransitionToVisibilityState:kVisible
-                                            fromState:kCoveredByOmniboxPopup];
+  callback.Run(BrowserViewVisibilityState::kVisible,
+               BrowserViewVisibilityState::kCoveredByOmniboxPopup);
   EXPECT_EQ(test_discover_feed_service_->visibility_state(),
-            kCoveredByOmniboxPopup);
+            BrowserViewVisibilityState::kCoveredByOmniboxPopup);
 }
 
 // Tests that -notifyLensBadgeDisplayed correctly notifies the tracker.

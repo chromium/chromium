@@ -21,8 +21,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
-#import "ios/chrome/browser/browser_view/model/browser_view_visibility_audience.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
+#import "ios/chrome/browser/browser_view/public/browser_view_visibility_state_changed_callback.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller+private.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/key_commands_provider.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h"
@@ -245,6 +245,10 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   // Used to fetch snapshots.
   raw_ptr<SnapshotBrowserAgent> _snapshotBrowserAgent;
 
+  // Callback invoked when the browser view visibility changes.
+  BrowserViewVisibilityStateChangedCallback
+      _browserViewVisibilityStateChangedCallback;
+
   // Used to get the layout guide center.
   LayoutGuideCenter* _layoutGuideCenter;
 
@@ -263,9 +267,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 // not active, the UI will not react to changes in the active web state, so
 // generally an inactive BVC should not be visible.
 @property(nonatomic, assign, getter=isActive) BOOL active;
-// Consumer that gets notified of the visibility of the browser view.
-@property(nonatomic, weak) id<BrowserViewVisibilityAudience>
-    browserViewVisibilityAudience;
 // Browser container view controller.
 @property(nonatomic, strong)
     BrowserContainerViewController* browserContainerViewController;
@@ -468,6 +469,16 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   [self updateOverlayContainerOrder];
 }
 
+- (const BrowserViewVisibilityStateChangedCallback&)
+    browserViewVisibilityStateChangedCallback {
+  return _browserViewVisibilityStateChangedCallback;
+}
+
+- (void)setBrowserViewVisibilityStateChangedCallback:
+    (const BrowserViewVisibilityStateChangedCallback&)callback {
+  _browserViewVisibilityStateChangedCallback = callback;
+}
+
 #pragma mark - Private Properties
 
 - (BOOL)isContentAreaObstructed {
@@ -482,11 +493,12 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   if (_visibilityState == state) {
     return;
   }
-  BrowserViewVisibilityState previousState = _visibilityState;
-  _visibilityState = state;
-  [self.browserViewVisibilityAudience
-      browserViewDidTransitionToVisibilityState:state
-                                      fromState:previousState];
+  const BrowserViewVisibilityState previousState =
+      std::exchange(_visibilityState, state);
+  if (_browserViewVisibilityStateChangedCallback) {
+    _browserViewVisibilityStateChangedCallback.Run(_visibilityState,
+                                                   previousState);
+  }
   [self updateBroadcastState];
   self.contentArea.accessibilityElementsHidden = self.contentAreaObstructed;
 }

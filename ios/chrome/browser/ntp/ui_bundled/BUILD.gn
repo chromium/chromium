@@ -377,7 +377,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/browser_view/model",
-    "//ios/chrome/browser/browser_view/model:audience",
+    "//ios/chrome/browser/browser_view/public",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/content_suggestions/ui_bundled:content_suggestions_constant",
     "//ios/chrome/browser/content_suggestions/ui_bundled:coordinator",

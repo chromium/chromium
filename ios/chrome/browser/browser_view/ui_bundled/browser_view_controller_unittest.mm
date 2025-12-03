@@ -188,6 +188,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
     FullscreenController::CreateForBrowser(browser_.get());
     DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser_.get());
+    BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
 
     WebUsageEnablerBrowserAgent::FromBrowser(browser_.get())
         ->SetWebUsageEnabled(true);
@@ -336,6 +337,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
                            keyCommandsProvider:key_commands_provider_
                                   dependencies:dependencies];
     bvc_.webUsageEnabled = YES;
+    bvc_.browserViewVisibilityStateChangedCallback =
+        BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser_.get())
+            ->GetNotificationCallback();
 
     id mockReauthHandler = OCMProtocolMock(@protocol(IncognitoReauthCommands));
     bvc_.reauthHandler = mockReauthHandler;

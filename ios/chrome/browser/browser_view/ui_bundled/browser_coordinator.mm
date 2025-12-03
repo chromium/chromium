@@ -1179,23 +1179,24 @@ const char kChromeAppStoreUrl[] =
 - (void)createViewController {
   DCHECK(self.browserContainerCoordinator.viewController);
 
+  Browser* browser = self.browser;
   _viewController = [[BrowserViewController alloc]
       initWithBrowserContainerViewController:self.browserContainerCoordinator
                                                  .viewController
                          keyCommandsProvider:_keyCommandsProvider
                                 dependencies:_viewControllerDependencies];
 
-  id<BrowserViewVisibilityAudience> visibilityAudience =
-      BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(self.browser)
-          ->GetBrowserViewVisibilityAudience();
-  _viewController.browserViewVisibilityAudience = visibilityAudience;
+  _viewController.browserViewVisibilityStateChangedCallback =
+      BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser)
+          ->GetNotificationCallback();
+
   self.tabLifecycleMediator.baseViewController = self.viewController;
   self.tabLifecycleMediator.passwordControllerDelegate = self;
 
   _webNavigationBrowserAgent->SetDelegate(self);
 
   self.contextMenuProvider = [[ContextMenuConfigurationProvider alloc]
-         initWithBrowser:self.browser
+         initWithBrowser:browser
       baseViewController:_viewController];
 }
 
@@ -1203,7 +1204,6 @@ const char kChromeAppStoreUrl[] =
 - (void)destroyViewController {
   _viewController.active = NO;
   _viewController.webUsageEnabled = NO;
-  _viewController.browserViewVisibilityAudience = nil;
 
   [self.contextMenuProvider stop];
   self.contextMenuProvider = nil;
