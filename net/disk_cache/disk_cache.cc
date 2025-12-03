@@ -22,6 +22,7 @@
 #include "net/base/cache_type.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
+#include "net/disk_cache/basic_cache_file.h"
 #include "net/disk_cache/blockfile/backend_impl.h"
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/cache_encryption_delegate.h"
@@ -624,8 +625,9 @@ bool TrivialFileOperations::DirectoryExists(const base::FilePath& path) {
   return result;
 }
 
-base::File TrivialFileOperations::OpenFile(const base::FilePath& path,
-                                           uint32_t flags) {
+std::unique_ptr<CacheFile> TrivialFileOperations::OpenFile(
+    const base::FilePath& path,
+    uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(path.IsAbsolute());
 #if DCHECK_IS_ON()
@@ -633,7 +635,7 @@ base::File TrivialFileOperations::OpenFile(const base::FilePath& path,
 #endif
 
   base::File file(path, flags);
-  return file;
+  return std::make_unique<BasicCacheFile>(std::move(file));
 }
 
 bool TrivialFileOperations::DeleteFile(const base::FilePath& path,

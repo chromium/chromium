@@ -29,7 +29,8 @@ class MojoBackendFileOperations final
   bool CreateDirectory(const base::FilePath& path) override;
   bool PathExists(const base::FilePath& path) override;
   bool DirectoryExists(const base::FilePath& path) override;
-  base::File OpenFile(const base::FilePath& path, uint32_t flags) override;
+  std::unique_ptr<disk_cache::CacheFile> OpenFile(const base::FilePath& path,
+                                                  uint32_t flags) override;
   bool DeleteFile(const base::FilePath& path, DeleteFileMode mode) override;
   bool ReplaceFile(const base::FilePath& from_path,
                    const base::FilePath& to_path,

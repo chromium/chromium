@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "net/base/net_export.h"
+#include "net/disk_cache/cache_file.h"
 #include "net/disk_cache/simple/simple_entry_format.h"
 
 namespace disk_cache {
@@ -55,8 +56,8 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
 
     ~FileHandle();
     FileHandle& operator=(FileHandle&& other);
-    base::File* operator->() const;
-    base::File* get() const;
+    CacheFile* operator->() const;
+    CacheFile* get() const;
     // Returns true if this handle points to a valid file. This should normally
     // be the first thing called on the object, after getting it from
     // SimpleFileTracker::Acquire.
@@ -67,13 +68,13 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
     FileHandle(SimpleFileTracker* file_tracker,
                const SimpleSynchronousEntry* entry,
                SimpleFileTracker::SubFile subfile,
-               base::File* file);
+               CacheFile* file);
 
     // All the pointer fields are nullptr in the default/moved away from form.
     raw_ptr<SimpleFileTracker> file_tracker_ = nullptr;
     raw_ptr<const SimpleSynchronousEntry> entry_ = nullptr;
     SimpleFileTracker::SubFile subfile_;
-    raw_ptr<base::File> file_ = nullptr;
+    raw_ptr<CacheFile> file_ = nullptr;
   };
 
   struct EntryFileKey {
@@ -106,7 +107,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
   // destroyed. |file->IsValid()| must be true.
   void Register(const SimpleSynchronousEntry* owner,
                 SubFile subfile,
-                std::unique_ptr<base::File> file);
+                std::unique_ptr<CacheFile> file);
 
   // Lends out a file to SimpleSynchronousEntry for use. SimpleFileTracker
   // will ensure that it doesn't close the file until the handle is destroyed.
@@ -182,7 +183,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
     // Note that these are stored indirect since we hand out pointers to these,
     // and we don't want those to become invalid if some other thread appends
     // things here.
-    std::array<std::unique_ptr<base::File>, kSimpleEntryTotalFileCount> files;
+    std::array<std::unique_ptr<CacheFile>, kSimpleEntryTotalFileCount> files;
 
     std::array<State, kSimpleEntryTotalFileCount> state;
   };
@@ -196,13 +197,13 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
 
   // Handles state transition of closing file (when we are not deferring it),
   // and moves the file out. Note that this may delete |*owners_files|.
-  std::unique_ptr<base::File> PrepareClose(TrackedFiles* owners_files,
-                                           int file_index);
+  std::unique_ptr<CacheFile> PrepareClose(TrackedFiles* owners_files,
+                                          int file_index);
 
   // If too many files are open, picks some to close, and moves them to
   // |*files_to_close|, updating other state as appropriate.
   void CloseFilesIfTooManyOpen(
-      std::vector<std::unique_ptr<base::File>>* files_to_close);
+      std::vector<std::unique_ptr<CacheFile>>* files_to_close);
 
   // Tries to reopen given file, updating |*owners_files| if successful.
   void ReopenFile(BackendFileOperations* file_operations,

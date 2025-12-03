@@ -276,7 +276,7 @@ class SimpleSynchronousEntry {
                  SimpleEntryStat* out_entry_stat,
                  WriteResult* out_write_result);
   int CheckEOFRecord(BackendFileOperations* file_operations,
-                     base::File* file,
+                     CacheFile* file,
                      int stream_index,
                      const SimpleEntryStat& entry_stat,
                      uint32_t expected_crc32);
@@ -365,7 +365,7 @@ class SimpleSynchronousEntry {
   // they are correct. If this entry was opened with a key, the key is checked
   // for a match. If not, then the |key_| member is set based on the value in
   // this header. Records histograms if any check is failed.
-  bool CheckHeaderAndKey(base::File* file, int file_index);
+  bool CheckHeaderAndKey(CacheFile* file, int file_index);
 
   // Returns a net error, i.e. net::OK on success.
   int InitializeForOpen(
@@ -395,7 +395,7 @@ class SimpleSynchronousEntry {
   // with |file_0_prefetch| potentially having prefetched file 0 content.
   // Puts the result into |*eof_record| and sanity-checks it.
   // Returns net status, and records any failures to UMA.
-  int GetEOFRecordData(base::File* file,
+  int GetEOFRecordData(CacheFile* file,
                        PrefetchData* prefetch_data,
                        int file_index,
                        int64_t file_offset,
@@ -403,7 +403,7 @@ class SimpleSynchronousEntry {
 
   // Reads either from |file_0_prefetch| or |file|.
   // Range-checks all the in-memory reads.
-  bool ReadFromFileOrPrefetched(base::File* file,
+  bool ReadFromFileOrPrefetched(CacheFile* file,
                                 PrefetchData* prefetch_data,
                                 int file_index,
                                 int64_t offset,
@@ -418,7 +418,7 @@ class SimpleSynchronousEntry {
   // |*stream_data| will be pointed to a fresh buffer with the results,
   // and |*out_crc32| will get the checksum, which will be verified against
   // |eof_record|.
-  int PreReadStreamPayload(base::File* file,
+  int PreReadStreamPayload(CacheFile* file,
                            PrefetchData* prefetch_data,
                            int stream_index,
                            int extra_size,
@@ -437,19 +437,19 @@ class SimpleSynchronousEntry {
   void CloseSparseFile(BackendFileOperations* file_operations);
 
   // Writes the header to the (newly-created) sparse file.
-  bool InitializeSparseFile(base::File* file);
+  bool InitializeSparseFile(CacheFile* file);
 
   // Removes all but the header of the sparse file.
-  bool TruncateSparseFile(base::File* sparse_file);
+  bool TruncateSparseFile(CacheFile* sparse_file);
 
   // Scans the existing ranges in the sparse file. Populates `sparse_ranges_`
   // and sets `*out_sparse_data_size` to the total size of all the ranges (not
   // including headers).
-  bool ScanSparseFile(base::File* sparse_file, uint64_t* out_sparse_data_size);
+  bool ScanSparseFile(CacheFile* sparse_file, uint64_t* out_sparse_data_size);
 
   // Reads from a single sparse range. If asked to read the entire range, also
   // verifies the CRC32.
-  bool ReadSparseRange(base::File* sparse_file,
+  bool ReadSparseRange(CacheFile* sparse_file,
                        const SparseRange* range,
                        size_t offset_in_range,
                        size_t len,
@@ -457,14 +457,14 @@ class SimpleSynchronousEntry {
 
   // Writes to a single (existing) sparse range. If asked to write the entire
   // range, also updates the CRC32; otherwise, invalidates it.
-  bool WriteSparseRange(base::File* sparse_file,
+  bool WriteSparseRange(CacheFile* sparse_file,
                         SparseRange* range,
                         size_t offset_in_range,
                         size_t len,
                         base::span<const uint8_t> buf);
 
   // Appends a new sparse range to the sparse data file.
-  bool AppendSparseRange(base::File* sparse_file,
+  bool AppendSparseRange(CacheFile* sparse_file,
                          uint64_t offset,
                          size_t len,
                          base::span<const uint8_t> buf);

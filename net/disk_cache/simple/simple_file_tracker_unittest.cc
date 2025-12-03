@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/disk_cache/simple/simple_file_tracker.h"
+
 #include <memory>
 #include <string>
 #include <string_view>
@@ -14,9 +16,9 @@
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "net/base/cache_type.h"
+#include "net/disk_cache/basic_cache_file.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/disk_cache_test_base.h"
-#include "net/disk_cache/simple/simple_file_tracker.h"
 #include "net/disk_cache/simple/simple_histogram_enums.h"
 #include "net/disk_cache/simple/simple_synchronous_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -87,9 +89,9 @@ TEST_F(SimpleFileTrackerTest, Basic) {
   ASSERT_TRUE(file_1->IsValid());
 
   file_tracker_.Register(entry.get(), SimpleFileTracker::SubFile::FILE_0,
-                         std::move(file_0));
+                         std::make_unique<BasicCacheFile>(std::move(*file_0)));
   file_tracker_.Register(entry.get(), SimpleFileTracker::SubFile::FILE_1,
-                         std::move(file_1));
+                         std::make_unique<BasicCacheFile>(std::move(*file_1)));
 
   std::string_view msg_0 = "Hello";
   std::string_view msg_1 = "Worldish Place";
@@ -135,9 +137,9 @@ TEST_F(SimpleFileTrackerTest, Collision) {
   ASSERT_TRUE(file2->IsValid());
 
   file_tracker_.Register(entry.get(), SimpleFileTracker::SubFile::FILE_0,
-                         std::move(file));
+                         std::make_unique<BasicCacheFile>(std::move(*file)));
   file_tracker_.Register(entry2.get(), SimpleFileTracker::SubFile::FILE_0,
-                         std::move(file2));
+                         std::make_unique<BasicCacheFile>(std::move(*file2)));
 
   std::string_view msg = "Alpha";
   std::string_view msg2 = "Beta";
@@ -179,16 +181,16 @@ TEST_F(SimpleFileTrackerTest, Reopen) {
   ASSERT_TRUE(file_1->IsValid());
 
   file_tracker_.Register(entry.get(), SimpleFileTracker::SubFile::FILE_0,
-                         std::move(file_0));
+                         std::make_unique<BasicCacheFile>(std::move(*file_0)));
   file_tracker_.Register(entry.get(), SimpleFileTracker::SubFile::FILE_1,
-                         std::move(file_1));
+                         std::make_unique<BasicCacheFile>(std::move(*file_1)));
 
   file_tracker_.Close(entry.get(), SimpleFileTracker::SubFile::FILE_1);
   std::unique_ptr<base::File> file_1b = std::make_unique<base::File>(
       path_1, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
   ASSERT_TRUE(file_1b->IsValid());
   file_tracker_.Register(entry.get(), SimpleFileTracker::SubFile::FILE_1,
-                         std::move(file_1b));
+                         std::make_unique<BasicCacheFile>(std::move(*file_1b)));
   file_tracker_.Close(entry.get(), SimpleFileTracker::SubFile::FILE_0);
   file_tracker_.Close(entry.get(), SimpleFileTracker::SubFile::FILE_1);
   EXPECT_TRUE(file_tracker_.IsEmptyForTesting());
@@ -208,7 +210,7 @@ TEST_F(SimpleFileTrackerTest, PointerStability) {
       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   ASSERT_TRUE(file_0->IsValid());
   file_tracker_.Register(entries[0].get(), SimpleFileTracker::SubFile::FILE_0,
-                         std::move(file_0));
+                         std::make_unique<BasicCacheFile>(std::move(*file_0)));
 
   std::string_view msg = "Message to write";
   {
@@ -219,9 +221,9 @@ TEST_F(SimpleFileTrackerTest, PointerStability) {
           cache_path_.AppendASCII(base::NumberToString(i)),
           base::File::FLAG_CREATE | base::File::FLAG_WRITE);
       ASSERT_TRUE(file_n->IsValid());
-      file_tracker_.Register(entries[i].get(),
-                             SimpleFileTracker::SubFile::FILE_0,
-                             std::move(file_n));
+      file_tracker_.Register(
+          entries[i].get(), SimpleFileTracker::SubFile::FILE_0,
+          std::make_unique<BasicCacheFile>(std::move(*file_n)));
     }
 
     EXPECT_EQ(msg.size(), borrow->Write(0, base::as_byte_span(msg)));
@@ -245,7 +247,7 @@ TEST_F(SimpleFileTrackerTest, Doom) {
   ASSERT_TRUE(file1->IsValid());
 
   file_tracker_.Register(entry1.get(), SimpleFileTracker::SubFile::FILE_0,
-                         std::move(file1));
+                         std::make_unique<BasicCacheFile>(std::move(*file1)));
   SimpleFileTracker::EntryFileKey key1 = entry1->entry_file_key();
   file_tracker_.Doom(entry1.get(), &key1);
   EXPECT_NE(0u, key1.doom_generation);
@@ -258,7 +260,7 @@ TEST_F(SimpleFileTrackerTest, Doom) {
   ASSERT_TRUE(file2->IsValid());
 
   file_tracker_.Register(entry2.get(), SimpleFileTracker::SubFile::FILE_0,
-                         std::move(file2));
+                         std::make_unique<BasicCacheFile>(std::move(*file2)));
   SimpleFileTracker::EntryFileKey key2 = entry2->entry_file_key();
   file_tracker_.Doom(entry2.get(), &key2);
   EXPECT_NE(0u, key2.doom_generation);
@@ -284,7 +286,7 @@ TEST_F(SimpleFileTrackerTest, OverLimit) {
                   base::File::FLAG_READ);
     ASSERT_TRUE(file->IsValid());
     file_tracker_.Register(entry.get(), SimpleFileTracker::SubFile::FILE_0,
-                           std::move(file));
+                           std::make_unique<BasicCacheFile>(std::move(*file)));
     entries.push_back(std::move(entry));
     names.push_back(name);
   }

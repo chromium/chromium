@@ -14,6 +14,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/pickle.h"
+#include "net/disk_cache/cache_file.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/simple/simple_backend_version.h"
 #include "net/disk_cache/simple/simple_entry_format.h"
@@ -35,10 +36,11 @@ void LogMessageFailedUpgradeFromVersion(int version) {
 
 bool WriteFakeIndexFile(disk_cache::BackendFileOperations* file_operations,
                         const base::FilePath& file_name) {
-  base::File file = file_operations->OpenFile(
+  std::unique_ptr<disk_cache::CacheFile> file = file_operations->OpenFile(
       file_name, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  if (!file.IsValid())
+  if (!file->IsValid()) {
     return false;
+  }
 
   disk_cache::FakeIndexData file_contents;
   file_contents.initial_magic_number = disk_cache::kSimpleInitialMagicNumber;
@@ -47,7 +49,7 @@ bool WriteFakeIndexFile(disk_cache::BackendFileOperations* file_operations,
   file_contents.zero2 = 0;
   file_contents.encryption_status = file_operations->IsEncrypted() ? 1 : 0;
 
-  if (!file.WriteAndCheck(0, base::byte_span_from_ref(file_contents))) {
+  if (!file->WriteAndCheck(0, base::byte_span_from_ref(file_contents))) {
     LOG(ERROR) << "Failed to write fake index file: "
                << file_name.LossyDisplayName();
     return false;
@@ -95,11 +97,11 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
   // 2. The Simple Backend has pickled file format for the index making it hacky
   //    to have the magic in the right place.
   const base::FilePath fake_index = path.AppendASCII(kFakeIndexFileName);
-  base::File fake_index_file = file_operations->OpenFile(
+  std::unique_ptr<CacheFile> fake_index_file = file_operations->OpenFile(
       fake_index, base::File::FLAG_OPEN | base::File::FLAG_READ);
 
-  if (!fake_index_file.IsValid()) {
-    if (fake_index_file.error_details() == base::File::FILE_ERROR_NOT_FOUND) {
+  if (!fake_index_file->IsValid()) {
+    if (fake_index_file->error_details() == base::File::FILE_ERROR_NOT_FOUND) {
       if (!WriteFakeIndexFile(file_operations, fake_index)) {
         file_operations->DeleteFile(fake_index);
         LOG(ERROR) << "Failed to write a new fake index.";
@@ -111,7 +113,8 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
   }
 
   FakeIndexData file_header;
-  if (!fake_index_file.ReadAndCheck(0, base::byte_span_from_ref(file_header))) {
+  if (!fake_index_file->ReadAndCheck(0,
+                                     base::byte_span_from_ref(file_header))) {
     LOG(ERROR) << "Disk cache backend fake index file has wrong size.";
     return SimpleCacheConsistencyResult::kBadFakeIndexReadSize;
   }
@@ -119,7 +122,7 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
     LOG(ERROR) << "Disk cache backend fake index file has wrong magic number.";
     return SimpleCacheConsistencyResult::kBadInitialMagicNumber;
   }
-  fake_index_file.Close();
+  fake_index_file.reset();
 
   uint32_t version_from = file_header.version;
   if (version_from < kMinVersionAbleToUpgrade) {

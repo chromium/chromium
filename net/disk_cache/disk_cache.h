@@ -27,6 +27,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
+#include "net/disk_cache/cache_file.h"
 
 namespace base {
 class FilePath;
@@ -667,7 +668,9 @@ class BackendFileOperations {
   virtual bool DirectoryExists(const base::FilePath& path) = 0;
 
   // Opens a file with the given path and flags. Returns the opened file.
-  virtual base::File OpenFile(const base::FilePath& path, uint32_t flags) = 0;
+  // Implementations must ensure the returned `CacheFile` object is not null.
+  virtual std::unique_ptr<CacheFile> OpenFile(const base::FilePath& path,
+                                              uint32_t flags) = 0;
 
   // Deletes a file with the given path and returns whether that succeeded.
   virtual bool DeleteFile(const base::FilePath& path,
@@ -744,7 +747,8 @@ class NET_EXPORT TrivialFileOperations : public BackendFileOperations {
   bool CreateDirectory(const base::FilePath& path) override;
   bool PathExists(const base::FilePath& path) override;
   bool DirectoryExists(const base::FilePath& path) override;
-  base::File OpenFile(const base::FilePath& path, uint32_t flags) override;
+  std::unique_ptr<CacheFile> OpenFile(const base::FilePath& path,
+                                      uint32_t flags) override;
   bool DeleteFile(const base::FilePath& path, DeleteFileMode mode) override;
   bool ReplaceFile(const base::FilePath& from_path,
                    const base::FilePath& to_path,

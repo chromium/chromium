@@ -59,6 +59,8 @@ component("network_service") {
     "enterprise/encryption/encrypted_backend_file_operations.h",
     "enterprise/encryption/encrypted_backend_file_operations_factory.cc",
     "enterprise/encryption/encrypted_backend_file_operations_factory.h",
+    "enterprise/encryption/encrypted_cache_file.cc",
+    "enterprise/encryption/encrypted_cache_file.h",
     "enterprise/encryption/os_crypt_cache_encryption_delegate.cc",
     "enterprise/encryption/os_crypt_cache_encryption_delegate.h",
     "file_opener_for_upload.cc",
