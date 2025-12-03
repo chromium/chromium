@@ -9260,21 +9260,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "scrollable-tabstrip",
-    "owners": [ "top-chrome-desktop-ui@google.com", "tbergquist@chromium.org" ],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "scrollable-tabstrip-overflow",
-    "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org" ],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "scrollable-tabstrip-with-dragging",
-    "owners": [ "top-chrome-desktop-ui@google.com", "shibalik@chromium.org" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "sct-auditing",
     "owners": [ "cthomp@chromium.org", "estark@chromium.org", "jdeblasio@chromium.org" ],
     "expiry_milestone": 92
@@ -9662,14 +9647,6 @@
       "chromeos-security@google.com"
     ],
     "expiry_milestone": 150
-  },
-  {
-    "name": "split-tabstrip",
-    "owners": [
-      "top-chrome-desktop-ui@google.com",
-      "tbergquist@chromium.org"
-    ],
-    "expiry_milestone": 115
   },
   {
     "name": "spotlight-never-retain-index",
