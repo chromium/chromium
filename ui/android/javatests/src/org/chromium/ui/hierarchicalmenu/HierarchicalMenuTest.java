@@ -12,7 +12,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.SystemClock;
 import android.view.InputDevice;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -37,7 +35,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.SubmenuHeaderFactory;
-import org.chromium.ui.listmenu.KeyboardAccessibleListView;
 import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -332,118 +329,6 @@ public class HierarchicalMenuTest {
                 () -> mDismissRunnableExecuted.get(), "Dismiss runnable was not executed");
     }
 
-    @Test
-    @MediumTest
-    public void testKeyboardNavigationForFlyout() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mController.setDrillDownOverrideValueForTesting(false);
-                });
-
-        // There should be one popup open.
-        CriteriaHelper.pollUiThread(
-                () -> mFlyoutController.getNumberOfPopups() == 1, "Popup count did not reach 1");
-
-        boolean isItem1Focused =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            View item1 = findViewWithText(mPopupView, "Item 1 >");
-                            return item1 != null && item1.hasFocus();
-                        });
-        if (!isItem1Focused) {
-            // If in touch mode, down key should set focus on Item 1 on the main popup.
-            InstrumentationRegistry.getInstrumentation()
-                    .sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_DOWN);
-        }
-
-        // Enter key should open the flyout popup for Item 1.
-        waitForViewWithText(
-                getRootViewWithPopupIndex(mFlyoutController, 0),
-                "Item 1 >",
-                /* requireFocus= */ true);
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_ENTER);
-        CriteriaHelper.pollUiThread(
-                () -> mFlyoutController.getNumberOfPopups() == 2, "Popup count did not reach 2");
-
-        // Enter key should open the flyout popup for Item 1-1.
-        waitForViewWithText(
-                getRootViewWithPopupIndex(mFlyoutController, 1),
-                "Item 1-1 >",
-                /* requireFocus= */ true);
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_ENTER);
-        CriteriaHelper.pollUiThread(
-                () -> mFlyoutController.getNumberOfPopups() == 3, "Popup count did not reach 3");
-
-        // Left key should dismiss one flyout popup and return the focus to Item 1-1.
-        waitForViewWithText(
-                getRootViewWithPopupIndex(mFlyoutController, 2),
-                "Item 1-1-1",
-                /* requireFocus= */ true);
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_LEFT);
-        CriteriaHelper.pollUiThread(
-                () -> mFlyoutController.getNumberOfPopups() == 2, "Popup count did not reach 2");
-
-        // Left key should dismiss one flyout popup and return the focus to Item 1.
-        waitForViewWithText(
-                getRootViewWithPopupIndex(mFlyoutController, 1),
-                "Item 1-1 >",
-                /* requireFocus= */ true);
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_LEFT);
-        CriteriaHelper.pollUiThread(
-                () -> mFlyoutController.getNumberOfPopups() == 1, "Popup count did not reach 1");
-    }
-
-    @Test
-    @MediumTest
-    public void testKeyboardNavigationForDrillDown() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mController.setDrillDownOverrideValueForTesting(true);
-                });
-
-        Assert.assertNotNull(
-                "Item 1 should be visible", waitForViewWithText(mPopupView, "Item 1 >"));
-
-        boolean isItem1Focused =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            View item1 = findViewWithText(mPopupView, "Item 1 >");
-                            return item1 != null && item1.hasFocus();
-                        });
-        if (!isItem1Focused) {
-            // If in touch mode, down key should set focus on Item 1 on the main popup.
-            InstrumentationRegistry.getInstrumentation()
-                    .sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_DOWN);
-        }
-
-        // Enter key should navigate to submenus for Item 1.
-        waitForViewWithText(mPopupView, "Item 1 >", /* requireFocus= */ true);
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_ENTER);
-        Assert.assertNotNull(
-                "Item 1-1 should be visible", waitForViewWithText(mPopupView, "Item 1-1 >"));
-
-        // Down key should set focus on Item 1-1 on the main popup.
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_DOWN);
-        waitForViewWithText(mPopupView, "Item 1-1 >", /* requireFocus= */ true);
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_ENTER);
-        Assert.assertNotNull(
-                "Item 1-1-1 should be visible", waitForViewWithText(mPopupView, "Item 1-1-1"));
-
-        // The up key should set focus on the header.
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_UP);
-        waitForViewWithText(mPopupView, "Header", /* requireFocus= */ true);
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_ENTER);
-        Assert.assertNotNull(
-                "Item 1-1 should be visible", waitForViewWithText(mPopupView, "Item 1-1 >"));
-
-        // The up key should set focus on the header.
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_UP);
-        waitForViewWithText(mPopupView, "Header", /* requireFocus= */ true);
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_ENTER);
-        Assert.assertNotNull(
-                "Item 1 should be visible", waitForViewWithText(mPopupView, "Item 1 >"));
-    }
-
     /** Manually dispatches a {@code HOVER_ENTER} event to a specific target view. */
     private void dispatchHoverEnterEvent(View target) {
         long now = SystemClock.uptimeMillis();
@@ -470,10 +355,9 @@ public class HierarchicalMenuTest {
      * @return The configured ListView.
      */
     private static ListView createStyledListView(Context context, ModelList items) {
-        ListView listView = new KeyboardAccessibleListView(context);
+        ListView listView = new ListView(context);
         listView.setBackgroundColor(Color.WHITE);
         listView.setDivider(null);
-        listView.setItemsCanFocus(true);
 
         ModelListAdapter adapter = new ModelListAdapter(items);
 
@@ -492,16 +376,12 @@ public class HierarchicalMenuTest {
                     } else if (key == HierarchicalMenuTestUtils.HOVER_LISTENER) {
                         view.setOnHoverListener(
                                 model.get(HierarchicalMenuTestUtils.HOVER_LISTENER));
-                    } else if (key == HierarchicalMenuTestUtils.KEY_LISTENER) {
-                        view.setOnKeyListener(model.get(HierarchicalMenuTestUtils.KEY_LISTENER));
                     }
                 };
 
         MVCListAdapter.ViewBuilder<TextView> builder =
                 parent -> {
                     TextView view = new TextView(context);
-                    view.setFocusable(true);
-                    view.setFocusableInTouchMode(false);
                     view.setPadding(30, 30, 30, 30);
                     GradientDrawable border = new GradientDrawable();
                     border.setColor(Color.WHITE);
@@ -629,22 +509,11 @@ public class HierarchicalMenuTest {
      * in the background window.
      */
     private View waitForViewWithText(View root, String text) {
-        return waitForViewWithText(root, text, /* requireFocus= */ false);
-    }
-
-    /**
-     * Polls the UI thread until a view with the specific text is found and attached to the window.
-     *
-     * @param context Whether to wait until the view gets focus as well.
-     */
-    private View waitForViewWithText(View root, String text, boolean requireFocus) {
         final View[] result = new View[1];
         CriteriaHelper.pollUiThread(
                 () -> {
                     View found = findViewWithText(root, text);
-                    if (found != null
-                            && found.isAttachedToWindow()
-                            && (!requireFocus || (found.hasFocus() && found.hasWindowFocus()))) {
+                    if (found != null && found.isAttachedToWindow()) {
                         result[0] = found;
                         return true;
                     }
