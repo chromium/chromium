@@ -60,12 +60,19 @@ void SetChildLocation(const PhysicalBoxFragment& parent_node_fragment,
                       const PhysicalBoxFragment* parent_fragmentainer,
                       PhysicalOffset parent_fragmentainer_offset,
                       OutOfFlowDescendants* oof_descendants) {
+  // Incomplete layout? See crbug.com/464464623
+  CHECK(!child_fragment.IsLayoutObjectDestroyedOrMoved());
+
   if (!child_fragment.IsFirstForNode()) {
     return;
   }
 
   auto* child_layout_box =
       To<LayoutBox>(child_fragment.GetMutableLayoutObject());
+
+  // As long as this is a CSS box, and not a fragmentainer, there should be a
+  // LayoutBox here. And we shouldn't be here if it's a fragmentainer.
+  CHECK(child_layout_box);
 
   if (parent_fragmentainer && child_fragment.IsOutOfFlowPositioned()) {
     // The containing block of an out-of-flow positioned element may be an
