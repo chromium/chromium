@@ -9,6 +9,11 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace glic::test {
 
 namespace {
@@ -20,9 +25,23 @@ using MultiStep = GlicActorUiTest::MultiStep;
 
 class GlicActorToctouUiTest : public GlicActorUiTest {
  public:
+  GlicActorToctouUiTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/465305046): Investigate how the rounded windows feature
+    // affects the hit test.
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kFeatureManagementRoundedWindows);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
   MultiStep NavigateFrame(ui::ElementIdentifier webcontents_id,
                           const std::string_view frame,
                           const GURL& url);
+
+ private:
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 MultiStep GlicActorToctouUiTest::NavigateFrame(
@@ -34,16 +53,8 @@ MultiStep GlicActorToctouUiTest::NavigateFrame(
                                        "').src='", url.spec(), "';}"})));
 }
 
-// TODO(crbug.com/460825984): Re-enable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ToctouCheckFailWhenCrossOriginTargetFrameChange \
-  DISABLED_ToctouCheckFailWhenCrossOriginTargetFrameChange
-#else
-#define MAYBE_ToctouCheckFailWhenCrossOriginTargetFrameChange \
-  ToctouCheckFailWhenCrossOriginTargetFrameChange
-#endif
 IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
-                       MAYBE_ToctouCheckFailWhenCrossOriginTargetFrameChange) {
+                       ToctouCheckFailWhenCrossOriginTargetFrameChange) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/two_iframes.html");
