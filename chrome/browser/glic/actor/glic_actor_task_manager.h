@@ -19,6 +19,8 @@ namespace actor {
 struct ActionResultWithLatencyInfo;
 class ActorKeyedService;
 class ActorTaskDelegate;
+class ActorTask;
+class ObservationDelayController;
 }  // namespace actor
 
 namespace glic {
@@ -69,14 +71,19 @@ class GlicActorTaskManager {
       actor::mojom::ActionResultCode result_code,
       std::optional<size_t> index_of_failed_action,
       std::vector<actor::ActionResultWithLatencyInfo> action_results);
+  void ReloadTab(actor::ActorTask& task, base::OnceClosure callback);
   void CreateActorTabFinished(
       glic::mojom::WebClientHandler::CreateActorTabCallback callback,
       tabs::TabInterface* new_tab);
+  void ReloadObserverDone(base::OnceClosure callback);
+  void ResetTaskState();
 
   raw_ptr<Profile> profile_;
   raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
 
   actor::TaskId current_task_id_;
+  bool attempted_reload_ = false;
+  std::unique_ptr<actor::ObservationDelayController> reload_observer_;
 
   base::WeakPtrFactory<GlicActorTaskManager> weak_ptr_factory_{this};
 };

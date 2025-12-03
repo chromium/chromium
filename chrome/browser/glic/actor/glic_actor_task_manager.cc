@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +26,7 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 
 namespace glic {
@@ -74,7 +76,7 @@ void GlicActorTaskManager::PerformActionsFinished(
 
   // Task has disappeared, clear the current task id.
   if (!task) {
-    current_task_id_ = actor::TaskId();
+    ResetTaskState();
     optimization_guide::proto::ActionsResult response =
         actor::BuildErrorActionsResult(
             actor::mojom::ActionResultCode::kTaskWentAway, std::nullopt);
@@ -93,24 +95,66 @@ void GlicActorTaskManager::PerformActionsFinished(
     return;
   }
 
-  // The callback doesn't need any weak semantics since all it does is wrap the
-  // result and pass it to the mojo callback. If `this` is destroyed the mojo
-  // connection is closed so this will be a no-op but the callback doesn't touch
-  // any freed memory.
-  auto result_callback = base::BindOnce(
-      [](mojom::WebClientHandler::PerformActionsCallback callback,
-         std::unique_ptr<optimization_guide::proto::ActionsResult> result,
-         std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
-             journal_entry) {
-        CHECK(result);
-        std::move(callback).Run(mojo_base::ProtoWrapper(*result));
-      },
-      std::move(callback));
+  if (!attempted_reload_ &&
+      result_code == actor::mojom::ActionResultCode::kRendererCrashed) {
+    // We call back into PerformActionsFinished once we've reloaded the tab.
+    auto peform_actions_done = base::BindOnce(
+        &GlicActorTaskManager::PerformActionsFinished,
+        weak_ptr_factory_.GetWeakPtr(), std::move(callback), task_id,
+        start_time, skip_async_observation_information, result_code,
+        index_of_failed_action, std::move(action_results));
+    ReloadTab(*task, std::move(peform_actions_done));
+  } else {
+    // The callback doesn't need any weak semantics since all it does is wrap
+    // the result and pass it to the mojo callback. If `this` is destroyed the
+    // mojo connection is closed so this will be a no-op but the callback
+    // doesn't touch any freed memory.
+    auto result_callback = base::BindOnce(
+        [](mojom::WebClientHandler::PerformActionsCallback callback,
+           std::unique_ptr<optimization_guide::proto::ActionsResult> result,
+           std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
+               journal_entry) {
+          CHECK(result);
+          std::move(callback).Run(mojo_base::ProtoWrapper(*result));
+        },
+        std::move(callback));
 
-  actor::BuildActionsResultWithObservations(
-      *profile_, start_time, result_code, index_of_failed_action,
-      std::move(action_results), *task, skip_async_observation_information,
-      std::move(result_callback));
+    actor::BuildActionsResultWithObservations(
+        *profile_, start_time, result_code, index_of_failed_action,
+        std::move(action_results), *task, skip_async_observation_information,
+        std::move(result_callback));
+  }
+}
+
+void GlicActorTaskManager::ReloadTab(actor::ActorTask& task,
+                                     base::OnceClosure callback) {
+  CHECK(!attempted_reload_);
+  // TODO(b/464019189): This code only deals with a single tab crashing. If
+  // they are multiple tabs that crashed we might want to figure out how to
+  // deal with that.
+  for (tabs::TabHandle tab_handle : task.GetLastActedTabs()) {
+    tabs::TabInterface* tab = tab_handle.Get();
+    if (!tab) {
+      continue;
+    }
+
+    if (content::WebContents* contents = tab->GetContents()) {
+      if (contents->IsCrashed()) {
+        attempted_reload_ = true;
+        reload_observer_ = std::make_unique<actor::ObservationDelayController>(
+            task.id(), actor_keyed_service_->GetJournal());
+        contents->GetController().Reload(content::ReloadType::NORMAL, true);
+        reload_observer_->Wait(
+            *tab, base::BindOnce(&GlicActorTaskManager::ReloadObserverDone,
+                                 base::Unretained(this), std::move(callback)));
+        return;
+      }
+    }
+  }
+
+  if (callback) {
+    std::move(callback).Run();
+  }
 }
 
 void GlicActorTaskManager::PerformActions(
@@ -190,7 +234,7 @@ void GlicActorTaskManager::StopActorTask(
     actor::TaskId task_id,
     mojom::ActorTaskStopReason stop_reason) {
   if (current_task_id_ == task_id) {
-    current_task_id_ = actor::TaskId();
+    ResetTaskState();
   }
 
   actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
@@ -428,11 +472,22 @@ void GlicActorTaskManager::CreateActorTabFinished(
       CreateTabData(new_tab ? new_tab->GetContents() : nullptr));
 }
 
+void GlicActorTaskManager::ReloadObserverDone(base::OnceClosure callback) {
+  reload_observer_.reset();
+  std::move(callback).Run();
+}
+
 void GlicActorTaskManager::CancelTask() {
   if (current_task_id_) {
     StopActorTask(current_task_id_,
                   glic::mojom::ActorTaskStopReason::kStoppedByUser);
   }
+}
+
+void GlicActorTaskManager::ResetTaskState() {
+  current_task_id_ = actor::TaskId();
+  attempted_reload_ = false;
+  reload_observer_.reset();
 }
 
 base::WeakPtr<GlicActorTaskManager> GlicActorTaskManager::GetWeakPtr() {
