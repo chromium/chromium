@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_propvariant.h"
 #include "media/base/decoder_buffer.h"

@@ -1,6 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "media/audio/mac/catap_audio_input_stream.h"
 
 #include <CoreAudioTypes/CoreAudioBaseTypes.h>
@@ -16,6 +17,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"

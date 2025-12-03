@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/base/test_data_util.h"
 #include "media/filters/hls_data_source_provider.h"

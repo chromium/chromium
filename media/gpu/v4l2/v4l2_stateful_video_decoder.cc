@@ -17,6 +17,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"

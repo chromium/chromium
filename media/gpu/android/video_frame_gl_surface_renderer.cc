@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/android/requires_api.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"

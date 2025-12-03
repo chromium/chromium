@@ -4,6 +4,7 @@
 
 #include "media/gpu/windows/d3d12_video_encode_accelerator.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "components/viz/common/resources/shared_image_format.h"

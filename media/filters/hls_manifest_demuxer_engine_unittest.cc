@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
