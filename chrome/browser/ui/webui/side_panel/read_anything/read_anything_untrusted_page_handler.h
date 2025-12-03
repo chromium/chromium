@@ -270,10 +270,6 @@ class ReadAnythingUntrustedPageHandler :
   // Logs the current visual settings values.
   void LogTextStyle();
 
-  // Adds this as an observer of the ReadAnythingSidePanelController tied to a
-  // tab.
-  void ObserveWebContentsSidePanelController(tabs::TabInterface* tab);
-
   void PerformActionInTargetTree(const ui::AXActionData& data);
 
   bool AreInnerContentsPdfContent(
