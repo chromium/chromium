@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -55,6 +56,15 @@ class CORE_EXPORT FocusController final
   explicit FocusController(Page*);
   FocusController(const FocusController&) = delete;
   FocusController& operator=(const FocusController&) = delete;
+
+  // If node is a reading-flow container or a display: contents element whose
+  // layout parent is a reading-flow container, return that container.
+  // This is a helper for SetReadingFlowInfo and Focusgroup. When called with
+  // |get_closest_ancestor| as true, it will return the closest ancestor
+  // container if one exists.
+  static const ContainerNode* ReadingFlowContainerOrDisplayContents(
+      const ContainerNode* node,
+      bool get_closest_ancestor = false);
 
   void SetFocusedFrame(Frame*, bool notify_embedder = true);
   void FocusDocumentView(Frame*, bool notify_embedder = true);

@@ -63,7 +63,8 @@ class CORE_EXPORT FocusgroupControllerUtils {
   STATIC_ONLY(FocusgroupControllerUtils);
 
  public:
-  static FocusgroupDirection FocusgroupDirectionForEvent(KeyboardEvent* event);
+  static FocusgroupDirection FocusgroupDirectionForEvent(
+      const KeyboardEvent* event);
   static bool IsDirectionBackward(FocusgroupDirection direction);
   static bool IsDirectionForward(FocusgroupDirection direction);
   static bool IsDirectionInline(FocusgroupDirection direction);
@@ -125,14 +126,14 @@ class CORE_EXPORT FocusgroupControllerUtils {
   // These helpers work on segments, not entire focusgroups. (see class comment
   // above for definition of segment).
   // If item is a focusgroup item, returns the first item in its segment.
-  static Element* FirstFocusgroupItemInSegment(const Element& item);
+  static const Element* FirstFocusgroupItemInSegment(const Element& item);
   // If item is a focusgroup item, returns the last item in its segment.
-  static Element* LastFocusgroupItemInSegment(const Element& item);
+  static const Element* LastFocusgroupItemInSegment(const Element& item);
 
   // |item| must be a focusgroup item. Returns the next item in its segment in
   // the given direction. Returns nullptr if |item| is not a focusgroup item or
   // if there is no next item in the segment in that direction.
-  static Element* NextFocusgroupItemInSegmentInDirection(
+  static const Element* NextFocusgroupItemInSegmentInDirection(
       const Element& item,
       const Element& focusgroup_owner,
       mojom::blink::FocusType direction);
@@ -171,12 +172,12 @@ class CORE_EXPORT FocusgroupControllerUtils {
   // |owner|: The focusgroup owner of |item| (must be valid).
   // |direction|: the direction that sequential focus navigation is moving in.
   static bool IsEntryElementForFocusgroupSegment(
-      Element& item,
-      Element& owner,
+      const Element& item,
+      const Element& owner,
       mojom::blink::FocusType direction);
-  static Element* GetEntryElementForFocusgroupSegment(
-      Element& item,
-      Element& owner,
+  static const Element* GetEntryElementForFocusgroupSegment(
+      const Element& item,
+      const Element& owner,
       mojom::blink::FocusType direction);
 
   // Returns true if the element is opted out or within an opted-out focusgroup
@@ -188,7 +189,7 @@ class CORE_EXPORT FocusgroupControllerUtils {
   static const Element* GetOptedOutSubtreeRoot(const Element* element);
 
   static GridFocusgroupStructureInfo*
-  CreateGridFocusgroupStructureInfoForGridRoot(Element* root);
+  CreateGridFocusgroupStructureInfoForGridRoot(const Element* root);
 };
 
 }  // namespace blink

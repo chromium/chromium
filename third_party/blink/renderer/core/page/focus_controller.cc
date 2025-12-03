@@ -350,28 +350,6 @@ const Element* InclusiveAncestorOpenPopoverWithInvoker(const Element* element) {
   return nullptr;
 }
 
-// If node is a reading-flow container or a display: contents element whose
-// layout parent is a reading-flow container, return that container.
-// This is a helper for SetReadingFlowInfo.
-const ContainerNode* ReadingFlowContainerOrDisplayContents(
-    const ContainerNode* node) {
-  if (!node) {
-    return nullptr;
-  }
-  if (node->IsReadingFlowContainer()) {
-    return node;
-  }
-  if (const Element* element = DynamicTo<Element>(node);
-      element && element->HasDisplayContentsStyle()) {
-    ContainerNode* closest_layout_parent =
-        LayoutTreeBuilderTraversal::LayoutParent(*node);
-    if (closest_layout_parent &&
-        closest_layout_parent->IsReadingFlowContainer()) {
-      return closest_layout_parent;
-    }
-  }
-  return nullptr;
-}
 
 // A reading-flow item scope owner is a reading-flow item that is not a scope
 // owner by other definitions.
@@ -395,7 +373,7 @@ bool IsReadingFlowItemScopeOwner(const ContainerNode* node) {
 // with a reading-flow container as its layout parent, or a reading-flow
 // item scope owner.
 bool IsReadingFlowScopeOwner(const ContainerNode* node) {
-  return ReadingFlowContainerOrDisplayContents(node) ||
+  return FocusController::ReadingFlowContainerOrDisplayContents(node) ||
          IsReadingFlowItemScopeOwner(node);
 }
 
@@ -441,7 +419,8 @@ class FocusNavigation final {
     Element* prev_element = nullptr;
     for (Element* child : children) {
       // Pseudo-elements in reading-flow are not focusable and should not be
-      // included in the elements to traverse.
+      // included in the elements to traverse. Keep in sync with the behavior in
+      // FocusgroupVisualOrderTraversalContext::BuildReadingFlowElementMappings.
       if (child->IsPseudoElement()) {
         continue;
       }
@@ -601,7 +580,8 @@ class FocusNavigation final {
       // We need to check the shadow host when the root is a shadow root.
       element = &shadow_root->host();
     }
-    if (auto* container = ReadingFlowContainerOrDisplayContents(element)) {
+    if (auto* container =
+            FocusController::ReadingFlowContainerOrDisplayContents(element)) {
       SetReadingFlowInfo(*container);
     }
     if (auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(element)) {
@@ -615,7 +595,8 @@ class FocusNavigation final {
     // Slot scope might have to follow reading flow if its closest layout
     // parent is a reading flow container.
     // TODO(crbug.com/336358906): Re-evaluate for content-visibility case.
-    if (auto* container = ReadingFlowContainerOrDisplayContents(&slot)) {
+    if (auto* container =
+            FocusController::ReadingFlowContainerOrDisplayContents(&slot)) {
       SetReadingFlowInfo(*container);
     }
   }
@@ -1484,6 +1465,28 @@ FocusController::FocusController(Page* page)
       is_focused_(false),
       is_changing_focused_frame_(false),
       is_emulating_focus_(false) {}
+
+// static
+const ContainerNode* FocusController::ReadingFlowContainerOrDisplayContents(
+    const ContainerNode* node,
+    bool get_closest_ancestor) {
+  if (!node) {
+    return nullptr;
+  }
+  if (node->IsReadingFlowContainer()) {
+    return node;
+  }
+  if (const Element* element = DynamicTo<Element>(node);
+      element && (element->HasDisplayContentsStyle() || get_closest_ancestor)) {
+    ContainerNode* closest_layout_parent =
+        LayoutTreeBuilderTraversal::LayoutParent(*node);
+    if (closest_layout_parent &&
+        closest_layout_parent->IsReadingFlowContainer()) {
+      return closest_layout_parent;
+    }
+  }
+  return nullptr;
+}
 
 void FocusController::SetFocusedFrame(Frame* frame, bool notify_embedder) {
   DCHECK(!frame || frame->GetPage() == page_);
