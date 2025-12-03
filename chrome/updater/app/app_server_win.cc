@@ -266,6 +266,8 @@ void AppServerWin::Stop() {
                                     GetAppServerWinInstance();
                                 this_server->update_service_ = nullptr;
                                 this_server->update_service_internal_ = nullptr;
+                                this_server->active_duty_stub_.reset();
+                                this_server->active_duty_internal_stub_.reset();
                                 this_server->Shutdown(0);
                               }));
 }
@@ -344,6 +346,11 @@ void AppServerWin::ActiveDuty(scoped_refptr<UpdateService> update_service) {
       update_service, base::BindRepeating(&AppServerWin::TaskStarted, this),
       base::BindRepeating(&AppServerWin::TaskCompleted, this));
 
+  active_duty_stub_ = std::make_unique<UpdateServiceStub>(
+      update_service, updater_scope(),
+      base::BindRepeating(&AppServerWin::TaskStarted, this),
+      base::BindRepeating(&AppServerWin::TaskCompleted, this));
+
   Start(base::BindOnce(&AppServerWin::RegisterClassObjects,
                        base::Unretained(this)));
 }
@@ -352,6 +359,11 @@ void AppServerWin::ActiveDutyInternal(
     scoped_refptr<UpdateServiceInternal> update_service_internal) {
   update_service_internal_ = base::MakeRefCounted<UpdateServiceInternalStubWin>(
       update_service_internal,
+      base::BindRepeating(&AppServerWin::TaskStarted, this),
+      base::BindRepeating(&AppServerWin::TaskCompleted, this));
+
+  active_duty_internal_stub_ = std::make_unique<UpdateServiceInternalStub>(
+      update_service_internal, updater_scope(),
       base::BindRepeating(&AppServerWin::TaskStarted, this),
       base::BindRepeating(&AppServerWin::TaskCompleted, this));
 

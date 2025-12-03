@@ -1497,8 +1497,7 @@ TEST_F(IntegrationTest, CheckForUpdate) {
 }
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/462797181): Disabled while mojo server is disabled.
-TEST_F(IntegrationTest, DISABLED_CheckForUpdateAndInstallAppViaMojo) {
+TEST_F(IntegrationTest, CheckForUpdateAndInstallAppViaMojo) {
   ScopedServer test_server(test_commands_);
   ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install());
