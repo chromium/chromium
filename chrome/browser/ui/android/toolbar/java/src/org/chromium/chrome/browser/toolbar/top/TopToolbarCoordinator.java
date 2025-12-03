@@ -133,7 +133,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     private int mFindToolbarToken = TokenHolder.INVALID_TOKEN;
 
     private final int mIndexOfLocationBarInToolbar;
-    private int mLayerYOffset;
+    private int mLayerYOffset = UNSPECIFIED_TOOLBAR_OFFSET;
 
     /**
      * Creates a new {@link TopToolbarCoordinator}.
@@ -926,6 +926,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // Remove the offset tag on animation starts, so the toolbar does not set the yOffset
         // while the compositor moves the layer with offset tags.
         mOverlayCoordinator.setOffsetTagInfo(null);
+        updateSceneLayerYOffset();
     }
 
     // In compositor, the position of the toolbar depends on the capture. As of Nov 2025, the

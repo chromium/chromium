@@ -35,6 +35,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarPositionController.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBar.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBarAnimatingView.java",
+    "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBarLayer.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarResourceUtils.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarTabController.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarTabControllerImpl.java",
