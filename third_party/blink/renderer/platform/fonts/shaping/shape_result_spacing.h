@@ -60,6 +60,25 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
                     bool allows_leading_expansion = false,
                     bool allows_trailing_expansion = false);
 
+  // An RAII class to prepare expansion.
+  class ExpansionSetup {
+    STACK_ALLOCATED();
+
+   public:
+    ExpansionSetup(InlineLayoutUnit expansion,
+                   ShapeResultSpacing* spacing,
+                   bool allows_leading_expansion = false,
+                   bool allows_trailing_expansion = false);
+    ~ExpansionSetup();
+
+    void CountOpportunities(TextJustify method, StringView text, TextDirection);
+
+   private:
+    ShapeResultSpacing* const spacing_;
+    const bool allows_trailing_expansion_;
+    bool is_after_expansion_;
+  };
+
   struct ComputeSpacingParameters {
     unsigned index;
     float original_advance = 0.0;
@@ -90,10 +109,6 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
 
  private:
   bool IsAfterExpansion() const { return is_after_expansion_; }
-
-  void ComputeExpansion(bool allows_leading_expansion,
-                        bool allows_trailing_expansion,
-                        TextDirection);
 
   TextRunLayoutUnit NextExpansion();
 
