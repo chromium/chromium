@@ -453,9 +453,9 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
 
     // Wrap the Dawn texture in a Skia texture, passing the YCbCr info.
     skgpu::graphite::DawnTextureInfo dawn_texture_info(
-        /*sampleCount=*/1, skgpu::Mipmapped::kNo, webgpu_format, webgpu_format,
-        texture_descriptor.usage, wgpu::TextureAspect::All, /*slice=*/0,
-        ahb_properties.yCbCrInfo);
+        skgpu::graphite::SampleCount::k1, skgpu::Mipmapped::kNo, webgpu_format,
+        webgpu_format, texture_descriptor.usage, wgpu::TextureAspect::All,
+        /*slice=*/0, ahb_properties.yCbCrInfo);
     return {base::MakeRefCounted<GraphiteTextureHolder>(
         skgpu::graphite::BackendTextures::MakeDawn(
             SkISize::Make(ahb_desc.width, ahb_desc.height), dawn_texture_info,

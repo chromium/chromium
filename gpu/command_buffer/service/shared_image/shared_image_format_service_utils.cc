@@ -720,7 +720,7 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
     if (wgpu_view_format == wgpu::TextureFormat::Undefined) {
       return skgpu::graphite::TextureInfos::MakeDawn(dawn_texture_info);
     }
-    dawn_texture_info.fSampleCount = 1;
+    dawn_texture_info.fSampleCount = skgpu::graphite::SampleCount::k1;
     // For multiplanar shared image, we don't know the real texture format until
     // the promise image is fulfilled, so set the fFormat to Undefined for now.
     dawn_texture_info.fFormat = format.is_multi_plane()
@@ -793,7 +793,7 @@ skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
   if (wgpu_view_format == wgpu::TextureFormat::Undefined) {
     return dawn_texture_info;
   }
-  dawn_texture_info.fSampleCount = 1;
+  dawn_texture_info.fSampleCount = skgpu::graphite::SampleCount::k1;
   dawn_texture_info.fFormat =
       is_yuv_plane ? ToDawnFormat(format) : wgpu_view_format;
   dawn_texture_info.fViewFormat = wgpu_view_format;
