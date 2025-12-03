@@ -242,9 +242,14 @@ inline constexpr char kLastInteractionTimeForFollowingGoodVisits[] =
     "LastInteractionTimeForGoodVisitsFollowing";
 inline constexpr char kLastInteractionTimeForGoodVisits[] =
     "LastInteractionTimeForGoodVisits";
-inline constexpr char kLongFeedVisitTimeAggregateKey[] = "LongFeedInteractionTimeDelta";
-inline constexpr char kLastUsedFeedForGoodVisitsKey[] = "LastUsedFeedForGoodVisits";
+inline constexpr char kLongFeedVisitTimeAggregateKey[] =
+    "LongFeedInteractionTimeDelta";
+inline constexpr char kLastUsedFeedForGoodVisitsKey[] =
+    "LastUsedFeedForGoodVisits";
 inline constexpr char kLegacySyncSessionsGUID[] = "sync.session_sync_guid";
+
+// Deprecated 12/2025.
+inline constexpr char kAutofillStatesDataDir[] = "autofill.states_data_dir";
 
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
@@ -1174,6 +1179,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 11/2025.
   registry->RegisterListPref(kReaderModeRecentlyUsedTimestampsPref);
+
+  // Deprecated 12/2025.
+  registry->RegisterStringPref(kAutofillStatesDataDir, std::string());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1376,6 +1384,9 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 11/2025.
   prefs->ClearPref(kReaderModeRecentlyUsedTimestampsPref);
+
+  // Added 12/2025.
+  prefs->ClearPref(kAutofillStatesDataDir);
 }
 
 void MigrateObsoleteUserDefault() {

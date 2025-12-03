@@ -76,13 +76,4 @@ TEST_F(AutofillStatesDataComponentInstallerPolicyTest, VerifyInstallation) {
   EXPECT_FALSE(policy.VerifyInstallationForTesting(manifest(), GetPath()));
 }
 
-// Tests that ComponentReady saves the installed dir path to prefs.
-TEST_F(AutofillStatesDataComponentInstallerPolicyTest,
-       InstallDirSavedToPrefOnComponentReady) {
-  AutofillStatesComponentInstallerPolicy policy(pref_service_.get());
-  policy.ComponentReadyForTesting(version(), GetPath(), base::Value::Dict());
-  ASSERT_EQ(GetPath(), pref_service_->GetFilePath(
-                           autofill::prefs::kAutofillStatesDataDir));
-}
-
 }  // namespace component_updater

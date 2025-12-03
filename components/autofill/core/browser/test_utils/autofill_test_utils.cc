@@ -147,7 +147,6 @@ std::unique_ptr<AutofillTestingPrefService> PrefServiceForTesting() {
   registry->RegisterBooleanPref(
       RandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   registry->RegisterBooleanPref(::prefs::kMixedFormsWarningsEnabled, true);
-  registry->RegisterStringPref(prefs::kAutofillStatesDataDir, "");
   prefs::RegisterProfilePrefs(registry);
   return pref_service;
 }

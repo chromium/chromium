@@ -41,9 +41,7 @@ namespace component_updater {
 
 // static
 void AutofillStatesComponentInstallerPolicy::RegisterPrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(autofill::prefs::kAutofillStatesDataDir, "");
-}
+    PrefRegistrySimple* registry) {}
 
 AutofillStatesComponentInstallerPolicy::AutofillStatesComponentInstallerPolicy(
     PrefService* pref_service)
@@ -78,8 +76,6 @@ void AutofillStatesComponentInstallerPolicy::ComponentReady(
            << install_dir.value();
 
   DCHECK(pref_service_);
-  pref_service_->SetFilePath(autofill::prefs::kAutofillStatesDataDir,
-                             install_dir);
 }
 
 // Called during startup and installation before ComponentReady().
