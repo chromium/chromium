@@ -142,12 +142,10 @@ export async function waitForStable(element) {
     await new Promise(resolve => setTimeout(resolve, 250));
     await element.updateComplete;
 
-    // Dialogs are flaky on LSan/ASan.
-    if (tagName === "MD-DIALOG") {
-      document.body.offsetHeight; // Force layout
-      await new Promise(resolve => requestAnimationFrame(resolve));
-      await new Promise(resolve => requestAnimationFrame(resolve));
-    }
+    // Additional work to avoid flakiness on LSan/ASan.
+    document.body.offsetHeight; // Force layout
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve => requestAnimationFrame(resolve));
   }
 
   // Form controls: Layout stability via forced reflow, single updateComplete
