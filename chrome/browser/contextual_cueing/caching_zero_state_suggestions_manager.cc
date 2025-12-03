@@ -26,7 +26,7 @@ class CachingContextualCueingServiceImpl
  public:
   explicit CachingContextualCueingServiceImpl(
       contextual_cueing::ContextualCueingService* service)
-      : contextual_queueing_service_(service) {}
+      : contextual_cueing_service_(service) {}
 
   void GetContextualGlicZeroStateSuggestionsForFocusedTab(
       content::WebContents* focused_tab,
@@ -52,7 +52,7 @@ class CachingContextualCueingServiceImpl
       return;
     }
 
-    contextual_queueing_service_
+    contextual_cueing_service_
         ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
             focused_tab, is_fre, supported_tools,
             mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -93,7 +93,7 @@ class CachingContextualCueingServiceImpl
       return;
     }
 
-    contextual_queueing_service_
+    contextual_cueing_service_
         ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
             pinned_web_contents, is_fre, supported_tools, focused_tab,
             mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -195,7 +195,7 @@ class CachingContextualCueingServiceImpl
   bool cache_disabled_ = false;
   CacheId::Generator id_generator_;
   raw_ptr<contextual_cueing::ContextualCueingService>
-      contextual_queueing_service_;
+      contextual_cueing_service_;
   std::deque<Entry> entries_;
   base::WeakPtrFactory<CachingContextualCueingServiceImpl> weak_ptr_factory_{
       this};
