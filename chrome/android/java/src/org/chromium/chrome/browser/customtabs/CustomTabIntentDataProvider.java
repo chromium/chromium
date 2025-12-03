@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CustomTabsFeature;
+import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareUtils;
@@ -606,11 +607,17 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         List<Bundle> menuItems =
                 IntentUtils.getParcelableArrayListExtra(intent, CustomTabsIntent.EXTRA_MENU_ITEMS);
 
-        mOpenInBrowserState =
+        int openInBrowserState =
                 IntentUtils.safeGetIntExtra(
                         intent,
                         EXTRA_OPEN_IN_BROWSER_STATE,
                         OpenInBrowserButtonState.OPEN_IN_BROWSER_STATE_DEFAULT);
+        if (isOpenInBrowserDisallowed(
+                getUiType(), getCustomTabMode() == CustomTabProfileType.INCOGNITO)) {
+            openInBrowserState = CustomTabsButtonState.BUTTON_STATE_OFF;
+        }
+        mOpenInBrowserState = openInBrowserState;
+
         int oibState = adjustOpenInBrowserOption(intent);
         maybeAddOpenInBrowserOption(context, oibState);
         updateExtraMenuItems(menuItems);
@@ -993,11 +1000,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         boolean usingInteractiveOmnibox =
                 CustomTabsConnection.getInstance().shouldEnableOmniboxForIntent(this);
 
-        int openInBrowserState =
-                IntentUtils.safeGetIntExtra(
-                        intent,
-                        EXTRA_OPEN_IN_BROWSER_STATE,
-                        CustomTabsButtonState.BUTTON_STATE_DEFAULT);
+        int openInBrowserState = mOpenInBrowserState;
 
         if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_ON
                 && !ChromeFeatureList.sCctOpenInBrowserButtonIfEnabledByEmbedder.isEnabled()) {
@@ -1045,6 +1048,37 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             return mToolbarButtons.isEmpty()
                     && isCpaOnlyOpenInBrowserDefault()
                     && mShareState == CustomTabsIntent.SHARE_STATE_OFF;
+        }
+    }
+
+    /**
+     * Returns {@code true} if open-in-browser (action button/menu item) should not be presented on
+     * the UI surface.
+     *
+     * @param type {@link CustomTabsUiType} value.
+     * @param incognito Whether the {@link CustomTabProfileType} is incongnito.
+     */
+    public static boolean isOpenInBrowserDisallowed(int type, boolean incognito) {
+        return !isOpenInBrowserAllowedForType(type)
+                || incognito
+                || !FirstRunStatus.getFirstRunFlowComplete();
+    }
+
+    private static boolean isOpenInBrowserAllowedForType(int type) {
+        switch (type) {
+            case CustomTabsUiType.MEDIA_VIEWER:
+            case CustomTabsUiType.READER_MODE:
+            case CustomTabsUiType.MINIMAL_UI_WEBAPP:
+            case CustomTabsUiType.OFFLINE_PAGE:
+            case CustomTabsUiType.AUTH_TAB:
+            case CustomTabsUiType.NETWORK_BOUND_TAB:
+            case CustomTabsUiType.POPUP:
+                return false;
+            case CustomTabsUiType.TRUSTED_WEB_ACTIVITY:
+                return !ChromeFeatureList.sAndroidWebAppMenuButton.isEnabled();
+            case CustomTabsUiType.DEFAULT:
+            default:
+                return true;
         }
     }
 
