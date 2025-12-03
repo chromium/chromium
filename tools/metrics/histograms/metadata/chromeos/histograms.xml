@@ -1205,7 +1205,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.CWP.CollectProcessTypes"
-    enum="ChromeOSProcessTypeCollectionStatus" expires_after="2026-01-19">
+    enum="ChromeOSProcessTypeCollectionStatus" expires_after="2027-01-19">
   <owner>gmx@google.com</owner>
   <owner>cwp-team@google.com</owner>
   <summary>
@@ -1271,7 +1271,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.CWP.RecordPerf" enum="ChromeOSProfileRecordStatus"
-    expires_after="2026-01-14">
+    expires_after="2027-01-14">
   <owner>shantuo@google.com</owner>
   <owner>gmx@google.com</owner>
   <owner>cwp-team@google.com</owner>
