@@ -755,7 +755,7 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #ifdef ABSL_INTERNAL_HAS_CXA_DEMANGLE
 #error ABSL_INTERNAL_HAS_CXA_DEMANGLE cannot be directly set
 #elif defined(OS_ANDROID) && (defined(__i386__) || defined(__x86_64__))
-#define ABSL_INTERNAL_HAS_CXA_DEMANGLE 0
+#undef ABSL_INTERNAL_HAS_CXA_DEMANGLE
 #elif defined(__GNUC__)
 #define ABSL_INTERNAL_HAS_CXA_DEMANGLE 1
 #elif defined(__clang__) && !defined(_MSC_VER)

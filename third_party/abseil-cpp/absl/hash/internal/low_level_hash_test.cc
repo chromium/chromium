@@ -361,9 +361,13 @@ TEST(LowLevelHashTest, VerifyGolden) {
 #if defined(ABSL_IS_BIG_ENDIAN) || !defined(ABSL_HAVE_INTRINSIC_INT128) || \
     UINTPTR_MAX != UINT64_MAX
   constexpr uint64_t kGolden[kNumGoldenOutputs] = {};
-  GTEST_SKIP()
-      << "We only maintain golden data for little endian 64 bit systems with "
-         "128 bit intristics.";
+  // This conditional is to avoid an unreachable code warning.
+  bool skip = true;
+  if (skip) {
+    GTEST_SKIP()
+        << "We only maintain golden data for little endian 64 bit systems with "
+           "128 bit intristics.";
+  }
 #elif defined(__SSE4_2__) && defined(__AES__)
   constexpr uint64_t kGolden[kNumGoldenOutputs] = {
       0xd6bdb2c9ba5e55f2, 0xffd3e23d4115a8ae, 0x2c3218ef486127de,
