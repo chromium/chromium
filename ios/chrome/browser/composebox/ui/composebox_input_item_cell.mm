@@ -14,8 +14,6 @@ namespace {
 const CGFloat kMaxCellHeight = 36.0;
 /// The trailing padding for the close button.
 const CGFloat kCloseButtonTrailing = 8.0;
-/// The corner radius for the cell's layer.
-const CGFloat kCellCornerRadius = 16.0;
 /// The point size for the symbol icons.
 const CGFloat kSymbolSize = 24.0;
 /// The size of the close icon.
@@ -40,7 +38,7 @@ const CGFloat kCloseButtonAlpha = 0.9;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.layer.cornerRadius = kCellCornerRadius;
+    self.layer.cornerRadius = composeboxAttachments::kAttachmentHeight / 2;
     self.clipsToBounds = YES;
 
     [self setupInputItemView];
