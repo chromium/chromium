@@ -99,7 +99,7 @@ CGFloat const kTitleLogoHeight = 32;
                                : IDS_IOS_PRODUCT_NAME),
                        l10n_util::GetNSString(
                            IDS_IOS_PAYMENT_BOTTOM_SHEET_SELECT_PAYMENT_METHOD)];
-  self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeImage;
+  self.customSpacingBeforeImage = kSpacingBeforeImage;
   self.customSpacingAfterImage = kSpacingAfterImage;
   self.subtitleTextStyle = UIFontTextStyleFootnote;
   std::u16string formattedURL =

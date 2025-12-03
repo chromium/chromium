@@ -222,7 +222,7 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
       IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT);
   alertScreen.imageHasFixedSize = YES;
   alertScreen.titleTextStyle = UIFontTextStyleTitle2;
-  alertScreen.customSpacingBeforeImageIfNoNavigationBar = kSpacing;
+  alertScreen.customSpacingBeforeImage = kSpacing;
   alertScreen.topAlignedLayout = YES;
   alertScreen.customSpacingAfterImage = kSpacing;
   alertScreen.customSpacing = kSpacing;

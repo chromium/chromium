@@ -132,7 +132,7 @@ NSString* const kCredentialProviderPromoAccessibilityId =
   self.alertScreen.topAlignedLayout = YES;
 
   if (!self.shouldShowAnimation || !self.alertScreen.image) {
-    self.alertScreen.customSpacingBeforeImageIfNoNavigationBar =
+    self.alertScreen.customSpacingBeforeImage =
         kCustomSpacingAtTopIfNoNavigationBar;
   }
 

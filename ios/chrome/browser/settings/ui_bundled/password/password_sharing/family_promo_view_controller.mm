@@ -25,7 +25,7 @@
 - (void)viewDidLoad {
   self.image = [UIImage imageNamed:@"password_sharing_family_promo"];
   self.customSpacingAfterImage = 32;
-  self.customSpacingBeforeImageIfNoNavigationBar = 24;
+  self.customSpacingBeforeImage = 24;
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.topAlignedLayout = YES;
   self.configuration.primaryActionString =

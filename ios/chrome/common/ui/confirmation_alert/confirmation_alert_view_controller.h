@@ -94,10 +94,9 @@
 // view.
 @property(nonatomic, copy) NSString* imageViewAccessibilityLabel;
 
-// Sets the custom spacing at the top if there is no navigation bar. If image is
-// set, the spacing is before the image. Otherwise, the spacing is before the
-// title label. Must be set before the view is loaded.
-@property(nonatomic, assign) CGFloat customSpacingBeforeImageIfNoNavigationBar;
+// Sets the custom spacing before the image. Must be set before the view is
+// loaded.
+@property(nonatomic, assign) CGFloat customSpacingBeforeImage;
 
 // Sets the custom spacing between the image and the title / subtitle. Must be
 // set before the view is loaded.
@@ -107,9 +106,9 @@
 @property(nonatomic, assign) CGFloat customFaviconSideLength;
 
 // Sets the custom spacing of the stackview. Values for
-// `customSpacingBeforeImageIfNoNavigationBar` and `customSpacingAfterImage` are
-// honored around the image, so this applies to all the other items of the
-// stackview. Must be set before the view is loaded.
+// `customSpacingBeforeImage` and `customSpacingAfterImage` are onored around
+// the image, so this applies to all the other items of the stackview. Must be
+// set before the view is loaded.
 @property(nonatomic, assign) CGFloat customSpacing;
 
 // When YES, the content is attached to the top of the view instead of being

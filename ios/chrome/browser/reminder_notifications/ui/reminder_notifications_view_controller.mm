@@ -74,7 +74,7 @@ NSString* const kBellIconAccessibilityLabel =
       @[ [UIColor whiteColor] ]);
   self.imageBackgroundColor = [UIColor colorNamed:kBlue500Color];
   self.imageViewAccessibilityLabel = kBellIconAccessibilityLabel;
-  self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeImage;
+  self.customSpacingBeforeImage = kSpacingBeforeImage;
   self.customSpacingAfterImage = kSpacingAfterImage;
   self.imageHasFixedSize = YES;
   self.imageEnclosedWithShadowWithoutBadge = YES;

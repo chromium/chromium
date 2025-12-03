@@ -51,7 +51,7 @@
 
   self.titleTextStyle = UIFontTextStyleTitle2;
   // Icon already contains some spacing for the shadow.
-  self.customSpacingBeforeImageIfNoNavigationBar = 24;
+  self.customSpacingBeforeImage = 24;
   self.customSpacingAfterImage = 1;
   self.topAlignedLayout = YES;
 

@@ -48,7 +48,7 @@ class BringAndroidTabsPromptConfirmationAlertViewController:
     // before calling the confirmation alert's `viewDidLoad`.
     self.image = UIImage(named: "bring_android_tabs_icon")
     self.imageHasFixedSize = true
-    self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeImage
+    self.customSpacingBeforeImage = kSpacingBeforeImage
     self.customSpacingAfterImage = kSpacingAfterImage
     self.titleString = L10nUtils.pluralString(
       messageId: IDS_IOS_BRING_ANDROID_TABS_PROMPT_TITLE,

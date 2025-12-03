@@ -65,8 +65,7 @@ CGFloat const kChromeLogoHeight = 22;
 - (void)viewDidLoad {
   self.image = [self aboveTitleImage];
   self.imageViewAccessibilityLabel = [self aboveTitleImageAccessibilityLabel];
-  self.customSpacingBeforeImageIfNoNavigationBar =
-      kSpacingBeforeAboveTitleImage;
+  self.customSpacingBeforeImage = kSpacingBeforeAboveTitleImage;
   self.customSpacingAfterImage = kSpacingAfterAboveTitleImage;
   self.customSpacing = kSpacing;
   self.actionHandler = self;

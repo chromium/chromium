@@ -140,7 +140,8 @@ const CGFloat kFaviconBadgeSideLength = 24;
     [self.stackView.trailingAnchor
         constraintEqualToAnchor:self.contentView.trailingAnchor],
   ]];
-  CGFloat stackViewTopConstant = self.customSpacingBeforeImageIfNoNavigationBar;
+
+  CGFloat stackViewTopConstant = self.customSpacingBeforeImage;
   if (self.topAlignedLayout) {
     [self.stackView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor
                                              constant:stackViewTopConstant]
@@ -227,9 +228,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
 - (CGFloat)preferredHeightForContent {
   CGFloat height = [super preferredHeightForContent];
-
-    height += self.customSpacingBeforeImageIfNoNavigationBar;
-
+  height += self.customSpacingBeforeImage;
   return height;
 }
 

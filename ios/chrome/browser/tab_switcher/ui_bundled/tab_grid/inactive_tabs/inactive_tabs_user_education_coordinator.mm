@@ -122,8 +122,7 @@ UIImage* ConfirmationAlertImage() {
       l10n_util::GetNSString(IDS_IOS_INACTIVE_TABS_USER_EDU_SUBTITLE);
   _confirmationAlert.image = ConfirmationAlertImage();
   _confirmationAlert.imageHasFixedSize = YES;
-  _confirmationAlert.customSpacingBeforeImageIfNoNavigationBar =
-      kImageTopSpacing;
+  _confirmationAlert.customSpacingBeforeImage = kImageTopSpacing;
   _confirmationAlert.customSpacingAfterImage = kImageBottomSpacing;
   _confirmationAlert.customSpacing = kSpacing;
   _confirmationAlert.topAlignedLayout = YES;

@@ -109,7 +109,7 @@ TEST_F(ReminderNotificationsViewControllerTest,
   EXPECT_TRUE(viewController.imageHasFixedSize);
   EXPECT_TRUE(viewController.imageEnclosedWithShadowWithoutBadge);
 
-  EXPECT_EQ(viewController.customSpacingBeforeImageIfNoNavigationBar, 16);
+  EXPECT_EQ(viewController.customSpacingBeforeImage, 16);
   EXPECT_EQ(viewController.customSpacingAfterImage, 16);
   EXPECT_EQ(viewController.customFaviconSideLength, 42);
   EXPECT_NSEQ(viewController.titleTextStyle, UIFontTextStyleTitle2);

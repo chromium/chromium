@@ -14,7 +14,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-constexpr CGFloat kCustomSpacingBeforeImageIfNoNavigationBar = 24;
+constexpr CGFloat kCustomSpacingBeforeImage = 24;
 constexpr CGFloat kCustomSpacingAfterImage = 1;
 }  // namespace
 
@@ -47,8 +47,7 @@ constexpr CGFloat kCustomSpacingAfterImage = 1;
 
   self.titleTextStyle = UIFontTextStyleTitle2;
   // Icon already contains some spacing for the shadow.
-  self.customSpacingBeforeImageIfNoNavigationBar =
-      kCustomSpacingBeforeImageIfNoNavigationBar;
+  self.customSpacingBeforeImage = kCustomSpacingBeforeImage;
   self.customSpacingAfterImage = kCustomSpacingAfterImage;
   self.topAlignedLayout = YES;
 

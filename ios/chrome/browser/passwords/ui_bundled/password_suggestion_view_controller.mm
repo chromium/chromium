@@ -27,7 +27,7 @@
 @end
 
 namespace {
-constexpr CGFloat customSpacingBeforeImageIfNoNavigationBar = 24;
+constexpr CGFloat customSpacingBeforeImage = 24;
 constexpr CGFloat customSpacingAfterImage = 1;
 }  // namespace
 
@@ -67,8 +67,7 @@ constexpr CGFloat customSpacingAfterImage = 1;
   self.image = ios::provider::GetBrandedImage(
       ios::provider::BrandedImage::kPasswordSuggestionKey);
   self.imageHasFixedSize = YES;
-  self.customSpacingBeforeImageIfNoNavigationBar =
-      customSpacingBeforeImageIfNoNavigationBar;
+  self.customSpacingBeforeImage = customSpacingBeforeImage;
   self.customSpacingAfterImage = customSpacingAfterImage;
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.topAlignedLayout = YES;

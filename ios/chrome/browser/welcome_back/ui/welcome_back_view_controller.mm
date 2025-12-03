@@ -107,7 +107,7 @@ constexpr CGFloat kTableViewHorizontalPadding = 6.0f;
   }
 
   self.imageHasFixedSize = YES;
-  self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeImageNoNav;
+  self.customSpacingBeforeImage = kSpacingBeforeImageNoNav;
 
   // Configure layout preferences.
   self.topAlignedLayout = YES;

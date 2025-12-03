@@ -154,7 +154,7 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
   DCHECK(self.alertScreen);
   self.alertScreen.imageHasFixedSize = YES;
   self.alertScreen.titleTextStyle = UIFontTextStyleTitle2;
-  self.alertScreen.customSpacingBeforeImageIfNoNavigationBar =
+  self.alertScreen.customSpacingBeforeImage =
       kSpacingBeforeImageIfNoNavigationBar;
   self.alertScreen.topAlignedLayout = YES;
 

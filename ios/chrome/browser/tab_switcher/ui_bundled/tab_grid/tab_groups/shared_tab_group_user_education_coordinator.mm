@@ -100,8 +100,7 @@ UIImage* TabGroupImage(UITraitCollection* trait_collection) {
       IDS_IOS_SHARED_GROUP_USER_EDUCATION_SHEET_SUBTITLE);
   confirmationAlert.image = TabGroupImage(confirmationAlert.traitCollection);
   confirmationAlert.imageHasFixedSize = YES;
-  confirmationAlert.customSpacingBeforeImageIfNoNavigationBar =
-      kImageTopSpacing;
+  confirmationAlert.customSpacingBeforeImage = kImageTopSpacing;
   confirmationAlert.customSpacingAfterImage = kImageBottomSpacing;
   confirmationAlert.customSpacing = kSpacing;
   confirmationAlert.topAlignedLayout = YES;

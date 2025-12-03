@@ -193,8 +193,7 @@ UIImageView* BrandingImageView() {
   // content and the top of the sheet. This is especially relevant with larger
   // accessibility text sizes.
   self.topAlignedLayout = YES;
-  self.customSpacingBeforeImageIfNoNavigationBar =
-      kPlusAddressSheetBeforeImageTopMargin;
+  self.customSpacingBeforeImage = kPlusAddressSheetBeforeImageTopMargin;
   self.customSpacingAfterImage = kPlusAddressSheetAfterImageMargin;
 
   self.underTitleView = [self setUpUnderTitleView];
