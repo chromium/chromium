@@ -65,6 +65,7 @@ enum LayerTreeImplTestMode {
   CommitToActiveTreeTreesInVizClient,
   CommitToPendingTreeTreesInVizClient,
   CommitToActiveTreeTreesInVizService,
+  CommitToActiveTreeAnimationsInVizService,
 };
 
 #define INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(name, ...)         \
@@ -82,6 +83,8 @@ enum LayerTreeImplTestMode {
             return "CommitToPendingTreeTreesInVizClient";         \
           case CommitToActiveTreeTreesInVizService:               \
             return "CommitToActiveTreeTreesInVizService";         \
+          case CommitToActiveTreeAnimationsInVizService:          \
+            return "CommitToActiveTreeAnimationsInVizService";    \
           default:                                                \
             NOTREACHED();                                         \
         }                                                         \
@@ -95,6 +98,12 @@ enum LayerTreeImplTestMode {
       name, CommitToActiveTree, CommitToPendingTree,                           \
       CommitToActiveTreeTreesInVizClient, CommitToPendingTreeTreesInVizClient, \
       CommitToActiveTreeTreesInVizService)
+
+#define INSTANTIATE_ANIMATIONS_TREE_TEST_P(name)                               \
+  INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(                                      \
+      name, CommitToActiveTree, CommitToPendingTree,                           \
+      CommitToActiveTreeTreesInVizClient, CommitToPendingTreeTreesInVizClient, \
+      CommitToActiveTreeAnimationsInVizService)
 
 // For parameterized test suites testing all tree modes including
 // CommitToActiveTree / CommitToPendingTree, excluding TreesInViz

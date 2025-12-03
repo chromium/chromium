@@ -187,11 +187,15 @@ class CompositorFrameProducingLayerTreeHostImplTest
 INSTANTIATE_COMPOSITOR_FRAME_PRODUCING_TREE_TEST_P(
     CompositorFrameProducingLayerTreeHostImplTest);
 
-// Test fixture that runs in all tree modes except for TreesInViz Servicce
+// Test fixture that runs in all tree modes except for TreesInViz Service
 // mode.
 class ClientModeLayerTreeHostImplTest : public LayerTreeHostImplTest {};
 
 INSTANTIATE_CLIENT_MODE_TREE_TEST_P(ClientModeLayerTreeHostImplTest);
+
+class AnimationsLayerTreeHostImplTest : public LayerTreeHostImplTest {};
+
+INSTANTIATE_ANIMATIONS_TREE_TEST_P(AnimationsLayerTreeHostImplTest);
 
 class OccludedSurfaceThrottlingLayerTreeHostImplTest
     : public LayerTreeHostImplTest {
@@ -219,7 +223,7 @@ class LayerTreeHostImplTimelinesTest : public LayerTreeHostImplTest {
   }
 };
 
-INSTANTIATE_CLIENT_MODE_TREE_TEST_P(LayerTreeHostImplTimelinesTest);
+INSTANTIATE_ANIMATIONS_TREE_TEST_P(LayerTreeHostImplTimelinesTest);
 
 class FluentOverlayScrollbarLayerTreeHostImplTest
     : public CommitToPendingTreeLayerTreeHostImplTest {
@@ -2863,9 +2867,7 @@ TEST_F(CommitToActiveTreeLayerTreeHostImplTest,
   host_impl_ = nullptr;
 }
 
-// TODO(crbug.com/458778816): Review animation related unittests for TreesInViz
-// Service mode.
-TEST_P(ClientModeLayerTreeHostImplTest, AnimationSchedulingOnLayerDestruction) {
+TEST_P(AnimationsLayerTreeHostImplTest, AnimationSchedulingOnLayerDestruction) {
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(50, 50));
 
   LayerImpl* child = AddLayerInActiveTree();
@@ -14593,9 +14595,7 @@ TEST_P(LayerTreeHostImplTest, SecondScrollAnimatedBeginNotIgnored) {
 
 // Verfify that a smooth scroll animation doesn't jump when UpdateTarget gets
 // called before the animation is started.
-// TODO(crbug.com/458778816): Review animation related unittests for TreesInViz
-// Service mode.
-TEST_P(ClientModeLayerTreeHostImplTest,
+TEST_P(AnimationsLayerTreeHostImplTest,
        AnimatedScrollUpdateTargetBeforeStarting) {
   const gfx::Size content_size(1000, 1000);
   const gfx::Size viewport_size(50, 100);
@@ -14651,9 +14651,7 @@ TEST_P(ClientModeLayerTreeHostImplTest,
   EXPECT_TRUE(y > 1 && y < 49);
 }
 
-// TODO(crbug.com/458778816): Review animation related unittests for TreesInViz
-// Service mode.
-TEST_P(ClientModeLayerTreeHostImplTest, ScrollAnimatedWithDelay) {
+TEST_P(AnimationsLayerTreeHostImplTest, ScrollAnimatedWithDelay) {
   const gfx::Size content_size(1000, 1000);
   const gfx::Size viewport_size(50, 100);
   SetupViewportLayersOuterScrolls(viewport_size, content_size);

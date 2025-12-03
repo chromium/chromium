@@ -970,6 +970,10 @@ LayerTreeHostImplTest::LayerTreeHostImplTest() {
     case CommitToActiveTreeTreesInVizService:
       scoped_feature_list_.InitAndEnableFeature(features::kTreesInViz);
       break;
+    case CommitToActiveTreeAnimationsInVizService:
+      scoped_feature_list_.InitWithFeatures(
+          {features::kTreesInViz, features::kTreeAnimationsInViz}, {});
+      break;
     case CommitToActiveTree:
     case CommitToPendingTree:
       scoped_feature_list_.InitAndDisableFeature(features::kTreesInViz);
@@ -985,6 +989,7 @@ bool LayerTreeHostImplTest::CommitsToActiveTree() {
     case CommitToActiveTree:
     case CommitToActiveTreeTreesInVizClient:
     case CommitToActiveTreeTreesInVizService:
+    case CommitToActiveTreeAnimationsInVizService:
       return true;
     case CommitToPendingTree:
     case CommitToPendingTreeTreesInVizClient:
@@ -998,7 +1003,8 @@ LayerTreeSettings LayerTreeHostImplTest::DefaultSettings() {
   LayerTreeSettings settings = LayerTreeHostImplTestBase::DefaultSettings();
   settings.commit_to_active_tree = CommitsToActiveTree();
   settings.trees_in_viz_in_viz_process =
-      (test_mode == CommitToActiveTreeTreesInVizService);
+      (test_mode == CommitToActiveTreeTreesInVizService ||
+       test_mode == CommitToActiveTreeAnimationsInVizService);
 
   return settings;
 }
