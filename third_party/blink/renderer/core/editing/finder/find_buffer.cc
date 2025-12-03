@@ -97,10 +97,7 @@ std::optional<UChar> FindBuffer::CharConstantForNode(const Node& node) {
     return std::nullopt;
   }
   if (IsA<HTMLBRElement>(To<HTMLElement>(node))) {
-    return RuntimeEnabledFeatures::FindAcrossParagraphsInTextareaEnabled() &&
-                   node.IsInUserAgentShadowRoot()
-               ? uchar::kSpace
-               : uchar::kLineFeed;
+    return uchar::kLineFeed;
   }
   return uchar::kNonCharacter;
 }

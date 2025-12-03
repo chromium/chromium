@@ -1155,7 +1155,8 @@ TEST_F(FindBufferTest, OrphanRubyTextCrash) {
 TEST_F(FindBufferTest, TextareaMultilines) {
   SetBodyContent("<textarea>line1\nline2\n</textarea>");
   FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
-  EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"ne1 li"));
+  EXPECT_EQ(0u, CaseInsensitiveMatchCount(buffer, u"ne1 li"));
+  EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"ne1\nli"));
 }
 
 // crbug.com/453125750
