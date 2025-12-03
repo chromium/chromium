@@ -786,6 +786,8 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
+    // TODO(crbug.com/430058918): Reenable or add new test.
+    @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
     public void testTabStripHeightTransition_Hide() {
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
 
@@ -850,6 +852,8 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
+    // TODO(crbug.com/430058918): Reenable or add new test.
+    @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
     public void testTabStripHeightTransition_Show() {
         doTestTabStripHeightTransition_Show(mToolbarPrimaryColor);
     }
@@ -1483,6 +1487,8 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
+    // TODO(crbug.com/430058918): Reenable or add new test.
+    @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
     public void testVisibilityConstraintAndOffsetOverride() {
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
         doReturn(false).when(mBrowserControlStateProvider).isVisibilityForced();

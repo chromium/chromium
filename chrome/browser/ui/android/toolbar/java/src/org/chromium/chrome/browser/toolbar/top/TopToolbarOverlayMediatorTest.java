@@ -386,6 +386,8 @@ public class TopToolbarOverlayMediatorTest {
     }
 
     @Test
+    // TODO(crbug.com/430058918): Reenable or add new test.
+    @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
     public void testBottomToolbarOffset() {
         float height = 700.0f;
         mMediator.setViewportHeight(height);
@@ -439,6 +441,8 @@ public class TopToolbarOverlayMediatorTest {
     }
 
     @Test
+    // TODO(crbug.com/430058918): Reenable or add new test.
+    @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
     public void testTopToolbarOffset() {
         int offset = -10;
         int height = 150;
@@ -481,6 +485,8 @@ public class TopToolbarOverlayMediatorTest {
     }
 
     @Test
+    // TODO(crbug.com/430058918): Reenable or add new test.
+    @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
     public void testOffsetTagAndConstraintChanges() {
         BrowserControlsOffsetTagsInfo tagsInfo = new BrowserControlsOffsetTagsInfo();
         int offset = -10;

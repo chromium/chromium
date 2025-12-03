@@ -631,6 +631,19 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_V2",
+                    "params": {
+                        "show_bookmark_bar": "false"
+                    },
+                    "enable_features": [
+                        "AndroidAppearanceSettings",
+                        "AndroidBookmarkBar",
+                        "IPH_BookmarksBar",
+                        "TopControlsRefactor",
+                        "TopControlsRefactorV2"
+                    ]
+                },
+                {
                     "name": "Enabled",
                     "params": {
                         "show_bookmark_bar": "false"
