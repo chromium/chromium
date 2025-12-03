@@ -2499,12 +2499,11 @@ public class ToolbarPhone extends ToolbarLayout
         }
     }
 
-    // TODO(crbug.com/430347234): Refine animations to match the spec.
     private void createAndRunFocusAnimatorRefactored(boolean hasFocus) {
         int toolbarBtnTransitionDuration =
                 hasFocus && animatingSuggestionsListOnNtp()
                         ? 0
-                        : URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS;
+                        : URL_FOCUS_CHANGE_ANIMATION_DURATION_MS;
         TransitionSet buttonsTransition =
                 new TransitionSet()
                         .addTransition(
