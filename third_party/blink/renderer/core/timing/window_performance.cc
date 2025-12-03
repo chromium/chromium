@@ -1407,6 +1407,7 @@ void WindowPerformance::AddContainerTiming(
   TRACE_EVENT2("loading", "PerformanceContainerTiming", "data",
                entry->ToTracedValue(), "frame",
                GetFrameIdForTracing(DomWindow()->GetFrame()));
+  entry->SetPaintTimingInfo(paint_timing_info);
   if (HasObserverFor(PerformanceEntry::kContainer)) {
     NotifyObserversOfContainerEntry(*entry);
   }

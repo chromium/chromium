@@ -7442,6 +7442,8 @@ interface PerformanceContainerTiming : PerformanceEntry
     getter identifier
     getter intersectionRect
     getter lastPaintedElement
+    getter paintTime
+    getter presentationTime
     getter rootElement
     getter size
     method constructor

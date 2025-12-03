@@ -15,3 +15,5 @@
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };
+
+PerformanceContainerTiming includes PaintTimingMixin;
