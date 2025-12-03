@@ -50,8 +50,8 @@ class DriveServiceTest : public testing::Test {
             &test_url_loader_factory_),
         identity_test_env.identity_manager(),
         &mock_segmentation_platform_service_, "en-US", &prefs_);
-    identity_test_env.MakePrimaryAccountAvailable("example@google.com",
-                                                  signin::ConsentLevel::kSync);
+    identity_test_env.MakePrimaryAccountAvailable(
+        "example@google.com", signin::ConsentLevel::kSignin);
     service_->RegisterProfilePrefs(prefs_.registry());
   }
 

@@ -77,16 +77,10 @@ class NewTabPageUtilBrowserTest : public SigninBrowserTestBase,
     }
   }
 
-  void SetSync(bool sync_enabled) {
-    GetTestSyncService()->SetSignedIn(sync_enabled
-                                          ? signin::ConsentLevel::kSync
-                                          : signin::ConsentLevel::kSignin);
-  }
-
-  void SetHistorySync(bool sync_enabled) {
+  void SetHistorySync(bool history_sync_enabled) {
     GetTestSyncService()->SetSignedIn(signin::ConsentLevel::kSignin);
     GetTestSyncService()->GetUserSettings()->SetSelectedType(
-        syncer::UserSelectableType::kHistory, sync_enabled);
+        syncer::UserSelectableType::kHistory, history_sync_enabled);
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
