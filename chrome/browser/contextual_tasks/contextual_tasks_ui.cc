@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 
+#include "base/base64.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
@@ -71,6 +72,16 @@ BrowserWindowInterface* FromWebContents(content::WebContents* web_contents) {
     return window->AsBrowserView()->browser();
   }
   return nullptr;
+}
+
+std::string GetEncodedHandshakeMessage() {
+  lens::ClientToAimMessage message;
+  lens::HandshakePing* ping = message.mutable_handshake_ping();
+  ping->add_capabilities(lens::FeatureCapability::DEFAULT);
+  const size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> serialized_message(size);
+  message.SerializeToArray(&serialized_message[0], size);
+  return base::Base64Encode(serialized_message);
 }
 }  // namespace
 
@@ -184,6 +195,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
 
   source->AddString("userAgentSuffix",
                     contextual_tasks::GetContextualTasksUserAgentSuffix());
+  // Preload the serialized handshake message so it doesn't have to be fetched
+  // at runtime.
+  source->AddString("handshakeMessage", GetEncodedHandshakeMessage());
 
   // Set up chrome://contextual-tasks/internals debug UI.
   source->AddResourcePath(

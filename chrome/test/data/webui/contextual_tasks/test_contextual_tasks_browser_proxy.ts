@@ -12,23 +12,11 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {TestSearchboxPageHandler} from './test_searchbox_page_handler.js';
-
-const BASE64_HANDSHAKE_RESPONSE = 'CgIIAA==';
-
-function base64ToUint8Array(base64: string): Uint8Array {
-  const binaryString = window.atob(base64);
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes;
-}
-
-const HANDSHAKE_RESPONSE_BYTES = base64ToUint8Array(BASE64_HANDSHAKE_RESPONSE);
+import {HANDSHAKE_RESPONSE_BYTES} from './test_utils.js';
 
 class MockPage extends TestBrowserProxy implements PageInterface {
   private postMessageHandler_: PostMessageHandler|null = null;
+
 
   constructor() {
     super([
@@ -77,7 +65,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     PageHandlerInterface {
   private url_: Url;
   private isInTab_: boolean = true;
-  private rejectGetHandshakeMessage_: boolean = false;
   private page_: MockPage;
 
   constructor(url: string, page: MockPage) {
@@ -96,17 +83,12 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'onTabClickedFromSourcesMenu',
       'getSearchUrl',
       'onWebviewMessage',
-      'getHandshakeMessage',
       'submitQuery',
       'getRecentTabs',
     ]);
 
     this.url_ = {url};
     this.page_ = page;
-  }
-
-  setRejectGetHandshakeMessage(reject: boolean) {
-    this.rejectGetHandshakeMessage_ = reject;
   }
 
   getThreadUrl() {
@@ -198,14 +180,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     if (isHandshakeResponse) {
       this.page_.onHandshakeComplete();
     }
-  }
-
-  getHandshakeMessage() {
-    this.methodCalled('getHandshakeMessage');
-    if (this.rejectGetHandshakeMessage_) {
-      return Promise.reject(new Error('Test rejection'));
-    }
-    return Promise.resolve({message: [1, 2, 3]});
   }
 
   submitQuery(
