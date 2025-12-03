@@ -34,8 +34,6 @@ export const StoreClientMixinLit =
         }
 
         updateFromStore(): void {
-          // TODO(b/296282541) assert that store is initialized instead of
-          // performing a runtime check.
           if (Store.getInstance().isInitialized()) {
             this.onStateChanged(this.getState());
           }
