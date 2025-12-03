@@ -361,6 +361,7 @@ struct TransformTreeUpdate {
   array<int32> nodes_affected_by_safe_area_bottom;
   array<StickyPositionNodeData> sticky_position_data;
   array<AnchorPositionScrollData> anchor_position_scroll_data;
+  map<cc.mojom.ElementId, gfx.mojom.Vector2dF> drawn_elastic_overscroll;
 };
 
 // Details about a new or updated node within a transform property tree.

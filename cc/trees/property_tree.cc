@@ -178,6 +178,7 @@ void TransformTree::clear() {
   cached_data_.push_back(TransformCachedNodeData());
   sticky_position_data_.clear();
   anchor_position_scroll_data_.clear();
+  drawn_elastic_overscroll_.clear();
 
 #if DCHECK_IS_ON()
   DCHECK(TransformTree() == *this);
@@ -988,7 +989,8 @@ bool TransformTree::operator==(const TransformTree& other) const {
              other.device_transform_scale_factor() &&
          nodes_affected_by_outer_viewport_bounds_delta_ ==
              other.nodes_affected_by_outer_viewport_bounds_delta() &&
-         cached_data_ == other.cached_data();
+         cached_data_ == other.cached_data() &&
+         drawn_elastic_overscroll_ == other.drawn_elastic_overscroll();
 }
 #endif
 

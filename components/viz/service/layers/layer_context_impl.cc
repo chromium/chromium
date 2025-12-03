@@ -551,7 +551,7 @@ DeserializeAnchorPositionScrollData(
   return anchor_position_scroll_data;
 }
 
-base::expected<void, std::string> UpdateTransformTreeProperties(
+base::expected<bool, std::string> UpdateTransformTreeProperties(
     cc::PropertyTrees& trees,
     cc::TransformTree& tree,
     mojom::TransformTreeUpdate& update) {
@@ -580,7 +580,11 @@ base::expected<void, std::string> UpdateTransformTreeProperties(
   ASSIGN_OR_RETURN(
       tree.anchor_position_scroll_data(),
       DeserializeAnchorPositionScrollData(update.anchor_position_scroll_data));
-  return base::ok();
+
+  bool drawn_elastic_overscroll_changed =
+      tree.drawn_elastic_overscroll() != update.drawn_elastic_overscroll;
+  tree.drawn_elastic_overscroll() = std::move(update.drawn_elastic_overscroll);
+  return drawn_elastic_overscroll_changed;
 }
 
 base::expected<bool, std::string> UpdateScrollTreeProperties(
@@ -1753,11 +1757,17 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   // transform nodes, so they must be deserialized after the trees are resized
   // above.
   bool transform_properties_changed = false;
+  bool transform_layer_properties_changed = false;
   if (update->transform_tree_update) {
     transform_properties_changed = true;
-    RETURN_IF_ERROR(UpdateTransformTreeProperties(
-        property_trees, property_trees.transform_tree_mutable(),
-        *update->transform_tree_update));
+    ASSIGN_OR_RETURN(
+        transform_layer_properties_changed,
+        UpdateTransformTreeProperties(property_trees,
+                                      property_trees.transform_tree_mutable(),
+                                      *update->transform_tree_update));
+    if (transform_layer_properties_changed) {
+      layers.set_needs_update_draw_properties();
+    }
   }
 
   bool scroll_properties_changed = false;
@@ -2018,7 +2028,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   // actually changed. This avoids redundant work and prevents incorrectly
   // flagging draw properties as needing an update when no relevant properties
   // have changed.
-  if (any_tree_changed || scroll_properties_changed) {
+  if (any_tree_changed || scroll_properties_changed ||
+      transform_layer_properties_changed) {
     layers.MoveChangeTrackingToLayers();
   }
 

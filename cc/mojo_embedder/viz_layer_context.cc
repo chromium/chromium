@@ -434,7 +434,9 @@ viz::mojom::TransformTreeUpdatePtr ComputeTransformTreePropertiesUpdate(
           new_tree.nodes_affected_by_safe_area_bottom() &&
       old_tree.sticky_position_data() == new_tree.sticky_position_data() &&
       old_tree.anchor_position_scroll_data() ==
-          new_tree.anchor_position_scroll_data()) {
+          new_tree.anchor_position_scroll_data() &&
+      old_tree.drawn_elastic_overscroll() ==
+          new_tree.drawn_elastic_overscroll()) {
     return nullptr;
   }
 
@@ -451,6 +453,7 @@ viz::mojom::TransformTreeUpdatePtr ComputeTransformTreePropertiesUpdate(
       SerializeStickyPositionData(new_tree.sticky_position_data());
   wire->anchor_position_scroll_data =
       SerializeAnchorPositionScrollData(new_tree.anchor_position_scroll_data());
+  wire->drawn_elastic_overscroll = new_tree.drawn_elastic_overscroll();
   return wire;
 }
 
