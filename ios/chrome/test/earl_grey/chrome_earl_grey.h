@@ -656,6 +656,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns the current web state's last committed URL.
 - (GURL)webStateLastCommittedURL;
 
+// Waits for the current web state's visible URL to be `URL`.
+- (void)waitForWebStateVisibleURL:(const GURL&)URL;
+
 // Purges cached web view pages, so the next time back navigation will not use
 // a cached page. Browsers don't have to use a fresh version for back/forward
 // navigation for HTTP pages and may serve a version from the cache even if the
