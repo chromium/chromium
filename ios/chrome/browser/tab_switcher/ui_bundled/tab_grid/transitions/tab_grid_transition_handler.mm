@@ -223,7 +223,11 @@
   CGRect primaryToolbarFrameInWindow =
       [primaryToolbarView.superview convertRect:primaryToolbarView.frame
                                          toView:nil];
-  CGFloat topToolbarHeight = CGRectGetMaxY(primaryToolbarFrameInWindow);
+
+  BOOL topToolbarHidden = [self shouldHideTopToolbar];
+  CGFloat topToolbarHeight =
+      topToolbarHidden ? _tabGridViewController.view.safeAreaInsets.top
+                       : CGRectGetMaxY(primaryToolbarFrameInWindow);
 
   // Get the "bottom toolbar height" (everything below the web content area).
   UIView* bottomToolbarView =
@@ -244,6 +248,17 @@
   CGRect contentAreaFrame = [NamedGuide guideWithName:kContentAreaGuide
                                                  view:tabContentView]
                                 .layoutFrame;
+
+  // No top toolbar snapshot for regular browser NTPs for grid to tab
+  // animations. `topToolbarHidden` is not directly used here as the screenshot
+  // of the content below the status bar is needed when doing a Tab to Grid
+  // transition.
+  UIView* topToolbarSnapshotView =
+      topToolbarHidden &&
+              _direction == TabGridTransitionDirection::kFromTabGridToBrowser
+          ? nil
+          : [self snapshotOfViewPortionAboveRect:tabContentView
+                                      middleRect:contentAreaFrame];
 
   // Get the animation's destination and origin frames.
   CGRect destinationFrame =
@@ -268,14 +283,13 @@
                 contentSnapshot:_tabGridCellItem.snapshot
                topToolbarHeight:topToolbarHeight
             bottomToolbarHeight:bottomToolbarHeight
-         topToolbarSnapshotView:
-             [self snapshotOfViewPortionAboveRect:tabContentView
-                                       middleRect:contentAreaFrame]
+         topToolbarSnapshotView:topToolbarSnapshotView
       bottomToolbarSnapshotView:
           [self snapshotOfViewPortionBelowRect:tabContentView
                                     middleRect:contentAreaFrame]
           shouldScaleTopToolbar:scaleTopToolbar
-                      incognito:_incognito];
+                      incognito:_incognito
+               topToolbarHidden:topToolbarHidden];
 }
 
 // Returns the frame for the snapshotted content of the active tab.
@@ -283,7 +297,7 @@
 // However, currently the BVC instances are themselves contained within a
 // BVCContainer view controller. This means that the
 // `viewControllerForTab.view` is not the BVC's view; rather it's the view of
-// the view controller that contains the BVC. Unfortunatley, the layout guide
+// the view controller that contains the BVC. Unfortunately, the layout guide
 // needed here is attached to the BVC's view, which is the first (and only)
 // subview of the BVCContainerViewController's view.
 // TODO(crbug.com/40583629) Clean up this arrangement.
@@ -324,6 +338,13 @@
   }
 
   return nil;
+}
+
+// Returns YES if the transition should hide the top toolbar (use the safe area
+// insets instead of the top toolbar LayoutGuide).
+- (BOOL)shouldHideTopToolbar {
+  return _isRegularBrowserNTP && !CanShowTabStrip(_tabGridViewController) &&
+         IsSplitToolbarMode(_tabGridViewController);
 }
 
 @end

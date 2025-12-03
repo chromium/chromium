@@ -18,7 +18,8 @@
                   topToolbarSnapshotView:(UIView*)topToolbarSnapshotView
                bottomToolbarSnapshotView:(UIView*)bottomToolbarSnapshotView
                    shouldScaleTopToolbar:(BOOL)shouldScaleTopToolbar
-                               incognito:(BOOL)incognito {
+                               incognito:(BOOL)incognito
+                        topToolbarHidden:(BOOL)topToolbarHidden {
   self = [super init];
   if (self) {
     _destinationFrame = destinationFrame;
@@ -34,6 +35,7 @@
     _activeCellPinned = activeCellPinned;
     _shouldScaleTopToolbar = shouldScaleTopToolbar;
     _incognito = incognito;
+    _topToolbarHidden = topToolbarHidden;
   }
   return self;
 }
