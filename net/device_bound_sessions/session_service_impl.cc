@@ -4,11 +4,22 @@
 
 #include "net/device_bound_sessions/session_service_impl.h"
 
+#include <algorithm>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/features.h"
+#include "components/unexportable_keys/service_error.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
@@ -17,6 +28,7 @@
 #include "net/device_bound_sessions/session_store.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net::device_bound_sessions {
 
@@ -177,6 +189,7 @@ void SessionServiceImpl::LoadSessionsAsync() {
   }
   session_store_->LoadSessions(base::BindOnce(
       &SessionServiceImpl::OnLoadSessionsComplete, weak_factory_.GetWeakPtr()));
+  StartGarbageCollection();
 }
 
 void SessionServiceImpl::RegisterBoundSession(
@@ -392,6 +405,66 @@ void SessionServiceImpl::OnLoadSessionsComplete(
   base::UmaHistogramCounts1000(
       "Net.DeviceBoundSessions.RequestsDeferredForInitialization",
       requests_before_initialization_);
+}
+
+void SessionServiceImpl::StartGarbageCollection() {
+  if (!base::FeatureList::IsEnabled(
+          unexportable_keys::kUnexportableKeyDeletion)) {
+    return;
+  }
+
+  // Use the maximum priority to reduce the risk of returning a new and valid
+  // key that is not part of `known_key_ids`.
+  key_service_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      unexportable_keys::BackgroundTaskPriority::kMaxValue,
+      base::BindOnce(&SessionServiceImpl::OnGetAllKeysForGarbageCollection,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void SessionServiceImpl::OnGetAllKeysForGarbageCollection(
+    unexportable_keys::ServiceErrorOr<
+        std::vector<unexportable_keys::UnexportableKeyId>>
+        all_key_ids_or_error) {
+  if (!all_key_ids_or_error.has_value() || all_key_ids_or_error->empty()) {
+    return;
+  }
+
+  base::OnceClosure do_garbage_collection = base::BindOnce(
+      &SessionServiceImpl::DoGarbageCollection, weak_factory_.GetWeakPtr(),
+      std::move(*all_key_ids_or_error));
+
+  if (pending_initialization_) {
+    queued_operations_.push_back(std::move(do_garbage_collection));
+  } else {
+    std::move(do_garbage_collection).Run();
+  }
+}
+
+void SessionServiceImpl::DoGarbageCollection(
+    std::vector<unexportable_keys::UnexportableKeyId> all_key_ids) {
+  absl::flat_hash_set<unexportable_keys::UnexportableKeyId> known_key_ids;
+  for (const auto& [_, session] : unpartitioned_sessions_) {
+    if (Session::KeyIdOrError key_id_or_error = session->unexportable_key_id();
+        key_id_or_error.has_value()) {
+      known_key_ids.insert(*key_id_or_error);
+    }
+  }
+
+  // Remove all keys that are still used.
+  std::erase_if(all_key_ids, [&](unexportable_keys::UnexportableKeyId key_id) {
+    return known_key_ids.contains(key_id);
+  });
+
+  // Delete all remaining keys.
+  std::ranges::for_each(
+      all_key_ids, [&](unexportable_keys::UnexportableKeyId unknown_key_id) {
+        key_service_->DeleteKeySlowlyAsync(
+            unknown_key_id,
+            unexportable_keys::BackgroundTaskPriority::kBestEffort,
+            // TODO(crbug.com/455538313): Add metrics for the number of keys
+            // deleted.
+            base::DoNothing());
+      });
 }
 
 void SessionServiceImpl::OnRegistrationComplete(

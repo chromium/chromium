@@ -17,6 +17,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/unexportable_keys/service_error.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/registration_fetcher.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
@@ -182,6 +184,14 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
                                   SessionKey session_key,
                                   RegistrationFetcher* fetcher,
                                   RegistrationResult result);
+
+  void StartGarbageCollection();
+  void OnGetAllKeysForGarbageCollection(
+      unexportable_keys::ServiceErrorOr<
+          std::vector<unexportable_keys::UnexportableKeyId>>
+          all_key_ids_or_error);
+  void DoGarbageCollection(
+      std::vector<unexportable_keys::UnexportableKeyId> all_key_ids);
 
   void AddSession(const SchemefulSite& site, std::unique_ptr<Session> session);
   void UnblockDeferredRequests(

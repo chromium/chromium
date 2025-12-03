@@ -4,11 +4,27 @@
 
 #include "net/device_bound_sessions/session_service_impl.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <utility>
+#include <variant>
+#include <vector>
+
+#include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "components/unexportable_keys/features.h"
+#include "components/unexportable_keys/mock_unexportable_key.h"
+#include "components/unexportable_keys/mock_unexportable_key_service.h"
+#include "components/unexportable_keys/scoped_mock_unexportable_key_provider.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
@@ -29,8 +45,10 @@
 using base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Invoke;
+using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::UnorderedElementsAre;
 
@@ -61,6 +79,34 @@ const std::string kSessionId3 = "SessionId3";
 const std::string kChallenge = "challenge";
 
 constexpr char kSessionChallengeHeaderName[] = "Secure-Session-Challenge";
+
+proto::Session CreateSessionProto(std::string_view session_id,
+                                  std::string_view url_string) {
+  base::Time expiry_time = base::Time::Now() + base::Days(1);
+
+  proto::Session session_proto;
+  session_proto.set_id(session_id);
+  session_proto.set_refresh_url(url_string);
+  session_proto.set_should_defer_when_expired(false);
+  session_proto.set_expiry_time(
+      expiry_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  session_proto.mutable_session_inclusion_rules()->set_origin(
+      "https://example.com");
+  session_proto.mutable_session_inclusion_rules()->set_do_include_site(true);
+
+  proto::CookieCraving* craving_proto = session_proto.add_cookie_cravings();
+  craving_proto->set_name("test_cookie");
+  craving_proto->set_domain("example.com");
+  craving_proto->set_path("/");
+  craving_proto->set_secure(true);
+  craving_proto->set_httponly(true);
+  craving_proto->set_source_port(443);
+  craving_proto->set_creation_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  craving_proto->set_same_site(proto::CookieSameSite::LAX_MODE);
+  craving_proto->set_source_scheme(proto::CookieSourceScheme::SECURE);
+  return session_proto;
+}
 
 // Matcher for SessionKeys
 auto ExpectId(std::string_view id) {
@@ -1637,6 +1683,14 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
   SessionServiceImpl& service() { return service_; }
   StrictMock<SessionStoreMock>& store() { return *store_; }
 
+  unexportable_keys::ScopedMockUnexportableKeyProvider&
+  SwitchToMockKeyProvider() {
+    // Using `emplace()` to destroy the existing scoped object before
+    // constructing a new one.
+    return scoped_key_provider_
+        .emplace<unexportable_keys::ScopedMockUnexportableKeyProvider>();
+  }
+
   void OnSessionsLoaded() {
     service().OnLoadSessionsComplete(SessionStore::SessionsMap());
   }
@@ -1660,7 +1714,9 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
   unexportable_keys::UnexportableKeyTaskManager task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
       task_manager_, crypto::UnexportableKeyProvider::Config()};
-  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
+  std::variant<crypto::ScopedFakeUnexportableKeyProvider,
+               unexportable_keys::ScopedMockUnexportableKeyProvider>
+      scoped_key_provider_;
   std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<StrictMock<SessionStoreMock>> store_;
   SessionServiceImpl service_;
@@ -1768,31 +1824,8 @@ TEST_F(SessionServiceImplWithStoreTest, RequestDestroyedDuringAsyncKeyRestore) {
   EXPECT_CALL(store(), LoadSessions).Times(1);
   service().LoadSessionsAsync();
 
-  base::Time expiry_time = base::Time::Now() + base::Days(1);
-
-  proto::Session session_proto;
-  session_proto.set_id(kSessionId);
-  session_proto.set_refresh_url(kUrlString);
-  session_proto.set_should_defer_when_expired(false);
-  session_proto.set_expiry_time(
-      expiry_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  session_proto.mutable_session_inclusion_rules()->set_origin(
-      "https://example.com");
-  session_proto.mutable_session_inclusion_rules()->set_do_include_site(true);
-
-  proto::CookieCraving* craving_proto = session_proto.add_cookie_cravings();
-  craving_proto->set_name("test_cookie");
-  craving_proto->set_domain("example.com");
-  craving_proto->set_path("/");
-  craving_proto->set_secure(true);
-  craving_proto->set_httponly(true);
-  craving_proto->set_source_port(443);
-  craving_proto->set_creation_time(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  craving_proto->set_same_site(proto::CookieSameSite::LAX_MODE);
-  craving_proto->set_source_scheme(proto::CookieSourceScheme::SECURE);
-
-  std::unique_ptr<Session> session = Session::CreateFromProto(session_proto);
+  std::unique_ptr<Session> session =
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
   ASSERT_TRUE(session);
 
   SessionStore::SessionsMap session_map;
@@ -1841,31 +1874,8 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
   EXPECT_CALL(store(), LoadSessions).Times(1);
   service().LoadSessionsAsync();
 
-  base::Time expiry_time = base::Time::Now() + base::Days(1);
-
-  proto::Session session_proto;
-  session_proto.set_id(kSessionId);
-  session_proto.set_refresh_url(kUrlString);
-  session_proto.set_should_defer_when_expired(false);
-  session_proto.set_expiry_time(
-      expiry_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  session_proto.mutable_session_inclusion_rules()->set_origin(
-      "https://example.com");
-  session_proto.mutable_session_inclusion_rules()->set_do_include_site(true);
-
-  proto::CookieCraving* craving_proto = session_proto.add_cookie_cravings();
-  craving_proto->set_name("test_cookie");
-  craving_proto->set_domain("example.com");
-  craving_proto->set_path("/");
-  craving_proto->set_secure(true);
-  craving_proto->set_httponly(true);
-  craving_proto->set_source_port(443);
-  craving_proto->set_creation_time(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  craving_proto->set_same_site(proto::CookieSameSite::LAX_MODE);
-  craving_proto->set_source_scheme(proto::CookieSourceScheme::SECURE);
-
-  std::unique_ptr<Session> session = Session::CreateFromProto(session_proto);
+  std::unique_ptr<Session> session =
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
   ASSERT_TRUE(session);
 
   SessionStore::SessionsMap session_map;
@@ -1917,6 +1927,89 @@ TEST_F(SessionServiceImplWithStoreTest, NoSessionUsageDuringInitialization) {
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kUnknown);
 }
 
+TEST_F(SessionServiceImplWithStoreTest, GarbageCollectsStaleKeys) {
+  base::test::ScopedFeatureList feature_list(
+      unexportable_keys::kUnexportableKeyDeletion);
+  unexportable_keys::MockUnexportableKeyProvider& mock_key_provider =
+      SwitchToMockKeyProvider().mock();
+
+  EXPECT_CALL(store(), LoadSessions).Times(1);
+  service().LoadSessionsAsync();
+
+  // The first two keys are known to the service, but the third key is stale.
+  const std::vector<uint8_t> kWrappedKey1 = {1, 2, 3};
+  const std::vector<uint8_t> kWrappedKey2 = {4, 5, 6};
+  const std::vector<uint8_t> kStaleWrappedKey = {7, 8, 9};
+
+  EXPECT_CALL(mock_key_provider, GetAllSigningKeysSlowly).WillRepeatedly([=] {
+    auto key1 = std::make_unique<unexportable_keys::MockUnexportableKey>();
+    auto key2 = std::make_unique<unexportable_keys::MockUnexportableKey>();
+    auto stale_key = std::make_unique<unexportable_keys::MockUnexportableKey>();
+
+    ON_CALL(*key1, GetWrappedKey).WillByDefault(Return(kWrappedKey1));
+    ON_CALL(*key2, GetWrappedKey).WillByDefault(Return(kWrappedKey2));
+    ON_CALL(*stale_key, GetWrappedKey).WillByDefault(Return(kStaleWrappedKey));
+
+    return base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
+        std::move(key1),
+        std::move(key2),
+        std::move(stale_key),
+    });
+  });
+
+  // Obtain the corresponding key ids.
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      std::vector<unexportable_keys::UnexportableKeyId>>>
+      get_all_keys_future;
+  key_service()->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      get_all_keys_future.GetCallback());
+  ASSERT_OK_AND_ASSIGN(
+      std::vector<unexportable_keys::UnexportableKeyId> all_keys_ids,
+      get_all_keys_future.Take());
+
+  // Create a session map with two sessions, each associated with a known key.
+  auto session1 =
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
+  session1->set_unexportable_key_id(all_keys_ids[0]);
+  auto session2 =
+      Session::CreateFromProto(CreateSessionProto(kSessionId2, kUrlString2));
+  session2->set_unexportable_key_id(all_keys_ids[1]);
+  SessionStore::SessionsMap session_map;
+  session_map[SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId)}] =
+      std::move(session1);
+  session_map[SessionKey{SchemefulSite(kTestUrl2), Session::Id(kSessionId2)}] =
+      std::move(session2);
+
+  // Finish loading the sessions, and wait for the stale key to be deleted.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_key_provider, DeleteSigningKeySlowly(Eq(kWrappedKey1)))
+      .Times(0);
+  EXPECT_CALL(mock_key_provider, DeleteSigningKeySlowly(Eq(kWrappedKey2)))
+      .Times(0);
+  EXPECT_CALL(mock_key_provider, DeleteSigningKeySlowly(Eq(kStaleWrappedKey)))
+      .WillOnce([&] {
+        run_loop.Quit();
+        return true;
+      });
+
+  FinishLoadingSessions(std::move(session_map));
+  run_loop.Run();
+}
+
+TEST_F(SessionServiceImplWithStoreTest,
+       GarbageCollectionDoesNotTriggerIfFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      unexportable_keys::kUnexportableKeyDeletion);
+  unexportable_keys::MockUnexportableKeyProvider& mock_key_provider =
+      SwitchToMockKeyProvider().mock();
+
+  EXPECT_CALL(mock_key_provider, GetAllSigningKeysSlowly).Times(0);
+  EXPECT_CALL(mock_key_provider, DeleteAllSigningKeysSlowly).Times(0);
+  FinishLoadingSessions({});
+}
+
 TEST_F(SessionServiceImplWithStoreTest,
        FederatedProviderSessionKeyRestoredOnUse) {
   // Create the provider session
@@ -1925,32 +2018,8 @@ TEST_F(SessionServiceImplWithStoreTest,
   EXPECT_CALL(store(), LoadSessions).Times(1);
   service().LoadSessionsAsync();
 
-  base::Time expiry_time = base::Time::Now() + base::Days(1);
-
-  proto::Session session_proto;
-  session_proto.set_id(kSessionId);
-  session_proto.set_refresh_url(kUrlString);
-  session_proto.set_should_defer_when_expired(false);
-  session_proto.set_expiry_time(
-      expiry_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  session_proto.mutable_session_inclusion_rules()->set_origin(
-      "https://example.com");
-  session_proto.mutable_session_inclusion_rules()->set_do_include_site(true);
-
-  proto::CookieCraving* craving_proto = session_proto.add_cookie_cravings();
-  craving_proto->set_name("test_cookie");
-  craving_proto->set_domain("example.com");
-  craving_proto->set_path("/");
-  craving_proto->set_secure(true);
-  craving_proto->set_httponly(true);
-  craving_proto->set_source_port(443);
-  craving_proto->set_creation_time(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  craving_proto->set_same_site(proto::CookieSameSite::LAX_MODE);
-  craving_proto->set_source_scheme(proto::CookieSourceScheme::SECURE);
-
   std::unique_ptr<Session> provider_session =
-      Session::CreateFromProto(session_proto);
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
   ASSERT_TRUE(provider_session);
 
   SessionStore::SessionsMap session_map;
