@@ -33,45 +33,30 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/** Helper for tests that need to download a file and check that it has been downloaded. */
-public class DownloadTestHelper implements AutoCloseable {
+/**
+ * Adapts a ChromeTabbedActivity for tests that need to download a file and check that it has been
+ * downloaded.
+ */
+class DownloadTestHelper {
     private static final String TAG = "DownloadTestBase";
     private static final File DOWNLOAD_DIRECTORY =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-    public static final long UPDATE_DELAY_MILLIS = 1000;
 
-    private final Supplier<ChromeTabbedActivity> mActivitySupplier;
+    private final ChromeTabbedActivity mActivity;
     private List<DownloadItem> mAllDownloads;
 
-    private DownloadTestHelper(Supplier<ChromeTabbedActivity> activitySupplier) {
-        mActivitySupplier = activitySupplier;
+    DownloadTestHelper(ChromeTabbedActivity activity) {
+        mActivity = activity;
     }
 
-    /**
-     * Create a {@link DownloadTestHelper}, perform clean up, and attach download observers.
-     *
-     * @return an instance of {@link DownloadTestHelper} which should be closed to clean up after
-     *     the test and detach observers.
-     */
-    public static DownloadTestHelper create(Supplier<ChromeTabbedActivity> activitySupplier) {
-        DownloadTestHelper helper = new DownloadTestHelper(activitySupplier);
-        helper.open();
-        return helper;
-    }
-
-    private void open() {
+    void attach() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DownloadDialogBridge.setPromptForDownloadAndroid(
-                            mActivitySupplier
-                                    .get()
-                                    .getProfileProviderSupplier()
-                                    .get()
-                                    .getOriginalProfile(),
+                            mActivity.getProfileProviderSupplier().get().getOriginalProfile(),
                             DownloadPromptStatus.DONT_SHOW);
                 });
 
@@ -87,8 +72,7 @@ public class DownloadTestHelper implements AutoCloseable {
                 });
     }
 
-    @Override
-    public void close() {
+    void detach() {
         cleanUpAllDownloads();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -97,16 +81,7 @@ public class DownloadTestHelper implements AutoCloseable {
                 });
     }
 
-    /**
-     * Checks if a file has downloaded. Is agnostic to the mechanism by which the file has
-     * downloaded.
-     *
-     * @param fileName Expected file name. Path is built by appending filename to the system
-     *     downloads path.
-     * @param expectedContents Expected contents of the file, or null if the contents should not be
-     *     checked.
-     */
-    public boolean hasDownloaded(String fileName, String expectedContents) {
+    boolean hasDownloaded(String fileName, String expectedContents) {
         try {
             File downloadedFile = getDownloadedPath(fileName);
             if (!downloadedFile.exists()) {
@@ -122,14 +97,7 @@ public class DownloadTestHelper implements AutoCloseable {
         }
     }
 
-    /**
-     * Checks if a file matching the regex has downloaded. Is agnostic to the mechanism by which the
-     * file has downloaded.
-     *
-     * @param fileNameRegex Expected regex the file name should match. Files are non-recursively
-     *     searched in the system downloads path.
-     */
-    public boolean hasDownloadedRegex(String fileNameRegex) {
+    boolean hasDownloadedRegex(String fileNameRegex) {
         List<String> filenames =
                 Stream.of(DOWNLOAD_DIRECTORY.listFiles())
                         .filter(f -> !f.isDirectory())
@@ -148,23 +116,14 @@ public class DownloadTestHelper implements AutoCloseable {
         return false;
     }
 
-    /**
-     * Check the download exists in DownloadManager by matching the local file path.
-     *
-     * @param fileName Expected file name. Path is built by appending filename to the system
-     *     downloads path.
-     * @param expectedContents Expected contents of the file, or null if the contents should not be
-     *     checked.
-     */
-    public boolean hasDownload(String fileName, String expectedContents) throws IOException {
+    boolean hasDownload(String fileName, String expectedContents) throws IOException {
         File downloadedFile = getDownloadedPath(fileName);
         if (!downloadedFile.exists()) {
             return false;
         }
 
         DownloadManager manager =
-                (DownloadManager)
-                        mActivitySupplier.get().getSystemService(Context.DOWNLOAD_SERVICE);
+                (DownloadManager) mActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         Cursor cursor = manager.query(new DownloadManager.Query());
 
         cursor.moveToFirst();
@@ -207,8 +166,7 @@ public class DownloadTestHelper implements AutoCloseable {
     /** Delete all download entries in DownloadManager and delete the corresponding files. */
     private void cleanUpAllDownloads() {
         DownloadManager manager =
-                (DownloadManager)
-                        mActivitySupplier.get().getSystemService(Context.DOWNLOAD_SERVICE);
+                (DownloadManager) mActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         Cursor cursor = manager.query(new DownloadManager.Query());
         int idColumnIndex = cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_ID);
         cursor.moveToFirst();
@@ -242,7 +200,7 @@ public class DownloadTestHelper implements AutoCloseable {
     private CallbackHelper mHttpDownloadFinished = new CallbackHelper();
     private TestDownloadManagerServiceObserver mDownloadManagerServiceObserver;
 
-    public int getChromeDownloadCallCount() {
+    int getChromeDownloadCallCount() {
         return mHttpDownloadFinished.getCallCount();
     }
 
@@ -250,7 +208,7 @@ public class DownloadTestHelper implements AutoCloseable {
         mHttpDownloadFinished = new CallbackHelper();
     }
 
-    public boolean waitForChromeDownloadToFinish(int currentCallCount) {
+    boolean waitForChromeDownloadToFinish(int currentCallCount) {
         boolean eventReceived = true;
         try {
             mHttpDownloadFinished.waitForCallback(currentCallCount, 1, 10, TimeUnit.SECONDS);
@@ -260,7 +218,7 @@ public class DownloadTestHelper implements AutoCloseable {
         return eventReceived;
     }
 
-    public List<DownloadItem> getAllDownloads() {
+    List<DownloadItem> getAllDownloads() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DownloadManagerService.getDownloadManagerService().getAllDownloads(null);
@@ -310,7 +268,7 @@ public class DownloadTestHelper implements AutoCloseable {
         }
     }
 
-    public void deleteFilesInDownloadDirectory(String... filenames) {
+    void deleteFilesInDownloadDirectory(String... filenames) {
         for (String filename : filenames) deleteFile(filename);
     }
 
@@ -318,19 +276,9 @@ public class DownloadTestHelper implements AutoCloseable {
         // Delete content URI.
         Uri uri = DownloadCollectionBridge.getDownloadUriForFileName(fileName);
         if (uri == null) {
-            Log.e(TAG, "Can't find URI of file for deletion: %s on Android P+.", fileName);
+            Log.e(TAG, "Can't find URI of file for deletion: %s", fileName);
             return;
         }
         DownloadCollectionBridge.deleteIntermediateUri(uri.toString());
-    }
-
-    /**
-     * Interface for Download tests to define actions that starts the activity.
-     *
-     * <p>This method will be called in DownloadTestRule's setUp process, which means it would
-     * happen before Test class' own setUp() call
-     */
-    public interface CustomMainActivityStart {
-        void customMainActivityStart() throws InterruptedException;
     }
 }

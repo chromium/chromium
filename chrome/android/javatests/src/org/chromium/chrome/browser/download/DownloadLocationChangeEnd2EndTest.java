@@ -23,6 +23,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.PathUtils;
@@ -32,12 +33,13 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
 import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -48,8 +50,14 @@ import java.util.ArrayList;
 /** Test to verify download end to end flow with download location dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStart {
-    @Rule public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
+public class DownloadLocationChangeEnd2EndTest {
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public final DownloadTestRule mDownloadTestRule = new DownloadTestRule();
+
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mActivityTestRule).around(mDownloadTestRule);
 
     private EmbeddedTestServer mTestServer;
     private static final String TEST_DATA_DIRECTORY = "/chrome/test/data/android/download/";
@@ -58,18 +66,15 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
 
     @Before
     public void setUp() {
+        mActivityTestRule.startOnBlankPage();
+        mDownloadTestRule.attach(mActivityTestRule.getActivity());
+
         mTestServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
                         ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
 
         // Show the location dialog for the first time.
         promptDownloadLocationDialog(DownloadPromptStatus.SHOW_INITIAL);
-    }
-
-    // CustomMainActivityStart implementation.
-    @Override
-    public void customMainActivityStart() throws InterruptedException {
-        mDownloadTestRule.startMainActivityOnBlankPage();
     }
 
     /** Ensures the default download location dialog is shown to the user with SD card inserted. */
@@ -82,7 +87,7 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
 
         // Ensure the dialog is being shown.
         CriteriaHelper.pollUiThread(
-                () -> mDownloadTestRule.getActivity().getModalDialogManager().isShowing());
+                () -> mActivityTestRule.getActivity().getModalDialogManager().isShowing());
 
         int currentCallCount = mDownloadTestRule.getChromeDownloadCallCount();
 
@@ -128,7 +133,7 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
 
         // Ensure the dialog is being shown.
         CriteriaHelper.pollUiThread(
-                () -> mDownloadTestRule.getActivity().getModalDialogManager().isShowing());
+                () -> mActivityTestRule.getActivity().getModalDialogManager().isShowing());
 
         // Open the spinner inside the dialog to show download location options.
         Espresso.onView(withId(R.id.file_location)).perform(click());
@@ -170,7 +175,7 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
     public void testShowDialogWithoutSDCardWithPolicy() {
         startDownload(/* hasSDCard= */ false);
         CriteriaHelper.pollUiThread(
-                () -> mDownloadTestRule.getActivity().getModalDialogManager().isShowing());
+                () -> mActivityTestRule.getActivity().getModalDialogManager().isShowing());
     }
 
     @Test
@@ -195,7 +200,7 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
                     Assert.assertEquals(
                             DownloadPromptStatus.SHOW_INITIAL,
                             DownloadDialogBridge.getPromptForDownloadAndroid(
-                                    mDownloadTestRule
+                                    mActivityTestRule
                                             .getActivity()
                                             .getProfileProviderSupplier()
                                             .get()
@@ -206,7 +211,7 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
                     // Trigger the download through navigation.
                     LoadUrlParams params =
                             new LoadUrlParams(mTestServer.getURL(TEST_DATA_DIRECTORY + TEST_FILE));
-                    mDownloadTestRule.getActivity().getActivityTab().loadUrl(params);
+                    mActivityTestRule.getActivity().getActivityTab().loadUrl(params);
                 });
     }
 
@@ -242,7 +247,7 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DownloadDialogBridge.setPromptForDownloadAndroid(
-                            mDownloadTestRule
+                            mActivityTestRule
                                     .getActivity()
                                     .getProfileProviderSupplier()
                                     .get()

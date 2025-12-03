@@ -41,10 +41,12 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
     private static final String TAG = "TestRule";
     private boolean mSkipInstanceAndTabStateCleanup;
 
+    /** Use {@link ChromeTransitTestRules#freshChromeTabbedActivityRule()}. */
     FreshCtaTransitTestRule() {
         super();
     }
 
+    /** Use {@link ChromeTransitTestRules#wrapTestRule(ChromeTabbedActivityTestRule)}. */
     FreshCtaTransitTestRule(ChromeTabbedActivityTestRule testRule) {
         super(testRule);
     }

@@ -20,7 +20,6 @@ import static org.chromium.base.test.transit.Triggers.noopTo;
 import android.app.Activity;
 import android.app.PendingIntent;
 
-import androidx.annotation.NonNull;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -30,6 +29,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
-import org.chromium.chrome.browser.download.DownloadTestHelper;
+import org.chromium.chrome.browser.download.DownloadTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationServiceImpl;
@@ -99,9 +99,13 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ReaderModeTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
     public final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public final DownloadTestRule mDownloadTestRule = new DownloadTestRule();
+
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mActivityTestRule).around(mDownloadTestRule);
 
     private static final String TEST_PAGE = "/chrome/test/data/dom_distiller/simple_article.html";
     // Suffix added to page titles, string is defined as IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX in
@@ -159,7 +163,6 @@ public class ReaderModeTest {
         watcher.assertExpected();
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(customTabActivity.getActivityTab(), notNullValue()));
-        @NonNull
         Tab distillerViewerTab = Objects.requireNonNull(customTabActivity.getActivityTab());
         waitForDistillation(PAGE_TITLE, distillerViewerTab);
     }
@@ -183,24 +186,22 @@ public class ReaderModeTest {
         String innerHtml = getInnerHtml(originalTab);
         assertThat(innerHtml).doesNotContain("article-header");
 
-        try (DownloadTestHelper helper =
-                DownloadTestHelper.create(mActivityTestRule::getActivity)) {
-            downloadAndOpenOfflinePage(helper);
+        mDownloadTestRule.attach(mActivityTestRule.getActivity());
+        downloadAndOpenOfflinePage();
 
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        originalTab
-                                .getUserDataHost()
-                                .getUserData(ReaderModeManager.USER_DATA_KEY)
-                                .activateReaderMode(EntryPoint.APP_MENU);
-                    });
-            CustomTabActivity customTabActivity = waitForCustomTabActivity();
-            CriteriaHelper.pollUiThread(
-                    () -> Criteria.checkThat(customTabActivity.getActivityTab(), notNullValue()));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    originalTab
+                            .getUserDataHost()
+                            .getUserData(ReaderModeManager.USER_DATA_KEY)
+                            .activateReaderMode(EntryPoint.APP_MENU);
+                });
+        CustomTabActivity customTabActivity = waitForCustomTabActivity();
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(customTabActivity.getActivityTab(), notNullValue()));
 
-            Tab distillerViewerTab = Objects.requireNonNull(customTabActivity.getActivityTab());
-            waitForDistillation(PAGE_TITLE, distillerViewerTab);
-        }
+        Tab distillerViewerTab = Objects.requireNonNull(customTabActivity.getActivityTab());
+        waitForDistillation(PAGE_TITLE, distillerViewerTab);
     }
 
     @Test
@@ -258,7 +259,6 @@ public class ReaderModeTest {
         CustomTabActivity customTabActivity = waitForCustomTabActivity();
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(customTabActivity.getActivityTab(), notNullValue()));
-        @NonNull
         Tab distillerViewerTab = Objects.requireNonNull(customTabActivity.getActivityTab());
         waitForDistillation(PAGE_TITLE, distillerViewerTab);
         assertTrue(distillerViewerTab.isIncognito());
@@ -266,13 +266,13 @@ public class ReaderModeTest {
         return customTabActivity;
     }
 
-    private void downloadAndOpenOfflinePage(DownloadTestHelper downloadTestHelper) {
-        int callCount = downloadTestHelper.getChromeDownloadCallCount();
+    private void downloadAndOpenOfflinePage() {
+        int callCount = mDownloadTestRule.getChromeDownloadCallCount();
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(),
                 R.id.offline_page_id);
-        Assert.assertTrue(downloadTestHelper.waitForChromeDownloadToFinish(callCount));
+        Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
 
         // Stop the server and also disconnect the network.
         mTestServer.stopAndDestroyServer();
@@ -310,7 +310,6 @@ public class ReaderModeTest {
                 });
         CustomTabActivity customTabActivity = waitForCustomTabActivity();
         CriteriaHelper.pollUiThread(() -> customTabActivity.getActivityTab() != null);
-        @NonNull
         Tab distillerViewerTab = Objects.requireNonNull(customTabActivity.getActivityTab());
         waitForDistillation(PAGE_TITLE, distillerViewerTab);
 
