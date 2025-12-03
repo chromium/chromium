@@ -333,3 +333,25 @@ ntp-lens-upload-dialog {
 #microsoftAuth {
   display: none;
 }
+
+#dialogAnchor {
+  anchor-name: --dialog-anchor;
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+#composeboxDialog {
+  background: transparent;
+  border: none;
+  left: anchor(left);
+  margin: 0;
+  overflow: visible;
+  position: absolute;
+  position-anchor: --dialog-anchor;
+  top: anchor(top);
+}
+
+#composeboxDialog::backdrop {
+  display: none;
+}

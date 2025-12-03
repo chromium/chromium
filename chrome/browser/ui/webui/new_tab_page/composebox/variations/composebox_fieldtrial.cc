@@ -309,6 +309,8 @@ const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick(
     &kNtpComposebox,
     "AddTabUploadDelayOnRecentTabChipClick",
     true);
+const base::FeatureParam<bool> kEnableModalComposebox(
+    &kNtpComposebox, "EnableModalComposebox", true);
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 

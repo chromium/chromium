@@ -58,13 +58,26 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         context-menu-glif-animation-state="${this.contextMenuGlifAnimationState_}">
     </cr-searchbox>
     ${this.showComposebox_ ? html`
-      <cr-composebox id="composebox"
-          ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
-          @composebox-initialized="${this.onComposeboxInitialized_}"
-          @close-composebox="${this.closeComposebox_}"
-          @composebox-input-focus-changed="${this.onInputFocusChanged_}"
-          searchbox-layout-mode="${this.realboxLayoutMode_}">
-      </cr-composebox>
+      ${this.enableModalComposebox_ ? html`
+        <div id="dialogAnchor"></div>
+        <dialog id="composeboxDialog">
+          <cr-composebox id="composebox"
+              ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
+              @composebox-initialized="${this.onComposeboxInitialized_}"
+              @close-composebox="${this.closeComposebox_}"
+              @composebox-input-focus-changed="${this.onInputFocusChanged_}"
+              searchbox-layout-mode="${this.realboxLayoutMode_}">
+          </cr-composebox>
+        </dialog>
+      ` : html`
+        <cr-composebox id="composebox"
+            ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
+            @composebox-initialized="${this.onComposeboxInitialized_}"
+            @close-composebox="${this.closeComposebox_}"
+            @composebox-input-focus-changed="${this.onInputFocusChanged_}"
+            searchbox-layout-mode="${this.realboxLayoutMode_}">
+        </cr-composebox>
+      `}
     ` : ''}
     ${this.showLensUploadDialog_ ? html`
       <ntp-lens-upload-dialog id="lensUploadDialog"
