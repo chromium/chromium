@@ -3299,6 +3299,7 @@ if (!is_android) {
       "../browser/devtools/device/devtools_android_bridge_browsertest.cc",
       "../browser/devtools/device/port_forwarding_browsertest.cc",
       "../browser/devtools/device/usb/android_usb_browsertest.cc",
+      "../browser/devtools/devtools_policy_browsertest.cc",
       "../browser/devtools/protocol/audits_protocol_test.cc",
       "../browser/devtools/protocol/devtools_autofill_browsertest.cc",
       "../browser/devtools/protocol/devtools_extensions_browsertest.cc",

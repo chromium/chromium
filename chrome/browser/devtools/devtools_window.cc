@@ -30,6 +30,9 @@
 #include "chrome/browser/devtools/aida_client.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_eye_dropper.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/devtools/devtools_policy_dialog.h"
+#endif
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/process_sharing_infobar_delegate.h"
 #include "chrome/browser/file_select_helper.h"
@@ -94,7 +97,6 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/dialog_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -886,21 +888,7 @@ void DevToolsWindow::ToggleDevToolsWindow(
     if (!window) {
       if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog)) {
 #if !BUILDFLAG(IS_ANDROID)
-
-        auto dialog_model =
-            ui::DialogModel::Builder(
-                std::make_unique<ui::DialogModelDelegate>())
-                .SetTitle(l10n_util::GetStringUTF16(IDS_DEVTOOLS_NOT_ALLOWED))
-                .AddParagraph(ui::DialogModelLabel(
-                    l10n_util::GetStringUTF16(IDS_DEVTOOLS_BLOCKED_BY_POLICY)))
-                .SetIcon(ui::ImageModel::FromVectorIcon(
-                    vector_icons::kBusinessIcon, ui::kColorIcon,
-                    extension_misc::EXTENSION_ICON_SMALL))
-                .AddOkButton(base::DoNothing(),
-                             ui::DialogModel::Button::Params().SetLabel(
-                                 l10n_util::GetStringUTF16(IDS_OK)))
-                .Build();
-        chrome::ShowTabModal(std::move(dialog_model), inspected_web_contents);
+        DevToolsPolicyDialog::Show(inspected_web_contents);
 #endif
       }
       return;
