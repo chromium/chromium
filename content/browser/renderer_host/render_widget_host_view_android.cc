@@ -1080,8 +1080,8 @@ void RenderWidgetHostViewAndroid::WriteContentBitmapToDiskAsync(
     JNIEnv* env,
     jint width,
     jint height,
-    const jni_zero::JavaParamRef<jstring>& jpath,
-    const jni_zero::JavaParamRef<jobject>& jcallback) {
+    const jni_zero::JavaRef<jstring>& jpath,
+    const jni_zero::JavaRef<jobject>& jcallback) {
   base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
       result_callback = base::BindOnce(
           &RenderWidgetHostViewAndroid::OnFinishGetContentBitmap,

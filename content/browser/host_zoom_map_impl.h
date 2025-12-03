@@ -106,7 +106,7 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   // Manages the lifecycle of JNI observers.
   jlong AddJniZoomLevelObserver(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_callback);
+      const base::android::JavaRef<jobject>& j_callback);
   void RemoveJniZoomLevelObserver(jlong subscription_key);
 #endif
 

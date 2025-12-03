@@ -53,11 +53,11 @@ class CONTENT_EXPORT MessagePortProvider {
   static void PostMessageToFrame(
       Page& page,
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& source_origin,
-      const base::android::JavaParamRef<jstring>& target_origin,
+      const base::android::JavaRef<jstring>& source_origin,
+      const base::android::JavaRef<jstring>& target_origin,
       /* org.chromium.content_public.browser.MessagePayload */
-      const base::android::JavaParamRef<jobject>& payload,
-      const base::android::JavaParamRef<jobjectArray>& ports);
+      const base::android::JavaRef<jobject>& payload,
+      const base::android::JavaRef<jobjectArray>& ports);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Fuchsia WebEngine always uses this version.

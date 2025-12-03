@@ -13,7 +13,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -63,13 +62,13 @@ void CaptioningController::WebContentsDestroyed() {
 void CaptioningController::SetTextTrackSettings(
     JNIEnv* env,
     jboolean textTracksEnabled,
-    const JavaParamRef<jstring>& textTrackBackgroundColor,
-    const JavaParamRef<jstring>& textTrackFontFamily,
-    const JavaParamRef<jstring>& textTrackFontStyle,
-    const JavaParamRef<jstring>& textTrackFontVariant,
-    const JavaParamRef<jstring>& textTrackTextColor,
-    const JavaParamRef<jstring>& textTrackTextShadow,
-    const JavaParamRef<jstring>& textTrackTextSize) {
+    const JavaRef<jstring>& textTrackBackgroundColor,
+    const JavaRef<jstring>& textTrackFontFamily,
+    const JavaRef<jstring>& textTrackFontStyle,
+    const JavaRef<jstring>& textTrackFontVariant,
+    const JavaRef<jstring>& textTrackTextColor,
+    const JavaRef<jstring>& textTrackTextShadow,
+    const JavaRef<jstring>& textTrackTextSize) {
   auto web_prefs = web_contents()->GetOrCreateWebPreferences();
   web_prefs.text_tracks_enabled = textTracksEnabled;
   web_prefs.text_track_background_color =
@@ -91,8 +90,8 @@ void CaptioningController::SetTextTrackSettings(
 
 static jlong JNI_CaptioningController_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents) {
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(jweb_contents));
   CHECK(web_contents);

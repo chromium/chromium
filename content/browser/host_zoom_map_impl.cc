@@ -611,7 +611,7 @@ HostZoomMapImpl::GetDefaultZoomLevelPrefCallback() {
 
 static void JNI_HostZoomMapImpl_SetZoomLevel(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jobject>& j_web_contents,
     jdouble new_zoom_level,
     jdouble adjusted_zoom_level) {
   WebContents* web_contents = WebContents::FromJavaWebContents(j_web_contents);
@@ -639,8 +639,8 @@ static void JNI_HostZoomMapImpl_SetZoomLevel(
 
 static void JNI_HostZoomMapImpl_SetZoomLevelForHost(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_context,
-    const base::android::JavaParamRef<jstring>& j_host,
+    const base::android::JavaRef<jobject>& j_context,
+    const base::android::JavaRef<jstring>& j_host,
     jdouble level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -658,7 +658,7 @@ static void JNI_HostZoomMapImpl_SetZoomLevelForHost(
 
 static jdouble JNI_HostZoomMapImpl_GetZoomLevel(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
+    const base::android::JavaRef<jobject>& j_web_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(j_web_contents);
   DCHECK(web_contents);
 
@@ -667,7 +667,7 @@ static jdouble JNI_HostZoomMapImpl_GetZoomLevel(
 
 static void JNI_HostZoomMapImpl_SetDefaultZoomLevel(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_context,
+    const base::android::JavaRef<jobject>& j_context,
     jdouble new_default_zoom_level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserContext* context = BrowserContextFromJavaHandle(j_context);
@@ -691,7 +691,7 @@ static void JNI_HostZoomMapImpl_SetDefaultZoomLevel(
 
 static jdouble JNI_HostZoomMapImpl_GetDefaultZoomLevel(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_context) {
+    const base::android::JavaRef<jobject>& j_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserContext* context = BrowserContextFromJavaHandle(j_context);
   if (!context)
@@ -705,7 +705,7 @@ static jdouble JNI_HostZoomMapImpl_GetDefaultZoomLevel(
 static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
 JNI_HostZoomMapImpl_GetAllHostZoomLevels(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_context) {
+    const base::android::JavaRef<jobject>& j_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ret;
 
@@ -753,8 +753,8 @@ void HostZoomMapImpl::NotifyJniObservers(
 
 static jlong JNI_HostZoomMapImpl_AddZoomLevelObserver(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_browser_context_handle,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_browser_context_handle,
+    const base::android::JavaRef<jobject>& j_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   BrowserContext* browser_context =
@@ -772,7 +772,7 @@ static jlong JNI_HostZoomMapImpl_AddZoomLevelObserver(
 
 jlong HostZoomMapImpl::AddJniZoomLevelObserver(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   int64_t key = next_jni_subscription_key_++;
@@ -783,7 +783,7 @@ jlong HostZoomMapImpl::AddJniZoomLevelObserver(
 
 static void JNI_HostZoomMapImpl_RemoveZoomLevelObserver(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_browser_context_handle,
+    const base::android::JavaRef<jobject>& j_browser_context_handle,
     jlong subscription_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

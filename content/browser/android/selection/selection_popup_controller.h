@@ -37,7 +37,7 @@ class SelectionPopupController : public RenderWidgetHostConnector {
   static SelectionPopupController* FromWebContents(WebContents& web_contents);
 
   SelectionPopupController(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj,
+                           const base::android::JavaRef<jobject>& obj,
                            WebContents* web_contents);
 
   void SetTextHandlesHiddenForDropdownMenu(JNIEnv* env, jboolean hidden);

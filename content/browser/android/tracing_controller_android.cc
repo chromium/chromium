@@ -29,9 +29,9 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_main_dex_jni/TracingControllerAndroidImpl_jni.h"
 
-using base::android::JavaParamRef;
-using base::android::ScopedJavaLocalRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
 
 namespace content {
 namespace {
@@ -75,7 +75,7 @@ void ReadJsonTraceData(
 
 static jlong JNI_TracingControllerAndroidImpl_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+    const base::android::JavaRef<jobject>& obj) {
   TracingControllerAndroid* profiler = new TracingControllerAndroid(env, obj);
   return reinterpret_cast<intptr_t>(profiler);
 }
@@ -93,8 +93,8 @@ void TracingControllerAndroid::Destroy(JNIEnv* env) {
 
 bool TracingControllerAndroid::StartTracing(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jcategories,
-    const JavaParamRef<jstring>& jtraceoptions,
+    const JavaRef<jstring>& jcategories,
+    const JavaRef<jstring>& jtraceoptions,
     bool use_protobuf) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::string categories =
@@ -120,10 +120,10 @@ bool TracingControllerAndroid::StartTracing(
 
 void TracingControllerAndroid::StopTracing(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jfilepath,
+    const JavaRef<jstring>& jfilepath,
     bool compress_file,
     bool use_protobuf,
-    const base::android::JavaParamRef<jobject>& callback) {
+    const base::android::JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::FilePath file_path(
       base::android::ConvertJavaStringToUTF8(env, jfilepath));
@@ -192,7 +192,7 @@ void TracingControllerAndroid::OnTracingStopped(
 
 bool TracingControllerAndroid::GetKnownCategoriesAsync(
     JNIEnv* env,
-    const JavaParamRef<jobject>& callback) {
+    const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ScopedJavaGlobalRef<jobject> global_callback(env, callback);
   // TODO(skyostil): Get the categories from Perfetto instead.
@@ -237,7 +237,7 @@ JNI_TracingControllerAndroidImpl_GetDefaultCategories(JNIEnv* env) {
 
 bool TracingControllerAndroid::GetTraceBufferUsageAsync(
     JNIEnv* env,
-    const JavaParamRef<jobject>& callback) {
+    const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ScopedJavaGlobalRef<jobject> global_callback(env, callback);
   auto weak_callback =

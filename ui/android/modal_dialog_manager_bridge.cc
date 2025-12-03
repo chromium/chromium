@@ -12,7 +12,7 @@
 namespace ui {
 
 ModalDialogManagerBridge::ModalDialogManagerBridge(
-    const jni_zero::JavaParamRef<jobject>& manager)
+    const jni_zero::JavaRef<jobject>& manager)
     : j_modal_dialog_manager_bridge_(manager) {}
 
 ModalDialogManagerBridge::~ModalDialogManagerBridge() = default;
@@ -52,7 +52,7 @@ void ModalDialogManagerBridge::DismissDialog(
 
 static jlong JNI_ModalDialogManagerBridge_Create(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& manager) {
+    const jni_zero::JavaRef<jobject>& manager) {
   return reinterpret_cast<intptr_t>(new ModalDialogManagerBridge(manager));
 }
 

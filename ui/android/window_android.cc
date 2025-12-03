@@ -29,7 +29,6 @@
 namespace ui {
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -81,7 +80,7 @@ WindowAndroid::AdaptiveRefreshRateInfo::operator=(
 
 // static
 WindowAndroid* WindowAndroid::FromJavaWindowAndroid(
-    const JavaParamRef<jobject>& jwindow_android) {
+    const JavaRef<jobject>& jwindow_android) {
   if (jwindow_android.is_null())
     return nullptr;
 
@@ -216,7 +215,7 @@ void WindowAndroid::OnUpdateRefreshRate(JNIEnv* env, float refresh_rate) {
 
 void WindowAndroid::OnSupportedRefreshRatesUpdated(
     JNIEnv* env,
-    const JavaParamRef<jfloatArray>& j_supported_refresh_rates) {
+    const JavaRef<jfloatArray>& j_supported_refresh_rates) {
   std::vector<float> supported_refresh_rates;
   if (j_supported_refresh_rates) {
     base::android::JavaFloatArrayToFloatVector(env, j_supported_refresh_rates,
@@ -415,7 +414,7 @@ void WindowAndroid::SetTestHooks(TestHooks* hooks) {
 // ----------------------------------------------------------------------------
 
 static jlong JNI_WindowAndroid_Init(JNIEnv* env,
-                                    const JavaParamRef<jobject>& obj,
+                                    const JavaRef<jobject>& obj,
                                     jint sdk_display_id,
                                     jfloat scroll_factor,
                                     jboolean window_is_wide_color_gamut) {

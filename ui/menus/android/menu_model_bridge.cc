@@ -18,7 +18,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/menu_model_bridge_jni_headers/MenuModelBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 
 namespace ui {

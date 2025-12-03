@@ -24,7 +24,6 @@
 #include "content/public/android/content_jni_headers/ContentUiEventHandler_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -89,7 +88,7 @@ bool ContentUiEventHandler::ScrollTo(float x, float y) {
 
 void ContentUiEventHandler::SendMouseWheelEvent(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& motion_event,
+    const base::android::JavaRef<jobject>& motion_event,
     jlong time_ns) {
   auto* event_handler = GetRenderWidgetHostView();
   if (!event_handler)
@@ -137,7 +136,7 @@ void ContentUiEventHandler::SendMouseWheelEvent(
 
 void ContentUiEventHandler::SendMouseEvent(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& motion_event,
+    const base::android::JavaRef<jobject>& motion_event,
     jlong time_ns,
     jint android_action_button,
     jint android_tool_type) {
@@ -218,8 +217,8 @@ void ContentUiEventHandler::CancelFling(JNIEnv* env, jlong time_ms) {
 
 static jlong JNI_ContentUiEventHandler_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents) {
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(jweb_contents));
   CHECK(web_contents)

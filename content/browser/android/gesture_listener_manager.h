@@ -36,7 +36,7 @@ class CONTENT_EXPORT GestureListenerManager
       public WebContentsObserver {
  public:
   GestureListenerManager(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj,
+                         const base::android::JavaRef<jobject>& obj,
                          WebContentsImpl* web_contents);
 
   GestureListenerManager(const GestureListenerManager&) = delete;

@@ -34,7 +34,6 @@ using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaArrayOfByteArrayToBytesVector;
 using base::android::JavaByteArrayToByteVector;
 using base::android::JavaIntArrayToIntVector;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace {
@@ -202,18 +201,17 @@ void BluetoothAdapterAndroid::OnScanFailed(JNIEnv* env) {
 
 void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
     JNIEnv* env,
-    const JavaParamRef<jstring>& address,
-    const JavaParamRef<jobject>&
+    const JavaRef<jstring>& address,
+    const JavaRef<jobject>&
         bluetooth_device_wrapper,  // Java Type: bluetoothDeviceWrapper
-    const JavaParamRef<jstring>& local_name,
+    const JavaRef<jstring>& local_name,
     int32_t rssi,
-    const JavaParamRef<jobjectArray>& advertised_uuids,  // Java Type: String[]
+    const JavaRef<jobjectArray>& advertised_uuids,  // Java Type: String[]
     int32_t tx_power,
-    const JavaParamRef<jobjectArray>& service_data_keys,  // Java Type: String[]
-    const JavaParamRef<jobjectArray>& service_data_values,  // Java Type: byte[]
-    const JavaParamRef<jintArray>& manufacturer_data_keys,  // Java Type: int[]
-    const JavaParamRef<jobjectArray>&
-        manufacturer_data_values,  // Java Type: byte[]
+    const JavaRef<jobjectArray>& service_data_keys,    // Java Type: String[]
+    const JavaRef<jobjectArray>& service_data_values,  // Java Type: byte[]
+    const JavaRef<jintArray>& manufacturer_data_keys,  // Java Type: int[]
+    const JavaRef<jobjectArray>& manufacturer_data_values,  // Java Type: byte[]
     int32_t advertisement_flags) {
   std::string device_address = ConvertJavaStringToUTF8(env, address);
   auto iter = devices_.find(device_address);
@@ -307,8 +305,8 @@ void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
 
 void BluetoothAdapterAndroid::PopulateOrUpdatePairedDevice(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& address,
-    const base::android::JavaParamRef<jobject>&
+    const base::android::JavaRef<jstring>& address,
+    const base::android::JavaRef<jobject>&
         bluetooth_device_wrapper,  // Java Type: bluetoothDeviceWrapper
     bool from_broadcast_receiver) {
   std::string device_address = ConvertJavaStringToUTF8(env, address);
@@ -342,7 +340,7 @@ void BluetoothAdapterAndroid::PopulateOrUpdatePairedDevice(
 
 void BluetoothAdapterAndroid::OnDeviceUnpaired(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& address) {
+    const base::android::JavaRef<jstring>& address) {
   std::string device_address = ConvertJavaStringToUTF8(env, address);
   auto iter = devices_.find(device_address);
   if (iter == devices_.end()) {
@@ -367,8 +365,8 @@ void BluetoothAdapterAndroid::OnDeviceUnpaired(
 
 void BluetoothAdapterAndroid::UpdateDeviceAclConnectState(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& address,
-    const base::android::JavaParamRef<jobject>&
+    const base::android::JavaRef<jstring>& address,
+    const base::android::JavaRef<jobject>&
         bluetooth_device_wrapper,  // Java Type: BluetoothDeviceWrapper
     uint8_t transport,
     bool connected) {
@@ -406,7 +404,7 @@ void BluetoothAdapterAndroid::UpdateDeviceAclConnectState(
 
 BluetoothDeviceAndroid* BluetoothAdapterAndroid::CreateDevice(
     const std::string& device_address,
-    const base::android::JavaParamRef<jobject>&
+    const base::android::JavaRef<jobject>&
         bluetooth_device_wrapper) {  // Java Type: BluetoothDeviceWrapper
   BluetoothDeviceAndroid* device;
   std::unique_ptr<BluetoothDeviceAndroid> device_owner =

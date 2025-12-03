@@ -58,7 +58,7 @@ void PostMessageToFrameInternal(
 
 #if BUILDFLAG(IS_ANDROID)
 std::u16string ToString16(JNIEnv* env,
-                          const base::android::JavaParamRef<jstring>& s) {
+                          const base::android::JavaRef<jstring>& s) {
   if (s.is_null())
     return std::u16string();
   return base::android::ConvertJavaStringToUTF16(env, s);
@@ -81,10 +81,10 @@ void MessagePortProvider::PostMessageToFrame(
 void MessagePortProvider::PostMessageToFrame(
     Page& page,
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& source_origin,
-    const base::android::JavaParamRef<jstring>& target_origin,
-    const base::android::JavaParamRef<jobject>& payload,
-    const base::android::JavaParamRef<jobjectArray>& ports) {
+    const base::android::JavaRef<jstring>& source_origin,
+    const base::android::JavaRef<jstring>& target_origin,
+    const base::android::JavaRef<jobject>& payload,
+    const base::android::JavaRef<jobjectArray>& ports) {
   std::optional<url::Origin> source;
   std::u16string serialized_source = ToString16(env, source_origin);
   if (!serialized_source.empty()) {

@@ -21,7 +21,7 @@
 
 namespace content {
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 struct MediaSessionAndroid::JavaObjectGetter {
@@ -51,7 +51,7 @@ MediaSessionAndroid::~MediaSessionAndroid() {
 static ScopedJavaLocalRef<jobject>
 JNI_MediaSessionImpl_GetMediaSessionFromWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_contents_android) {
+    const JavaRef<jobject>& j_contents_android) {
   WebContents* contents = WebContents::FromJavaWebContents(j_contents_android);
   if (!contents)
     return ScopedJavaLocalRef<jobject>();

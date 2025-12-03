@@ -27,7 +27,7 @@ namespace ui {
 namespace {
 static constexpr float kEpsilon = 1e-5f;
 using base::android::AppendJavaStringArrayToStringVector;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 }  // namespace
 
@@ -54,7 +54,7 @@ ScopedJavaLocalRef<jobject> EventForwarder::GetJavaObject() {
 }
 
 jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
-                                      const JavaParamRef<jobject>& motion_event,
+                                      const JavaRef<jobject>& motion_event,
                                       jlong oldest_event_time_ns,
                                       jlong latest_event_time_ns,
                                       jint android_action,
@@ -170,7 +170,7 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
 
 void EventForwarder::OnMouseEvent(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& motion_event,
+    const base::android::JavaRef<jobject>& motion_event,
     jlong time_ns,
     jint android_action,
     jint android_action_button,
@@ -219,12 +219,12 @@ void EventForwarder::OnDragEvent(JNIEnv* env,
                                  jfloat y,
                                  jfloat screen_x,
                                  jfloat screen_y,
-                                 const JavaParamRef<jobjectArray>& j_mimeTypes,
-                                 const JavaParamRef<jstring>& j_content,
-                                 const JavaParamRef<jobjectArray>& j_filenames,
-                                 const JavaParamRef<jstring>& j_text,
-                                 const JavaParamRef<jstring>& j_html,
-                                 const JavaParamRef<jstring>& j_url) {
+                                 const JavaRef<jobjectArray>& j_mimeTypes,
+                                 const JavaRef<jstring>& j_content,
+                                 const JavaRef<jobjectArray>& j_filenames,
+                                 const JavaRef<jstring>& j_text,
+                                 const JavaRef<jstring>& j_html,
+                                 const JavaRef<jstring>& j_url) {
   float dip_scale = view_->GetDipScale();
   gfx::PointF location(x / dip_scale, y / dip_scale);
   gfx::PointF root_location(screen_x / dip_scale, screen_y / dip_scale);
@@ -255,7 +255,7 @@ jboolean EventForwarder::OnGestureEvent(JNIEnv* env,
 
 jboolean EventForwarder::OnGenericMotionEvent(
     JNIEnv* env,
-    const JavaParamRef<jobject>& motion_event,
+    const JavaRef<jobject>& motion_event,
     jlong event_time_ns,
     jlong down_time_ms) {
   auto size = view_->GetSizeDIPs();
@@ -297,16 +297,15 @@ jboolean EventForwarder::OnGenericMotionEvent(
   return view_->OnGenericMotionEvent(*event);
 }
 
-void EventForwarder::OnMouseWheelEvent(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& motion_event,
-    jlong time_ns,
-    jfloat x,
-    jfloat y,
-    jfloat raw_x,
-    jfloat raw_y,
-    jfloat delta_x,
-    jfloat delta_y) {
+void EventForwarder::OnMouseWheelEvent(JNIEnv* env,
+                                       const JavaRef<jobject>& motion_event,
+                                       jlong time_ns,
+                                       jfloat x,
+                                       jfloat y,
+                                       jfloat raw_x,
+                                       jfloat raw_y,
+                                       jfloat delta_x,
+                                       jfloat delta_y) {
   ui::MotionEventAndroid::Pointer pointer(
       /*id=*/0, x, y, /*touch_major_pixels=*/0.0f, /*touch_minor_pixels=*/0.0f,
       /*pressure=*/0,

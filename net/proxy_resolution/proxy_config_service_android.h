@@ -45,10 +45,10 @@ class NET_EXPORT ProxyConfigServiceAndroid : public ProxyConfigService {
     // The fourth argument is the proxy exclusion list.
     virtual void ProxySettingsChangedTo(
         JNIEnv*,
-        const base::android::JavaParamRef<jstring>&,
+        const base::android::JavaRef<jstring>&,
         jint,
-        const base::android::JavaParamRef<jstring>&,
-        const base::android::JavaParamRef<jobjectArray>&) = 0;
+        const base::android::JavaRef<jstring>&,
+        const base::android::JavaRef<jobjectArray>&) = 0;
 
     // Called from Java (on JNI thread) to signal that the proxy settings have
     // changed. New proxy settings are fetched from the system property store.

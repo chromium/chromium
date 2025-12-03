@@ -113,7 +113,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   void NotifyOfNetworkDisconnect(JNIEnv* env, jlong net_id);
   void NotifyPurgeActiveNetworkList(
       JNIEnv* env,
-      const base::android::JavaParamRef<jlongArray>& active_networks);
+      const base::android::JavaRef<jlongArray>& active_networks);
 
   // Called from NetworkActiveNotifier.java on the JNI thread to push down
   // notifications of default network going in to high power mode.

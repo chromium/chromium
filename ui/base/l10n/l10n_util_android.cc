@@ -18,14 +18,14 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/base/ui_base_jni_headers/LocalizationUtils_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace l10n_util {
 
 static jint JNI_LocalizationUtils_GetFirstStrongCharacterDirection(
     JNIEnv* env,
-    const JavaParamRef<jstring>& string) {
+    const JavaRef<jstring>& string) {
   return base::i18n::GetFirstStrongCharacterDirection(
       base::android::ConvertJavaStringToUTF16(env, string));
 }

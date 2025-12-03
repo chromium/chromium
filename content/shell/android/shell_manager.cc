@@ -18,7 +18,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/shell/android/content_shell_jni_headers/ShellManager_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -49,13 +48,12 @@ void RemoveShellView(const JavaRef<jobject>& shell_view) {
                                 shell_view);
 }
 
-static void JNI_ShellManager_Init(JNIEnv* env,
-                                  const JavaParamRef<jobject>& obj) {
+static void JNI_ShellManager_Init(JNIEnv* env, const JavaRef<jobject>& obj) {
   g_global_state.Get().j_shell_manager.Reset(obj);
 }
 
 static void JNI_ShellManager_LaunchShell(JNIEnv* env,
-                                         const JavaParamRef<jstring>& jurl) {
+                                         const JavaRef<jstring>& jurl) {
   ShellBrowserContext* browserContext =
       ShellContentBrowserClient::Get()->browser_context();
   GURL url(base::android::ConvertJavaStringToUTF8(env, jurl));

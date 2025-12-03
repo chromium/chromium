@@ -26,7 +26,7 @@ using base::android::AttachCurrentThread;
 using base::android::CheckException;
 using base::android::ClearException;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace device {
@@ -196,20 +196,19 @@ void GamepadPlatformDataFetcherAndroid::ResetVibration(
                                   std::move(callback_runner));
 }
 
-static void JNI_GamepadList_SetGamepadData(
-    JNIEnv* env,
-    jlong data_fetcher,
-    jint index,
-    jboolean mapping,
-    jboolean connected,
-    const JavaParamRef<jstring>& devicename,
-    jint vendor_id,
-    jint product_id,
-    jlong timestamp,
-    const JavaParamRef<jfloatArray>& jaxes,
-    const JavaParamRef<jfloatArray>& jbuttons,
-    jint buttons_length,
-    jboolean supports_dual_rumble) {
+static void JNI_GamepadList_SetGamepadData(JNIEnv* env,
+                                           jlong data_fetcher,
+                                           jint index,
+                                           jboolean mapping,
+                                           jboolean connected,
+                                           const JavaRef<jstring>& devicename,
+                                           jint vendor_id,
+                                           jint product_id,
+                                           jlong timestamp,
+                                           const JavaRef<jfloatArray>& jaxes,
+                                           const JavaRef<jfloatArray>& jbuttons,
+                                           jint buttons_length,
+                                           jboolean supports_dual_rumble) {
   DCHECK(data_fetcher);
   GamepadPlatformDataFetcherAndroid* fetcher =
       reinterpret_cast<GamepadPlatformDataFetcherAndroid*>(data_fetcher);

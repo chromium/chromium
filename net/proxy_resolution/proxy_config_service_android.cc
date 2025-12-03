@@ -30,11 +30,11 @@
 #include "net/net_jni_headers/ProxyChangeListener_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::ConvertJavaStringToUTF8;
 using base::android::CheckException;
 using base::android::ClearException;
-using base::android::JavaParamRef;
+using base::android::ConvertJavaStringToUTF8;
+using base::android::ConvertUTF8ToJavaString;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -431,10 +431,10 @@ class ProxyConfigServiceAndroid::Delegate
     // ProxyConfigServiceAndroid::JNIDelegate overrides.
     void ProxySettingsChangedTo(
         JNIEnv* env,
-        const JavaParamRef<jstring>& jhost,
+        const JavaRef<jstring>& jhost,
         jint jport,
-        const JavaParamRef<jstring>& jpac_url,
-        const JavaParamRef<jobjectArray>& jexclusion_list) override {
+        const JavaRef<jstring>& jpac_url,
+        const JavaRef<jobjectArray>& jexclusion_list) override {
       std::string host = ConvertJavaStringToUTF8(env, jhost);
       std::string pac_url;
       if (jpac_url)

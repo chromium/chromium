@@ -471,8 +471,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       JNIEnv* env,
       jint width,
       jint height,
-      const jni_zero::JavaParamRef<jstring>& jpath,
-      const jni_zero::JavaParamRef<jobject>& jcallback);
+      const jni_zero::JavaRef<jstring>& jpath,
+      const jni_zero::JavaRef<jobject>& jcallback);
 
   // Notifies that the parent activity has moved into the foreground.
   void OnResume(JNIEnv* env);

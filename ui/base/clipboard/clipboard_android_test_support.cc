@@ -21,7 +21,7 @@ namespace ui {
 
 static jboolean JNI_ClipboardAndroidTestSupport_NativeWriteHtml(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_html_text) {
+    const base::android::JavaRef<jstring>& j_html_text) {
   {
     // Simulate something writing HTML to the clipboard in native.
     // Android requires both a plaintext and HTML version.
@@ -43,7 +43,7 @@ static jboolean JNI_ClipboardAndroidTestSupport_NativeWriteHtml(
 
 static jboolean JNI_ClipboardAndroidTestSupport_NativeClipboardContains(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_text) {
+    const base::android::JavaRef<jstring>& j_text) {
   // The Java side of the test pretended to be another app using
   // ClipboardManager. This should update the native side of the clipboard as
   // well as the Android side.

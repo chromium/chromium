@@ -11,7 +11,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/test/android/content_test_jni/DOMUtils_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace content {
 
@@ -19,7 +19,7 @@ namespace content {
 // of shrinking Blink's view size, otherwise 0.
 static jint JNI_DOMUtils_GetTopControlsShrinkBlinkHeight(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
 
   // Android obtains the top control size via WebContentsDelegate.

@@ -43,11 +43,10 @@ class CONTENT_EXPORT SpeechRecognizerImplAndroid : public SpeechRecognizer {
   void OnSoundStart(JNIEnv* env);
   void OnSoundEnd(JNIEnv* env);
   void OnAudioEnd(JNIEnv* env);
-  void OnRecognitionResults(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& strings,
-      const base::android::JavaParamRef<jfloatArray>& floats,
-      jboolean interim);
+  void OnRecognitionResults(JNIEnv* env,
+                            const base::android::JavaRef<jobjectArray>& strings,
+                            const base::android::JavaRef<jfloatArray>& floats,
+                            jboolean interim);
   void OnRecognitionError(JNIEnv* env,
                           jint error);
   void OnRecognitionEnd(JNIEnv* env);

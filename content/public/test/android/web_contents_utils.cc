@@ -25,7 +25,7 @@
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -45,7 +45,7 @@ void JavaScriptResultCallback(const ScopedJavaGlobalRef<jobject>& callback,
 // impact Browser UI.
 static void JNI_WebContentsUtils_ReportAllFrameSubmissions(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jweb_contents,
     jboolean enabled) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   RenderFrameMetadataProviderImpl* provider =
@@ -56,7 +56,7 @@ static void JNI_WebContentsUtils_ReportAllFrameSubmissions(
 
 static ScopedJavaLocalRef<jobject> JNI_WebContentsUtils_GetFocusedFrame(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   return static_cast<RenderFrameHostImpl*>(web_contents->GetFocusedFrame())
       ->GetJavaRenderFrameHost();
@@ -64,9 +64,9 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsUtils_GetFocusedFrame(
 
 static void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
-    const JavaParamRef<jstring>& script,
-    const base::android::JavaParamRef<jobject>& callback) {
+    const JavaRef<jobject>& jweb_contents,
+    const JavaRef<jstring>& script,
+    const base::android::JavaRef<jobject>& callback) {
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(jweb_contents));
   RenderViewHost* rvh = web_contents->GetRenderViewHost();
@@ -98,7 +98,7 @@ static void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
 
 static void JNI_WebContentsUtils_CrashTab(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(jweb_contents));
   web_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
@@ -107,8 +107,8 @@ static void JNI_WebContentsUtils_CrashTab(
 
 static void JNI_WebContentsUtils_NotifyCopyableViewInWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
-    const JavaParamRef<jobject>& done_callback) {
+    const JavaRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& done_callback) {
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(jweb_contents));
 
@@ -122,7 +122,7 @@ static void JNI_WebContentsUtils_NotifyCopyableViewInWebContents(
 
 static void JNI_WebContentsUtils_SimulateEndOfPaintHolding(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
 }

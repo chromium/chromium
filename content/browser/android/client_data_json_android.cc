@@ -50,12 +50,12 @@ static base::android::ScopedJavaLocalRef<jstring>
 JNI_ClientDataJsonImpl_BuildClientDataJson(
     JNIEnv* env,
     jint jclient_data_request_type,
-    const base::android::JavaParamRef<jstring>& jcaller_origin,
-    const base::android::JavaParamRef<jbyteArray>& jchallenge,
+    const base::android::JavaRef<jstring>& jcaller_origin,
+    const base::android::JavaRef<jbyteArray>& jchallenge,
     jboolean jis_cross_origin,
-    const base::android::JavaParamRef<jobject>& joptions_byte_buffer,
-    const base::android::JavaParamRef<jstring>& jrelying_party_id,
-    const base::android::JavaParamRef<jobject>& jtop_origin) {
+    const base::android::JavaRef<jobject>& joptions_byte_buffer,
+    const base::android::JavaRef<jstring>& jrelying_party_id,
+    const base::android::JavaRef<jobject>& jtop_origin) {
   webauthn::ClientDataRequestType type =
       static_cast<webauthn::ClientDataRequestType>(jclient_data_request_type);
   std::string caller_origin =

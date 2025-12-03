@@ -54,8 +54,8 @@ constexpr uint8_t kLightestAlpha = 0;
 
 static jlong JNI_MagnifierSurfaceControl_Create(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
-    const base::android::JavaParamRef<jobject>& j_surface_control,
+    const base::android::JavaRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jobject>& j_surface_control,
     jfloat device_scale,
     jint width,
     jint height,

@@ -15,7 +15,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "net/android/net_test_support_provider_jni/EmbeddedTestServerImpl_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -79,7 +78,7 @@ jboolean EmbeddedTestServerAndroid::ShutdownAndWaitUntilComplete(JNIEnv* env) {
 
 ScopedJavaLocalRef<jstring> EmbeddedTestServerAndroid::GetURL(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jrelative_url) const {
+    const JavaRef<jstring>& jrelative_url) const {
   const GURL gurl(test_server_.GetURL(
       base::android::ConvertJavaStringToUTF8(env, jrelative_url)));
   return base::android::ConvertUTF8ToJavaString(env, gurl.spec());
@@ -87,8 +86,8 @@ ScopedJavaLocalRef<jstring> EmbeddedTestServerAndroid::GetURL(
 
 ScopedJavaLocalRef<jstring> EmbeddedTestServerAndroid::GetURLWithHostName(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jhostname,
-    const JavaParamRef<jstring>& jrelative_url) const {
+    const JavaRef<jstring>& jhostname,
+    const JavaRef<jstring>& jrelative_url) const {
   const GURL gurl(test_server_.GetURL(
       base::android::ConvertJavaStringToUTF8(env, jhostname),
       base::android::ConvertJavaStringToUTF8(env, jrelative_url)));
@@ -97,7 +96,7 @@ ScopedJavaLocalRef<jstring> EmbeddedTestServerAndroid::GetURLWithHostName(
 
 std::vector<std::string> EmbeddedTestServerAndroid::GetRequestHeadersForUrl(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jrelative_url) {
+    const base::android::JavaRef<jstring>& jrelative_url) {
   base::AutoLock auto_lock(lock_);
   std::string path = base::android::ConvertJavaStringToUTF8(env, jrelative_url);
   CHECK(requests_by_path_.contains(path)) << path;
@@ -117,7 +116,7 @@ std::vector<std::string> EmbeddedTestServerAndroid::GetRequestHeadersForUrl(
 
 int EmbeddedTestServerAndroid::GetRequestCountForUrl(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jrelative_url) {
+    const base::android::JavaRef<jstring>& jrelative_url) {
   base::AutoLock auto_lock(lock_);
   std::string path = base::android::ConvertJavaStringToUTF8(env, jrelative_url);
   auto it = requests_by_path_.find(path);
@@ -129,7 +128,7 @@ int EmbeddedTestServerAndroid::GetRequestCountForUrl(
 
 void EmbeddedTestServerAndroid::AddDefaultHandlers(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jdirectory_path) {
+    const JavaRef<jstring>& jdirectory_path) {
   const base::FilePath directory(
       base::android::ConvertJavaStringToUTF8(env, jdirectory_path));
   test_server_.AddDefaultHandlers(directory);
@@ -152,7 +151,7 @@ void EmbeddedTestServerAndroid::RegisterRequestHandler(JNIEnv* env,
 
 void EmbeddedTestServerAndroid::ServeFilesFromDirectory(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jdirectory_path) {
+    const JavaRef<jstring>& jdirectory_path) {
   const base::FilePath directory(
       base::android::ConvertJavaStringToUTF8(env, jdirectory_path));
   test_server_.ServeFilesFromDirectory(directory);
@@ -176,8 +175,8 @@ void EmbeddedTestServerAndroid::Destroy(JNIEnv* env) {
 
 static void JNI_EmbeddedTestServerImpl_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
-    const JavaParamRef<jstring>& jtest_data_dir,
+    const JavaRef<jobject>& jobj,
+    const JavaRef<jstring>& jtest_data_dir,
     jboolean jhttps) {
   TRACE_EVENT0("native", "EmbeddedTestServerAndroid::Init");
   base::FilePath test_data_dir(

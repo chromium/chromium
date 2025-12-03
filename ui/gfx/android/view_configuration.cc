@@ -12,7 +12,7 @@
 #include "ui/gfx/gfx_jni_headers/ViewConfigurationHelper_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace gfx {
 

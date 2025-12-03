@@ -21,7 +21,7 @@
 #include "content/public/android/content_app_jni/ContentMain_jni.h"
 
 using base::LazyInstance;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace content {
 

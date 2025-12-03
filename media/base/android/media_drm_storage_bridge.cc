@@ -27,7 +27,7 @@ using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaByteArrayToByteVector;
 using base::android::JavaByteArrayToString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::RunBooleanCallbackAndroid;
 using base::android::RunObjectCallbackAndroid;
 using base::android::ScopedJavaLocalRef;
@@ -50,10 +50,9 @@ void MediaDrmStorageBridge::Initialize(const CreateStorageCB& create_storage_cb,
                                    std::move(init_cb)));
 }
 
-void MediaDrmStorageBridge::OnProvisioned(
-    JNIEnv* env,
-    // Callback<Boolean>
-    const JavaParamRef<jobject>& j_callback) {
+void MediaDrmStorageBridge::OnProvisioned(JNIEnv* env,
+                                          // Callback<Boolean>
+                                          const JavaRef<jobject>& j_callback) {
   DCHECK(impl_);
   task_runner_->PostTask(
       FROM_HERE,
@@ -67,11 +66,10 @@ void MediaDrmStorageBridge::OnProvisioned(
               base::android::ScopedJavaGlobalRef<jobject>(env, j_callback))));
 }
 
-void MediaDrmStorageBridge::OnLoadInfo(
-    JNIEnv* env,
-    const JavaParamRef<jbyteArray>& j_session_id,
-    // Callback<PersistentInfo>
-    const JavaParamRef<jobject>& j_callback) {
+void MediaDrmStorageBridge::OnLoadInfo(JNIEnv* env,
+                                       const JavaRef<jbyteArray>& j_session_id,
+                                       // Callback<PersistentInfo>
+                                       const JavaRef<jobject>& j_callback) {
   DCHECK(impl_);
   std::string session_id;
   JavaByteArrayToString(env, j_session_id, &session_id);
@@ -86,11 +84,10 @@ void MediaDrmStorageBridge::OnLoadInfo(
                                     session_id)));
 }
 
-void MediaDrmStorageBridge::OnSaveInfo(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_persist_info,
-    // Callback<Boolean>
-    const JavaParamRef<jobject>& j_callback) {
+void MediaDrmStorageBridge::OnSaveInfo(JNIEnv* env,
+                                       const JavaRef<jobject>& j_persist_info,
+                                       // Callback<Boolean>
+                                       const JavaRef<jobject>& j_callback) {
   DCHECK(impl_);
   std::vector<uint8_t> key_set_id;
   JavaByteArrayToByteVector(
@@ -124,11 +121,10 @@ void MediaDrmStorageBridge::OnSaveInfo(
               base::android::ScopedJavaGlobalRef<jobject>(env, j_callback))));
 }
 
-void MediaDrmStorageBridge::OnClearInfo(
-    JNIEnv* env,
-    const JavaParamRef<jbyteArray>& j_session_id,
-    // Callback<Boolean>
-    const JavaParamRef<jobject>& j_callback) {
+void MediaDrmStorageBridge::OnClearInfo(JNIEnv* env,
+                                        const JavaRef<jbyteArray>& j_session_id,
+                                        // Callback<Boolean>
+                                        const JavaRef<jobject>& j_callback) {
   DCHECK(impl_);
   std::string session_id;
   JavaByteArrayToString(env, j_session_id, &session_id);

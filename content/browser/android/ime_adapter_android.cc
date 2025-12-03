@@ -39,7 +39,7 @@ using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 
@@ -70,10 +70,9 @@ input::NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
 
 }  // anonymous namespace
 
-static jlong JNI_ImeAdapterImpl_Init(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents) {
+static jlong JNI_ImeAdapterImpl_Init(JNIEnv* env,
+                                     const JavaRef<jobject>& obj,
+                                     const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
   auto* ime_adapter = new ImeAdapterAndroid(env, obj, web_contents);
@@ -134,7 +133,7 @@ static void JNI_ImeAdapterImpl_AppendSuggestionSpan(
     jboolean remove_on_finish_composing,
     jint underline_color,
     jint suggestion_highlight_color,
-    const JavaParamRef<jobjectArray>& suggestions) {
+    const JavaRef<jobjectArray>& suggestions) {
   DCHECK_GE(start, 0);
   DCHECK_GE(end, 0);
 
@@ -174,7 +173,7 @@ static void JNI_ImeAdapterImpl_AppendUnderlineSpan(JNIEnv*,
 }
 
 ImeAdapterAndroid::ImeAdapterAndroid(JNIEnv* env,
-                                     const JavaParamRef<jobject>& obj,
+                                     const JavaRef<jobject>& obj,
                                      WebContents* web_contents)
     : RenderWidgetHostConnector(web_contents), rwhva_(nullptr) {
   java_ime_adapter_ = JavaObjectWeakGlobalRef(env, obj);
@@ -287,16 +286,15 @@ void ImeAdapterAndroid::OnRenderFrameMetadataChangedAfterActivation(
                                                  surface_height_reduced);
 }
 
-bool ImeAdapterAndroid::SendKeyEvent(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& original_key_event,
-    int type,
-    int modifiers,
-    jlong time_ms,
-    int key_code,
-    int scan_code,
-    bool is_system_key,
-    int unicode_char) {
+bool ImeAdapterAndroid::SendKeyEvent(JNIEnv* env,
+                                     const JavaRef<jobject>& original_key_event,
+                                     int type,
+                                     int modifiers,
+                                     jlong time_ms,
+                                     int key_code,
+                                     int scan_code,
+                                     bool is_system_key,
+                                     int unicode_char) {
   if (!rwhva_)
     return false;
   input::NativeWebKeyboardEvent event = NativeWebKeyboardEventFromKeyEvent(
@@ -307,9 +305,9 @@ bool ImeAdapterAndroid::SendKeyEvent(
 }
 
 void ImeAdapterAndroid::SetComposingText(JNIEnv* env,
-                                         const JavaParamRef<jobject>& obj,
-                                         const JavaParamRef<jobject>& text,
-                                         const JavaParamRef<jstring>& text_str,
+                                         const JavaRef<jobject>& obj,
+                                         const JavaRef<jobject>& text,
+                                         const JavaRef<jstring>& text_str,
                                          int relative_cursor_pos) {
   RenderWidgetHostImpl* rwhi = GetFocusedWidget();
   if (!rwhi)
@@ -340,9 +338,9 @@ void ImeAdapterAndroid::SetComposingText(JNIEnv* env,
 }
 
 void ImeAdapterAndroid::CommitText(JNIEnv* env,
-                                   const JavaParamRef<jobject>& obj,
-                                   const JavaParamRef<jobject>& text,
-                                   const JavaParamRef<jstring>& text_str,
+                                   const JavaRef<jobject>& obj,
+                                   const JavaRef<jobject>& text,
+                                   const JavaRef<jstring>& text_str,
                                    int relative_cursor_pos) {
   RenderWidgetHostImpl* rwhi = GetFocusedWidget();
   if (!rwhi)
@@ -367,10 +365,10 @@ void ImeAdapterAndroid::CommitText(JNIEnv* env,
 
 void ImeAdapterAndroid::ReplaceText(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaRef<jobject>& obj,
     int start,
     int end,
-    const base::android::JavaParamRef<jstring>& text_str,
+    const base::android::JavaRef<jstring>& text_str,
     int relative_cursor_pos) {
   RenderWidgetHostImpl* rwhi = GetFocusedWidget();
   if (!rwhi) {
@@ -405,7 +403,7 @@ void ImeAdapterAndroid::FinishComposingText(JNIEnv* env) {
 
 bool ImeAdapterAndroid::InsertMediaFromURL(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& url) {
+    const base::android::JavaRef<jstring>& url) {
   auto* input_handler = GetFocusedFrameWidgetInputHandler();
   if (!input_handler) {
     return false;
@@ -462,7 +460,7 @@ void ImeAdapterAndroid::OnEditElementFocusedForStylusWriting(
 void ImeAdapterAndroid::HandleStylusWritingGestureAction(
     JNIEnv* env,
     const jint id,
-    const base::android::JavaParamRef<jobject>& jgesture_data_byte_buffer) {
+    const base::android::JavaRef<jobject>& jgesture_data_byte_buffer) {
   auto* input_handler = GetFocusedFrameWidgetInputHandler();
   if (!input_handler)
     return;
@@ -624,8 +622,8 @@ ImeAdapterAndroid::GetFocusedFrameWidgetInputHandler() {
 
 std::vector<ui::ImeTextSpan> ImeAdapterAndroid::GetImeTextSpansFromJava(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& text,
+    const base::android::JavaRef<jobject>& obj,
+    const base::android::JavaRef<jobject>& text,
     const std::u16string& text16) {
   std::vector<ui::ImeTextSpan> ime_text_spans;
   // Iterate over spans in |text|, dispatch those that we care about (e.g.,

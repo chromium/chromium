@@ -36,7 +36,7 @@ class MidiInputPortAndroid final {
 
   // Called by the Java world.
   void OnData(JNIEnv* env,
-              const base::android::JavaParamRef<jbyteArray>& data,
+              const base::android::JavaRef<jbyteArray>& data,
               jint offset,
               jint size,
               jlong timestamp);

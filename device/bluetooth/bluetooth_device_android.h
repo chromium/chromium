@@ -108,8 +108,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
   // BluetoothDevice::gatt_services_ if they are not already there.
   void CreateGattRemoteService(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& instance_id,
-      const base::android::JavaParamRef<jobject>&
+      const base::android::JavaRef<jstring>& instance_id,
+      const base::android::JavaRef<jobject>&
           bluetooth_gatt_service_wrapper);  // BluetoothGattServiceWrapper
 
   // Update the connected state of |transport| to |connected|.

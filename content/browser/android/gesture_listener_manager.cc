@@ -21,7 +21,7 @@ using blink::WebGestureEvent;
 using blink::WebInputEvent;
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace content {
@@ -110,7 +110,7 @@ void GestureListenerManager::ResetScrollObserver::
 }
 
 GestureListenerManager::GestureListenerManager(JNIEnv* env,
-                                               const JavaParamRef<jobject>& obj,
+                                               const JavaRef<jobject>& obj,
                                                WebContentsImpl* web_contents)
     : RenderWidgetHostConnector(web_contents),
       WebContentsObserver(web_contents),
@@ -385,8 +385,8 @@ void GestureListenerManager::UnobserveRenderFrames() {
 
 static jlong JNI_GestureListenerManagerImpl_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents) {
   auto* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents) << "Should be created with a valid WebContents.";
 

@@ -49,7 +49,7 @@ class NET_EXPORT_PRIVATE JavaNegotiateResultWrapper {
 
   void SetResult(JNIEnv* env,
                  int result,
-                 const base::android::JavaParamRef<jstring>& token);
+                 const base::android::JavaRef<jstring>& token);
 
  private:
   // Class is only allowed to delete itself, nobody else is allowed to delete.

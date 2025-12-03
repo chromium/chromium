@@ -54,7 +54,7 @@
 #include "content/public/android/content_jni_headers/WebContentsAccessibilityImpl_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaIntArray;
 
@@ -566,9 +566,9 @@ void WebContentsAccessibilityAndroid::Connector::UpdateRenderProcessConnection(
 
 WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
+    const JavaRef<jobject>& obj,
     WebContents* web_contents,
-    const JavaParamRef<jobject>& jaccessibility_node_info_builder)
+    const JavaRef<jobject>& jaccessibility_node_info_builder)
     : java_ref_(env, obj),
       java_anib_ref_(env, jaccessibility_node_info_builder),
       web_contents_(static_cast<WebContentsImpl*>(web_contents)),
@@ -581,9 +581,9 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
 
 WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
+    const JavaRef<jobject>& obj,
     jlong ax_tree_update_ptr,
-    const JavaParamRef<jobject>& jaccessibility_node_info_builder)
+    const JavaRef<jobject>& jaccessibility_node_info_builder)
     : java_ref_(env, obj),
       java_anib_ref_(env, jaccessibility_node_info_builder),
       web_contents_(nullptr),
@@ -598,8 +598,8 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
 
 WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jassist_data_builder,
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jassist_data_builder,
     WebContents* web_contents)
     : java_ref_(env, obj),
       java_adb_ref_(env, jassist_data_builder),
@@ -687,7 +687,7 @@ void WebContentsAccessibilityAndroid::DisableRendererAccessibility(
 
 void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   // This method should only be called when |snapshot_root_manager_| is null,
   // which means this instance was constructed via a web contents and not an
   // AXTreeUpdate (e.g. for snapshots, frozen tabs, paint preview, etc).
@@ -1252,7 +1252,7 @@ static size_t ActualUnignoredChildCount(const ui::AXNode* node) {
 void WebContentsAccessibilityAndroid::UpdateAccessibilityNodeInfoBoundsRect(
     JNIEnv* env,
     const ScopedJavaLocalRef<jobject>& obj,
-    const JavaParamRef<jobject>& info,
+    const JavaRef<jobject>& info,
     jint unique_id,
     BrowserAccessibilityAndroid* node) {
   BrowserAccessibilityManagerAndroid* root_manager =
@@ -1283,7 +1283,7 @@ void WebContentsAccessibilityAndroid::UpdateAccessibilityNodeInfoBoundsRect(
 
 jboolean WebContentsAccessibilityAndroid::UpdateCachedAccessibilityNodeInfo(
     JNIEnv* env,
-    const JavaParamRef<jobject>& info,
+    const JavaRef<jobject>& info,
     jint unique_id) {
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
@@ -1309,7 +1309,7 @@ jboolean WebContentsAccessibilityAndroid::UpdateCachedAccessibilityNodeInfo(
 
 void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoChildIds(
     JNIEnv* env,
-    const JavaParamRef<jobject>& info,
+    const JavaRef<jobject>& info,
     const ScopedJavaLocalRef<jobject>& obj,
     BrowserAccessibilityAndroid* node) {
   CHECK(!obj.is_null());
@@ -1330,7 +1330,7 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoChildIds(
 void WebContentsAccessibilityAndroid::
     PopulateAccessibilityNodeInfoBooleanAttributes(
         JNIEnv* env,
-        const JavaParamRef<jobject>& info,
+        const JavaRef<jobject>& info,
         const ScopedJavaLocalRef<jobject>& obj,
         BrowserAccessibilityAndroid* node) {
   CHECK(!obj.is_null());
@@ -1349,7 +1349,7 @@ void WebContentsAccessibilityAndroid::
 void WebContentsAccessibilityAndroid::
     PopulateAccessibilityNodeInfoActionAttributes(
         JNIEnv* env,
-        const JavaParamRef<jobject>& info,
+        const JavaRef<jobject>& info,
         const ScopedJavaLocalRef<jobject>& obj,
         BrowserAccessibilityAndroid* node) {
   CHECK(!obj.is_null());
@@ -1369,7 +1369,7 @@ void WebContentsAccessibilityAndroid::
 void WebContentsAccessibilityAndroid::
     PopulateAccessibilityNodeInfoBaseAttributes(
         JNIEnv* env,
-        const JavaParamRef<jobject>& info,
+        const JavaRef<jobject>& info,
         const ScopedJavaLocalRef<jobject>& obj,
         BrowserAccessibilityAndroid* node,
         int parent_id) {
@@ -1397,7 +1397,7 @@ void WebContentsAccessibilityAndroid::
 void WebContentsAccessibilityAndroid::
     PopulateAccessibilityNodeInfoTextWithFormatting(
         JNIEnv* env,
-        const JavaParamRef<jobject>& info,
+        const JavaRef<jobject>& info,
         const ScopedJavaLocalRef<jobject>& obj,
         BrowserAccessibilityAndroid* node) {
   CHECK(!obj.is_null());
@@ -1478,7 +1478,7 @@ void WebContentsAccessibilityAndroid::
 void WebContentsAccessibilityAndroid::
     PopulateAccessibilityNodeInfoTextWithoutFormatting(
         JNIEnv* env,
-        const JavaParamRef<jobject>& info,
+        const JavaRef<jobject>& info,
         const ScopedJavaLocalRef<jobject>& obj,
         BrowserAccessibilityAndroid* node) {
   CHECK(!obj.is_null());
@@ -1541,7 +1541,7 @@ void WebContentsAccessibilityAndroid::
 
 void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoText(
     JNIEnv* env,
-    const JavaParamRef<jobject>& info,
+    const JavaRef<jobject>& info,
     const ScopedJavaLocalRef<jobject>& obj,
     BrowserAccessibilityAndroid* node) {
   if (::features::IsAccessibilityTextFormattingEnabled()) {
@@ -1554,7 +1554,7 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoText(
 void WebContentsAccessibilityAndroid::
     PopulateAccessibilityNodeInfoViewIdResourceName(
         JNIEnv* env,
-        const JavaParamRef<jobject>& info,
+        const JavaRef<jobject>& info,
         const ScopedJavaLocalRef<jobject>& obj,
         BrowserAccessibilityAndroid* node) {
   CHECK(!obj.is_null());
@@ -1570,7 +1570,7 @@ void WebContentsAccessibilityAndroid::
 void WebContentsAccessibilityAndroid::
     PopulateAccessibilityNodeInfoCollectionInfo(
         JNIEnv* env,
-        const JavaParamRef<jobject>& info,
+        const JavaRef<jobject>& info,
         const ScopedJavaLocalRef<jobject>& obj,
         BrowserAccessibilityAndroid* node) {
   CHECK(!obj.is_null());
@@ -1588,7 +1588,7 @@ void WebContentsAccessibilityAndroid::
 void WebContentsAccessibilityAndroid::
     PopulateAccessibilityNodeInfoCollectionItemInfo(
         JNIEnv* env,
-        const JavaParamRef<jobject>& info,
+        const JavaRef<jobject>& info,
         const ScopedJavaLocalRef<jobject>& obj,
         BrowserAccessibilityAndroid* node) {
   CHECK(!obj.is_null());
@@ -1605,7 +1605,7 @@ void WebContentsAccessibilityAndroid::
 
 void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoRangeInfo(
     JNIEnv* env,
-    const JavaParamRef<jobject>& info,
+    const JavaRef<jobject>& info,
     const ScopedJavaLocalRef<jobject>& obj,
     BrowserAccessibilityAndroid* node) {
   CHECK(!obj.is_null());
@@ -1626,7 +1626,7 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoRangeInfo(
 
 void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoPaneTitle(
     JNIEnv* env,
-    const JavaParamRef<jobject>& info,
+    const JavaRef<jobject>& info,
     const ScopedJavaLocalRef<jobject>& obj,
     BrowserAccessibilityAndroid* node) {
   CHECK(!obj.is_null());
@@ -1640,7 +1640,7 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoPaneTitle(
 
 void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoSelection(
     JNIEnv* env,
-    const JavaParamRef<jobject>& info,
+    const JavaRef<jobject>& info,
     const ScopedJavaLocalRef<jobject>& obj,
     BrowserAccessibilityAndroid* node) {
   CHECK(!obj.is_null());
@@ -1655,7 +1655,7 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoSelection(
 
 jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
     JNIEnv* env,
-    const JavaParamRef<jobject>& info,
+    const JavaRef<jobject>& info,
     jint unique_id) {
   if (!GetRootBrowserAccessibilityManager()) {
     return false;
@@ -1696,7 +1696,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
 
 jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityEvent(
     JNIEnv* env,
-    const JavaParamRef<jobject>& event,
+    const JavaRef<jobject>& event,
     jint unique_id,
     jint event_type) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
@@ -1794,7 +1794,7 @@ void WebContentsAccessibilityAndroid::ScrollToMakeNodeVisible(JNIEnv* env,
 void WebContentsAccessibilityAndroid::SetTextFieldValue(
     JNIEnv* env,
     jint unique_id,
-    const JavaParamRef<jstring>& value) {
+    const JavaRef<jstring>& value) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
   if (node) {
     node->manager()->SetValue(
@@ -1871,7 +1871,7 @@ void WebContentsAccessibilityAndroid::ShowContextMenu(JNIEnv* env,
 jint WebContentsAccessibilityAndroid::FindElementType(
     JNIEnv* env,
     jint start_id,
-    const JavaParamRef<jstring>& element_type_str,
+    const JavaRef<jstring>& element_type_str,
     jboolean forwards,
     jboolean can_wrap_to_last_element,
     jboolean use_default_predicate,
@@ -2345,7 +2345,7 @@ WebContentsAccessibilityAndroid::GetCharacterBoundingBoxes(JNIEnv* env,
 
 jboolean WebContentsAccessibilityAndroid::GetImageData(
     JNIEnv* env,
-    const JavaParamRef<jobject>& info,
+    const JavaRef<jobject>& info,
     jint unique_id,
     jboolean has_sent_previous_request) {
   BrowserAccessibilityManagerAndroid* root_manager =
@@ -2412,7 +2412,7 @@ jint WebContentsAccessibilityAndroid::GetPaintOrder(JNIEnv* env,
 void WebContentsAccessibilityAndroid::RequestLayoutBasedActions(
     JNIEnv* env,
     jint unique_id,
-    const JavaParamRef<jobject>& info) {
+    const JavaRef<jobject>& info) {
   ui::BrowserAccessibility* node = GetAXFromUniqueID(unique_id);
   if (!node) {
     return;
@@ -2471,10 +2471,10 @@ void WebContentsAccessibilityAndroid::UpdateFrameInfo(float page_scale) {
 
 void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
     JNIEnv* env,
-    const JavaParamRef<jobject>& view_structure_root,
-    const JavaParamRef<jobject>& accessibility_coordinates,
-    const JavaParamRef<jobject>& view,
-    const JavaParamRef<jobject>& on_done_callback) {
+    const JavaRef<jobject>& view_structure_root,
+    const JavaRef<jobject>& accessibility_coordinates,
+    const JavaRef<jobject>& view,
+    const JavaRef<jobject>& on_done_callback) {
   // This method should only be called by the unified snapshots feature.
   CHECK(base::FeatureList::IsEnabled(features::kAccessibilityUnifiedSnapshots));
 
@@ -2679,18 +2679,18 @@ WebContentsAccessibilityAndroid::GetLabeledByNodeIdsForTesting(JNIEnv* env,
 
 static jlong JNI_WebContentsAccessibilityImpl_InitWithAXTree(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
+    const JavaRef<jobject>& obj,
     jlong ax_tree_update_ptr,
-    const JavaParamRef<jobject>& jaccessibility_node_info_builder) {
+    const JavaRef<jobject>& jaccessibility_node_info_builder) {
   return reinterpret_cast<intptr_t>(new WebContentsAccessibilityAndroid(
       env, obj, ax_tree_update_ptr, jaccessibility_node_info_builder));
 }
 
 static jlong JNI_WebContentsAccessibilityImpl_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents,
-    const JavaParamRef<jobject>& jaccessibility_node_info_builder) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jaccessibility_node_info_builder) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
 
@@ -2700,9 +2700,9 @@ static jlong JNI_WebContentsAccessibilityImpl_Init(
 
 static jlong JNI_WebContentsAccessibilityImpl_InitForAssistData(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents,
-    const JavaParamRef<jobject>& jassist_data_builder) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jassist_data_builder) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
 

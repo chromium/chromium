@@ -56,10 +56,9 @@ class CONTENT_EXPORT AppWebMessagePort : public mojo::MessageReceiver {
   // When clean up native, we notify Java instance to release native handle.
   ~AppWebMessagePort() override;
 
-  void PostMessage(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_message_payload,
-      const base::android::JavaParamRef<jobjectArray>& j_ports);
+  void PostMessage(JNIEnv* env,
+                   const base::android::JavaRef<jobject>& j_message_payload,
+                   const base::android::JavaRef<jobjectArray>& j_ports);
   void SetShouldReceiveMessages(JNIEnv* env, bool should_receive_message);
   void CloseAndDestroy(JNIEnv* env);
 

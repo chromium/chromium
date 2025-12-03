@@ -20,7 +20,7 @@
 #include "content/public/android/content_jni_headers/NavigationHandle_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace content {
 

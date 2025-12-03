@@ -39,7 +39,6 @@ using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -211,24 +210,24 @@ void NavigationControllerAndroid::GoToNavigationIndex(JNIEnv* env, jint index) {
 
 base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url,
+    const JavaRef<jstring>& url,
     jint load_url_type,
     jint transition_type,
-    const JavaParamRef<jstring>& j_referrer_url,
+    const JavaRef<jstring>& j_referrer_url,
     jint referrer_policy,
     jint ua_override_option,
-    const JavaParamRef<jstring>& extra_headers,
-    const JavaParamRef<jobject>& j_post_data,
-    const JavaParamRef<jstring>& base_url_for_data_url,
-    const JavaParamRef<jstring>& virtual_url_for_special_cases,
-    const JavaParamRef<jstring>& data_url_as_string,
+    const JavaRef<jstring>& extra_headers,
+    const JavaRef<jobject>& j_post_data,
+    const JavaRef<jstring>& base_url_for_data_url,
+    const JavaRef<jstring>& virtual_url_for_special_cases,
+    const JavaRef<jstring>& data_url_as_string,
     jboolean can_load_local_resources,
     jboolean is_renderer_initiated,
     jboolean should_replace_current_entry,
-    const JavaParamRef<jobject>& j_initiator_origin,
+    const JavaRef<jobject>& j_initiator_origin,
     jboolean has_user_gesture,
     jboolean should_clear_history_list,
-    const base::android::JavaParamRef<jobject>& j_additional_navigation_params,
+    const base::android::JavaRef<jobject>& j_additional_navigation_params,
     jlong input_start,
     jlong navigation_ui_data_ptr,
     jboolean is_pdf) {
@@ -339,7 +338,7 @@ void NavigationControllerAndroid::ClearHistory(JNIEnv* env) {
 
 jint NavigationControllerAndroid::GetNavigationHistory(
     JNIEnv* env,
-    const JavaParamRef<jobject>& history) {
+    const JavaRef<jobject>& history) {
   // Iterate through navigation entries to populate the list
   int count = navigation_controller_->GetEntryCount();
   for (int i = 0; i < count; ++i) {
@@ -352,7 +351,7 @@ jint NavigationControllerAndroid::GetNavigationHistory(
 
 void NavigationControllerAndroid::GetDirectedNavigationHistory(
     JNIEnv* env,
-    const JavaParamRef<jobject>& history,
+    const JavaRef<jobject>& history,
     jboolean is_forward,
     jint max_entries) {
   // Iterate through navigation entries to populate the list
@@ -498,7 +497,7 @@ void NavigationControllerAndroid::PruneForwardEntries(JNIEnv* env) {
 ScopedJavaLocalRef<jstring> NavigationControllerAndroid::GetEntryExtraData(
     JNIEnv* env,
     jint index,
-    const JavaParamRef<jstring>& jkey) {
+    const JavaRef<jstring>& jkey) {
   if (index < 0 || index >= navigation_controller_->GetEntryCount())
     return ScopedJavaLocalRef<jstring>();
 
@@ -513,8 +512,8 @@ ScopedJavaLocalRef<jstring> NavigationControllerAndroid::GetEntryExtraData(
 void NavigationControllerAndroid::SetEntryExtraData(
     JNIEnv* env,
     jint index,
-    const JavaParamRef<jstring>& jkey,
-    const JavaParamRef<jstring>& jvalue) {
+    const JavaRef<jstring>& jkey,
+    const JavaRef<jstring>& jvalue) {
   if (index < 0 || index >= navigation_controller_->GetEntryCount())
     return;
 

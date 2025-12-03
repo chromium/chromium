@@ -25,7 +25,7 @@
 #include "ui/base/select_file_dialog_jni_headers/SelectFileDialog_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace ui {
@@ -70,8 +70,8 @@ SelectFileDialogImpl* SelectFileDialogImpl::Create(
 
 void SelectFileDialogImpl::OnFileSelected(
     JNIEnv* env,
-    const JavaParamRef<jstring>& filepath,
-    const JavaParamRef<jstring>& display_name) {
+    const JavaRef<jstring>& filepath,
+    const JavaRef<jstring>& display_name) {
   if (!listener_)
     return;
 
@@ -95,8 +95,8 @@ void SelectFileDialogImpl::OnFileSelected(
 
 void SelectFileDialogImpl::OnMultipleFilesSelected(
     JNIEnv* env,
-    const JavaParamRef<jobjectArray>& filepaths,
-    const JavaParamRef<jobjectArray>& display_names) {
+    const JavaRef<jobjectArray>& filepaths,
+    const JavaRef<jobjectArray>& display_names) {
   if (!listener_)
     return;
 

@@ -99,8 +99,8 @@ AppWebMessagePort::~AppWebMessagePort() {
 // JNI
 void AppWebMessagePort::PostMessage(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_message_payload,
-    const base::android::JavaParamRef<jobjectArray>& j_ports) {
+    const base::android::JavaRef<jobject>& j_message_payload,
+    const base::android::JavaRef<jobjectArray>& j_ports) {
   DCHECK(runner_->BelongsToCurrentThread());
   DCHECK(descriptor_.IsValid());
   DCHECK(connector_);

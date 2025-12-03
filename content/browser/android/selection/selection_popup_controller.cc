@@ -33,7 +33,7 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -75,8 +75,8 @@ JNI_SelectionPopupControllerImpl_IsMagnifierWithSurfaceControlSupported(
 
 static jlong JNI_SelectionPopupControllerImpl_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
 
@@ -106,10 +106,9 @@ SelectionPopupController* SelectionPopupController::FromWebContents(
       selection_popup_controller);
 }
 
-SelectionPopupController::SelectionPopupController(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    WebContents* web_contents)
+SelectionPopupController::SelectionPopupController(JNIEnv* env,
+                                                   const JavaRef<jobject>& obj,
+                                                   WebContents* web_contents)
     : RenderWidgetHostConnector(web_contents) {
   java_obj_ = JavaObjectWeakGlobalRef(env, obj);
 }

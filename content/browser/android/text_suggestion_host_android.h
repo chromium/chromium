@@ -39,7 +39,7 @@ class TextSuggestionHostAndroid : public RenderWidgetHostConnector {
   // check suggestion.
   void ApplySpellCheckSuggestion(
       JNIEnv*,
-      const base::android::JavaParamRef<jstring>& replacement);
+      const base::android::JavaRef<jstring>& replacement);
   // Called from the Java text suggestion menu to have Blink apply a text
   // suggestion.
   void ApplyTextSuggestion(JNIEnv*,
@@ -52,9 +52,8 @@ class TextSuggestionHostAndroid : public RenderWidgetHostConnector {
   // Called from the Java text suggestion menu to tell Blink that a word is
   // being added to the dictionary (so Blink can clear the spell check markers
   // for that word).
-  void OnNewWordAddedToDictionary(
-      JNIEnv*,
-      const base::android::JavaParamRef<jstring>& word);
+  void OnNewWordAddedToDictionary(JNIEnv*,
+                                  const base::android::JavaRef<jstring>& word);
   // Called from the Java text suggestion menu to tell Blink that the user
   // closed the menu without performing one of the available actions, so Blink
   // can re-show the insertion caret and remove the suggestion range highlight.

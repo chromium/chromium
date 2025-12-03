@@ -44,28 +44,28 @@ class CPPClass {
   class InnerClass {
    public:
     jdouble MethodOtherP0(JNIEnv* env,
-                          const jni_zero::JavaParamRef<jobject>& caller);
+                          const jni_zero::JavaRef<jobject>& caller);
   };
 
   void Destroy(JNIEnv* env,
-               const jni_zero::JavaParamRef<jobject>& caller,
+               const jni_zero::JavaRef<jobject>& caller,
                std::vector<uint8_t>& bytes);
 
   jint Method(JNIEnv* env,
-              const jni_zero::JavaParamRef<jobject>& caller,
+              const jni_zero::JavaRef<jobject>& caller,
               std::vector<std::string>& strings);
 
   void AddStructB(JNIEnv* env,
-                  const jni_zero::JavaParamRef<jobject>& caller,
-                  const jni_zero::JavaParamRef<jobject>& structb);
+                  const jni_zero::JavaRef<jobject>& caller,
+                  const jni_zero::JavaRef<jobject>& structb);
 
   void IterateAndDoSomethingWithStructB(
       JNIEnv* env,
-      const jni_zero::JavaParamRef<jobject>& caller);
+      const jni_zero::JavaRef<jobject>& caller);
 
   jni_zero::ScopedJavaLocalRef<jstring> ReturnAString(
       JNIEnv* env,
-      const jni_zero::JavaParamRef<jobject>& caller);
+      const jni_zero::JavaRef<jobject>& caller);
 
  private:
   std::map<long, std::string> map_;

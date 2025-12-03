@@ -59,7 +59,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorAndroid
   // Called when Read operation completes.
   void OnRead(JNIEnv* env,
               int32_t status,
-              const base::android::JavaParamRef<jbyteArray>& value);
+              const base::android::JavaRef<jbyteArray>& value);
 
   // Called when Write operation completes.
   void OnWrite(JNIEnv* env,

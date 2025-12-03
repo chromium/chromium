@@ -28,7 +28,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace device {
@@ -325,8 +324,8 @@ void BluetoothDeviceAndroid::OnGattServicesDiscovered(JNIEnv* env) {
 
 void BluetoothDeviceAndroid::CreateGattRemoteService(
     JNIEnv* env,
-    const JavaParamRef<jstring>& instance_id,
-    const JavaParamRef<jobject>&
+    const JavaRef<jstring>& instance_id,
+    const JavaRef<jobject>&
         bluetooth_gatt_service_wrapper) {  // BluetoothGattServiceWrapper
   std::string instance_id_string = ConvertJavaStringToUTF8(env, instance_id);
 

@@ -187,7 +187,7 @@ class BluetoothTestAndroid : public BluetoothTestBase {
   // Records that Java FakeBluetoothGatt writeCharacteristic was called.
   void OnFakeBluetoothGattWriteCharacteristic(
       JNIEnv* env,
-      const base::android::JavaParamRef<jbyteArray>& value);
+      const base::android::JavaRef<jbyteArray>& value);
 
   // Records that Java FakeBluetoothGatt readDescriptor was called.
   void OnFakeBluetoothGattReadDescriptor(JNIEnv* env);
@@ -195,20 +195,19 @@ class BluetoothTestAndroid : public BluetoothTestBase {
   // Records that Java FakeBluetoothGatt writeDescriptor was called.
   void OnFakeBluetoothGattWriteDescriptor(
       JNIEnv* env,
-      const base::android::JavaParamRef<jbyteArray>& value);
+      const base::android::JavaRef<jbyteArray>& value);
 
   // Records that Java FakeBluetoothAdapter onAdapterStateChanged was called.
   void OnFakeAdapterStateChanged(JNIEnv* env, const bool powered);
 
   // Posts a task to be run on the current message loop.
   void PostTaskFromJava(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& runnable);
+                        const base::android::JavaRef<jobject>& runnable);
 
   // Posts a delayed task to be run on the current message loop.
-  void PostDelayedTaskFromJava(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& runnable,
-      jlong delayMillis);
+  void PostDelayedTaskFromJava(JNIEnv* env,
+                               const base::android::JavaRef<jobject>& runnable,
+                               jlong delayMillis);
 
   base::android::ScopedJavaGlobalRef<jobject> j_default_bluetooth_adapter_;
   base::android::ScopedJavaGlobalRef<jobject> j_fake_bluetooth_adapter_;

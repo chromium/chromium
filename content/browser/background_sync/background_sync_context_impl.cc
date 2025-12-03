@@ -45,7 +45,7 @@ BackgroundSyncContextImpl::~BackgroundSyncContextImpl() {
 void BackgroundSyncContext::FireBackgroundSyncEventsAcrossPartitions(
     BrowserContext* browser_context,
     blink::mojom::BackgroundSyncType sync_type,
-    const base::android::JavaParamRef<jobject>& j_runnable) {
+    const base::android::JavaRef<jobject>& j_runnable) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(browser_context);
   BackgroundSyncLauncher::FireBackgroundSyncEvents(browser_context, sync_type,

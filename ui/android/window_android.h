@@ -66,7 +66,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   };
 
   static WindowAndroid* FromJavaWindowAndroid(
-      const base::android::JavaParamRef<jobject>& jwindow_android);
+      const base::android::JavaRef<jobject>& jwindow_android);
 
   WindowAndroid(JNIEnv* env,
                 const base::android::JavaRef<jobject>& obj,
@@ -108,7 +108,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
                            float refresh_rate);
   void OnSupportedRefreshRatesUpdated(
       JNIEnv* env,
-      const base::android::JavaParamRef<jfloatArray>& supported_refresh_rates);
+      const base::android::JavaRef<jfloatArray>& supported_refresh_rates);
   void OnAdaptiveRefreshRateInfoChanged(JNIEnv* env,
                                         jboolean supports_adaptive_refresh_rate,
                                         jfloat suggested_frame_rate_high);

@@ -47,7 +47,7 @@
 extern "C" int __llvm_profile_dump(void);
 #endif
 
-using jni_zero::JavaParamRef;
+using jni_zero::JavaRef;
 
 // The main function of the program to be wrapped as a test apk.
 extern int main(int argc, char** argv);
@@ -87,11 +87,11 @@ void AndroidLog(int priority, const char* format, ...) {
 
 static void JNI_NativeTest_RunTests(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jcommand_line_flags,
-    const JavaParamRef<jstring>& jcommand_line_file_path,
-    const JavaParamRef<jstring>& jstdout_file_path,
-    const JavaParamRef<jobject>& app_context,
-    const JavaParamRef<jstring>& jtest_data_dir) {
+    const JavaRef<jstring>& jcommand_line_flags,
+    const JavaRef<jstring>& jcommand_line_file_path,
+    const JavaRef<jstring>& jstdout_file_path,
+    const JavaRef<jobject>& app_context,
+    const JavaRef<jstring>& jtest_data_dir) {
   base::ScopedAllowBlockingForTesting allow;
 
   // Required for DEATH_TESTS.

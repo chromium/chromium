@@ -30,7 +30,7 @@ ConvertResourceRequestBodyToJavaObject(
 CONTENT_EXPORT scoped_refptr<network::ResourceRequestBody>
 ExtractResourceRequestBodyFromJavaObject(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_object);
+    const base::android::JavaRef<jobject>& java_object);
 
 }  // namespace content
 

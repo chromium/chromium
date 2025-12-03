@@ -3278,7 +3278,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 
   web_contents()->GetWebContentsAndroid()->SetTopLevelNativeWindow(
       /*env=*/nullptr,
-      /*jwindow_android=*/base::android::JavaParamRef<jobject>(nullptr));
+      /*jwindow_android=*/base::android::JavaRef<jobject>(nullptr));
   ASSERT_TRUE(destroyed.Wait());
   EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
 }

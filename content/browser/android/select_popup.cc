@@ -16,7 +16,7 @@
 #include "content/public/android/content_jni_headers/SelectPopup_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace content {
@@ -140,7 +140,7 @@ void SelectPopup::HideMenu() {
 
 void SelectPopup::SelectMenuItems(JNIEnv* env,
                                   jlong selectPopupDelegate,
-                                  const JavaParamRef<jintArray>& indices) {
+                                  const JavaRef<jintArray>& indices) {
   blink::mojom::PopupMenuClient* popup_client_raw_ptr =
       reinterpret_cast<blink::mojom::PopupMenuClient*>(selectPopupDelegate);
   DCHECK(popup_client_raw_ptr && popup_client_.get() == popup_client_raw_ptr);

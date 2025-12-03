@@ -36,7 +36,6 @@
 #include "ui/android/ui_android_jni_headers/ResourceManager_jni.h"
 
 using base::android::JavaArrayOfIntArrayToIntVector;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace {

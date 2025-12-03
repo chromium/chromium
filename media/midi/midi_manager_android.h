@@ -54,12 +54,10 @@ class MidiManagerAndroid final : public MidiManager,
 
   // Called from the Java world.
   void OnInitialized(JNIEnv* env,
-                     const base::android::JavaParamRef<jobjectArray>& devices);
+                     const base::android::JavaRef<jobjectArray>& devices);
   void OnInitializationFailed(JNIEnv* env);
-  void OnAttached(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& device);
-  void OnDetached(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& device);
+  void OnAttached(JNIEnv* env, const base::android::JavaRef<jobject>& device);
+  void OnDetached(JNIEnv* env, const base::android::JavaRef<jobject>& device);
 
  private:
   void AddDevice(std::unique_ptr<MidiDeviceAndroid> device);

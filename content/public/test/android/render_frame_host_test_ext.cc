@@ -21,7 +21,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/test/android/content_test_jni/RenderFrameHostTestExt_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace content {
 
@@ -57,8 +57,8 @@ RenderFrameHostTestExt::RenderFrameHostTestExt(RenderFrameHostImpl* rfhi)
 
 void RenderFrameHostTestExt::ExecuteJavaScript(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jscript,
-    const JavaParamRef<jobject>& jcallback,
+    const JavaRef<jstring>& jscript,
+    const JavaRef<jobject>& jcallback,
     jboolean with_user_gesture) {
   std::u16string script(base::android::ConvertJavaStringToUTF16(env, jscript));
   auto callback = base::BindOnce(
@@ -75,7 +75,7 @@ void RenderFrameHostTestExt::ExecuteJavaScript(
 
 void RenderFrameHostTestExt::UpdateVisualState(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcallback) {
+    const JavaRef<jobject>& jcallback) {
   auto result_callback = base::BindOnce(
       &base::android::RunBooleanCallbackAndroid,
       base::android::ScopedJavaGlobalRef<jobject>(env, jcallback));

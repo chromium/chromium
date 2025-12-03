@@ -18,11 +18,10 @@ class WebContentsImpl;
 
 class JavascriptInjector : public WebContentsUserData<JavascriptInjector> {
  public:
-  JavascriptInjector(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& retained_objects,
-      WebContents* web_contents);
+  JavascriptInjector(JNIEnv* env,
+                     const base::android::JavaRef<jobject>& obj,
+                     const base::android::JavaRef<jobject>& retained_objects,
+                     WebContents* web_contents);
 
   JavascriptInjector(const JavascriptInjector&) = delete;
   JavascriptInjector& operator=(const JavascriptInjector&) = delete;
@@ -33,15 +32,15 @@ class JavascriptInjector : public WebContentsUserData<JavascriptInjector> {
                           jboolean allow);
 
   // See GinJavaBridgeDispatcherHost::AddNamedObject more information.
-  void AddInterface(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& object,
-      const base::android::JavaParamRef<jstring>& name,
-      const base::android::JavaParamRef<jclass>& safe_annotation_clazz,
-      origin_matcher::OriginMatcher matcher);
+  void AddInterface(JNIEnv* env,
+                    const base::android::JavaRef<jobject>& object,
+                    const base::android::JavaRef<jstring>& name,
+                    const base::android::JavaRef<jclass>& safe_annotation_clazz,
+                    origin_matcher::OriginMatcher matcher);
 
   void RemoveInterface(JNIEnv* env,
-                       const base::android::JavaParamRef<jstring>& name);
+                       const base::android::JavaRef<jstring>& name);
+
  private:
   friend class content::WebContentsUserData<JavascriptInjector>;
 

@@ -62,20 +62,18 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
  public:
   WebContentsAccessibilityAndroid(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaRef<jobject>& obj,
       WebContents* web_contents,
-      const base::android::JavaParamRef<jobject>&
-          jaccessibility_node_info_builder);
+      const base::android::JavaRef<jobject>& jaccessibility_node_info_builder);
   WebContentsAccessibilityAndroid(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaRef<jobject>& obj,
       jlong ax_tree_update_ptr,
-      const base::android::JavaParamRef<jobject>&
-          jaccessibility_node_info_builder);
+      const base::android::JavaRef<jobject>& jaccessibility_node_info_builder);
   WebContentsAccessibilityAndroid(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& jassist_data_builder,
+      const base::android::JavaRef<jobject>& obj,
+      const base::android::JavaRef<jobject>& jassist_data_builder,
       WebContents* web_contents);
 
   WebContentsAccessibilityAndroid(const WebContentsAccessibilityAndroid&) =
@@ -135,7 +133,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Note: Calling this method should be followed by calling {SetBrowserAXMode}
   void ReEnableRendererAccessibility(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jweb_contents);
+      const base::android::JavaRef<jobject>& jweb_contents);
 
   // This method turns on the renderer-side accessibility engine for this
   // web contents.
@@ -172,15 +170,15 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Populate Java accessibility data structures with info about a node.
   jboolean UpdateCachedAccessibilityNodeInfo(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       jint id);
   jboolean PopulateAccessibilityNodeInfo(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       jint id);
   jboolean PopulateAccessibilityEvent(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& event,
+      const base::android::JavaRef<jobject>& event,
       jint id,
       jint event_type);
 
@@ -191,7 +189,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void ScrollToMakeNodeVisible(JNIEnv* env, jint id);
   void SetTextFieldValue(JNIEnv* env,
                          jint id,
-                         const base::android::JavaParamRef<jstring>& value);
+                         const base::android::JavaRef<jstring>& value);
   void SetSelection(JNIEnv* env, jint id, jint start, jint end);
   jboolean AdjustSlider(JNIEnv* env, jint id, jboolean increment);
   void ShowContextMenu(JNIEnv* env, jint id);
@@ -204,15 +202,14 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Use |can_wrap_to_last_element| to specify if a backwards search can wrap
   // around to the last element. This is used to expose the last HTML element
   // upon swiping backwards into a WebView.
-  jint FindElementType(
-      JNIEnv* env,
-      jint start_id,
-      const base::android::JavaParamRef<jstring>& element_type_str,
-      jboolean forwards,
-      jboolean can_wrap_to_last_element,
-      jboolean use_default_predicate,
-      jboolean is_known_screen_reader_enabled,
-      jboolean is_only_one_accessibility_service_enabled);
+  jint FindElementType(JNIEnv* env,
+                       jint start_id,
+                       const base::android::JavaRef<jstring>& element_type_str,
+                       jboolean forwards,
+                       jboolean can_wrap_to_last_element,
+                       jboolean use_default_predicate,
+                       jboolean is_known_screen_reader_enabled,
+                       jboolean is_only_one_accessibility_service_enabled);
 
   // Respond to a ACTION_[NEXT/PREVIOUS]_AT_MOVEMENT_GRANULARITY action
   // and move the cursor/selection within the given node id. We keep track
@@ -297,7 +294,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // will call through to |BrowserAccessibilityManager| to populate the data
   // asynchronously so the next time the method is called the data is ready.
   jboolean GetImageData(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& info,
+                        const base::android::JavaRef<jobject>& info,
                         jint unique_id,
                         jboolean has_sent_previous_request);
 
@@ -305,10 +302,9 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   jint GetPaintOrder(JNIEnv* env, jint unique_id);
 
   // Request layout based actions for a given node.
-  void RequestLayoutBasedActions(
-      JNIEnv* env,
-      jint unique_id,
-      const base::android::JavaParamRef<jobject>& info);
+  void RequestLayoutBasedActions(JNIEnv* env,
+                                 jint unique_id,
+                                 const base::android::JavaRef<jobject>& info);
 
   void UpdateFrameInfo(float page_scale);
 
@@ -358,10 +354,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   void RequestAccessibilityTreeSnapshot(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& view_structure_root,
-      const base::android::JavaParamRef<jobject>& accessibility_coordinates,
-      const base::android::JavaParamRef<jobject>& view,
-      const base::android::JavaParamRef<jobject>& on_done_callback);
+      const base::android::JavaRef<jobject>& view_structure_root,
+      const base::android::JavaRef<jobject>& accessibility_coordinates,
+      const base::android::JavaRef<jobject>& view,
+      const base::android::JavaRef<jobject>& on_done_callback);
 
   void ProcessCompletedAccessibilityTreeSnapshot(
       JNIEnv* env,
@@ -447,87 +443,87 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   void PopulateAccessibilityNodeInfoChildIds(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
       BrowserAccessibilityAndroid* node);
 
   void PopulateAccessibilityNodeInfoBooleanAttributes(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
       BrowserAccessibilityAndroid* node);
 
   void PopulateAccessibilityNodeInfoActionAttributes(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
       BrowserAccessibilityAndroid* node);
 
   void PopulateAccessibilityNodeInfoBaseAttributes(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
       BrowserAccessibilityAndroid* node,
       int parent_id);
 
   void PopulateAccessibilityNodeInfoText(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
       BrowserAccessibilityAndroid* node);
 
   void PopulateAccessibilityNodeInfoTextWithFormatting(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
       BrowserAccessibilityAndroid* node);
 
   void PopulateAccessibilityNodeInfoTextWithoutFormatting(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
       BrowserAccessibilityAndroid* node);
 
   void PopulateAccessibilityNodeInfoViewIdResourceName(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
       BrowserAccessibilityAndroid* node);
 
   void PopulateAccessibilityNodeInfoCollectionInfo(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
       BrowserAccessibilityAndroid* node);
 
   void PopulateAccessibilityNodeInfoCollectionItemInfo(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
       BrowserAccessibilityAndroid* node);
 
   void PopulateAccessibilityNodeInfoRangeInfo(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
       BrowserAccessibilityAndroid* node);
 
   void PopulateAccessibilityNodeInfoPaneTitle(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
       BrowserAccessibilityAndroid* node);
 
   void PopulateAccessibilityNodeInfoSelection(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
       BrowserAccessibilityAndroid* node);
 
   void UpdateAccessibilityNodeInfoBoundsRect(
       JNIEnv* env,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& info,
+      const base::android::JavaRef<jobject>& info,
       jint id,
       BrowserAccessibilityAndroid* node);
 

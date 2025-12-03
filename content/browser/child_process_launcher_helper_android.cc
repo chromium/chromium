@@ -44,7 +44,7 @@
 #include "content/public/android/content_jni_headers/ChildProcessLauncherHelperImpl_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;

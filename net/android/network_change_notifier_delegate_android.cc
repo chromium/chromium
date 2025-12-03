@@ -14,7 +14,6 @@
 #include "net/net_jni_headers/NetworkActiveNotifier_jni.h"
 #include "net/net_jni_headers/NetworkChangeNotifier_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -330,7 +329,7 @@ void NetworkChangeNotifierDelegateAndroid::NotifyOfNetworkDisconnect(
 
 void NetworkChangeNotifierDelegateAndroid::NotifyPurgeActiveNetworkList(
     JNIEnv* env,
-    const JavaParamRef<jlongArray>& active_networks) {
+    const JavaRef<jlongArray>& active_networks) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   NetworkList active_network_list;
   base::android::JavaLongArrayToInt64Vector(env, active_networks,

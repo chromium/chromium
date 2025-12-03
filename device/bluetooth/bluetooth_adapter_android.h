@@ -100,21 +100,21 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
   // discovered during a scan.
   void CreateOrUpdateDeviceOnScan(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& address,
-      const base::android::JavaParamRef<jobject>&
+      const base::android::JavaRef<jstring>& address,
+      const base::android::JavaRef<jobject>&
           bluetooth_device_wrapper,  // Java Type: bluetoothDeviceWrapper
-      const base::android::JavaParamRef<jstring>& local_name,
+      const base::android::JavaRef<jstring>& local_name,
       int32_t rssi,
-      const base::android::JavaParamRef<jobjectArray>&
+      const base::android::JavaRef<jobjectArray>&
           advertised_uuids,  // Java Type: String[]
       int32_t tx_power,
-      const base::android::JavaParamRef<jobjectArray>&
+      const base::android::JavaRef<jobjectArray>&
           service_data_keys,  // Java Type: String[]
-      const base::android::JavaParamRef<jobjectArray>&
+      const base::android::JavaRef<jobjectArray>&
           service_data_values,  // Java Type: byte[]
-      const base::android::JavaParamRef<jintArray>&
+      const base::android::JavaRef<jintArray>&
           manufacturer_data_keys,  // Java Type: int[]
-      const base::android::JavaParamRef<jobjectArray>&
+      const base::android::JavaRef<jobjectArray>&
           manufacturer_data_values,  // Java Type: byte[]
       int32_t advertisement_flags);
 
@@ -122,22 +122,22 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
   // paired. It creates a device if it isn't in |devices_|
   void PopulateOrUpdatePairedDevice(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& address,
-      const base::android::JavaParamRef<jobject>&
+      const base::android::JavaRef<jstring>& address,
+      const base::android::JavaRef<jobject>&
           bluetooth_device_wrapper,  // Java Type: BluetoothDeviceWrapper
       bool from_broadcast_receiver);
 
   // Called when the Android system notifies us that a device is unpaired.
   void OnDeviceUnpaired(JNIEnv* env,
-                        const base::android::JavaParamRef<jstring>& address);
+                        const base::android::JavaRef<jstring>& address);
 
   // Updates the connected state of the device with |address| if it's in the
   // device list for |transport| to |connected|. It creates a device if it's
   // not in |devices_| and connected.
   void UpdateDeviceAclConnectState(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& address,
-      const base::android::JavaParamRef<jobject>&
+      const base::android::JavaRef<jstring>& address,
+      const base::android::JavaRef<jobject>&
           bluetooth_device_wrapper,  // Java Type: BluetoothDeviceWrapper
       uint8_t transport,
       bool connected);
@@ -171,7 +171,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
   void PopulatePairedDevices() const;
   BluetoothDeviceAndroid* CreateDevice(
       const std::string& device_address,
-      const base::android::JavaParamRef<jobject>&
+      const base::android::JavaRef<jobject>&
           bluetooth_device_wrapper);  // Java Type: BluetoothDeviceWrapper
 
   // Update device connection states due to adapter turning off because Android

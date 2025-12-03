@@ -51,7 +51,7 @@ base::TimeDelta BackgroundSyncLauncher::GetSoonestWakeupDelta(
 void BackgroundSyncLauncher::FireBackgroundSyncEvents(
     BrowserContext* browser_context,
     blink::mojom::BackgroundSyncType sync_type,
-    const base::android::JavaParamRef<jobject>& j_runnable) {
+    const base::android::JavaRef<jobject>& j_runnable) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(browser_context);
 
@@ -61,7 +61,7 @@ void BackgroundSyncLauncher::FireBackgroundSyncEvents(
 void BackgroundSyncLauncher::FireBackgroundSyncEventsImpl(
     BrowserContext* browser_context,
     blink::mojom::BackgroundSyncType sync_type,
-    const base::android::JavaParamRef<jobject>& j_runnable) {
+    const base::android::JavaRef<jobject>& j_runnable) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(browser_context);
   if (sync_type == blink::mojom::BackgroundSyncType::PERIODIC)
