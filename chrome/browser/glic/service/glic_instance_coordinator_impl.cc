@@ -295,11 +295,11 @@ GlicInstanceCoordinatorImpl::AddGlobalShowHideCallback(
 }
 
 void GlicInstanceCoordinatorImpl::Preload() {
-  if (warming_enabled_) {
+  if (!base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
     CreateWarmedInstance();
     warmed_instance_->metrics()->OnWarmedInstanceCreated();
   } else {
-    VLOG(1) << "Warming is disabled, skipping warming";
+    VLOG(1) << "WebContents warming is enabled, skipping GlicInstance warming";
   }
 }
 
@@ -401,33 +401,46 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplFor(
 }
 
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance() {
-  if (!warmed_instance_) {
-    CreateWarmedInstance();
-    // Records a just-in-time instance creation when warming is disabled or
-    // failed.
-    warmed_instance_->metrics()->OnInstanceCreatedWithoutWarming();
-  }
-  auto* instance_ptr = warmed_instance_.get();
-  instances_[instance_ptr->id()] = std::move(warmed_instance_);
-  // Records the promotion of an instance to an active one.
-  instance_ptr->metrics()->OnInstancePromoted();
-  if (warming_enabled_) {
-    CreateWarmedInstance();
-    // Records the creation of a new warmed instance to replace the promoted
-    // one.
-    warmed_instance_->metrics()->OnWarmedInstanceCreated();
+  if (!base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
+    if (!warmed_instance_) {
+      CreateWarmedInstance();
+      // Records a just-in-time instance creation when warming is disabled or
+      // failed.
+      warmed_instance_->metrics()->OnInstanceCreatedWithoutWarming();
+    }
+    auto* instance_ptr = warmed_instance_.get();
+    instances_[instance_ptr->id()] = std::move(warmed_instance_);
+    // Records the promotion of an instance to an active one.
+    instance_ptr->metrics()->OnInstancePromoted();
+    if (warming_enabled_) {
+      CreateWarmedInstance();
+      // Records the creation of a new warmed instance to replace the promoted
+      // one.
+      warmed_instance_->metrics()->OnWarmedInstanceCreated();
+    } else {
+      VLOG(1) << "Warming is disabled, skipping warming";
+    }
+    return instance_ptr;
   } else {
-    VLOG(1) << "Warming is disabled, skipping warming";
+    auto instance = CreateInstanceImpl();
+    auto* instance_ptr = instance.get();
+    instances_[instance->id()] = std::move(instance);
+    instance_ptr->metrics()->OnInstanceCreatedWithoutWarming();
+    return instance_ptr;
   }
-  return instance_ptr;
 }
 
-void GlicInstanceCoordinatorImpl::CreateWarmedInstance() {
+std::unique_ptr<GlicInstanceImpl>
+GlicInstanceCoordinatorImpl::CreateInstanceImpl() {
   InstanceId instance_id = base::Uuid::GenerateRandomV4();
-  warmed_instance_ = std::make_unique<GlicInstanceImpl>(
+  return std::make_unique<GlicInstanceImpl>(
       profile_, instance_id, weak_ptr_factory_.GetWeakPtr(),
       GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->metrics(),
       contextual_cueing_service_);
+}
+
+void GlicInstanceCoordinatorImpl::CreateWarmedInstance() {
+  warmed_instance_ = CreateInstanceImpl();
 }
 
 GlicInstanceImpl*

@@ -63,6 +63,7 @@ class GlicTabDataObserver;
 class GlicWindowController;
 class HostManager;
 class GlicActorTaskManager;
+class GlicWebContentsWarmingPool;
 
 enum class GlicPrewarmingChecksResult;
 
@@ -286,6 +287,10 @@ class GlicKeyedService : public KeyedService,
 
   HostManager& host_manager();
 
+  GlicWebContentsWarmingPool& web_contents_warming_pool() {
+    return *web_contents_warming_pool_;
+  }
+
   // Null in multi-instance mode.
   GlicZeroStateSuggestionsManager* zero_state_suggestions_manager() {
     return zero_state_suggestions_manager_.get();
@@ -386,6 +391,7 @@ class GlicKeyedService : public KeyedService,
   base::OnceCallback<void()> preload_callback_;
   std::unique_ptr<GlicActorTaskManager> actor_task_manager_;
   std::unique_ptr<GlicTabDataObserver> tab_data_observer_;
+  std::unique_ptr<GlicWebContentsWarmingPool> web_contents_warming_pool_;
 
   // Unowned
   raw_ptr<contextual_cueing::ContextualCueingService>

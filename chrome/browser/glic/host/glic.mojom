@@ -37,17 +37,40 @@ enum ProfileReadyState {
   kDisabledByAdmin,
 };
 
+// A minimal interface for the initial handshake.
+interface PreloadPage {
+  // The one and only method needed to unblock the frontend.
+  SetProfileReadyState(ProfileReadyState ready_state);
+};
+
 // Functions provided by the WebUI page.
 interface Page {
   // Called before the page is shown.
   IntentToShow();
 
+  // TODO(crbug.com/454120908): Remove this method after WebContents warming is
+  // rolled out.
   // Called any time the ready state of the profile changes.
   // `ready_state` = `GlicEnabling::GetProfileReadyState()`.
   SetProfileReadyState(ProfileReadyState ready_state);
 
   // Called to inform the page of the UI surface it is being rendered in.
   UpdatePageState(PanelStateKind panelStateKind);
+};
+
+// Page handler for pre-loading tasks.
+interface GlicPreloadHandler {
+  // Prepare the webview for loading the client. Sync Google account sign-in
+  // cookies to the webview, if necessary, so that it can sign-in automatically.
+  // If this returns an error, the web client cannot be created.
+  PrepareForClient() => (PrepareForClientResult result);
+};
+
+// Factory for GlicPreloadHandler used in chrome://glic.
+interface GlicPreloadHandlerFactory {
+  // Creates the GlicPreloadHandler for chrome://glic.
+  CreatePreloadHandler(pending_receiver<GlicPreloadHandler> receiver,
+                       pending_remote<PreloadPage> page);
 };
 
 // Factory for PageHandler used in chrome://glic.
@@ -122,6 +145,8 @@ interface PageHandler {
   // Creates a WebClientHandler, for use by a single web client instance.
   CreateWebClient(pending_receiver<WebClientHandler> web_client_receiver);
 
+  // TODO(crbug.com/454120908): Remove this method after WebContents warming is
+  // rolled out.
   // Prepare the webview for loading the client. Sync Google account sign-in
   // cookies to the webview, if necessary, so that it can sign-in automatically.
   // If this returns an error, the web client cannot be created.

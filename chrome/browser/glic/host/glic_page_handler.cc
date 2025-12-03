@@ -1929,20 +1929,24 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
 GlicPageHandler::GlicPageHandler(
     content::WebContents* webui_contents,
+    Host* host,
     mojo::PendingReceiver<glic::mojom::PageHandler> receiver,
     mojo::PendingRemote<mojom::Page> page)
-    : webui_contents_(webui_contents),
+    : host_(*host),
+      webui_contents_(webui_contents),
       browser_context_(webui_contents->GetBrowserContext()),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
-  host_ = GetGlicService()->host_manager().WebUIPageHandlerAdded(this);
+  GetGlicService()->host_manager().WebUIPageHandlerAdded(this, &host_.get());
   host_->AddPanelStateObserver(this);
-  UpdatePageState(host().GetPanelState(web_client_handler_.get()).kind);
-  subscriptions_.push_back(
-      GetGlicService()->enabling().RegisterProfileReadyStateChanged(
-          base::BindRepeating(&GlicPageHandler::UpdateProfileReadyState,
-                              base::Unretained(this))));
-  UpdateProfileReadyState();
+  UpdatePageState(host_->GetPanelState(web_client_handler_.get()).kind);
+  if (!base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
+    subscriptions_.push_back(
+        GetGlicService()->enabling().RegisterProfileReadyStateChanged(
+            base::BindRepeating(&GlicPageHandler::UpdateProfileReadyState,
+                                base::Unretained(this))));
+    UpdateProfileReadyState();
+  }
 }
 
 GlicPageHandler::~GlicPageHandler() {
@@ -1950,7 +1954,6 @@ GlicPageHandler::~GlicPageHandler() {
   WebUiStateChanged(glic::mojom::WebUiState::kUninitialized);
   // `GlicWebClientHandler` holds a pointer back to us, so delete it first.
   web_client_handler_.reset();
-  host_ = nullptr;
   GetGlicService()->host_manager().WebUIPageHandlerRemoved(this);
 }
 
@@ -2001,6 +2004,11 @@ content::RenderFrameHost* GlicPageHandler::GetGuestMainFrame() {
         return content::RenderFrameHost::FrameIterationAction::kContinue;
       });
   return web_view_guest ? web_view_guest->GetGuestMainFrame() : nullptr;
+}
+
+void GlicPageHandler::SetProfileReadyState(
+    glic::mojom::ProfileReadyState ready_state) {
+  page_->SetProfileReadyState(ready_state);
 }
 
 void GlicPageHandler::ClosePanel(ClosePanelCallback callback) {
@@ -2056,13 +2064,13 @@ void GlicPageHandler::PanelStateChanged(
   UpdatePageState(panel_state.kind);
 }
 
+void GlicPageHandler::UpdatePageState(mojom::PanelStateKind panelStateKind) {
+  page_->UpdatePageState(panelStateKind);
+}
+
 void GlicPageHandler::UpdateProfileReadyState() {
   page_->SetProfileReadyState(GlicEnabling::GetProfileReadyState(
       Profile::FromBrowserContext(browser_context_)));
-}
-
-void GlicPageHandler::UpdatePageState(mojom::PanelStateKind panelStateKind) {
-  page_->UpdatePageState(panelStateKind);
 }
 
 void GlicPageHandler::ZeroStateSuggestionChanged(

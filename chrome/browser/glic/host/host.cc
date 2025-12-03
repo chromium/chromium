@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/host/glic.mojom-data-view.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
+#include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -112,13 +113,20 @@ void Host::Reload() {
 }
 
 void Host::CreateContents(bool initially_hidden) {
-  if (!contents_) {
-    glic_service().fre_controller().RecordFrameworkStartTime();
-    contents_ = std::make_unique<WebUIContentsContainer>(
-        profile_, &glic_service().window_controller(), initially_hidden);
-    glic::GlicProfileManager::GetInstance()->OnLoadingClientForService(
-        &glic_service());
+  if (contents_) {
+    return;
   }
+
+  glic_service().fre_controller().RecordFrameworkStartTime();
+  if (base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
+    contents_ = glic_service().web_contents_warming_pool().TakeContainer();
+  } else {
+    contents_ =
+        std::make_unique<WebUIContentsContainer>(profile_, initially_hidden);
+  }
+  contents_->AttachToHost(this);
+  glic::GlicProfileManager::GetInstance()->OnLoadingClientForService(
+      &glic_service());
 }
 
 Host::PanelWillOpenOptions::PanelWillOpenOptions() = default;
@@ -634,6 +642,32 @@ std::vector<Host*> HostManager::GetAllHosts() {
   return hosts;
 }
 
+Host* HostManager::GetOrCreateHostForTab(content::WebContents* web_contents) {
+  for (const auto& host : tab_hosts_) {
+    if (host->webui_contents() == web_contents) {
+      return host.get();
+    }
+  }
+
+  if (!tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+    return nullptr;
+  }
+
+  // For backwards compatibility, tab hosts are tied to the window controller.
+  // In multi-instance mode, no instance is used for now. We should consider
+  // just creating new instances for these hosts.
+  GlicInstance* glic_instance = nullptr;
+  if (!GlicEnabling::IsMultiInstanceEnabled()) {
+    glic_instance =
+        static_cast<GlicWindowControllerInterface*>(window_controller_.get());
+  }
+  tab_hosts_.push_back(std::make_unique<Host>(profile_, nullptr, glic_instance,
+                                              GlicKeyedService::Get(profile_)));
+  Host* new_host = tab_hosts_.back().get();
+  new_host->SetDelegate(empty_embedder_delegate_.get());
+  return new_host;
+}
+
 bool HostManager::IsGlicWebUi(content::WebContents* contents) {
   for (const Host* host : GetAllHosts()) {
     if (host->IsGlicWebUi(contents)) {
@@ -652,32 +686,10 @@ bool HostManager::IsGlicWebUiHost(content::RenderProcessHost* process_host) {
   return false;
 }
 
-Host* HostManager::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
-  std::vector<Host*> instance_hosts = GetPrimaryHosts();
-  auto iter = std::find_if(
-      instance_hosts.begin(), instance_hosts.end(), [page_handler](Host* h) {
-        return h->webui_contents() == page_handler->webui_contents();
-      });
-  if (iter != instance_hosts.end()) {
-    Host* host = *iter;
-    host->WebUIPageHandlerAdded(page_handler);
-    return host;
-  }
-
-  // For backwards compatibility, tab hosts are tied to the window controller.
-  // In multi-instance mode, no instance is used for now. We should consider
-  // just creating new instances for these hosts.
-  GlicInstance* glic_instance = nullptr;
-  if (!GlicEnabling::IsMultiInstanceEnabled()) {
-    glic_instance =
-        static_cast<GlicWindowControllerInterface*>(window_controller_.get());
-  }
-  tab_hosts_.push_back(std::make_unique<Host>(profile_, nullptr, glic_instance,
-                                              GlicKeyedService::Get(profile_)));
-  Host& new_host = *tab_hosts_.back();
-  new_host.SetDelegate(empty_embedder_delegate_.get());
-  new_host.WebUIPageHandlerAdded(page_handler);
-  return &new_host;
+void HostManager::WebUIPageHandlerAdded(GlicPageHandler* page_handler,
+                                        Host* host) {
+  CHECK(host);
+  host->WebUIPageHandlerAdded(page_handler);
 }
 
 void HostManager::WebUIPageHandlerRemoved(GlicPageHandler* page_handler) {
