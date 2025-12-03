@@ -9,12 +9,15 @@
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_constants.h"
+#import "ios/chrome/browser/credential_exchange/ui/credential_export_favicon_provider.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_group_identifier.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_items.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/favicon_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -291,7 +294,6 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
                                  base::NumberToString16(credentials.size()));
 }
 
-// Helper method to encapsulate cell configuration logic.
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                          atIndexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(CredentialGroupIdentifier*)identifier {
@@ -301,21 +303,68 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
 
   const password_manager::AffiliatedGroup& group = identifier.affiliatedGroup;
 
+  [self configureCell:cell withGroup:group identifier:identifier];
+
+  return cell;
+}
+
+// Helper to configure the cell.
+- (void)configureCell:(UITableViewCell*)cell
+            withGroup:(const password_manager::AffiliatedGroup&)group
+           identifier:(CredentialGroupIdentifier*)identifier {
   TableViewCellContentConfiguration* contentConfig =
       [[TableViewCellContentConfiguration alloc] init];
+
   contentConfig.title = base::SysUTF8ToNSString(group.GetDisplayName());
   contentConfig.subtitle = [self detailTextForGroup:group];
+
   contentConfig.titleNumberOfLines = 2;
   contentConfig.titleLineBreakMode = NSLineBreakByTruncatingTail;
   contentConfig.subtitleNumberOfLines = 1;
+  contentConfig.subtitleLineBreakMode = NSLineBreakByTruncatingTail;
+
+  [self loadFaviconForContentConfiguration:contentConfig identifier:identifier];
 
   cell.contentConfiguration = contentConfig;
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
+}
 
-  // TODO(crbug.com/461479302): Load favicon.
+// Helper to load favicon and update configuration.
+- (void)loadFaviconForContentConfiguration:
+            (TableViewCellContentConfiguration*)contentConfig
+                                identifier:
+                                    (CredentialGroupIdentifier*)identifier {
+  FaviconContentConfiguration* faviconConfiguration =
+      [[FaviconContentConfiguration alloc] init];
+  contentConfig.leadingConfiguration = faviconConfiguration;
 
-  return cell;
+  if (!self.faviconProvider) {
+    return;
+  }
+
+  GURL URL = identifier.affiliatedGroup.GetFallbackIconURL();
+
+  __weak __typeof(self) weakSelf = self;
+  [self.faviconProvider
+      fetchFaviconForURL:URL
+              completion:^(FaviconAttributes* attributes, BOOL cached) {
+                if (cached) {
+                  FaviconContentConfiguration* newFaviconConfig =
+                      [[FaviconContentConfiguration alloc] init];
+                  newFaviconConfig.faviconAttributes = attributes;
+                  contentConfig.leadingConfiguration = newFaviconConfig;
+                } else if (attributes.faviconImage) {
+                  [weakSelf reconfigureItem:identifier];
+                }
+              }];
+}
+
+// Refreshes the cell content for the specific item.
+- (void)reconfigureItem:(CredentialGroupIdentifier*)item {
+  NSDiffableDataSourceSnapshot* snapshot = [_dataSource snapshot];
+  [snapshot reconfigureItemsWithIdentifiers:@[ item ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:NO completion:nil];
 }
 
 @end

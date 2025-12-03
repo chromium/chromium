@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_export_mediator.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -73,14 +74,19 @@
 - (void)start {
   _viewController = [[CredentialExportViewController alloc] init];
 
+  FaviconLoader* faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
+
   _mediator = [[CredentialExportMediator alloc]
         initWithWindow:_baseNavigationController.view.window
       affiliatedGroups:std::move(_affiliatedGroups)
-          passkeyModel:IOSPasskeyModelFactory::GetForProfile(self.profile)];
+          passkeyModel:IOSPasskeyModelFactory::GetForProfile(self.profile)
+         faviconLoader:faviconLoader];
   _affiliatedGroups = {};
   _viewController.delegate = _mediator;
   _mediator.delegate = self;
   _mediator.consumer = _viewController;
+  _viewController.faviconProvider = _mediator;
 
   _userEmail = IdentityManagerFactory::GetForProfile(self.profile)
                    ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)

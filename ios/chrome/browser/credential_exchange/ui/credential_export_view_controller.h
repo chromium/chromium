@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_consumer.h"
 
 @protocol CredentialExportViewControllerPresentationDelegate;
+@protocol CredentialExportFaviconProvider;
 
 API_AVAILABLE(ios(26.0))
 @interface CredentialExportViewController
@@ -19,6 +20,9 @@ API_AVAILABLE(ios(26.0))
 @property(nonatomic, weak)
     id<CredentialExportViewControllerPresentationDelegate>
         delegate;
+
+// Provider used to fetch favicons for the credential list items.
+@property(nonatomic, weak) id<CredentialExportFaviconProvider> faviconProvider;
 
 - (instancetype)init;
 

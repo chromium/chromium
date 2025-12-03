@@ -6,12 +6,22 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
+#import "components/favicon_base/favicon_types.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exporter.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_group_identifier.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_items.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+
+namespace {
+// Favicon constants.
+const CGFloat kFaviconSize = 24.0;
+const CGFloat kMinFaviconSize = 16.0;
+
+}  // namespace
 
 @implementation CredentialExportMediator {
   // Used as a presentation anchor for OS views. Must not be nil.
@@ -26,17 +36,22 @@
 
   // Provides access to stored WebAuthn credentials.
   raw_ptr<webauthn::PasskeyModel> _passkeyModel;
+
+  // Service used to retrieve favicons.
+  raw_ptr<FaviconLoader> _faviconLoader;
 }
 
 - (instancetype)initWithWindow:(UIWindow*)window
               affiliatedGroups:(std::vector<password_manager::AffiliatedGroup>)
                                    affiliatedGroups
-                  passkeyModel:(webauthn::PasskeyModel*)passkeyModel {
+                  passkeyModel:(webauthn::PasskeyModel*)passkeyModel
+                 faviconLoader:(FaviconLoader*)faviconLoader {
   self = [super init];
   if (self) {
     _window = window;
     _affiliatedGroups = std::move(affiliatedGroups);
     _passkeyModel = passkeyModel;
+    _faviconLoader = faviconLoader;
   }
   return self;
 }
@@ -126,6 +141,23 @@
                                          passkeys:std::move(passkeys)
                             securityDomainSecrets:securityDomainSecrets];
   }
+}
+
+#pragma mark - CredentialExportFaviconProvider
+
+- (void)fetchFaviconForURL:(const GURL&)URL
+                completion:(void (^)(FaviconAttributes*, BOOL))completion {
+  if (!_faviconLoader) {
+    completion(nil, YES);
+    return;
+  }
+
+  _faviconLoader->FaviconForPageUrl(
+      URL, kFaviconSize, kMinFaviconSize,
+      /*fallback_to_google_server=*/false,
+      ^(FaviconAttributes* attributes, bool cached) {
+        completion(attributes, cached);
+      });
 }
 
 @end
