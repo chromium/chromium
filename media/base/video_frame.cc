@@ -1219,12 +1219,7 @@ bool VideoFrame::AsyncMappingIsNonBlocking() const {
     CHECK(shared_image_);
     return shared_image_->AsyncMappingIsNonBlocking();
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/404905709): Remove this code, which is now unreachable.
-  return false;
-#else
   NOTREACHED();
-#endif
 }
 
 gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
