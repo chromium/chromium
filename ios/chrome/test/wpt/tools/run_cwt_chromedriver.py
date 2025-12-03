@@ -20,6 +20,7 @@ def GetIosDir():
 sys.path.append(os.path.join(GetIosDir(), 'build', 'bots', 'scripts'))
 
 import constants
+import exception_utils
 import iossim_util
 import test_apps
 import xcodebuild_runner
@@ -84,10 +85,13 @@ egtests_app = test_apps.EgtestsApp(
 if iossim_util.is_device_with_udid_simulator(destination):
     xcodebuild_runner.shutdown_all_simulators()
     xcodebuild_runner.erase_all_simulators()
+cert_path = os.path.join(GetChromiumSrcDir(), 'third_party',
+                         'wpt_tools', 'wpt', 'tools', 'certs', 'cacert.pem')
 launch_command = xcodebuild_runner.LaunchCommand(egtests_app, destination,
     clones=1, retries=1, readline_timeout=constants.READLINE_TIMEOUT,
+    exception_checker=exception_utils.ExceptionChecker(),
     out_dir=output_directory,
-    cert_path='../../wpt_tools/wpt/tools/certs/cacert.pem',
+    cert_path=cert_path,
     erase_simulators=False)
 
 launch_command.launch()

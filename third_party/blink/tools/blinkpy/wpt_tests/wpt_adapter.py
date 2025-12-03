@@ -618,11 +618,23 @@ class WPTAdapter:
                          f'(exit code: {exit_code})')
 
     def checkout_upstream_wpt(self) -> str:
+        """Check out a recent epoch-aligned revision of WPT.
+
+        WPT commits are periodically tagged at different frequencies (e.g.,
+        daily, weekly). When generating wpt.fyi results, we should use one of
+        these tagged revisions instead of the WPT copy under `web_tests/`, which
+        can be at an arbitrary revision. This produces comparable test runs more
+        frequently when other wpt.fyi uploaders target the same tagged
+        revisions.
+        """
         # This will leave behind a checkout in `/tmp/external/wpt` that can be
         # `git fetch`ed later instead of checked out from scratch.
         local_wpt = LocalWPT(self.host, path=self.tests_root)
         local_wpt.mirror_url = 'https://github.com/web-platform-tests/wpt.git'
-        local_wpt.fetch()
+        # Shallow clone the last `depth` revisions instead of the entire
+        # history. The `depth` is an estimated upper bound on the number of
+        # merged commits in any 3h window.
+        local_wpt.fetch(depth=100)
         wpt_executable = self.host.filesystem.join(local_wpt.path, 'wpt')
         rev_list_output = self.host.executive.run_command(
             [wpt_executable, 'rev-list', '--epoch', '3h'])

@@ -59,7 +59,7 @@ class LocalRepo(object):
         self.gh_token = gh_token
         self.main_branch = main_branch or LEGACY_MAIN_BRANCH_NAME
 
-    def fetch(self):
+    def fetch(self, depth: int | None = None):
         """Fetches a copy of the web-platform-tests repo in `self.path`."""
         if self.host.filesystem.exists(self.path):
             _log.info('%s checkout exists at %s, fetching latest', self.name,
@@ -79,8 +79,11 @@ class LocalRepo(object):
                 'It is possible for the mirror to be delayed; see https://crbug.com/698272.'
             )
         # Do not use self.run here because self.path doesn't exist yet.
-        self.host.executive.run_command(
-            ['git', 'clone', remote_url, self.path])
+        clone_command = ['git', 'clone']
+        if depth is not None:
+            clone_command.extend(['--depth', str(depth)])
+        clone_command.extend([remote_url, self.path])
+        self.host.executive.run_command(clone_command)
 
         _log.info('Setting git user name & email in %s', self.path)
         self.run(['git', 'config', 'user.name', self.default_committer_name])
