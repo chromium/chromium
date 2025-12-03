@@ -1867,9 +1867,9 @@ ci.thin_tester(
         # the gpu_noop_sleep_telemetry_test test should be used. Otherwise, this
         # should have the same test_suites as 'Dawn Mac x64 Release (Intel)'.
         targets = [
+            "dawn_chromium_isolated_scripts",
+            "gpu_common_gtests_passthrough",
             "gpu_dawn_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough",
-            "gpu_dawn_isolated_scripts",
         ],
         mixins = [
             "limited_capacity_bot",
