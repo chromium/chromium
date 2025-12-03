@@ -188,6 +188,14 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
         const nextNode = textNodes[i + 1];
         if (nextNode && this.isLineBreakingItem(textNode, nextNode)) {
           fullText += '\n';
+        } else if (
+            nextNode && nextNode.isSuperscript() && !textNode.isSuperscript() &&
+            !fullText.endsWith(' ')) {
+          // Add whitespace between a non-superscript and a superscript. This
+          // is to prevent the text being segmented together as a single word.
+          // e.g. without this, "pop<sup>i</sup>" would be read out loud as
+          // "popi" instead of two separate words: "pop" and "i".
+          fullText += ' ';
         }
       }
     }
@@ -525,10 +533,20 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     let textSoFarIndex = 0;
 
     for (const segment of sentenceSegments) {
-      const segmentStart = textSoFarIndex;
+      // Adjust the highlighting index by finding where the current segment
+      // text starts in the sentence text. This allows extra characters such as
+      // spaces that were added to make speech sound more natural to be indexed
+      // correctly.
+      const segmentText =
+          (segment.node as DomReadAloudNode)
+              .getText()
+              .substring(segment.start, segment.start + segment.length);
+      const segmentStart = sentenceText.indexOf(segmentText, textSoFarIndex);
 
-      // Stop iterating if segmentStart is ever greater than the highlight end
-      // index.
+      if (segmentStart === -1) {
+        continue;
+      }
+
       if (segmentStart >= highlightEndIndex) {
         break;
       }
@@ -544,7 +562,7 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
         highlightSegments.push(highlightSegment);
       }
 
-      textSoFarIndex += segment.length;
+      textSoFarIndex = segmentStart + segment.length;
     }
 
     return highlightSegments;

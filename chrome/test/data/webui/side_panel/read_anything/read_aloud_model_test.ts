@@ -107,6 +107,90 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
+  test('getCurrentText separates superscripts with no spaces', async () => {
+    const paragraph = document.createElement('p');
+
+    const sentence = document.createTextNode('film');
+    const superscript = document.createElement('sup');
+    superscript.textContent = 'a';
+
+    paragraph.appendChild(sentence);
+    paragraph.appendChild(superscript);
+    document.body.appendChild(paragraph);
+
+    await microtasksFinished();
+
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+    assertEquals('film a', getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
+  test(
+      'getCurrentText separates nested superscripts with no spaces',
+      async () => {
+        const paragraph = document.createElement('p');
+        const sentence = document.createTextNode('film');
+        const superscript = document.createElement('sup');
+
+        const link = document.createElement('a');
+        link.href = 'google.com';
+        link.textContent = 'a';
+
+        superscript.appendChild(link);
+        paragraph.appendChild(sentence);
+        paragraph.appendChild(superscript);
+        document.body.appendChild(paragraph);
+
+        await microtasksFinished();
+
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+        assertEquals(
+            'film a', getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
+
+  test(
+      'getHighlightForCurrentSegmentIndex with space added before superscript',
+      async () => {
+        const paragraph = document.createElement('p');
+        const sentence = document.createTextNode('film');
+        const superscript = document.createElement('sup');
+
+        const link = document.createElement('a');
+        link.href = 'google.com';
+        link.textContent = 'a';
+
+        superscript.appendChild(link);
+        paragraph.appendChild(sentence);
+        paragraph.appendChild(superscript);
+        document.body.appendChild(paragraph);
+
+        await microtasksFinished();
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+        // The model should add a space, making the text "some text 1"
+        assertEquals(
+            'film a', getReadAloudModel().getCurrentTextContent().trim());
+
+        // Highlight "film"
+        for (let i = 0; i < 4; i++) {
+          expectHighlightAtIndexMatches(
+              i, [{node: sentence, start: i, length: 4 - i}]);
+        }
+
+        // The space is at index 4. The superscript starts at index 5.
+        // Highlight "a"
+        expectHighlightAtIndexMatches(
+            5, [{node: link.firstChild!, start: 0, length: 1}]);
+      });
+
+
   test('getCurrentText multiple opening punctuation ignored', async () => {
     const paragraph = document.createElement('p');
 
@@ -1287,7 +1371,7 @@ suite('ReadAloudModel', () => {
         await microtasksFinished();
         getReadAloudModel().init(ReadAloudNode.create(document.body)!);
         assertEquals(
-            sentence1.textContent + sentence2.textContent,
+            sentence1.textContent + ' ' + sentence2.textContent,
             getReadAloudModel().getCurrentTextContent().trim());
 
         getReadAloudModel().moveSpeechForward();
@@ -1317,7 +1401,7 @@ suite('ReadAloudModel', () => {
         await microtasksFinished();
         getReadAloudModel().init(ReadAloudNode.create(document.body)!);
         assertEquals(
-            'I\'m coming![b]',
+            'I\'m coming! [b]',
             getReadAloudModel().getCurrentTextContent().trim());
         getReadAloudModel().moveSpeechForward();
         assertEquals(
@@ -1354,7 +1438,7 @@ suite('ReadAloudModel', () => {
         await microtasksFinished();
         getReadAloudModel().init(ReadAloudNode.create(document.body)!);
         assertEquals(
-            'Wait for me, I\'m coming.[7][8]',
+            'Wait for me, I\'m coming. [7][8]',
             getReadAloudModel().getCurrentTextContent().trim());
         getReadAloudModel().moveSpeechForward();
         assertEquals(
@@ -1386,7 +1470,7 @@ suite('ReadAloudModel', () => {
 
         // The first sentence and its superscript are returned as one segment.
         assertEquals(
-            'Doubt comes in.[3]',
+            'Doubt comes in. [3]',
             getReadAloudModel().getCurrentTextContent().trim());
 
 
@@ -1413,7 +1497,7 @@ suite('ReadAloudModel', () => {
 
         // The first sentence and its superscript are returned as one segment.
         assertEquals(
-            'Doubt comes in.[2]',
+            'Doubt comes in. [2]',
             getReadAloudModel().getCurrentTextContent().trim());
 
         getReadAloudModel().moveSpeechForward();
@@ -1446,7 +1530,7 @@ suite('ReadAloudModel', () => {
 
         // The first sentence and its superscript are returned as one segment.
         assertEquals(
-            'And I am almost there.[23]',
+            'And I am almost there. [23]',
             getReadAloudModel().getCurrentTextContent().trim());
 
         // The next sentence and is returned on its own.
