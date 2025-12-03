@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_SERVICE_ERROR_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_SERVICE_ERROR_H_
 
+#include <stdint.h>
+
 #include "base/types/expected.h"
 
 namespace unexportable_keys {
@@ -13,7 +15,7 @@ namespace unexportable_keys {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(ServiceError)
-enum class ServiceError {
+enum class ServiceError : uint8_t {
   // Reserved for histograms.
   // kNone = 0
   // crypto:: operation returned an error.
