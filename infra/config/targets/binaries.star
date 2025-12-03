@@ -1674,11 +1674,13 @@ targets.binaries.console_test_launcher(
 targets.binaries.generated_script(
     name = "model_validation_tests",
     label = "//components/optimization_guide/internal/testing:model_validation_tests",
+    module_scheme = "flat",
 )
 
 targets.binaries.generated_script(
     name = "model_validation_tests_light",
     label = "//components/optimization_guide/internal/testing:model_validation_tests_light",
+    module_scheme = "flat",
 )
 
 targets.binaries.generated_script(
@@ -1776,21 +1778,25 @@ targets.binaries.windowed_test_launcher(
 targets.binaries.generated_script(
     name = "ondevice_stability_tests",
     label = "//components/optimization_guide/internal/testing:ondevice_stability_tests",
+    module_scheme = "flat",
 )
 
 targets.binaries.generated_script(
     name = "ondevice_stability_tests_light",
     label = "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
+    module_scheme = "flat",
 )
 
 targets.binaries.generated_script(
     name = "ondevice_model_benchmark_tests",
     label = "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
+    module_scheme = "flat",
 )
 
 targets.binaries.generated_script(
     name = "opt_target_coverage_test",
     label = "//components/optimization_guide/internal/testing:opt_target_coverage_test",
+    module_scheme = "flat",
 )
 
 targets.binaries.generated_script(

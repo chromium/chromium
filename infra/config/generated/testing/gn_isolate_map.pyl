@@ -1527,10 +1527,12 @@
   "model_validation_tests": {
     "label": "//components/optimization_guide/internal/testing:model_validation_tests",
     "type": "generated_script",
+    "module_scheme": "flat",
   },
   "model_validation_tests_light": {
     "label": "//components/optimization_guide/internal/testing:model_validation_tests_light",
     "type": "generated_script",
+    "module_scheme": "flat",
   },
   "module_installer_junit_tests": {
     "label": "//components/module_installer/android:module_installer_junit_tests",
@@ -1608,14 +1610,17 @@
   "ondevice_model_benchmark_tests": {
     "label": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
     "type": "generated_script",
+    "module_scheme": "flat",
   },
   "ondevice_stability_tests": {
     "label": "//components/optimization_guide/internal/testing:ondevice_stability_tests",
     "type": "generated_script",
+    "module_scheme": "flat",
   },
   "ondevice_stability_tests_light": {
     "label": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
     "type": "generated_script",
+    "module_scheme": "flat",
   },
   "one_time_tokens_junit_tests": {
     "label": "//components/one_time_tokens/android/backend/sms:one_time_tokens_junit_tests",
@@ -1632,6 +1637,7 @@
   "opt_target_coverage_test": {
     "label": "//components/optimization_guide/internal/testing:opt_target_coverage_test",
     "type": "generated_script",
+    "module_scheme": "flat",
   },
   "optimization_guide_gpu_unittests": {
     "label": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
