@@ -7,6 +7,11 @@ source_set("phosphor") {
     "config_http.cc",
     "config_http.h",
     "data_types.h",
+    "token_fetcher.h",
+    "token_fetcher_helper.cc",
+    "token_fetcher_helper.h",
+    "token_fetcher_impl.cc",
+    "token_fetcher_impl.h",
   ]
   deps = [
     "//base",
@@ -18,11 +23,27 @@ source_set("phosphor") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_blind_sign_auth.cc",
+    "mock_blind_sign_auth.h",
+  ]
+  public_deps = [
+    "//net/third_party/quiche:blind_sign_auth",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "config_http_unittest.cc" ]
+  sources = [
+    "config_http_unittest.cc",
+    "token_fetcher_impl_unittest.cc",
+  ]
   deps = [
     ":phosphor",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/legion:features",

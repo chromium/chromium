@@ -948,6 +948,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             # Needed to use QUICHE API.
             r'android_webview/browser/ip_protection/.*',
             r'components/ip_protection/.*',
+            r'components/legion/phosphor/.*',
             r'net/third_party/quiche/overrides/quiche_platform_impl/quiche_stack_trace_impl\.*',
             r'services/network/web_transport\.cc',
 
