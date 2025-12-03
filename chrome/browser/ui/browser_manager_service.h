@@ -38,6 +38,11 @@ class BrowserManagerService : public KeyedService,
   // Destroys `browser` if owned and managed by the service.
   void DeleteBrowser(Browser* browser);
 
+  // Adds a new unowned Browser created by unit tests.
+  // TODO(crbug.com/417766643): Remove this once all use of Browser in unit
+  // tests has been eliminated.
+  void AddBrowserForTesting(BrowserWindowInterface* browser);
+
  protected:
   // ProfileBrowserCollection:
   BrowserVector GetBrowsers(Order order) override;
@@ -48,6 +53,10 @@ class BrowserManagerService : public KeyedService,
 
   // Called when a browser in this profile became inactive.
   void OnBrowserDeactivated(BrowserWindowInterface* browser);
+
+  // Called when browsers in `browsers_and_subscriptions_for_testing_` have
+  // closed.
+  void OnBrowserClosedForTesting(BrowserWindowInterface* browser);
 
   // Profile associated with this service.
   const raw_ptr<Profile> profile_;
@@ -64,6 +73,34 @@ class BrowserManagerService : public KeyedService,
                 std::pair<base::CallbackListSubscription,
                           base::CallbackListSubscription>>;
   std::vector<BrowserAndSubscriptions> browsers_and_subscriptions_;
+
+  // `browsers_and_subscriptions_for_testing_` and `browsers_and_subscriptions_`
+  // are mutually exclusive to each other. Tests creating owned test Browser
+  // instances should never be creating unowned Browser instances.
+  // TODO(crbug.com/417766643): Remove this once all use of Browser in unit
+  // tests has been eliminated.
+  struct UnownedBrowserAndSubscriptions {
+    UnownedBrowserAndSubscriptions(
+        BrowserWindowInterface* browser,
+        base::CallbackListSubscription activated_subscription,
+        base::CallbackListSubscription deactivated_subscription,
+        base::CallbackListSubscription closed_subscription);
+    UnownedBrowserAndSubscriptions(const UnownedBrowserAndSubscriptions&) =
+        delete;
+    UnownedBrowserAndSubscriptions& operator=(
+        const UnownedBrowserAndSubscriptions&) = delete;
+    UnownedBrowserAndSubscriptions(UnownedBrowserAndSubscriptions&&);
+    UnownedBrowserAndSubscriptions& operator=(
+        UnownedBrowserAndSubscriptions&&) = default;
+    ~UnownedBrowserAndSubscriptions() = default;
+
+    raw_ptr<BrowserWindowInterface> browser;
+    base::CallbackListSubscription activated_subscription;
+    base::CallbackListSubscription deactivated_subscription;
+    base::CallbackListSubscription closed_subscription;
+  };
+  std::vector<UnownedBrowserAndSubscriptions>
+      browsers_and_subscriptions_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_MANAGER_SERVICE_H_

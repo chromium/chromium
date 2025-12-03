@@ -179,20 +179,21 @@ class ScopedBrowser {
  public:
   explicit ScopedBrowser(Profile* profile) {
     Browser::CreateParams params(profile, true);
-    browser_view_ =
-        BrowserView::GetBrowserViewForBrowser(Browser::Create(params));
+    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
+    browser_view_ = BrowserView::GetBrowserViewForBrowser(browser_.get());
   }
   ScopedBrowser(const ScopedBrowser&) = delete;
   ScopedBrowser& operator=(const ScopedBrowser&) = delete;
   ~ScopedBrowser() {
-    browser_view_->browser()->tab_strip_model()->CloseAllTabs();
+    browser()->tab_strip_model()->CloseAllTabs();
     browser_view_.ExtractAsDangling()->GetWidget()->CloseNow();
     content::RunAllTasksUntilIdle();
   }
 
-  Browser* browser() { return browser_view_->browser(); }
+  Browser* browser() { return browser_.get(); }
 
  private:
+  std::unique_ptr<Browser> browser_;
   raw_ptr<BrowserView> browser_view_;
 };
 }  // namespace

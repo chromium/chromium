@@ -569,7 +569,11 @@ std::unique_ptr<Browser> Browser::DeprecatedCreateOwnedForTesting(
   // not possible, e.g. using the wrong profile or during shutdown. The caller
   // should handle this; see e.g. crbug.com/1141608 and crbug.com/1261628.
   CHECK_EQ(CreationStatus::kOk, GetCreationStatusForProfile(params.profile));
-  return base::WrapUnique(new Browser(params));
+
+  std::unique_ptr<Browser> browser = base::WrapUnique(new Browser(params));
+  BrowserManagerServiceFactory::GetForProfile(params.profile)
+      ->AddBrowserForTesting(browser.get());
+  return browser;
 }
 
 Browser::Browser(const CreateParams& params)

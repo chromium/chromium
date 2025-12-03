@@ -15,8 +15,6 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_manager_service.h"
-#include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -63,27 +61,14 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
     ProfileActivityMetricsRecorder::CleanupForTesting();
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
 
-    for (auto browser_and_profile : browsers_and_profiles_) {
-      // TODO(crbug.com/465101639): tracking and deleting these browsers should
-      // not be necessary, but currently not doing so results in a crash during
-      // profile destruction. This needs to be investigated.
-      BrowserManagerServiceFactory::GetForProfile(browser_and_profile.second)
-          ->DeleteBrowser(browser_and_profile.first);
-    }
   }
 
   void ActivateBrowser(Profile* profile) {
     Browser::CreateParams browser_params(profile, false);
-    std::unique_ptr<Browser> browser(
-        CreateBrowserWithTestWindowForParams(browser_params));
-    Browser* browser_ptr = browser.get();
-    BrowserManagerServiceFactory::GetForProfile(profile)->AddBrowser(
-        std::move(browser));
-
-    browsers_and_profiles_.emplace_back(browser_ptr, profile);
+    browsers_.push_back(CreateBrowserWithTestWindowForParams(browser_params));
 
     // This triggers the recorder to post a task, wait until that's done.
-    browser_ptr->DidBecomeActive();
+    browsers_.back().get()->DidBecomeActive();
     task_environment_.RunUntilIdle();
   }
 
@@ -122,7 +107,7 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
   TestingProfileManager profile_manager_;
   base::HistogramTester histogram_tester_;
 
-  std::vector<std::pair<Browser*, Profile*>> browsers_and_profiles_;
+  std::vector<std::unique_ptr<Browser>> browsers_;
 };
 
 TEST_F(ProfileActivityMetricsRecorderTest, GuestProfile) {

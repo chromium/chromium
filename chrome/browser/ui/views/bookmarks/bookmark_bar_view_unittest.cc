@@ -91,6 +91,11 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
     browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
   }
 
+  void TearDown() override {
+    browser_->GetWindow()->Close();
+    ChromeViewsTestBase::TearDown();
+  }
+
   virtual BookmarkBarView* bookmark_bar_view() = 0;
 
   TestingProfile* profile() { return profile_.get(); }

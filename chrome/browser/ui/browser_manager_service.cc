@@ -23,6 +23,7 @@ void BrowserManagerService::Shutdown() {
 }
 
 void BrowserManagerService::AddBrowser(std::unique_ptr<Browser> browser) {
+  CHECK(browsers_and_subscriptions_for_testing_.empty());
   BrowserWindowInterface* const browser_ptr = browser.get();
   browsers_and_subscriptions_.push_back(std::pair(
       std::move(browser),
@@ -71,6 +72,33 @@ void BrowserManagerService::DeleteBrowser(Browser* removed_browser) {
   }
 }
 
+void BrowserManagerService::AddBrowserForTesting(
+    BrowserWindowInterface* browser) {
+  // Tests manually creating owned browsers must create all their instances
+  // via `Browser::DeprecatedCreateOwnedForTesting()`, which calls into this
+  // method.
+  CHECK(browsers_and_subscriptions_.empty());
+  browsers_and_subscriptions_for_testing_.push_back(
+      UnownedBrowserAndSubscriptions(
+          browser,
+          browser->RegisterDidBecomeActive(
+              base::BindRepeating(&BrowserManagerService::OnBrowserActivated,
+                                  base::Unretained(this))),
+          browser->RegisterDidBecomeInactive(
+              base::BindRepeating(&BrowserManagerService::OnBrowserDeactivated,
+                                  base::Unretained(this))),
+          browser->RegisterBrowserDidClose(base::BindRepeating(
+              &BrowserManagerService::OnBrowserClosedForTesting,
+              base::Unretained(this)))));
+
+  // Push the browser to the back of the activation order list. It will be moved
+  // to the front when the browser is eventually activated (which may or may
+  // not happen immediately after creation).
+  browsers_activation_order_.push_back(browser);
+
+  observers().Notify(&BrowserCollectionObserver::OnBrowserCreated, browser);
+}
+
 BrowserCollection::BrowserVector BrowserManagerService::GetBrowsers(
     Order order) {
   CHECK(order == Order::kCreation || order == Order::kActivation);
@@ -79,10 +107,23 @@ BrowserCollection::BrowserVector BrowserManagerService::GetBrowsers(
   }
 
   BrowserCollection::BrowserVector browsers;
-  browsers.reserve(browsers_and_subscriptions_.size());
-  std::ranges::transform(browsers_and_subscriptions_,
-                         std::back_inserter(browsers),
-                         [](const auto& pair) { return pair.first.get(); });
+  CHECK(browsers_and_subscriptions_.empty() ||
+        browsers_and_subscriptions_for_testing_.empty());
+  if (!browsers_and_subscriptions_for_testing_.empty()) {
+    CHECK(browsers_and_subscriptions_.empty());
+    browsers.reserve(browsers_and_subscriptions_for_testing_.size());
+    std::ranges::transform(browsers_and_subscriptions_for_testing_,
+                           std::back_inserter(browsers),
+                           [](const auto& browser_and_subscriptions) {
+                             return browser_and_subscriptions.browser.get();
+                           });
+  } else {
+    browsers.reserve(browsers_and_subscriptions_.size());
+    std::ranges::transform(browsers_and_subscriptions_,
+                           std::back_inserter(browsers),
+                           [](const auto& pair) { return pair.first.get(); });
+  }
+
   return browsers;
 }
 
@@ -104,3 +145,36 @@ void BrowserManagerService::OnBrowserDeactivated(
     observer.OnBrowserDeactivated(browser);
   }
 }
+
+void BrowserManagerService::OnBrowserClosedForTesting(
+    BrowserWindowInterface* browser) {
+  // Tests manually creating owned browsers must create all their instances
+  // via `Browser::DeprecatedCreateOwnedForTesting()`.
+  CHECK(browsers_and_subscriptions_.empty());
+  auto it = std::ranges::find_if(
+      browsers_and_subscriptions_for_testing_,
+      [browser](
+          const UnownedBrowserAndSubscriptions& browser_and_subscriptions) {
+        return browser_and_subscriptions.browser == browser;
+      });
+  if (it != browsers_and_subscriptions_for_testing_.end()) {
+    std::erase(browsers_activation_order_, browser);
+    browsers_and_subscriptions_for_testing_.erase(it);
+    observers().Notify(&BrowserCollectionObserver::OnBrowserClosed, browser);
+    return;
+  }
+}
+
+BrowserManagerService::UnownedBrowserAndSubscriptions::
+    UnownedBrowserAndSubscriptions(
+        BrowserWindowInterface* browser,
+        base::CallbackListSubscription activated_subscription,
+        base::CallbackListSubscription deactivated_subscription,
+        base::CallbackListSubscription closed_subscription)
+    : browser(browser),
+      activated_subscription(std::move(activated_subscription)),
+      deactivated_subscription(std::move(deactivated_subscription)),
+      closed_subscription(std::move(closed_subscription)) {}
+
+BrowserManagerService::UnownedBrowserAndSubscriptions::
+    UnownedBrowserAndSubscriptions(UnownedBrowserAndSubscriptions&&) = default;
