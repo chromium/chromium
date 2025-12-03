@@ -200,7 +200,8 @@
 
 - (ComposeboxTheme*)createTheme {
   return [[ComposeboxTheme alloc]
-      initWithInputPlatePosition:[self inputPlatePositionPreference]];
+      initWithInputPlatePosition:[self inputPlatePositionPreference]
+                       incognito:self.isOffTheRecord];
 }
 
 - (ComposeboxInputPlatePosition)inputPlatePositionPreference {

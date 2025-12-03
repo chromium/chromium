@@ -145,8 +145,9 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 }
 
 - (void)userInterfaceStyleChanged {
-  _blurEffectView.hidden =
+  BOOL darkStyle =
       self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+  _blurEffectView.hidden = darkStyle || _theme.incognito;
 }
 
 - (void)addInputViewController:
