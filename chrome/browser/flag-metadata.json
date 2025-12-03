@@ -9991,7 +9991,7 @@
     "owners": [
       "jlebel@google.com", "dgn@google.com", "chrome-regionalcapabilities@google.com"
     ],
-    "expiry_milestone": 145
+    "expiry_milestone": 147
   },
   {
     "name": "terminal-dev",
