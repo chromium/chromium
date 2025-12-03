@@ -3001,7 +3001,6 @@ source_set("browser") {
         "media/captured_surface_controller.h",
       ]
       public_deps += [ "//ui/base/cursor" ]
-      deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
     }
     if (use_aura) {
       sources += [
