@@ -515,6 +515,7 @@ template("generate_jni") {
 
     if (!defined(invoker.enable_definition_macros)) {
       enable_definition_macros =
+          build_with_chromium &&
           filter_include([ get_label_info(":$target_name", "dir") ],
                          [ "//third_party/webrtc/*" ]) == []
     }
