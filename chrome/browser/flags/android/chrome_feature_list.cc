@@ -32,6 +32,7 @@
 #include "components/browsing_data/core/features.h"
 #include "components/collaboration/public/features.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/content_capture/common/content_capture_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/credential_management/android/features.h"
 #include "components/data_sharing/public/features.h"
@@ -143,6 +144,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &commerce::kPriceInsights,
     &commerce::kShoppingList,
     &commerce::kShoppingPDPMetrics,
+    &content_capture::features::kContentCaptureSendMetadataForDataShare,
     &content_settings::features::kTrackingProtection3pcd,
     &content_settings::features::kUserBypassUI,
     &content_settings::kDarkenWebsitesCheckboxInThemesSetting,

@@ -100,6 +100,7 @@ include_rules = [
   "+components/consent_auditor",
   "+components/constrained_window",
   "+components/content_capture/browser",
+  "+components/content_capture/common",
   "+components/content_extraction/content/browser",
   "+components/content_settings/browser",
   "+components/content_settings/core/browser",
