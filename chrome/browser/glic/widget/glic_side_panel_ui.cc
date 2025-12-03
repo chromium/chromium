@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/view.h"
@@ -67,6 +68,15 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
   }
 
   glic_side_panel_coordinator->SetContentsView(CreateView(profile_));
+
+  // Add capability to show web modal dialogs (e.g. Data Controls Dialogs for
+  // enterprise users) via constrained_window APIs.
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      delegate_->host().webui_contents());
+  web_modal::WebContentsModalDialogManager::FromWebContents(
+      delegate_->host().webui_contents())
+      ->SetDelegate(this);
+
   panel_state_.kind = mojom::PanelStateKind::kAttached;
 }
 
@@ -83,6 +93,15 @@ std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
 GlicSidePanelUi::~GlicSidePanelUi() {
   if (glic_view_) {
     glic_view_->SetWebContents(nullptr);
+  }
+  auto* webui_contents = delegate_->host().webui_contents();
+  if (!webui_contents) {
+    return;
+  }
+  auto* dialog_manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(webui_contents);
+  if (dialog_manager) {
+    dialog_manager->SetDelegate(nullptr);
   }
 }
 
@@ -265,6 +284,14 @@ void GlicSidePanelUi::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
 
 base::WeakPtr<views::View> GlicSidePanelUi::GetView() {
   return glic_view_;
+}
+
+// web_modal::WebContentsModalDialogManagerDelegate
+web_modal::WebContentsModalDialogHost*
+GlicSidePanelUi::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
+  return tab_->GetBrowserWindowInterface()
+      ->GetWebContentsModalDialogHostForWindow();
 }
 
 void GlicSidePanelUi::OnBrowserWindowActivated(BrowserWindowInterface* bwi) {
