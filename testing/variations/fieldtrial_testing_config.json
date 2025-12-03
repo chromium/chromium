@@ -340,6 +340,28 @@
             ]
         }
     ],
+    "AccessibilitySequentialFocus": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilitySequentialFocus"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "AccessibilitySequentialFocus"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilitySerializationSizeMetrics": [
         {
             "platforms": [
