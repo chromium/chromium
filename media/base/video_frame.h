@@ -117,10 +117,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   };
 
   // This class will allow VF clients to be able to get CPU mapped memory and
-  // other metadata either from GMB or MappableSI backing the VF. Note that this
-  // class will go away once GMB is removed. Clients can directly called a new
-  // method like VideoFrame::MapSharedImage() to get a
-  // ClientSharedImage::ScopedMapping object.
+  // other metadata either from MappableSI backing the VF.
+  // TODO(crbug.com/40263579): Have clients directly interact with
+  // ClientSharedImage::ScopedMapping and remove this.
   class MEDIA_EXPORT ScopedMapping {
    public:
     virtual ~ScopedMapping() = default;
@@ -494,8 +493,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   bool HasSharedImage() const;
 
   // Returns true if the |storage_type_| is STOAGE_GPU_MEMORY_BUFFER which
-  // indicates that the VideoFrame is backed by GMB or a MappableSharedImage
-  // when its enabled.
+  // indicates that the VideoFrame is backed by a MappableSharedImage.
   bool HasMappableGpuBuffer() const;
 
   // Returns true if the GpuMemoruBuffer backing the video frame is native
@@ -509,30 +507,28 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   bool IsMappableSharedImageEnabled() const;
 
   // Gets the ScopedMapping object which clients can use to access the CPU
-  // visible memory and other metadata for the gpu buffer backing this
-  // VideoFrame(via GpuMemoryBuffer or MappableSI).
-  // TODO(crbug.com/40263579): Note that once MappableSI is fully launched and
-  // enabled for VideoFrame, rename this method to MapSharedImage(). It can
-  // then directly return ClientSharedImage::ScopedMapping object instead.
+  // visible memory and other metadata for the MappableSI backing this
+  // VideoFrame.
+  // TODO(crbug.com/40263579): Have this method directly return
+  // ClientSharedImage::ScopedMapping object instead.
   std::unique_ptr<VideoFrame::ScopedMapping> MapSharedImage() const;
 
   // Gets the ScopedMapping object which clients can use to access the CPU
-  // visible memory and other metadata for the gpu buffer backing this
-  // VideoFrame(via GpuMemoryBuffer or MappableSI).
+  // visible memory and other metadata for the MappableSI backing this
+  // VideoFrame.
   // This isn't guaranteed to be always async.
   // If 'AsyncMappingIsNonBlocking()' is 'false', this will run the callback
   // in the current sequence. Otherwise, the callback will be invoked in the
   // GpuMemoryThread.
   // Note: the frame must not be destroyed before the result callback is
   // executed.
-  // TODO(crbug.com/40263579): Note that once MappableSI is fully launched and
-  // enabled for VideoFrame, rename this method to MapSharedImageAsync(). It can
-  // then directly return ClientSharedImage::ScopedMapping object instead.
+  // TODO(crbug.com/40263579): Have this method directly return
+  // ClientSharedImage::ScopedMapping object instead.
   void MapSharedImageAsync(
       base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
           result_cb) const;
 
-  // Returns true if the underlying SharedImage or GMB can be mapped truly
+  // Returns true if the underlying SharedImage can be mapped truly
   // asynchronously: with an unblocking request to the GPU process.
   // Only call if `HasMappableGpuBuffer() == true`.
   bool AsyncMappingIsNonBlocking() const;
