@@ -58,12 +58,15 @@ class CONTENT_EXPORT NavigationInterceptor
 
   // content::NavigationThrottle overrides:
   ThrottleCheckResult WillStartRequest() override;
+  ThrottleCheckResult WillRedirectRequest() override;
   ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
   static void MaybeCreateAndAdd(NavigationThrottleRegistry& registry);
 
  private:
+  ThrottleCheckResult ProcessRequest();
+
   void OnHeaderParsed(
       base::expected<net::structured_headers::Dictionary, std::string> result);
   void OnTokenResponse(

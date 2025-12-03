@@ -66,11 +66,22 @@ NavigationInterceptor::WillStartRequest() {
 }
 
 NavigationThrottle::ThrottleCheckResult
+NavigationInterceptor::WillRedirectRequest() {
+  return ProcessRequest();
+}
+
+NavigationThrottle::ThrottleCheckResult
 NavigationInterceptor::WillProcessResponse() {
+  return ProcessRequest();
+}
+
+NavigationThrottle::ThrottleCheckResult
+NavigationInterceptor::ProcessRequest() {
   if (!document_.AsRenderFrameHostIfValid()) {
     // Some other navigation has happened in the meantime.
     return PROCEED;
   }
+
   if (!navigation_handle()->IsInPrimaryMainFrame()) {
     // Only top level navigations can be intercepted.
     return PROCEED;
