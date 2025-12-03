@@ -1422,7 +1422,7 @@ targets.bundle(
     name = "chromeos_jacuzzi_rel_skylab_tests",
     targets = [
         targets.bundle(
-            targets = "chromeos_chrome_all_tast_tests_tfc",
+            targets = "chromeos_chrome_all_tast_tests",
             mixins = [
                 "chromeos-tast-public-builder",
                 "tfc-exclude-public",
@@ -1435,7 +1435,7 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "chromeos_chrome_criticalstaging_tast_tests_tfc",
+            targets = "chromeos_chrome_criticalstaging_tast_tests",
             mixins = [
                 "chromeos-tast-public-builder",
                 "skylab-20-tests-per-shard",
@@ -1446,7 +1446,7 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "chromeos_chrome_disabled_tast_tests_tfc",
+            targets = "chromeos_chrome_disabled_tast_tests",
             mixins = [
                 "chromeos-tast-public-builder",
                 "tfc-run-public",
@@ -1489,7 +1489,7 @@ targets.bundle(
     name = "chromeos_octopus_rel_skylab_tests",
     targets = [
         targets.bundle(
-            targets = "chromeos_chrome_all_tast_tests_tfc",
+            targets = "chromeos_chrome_all_tast_tests",
             mixins = [
                 "chromeos-tast-public-builder",
                 "tfc-exclude-public",
@@ -1501,7 +1501,7 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "chromeos_chrome_criticalstaging_tast_tests_tfc",
+            targets = "chromeos_chrome_criticalstaging_tast_tests",
             mixins = [
                 "chromeos-tast-public-builder",
                 "skylab-50-tests-per-shard",
@@ -1512,7 +1512,7 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "chromeos_chrome_disabled_tast_tests_tfc",
+            targets = "chromeos_chrome_disabled_tast_tests",
             mixins = [
                 "chromeos-tast-public-builder",
                 "tfc-run-public",

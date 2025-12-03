@@ -90,7 +90,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromeos_chrome_all_tast_tests_tfc",
+    name = "chromeos_chrome_all_tast_tests",
     tests = {
         "chrome_all_tast_tests": targets.legacy_test_config(
             skylab = targets.skylab(
@@ -106,7 +106,7 @@ targets.legacy_basic_suite(
 
 # Test suite for running critical Tast tests.
 targets.legacy_basic_suite(
-    name = "chromeos_chrome_criticalstaging_tast_tests_tfc",
+    name = "chromeos_chrome_criticalstaging_tast_tests",
     tests = {
         "chrome_criticalstaging_tast_tests": targets.legacy_test_config(
             ci_only = True,
@@ -124,7 +124,7 @@ targets.legacy_basic_suite(
 # Test suite for running disabled Tast tests to collect data to re-enable
 # them. The test suite should not be critical to builders.
 targets.legacy_basic_suite(
-    name = "chromeos_chrome_disabled_tast_tests_tfc",
+    name = "chromeos_chrome_disabled_tast_tests",
     tests = {
         "chrome_disabled_tast_tests": targets.legacy_test_config(
             ci_only = True,
