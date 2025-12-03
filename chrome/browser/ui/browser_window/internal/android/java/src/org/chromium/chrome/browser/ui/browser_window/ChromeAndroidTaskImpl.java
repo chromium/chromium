@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
@@ -288,7 +287,7 @@ final class ChromeAndroidTaskImpl
             mId = activity.getTaskId();
             @Nullable Rect futureBounds = mPendingActionManager.getFutureBoundsInDp();
             @Nullable Rect futureRestoredBounds =
-                    mPendingActionManager.getPendingRestoredBoundsInDp();
+                    mPendingActionManager.getFutureRestoredBoundsInDp();
             mState.set(State.IDLE);
             dispatchPendingActionsLocked(
                     activity, activityWindowAndroid, futureBounds, futureRestoredBounds);
@@ -468,15 +467,9 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public Rect getRestoredBoundsInDp() {
-        if (mState.get() == State.PENDING_CREATE) {
-            var initialBounds = assumeNonNull(mPendingTaskInfo).mCreateParams.getInitialBounds();
-            if (mPendingActionManager.isActionRequested(PendingAction.SET_BOUNDS)) {
-                return assertNonNull(mPendingActionManager.getFutureBoundsInDp());
-            } else if (mPendingActionManager.isActionRequested(PendingAction.RESTORE)) {
-                var pendingRestoredBounds = mPendingActionManager.getPendingRestoredBoundsInDp();
-                return pendingRestoredBounds == null ? initialBounds : pendingRestoredBounds;
-            }
-            return initialBounds;
+        Rect futureRestoredBounds = mPendingActionManager.getFutureRestoredBoundsInDp();
+        if (futureRestoredBounds != null) {
+            return futureRestoredBounds;
         }
 
         return useActivity(
@@ -1228,6 +1221,10 @@ final class ChromeAndroidTaskImpl
     private void restoreInternalLocked(
             Activity activity, ActivityWindowAndroid activityWindowAndroid) {
         if (mRestoredBoundsInPx == null) return;
+        var restoredBoundsInDp =
+                convertBoundsInPxToDp(mRestoredBoundsInPx, activityWindowAndroid.getDisplay());
+        var futureBounds = mPendingActionManager.getFutureBoundsInDp();
+        if (restoredBoundsInDp.equals(futureBounds)) return;
 
         if (isMinimizedInternalLocked(activity)) {
             activateInternalLocked(activity);

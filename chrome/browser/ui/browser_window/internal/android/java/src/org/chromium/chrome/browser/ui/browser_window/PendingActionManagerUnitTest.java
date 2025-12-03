@@ -127,7 +127,7 @@ public class PendingActionManagerUnitTest {
         assertEquals(
                 "Restored bounds should be saved.",
                 TEST_SET_BOUNDS_INPUT_1,
-                mManager.getPendingRestoredBoundsInDp());
+                mManager.getFutureRestoredBoundsInDp());
     }
 
     @Test
@@ -162,7 +162,7 @@ public class PendingActionManagerUnitTest {
         assertEquals(
                 "Restored bounds should be updated.",
                 TEST_SET_BOUNDS_INPUT_2,
-                mManager.getPendingRestoredBoundsInDp());
+                mManager.getFutureRestoredBoundsInDp());
     }
 
     @Test
@@ -568,7 +568,7 @@ public class PendingActionManagerUnitTest {
                 assertNull("Bounds should be cleared.", mManager.getPendingBoundsInDpForTesting());
                 assertNotNull(
                         "Restored bounds should not be cleared.",
-                        mManager.getPendingRestoredBoundsInDp());
+                        mManager.getFutureRestoredBoundsInDp());
             }
 
             if (action == PendingAction.SET_BOUNDS) {
@@ -579,7 +579,7 @@ public class PendingActionManagerUnitTest {
                 assertEquals(
                         "Restored bounds should be saved.",
                         bounds,
-                        mManager.getPendingRestoredBoundsInDp());
+                        mManager.getFutureRestoredBoundsInDp());
             }
         }
     }
@@ -657,7 +657,7 @@ public class PendingActionManagerUnitTest {
                     assertEquals(
                             "Restored bounds should be preserved.",
                             TEST_SET_BOUNDS_INPUT_1,
-                            mManager.getPendingRestoredBoundsInDp());
+                            mManager.getFutureRestoredBoundsInDp());
                 }
             }
         }
@@ -706,7 +706,7 @@ public class PendingActionManagerUnitTest {
                     assertEquals(
                             "Restored bounds should be saved.",
                             TEST_SET_BOUNDS_INPUT_2,
-                            mManager.getPendingRestoredBoundsInDp());
+                            mManager.getFutureRestoredBoundsInDp());
                 }
             }
         }
