@@ -25,6 +25,7 @@
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
+#include "ui/views/accessibility/tree/widget_ax_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/root_view.h"
@@ -1448,7 +1449,20 @@ void ViewAccessibility::SetChildTreeScaleFactor(float scale_factor) {
 }
 
 gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {
-  return gfx::NativeViewAccessible();
+  if (!::features::IsAccessibilityTreeForViewsEnabled()) {
+    return gfx::NativeViewAccessible();
+  }
+
+  // TODO(crbug.com/40672241): Investigate whether this function should
+  // be removed altogether. Does it still make sense to let Views
+  // access the native accessible object directly with ViewsAX, or should the
+  // Views and Accessibility layer be completely separate?
+  Widget* widget = GetWidget();
+  if (!widget || !widget->ax_manager()) {
+    return gfx::NativeViewAccessible();
+  }
+
+  return widget->ax_manager()->GetNativeViewAccessibleForId(GetUniqueId());
 }
 
 void ViewAccessibility::AnnounceAlert(std::u16string_view text) {

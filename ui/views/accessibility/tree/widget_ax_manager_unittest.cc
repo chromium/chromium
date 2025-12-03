@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/views/accessibility/tree/widget_ax_manager_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/widget_test.h"
@@ -495,6 +496,71 @@ TEST_F(WidgetAXManagerTest, SendPendingUpdate_NoSerializeWhenNodeNotInTree) {
   EXPECT_EQ(api.ax_tree_manager()->ax_tree()->GetFromId(
                 static_cast<ui::AXNodeID>(v->GetUniqueId())),
             nullptr);
+}
+
+TEST_F(WidgetAXManagerTest,
+       GetNativeViewAccessibleForIdReturnsBrowserAccessible) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* child = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  api.WaitForNextSerialization();
+
+  ui::BrowserAccessibilityManager* browser_manager = api.ax_tree_manager();
+  ASSERT_NE(browser_manager, nullptr);
+
+  const ui::AXNodeID child_id =
+      static_cast<ui::AXNodeID>(child->GetViewAccessibility().GetUniqueId());
+  ui::BrowserAccessibility* browser_node = browser_manager->GetFromID(child_id);
+  ASSERT_NE(browser_node, nullptr);
+
+  gfx::NativeViewAccessible expected = browser_node->GetNativeViewAccessible();
+  EXPECT_NE(expected, gfx::NativeViewAccessible());
+  EXPECT_EQ(expected, manager()->GetNativeViewAccessibleForId(child_id));
+}
+
+TEST_F(WidgetAXManagerTest,
+       GetNativeViewAccessibleForIdWithoutAXTreeManagerReturnsNull) {
+  std::unique_ptr<Widget> child_widget =
+      base::WrapUnique(CreateChildNativeWidgetWithParent(
+          widget(), Widget::InitParams::CLIENT_OWNS_WIDGET));
+  auto* child_manager = child_widget->ax_manager();
+  ASSERT_NE(child_manager, nullptr);
+
+  WidgetAXManagerTestApi child_api(child_manager);
+  EXPECT_EQ(child_api.ax_tree_manager(), nullptr);
+
+  ui::AXNodeID child_root_id = static_cast<ui::AXNodeID>(
+      child_widget->GetRootView()->GetViewAccessibility().GetUniqueId());
+  EXPECT_EQ(child_manager->GetNativeViewAccessibleForId(child_root_id),
+            gfx::NativeViewAccessible());
+
+  child_api.TearDown();
+  child_widget->CloseNow();
+  child_widget.reset();
+}
+
+TEST_F(WidgetAXManagerTest,
+       ViewAccessibilityGetNativeObjectMatchesBrowserAccessible) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* child = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  api.WaitForNextSerialization();
+
+  ui::BrowserAccessibilityManager* browser_manager = api.ax_tree_manager();
+  ASSERT_NE(browser_manager, nullptr);
+
+  const ui::AXNodeID child_id =
+      static_cast<ui::AXNodeID>(child->GetViewAccessibility().GetUniqueId());
+  ui::BrowserAccessibility* browser_node = browser_manager->GetFromID(child_id);
+  ASSERT_NE(browser_node, nullptr);
+
+  gfx::NativeViewAccessible expected = browser_node->GetNativeViewAccessible();
+  EXPECT_NE(expected, gfx::NativeViewAccessible());
+  EXPECT_EQ(expected, child->GetViewAccessibility().GetNativeObject());
 }
 
 TEST_F(WidgetAXManagerTest, AccessibilityViewHasFocusAndSetFocus) {

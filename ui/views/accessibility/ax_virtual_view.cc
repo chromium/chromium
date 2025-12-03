@@ -216,6 +216,9 @@ const char* AXVirtualView::GetViewClassName() const {
 }
 
 gfx::NativeViewAccessible AXVirtualView::GetNativeObject() const {
+  if (::features::IsAccessibilityTreeForViewsEnabled()) {
+    return ViewAccessibility::GetNativeObject();
+  }
   DCHECK(ax_platform_node_);
   return ax_platform_node_->GetNativeViewAccessible();
 }

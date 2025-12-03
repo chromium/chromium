@@ -115,6 +115,18 @@ void WidgetAXManager::OnAXModeAdded(ui::AXMode mode) {
   }
 }
 
+gfx::NativeViewAccessible WidgetAXManager::GetNativeViewAccessibleForId(
+    ui::AXNodeID id) {
+  if (!ax_tree_manager_) {
+    return gfx::NativeViewAccessible();
+  }
+  ui::BrowserAccessibility* browser_node = ax_tree_manager_->GetFromID(id);
+  if (!browser_node) {
+    return gfx::NativeViewAccessible();
+  }
+  return browser_node->GetNativeViewAccessible();
+}
+
 ui::AXPlatformNodeId WidgetAXManager::GetOrCreateAXNodeUniqueId(
     ui::AXNodeID ax_node_id) {
   // ViewAccessibility already generates a unique ID for each View. Return it.
