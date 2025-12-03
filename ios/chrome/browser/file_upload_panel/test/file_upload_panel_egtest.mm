@@ -1011,16 +1011,9 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 }
 
 // Tests that picking multiple files logs the success metrics.
-// TODO(crbug.com/464179603): Disabled on simulator because of an iOS bug,
-// re-enable test when it has been fixed.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testFilePickerMultipleFileSelectionSuccess \
-  DISABLED_testFilePickerMultipleFileSelectionSuccess
-#else
-#define MAYBE_testFilePickerMultipleFileSelectionSuccess \
-  testFilePickerMultipleFileSelectionSuccess
-#endif
-- (void)MAYBE_testFilePickerMultipleFileSelectionSuccess {
+// TODO(crbug.com/464179603): Disabled because of an iOS bug, re-enable test
+// when it has been fixed.
+- (void)DISABLED_testFilePickerMultipleFileSelectionSuccess {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
