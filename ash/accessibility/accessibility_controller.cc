@@ -1967,18 +1967,6 @@ void AccessibilityController::SetSpokenFeedbackEnabled(
   }
   ShowAccessibilityNotification(A11yNotificationWrapper(
       type, kNotificationId, std::vector<std::u16string>()));
-
-  if (::features::IsAccessibilityManifestV3EnabledForChromeVox() &&
-      accessibility_event_rewriter_ && !enabled) {
-    // SetSpokenFeedbackMv3KeyHandlingEnabled(true) is called once the
-    // ChromeVox service worker is ready to receive key events
-    // (after the service worker starts and listeners are registered).
-    // SetSpokenFeedbackMv3KeyHandlingEnabled(false) needs to be called
-    // here (as opposed to the extension) to ensure that mv3 key handling
-    // is only enabled if we're guaranteed a response from the extension.
-    accessibility_event_rewriter_->SetSpokenFeedbackMv3KeyHandlingEnabled(
-        false);
-  }
 }
 
 bool AccessibilityController::IsSpokenFeedbackSettingVisibleInTray() {
@@ -3904,6 +3892,17 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       message_center::MessageCenter::Get()->SetSpokenFeedbackEnabled(enabled);
       // TODO(warx): ChromeVox loading/unloading requires browser process
       // started, thus it is still handled on Chrome side.
+      if (::features::IsAccessibilityManifestV3EnabledForChromeVox() &&
+          accessibility_event_rewriter_ && !enabled) {
+        // SetSpokenFeedbackMv3KeyHandlingEnabled(true) is called once the
+        // ChromeVox service worker is ready to receive key events
+        // (after the service worker starts and listeners are registered).
+        // SetSpokenFeedbackMv3KeyHandlingEnabled(false) needs to be called
+        // here (as opposed to the extension) to ensure that mv3 key handling
+        // is only enabled if we're guaranteed a response from the extension.
+        accessibility_event_rewriter_->SetSpokenFeedbackMv3KeyHandlingEnabled(
+            false);
+      }
 
       // ChromeVox focus highlighting overrides the other focus highlighting.
       focus_highlight().UpdateFromPref();

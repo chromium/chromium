@@ -12,14 +12,17 @@
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/events/test_event_capturer.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/prefs/pref_service.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -480,7 +483,7 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest,
   size_t captured_count = 0;
 
   // Map Control key to Search.
-  SetModifierRemapping(prefs::kLanguageRemapControlKeyTo,
+  SetModifierRemapping(::prefs::kLanguageRemapControlKeyTo,
                        ui::mojom::ModifierKey::kMeta);
 
   // Anything with Search gets captured.
@@ -751,8 +754,11 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, InvalidCommand) {
 
 TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
        PropagatePendingEventsOnDisable) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   AccessibilityController* controller = GetAccessibilityController();
-  controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
+
+  prefs->SetBoolean(prefs::kAccessibilitySpokenFeedbackEnabled, true);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
   accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
 
@@ -764,7 +770,7 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
 
   // Disable spoken feedback, which will cause all pending events to be
   // propagated.
-  controller->SetSpokenFeedbackEnabled(false, A11Y_NOTIFICATION_NONE);
+  prefs->SetBoolean(prefs::kAccessibilitySpokenFeedbackEnabled, false);
   EXPECT_FALSE(controller->spoken_feedback().enabled());
   EXPECT_TRUE(base::test::RunUntil(
       [this]() { return GetPendingKeyEventsSize() == 0u; }));
@@ -1118,7 +1124,7 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest, RespectsModifierRemappings) {
       SwitchAccessCommand::kSelect);
 
   // Map Control key to Alt.
-  SetModifierRemapping(prefs::kLanguageRemapControlKeyTo,
+  SetModifierRemapping(::prefs::kLanguageRemapControlKeyTo,
                        ui::mojom::ModifierKey::kAlt);
 
   // Send a key event for Control.
