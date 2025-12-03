@@ -1232,11 +1232,11 @@ class KdeWaylandSession(WaylandSession):
     # Killing startplasma-wayland does not kill kwin_wayland_wrapper and its
     # subprocesses, so we need to manually terminate them.
     for process in psutil.process_iter():
-      if process.name() in ['kwin_wayland', 'kwin_wayland_wrapper']:
-        try:
-          terminate_process(process.pid, process.name())
-        except psutil.NoSuchProcess:
-          pass
+      try:
+        if process.name() in ['kwin_wayland', 'kwin_wayland_wrapper']:
+            terminate_process(process.pid, process.name())
+      except (psutil.NoSuchProcess, psutil.AccessDenied):
+        continue
 
 WAYLAND_SESSIONS = {
   GnomeWaylandSession.get_xdg_current_desktop(): GnomeWaylandSession,
