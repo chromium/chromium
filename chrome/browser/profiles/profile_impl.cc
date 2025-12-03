@@ -577,7 +577,9 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
   policy::ChromeBrowserPolicyConnector* connector =
       g_browser_process->browser_policy_connector();
   schema_registry_service_ = BuildSchemaRegistryServiceForProfile(
-      this, connector->GetChromeSchema(), connector->GetSchemaRegistry());
+      this, connector->GetChromeSchema(),
+      connector->GetExtensionInstallPolicySchema(),
+      connector->GetSchemaRegistry());
 
   // If we are creating the profile synchronously, then we should load the
   // policy data immediately.

@@ -46,6 +46,8 @@ class POLICY_EXPORT BrowserPolicyConnectorBase {
   // Returns a handle to the Chrome schema.
   const Schema& GetChromeSchema() const;
 
+  const Schema& GetExtensionInstallPolicySchema() const;
+
   // Returns the global CombinedSchemaRegistry. SchemaRegistries from Profiles
   // should be tracked by the global registry, so that the global policy
   // providers also load policies for the components of each Profile.
@@ -105,6 +107,8 @@ class POLICY_EXPORT BrowserPolicyConnectorBase {
   // Shutdown(). Once created the PolicyService is destroyed in the destructor,
   // not Shutdown().
   bool is_initialized_ = false;
+
+  Schema extension_install_policy_schema_;
 
   // Used to convert policies to preferences. The providers declared below
   // may trigger policy updates during shutdown, which will result in

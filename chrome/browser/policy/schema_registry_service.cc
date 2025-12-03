@@ -15,13 +15,20 @@ namespace policy {
 SchemaRegistryService::SchemaRegistryService(
     std::unique_ptr<SchemaRegistry> registry,
     const Schema& chrome_schema,
+    const Schema& extension_install_policy_schema,
     CombinedSchemaRegistry* global_registry)
     : registry_(std::move(registry)) {
   if (chrome_schema.valid()) {
-    registry_->RegisterComponent(PolicyNamespace(POLICY_DOMAIN_CHROME, ""),
-                                 chrome_schema);
+    registry_->RegisterComponent(
+        PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()), chrome_schema);
+  }
+  if (extension_install_policy_schema.valid()) {
+    registry_->RegisterComponent(
+        PolicyNamespace(POLICY_DOMAIN_EXTENSION_INSTALL, std::string()),
+        extension_install_policy_schema);
   }
   registry_->SetDomainReady(POLICY_DOMAIN_CHROME);
+  registry_->SetDomainReady(POLICY_DOMAIN_EXTENSION_INSTALL);
   if (global_registry)
     global_registry->Track(registry_.get());
 }

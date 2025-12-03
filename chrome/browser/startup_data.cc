@@ -211,6 +211,7 @@ void StartupData::CreateServicesInternal() {
       std::make_unique<policy::SchemaRegistry>();
   schema_registry_service_ = BuildSchemaRegistryService(
       std::move(schema_registry), browser_policy_connector->GetChromeSchema(),
+      browser_policy_connector->GetExtensionInstallPolicySchema(),
       browser_policy_connector->GetSchemaRegistry());
 
   user_cloud_policy_manager_ = policy::UserCloudPolicyManager::Create(

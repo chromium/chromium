@@ -21,6 +21,7 @@ SchemaRegistry::SchemaRegistry() : schema_map_(new SchemaMap) {
     domains_ready_[i] = false;
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
   SetExtensionsDomainsReady();
+  SetDomainReady(POLICY_DOMAIN_EXTENSION_INSTALL);
 #endif
 }
 

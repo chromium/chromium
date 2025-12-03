@@ -117,6 +117,7 @@ TEST(SchemaRegistryTest, IsReady) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   EXPECT_CALL(observer, OnSchemaRegistryReady()).Times(0);
   registry.SetExtensionsDomainsReady();
+  registry.SetDomainReady(POLICY_DOMAIN_EXTENSION_INSTALL);
   Mock::VerifyAndClearExpectations(&observer);
   EXPECT_FALSE(registry.IsReady());
 #endif
@@ -329,6 +330,7 @@ TEST(SchemaRegistryTest, ForwardingSchemaRegistry) {
   EXPECT_FALSE(forwarding.IsReady());
 
   registry->SetExtensionsDomainsReady();
+  registry->SetDomainReady(POLICY_DOMAIN_EXTENSION_INSTALL);
   EXPECT_FALSE(registry->IsReady());
   EXPECT_FALSE(forwarding.IsReady());
 
@@ -343,6 +345,7 @@ TEST(SchemaRegistryTest, ForwardingSchemaRegistry) {
 
   forwarding.SetExtensionsDomainsReady();
   forwarding.SetDomainReady(POLICY_DOMAIN_CHROME);
+  forwarding.SetDomainReady(POLICY_DOMAIN_EXTENSION_INSTALL);
   EXPECT_TRUE(forwarding.IsReady());
 
   // Keep the same SchemaMap when the original registry is gone.

@@ -177,6 +177,8 @@ std::ostream& operator<<(std::ostream& os, PolicyDomain domain) {
       return os << "POLICY_DOMAIN_EXTENSIONS";
     case POLICY_DOMAIN_SIGNIN_EXTENSIONS:
       return os << "POLICY_DOMAIN_SIGNIN_EXTENSIONS";
+    case POLICY_DOMAIN_EXTENSION_INSTALL:
+      return os << "POLICY_DOMAIN_EXTENSION_INSTALL";
     case POLICY_DOMAIN_SIZE:
       break;
   }

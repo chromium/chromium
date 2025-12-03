@@ -756,8 +756,8 @@ void TestingProfile::CreateIncognitoPrefService() {
 }
 
 void TestingProfile::CreateProfilePolicyConnector() {
-  schema_registry_service_ =
-      BuildSchemaRegistryServiceForProfile(this, policy::Schema(), nullptr);
+  schema_registry_service_ = BuildSchemaRegistryServiceForProfile(
+      this, policy::Schema(), policy::Schema(), nullptr);
 
   if (!policy_service_) {
     std::vector<
