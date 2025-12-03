@@ -16,7 +16,7 @@ source_set("ui") {
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:icon_detail_view",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public:constants",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",

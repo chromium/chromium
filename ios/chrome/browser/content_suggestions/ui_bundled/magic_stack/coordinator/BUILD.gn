@@ -102,7 +102,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled:metrics",
     "//ios/chrome/browser/content_suggestions/ui_bundled:public",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model:unit_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/coordinator",
     "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/coordinator",

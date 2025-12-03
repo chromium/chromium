@@ -12,14 +12,6 @@ source_set("cells") {
     "content_suggestions_action_tile_view.mm",
     "content_suggestions_tile_view.h",
     "content_suggestions_tile_view.mm",
-    "icon_detail_view.h",
-    "icon_detail_view.mm",
-    "icon_detail_view_configuration.h",
-    "icon_detail_view_configuration.mm",
-    "icon_view.h",
-    "icon_view.mm",
-    "icon_view_configuration.h",
-    "icon_view_configuration.mm",
     "multi_row_container_view.h",
     "multi_row_container_view.mm",
   ]
@@ -51,11 +43,55 @@ source_set("cells") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("standalone_module_view") {
+  sources = [
+    "standalone_module_view.h",
+    "standalone_module_view.mm",
+    "standalone_module_view_configuration.h",
+    "standalone_module_view_configuration.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public:constants" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:public",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("icon_detail_view") {
+  sources = [
+    "icon_detail_view.h",
+    "icon_detail_view.mm",
+    "icon_detail_view_configuration.h",
+    "icon_detail_view_configuration.mm",
+    "icon_view.h",
+    "icon_view.mm",
+    "icon_view_configuration.h",
+    "icon_view_configuration.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public:constants",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("tile_saver") {
   sources = [
     "content_suggestions_tile_saver.h",
     "content_suggestions_tile_saver.mm",
   ]
+  public_deps = [ "//components/ntp_tiles" ]
   deps = [
     "//base",
     "//components/favicon/core",
@@ -77,6 +113,7 @@ source_set("tile_saver") {
   if (ios_enable_widget_kit_extension) {
     deps += [ "//ios/chrome/browser/widget_kit/model:model_swift" ]
   }
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("constants") {
@@ -88,7 +125,6 @@ source_set("constants") {
     "content_suggestions_tile_layout_util.h",
     "content_suggestions_tile_layout_util.mm",
   ]
-
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",

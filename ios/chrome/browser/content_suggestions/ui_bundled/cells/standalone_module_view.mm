@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/standalone_module_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/standalone_module_view.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_detail_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/standalone_module_delegate.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/standalone_module_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/standalone_module_view_configuration.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -47,10 +45,10 @@ const CGFloat kSeparatorHeight = 0.5;
   UILabel* _descriptionLabel;
   UIButton* _button;
   ContentSuggestionsModuleType _moduleType;
-  StandaloneModuleItem* _config;
+  StandaloneModuleViewConfiguration* _config;
 }
 
-- (void)configureView:(StandaloneModuleItem*)config {
+- (void)configureView:(StandaloneModuleViewConfiguration*)config {
   CHECK(config);
   CHECK(self.subviews.count == 0);
   _moduleType = config.type;
@@ -216,7 +214,7 @@ const CGFloat kSeparatorHeight = 0.5;
 
 // Handles the tap action for the button.
 - (void)buttonTapped:(UIGestureRecognizer*)sender {
-  [self.delegate buttonTappedForModuleType:_moduleType];
+  [self.tapDelegate buttonTappedForModuleType:_moduleType];
 }
 
 - (void)hideDescriptionOnTraitChange {

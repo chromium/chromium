@@ -13,7 +13,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:icon_detail_view",
     "//ios/chrome/browser/content_suggestions/ui_bundled/tips/ui",
     "//ios/chrome/common/ui/colors",
     "//testing/gtest",

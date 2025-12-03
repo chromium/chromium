@@ -11,11 +11,16 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/coordinator/send_tab_promo_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/ui/send_tab_promo_audience.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/ui/send_tab_promo_item.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "url/gurl.h"
+
+@interface SendTabPromoMediator () <SendTabPromoAudience>
+
+@end
 
 @implementation SendTabPromoMediator {
   SendTabPromoItem* _sendTabPromoItem;
@@ -51,16 +56,17 @@
 }
 
 - (void)dismissModule {
-  [_delegate removeSendTabPromoModule];
+  [self.delegate removeSendTabPromoModule];
 }
 
-#pragma mark - StandaloneModuleDelegate
+#pragma mark - SendTabPromoAudience
 
-- (void)buttonTappedForModuleType:(ContentSuggestionsModuleType)moduleType {
-  CHECK(moduleType == ContentSuggestionsModuleType::kSendTabPromo);
+- (void)didSelectSendTabPromo {
   base::UmaHistogramBoolean(
       "IOS.Notifications.SendTab.MagicStack.AllowNotificationsPressed", true);
-  [self.notificationsDelegate enableNotifications:moduleType viaContextMenu:NO];
+  [self.notificationsDelegate
+      enableNotifications:ContentSuggestionsModuleType::kSendTabPromo
+           viaContextMenu:NO];
 }
 
 #pragma mark - Private
@@ -100,7 +106,7 @@
   if (!cached || attributes.faviconImage) {
     _sendTabPromoItem.faviconImage = attributes.faviconImage;
   }
-  _sendTabPromoItem.standaloneDelegate = self;
+  _sendTabPromoItem.audience = self;
   [_delegate sentTabReceived];
 }
 

@@ -16,7 +16,6 @@ source_set("coordinator") {
     ":constants",
     ":content_suggestions_constant",
     ":metrics",
-    ":promo_module_ui",
     ":public",
     ":ui",
     "//base",
@@ -51,7 +50,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/coordinator",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/default_browser/coordinator",
     "//ios/chrome/browser/content_suggestions/ui_bundled/default_browser/public:features",
     "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model",
@@ -166,7 +164,6 @@ source_set("metrics") {
     "//components/favicon_base",
     "//components/ntp_tiles",
     "//components/prefs",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui",
     "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public:utils",
@@ -224,7 +221,6 @@ source_set("ui") {
     "//components/segmentation_platform/public",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:cells",
@@ -287,7 +283,6 @@ source_set("ui_util") {
     "//components/ntp_tiles",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:constants",
     "//ios/chrome/browser/location_bar/ui_bundled:constants",
     "//ios/chrome/browser/ntp/search_engine_logo/ui",
@@ -306,27 +301,6 @@ source_set("ui_util") {
     "//ios/components/ui_util",
     "//ios/web/common",
     "//ui/base",
-  ]
-}
-
-source_set("promo_module_ui") {
-  sources = [
-    "standalone_module_delegate.h",
-    "standalone_module_item.h",
-    "standalone_module_item.mm",
-    "standalone_module_view.h",
-    "standalone_module_view.mm",
-  ]
-  deps = [
-    ":constants",
-    "//base",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:public",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/elements",
-    "//ios/chrome/common/ui/util",
   ]
 }
 
@@ -354,7 +328,6 @@ source_set("unit_tests") {
     "//components/signin/public/base",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/commerce/model:shopping_service",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:public",
     "//ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/coordinator",

@@ -10,7 +10,9 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
 const CGFloat kSymbolSize = 10;
+
 }  // namespace
 
 @implementation SendTabPromoItem
@@ -21,7 +23,7 @@ const CGFloat kSymbolSize = 10;
   return ContentSuggestionsModuleType::kSendTabPromo;
 }
 
-#pragma mark - StandaloneModuleItem
+#pragma mark - StandaloneModuleViewConfiguration
 
 - (UIImage*)fallbackSymbolImage {
   return DefaultSymbolWithPointSize(kIPhoneAndArrowForwardSymbol, kSymbolSize);

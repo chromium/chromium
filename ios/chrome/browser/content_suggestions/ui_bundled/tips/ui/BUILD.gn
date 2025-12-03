@@ -26,7 +26,7 @@ source_set("ui") {
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:icon_detail_view",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:magic_stack_module_content_view_delegate",
     "//ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/resources",
     "//ios/chrome/browser/instructions_bottom_sheet/ui",

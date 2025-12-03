@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/app_bundle_promo_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/multi_row_container_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/standalone_module_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/ui/default_browser_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/ui/default_browser_view.h"
@@ -21,7 +22,9 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_state.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/ui/send_tab_promo_audience.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/ui/send_tab_promo_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/ui/send_tab_promo_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/coordinator/set_up_list_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public/set_up_list_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public/set_up_list_utils.h"
@@ -39,7 +42,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui/shortcuts_tile_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/standalone_module_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui/tab_resumption_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui/tab_resumption_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui/tab_resumption_view.h"
@@ -211,10 +213,9 @@
 }
 
 - (UIView*)sendTabPromoViewForConfig:(SendTabPromoItem*)sendTabPromoItem {
-  StandaloneModuleView* view =
-      [[StandaloneModuleView alloc] initWithFrame:CGRectZero];
-  view.delegate = sendTabPromoItem.standaloneDelegate;
-  [view configureView:sendTabPromoItem];
+  SendTabPromoView* view =
+      [[SendTabPromoView alloc] initWithConfig:sendTabPromoItem];
+  view.audience = sendTabPromoItem.audience;
   return view;
 }
 

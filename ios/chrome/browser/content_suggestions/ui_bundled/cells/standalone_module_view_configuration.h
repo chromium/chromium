@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_STANDALONE_MODULE_ITEM_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_STANDALONE_MODULE_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_STANDALONE_MODULE_VIEW_CONFIGURATION_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_STANDALONE_MODULE_VIEW_CONFIGURATION_H_
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_module.h"
 
-@protocol StandaloneModuleDelegate;
-
 // Item containing the configurations for standalone-type Magic Stack Module
 // view.
-@interface StandaloneModuleItem : MagicStackModule
-
-// Delegate to relay user actions.
-@property(nonatomic, weak) id<StandaloneModuleDelegate> standaloneDelegate;
+@interface StandaloneModuleViewConfiguration : MagicStackModule
 
 // Favicon image for the module.
 @property(nonatomic, strong) UIImage* faviconImage;
@@ -33,4 +28,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_STANDALONE_MODULE_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_STANDALONE_MODULE_VIEW_CONFIGURATION_H_
