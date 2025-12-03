@@ -118,7 +118,7 @@ void TabMenuModel::BuildForWebApp(TabStripModel* tab_strip, int index) {
 void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   std::vector<int> indices;
   if (tab_strip->IsTabSelected(index)) {
-    const ui::ListSelectionModel::SelectedIndices& sel =
+    const ui::ListSelectionModel::SelectedIndices sel =
         tab_strip->selection_model().selected_indices();
     indices = std::vector<int>(sel.begin(), sel.end());
   } else {

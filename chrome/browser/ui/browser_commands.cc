@@ -1301,14 +1301,14 @@ bool CanDuplicateKeyboardFocusedTab(const Browser* browser) {
 }
 
 bool CanMoveActiveTabToNewWindow(Browser* browser) {
-  const ui::ListSelectionModel::SelectedIndices& selection =
+  const ui::ListSelectionModel::SelectedIndices selection =
       browser->tab_strip_model()->selection_model().selected_indices();
   return CanMoveTabsToNewWindow(
       browser, std::vector<int>(selection.begin(), selection.end()));
 }
 
 void MoveActiveTabToNewWindow(Browser* browser) {
-  const ui::ListSelectionModel::SelectedIndices& selection =
+  const ui::ListSelectionModel::SelectedIndices selection =
       browser->tab_strip_model()->selection_model().selected_indices();
   MoveTabsToNewWindow(browser,
                       std::vector<int>(selection.begin(), selection.end()));

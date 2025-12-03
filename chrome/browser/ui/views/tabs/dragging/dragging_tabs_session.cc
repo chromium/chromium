@@ -236,7 +236,7 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
       attached_model->GetAdjacentTabsAfterSelectedMove(
           base::PassKey<DraggingTabsSession>(), to_index);
 
-  const ui::ListSelectionModel::SelectedIndices& selected =
+  const ui::ListSelectionModel::SelectedIndices selected =
       attached_model->selection_model().selected_indices();
 
   // Pinned tabs cannot be grouped, so we only change the group membership of

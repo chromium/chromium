@@ -1741,7 +1741,7 @@ void TabStripModel::AddTab(std::unique_ptr<tabs::TabModel> tab,
 void TabStripModel::CloseSelectedTabs() {
   auto get_indices = base::BindRepeating(
       [](const ui::ListSelectionModel& selection_model) {
-        const ui::ListSelectionModel::SelectedIndices& sel =
+        const ui::ListSelectionModel::SelectedIndices sel =
             selection_model.selected_indices();
         return std::vector<int>(sel.begin(), sel.end());
       },
@@ -3968,7 +3968,7 @@ TabStripModel::GetAdjacentTabsAfterSelectedMove(
 
 std::vector<int> TabStripModel::GetSelectedPinnedTabs() {
   const int pinned_tab_count = IndexOfFirstNonPinnedTab();
-  const ui::ListSelectionModel::SelectedIndices& selected_indices =
+  const ui::ListSelectionModel::SelectedIndices selected_indices =
       selection_model().selected_indices();
 
   std::vector<int> indices;
@@ -3987,7 +3987,7 @@ std::vector<int> TabStripModel::GetSelectedPinnedTabs() {
 
 std::vector<int> TabStripModel::GetSelectedUnpinnedTabs() {
   const int pinned_tab_count = IndexOfFirstNonPinnedTab();
-  const ui::ListSelectionModel::SelectedIndices& selected_indices =
+  const ui::ListSelectionModel::SelectedIndices selected_indices =
       selection_model().selected_indices();
 
   std::vector<int> indices;
@@ -4646,7 +4646,7 @@ void TabStripModel::ValidateTabStripModel() {
   CHECK(GetTabAtIndex(selection_model().active().value()));
 
   // Check if the selected tab indices are valid.
-  const ui::ListSelectionModel::SelectedIndices& selected_indices =
+  const ui::ListSelectionModel::SelectedIndices selected_indices =
       selection_model().selected_indices();
 
   std::set<split_tabs::SplitTabId> selected_splits;
