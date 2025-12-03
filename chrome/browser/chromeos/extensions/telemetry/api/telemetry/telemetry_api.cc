@@ -311,7 +311,6 @@ void OsTelemetryGetOsVersionInfoFunction::OnResult(
   auto& system_info = ptr->system_result->get_system_info();
 
   // os_version is an optional value and might not be present.
-  // TODO(b/234338704): check how to test this.
   if (!system_info->os_info || !system_info->os_info->os_version) {
     Respond(Error("API internal error"));
     return;
