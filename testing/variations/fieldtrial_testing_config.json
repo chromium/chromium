@@ -12770,6 +12770,10 @@
                     "//2": "UseLockFreeBloomFilter is a new feature that modifies the profiler behaviour, so needs it to be on.",
                     "//3": "HeapProfilerReporting will never go beyond 1% stable.",
                     "name": "EnabledBloomFilter_20251203",
+                    "params": {
+                        "nonstable-probability": "1.0",
+                        "stable-probability": "1.0"
+                    },
                     "enable_features": [
                         "HeapProfilerReporting",
                         "UseLockFreeBloomFilter"
