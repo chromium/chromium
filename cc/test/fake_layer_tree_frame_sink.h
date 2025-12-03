@@ -55,6 +55,13 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
       return *this;
     }
 
+    Builder& EnableGpuTileRasterizationFeatureInWorkerContext() {
+      worker_context_provider_->GetWritableGpuFeatureInfo()
+          .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
+          gpu::kGpuFeatureStatusEnabled;
+      return *this;
+    }
+
    private:
     scoped_refptr<viz::TestContextProvider> compositor_context_provider_;
     scoped_refptr<viz::TestContextProvider> worker_context_provider_;
@@ -84,6 +91,7 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
   static std::unique_ptr<FakeLayerTreeFrameSink> Create3dForGpuRasterization() {
     return Builder()
         .AllContexts(&viz::TestRasterInterface::set_gpu_rasterization, true)
+        .EnableGpuTileRasterizationFeatureInWorkerContext()
         .Build();
   }
 
