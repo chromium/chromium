@@ -191,6 +191,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/465746228")
     public void whenLaunchFromTabSwitcher_autofocusSucceeds_tabletOrDesktopNonAuto() {
         // Open an incognito tab.
         IncognitoNewTabPageStation ntpPage = mInitialPage.openNewIncognitoTabOrWindowFast();
