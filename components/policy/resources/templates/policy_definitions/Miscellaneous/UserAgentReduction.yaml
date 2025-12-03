@@ -35,9 +35,9 @@ schema:
   - 2
   type: integer
 supported_on:
-- chrome_os:98-
-- chrome.*:98-
-- android:98-
+- chrome_os:98-144
+- chrome.*:98-144
+- android:98-144
 tags:
 - website-sharing
 type: int-enum

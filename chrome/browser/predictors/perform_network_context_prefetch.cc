@@ -276,16 +276,8 @@ void PerformNetworkContextPrefetch(Profile* profile,
   blink::UserAgentMetadata ua_metadata =
       embedder_support::GetUserAgentMetadata();
 
-  // When generating the User-Agent header, we need to take into account user
-  // agent reduction enterprise policy. Nothing is ever simple. This code
-  // gratuitously copied from from chrome_content_browser_client.cc. This
-  // doesn't take into account DevTools overrides or desktop emulation.
   const PrefService* prefs = profile->GetPrefs();
-  const embedder_support::UserAgentReductionEnterprisePolicyState
-      user_agent_reduction =
-          embedder_support::GetUserAgentReductionFromPrefs(prefs);
-  const std::string user_agent =
-      embedder_support::GetUserAgent(user_agent_reduction);
+  const std::string user_agent = embedder_support::GetUserAgent();
 
   for (const auto& [url, destination] : requests) {
     auto resource_type = GetResourceTypeForPrefetch(destination);

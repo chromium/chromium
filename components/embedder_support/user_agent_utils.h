@@ -12,8 +12,6 @@
 #include "third_party/blink/public/common/user_agent/user_agent_brand_version_type.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
-class PrefService;
-
 namespace blink {
 struct UserAgentMetadata;
 }
@@ -23,32 +21,18 @@ namespace embedder_support {
 enum class IncludeAndroidBuildNumber { Include, Exclude };
 enum class IncludeAndroidModel { Include, Exclude };
 
-// TODO(crbug.com/40843535): Remove this enum along with policy.
-enum class UserAgentReductionEnterprisePolicyState {
-  kDefault = 0,
-  kForceDisabled = 1,
-  kForceEnabled = 2,
-};
-
 // Returns the product & version string.  Examples:
 //   "Chrome/101.0.0.0"       - if UA reduction is enabled
 //   "Chrome/101.0.4698.0"    - if UA reduction isn't enabled
-// TODO(crbug.com/40212812): modify to accept an optional PrefService*.
-std::string GetProductAndVersion(
-    UserAgentReductionEnterprisePolicyState user_agent_reduction =
-        UserAgentReductionEnterprisePolicyState::kDefault);
+std::string GetProductAndVersion();
 
 // Returns a user agent string passed via the kUserAgent command-line argument
 // when it is valid, or std::nullopt if it is not valid.
 std::optional<std::string> GetUserAgentFromCommandLine();
 
-// Returns the full or "reduced" user agent string, depending on the following:
-// 1) UserAgentReduction enterprise policy.
-// 2) Reduce User-Agent reduction phase features.
-// TODO(crbug.com/40212812): modify to accept an optional PrefService*.
-std::string GetUserAgent(
-    UserAgentReductionEnterprisePolicyState user_agent_reduction =
-        UserAgentReductionEnterprisePolicyState::kDefault);
+// Returns the full or "reduced" user agent string, depending on the Reduce
+// User-Agent reduction phase features.
+std::string GetUserAgent();
 
 // Return UserAgentMetadata, `only_low_entropy_ch` indicates whether only
 // populate the low entropy client hints.
@@ -108,12 +92,6 @@ blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
 #if BUILDFLAG(IS_WIN)
 int GetHighestKnownUniversalApiContractVersionForTesting();
 #endif  // BUILDFLAG(IS_WIN)
-
-// Returns the UserAgentReductionEnterprisePolicyState enum value corresponding
-// to the provided integer policy value for UserAgentReduction.
-// TODO(crbug.com/40843535): Remove this function with policy.
-UserAgentReductionEnterprisePolicyState GetUserAgentReductionFromPrefs(
-    const PrefService* pref_service);
 
 // Returns the (incorrectly named, for historical reasons) WebKit version, in
 // the form "major.minor (@chromium_git_revision)".

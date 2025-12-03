@@ -1470,10 +1470,6 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kIPv6ReachabilityOverrideEnabled, false);
   registry->RegisterDictionaryPref(
       enterprise::content::kCopyPreventionSettings);
-  registry->RegisterIntegerPref(
-      prefs::kUserAgentReduction,
-      static_cast<int>(
-          embedder_support::UserAgentReductionEnterprisePolicyState::kDefault));
   registry->RegisterBooleanPref(prefs::kOriginAgentClusterDefaultEnabled, true);
 
   registry->RegisterBooleanPref(
@@ -6602,7 +6598,7 @@ void ChromeContentBrowserClient::ConfigureNetworkContextParams(
                                            cert_verifier_creation_params);
   } else {
     // Set default params.
-    network_context_params->user_agent = GetUserAgentBasedOnPolicy(context);
+    network_context_params->user_agent = GetUserAgent();
     network_context_params->accept_language = GetApplicationLocale();
   }
 }
@@ -7308,13 +7304,11 @@ std::string ChromeContentBrowserClient::GetUserAgent() {
   return embedder_support::GetUserAgent();
 }
 
+// TODO(crbug.com/40843535): Remove this method along with its definition in the
+// interface.
 std::string ChromeContentBrowserClient::GetUserAgentBasedOnPolicy(
-    content::BrowserContext* context) {
-  const PrefService* prefs = Profile::FromBrowserContext(context)->GetPrefs();
-  embedder_support::UserAgentReductionEnterprisePolicyState
-      user_agent_reduction =
-          embedder_support::GetUserAgentReductionFromPrefs(prefs);
-  return embedder_support::GetUserAgent(user_agent_reduction);
+    content::BrowserContext* _) {
+  return embedder_support::GetUserAgent();
 }
 
 blink::UserAgentMetadata ChromeContentBrowserClient::GetUserAgentMetadata() {

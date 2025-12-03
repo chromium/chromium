@@ -2284,9 +2284,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCORSNonWildcardRequestHeadersSupport,
     prefs::kCorsNonWildcardRequestHeadersSupport,
     base::Value::Type::BOOLEAN },
-  { key::kUserAgentReduction,
-    prefs::kUserAgentReduction,
-    base::Value::Type::INTEGER},
 #if BUILDFLAG(IS_MAC)
   { key::kWarnBeforeQuittingEnabled,
     prefs::kConfirmToQuitEnabled,

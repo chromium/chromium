@@ -22,9 +22,6 @@
 
 namespace policy {
 
-using ReductionPolicyState =
-    embedder_support::UserAgentReductionEnterprisePolicyState;
-
 class UserAgentBrowserTest : public InProcessBrowserTest {
  public:
   UserAgentBrowserTest() {
@@ -37,17 +34,6 @@ class UserAgentBrowserTest : public InProcessBrowserTest {
     empty_url_ = embedded_test_server()->GetURL("/empty.html");
 
     InProcessBrowserTest::SetUp();
-  }
-
-  void set_user_agent_reduction_policy(ReductionPolicyState policy) {
-    browser()->profile()->GetPrefs()->SetInteger(prefs::kUserAgentReduction,
-                                                 static_cast<int>(policy));
-  }
-
-  ReductionPolicyState user_agent_reduction_policy() {
-    return static_cast<ReductionPolicyState>(
-        browser()->profile()->GetPrefs()->GetInteger(
-            prefs::kUserAgentReduction));
   }
 
   std::string observed_user_agent() { return observered_user_agent_; }
@@ -67,13 +53,7 @@ class UserAgentBrowserTest : public InProcessBrowserTest {
   GURL empty_url_;
 };
 
-IN_PROC_BROWSER_TEST_F(UserAgentBrowserTest, EnterprisePolicyInitialized) {
-  // Check that default is set correctly
-  EXPECT_EQ(ReductionPolicyState::kDefault, user_agent_reduction_policy());
-}
-
 IN_PROC_BROWSER_TEST_F(UserAgentBrowserTest, ReductionPolicyDefault) {
-  set_user_agent_reduction_policy(ReductionPolicyState::kDefault);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), empty_url()));
   EXPECT_EQ(observed_user_agent(), embedder_support::GetUserAgent());
 }

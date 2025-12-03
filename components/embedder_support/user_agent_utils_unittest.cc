@@ -1031,15 +1031,13 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
   std::string build_version;
   std::string patch_version;
 
-  // (1) Features: UserAgentReduction disabled.
+  // Feature kReduceUserAgentMinorVersion disabled.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
           blink::features::kReduceUserAgentMinorVersion});
 
-  // (1a) Policies: UserAgentReduction default.
-  product =
-      GetProductAndVersion(UserAgentReductionEnterprisePolicyState::kDefault);
+  product = GetProductAndVersion();
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version,
                                   &build_version));
@@ -1048,38 +1046,13 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
   EXPECT_NE(build_version, "0");
   // Patch version cannot be tested as it would be set in a release branch.
 
-  // (1b) Policies: UserAgentReduction force enabled.
-  product = GetProductAndVersion(
-      UserAgentReductionEnterprisePolicyState::kForceEnabled);
-  EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
-                                  &major_version, &minor_version,
-                                  &build_version, &patch_version));
-  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
-  EXPECT_EQ(minor_version, "0");
-  EXPECT_EQ(build_version, "0");
-  EXPECT_EQ(patch_version, "0");
-
-  // (1c) Policies:: UserAgentReduction force disabled.
-  product = GetProductAndVersion(
-      UserAgentReductionEnterprisePolicyState::kForceDisabled);
-  EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
-                                  &major_version, &minor_version,
-                                  &build_version));
-  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
-  EXPECT_EQ(minor_version, "0");
-  EXPECT_NE(build_version, "0");
-  // Patch version cannot be tested as it would be set in a release branch.
-
-  // (2) Features: UserAgentReduction enabled with version.
+  // Feature kReduceUserAgentMinorVersion enabled with version.
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{blink::features::kReduceUserAgentMinorVersion,
                              {{{"build_version", "0000"}}}}},
       /*disabled_features=*/{});
-
-  // (2a) Policies: UserAgentReduction default.
-  product =
-      GetProductAndVersion(UserAgentReductionEnterprisePolicyState::kDefault);
+  product = GetProductAndVersion();
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version,
                                   &build_version, &patch_version));
