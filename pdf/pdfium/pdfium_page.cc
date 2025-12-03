@@ -608,40 +608,40 @@ void PDFiumPage::AssociateMarkedContentWithStructureElement(
     return;
   }
 
-  int marked_content_id = -1;
-  if (FPDF_StructElement_GetMarkedContentIdCount(element) > 0) {
-    marked_content_id =
-        FPDF_StructElement_GetMarkedContentIdAtIndex(element, 0);
-  }
-  if (marked_content_id < 0) {
-    return;
-  }
-
-  // Associate text runs for this MCID.
-  auto text_runs_iter =
-      marked_content_id_to_text_runs_map_.find(marked_content_id);
-  if (text_runs_iter != marked_content_id_to_text_runs_map_.end()) {
-    const std::vector<size_t>& text_run_indices = text_runs_iter->second;
-    for (size_t text_run_index : text_run_indices) {
-      tree_node->associated_text_runs_if_available.push_back(
-          &text_runs_[text_run_index]);
+  int mcid_count = FPDF_StructElement_GetMarkedContentIdCount(element);
+  for (int mcid_index = 0; mcid_index < mcid_count; ++mcid_index) {
+    int marked_content_id =
+        FPDF_StructElement_GetMarkedContentIdAtIndex(element, mcid_index);
+    if (marked_content_id < 0) {
+      continue;
     }
-  }
 
-  // Associate image for this MCID.
-  auto image_iter = marked_content_id_to_images_map_.find(marked_content_id);
-  if (image_iter != marked_content_id_to_images_map_.end()) {
-    const Image& img = images_[image_iter->second];
+    // Associate text runs for this MCID.
+    auto text_runs_iter =
+        marked_content_id_to_text_runs_map_.find(marked_content_id);
+    if (text_runs_iter != marked_content_id_to_text_runs_map_.end()) {
+      const std::vector<size_t>& text_run_indices = text_runs_iter->second;
+      for (size_t text_run_index : text_run_indices) {
+        tree_node->associated_text_runs_if_available.push_back(
+            &text_runs_[text_run_index]);
+      }
+    }
 
-    auto accessibility_image = std::make_unique<AccessibilityImageInfo>();
-    accessibility_image->alt_text = img.alt_text;
-    // text_run_index is unused in structure tree mode (image positioning
-    // is determined by structure tree location, not text run proximity).
-    accessibility_image->text_run_index = 0;
-    accessibility_image->bounds = gfx::RectF(img.bounding_rect);
-    accessibility_image->page_object_index = img.page_object_index;
+    // Associate image for this MCID.
+    auto image_iter = marked_content_id_to_images_map_.find(marked_content_id);
+    if (image_iter != marked_content_id_to_images_map_.end()) {
+      const Image& img = images_[image_iter->second];
 
-    tree_node->associated_image_if_available = std::move(accessibility_image);
+      auto accessibility_image = std::make_unique<AccessibilityImageInfo>();
+      accessibility_image->alt_text = img.alt_text;
+      // text_run_index is unused in structure tree mode (image positioning
+      // is determined by structure tree location, not text run proximity).
+      accessibility_image->text_run_index = 0;
+      accessibility_image->bounds = gfx::RectF(img.bounding_rect);
+      accessibility_image->page_object_index = img.page_object_index;
+
+      tree_node->associated_image_if_available = std::move(accessibility_image);
+    }
   }
 }
 

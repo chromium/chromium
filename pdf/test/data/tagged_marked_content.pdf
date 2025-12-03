@@ -1,0 +1,159 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+  /StructTreeRoot 7 0 R
+  /MarkInfo <<
+    /Type /MarkInfo
+    /Marked true
+  >>
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /StructParents 0
+  /Annots [4 0 R]
+  /Contents 5 0 R
+  /MediaBox [0 0 612 792]
+  /Resources <<
+    /ProcSet [/PDF /Text]
+    /Font <<
+      /F4 6 0 R
+    >>
+  >>
+>>
+endobj
+4 0 obj <<
+  /Type /Annot
+  /Subtype /Link
+  /Border [0 0 0]
+  /Dest /top
+  /F 4
+  /Rect [20 46 68 61]
+>>
+endobj
+5 0 obj <<
+  /Length 264
+>>
+stream
+q
+BT
+/P <</MCID 0 >>BDC
+/F4 16 Tf
+20 650 Td
+(Top Left) Tj
+EMC
+ET
+BT
+/P <</MCID 1 >>BDC
+/F4 16 Tf
+20 50 Td
+(Bottom Left) Tj
+EMC
+ET
+BT
+/P <</MCID 2 >>BDC
+/F4 16 Tf
+400 50 Td
+(Bottom Right) Tj
+EMC
+ET
+BT
+/P <</MCID 3 >>BDC
+/F4 16 Tf
+400 650 Td
+(Top Right) Tj
+EMC
+ET
+Q
+endstream
+endobj
+6 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+7 0 obj <<
+  /Type /StructTreeRoot
+  /K [9 0 R 10 0 R 11 0 R 12 0 R]
+  /ParentTree 8 0 R
+  /ParentTreeNextKey 1
+>>
+endobj
+8 0 obj <<
+  /Type /ParentTree
+  /Nums [0 [9 0 R 10 0 R 11 0 R 12 0 R]]
+>>
+endobj
+9 0 obj <<
+  /Type /StructElem
+  /S /NonStruct
+  /P 7 0 R
+  /K 0
+  /ID /3
+>>
+endobj
+10 0 obj <<
+  /Type /StructElem
+  /S /NonStruct
+  /P 7 0 R
+  /K <<
+      /Type /MCR
+      /MCID 1
+      /Pg 3 0 R
+     >>
+  /ID /4
+>>
+endobj
+11 0 obj <<
+  /Type /StructElem
+  /S /NonStruct
+  /P 7 0 R
+  /K [
+      <<
+       /Type /MCR
+       /MCID 2
+       /Pg 3 0 R
+      >>
+      3]
+  /ID /5
+>>
+endobj
+12 0 obj <<
+  /Type /StructElem
+  /S /NonStruct
+  /P 7 0 R
+  /ID /6
+>>
+endobj
+xref
+0 13
+0000000000 65535 f 
+0000000015 00000 n 
+0000000149 00000 n 
+0000000212 00000 n 
+0000000427 00000 n 
+0000000540 00000 n 
+0000000856 00000 n 
+0000000934 00000 n 
+0000001056 00000 n 
+0000001138 00000 n 
+0000001222 00000 n 
+0000001363 00000 n 
+0000001525 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 13
+>>
+startxref
+1603
+%%EOF

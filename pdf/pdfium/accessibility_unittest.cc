@@ -250,6 +250,39 @@ TEST_P(AccessibilityTest, AccessibilityStructureTreeWithImages) {
             AccessibilityStructureElementToString(*doc_structure));
 }
 
+TEST_P(AccessibilityTest, AccessibilityStructureTreeWithMultipleMCIDs) {
+  base::test::ScopedFeatureList pdf_tags;
+  pdf_tags.InitAndEnableFeature(features::kPdfTags);
+
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("tagged_marked_content.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  std::unique_ptr<AccessibilityStructureElement> doc_structure =
+      engine->GetStructureTree();
+  ASSERT_TRUE(doc_structure);
+
+  // tagged_marked_content.pdf contains a Part with 4 child structure elements:
+  // - Element 0: MCID value 0 (single MCID, text run length 10)
+  // - Element 1: MCID value 1 (single MCID, text run length 12)
+  // - Element 2: MCID values 2 and 3 (multiple MCIDs with text run lengths 14
+  //              and 9)
+  // - Element 3: No MCIDs (empty)
+  static constexpr char kExpectedStructureTree[] = R"(/S /Document
+++/S /Part
+++++/S /Unknown AssociatedTextRunLens={ 10 }
+++++/S /Unknown AssociatedTextRunLens={ 12 }
+++++/S /Unknown AssociatedTextRunLens={ 14 9 }
+++++/S /Unknown)";
+
+  // Verifies that structure elements with multiple MCIDs correctly associate
+  // all their text runs, not just the first one.
+  EXPECT_EQ(kExpectedStructureTree,
+            AccessibilityStructureElementToString(*doc_structure));
+}
+
 TEST_P(AccessibilityTest, GetAccessibilityPageWithTags) {
   base::test::ScopedFeatureList pdf_tags;
   pdf_tags.InitAndEnableFeature(features::kPdfTags);
