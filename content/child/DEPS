@@ -8,7 +8,7 @@ include_rules = [
 
   "+content/public/child",
   "+device/base/features.h",
-  "+device/fido/features.h",
+  "+device/fido/public/features.h",
   "+device/gamepad/public/cpp/gamepad_features.h",
   "+device/vr/buildflags/buildflags.h",
   "+device/vr/public/cpp/features.h",

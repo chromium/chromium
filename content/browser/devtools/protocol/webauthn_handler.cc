@@ -19,8 +19,8 @@
 #include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_u2f_device.h"
 

@@ -441,7 +441,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/password_manager/startup_passwords_import_service_factory.h"  // nogncheck (Desktop only)
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/policy/messaging_layer/util/manual_test_heartbeat_event_factory.h"

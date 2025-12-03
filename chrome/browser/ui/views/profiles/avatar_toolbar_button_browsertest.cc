@@ -91,7 +91,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"

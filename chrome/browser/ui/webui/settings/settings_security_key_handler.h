@@ -16,8 +16,8 @@
 #include "device/fido/bio/enrollment.h"
 #include "device/fido/bio/enrollment_handler.h"
 #include "device/fido/credential_management_handler.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 struct AggregatedEnumerateCredentialsResponse;

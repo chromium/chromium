@@ -212,7 +212,7 @@
 #include "device/bluetooth/bluez/bluez_features.h"
 #include "device/bluetooth/chromeos_platform_features.h"
 #include "device/bluetooth/floss/floss_features.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"

@@ -24,7 +24,7 @@
 #include "components/payments/content/mock_web_payments_web_data_service.h"
 #include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "content/public/test/browser_task_environment.h"
-#include "device/fido/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

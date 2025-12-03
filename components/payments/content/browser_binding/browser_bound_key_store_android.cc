@@ -7,7 +7,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/payments/content/browser_binding/browser_bound_key_android.h"
-#include "device/fido/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_params.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize ToJniType()/FromJniType()

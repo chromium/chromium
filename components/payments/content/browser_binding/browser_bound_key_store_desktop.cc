@@ -12,7 +12,7 @@
 #include "components/payments/content/browser_binding/browser_bound_key_desktop.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
-#include "device/fido/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_params.h"
 
 namespace {
 

@@ -140,7 +140,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "device/fido/win/webauthn_api.h"
 #endif  // BUILDFLAG(IS_WIN)
 

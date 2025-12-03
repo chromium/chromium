@@ -26,7 +26,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "crypto/crypto_buildflags.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/compositor/compositor_switches.h"
 

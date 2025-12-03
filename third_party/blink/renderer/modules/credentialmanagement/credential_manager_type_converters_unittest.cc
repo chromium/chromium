@@ -6,7 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

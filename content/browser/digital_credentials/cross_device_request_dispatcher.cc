@@ -14,7 +14,7 @@
 #include "device/fido/cable/fido_tunnel_device.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_base.h"
-#include "device/fido/fido_types.h"
+#include "device/fido/public/fido_types.h"
 
 namespace content::digital_credentials::cross_device {
 

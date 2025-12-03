@@ -64,7 +64,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "manage_passwords_referrer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"

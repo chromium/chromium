@@ -17,7 +17,7 @@
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/service/sync_prefs.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/webauthn/android/cable_module_android.h"

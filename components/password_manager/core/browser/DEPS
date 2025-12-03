@@ -30,7 +30,7 @@ include_rules = [
   "+components/webdata/common",
   "+content/public/browser",
   "+crypto",
-  "+device/fido/features.h",
+  "+device/fido/public/features.h",
   "+google_apis",
   "+grit",
   "+mojo/public/cpp/bindings",

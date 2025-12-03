@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "device/base/features.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "services/device/public/cpp/device_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

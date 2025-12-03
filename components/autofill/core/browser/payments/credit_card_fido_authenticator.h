@@ -20,7 +20,7 @@
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/strike_databases/payments/fido_authentication_strike_database.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
 namespace autofill {

@@ -7,7 +7,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key.h"
-#include "device/fido/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_params.h"
 
 namespace payments {
 

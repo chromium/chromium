@@ -25,17 +25,6 @@ component("public") {
     "public_key_credential_rp_entity.h",
     "public_key_credential_user_entity.cc",
     "public_key_credential_user_entity.h",
-
-    # TODO(crbug.com/463551853): remove once move is complete.
-    "../authenticator_selection_criteria.h",
-    "../features.h",
-    "../fido_constants.h",
-    "../fido_transport_protocol.h",
-    "../fido_types.h",
-    "../public_key_credential_descriptor.h",
-    "../public_key_credential_params.h",
-    "../public_key_credential_rp_entity.h",
-    "../public_key_credential_user_entity.h",
   ]
 
   deps = [

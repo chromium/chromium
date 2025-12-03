@@ -13,7 +13,7 @@
 #include "components/unexportable_keys/mock_unexportable_key_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/signature_verifier.h"
-#include "device/fido/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
