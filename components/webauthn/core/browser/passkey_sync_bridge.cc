@@ -297,6 +297,20 @@ PasskeySyncBridge::GetPasskeys(std::variant<AnyRp, std::string_view> rp_id,
   return passkeys;
 }
 
+std::optional<sync_pb::WebauthnCredentialSpecifics>
+PasskeySyncBridge::GetPasskey(std::variant<AnyRp, std::string_view> rp_id,
+                              std::string_view credential_id,
+                              ShadowedCredentials shadowed_credentials) const {
+  for (const sync_pb::WebauthnCredentialSpecifics& passkey :
+       GetPasskeys(rp_id, shadowed_credentials)) {
+    if (passkey.credential_id() == credential_id) {
+      return passkey;
+    }
+  }
+
+  return std::nullopt;
+}
+
 std::vector<sync_pb::WebauthnCredentialSpecifics>
 PasskeySyncBridge::GetAllPasskeys() const {
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;

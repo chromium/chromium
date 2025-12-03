@@ -76,6 +76,10 @@ class PasskeySyncBridge : public syncer::DataTypeSyncBridge,
   std::vector<sync_pb::WebauthnCredentialSpecifics> GetPasskeys(
       std::variant<AnyRp, std::string_view> rp_id,
       ShadowedCredentials shadowed_credentials) const override;
+  std::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskey(
+      std::variant<AnyRp, std::string_view> rp_id,
+      std::string_view credential_id,
+      ShadowedCredentials shadowed_credentials) const override;
   std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
       const override;
   std::vector<sync_pb::WebauthnCredentialSpecifics> GetUnShadowedPasskeys()

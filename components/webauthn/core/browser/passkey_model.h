@@ -111,6 +111,17 @@ class PasskeyModel : public KeyedService {
       std::variant<AnyRp, std::string_view> rp_id,
       ShadowedCredentials shadowed_credentials) const = 0;
 
+  // Returns the passkey matching the provided criteria (or std::nullopt if
+  // there isn't any):
+  // - `rp_id`: Either a specific Relying Party ID or any.
+  // - `credential_id`: Credential ID of the passkey.
+  // - `shadowed_credentials`: Whether to include shadowed credentials.
+  // TODO(crbug.com/465377708): Remove redundant functions.
+  virtual std::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskey(
+      std::variant<AnyRp, std::string_view> rp_id,
+      std::string_view credential_id,
+      ShadowedCredentials shadowed_credentials) const = 0;
+
   // Returns the list of all passkeys, including those that are shadowed.
   virtual std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
       const = 0;
