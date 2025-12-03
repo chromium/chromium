@@ -158,12 +158,21 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 @interface ManageSyncSettingsTestCase : WebHttpServerChromeTestCase
 @end
 
+// TODO(crbug.com/460742017): Test is flaky on a simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testPersonalizeGoogleServicesSettingsDismissedOnSignOut \
+  FLAKY_testPersonalizeGoogleServicesSettingsDismissedOnSignOut
+#else
+#define MAYBE_testPersonalizeGoogleServicesSettingsDismissedOnSignOut \
+  testPersonalizeGoogleServicesSettingsDismissedOnSignOut
+#endif  // TARGET_OS_SIMULATOR
+
 @implementation ManageSyncSettingsTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector
-            (testPersonalizeGoogleServicesSettingsDismissedOnSignOut)]) {
+            (MAYBE_testPersonalizeGoogleServicesSettingsDismissedOnSignOut)]) {
     config.additional_args.push_back(
         std::string("--") + switches::kSearchEngineChoiceCountry + "=BE");
     config.features_enabled.push_back(kLinkedServicesSettingIos);
@@ -1487,7 +1496,12 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the account settings and the encryption view are dismissed
 // on account removal.
+#if TARGET_OS_SIMULATOR
+// TODO(crbug.com/460742017): Test is flaky on a simulator.
+- (void)FLAKY_testAccountSettingsAndEncryptionDismissed {
+#else
 - (void)testAccountSettingsAndEncryptionDismissed {
+#endif  // TARGET_OS_SIMULATOR
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -1610,7 +1624,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Test that the Personalize Google Services page is dismissed when the user
 // signs out.
-- (void)testPersonalizeGoogleServicesSettingsDismissedOnSignOut {
+// TODO(crbug.com/460742017): Test is flaky on a simulator.
+- (void)MAYBE_testPersonalizeGoogleServicesSettingsDismissedOnSignOut {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
