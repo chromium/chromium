@@ -113,10 +113,10 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
       side_panel_options.suppress_opening_animation = true;
       auto show_options = ShowOptions{side_panel_options};
       show_options.focus_on_show = tab_to_bind->IsActivated();
-      instance_->Show(show_options);
       instance_->metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
                                          /*success=*/true, tab_to_bind,
                                          source_tab);
+      instance_->Show(show_options);
     } else {
       // Record the failure.
       instance_->metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
@@ -395,11 +395,20 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
   instance_metrics_.OnCreateTab();
   auto* active_embedder = GetActiveEmbedder();
   bool embedder_has_focus = active_embedder && active_embedder->HasFocus();
+
+  tabs::TabInterface* source_tab = nullptr;
+  if (active_embedder_key_.has_value()) {
+    if (auto* tab_ptr =
+            std::get_if<tabs::TabInterface*>(&active_embedder_key_.value())) {
+      source_tab = *tab_ptr;
+    }
+  }
+
   tabs::TabInterface* created_tab = service_->CreateTab(
       url, open_in_background, window_id, std::move(callback));
   if (!created_tab) {
     instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
-                                   /*success=*/false);
+                                   /*success=*/false, nullptr, source_tab);
     return nullptr;
   }
 
@@ -421,7 +430,7 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
     Show(show_options);
   }
   instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
-                                 /*success=*/true, created_tab);
+                                 /*success=*/true, created_tab, source_tab);
   return nullptr;
 }
 
@@ -803,7 +812,8 @@ void GlicInstanceImpl::SwitchConversation(
     const ShowOptions& options,
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
-  instance_metrics_.OnSwitchFromConversation(options);
+  instance_metrics_.OnSwitchFromConversation(options, active_embedder_key_);
+
   if (coordinator_delegate_) {
     coordinator_delegate_->SwitchConversation(*this, options, std::move(info),
                                               std::move(callback));
@@ -1155,6 +1165,7 @@ void GlicInstanceImpl::RequestToConfirmNavigation(
   host_.RequestToConfirmNavigation(task_id, navigation_origin,
                                    std::move(callback));
 }
+
 void GlicInstanceImpl::RequestToShowAutofillSuggestionsDialog(
     actor::TaskId task_id,
     std::vector<autofill::ActorFormFillingRequest> requests,

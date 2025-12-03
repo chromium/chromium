@@ -31,6 +31,9 @@ class GlicInstanceHelper {
 
   void OnPinnedByInstance(const InstanceId& instance_id);
 
+  void SetIsDaisyChained();
+  void OnDaisyChainAction(DaisyChainFirstAction action);
+
   base::CallbackListSubscription SubscribeToDestruction(
       base::RepeatingCallback<void(tabs::TabInterface*, const InstanceId&)>
           callback);
