@@ -357,9 +357,6 @@ const NSUInteger kSearchCharacterLimit = 1000;
   NSDictionary* accounts = base::apple::ObjCCast<NSDictionary>(
       [sharedDefaults dictionaryForKey:app_group::kAccountsOnDevice]);
 
-  if (!accounts) {
-    return;
-  }
   NSURL* avatarsFolderPath = app_group::WidgetsAvatarFolder();
 
   NSMutableArray* loadedAccounts = [[NSMutableArray alloc] init];
@@ -382,7 +379,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
     }
   }
 
-  if (!primaryAccount || ![primaryAccount length]) {
+  if (!self.shareSheet.selectedAccountInfo) {
     AccountInfo* accountInfo = [[AccountInfo alloc] init];
     accountInfo.gaiaID = app_group::kNoAccount;
     self.shareSheet.selectedAccountInfo = accountInfo;
