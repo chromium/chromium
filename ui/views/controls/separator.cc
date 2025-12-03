@@ -12,6 +12,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/metadata/type_conversion.h"
+#include "ui/views/property_effects.h"
 
 namespace views {
 

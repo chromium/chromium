@@ -25,6 +25,8 @@ class ActionItem;
 
 namespace views {
 
+enum class PropertyEffects;
+
 // A button class that implements the Material Design text button spec.
 class VIEWS_EXPORT MdTextButton : public LabelButton {
   METADATA_HEADER(MdTextButton, LabelButton)

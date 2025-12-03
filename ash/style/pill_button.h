@@ -16,6 +16,10 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/view_factory.h"
 
+namespace views {
+enum class PropertyEffects;
+}  // namespace views
+
 namespace ash {
 
 class BlurredBackgroundShield;

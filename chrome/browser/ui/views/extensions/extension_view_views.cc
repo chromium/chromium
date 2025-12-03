@@ -21,6 +21,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/native/native_view_host.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/widget/widget.h"
 
 ExtensionViewViews::ExtensionViewViews(Profile* profile,

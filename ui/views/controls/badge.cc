@@ -7,6 +7,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/badge_painter.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/property_effects.h"
 
 namespace views {
 

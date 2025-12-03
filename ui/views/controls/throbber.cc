@@ -20,6 +20,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_throbber.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/property_effects.h"
 
 namespace views {
 

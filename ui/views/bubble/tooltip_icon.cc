@@ -20,6 +20,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/mouse_watcher_view_host.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/style/platform_style.h"
 
 namespace views {

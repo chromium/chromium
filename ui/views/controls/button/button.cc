@@ -41,6 +41,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/painter.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 

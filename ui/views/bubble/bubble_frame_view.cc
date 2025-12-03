@@ -48,6 +48,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/paint_info.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"

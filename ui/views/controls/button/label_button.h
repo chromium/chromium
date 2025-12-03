@@ -43,6 +43,7 @@ namespace views {
 
 class InkDropContainerView;
 class LabelButtonBorder;
+enum class PropertyEffects;
 
 // LabelButton is a button with text and an icon.
 class VIEWS_EXPORT LabelButton : public Button,

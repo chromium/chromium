@@ -47,6 +47,7 @@
 #include "ui/views/controls/prefix_selector.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/mouse_constants.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"

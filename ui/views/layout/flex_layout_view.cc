@@ -10,6 +10,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/type_conversion.h"
+#include "ui/views/property_effects.h"
 
 namespace views {
 

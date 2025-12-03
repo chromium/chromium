@@ -54,6 +54,7 @@
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_utils.h"
 

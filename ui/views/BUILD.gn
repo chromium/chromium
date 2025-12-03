@@ -270,6 +270,7 @@ component("views") {
     "native_theme_delegate.h",
     "paint_info.h",
     "painter.h",
+    "property_effects.h",
     "rect_based_targeting_utils.h",
     "repeat_controller.h",
     "round_rect_painter.h",

@@ -18,6 +18,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/property_effects.h"
 
 namespace ash {
 namespace {
