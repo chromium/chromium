@@ -254,8 +254,6 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
         'Settings.PrivacySandbox.Topics.Manage.LearnMoreClicked');
   }
 
-  // TODO(b/321007722): Add test to make sure there is always a icon based on
-  // the variability of different taxonomies.
   private computeTopicIcon_(topicId: number) {
     return topicIdToIconName.get(topicId) || 'firstLevelTopics20:category';
   }
