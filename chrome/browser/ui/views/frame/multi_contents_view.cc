@@ -305,19 +305,6 @@ void MultiContentsView::OnSwap() {
   delegate_->ReverseWebContents();
 }
 
-int MultiContentsView::GetMinViewWidth() const {
-  if (!IsInSplitView()) {
-    return 0;
-  }
-
-  const int min_percentage =
-      kMinWebContentsWidthPercentage * browser_view_->GetBounds().width();
-  const int min_fixed_value = min_contents_width_for_testing_.has_value()
-                                  ? min_contents_width_for_testing_.value()
-                                  : kMinWebContentsWidth;
-  return std::min(min_fixed_value, min_percentage);
-}
-
 std::vector<views::View*> MultiContentsView::GetAccessiblePanes() {
   std::vector<views::View*> accessible_panes;
   for (auto* contents_container_view : contents_container_views_) {
@@ -594,10 +581,11 @@ MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
     CHECK(!contents_container_views_[1]->GetVisible());
     widths.start_width = available_space.width();
   }
-  return ClampToMinWidth(widths);
+  return ClampToMinWidth(available_space, widths);
 }
 
 MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
+    gfx::Rect available_space,
     ViewWidths widths) const {
   if (!IsInSplitView()) {
     // Don't clamp if in a single-view state, where other views should be 0
@@ -605,7 +593,7 @@ MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
     return widths;
   }
 
-  const int min_width = GetMinViewWidth();
+  const int min_width = GetMinViewWidth(available_space);
   if (widths.start_width < min_width) {
     const double diff = min_width - widths.start_width;
     widths.start_width += diff;
@@ -616,6 +604,21 @@ MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
     widths.start_width -= diff;
   }
   return widths;
+}
+
+int MultiContentsView::GetMinViewWidth(gfx::Rect available_space) const {
+  CHECK(IsInSplitView());
+
+  // The minimum width for a content view in a split should be the lesser of
+  // kMinWebContentsWidth, and kMinWebContentsWidthPercentage as a percentage of
+  // the MultiContentsView's available width with a lower bound of
+  // kConstrainedMinWebContentsWidth.
+  const int min_percentage =
+      kMinWebContentsWidthPercentage * available_space.width();
+  const int min_fixed_value =
+      min_contents_width_for_testing_.value_or(kMinWebContentsWidth);
+  return std::min(min_fixed_value,
+                  std::max(kConstrainedMinWebContentsWidth, min_percentage));
 }
 
 void MultiContentsView::UpdateContentsBorderAndOverlay() {

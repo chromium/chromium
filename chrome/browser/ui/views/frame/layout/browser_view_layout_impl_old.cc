@@ -685,12 +685,6 @@ int BrowserViewLayoutImplOld::GetMinWebContentsWidth() const {
                  .right_aligned_side_panel_separator->GetPreferredSize()
                  .width()
            : 0);
-
-  // When in split view, the minimum width of the contents is higher.
-  if (views().multi_contents_view) {
-    min_width =
-        std::max(min_width, 2 * views().multi_contents_view->GetMinViewWidth());
-  }
   DCHECK_GE(min_width, 0);
   return min_width;
 }

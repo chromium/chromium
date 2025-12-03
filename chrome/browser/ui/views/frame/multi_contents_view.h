@@ -120,10 +120,6 @@ class MultiContentsView : public views::View,
     return initial_start_width_on_resize_.has_value();
   }
 
-  // Returns the minimum width for a single view within the `MultiContentsView`.
-  // Returns 0 if not in a split view.
-  int GetMinViewWidth() const;
-
   // Returns accessible panes to be used in BrowserView to create the order of
   // pane traversal.
   std::vector<views::View*> GetAccessiblePanes();
@@ -191,6 +187,7 @@ class MultiContentsView : public views::View,
   };
 
   static constexpr int kMinWebContentsWidth = 200;
+  static constexpr int kConstrainedMinWebContentsWidth = 50;
   static constexpr double kMinWebContentsWidthPercentage = 0.1;
 
   // LayoutDelegate:
@@ -218,9 +215,14 @@ class MultiContentsView : public views::View,
   ViewWidths GetViewWidths(gfx::Rect available_space) const;
 
   // Clamps to the minimum of kMinWebContentsWidth or
-  // kMinWebContentsWidthPercentage multiplied by the window width. This allows
-  // for some flexibility when it comes to particularly narrow windows.
-  ViewWidths ClampToMinWidth(ViewWidths widths) const;
+  // kMinWebContentsWidthPercentage multiplied by the available width. This
+  // allows for some flexibility when it comes to particularly narrow windows.
+  ViewWidths ClampToMinWidth(gfx::Rect available_space,
+                             ViewWidths widths) const;
+
+  // Returns the minimum width for a single view within the `MultiContentsView`.
+  // Returns 0 if not in a split view.
+  int GetMinViewWidth(gfx::Rect available_space) const;
 
   void UpdateContentsBorderAndOverlay();
 
