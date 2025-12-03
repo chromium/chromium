@@ -103,6 +103,7 @@ function webifyRequestDetails(details) {
     }),
     parentDocumentId: identity,
     parentFrameId: identity,
+    securityInfo: identity,
   });
 
   const request = extractAndMapValues(details, {
@@ -242,6 +243,13 @@ class WebRequestInterceptor extends EventTarget {
       $Array.push(this.#extraInfoSpec, 'responseHeaders');
       $Array.push(this.#extraInfoSpec, 'extraHeaders');
     }
+
+    if (options.securityInfo) {
+      $Array.push(this.#extraInfoSpec, 'securityInfo');
+    }
+    if (options.securityInfoRawDer) {
+      $Array.push(this.#extraInfoSpec, 'securityInfoRawDer');
+    }
   }
 
   addEventListener(type, webListener, options) {
@@ -262,8 +270,9 @@ class WebRequestInterceptor extends EventTarget {
           $Array.self('blocking', 'requestHeaders', 'extraHeaders'),
       completed: $Array.self('responseHeaders', 'extraHeaders'),
       erroroccurred: $Array.self(),
-      headersreceived:
-          $Array.self('blocking', 'responseHeaders', 'extraHeaders'),
+      headersreceived: $Array.self(
+          'blocking', 'responseHeaders', 'extraHeaders', 'securityInfo',
+          'securityInfoRawDer'),
       responsestarted: $Array.self('responseHeaders', 'extraHeaders'),
       sendheaders: $Array.self('requestHeaders', 'extraHeaders'),
     }[type];

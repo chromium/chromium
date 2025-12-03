@@ -45,6 +45,7 @@
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 using testing::HasSubstr;
@@ -157,7 +158,6 @@ class ControlledFrameApiTest : public ControlledFrameTestBase {
     ControlledFrameTestBase::SetUpOnMainThread();
     StartContentServer("web_apps/simple_isolated_app");
   }
-
 };
 
 // This test checks if the Controlled Frame is able to intercept URL navigation
@@ -1291,6 +1291,91 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameRequestHeaderTest,
   ASSERT_TRUE(SetClientHintsUABrandEnabled(app_frame, true));
   EXPECT_EQ(last_seen_ua(), embedder_support::GetUserAgent());
   EXPECT_THAT(last_seen_sec_ch_ua(), HasSubstr("ControlledFrame"));
+}
+
+class ControlledFrameSecurityInfoApiTest : public ControlledFrameApiTest {
+ public:
+  // Tests WebRequest.SecurityInfo.
+  // It is a very high level test, that only checks that new
+  // WebRequestInterceptorOptions are respected and
+  // SecurityInfo is returned in correct data format.
+  // Tests that check more cases comprehensively are located in
+  // chrome/browser/extensions/api/web_request/web_request_apitest.cc.
+  void RunWebRequestSecurityInfoTest(bool raw_der) {
+    web_app::IsolatedWebAppUrlInfo url_info =
+        CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+    content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+    const GURL& kOriginalControlledFrameUrl =
+        embedded_https_test_server().GetURL("/index.html");
+    ASSERT_TRUE(CreateControlledFrame(app_frame, kOriginalControlledFrameUrl));
+
+    std::string script = R"(
+        new Promise((resolve, reject) => {
+          const frame = document.getElementsByTagName('controlledframe')[0];
+          if (!frame || !frame.request) {
+            return reject('controlled frame element is not found');
+          }
+
+          const useRawDer = $2;
+
+          frame.request.createWebRequestInterceptor({
+            urlPatterns: ['*://*/*'],
+            securityInfo: true,
+            securityInfoRawDer: useRawDer
+          }).addEventListener('headersreceived', (details) => {
+            if (!('securityInfo' in details)) {
+              return reject('securityInfo must be present');
+            }
+            // It is fine if for some reason the connection is not trusted by chrome.
+            if (details.securityInfo.state in ['secure', 'broken']) {
+              return reject('state must be secure or broken, but was ' + details.securityInfo.state);
+            }
+            if (details.securityInfo.certificates.length == 0) {
+              return reject('certificates must be present');
+            }
+            if (!('sha256' in details.securityInfo.certificates[0].fingerprint)) {
+              return reject('sha256 must be present');
+            }
+
+            if (useRawDer) {
+              if (!('rawDER' in details.securityInfo.certificates[0])) {
+                return reject('rawDER must be present');
+              }
+            } else {
+              if ('rawDER' in details.securityInfo.certificates[0]) {
+                return reject('rawDER must NOT be present');
+              }
+            }
+
+            resolve(true);
+          });
+
+          frame.src = $1;
+        });
+      )";
+
+    EXPECT_EQ(true, content::EvalJs(
+                        app_frame,
+                        content::JsReplace(
+                            std::move(script),
+                            embedded_https_test_server().GetURL("/simple.html"),
+                            raw_der)));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kControlledFrameWebRequestSecurityInfo};
+};
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameSecurityInfoApiTest,
+                       WebRequestSecurityInfo) {
+  RunWebRequestSecurityInfoTest(/*raw_der=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameSecurityInfoApiTest,
+                       WebRequestSecurityInfoRawDer) {
+  RunWebRequestSecurityInfoTest(/*raw_der=*/true);
 }
 
 }  // namespace controlled_frame
