@@ -44,6 +44,10 @@ class CORE_EXPORT StyleRecalcContext {
       Element& originating_element,
       PseudoId);
 
+  static StyleRecalcContext FromParentContext(
+      const StyleRecalcContext& parent_context,
+      Element& element);
+
  private:
   // Build a StyleRecalcContext suitable for resolving the style for child
   // elements of the passed in element.

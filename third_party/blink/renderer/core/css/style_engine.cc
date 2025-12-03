@@ -2153,7 +2153,7 @@ void StyleEngine::ApplyRuleSetInvalidationForElement(
     const TreeScope& tree_scope,
     Element& element,
     SelectorFilter& selector_filter,
-    StyleScopeFrame& style_scope_frame,
+    StyleRecalcContext& style_recalc_context,
     const HeapHashSet<Member<RuleSet>>& rule_sets,
     unsigned changed_rule_flags,
     bool is_shadow_host) {
@@ -2173,9 +2173,6 @@ void StyleEngine::ApplyRuleSetInvalidationForElement(
   EInsideLink inside_link =
       EInsideLink::kNotInsideLink;  // Only used for MatchedProperties, so does
                                     // not matter for us.
-  StyleRecalcContext style_recalc_context =
-      StyleRecalcContext::FromAncestors(element);
-  style_recalc_context.style_scope_frame = &style_scope_frame;
   ElementRuleCollector collector(element_resolve_context, style_recalc_context,
                                  selector_filter, match_result, inside_link);
 
@@ -2483,8 +2480,11 @@ void StyleEngine::ApplyRuleSetInvalidationForTreeScope(
     // in the filter for the host will stay, giving a potential false
     // positive. It would be nice to handle this somehow.
     selector_filter.PopParent(host);
+    StyleRecalcContext style_recalc_context =
+        StyleRecalcContext::FromAncestors(host);
+    style_recalc_context.style_scope_frame = &style_scope_frame;
     ApplyRuleSetInvalidationForElement(tree_scope, host, selector_filter,
-                                       style_scope_frame, rule_sets,
+                                       style_recalc_context, rule_sets,
                                        changed_rule_flags,
                                        /*is_shadow_host=*/true);
     selector_filter.PushParent(host);
@@ -2525,11 +2525,13 @@ void StyleEngine::ApplyRuleSetInvalidationForTreeScope(
   // or StyleScopeFrame here: the caller should already have set up
   // the required state for `node` in both cases.
   for (Element& child : ElementTraversal::ChildrenOf(node)) {
-    ApplyRuleSetInvalidationForSubtree(
-        tree_scope, child, selector_filter,
-        /* parent_style_scope_frame */ style_scope_frame, rule_sets,
-        changed_rule_flags, invalidation_scope, invalidate_slotted,
-        invalidate_part);
+    StyleRecalcContext style_recalc_context =
+        StyleRecalcContext::FromAncestors(child);
+    style_recalc_context.style_scope_frame = &style_scope_frame;
+    ApplyRuleSetInvalidationForSubtree(tree_scope, child, selector_filter,
+                                       style_recalc_context, rule_sets,
+                                       changed_rule_flags, invalidation_scope,
+                                       invalidate_slotted, invalidate_part);
   }
 }
 
@@ -2537,13 +2539,14 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
     TreeScope& tree_scope,
     Element& element,
     SelectorFilter& selector_filter,
-    StyleScopeFrame& parent_style_scope_frame,
+    StyleRecalcContext& parent_style_recalc_context,
     const HeapHashSet<Member<RuleSet>>& rule_sets,
     unsigned changed_rule_flags,
     InvalidationScope invalidation_scope,
     bool invalidate_slotted,
     bool invalidate_part) {
-  StyleScopeFrame style_scope_frame(element, &parent_style_scope_frame);
+  StyleScopeFrame style_scope_frame(
+      element, parent_style_recalc_context.style_scope_frame);
 
   if (invalidate_part && element.hasAttribute(html_names::kPartAttr)) {
     // It's too complicated to try to handle ::part() precisely.
@@ -2553,8 +2556,12 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
                                 StyleChangeReasonForTracing::Create(
                                     style_change_reason::kStyleRuleChange));
   } else {
+    StyleRecalcContext style_recalc_context =
+        StyleRecalcContext::FromParentContext(parent_style_recalc_context,
+                                              element);
+    style_recalc_context.style_scope_frame = &style_scope_frame;
     ApplyRuleSetInvalidationForElement(tree_scope, element, selector_filter,
-                                       style_scope_frame, rule_sets,
+                                       style_recalc_context, rule_sets,
                                        changed_rule_flags,
                                        /*is_shadow_host=*/false);
   }
@@ -2587,12 +2594,16 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
     SelectorFilter::Mark mark = selector_filter.SetMark();
     selector_filter.PushParent(element);
 
+    StyleRecalcContext style_recalc_context =
+        StyleRecalcContext::FromParentContext(parent_style_recalc_context,
+                                              element);
+    style_recalc_context.style_scope_frame = &style_scope_frame;
+
     for (Element& child : ElementTraversal::ChildrenOf(element)) {
-      ApplyRuleSetInvalidationForSubtree(
-          tree_scope, child, selector_filter,
-          /* parent_style_scope_frame */ style_scope_frame, rule_sets,
-          changed_rule_flags, invalidation_scope, invalidate_slotted,
-          invalidate_part);
+      ApplyRuleSetInvalidationForSubtree(tree_scope, child, selector_filter,
+                                         style_recalc_context, rule_sets,
+                                         changed_rule_flags, invalidation_scope,
+                                         invalidate_slotted, invalidate_part);
     }
 
     selector_filter.PopTo(mark);

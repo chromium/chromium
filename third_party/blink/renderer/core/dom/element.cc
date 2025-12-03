@@ -4835,21 +4835,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     return;
   }
 
-  StyleRecalcContext child_recalc_context = local_style_recalc_context;
-  // If we're in StyleEngine::UpdateStyleAndLayoutTreeForOutOfFlow, then
-  // anchor_evaluator may be non-nullptr to allow evaluation of anchor() and
-  // anchor-size() queries, and the try sets may be non-nullptr if we're
-  // attempting some position option [1]. These are only supposed to apply to
-  // the interleaving root itself (i.e. the out-of-flow element being laid out),
-  // and not to descendants.
-  //
-  // [1] https://drafts.csswg.org/css-anchor-position-1/#fallback
-  child_recalc_context.anchor_evaluator = nullptr;
-  child_recalc_context.try_set = nullptr;
-  child_recalc_context.try_tactics_set = nullptr;
-
-  child_recalc_context.has_content_visibility_auto_locked_ancestor |=
-      display_lock_style_scope.IsLockedContentVisibilityAuto();
+  const StyleRecalcContext child_recalc_context =
+      StyleRecalcContext::FromParentContext(local_style_recalc_context, *this);
 
   if (ContainerQueryData* cq_data = GetContainerQueryData()) {
     // If we skipped the subtree during style recalc, retrieve the
@@ -4863,10 +4850,6 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   if (const ComputedStyle* style = GetComputedStyle()) {
-    child_recalc_context
-        .has_scroller_ancestor_with_scroll_marker_group_property |=
-        (style->IsScrollContainer() || IsDocumentElement()) &&
-        !style->ScrollMarkerGroupNone();
     if (style->CanMatchSizeContainerQueries(*this)) {
       // IsSuppressed() means we are at the root of a container subtree called
       // from UpdateStyleAndLayoutTreeForSizeContainer(). If so, we can not skip
@@ -4878,12 +4861,6 @@ void Element::RecalcStyle(const StyleRecalcChange change,
           return;
         }
       }
-    }
-    if (style->IsContainerForSizeContainerQueries()) {
-      child_recalc_context.size_container = this;
-    }
-    if (style->IsContainerForAnchoredContainerQueries()) {
-      child_recalc_context.has_anchored_container = true;
     }
   }
 
@@ -4959,10 +4936,6 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   if (child_change.TraverseChildren(*this)) {
-    if (!child_recalc_context.has_animating_ancestor &&
-        GetElementAnimations()) {
-      child_recalc_context.has_animating_ancestor = true;
-    }
     if (ShadowRoot* root = GetShadowRoot()) {
       root->RecalcDescendantStyles(child_change, child_recalc_context, *this);
       if (child_change.RecalcDescendants()) {
@@ -7133,8 +7106,7 @@ bool Element::AttachDeclarativeShadowRoot(
   shadow_root.SetAvailableToElementInternals(true);
   // 10.8.NEW. Process shadowrootadoptedstylesheets attribute.
   if (RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled()) {
-    shadow_root.ProcessAdoptedStylesheetAttribute(
-        adopted_stylesheets);
+    shadow_root.ProcessAdoptedStylesheetAttribute(adopted_stylesheets);
   }
   return true;
 }
