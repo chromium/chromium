@@ -29,8 +29,6 @@ PrinterQueryOop::~PrinterQueryOop() = default;
 std::unique_ptr<PrintJobWorker> PrinterQueryOop::TransferContextToNewWorker(
     PrintJob* print_job) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(crbug.com/40256381)  Do extra setup on the worker as needed for
-  // supporting OOP system print dialogs.
   return CreatePrintJobWorkerOop(print_job);
 }
 
