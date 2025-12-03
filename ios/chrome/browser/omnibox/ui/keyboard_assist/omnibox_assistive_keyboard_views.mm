@@ -18,8 +18,7 @@ OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
     id<OmniboxTextInput> textInput,
     NSString* dotComTLD,
     id<OmniboxAssistiveKeyboardDelegate> delegate,
-    TemplateURLService* templateURLService,
-    id<HelpCommands> helpHandler) {
+    TemplateURLService* templateURLService) {
   DCHECK(dotComTLD);
 
   if (!ShouldShowKeyboardAccessory()) {
@@ -51,8 +50,7 @@ OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
                       delegate:delegate
                    pasteTarget:textInput
             templateURLService:templateURLService
-                     responder:textInput.view
-                   helpHandler:helpHandler];
+                     responder:textInput.view];
     [keyboardAccessoryView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
     [textInput setInputAccessoryView:keyboardAccessoryView];
     return keyboardAccessoryView;

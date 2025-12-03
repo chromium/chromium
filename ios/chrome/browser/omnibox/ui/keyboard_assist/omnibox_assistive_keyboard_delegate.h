@@ -33,6 +33,10 @@
 // Notifies the delegate that a key with the title `title` was pressed.
 - (void)keyPressed:(NSString*)title;
 
+// Notifies the delegate to present the in product help for the lens button in
+// the keyboard accessory.
+- (void)presentLensKeyboardInProductHelper;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_KEYBOARD_ASSIST_OMNIBOX_ASSISTIVE_KEYBOARD_DELEGATE_H_

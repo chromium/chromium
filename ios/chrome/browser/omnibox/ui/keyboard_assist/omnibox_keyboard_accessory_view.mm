@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
-#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -57,9 +56,6 @@ constexpr CGFloat kShadowOpacity = 0.12;
 // The text field that this view is an accessory to.
 @property(nonatomic, weak) UIResponder* responder;
 
-// IPH bubble handler for displaying IPH bubbles relating to the omnibox.
-@property(nonatomic, weak) id<HelpCommands> helpHandler;
-
 // Called when a keyboard shortcut button is pressed.
 - (void)keyboardButtonPressed:(NSString*)title;
 // Creates a button shortcut for `title`.
@@ -81,8 +77,7 @@ constexpr CGFloat kShadowOpacity = 0.12;
                        delegate:(id<OmniboxAssistiveKeyboardDelegate>)delegate
                     pasteTarget:(id<UIPasteConfigurationSupporting>)pasteTarget
              templateURLService:(TemplateURLService*)templateURLService
-                      responder:(UIResponder*)responder
-                    helpHandler:(id<HelpCommands>)helpHandler {
+                      responder:(UIResponder*)responder {
   self = [super initWithFrame:CGRectZero
                inputViewStyle:UIInputViewStyleKeyboard];
   if (self) {
@@ -97,7 +92,6 @@ constexpr CGFloat kShadowOpacity = 0.12;
     // style, self-sizing is allowed.
     self.allowsSelfSizing = !GlassEffectEnabled();
     self.templateURLService = templateURLService;
-    self.helpHandler = helpHandler;
     [self addSubviews];
 
     NSArray<UITrait>* traits =
@@ -307,11 +301,10 @@ constexpr CGFloat kShadowOpacity = 0.12;
 
   UIButton* lensButton = _delegate.lensButton;
   if (lensButton) {
-    id<HelpCommands> helpHandler = self.helpHandler;
+    __weak __typeof__(self) weakSelf = self;
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(^{
-          [helpHandler
-              presentInProductHelpWithType:InProductHelpType::kLensKeyboard];
+          [weakSelf.delegate presentLensKeyboardInProductHelper];
         }),
         kLensButtonIPHDelay);
   }
