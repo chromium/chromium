@@ -105,14 +105,16 @@ void ContextualTasksPageHandler::OpenHelpUi() {
   OpenUrlInNewTab(web_ui_controller_->web_ui(), GURL(kHelpUrl));
 }
 
-void ContextualTasksPageHandler::MoveTaskUiToToNewTab() {
+void ContextualTasksPageHandler::MoveTaskUiToNewTab() {
   auto* browser = web_ui_controller_->GetBrowser();
   const auto& task_id = web_ui_controller_->GetTaskId();
   if (!task_id.has_value()) {
     LOG(ERROR) << "Attempted to open in new tab with no valid task ID.";
     return;
   }
-  ui_service_->MoveTaskUiToToNewTab(task_id.value(), browser);
+
+  ui_service_->MoveTaskUiToNewTab(task_id.value(), browser,
+                                  web_ui_controller_->GetInnerFrameUrl());
 }
 
 void ContextualTasksPageHandler::GetOAuthToken(GetOAuthTokenCallback callback) {

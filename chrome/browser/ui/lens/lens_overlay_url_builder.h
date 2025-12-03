@@ -107,10 +107,6 @@ GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url);
 // results.
 GURL RemoveIgnoredSearchURLParameters(const GURL& url);
 
-// Remove parameters that cause the SRP to be rendered for the side panel. Used
-// when opening the SRP in a new tab.
-GURL RemoveSidePanelURLParameters(const GURL& url);
-
 // Returns the URL to open in a new tab by adding a unique vsrid to the side
 // panel new tab URL. If the given URL is empty, or is a URL for a contextual
 // query, returns an empty URL since they cannot be opened in a new tab.

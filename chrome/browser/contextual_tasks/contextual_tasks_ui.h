@@ -115,6 +115,9 @@ class ContextualTasksUI : public TaskInfoDelegate,
   BrowserWindowInterface* GetBrowser() override;
   content::WebContents* GetWebUIWebContents() override;
 
+  // Get the URL of the page currently embedded in this WebUI.
+  const GURL& GetInnerFrameUrl() const;
+
   void CloseSidePanel();
 
   void BindInterface(

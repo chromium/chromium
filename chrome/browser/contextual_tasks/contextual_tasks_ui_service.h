@@ -15,6 +15,7 @@
 #include "url/gurl.h"
 
 class BrowserWindowInterface;
+class ContextualTasksUI;
 class Profile;
 
 namespace base {
@@ -22,6 +23,7 @@ class Uuid;
 }  // namespace base
 
 namespace content {
+struct OpenURLParams;
 class WebContents;
 }  // namespace content
 
@@ -61,17 +63,30 @@ class ContextualTasksUiService : public KeyedService {
       base::WeakPtr<tabs::TabInterface> tab,
       base::WeakPtr<BrowserWindowInterface> browser);
 
+  // A notification that a navigation to the search results page occurred in the
+  // contextual tasks WebUI while being viewed in a tab (as opposed to side
+  // panel).
+  virtual void OnSearchResultsNavigationInTab(
+      const GURL& url,
+      base::WeakPtr<tabs::TabInterface> tab);
+
+  // A notification that a navigation to the search results page occurred in the
+  // contextual tasks WebUI while being viewed in the side panel (as opposed to
+  // a tab).
+  virtual void OnSearchResultsNavigationInSidePanel(
+      content::OpenURLParams url_params,
+      ContextualTasksUI* webui_controller);
+
   // A notification that a navigation is occurring. This method gives the
-  // service the opportunity to prevent the navigation from happening in order
-  // to handle it manually. Returns true if the navigation is being handled by
-  // the service (e.g. the navigation is blocked), and false otherwise. The
-  // WebContents the navigation originated from is provided along with
-  // `is_to_new_tab` which indicates whether the navigation would open in a
-  // new tab or window. The `initiated_in_page` param is to help determine if
-  // the navigation was from something like a link or redirect versus an action
-  // in Chrome's UI like back/forward.
-  virtual bool HandleNavigation(const GURL& navigation_url,
-                                bool initiated_in_page,
+  // service the opportunity to prevent the navigation from happening in
+  // order to handle it manually. Returns true if the navigation is being
+  // handled by the service (e.g. the navigation is blocked), and false
+  // otherwise. The WebContents the navigation originated from is provided
+  // along with `is_to_new_tab` which indicates whether the navigation would
+  // open in a new tab or window. The `initiated_in_page` param is to help
+  // determine if the navigation was from something like a link or redirect
+  // versus an action in Chrome's UI like back/forward.
+  virtual bool HandleNavigation(content::OpenURLParams url_params,
                                 content::WebContents* source_contents,
                                 bool is_to_new_tab);
 
@@ -111,14 +126,24 @@ class ContextualTasksUiService : public KeyedService {
                                   const base::Uuid& task_id);
 
   // Move the WebContents for the given task to a new tab.
-  virtual void MoveTaskUiToToNewTab(const base::Uuid& task_id,
-                                    BrowserWindowInterface* browser);
+  virtual void MoveTaskUiToNewTab(const base::Uuid& task_id,
+                                  BrowserWindowInterface* browser,
+                                  const GURL& inner_frame_url);
 
   // Called when a tab in the sources menu is clicked. Switches to the tab or
   // reopens the tab depending on whether the tab is already open on tab strip.
   void OnTabClickedFromSourcesMenu(int32_t tab_id,
                                    const GURL& url,
                                    BrowserWindowInterface* browser);
+
+ protected:
+  // The actual implementation of `HandleNavigation` that extracts more of the
+  // components needed to decide if the navigation should be handled by this
+  // service.
+  virtual bool HandleNavigationImpl(content::OpenURLParams url_params,
+                                    content::WebContents* source_contents,
+                                    tabs::TabInterface* tab,
+                                    bool is_to_new_tab);
 
  private:
   const raw_ptr<Profile> profile_;

@@ -69,7 +69,7 @@ interface PageHandler {
   OpenHelpUi();
 
   // Moves the contents of the side panel to a new tab.
-  MoveTaskUiToToNewTab();
+  MoveTaskUiToNewTab();
 
   // Gets an OAuth token for the search results for the signed-in user.
   GetOAuthToken() => (string oauth_token);

@@ -234,6 +234,14 @@ void ContextualTasksUI::SetThreadTitle(std::optional<std::string> title) {
   }
 }
 
+const GURL& ContextualTasksUI::GetInnerFrameUrl() const {
+  if (!nav_observer_ || !nav_observer_->web_contents()) {
+    return GURL::EmptyGURL();
+  }
+
+  return nav_observer_->web_contents()->GetLastCommittedURL();
+}
+
 bool ContextualTasksUI::IsShownInTab() {
   return tabs::TabInterface::MaybeGetFromContents(web_ui()->GetWebContents());
 }

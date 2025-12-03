@@ -39,6 +39,7 @@
 #include "components/lens/lens_overlay_metrics.h"
 #include "components/lens/lens_overlay_side_panel_menu_option.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
