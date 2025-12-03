@@ -109,7 +109,10 @@ import java.util.concurrent.TimeoutException;
 
 /** Integration test suite for the first run experience. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
+@Features.EnableFeatures({
+    SigninFeatures.SMART_EMAIL_LINE_BREAKING,
+    ChromeFeatureList.XPLAT_SYNCED_SETUP
+})
 @DoNotBatch(reason = "This test interacts with startup, native initialization, and first run.")
 @CommandLineFlags.Add({ChromeSwitches.NO_FIRST_RUN})
 public class FirstRunIntegrationTest {

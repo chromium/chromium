@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ProgressBar;
 
+import com.airbnb.lottie.LottieAnimationView;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -93,6 +95,21 @@ class FullscreenSigninViewBinder {
             }
             view.getIcon().setImageResource(logoId);
             view.getIcon().setLayoutParams(params);
+        } else if (propertyKey == FullscreenSigninProperties.PROFILE_PICTURE) {
+            view.getIcon().setImageDrawable(model.get(FullscreenSigninProperties.PROFILE_PICTURE));
+        } else if (propertyKey == FullscreenSigninProperties.SHOW_ANIMATION) {
+            boolean visible = model.get(FullscreenSigninProperties.SHOW_ANIMATION);
+            view.getAnimationView().setVisibility(visible ? View.VISIBLE : View.GONE);
+        } else if (propertyKey == FullscreenSigninProperties.START_ANIMATION) {
+            boolean startAnimation = model.get(FullscreenSigninProperties.START_ANIMATION);
+            LottieAnimationView animation = view.getAnimationView();
+            if (startAnimation) {
+                animation.playAnimation();
+            }
+        } else if (propertyKey == FullscreenSigninProperties.ANIMATOR_LISTENER) {
+            LottieAnimationView animation = view.getAnimationView();
+            animation.removeAllAnimatorListeners();
+            animation.addAnimatorListener(model.get(FullscreenSigninProperties.ANIMATOR_LISTENER));
         } else if (Objects.equals(propertyKey, FullscreenSigninProperties.TITLE_STRING)) {
             String text = model.get(FullscreenSigninProperties.TITLE_STRING);
             view.getTitle().setText(text);

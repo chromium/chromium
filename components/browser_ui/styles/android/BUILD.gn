@@ -286,6 +286,7 @@ android_resources("java_resources") {
     "java/res_chromium/drawable-xxhdpi/product_logo_name.png",
     "java/res_chromium/drawable-xxxhdpi/fre_product_logo.png",
     "java/res_chromium/drawable-xxxhdpi/product_logo_name.png",
+    "java/res_chromium/raw/signin_spin.json",
   ]
 
   if (enable_arcore) {
@@ -312,5 +313,6 @@ android_resources("chrome_public_apk_resources") {
     "java/res_chromium/drawable-xxhdpi/product_logo_name.png",
     "java/res_chromium/drawable-xxxhdpi/fre_product_logo.png",
     "java/res_chromium/drawable-xxxhdpi/product_logo_name.png",
+    "java/res_chromium/raw/signin_spin.json",
   ]
 }

@@ -8,6 +8,8 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.accounts.Account;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -17,11 +19,16 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger;
@@ -74,6 +81,9 @@ public class FullscreenSigninMediator
                 AccountPickerCoordinator.Listener,
                 UMADialogCoordinator.Listener {
     private static final String TAG = "SigninFRMediator";
+
+    private static final int SIGNIN_ANIMATION_DELAY_MS = 600;
+    private static boolean sAnimationsEnabled = true;
 
     // LINT.IfChange(LoadPoint)
     /** Used for MobileFre.SlowestLoadPoint histogram. Should be treated as append-only. */
@@ -433,71 +443,139 @@ public class FullscreenSigninMediator
                 SigninFlowTimestampsLogger.startLogging(FlowVariant.FULLSCREEN);
         // If the user signs into an account on the FRE, goes to the next page and presses
         // back to come back to the welcome screen, then there will already be an account signed in.
-        Profile profile = assumeNonNull(mDelegate.getProfileSupplier().get()).getOriginalProfile();
-        @Nullable CoreAccountInfo signedInAccount =
-                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        @Nullable CoreAccountInfo signedInAccount = getSignedInAccount();
         if (signedInAccount != null && Objects.equals(signedInAccount, mSelectedAccount)) {
             mDelegate.advanceToNextPage();
-            return;
         }
-        final SigninManager signinManager =
-                IdentityServicesProvider.get().getSigninManager(profile);
-        assumeNonNull(signinManager);
-        final SignInCallback signInCallback =
-                new SignInCallback() {
-                    @Override
-                    public void onSignInComplete() {
-                        signinTimestampsLogger.recordTimestamp(Event.SIGNIN_COMPLETED);
-                        if (mDestroyed) {
-                            // FirstRunActivity was destroyed while we were waiting for sign-in.
-                            return;
-                        }
-                        mDelegate.advanceToNextPage();
-                    }
-
-                    @Override
-                    public void onSignInAborted() {
-                        signinTimestampsLogger.recordTimestamp(Event.SIGNIN_ABORTED);
-                        // TODO(crbug.com/40790332): For now we enable the buttons again to not
-                        // block the
-                        // users from continuing to the next page. Should show a dialog with the
-                        // signin error.
-                        mModel.set(
-                                FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT,
-                                false);
-                        mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
-                    }
-                };
 
         if (mSelectedAccount != null) {
             mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
-            final @SigninAccessPoint int accessPoint =
-                    mModel.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)
-                            ? SigninAccessPoint.FORCED_SIGNIN
-                            : mAccessPoint;
-            if (signedInAccount != null) {
-                // If there already exists another signed-in account, first sign-out and then
-                // sign-in with the selected account.
-                signOutThenSignInWithSelectedAccount(
-                        mSelectedAccount,
-                        signinManager,
-                        accessPoint,
-                        signinTimestampsLogger,
-                        signInCallback);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.XPLAT_SYNCED_SETUP)) {
+                startSignInAnimation(signinTimestampsLogger);
             } else {
-                FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
-                        mSelectedAccount,
-                        signinManager,
-                        signinTimestampsLogger,
-                        accessPoint,
-                        signInCallback,
-                        mContext,
-                        mModalDialogManager);
+                // Proceed to the next step without waiting for animation.
+                finishSignIn(signinTimestampsLogger);
             }
         }
     }
 
+    /**
+     * Starts the sign-in animation.
+     *
+     * @param signinTimestampsLogger a logger for signin flow events.
+     */
+    private void startSignInAnimation(SigninFlowTimestampsLogger signinTimestampsLogger) {
+        DisplayableProfileData profileData =
+                mModel.get(FullscreenSigninProperties.SELECTED_ACCOUNT_DATA);
+        mModel.set(
+                FullscreenSigninProperties.TITLE_STRING,
+                String.format(
+                        mContext.getString(R.string.signed_in_fre_title),
+                        profileData.getGivenNameOrFullNameOrEmail()));
+        mModel.set(FullscreenSigninProperties.PROFILE_PICTURE, profileData.getImage());
+        if (sAnimationsEnabled) {
+            mModel.set(
+                    FullscreenSigninProperties.ANIMATOR_LISTENER,
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            // To give users more time to read the welcome text, we will wait for a
+                            // delay time (according to UX request).
+                            ThreadUtils.postOnUiThreadDelayed(
+                                    () -> finishSignIn(signinTimestampsLogger),
+                                    SIGNIN_ANIMATION_DELAY_MS);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            getSigninCallback(signinTimestampsLogger).onSignInAborted();
+                        }
+                    });
+            mModel.set(FullscreenSigninProperties.START_ANIMATION, true);
+        } else {
+            finishSignIn(signinTimestampsLogger);
+        }
+    }
+
+    /**
+     * Finishes the sign-in flow, either by signing out and then in with the selected account, or by
+     * checking for account management and signing in with the selected account.
+     *
+     * @param signinTimestampsLogger a logger for signin flow events.
+     */
+    private void finishSignIn(SigninFlowTimestampsLogger signinTimestampsLogger) {
+        @Nullable CoreAccountInfo signedInAccount = getSignedInAccount();
+        final SigninManager signinManager =
+                IdentityServicesProvider.get().getSigninManager(assumeNonNull(getProfile()));
+        assumeNonNull(signinManager);
+        final SignInCallback signInCallback = getSigninCallback(signinTimestampsLogger);
+        final @SigninAccessPoint int accessPoint =
+                mModel.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)
+                        ? SigninAccessPoint.FORCED_SIGNIN
+                        : mAccessPoint;
+        assumeNonNull(mSelectedAccount);
+        if (signedInAccount != null) {
+            // If there already exists another signed-in account, first
+            // sign-out and then sign-in with the selected account.
+            signOutThenSignInWithSelectedAccount(
+                    mSelectedAccount,
+                    signinManager,
+                    accessPoint,
+                    signinTimestampsLogger,
+                    signInCallback);
+        } else {
+            FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
+                    mSelectedAccount,
+                    signinManager,
+                    signinTimestampsLogger,
+                    accessPoint,
+                    signInCallback,
+                    mContext,
+                    mModalDialogManager);
+        }
+    }
+
+    /**
+     * @param signinTimestampsLogger a logger for signin flow events.
+     * @return a {@link SignInCallback} that reacts to sign-in being completed or aborted.
+     */
+    private SignInCallback getSigninCallback(SigninFlowTimestampsLogger signinTimestampsLogger) {
+        return new SignInCallback() {
+            @Override
+            public void onSignInComplete() {
+                signinTimestampsLogger.recordTimestamp(Event.SIGNIN_COMPLETED);
+                if (mDestroyed) {
+                    // FirstRunActivity was destroyed while we were waiting for sign-in.
+                    return;
+                }
+                mDelegate.advanceToNextPage();
+            }
+
+            @Override
+            public void onSignInAborted() {
+                signinTimestampsLogger.recordTimestamp(Event.SIGNIN_ABORTED);
+                // TODO(crbug.com/40790332): For now we enable the buttons again to not
+                // block the users from continuing to the next page. Should show a dialog
+                // with the signin error.
+                mModel.set(
+                        FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, false);
+                mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
+                mModel.set(FullscreenSigninProperties.LOGO_DRAWABLE_ID, mConfig.logoId);
+                mModel.set(FullscreenSigninProperties.SHOW_ANIMATION, mConfig.logoId == 0);
+                mModel.set(FullscreenSigninProperties.TITLE_STRING, mConfig.title);
+            }
+        };
+    }
+
+    /**
+     * Signs out from the current account and then signs in with the selected account.
+     *
+     * @param selectedAccount The account to sign in with.
+     * @param signinManager The signin manager.
+     * @param accessPoint The signin access point.
+     * @param signinTimestampsLogger a logger for signin flow events.
+     * @param signInCallback The callback to be called after sign-in completes or aborts.
+     */
     private void signOutThenSignInWithSelectedAccount(
             CoreAccountInfo selectedAccount,
             SigninManager signinManager,
@@ -516,6 +594,28 @@ public class FullscreenSigninMediator
                                 mModalDialogManager);
         signinManager.signOut(
                 SignoutReason.ABORT_SIGNIN, signOutCallback, /* forceWipeUserData= */ false);
+    }
+
+    /**
+     * @return The {@link Profile} of the user, or null if it's not available yet.
+     */
+    private @Nullable Profile getProfile() {
+        @Nullable ProfileProvider profileProvider = mDelegate.getProfileSupplier().get();
+        if (profileProvider == null) return null;
+        return profileProvider.getOriginalProfile();
+    }
+
+    /**
+     * @return The signed-in {@link CoreAccountInfo} of the user, or null if the user isn't signed
+     *     in or the profile is not available yet.
+     */
+    private @Nullable CoreAccountInfo getSignedInAccount() {
+        Profile profile = getProfile();
+        if (profile == null) return null;
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        if (identityManager == null) return null;
+        return identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
     }
 
     private @AccountConsistencyPromoAction int getSigninPromoAction() {
@@ -674,5 +774,21 @@ public class FullscreenSigninMediator
 
         // Apply spans to footer string.
         return SpanApplier.applySpans(footerString, spans.toArray(new SpanApplier.SpanInfo[0]));
+    }
+
+    /**
+     * @return Whether the animations are enabled for testing purposes.
+     */
+    public static boolean getAnimationsEnabledForTesting() {
+        return sAnimationsEnabled;
+    }
+
+    /**
+     * @param value Whether the animations should be enabled for testing purposes.
+     */
+    public static void setAnimationsEnabledForTesting(boolean value) {
+        boolean oldValue = sAnimationsEnabled;
+        sAnimationsEnabled = value;
+        ResettersForTesting.register(() -> sAnimationsEnabled = oldValue);
     }
 }

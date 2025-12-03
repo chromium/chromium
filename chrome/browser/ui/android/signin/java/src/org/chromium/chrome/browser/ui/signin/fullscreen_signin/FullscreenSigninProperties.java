@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
+import android.animation.Animator.AnimatorListener;
+import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.DrawableRes;
@@ -56,6 +58,24 @@ class FullscreenSigninProperties {
     static final WritableIntPropertyKey LOGO_DRAWABLE_ID =
             new WritableIntPropertyKey("logo_drawable_id");
 
+    /** Profile picture after the user signs into FRE. Setting this also starts an animation. */
+    static final WritableObjectPropertyKey<Drawable> PROFILE_PICTURE =
+            new WritableObjectPropertyKey<>("profile_picture");
+
+    /**
+     * Whether the animation should be shown. We expect this to be true iff LOGO_DRAWABLE_ID == 0.
+     */
+    static final WritableBooleanPropertyKey SHOW_ANIMATION =
+            new WritableBooleanPropertyKey("show_animation");
+
+    /** Whether the animation should start playing. */
+    static final WritableBooleanPropertyKey START_ANIMATION =
+            new WritableBooleanPropertyKey("start_animation");
+
+    /** A {@link AnimatorListener} to be attached to the sign-in animation. */
+    static final WritableObjectPropertyKey<AnimatorListener> ANIMATOR_LISTENER =
+            new WritableObjectPropertyKey<>("animator_listener");
+
     static final WritableObjectPropertyKey<String> TITLE_STRING =
             new WritableObjectPropertyKey<>("title_string");
 
@@ -81,6 +101,10 @@ class FullscreenSigninProperties {
                 SHOW_ENTERPRISE_MANAGEMENT_NOTICE,
                 IS_SIGNIN_SUPPORTED,
                 LOGO_DRAWABLE_ID,
+                PROFILE_PICTURE,
+                SHOW_ANIMATION,
+                START_ANIMATION,
+                ANIMATOR_LISTENER,
                 TITLE_STRING,
                 SUBTITLE_STRING,
                 DISMISS_BUTTON_STRING,
