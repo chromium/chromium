@@ -64,7 +64,8 @@ bool DOMFeaturePolicy::allowsFeature(ScriptState* script_state,
     context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "Invalid origin url for feature '" + feature + "': " + url + "."));
+        StrCat(
+            {"Invalid origin url for feature '", feature, "': ", url, "."})));
     return false;
   }
 
@@ -157,7 +158,7 @@ void DOMFeaturePolicy::AddWarningForUnrecognizedFeature(
   context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kOther,
       mojom::blink::ConsoleMessageLevel::kWarning,
-      "Unrecognized feature: '" + feature + "'."));
+      StrCat({"Unrecognized feature: '", feature, "'."})));
 }
 
 void DOMFeaturePolicy::Trace(Visitor* visitor) const {

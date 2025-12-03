@@ -369,7 +369,7 @@ ScriptPromise<IDLUndefined> PreferenceObject::requestOverride(
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kTypeMismatchError,
-                          value.value() + " is not a valid value."));
+                          StrCat({value.value(), " is not a valid value."})));
   }
 
   if (!value_same_as_existing_override) {

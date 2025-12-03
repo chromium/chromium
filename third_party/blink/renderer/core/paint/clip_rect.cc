@@ -90,8 +90,8 @@ void ClipRect::Reset() {
 }
 
 String ClipRect::ToString() const {
-  return rect_.ToString() + (has_radius_ ? " hasRadius" : " noRadius") +
-         (is_infinite_ ? " isInfinite" : " notInfinite");
+  return StrCat({rect_.ToString(), (has_radius_ ? " hasRadius" : " noRadius"),
+                 (is_infinite_ ? " isInfinite" : " notInfinite")});
 }
 
 std::ostream& operator<<(std::ostream& ostream, const ClipRect& rect) {

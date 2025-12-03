@@ -301,7 +301,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
     opener_window.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "Not allowed to load local resource: " + url.ElidedString()));
+        StrCat({"Not allowed to load local resource: ", url.ElidedString()})));
     return nullptr;
   }
 
@@ -352,9 +352,9 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
     opener_window.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "Blocked opening '" + url.ElidedString() +
-            "' in a new window because the request was made in a sandboxed "
-            "frame whose 'allow-popups' permission is not set."));
+        StrCat({"Blocked opening '", url.ElidedString(),
+                "' in a new window because the request was made in a sandboxed "
+                "frame whose 'allow-popups' permission is not set."})));
     return nullptr;
   }
 

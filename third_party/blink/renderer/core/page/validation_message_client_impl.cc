@@ -75,7 +75,8 @@ void ValidationMessageClientImpl::ShowValidationMessage(
   String message = original_message;
   if (original_message.length() > kMaxValidationStringLength &&
       anchor.GetDocument().GetFrame()->IsCrossOriginToOutermostMainFrame()) {
-    message = original_message.Substring(0, kMaxValidationStringLength) + "...";
+    message = StrCat(
+        {StringView(original_message, 0, kMaxValidationStringLength), "..."});
   }
 
   if (current_anchor_)

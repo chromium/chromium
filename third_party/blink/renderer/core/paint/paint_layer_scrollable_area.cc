@@ -3279,8 +3279,8 @@ gfx::Rect PaintLayerScrollableArea::ScrollingBackgroundVisualRect(
 String
 PaintLayerScrollableArea::ScrollingBackgroundDisplayItemClient::DebugName()
     const {
-  return "Scrolling background of " +
-         scrollable_area_->GetLayoutBox()->DebugName();
+  return StrCat({"Scrolling background of ",
+                 scrollable_area_->GetLayoutBox()->DebugName()});
 }
 
 DOMNodeId
@@ -3292,7 +3292,8 @@ PaintLayerScrollableArea::ScrollingBackgroundDisplayItemClient::OwnerNodeId(
 
 String PaintLayerScrollableArea::ScrollCornerDisplayItemClient::DebugName()
     const {
-  return "Scroll corner of " + scrollable_area_->GetLayoutBox()->DebugName();
+  return StrCat(
+      {"Scroll corner of ", scrollable_area_->GetLayoutBox()->DebugName()});
 }
 
 DOMNodeId PaintLayerScrollableArea::ScrollCornerDisplayItemClient::OwnerNodeId(

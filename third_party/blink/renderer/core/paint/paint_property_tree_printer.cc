@@ -140,7 +140,7 @@ void SetDebugName(const PaintPropertyNode* node,
                   const String& name,
                   const LayoutObject& object) {
   if (node) {
-    SetDebugName(node, name + " (" + object.DebugName() + ")");
+    SetDebugName(node, StrCat({name, " (", object.DebugName(), ")"}));
   }
 }
 
