@@ -723,6 +723,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
         updateDataTypeState();
         updateEncryptionState();
+        notifyPreferencesUpdated();
     }
 
     /** Gets the state from data type checkboxes and saves this state into {@link SyncService}. */
