@@ -1213,7 +1213,12 @@ void PermissionRequestManager::CurrentRequestsDecided(
         view_ ? std::optional(view_->GetPromptVariants()) : std::nullopt,
         prediction_grant_likelihood_, permission_request_relevance_,
         permission_ai_relevance_model_, was_decision_held_back_, ignore_reason,
-        did_show_prompt_, did_click_manage_, did_click_learn_more_);
+        did_show_prompt_, did_click_manage_, did_click_learn_more_,
+        requests_[0]->GetContentSettingsType() ==
+                ContentSettingsType::GEOLOCATION_WITH_OPTIONS
+            ? std::make_optional<GeolocationAccuracy>(
+                  GetInitialGeolocationAccuracySelection())
+            : std::nullopt);
   }
 
   std::optional<QuietUiReason> quiet_ui_reason;

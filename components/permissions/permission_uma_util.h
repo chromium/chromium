@@ -694,7 +694,9 @@ class PermissionUmaUtil {
       std::optional<permissions::PermissionIgnoredReason> ignored_reason,
       bool did_show_prompt,
       bool did_click_manage,
-      bool did_click_learn_more);
+      bool did_click_learn_more,
+      std::optional<GeolocationAccuracy>
+          initial_geolocation_accuracy_selection);
 
   static void RecordCrowdDenyDelayedPushNotification(base::TimeDelta delay);
 
@@ -1012,7 +1014,9 @@ class PermissionUmaUtil {
       std::optional<permissions::PermissionAiRelevanceModel>
           permission_ai_relevance_model,
       std::optional<bool> prediction_decision_held_back,
-      const PromptOptions& prompt_options);
+      const PromptOptions& prompt_options,
+      std::optional<GeolocationAccuracy>
+          initial_geolocation_accuracy_selection);
 
   // Records |count| total prior actions for a prompt of type |permission|
   // for a single origin using |prefix| for the metric.

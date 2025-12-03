@@ -391,7 +391,8 @@ TEST_F(PermissionsDelegationUmaUtilTest, UsageAndPromptInTopLevelFrame) {
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
-      /*did_click_learn_more*/ false);
+      /*did_click_learn_more*/ false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
   histograms.ExpectTotalCount(kGeolocationPermissionsPolicyActionHistogramName,
                               0);
 }
@@ -729,7 +730,8 @@ TEST_F(PermissionsDelegationUmaUtilTest, SiteLevelAndOSPromptVariantsTest) {
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ true,
       /*did_click_managed*/ false,
-      /*did_click_learn_more*/ false);
+      /*did_click_learn_more*/ false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
 
   const auto entries = ukm_recorder.GetEntriesByName("Permission");
   ASSERT_EQ(1u, entries.size());
@@ -765,7 +767,8 @@ TEST_F(PermissionsDelegationUmaUtilTest, PermissionAiRelevanceModelUkmTest) {
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ true,
       /*did_click_managed*/ false,
-      /*did_click_learn_more*/ false);
+      /*did_click_learn_more*/ false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
 
   const auto entries = ukm_recorder.GetEntriesByName("Permission");
   ASSERT_EQ(1u, entries.size());
@@ -806,7 +809,8 @@ TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
-      /*did_click_learn_more*/ false);
+      /*did_click_learn_more*/ false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
   histograms.ExpectTotalCount(kGeolocationPermissionsPolicyActionHistogramName,
                               0);
 }
@@ -975,7 +979,8 @@ TEST_P(CrossFramePermissionsDelegationUmaUtilTest, CrossOriginFrame) {
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
-      /*did_click_learn_more*/ false);
+      /*did_click_learn_more*/ false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
   if (feature.has_value()) {
     EXPECT_THAT(
         histograms.GetAllSamples(kPermissionsPolicyActionHistogramName),
@@ -1181,7 +1186,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       /*ignored_reason*/ std::nullopt,
       /*did_show_prompt=*/false,
       /*did_click_manage=*/false,
-      /*did_click_learn_more=*/false);
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
 
   histogram_tester_.ExpectUniqueSample(
       "Permissions.PredictionService.Action.Notifications.Gesture.Loud",
@@ -1207,7 +1213,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       /*ignored_reason*/ std::nullopt,
       /*did_show_prompt=*/false,
       /*did_click_manage=*/false,
-      /*did_click_learn_more=*/false);
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
 
   histogram_tester_.ExpectUniqueSample(
       "Permissions.PredictionService.Action.Notifications.NoGesture.Loud",
@@ -1233,7 +1240,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       /*ignored_reason*/ std::nullopt,
       /*did_show_prompt=*/false,
       /*did_click_manage=*/false,
-      /*did_click_learn_more=*/false);
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
 
   histogram_tester_.ExpectUniqueSample(
       "Permissions.PredictionService.Action.Notifications.Gesture.Quiet",
@@ -1259,7 +1267,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       /*ignored_reason*/ std::nullopt,
       /*did_show_prompt=*/false,
       /*did_click_manage=*/false,
-      /*did_click_learn_more=*/false);
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
 
   histogram_tester_.ExpectUniqueSample(
       "Permissions.PredictionService.Action.Notifications.NoGesture.Quiet",
@@ -1285,7 +1294,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       /*ignored_reason*/ std::nullopt,
       /*did_show_prompt=*/false,
       /*did_click_manage=*/false,
-      /*did_click_learn_more=*/false);
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
 
   histogram_tester_.ExpectUniqueSample(
       "Permissions.PredictionService.Action.Geolocation.Gesture.Loud",
@@ -1311,7 +1321,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       /*ignored_reason*/ std::nullopt,
       /*did_show_prompt=*/false,
       /*did_click_manage=*/false,
-      /*did_click_learn_more=*/false);
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
 
   histogram_tester_.ExpectUniqueSample(
       "Permissions.PredictionService.Action.Geolocation.NoGesture.Loud",
@@ -1337,7 +1348,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       /*ignored_reason*/ std::nullopt,
       /*did_show_prompt=*/false,
       /*did_click_manage=*/false,
-      /*did_click_learn_more=*/false);
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
 
   histogram_tester_.ExpectUniqueSample(
       "Permissions.PredictionService.Action.Geolocation.Gesture.Quiet",
@@ -1363,7 +1375,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       /*ignored_reason*/ std::nullopt,
       /*did_show_prompt=*/false,
       /*did_click_manage=*/false,
-      /*did_click_learn_more=*/false);
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
 
   histogram_tester_.ExpectUniqueSample(
       "Permissions.PredictionService.Action.Geolocation.NoGesture.Quiet",

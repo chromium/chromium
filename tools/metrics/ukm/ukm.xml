@@ -20270,6 +20270,17 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="InitialGeolocationAccuracySelection">
+    <summary>
+      An enum of type GeolocationAccuracy (see
+      https://source.chromium.org/search?q=class:%5CbGeolocationAccuracy%5Cb).
+      This is only emitted for geolocation permission prompts with
+      precise/approximate options (corresponding to
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS). In that case, it is either
+      0 (kPrecise) or 1 (kApproximate) and represents the preselected accuracy
+      option in the prompt.
+    </summary>
+  </metric>
   <metric name="OsPromptScreen" enum="ElementAnchoredBubbleVariant">
     <summary>
       An enum of type ElementAnchoredBubbleVariant. The screen that prompts the

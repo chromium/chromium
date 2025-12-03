@@ -343,6 +343,7 @@ void RecordPermissionActionUkm(
     PredictionRequestFeatures::ActionCounts actions_counts,
     std::optional<bool> prediction_decision_held_back,
     std::optional<UkmPromptOptions> prompt_options,
+    std::optional<GeolocationAccuracy> initial_geolocation_accuracy_selection,
     std::optional<ukm::SourceId> source_id) {
   if (action == PermissionAction::REVOKED) {
     RecordUmaForWhetherRevocationUkmWasRecorded(permission,
@@ -373,6 +374,11 @@ void RecordPermissionActionUkm(
 
   if (prompt_options) {
     builder.SetPromptOptions(static_cast<int64_t>(prompt_options.value()));
+  }
+
+  if (initial_geolocation_accuracy_selection) {
+    builder.SetInitialGeolocationAccuracySelection(
+        static_cast<int64_t>(initial_geolocation_accuracy_selection.value()));
   }
 
   builder
@@ -949,7 +955,8 @@ void PermissionUmaUtil::PermissionRevoked(
       /*predicted_grant_likelihood=*/std::nullopt,
       /*permission_request_relevance=*/std::nullopt,
       /*permission_ai_relevance_model=*/std::nullopt,
-      /*prediction_decision_held_back=*/std::nullopt, std::monostate());
+      /*prediction_decision_held_back=*/std::nullopt, std::monostate(),
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
 }
 
 void PermissionUmaUtil::RecordEmbargoPromptSuppression(
@@ -1086,7 +1093,8 @@ void PermissionUmaUtil::PermissionPromptResolved(
     std::optional<permissions::PermissionIgnoredReason> ignored_reason,
     bool did_show_prompt,
     bool did_click_managed,
-    bool did_click_learn_more) {
+    bool did_click_learn_more,
+    std::optional<GeolocationAccuracy> initial_geolocation_accuracy_selection) {
   switch (permission_action) {
     case PermissionAction::GRANTED:
       RecordPromptDecided(requests, /*accepted=*/true, /*is_one_time=*/false);
@@ -1131,7 +1139,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
         content::RenderFrameHost::FromID(request->get_requesting_frame_id()),
         predicted_grant_likelihood, permission_request_relevance,
         permission_ai_relevance_model, prediction_decision_held_back,
-        request->prompt_options());
+        request->prompt_options(), initial_geolocation_accuracy_selection);
 
     std::string priorDismissPrefix = base::StrCat(
         {"Permissions.Prompt.", action_string, ".PriorDismissCount2."});
@@ -1471,7 +1479,8 @@ void PermissionUmaUtil::RecordPermissionAction(
     std::optional<permissions::PermissionAiRelevanceModel>
         permission_ai_relevance_model,
     std::optional<bool> prediction_decision_held_back,
-    const PromptOptions& prompt_options) {
+    const PromptOptions& prompt_options,
+    std::optional<GeolocationAccuracy> initial_geolocation_accuracy_selection) {
   DCHECK(PermissionUtil::IsPermission(permission));
   PermissionDecisionAutoBlocker* autoblocker =
       PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
@@ -1546,7 +1555,8 @@ void PermissionUmaUtil::RecordPermissionAction(
           permission_ai_relevance_model,
           loud_ui_actions_counts_per_request_type, loud_ui_actions_counts,
           actions_counts_per_request_type, actions_counts,
-          prediction_decision_held_back, ukm_prompt_options));
+          prediction_decision_held_back, ukm_prompt_options,
+          initial_geolocation_accuracy_selection));
 
   if (render_frame_host && IsCrossOriginSubframe(render_frame_host)) {
     RecordCrossOriginFrameActionAndPolicyConfiguration(permission, action,

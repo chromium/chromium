@@ -1867,6 +1867,7 @@ class PredictionServiceGeolocationAccuracyBrowserTest
 IN_PROC_BROWSER_TEST_P(PredictionServiceGeolocationAccuracyBrowserTest,
                        UseGeolocationAccuracyFromResponse) {
   ASSERT_TRUE(embedded_test_server()->Start());
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   GeneratePredictionsResponse prediction_service_response =
       BuildPredictionServiceResponse(kLikelihoodLikely);
@@ -1891,6 +1892,17 @@ IN_PROC_BROWSER_TEST_P(PredictionServiceGeolocationAccuracyBrowserTest,
   EXPECT_FALSE(manager->ShouldCurrentRequestUseQuietUI());
   EXPECT_EQ(GetParam().expected_accuracy,
             manager->GetInitialGeolocationAccuracySelection());
+
+  manager->Accept();
+
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::Permission::kEntryName);
+  ASSERT_FALSE(entries.empty());
+  const ukm::mojom::UkmEntry* entry = entries.back().get();
+  ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::Permission::kInitialGeolocationAccuracySelectionName,
+      static_cast<int64_t>(GetParam().expected_accuracy));
 }
 
 INSTANTIATE_TEST_SUITE_P(
