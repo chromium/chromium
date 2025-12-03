@@ -7,7 +7,7 @@
   <message name ="IDS_COLLABORATION_SIGNIN_DESCRIPTION" desc="The description of the collaboration signin screen." formatter_data="android_java">
     Sign in to Chrome to share and join tab groups, and work together on ideas
   </message>
-  <message name ="IDS_COLLABORATION_SIGNIN_BOTTOM_SHEET_TITLE" desc="The title of the collaboration signin bottom sheet screen." formatter_data="android_java">
+  <message name ="IDS_COLLABORATION_SIGNIN_BOTTOM_SHEET_TITLE" meaning="Title" desc="The title of the collaboration signin bottom sheet screen." formatter_data="android_java">
     Sign in to Chrome
   </message>
   <message name ="IDS_COLLABORATION_SIGNIN_BOTTOM_SHEET_DESCRIPTION" desc="The description of the collaboration signin bottom sheet screen." formatter_data="android_java">

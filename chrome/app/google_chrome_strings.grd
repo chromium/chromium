@@ -1311,7 +1311,7 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- Profile Menu -->
-      <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON" desc="Text for the button in the sign-in promo in the profile menu when the used is signed out.">
+      <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON" meaning="Button" desc="Text for the button in the sign-in promo in the profile menu when the used is signed out.">
         Sign in to Chrome
       </message>
       <message name="IDS_PROFILE_MENU_PLACEHOLDER_PROFILE_NAME" desc="Placeholder profile name, used when the user did not enter a name for their profile.">
@@ -2451,7 +2451,7 @@ Google Chrome is unable to recover your settings.
         </message>
 
         <!-- First Run Experience -->
-        <message name="IDS_FRE_SIGN_IN_TITLE_0"
+        <message name="IDS_FRE_SIGN_IN_TITLE_0" meaning="Title"
           desc="This string appears as a heading on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. The tone should be inviting and alluring.">
           Sign in to Chrome
         </message>

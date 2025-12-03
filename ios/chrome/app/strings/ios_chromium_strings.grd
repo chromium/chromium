@@ -261,7 +261,7 @@
       <message name="IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL" desc="Dialog label to invite the user to sign-in on the web. [iOS only]">
         Sign in to this site and Chromium.
       </message>
-      <message name="IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE" desc="Dialog title to invite the user to sign-in on the web, related to IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE.">
+      <message name="IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE" meaning="Title" desc="Dialog title to invite the user to sign-in on the web, related to IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE.">
         Sign in to Chromium
       </message>
       <message name="IDS_IOS_CONTEXTUAL_PANEL_BRANDING_ACCESSIBILITY_LABEL" desc="Accessibility text for the title of the Contextual Panel screen.">
@@ -432,7 +432,7 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
        <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0" desc="Variations option 1. Title of the screen suggesting to the user to sign in. [iOS only]">
         Take your Chromium with you
       </message>
-      <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED" desc="Title of a dialog to sign in to Chrome when sign-in is required because of an enterprise policy. [iOS only]">
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED" meaning="Title" desc="Title of a dialog to sign in to Chrome when sign-in is required because of an enterprise policy. [iOS only]">
         Sign in to Chromium
       </message>
       <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX" desc="Checkbox to accept the metrics reporting consent. Related to IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION and IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE. [iOS only]">
@@ -724,7 +724,7 @@ Things to consider:
 
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chromium data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
-      <message name="IDS_IOS_NON_MODAL_SIGNIN_PROMO_PROMPT" desc="Infobar title for non modal signin promo.">
+      <message name="IDS_IOS_NON_MODAL_SIGNIN_PROMO_PROMPT" meaning="Title" desc="Infobar title for non modal signin promo.">
         Sign in to Chromium
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_ALERT_MESSAGE" desc="Text for the Notifications UI Alert Prompt that redirects the user to the iOS notifications permission page">
@@ -1156,7 +1156,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
       <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_MANAGED_ACCOUNT" desc="The signout dialog title. This dialog is used when the user have a managed account (other than gmail account) [iOS only].">
         Your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex></ph>, so your Chromium data will be cleared from this device
       </message>
-      <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE" desc="The title for the setting item to Sign in to Chromium [iOS only]">
+      <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE" meaning= "Title" desc="The title for the setting item to Sign in to Chromium [iOS only]">
         Sign in to Chromium
       </message>
       <message name="IDS_IOS_SPOTLIGHT_CHROME_ACTIONS_LABEL" desc="Tag label title displayed for chrome actions spotlight items. [iOS only]">
