@@ -8,7 +8,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/metrics/testing/metrics_consent_override.h"
-#include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -152,7 +151,8 @@ class DwaBrowserTest : public SyncTest {
     ASSERT_NE(consent_service, nullptr);
 
     std::unique_ptr<SyncServiceImplHarness> harness =
-        test::InitializeProfileForSync(profile, GetFakeServer()->AsWeakPtr());
+        SyncServiceImplHarness::Create(
+            profile, SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
     EXPECT_TRUE(harness->SetupSync());
 
     if (consent_state) {
@@ -171,7 +171,8 @@ class DwaBrowserTest : public SyncTest {
     ASSERT_NE(consent_service, nullptr);
 
     std::unique_ptr<SyncServiceImplHarness> harness =
-        test::InitializeProfileForSync(profile, GetFakeServer()->AsWeakPtr());
+        SyncServiceImplHarness::Create(
+            profile, SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
     EXPECT_TRUE(harness->SetupSync());
 
     if (consent_state) {
@@ -188,7 +189,8 @@ class DwaBrowserTest : public SyncTest {
   std::unique_ptr<SyncServiceImplHarness> EnableSyncForProfile(
       Profile* profile) {
     std::unique_ptr<SyncServiceImplHarness> harness =
-        test::InitializeProfileForSync(profile, GetFakeServer()->AsWeakPtr());
+        SyncServiceImplHarness::Create(
+            profile, SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
     EXPECT_TRUE(harness->SetupSync());
 
     // If unified consent is enabled, then enable url-keyed-anonymized data

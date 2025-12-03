@@ -23,7 +23,6 @@
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/metrics/testing/metrics_consent_override.h"
 #include "chrome/browser/metrics/testing/metrics_reporting_pref_helper.h"
-#include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -224,7 +223,8 @@ class UkmBrowserTestBase : public SyncTest {
   std::unique_ptr<SyncServiceImplHarness> EnableSyncForProfile(
       Profile* profile) {
     std::unique_ptr<SyncServiceImplHarness> harness =
-        test::InitializeProfileForSync(profile, GetFakeServer()->AsWeakPtr());
+        SyncServiceImplHarness::Create(
+            profile, SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
 
     EXPECT_TRUE(harness->SetupSync());
 
@@ -1188,7 +1188,8 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTestWithSyncTransport,
   // should trigger starting the Sync machinery in standalone transport mode.
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   std::unique_ptr<SyncServiceImplHarness> harness =
-      test::InitializeProfileForSync(profile, GetFakeServer()->AsWeakPtr());
+      SyncServiceImplHarness::Create(
+          profile, SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
 
@@ -1199,7 +1200,6 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTestWithSyncTransport,
   ASSERT_TRUE(harness->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             sync_service->GetTransportState());
-  ASSERT_FALSE(sync_service->IsSyncFeatureEnabled());
 
   // History Sync is not active.
   ASSERT_FALSE(sync_service->GetActiveDataTypes().Has(syncer::HISTORY));
