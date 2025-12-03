@@ -40,15 +40,19 @@ def main():
     cmd += ['--quiet']
   cmd += args.targets
 
+  siso_output_path = os.path.join(output_dir, 'siso_output')
+
   for iteration_count in range(1, 10000):
     logging.info('Building Iteration %d', iteration_count)
+    # Need to delete file since it is not cleared if "gn gen" fails.
+    if os.path.exists(siso_output_path):
+      os.unlink(siso_output_path)
     result = subprocess.run(cmd)
 
     if result.returncode == 0:
       logging.info('Build successful after %d iteration(s).', iteration_count)
       return 0
 
-    siso_output_path = os.path.join(output_dir, 'siso_output')
     if not os.path.exists(siso_output_path):
       logging.error('siso_output not found at %s', siso_output_path)
       return 1
