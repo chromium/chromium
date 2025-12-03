@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
@@ -215,6 +216,22 @@ const ScrollMarkerPseudoElement* GetScrollMarker(const Node* node) {
       element->GetPseudoElement(kPseudoIdScrollMarker));
 }
 
+// Returns the ::column::scroll-marker pseudo-element for the first column of
+// `node`, or nullptr if not found.
+const ScrollMarkerPseudoElement* GetColumnScrollMarker(const Node* node) {
+  auto* element = DynamicTo<Element>(node);
+  if (!element) {
+    return nullptr;
+  }
+  const ColumnPseudoElementsVector* column_pseudo_elements =
+      element->GetColumnPseudoElements();
+  if (!column_pseudo_elements || column_pseudo_elements->empty()) {
+    return nullptr;
+  }
+  return DynamicTo<ScrollMarkerPseudoElement>(
+      column_pseudo_elements->front()->GetPseudoElement(kPseudoIdScrollMarker));
+}
+
 bool IsTabsModeScrollMarker(const ScrollMarkerPseudoElement& scroll_marker) {
   ScrollMarkerGroupPseudoElement* scroll_marker_group =
       scroll_marker.ScrollMarkerGroup();
@@ -227,11 +244,17 @@ bool IsTabsModeScrollMarker(const ScrollMarkerPseudoElement& scroll_marker) {
          ScrollMarkerGroup::ScrollMarkerMode::kTabs;
 }
 
-// Returns `true` if `node` has ::scroll-marker and the originating
-// element of its ::scroll-marker-group has scroll-marker-group property
-// set to `tabs` mode.
-bool IsOriginatingElementForScrollMarkerInTabsMode(const Node* node) {
+// Returns `true` if `node` has ::scroll-marker or ::column::scroll-marker, and
+// the originating element of its ::scroll-marker-group has scroll-marker-group
+// property set to `tabs` mode.
+bool IsUltimateOriginatingElementForScrollMarkerInTabsMode(const Node* node) {
   const ScrollMarkerPseudoElement* scroll_marker = GetScrollMarker(node);
+  // Check ::column::scroll-marker if no regular ::scroll-marker found, as
+  // if the originating element is ::column the tabpanel role is given to the
+  // originating element of the ::column.
+  if (!scroll_marker) {
+    scroll_marker = GetColumnScrollMarker(node);
+  }
   return scroll_marker && IsTabsModeScrollMarker(*scroll_marker);
 }
 
@@ -2246,7 +2269,7 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
   // the originating element of ::scroll-marker is given an implicit
   // role of tabpanel.
   if (RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled() &&
-      IsOriginatingElementForScrollMarkerInTabsMode(node)) {
+      IsUltimateOriginatingElementForScrollMarkerInTabsMode(node)) {
     return ax::mojom::blink::Role::kTabPanel;
   }
 
