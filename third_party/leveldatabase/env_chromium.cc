@@ -7,6 +7,7 @@
 #include <atomic>
 #include <iterator>
 #include <limits>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -175,12 +176,14 @@ Status ReadFromFileToScratch(uint64_t offset,
                              char* scratch,
                              base::File* file,
                              const base::FilePath& file_path) {
-  int bytes_read = file->Read(offset, scratch, n);
-  if (bytes_read < 0) {
+  base::span<uint8_t> scratch_span =
+      base::as_writable_bytes(UNSAFE_TODO(base::span(scratch, n)));
+  std::optional<size_t> bytes_read = file->Read(offset, scratch_span);
+  if (!bytes_read) {
     return MakeIOError(file_path.AsUTF8Unsafe(), "Could not perform read",
                        kRandomAccessFileRead);
   }
-  *result = Slice(scratch, (bytes_read < 0) ? 0 : bytes_read);
+  *result = Slice(scratch, bytes_read.value());
 
   return Status::OK();
 }
