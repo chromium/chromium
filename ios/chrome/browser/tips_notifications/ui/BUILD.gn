@@ -11,6 +11,7 @@ source_set("shared") {
     "//base",
     "//ios/chrome/browser/instructions_bottom_sheet/ui",
     "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/promo_style:utils",

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/tips_notifications/ui/tips_promo_view_controller.h"
 
+#import "base/check.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -28,32 +30,17 @@ const CGFloat kAnimationHeightPercent = 0.5;
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                           target:self.delegate
-                           action:@selector(didDismissViewController)];
-  self.navigationItem.rightBarButtonItem = dismissButton;
-  self.shouldHideBanner = YES;
-  self.headerImageType = PromoStyleImageType::kNone;
+  [super viewDidLoad];
 
   UIStackView* contentStack = [self createContentStack];
-  [self.specificContentView addSubview:contentStack];
-  [super viewDidLoad];
+  [self.contentView addSubview:contentStack];
 
   [NSLayoutConstraint activateConstraints:@[
     [_animationViewWrapper.animationView.heightAnchor
         constraintEqualToAnchor:self.view.heightAnchor
                      multiplier:kAnimationHeightPercent],
-    [contentStack.centerXAnchor
-        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
-    [contentStack.topAnchor
-        constraintEqualToAnchor:self.specificContentView.topAnchor
-                       constant:-kCustomSpacingAfterAnimation],
-    [contentStack.widthAnchor
-        constraintEqualToAnchor:self.specificContentView.widthAnchor],
-    [self.specificContentView.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:contentStack.heightAnchor],
   ]];
+  AddSameConstraints(contentStack, self.contentView);
 
   [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withAction:@selector(updateAnimation)];
@@ -106,20 +93,20 @@ const CGFloat kAnimationHeightPercent = 0.5;
   }
   [self updateAnimation];
 
-  UILabel* title = [self createLabel:self.titleText
-                                font:GetFRETitleFont(UIFontTextStyleTitle2)
-                               color:kTextPrimaryColor];
-  UILabel* subtitle =
-      [self createLabel:self.subtitleText
-                   font:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-                  color:kTextSecondaryColor];
-  // Clear `titleText` and `subtitleText` so that PromoStyleViewController does
-  // not use them to create alternate title and subtitle labels.
-  self.titleText = nil;
-  self.subtitleText = nil;
+  if (self.titleText.length > 0) {
+    UILabel* title = [self createLabel:self.titleText
+                                  font:GetFRETitleFont(UIFontTextStyleTitle2)
+                                 color:kTextPrimaryColor];
+    [stack addArrangedSubview:title];
+  }
 
-  [stack addArrangedSubview:title];
-  [stack addArrangedSubview:subtitle];
+  if (self.subtitleText.length > 0) {
+    UILabel* subtitle =
+        [self createLabel:self.subtitleText
+                     font:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+                    color:kTextSecondaryColor];
+    [stack addArrangedSubview:subtitle];
+  }
 
   return stack;
 }
