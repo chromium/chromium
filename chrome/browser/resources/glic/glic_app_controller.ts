@@ -460,7 +460,9 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     // Blocking on cookie syncing here introduces latency, we should consider
     // ways to avoid it.
     this.trackLoadingStageStart(LoadingStage.AWAITING_COOKIE_SYNC);
-    const {result} = await this.browserProxy.handler.prepareForClient();
+    const {result} = this.browserProxy.preloadHandler ?
+        await this.browserProxy.preloadHandler.prepareForClient() :
+        await this.browserProxy.handler.prepareForClient();
     this.trackLoadingStageEnd();
 
     switch (result) {

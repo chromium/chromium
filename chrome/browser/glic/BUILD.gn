@@ -168,6 +168,8 @@ source_set("impl") {
     "host/glic_synthetic_trial_manager.cc",
     "host/glic_synthetic_trial_manager.h",
     "host/glic_ui.cc",
+    "host/glic_web_contents_warming_pool.cc",
+    "host/glic_web_contents_warming_pool.h",
     "host/guest_util.cc",
     "host/host.cc",
     "host/page_metadata_manager.cc",
