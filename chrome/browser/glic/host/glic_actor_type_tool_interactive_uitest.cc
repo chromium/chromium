@@ -86,7 +86,7 @@ GlicActorUiTest::MultiStep GlicActorTypeToolUiTest::TypeAction(
   return ExecuteAction(std::move(type_provider), std::move(expected_result));
 }
 
-// TODO(crbug.com/409570203): Add Tests for other cases once they are
+// TODO(crbug.com/417270084): Add Tests for other cases once they are
 // implemented. Currently uses DELETE_EXISTING behavior in all cases.
 IN_PROC_BROWSER_TEST_F(GlicActorTypeToolUiTest, BasicTypeActionSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTypingTestTabId);
