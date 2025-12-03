@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 
 #include "base/functional/callback.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -126,18 +127,23 @@ void GlicSidePanelCoordinator::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
-  if (reason == SidePanelEntryHideReason::kBackgrounded) {
+  pending_hide_reason_ = reason;
+}
+
+void GlicSidePanelCoordinator::OnEntryHideCancelled(SidePanelEntry* entry) {
+  CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
+  pending_hide_reason_.reset();
+}
+
+void GlicSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
+  CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
+  CHECK(pending_hide_reason_.has_value());
+  if (pending_hide_reason_ == SidePanelEntryHideReason::kBackgrounded) {
     state_ = State::kBackgrounded;
   } else {
     state_ = State::kClosed;
   }
 
-  NotifyStateChanged();
-}
-
-void GlicSidePanelCoordinator::OnEntryHideCancelled(SidePanelEntry* entry) {
-  CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
-  state_ = State::kShown;
   NotifyStateChanged();
 }
 
