@@ -19001,6 +19001,21 @@
             ]
         }
     ],
+    "PermissionsAndroidClapperLoud": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PermissionsAndroidClapperLoud"
+                    ]
+                }
+            ]
+        }
+    ],
     "PersistentDefaultBrowserPromo": [
         {
             "platforms": [
