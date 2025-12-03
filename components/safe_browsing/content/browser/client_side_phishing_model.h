@@ -21,15 +21,29 @@
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/embeddings.pb.h"
+#endif
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
 namespace safe_browsing {
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+// Holds an embedding we are targeting.
+struct TargetEmbedding {
+  TargetEmbedding(tflite::task::vision::FeatureVector embedding,
+                  float threshold);
+  tflite::task::vision::FeatureVector embedding;
+  float threshold;
+};
+#endif
 
 enum class CSDModelType { kNone = 0, kFlatbuffer = 1 };
 
@@ -73,6 +87,9 @@ class ClientSidePhishingModel
   static bool VerifyCSDFlatBufferIndicesAndFields(
       const flat::ClientSideModel* model);
 
+  // Returns the hash of an embedding.
+  static std::string GetHashFromEmbedding(const std::vector<float>& embedding);
+
   // Returns model type (flatbuffer or none).
   CSDModelType GetModelType() const;
 
@@ -102,6 +119,13 @@ class ClientSidePhishingModel
   const base::flat_map<std::string, TfLiteModelMetadata::Threshold>&
   GetVisualTfLiteModelThresholds() const;
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  const std::vector<TargetEmbedding>& GetTargetImageEmbeddings() const;
+
+  void SetTargetImageEmbeddingsForTesting(
+      std::vector<TargetEmbedding> target_embeddings);
+#endif
+
   // This function is used to override internal model for testing in
   // client_side_phishing_model_unittest
   void MaybeOverrideModel();
@@ -110,9 +134,9 @@ class ClientSidePhishingModel
       std::optional<optimization_guide::proto::Any> model_metadata,
       std::pair<std::string, base::File> model_and_tflite);
 
-  void OnImageEmbeddingModelLoaded(
+  void OnImageEmbeddingModelFileAndEmbeddingListLoaded(
       std::optional<optimization_guide::proto::Any> model_metadata,
-      base::File image_embedding_model_data);
+      std::pair<base::File, std::optional<EmbeddingList>> model_and_list);
 
   void SetModelAndVisualTfLiteForTesting(
       const base::FilePath& model_file_path,
@@ -201,6 +225,11 @@ class ClientSidePhishingModel
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::TimeTicks beginning_time_;
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  // The image embedding targets to evaluate pages against.
+  std::vector<TargetEmbedding> target_image_embeddings_;
+#endif
 
   base::WeakPtrFactory<ClientSidePhishingModel> weak_ptr_factory_{this};
 };

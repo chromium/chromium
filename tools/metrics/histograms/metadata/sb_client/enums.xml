@@ -106,6 +106,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="FULLSCREEN_API"/>
   <int value="8" label="CLIPBOARD_COPY_API"/>
   <int value="9" label="CREDIT_CARD_FORM"/>
+  <int value="10" label="IMAGE_EMBEDDING_MATCH"/>
 </enum>
 
 <enum name="ClientSidePhishingImageEmbeddingResult">

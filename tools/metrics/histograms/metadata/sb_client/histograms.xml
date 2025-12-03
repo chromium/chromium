@@ -710,6 +710,38 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="SBClientPhishing.ImageEmbedding.CapturedWithPhishingClassification"
+    enum="BooleanSuccess" expires_after="2026-11-25">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the loaded page's image embedding was captured. This is
+    logged after any trigger models have finished classification and the client
+    side detection type is `IMAGE_EMBEDDING_MATCH`.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.ImageEmbeddingList.Size" units="entries"
+    expires_after="2026-11-25">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the size of the image embedding list. This is logged when a new
+    image embedding model is fetched, or on each startup.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.ImageEmbeddingList.Version" units="YYMMDDRR"
+    expires_after="2026-11-25">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the version of the image embedding list. This is logged when a new
+    image embedding model is fetched, or on each startup.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.ImageEmbeddingModelLoadTime.FlatbufferScorer"
     units="ms" expires_after="2026-08-31">
   <owner>andysjlim@chromium.org</owner>

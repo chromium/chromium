@@ -152,6 +152,8 @@ enum ClientSideDetectionType {
   kClipboardCopyApi,
   // Credit card form was detected.
   kCreditCardForm,
+  // Image embedding matched.
+  kImageEmbeddingMatch,
 };
 
 // Interface for starting phishing classification. This is scoped to a

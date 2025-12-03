@@ -211,6 +211,8 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
   MOCK_METHOD0(GetModelSharedMemoryRegion, base::ReadOnlySharedMemoryRegion());
   MOCK_METHOD0(GetModelType, CSDModelType());
   MOCK_METHOD0(IsModelAvailable, bool());
+  MOCK_METHOD0(HasImageEmbeddingModel, bool());
+  MOCK_METHOD0(IsModelMetadataImageEmbeddingVersionMatching, bool());
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
@@ -494,9 +496,11 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  void PhishingDetectionDone(std::optional<mojo_base::ProtoWrapper> verdict) {
+  void PhishingDetectionDone(std::optional<mojo_base::ProtoWrapper> verdict,
+                             ClientSideDetectionType csd_type =
+                                 ClientSideDetectionType::TRIGGER_MODELS) {
     csd_host_->PhishingDetectionDone(
-        ClientSideDetectionType::TRIGGER_MODELS,
+        csd_type,
         /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
         mojom::PhishingDetectorResult::SUCCESS, std::move(verdict));
   }
@@ -516,12 +520,13 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         error, std::nullopt);
   }
 
-  void ExpectPreClassificationChecks(const GURL& url,
-                                     const bool* is_private,
-                                     const bool* match_csd_allowlist,
-                                     const bool* get_valid_cached_result,
-                                     const bool* over_phishing_report_limit,
-                                     const bool* is_local) {
+  void ExpectPreClassificationChecks(
+      const GURL& url,
+      const bool* is_private = nullptr,
+      const bool* match_csd_allowlist = nullptr,
+      const bool* get_valid_cached_result = nullptr,
+      const bool* over_phishing_report_limit = nullptr,
+      const bool* is_local = nullptr) {
     if (is_private) {
       EXPECT_CALL(*csd_service_, IsPrivateIPAddress(_))
           .WillOnce(Return(*is_private));
@@ -585,6 +590,28 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
+  void SetForceRequestInCache(bool force_request) {
+    VerdictCacheManager* cache_manager =
+        VerdictCacheManagerFactory::GetForProfile(
+            Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+    RTLookupResponse response;
+
+    RTLookupResponse::ThreatInfo* threat_info = response.add_threat_info();
+    threat_info->set_verdict_type(RTLookupResponse::ThreatInfo::DANGEROUS);
+    threat_info->set_threat_type(
+        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
+    threat_info->set_cache_duration_sec(60);
+    threat_info->set_cache_expression_using_match_type("example.com/");
+    threat_info->set_cache_expression_match_type(
+        RTLookupResponse::ThreatInfo::EXACT_MATCH);
+
+    response.set_client_side_detection_type(
+        force_request ? safe_browsing::ClientSideDetectionType::FORCE_REQUEST
+                      : safe_browsing::ClientSideDetectionType::
+                            CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED);
+    cache_manager->CacheRealTimeUrlVerdict(response, base::Time::Now());
+  }
+
   std::string GetRequestTypeName(
       ClientSideDetectionType client_side_detection_type) {
     switch (client_side_detection_type) {
@@ -610,6 +637,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         return "ClipboardCopyApi";
       case safe_browsing::ClientSideDetectionType::CREDIT_CARD_FORM:
         return "CreditCardForm";
+      case safe_browsing::ClientSideDetectionType::IMAGE_EMBEDDING_MATCH:
+        return "ImageEmbeddingMatch";
     }
   }
 
@@ -2177,6 +2206,201 @@ TEST_F(ClientSideDetectionHostTest,
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi",
       PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC, 1);
+}
+
+TEST_F(ClientSideDetectionHostTest, NoImageEmbeddingMatchWithForcedRequest) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  base::HistogramTester histogram_tester;
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo}, {});
+  GURL example_url("http://example.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);
+  ExpectPreClassificationChecks(example_url);
+  NavigateAndCommit(example_url);
+  WaitAndCheckPreClassificationChecks();
+
+  SetForceRequestInCache(true);
+
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
+
+  ClientPhishingRequest verdict;
+  verdict.set_url(example_url.spec());
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(false);
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _,
+                                 "fake_access_token_for_force_request"))
+      .WillOnce(MoveArg<1>(&cb));
+
+  SafeBrowsingTokenFetcher::Callback token_cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&token_cb));
+
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict),
+                        ClientSideDetectionType::IMAGE_EMBEDDING_MATCH);
+
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(token_cb.is_null());
+  std::move(token_cb).Run("fake_access_token_for_force_request");
+
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run(example_url, false, net::HTTP_OK, std::nullopt);
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::FORCE_REQUEST, 1);
+  histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
+                                     true, 1);
+}
+
+TEST_F(ClientSideDetectionHostTest, NoImageEmbeddingMatchWithTfliteMatch) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  base::HistogramTester histogram_tester;
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo}, {});
+  GURL example_url("http://example.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);
+  ExpectPreClassificationChecks(example_url);
+  NavigateAndCommit(example_url);
+  WaitAndCheckPreClassificationChecks();
+
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
+
+  ClientPhishingRequest verdict;
+  verdict.set_url(example_url.spec());
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(true);
+  verdict.set_is_tflite_match(true);
+  EXPECT_CALL(*csd_service_,
+              SendClientReportPhishingRequest(PartiallyEqualVerdict(verdict), _,
+                                              "fake_access_token"))
+      .WillOnce(MoveArg<1>(&cb));
+
+  SafeBrowsingTokenFetcher::Callback token_cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&token_cb));
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict),
+                        ClientSideDetectionType::IMAGE_EMBEDDING_MATCH);
+
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(token_cb.is_null());
+  std::move(token_cb).Run("fake_access_token");
+
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run(example_url, false, net::HTTP_OK, std::nullopt);
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::TRIGGER_MODELS, 1);
+  histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
+                                     false, 1);
+}
+
+TEST_F(ClientSideDetectionHostTest, ImageEmbeddingMatch) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  base::HistogramTester histogram_tester;
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo}, {});
+  GURL example_url("http://example.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);
+  ExpectPreClassificationChecks(example_url);
+  NavigateAndCommit(example_url);
+  WaitAndCheckPreClassificationChecks();
+
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
+
+  ClientPhishingRequest verdict;
+  verdict.set_url(example_url.spec());
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(true);
+  EXPECT_CALL(*csd_service_,
+              SendClientReportPhishingRequest(PartiallyEqualVerdict(verdict), _,
+                                              "fake_access_token"))
+      .WillOnce(MoveArg<1>(&cb));
+
+  SafeBrowsingTokenFetcher::Callback token_cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&token_cb));
+
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict),
+                        ClientSideDetectionType::IMAGE_EMBEDDING_MATCH);
+
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(token_cb.is_null());
+  std::move(token_cb).Run("fake_access_token");
+
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run(example_url, false, net::HTTP_OK, std::nullopt);
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::IMAGE_EMBEDDING_MATCH, 1);
+  histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
+                                     false, 1);
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       NoImageEmbeddingMatchWithNoTfliteMatchAndNoForceRequest) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  base::HistogramTester histogram_tester;
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo}, {});
+  GURL example_url("http://example.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);
+  ExpectPreClassificationChecks(example_url);
+  NavigateAndCommit(example_url);
+  WaitAndCheckPreClassificationChecks();
+
+  ClientPhishingRequest verdict;
+  verdict.set_url(example_url.spec());
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(false);
+  EXPECT_CALL(*csd_service_,
+              SendClientReportPhishingRequest(PartiallyEqualVerdict(verdict), _,
+                                              "fake_access_token"))
+      .Times(0);
+
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).Times(0);
+
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict),
+                        ClientSideDetectionType::IMAGE_EMBEDDING_MATCH);
+
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::TRIGGER_MODELS, 1);
+  histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
+                                     false, 1);
 }
 
 // Note: Tests involving the credit card form trigger check for a

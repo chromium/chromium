@@ -6,5 +6,7 @@
 #       instructions on how to regenerate. Otherwise, do not edit.
 //components/test/data/safe_browsing/client_model.pb
 //components/test/data/safe_browsing/image_embedding.tflite
+//components/test/data/safe_browsing/image_embeddings.pb.gz
+//components/test/data/safe_browsing/image_embeddings.textproto
 //components/test/data/safe_browsing/visual_model_android.tflite
 //components/test/data/safe_browsing/visual_model_desktop.tflite

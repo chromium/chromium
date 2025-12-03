@@ -337,7 +337,18 @@ message ClientPhishingRequest {
   // CLIPBOARD_COPY_API.
   optional ClipboardExtractedData clipboard_extracted_data = 33;
 
-  // next available tag number: 34.
+  message EmbeddingMatchMetadata {
+    // The id of the target image embedding.
+    optional string id = 1;
+    // The similarity score between the target and current page.
+    optional float score = 2;
+  }
+
+  // The image embedding that triggered the ping. The field is only populated if
+  // the score meets the image embedding's minimum threshold.
+  optional EmbeddingMatchMetadata target_image_embedding_score = 34;
+
+  // next available tag number: 35.
 }
 
 message ClipboardExtractedData {
@@ -1335,6 +1346,8 @@ enum ClientSideDetectionType {
   CLIPBOARD_COPY_API = 8;
   // Credit card form detected.
   CREDIT_CARD_FORM = 9;
+  // Image embedding matched.
+  IMAGE_EMBEDDING_MATCH = 10;
 }
 
 message ClientDownloadResponse {

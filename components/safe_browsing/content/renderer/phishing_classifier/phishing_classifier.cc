@@ -64,6 +64,11 @@ bool PhishingClassifier::is_ready() const {
   return !!ScorerStorage::GetInstance()->GetScorer();
 }
 
+void PhishingClassifier::SetClientSideDetectionType(
+    std::optional<safe_browsing::mojom::ClientSideDetectionType> request_type) {
+  request_type_ = request_type;
+}
+
 void PhishingClassifier::BeginClassification(DoneCallback done_callback) {
   TRACE_EVENT_BEGIN("safe_browsing", "PhishingClassification",
                     perfetto::Track::FromPointer(this));
@@ -190,6 +195,38 @@ void PhishingClassifier::OnVisualTfLiteModelDone(
     category->set_value(result[i]);
   }
 
+  if (request_type_.has_value() &&
+      request_type_.value() ==
+          safe_browsing::mojom::ClientSideDetectionType::kImageEmbeddingMatch) {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    ScorerStorage::GetInstance()
+        ->GetScorer()
+        ->ApplyVisualTfLiteModelImageEmbedding(
+            *bitmap_,
+            base::BindOnce(
+                &PhishingClassifier::OnVisualTfLiteModelImageEmbeddingDone,
+                weak_factory_.GetWeakPtr(), std::move(verdict)));
+    return;
+#endif
+  }
+
+  RunCallback(*verdict, Result::kSuccess);
+}
+
+void PhishingClassifier::OnVisualTfLiteModelImageEmbeddingDone(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    ImageFeatureEmbedding image_feature_embedding) {
+  bool has_image_feature_embedding =
+      image_feature_embedding.embedding_value_size() > 0;
+  if (has_image_feature_embedding) {
+    Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
+    image_feature_embedding.set_embedding_model_version(
+        scorer->image_embedding_tflite_model_version());
+    *verdict->mutable_image_feature_embedding() = image_feature_embedding;
+  }
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.ImageEmbedding.CapturedWithPhishingClassification",
+      has_image_feature_embedding);
   RunCallback(*verdict, Result::kSuccess);
 }
 

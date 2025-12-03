@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/files/file.h"
@@ -56,6 +57,11 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "tensorflow_lite_support/cc/port/statusor.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_embedder.h"
+#endif
 
 using content::BrowserThread;
 
@@ -669,6 +675,21 @@ ClientSideDetectionService::GetVisualTfLiteModelThresholds() {
   return client_side_phishing_model_->GetVisualTfLiteModelThresholds();
 }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+const std::vector<TargetEmbedding>&
+ClientSideDetectionService::GetTargetImageEmbeddings() {
+  return client_side_phishing_model_->GetTargetImageEmbeddings();
+}
+
+void ClientSideDetectionService::SetTargetImageEmbeddingsForTesting(
+    std::vector<TargetEmbedding> target_embeddings) {
+  if (client_side_phishing_model_) {
+    client_side_phishing_model_->SetTargetImageEmbeddingsForTesting(  // IN-TEST
+        std::move(target_embeddings));
+  }
+}
+#endif
+
 void ClientSideDetectionService::ClassifyPhishingThroughThresholds(
     ClientPhishingRequest* verdict) {
   // This is added so that client_side_detection_host_unittest.cc can pass.
@@ -732,6 +753,40 @@ void ClientSideDetectionService::ClassifyPhishingThroughThresholds(
       }
     }
   }
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  auto target_image_embeddings =
+      client_side_phishing_model_->GetTargetImageEmbeddings();
+  if (!target_image_embeddings.empty() && !verdict->is_phishing() &&
+      verdict->has_image_feature_embedding()) {
+    // Create a FeatureVector from the ImageFeatureEmbedding.
+    tflite::task::vision::FeatureVector feature_vector;
+    for (float image_embedding_value :
+         verdict->image_feature_embedding().embedding_value()) {
+      feature_vector.add_value_float(image_embedding_value);
+    }
+    // Compare newly made FeatureVector to target image embeddings.
+    for (const TargetEmbedding& target_image_embedding :
+         target_image_embeddings) {
+      tflite::support::StatusOr<double> similarity =
+          tflite::task::vision::ImageEmbedder::CosineSimilarity(
+              target_image_embedding.embedding, feature_vector);
+      if (similarity.ok() &&
+          similarity.value() >= target_image_embedding.threshold) {
+        verdict->set_is_phishing(true);
+        ClientPhishingRequest::EmbeddingMatchMetadata embedding_match_metadata;
+        const auto& value_floats = feature_vector.value_float();
+        embedding_match_metadata.set_id(
+            ClientSidePhishingModel::GetHashFromEmbedding(
+                std::vector<float>(value_floats.begin(), value_floats.end())));
+        embedding_match_metadata.set_score(similarity.value());
+        *verdict->mutable_target_image_embedding_score() =
+            embedding_match_metadata;
+        break;
+      }
+    }
+  }
+#endif
 
   base::UmaHistogramEnumeration(
       "SBClientPhishing.ClassifyThresholdsResult",

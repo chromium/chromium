@@ -92,6 +92,10 @@ extern const base::FeatureParam<bool>
 // Killswitch for Llama forced trigger info redirect chain check.
 BASE_DECLARE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch);
 
+// Enables sending a CSD ping when a page's image embedding matches a
+// target image embedding.
+BASE_DECLARE_FEATURE(kClientSideDetectionImageEmbeddingMatch);
+
 // Killswitch for client side phishing detection. Since client side models are
 // run on a large fraction of navigations, crashes due to the model are very
 // impactful, even if only a small fraction of users have a bad version of the

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 
 # NOTE: This target is separated from :browser as
@@ -270,6 +271,7 @@ if (safe_browsing_mode != 0) {
     ]
 
     deps = [
+      "//components/optimization_guide:machine_learning_tflite_buildflags",
       "//components/optimization_guide/core",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/prefs",
@@ -287,6 +289,13 @@ if (safe_browsing_mode != 0) {
       "//services/network/public/cpp",
       "//url",
     ]
+
+    if (build_with_tflite_lib) {
+      deps += [
+        "//third_party/tflite_support",
+        "//third_party/tflite_support:tflite_support_proto",
+      ]
+    }
   }
 
   source_set("client_side_detection") {

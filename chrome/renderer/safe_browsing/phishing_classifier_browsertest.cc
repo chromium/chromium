@@ -22,6 +22,7 @@
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/murmurhash3_util.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
@@ -87,7 +88,7 @@ class PhishingClassifierTest
   }
 
   void PrepareFlatModel() {
-    flatbuffers::FlatBufferBuilder builder(1024);
+    flatbuffers::FlatBufferBuilder builder(2048);
     std::vector<flatbuffers::Offset<flat::Hash>> hashes;
     // Make sure this is sorted.
     std::vector<std::string> original_hashes_vector = {
@@ -179,6 +180,9 @@ class PhishingClassifierTest
     flatbuffers::Offset<flat::TfLiteModelMetadata> tflite_metadata_flat =
         flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector,
                                               48, 48);
+    flatbuffers::Offset<flat::TfLiteModelMetadata> img_embedding_metadata_flat =
+        flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector,
+                                              289, 289);
 
     flat::ClientSideModelBuilder csd_model_builder(builder);
     csd_model_builder.add_hashes(hashes_flat);
@@ -190,6 +194,7 @@ class PhishingClassifierTest
     csd_model_builder.add_max_shingles_per_page(100);
     csd_model_builder.add_shingle_size(3);
     csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
+    csd_model_builder.add_img_embedding_metadata(img_embedding_metadata_flat);
     csd_model_builder.add_dom_model_version(123);
 
     builder.Finish(csd_model_builder.Finish());
@@ -205,8 +210,21 @@ class PhishingClassifierTest
     GetTfliteModelPath(&tflite_path),
         tflite_model = base::File(
             tflite_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-    ScorerStorage::GetInstance()->SetScorer(Scorer::Create(
-        mapped_region_.region.Duplicate(), std::move(tflite_model)));
+    base::File img_embedding_model;
+    base::FilePath img_embedding_path;
+    GetImgEmbeddingPath(&img_embedding_path),
+        img_embedding_model = base::File(
+            img_embedding_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    ScorerStorage::GetInstance()->SetScorer(
+        Scorer::CreateScorerWithImageEmbeddingModel(
+            mapped_region_.region.Duplicate(), std::move(tflite_model),
+            std::move(img_embedding_model)));
+  }
+
+  void GetImgEmbeddingPath(base::FilePath* path) {
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, path));
+    *path = path->AppendASCII("safe_browsing")
+                .AppendASCII("image_embedding.tflite");
   }
 
   void GetTfliteModelPath(base::FilePath* path) {
@@ -288,6 +306,40 @@ TEST_F(PhishingClassifierTest, DisableDetection) {
   EXPECT_FALSE(classifier_->is_ready());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PhishingClassifierTest, TestImageEmbeddingMatchPopulatesEmbedding) {
+  LoadHtml(
+      GURL("http://host.net"),
+      "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
+
+  classifier_->SetClientSideDetectionType(
+      safe_browsing::mojom::ClientSideDetectionType::kImageEmbeddingMatch);
+
+  RunPhishingClassifier();
+
+  // Verify that image_feature_embedding is populated.
+  ASSERT_TRUE(verdict_.has_image_feature_embedding());
+
+  // Depending on the test model, you might be able to assert on the size
+  // or contents of embedding_value.
+  EXPECT_GT(verdict_.image_feature_embedding().embedding_value_size(), 0);
+}
+
+TEST_F(PhishingClassifierTest,
+       TestNonImageEmbeddingMatchDoesNotPopulateEmbedding) {
+  LoadHtml(
+      GURL("http://host.net"),
+      "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
+
+  classifier_->SetClientSideDetectionType(
+      safe_browsing::mojom::ClientSideDetectionType::kTriggerModels);
+
+  RunPhishingClassifier();
+
+  // Verify that image_feature_embedding is not populated.
+  ASSERT_FALSE(verdict_.has_image_feature_embedding());
+}
+#endif
 // TODO(jialiul): Add test to verify that classification only starts on GET
 // method. It seems there is no easy way to simulate a HTTP POST in
 // ChromeRenderViewTest.

@@ -188,6 +188,8 @@ std::string GetRequestTypeName(
       return "ClipboardCopyApi";
     case safe_browsing::ClientSideDetectionType::CREDIT_CARD_FORM:
       return "CreditCardForm";
+    case safe_browsing::ClientSideDetectionType::IMAGE_EMBEDDING_MATCH:
+      return "ImageEmbeddingMatch";
   }
 }
 
@@ -213,6 +215,9 @@ safe_browsing::mojom::ClientSideDetectionType GetClientSideDetectionMojomType(
       return safe_browsing::mojom::ClientSideDetectionType::kClipboardCopyApi;
     case safe_browsing::ClientSideDetectionType::CREDIT_CARD_FORM:
       return safe_browsing::mojom::ClientSideDetectionType::kCreditCardForm;
+    case safe_browsing::ClientSideDetectionType::IMAGE_EMBEDDING_MATCH:
+      return safe_browsing::mojom::ClientSideDetectionType::
+          kImageEmbeddingMatch;
     case safe_browsing::ClientSideDetectionType::
         CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED:
     default:
@@ -1272,6 +1277,23 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
 
     if (phishing_detector_.is_bound()) {
       phishing_detection_start_time_ = tick_clock_->NowTicks();
+      if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
+          request_type == ClientSideDetectionType::TRIGGER_MODELS) {
+        // Only ESB users should be in the study.
+        if (base::FeatureList::IsEnabled(
+                kClientSideDetectionImageEmbeddingMatch)) {
+          phishing_detector_->StartPhishingDetection(
+              current_url_,
+              GetClientSideDetectionMojomType(
+                  ClientSideDetectionType::IMAGE_EMBEDDING_MATCH),
+              base::BindOnce(&ClientSideDetectionHost::PhishingDetectionDone,
+                             weak_factory_.GetWeakPtr(),
+                             ClientSideDetectionType::IMAGE_EMBEDDING_MATCH,
+                             is_sample_ping,
+                             did_match_high_confidence_allowlist));
+          return;
+        }
+      }
       phishing_detector_->StartPhishingDetection(
           current_url_, GetClientSideDetectionMojomType(request_type),
           base::BindOnce(&ClientSideDetectionHost::PhishingDetectionDone,
@@ -1461,7 +1483,16 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
   base::UmaHistogramBoolean(
       "SBClientPhishing.LocalModelDetectsPhishing." + request_type_name,
       verdict->is_phishing());
-
+  // When there is a tflite match, the target image embeddings are not
+  // evaluated making the detection type effectively TRIGGER_MODELS.
+  // Separately, when there is no phishing detected, the client side detection
+  // type is set to TRIGGER_MODELS to simplify downstream processing.
+  if (verdict->client_side_detection_type() ==
+          ClientSideDetectionType::IMAGE_EMBEDDING_MATCH &&
+      (verdict->is_tflite_match() || !verdict->is_phishing())) {
+    verdict->set_client_side_detection_type(
+        ClientSideDetectionType::TRIGGER_MODELS);
+  }
   bool force_request_from_rt_url_lookup =
       verdict->client_side_detection_type() ==
       safe_browsing::ClientSideDetectionType::FORCE_REQUEST;
@@ -1582,7 +1613,8 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
 
   if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
       csd_service_->HasImageEmbeddingModel() &&
-      csd_service_->IsModelMetadataImageEmbeddingVersionMatching()) {
+      csd_service_->IsModelMetadataImageEmbeddingVersionMatching() &&
+      !verdict->has_image_feature_embedding()) {
     content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 
     phishing_image_embedder_.reset();

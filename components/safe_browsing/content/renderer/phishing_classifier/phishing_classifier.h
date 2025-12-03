@@ -24,6 +24,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -96,6 +97,10 @@ class PhishingClassifier {
   // the classifier is not yet ready.
   virtual void CancelPendingClassification();
 
+  virtual void SetClientSideDetectionType(
+      std::optional<safe_browsing::mojom::ClientSideDetectionType>
+          request_type);
+
  private:
   // Any score equal to or above this value is considered phishy.
   static const float kPhishyThreshold;
@@ -122,6 +127,12 @@ class PhishingClassifier {
   void OnVisualTfLiteModelDone(std::unique_ptr<ClientPhishingRequest> verdict,
                                std::vector<double> result);
 
+  // Callback when the visual TFLite image embedding model has been applied and
+  // has returned an ImageFeatureEmbedding.
+  void OnVisualTfLiteModelImageEmbeddingDone(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      ImageFeatureEmbedding image_feature_embedding);
+
   // Helper method to run the DoneCallback and clear the state.
   void RunCallback(const ClientPhishingRequest& verdict,
                    Result phishing_classifier_result);
@@ -144,6 +155,11 @@ class PhishingClassifier {
 
   // Used to record the duration of visual feature scoring.
   base::TimeTicks visual_matching_start_;
+
+  // Trigger request type forwarded from the PhishingClassifierDelegate.
+  // Used to determine if the image embedder should be applied after the visual
+  // tflite model was applied.
+  std::optional<safe_browsing::mojom::ClientSideDetectionType> request_type_;
 
   // Used in scheduling BeginFeatureExtraction tasks.
   // These pointers are invalidated if classification is cancelled.

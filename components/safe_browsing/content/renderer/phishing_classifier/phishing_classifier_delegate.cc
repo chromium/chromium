@@ -76,6 +76,8 @@ std::string GetRequestTypeName(
       return "ClipboardCopyApi";
     case safe_browsing::mojom::ClientSideDetectionType::kCreditCardForm:
       return "CreditCardForm";
+    case safe_browsing::mojom::ClientSideDetectionType::kImageEmbeddingMatch:
+      return "ImageEmbeddingMatch";
   }
 }
 
@@ -133,7 +135,9 @@ void PhishingClassifierDelegate::StartPhishingDetection(
   last_url_received_from_browser_ = StripRef(url);
   callback_ = std::move(callback);
   request_type_ = request_type;
+  classifier_->SetClientSideDetectionType(request_type);
   RecordEvent(SBPhishingClassifierEvent::kPhishingDetectionRequested);
+
   // Start classifying the current page if all conditions are met.
   // See MaybeStartClassification() for details.
   MaybeStartClassification();

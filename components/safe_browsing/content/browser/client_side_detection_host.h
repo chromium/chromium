@@ -272,6 +272,8 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostTest,
       FullscreenApiCallChecksAllowlistInPreClassificationAndDoesNotProceedWithClassification);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostTest,
+                           SkipsImageEmbeddingIfAlreadyPresent);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostTest,
       TwoFullscreenApiTriggersOnSamePageOnlyLogsOnePreclassificationCheck);

@@ -105,6 +105,9 @@ const base::FeatureParam<bool> kCsdCreditCardFormEnableReferringAppFilter{
 BASE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClientSideDetectionImageEmbeddingMatch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionKillswitch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
@@ -381,6 +384,7 @@ base::Value::List GetFeatureStatusList() {
       &kBundledSecuritySettings,
       &kClientSideDetectionClipboardCopyApi,
       &kClientSideDetectionForcedLlamaRedirectChainKillswitch,
+      &kClientSideDetectionImageEmbeddingMatch,
       &kClientSideDetectionKillswitch,
       &kClientSideDetectionRedirectChainKillswitch,
       &kCreateNotificationsAcceptedClientSafeBrowsingReports,

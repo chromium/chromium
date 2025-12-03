@@ -34,6 +34,7 @@
 #include "url/gurl.h"
 
 using base::ASCIIToUTF16;
+using safe_browsing::mojom::ClientSideDetectionType::kTriggerModels;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
@@ -122,6 +123,9 @@ class MockPhishingClassifier : public PhishingClassifier {
 
   MOCK_METHOD1(BeginClassification, void(DoneCallback));
   MOCK_METHOD0(CancelPendingClassification, void());
+  MOCK_METHOD1(
+      SetClientSideDetectionType,
+      void(std::optional<safe_browsing::mojom::ClientSideDetectionType>));
 };
 }  // namespace
 
@@ -146,8 +150,10 @@ class PhishingClassifierDelegateTest : public ChromeRenderViewTest {
   }
 
   void OnStartPhishingDetection(const GURL& url) {
+    EXPECT_CALL(*classifier_,
+                SetClientSideDetectionType(std::optional(kTriggerModels)));
     delegate_->StartPhishingDetection(
-        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
+        url, kTriggerModels,
         base::BindOnce(&PhishingClassifierDelegateTest::VerifyRequestProto,
                        base::Unretained(this)));
   }
