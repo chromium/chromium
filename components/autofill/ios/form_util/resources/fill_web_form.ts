@@ -11,7 +11,7 @@ import type {AutofillFormData, AutofillFormFieldData, FrameTokenWithPredecessor}
 import {getCanonicalActionForForm, getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {getFormControlElements, getFormIdentifier, getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {removeQueryAndReferenceFromURL} from '//ios/web/public/js_messaging/resources/utils.js';
+import {removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * Retrieves the registered 'autofill_form_features' CrWebApi
@@ -452,4 +452,37 @@ function extractFieldsFromControlElements(
 // root node.
 function isDOMSuccessor(a: Node, b: Node): boolean {
   return (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_PRECEDING) > 0;
+}
+
+/**
+ * Returns the field's `name` attribute if not space only; otherwise the
+ * field's `id` attribute.
+ *
+ * The name will be used as a hint to infer the autofill type of the field.
+ *
+ * It aims to provide the logic in
+ *     WebString nameForAutofill() const;
+ * in chromium/src/third_party/WebKit/Source/WebKit/chromium/public/
+ *  WebFormControlElement.h
+ *
+ * @param element An element of which the name for Autofill will be returned.
+ * @return the name for Autofill.
+ */
+export function getFieldName(element: Element|null): string {
+  if (!element) {
+    return '';
+  }
+
+  if ('name' in element && element.name) {
+    const trimmedName = trim(element.name as string);
+    if (trimmedName.length > 0) {
+      return trimmedName;
+    }
+  }
+
+  if (element.id) {
+    return trim(element.id);
+  }
+
+  return '';
 }
