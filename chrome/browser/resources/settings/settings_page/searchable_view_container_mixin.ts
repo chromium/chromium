@@ -103,7 +103,11 @@ export const SearchableViewContainerMixin = dedupingMixin(
           // Wait for all parent promises to finish, to avoid any race
           // conditions when possibly revealing parent sections later.
           // For now assume that there are not nested child views.
-          await Promise.all(parentPromises);
+          const parentsResult =
+              combineSearchResults(await Promise.all(parentPromises));
+          if (parentsResult.canceled) {
+            return parentsResult;
+          }
 
           // Secondly search all child views to detect any search hits and
           // update their parents visibility so that they can be reachable.

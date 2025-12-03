@@ -139,6 +139,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
 
   private pendingViewSwitching_: PromiseResolver<void> = new PromiseResolver();
   private topLevelEquivalentRoute_: Route = getTopLevelRoute();
+  private currentQuery_: string = '';
 
   override connectedCallback() {
     super.connectedCallback();
@@ -209,6 +210,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
   searchContents(query: string): Promise<void> {
     this.inSearchMode_ = true;
     this.toolbarSpinnerActive = true;
+    this.currentQuery_ = query;
 
     if (query === '') {
       // Synchronously remove 'show-all' instead of waiting for later observers
@@ -223,18 +225,23 @@ export class SettingsMainElement extends SettingsMainElementBase {
     const toSearch =
         Array.from(this.$.switcher.querySelectorAll<HTMLElement&SettingsPlugin>(
             '[slot=view] > *:not(dom-if)'));
-    const promises = toSearch.map(element => {
-      return customElements.whenDefined(element.tagName.toLowerCase())
-          .then(() => {
-            return element.searchContents(query).then(result => {
-              // Reveal each plugin immediately, instead of waiting of all
-              // search results to come back.
-              element.toggleAttribute(
-                  'hidden-by-search',
-                  query === '' ? false : result.matchCount === 0);
-              return result;
-            });
-          });
+    const promises = toSearch.map(async element => {
+      await customElements.whenDefined(element.tagName.toLowerCase());
+      if (query !== this.currentQuery_) {
+        // Handle case where a newer query was issued while waiting for the
+        // whenDefined calls to resolve.
+        return {
+          canceled: true,
+          matchCount: 0,
+          wasClearSearch: false,
+        };
+      }
+      const result = await element.searchContents(query);
+      // Reveal each plugin immediately, instead of waiting of all
+      // search results to come back.
+      element.toggleAttribute(
+          'hidden-by-search', query === '' ? false : result.matchCount === 0);
+      return result;
     });
 
     return Promise.all(promises).then(results => {
