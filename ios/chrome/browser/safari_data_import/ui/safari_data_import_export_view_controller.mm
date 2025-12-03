@@ -92,11 +92,6 @@ NSDictionary<NSString*, NSString*>* GetTextProvider() {
 @implementation SafariDataImportExportViewController
 
 - (void)viewDidLoad {
-  /// Sets up navigation bar.
-  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                           target:self
-                           action:@selector(didTapCancelButton)];
   /// Sets up the safari data import item.
   self.animationName = GetAnimationName(/*dark_mode=*/NO);
   self.animationNameDarkMode = GetAnimationName(/*dark_mode=*/YES);
@@ -108,13 +103,6 @@ NSDictionary<NSString*, NSString*>* GetTextProvider() {
       l10n_util::GetNSString(IDS_IOS_SAFARI_IMPORT_EXPORT_BUTTON_CONTINUE);
   self.animationTextProvider = GetTextProvider();
   [super viewDidLoad];
-}
-
-#pragma mark - Private
-
-/// Handles tapping the "Cancel" button in navigation.
-- (void)didTapCancelButton {
-  [self.actionHandler confirmationAlertDismissAction];
 }
 
 @end

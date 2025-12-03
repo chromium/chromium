@@ -57,6 +57,12 @@ using segmentation_platform::TipIdentifier;
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:_tipsInstructionalViewController];
 
+  _tipsInstructionalViewController.navigationItem.rightBarButtonItem =
+      [[UIBarButtonItem alloc]
+          initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                               target:self
+                               action:@selector(dismissSheet)];
+
   navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
 
   [self.baseViewController presentViewController:navigationController
@@ -81,7 +87,7 @@ using segmentation_platform::TipIdentifier;
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [_delegate tipsPasswordsCoordinatorDidFinish:self];
+  [self dismissSheet];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -89,7 +95,7 @@ using segmentation_platform::TipIdentifier;
 - (void)confirmationAlertPrimaryAction {
   // TODO(crbug.com/369457289): Track user interactions with the Tips module
   // using new metrics.
-  [_delegate tipsPasswordsCoordinatorDidFinish:self];
+  [self dismissSheet];
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -120,11 +126,12 @@ using segmentation_platform::TipIdentifier;
   }
 }
 
-- (void)confirmationAlertDismissAction {
+#pragma mark - Private
+
+// Dismisses the sheet.
+- (void)dismissSheet {
   [_delegate tipsPasswordsCoordinatorDidFinish:self];
 }
-
-#pragma mark - Private
 
 // Dismisses the instructions.
 - (void)dismissInstructions {

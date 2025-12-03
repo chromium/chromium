@@ -443,6 +443,7 @@
   }
 
   [self.banneredProvider standardPromoPrimaryAction];
+  [self dismissPromo];
 }
 
 // Invoked when the secondary action button is tapped.
@@ -458,6 +459,7 @@
   } else if ([self.banneredProvider
                  respondsToSelector:@selector(standardPromoSecondaryAction)]) {
     [self.banneredProvider standardPromoSecondaryAction];
+    [self dismissPromo];
   }
 }
 
@@ -489,6 +491,7 @@
   }
 
   [self.provider standardPromoPrimaryAction];
+  [self dismissPromo];
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -500,6 +503,7 @@
   }
 
   [self.provider standardPromoSecondaryAction];
+  [self dismissPromo];
 }
 
 - (void)confirmationAlertTertiaryAction {
@@ -511,20 +515,6 @@
   }
 
   [self.provider standardPromoTertiaryAction];
-}
-
-- (void)confirmationAlertDismissAction {
-  DCHECK(self.provider || self.banneredProvider);
-
-  if ([self.provider
-          respondsToSelector:@selector(standardPromoDismissAction)]) {
-    [self.provider standardPromoDismissAction];
-  } else if ([self.banneredProvider
-                 respondsToSelector:@selector(standardPromoDismissAction)]) {
-    [self.banneredProvider standardPromoDismissAction];
-  }
-
-  [self dismissViewControllers];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -541,11 +531,26 @@
     [self.banneredProvider standardPromoDismissSwipe];
     [self dismissViewControllers];
   } else {
-    [self confirmationAlertDismissAction];
+    [self dismissPromo];
   }
 }
 
 #pragma mark - Private
+
+// Dismisses the promo.
+- (void)dismissPromo {
+  DCHECK(self.provider || self.banneredProvider);
+
+  if ([self.provider
+          respondsToSelector:@selector(standardPromoDismissAction)]) {
+    [self.provider standardPromoDismissAction];
+  } else if ([self.banneredProvider
+                 respondsToSelector:@selector(standardPromoDismissAction)]) {
+    [self.banneredProvider standardPromoDismissAction];
+  }
+
+  [self dismissViewControllers];
+}
 
 - (void)dismissViewControllers {
   if (self.viewController) {

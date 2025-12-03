@@ -86,11 +86,6 @@ using password_manager::metrics_util::LeakDialogType;
 
 #pragma mark - ConfirmationAlertActionHandler
 
-- (void)confirmationAlertDismissAction {
-  self.dismissReason = LeakDialogDismissalReason::kClickedOk;
-  [self.presenter stop];
-}
-
 - (void)confirmationAlertPrimaryAction {
   if (ShouldCheckPasswords(self.credentialLeakType)) {
     self.dismissReason = LeakDialogDismissalReason::kClickedCheckPasswords;
@@ -106,12 +101,19 @@ using password_manager::metrics_util::LeakDialogType;
       [self.presenter openPasswordManager];
     }
   } else {
-    [self confirmationAlertDismissAction];
+    [self dismissSheet];
   }
 }
 
 - (void)confirmationAlertSecondaryAction {
-  [self confirmationAlertDismissAction];
+  [self dismissSheet];
+}
+
+#pragma mark - Private
+
+- (void)dismissSheet {
+  self.dismissReason = LeakDialogDismissalReason::kClickedOk;
+  [self.presenter stop];
 }
 
 @end

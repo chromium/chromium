@@ -81,7 +81,6 @@ constexpr CGFloat kHelpSymbolSize = 20;
   LogUserInteractionWithTailoredFullscreenPromo();
 
   OpenIOSDefaultBrowserSettingsPage();
-  [self dissmissPromo];
 }
 
 // The "Secondary Action" was touched.
@@ -92,8 +91,6 @@ constexpr CGFloat kHelpSymbolSize = 20;
   LogDefaultBrowserPromoHistogramForAction(
       self.defaultBrowserPromoType, IOSDefaultBrowserPromoAction::kCancel);
   LogUserInteractionWithTailoredFullscreenPromo();
-
-  [self dissmissPromo];
 }
 
 // Gesture-based actions.
@@ -153,14 +150,6 @@ constexpr CGFloat kHelpSymbolSize = 20;
   [_promoViewController presentViewController:learnMoreViewController
                                      animated:YES
                                    completion:nil];
-}
-
-// Dismiss promo.
-- (void)dissmissPromo {
-  if ([_promoViewController.actionHandler
-          respondsToSelector:@selector(confirmationAlertDismissAction)]) {
-    [_promoViewController.actionHandler confirmationAlertDismissAction];
-  }
 }
 
 // Sets resources for promo view.
