@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -40,8 +41,15 @@ class MockReadAnythingSidePanelControllerObserver
   MOCK_METHOD(void, OnTabWillDetach, (), (override));
 };
 
-class ReadAnythingSidePanelControllerTest : public InProcessBrowserTest {
+class ReadAnythingSidePanelControllerTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
+  ReadAnythingSidePanelControllerTest() {
+    feature_list_.InitWithFeatureState(features::kImmersiveReadAnything,
+                                       IsImmersiveEnabled());
+  }
+
   // Wrapper methods around the ReadAnythingSidePanelController. These do
   // nothing more than keep the below tests less verbose (simple pass-throughs).
   ReadAnythingSidePanelController* side_panel_controller() {
@@ -52,10 +60,20 @@ class ReadAnythingSidePanelControllerTest : public InProcessBrowserTest {
   }
 
   void AddObserver(ReadAnythingLifecycleObserver* observer) {
-    side_panel_controller()->AddObserver(observer);
+    if (IsImmersiveEnabled()) {
+      ReadAnythingController::From(browser()->GetActiveTabInterface())
+          ->AddObserver(observer);
+    } else {
+      side_panel_controller()->AddObserver(observer);
+    }
   }
   void RemoveObserver(ReadAnythingLifecycleObserver* observer) {
-    side_panel_controller()->RemoveObserver(observer);
+    if (IsImmersiveEnabled()) {
+      ReadAnythingController::From(browser()->GetActiveTabInterface())
+          ->RemoveObserver(observer);
+    } else {
+      side_panel_controller()->RemoveObserver(observer);
+    }
   }
 
   std::optional<ReadAnythingOpenTrigger> empty_trigger() {
@@ -63,10 +81,14 @@ class ReadAnythingSidePanelControllerTest : public InProcessBrowserTest {
   }
 
  protected:
+  bool IsImmersiveEnabled() const { return GetParam(); }
   MockReadAnythingSidePanelControllerObserver side_panel_controller_observer_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
+IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
                        RegisterReadAnythingEntry) {
   // The tab should have a read anything entry in its side panel.
   EXPECT_EQ(browser()
@@ -80,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
             SidePanelEntry::Id::kReadAnything);
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
+IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
                        OnEntryShown_ActivateObservers) {
   AddObserver(&side_panel_controller_observer_);
   SidePanelEntry* entry = browser()
@@ -98,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
   side_panel_controller()->OnEntryShown(entry);
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
+IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
                        OnEntryHidden_ActivateObservers) {
   AddObserver(&side_panel_controller_observer_);
   SidePanelEntry* entry = browser()
@@ -113,13 +135,17 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
   side_panel_controller()->OnEntryHidden(entry);
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
+IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
                        TabWillDetach_NotfiyObservers) {
   AddObserver(&side_panel_controller_observer_);
 
   EXPECT_CALL(side_panel_controller_observer_, OnTabWillDetach()).Times(1);
   browser()->GetActiveTabInterface()->Close();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReadAnythingSidePanelControllerTest,
+                         testing::Bool());
 
 class ReadAnythingCUJTest : public InteractiveFeaturePromoTest {
  public:

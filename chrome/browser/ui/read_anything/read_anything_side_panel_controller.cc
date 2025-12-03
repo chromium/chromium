@@ -197,7 +197,13 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
     }
   }
 
-  observers_.Notify(&Observer::Activate, true, read_anything_trigger);
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    auto* controller = ReadAnythingController::From(tab_);
+    CHECK(controller);
+    controller->OnEntryShown(read_anything_trigger);
+  } else {
+    observers_.Notify(&Observer::Activate, true, read_anything_trigger);
+  }
 }
 
 void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
@@ -227,8 +233,14 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
   if (service) {
     service->OnReadAnythingSidePanelEntryHidden();
   }
-  observers_.Notify(&Observer::Activate, false,
-                    std::optional<ReadAnythingOpenTrigger>());
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    auto* controller = ReadAnythingController::From(tab_);
+    CHECK(controller);
+    controller->OnEntryHidden();
+  } else {
+    observers_.Notify(&Observer::Activate, false,
+                      std::optional<ReadAnythingOpenTrigger>());
+  }
 }
 
 void ReadAnythingSidePanelController::OnEntryWillHide(
@@ -307,7 +319,9 @@ void ReadAnythingSidePanelController::TabForegrounded(tabs::TabInterface* tab) {
 void ReadAnythingSidePanelController::TabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
-  observers_.Notify(&Observer::OnTabWillDetach);
+  if (!features::IsImmersiveReadAnythingEnabled()) {
+    observers_.Notify(&Observer::OnTabWillDetach);
+  }
 
   if (!tab_->IsActivated()) {
     return;

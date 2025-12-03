@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
 #define CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
@@ -29,6 +33,8 @@ class TabStripModel;
 class ReadAnythingController : public TabStripModelObserver,
                                content::WebContentsObserver {
  public:
+  using Observer = ReadAnythingLifecycleObserver;
+
   ReadAnythingController(const ReadAnythingController&) = delete;
   ReadAnythingController& operator=(const ReadAnythingController&) = delete;
   ~ReadAnythingController() override;
@@ -43,6 +49,17 @@ class ReadAnythingController : public TabStripModelObserver,
 
   DECLARE_USER_DATA(ReadAnythingController);
   static ReadAnythingController* From(tabs::TabInterface* tab);
+
+  tabs::TabInterface* tab() { return tab_.get(); }
+
+  // Adds/removes an observer.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  // Called by ReadAnythingSidePanelController when the WebUI is
+  // shown/hidden.
+  void OnEntryShown(std::optional<ReadAnythingOpenTrigger> trigger);
+  void OnEntryHidden();
 
   // Displays the Reading Mode UI by utilizing the SidePanelUI on the active
   // tab.
@@ -93,6 +110,10 @@ class ReadAnythingController : public TabStripModelObserver,
           web_ui_wrapper);
 
  private:
+  // Called when the tab will detach.
+  void TabWillDetach(tabs::TabInterface* tab,
+                     tabs::TabInterface::DetachReason reason);
+
   // Returns the SidePanelUI for the active tab if it can be shown.
   // Otherwise, returns nullptr.
   SidePanelUI* GetSidePanelUI();
@@ -109,6 +130,13 @@ class ReadAnythingController : public TabStripModelObserver,
   bool is_active_tab_ = false;
 
   bool has_shown_ui_ = false;
+
+  base::ObserverList<Observer> observers_;
+
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
+
+  base::WeakPtrFactory<ReadAnythingController> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_

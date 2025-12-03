@@ -233,8 +233,8 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
   ReadAnythingUntrustedPageHandlerTest() {
     // FeatureList overrides must happen in the constructor or SetUp (before
     // base::SetUp).
-    scoped_feature_list_.InitAndEnableFeature(
-        {features::kReadAnythingReadAloud});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingReadAloud}, {features::kImmersiveReadAnything});
     // `TestReadAnythingUntrustedPageHandler` disables ScreenAI service, which
     // disables using ReadAnythingWithScreen2x and PdfOcr.
   }

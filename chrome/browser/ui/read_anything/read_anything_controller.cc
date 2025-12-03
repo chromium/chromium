@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
@@ -34,6 +35,10 @@ ReadAnythingController::ReadAnythingController(tabs::TabInterface* tab)
       tab_->GetBrowserWindowInterface()->GetTabStripModel()) {
     tab_->GetBrowserWindowInterface()->GetTabStripModel()->AddObserver(this);
   }
+
+  tab_subscriptions_.push_back(
+      tab_->RegisterWillDetach(base::BindRepeating(
+          &ReadAnythingController::TabWillDetach, weak_factory_.GetWeakPtr())));
 }
 
 ReadAnythingController::~ReadAnythingController() {
@@ -41,6 +46,31 @@ ReadAnythingController::~ReadAnythingController() {
       tab_->GetBrowserWindowInterface()->GetTabStripModel()) {
     tab_->GetBrowserWindowInterface()->GetTabStripModel()->RemoveObserver(this);
   }
+  observers_.Notify(&Observer::OnDestroyed);
+}
+
+void ReadAnythingController::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ReadAnythingController::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void ReadAnythingController::OnEntryShown(
+    std::optional<ReadAnythingOpenTrigger> trigger) {
+  observers_.Notify(&Observer::Activate, true, trigger);
+}
+
+void ReadAnythingController::OnEntryHidden() {
+  observers_.Notify(&Observer::Activate, false,
+                    std::optional<ReadAnythingOpenTrigger>());
+}
+
+void ReadAnythingController::TabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  observers_.Notify(&Observer::OnTabWillDetach);
 }
 
 void ReadAnythingController::OnTabStripModelChanged(
