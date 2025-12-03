@@ -1909,6 +1909,7 @@ config("libcxx_module") {
       # is not a config mismatch.
       # For example, compiling libcxx without -Wfoo and then having another
       # target which uses it declare -Wfoo should not be an error
+      "-Xclang",
       "-fmodules-disable-diagnostic-validation",
 
       # Needed to allow using builtin modules when the headers are
