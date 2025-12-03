@@ -2479,6 +2479,7 @@ ci.builder(
 
 ci.builder(
     name = "android-10-x86-nofieldtrial-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run chromium tests on Android 10 emulators without fieldtrials.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -2539,6 +2540,7 @@ ci.builder(
             "emulator-4-cores",
             "linux-jammy",
             "x86-64",
+            "retry_only_failed_tests",
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(

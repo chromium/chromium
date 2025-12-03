@@ -85,6 +85,7 @@ try_.builder(
 
 try_.builder(
     name = "android-10-x86-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-10-x86-rel",
     ],
@@ -1169,11 +1170,11 @@ try_.orchestrator_builder(
     name = "android-x86-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
-        "ci/android-10-x86-rel",
+        "ci/android-10-x86-nofieldtrial-rel",
     ],
     gn_args = gn_args.config(
         configs = [
-            "ci/android-10-x86-rel",
+            "ci/android-10-x86-nofieldtrial-rel",
             "release_try_builder",
             "use_clang_coverage",
             "use_java_coverage",

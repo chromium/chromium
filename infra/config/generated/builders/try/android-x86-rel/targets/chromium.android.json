@@ -1,5 +1,5 @@
 {
-  "android-10-x86-rel": {
+  "android-10-x86-nofieldtrial-rel": {
     "additional_compile_targets": [
       "chrome_nocompile_tests"
     ],
@@ -869,6 +869,8 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.chrome_public_test_apk.filter",
+          "--disable-field-trial-config",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -926,6 +928,8 @@
           "--git-revision=${got_revision}",
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
+          "--disable-field-trial-config",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1136,6 +1140,8 @@
         "args": [
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
+          "--disable-field-trial-config",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3304,6 +3310,8 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--use-persistent-shell",
+          "--disable-field-trial-config",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3357,6 +3365,8 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--use-persistent-shell",
+          "--disable-field-trial-config",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
