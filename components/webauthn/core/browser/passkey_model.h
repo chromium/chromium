@@ -43,9 +43,13 @@ namespace webauthn {
 // on the device. E.g., non-passkey credentials in the browser-provided
 // authenticators on CrOS (u2fd) and macOS (//device/fido/mac); or platform
 // credentials owned by Windows Hello or iCloud Keychain. None of these are
-// accessible though PasskeyModel.
+// accessible through PasskeyModel.
 class PasskeyModel : public KeyedService {
  public:
+  // The following types specify different criteria for fetching passkeys.
+  using AnyRp = base::StrongAlias<class AnyRp, std::monostate>;
+  enum class ShadowedCredentials { kExclude, kInclude };
+
   class Observer : public base::CheckedObserver {
    public:
     // Notifies the observer that passkeys have changed, e.g. because a new one
@@ -98,6 +102,14 @@ class PasskeyModel : public KeyedService {
   virtual bool IsEmpty() const = 0;
 
   virtual base::flat_set<std::string> GetAllSyncIds() const = 0;
+
+  // Returns the list of all passkeys matching the provided criteria:
+  // - `rp_id`: Either a specific Relying Party ID or any.
+  // - `shadowed_credentials`: Whether to include shadowed credentials.
+  // TODO(crbug.com/465377708): Remove other functions returning lists.
+  virtual std::vector<sync_pb::WebauthnCredentialSpecifics> GetPasskeys(
+      std::variant<AnyRp, std::string_view> rp_id,
+      ShadowedCredentials shadowed_credentials) const = 0;
 
   // Returns the list of all passkeys, including those that are shadowed.
   virtual std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()

@@ -10,6 +10,7 @@
 #include <numeric>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
@@ -272,6 +273,28 @@ base::flat_set<std::string> PasskeySyncBridge::GetAllSyncIds() const {
   std::ranges::transform(data_, std::back_inserter(sync_ids),
                          [](const auto& pair) { return pair.first; });
   return base::flat_set<std::string>(base::sorted_unique, std::move(sync_ids));
+}
+
+std::vector<sync_pb::WebauthnCredentialSpecifics>
+PasskeySyncBridge::GetPasskeys(std::variant<AnyRp, std::string_view> rp_id,
+                               ShadowedCredentials shadowed_credentials) const {
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
+
+  const std::string_view* specific_rp_id =
+      std::get_if<std::string_view>(&rp_id);
+  for (const auto& sync_id_and_passkey : data_) {
+    const sync_pb::WebauthnCredentialSpecifics& passkey =
+        sync_id_and_passkey.second;
+    if (!specific_rp_id || passkey.rp_id() == *specific_rp_id) {
+      passkeys.emplace_back(passkey);
+    }
+  }
+
+  if (shadowed_credentials == PasskeyModel::ShadowedCredentials::kExclude) {
+    return passkey_model_utils::FilterShadowedCredentials(passkeys);
+  }
+
+  return passkeys;
 }
 
 std::vector<sync_pb::WebauthnCredentialSpecifics>

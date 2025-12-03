@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <optional>
+#include <variant>
 
 #include "base/notimplemented.h"
 #include "base/rand_util.h"
@@ -53,6 +54,26 @@ base::flat_set<std::string> TestPasskeyModel::GetAllSyncIds() const {
     ids.emplace(credential.sync_id());
   }
   return ids;
+}
+
+std::vector<sync_pb::WebauthnCredentialSpecifics> TestPasskeyModel::GetPasskeys(
+    std::variant<AnyRp, std::string_view> rp_id,
+    ShadowedCredentials shadowed_credentials) const {
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
+
+  const std::string_view* specific_rp_id =
+      std::get_if<std::string_view>(&rp_id);
+  for (const sync_pb::WebauthnCredentialSpecifics& passkey : credentials_) {
+    if (!specific_rp_id || passkey.rp_id() == *specific_rp_id) {
+      passkeys.emplace_back(passkey);
+    }
+  }
+
+  if (shadowed_credentials == PasskeyModel::ShadowedCredentials::kExclude) {
+    return passkey_model_utils::FilterShadowedCredentials(passkeys);
+  }
+
+  return passkeys;
 }
 
 std::vector<sync_pb::WebauthnCredentialSpecifics>
