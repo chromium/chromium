@@ -4196,21 +4196,22 @@ IN_PROC_BROWSER_TEST_F(
 
 class ProfilePickerOpenAllProfilesButtonExperimentBrowserTest
     : public ProfilePickerCreationFlowBrowserTest {
+ public:
+  ProfilePickerOpenAllProfilesButtonExperimentBrowserTest() {
+    // Since `OpenAllProfilesAfterSimulatingButtonClick` depends on the order
+    // of profiles, need to enable `kProfilesReordering`.
+    feature_list_.InitWithFeatures(
+        {switches::kOpenAllProfilesFromProfilePickerExperiment,
+         switches::kProfilesReordering},
+        {});
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kOpenAllProfilesFromProfilePickerExperiment};
+  base::test::ScopedFeatureList feature_list_;
 };
 
-// Failing on Windows linux cross: https://crbug.com/464956659.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OpenAllProfilesAfterSimulatingButtonClick \
-  DISABLED_OpenAllProfilesAfterSimulatingButtonClick
-#else
-#define MAYBE_OpenAllProfilesAfterSimulatingButtonClick \
-  OpenAllProfilesAfterSimulatingButtonClick
-#endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerOpenAllProfilesButtonExperimentBrowserTest,
-                       MAYBE_OpenAllProfilesAfterSimulatingButtonClick) {
+                       OpenAllProfilesAfterSimulatingButtonClick) {
   base::HistogramTester histogram_tester;
   base::FilePath profile_path1 = browser()->profile()->GetPath();
   base::FilePath profile_path2 = CreateNewProfileWithoutBrowser();
