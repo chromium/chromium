@@ -277,6 +277,19 @@ void ComposeboxOmniboxClient::OnTextChanged(
        userInputInProgress:user_input_in_progress];
 }
 
+void ComposeboxOmniboxClient::OnThumbnailOnlyAccept() {
+  UrlLoadParams params = CreateOmniboxUrlLoadParams(
+      GURL(),
+      /*post_content=*/nullptr, WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_GENERATED,
+      /*destination_url_entered_without_scheme=*/false,
+      profile_->IsOffTheRecord());
+  [delegate_ omniboxDidAcceptText:u""
+                   destinationURL:GURL()
+                    URLLoadParams:params
+                     isSearchType:NO];
+}
+
 void ComposeboxOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   // If a search was done, donate the Search In Chrome intent to the OS for
   // future Siri suggestions.

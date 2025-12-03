@@ -33,3 +33,8 @@ source_set("input_plate_position") {
   sources = [ "composebox_input_plate_position.h" ]
   deps = [ "//base" ]
 }
+
+source_set("input_plate_controls") {
+  sources = [ "composebox_input_plate_controls.h" ]
+  deps = [ "//base" ]
+}

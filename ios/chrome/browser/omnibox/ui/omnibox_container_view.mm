@@ -337,6 +337,10 @@ UIButton* CreateClearButton() {
   [_textInputView forceDisableReturnKey:forceDisable];
 }
 
+- (void)setAllowsReturnKeyWithEmptyText:(BOOL)allowsReturnKeyWithEmptyText {
+  _textInputView.allowsReturnKeyWithEmptyText = allowsReturnKeyWithEmptyText;
+}
+
 - (void)setCustomPlaceholderText:(NSString*)customPlaceholderText {
   [_textInputView setCustomPlaceholderText:[customPlaceholderText copy]];
 }

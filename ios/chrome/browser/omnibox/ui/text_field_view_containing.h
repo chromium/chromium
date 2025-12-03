@@ -38,6 +38,9 @@
 // Whether to force disable the return key on the keyboard.
 - (void)forceDisableReturnKey:(BOOL)forceDisable;
 
+/// Whether the return key is enabled with an empty text.
+- (void)setAllowsReturnKeyWithEmptyText:(BOOL)allowsReturnKeyWithEmptyText;
+
 // Sets a custom placeholder text, overriding the default one already set.
 // If the custom placeholder is `nil` the system will fallback to the default
 // placeholder.

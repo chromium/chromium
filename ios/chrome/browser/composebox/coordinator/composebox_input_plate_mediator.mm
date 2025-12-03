@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
 #import "ios/chrome/browser/composebox/coordinator/web_state_deferred_executor.h"
+#import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
@@ -186,6 +187,8 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL _isIncognito;
   // Whether the mediator is currently updating the compact mode.
   BOOL _isUpdatingCompactMode;
+  // Whether the omnibox has text inputted.
+  BOOL _hasText;
 }
 
 - (instancetype)
@@ -226,7 +229,7 @@ CreateInputDataFromAnnotatedPageContent(
       _aimEligibilitySubscription =
           _aimEligibilityService->RegisterEligibilityChangedCallback(
               base::BindRepeating(^{
-                [weakSelf updateEligibleToAIMode];
+                [weakSelf updateButtonsVisibility];
               }));
     }
   }
@@ -315,9 +318,10 @@ CreateInputDataFromAnnotatedPageContent(
     [self attachCurrentTabContent];
   }
 
-  [self updateEligibleToAIMode];
-  [self updateCompactModeIfNeeded];
-  [self updateShowsExtendedControls];
+  [self updateCompactMode];
+  [self updateConsumerItems];
+  [self updateConsumerActionsState];
+  [self updateButtonsVisibility];
 }
 
 - (void)processPDFFileURL:(GURL)PDFFileURL {
@@ -462,7 +466,8 @@ CreateInputDataFromAnnotatedPageContent(
       break;
   }
 
-  [self updateCompactModeIfNeeded];
+  [self updateCompactMode];
+  [self updateButtonsVisibility];
   [self updateConsumerActionsState];
 }
 
@@ -1093,22 +1098,28 @@ CreateInputDataFromAnnotatedPageContent(
   return NO;
 }
 
-// Updates the consumer about whether the user is eligible to use AI Mode.
-- (void)updateEligibleToAIMode {
+- (BOOL)isEligibleToAIM {
   if (!_aimEligibilityService) {
-    return;
+    return NO;
   }
-  [self.consumer setEligibleToAIMode:_aimEligibilityService->IsAimEligible()];
+  return _aimEligibilityService->IsAimEligible();
 }
 
-// Updates the consumer about whether the extended controls should be shown.
-- (void)updateShowsExtendedControls {
+- (BOOL)isDSEGoogle {
   if (!_templateURLService) {
-    return;
+    return NO;
   }
-  const BOOL showsExtendedControls =
-      search::DefaultSearchProviderIsGoogle(_templateURLService);
-  [self.consumer setShowsExtendedControls:showsExtendedControls];
+  return search::DefaultSearchProviderIsGoogle(_templateURLService);
+}
+
+- (BOOL)compactModeRequired {
+  if (!IsComposeboxCompactModeEnabled()) {
+    return NO;
+  }
+  BOOL requiresExpansion = _isMultiline ||
+                           _modeHolder.mode == ComposeboxMode::kAIM ||
+                           _modeHolder.mode == ComposeboxMode::kImageGeneration;
+  return !requiresExpansion;
 }
 
 #pragma mark - ComposeboxOmniboxClientDelegate
@@ -1150,7 +1161,8 @@ CreateInputDataFromAnnotatedPageContent(
                isSearchQuery:(BOOL)isSearchQuery
          userInputInProgress:(BOOL)userInputInProgress {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  [self.consumer setShowsSendButton:text.length()];
+  _hasText = text.length() > 0;
+  [self updateButtonsVisibility];
 }
 
 - (ComposeboxMode)composeboxMode {
@@ -1158,6 +1170,50 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 #pragma mark - Private helpers
+
+- (void)updateButtonsVisibility {
+  BOOL compactMode = [self compactModeRequired];
+  BOOL hasAttachments = _items.count > 0;
+  BOOL hasContent = hasAttachments || _hasText;
+  BOOL dseGoogle = [self isDSEGoogle];
+  BOOL eligibleToAIM = [self isEligibleToAIM];
+  BOOL allowsMultimodalActions = dseGoogle && eligibleToAIM;
+  BOOL canSend = hasContent && !compactMode;
+  BOOL showShortcuts = !hasContent && !canSend;
+
+  ComposeboxInputPlateControls leadingAction =
+      allowsMultimodalActions ? ComposeboxInputPlateControls::kPlus
+                              : ComposeboxInputPlateControls::kNone;
+
+  ComposeboxInputPlateControls modeSwitchButton;
+  switch (_modeHolder.mode) {
+    case ComposeboxMode::kAIM:
+      modeSwitchButton = ComposeboxInputPlateControls::kAIM;
+      break;
+    case ComposeboxMode::kImageGeneration:
+      modeSwitchButton = ComposeboxInputPlateControls::kCreateImage;
+      break;
+    case ComposeboxMode::kRegularSearch:
+      modeSwitchButton = ComposeboxInputPlateControls::kNone;
+      break;
+  }
+
+  ComposeboxInputPlateControls trailingAction =
+      ComposeboxInputPlateControls::kNone;
+  if (canSend) {
+    trailingAction = ComposeboxInputPlateControls::kSend;
+  } else if (showShortcuts && dseGoogle) {
+    trailingAction = ComposeboxInputPlateControls::kVoice |
+                     ComposeboxInputPlateControls::kLens;
+  } else if (showShortcuts && !dseGoogle) {
+    trailingAction = ComposeboxInputPlateControls::kVoice;
+  }
+
+  ComposeboxInputPlateControls visibleControls =
+      (leadingAction | modeSwitchButton | trailingAction);
+
+  [self.consumer updateVisibleControls:visibleControls];
+}
 
 - (BOOL)updateOptionToAttachCurrentTab {
   web::WebState* webState = _webStateList->GetActiveWebState();
@@ -1203,6 +1259,7 @@ CreateInputDataFromAnnotatedPageContent(
   [self.consumer setItems:_items];
   [self updateOptionToAttachCurrentTab];
   [self updateConsumerActionsState];
+  [self updateButtonsVisibility];
 
   if (_items.count > 0 && [_modeHolder isRegularSearch]) {
     // AI mode is implicitly enabled by items attachment.
@@ -1213,19 +1270,15 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 /// Updates the consumer whether to show in compact mode.
-- (void)updateCompactModeIfNeeded {
-  BOOL compactModeAllowed = IsComposeboxCompactModeEnabled();
-  BOOL requiresExpansion = _isMultiline ||
-                           _modeHolder.mode == ComposeboxMode::kAIM ||
-                           _modeHolder.mode == ComposeboxMode::kImageGeneration;
-  BOOL compact = !requiresExpansion && compactModeAllowed;
+- (void)updateCompactMode {
+  BOOL compact = [self compactModeRequired];
   [self.consumer setCompact:compact];
 }
 
 #pragma mark - SearchEngineObserving
 
 - (void)searchEngineChanged {
-  [self updateShowsExtendedControls];
+  [self updateButtonsVisibility];
 }
 
 - (void)templateURLServiceShuttingDown:(TemplateURLService*)urlService {
@@ -1244,7 +1297,8 @@ CreateInputDataFromAnnotatedPageContent(
   }
   _isMultiline = sender.numberOfLines > 1;
   _isUpdatingCompactMode = YES;
-  [self updateCompactModeIfNeeded];
+  [self updateCompactMode];
+  [self updateButtonsVisibility];
   _isUpdatingCompactMode = NO;
 }
 
