@@ -429,8 +429,9 @@ void PermissionActionsHistory::RecordOneTimeGrant(
       current_count);
 }
 
-void PermissionActionsHistory::RecordOTPCountForGrant(
+void PermissionActionsHistory::RecordOTPCountForAction(
     ContentSettingsType permission,
+    PermissionAction action,
     int count) {
   if (permission != ContentSettingsType::GEOLOCATION &&
       permission != ContentSettingsType::MEDIASTREAM_MIC &&
@@ -439,7 +440,22 @@ void PermissionActionsHistory::RecordOTPCountForGrant(
   }
   std::string histogram_name = "Permissions.OneTimePermission.";
   histogram_name += PermissionUtil::GetPermissionString(permission);
-  histogram_name += ".GrantOTPCount";
+  switch (action) {
+    case PermissionAction::GRANTED:
+      histogram_name += ".GrantOTPCount";
+      break;
+    case PermissionAction::DENIED:
+      histogram_name += ".DenyOTPCount";
+      break;
+    case PermissionAction::DISMISSED:
+      histogram_name += ".DismissOTPCount";
+      break;
+    case PermissionAction::IGNORED:
+      histogram_name += ".IgnoreOTPCount";
+      break;
+    default:
+      NOTREACHED();
+  }
   base::UmaHistogramCounts100(histogram_name, count);
 }
 

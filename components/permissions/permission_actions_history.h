@@ -123,9 +123,12 @@ class PermissionActionsHistory : public KeyedService {
   void RecordOneTimeGrant(const GURL& origin,
                           ContentSettingsType permission_type);
 
-  // Records the number of times a one-time permission was granted before a
-  // permanent grant.
-  void RecordOTPCountForGrant(ContentSettingsType permission, int count);
+  // Records the number of times a one-time permission was granted before the
+  // user permanently grants/denies it. Its also counted for dismissals and
+  // ignores.
+  void RecordOTPCountForAction(ContentSettingsType permission,
+                               PermissionAction action,
+                               int count);
 
   // Returns the number of times a one-time permission has been granted for the
   // given origin and permission type.

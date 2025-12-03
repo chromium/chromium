@@ -52,7 +52,8 @@ class OneTimePermissionsBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitch("use-fake-ui-for-media-stream");
   }
 
-  void RequestPermission(permissions::RequestType request_type) {
+  void RequestPermissionAnAcceptThisTime(
+      permissions::RequestType request_type) {
     permissions::PermissionRequestObserver observer(
         browser()->tab_strip_model()->GetActiveWebContents());
     test_api_->AddSimpleRequest(browser()
@@ -79,89 +80,160 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionsBrowserTest, RecordOneTimeGrant) {
   base::HistogramTester histogram_tester;
 
   // Geolocation
-  RequestPermission(permissions::RequestType::kGeolocation);
+  RequestPermissionAnAcceptThisTime(permissions::RequestType::kGeolocation);
   histogram_tester.ExpectBucketCount(
       "Permissions.OneTimePermission.Geolocation.OneTimeGrant", 1, 1);
-  RequestPermission(permissions::RequestType::kGeolocation);
+  RequestPermissionAnAcceptThisTime(permissions::RequestType::kGeolocation);
   histogram_tester.ExpectBucketCount(
       "Permissions.OneTimePermission.Geolocation.OneTimeGrant", 2, 1);
 
   // Mic
-  RequestPermission(permissions::RequestType::kMicStream);
+  RequestPermissionAnAcceptThisTime(permissions::RequestType::kMicStream);
   histogram_tester.ExpectBucketCount(
       "Permissions.OneTimePermission.AudioCapture.OneTimeGrant", 1, 1);
-  RequestPermission(permissions::RequestType::kMicStream);
+  RequestPermissionAnAcceptThisTime(permissions::RequestType::kMicStream);
   histogram_tester.ExpectBucketCount(
       "Permissions.OneTimePermission.AudioCapture.OneTimeGrant", 2, 1);
 
   // Camera
-  RequestPermission(permissions::RequestType::kCameraStream);
+  RequestPermissionAnAcceptThisTime(permissions::RequestType::kCameraStream);
   histogram_tester.ExpectBucketCount(
       "Permissions.OneTimePermission.VideoCapture.OneTimeGrant", 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(OneTimePermissionsBrowserTest, RecordGrantOTPCount) {
+struct OneTimePermissionActionTestParams {
+  permissions::PermissionAction action;
+  std::string histogram_suffix;
+  permissions::RequestType request_type;
+  std::string permission_type_string;
+};
+
+class OneTimePermissionActionBrowserTest
+    : public OneTimePermissionsBrowserTest,
+      public testing::WithParamInterface<OneTimePermissionActionTestParams> {
+ public:
+  std::string GetOneTimePermissionActionHistogramName() {
+    return "Permissions.OneTimePermission." +
+           GetParam().permission_type_string + "." +
+           GetParam().histogram_suffix;
+  }
+
+  std::string GetOneTimeGrantHistogramName() {
+    return "Permissions.OneTimePermission." +
+           GetParam().permission_type_string + ".OneTimeGrant";
+  }
+
+  void ExecuteAction(permissions::PermissionRequestManager* manager) {
+    switch (GetParam().action) {
+      case permissions::PermissionAction::GRANTED:
+        manager->Accept();
+        break;
+      case permissions::PermissionAction::DENIED:
+        manager->Deny();
+        break;
+      case permissions::PermissionAction::DISMISSED:
+        manager->Dismiss();
+        break;
+      case permissions::PermissionAction::IGNORED:
+        manager->Ignore();
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(OneTimePermissionActionBrowserTest, RecordOTPCount) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   base::HistogramTester histogram_tester;
   auto* manager = permissions::PermissionRequestManager::FromWebContents(
       browser()->tab_strip_model()->GetActiveWebContents());
   test::PermissionRequestManagerTestApi test_api(manager);
 
-  // Request Geolocation twice with "Allow this time"
-  RequestPermission(permissions::RequestType::kGeolocation);
-  RequestPermission(permissions::RequestType::kGeolocation);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OneTimePermission.Geolocation.OneTimeGrant", 1, 1);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OneTimePermission.Geolocation.OneTimeGrant", 2, 1);
+  RequestPermissionAnAcceptThisTime(GetParam().request_type);
+  RequestPermissionAnAcceptThisTime(GetParam().request_type);
+  // I.e. Permissions.OneTimePermission.Geolocation.OneTimeGrant
+  histogram_tester.ExpectBucketCount(GetOneTimeGrantHistogramName(), 1, 1);
+  histogram_tester.ExpectBucketCount(GetOneTimeGrantHistogramName(), 2, 1);
 
-  // Now grant permanently
+  // Trigger the permanent action (Grant/Deny/Dismiss/Ignore)
   permissions::PermissionRequestObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
   test_api.AddSimpleRequest(browser()
                                 ->tab_strip_model()
                                 ->GetActiveWebContents()
                                 ->GetPrimaryMainFrame(),
-                            permissions::RequestType::kGeolocation);
+                            GetParam().request_type);
   observer.Wait();
-  manager->Accept();  // Permanent grant
 
-  // Expect GrantOTPCount to be 2 for Geolocation
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OneTimePermission.Geolocation.GrantOTPCount", 2, 1);
+  ExecuteAction(manager);
 
-  // Request Mic once with "Allow this time"
-  RequestPermission(permissions::RequestType::kMicStream);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OneTimePermission.AudioCapture.OneTimeGrant", 1, 1);
-
-  // Now grant permanently
-  permissions::PermissionRequestObserver observer2(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  test_api.AddSimpleRequest(browser()
-                                ->tab_strip_model()
-                                ->GetActiveWebContents()
-                                ->GetPrimaryMainFrame(),
-                            permissions::RequestType::kMicStream);
-  observer2.Wait();
-  manager->Accept();  // Permanent grant
-
-  // Expect GrantOTPCount to be 1 for AudioCapture
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OneTimePermission.AudioCapture.GrantOTPCount", 1, 1);
-
-  // Grant Camera permanently without any prior one-time grants
-  permissions::PermissionRequestObserver observer3(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  test_api.AddSimpleRequest(browser()
-                                ->tab_strip_model()
-                                ->GetActiveWebContents()
-                                ->GetPrimaryMainFrame(),
-                            permissions::RequestType::kCameraStream);
-  observer3.Wait();
-  manager->Accept();  // Permanent grant
-
-  // Expect GrantOTPCount to be 0 for VideoCapture
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OneTimePermission.VideoCapture.GrantOTPCount", 0, 1);
+  // Expect correct histogram count, i.e. for
+  // Permissions.OneTimePermission.Geolocation.GrantOTPCount
+  histogram_tester.ExpectBucketCount(GetOneTimePermissionActionHistogramName(),
+                                     2, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OneTimePermissionActionBrowserTest,
+    testing::Values(
+        // Geolocation
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::GRANTED, "GrantOTPCount",
+            permissions::RequestType::kGeolocation, "Geolocation"},
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::DENIED, "DenyOTPCount",
+            permissions::RequestType::kGeolocation, "Geolocation"},
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::DISMISSED, "DismissOTPCount",
+            permissions::RequestType::kGeolocation, "Geolocation"},
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::IGNORED, "IgnoreOTPCount",
+            permissions::RequestType::kGeolocation, "Geolocation"},
+        // Mic
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::GRANTED, "GrantOTPCount",
+            permissions::RequestType::kMicStream, "AudioCapture"},
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::DENIED, "DenyOTPCount",
+            permissions::RequestType::kMicStream, "AudioCapture"},
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::DISMISSED, "DismissOTPCount",
+            permissions::RequestType::kMicStream, "AudioCapture"},
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::IGNORED, "IgnoreOTPCount",
+            permissions::RequestType::kMicStream, "AudioCapture"},
+        // Camera
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::GRANTED, "GrantOTPCount",
+            permissions::RequestType::kCameraStream, "VideoCapture"},
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::DENIED, "DenyOTPCount",
+            permissions::RequestType::kCameraStream, "VideoCapture"},
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::DISMISSED, "DismissOTPCount",
+            permissions::RequestType::kCameraStream, "VideoCapture"},
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::IGNORED, "IgnoreOTPCount",
+            permissions::RequestType::kCameraStream, "VideoCapture"}),
+    [](const testing::TestParamInfo<OneTimePermissionActionTestParams>& info) {
+      std::string action_str;
+      switch (info.param.action) {
+        case permissions::PermissionAction::GRANTED:
+          action_str = "Granted";
+          break;
+        case permissions::PermissionAction::DENIED:
+          action_str = "Denied";
+          break;
+        case permissions::PermissionAction::DISMISSED:
+          action_str = "Dismissed";
+          break;
+        case permissions::PermissionAction::IGNORED:
+          action_str = "Ignored";
+          break;
+        default:
+          action_str = "Unknown";
+      }
+      return info.param.permission_type_string + "_" + action_str;
+    });

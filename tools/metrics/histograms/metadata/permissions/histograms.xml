@@ -101,6 +101,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:OsScreenAction) -->
 
+<variants name="OTPCountPermissionAction">
+  <variant name="Deny" summary="deny"/>
+  <variant name="Dismiss" summary="dismiss"/>
+  <variant name="Grant" summary="permanent grant"/>
+  <variant name="Ignore" summary="ignore"/>
+</variants>
+
+<variants name="OTPSupportedPermissionType">
+  <variant name="AudioCapture"/>
+  <variant name="Geolocation"/>
+  <variant name="VideoCapture"/>
+</variants>
+
 <variants name="PermissionRequestGesture">
   <variant name=".Gesture" summary="With user gesture"/>
   <variant name=".NoGesture" summary="Without user gesture"/>
@@ -970,26 +983,7 @@ chromium-metrics-reviews@google.com.
     correctly for clients &gt;= M116 (and should be ignored for previous major
     versions)
   </summary>
-  <token key="PermissionType">
-    <variant name="AudioCapture"/>
-    <variant name="Geolocation"/>
-    <variant name="VideoCapture"/>
-  </token>
-</histogram>
-
-<histogram name="Permissions.OneTimePermission.{PermissionType}.GrantOTPCount"
-    units="count" expires_after="2026-01-15">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the number of times a one-time permission was granted for a site
-    before a permanent grant was issued.
-  </summary>
-  <token key="PermissionType">
-    <variant name="AudioCapture"/>
-    <variant name="Geolocation"/>
-    <variant name="VideoCapture"/>
-  </token>
+  <token key="PermissionType" variants="OTPSupportedPermissionType"/>
 </histogram>
 
 <histogram name="Permissions.OneTimePermission.{PermissionType}.OneTimeGrant"
@@ -997,15 +991,23 @@ chromium-metrics-reviews@google.com.
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Records the number of times a one-time Geolocation permission has been
-    granted for a site. Each count represents an additional one-time grant for
-    the same site.
+    Records the number of times a one-time permission has been granted for a
+    site. Each count represents an additional one-time grant for the same site.
   </summary>
-  <token key="PermissionType">
-    <variant name="AudioCapture"/>
-    <variant name="Geolocation"/>
-    <variant name="VideoCapture"/>
-  </token>
+  <token key="PermissionType" variants="OTPSupportedPermissionType"/>
+</histogram>
+
+<histogram
+    name="Permissions.OneTimePermission.{PermissionType}.{OTPCountPermissionAction}OTPCount"
+    units="count" expires_after="2026-01-15">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the number of times a one-time permission was granted for a site
+    before a {OTPCountPermissionAction} action was taken.
+  </summary>
+  <token key="PermissionType" variants="OTPSupportedPermissionType"/>
+  <token key="OTPCountPermissionAction" variants="OTPCountPermissionAction"/>
 </histogram>
 
 <histogram

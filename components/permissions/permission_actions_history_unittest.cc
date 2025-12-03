@@ -148,12 +148,14 @@ class PermissionActionHistoryTest : public testing::Test {
     for (const auto& entry : kTestEntries) {
       // Legacy entries are added directly to the pref above and not through
       // Permission Actions History API
-      if (entry.is_legacy_entry)
+      if (entry.is_legacy_entry) {
         continue;
+      }
       GetPermissionActionsHistory()->RecordAction(entry.action, entry.type,
                                                   entry.prompt_disposition);
-      if (entry.advance_clock)
+      if (entry.advance_clock) {
         task_environment_.AdvanceClock(base::Days(1));
+      }
     }
   }
 
@@ -172,8 +174,9 @@ TEST_F(PermissionActionHistoryTest, GetHistorySortedOrder) {
   EXPECT_EQ(10u, all_entries.size());
 
   size_t index = 0;
-  for (const auto& entry : kTestEntries)
+  for (const auto& entry : kTestEntries) {
     EXPECT_EQ(entry.action, all_entries[index++].action);
+  }
 
   for (const auto& request_type :
        {RequestType::kVrSession, RequestType::kCameraStream,
@@ -633,83 +636,142 @@ TEST_F(PermissionActionHistoryTest, RecordOneTimeGrant) {
       "Permissions.OneTimePermission.VideoCapture.OneTimeGrant", 1);
 }
 
-TEST_F(PermissionActionHistoryTest, RecordOTPCountForGrant) {
+struct PermissionActionsHistoryTestParams {
+  ContentSettingsType type;
+  std::string permission_name;
+  PermissionAction action;
+  std::string suffix;
+};
+
+class PermissionActionHistoryParameterizedTest
+    : public PermissionActionHistoryTest,
+      public testing::WithParamInterface<PermissionActionsHistoryTestParams> {};
+
+TEST_P(PermissionActionHistoryParameterizedTest, RecordOTPCountForAction) {
   auto* history = GetPermissionActionsHistory();
   base::HistogramTester histogram_tester;
 
-  // Geolocation
-  history->RecordOTPCountForGrant(ContentSettingsType::GEOLOCATION, 3);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OneTimePermission.Geolocation.GrantOTPCount", 3, 1);
-  history->RecordOTPCountForGrant(ContentSettingsType::GEOLOCATION, 0);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OneTimePermission.Geolocation.GrantOTPCount", 0, 1);
+  std::string histogram_name = "Permissions.OneTimePermission." +
+                               GetParam().permission_name + "." +
+                               GetParam().suffix;
+  history->RecordOTPCountForAction(GetParam().type, GetParam().action, 0);
+  histogram_tester.ExpectBucketCount(histogram_name, 0, 1);
 
-  // Mic
-  history->RecordOTPCountForGrant(ContentSettingsType::MEDIASTREAM_MIC, 1);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OneTimePermission.AudioCapture.GrantOTPCount", 1, 1);
+  history->RecordOTPCountForAction(GetParam().type, GetParam().action, 1);
+  histogram_tester.ExpectBucketCount(histogram_name, 1, 1);
 
-  // Camera
-  history->RecordOTPCountForGrant(ContentSettingsType::MEDIASTREAM_CAMERA, 5);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OneTimePermission.VideoCapture.GrantOTPCount", 5, 1);
-
-  // Unsupported type - should be ignored
-  history->RecordOTPCountForGrant(ContentSettingsType::NOTIFICATIONS, 2);
-  histogram_tester.ExpectTotalCount(
-      "Permissions.OneTimePermission.Notifications.GrantOTPCount", 0);
-
-  // Check total counts
-  histogram_tester.ExpectTotalCount(
-      "Permissions.OneTimePermission.Geolocation.GrantOTPCount", 2);
-  histogram_tester.ExpectTotalCount(
-      "Permissions.OneTimePermission.AudioCapture.GrantOTPCount", 1);
-  histogram_tester.ExpectTotalCount(
-      "Permissions.OneTimePermission.VideoCapture.GrantOTPCount", 1);
+  history->RecordOTPCountForAction(GetParam().type, GetParam().action, 5);
+  histogram_tester.ExpectBucketCount(histogram_name, 5, 1);
 }
 
-TEST_F(PermissionActionHistoryTest, GetOneTimeGrantCount) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PermissionActionHistoryParameterizedTest,
+    testing::Values(
+        // Geolocation
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::GEOLOCATION, "Geolocation",
+            PermissionAction::GRANTED, "GrantOTPCount"},
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::GEOLOCATION, "Geolocation",
+            PermissionAction::DENIED, "DenyOTPCount"},
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::GEOLOCATION, "Geolocation",
+            PermissionAction::DISMISSED, "DismissOTPCount"},
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::GEOLOCATION, "Geolocation",
+            PermissionAction::IGNORED, "IgnoreOTPCount"},
+        // Mic
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::MEDIASTREAM_MIC, "AudioCapture",
+            PermissionAction::GRANTED, "GrantOTPCount"},
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::MEDIASTREAM_MIC, "AudioCapture",
+            PermissionAction::DENIED, "DenyOTPCount"},
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::MEDIASTREAM_MIC, "AudioCapture",
+            PermissionAction::DISMISSED, "DismissOTPCount"},
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::MEDIASTREAM_MIC, "AudioCapture",
+            PermissionAction::IGNORED, "IgnoreOTPCount"},
+        // Camera
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::MEDIASTREAM_CAMERA, "VideoCapture",
+            PermissionAction::GRANTED, "GrantOTPCount"},
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::MEDIASTREAM_CAMERA, "VideoCapture",
+            PermissionAction::DENIED, "DenyOTPCount"},
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::MEDIASTREAM_CAMERA, "VideoCapture",
+            PermissionAction::DISMISSED, "DismissOTPCount"},
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::MEDIASTREAM_CAMERA, "VideoCapture",
+            PermissionAction::IGNORED, "IgnoreOTPCount"}),
+    [](const testing::TestParamInfo<PermissionActionsHistoryTestParams>& info) {
+      return info.param.permission_name + "_" + info.param.suffix;
+    });
+
+TEST_F(PermissionActionHistoryTest, RecordOTPCountForAction_UnsupportedType) {
+  auto* history = GetPermissionActionsHistory();
+  base::HistogramTester histogram_tester;
+
+  // Unsupported type - should be ignored
+  history->RecordOTPCountForAction(ContentSettingsType::NOTIFICATIONS,
+                                   PermissionAction::DENIED, 2);
+  history->RecordOTPCountForAction(ContentSettingsType::NOTIFICATIONS,
+                                   PermissionAction::DISMISSED, 2);
+  history->RecordOTPCountForAction(ContentSettingsType::NOTIFICATIONS,
+                                   PermissionAction::IGNORED, 2);
+  history->RecordOTPCountForAction(ContentSettingsType::NOTIFICATIONS,
+                                   PermissionAction::GRANTED, 2);
+
+  histogram_tester.ExpectTotalCount(
+      "Permissions.OneTimePermission.Notifications.DenyOTPCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.OneTimePermission.Notifications.DismissOTPCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.OneTimePermission.Notifications.IgnoreOTPCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.OneTimePermission.Notifications.GrantOTPCount", 0);
+}
+
+TEST_P(PermissionActionHistoryParameterizedTest, GetOneTimeGrantCount) {
   GURL url1("https://www.example.com");
   GURL url2("https://www.google.com");
   auto* history = GetPermissionActionsHistory();
 
-  EXPECT_EQ(
-      0, history->GetOneTimeGrantCount(url1, ContentSettingsType::GEOLOCATION));
+  EXPECT_EQ(0, history->GetOneTimeGrantCount(url1, GetParam().type));
 
   // Record some GRANTED_ONCE actions
-  history->RecordOneTimeGrant(url1, ContentSettingsType::GEOLOCATION);
-  EXPECT_EQ(
-      1, history->GetOneTimeGrantCount(url1, ContentSettingsType::GEOLOCATION));
+  history->RecordOneTimeGrant(url1, GetParam().type);
+  EXPECT_EQ(1, history->GetOneTimeGrantCount(url1, GetParam().type));
+  EXPECT_EQ(0, history->GetOneTimeGrantCount(url2, GetParam().type));
 
-  history->RecordOneTimeGrant(url1, ContentSettingsType::GEOLOCATION);
-  EXPECT_EQ(
-      2, history->GetOneTimeGrantCount(url1, ContentSettingsType::GEOLOCATION));
+  history->RecordOneTimeGrant(url1, GetParam().type);
+  EXPECT_EQ(2, history->GetOneTimeGrantCount(url1, GetParam().type));
 
-  history->RecordOneTimeGrant(url2, ContentSettingsType::GEOLOCATION);
-  EXPECT_EQ(
-      1, history->GetOneTimeGrantCount(url2, ContentSettingsType::GEOLOCATION));
+  history->RecordOneTimeGrant(url2, GetParam().type);
+  EXPECT_EQ(1, history->GetOneTimeGrantCount(url2, GetParam().type));
   EXPECT_EQ(2, history->GetOneTimeGrantCount(
-                   url1, ContentSettingsType::GEOLOCATION));  // url1 unchanged
-
-  history->RecordOneTimeGrant(url1, ContentSettingsType::MEDIASTREAM_MIC);
-  EXPECT_EQ(1, history->GetOneTimeGrantCount(
-                   url1, ContentSettingsType::MEDIASTREAM_MIC));
-  EXPECT_EQ(0, history->GetOneTimeGrantCount(
-                   url2, ContentSettingsType::MEDIASTREAM_MIC));
+                   url1, GetParam().type));  // url1 unchanged
 
   // Non-one-time grant actions should not affect the count
-  history->RecordAction(PermissionAction::GRANTED, RequestType::kGeolocation,
+  RequestType request_type =
+      GetParam().type == ContentSettingsType::GEOLOCATION
+          ? RequestType::kGeolocation
+          : (GetParam().type == ContentSettingsType::MEDIASTREAM_MIC
+                 ? RequestType::kMicStream
+                 : RequestType::kCameraStream);
+  history->RecordAction(GetParam().action, request_type,
                         PermissionPromptDisposition::ANCHORED_BUBBLE);
-  EXPECT_EQ(
-      2, history->GetOneTimeGrantCount(url1, ContentSettingsType::GEOLOCATION));
+  EXPECT_EQ(2, history->GetOneTimeGrantCount(url1, GetParam().type));
+}
 
-  history->RecordAction(PermissionAction::DENIED, RequestType::kGeolocation,
-                        PermissionPromptDisposition::ANCHORED_BUBBLE);
-  EXPECT_EQ(
-      2, history->GetOneTimeGrantCount(url1, ContentSettingsType::GEOLOCATION));
+TEST_F(PermissionActionHistoryTest, GetOneTimeGrantCount_UnsupportedType) {
+  GURL url1("https://www.example.com");
+  auto* history = GetPermissionActionsHistory();
 
-  // Unsupported type
+  history->RecordOneTimeGrant(url1, ContentSettingsType::NOTIFICATIONS);
   EXPECT_EQ(0, history->GetOneTimeGrantCount(
                    url1, ContentSettingsType::NOTIFICATIONS));
 }

@@ -1256,25 +1256,20 @@ void PermissionRequestManager::CurrentRequestsDecided(
       // request.
     }
 
-    if (permission_action == PermissionAction::GRANTED_ONCE) {
-      ContentSettingsType content_settings_type =
-          request->GetContentSettingsType();
-
-      if (request->request_type() == RequestType::kGeolocation ||
-          content_settings_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
-          content_settings_type == ContentSettingsType::MEDIASTREAM_MIC) {
+    ContentSettingsType content_settings_type =
+        request->GetContentSettingsType();
+    if (content_settings_type == ContentSettingsType::GEOLOCATION ||
+        content_settings_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
+        content_settings_type == ContentSettingsType::MEDIASTREAM_MIC) {
+      if (permission_action == PermissionAction::GRANTED_ONCE) {
         actions_history->RecordOneTimeGrant(request->requesting_origin(),
                                             content_settings_type);
-      }
-    } else if (permission_action == PermissionAction::GRANTED) {
-      ContentSettingsType content_settings_type =
-          request->GetContentSettingsType();
-
-      if (request->request_type() == RequestType::kGeolocation ||
-          content_settings_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
-          content_settings_type == ContentSettingsType::MEDIASTREAM_MIC) {
-        actions_history->RecordOTPCountForGrant(
-            content_settings_type,
+      } else if (permission_action == PermissionAction::GRANTED ||
+                 permission_action == PermissionAction::DENIED ||
+                 permission_action == PermissionAction::DISMISSED ||
+                 permission_action == PermissionAction::IGNORED) {
+        actions_history->RecordOTPCountForAction(
+            content_settings_type, permission_action,
             actions_history->GetOneTimeGrantCount(request->requesting_origin(),
                                                   content_settings_type));
       }
