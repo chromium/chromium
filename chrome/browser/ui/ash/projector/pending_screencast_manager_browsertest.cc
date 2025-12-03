@@ -97,10 +97,7 @@ class ScreencastsPendingStatusChangedObserver
 
 class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
  public:
-  PendingScreencastMangerBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kProjectorUpdateIndexableText}, {});
-  }
+  PendingScreencastMangerBrowserTest() = default;
   PendingScreencastMangerBrowserTest(
       const PendingScreencastMangerBrowserTest&) = delete;
   PendingScreencastMangerBrowserTest& operator=(

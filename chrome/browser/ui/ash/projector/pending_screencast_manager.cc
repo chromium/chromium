@@ -403,8 +403,7 @@ void PendingScreencastManager::OnSyncingStatusUpdate(
     // times. The `syncing_metadata_files_` is used to watch the first
     // "kCompleted" state for a file so that we could only update indexable text
     // once.
-    if (ash::features::IsProjectorUpdateIndexableTextEnabled() &&
-        IsMetadataFile(event_file)) {
+    if (IsMetadataFile(event_file)) {
       syncing_metadata_files_.emplace(event_file);
     }
     pending_webm_or_projector_events.emplace_back(*event.get());
@@ -561,28 +560,26 @@ void PendingScreencastManager::OnFileSyncedCompletely(
   // If observes a error uploaded file is now successfully uploaded, removes
   // it from `error_syncing_files_`:
   error_syncing_files_.erase(event_file);
-  if (ash::features::IsProjectorUpdateIndexableTextEnabled()) {
-    // If observes a ".projector" file is now successfully uploaded, updates
-    // the indexable text and remove it from `syncing_metadata_files_`.
-    const auto iter = syncing_metadata_files_.find(event_file);
-    if (iter != syncing_metadata_files_.end()) {
-      auto on_get_file_id_callback =
-          on_get_file_id_callback_
-              ? std::move(on_get_file_id_callback_)
-              : base::BindOnce(&PendingScreencastManager::OnGetFileId,
-                               weak_ptr_factory_.GetWeakPtr());
+  // If observes a ".projector" file is now successfully uploaded, updates
+  // the indexable text and remove it from `syncing_metadata_files_`.
+  const auto iter = syncing_metadata_files_.find(event_file);
+  if (iter != syncing_metadata_files_.end()) {
+    auto on_get_file_id_callback =
+        on_get_file_id_callback_
+            ? std::move(on_get_file_id_callback_)
+            : base::BindOnce(&PendingScreencastManager::OnGetFileId,
+                             weak_ptr_factory_.GetWeakPtr());
 
-      // Posts a delayed task to get Drive metadata because the metadata might
-      // not be polulated as the file get uploaded. This task has a long chain
-      // of callbacks. The calling order is: GetDriveFileMetadata() ->
-      // ParseFileIdOnGetMetaData() -> on_get_file_id_callback.
-      content::GetUIThreadTaskRunner({})->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&GetDriveFileMetadata, event_file,
-                         std::move(on_get_file_id_callback)),
-          kDriveGetMetadataDelay);
-      syncing_metadata_files_.erase(iter);
-    }
+    // Posts a delayed task to get Drive metadata because the metadata might
+    // not be populated as the file get uploaded. This task has a long chain
+    // of callbacks. The calling order is: GetDriveFileMetadata() ->
+    // ParseFileIdOnGetMetaData() -> on_get_file_id_callback.
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&GetDriveFileMetadata, event_file,
+                       std::move(on_get_file_id_callback)),
+        kDriveGetMetadataDelay);
+    syncing_metadata_files_.erase(iter);
   }
 }
 

@@ -1681,10 +1681,6 @@ BASE_FEATURE(kProjectorManagedUserIgnorePolicy,
 BASE_FEATURE(kProjectorShowShortPseudoTranscript,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to update the indexable text when metadata file gets
-// uploaded.
-BASE_FEATURE(kProjectorUpdateIndexableText, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to enable features that are not ready to enable by
 // default but ready for internal testing.
 BASE_FEATURE(kProjectorBleedingEdgeExperience,
@@ -3212,10 +3208,6 @@ bool IsProjectorManagedUserIgnorePolicyEnabled() {
 
 bool IsProjectorShowShortPseudoTranscript() {
   return base::FeatureList::IsEnabled(kProjectorShowShortPseudoTranscript);
-}
-
-bool IsProjectorUpdateIndexableTextEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorUpdateIndexableText);
 }
 
 bool IsProjectorServerSideRecognitionFallbackImplEnabled() {
