@@ -45,6 +45,7 @@
 <translation id="146866447420868597">Bạn muốn đăng nhập vào Chrome?</translation>
 <translation id="1476347941828409626">&amp;Quản lý hồ sơ trên Chrome</translation>
 <translation id="1492280395845991349">Chạy lại để hoàn tất quá trình cập nhật Chrome</translation>
+<translation id="1496875977627931224">Chào <ph name="USER_NAME" />,<ph name="LINE_BREAK" />hôm nay bạn đang nghĩ gì vậy?</translation>
 <translation id="1497802159252041924">Lỗi cài đặt: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Tùy chỉnh hồ sơ mới của bạn trên Chrome</translation>
 <translation id="1518627427551567882">Trang này được bảo vệ</translation>
@@ -200,6 +201,7 @@
 <translation id="3112458742631356345">Chrome đã chặn tệp tải xuống này vì tệp này ít được tải xuống và có thể nguy hiểm</translation>
 <translation id="3114643501466072395">Để kiểm tra xem các mật khẩu khác của bạn có bị ảnh hưởng bởi các vụ rò rỉ dữ liệu và sự cố bảo mật khác hay không, hãy <ph name="BEGIN_LINK" />đăng nhập vào Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome đã chặn tệp tải xuống này vì tệp lưu trữ gồm các tệp khác có thể ẩn chứa phần mềm độc hại</translation>
+<translation id="3130333203120345554">Lượt tìm kiếm mới</translation>
 <translation id="3135560418014806498">Thêm hồ sơ Chrome</translation>
 <translation id="3137969841538672700">Kéo để tìm</translation>
 <translation id="3140883423282498090">Thay đổi của bạn sẽ có hiệu lực vào lần tiếp theo bạn chạy lại Google Chrome.</translation>
@@ -365,6 +367,7 @@
 <translation id="5139423532931106058">Tuỳ chỉnh hồ sơ của bạn trên Chrome</translation>
 <translation id="5163087008893166964">Chào mừng bạn đến với Chrome. Cửa sổ trình duyệt mới đã mở ra</translation>
 <translation id="5166439563123238795">Chrome cần có quyền theo dõi cử chỉ tay của bạn</translation>
+<translation id="5167819546851111585">Hôm nay, bạn đang nghĩ gì?</translation>
 <translation id="5170938038195470297">Không thể sử dụng hồ sơ của bạn vì hồ sơ được tạo từ phiên bản Google Chrome mới hơn.
 
 Một số tính năng có thể không khả dụng. Vui lòng chỉ định thư mục hồ sơ khác hoặc sử dụng phiên bản Chrome mới hơn.</translation>
@@ -644,6 +647,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8013993649590906847">Chrome sẽ cố gắng mô tả cho bạn những hình ảnh không có nội dung mô tả hữu ích. Để tạo nội dung mô tả, các hình ảnh sẽ được gửi đến Google.</translation>
 <translation id="8019103195866286235">Tiện ích này đã bị nhà phát triển huỷ phát hành và có thể không an toàn. Hãy xoá khỏi Chrome để tiện ích này không thể xem và thay đổi dữ liệu của bạn (bao gồm cả thông tin cá nhân) trên các trang web bạn truy cập nữa.</translation>
 <translation id="8040768861829554732">Một tiện ích muốn bạn đăng nhập vào Chrome</translation>
+<translation id="8041795619940733262">Hỏi Google<ph name="LINE_BREAK" />về thẻ này</translation>
 <translation id="80471789339884597">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại tất cả trình duyệt trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Các hồ sơ khác trên Chrome</translation>

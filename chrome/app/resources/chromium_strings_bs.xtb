@@ -41,6 +41,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="141901961143729572">Podijelite svoje misli</translation>
 <translation id="1465192221147974788">Da podijelite prozor, dozvolite snimanje ekrana za Chromium u Postavkama sistema.</translation>
 <translation id="1478370723027452770">Potražite pomoć za Chrome for Testing</translation>
+<translation id="1496875977627931224">Zdravo, <ph name="USER_NAME" />,<ph name="LINE_BREAK" />o čemu danas razmišljate?</translation>
 <translation id="1497802159252041924">Greška prilikom instaliranja: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Stranica je zaštićena</translation>
 <translation id="1524282610922162960">Dijelite Chromium karticu</translation>
@@ -194,6 +195,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3103660991484857065">Aplikacija za instaliranje nije uspjela dekompresirati arhivu. Ponovo preuzmite Chromium.</translation>
 <translation id="310459126943037700">Prekidanje zadataka nije uspjelo.</translation>
 <translation id="3130323860337406239">Chromium koristi vaš mikrofon</translation>
+<translation id="3130333203120345554">Novo pretraživanje</translation>
 <translation id="3137969841538672700">Prevucite da pretražite</translation>
 <translation id="3144188012276422546">Kartica koristi dodatne resurse. Da poboljšate performanse, dozvolite Chromiumu da je deaktivira.</translation>
 <translation id="3149163023759831301">Da podijelite ekran, dozvolite snimanje ekrana za Chromium u Postavkama sistema</translation>
@@ -351,6 +353,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4994636714258228724">Dodajte se u Chromium</translation>
 <translation id="5123973130450702873">Chromium treba odobrenje da prati vaše ruke</translation>
 <translation id="5141988424377517949">Niste je posjetili već neko vrijeme. Chromium je uklonio odobrenja "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" i "<ph name="PERMISSION_3" />".</translation>
+<translation id="5167819546851111585">O čemu danas razmišljate?</translation>
 <translation id="5174969993834422967">Obično blokirate obavještenja. Da dozvolite ovoj web lokaciji da vas obavještava, kliknite na ikonu obavještenja u desnom uglu lokacijske trake.</translation>
 <translation id="5174983315706567306">Nema dovoljno prostora na disku.</translation>
 <translation id="5187123684706427865">Chromium račun zahtijeva ponovnu autentifikaciju</translation>
@@ -383,6 +386,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="5496810170689441661">Chromium pokušava urediti lozinke. Unesite Windows lozinku da ovo omogućite.</translation>
 <translation id="5524890928877629608">gornji lijevi ugao područja za pretraživanje: lijevo <ph name="LEFT" />%, gore <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Otvaraj PDF-ove u Chromiumu</translation>
+<translation id="5536164441519929134">Postavite<ph name="LINE_BREAK" />pitanje o ovoj kartici</translation>
 <translation id="5579324208890605088">Došlo je do greške prilikom pokretanja. Pokrenite alat za instaliranje kao obični korisnik, a ne kao administrator.</translation>
 <translation id="5580770360767802657">Koristite Chromium prema zadanim postavkama i zakačite ga</translation>
 <translation id="5596627076506792578">Više opcija</translation>

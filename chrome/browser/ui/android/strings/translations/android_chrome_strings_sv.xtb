@@ -496,6 +496,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3114507951000454849">Läs dagens nyheter <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Mer information</translation>
 <translation id="3123734510202723619">Meddelanden</translation>
+<translation id="3134385238404760368">Inga nya flikar</translation>
 <translation id="314939179385989105">Chromes startsida</translation>
 <translation id="3158667104057012316">Sorterar efter manuell ordning</translation>
 <translation id="3159335509547415276">Läs mer om blockerade konton</translation>
@@ -818,6 +819,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4577115723294378384">Sortera från A till Ö</translation>
 <translation id="4578289292431526768">Kom igång</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{för # minut sedan}other{för # minuter sedan}}</translation>
+<translation id="4585751637295612750">Öppna en ny flik för att lägga till den i din fråga</translation>
 <translation id="4587589328781138893">Webbplatser</translation>
 <translation id="4594952190837476234">Den här offlinesidan sparades <ph name="CREATION_TIME" /> och kan skilja sig från onlineversionen.</translation>
 <translation id="4595237294768457124">Öppna en sida på en ny flik</translation>
@@ -1339,6 +1341,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="670498945988402717">Genomsöktes i går</translation>
 <translation id="6710213216561001401">Föregående</translation>
 <translation id="671481426037969117">Timern för <ph name="FQDN" /> har löpt ut. Den börjar om igen i morgon.</translation>
+<translation id="6716434912087331834">Om du vill återställa ett nytt fönster minskar du det totala antalet aktiva fönster till högst <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Inaktiva fönster raderas efter sex månader.</translation>
 <translation id="6723740634201835758">I Google-kontot</translation>
 <translation id="6734310707649923383">Du kan se sidor som du har besökt eller radera dem från historiken</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, fäst inkognitoflik som spelas in</translation>
@@ -1656,6 +1659,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> är inaktuell.</translation>
 <translation id="7944772052836377867">Verifiera din identitet för synkronisering</translation>
 <translation id="7951102827450076904">Öppna alltid nedladdade PDF-filer</translation>
+<translation id="7952479614398473176">Om du vill öppna ett nytt fönster minskar du det totala antalet aktiva fönster till högst <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7957413488482743710">Ett virtuellt kort döljer det riktiga kortet och skyddar dig från eventuella bedrägerier. <ph name="BEGIN_LINK1" />Läs mer om virtuella kort<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Flikar på den här enheten</translation>
 <translation id="7961926449547174351">Du har inaktiverat åtkomst till lagringsutrymmet. Återaktivera i inställningarna.</translation>

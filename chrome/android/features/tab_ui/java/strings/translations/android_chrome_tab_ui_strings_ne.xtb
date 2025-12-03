@@ -73,7 +73,6 @@
 <translation id="311432875115153175">ट्याब समूहको सूची बन्द गरियो</translation>
 <translation id="3194464645767632461">मूल्याङ्कन</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{समूहमा <ph name="TABS_COUNT_ONE" /> ट्याब हाल्नुहोस्}other{समूहमा <ph name="TABS_COUNT_MANY" /> वटा ट्याब हाल्नुहोस्}}</translation>
-<translation id="3293080634164207409">ट्याबहरू हाल्नुहोस्</translation>
 <translation id="3328308545011660196">सुझाव: <ph name="NUMBER_OF_TABS" /> ट्याबहरू एकअर्कासँग सम्बन्धित देखिन्छन्। यिनलाई एउटै समूहमा राख्ने हो?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{१ दिनदेखि निष्क्रिय भएपछि}other{<ph name="DAY_COUNT_MANY" /> दिनदेखि निष्क्रिय भएपछि}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> नयाँ ट्याब}other{<ph name="MANY_ADDED" /> वटा नयाँ ट्याब}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="855081842937141170">ट्याबलाई पिन गर्नुहोस्</translation>
 <translation id="8633025649649592204">हालसालैको क्रियाकलाप</translation>
+<translation id="8635822281281406185">बढीमा १० वटा फाइल, ट्याब वा फोटो हाल्नुहोस्</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8714939927607906138">अझ कम मूल्य</translation>
 <translation id="8730621377337864115">गरियो</translation>

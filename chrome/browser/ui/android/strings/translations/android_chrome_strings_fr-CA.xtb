@@ -496,6 +496,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3114507951000454849">Actualités du jour <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Plus de détails</translation>
 <translation id="3123734510202723619">Annonces</translation>
+<translation id="3134385238404760368">Aucun onglet récent</translation>
 <translation id="314939179385989105">Page d'accueil de Chrome</translation>
 <translation id="3158667104057012316">Tri par ordre manuel</translation>
 <translation id="3159335509547415276">En savoir plus sur les comptes bloqués</translation>
@@ -817,6 +818,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4577115723294378384">Trier de A à Z</translation>
 <translation id="4578289292431526768">Allons-y</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Il y a # minute}one{Il y a # minute}other{Il y a # minutes}}</translation>
+<translation id="4585751637295612750">Ouvrez un nouvel onglet pour l'ajouter à votre question</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Cette page hors connexion a été créée le <ph name="CREATION_TIME" /> et peut différer de la version en ligne.</translation>
 <translation id="4595237294768457124">Ouvrez une page Nouvel onglet.</translation>

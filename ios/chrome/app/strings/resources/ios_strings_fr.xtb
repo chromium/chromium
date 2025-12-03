@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">Écran de verrouillage</translation>
 <translation id="1963976881984600709">Protection standard</translation>
 <translation id="1964507856799750384">Appuyez sur <ph name="BEGIN_BOLD" />Appli de navigateur<ph name="END_BOLD" />.</translation>
+<translation id="1965633132497641148">Code de sécurité incorrect</translation>
 <translation id="1966313166384086081">données des sites</translation>
 <translation id="1967461193809857427">{count,plural, =1{Afficher l'onglet que vous avez quitté sur Android ?}one{Afficher l'onglet que vous avez quitté sur Android ?}other{Afficher les onglets que vous avez quittés sur Android ?}}</translation>
 <translation id="1972325230031091483">Vous naviguerez plus rapidement, car le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">Effacer l'historique et les données de sites</translation>
 <translation id="3190736958609431397">Ne plus suivre</translation>
 <translation id="3208260410153224535">Votre organisation a désactivé la connexion. Les nouveaux favoris, mots de passe, etc. ne seront enregistrés que sur cet appareil.</translation>
+<translation id="3211969308836412674">Retirer le site</translation>
 <translation id="3213807041830307252">Achetez, traduisez et identifiez ce que vous voyez à l'aide de votre appareil photo et de votre galerie photo.</translation>
 <translation id="3214379938835224220">Vous avez été déconnecté lors de la réinitialisation de votre iPad. Appuyez sur "Continuer" ci-dessous pour vous connecter.</translation>
 <translation id="3218296450292600703">En vous connectant avec votre compte géré, vous pouvez séparer la navigation liée à votre organisation (onglets, historique et mots de passe, par exemple) de vos autres activités de navigation.</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Informations sur le site</translation>
 <translation id="333229797575847124">Comment activer cette fonctionnalité</translation>
+<translation id="3344233834747405775">Nom de titulaire de carte non valide</translation>
 <translation id="3344485292736684439">{count,plural, =1{Favori enregistré dans "{title}" sur votre compte {email}}one{Favori enregistré dans "{title}" sur votre compte {email}}other{Favoris enregistrés dans "{title}" sur votre compte {email}}}</translation>
 <translation id="334690320928261823">Onglets récents</translation>
 <translation id="3349031117032695619">Bloquer les pop-ups</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">Me le rappeler plus tard</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="4883766694719903356">Grille des onglets de navigation privée</translation>
+<translation id="4884937942297374058">Protection renforcée désactivée</translation>
 <translation id="488785315393301722">Afficher les détails</translation>
 <translation id="4889521386764567563">Profil actuel</translation>
 <translation id="4893713555726946316">Masquer "Rechercher sur la page"</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">Créer des événements d'agenda à partir de dates</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Modifier le site</translation>
 <translation id="5233638681132016545">Nouvel onglet</translation>
 <translation id="5234094073825090254">{count,plural, =1{Favori enregistré dans votre compte Google ({email}).}one{Favori enregistré dans votre compte Google ({email}).}other{Favoris enregistrés dans votre compte Google ({email}).}}</translation>
 <translation id="5234764350956374838">Ignorer</translation>
@@ -1325,6 +1330,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6066301408025741299">Appuyez pour annuler.</translation>
 <translation id="6074656473835429958">Recevez des notifications</translation>
 <translation id="607620096698446287">Impossible d'importer <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
+<translation id="6076618233738284461">Épingler le site</translation>
 <translation id="6077126322656614846">Accès à la caméra autorisé</translation>
 <translation id="607730456154980869">Obtenez des réponses plus rapidement avec Gemini dans Chrome</translation>
 <translation id="6078236141387574983">Réajuster la hauteur de la feuille</translation>
@@ -1540,6 +1546,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[RÉSERVÉ]</translation>
 <translation id="6779455296366983087">Vos données de navigation seront supprimées</translation>
+<translation id="6782531425936234573">Exporter des données</translation>
 <translation id="6791425686608802741">Appuyez sur "Ajouter l'onglet à un nouveau groupe"</translation>
 <translation id="6794476726485507147">Sélectionnez quand vous envoyer un rappel vous invitant à revenir sur cette page</translation>
 <translation id="6795481620482106033">Données incorrectes</translation>
@@ -1635,7 +1642,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7173114856073700355">Paramètres</translation>
 <translation id="7173721738069475737">{count,plural, =1{Favori enregistré}one{{count} favori enregistré}other{{count} favoris enregistrés}}</translation>
 <translation id="7176183551031110427">Faire un zoom arrière</translation>
-<translation id="7186568385131859684">Contrôlez la façon dont l'historique de navigation est utilisé avec vos autres données dans l'ensemble des services Google</translation>
+<translation id="7186568385131859684">Contrôler la façon dont l'historique de navigation est utilisé avec vos autres données dans l'ensemble des services Google</translation>
 <translation id="719133302483559673">Gérez vos centres d'intérêt et préférences.</translation>
 <translation id="7191382490098297347">Image de la pellicule</translation>
 <translation id="7203496777391039568">Les données de votre organisation sont privées et sécurisées</translation>

@@ -11366,7 +11366,7 @@
 <translation id="8821268776955756404"><ph name="APP_NAME" /> 已可使用。</translation>
 <translation id="8821647731831124007">沒有可用的熱點</translation>
 <translation id="882204272221080310">更新韌體以提高安全性。</translation>
-<translation id="8822690627597552656">讓某些不熟悉的網站減慢速度，以封鎖常見攻擊</translation>
+<translation id="8822690627597552656">減慢部分陌生網站的速度，以封鎖常見攻擊</translation>
 <translation id="8823514049557262177">複製連結文字(&amp;X)</translation>
 <translation id="8823704566850948458">建議密碼…</translation>
 <translation id="8823963789776061136">您亦可選取打印機 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -11499,6 +11499,7 @@
 <translation id="8910987510378294980">隱藏裝置清單</translation>
 <translation id="8912362522468806198">Google 帳戶</translation>
 <translation id="8912810933860534797">啟用自動掃瞄</translation>
+<translation id="8914030287343429787">即使沒有在使用 Chrome 或 Android，只要登入 <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> 就能查看自己的密碼</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8915307125957890427">在分頁上按一下右鍵，並選取「將分頁加入群組」和「新群組」</translation>
 <translation id="8915370057835397490">正在載入建議</translation>

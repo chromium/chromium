@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">Lås skärmen</translation>
 <translation id="1963976881984600709">Standardskydd</translation>
 <translation id="1964507856799750384">Tryck på <ph name="BEGIN_BOLD" />Webbläsarapp<ph name="END_BOLD" /></translation>
+<translation id="1965633132497641148">Ogiltig säkerhetskod</translation>
 <translation id="1966313166384086081">webbplatsdata</translation>
 <translation id="1967461193809857427">{count,plural, =1{Vill du fortsätta med fliken du använde på Android?}other{Vill du fortsätta med flikarna du använde på Android?}}</translation>
 <translation id="1972325230031091483">Du surfar snabbare eftersom innehåll läses in proaktivt baserat på den webbsida du besöker för tillfället</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">Rensa historik och webbplatsdata</translation>
 <translation id="3190736958609431397">Ta bort bevakning</translation>
 <translation id="3208260410153224535">Din organisation har inaktiverat inloggning. Nya bokmärken, lösenord med mera sparas endast på den här enheten.</translation>
+<translation id="3211969308836412674">Lossa webbplats</translation>
 <translation id="3213807041830307252">Köp, översätt och identifiera det du ser med hjälp av kameran och fotogalleriet.</translation>
 <translation id="3214379938835224220">Du har loggats ut som en del av återställningen av din iPad. Tryck på Fortsätt nedan för att logga in.</translation>
 <translation id="3218296450292600703">Genom att logga in med det hanterade kontot kan du skilja på webbinformationen som är kopplad till organisationen, till exempel flikar, historik och lösenord, från annan webbinformation.</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">Adressrad 2</translation>
 <translation id="3328801116991980348">Platsinformation</translation>
 <translation id="333229797575847124">Så här aktiverar du den här funktionen</translation>
+<translation id="3344233834747405775">Ogiltigt namn på kortinnehavare</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bokmärket har sparats i {title} i ditt konto, {email}}other{Bokmärkena har sparats i {title} i ditt konto, {email}}}</translation>
 <translation id="334690320928261823">Senaste flikarna</translation>
 <translation id="3349031117032695619">Blockera popup-fönster</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">Påminn mig senare</translation>
 <translation id="4881695831933465202">Öppna</translation>
 <translation id="4883766694719903356">Rutnät med inkognitoflikar</translation>
+<translation id="4884937942297374058">Utökat skydd är inaktiverat</translation>
 <translation id="488785315393301722">Visa information</translation>
 <translation id="4889521386764567563">Aktuell profil</translation>
 <translation id="4893713555726946316">Dölj Sök på sidan</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">Skapa kalenderhändelser från datum</translation>
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Redigera webbplats</translation>
 <translation id="5233638681132016545">Ny flik</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bokmärket har sparats i Google-kontot {email}.}other{Bokmärkena har sparats i Google-kontot {email}.}}</translation>
 <translation id="5234764350956374838">Stäng</translation>
@@ -1325,6 +1330,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6066301408025741299">Avbryt genom att trycka här.</translation>
 <translation id="6074656473835429958">Få aviseringar</translation>
 <translation id="607620096698446287">Det gick inte att ladda upp <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
+<translation id="6076618233738284461">Fäst webbplats</translation>
 <translation id="6077126322656614846">Kameraåtkomst har tillåtits</translation>
 <translation id="607730456154980869">Få svar snabbare med Gemini i Chrome</translation>
 <translation id="6078236141387574983">Justera arkhöjden igen</translation>
@@ -1540,6 +1546,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6761393919622941301">Ljud</translation>
 <translation id="6770452996697898492">[BOKAT]</translation>
 <translation id="6779455296366983087">Din webbinformation rensas</translation>
+<translation id="6782531425936234573">Exportera data</translation>
 <translation id="6791425686608802741">Tryck på Lägg till fliken i en ny grupp</translation>
 <translation id="6794476726485507147">Välj ett datum och en tidpunkt då du vill få en påminnelse om att besöka den här sidan igen</translation>
 <translation id="6795481620482106033">Ogiltig data</translation>

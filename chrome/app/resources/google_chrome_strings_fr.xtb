@@ -46,6 +46,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="146866447420868597">Se connecter à Chrome ?</translation>
 <translation id="1476347941828409626">&amp;Gérer les profils Chrome</translation>
 <translation id="1492280395845991349">Relancer pour terminer la mise à jour de Chrome</translation>
+<translation id="1496875977627931224">Bonjour <ph name="USER_NAME" />,<ph name="LINE_BREAK" />à quoi pensez-vous aujourd'hui ?</translation>
 <translation id="1497802159252041924">Erreur d'installation : <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personnalisez votre nouveau profil Chrome</translation>
 <translation id="1518627427551567882">Cette page est protégée</translation>
@@ -201,6 +202,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3112458742631356345">Chrome a bloqué ce téléchargement, car le fichier n'est pas souvent téléchargé et peut être dangereux</translation>
 <translation id="3114643501466072395">Pour vérifier si vos autres mots de passe sont suffisamment sécurisés afin d'empêcher toute violation de données et autres problèmes de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome a bloqué ce téléchargement, car le fichier d'archive contient d'autres fichiers susceptibles de dissimuler un logiciel malveillant</translation>
+<translation id="3130333203120345554">Nouvelle recherche</translation>
 <translation id="3135560418014806498">Ajouter un profil Chrome</translation>
 <translation id="3137969841538672700">Faire glisser pour rechercher</translation>
 <translation id="3140883423282498090">Vos modifications seront prises en compte au prochain redémarrage de Google Chrome.</translation>
@@ -274,6 +276,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4022972681110646219">Traduire l'écran</translation>
 <translation id="4023601594785368013">Langue d'origine : <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Redémarrez Chrome OS pour appliquer la mise à jour.</translation>
+<translation id="4039097928859803404">Toujours afficher les raccourcis vers le Mode IA</translation>
 <translation id="4050175100176540509">La dernière version propose d'importantes améliorations de la sécurité ainsi que de nouvelles fonctionnalités.</translation>
 <translation id="4053720452172726777">Personnaliser et contrôler Google Chrome</translation>
 <translation id="408393047846373801">Pour accéder à vos mots de passe et plus encore sur tous vos appareils, connectez-vous à Chrome. Ce mot de passe sera enregistré dans votre compte Google une fois que vous vous serez connecté.</translation>
@@ -355,6 +358,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4970880042055371251">Version de Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Cliquez sur "Gestionnaire de mots de passe de Google"</translation>
+<translation id="5043786843026425788">En savoir plus sur la recherche avec Google Lens dans Chrome</translation>
 <translation id="504867494566807945">Ouvrez les liens dans Chrome depuis n'importe quelle appli. Chrome est épinglé à la barre des tâches pour un accès plus simple.</translation>
 <translation id="5114340746415930644">Saisissez votre phrase secrète pour utiliser et enregistrer des données Chrome dans votre compte <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Se connecter à Chrome lorsque vous vous connectez aux autres services Google</translation>
@@ -364,6 +368,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="5139423532931106058">Personnalisez votre profil Chrome</translation>
 <translation id="5163087008893166964">Bienvenue dans Chrome, une nouvelle fenêtre du navigateur a été ouverte</translation>
 <translation id="5166439563123238795">Chrome a besoin de l'autorisation de suivre vos mains</translation>
+<translation id="5167819546851111585">À quoi pensez-vous aujourd'hui ?</translation>
 <translation id="5170938038195470297">Votre profil ne peut pas être utilisé parce qu'il vient d'une version plus récente de Google Chrome. 
 
 Certaines fonctionnalités peuvent être indisponibles. Veuillez spécifier un répertoire de profil différent ou utiliser une version plus récente de Google Chrome.</translation>
@@ -528,6 +533,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="683440813066116847">Règle de trafic entrant pour Google Chrome Canary autorisant le trafic mDNS</translation>
 <translation id="6841242485723266823">Les profils Chrome vous aident à séparer différents aspects de votre vie. Ajoutez un profil maintenant.</translation>
 <translation id="684888714667046800">Impossible de se connecter à Internet. Si vous utilisez un pare-feu, assurez-vous que <ph name="PRODUCT_EXE_NAME" /> figure dans la liste d'autorisation.</translation>
+<translation id="6859580922007887573">Appuyez pour continuer</translation>
 <translation id="6877155553248388166">angle inférieur droit de la zone de recherche : <ph name="RIGHT" /> % droite, <ph name="BOTTOM" /> % bas</translation>
 <translation id="6881299373831449287">Mise à jour de Chrome</translation>
 <translation id="6885412569789873916">Applications pour la version bêta de Chrome</translation>
@@ -627,6 +633,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7849037457735762883">Reprenez là où vous en étiez : Chrome peut restaurer vos onglets à chaque redémarrage. Pour activer cette option, accédez aux</translation>
 <translation id="7872446069773932638">Téléchargement… <ph name="SECONDS" /> seconde(s) restante(s)</translation>
 <translation id="7886087451482920026">Sélectionnez du texte avec Google Lens</translation>
+<translation id="7887929410013642057">Toujours afficher les raccourcis vers le Mode IA</translation>
 <translation id="7890208801193284374">Si vous partagez un ordinateur avec vos proches, ceux-ci peuvent configurer Chrome comme bon leur semble et naviguer sur le Web à leur manière.</translation>
 <translation id="7896673875602241923">Un utilisateur s'est récemment connecté à Chrome sur cet ordinateur en tant que <ph name="ACCOUNT_EMAIL_LAST" />. Veuillez créer un autre utilisateur Chrome pour séparer vos informations.</translation>
 <translation id="7904985524660297937">Essayez Gemini dans Google Chrome</translation>
@@ -643,6 +650,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8013993649590906847">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google.</translation>
 <translation id="8019103195866286235">Cette extension peut présenter des risques, car son développeur a annulé sa publication. Supprimez-la de Chrome pour qu'elle ne puisse plus voir ni modifier vos données (y compris vos informations personnelles) sur les sites que vous consultez.</translation>
 <translation id="8040768861829554732">Une extension vous demande de vous connecter à Chrome</translation>
+<translation id="8041795619940733262">Posez une question à Google<ph name="LINE_BREAK" />concernant cet onglet</translation>
 <translation id="80471789339884597">Merci d'avoir installé notre produit. Vous devez redémarrer tous vos navigateurs avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Autres profils Chrome</translation>

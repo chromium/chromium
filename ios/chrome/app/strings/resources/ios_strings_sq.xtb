@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">Ekrani i kyçjes</translation>
 <translation id="1963976881984600709">Mbrojtja standarde</translation>
 <translation id="1964507856799750384">Trokit te <ph name="BEGIN_BOLD" />Browser App<ph name="END_BOLD" /></translation>
+<translation id="1965633132497641148">Kod i pavlefshëm sigurie</translation>
 <translation id="1966313166384086081">të dhënat e sajtit</translation>
 <translation id="1967461193809857427">{count,plural, =1{Të vazhdohet me skedën ku e ke lënë në Android?}other{Të vazhdohet me skedat ku e ke lënë në Android?}}</translation>
 <translation id="1972325230031091483">Do të shfletosh më shpejt sepse përmbajtja ngarkohet në mënyrë proaktive bazuar në vizitën aktuale në faqen e uebit</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">Pastro të dhënat e historikut dhe të uebsajteve</translation>
 <translation id="3190736958609431397">Anulo monitorimin</translation>
 <translation id="3208260410153224535">Organizata jote ka e çaktivizuar identifikimin. Faqeshënuesit e rinj, fjalëkalimet etj. do të ruhen vetëm në këtë pajisje.</translation>
+<translation id="3211969308836412674">Zhgozhdo sajtin</translation>
 <translation id="3213807041830307252">Kërko për të blerë, përkthe dhe identifiko ato që shikon duke përdorur kamerën dhe galerinë e fotografive.</translation>
 <translation id="3214379938835224220">Ke dalë si pjesë e rivendosjes së iPad. Trokit te "Vazhdo" më poshtë për t'u identifikuar.</translation>
 <translation id="3218296450292600703">Identifikimi me llogarinë tënde të menaxhuar të ndihmon ta mbash shfletimin në lidhje me organizatën tënde, (duke përfshirë skedat, historikun dhe fjalëkalimet) veçmas nga shfletime të tjera.</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">Adresa 2</translation>
 <translation id="3328801116991980348">Informacionet rreth sajtit</translation>
 <translation id="333229797575847124">Si ta aktivizosh këtë veçori</translation>
+<translation id="3344233834747405775">Emër i pavlefshëm i mbajtësit të kartës</translation>
 <translation id="3344485292736684439">{count,plural, =1{Faqeshënuesi u ruajt te "{title}" në llogarinë tënde, {email}}other{Faqeshënuesit u ruajtën te "{title}" në llogarinë tënde, {email}}}</translation>
 <translation id="334690320928261823">Skedat e fundit</translation>
 <translation id="3349031117032695619">Blloko dritaret kërcyese</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">Më kujto më vonë</translation>
 <translation id="4881695831933465202">Hap</translation>
 <translation id="4883766694719903356">Rrjeta e skedave "të fshehta"</translation>
+<translation id="4884937942297374058">"Mbrojtja e përmirësuar" është joaktive</translation>
 <translation id="488785315393301722">Shfaq detajet</translation>
 <translation id="4889521386764567563">Profili aktual</translation>
 <translation id="4893713555726946316">Fshih "Gjej në faqe"</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">Krijo ngjarje kalendari nga datat</translation>
 <translation id="5222676887888702881">Dil</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Modifiko sajtin</translation>
 <translation id="5233638681132016545">Skedë e re</translation>
 <translation id="5234094073825090254">{count,plural, =1{Faqeshënuesi u ruajt në "Llogarinë tënde të Google", {email}.}other{Faqeshënuesit u ruajtën në "Llogarinë tënde të Google", {email}.}}</translation>
 <translation id="5234764350956374838">Hiq</translation>
@@ -1325,6 +1330,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6066301408025741299">Prek lehtë për të anuluar.</translation>
 <translation id="6074656473835429958">Merr njoftime</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) nuk mund të ngarkohej</translation>
+<translation id="6076618233738284461">Gozhdo sajtin</translation>
 <translation id="6077126322656614846">Lejohet qasja te "Kamera"</translation>
 <translation id="607730456154980869">Merr përgjigje më shpejt me Gemini në Chrome</translation>
 <translation id="6078236141387574983">Rregullo përsëri lartësinë e fletës</translation>

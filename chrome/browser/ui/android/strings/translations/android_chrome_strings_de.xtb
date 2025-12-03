@@ -496,6 +496,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3114507951000454849">Nachrichten von heute lesen <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Weitere Details</translation>
 <translation id="3123734510202723619">Ankündigungen</translation>
+<translation id="3134385238404760368">Keine kürzlich verwendeten Tabs</translation>
 <translation id="314939179385989105">Chrome-Startseite</translation>
 <translation id="3158667104057012316">Nach manueller Reihenfolge sortieren</translation>
 <translation id="3159335509547415276">Informationen zu blockierten Konten</translation>
@@ -817,6 +818,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4577115723294378384">Von A bis Z sortieren</translation>
 <translation id="4578289292431526768">Los gehts</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{vor # Minute}other{vor # Minuten}}</translation>
+<translation id="4585751637295612750">Neuen Tab öffnen, um ihn zur Frage hinzuzufügen</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4594952190837476234">Diese Offlineseite ist vom <ph name="CREATION_TIME" /> und unterscheidet sich gegebenenfalls von der Onlineversion.</translation>
 <translation id="4595237294768457124">Öffne einen neuen Tab</translation>
@@ -1338,6 +1340,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="670498945988402717">Gestern geprüft</translation>
 <translation id="6710213216561001401">Zurück</translation>
 <translation id="671481426037969117">Dein <ph name="FQDN" />-Timer ist abgelaufen. Morgen startet er neu.</translation>
+<translation id="6716434912087331834">Wenn du ein neues Fenster wiederherstellen möchtest, reduziere die Gesamtzahl der aktiven Fenster auf maximal <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Inaktive Fenster werden nach 6 Monaten gelöscht.</translation>
 <translation id="6723740634201835758">Im Google-Konto</translation>
 <translation id="6734310707649923383">Du kannst die von dir besuchten Seiten ansehen oder sie aus dem Verlauf löschen</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, angepinnter Inkognitotab zum Aufzeichnen</translation>
@@ -1655,6 +1658,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ist veraltet.</translation>
 <translation id="7944772052836377867">Zur Synchronisierung muss deine Identität bestätigt werden</translation>
 <translation id="7951102827450076904">Heruntergeladene PDFs immer öffnen</translation>
+<translation id="7952479614398473176">Wenn du ein neues Fenster öffnen möchtest, reduziere die Gesamtzahl der aktiven Fenster auf maximal <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7957413488482743710">Wenn du eine virtuelle Karte verwendest, werden deine tatsächlichen Kartendetails nicht preisgegeben – dadurch bist du besser vor Betrugsversuchen geschützt. <ph name="BEGIN_LINK1" />Weitere Informationen zu virtuellen Karten<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Tabs auf diesem Gerät</translation>
 <translation id="7961926449547174351">Du hast den Speicherzugriff deaktiviert. Gehe zu den Einstellungen, um ihn zu aktivieren.</translation>

@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">portokaj</translation>
 <translation id="1275718070701477396">Përzgjedhur</translation>
 <translation id="1290331692326790741">Sinjal i dobët</translation>
+<translation id="1292474106138697109">Shfaqja e "Veglave të orës së mësimit"</translation>
 <translation id="1300115153046603471">APN-ja është e llojit të parazgjedhur dhe <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Konverto</translation>
@@ -1046,6 +1047,7 @@
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="5600027863942488546">Tasti <ph name="KEY_NAME" /> u testua</translation>
 <translation id="5606865426897221650">Skeda</translation>
+<translation id="5612205513582918357">"Veglat e orës së mësimit" po ndajnë ekranin tënd me <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Ke dalë nga llogaria</translation>
 <translation id="5620281292257375798">Vetëm i brendshëm</translation>
 <translation id="5628106863521633649">Gjuhët e disponueshme</translation>

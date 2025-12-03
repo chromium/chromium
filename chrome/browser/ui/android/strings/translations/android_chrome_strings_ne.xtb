@@ -496,6 +496,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3114507951000454849">आजको समाचार पढ्नुहोस् <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">थप विवरणहरू</translation>
 <translation id="3123734510202723619">घोषणाहरू</translation>
+<translation id="3134385238404760368">हालसालै कुनै पनि ट्याब खोलिएको छैन</translation>
 <translation id="314939179385989105">Chrome को गृहपृष्ठ</translation>
 <translation id="3158667104057012316">म्यानुअल तरिकाले क्रमबद्ध गर्नुहोस्</translation>
 <translation id="3159335509547415276">ब्लक गरिएका खाताहरूका बारेमा जान्नुहोस्</translation>
@@ -816,6 +817,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4577115723294378384">A देखि Z को क्रममा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="4578289292431526768">सुरु गरौँ</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनेटअघि}other{# मिनेटअघि}}</translation>
+<translation id="4585751637295612750">आफ्नो प्रश्नमा हाल्नका निम्ति नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="4587589328781138893">साइटहरू</translation>
 <translation id="4594952190837476234">यो पृष्ठ <ph name="CREATION_TIME" /> मा सिर्जना गरिएको हुँदा अनलाइन संस्करणभन्दा भिन्न हुन सक्छ।</translation>
 <translation id="4595237294768457124">नयाँ ट्याब पेज खोल्नुहोस्</translation>
@@ -1337,6 +1339,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="670498945988402717">हिजो जाँच गरिएको</translation>
 <translation id="6710213216561001401">अघिल्लो</translation>
 <translation id="671481426037969117">तपाईंको <ph name="FQDN" /> टाइमरको समय सकियो। यो भोलि फेरि सुरु हुने छ।</translation>
+<translation id="6716434912087331834">नयाँ विन्डो रिस्टोर गर्न सक्रिय विन्डोहरूको कुल सङ्ख्या घटाएर <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> वा सोभन्दा कम बनाउनुहोस्। निष्क्रिय विन्डोहरू ६ महिनापछि मेटाइन्छन्।</translation>
 <translation id="6723740634201835758">तपाईंको Google खातामा</translation>
 <translation id="6734310707649923383">तपाईं आफूले खोलेका पेज हेर्न वा आफ्नो ब्राउजिङ हिस्ट्रीबाट ती पेज मेटाउन सक्नुहुन्छ</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, पिन गरिएको रेकर्डिङ इन्कोग्निटो ट्याब</translation>
@@ -1654,6 +1657,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> को म्याद सकिएको छ।</translation>
 <translation id="7944772052836377867">"सिंक" ले तपाईंको पहिचान पुष्टि गर्नु पर्ने हुन्छ</translation>
 <translation id="7951102827450076904">डाउनलोड गरिएका PDF सधैँ खोलियोस्</translation>
+<translation id="7952479614398473176">नयाँ विन्डो खोल्न सक्रिय विन्डोहरूको कुल सङ्ख्या घटाएर <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> वा सोभन्दा कम बनाउनुहोस्।</translation>
 <translation id="7957413488482743710">भर्चुअल कार्डले तपाईंलाई ठगीबाट जोगाउनका निम्ति तपाईंको कार्डको वास्तविक जानकारी लुकाउँछ। <ph name="BEGIN_LINK1" />भर्चुअल कार्डका बारेमा थप जान्नुहोस्<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">यो डिभाइसमा भएका ट्याबहरू</translation>
 <translation id="7961926449547174351">तपाईंले भण्डारण प्रयोग गर्ने अनुमति दिनुभएको छैन, कृपया सेटिङमा गई उक्त अनुमति दिनुहोस्।</translation>

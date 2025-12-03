@@ -73,7 +73,6 @@
 <translation id="311432875115153175">පටිති සමූහ ලැයිස්තුව වසා ඇත</translation>
 <translation id="3194464645767632461">ඇගයීම</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{කණ්ඩායමට <ph name="TABS_COUNT_ONE" /> පටිත්ත එක් කරන්න}one{කණ්ඩායමට පටිති <ph name="TABS_COUNT_MANY" /> එක් කරන්න}other{කණ්ඩායමට පටිති <ph name="TABS_COUNT_MANY" /> එක් කරන්න}}</translation>
-<translation id="3293080634164207409">පටිති එක් කරන්න</translation>
 <translation id="3328308545011660196">යෝජනාව: පටිති <ph name="NUMBER_OF_TABS" /> ක් අදාළ බව පෙනේ. ඒවා සමූහ කරන්නද?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{අක්‍රියව 1 දිනකට පසු}one{අක්‍රියව දින <ph name="DAY_COUNT_MANY" />කට පසු}other{අක්‍රියව දින <ph name="DAY_COUNT_MANY" />කට පසු}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> නව පටිත්තක්}one{නව පටිති <ph name="MANY_ADDED" />ක්}other{නව පටිති <ph name="MANY_ADDED" />ක්}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">සැකසුම්</translation>
 <translation id="855081842937141170">ටැබය අමුණන්න</translation>
 <translation id="8633025649649592204">මෑත ක්‍රියාකාරකම</translation>
+<translation id="8635822281281406185">ගොනු, පටිති, හෝ රූප 10ක් දක්වා එක් කරන්න</translation>
 <translation id="8712637175834984815">එය ලැබුණා</translation>
 <translation id="8714939927607906138">අඩු මිල</translation>
 <translation id="8730621377337864115">අවසන්</translation>

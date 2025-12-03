@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Список груп вкладок закрито</translation>
 <translation id="3194464645767632461">оцінка</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Додати <ph name="TABS_COUNT_ONE" /> вкладку в групу}one{Додати <ph name="TABS_COUNT_MANY" /> вкладку в групу}few{Додати <ph name="TABS_COUNT_MANY" /> вкладки в групу}many{Додати <ph name="TABS_COUNT_MANY" /> вкладок у групу}other{Додати <ph name="TABS_COUNT_MANY" /> вкладки в групу}}</translation>
-<translation id="3293080634164207409">Додайте вкладки</translation>
 <translation id="3328308545011660196">Підказка: схоже, ви відкрили кілька пов'язаних вкладок (<ph name="NUMBER_OF_TABS" />). Додати їх у групу?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Через 1 день без активності}one{Через <ph name="DAY_COUNT_MANY" /> день без активності}few{Через <ph name="DAY_COUNT_MANY" /> дні без активності}many{Через <ph name="DAY_COUNT_MANY" /> днів без активності}other{Через <ph name="DAY_COUNT_MANY" /> дня без активності}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> нова вкладка}one{<ph name="MANY_ADDED" /> нова вкладка}few{<ph name="MANY_ADDED" /> нові вкладки}many{<ph name="MANY_ADDED" /> нових вкладок}other{<ph name="MANY_ADDED" /> нової вкладки}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Налаштування</translation>
 <translation id="855081842937141170">Закріпити вкладку</translation>
 <translation id="8633025649649592204">Останні дії</translation>
+<translation id="8635822281281406185">Можна додати щонайбільше 10 файлів, вкладок або зображень</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8714939927607906138">Дешевше</translation>
 <translation id="8730621377337864115">Готово</translation>

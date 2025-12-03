@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Liste de groupes d'onglets fermée</translation>
 <translation id="3194464645767632461">note</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Ajouter <ph name="TABS_COUNT_ONE" /> onglet à un groupe}one{Ajouter <ph name="TABS_COUNT_MANY" /> onglet à un groupe}other{Ajouter <ph name="TABS_COUNT_MANY" /> onglets à un groupe}}</translation>
-<translation id="3293080634164207409">Ajouter des onglets</translation>
 <translation id="3328308545011660196">Suggestion : <ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper ?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Après 1 jour d'inactivité}one{Après <ph name="DAY_COUNT_MANY" /> jour d'inactivité}other{Après <ph name="DAY_COUNT_MANY" /> jours d'inactivité}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nouvel onglet}one{<ph name="MANY_ADDED" /> nouvel onglet}other{<ph name="MANY_ADDED" /> nouveaux onglets}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="855081842937141170">Épingler l'onglet</translation>
 <translation id="8633025649649592204">Activité récente</translation>
+<translation id="8635822281281406185">Ajoutez jusqu'à 10 fichiers, onglets ou images</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8714939927607906138">Prix inférieur</translation>
 <translation id="8730621377337864115">OK</translation>

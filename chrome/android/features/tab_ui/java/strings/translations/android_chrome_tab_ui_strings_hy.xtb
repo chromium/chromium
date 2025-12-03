@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Ներդիրների խմբերի ցանկը փակված է</translation>
 <translation id="3194464645767632461">գնահատական</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Ավելացրեք <ph name="TABS_COUNT_ONE" /> ընտրված ներդիր խմբում}one{Ավելացրեք <ph name="TABS_COUNT_MANY" /> ընտրված ներդիր խմբում}other{Ավելացրեք <ph name="TABS_COUNT_MANY" /> ընտրված ներդիր խմբում}}</translation>
-<translation id="3293080634164207409">Ավելացրեք ներդիրներ</translation>
 <translation id="3328308545011660196">Հուշում․ <ph name="NUMBER_OF_TABS" /> ներդիր նմանություն ունեն։ Խմբավորե՞լ դրանք։</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 օր հետո ներդիրը կդառնա ոչ ակտիվ}one{<ph name="DAY_COUNT_MANY" /> օր հետո ներդիրը կդառնա ոչ ակտիվ}other{<ph name="DAY_COUNT_MANY" /> օր հետո ներդիրը կդառնա ոչ ակտիվ}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> նոր ներդիր}one{<ph name="MANY_ADDED" /> նոր ներդիր}other{<ph name="MANY_ADDED" /> նոր ներդիր}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="855081842937141170">Ամրացնել ներդիրը</translation>
 <translation id="8633025649649592204">Վերջին գործողությունները</translation>
+<translation id="8635822281281406185">Ավելացրեք մինչև 10 ֆայլ, ներդիր կամ պատկեր</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8714939927607906138">Ավելի ցածր գին</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>

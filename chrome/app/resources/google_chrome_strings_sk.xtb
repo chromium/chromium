@@ -47,6 +47,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="146866447420868597">Chcete sa prihlásiť do Chromu?</translation>
 <translation id="1476347941828409626">Spravovať profily Chromu</translation>
 <translation id="1492280395845991349">Ak chcete dokončiť aktualizáciu Chromu, znova ho spustite</translation>
+<translation id="1496875977627931224">Dobrý deň, <ph name="USER_NAME" />,<ph name="LINE_BREAK" />čo vás dnes zaujíma?</translation>
 <translation id="1497802159252041924">Chyba inštalácie: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Prispôsobte svoj nový profil Chromu</translation>
 <translation id="1518627427551567882">Táto stránka je chránená</translation>
@@ -200,6 +201,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3112458742631356345">Chrome toto sťahovanie zablokoval, pretože používatelia tento súbor bežne nesťahujú a môže byť nebezpečný</translation>
 <translation id="3114643501466072395">Ak chcete skontrolovať, či sú vaše ostatné heslá chránené pred porušením ochrany údajov a inými bezpečnostnými hrozbami, <ph name="BEGIN_LINK" />prihláste sa do Chromu<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome toto sťahovanie zablokoval, pretože daný súbor archívu obsahuje ďalšie súbory, v ktorých môže byť skrytý malvér</translation>
+<translation id="3130333203120345554">Nové vyhľadávanie</translation>
 <translation id="3135560418014806498">Pridať profil Chromu</translation>
 <translation id="3137969841538672700">Vyhľadávanie spustíte presunutím</translation>
 <translation id="3140883423282498090">Zmeny sa prejavia pri nasledujúcom reštartovaní prehliadača Google Chrome.</translation>
@@ -364,6 +366,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="5139423532931106058">Prispôsobiť profil Chromu</translation>
 <translation id="5163087008893166964">Vitajte v Chrome, otvorilo sa nové okno prehliadača</translation>
 <translation id="5166439563123238795">Chrome vyžaduje povolenie sledovať vaše ruky</translation>
+<translation id="5167819546851111585">Čo vás dnes zaujíma?</translation>
 <translation id="5170938038195470297">Váš profil sa nedá použiť, pretože pochádza z novšej verzie prehliadača Google Chrome.
 
 Niektoré funkcie môžu byť nedostupné. Zadajte iný adresár profilu alebo použite novšiu verziu prehliadača Chrome.</translation>
@@ -645,6 +648,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8013993649590906847">Ak obrázok nemá užitočný popis, Chrome sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy.</translation>
 <translation id="8019103195866286235">Zverejnenie tohto rozšírenia bolo zrušené jeho vývojárom. Môže byť nebezpečné. Odstráňte ho z Chromu, aby sa mu nezobrazovali vaše údaje na weboch, ktoré navštevujete (vrátane vašich osobných údajov), a nemohlo ich meniť.</translation>
 <translation id="8040768861829554732">Rozšírenie vyžaduje, aby ste sa prihlásili do Chromu</translation>
+<translation id="8041795619940733262">Opýtajte sa Googlu<ph name="LINE_BREAK" />na túto kartu</translation>
 <translation id="80471789339884597">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať všetky svoje prehliadače.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">Ďalšie profily Chromu</translation>

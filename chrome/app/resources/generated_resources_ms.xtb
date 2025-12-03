@@ -6683,6 +6683,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="557722062034137776">Penetapan semula peranti anda tidak akan menjejaskan Google Account anda atau sebarang data yang disegerakkan ke akaun ini. Walau bagaimanapun, semua fail yang disimpan secara setempat pada peranti anda akan dipadamkan.</translation>
 <translation id="5578059481725149024">Auto log masuk</translation>
 <translation id="5578387000057347457">Masukkan gesaan tersuai atau serlahkan teks untuk membuat imej</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 item disimpan pada peranti ini sahaja. Untuk menggunakan item pada peranti anda yang lain, <ph name="BEGIN_LINK" />simpan item dalam Google Account anda<ph name="END_LINK" />.}other{{ITEM_COUNT} item disimpan pada peranti ini sahaja. Untuk menggunakan item pada peranti anda yang lain, <ph name="BEGIN_LINK" />simpan item dalam Google Account anda<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Alih keluar <ph name="SITE" /> daripada senarai <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">Penterjemahan kepada <ph name="LANGUAGE" /> selesai</translation>
 <translation id="558170650521898289">Pengesahan Pemacu Perkakasan Microsoft Windows</translation>
@@ -7171,6 +7172,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
     <ph name="LINE_BREAK" />
     Gambar ini akan dipaparkan pada skrin log masuk dan kunci skrin Chromebook.</translation>
 <translation id="5925147183566400388">Penuding Pernyataan Amalan Pensijilan</translation>
+<translation id="5926936390113611560">Buka semua profil</translation>
 <translation id="5927132638760172455">Menghantar ke penerima yang tidak diketahui</translation>
 <translation id="592740088639760830">Hentikan bekas ini</translation>
 <translation id="592880897588170157">Muat turun fail PDF dan bukannya membuka fail dalam Chrome secara automatik</translation>
@@ -7255,6 +7257,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5979421442488174909">&amp;Terjemahkan ke <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Untuk menandai halaman, klik bintang dalam bar alamat</translation>
 <translation id="5982578203375898585">Tunjukkan muat turun setelah muat turun selesai</translation>
+<translation id="598347738324022917">Penanda halaman disimpan pada peranti ini</translation>
 <translation id="5983716913605894570">Menjana...</translation>
 <translation id="5984222099446776634">Dilawati Baru-baru Ini</translation>
 <translation id="5984334442529819751">Terdapat ralat semasa memasang DLC (sering kali but semula diperlukan, semak Tetapan\&gt;\&gt;Perihal ChromeOS untuk mendapatkan maklumat lanjut).</translation>

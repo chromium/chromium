@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">आजच्या बातम्या वाचा <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">आणखी तपशील</translation>
 <translation id="3123734510202723619">घोषणा</translation>
+<translation id="3134385238404760368">अलीकडील कोणतेही टॅब नाहीत</translation>
 <translation id="314939179385989105">Chrome चे होम पेज</translation>
 <translation id="3158667104057012316">मॅन्युअल ऑर्डरनुसार क्रमाने लावत आहे</translation>
 <translation id="3159335509547415276">ब्लॉक केलेल्या खात्यांविषयी जाणून घ्या</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">अ-ज्ञ नुसार क्रमाने लावा</translation>
 <translation id="4578289292431526768">चला सुरू करू या</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
+<translation id="4585751637295612750">तुमच्या प्रश्नामध्ये जोडण्यासाठी नवीन टॅब उघडा</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">हे <ph name="CREATION_TIME" /> पासूनचे ऑफलाइन पेज आहे आणि ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>
 <translation id="4595237294768457124">नवीन टॅब पेज उघडा</translation>

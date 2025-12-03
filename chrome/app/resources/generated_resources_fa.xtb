@@ -103,7 +103,7 @@
 <translation id="1061373870045429865">ایجاد رمزینه پاسخ‌سریع برای این پیوند</translation>
 <translation id="1061904396131502319">تقریباً زمان استراحت است</translation>
 <translation id="10619348099955377">کپی کردن نام نمایشی</translation>
-<translation id="1062407476771304334">جایگزینی</translation>
+<translation id="1062407476771304334">جایگزین کردن</translation>
 <translation id="1064236804542808595">بازیابی میان‌برهای سازمان</translation>
 <translation id="1065369186007547872">‏‫Chrome تشخیص داده است شما اعلان‌های این سایت را نمی‌خواهید. بنابراین درخواست‌ها پنهان شده‌اند تا از ایجاد مزاحمت جلوگیری شود.</translation>
 <translation id="1066964438793906105">اسکن برای یافتن بدافزار</translation>
@@ -1353,6 +1353,7 @@
 <translation id="1907044622262489040">‏با صدایتان تایپ کنید. از کلیدهای «جستجو + D» استفاده کنید، سپس شروع به صحبت کنید.</translation>
 <translation id="1907659324308286326">‏برخی‌از لوازم جانبی Thunderbolt یا USB4 برای عملکرد درست باید به حافظه دسترسی داشته باشند.</translation>
 <translation id="1908591798274282246">باز کردن مجدد گروه بسته‌شده</translation>
+<translation id="1909677622563887527">‏‫Chrome توسط نرم‌افزار آزمایش خودکار کنترل می‌شود</translation>
 <translation id="1909880997794698664">آیا مطمئن هستید که می‌خواهید این دستگاه را برای همیشه در حالت کیوسک نگه دارید؟</translation>
 <translation id="1910721550319506122">خوش‌آمدید!</translation>
 <translation id="1910736334623230603">نمی‌توانید چند تصویر را به‌طور هم‌زمان جستجو کنید. هربار فقط یک تصویر اضافه کنید.</translation>
@@ -1707,6 +1708,7 @@
 <translation id="2144536955299248197">نمایشگر گواهی: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">‏تولید برنامه Android در Linux</translation>
 <translation id="2145468727756963476">‏‫Gemini درحال بازآوری است…</translation>
+<translation id="2145688286532368277">بهینه‌سازی جاوا اسکریپت برای این سایت خاموش است.</translation>
 <translation id="2145917706968602070">‏مطمئن شوید تلفنتان همین اطراف باشد و قفل آن باز و بلوتوث و Wi-Fi در آن روشن باشد</translation>
 <translation id="2146263598007866206">سایت‌ها شاید به‌طور خودکار فایل‌های مرتبط را با هم بارگیری کنند تا در زمان صرفه‌جویی شود</translation>
 <translation id="2147218225094845757">پنهان کردن پانل کناری</translation>
@@ -4361,6 +4363,7 @@
 
   آیا می‌خواهید <ph name="CONTROL_PANEL_APPLET_NAME" /> را شروع کنید؟</translation>
 <translation id="3942420633017001071">تشخیص خطا</translation>
+<translation id="3942558231079086184">بهینه‌سازی جاوا اسکریپت برای این سایت خاموش است. برای عملکرد بهتر، آن را فعال کنید.</translation>
 <translation id="3943582379552582368">&amp;برگشت</translation>
 <translation id="3943857333388298514">جاگذاری</translation>
 <translation id="3945513714196326460">نام کوتاه‌تری را امتحان کنید</translation>
@@ -10210,6 +10213,7 @@
 <translation id="8032569120109842252">دنبال می‌کنید</translation>
 <translation id="8033827949643255796">انتخاب شد</translation>
 <translation id="8033958968890501070">پایان درنگ</translation>
+<translation id="8034399942062051455">‏بهینه‌سازی V8 خاموش است</translation>
 <translation id="8034697324150621782">جابه‌جا کردن با نمای بالا</translation>
 <translation id="8035059678007243127">صفحه ناشناس ذخیره‌شده در حافظه پنهان عقب-جلو: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">کمک به بهبود «تکمیل خودکار»</translation>

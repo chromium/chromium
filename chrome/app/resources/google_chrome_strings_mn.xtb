@@ -276,6 +276,7 @@
 <translation id="4022972681110646219">Дэлгэцийг орчуулах</translation>
 <translation id="4023601594785368013">Эх хэл: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Шинэчлэлтийг хэрэгжүүлэхийн тулд ChromeOS-г дахин эхлүүлэх шаардлагатай.</translation>
+<translation id="4039097928859803404">ХОУ-ы горимын товчлолуудыг үргэлж харуулах</translation>
 <translation id="4050175100176540509">Хамгийн сүүлийн хувилбар дээр аюулгүй байдлын чухал сайжруулалт болон шинэ функцийг санал болгож байна.</translation>
 <translation id="4053720452172726777">Google Chrome-ыг өөртөө тохируулан хянах</translation>
 <translation id="408393047846373801">Нууц үг болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү. Таныг нэвтэрсний дараа энэ нууц үгийг Google Бүртгэлд тань хадгална.</translation>
@@ -357,6 +358,7 @@
 <translation id="4970880042055371251">ChromeOS-н хувилбар</translation>
 <translation id="4990567037958725628">Google Chrome цайвар шаргал өнгө</translation>
 <translation id="5003967926796347400">“Google Password Manager”-г товшино уу</translation>
+<translation id="5043786843026425788">Chrome-д Google Lens-р хайх талаар нэмэлт мэдээлэл авах</translation>
 <translation id="504867494566807945">Дурын аппаас холбоосыг Chrome-д нээнэ үү. Түүнчлэн хялбар хандахад зориулж үүнийг таны ажлын хэсэгт бэхэлдэг.</translation>
 <translation id="5114340746415930644"><ph name="USER_EMAIL" /> бүртгэлдээ Chrome-н өгөгдлийг ашиглах, хадгалахын тулд нэвтрэх үгээ оруулна уу</translation>
 <translation id="5120334927898581447">Та Google-н бусад үйлчилгээнд нэвтрэх үедээ Chrome-д нэвтэрнэ үү</translation>
@@ -531,6 +533,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="683440813066116847">mDNS-ийг зөвшөөрөх Google Chrome Canary-ийн гадаад дүрэм.</translation>
 <translation id="6841242485723266823">Chrome-н профайлууд таны амьдралын өөр өөр хэсгийг тусгаарлахад тусалдаг. Одоо шинэ профайл нэмнэ үү.</translation>
 <translation id="684888714667046800">Интернэтэд холбогдох боломжгүй байна. Хэрэв та галт хана ашиглавал <ph name="PRODUCT_EXE_NAME" />-г зөвшөөрсөн жагсаалтад байгаа болохыг баталгаажуулна уу.</translation>
+<translation id="6859580922007887573">Үргэлжлүүлэхийн тулд Tab дээр дарна уу</translation>
 <translation id="6877155553248388166">хайлтын хэсгийн баруун доод булан: баруун <ph name="RIGHT" />%, доод <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chrome-г шинэчилж байна</translation>
 <translation id="6885412569789873916">Chrome Бета Апп</translation>
@@ -630,6 +633,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7849037457735762883">Орхисон газраасаа үргэлжлүүлнэ үү: Chrome таныг дахин эхлүүлэх бүрд табуудыг тань сэргээж болно. Үүнийг асаахын тулд дараах руу очно уу</translation>
 <translation id="7872446069773932638">Татаж байна... <ph name="SECONDS" /> секунд үлдсэн</translation>
 <translation id="7886087451482920026">Google Lens-р текст сонгох</translation>
+<translation id="7887929410013642057">ХОУ-ы горимын товчлолуудыг үргэлж харуулах</translation>
 <translation id="7890208801193284374">Нэг компьютерыг олон хэрэглэгч хуваан хэрэглэж байгаа тохиолдолд хэрэглэгч бүр өөрийн хүссэнээр Chrome-ыг тохируулж, хайлт хийх боломжтой.</translation>
 <translation id="7896673875602241923">Өмнө нь хэн нэгэн энэ компьютероос Chrome-д <ph name="ACCOUNT_EMAIL_LAST" /> бүртгэлээр нэвтэрсэн байна. Мэдээллээ тусaд нь байлгахын тулд Chrome-н шинэ хэрэглэгч үүсгэнэ үү.</translation>
 <translation id="7904985524660297937">Google Chrome дахь Gemini-г туршиж үзээрэй</translation>

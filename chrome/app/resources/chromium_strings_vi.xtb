@@ -39,6 +39,7 @@
 <translation id="141901961143729572">Chia sẻ suy nghĩ của bạn</translation>
 <translation id="1465192221147974788">Để chia sẻ cửa sổ, hãy cho phép Chromium ghi màn hình trong phần Cài đặt hệ thống.</translation>
 <translation id="1478370723027452770">Nhận trợ giúp về Chrome for Testing</translation>
+<translation id="1496875977627931224">Chào <ph name="USER_NAME" />,<ph name="LINE_BREAK" />hôm nay bạn đang nghĩ gì vậy?</translation>
 <translation id="1497802159252041924">Lỗi cài đặt: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Trang này được bảo vệ</translation>
 <translation id="1524282610922162960">Chia sẻ một thẻ Chromium</translation>
@@ -192,6 +193,7 @@
 <translation id="3103660991484857065">Trình cài đặt không thể giải nén tệp lưu trữ. Hãy tải xuống Chromium lại lần nữa.</translation>
 <translation id="310459126943037700">Chưa thể kết thúc nhiệm vụ.</translation>
 <translation id="3130323860337406239">Chromium đang sử dụng micrô của bạn.</translation>
+<translation id="3130333203120345554">Lượt tìm kiếm mới</translation>
 <translation id="3137969841538672700">Kéo để tìm</translation>
 <translation id="3144188012276422546">Thẻ này đang sử dụng thêm tài nguyên. Để cải thiện hiệu suất, hãy cho phép Chromium dừng hoạt động của thẻ này.</translation>
 <translation id="3149163023759831301">Để chia sẻ màn hình, hãy cho phép Chromium ghi màn hình trong phần Cài đặt hệ thống</translation>
@@ -349,6 +351,7 @@
 <translation id="4994636714258228724">Thêm chính bạn vào Chromium</translation>
 <translation id="5123973130450702873">Chromium cần có quyền theo dõi cử chỉ tay của bạn</translation>
 <translation id="5141988424377517949">Gần đây bạn không truy cập trang web này. Chromium đã xoá <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
+<translation id="5167819546851111585">Hôm nay, bạn đang nghĩ gì?</translation>
 <translation id="5174969993834422967">Bạn thường chặn các thông báo. Để trang web này có thể gửi thông báo cho bạn, hãy nhấp vào biểu tượng thông báo ở góc bên phải của thanh vị trí.</translation>
 <translation id="5174983315706567306">Dung lượng ổ đĩa không đủ.</translation>
 <translation id="5187123684706427865">Tài khoản Chromium cần được xác thực lại</translation>
@@ -381,6 +384,7 @@
 <translation id="5496810170689441661">Chromium đang cố gắng chỉnh sửa mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="5524890928877629608">góc trên cùng bên trái của khu vực tìm kiếm: <ph name="LEFT" />% từ bên trái sang, <ph name="TOP" />% từ trên cùng xuống</translation>
 <translation id="5527463683072221100">Mở tệp PDF trong Chromium</translation>
+<translation id="5536164441519929134">Hỏi<ph name="LINE_BREAK" />về thẻ này</translation>
 <translation id="5579324208890605088">Lỗi khi khởi động: vui lòng chạy trình cài đặt với tư cách người dùng thông thường, không phải quản trị viên.</translation>
 <translation id="5580770360767802657">Sử dụng Chromium theo mặc định và ghim Chromium</translation>
 <translation id="5596627076506792578">Tuỳ chọn khác</translation>

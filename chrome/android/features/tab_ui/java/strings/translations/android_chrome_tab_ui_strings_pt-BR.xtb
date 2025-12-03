@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Lista de grupos de guias fechada</translation>
 <translation id="3194464645767632461">nota</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> guia ao grupo}one{Adicionar <ph name="TABS_COUNT_MANY" /> guia ao grupo}other{Adicionar <ph name="TABS_COUNT_MANY" /> guias ao grupo}}</translation>
-<translation id="3293080634164207409">Adicionar guias</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Após 1 dia de inatividade}one{Após <ph name="DAY_COUNT_MANY" /> dia de inatividade}other{Após <ph name="DAY_COUNT_MANY" /> dias de inatividade}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nova guia}one{<ph name="MANY_ADDED" /> nova guia}other{<ph name="MANY_ADDED" /> novas guias}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="855081842937141170">Fixar guia</translation>
 <translation id="8633025649649592204">Atividade recente</translation>
+<translation id="8635822281281406185">Adicione até 10 arquivos, guias ou imagens</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8714939927607906138">Preço menor</translation>
 <translation id="8730621377337864115">Concluído</translation>

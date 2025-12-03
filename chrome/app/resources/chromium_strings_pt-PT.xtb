@@ -501,6 +501,7 @@
 Algumas funcionalidades podem não estar disponíveis. Especifique um diretório de perfil diferente ou utilize uma versão mais recente do Chromium.</translation>
 <translation id="6729124504294600478">Para usar a personalização e outras funcionalidades, inclua o Chromium na Atividade da Web e de apps e nos serviços Google associados</translation>
 <translation id="6734291798041940871">O Chromium já está instalado para todos os utilizadores no seu computador.</translation>
+<translation id="6742093177587589736">Para aceder aos seus marcadores e muito mais em todos os seus dispositivos, inicie sessão no Chromium. Este marcador é guardado na sua Conta Google depois de iniciar sessão.</translation>
 <translation id="6751374565094704799">Acelera os sites com o motor V8 do Chromium, mas torna o Chromium ligeiramente menos resistente a ataques. Esta definição está ativada.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Alguns dos seus dados do Chromium ainda não foram guardados na sua Conta Google. Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados (1 item) são eliminados.}other{Alguns dos seus dados do Chromium ainda não foram guardados na sua Conta Google. Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados ({count} itens) vão ser eliminados.}}</translation>
 <translation id="67706546131546258">O Chromium recomenda que analise este ficheiro porque pode ser perigoso.</translation>

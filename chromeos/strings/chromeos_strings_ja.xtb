@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">オレンジ</translation>
 <translation id="1275718070701477396">選択中</translation>
 <translation id="1290331692326790741">電波: 弱い</translation>
+<translation id="1292474106138697109">クラスツールのディスプレイ</translation>
 <translation id="1300115153046603471">APN の種類はデフォルトで、<ph name="ATTACH" /> です。</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">変換</translation>
@@ -1046,6 +1047,7 @@
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> キーをテストしました</translation>
 <translation id="5606865426897221650">タブ</translation>
+<translation id="5612205513582918357">クラスツールが画面を <ph name="RECEIVER_NAME" /> に共有しています</translation>
 <translation id="5613201299517339763">ログアウトしました</translation>
 <translation id="5620281292257375798">内部専用</translation>
 <translation id="5628106863521633649">対応言語</translation>

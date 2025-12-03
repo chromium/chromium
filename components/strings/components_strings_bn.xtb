@@ -338,6 +338,7 @@
 <translation id="1549470594296187301">এই বৈশিষ্ট্যটি ব্যবহার করার জন্য জাভাস্ক্রিপ্ট চালু করা প্রয়োজন।</translation>
 <translation id="1553152622374372421">শীতকালীন খেলাধূলা</translation>
 <translation id="1553358976309200471">Chrome আপডেট করুন</translation>
+<translation id="1555014818414775661">ছবি যোগ করুন</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="1555191101192706055">আপনি যে সাইট ভিজিট করার চেষ্টা করেছেন সেখানে আক্রমণকারীরা প্রতারণার মাধ্যমে আপনাকে দিয়ে ক্ষতিকর সফ্টওয়্যার ইনস্টল করিয়ে নিতে পারে, যা আপনার ব্রাউজিং অভিজ্ঞতায় প্রভাব ফেলবে। যেমন, আপনার হোমপেজ পরিবর্তন করে দেওয়া অথবা কোনও সাইটে অতিরিক্ত বিজ্ঞাপন দেখানো।</translation>
 <translation id="1559231233244409191">কার্ডবোর্ড (ট্রিপল ওয়াল)</translation>
@@ -966,6 +967,7 @@
 <translation id="2536110899380797252">ঠিকানা যোগ করুন</translation>
 <translation id="2537931901612099523">অন্য যারা এই ডিভাইস ব্যবহার করেন, তারা আপনার অ্যাক্টিভিটি দেখতে পাবেন না, তাই আরও ব্যক্তিগতভাবে ব্রাউজ করতে পারবেন। এর মধ্যে আপনি যে ওয়েবসাইট দেখেন, তার মাধ্যমে কীভাবে ডেটা সংগ্রহ করা হয় ও Google সহ যে পরিষেবা এগুলি ব্যবহার করে, তা পরিবর্তন হবে না। আপনার করা ডাউনলোড ও বুকমার্ক সেভ করা হবে।</translation>
 <translation id="2541219929084442027">ছদ্মবেশী ট্যাবে আপনি যেসব পৃষ্ঠা দেখবেন সেগুলি বন্ধ করার পরে ব্রাউজার ইতিহাস, কুকি স্টোর বা সার্চ ইতিহাসে থাকবে না। আপনি কোনও ফাইল ডাউনলোড করলে বা বুকমার্ক তৈরি করলে, সেটি সেভ করা থাকবে।</translation>
+<translation id="2541474152868747095">আপনার অন্যান্য ডিভাইস থেকে ইতিহাস পেতে, নিজের পরিচয় যাচাই করুন। সেটিংস থেকে আপনি যেকোনও সময় সিঙ্ক করা বন্ধ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, Search ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="2542106216580219892">সার্ফিং</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" /> – ফুল-স্ক্রিন থেকে বেরিয়ে আসতে, |<ph name="ACCELERATOR" />| প্রেস করে ধরে রাখুন</translation>
 <translation id="2544546346215446551">অ্যাডমিনিস্ট্রেটর আপনার ডিভাইস রিস্টার্ট করেছেন</translation>
@@ -1217,6 +1219,7 @@
 <translation id="2979424420072875974">লেখক সম্পর্কিত রিসোর্স</translation>
 <translation id="2979639724566107830">নতুন উইন্ডোতে খুলুন</translation>
 <translation id="2980742331521553164">আরও দ্রুত চেক-আউটের জন্য এই কার্ডের CVC আপনার Google অ্যাকাউন্টে এনক্রিপ্ট করে সেভ করা হবে</translation>
+<translation id="2983311431122838216">Google Search-এ AI মোডকে জিজ্ঞাসা করুন</translation>
 <translation id="2983666748527428214">ছদ্মবেশী ট্যাব খুলুন</translation>
 <translation id="2985306909656435243">চালু করা হলে, ফর্ম পূরণের কাজ দ্রুত করতে Chromium এই ডিভাইসে আপনার কার্ডের একটি কপি স্টোর করবে।</translation>
 <translation id="2985398929374701810">একটি সঠিক ঠিকানা লিখুন</translation>
@@ -1395,6 +1398,7 @@
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, চটপট নতুন Google Calendar তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="3261488570342242926">ভার্চুয়াল কার্ডের বিষয়ে জানুন</translation>
 <translation id="3262698603497362968">কেনাকাটার বিকল্প</translation>
+<translation id="3264315627780269177">এই ট্যাব শেয়ার করা যাবে না</translation>
 <translation id="3266367459139339908">সাইটগুলি যখন আপনাকে পছন্দমতো বিজ্ঞাপন দেখায় তখন সাইটগুলি আপনার সম্পর্কে কী জানতে পারে তা সীমিত করার জন্য আমরা নতুন উপায় চালু করছি, যেমন:</translation>
 <translation id="3266793032086590337">মান (ম্যাচ করছে না)</translation>
 <translation id="3268451620468152448">ওপেন ট্যাব</translation>
@@ -1646,6 +1650,7 @@
 <translation id="3665100783276035932">বেশিরভাগ সাইটের প্রত্যাশা অনুযায়ী কাজ করা উচিত</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />আরও জানুন<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">নম্বর</translation>
+<translation id="3670159164851218963">AI মোড ইতিহাস</translation>
 <translation id="3670229581627177274">ব্লুটুথ চালু করুন</translation>
 <translation id="3671540257457995106">ছোট বড় করতে অনুমতি দেবেন?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" />-এ সমস্যা</translation>
@@ -1874,6 +1879,7 @@
 <translation id="4031179711345676612">মাইক্রোফোন ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4036753017940930924">প্লট ও জমি</translation>
 <translation id="4039506337798853114">আপনার কার্সর দেখাতে, |<ph name="ACCELERATOR" />| প্রেস করুন</translation>
+<translation id="4045070493270310437">ট্যাব আবার খুলুন</translation>
 <translation id="4045226534284799755">আবার চেষ্টা করার আগে নিজের Microsoft অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="4045441967987592849">আবার খুলুন</translation>
 <translation id="4047351652147966654">১৮ x ২৪ ইঞ্চি</translation>
@@ -2027,6 +2033,7 @@
 <translation id="4255487295905690262">কোনও সাইটে দাম কমলে আপনি সেই বিষয়ে ইমেলের মাধ্যমে সতর্কতা পাবেন।</translation>
 <translation id="425582637250725228">আপনার করা পরিবর্তনগুলি সংরক্ষণ নাও করা হতে পারে।</translation>
 <translation id="4258748452823770588">ত্রুটিপূর্ণ স্বাক্ষর</translation>
+<translation id="4260407128682690669">আপনার অন্যান্য ডিভাইস থেকে ইতিহাস পেতে, <ph name="ACCOUNT_EMAIL" />-এর সাথে ইতিহাস ও ট্যাব সিঙ্ক করুন। সেটিংস থেকে আপনি যেকোনও সময় সিঙ্ক করা বন্ধ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, Search ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="4265635050210404830">আপনার লয়ালটি কার্ড</translation>
 <translation id="4265872034478892965">আপনার প্রশাসক অনুমতি দিয়েছে</translation>
 <translation id="4267590181863312380">আপনার অন্যান্য ডিভাইস থেকে ইতিহাস পেতে, সাইন-ইন করে ইতিহাস সিঙ্ক করুন। আপনার সব ডিভাইসে পাসওয়ার্ড ও আরও অনেক কিছু পাবেন। সেটিংস থেকে আপনি যেকোনও সময় সিঙ্ক করা বন্ধ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
@@ -2126,6 +2133,7 @@
 <translation id="4406896451731180161">সার্চের ফলাফলগুলি</translation>
 <translation id="4407758156081352648">নিরাপত্তার নিশ্চিত করতে, আপনার সংগঠন Chrome-এ একাধিক সাইটে একই পাসওয়ার্ড ব্যবহার করতে দেয় না। ব্যবহারকারীর গোপনীয়তা সুরক্ষিত রাখার জন্য Chrome-এ পাসওয়ার্ড এনক্রিপ্ট করা হয়।</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" />টি কুকিজ</translation>
+<translation id="4409556632583862731">নতুন থ্রেড</translation>
 <translation id="4412074349188076601">এই কনফিগারেশন 'ইনস্টল করার যোগ্য' হিসেবে চিহ্নিত করা হয়েছে, কিন্তু এই আর্কিটেকচারের জন্য কোনও ছবি প্রদান করা হয়নি, তাই এটি ইনস্টল করা যাবে না।</translation>
 <translation id="4412377069090572315">লোকজন এ ব্যাপারে কী বলছেন</translation>
 <translation id="4414452699610169758">পায়ওয়ার্ড, পেমেন্ট পদ্ধতি ও ঠিকানা সেভ এবং পূরণ করতে Google Password Manager ও Chrome অটোফিল ব্যবহার করুন</translation>
@@ -2370,7 +2378,6 @@
 <translation id="4832388034239846146">ট্যাব গ্রুপ শেয়ার করতে, Chrome আপডেট করুন</translation>
 <translation id="483241715238664915">সতর্কতা চালু করুন</translation>
 <translation id="4832961164064927107">বার্বিকিউ ও গ্রিলিং</translation>
-<translation id="4834250788637067901">Google Pay-এর সাথে যুক্ত পেমেন্ট পদ্ধতি, অফার ও ঠিকানা</translation>
 <translation id="4840250757394056958">আপনার Chrome ইতিহাস দেখুন</translation>
 <translation id="484462545196658690">অটো</translation>
 <translation id="4844937814014739139">শেয়ার করা ট্যাব স্ক্রল ও জুম করা</translation>
@@ -2776,6 +2783,7 @@
     <ph name="LINE_BREAK" />
     আপনার সিস্টেম প্রশাসকের সাথে যোগাযোগের চেষ্টা করুন।</translation>
 <translation id="5496804587179176046">সুরক্ষা কোড সেভ করুন, তবে বর্তমানে কোনও সুরক্ষা কোড নেই</translation>
+<translation id="5499229993630251170">এই থ্রেড চালিয়ে যেতে চান?</translation>
 <translation id="550365051221576010">ঠিকানার সবকটি ফিল্ডে তথ্য লিখুন</translation>
 <translation id="5506286895894263601">তালিকায় কোনও সঠিক শর্টকাট নেই।</translation>
 <translation id="5508443345185481044">ক্যামেরা ও ক্যামকোডার</translation>
@@ -3004,6 +3012,7 @@
 <translation id="5886961930368713749">'তুলনা' করার জন্য মতামত পাঠান</translation>
 <translation id="5887400589839399685">কার্ড সেভ করা হয়েছে</translation>
 <translation id="5887687176710214216">গতকাল শেষবার দেখা হয়েছে</translation>
+<translation id="5889251770650310375">আপনার অন্যান্য ডিভাইস থেকে ইতিহাস পেতে, নিজের পরিচয় যাচাই এবং আপনার ইতিহাস ও ট্যাব সিঙ্ক করুন। সেটিংস থেকে আপনি যেকোনও সময় সিঙ্ক করা বন্ধ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, Search ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="5890248301649767931">রিড্রেস নম্বর সেভ করবেন?</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
 <translation id="5895187275912066135">এই তারিখে ইস্যু করা</translation>
@@ -3086,6 +3095,7 @@
 <translation id="6018650639991193045">Chrome 'সেটিংস' থেকে আপনার ব্রাউজিং ইতিহাস, কুকি, ক্যাশে ও আরও অনেক কিছু মুছে দিন</translation>
 <translation id="6019118530636932154">Google Apps স্ক্রিপ্ট</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (সিঙ্ক হয়েছে)</translation>
+<translation id="6025471531651464742">ফাইল যোগ করুন</translation>
 <translation id="6028591542479806248">মোবাইল এবং ইমেল বিজ্ঞপ্তি ম্যানেজ করুন</translation>
 <translation id="6028833024483927901">বিশ্বের বিভিন্ন জায়গার রান্না</translation>
 <translation id="603068602130820122">ডানদিকে ডুয়াল স্টেপল</translation>
@@ -3123,6 +3133,7 @@
 <translation id="6062405040252994646">টুল</translation>
 <translation id="6062937464449575061">দাম ট্র্যাক করা বন্ধ করুন</translation>
 <translation id="6063415549109819824">হোম ফাইন্যান্সিং</translation>
+<translation id="6069343053547121389">AI মোড ব্যবহার করে এই ট্যাব সম্পর্কে প্রশ্ন করুন</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" />-এ <ph name="FOLDER_NAME" />-এ এক বা তার থেকে বেশি ফাইল আপলোড করা যায়নি</translation>
 <translation id="6071503852498277813">কন্টেন্ট বুকমার্ক পার্সার পরিষেবা</translation>
 <translation id="6078069862923723141">সায়ান ২</translation>
@@ -3366,6 +3377,7 @@
 <translation id="6443406338865242315">কোন কোন এক্সটেনশন ও প্লাগ-ইন আপনি ইনস্টল করেছেন</translation>
 <translation id="6444329331928531170">রিটায়ারমেন্ট ও পেনশন</translation>
 <translation id="6445051938772793705">দেশ</translation>
+<translation id="6446256167362544629">AI সাইড প্যানেল</translation>
 <translation id="6446608382365791566">আরও তথ্য যোগ করুন</translation>
 <translation id="6447842834002726250">কুকিজ</translation>
 <translation id="6448371595882710519">ডেটা কন্ট্রোল সম্পর্কে আরও জানুন</translation>
@@ -3458,6 +3470,7 @@
 <translation id="6597665340361269064">৯০ ডিগ্রী</translation>
 <translation id="6598976221101665070">ড্রামা সিনেমা</translation>
 <translation id="6599642189720630047">যে প্রোডাক্টগুলি ট্র্যাক করা হয়েছে</translation>
+<translation id="6608426252530537984">সর্বাধিক ১০টি ট্যাব যোগ করুন</translation>
 <translation id="6613742613135780554">হ্যান্ড ট্র্যাকিং</translation>
 <translation id="6613866251791999074">Chrome-এ ব্যবহৃত সার্চ ইঞ্জিন সম্পর্কে আরও জানুন</translation>
 <translation id="6615297766614333076">স্ট্যাকার ২</translation>
@@ -3579,6 +3592,7 @@
 <translation id="6799145206637008376">এই ভার্চুয়াল কার্ডের জন্য CVC পূরণ করুন</translation>
 <translation id="6805030849054648206">এনভেলপ B6/C4</translation>
 <translation id="6807791860691150411">শিক্ষা</translation>
+<translation id="6808579246645021886">শেয়ার করা ট্যাব ও ফাইল</translation>
 <translation id="681021252041861472">এই ফিল্ডটি ফাঁকা রাখা যাবে না</translation>
 <translation id="6810899417690483278">কাস্টমাইজেশন আইডি</translation>
 <translation id="6816109178681043245">খেলাধুলার সরঞ্জাম</translation>
@@ -4990,6 +5004,7 @@
 <translation id="9118692854637641831">সার্চ করা আবার চালু করতে <ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ও তারপরে Enter প্রেস করুন এবং আপনার Chrome ইতিহাসে প্রাসঙ্গিক অ্যাক্টিভিটি দেখুন</translation>
 <translation id="9119042192571987207">আপলোড করা হয়েছে</translation>
 <translation id="9119308212838450857">ব্যবহারকারী আপনিই কিনা তা <ph name="PROVIDER_ORIGIN" /> যাচাই করতে চায়</translation>
+<translation id="9119764377203471454">অ্যাটাচমেন্ট যোগ করা যায়নি</translation>
 <translation id="9120593907434185157">ঠিকানা সেভ করুন</translation>
 <translation id="912327514020027767">স্কার্ট</translation>
 <translation id="9128870381267983090">নেটওয়ার্কে সংযোগ করুন</translation>
@@ -4998,6 +5013,7 @@
 <translation id="9133985615769429248">আপনি অন্যদের সাথে এই ডিভাইসটি শেয়ার করলে, আপনি যখনই একটি সেভ করা পাসওয়ার্ড ব্যবহার করেন তখন আপনার পরিচয় যাচাই করতে আপনার স্ক্রিন লক ব্যবহার করতে পারেন</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, ভার্চুয়াল কার্ড</translation>
 <translation id="9138037198177304356">বিজ্ঞপ্তি ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
+<translation id="913846191326613072">ট্যাব শেয়ার করা হলে, সেগুলির কন্টেন্ট ও URL Google-কে পাঠানো হয়।</translation>
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">পাসওয়ার্ড অটোফিল করার জন্য Chrome ব্রাউজার আপনার ফিঙ্গারপ্রিন্ট ব্যবহার করতে চায়</translation>
 <translation id="9141013498910525015">ঠিকানা ম্যানেজ করুন</translation>
@@ -5089,6 +5105,7 @@
 <translation id="955429569736351433">ভিআর (VR) ব্যবহার করার অনুমতি রয়েছে</translation>
 <translation id="955627189349169688">আপনি <ph name="BEGIN_LINK" />Chrome সিঙ্ক সেটিংস<ph name="END_LINK" />-এ গিয়ে এই নীতি থেকে বেরিয়ে আসতে পারবেন।</translation>
 <translation id="95721182352849470">হলুদ ২</translation>
+<translation id="961372935451193190">ট্যাব ও ফাইল</translation>
 <translation id="961663415146723894">নিচে বাঁধাই করুন</translation>
 <translation id="961856697154696964">ব্রাউজ করা ডেটা মুছে দিন</translation>
 <translation id="961930410699694996">এই সময় লোকেশনের অনুমতি দেওয়া আছে</translation>

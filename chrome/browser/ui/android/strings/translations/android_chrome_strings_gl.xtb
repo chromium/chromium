@@ -496,6 +496,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3114507951000454849">Le as noticias do día <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Máis detalles</translation>
 <translation id="3123734510202723619">Avisos</translation>
+<translation id="3134385238404760368">Non hai ningunha pestana recente</translation>
 <translation id="314939179385989105">Páxina de inicio de Chrome</translation>
 <translation id="3158667104057012316">Ordenando de maneira manual</translation>
 <translation id="3159335509547415276">Máis información acerca das contas bloqueadas</translation>
@@ -817,6 +818,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4577115723294378384">Ordenar do A ao Z</translation>
 <translation id="4578289292431526768">Vamos aló</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Hai # minuto}other{Hai # minutos}}</translation>
+<translation id="4585751637295612750">Abre unha pestana nova para engadila á túa pregunta</translation>
 <translation id="4587589328781138893">Sitios</translation>
 <translation id="4594952190837476234">Esta páxina sen conexión creouse o <ph name="CREATION_TIME" /> e pode ser diferente da versión en liña.</translation>
 <translation id="4595237294768457124">Abre unha páxina Nova pestana</translation>

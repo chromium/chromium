@@ -1985,6 +1985,10 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 
       Se la policy viene impostata su Disattivata, questa funzionalità non è disponibile.</translation>
 <translation id="2342066287156668839">Attiva la quota permanente.</translation>
+<translation id="2343774133209251840">Se la policy viene attivata, le API per la quota di spazio di archiviazione restituiranno un valore statico pari a utilizzo + min (10 GiB, disco arrotondato per eccesso al GiB più vicino).
+Se la policy viene disattivata, le API per la quota di spazio di archiviazione in genere restituiranno un valore dinamico proporzionale allo spazio totale disponibile sul dispositivo, indipendentemente dall'utilizzo.
+Se la policy non viene configurata, il comportamento sarà determinato dal lancio della funzionalità di quota di spazio di archiviazione segnalata prevedibile o dai flag.
+Questa impostazione non influisce sui siti con autorizzazioni di spazio di archiviazione illimitato. Neanche la quota applicata è interessata.</translation>
 <translation id="2344033063256716138">Configura le policy per controllare se l'utente è autorizzato ad accedere a funzionalità e dati condivisi.</translation>
 <translation id="2345547870894930157">Attiva DNS over HTTPS senza fallback non sicuro</translation>
 <translation id="2347695338560092641">Driver di stampa out-of-process consentiti</translation>
@@ -3202,6 +3206,7 @@ fino alla versione 142 di
 <translation id="3169872426103732947">Visualizza l'URL predefinito, consenti agli utenti di passare all'URL completo</translation>
 <translation id="3171369832001535378">Modello del nome host della rete del dispositivo</translation>
 <translation id="3173844121395372156">Questa policy è stata deprecata e non è supportata. Utilizza la policy <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />.</translation>
+<translation id="3175063338945713984">Le API per la quota di archiviazione restituiscono valori in base al processo di lancio delle funzionalità.</translation>
 <translation id="3177537290334203187">Usa il comportamento predefinito quando determini se i siti web possono effettuare richieste agli endpoint di rete.</translation>
 <translation id="3177802893484440532">Richiedi controlli OCSP/CRL online per i trust anchor</translation>
 <translation id="3179533009079100620">Mostra Selettore profilo</translation>
@@ -3347,6 +3352,7 @@ La scheda Microsoft Outlook richiederà una configurazione amministrativa aggiun
 
 Se la policy <ph name="NTPCARDSVISIBLE" /> è disattivata, la scheda di Outlook non verrà mostrata. Se la policy <ph name="NTPCARDSVISIBLE" /> è abilitata, la scheda di Outlook verrà mostrata se anche la relativa policy è abilitata e sono disponibili dati da mostrare. Se la policy <ph name="NTPCARDSVISIBLE" /> non viene configurata, la scheda di Outlook verrà mostrata se anche la relativa policy è abilitata, l'utente ha abilitato la scheda in Personalizza Chrome e sono disponibili dati da mostrare.</translation>
 <translation id="3261592499545947104">Il numero di secondi prima della scadenza di un certificato in cui attivare il rinnovo.</translation>
+<translation id="326182244921429468">Le API per la quota di archiviazione restituiscono valori dinamici.</translation>
 <translation id="3262080895269946462">Consenti la disattivazione per impostazione predefinita di WebSQL nei contesti di terze parti.</translation>
 <translation id="326341982850521928">Attiva la correzione del colore</translation>
 <translation id="3263892501786842604">Consenti la visualizzazione del pulsante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nella casella di ricerca della pagina Nuova scheda, se supportato.</translation>
@@ -6452,6 +6458,34 @@ Nota: questa policy non viene applicata agli upgrade a HSTS.</translation>
 
 Se la policy viene impostata su Disattivata, la cronologia di navigazione e quella dei download non possono essere eliminate. Non è garantita la memorizzazione della cronologia di navigazione e di quella dei download, anche se questa policy viene disattivata. Gli utenti potrebbero essere in grado di modificare o eliminare direttamente i file dei database delle cronologie e il browser stesso potrebbe far scadere o archiviare una o tutte le voci delle cronologie in qualsiasi momento.</translation>
 <translation id="5322649594584715998">Carica completamente la batteria con la modalità standard. Questa modalità disattiva le ricariche adattiva e limitata.</translation>
+<translation id="5322726025747768984">Se configuri questa policy, vengono impostate regole che selezionano il proxy utilizzato dal browser in base all'URL di destinazione e ad altre condizioni. Questa policy avrà la precedenza sulle impostazioni del proxy configurate dalla policy<ph name="PROXY_SETTINGS_POLICY_NAME" />, dall'API dell'estensione <ph name="PROXY_SETTINGS_EXTENSION_API" /> o dalle impostazioni manuali dell'utente, se presenti.
+
+Se non viene configurata, la policy non influisce su altre policy del proxy o impostazioni utente.
+
+Quando il browser deve decidere quale proxy utilizzare, le voci della policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> vengono valutate in sequenza finché una voce non soddisfa tutti i seguenti punti:
+  * Almeno uno dei pattern URL in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> corrisponde.
+  * Nessuno dei pattern URL in <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> corrisponde.
+  * Se <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> è specificato ed è un elenco non vuoto, tutte le condizioni rappresentate dalle relative voci sono soddisfatte.
+Il valore in <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> verrà utilizzato come proxy per questa corrispondenza. Se non viene trovata alcuna corrispondenza, le impostazioni del proxy verranno ripristinate in base a quanto impostato nella policy <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+I pattern URL supportati da <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> e <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> sono documentati all'indirizzo https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+Le voci del campo <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> corrispondono a valori stringa dei file PAC, ad esempio:
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+In alternativa, è possibile utilizzare direttamente identificatori proxy simili a URL per specificare il proxy, ad esempio:
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+La prima voce raggiungibile nell'elenco verrà utilizzata come proxy. Le voci non valide nell'elenco verranno ignorate.
+
+Il campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contiene un elenco di condizioni, le quali devono essere tutte soddisfatte affinché la regola di override venga utilizzata per decidere il proxy da utilizzare. Se non viene impostato, la voce verrà utilizzata finché almeno un host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> corrisponde.
+
+La condizione <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica se il DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> fornito riesce a trovare un indirizzo IP corrispondente. Se il valore di <ph name="PROXY_OVERRIDE_RULES_RESULT" /> è "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />", la condizione viene considerata soddisfatta. Se il valore è invece impostato su <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, la condizione viene considerata soddisfatta se la risoluzione non è riuscita.</translation>
 <translation id="5323200200131319468">Attiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="5323271643727095577">Non mostrare la finestra di dialogo di annullamento quando viene chiamato event.preventDefault() per l'evento beforeunload. Mostra la finestra di dialogo di annullamento quando event.returnValue è la stringa vuota dell'evento beforeunload.</translation>
 <translation id="5324430722441910403">Impostazioni ricerca sui siti</translation>
@@ -10911,6 +10945,7 @@ Per una descrizione dettagliata di tutti i valori di gestione, consulta la sezio
       Se la policy non viene configurata, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostata. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Per informazioni dettagliate sui pattern URL validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. Tuttavia, a partire dalla versione M85, i pattern con caratteri jolly "*" e "[*.]" nell'host non sono più supportati per questa policy.</translation>
+<translation id="8251975082850036657">Le API per la quota di archiviazione restituiscono valori statici.</translation>
 <translation id="82530263956734297">ID delle estensioni da escludere dalla lista bloccata</translation>
 <translation id="8254749125469750814">Non convalidare se un'estensione può essere installata o meno con un servizio cloud.</translation>
 <translation id="8256006033157034334">Questa policy è deprecata e non è supportata. Utilizza la policy <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
@@ -12035,6 +12070,7 @@ Per maggiori dettagli, vai su https://support.google.com/chrome/a/answer/9301891
       Questa policy viene utilizzata unicamente per gli utenti di Family Link.</translation>
 <translation id="8947415621777543415">Segnala posizione del dispositivo</translation>
 <translation id="8948062138228904066">Lista consentita di server di autenticazione</translation>
+<translation id="8951145747995737852">Controlla se le API per la quota di archiviazione restituiranno valori statici</translation>
 <translation id="8951350807133946005">Impostazione directory della cache su disco</translation>
 <translation id="8952611478149810182">L'esecuzione di eventi sui controlli dei moduli disattivati cambierà in Chromium per migliorare la compatibilità con altri browser e l'esperienza per gli sviluppatori.
 

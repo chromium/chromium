@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">Pantalla de bloqueo</translation>
 <translation id="1963976881984600709">Protección estándar</translation>
 <translation id="1964507856799750384">Toca <ph name="BEGIN_BOLD" />Browser App<ph name="END_BOLD" /> (Aplicación de navegación)</translation>
+<translation id="1965633132497641148">O código de seguridade non é válido</translation>
 <translation id="1966313166384086081">datos dos sitios</translation>
 <translation id="1967461193809857427">{count,plural, =1{Queres seguir usando a pestana que deixaches en Android?}other{Queres seguir usando as pestanas que deixaches en Android?}}</translation>
 <translation id="1972325230031091483">Navegarás máis rápido porque o contido se cargará de maneira proactiva en función da túa visita á páxina web na que te atopes</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">Clear History and Website Data (Borrar datos dos sitios web e das aplicacións)</translation>
 <translation id="3190736958609431397">Deixar de facer seguimento</translation>
 <translation id="3208260410153224535">A túa organización desactivou a opción de iniciar sesión. Os marcadores, contrasinais e demais datos que engadas gardaranse só neste dispositivo.</translation>
+<translation id="3211969308836412674">Deixar de fixar sitio</translation>
 <translation id="3213807041830307252">Compra, traduce e identifica o que vexas mediante a cámara e a galería de fotos.</translation>
 <translation id="3214379938835224220">Pechouse sesión como parte do restablecemento do iPad. Para iniciar sesión, toca debaixo a opción de continuar.</translation>
 <translation id="3218296450292600703">Iniciar sesión coa túa conta xestionada axudarache a separar a navegación relacionada coa túa organización, como as pestanas, o historial e os contrasinais, da outra navegación que fagas</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">Enderezo 2</translation>
 <translation id="3328801116991980348">Información do sitio</translation>
 <translation id="333229797575847124">Como activar esta función</translation>
+<translation id="3344233834747405775">O nome da persoa titular da tarxeta non é válido</translation>
 <translation id="3344485292736684439">{count,plural, =1{O marcador gardouse no cartafol "{title}" da túa conta ({email})}other{Os marcadores gardáronse no cartafol "{title}" da túa conta ({email})}}</translation>
 <translation id="334690320928261823">Pestanas recentes</translation>
 <translation id="3349031117032695619">Bloquear ventás emerxentes</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">Lembrarmo máis tarde</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4883766694719903356">Grade de pestanas do modo de incógnito</translation>
+<translation id="4884937942297374058">A protección mellorada está desactivada</translation>
 <translation id="488785315393301722">Mostrar detalles</translation>
 <translation id="4889521386764567563">Perfil actual</translation>
 <translation id="4893713555726946316">Ocultar Buscar na páxina</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">Crea eventos do calendario a partir de datas</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Editar sitio</translation>
 <translation id="5233638681132016545">Nova pestana</translation>
 <translation id="5234094073825090254">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email}).}other{Os marcadores gardáronse na túa Conta de Google ({email}).}}</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
@@ -1325,6 +1330,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6066301408025741299">Toca para cancelar.</translation>
 <translation id="6074656473835429958">Recibe notificacións</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) non se puido cargar</translation>
+<translation id="6076618233738284461">Fixar sitio</translation>
 <translation id="6077126322656614846">Permítese o acceso á cámara</translation>
 <translation id="607730456154980869">Consigue respostas máis rápido con Gemini en Chrome</translation>
 <translation id="6078236141387574983">Reaxusta a altura da folla</translation>

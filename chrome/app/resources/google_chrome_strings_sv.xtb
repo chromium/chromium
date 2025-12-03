@@ -47,6 +47,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="146866447420868597">Vill du logga in i Chrome?</translation>
 <translation id="1476347941828409626">&amp;Hantera Chrome-profiler</translation>
 <translation id="1492280395845991349">Starta om för att slutföra uppdateringen av Chrome</translation>
+<translation id="1496875977627931224">Hej <ph name="USER_NAME" />!<ph name="LINE_BREAK" />Vad vill du ha hjälp med i dag?</translation>
 <translation id="1497802159252041924">Installationsfel: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Anpassa din nya Chrome-profil</translation>
 <translation id="1518627427551567882">Den här sidan är skyddad</translation>
@@ -202,6 +203,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3112458742631356345">Den här nedladdningen blockerades av Chrome eftersom filen inte brukar laddas ned och den kan vara farlig</translation>
 <translation id="3114643501466072395"><ph name="BEGIN_LINK" />Logga in i Chrome<ph name="END_LINK" /> om du vill kontrollera att dina andra lösenord skyddas från dataintrång och andra säkerhetsproblem.</translation>
 <translation id="3119573284443908657">Den här nedladdningen blockerades av Chrome eftersom arkivfilen innehåller andra filer som kan dölja skadlig kod</translation>
+<translation id="3130333203120345554">Ny sökning</translation>
 <translation id="3135560418014806498">Lägg till Chrome-profil</translation>
 <translation id="3137969841538672700">Dra för att söka</translation>
 <translation id="3140883423282498090">Ändringarna börjar gälla nästa gång du startar Google Chrome.</translation>
@@ -275,6 +277,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4022972681110646219">Översätt text på skärmen</translation>
 <translation id="4023601594785368013">Originalspråk: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ChromeOS måste startas om för att uppdateringen ska börja gälla.</translation>
+<translation id="4039097928859803404">Visa alltid genvägar till AI-läget</translation>
 <translation id="4050175100176540509">Den senaste versionen har viktiga säkerhetsförbättringar och nya funktioner.</translation>
 <translation id="4053720452172726777">Anpassa och kontrollera Google Chrome</translation>
 <translation id="408393047846373801">Logga in i Chrome om du vill få tillgång till dina lösenord med mera på alla dina enheter. Lösenordet sparas i ditt Google-konto när du har loggat in.</translation>
@@ -356,6 +359,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4970880042055371251">ChromeOS-version</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klicka på Google Lösenordshantering</translation>
+<translation id="5043786843026425788">Läs mer om att söka med Google Lens i Chrome</translation>
 <translation id="504867494566807945">Öppna länkar från dina appar i Chrome, som dessutom fästs i aktivitetsfältet för enkel åtkomst.</translation>
 <translation id="5114340746415930644">Ange lösenfrasen om du vill använda och spara Chrome-data i ditt konto, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Logga in i Chrome när du loggar in i andra tjänster från Google</translation>
@@ -365,6 +369,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5139423532931106058">Anpassa din Chrome-profil</translation>
 <translation id="5163087008893166964">Välkommen till Chrome, ett nytt webbläsarfönster har öppnats</translation>
 <translation id="5166439563123238795">Chrome behöver behörighet för handspårning</translation>
+<translation id="5167819546851111585">Vad vill du ha hjälp med i dag?</translation>
 <translation id="5170938038195470297">Profilen kan inte användas eftersom den tillhör en nyare version av Google Chrome.
 
 Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om du vill använda en nyare version av Chrome.</translation>
@@ -529,6 +534,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="683440813066116847">Regel som tillåter inkommande mDNS-trafik för Google Chrome Canary.</translation>
 <translation id="6841242485723266823">Med Chrome-profiler slipper du blanda olika delar av ditt liv. Lägg till en ny profil nu.</translation>
 <translation id="684888714667046800">Det går inte att ansluta till internet. Om du använder en brandvägg kontrollerar du att <ph name="PRODUCT_EXE_NAME" /> finns med i godkännandelistan.</translation>
+<translation id="6859580922007887573">Tryck på tabbtangenten för att fortsätta</translation>
 <translation id="6877155553248388166">nedre högra hörnet av sökområdet: <ph name="RIGHT" /> % åt höger, <ph name="BOTTOM" /> % nedåt</translation>
 <translation id="6881299373831449287">Chrome uppdateras</translation>
 <translation id="6885412569789873916">Appar i Chrome Beta</translation>
@@ -628,6 +634,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7849037457735762883">Fortsätt där du slutade: Chrome kan återställa dina flikar varje gång du startar om. Aktivera detta genom att öppna</translation>
 <translation id="7872446069773932638">Laddar ned … <ph name="SECONDS" /> sekund/sekunder återstår</translation>
 <translation id="7886087451482920026">Välj text med Google Lens</translation>
+<translation id="7887929410013642057">Visa alltid genvägar till AI-läget</translation>
 <translation id="7890208801193284374">Om du delar en dator med vänner och familj kan de konfigurera Chrome precis som de vill och surfa separat.</translation>
 <translation id="7896673875602241923">Någon har tidigare loggat in i Chrome som <ph name="ACCOUNT_EMAIL_LAST" /> på den här datorn. Skapa en ny Chrome-användare så att dina uppgifter hålls separat.</translation>
 <translation id="7904985524660297937">Testa Gemini i Google Chrome</translation>
@@ -644,6 +651,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8013993649590906847">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chrome. Bilderna skickas till Google så att beskrivningen kan genereras.</translation>
 <translation id="8019103195866286235">Det här tillägget har tagits bort av utvecklaren och kan vara osäkert. Ta bort det från Chrome så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
 <translation id="8040768861829554732">Ett tillägg vill att du ska logga in i Chrome</translation>
+<translation id="8041795619940733262">Fråga Google<ph name="LINE_BREAK" />om den här fliken</translation>
 <translation id="80471789339884597">Tack för att du installerat programmet. Du måste starta om alla webbläsare innan du använder <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Andra Chrome-profiler</translation>

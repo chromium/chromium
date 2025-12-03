@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">Ekranı kilidləyin</translation>
 <translation id="1963976881984600709">Standart qoruma</translation>
 <translation id="1964507856799750384"><ph name="BEGIN_BOLD" />Brauzer tətbiqinə<ph name="END_BOLD" /> toxunun</translation>
+<translation id="1965633132497641148">Keçərsiz güvənlik kodu</translation>
 <translation id="1966313166384086081">sayt datası</translation>
 <translation id="1967461193809857427">{count,plural, =1{Android-də qaldığınız tabdan davam edilsin?}other{Android-də qaldığınız tablardan davam edilsin?}}</translation>
 <translation id="1972325230031091483">Cari veb səhifə ziyarətinizə əsasən məzmun proaktiv şəkildə yükləndiyinə görə daha sürətli gözdən keçirəcəksiniz</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">Tarixçəni və veb-sayt datasını silin</translation>
 <translation id="3190736958609431397">İzləməyin</translation>
 <translation id="3208260410153224535">Təşkilat girişi deaktiv edib. Yeni əlfəcin, parol və s. yalnız bu cihazda yadda saxlanacaq.</translation>
+<translation id="3211969308836412674">Saytın bərkidilməsini ləğv edin</translation>
 <translation id="3213807041830307252">Kamera və fotoqalereyadan istifadə edərək gördüklərinizi alın, tərcümə edin və müəyyənləşdirin.</translation>
 <translation id="3214379938835224220">iPad sıfırlamasının bir hissəsi olaraq hesabınızdan çıxmısınız. Daxil olmaq üçün aşağıda "davam edin" seçiminə toxunun.</translation>
 <translation id="3218296450292600703">İdarə olunan hesabınız ilə daxil olmaq təşkilatınızla əlaqəli axtarışı (tablar, tarixçə və parollar daxil olmaqla) digər axtarışdan ayırmağa kömək edir.</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">Ünvan 2</translation>
 <translation id="3328801116991980348">Sayt haqqında</translation>
 <translation id="333229797575847124">Bu funksiyanı aktivləşdirmə qaydası</translation>
+<translation id="3344233834747405775">Keçərsiz kart sahibi adı</translation>
 <translation id="3344485292736684439">{count,plural, =1{Əlfəcin hesabda ({email}) "{title}" bölməsində saxlandı}other{Əlfəcinlər hesabda ({email}) "{title}" bölməsində saxlandı}}</translation>
 <translation id="334690320928261823">Son tablar</translation>
 <translation id="3349031117032695619">Popapları bloklayın</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">Sonra xatırladın</translation>
 <translation id="4881695831933465202">Açın</translation>
 <translation id="4883766694719903356">Anonim tab toru</translation>
+<translation id="4884937942297374058">Təkmil qoruma deaktivdir</translation>
 <translation id="488785315393301722">Detalları göstər</translation>
 <translation id="4889521386764567563">Cari profil</translation>
 <translation id="4893713555726946316">"Səhifədə axtarın" seçimini gizlədin</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">Tarixlərdən təqvim tədbirləri yaradın</translation>
 <translation id="5222676887888702881">Hesabdan çıxın</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Sayta düzəliş edin</translation>
 <translation id="5233638681132016545">Yeni panel</translation>
 <translation id="5234094073825090254">{count,plural, =1{Əlfəcin Google Hesabında ({email}) yadda saxlandı.}other{Əlfəcinlər Google Hesabında ({email}) yadda saxlandı.}}</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
@@ -1325,6 +1330,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6066301408025741299">Ləğv etmək üçün tıklayın.</translation>
 <translation id="6074656473835429958">Bildiriş alın</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) yüklənmədi</translation>
+<translation id="6076618233738284461">Saytı bərkidin</translation>
 <translation id="6077126322656614846">Kameraya giriş icazəsi verilib</translation>
 <translation id="607730456154980869">Chrome-da Gemini ilə cavabları daha tez əldə edin</translation>
 <translation id="6078236141387574983">Vərəqin hündürlüyünü yenidən tənzimləyin</translation>

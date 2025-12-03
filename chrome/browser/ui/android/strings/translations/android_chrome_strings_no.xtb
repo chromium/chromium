@@ -496,6 +496,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3114507951000454849">Les dagens nyheter <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Mer informasjon</translation>
 <translation id="3123734510202723619">Kunngjøringer</translation>
+<translation id="3134385238404760368">Ingen nylige faner</translation>
 <translation id="314939179385989105">Startsiden for Chrome</translation>
 <translation id="3158667104057012316">Sorteres i manuell rekkefølge</translation>
 <translation id="3159335509547415276">Få informasjon om blokkerte kontoer</translation>
@@ -817,6 +818,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4577115723294378384">Sorter fra A til Å</translation>
 <translation id="4578289292431526768">Sett i gang</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{for # minutt siden}other{for # minutter siden}}</translation>
+<translation id="4585751637295612750">Åpne en ny fane for å legge den til i spørsmålet ditt</translation>
 <translation id="4587589328781138893">Nettsteder</translation>
 <translation id="4594952190837476234">Denne siden uten nett er fra <ph name="CREATION_TIME" /> og kan avvike fra nettversjonen.</translation>
 <translation id="4595237294768457124">Åpne en Ny fane-side</translation>

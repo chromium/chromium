@@ -2010,6 +2010,10 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Si la inhabilitas, esta acción hará que la función no esté disponible.</translation>
 <translation id="2342066287156668839">Habilitar la cuota persistente</translation>
+<translation id="2343774133209251840">Si se habilita, las APIs de cuota de almacenamiento devolverán un valor estático igual al uso + min (10 GiB, espacio del disco redondeado al 1 GiB más cercano).
+Cuando se inhabilita, las APIs de cuota de almacenamiento generalmente devuelven un valor dinámico proporcional al espacio total disponible en el dispositivo, independientemente del uso.
+Si no se establece, la ejecución de la función de cuota de almacenamiento informada predecible o las marcas determinarán el comportamiento.
+Esta configuración no afecta a los sitios con permisos de almacenamiento ilimitado. La cuota forzosa tampoco se verá afectada.</translation>
 <translation id="2344033063256716138">Configurar políticas para controlar si el usuario puede acceder a datos y funciones compartidos.</translation>
 <translation id="2345547870894930157">Habilitar DNS-over-HTTPS sin resguardo inseguro</translation>
 <translation id="2347695338560092641">Permitir controladores de impresión fuera del proceso</translation>
@@ -3275,6 +3279,7 @@ ofrecerse en la versión 142 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3169872426103732947">Mostrar la URL predeterminada y permitir que los usuarios cambien a la URL completa</translation>
 <translation id="3171369832001535378">Plantilla para el nombre de host de la red de dispositivos</translation>
 <translation id="3173844121395372156">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa la política "<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />".</translation>
+<translation id="3175063338945713984">Las APIs de cuota de almacenamiento devuelven valores basados en el proceso de ejecución de la función.</translation>
 <translation id="3177537290334203187">Utilizar el comportamiento predeterminado al decidir si los sitios web pueden hacer solicitudes a extremos de red</translation>
 <translation id="3177802893484440532">Exigir verificaciones de OCSP/CRL en línea para las anclas de confianza locales</translation>
 <translation id="3179533009079100620">Mostrar el selector de perfiles</translation>
@@ -3422,6 +3427,7 @@ La tarjeta de Microsoft Outlook requerirá una configuración adicional del admi
 
 Si inhabilitas <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de Outlook. Si habilitas <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de Outlook si esta política también está habilitada y hay datos para mostrar. Si no estableces <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de Outlook si esta política también está habilitada, el usuario tiene la tarjeta habilitada en Personalizar Chrome y hay datos para mostrar.</translation>
 <translation id="3261592499545947104">La cantidad de segundos restantes para que caduque un certificado y se active la renovación.</translation>
+<translation id="326182244921429468">Las APIs de cuota de almacenamiento devuelven valores dinámicos.</translation>
 <translation id="3262080895269946462">Permitir que se inhabilite de forma predeterminada WebSQL en contextos de terceros</translation>
 <translation id="326341982850521928">Habilitar la corrección de colores</translation>
 <translation id="3263892501786842604">Permitir que el botón <ph name="GOOGLE_LENS_PRODUCT_NAME" /> se muestre en el cuadro de búsqueda de la página Nueva pestaña si es compatible</translation>
@@ -11220,6 +11226,7 @@ Consulta el RFC 8828, sección 5.2 (https://tools.ietf.org/html/rfc8828.html#sec
       Si no estableces la política, se aplicará <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns. Sin embargo, a partir de la versión M85, ya no serán compatibles para esta política los patrones que incluyan comodines "*" y "[*.]" en el host.</translation>
+<translation id="8251975082850036657">Las APIs de cuota de almacenamiento devuelven valores estáticos.</translation>
 <translation id="82530263956734297">Identificadores de extensión para excluir de la lista de elementos bloqueados</translation>
 <translation id="8254749125469750814">No validar si se puede instalar una extensión o no con un servicio en la nube.</translation>
 <translation id="8256006033157034334">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
@@ -12396,6 +12403,7 @@ Para obtener más información, consulta https://support.google.com/chrome/a/ans
       Esta política solo se usa para usuarios de Family Link.</translation>
 <translation id="8947415621777543415">Informar la ubicación del dispositivo</translation>
 <translation id="8948062138228904066">Lista de servidores de autenticación habilitados</translation>
+<translation id="8951145747995737852">Controlar si las APIs de cuota de almacenamiento devolverán valores estáticos</translation>
 <translation id="8951350807133946005">Configurar el directorio de caché de disco</translation>
 <translation id="8952611478149810182">Se modificará el envío de eventos en los controles de formularios inhabilitados en Chromium a fin de mejorar la compatibilidad con otros navegadores y la experiencia de los desarrolladores.
 

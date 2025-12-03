@@ -2065,6 +2065,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4299919199185766032">Emri i shkurtores tejkalon maksimumin e gjatësisë së lejuar prej <ph name="MAX_LENGTH" /> karakteresh.</translation>
 <translation id="4300272766492248925">Hap aplikacionin</translation>
 <translation id="4300675098767811073">Shumë shpime djathtas</translation>
+<translation id="4300841966382281549">Udhëtimi</translation>
 <translation id="4302514097724775343">Trokit te dinozauri për të luajtur</translation>
 <translation id="4304049446746819918">{0,plural, =1{Politika e administratorit nuk rekomandon zhvendosjen e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon zhvendosjen e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Lexo vlerësimet e klientëve për produktet, shërbimet ose përvojat për të marrë informacione për vendimet e tua në lidhje me komentet.</translation>
@@ -2166,6 +2167,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ky formular nuk është i sigurt. Plotësimi automatik është çaktivizuar.</translation>
 <translation id="4477350412780666475">Kënga tjetër</translation>
+<translation id="4479915773139026885">"Modaliteti i IA-së" në "Kërko në Google"</translation>
 <translation id="4480760608050410381">Video MP4</translation>
 <translation id="448363931695049633">Piceri</translation>
 <translation id="4489023393592172404">Zarf Kaku 4</translation>
@@ -2373,7 +2375,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4832388034239846146">Përditëso Chrome për të ndarë grupet e skedave</translation>
 <translation id="483241715238664915">Aktivizo paralajmërimet</translation>
 <translation id="4832961164064927107">Skara dhe pjekja në skarë</translation>
-<translation id="4834250788637067901">Mënyrat e pagesës, ofertat dhe adresat që përdorin Google Pay</translation>
 <translation id="4840250757394056958">Shiko historikun tënd të Chrome</translation>
 <translation id="484462545196658690">Automatike</translation>
 <translation id="4844937814014739139">Lëvizja dhe zmadhimi në skedat e ndara</translation>
@@ -3165,6 +3166,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6124996493718543728">Ekrani i progresit për metodën "Bli tani, paguaj më vonë" u hap në lartësi të plotë.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Më shumë detaje<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Enter" për të pyetur "Modalitetin e IA-së" në "Kërko në Google"</translation>
 <translation id="6126565365696310362">Zarf kinez nr. 2</translation>
 <translation id="6131824478727057281">vendndodhja</translation>
 <translation id="6133320744616005677">Vazhdo lejimin</translation>
@@ -3434,6 +3436,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6539092367496845964">Ndodhi një gabim. Provo përsëri më vonë.</translation>
 <translation id="6540488083026747005">Ke lejuar kukit e palëve të treta në këtë sajt</translation>
 <translation id="6545864417968258051">Skanimi për Bluetooth</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> - <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Dy shpime majtas</translation>
 <translation id="6549443526281184652">Kostumet</translation>
 <translation id="6550245281449521513">Kyçja e miut nuk lejohet</translation>
@@ -3902,6 +3905,7 @@ Detaje shtesë:
 <translation id="7337248890521463931">Shfaq më shumë radhë</translation>
 <translation id="7337706099755338005">Nuk ofrohet në këtë platformë.</translation>
 <translation id="733923710415886693">Certifikata e serverit nuk është zbuluar përmes "Transparencës së certifikatave".</translation>
+<translation id="73398226265793546">Butoni "Modaliteti i IA-së"; aktivizoje për të pyetur "Modalitetin e IA-së" në "Kërko në Google"</translation>
 <translation id="7346048084945669753">Është i lidhur:</translation>
 <translation id="7346062987309535530">Artikuj tavoline</translation>
 <translation id="7346081071264046066">"përgjigju me 'po' me emocion për këtë ftesë dasme"</translation>
@@ -4707,6 +4711,7 @@ Detaje shtesë:
 <translation id="8622864575115813231">Po kontaktohet me institucionin tënd financiar...</translation>
 <translation id="8624354461147303341">Merr uljet e çmimeve</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">Shto deri në 10 skedarë, skeda ose imazhe</translation>
 <translation id="8637362707224133343">Chrome ka veçori të integruara sigurie për të të mbrojtur ndërsa shfleton, si p.sh. "Shfletimi i sigurt i Google", i cili <ph name="BEGIN_LINK" />së fundi gjeti një mashtrim<ph name="END_LINK" /> në sajtin që u përpoqe të vizitoje. Sajtet mashtruese pretendojnë se janë sajte të tjera për të të mashtruar.<ph name="NEW_LINE" />Edhe sajtet që janë zakonisht të sigurta, ndonjëherë komprometohen nga sulmuesit. <ph name="BEGIN_ERROR_LINK" />Na njofto<ph name="END_ERROR_LINK" /> nëse mendon se ka ndodhur një gabim dhe se ky sajt nuk përbën rrezik.</translation>
 <translation id="8640996933372643759">Për të ndarë skedat dhe për të bashkëpunuar me të tjerët, duhet të jesh në gjendje të identifikohesh në Chrome</translation>
 <translation id="8641131559425911240">Zarf (me ngjitje)</translation>
@@ -4819,6 +4824,7 @@ Detaje shtesë:
 <translation id="8814547618907885931">Shiko të gjitha tabelat e krahasimit</translation>
 <translation id="8814707942599948500">Zarf C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të përditësuar Chrome nga cilësimet e tua të Chrome</translation>
+<translation id="8819855907485254989">Ruaje biletën e transportit te "Portofoli"</translation>
 <translation id="8820817407110198400">Faqeshënuesit</translation>
 <translation id="882338992931677877">Foleja manuale</translation>
 <translation id="8827067923357481311">Opsionet për të paguar më vonë</translation>

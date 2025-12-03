@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">Uzamknúť obrazovku</translation>
 <translation id="1963976881984600709">Štandardná ochrana</translation>
 <translation id="1964507856799750384">Klepnite na položku <ph name="BEGIN_BOLD" />Aplikácia prehliadača<ph name="END_BOLD" /></translation>
+<translation id="1965633132497641148">Neplatný bezpečnostný kód</translation>
 <translation id="1966313166384086081">dáta webov</translation>
 <translation id="1967461193809857427">{count,plural, =1{Chcete si zobraziť kartu, ktorú ste zavreli v Androide?}few{Chcete si zobraziť karty, ktoré ste zavreli v Androide?}many{Pick up the tabs you left on Android?}other{Chcete si zobraziť karty, ktoré ste zavreli v Androide?}}</translation>
 <translation id="1972325230031091483">Prehliadanie sa zrýchli, pretože obsah bude proaktívne načítaný na základe vašej návštevy aktuálnej webovej stránky</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">Vymazať históriu a údaje webov</translation>
 <translation id="3190736958609431397">Prestať sledovať</translation>
 <translation id="3208260410153224535">Vaša organizácia vypla prihlasovanie. Nové záložky, heslá a ďalšie položky sa budú ukladať iba do tohto zariadenia.</translation>
+<translation id="3211969308836412674">Odopni web</translation>
 <translation id="3213807041830307252">Nakupujte, prekladajte a identifikujte, čo vidíte, pomocou kamery a fotogalérie.</translation>
 <translation id="3214379938835224220">V rámci resetovania iPadu vás systém odhlásil. Ak sa chcete prihlásiť, klepnite na Pokračovať nižšie.</translation>
 <translation id="3218296450292600703">Ak sa prihlásite spravovaným účtom, budete môcť prehliadanie súvisiace s vašou organizáciou (vrátane kariet, histórie a hesiel) ponechať oddelené od ostatného prehliadania</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">Adresa 2</translation>
 <translation id="3328801116991980348">Informácie o stránkach</translation>
 <translation id="333229797575847124">Ako aktivovať túto funkciu</translation>
+<translation id="3344233834747405775">Neplatné meno majiteľa karty</translation>
 <translation id="3344485292736684439">{count,plural, =1{Záložka bola uložená do priečinka {title} vo vašom účte {email}}few{Záložky boli uložené do priečinka {title} vo vašom účte {email}}many{Bookmarks saved to "{title}" in your account, {email}}other{Záložky boli uložené do priečinka {title} vo vašom účte {email}}}</translation>
 <translation id="334690320928261823">Nedávne karty</translation>
 <translation id="3349031117032695619">Blokovanie vyskakovacích okien</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">Pripomenúť neskôr</translation>
 <translation id="4881695831933465202">Otvoriť</translation>
 <translation id="4883766694719903356">Mriežka kariet inkognito</translation>
+<translation id="4884937942297374058">Rozšírená ochrana je vypnutá</translation>
 <translation id="488785315393301722">Zobraziť podrobnosti</translation>
 <translation id="4889521386764567563">Aktuálny profil</translation>
 <translation id="4893713555726946316">Skryť položku Vyhľadávať na stránke</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">Vytvorenie udalostí v kalendári z dátumov</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Uprav web</translation>
 <translation id="5233638681132016545">Nová karta</translation>
 <translation id="5234094073825090254">{count,plural, =1{Záložka bola uložená vo vašom účte Google {email}}few{Záložky boli uložené vo vašom účte Google {email}}many{Záložky boli uložené vo vašom účte Google {email}}other{Záložky boli uložené vo vašom účte Google {email}}}</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
@@ -1325,6 +1330,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6066301408025741299">Sťahovanie zrušíte klepnutím.</translation>
 <translation id="6074656473835429958">Dostávajte upozornenia</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) sa nepodarilo nahrať</translation>
+<translation id="6076618233738284461">Pripni web</translation>
 <translation id="6077126322656614846">Prístup ku kamere je povolený</translation>
 <translation id="607730456154980869">Získavajte odpovede rýchlejšie pomocou Gemini v Chrome</translation>
 <translation id="6078236141387574983">Znova upraviť výšku hárka</translation>

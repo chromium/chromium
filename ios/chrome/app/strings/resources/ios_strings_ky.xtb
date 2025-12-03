@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">Кулпуланган экран</translation>
 <translation id="1963976881984600709">Стандарттуу коргоо</translation>
 <translation id="1964507856799750384"><ph name="BEGIN_BOLD" />Серепчи колдонмосун<ph name="END_BOLD" /> таптап коюңуз</translation>
+<translation id="1965633132497641148">Коргоочу код жараксыз</translation>
 <translation id="1966313166384086081">сайттагы маалымат</translation>
 <translation id="1967461193809857427">{count,plural, =1{Android'де көргөн өтмөктү ачасызбы?}other{Android'де көргөн өтмөктү ачасызбы?}}</translation>
 <translation id="1972325230031091483">Мазмун учурда ачылып турган веб-баракчанын негизинде жүктөлгөндүктөн, барактарды тезирээк карап чыгасыз</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">Таржымалдагы жана вебсайттагы нерселерди тазалоо</translation>
 <translation id="3190736958609431397">Көз салууну токтотуу</translation>
 <translation id="3208260410153224535">Уюмуңуз кирүү аракетин өчүрүп койду. Жаңы кыстармалар, сырсөздөр жана башкалар ушул түзмөккө гана сакталат.</translation>
+<translation id="3211969308836412674">Сайтты бошотуу</translation>
 <translation id="3213807041830307252">Камера жана cүрөт галереясы аркылуу соода кылыңыз, тексттерди которуңуз жана көргөн нерсеңизди аныктаңыз.</translation>
 <translation id="3214379938835224220">iPad түзмөгүңүз баштапкы абалга келтирилип жатканда аккаунтуңуздан чыктыңыз. Кирүү үчүн төмөндөгү "Улантуу" дегенди таптаңыз.</translation>
 <translation id="3218296450292600703">Башкарылган аккаунт менен кирүү уюмуңузга тиешелүү серептөө дайындарын (анын ичинде өтмөктөрдү, таржымалды жана сырсөздөрдү) башка серептөө дайындарынан өзүнчө сактоого жардам берет</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">2-дарек</translation>
 <translation id="3328801116991980348">Сайт жөнүндө маалымат</translation>
 <translation id="333229797575847124">Бул функцияны кантип иштетүү керек</translation>
+<translation id="3344233834747405775">Карточканын ээсинин аты жараксыз</translation>
 <translation id="3344485292736684439">{count,plural, =1{Кыстарма {email} аккаунтуңуздагы "{title}" папкасына сакталды}other{Кыстармалар {email} аккаунтуңуздагы "{title}" папкасына сакталды}}</translation>
 <translation id="334690320928261823">Соңку өтмөктөр</translation>
 <translation id="3349031117032695619">Калкып чыкмаларды бөгөттөө</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">Мага кийинчерээк эскертилсин</translation>
 <translation id="4881695831933465202">Ачуу</translation>
 <translation id="4883766694719903356">Жашыруун өтмөк торчосу</translation>
+<translation id="4884937942297374058">Мыктылап коргоо өчүк</translation>
 <translation id="488785315393301722">Чоо-жайын көрсөтүү</translation>
 <translation id="4889521386764567563">Учурдагы профиль</translation>
 <translation id="4893713555726946316">"Барактан табуу" дегенди жашыруу</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">Күндөрдүн негизинде жылнаамада иш-чараларды түзүү</translation>
 <translation id="5222676887888702881">Чыгуу</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Сайтты түзөтүү</translation>
 <translation id="5233638681132016545">Жаңы өтмөк</translation>
 <translation id="5234094073825090254">{count,plural, =1{Кыстарма Google аккаунтуңузга ({email}) сакталды.}other{Кыстармалар Google аккаунтуңузга ({email}) сакталды.}}</translation>
 <translation id="5234764350956374838">Этибарга албоо</translation>
@@ -1325,6 +1330,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6066301408025741299">Жокко чыгаруу үчүн таптаңыз.</translation>
 <translation id="6074656473835429958">Билдирмелерди алуу</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) жүктөлүп берилген жок</translation>
+<translation id="6076618233738284461">Сайтты кадап коюу</translation>
 <translation id="6077126322656614846">Камераны колдонууга уруксат берилди</translation>
 <translation id="607730456154980869">Chrome'догу Gemini менен жоопторду тез алыңыз</translation>
 <translation id="6078236141387574983">Барактын узундугун кайра тууралаңыз</translation>

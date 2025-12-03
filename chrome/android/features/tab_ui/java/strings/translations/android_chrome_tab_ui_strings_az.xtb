@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Tab qrupu siyahısı bağlandı</translation>
 <translation id="3194464645767632461">reytinq</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabı qrupa əlavə edin}other{<ph name="TABS_COUNT_MANY" /> tabı qrupa əlavə edin}}</translation>
-<translation id="3293080634164207409">Tab əlavə edin</translation>
 <translation id="3328308545011660196">Təklif: <ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 gün qeyri-aktiv olduqdan sonra}other{<ph name="DAY_COUNT_MANY" /> gün qeyri-aktiv olduqdan sonra}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> yeni tab}other{<ph name="MANY_ADDED" /> yeni tab}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="855081842937141170">Sancaq tabı</translation>
 <translation id="8633025649649592204">Son fəaliyyət</translation>
+<translation id="8635822281281406185">10-a qədər fayl, tab və ya şəkil əlavə edin</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8714939927607906138">Aşağı qiymət</translation>
 <translation id="8730621377337864115">Tamamdır</translation>

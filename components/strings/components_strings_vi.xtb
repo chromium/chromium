@@ -966,6 +966,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2536110899380797252">Thêm địa chỉ</translation>
 <translation id="2537931901612099523">Những người khác sử dụng thiết bị này sẽ không thấy hoạt động của bạn. Vì vậy, bạn có thể duyệt web riêng tư hơn. Việc này sẽ không thay đổi cách các trang web mà bạn truy cập và dịch vụ mà họ sử dụng (bao gồm cả Google) thu thập dữ liệu. Hệ thống sẽ lưu các tệp đã tải xuống và dấu trang.</translation>
 <translation id="2541219929084442027">Những trang mà bạn xem trong các thẻ Ẩn danh sẽ không bị lưu lại trong nhật ký của trình duyệt, kho cookie hoặc nhật ký tìm kiếm sau khi bạn đóng tất cả các thẻ Ẩn danh. Mọi tệp bạn tải xuống hoặc dấu trang mà bạn tạo sẽ được giữ nguyên.</translation>
+<translation id="2541474152868747095">Để truy cập vào nhật ký của bạn trên những thiết bị khác, hãy xác minh danh tính của bạn. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="2542106216580219892">Lướt sóng</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" /> – Để thoát khỏi chế độ toàn màn hình, hãy nhấn và giữ |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Quản trị viên đã khởi động lại thiết bị của bạn</translation>
@@ -2031,6 +2032,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4255487295905690262">Bạn sẽ nhận được thông báo qua email nếu giá giảm trên bất cứ trang web nào.</translation>
 <translation id="425582637250725228">Các thay đổi bạn đã thực hiện có thể không được lưu.</translation>
 <translation id="4258748452823770588">Chữ ký không hợp lệ</translation>
+<translation id="4260407128682690669">Để truy cập vào nhật ký của bạn trên những thiết bị khác, hãy đồng bộ hoá nhật ký và thẻ của bạn với <ph name="ACCOUNT_EMAIL" />. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="4265635050210404830">Các thẻ khách hàng thân thiết của bạn</translation>
 <translation id="4265872034478892965">Được quản trị viên cho phép</translation>
 <translation id="4267590181863312380">Để truy cập vào nhật ký của bạn trên những thiết bị khác, hãy đăng nhập và đồng bộ hoá nhật ký. Bạn cũng có thể truy cập mật khẩu và nhiều dữ liệu khác trên mọi thiết bị của mình. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
@@ -2167,6 +2169,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Biểu mẫu này không an toàn. Do đó, tính năng tự động điền đã bị tắt.</translation>
 <translation id="4477350412780666475">Bản nhạc tiếp theo</translation>
+<translation id="4479915773139026885">Chế độ AI trên Google Tìm kiếm</translation>
 <translation id="4480760608050410381">Video MP4</translation>
 <translation id="448363931695049633">Nhà hàng pizza</translation>
 <translation id="4489023393592172404">Phong bì Kaku 4</translation>
@@ -2374,7 +2377,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4832388034239846146">Để chia sẻ nhóm thẻ, hãy cập nhật Chrome</translation>
 <translation id="483241715238664915">Bật cảnh báo</translation>
 <translation id="4832961164064927107">BBQ và đồ nướng</translation>
-<translation id="4834250788637067901">Phương thức thanh toán, ưu đãi và địa chỉ sử dụng Google Pay</translation>
 <translation id="4840250757394056958">Xem nhật ký duyệt web trên Chrome</translation>
 <translation id="484462545196658690">Tự động</translation>
 <translation id="4844937814014739139">Cuộn và thu phóng thẻ được chia sẻ</translation>
@@ -3009,6 +3011,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5886961930368713749">Gửi ý kiến phản hồi về tính năng So sánh</translation>
 <translation id="5887400589839399685">Đã lưu thẻ</translation>
 <translation id="5887687176710214216">Lần truy cập gần đây nhất: hôm qua</translation>
+<translation id="5889251770650310375">Để truy cập vào nhật ký của bạn trên những thiết bị khác, hãy xác minh danh tính của bạn cũng như đồng bộ hoá thẻ và nhật ký. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="5890248301649767931">Lưu mã số xác nhận trùng tên?</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5895187275912066135">Cấp vào</translation>
@@ -3166,6 +3169,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6124432979022149706">Trình kết nối của Chrome Enterprise</translation>
 <translation id="6124996493718543728">Màn hình tiến trình Mua trước trả sau đã mở trên toàn màn hình.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Thông tin chi tiết khác<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Enter để hỏi ở Chế độ AI trên Google Tìm kiếm</translation>
 <translation id="6126565365696310362">Phong bì kiểu Trung số 2</translation>
 <translation id="6131824478727057281">vị trí</translation>
 <translation id="6133320744616005677">Tiếp tục cho phép</translation>
@@ -3906,6 +3910,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7337248890521463931">Hiện thêm dòng</translation>
 <translation id="7337706099755338005">Không được hỗ trợ trên nền tảng của bạn.</translation>
 <translation id="733923710415886693">Chứng chỉ của máy chủ đã không được tiết lộ qua Tính minh bạch của chứng chỉ.</translation>
+<translation id="73398226265793546">Nút Chế độ AI, nhấn nút này để hỏi ở Chế độ AI trên Google Tìm kiếm</translation>
 <translation id="7346048084945669753">Được liên kết:</translation>
 <translation id="7346062987309535530">Dụng cụ ăn</translation>
 <translation id="7346081071264046066">"hào hứng nhận lời mời dự đám cưới này"</translation>
@@ -4712,6 +4717,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8622864575115813231">Đang liên hệ với tổ chức tài chính của bạn...</translation>
 <translation id="8624354461147303341">Nhận chiết khấu</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">Thêm tối đa 10 tệp, thẻ hoặc hình ảnh</translation>
 <translation id="8637362707224133343">Chrome tích hợp sẵn các tính năng an toàn nhằm bảo vệ bạn khi bạn duyệt web, chẳng hạn như Duyệt web An toàn của Google – tính năng <ph name="BEGIN_LINK" />vừa phát hiện thấy hành vi lừa đảo<ph name="END_LINK" /> trên trang web bạn đã cố truy cập. Trang web lừa đảo sẽ giả mạo các trang web khác để đánh lừa bạn.<ph name="NEW_LINE" />Ngay cả những trang web thường được coi là an toàn đôi khi vẫn bị kẻ tấn công xâm phạm. <ph name="BEGIN_ERROR_LINK" />Hãy cho chúng tôi biết<ph name="END_ERROR_LINK" /> nếu bạn cho rằng đã có sự nhầm lẫn và trang web này không gây nguy hiểm.</translation>
 <translation id="8640996933372643759">Để chia sẻ thẻ và cộng tác với người khác, bạn phải được phép đăng nhập vào Chrome</translation>
 <translation id="8641131559425911240">Phong bì (Giấy bông)</translation>
@@ -4999,6 +5005,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn Enter để tiếp tục hành trình và xem hoạt động liên quan trong nhật ký duyệt web trên Chrome</translation>
 <translation id="9119042192571987207">Đã tải lên</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> muốn xác minh danh tính của bạn</translation>
+<translation id="9119764377203471454">Không thêm được tệp đính kèm</translation>
 <translation id="9120593907434185157">Lưu địa chỉ</translation>
 <translation id="912327514020027767">Váy</translation>
 <translation id="9128870381267983090">Kết nối đến mạng</translation>

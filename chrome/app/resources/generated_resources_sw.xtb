@@ -1352,6 +1352,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1907044622262489040">Andika kwa kutumia sauti yako. Bonyeza kitufe cha Tafuta na D kwa wakati mmoja, kisha uanze kuzungumza.</translation>
 <translation id="1907659324308286326">Baadhi ya vifuasi vya Thunderbolt au USB4 vinahitaji idhini ya kufikia hifadhi ili vifanye kazi ipasavyo.</translation>
 <translation id="1908591798274282246">Fungua Tena Kikundi Kilichofungwa</translation>
+<translation id="1909677622563887527">Chrome inadhibitiwa na programu otomatiki ya majaribio</translation>
 <translation id="1909880997794698664">Una uhakika unataka kuweka kifaa hiki kiwe cha kudumu katika modi ya kioski?</translation>
 <translation id="1910721550319506122">Karibu!</translation>
 <translation id="1910736334623230603">Imeshindwa kutafuta picha nyingi. Weka picha moja baada ya nyingine.</translation>
@@ -1706,6 +1707,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2144536955299248197">Kitazama Cheti: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Usanidi wa programu ya Android kwenye Linux</translation>
 <translation id="2145468727756963476">Gemini inaonyesha upya...</translation>
+<translation id="2145688286532368277">Umezima uboreshaji wa JavaScript kwenye tovuti hii.</translation>
 <translation id="2145917706968602070">Hakikisha kwamba simu yako ipo karibu, umeifungua na umewasha Bluetooth na Wi-Fi</translation>
 <translation id="2146263598007866206">Tovuti zinaweza kupakua kiotomatiki faili zinazohusiana kwa pamoja ili kuokoa muda wako</translation>
 <translation id="2147218225094845757">Ficha kidirisha cha pembeni</translation>
@@ -4335,6 +4337,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Ukubwa wa skrini na maandishi asilmia <ph name="DISPLAY_ZOOM" /></translation>
 <translation id="3924487862883651986">Hutuma URL kwenye kipengele cha Kuvinjari Salama ili zikaguliwe. Hutuma pia sampuli ndogo ya kurasa, vipakuliwa, shughuli za viendelezi na maelezo ya mfumo ili kusaidia kugundua matukio mapya hatari. Huunganisha data hii kwenye Akaunti yako ya Google kwa muda mfupi ukiwa umeingia katika akaunti, ili kukulinda kwenye programu za Google.</translation>
+<translation id="3924788966103416622">Programu ya nje inataka udhibiti kamili wa kipindi hiki cha Chrome ili ikitatue. Hii inajumuisha idhini ya kufikia data uliyohifadhi, vidakuzi, data ya tovuti pamoja na uwezo wa kwenda kwenye URL yoyote.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Watumiaji wengine kwenye kifaa hiki pia wanaweza kutumia mtandao huu</translation>
 <translation id="3926002189479431949">Simu ya Smart Lock imebadilishwa</translation>
@@ -4361,6 +4364,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 
 Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Vichunguzi</translation>
+<translation id="3942558231079086184">Umezima uboreshaji wa JavaScript kwenye tovuti hii. Washa ili upate utendaji bora.</translation>
 <translation id="3943582379552582368">&amp;Nyuma</translation>
 <translation id="3943857333388298514">Bandika</translation>
 <translation id="3945513714196326460">Jaribu jina fupi</translation>
@@ -4472,6 +4476,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4015250302257349679">Bonyeza <ph name="ACCELERATOR" /> uangazie kiputo hiki kisha ubonyeza tena uangazie kipengee kinacholengwa na kiputo hiki.</translation>
 <translation id="4016762287427926315">Ruhusa unazotoa kwenye <ph name="APP_NAME" /> zitaruhusiwa pia kwenye programu hii. <ph name="BEGIN_LINK" />Dhibiti<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Tunga Msimbo wa QR wa kiungo hiki</translation>
+<translation id="4018953474106733212">Wasanidi wavuti pekee ndio wanapaswa kuwasha kipengele hiki na kukitumia tu kwenye programu wanazoziamini.</translation>
 <translation id="4019983356493507433">Badilisha Orodha ya Alamisho</translation>
 <translation id="4020701737692625681">Msimamizi wako anaweza kurekodi skrini yako</translation>
 <translation id="4021279097213088397">–</translation>
@@ -10206,6 +10211,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8032569120109842252">Unafuatilia</translation>
 <translation id="8033827949643255796">kimechaguliwa</translation>
 <translation id="8033958968890501070">Muda umekwisha</translation>
+<translation id="8034399942062051455">Umezima uboreshaji wa V8</translation>
 <translation id="8034697324150621782">Badilisha utumie Mwonekano wa Juu</translation>
 <translation id="8035059678007243127">Ukurasa fiche Uliohifadhiwa kwenye Kipengele cha Kuakibisha Ukurasa Kamili: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Saidia Kuboresha kipengele cha Kujaza kiotomatiki</translation>
@@ -11506,6 +11512,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="8910987510378294980">Ficha orodha ya vifaa</translation>
 <translation id="8912362522468806198">Akaunti ya Google</translation>
 <translation id="8912810933860534797">Washa ukaguzi wa kiotomatiki</translation>
+<translation id="8914030287343429787">Angalia manenosiri yako hata wakati hutumii Chrome au Android kwa kuingia katika <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Zindua upya Chrome</translation>
 <translation id="8915307125957890427">Bofya kulia kwenye kichupo na uchague "Weka Kichupo kwenye Kikundi" kisha chagua "Kikundi Kipya"</translation>
 <translation id="8915370057835397490">Inapakia pendekezo</translation>

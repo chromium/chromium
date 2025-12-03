@@ -39,6 +39,7 @@
 <translation id="141901961143729572">Envie feedback</translation>
 <translation id="1465192221147974788">Para compartilhar a janela, use os Ajustes do Sistema para permitir a gravação de tela do Chromium.</translation>
 <translation id="1478370723027452770">Receber ajuda com o Chrome for Testing</translation>
+<translation id="1496875977627931224">Olá, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />No que você está pensando hoje?</translation>
 <translation id="1497802159252041924">Erro de instalação: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Esta página está protegida</translation>
 <translation id="1524282610922162960">Compartilhar uma guia do Chromium</translation>
@@ -192,6 +193,7 @@
 <translation id="3103660991484857065">Ocorreu uma falha no instalador ao descompactar o arquivo. Baixe o Chromium novamente.</translation>
 <translation id="310459126943037700">Falha ao encerrar tarefas.</translation>
 <translation id="3130323860337406239">O Chromium está usando seu microfone.</translation>
+<translation id="3130333203120345554">Nova pesquisa</translation>
 <translation id="3137969841538672700">Arraste para pesquisar</translation>
 <translation id="3144188012276422546">Esta guia está usando recursos extras. Para melhorar o desempenho, permita que o Chromium a deixe inativa.</translation>
 <translation id="3149163023759831301">Para compartilhar a tela, use os Ajustes do Sistema para permitir a gravação de tela do Chromium</translation>
@@ -266,6 +268,7 @@
 <translation id="4023601594785368013">Idioma original: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Abra links no Chromium a partir de qualquer app. E para facilitar o acesso, ele fica fixado na barra de tarefas.</translation>
 <translation id="4036079820698952681">Ajude a melhorar o Chromium informando as <ph name="BEGIN_LINK" />configurações atuais<ph name="END_LINK" /></translation>
+<translation id="4039097928859803404">Sempre mostrar atalhos do Modo IA</translation>
 <translation id="4050175100176540509">Melhorias de segurança importantes e novos recursos estão disponíveis na versão mais recente.</translation>
 <translation id="4055805654398742145">Gerenciador de senhas</translation>
 <translation id="4061696872429826774">Outro programa no seu computador adicionou uma extensão que pode mudar a forma como o Chromium funciona.
@@ -346,6 +349,7 @@
 <translation id="4994636714258228724">Cadastrar-se no Chromium</translation>
 <translation id="5123973130450702873">O Chromium precisa de permissão para rastrear suas mãos</translation>
 <translation id="5141988424377517949">Você não visitou os sites recentemente. O Chromium removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
+<translation id="5167819546851111585">No que você está pensando hoje?</translation>
 <translation id="5174969993834422967">Você geralmente bloqueia notificações. Para permitir que este site envie notificações, clique no ícone de notificação no canto direito da barra de local.</translation>
 <translation id="5174983315706567306">Não há espaço em disco suficiente.</translation>
 <translation id="5187123684706427865">A conta do Chromium precisa ser autenticada de novo</translation>
@@ -378,6 +382,7 @@
 <translation id="5496810170689441661">O Chromium está tentando editar senhas. Digite a senha do Windows para permitir essa ação.</translation>
 <translation id="5524890928877629608">canto superior esquerdo da área de pesquisa: <ph name="LEFT" />% à esquerda, <ph name="TOP" />% acima</translation>
 <translation id="5527463683072221100">Abrir PDFs no Chromium</translation>
+<translation id="5536164441519929134">Pergunte<ph name="LINE_BREAK" />sobre esta guia</translation>
 <translation id="5579324208890605088">Erro de inicialização: execute o instalador como um usuário comum, não como administrador.</translation>
 <translation id="5580770360767802657">Use o Chromium por padrão e o mantenha fixado</translation>
 <translation id="5596627076506792578">Mais opções</translation>
@@ -500,6 +505,7 @@
 <translation id="6847869444787758381">O Chromium avisa se suas senhas forem comprometidas</translation>
 <translation id="684888714667046800">Não foi possível se conectar à Internet. Se você usa um firewall, confira se <ph name="PRODUCT_EXE_NAME" /> está na lista de permissões.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
+<translation id="6859580922007887573">Pressione Tab para continuar</translation>
 <translation id="6862030660799253820">Pesquise esta imagem com a pesquisa por imagens</translation>
 <translation id="6873893289264747459">O Chromium encontrou malware na extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="6877155553248388166">canto inferior direito da área de pesquisa: <ph name="RIGHT" />% à direita, <ph name="BOTTOM" />% abaixo</translation>
@@ -583,6 +589,7 @@
 <translation id="7872446069773932638">Fazendo o download… <ph name="SECONDS" /> segundo(s) restante(s)</translation>
 <translation id="7873537467422636035">Se você esqueceu a senha longa ou quer mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="7877212753140190672">Pergunte sobre esta imagem</translation>
+<translation id="7887929410013642057">Sempre mostrar atalhos do Modo IA</translation>
 <translation id="7888981273428720788">Defina o Chromium como o navegador padrão</translation>
 <translation id="7934340546140346950">Quando possível, o Chromium faz upgrade automático de conexões sem segurança para HTTPS</translation>
 <translation id="7937630085815544518">Você estava conectado ao Chromium como <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para fazer login novamente.</translation>
@@ -630,6 +637,7 @@
 <translation id="8416884904046428725">O Chromium precisa confirmar sua identidade para que alguns dados sejam salvos na sua Conta do Google e usados em todos seus dispositivos. Se você sair agora, esses dados serão excluídos.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reiniciar o Chromium em 1 dia}one{Reiniciar o Chromium em # dia}other{Reiniciar o Chromium em # dias}}</translation>
 <translation id="8438543370129609977">Quando você usa a pesquisa por imagens, o título, o URL e o conteúdo da página, incluindo PDFs, são enviados ao servidor. <ph name="LEARN_MORE" /></translation>
+<translation id="8447525028100794994">Saiba mais sobre como usar a pesquisa por imagens no Chromium</translation>
 <translation id="8453117565092476964">O arquivo de instalação está corrompido ou não é válido. Baixe o Chromium novamente.</translation>
 <translation id="8458614432758743027">O Chromium exige o Windows 10 ou versão mais recente.</translation>
 <translation id="8463672209299734063">Opcional: ajude a melhorar os recursos e o desempenho do ChromiumOS enviando automaticamente dados de uso e diagnóstico ao Google.</translation>

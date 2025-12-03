@@ -75,7 +75,6 @@
 <translation id="311432875115153175">分頁群組清單閂咗</translation>
 <translation id="3194464645767632461">評分</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個分頁加去群組}other{將 <ph name="TABS_COUNT_MANY" /> 個分頁加去群組}}</translation>
-<translation id="3293080634164207409">新增分頁</translation>
 <translation id="3328308545011660196">建議：似乎有 <ph name="NUMBER_OF_TABS" /> 個相關嘅分頁。要唔要將佢哋分組？</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{閒置 1 天後}other{閒置 <ph name="DAY_COUNT_MANY" /> 天後}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{新增 <ph name="ONE_ADDED" /> 個分頁}other{新增 <ph name="MANY_ADDED" /> 個分頁}}</translation>
@@ -178,6 +177,7 @@
 <translation id="7326879924029668159">查看退貨政策等資料</translation>
 <translation id="7352298686197644113">查看已開啟分頁中有哪項產品降價</translation>
 <translation id="7369451074646620503">「<ph name="TAB_GROUP_NAME" />」分頁群組已無法使用</translation>
+<translation id="7402375256128852434">新增最近開啟的分頁</translation>
 <translation id="7452985128687107478">分頁群組會自動儲存並同步至所有裝置</translation>
 <translation id="747459581954555080">全部還原</translation>
 <translation id="7489558427602531799">將分頁群組向右移</translation>

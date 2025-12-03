@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Спіс груп укладак закрыты</translation>
 <translation id="3194464645767632461">ацэнка</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Дадаць <ph name="TABS_COUNT_ONE" /> укладку ў групу}one{Дадаць <ph name="TABS_COUNT_MANY" /> укладку ў групу}few{Дадаць <ph name="TABS_COUNT_MANY" /> укладкі ў групу}many{Дадаць <ph name="TABS_COUNT_MANY" /> укладак у групу}other{Дадаць <ph name="TABS_COUNT_MANY" /> укладкі ў групу}}</translation>
-<translation id="3293080634164207409">Дадайце ўкладкі</translation>
 <translation id="3328308545011660196">Прапанова: здаецца, гэтыя ўкладкі (<ph name="NUMBER_OF_TABS" />) звязаныя паміж сабой. Згрупаваць іх?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Праз 1 дзень бяздзейнасці}one{Праз <ph name="DAY_COUNT_MANY" /> дзень бяздзейнасці}few{Праз <ph name="DAY_COUNT_MANY" /> дні бяздзейнасці}many{Праз <ph name="DAY_COUNT_MANY" /> дзён бяздзейнасці}other{Праз <ph name="DAY_COUNT_MANY" /> дня бяздзейнасці}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> новая ўкладка}one{<ph name="MANY_ADDED" /> новая ўкладка}few{<ph name="MANY_ADDED" /> новыя ўкладкі}many{<ph name="MANY_ADDED" /> новых укладак}other{<ph name="MANY_ADDED" /> новай укладкі}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Налады</translation>
 <translation id="855081842937141170">Замацаваць укладку</translation>
 <translation id="8633025649649592204">Нядаўнія дзеянні</translation>
+<translation id="8635822281281406185">Можна дадаць да 10 файлаў, укладак або відарысаў</translation>
 <translation id="8712637175834984815">Зразумела</translation>
 <translation id="8714939927607906138">Цана знізілася</translation>
 <translation id="8730621377337864115">Гатова</translation>

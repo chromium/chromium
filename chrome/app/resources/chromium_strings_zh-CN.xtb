@@ -38,6 +38,7 @@
 <translation id="141901961143729572">分享您的想法</translation>
 <translation id="1465192221147974788">若要共享窗口，请在“系统设置”中为 Chromium 启用屏幕录制功能。</translation>
 <translation id="1478370723027452770">获取 Chrome for Testing 方面的帮助</translation>
+<translation id="1496875977627931224"><ph name="USER_NAME" />，您好！<ph name="LINE_BREAK" />今天想聊点什么？</translation>
 <translation id="1497802159252041924">安装时出错：<ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">此页面受保护</translation>
 <translation id="1524282610922162960">共享 Chromium 标签页</translation>
@@ -191,6 +192,7 @@
 <translation id="3103660991484857065">安装程序解压缩归档失败。请重新下载 Chromium。</translation>
 <translation id="310459126943037700">未能结束任务。</translation>
 <translation id="3130323860337406239">Chromium 正在使用您的麦克风。</translation>
+<translation id="3130333203120345554">新搜索</translation>
 <translation id="3137969841538672700">拖动即可搜索</translation>
 <translation id="3144188012276422546">此标签页正在占用额外的资源。请通过 Chromium 将其设为非活跃状态，以便提升性能。</translation>
 <translation id="3149163023759831301">若要共享屏幕，请在“系统设置”中为 Chromium 启用屏幕录制功能</translation>
@@ -348,6 +350,7 @@
 <translation id="4994636714258228724">将您自己添加到Chromium</translation>
 <translation id="5123973130450702873">Chromium 需要获得权限，才能跟踪您的手部动作</translation>
 <translation id="5141988424377517949">您近期未访问过该网站，因此 Chromium 撤消了该网站的<ph name="PERMISSION_1" />权限、<ph name="PERMISSION_2" />权限和<ph name="PERMISSION_3" />权限。</translation>
+<translation id="5167819546851111585">今天想聊点什么？</translation>
 <translation id="5174969993834422967">您通常会屏蔽通知。要允许此网站向您发送通知，请点击位置栏右侧的通知图标。</translation>
 <translation id="5174983315706567306">磁盘可用空间不足。</translation>
 <translation id="5187123684706427865">Chromium 账号需要重新验证身份</translation>
@@ -380,6 +383,7 @@
 <translation id="5496810170689441661">Chromium 正在尝试修改密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="5524890928877629608">搜索区域的左上角：左侧 <ph name="LEFT" />%，顶部 <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">在 Chromium 中打开 PDF 文件</translation>
+<translation id="5536164441519929134">询问<ph name="LINE_BREAK" />关于此标签页的问题</translation>
 <translation id="5579324208890605088">启动错误：请以普通用户身份（非管理员身份）运行安装程序。</translation>
 <translation id="5580770360767802657">默认使用 Chromium 并将其固定</translation>
 <translation id="5596627076506792578">更多选项</translation>

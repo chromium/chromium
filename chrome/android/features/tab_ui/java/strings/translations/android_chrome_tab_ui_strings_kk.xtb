@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Қойындылар тобының тізімі жабылды.</translation>
 <translation id="3194464645767632461">бағасы</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындыны топқа қосу}other{<ph name="TABS_COUNT_MANY" /> қойындыны топқа қосу}}</translation>
-<translation id="3293080634164207409">Қойындылар қосу</translation>
 <translation id="3328308545011660196">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 күн әрекетсіз болғаннан кейін}other{<ph name="DAY_COUNT_MANY" /> күн әрекетсіз болғаннан кейін}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> жаңа қойынды}other{<ph name="MANY_ADDED" /> жаңа қойынды}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="855081842937141170">Қойындыны бекіту</translation>
 <translation id="8633025649649592204">Соңғы іс-әрекеттер</translation>
+<translation id="8635822281281406185">Көп дегенде 10 файл, қойынды немесе сурет қосуға болады</translation>
 <translation id="8712637175834984815">Түсінікті</translation>
 <translation id="8714939927607906138">Арзанырақ</translation>
 <translation id="8730621377337864115">Дайын</translation>

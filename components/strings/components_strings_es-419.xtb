@@ -2066,6 +2066,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4299919199185766032">El nombre del acceso directo supera la longitud máxima permitida de <ph name="MAX_LENGTH" /> caracteres.</translation>
 <translation id="4300272766492248925">Abrir app</translation>
 <translation id="4300675098767811073">Perforaciones múltiples a la derecha</translation>
+<translation id="4300841966382281549">Viaje</translation>
 <translation id="4302514097724775343">Presiona el dinosaurio para jugar</translation>
 <translation id="4304049446746819918">{0,plural, =1{La política del administrador no recomienda mover este archivo a <ph name="DESTINATION_NAME" />.}other{La política del administrador no recomienda mover estos archivos a <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="4304485328308299773">Leer evaluaciones de los clientes sobre productos, servicios o experiencias para tomar decisiones fundamentadas</translation>
@@ -2167,6 +2168,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Este formulario no es seguro. Se desactivó la función Autocompletar.</translation>
 <translation id="4477350412780666475">Siguiente pista</translation>
+<translation id="4479915773139026885">Modo IA en la Búsqueda de Google</translation>
 <translation id="4480760608050410381">Video MP4</translation>
 <translation id="448363931695049633">Pizzerías</translation>
 <translation id="4489023393592172404">Sobre Kaku n.º 4</translation>
@@ -2374,7 +2376,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4832388034239846146">Para compartir grupos de pestañas, actualiza Chrome</translation>
 <translation id="483241715238664915">Activar advertencias</translation>
 <translation id="4832961164064927107">Barbacoas y parrilladas</translation>
-<translation id="4834250788637067901">Formas de pago, ofertas y direcciones con Google Pay</translation>
 <translation id="4840250757394056958">Ver tu historial de Chrome</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4844937814014739139">Desplazamiento y zoom en pestañas compartidas</translation>
@@ -3166,6 +3167,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6124432979022149706">Conectores de Chrome Enterprise</translation>
 <translation id="6124996493718543728">La pantalla de progreso de Compra ahora y paga después está totalmente abierta.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Más detalles<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Intro para activar el Modo IA en la Búsqueda de Google</translation>
 <translation id="6126565365696310362">Sobre chino n.º 2</translation>
 <translation id="6131824478727057281">ubicación</translation>
 <translation id="6133320744616005677">Seguir permitiendo</translation>
@@ -3436,6 +3438,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6539092367496845964">Se produjo un error; vuelve a intentarlo más tarde.</translation>
 <translation id="6540488083026747005">Permitiste las cookies de terceros en este sitio</translation>
 <translation id="6545864417968258051">Búsqueda de dispositivos Bluetooth</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" />-<ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Perforación doble a la izquierda</translation>
 <translation id="6549443526281184652">Disfraces</translation>
 <translation id="6550245281449521513">No se permite el bloqueo del mouse</translation>
@@ -3905,6 +3908,7 @@ Detalles adicionales:
 <translation id="7337248890521463931">Mostrar más líneas</translation>
 <translation id="7337706099755338005">No está disponible para tu plataforma.</translation>
 <translation id="733923710415886693">El certificado del servidor no se divulgó mediante el Certificado de transparencia.</translation>
+<translation id="73398226265793546">Botón del Modo IA, actívalo para preguntar al Modo IA en la Búsqueda de Google</translation>
 <translation id="7346048084945669753">Se afilió:</translation>
 <translation id="7346062987309535530">Vajilla</translation>
 <translation id="7346081071264046066">"responder sí a esta invitación de boda con emoción"</translation>
@@ -4711,6 +4715,7 @@ Detalles adicionales:
 <translation id="8622864575115813231">Comunicándonos con tu institución financiera…</translation>
 <translation id="8624354461147303341">Obtener descuentos</translation>
 <translation id="8634957317623797170">54 × 86 mm</translation>
+<translation id="8635822281281406185">Agrega hasta 10 archivos, pestañas o imágenes</translation>
 <translation id="8637362707224133343">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google, que <ph name="BEGIN_LINK" />recientemente encontró un caso de phishing<ph name="END_LINK" /> en el sitio que intentaste visitar. Los sitios de phishing imitan a otros sitios para engañarte.<ph name="NEW_LINE" />A veces, incluso los sitios que suelen ser seguros son hackeados por atacantes. <ph name="BEGIN_ERROR_LINK" />Cuéntanos<ph name="END_ERROR_LINK" /> si crees que hubo un error y que este sitio no representa un peligro.</translation>
 <translation id="8640996933372643759">Para compartir pestañas y colaborar con otras personas, debes poder acceder a Chrome</translation>
 <translation id="8641131559425911240">Sobre (bond)</translation>
@@ -4823,6 +4828,7 @@ Detalles adicionales:
 <translation id="8814547618907885931">Ver todas las tablas de comparación</translation>
 <translation id="8814707942599948500">Sobre C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para actualizar Chrome desde la configuración del navegador</translation>
+<translation id="8819855907485254989">Guarda el boleto de transporte público en la Billetera</translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="882338992931677877">Ranura manual</translation>
 <translation id="8827067923357481311">Opciones para pagar más tarde</translation>

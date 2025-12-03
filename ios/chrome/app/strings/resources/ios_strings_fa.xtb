@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">صفحه قفل</translation>
 <translation id="1963976881984600709">محافظت استاندارد</translation>
 <translation id="1964507856799750384">‏روی <ph name="BEGIN_BOLD" />Browser App (برنامه مرورگر)<ph name="END_BOLD" /> تک‌ضرب بزنید</translation>
+<translation id="1965633132497641148">کد امنیتی نامعتبر است</translation>
 <translation id="1966313166384086081">داده‌های سایت</translation>
 <translation id="1967461193809857427">{count,plural, =1{‏می‌خواهید ادامه کار ناتمامتان در زبانه Android را انجام دهید؟}one{‏می‌خواهید ادامه کار ناتمامتان در زبانه‌های Android را انجام دهید؟}other{‏می‌خواهید ادامه کار ناتمامتان در زبانه‌های Android را انجام دهید؟}}</translation>
 <translation id="1972325230031091483">سریع‌تر مرور خواهید کرد چون محتوا به‌صورت پیش‌نگرانه براساس بازدید صفحه وب فعلی‌تان بار می‌شود</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">‏‫Clear History and Website Data (پاک کردن داده‌های وب‌سایت و سابقه)</translation>
 <translation id="3190736958609431397">لغو پیگیری</translation>
 <translation id="3208260410153224535">سازمانتان ورود به سیستم را خاموش کرده است. نشانک‌ها، گذرواژه‌ها، و سایر اطلاعات جدید فقط در این دستگاه ذخیره خواهد شد.</translation>
+<translation id="3211969308836412674">برداشتن سنجاق سایت</translation>
 <translation id="3213807041830307252">بااستفاده از دوربین و گالری عکس، آنچه را می‌بینید بخرید، ترجمه کنید، و شناسایی کنید.</translation>
 <translation id="3214379938835224220">‏به‌عنوان بخشی از بازنشانی iPad، از سیستم خارج شده‌اید. برای ورود به سیستم، روی Continue (ادامه) در زیر تک‌ضرب بزنید.</translation>
 <translation id="3218296450292600703">وارد شدن به سیستم با حساب مدیریت‌شده‌تان به شما کمک می‌کند داده‌های مرور مربوط به سازمانتان (مانند زبانه‌ها، سابقه، و گذرواژه‌ها) را از دیگر داده‌های مرور جدا نگه دارید</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">آدرس ۲</translation>
 <translation id="3328801116991980348">اطلاعات سایت</translation>
 <translation id="333229797575847124">نحوه فعال کردن این ویژگی</translation>
+<translation id="3344233834747405775">نام دارنده کارت نامعتبر است</translation>
 <translation id="3344485292736684439">{count,plural, =1{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}one{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}other{نشانک‌ها در «{title}» در حساب شما ({email}) ذخیره شد}}</translation>
 <translation id="334690320928261823">زبانه‌های اخیر</translation>
 <translation id="3349031117032695619">مسدود کردن بالاپرها</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">بعداً به من یادآوری شود</translation>
 <translation id="4881695831933465202">باز کردن</translation>
 <translation id="4883766694719903356">جدول زبانه ناشناس</translation>
+<translation id="4884937942297374058">«محافظت بهبودیافته» خاموش است</translation>
 <translation id="488785315393301722">نمایش جزئیات</translation>
 <translation id="4889521386764567563">نمایه کنونی</translation>
 <translation id="4893713555726946316">پنهان کردن «یافتن در صفحه»</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">ایجاد «رویداد تقویم» از تاریخ‌ها</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">ویرایش کردن سایت</translation>
 <translation id="5233638681132016545">زبانه جدید</translation>
 <translation id="5234094073825090254">{count,plural, =1{‏نشانک در «حساب Google» شما ({email}) ذخیره شد.}one{‏نشانک‌ها در «حساب Google» شما ({email}) ذخیره شد.}other{‏نشانک‌ها در «حساب Google» شما ({email}) ذخیره شد.}}</translation>
 <translation id="5234764350956374838">بستن</translation>
@@ -1325,6 +1330,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6066301408025741299">برای لغو تک‌ضرب بزنید.</translation>
 <translation id="6074656473835429958">دریافت اعلان</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) بارگذاری نشد</translation>
+<translation id="6076618233738284461">سنجاق کردن سایت</translation>
 <translation id="6077126322656614846">دسترسی به دوربین مجاز شد</translation>
 <translation id="607730456154980869">‏با «Gemini در Chrome»، پاسخ‌ها را سریع‌تر دریافت کنید</translation>
 <translation id="6078236141387574983">تنظیم مجدد ارتفاع برگه</translation>

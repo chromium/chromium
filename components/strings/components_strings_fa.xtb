@@ -34,7 +34,7 @@
 <translation id="1060136083665017312">سیستم‌های بازی و کنسول</translation>
 <translation id="1060320201901229167">پاکت کاکو ۵</translation>
 <translation id="1060985736456216896">‏‫Google Pay، نشان‌واره Zip</translation>
-<translation id="1062407476771304334">جایگزینی</translation>
+<translation id="1062407476771304334">جایگزین کردن</translation>
 <translation id="1063822554756965137">فایل‌ها باموفقیت حذف شد</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1065369186007547872">‏‫Chrome تشخیص داده است شما اعلان‌های این سایت را نمی‌خواهید. بنابراین درخواست‌ها پنهان شده‌اند تا از ایجاد مزاحمت جلوگیری شود.</translation>
@@ -2167,6 +2167,7 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">این فرم ایمن نیست. تکمیل خودکار خاموش شده است.</translation>
 <translation id="4477350412780666475">آهنگ بعدی</translation>
+<translation id="4479915773139026885">‏«حالت هوش مصنوعی» در «جستجوی Google»</translation>
 <translation id="4480760608050410381">‏ویدیو MP4</translation>
 <translation id="448363931695049633">پیتزا فروشی</translation>
 <translation id="4489023393592172404">پاکت کاکو ۴</translation>
@@ -2374,7 +2375,6 @@
 <translation id="4832388034239846146">‏برای هم‌رسانی گروه‌های زبانه‌ها، Chrome را به‌روزرسانی کنید</translation>
 <translation id="483241715238664915">روشن کردن هشدارها</translation>
 <translation id="4832961164064927107">باربیکیو و کباب کردن</translation>
-<translation id="4834250788637067901">‏روش‌های پرداخت، پیشنهادها، و نشانی‌های استفاده‌شده در Google Pay</translation>
 <translation id="4840250757394056958">‏مشاهده سابقه Chrome</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4844937814014739139">پیمایش و بزرگ‌نمایی برگه‌های هم‌رسانی‌شده</translation>
@@ -3166,6 +3166,7 @@
 <translation id="6124432979022149706">‏رابط‌های Chrome Enterprise</translation>
 <translation id="6124996493718543728">صفحه پیشرفت «حالا خرید کنید، بعداً بپردازید» به‌صورت کامل باز شده است.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />جزئیات بیشتر<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178">‏‫<ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای پرسیدن از «حالت هوش مصنوعی» در «جستجوی Google»، کلید Enter را فشار دهید</translation>
 <translation id="6126565365696310362">پاکت چینی شماره ۲</translation>
 <translation id="6131824478727057281">مکان</translation>
 <translation id="6133320744616005677">دسترسی ادامه یابد</translation>
@@ -3906,6 +3907,7 @@
 <translation id="7337248890521463931">نمایش خطوط بیشتر</translation>
 <translation id="7337706099755338005">در پلتفورم شما دردسترس نیست.</translation>
 <translation id="733923710415886693">گواهی سرور از طریق شفافیت گواهینامه نشان داده نشده بود.</translation>
+<translation id="73398226265793546">‏دکمه «حالت هوش مصنوعی»، آن را فعال کنید تا از «حالت هوش مصنوعی» در «جستجوی Google» بپرسید</translation>
 <translation id="7346048084945669753">وابسته است:</translation>
 <translation id="7346062987309535530">ظروف غذاخوری</translation>
 <translation id="7346081071264046066">«پاسخ مثبت با هیجان به این دعوت عروسی»</translation>
@@ -4711,6 +4713,7 @@
 <translation id="8622864575115813231">درحال برقراری ارتباط با مؤسسه مالی شما…</translation>
 <translation id="8624354461147303341">دریافت تخفیف</translation>
 <translation id="8634957317623797170">۸۶ × ۵۴ میلی‌متر</translation>
+<translation id="8635822281281406185">تا ۱۰ فایل، زبانه، یا تصویر اضافه کنید</translation>
 <translation id="8637362707224133343">‏‫Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند — مثل «مرور ایمن Google»، که اخیراً در سایتی که می‌خواستید بازدید کنید <ph name="BEGIN_LINK" />رمزگیری پیدا کرده است<ph name="END_LINK" />. سایت‌های رمزگیری وانمود می‌کنند که سایت‌های دیگری هستند تا شما را فریب دهند.<ph name="NEW_LINE" />حتی سایت‌هایی که معمولاً امن هستند گاهی اوقات توسط مهاجمان درمعرض خطر قرار می‌گیرند. اگر فکر می‌کنید اشتباهی روی داده است و این سایت خطری ندارد، <ph name="BEGIN_ERROR_LINK" />به ما اطلاع دهید<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">‏برای هم‌رسانی زبانه‌ها و مشارکت کردن با دیگران، باید بتوانید به سیستم Chrome وارد شوید</translation>
 <translation id="8641131559425911240">پاکت (باند)</translation>

@@ -6671,6 +6671,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="557722062034137776">A reposição do dispositivo não afetará as suas Contas Google nem quaisquer dados sincronizados com essas contas. No entanto, todos os ficheiros guardados localmente no seu dispositivo serão eliminados.</translation>
 <translation id="5578059481725149024">Início de sessão automático</translation>
 <translation id="5578387000057347457">Introduza um comando personalizado ou realce texto para criar uma imagem.</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 item está guardado apenas neste dispositivo. Para usá-lo nos seus outros dispositivos, <ph name="BEGIN_LINK" />guarde-o na sua Conta Google<ph name="END_LINK" />.}other{{ITEM_COUNT} itens estão guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, <ph name="BEGIN_LINK" />guarde-os na sua Conta Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Remover <ph name="SITE" /> da lista <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">Tradução para <ph name="LANGUAGE" /> concluída</translation>
 <translation id="558170650521898289">Verificação de controladores de hardware Microsoft Windows</translation>
@@ -7160,6 +7161,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
     <ph name="LINE_BREAK" />
     Esta imagem irá aparecer no ecrã de início de sessão e no ecrã de bloqueio do Chromebook.</translation>
 <translation id="5925147183566400388">Apontador para a declaração de práticas de certificação</translation>
+<translation id="5926936390113611560">Abrir todos os perfis</translation>
 <translation id="5927132638760172455">A transmitir para um recetor desconhecido</translation>
 <translation id="592740088639760830">Parar este contentor</translation>
 <translation id="592880897588170157">Transferir ficheiros PDF em vez de os abrir automaticamente no Chrome</translation>
@@ -7244,6 +7246,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5979421442488174909">&amp;Traduzir para <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Para adicionar páginas aos marcadores, clicar na estrela na barra de endereço</translation>
 <translation id="5982578203375898585">Mostrar as transferências quando estiverem concluídas</translation>
+<translation id="598347738324022917">Marcador guardado neste dispositivo</translation>
 <translation id="5983716913605894570">A gerar…</translation>
 <translation id="5984222099446776634">Visitados Recentemente</translation>
 <translation id="5984334442529819751">Erro ao instalar o DLC (muitas vezes, é preciso reiniciar. Consulte as Definições\&gt;\&gt;Acerca do ChromeOS para mais informações).</translation>
@@ -11506,6 +11509,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8910987510378294980">Ocultar lista de dispositivos</translation>
 <translation id="8912362522468806198">Conta Google</translation>
 <translation id="8912810933860534797">Ativar análise automática</translation>
+<translation id="8914030287343429787">Veja as suas palavras-passe, mesmo quando não estiver a usar o Chrome ou o Android, iniciando sessão em <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Reiniciar o Chrome</translation>
 <translation id="8915307125957890427">Clique com o botão direito do rato num separador, selecione "Adicionar separador a grupo" e, em seguida, "Novo grupo"</translation>
 <translation id="8915370057835397490">A carregar sugestão</translation>

@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">ਅੱਜ ਦੀਆਂ ਖਬਰਾਂ ਪੜ੍ਹੋ <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">ਹੋਰ ਵੇਰਵੇ</translation>
 <translation id="3123734510202723619">ਘੋਸ਼ਣਾਵਾਂ</translation>
+<translation id="3134385238404760368">ਕੋਈ ਹਾਲੀਆ ਟੈਬ ਨਹੀਂ</translation>
 <translation id="314939179385989105">Chrome ਦਾ ਹੋਮਪੇਜ</translation>
 <translation id="3158667104057012316">ਹੱਥੀਂ ਆਰਡਰ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰਨਾ</translation>
 <translation id="3159335509547415276">ਬਲਾਕ ਕੀਤੇ ਖਾਤਿਆਂ ਬਾਰੇ ਜਾਣੋ</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">A-Z ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
 <translation id="4578289292431526768">ਚਲੋ ਸ਼ੁਰੂ ਕਰੀਏ</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# ਮਿੰਟ ਪਹਿਲਾਂ}one{# ਮਿੰਟ ਪਹਿਲਾਂ}other{# ਮਿੰਟ ਪਹਿਲਾਂ}}</translation>
+<translation id="4585751637295612750">ਇਸਨੂੰ ਆਪਣੇ ਸਵਾਲ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਇੱਕ ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="4587589328781138893">ਸਾਈਟਾਂ</translation>
 <translation id="4594952190837476234">ਇਹ ਆਫ਼ਲਾਈਨ ਪੰਨਾ <ph name="CREATION_TIME" /> ਦਾ ਹੈ ਅਤੇ ਆਨਲਾਈਨ ਵਰਜਨ ਤੋਂ ਵੱਖਰਾ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="4595237294768457124">ਨਵਾਂ ਟੈਬ ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
@@ -1338,6 +1340,7 @@
 <translation id="670498945988402717">ਬੀਤੇ ਕੱਲ੍ਹ ਜਾਂਚ ਕੀਤੀ ਗਈ</translation>
 <translation id="6710213216561001401">ਪਿਛਲਾ</translation>
 <translation id="671481426037969117">ਤੁਹਾਡਾ <ph name="FQDN" /> ਟਾਈਮਰ ਸਮਾਪਤ ਹੋਇਆ। ਇਹ ਭਲਕੇ ਦੁਬਾਰਾ ਸ਼ੁਰੂ ਹੋਵੇਗਾ।</translation>
+<translation id="6716434912087331834">ਨਵੀਂ ਵਿੰਡੋ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ, ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋਆਂ ਦੀ ਕੁੱਲ ਗਿਣਤੀ ਨੂੰ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ਜਾਂ ਇਸ ਤੋਂ ਘੱਟ ਕਰੋ। ਅਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋਆਂ ਨੂੰ 6 ਮਹੀਨੇ ਬਾਅਦ ਮਿਟਾ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="6723740634201835758">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ</translation>
 <translation id="6734310707649923383">ਤੁਸੀਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਪੰਨਿਆਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ ਜਾਂ ਆਪਣੇ ਇਤਿਹਾਸ ਵਿੱਚੋਂ ਉਨ੍ਹਾਂ ਨੂੰ ਮਿਟਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, ਪਿੰਨ ਕੀਤੀ ਰਿਕਾਰਡਿੰਗ ਵਾਲੀ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
@@ -1655,6 +1658,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ਪੁਰਾਣਾ ਹੈ।</translation>
 <translation id="7944772052836377867">ਸਿੰਕ ਕਰਨ ਲਈ ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="7951102827450076904">ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਗਈਆਂ PDF ਫ਼ਾਈਲਾਂ ਨੂੰ ਹਮੇਸ਼ਾਂ ਆਪਣੇ ਆਪ ਖੋਲ੍ਹਣ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
+<translation id="7952479614398473176">ਨਵੀਂ ਵਿੰਡੋ ਖੋਲ੍ਹਣ ਲਈ, ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋਆਂ ਦੀ ਕੁੱਲ ਗਿਣਤੀ ਨੂੰ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ਜਾਂ ਇਸ ਤੋਂ ਘੱਟ ਕਰੋ।</translation>
 <translation id="7957413488482743710">ਤੁਹਾਨੂੰ ਸੰਭਾਵੀ ਧੋਖਾਧੜੀ ਤੋਂ ਬਚਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ ਆਭਾਸੀ ਕਾਰਡ ਤੁਹਾਡੇ ਅਸਲ ਕਾਰਡ ਨੂੰ ਲੁਕਾ ਦਿੰਦਾ ਹੈ। <ph name="BEGIN_LINK1" />ਆਭਾਸੀ ਕਾਰਡਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਟੈਬਾਂ</translation>
 <translation id="7961926449547174351">ਤੁਸੀਂ ਸਟੋਰੇਜ ਤੱਕ ਪਹੁੰਚ ਬੰਦ ਕਰ ਦਿੱਤੀ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>

@@ -40,6 +40,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="141901961143729572">Faites part de vos commentaires</translation>
 <translation id="1465192221147974788">Pour partager votre fenêtre, autorisez l'enregistrement de l'écran pour Chromium dans les Réglages système.</translation>
 <translation id="1478370723027452770">Obtenir de l'aide avec Chrome for Testing</translation>
+<translation id="1496875977627931224">Bonjour <ph name="USER_NAME" />,<ph name="LINE_BREAK" />À quoi pensez-vous aujourd'hui?</translation>
 <translation id="1497802159252041924">Erreur d'installation : <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Cette page est protégée</translation>
 <translation id="1524282610922162960">Partager un onglet de Chromium</translation>
@@ -193,6 +194,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="3103660991484857065">Le programme d'installation n'a pas réussi à décompresser l'archive. Veuillez télécharger Chromium de nouveau.</translation>
 <translation id="310459126943037700">Impossible de terminer la ou les tâches.</translation>
 <translation id="3130323860337406239">Chromium se sert de votre microphone.</translation>
+<translation id="3130333203120345554">Nouvelle recherche</translation>
 <translation id="3137969841538672700">Faire glisser pour rechercher</translation>
 <translation id="3144188012276422546">Cet onglet utilise des ressources supplémentaires. Pour améliorer vos performances, laissez Chromium le rendre inactif.</translation>
 <translation id="3149163023759831301">Pour partager votre écran, autorisez l'enregistrement de l'écran pour Chromium dans les Réglages système</translation>
@@ -350,6 +352,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="4994636714258228724">Ajouter un utilisateur à Chromium</translation>
 <translation id="5123973130450702873">Chromium a besoin de l'autorisation de suivre vos mains</translation>
 <translation id="5141988424377517949">Vous n'avez pas effectué de visite récemment. Chromium a retiré <ph name="PERMISSION_1" />,<ph name="PERMISSION_2" /> et <ph name="PERMISSION_3" />.</translation>
+<translation id="5167819546851111585">À quoi pensez-vous aujourd'hui?</translation>
 <translation id="5174969993834422967">Vous bloquez généralement les notifications. Pour permettre à ce site de vous envoyer des notifications, cliquez sur l'icône de notification dans le coin droit de votre barre d'adresse.</translation>
 <translation id="5174983315706567306">Espace disque insuffisant.</translation>
 <translation id="5187123684706427865">Le compte Chromium nécessite une réauthentification</translation>
@@ -382,6 +385,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="5496810170689441661">Chromium essaie de modifier des mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="5524890928877629608">Coin supérieur gauche de la zone de recherche : gauche <ph name="LEFT" /> %, haut <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Ouvrir les PDF dans Chromium</translation>
+<translation id="5536164441519929134">Posez une question<ph name="LINE_BREAK" />sur cet onglet</translation>
 <translation id="5579324208890605088">Erreur de démarrage : veuillez exécuter le programme d'installation en tant qu'utilisateur normal et non en tant qu'administrateur.</translation>
 <translation id="5580770360767802657">Utilisez Chromium par défaut et épinglez-le</translation>
 <translation id="5596627076506792578">Autres options</translation>

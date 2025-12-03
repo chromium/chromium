@@ -7,6 +7,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{创建时间：<ph name="NUM_YEARS_ONE" /> 年前}other{创建时间：<ph name="NUM_YEARS_MANY" /> 年前}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{闲置标签页和分组将在 1 个月后关闭}other{闲置标签页和分组将在 <ph name="MONTH_COUNT_MANY" /> 个月后关闭}}</translation>
 <translation id="1173894706177603556">重命名</translation>
+<translation id="1203747227183434426">正在录制媒体内容</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{打开包含 <ph name="TAB_COUNT2" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”分组}other{打开包含 <ph name="TAB_COUNT2" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”分组}}</translation>
 <translation id="1273910660700874265">“<ph name="TITLE_OF_GROUP" />”标签页分组选项</translation>
 <translation id="1300188005269437765">选择何时自动将标签页和标签页分组移至“闲置”部分。</translation>
@@ -21,6 +22,7 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个闲置标签页}other{<ph name="TABS_COUNT_MANY" /> 个闲置标签页}}</translation>
 <translation id="1645759014353344461">已将 <ph name="TABS_COUNT_MANY" /> 个标签页合为一组</translation>
 <translation id="1657719826150349398">下移标签页</translation>
+<translation id="1670942869417022142">音频已静音</translation>
 <translation id="1697284962337958118">添加到</translation>
 <translation id="1713541401465507417">关闭所有标签页和分组</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> 个标签页分组已不可用}other{<ph name="TAB_GROUPS_COUNT_MANY" /> 个标签页分组已不可用}}</translation>
@@ -73,7 +75,6 @@
 <translation id="311432875115153175">标签页分组列表已关闭</translation>
 <translation id="3194464645767632461">评分</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{向分组中添加 <ph name="TABS_COUNT_ONE" /> 个标签页}other{向分组中添加 <ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
-<translation id="3293080634164207409">添加标签页</translation>
 <translation id="3328308545011660196">建议：有 <ph name="NUMBER_OF_TABS" /> 个标签页似乎彼此相关。为它们建组？</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{闲置 1 天后}other{闲置 <ph name="DAY_COUNT_MANY" /> 天后}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 个新标签页}other{<ph name="MANY_ADDED" /> 个新标签页}}</translation>
@@ -111,6 +112,7 @@
 <translation id="4871719318659334896">关闭分组</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{恢复并打开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组，颜色为<ph name="COLOR_NAME" />。}other{恢复并打开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
 <translation id="4881695831933465202">打开</translation>
+<translation id="4894777338623123366">正在共享标签页屏幕内容</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{关闭标签页}other{关闭标签页}}</translation>
 <translation id="4908147833782857886">已保存 <ph name="USER_EMAIL" /> 个分组（将关闭标签页并删除分组）</translation>
 <translation id="492284538114688557">发现了降价商品</translation>
@@ -143,6 +145,7 @@
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{将分组移至新窗口}other{将分组移至另一个窗口}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{右移标签页}other{右移标签页}}</translation>
 <translation id="6228793724645064692">（商店评分）</translation>
+<translation id="6251046978189636310">正在播放音频</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{从分组中移除标签页}other{从分组中移除标签页}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{向新分组中添加标签页}other{向新分组中添加标签页}}</translation>
 <translation id="6333260925957816943">此商店的相关信息</translation>
@@ -174,6 +177,7 @@
 <translation id="7326879924029668159">查看退货政策及其他信息</translation>
 <translation id="7352298686197644113">查看您打开的标签页中哪件商品降价了</translation>
 <translation id="7369451074646620503">“<ph name="TAB_GROUP_NAME" />”标签页分组已不可用</translation>
+<translation id="7402375256128852434">添加近期打开的标签页</translation>
 <translation id="7452985128687107478">标签页分组会自动保存并在您的所有设备上更新</translation>
 <translation id="747459581954555080">全部恢复</translation>
 <translation id="7489558427602531799">将标签页分组右移</translation>
@@ -219,6 +223,7 @@
 <translation id="8428213095426709021">设置</translation>
 <translation id="855081842937141170">固定标签页</translation>
 <translation id="8633025649649592204">近期活动</translation>
+<translation id="8635822281281406185">最多可添加 10 个文件、标签页或图片</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8714939927607906138">降价了</translation>
 <translation id="8730621377337864115">完成</translation>

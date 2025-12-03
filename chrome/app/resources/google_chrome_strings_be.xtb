@@ -47,6 +47,7 @@
 <translation id="146866447420868597">Увайсці ў Chrome?</translation>
 <translation id="1476347941828409626">&amp;Кіраваць профілямі Chrome</translation>
 <translation id="1492280395845991349">Перазапусціце, каб завяршыць абнаўленне Chrome</translation>
+<translation id="1496875977627931224">Вітаем, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />Пра што вы хочаце спытаць?</translation>
 <translation id="1497802159252041924">Памылка ўсталявання: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Наладзьце новы профіль Chrome</translation>
 <translation id="1518627427551567882">Гэта старонка абаронена</translation>
@@ -202,6 +203,7 @@
 <translation id="3112458742631356345">Браўзер Chrome заблакіраваў спампоўку, бо гэты файл спампоўваюць рэдка і ён можа быць небяспечным</translation>
 <translation id="3114643501466072395">Каб праверыць, ці не пагражае вашым іншым паролям раскрыццё ў выніку ўцечкі даных або іншых праблем з бяспекай, <ph name="BEGIN_LINK" />увайдзіце ў Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Браўзер Chrome заблакіраваў спампоўку, бо ў гэтым архіве ёсць файлы, якія могуць хаваць шкоднае ПЗ</translation>
+<translation id="3130333203120345554">Новы пошук</translation>
 <translation id="3135560418014806498">Дадаць профіль Chrome</translation>
 <translation id="3137969841538672700">Перацягніце для пошуку</translation>
 <translation id="3140883423282498090">Змены ўступяць у сілу пасля перазапуску Google Chrome.</translation>
@@ -274,6 +276,7 @@
 <translation id="4022972681110646219">Перакласці экран</translation>
 <translation id="4023601594785368013">Мова арыгінала: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Каб прымяніць абнаўленне, трэба перазапусціць Chrome OS.</translation>
+<translation id="4039097928859803404">Заўсёды паказваць спалучэнні клавіш для рэжыму AI</translation>
 <translation id="4050175100176540509">У апошняй версіі з’явіліся важныя паляпшэнні сістэмы бяспекі і новыя функцыі.</translation>
 <translation id="4053720452172726777">Наладжвайце Google Chrome і кіруйце ім</translation>
 <translation id="408393047846373801">Каб выкарыстоўваць свае паролі і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў Chrome. Пасля ўваходу пароль будзе захаваны ва Уліковым запісе Google.</translation>
@@ -355,6 +358,7 @@
 <translation id="4970880042055371251">Версія Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Націсніце "Менеджар пароляў Google"</translation>
+<translation id="5043786843026425788">Даведацца больш пра пошук з дапамогай Google Аб’ектыва ў Chrome</translation>
 <translation id="504867494566807945">Вы можаце адкрываць спасылкі з любой праграмы ў Chrome. Для хуткага доступу браўзер замацаваны на панэлі задач.</translation>
 <translation id="5114340746415930644">Каб выкарыстоўваць і захоўваць даныя Chrome ва ўліковым запісе <ph name="USER_EMAIL" />, увядзіце фразу-пароль</translation>
 <translation id="5120334927898581447">Уваходзіць у Chrome пры ўваходзе ў іншыя сэрвісы Google</translation>
@@ -364,6 +368,7 @@
 <translation id="5139423532931106058">Наладзьце свой профіль Chrome</translation>
 <translation id="5163087008893166964">Вітаем у Chrome! Адкрыта новае акно браўзера</translation>
 <translation id="5166439563123238795">Chrome запытвае дазвол на адсочванне рухаў рук</translation>
+<translation id="5167819546851111585">Пра што вы хочаце спытаць?</translation>
 <translation id="5170938038195470297">Ваш профіль нельга выкарыстоўваць, бо ён з навейшай версіі Google Chrome.
 
 Некаторыя функцыі могуць быць недаступныя. Укажыце іншы каталог профілю або выкарыстайце навейшую версію Chrome.</translation>
@@ -528,6 +533,7 @@
 <translation id="683440813066116847">Уваходнае правіла для Google Chrome Canary, якое дазваляе трафік mDNS.</translation>
 <translation id="6841242485723266823">Профілі Chrome дапамагаюць раздзяляць розныя сферы жыцця. Дадайце новы профіль.</translation>
 <translation id="684888714667046800">Не ўдалося падключыцца да інтэрнэту. Калі вы выкарыстоўваеце брандмаўар, упэўніцеся, што <ph name="PRODUCT_EXE_NAME" /> знаходзіцца ў белым спісе.</translation>
+<translation id="6859580922007887573">Націсніце Tab, каб працягнуць</translation>
 <translation id="6877155553248388166">ніжні правы вугал поля пошуку: <ph name="RIGHT" />% справа, <ph name="BOTTOM" />% знізу</translation>
 <translation id="6881299373831449287">Ідзе абнаўленне браўзера Chrome</translation>
 <translation id="6885412569789873916">Праграмы бэта-версіі Chrome</translation>
@@ -627,6 +633,7 @@
 <translation id="7849037457735762883">Працягвайце з месца, дзе вы спыніліся: Chrome можа аднаўляць укладкі пры кожным перазапуску. Уключыць гэту наладу можна тут:</translation>
 <translation id="7872446069773932638">Ідзе спампоўванне… Застаецца <ph name="SECONDS" /> с</translation>
 <translation id="7886087451482920026">Выберыце тэкст з дапамогай Google Аб’ектыва</translation>
+<translation id="7887929410013642057">Заўсёды паказваць спалучэнні клавіш для рэжыму AI</translation>
 <translation id="7890208801193284374">Калі камп’ютар выкарыстоўваюць некалькі чалавек, кожны з іх можа наладзіць Chrome для сябе і праглядаць старонкі асобна ад іншых.</translation>
 <translation id="7896673875602241923">Нехта раней увайшоў у Chrome на гэтым камп’ютары як <ph name="ACCOUNT_EMAIL_LAST" />. Стварыце новага карыстальніка Chrome, каб трымаць сваю інфармацыю асобна.</translation>
 <translation id="7904985524660297937">Паспрабаваць Gemini ў Google Chrome</translation>
@@ -643,6 +650,7 @@
 <translation id="8013993649590906847">Калі відарыс не мае прыдатнага апісання, Chrome паспрабуе дадаць яго для вас. Каб стварыць апісанні, відарысы адпраўляюцца ў Google.</translation>
 <translation id="8019103195866286235">Публікацыя гэтага пашырэння была адроблена распрацоўшчыкам, яно можа быць небяспечным. Выдаліце яго з Chrome, каб яно больш не магло бачыць і змяняць даныя на сайтах, якія вы наведваеце, уключаючы вашу асабістую інфармацыю.</translation>
 <translation id="8040768861829554732">Пашырэнне прапануе вам увайсці ў Chrome</translation>
+<translation id="8041795619940733262">Спытацца ў Google<ph name="LINE_BREAK" />пра гэту ўкладку</translation>
 <translation id="80471789339884597">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце ўсе свае браўзеры.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">Іншыя профілі Chrome</translation>

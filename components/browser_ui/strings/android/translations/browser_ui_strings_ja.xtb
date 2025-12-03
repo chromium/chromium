@@ -184,6 +184,7 @@
 <translation id="2903493209154104877">住所</translation>
 <translation id="2910701580606108292">保護されたコンテンツの再生をサイトに許可する前に確認する</translation>
 <translation id="2918484639460781603">設定に移動</translation>
+<translation id="293060180538644702">Chrome のヒントの通知を受け取る</translation>
 <translation id="2932883381142163287">不正行為を報告</translation>
 <translation id="2939338015096024043">オンにすると、サイトはカメラ位置の追跡と周囲の状況の検出を要求できます。オフにすると、サイトはカメラ位置の追跡や周囲の状況の検出を行えません。</translation>
 <translation id="2968755619301702150">証明書ビューア</translation>
@@ -244,6 +245,7 @@
 <translation id="3611658447322220736">最近閉じたサイトがデータの送受信を完了できるようにする</translation>
 <translation id="3619294456800709762">サイトはピクチャー イン ピクチャーを自動的に開始できる</translation>
 <translation id="3628308229821498208">提案された検索</translation>
+<translation id="3632460243282703117">許可</translation>
 <translation id="363748948745453283">おおよその位置情報を使用しています</translation>
 <translation id="3641456520301071208">サイトが位置情報を要求できるようにする</translation>
 <translation id="3658847490588580244">デフォルトのブラウザのボトムシート</translation>
@@ -522,6 +524,7 @@
 <translation id="662080504995468778">とどまる</translation>
 <translation id="6630443592285535486">ここに 16 進数を入力</translation>
 <translation id="6635327442719709864">オンにすると、サイトはシリアルポートの使用を要求できます。オフにすると、サイトはシリアルポートを使用できません。</translation>
+<translation id="6669390930482049506">通知する</translation>
 <translation id="6678072580827808850">安全確認を表示</translation>
 <translation id="6682057173375416470">新しいタブページでおすすめの記事を表示</translation>
 <translation id="6683865262523156564">このサイトは、あなたのアクティビティを確認できるグループに属しています。グループは <ph name="RWS_OWNER" /> によって定義されます</translation>
@@ -631,6 +634,7 @@
 <translation id="7990211076305263060">オンにすると、サイトはマイクの使用を要求できます。オフにすると、サイトはマイクを使用できません。</translation>
 <translation id="8007176423574883786">このデバイスに対して無効</translation>
 <translation id="802154636333426148">ダウンロード エラー</translation>
+<translation id="8033047164036749181">このサイトの通知を許可</translation>
 <translation id="8042586301629853791">並べ替え:</translation>
 <translation id="8051193500142930381">カメラを必要とする機能は動作しなくなります</translation>
 <translation id="8056330801132235235">Chrome のデフォルト</translation>

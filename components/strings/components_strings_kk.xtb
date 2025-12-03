@@ -2064,6 +2064,7 @@
 <translation id="4299919199185766032">Жылдам пәрменнің атауы рұқсат етілген максималды <ph name="MAX_LENGTH" /> таңбадан асады.</translation>
 <translation id="4300272766492248925">Қолданбаны ашу</translation>
 <translation id="4300675098767811073">Оң жақтан бірнеше рет тесу</translation>
+<translation id="4300841966382281549">Сапар</translation>
 <translation id="4302514097724775343">Ойнау үшін динозаврды басыңыз.</translation>
 <translation id="4304049446746819918">{0,plural, =1{Әкімші саясатына сәйкес бұл файлды <ph name="DESTINATION_NAME" /> қалтасына ауыстырмаған жөн.}other{Әкімші саясатына сәйкес бұл файлдарды <ph name="DESTINATION_NAME" /> қалтасына ауыстырмаған жөн.}}</translation>
 <translation id="4304485328308299773">Пікірлер арқылы шешімдер қабылдауға көмектесу үшін өнімдер, қызметтер немесе тәжірибелер туралы тұтынушы бағалауларын оқыңыз.</translation>
@@ -2165,6 +2166,7 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Бұл үлгі қорғалмаған. Автотолтыру өшірілді.</translation>
 <translation id="4477350412780666475">Келесі аудиотрек</translation>
+<translation id="4479915773139026885">Google Search-тегі AI режимі</translation>
 <translation id="4480760608050410381">MP4 бейнесі</translation>
 <translation id="448363931695049633">Пиццериялар</translation>
 <translation id="4489023393592172404">Kaku 4 хатқалтасы</translation>
@@ -2372,7 +2374,6 @@
 <translation id="4832388034239846146">Қойындылар топтарын бөлісу үшін Chrome-ды жаңартыңыз.</translation>
 <translation id="483241715238664915">Хабарландыруларды қосу</translation>
 <translation id="4832961164064927107">Гриль және барбекю</translation>
-<translation id="4834250788637067901">Google Pay қызметіндегі төлеу әдістері, ұсыныстар және мекенжайлар</translation>
 <translation id="4840250757394056958">Chrome тарихын көру</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4844937814014739139">Ортақ қойындыларды айналдыру және масштабтау</translation>
@@ -3164,6 +3165,7 @@
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6124996493718543728">Бөліп төлеудің прогресс экраны толығымен ашылды.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Қосымша мәліметтер<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Search-тегі AI режимінен сұрау үшін Enter пернесін басыңыз.</translation>
 <translation id="6126565365696310362">Chinese #2 хатқалтасы</translation>
 <translation id="6131824478727057281">орын</translation>
 <translation id="6133320744616005677">Рұқсатты қалдыру</translation>
@@ -3434,6 +3436,7 @@
 <translation id="6539092367496845964">Бірдеңе дұрыс болмады. Кейінірек қайталап көріңіз.</translation>
 <translation id="6540488083026747005">Сіз осы сайтта үшінші тарап cookie файлдарына рұқсат еттіңіз.</translation>
 <translation id="6545864417968258051">Bluetooth құрылғыларын іздеу</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> – <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Сол жағын екі рет тесу</translation>
 <translation id="6549443526281184652">Костюмдер</translation>
 <translation id="6550245281449521513">Тінтуірді құлыптауға рұқсат берілмеді</translation>
@@ -3902,6 +3905,7 @@
 <translation id="7337248890521463931">Жолдарды көбірек көрсету</translation>
 <translation id="7337706099755338005">Сіздің платформаңызда қолжетімді емес.</translation>
 <translation id="733923710415886693">Сервер сертификаты Сертификат айқындығы саясатымен ашылмады.</translation>
+<translation id="73398226265793546">AI режимі түймесі. Google Search-тегі AI режимінен сұрау үшін іске қосыңыз</translation>
 <translation id="7346048084945669753">үлестес пайдаланушы:</translation>
 <translation id="7346062987309535530">Ыдыс-аяқ</translation>
 <translation id="7346081071264046066">"бұл тойға шақыруға қуанған эмоджимен "иә" деп жауап беру"</translation>
@@ -4707,6 +4711,7 @@
 <translation id="8622864575115813231">Қаржылық мекемеңізбен байланыс орнатылуда...</translation>
 <translation id="8624354461147303341">Жеңілдіктер алу</translation>
 <translation id="8634957317623797170">54 x 86 мм</translation>
+<translation id="8635822281281406185">Көп дегенде 10 файл, қойынды немесе сурет қосуға болады</translation>
 <translation id="8637362707224133343">Chrome-ның браузерді пайдалану кезінде қорғайтын ендірілген қауіпсіздік мүмкіндіктері бар. Солардың бірі — Google Safe Browsing. Ол сіз кіргіңіз келген сайтта <ph name="BEGIN_LINK" />жақында бір фишинг әрекетін анықтады<ph name="END_LINK" />. Фишинг сайттары сізді басқа сайтпыз деп алдайды.<ph name="NEW_LINE" />Әдетте қауіпсіз болатын сайттардың өзінде кейде шабуылдаушылар болуы мүмкін. Бұл қате болса және осы сайт қауіпті болмаса, <ph name="BEGIN_ERROR_LINK" />бізге хабарлаңыз<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Қойындыларды бөлісіп, басқалармен бірлесіп жұмыс істеу үшін Chrome-ға кіре алатын болуыңыз қажет.</translation>
 <translation id="8641131559425911240">Хатқалта (бонд)</translation>
@@ -4819,6 +4824,7 @@
 <translation id="8814547618907885931">Барлық салыстыру кестесін көру</translation>
 <translation id="8814707942599948500">C8 хатқалтасы</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінде Chrome-ды жаңарту үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
+<translation id="8819855907485254989">Көлік билетін Wallet-ке сақтау</translation>
 <translation id="8820817407110198400">Бетбелгілер</translation>
 <translation id="882338992931677877">Қолмен беру науасы</translation>
 <translation id="8827067923357481311">Кейін төлеу опциялары</translation>

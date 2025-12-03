@@ -2065,6 +2065,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4299919199185766032">Navnet på snarveien overskrider den maksimale tillatte lengden på <ph name="MAX_LENGTH" /> tegn.</translation>
 <translation id="4300272766492248925">Åpne appen</translation>
 <translation id="4300675098767811073">Flere hull høyre</translation>
+<translation id="4300841966382281549">Tur</translation>
 <translation id="4302514097724775343">Trykk på dinosauren for å spille</translation>
 <translation id="4304049446746819918">{0,plural, =1{Administratorreglene anbefaler ikke at du flytter denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du flytter disse filene til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Med anmeldelser kan du lese kundevurderinger av produkter, tjenester eller opplevelser for å gjøre det lettere å ta beslutninger.</translation>
@@ -2166,6 +2167,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Dette skjemaet er ikke sikkert. Autofyll er slått av.</translation>
 <translation id="4477350412780666475">Neste spor</translation>
+<translation id="4479915773139026885">AI-modus i Google Søk</translation>
 <translation id="4480760608050410381">MP4-video</translation>
 <translation id="448363931695049633">Pizzeriaer</translation>
 <translation id="4489023393592172404">Kaku 4-konvolutt</translation>
@@ -2373,7 +2375,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4832388034239846146">Oppdater Chrome for å dele fanegrupper</translation>
 <translation id="483241715238664915">Slå på varsler</translation>
 <translation id="4832961164064927107">Grilling</translation>
-<translation id="4834250788637067901">Betalingsmåter, tilbud og adresser som bruker Google Pay</translation>
 <translation id="4840250757394056958">Se Chrome-loggen din</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Rulling og zooming på delte faner</translation>
@@ -3165,6 +3166,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6124996493718543728">Fremdriftsskjermen for Kjøp nå, betal senere er åpnet i full høyde.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mer informasjon<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Enter for å spørre AI-modusen i Google Søk</translation>
 <translation id="6126565365696310362">Kinesisk konvolutt nr. 2</translation>
 <translation id="6131824478727057281">sted</translation>
 <translation id="6133320744616005677">Fortsett å tillate</translation>
@@ -3435,6 +3437,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6539092367496845964">Noe gikk galt. Prøv på nytt senere.</translation>
 <translation id="6540488083026747005">Du har tillatt informasjonskapsler fra tredjeparter for dette nettstedet</translation>
 <translation id="6545864417968258051">Bluetooth-skanning</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> – <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">To hull venstre</translation>
 <translation id="6549443526281184652">Kostymer</translation>
 <translation id="6550245281449521513">Muselås er ikke tillatt</translation>
@@ -3903,6 +3906,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7337248890521463931">Vis flere linjer</translation>
 <translation id="7337706099755338005">Ikke tilgjengelig på plattformen din.</translation>
 <translation id="733923710415886693">Tjenerens sertifikat er ikke vist i henhold til regelen for sertifikatåpenhet.</translation>
+<translation id="73398226265793546">AI-modus-knapp. Aktiver for å spørre AI-modusen i Google Søk</translation>
 <translation id="7346048084945669753">Er tilknyttet:</translation>
 <translation id="7346062987309535530">Servise</translation>
 <translation id="7346081071264046066">«Svar ja på denne bryllupsinvitasjonen med begeistring»</translation>
@@ -4708,6 +4712,7 @@ Mer informasjon:
 <translation id="8622864575115813231">Kontakter finansinstitusjonen din …</translation>
 <translation id="8624354461147303341">Få rabatter</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">Legg til opptil 10 filer, faner eller bilder</translation>
 <translation id="8637362707224133343">Chrome har innebygde sikkerhetsfunksjoner som beskytter deg når du surfer – for eksempel Google Safe Browsing, som <ph name="BEGIN_LINK" />nylig har funnet nettfisking<ph name="END_LINK" /> på nettstedet du prøvde å besøke. Nettsteder som driver med nettfisking, utgir seg for å være andre nettsteder for å lure deg.<ph name="NEW_LINE" />Selv nettsteder som vanligvis er trygge, blir noen ganger kompromittert av angripere. <ph name="BEGIN_ERROR_LINK" />Gi oss beskjed<ph name="END_ERROR_LINK" /> hvis du tror det har skjedd en feil, og at dette nettstedet ikke utgjør noen fare.</translation>
 <translation id="8640996933372643759">Du må kunne logge på Chrome for å dele faner og samarbeide med andre</translation>
 <translation id="8641131559425911240">Konvolutt (obligasjon)</translation>
@@ -4820,6 +4825,7 @@ Mer informasjon:
 <translation id="8814547618907885931">Se alle sammenligningstabeller</translation>
 <translation id="8814707942599948500">C8-konvolutt</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å oppdatere Chrome fra Chrome-innstillingene</translation>
+<translation id="8819855907485254989">Lagre transportbilletten i Wallet</translation>
 <translation id="8820817407110198400">Bokmerker</translation>
 <translation id="882338992931677877">Manuelt spor</translation>
 <translation id="8827067923357481311">Alternativer for betaling senere</translation>
@@ -4994,6 +5000,7 @@ Mer informasjon:
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å fortsette ferden og se relevant aktivitet i Chrome-loggen</translation>
 <translation id="9119042192571987207">Opplastet</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> vil bekrefte at det er deg</translation>
+<translation id="9119764377203471454">Kan ikke legge til vedlegg</translation>
 <translation id="9120593907434185157">Lagre adressen</translation>
 <translation id="912327514020027767">Skjørt</translation>
 <translation id="9128870381267983090">Koble til nettverk</translation>

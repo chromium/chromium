@@ -47,6 +47,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="146866447420868597">Mag-sign in sa Chrome?</translation>
 <translation id="1476347941828409626">&amp;Pamahalaan ang mga profile sa Chrome</translation>
 <translation id="1492280395845991349">Ilunsad ulit para tapusin ang pag-update sa Chrome</translation>
+<translation id="1496875977627931224">Kumusta <ph name="USER_NAME" />,<ph name="LINE_BREAK" />ano ang iniisip mo ngayon?</translation>
 <translation id="1497802159252041924">Error sa pag-install: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">I-customize ang iyong bagong profile sa Chrome</translation>
 <translation id="1518627427551567882">Pinoprotektahan ang page na ito</translation>
@@ -202,6 +203,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3112458742631356345">Na-block ng Chrome ang pag-download na ito dahil hindi karaniwang dina-download ang file at posibleng mapanganib ito</translation>
 <translation id="3114643501466072395">Para makita kung ligtas ang iba mo pang password mula sa mga paglabag sa data at iba pang isyu sa seguridad, <ph name="BEGIN_LINK" />mag-sign in sa Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Na-block ng Chrome ang pag-download na ito dahil naglalaman ang naka-archive na file ng iba pang file na posibleng nagtatago ng malware</translation>
+<translation id="3130333203120345554">Bagong paghahanap</translation>
 <translation id="3135560418014806498">Magdagdag ng Profile sa Chrome</translation>
 <translation id="3137969841538672700">Mag-drag para maghanap</translation>
 <translation id="3140883423282498090">Magkakaroon ng bisa ang iyong mga pagbabago sa susunod na pagkakataong muli mong ilunsad ang Google Chrome.</translation>
@@ -367,6 +369,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5139423532931106058">I-customize ang iyong profile sa Chrome</translation>
 <translation id="5163087008893166964">Welcome sa Chrome; binuksan ang bagong window ng browser</translation>
 <translation id="5166439563123238795">Kailangan ng Chrome ng pahintulot para i-track ang iyong mga kamay</translation>
+<translation id="5167819546851111585">Ano ang iniisip mo ngayon?</translation>
 <translation id="5170938038195470297">Hindi magagamit ang iyong profile dahil mula ito sa isang mas bagong bersyon ng Google Chrome.
 
 Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktoryo ng profile o gumamit ng mas bagong bersyon ng Chrome.</translation>
@@ -648,6 +651,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="8013993649590906847">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chrome na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google.</translation>
 <translation id="8019103195866286235">In-unpublish ng developer nito ang extension na ito, at posibleng hindi ito ligtas. Alisin ito sa Chrome para hindi na nito makita at mabago ang iyong data sa mga site na binibisita mo, kabilang ang iyong personal na impormasyon.</translation>
 <translation id="8040768861829554732">Gusto ng isang extension na mag-sign in ka sa Chrome</translation>
+<translation id="8041795619940733262">Magtanong sa Google<ph name="LINE_BREAK" />tungkol sa tab na ito</translation>
 <translation id="80471789339884597">Salamat sa pag-install. Dapat mong i-restart ang lahat ng iyong browser bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Iba pang Profile sa Chrome</translation>

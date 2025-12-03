@@ -47,6 +47,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="146866447420868597">Ungependa kuingia kwenye Chrome?</translation>
 <translation id="1476347941828409626">Dhibiti Wasifu kwenye Chrome</translation>
 <translation id="1492280395845991349">Fungua tena ili umalize kusasisha Chrome</translation>
+<translation id="1496875977627931224">Hujambo <ph name="USER_NAME" />,<ph name="LINE_BREAK" />unafikiria nini leo?</translation>
 <translation id="1497802159252041924">Hitilafu ya kusakinisha: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Weka wasifu wako mpya wa Chrome uwe upendavyo</translation>
 <translation id="1518627427551567882">Ukurasa huu umelindwa</translation>
@@ -202,6 +203,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3112458742631356345">Chrome imezuia upakuaji huu kwa sababu faili hii kwa kawaida haipakuliwi na huenda si salama</translation>
 <translation id="3114643501466072395">Ili uangalie kama manenosiri yako mengine ni salama dhidi ya ufichuzi haramu wa data na matatizo mengine ya usalama, <ph name="BEGIN_LINK" />ingia katika akaunti kwenye Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome imezuia upakuaji huu kwa sababu faili iliyo kwenye kumbukumbu inajumuisha faili nyingine ambazo huenda zimeficha programu hasidi</translation>
+<translation id="3130333203120345554">Utafutaji mpya</translation>
 <translation id="3135560418014806498">Weka Wasifu wa Chrome</translation>
 <translation id="3137969841538672700">Buruta ili utafute</translation>
 <translation id="3140883423282498090">Mabadiliko yako yataanza kufanya kazi wakati ujao utakapozindua Google Chrome.</translation>
@@ -367,6 +369,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="5139423532931106058">Weka mapendeleo ya wasifu wako kwenye Chrome</translation>
 <translation id="5163087008893166964">Karibu kwenye Chrome; dirisha jipya la kivinjari limefunguliwa</translation>
 <translation id="5166439563123238795">Chrome inahitaji ruhusa ya kufuatilia mijongeo ya mikono yako</translation>
+<translation id="5167819546851111585">Unafikiria nini leo?</translation>
 <translation id="5170938038195470297">Wasifu wako huenda usitumike kwa sababu unatoka katika toleo jipya la Google Chrome.
 
 Huenda baadhi ya vipengele visipatikane. Tafadhali bainisha saraka tofauti ya wasifu au tumia toleo jipya la Chrome.</translation>
@@ -648,6 +651,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8013993649590906847">Ikiwa picha haina ufafanuzi muhimu, Chrome itajaribu kukuwekea. Ili kuweka ufafanuzi, tutatuma picha kwa Google.</translation>
 <translation id="8019103195866286235">Uchapishaji wa kiendelezi hiki ulibatilishwa na msanidi programu na huenda kisiwe salama. Kiondoe kwenye Chrome ili kisiweze tena kuona na kubadilisha data yako kwenye tovuti unazotembelea, ikiwa ni pamoja na taarifa zako binafsi.</translation>
 <translation id="8040768861829554732">Kiendelezi kinakuhitaji uingie katika Chrome</translation>
+<translation id="8041795619940733262">Uliza Google<ph name="LINE_BREAK" />kuhusu kichupo hiki</translation>
 <translation id="80471789339884597">Asante kwa kusakinisha. Ni lazima uzime kisha uwashe tena vivinjari vyako kabla ya kutumia <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Arifa ya ChromeOS Flex</translation>
 <translation id="8077579734294125741">Wasifu Mwingine Kwenye Chrome</translation>

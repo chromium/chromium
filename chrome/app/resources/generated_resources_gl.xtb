@@ -1344,6 +1344,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1907044622262489040">Escribe usando a voz. Preme Buscar + D e, a continuación, comeza a falar.</translation>
 <translation id="1907659324308286326">Algúns accesorios Thunderbolt ou USB4 necesitan acceso á memoria para funcionar correctamente.</translation>
 <translation id="1908591798274282246">Volver abrir grupo pechado</translation>
+<translation id="1909677622563887527">Un software de probas automatizadas está controlando Chrome</translation>
 <translation id="1909880997794698664">Seguro que queres que se utilice o modo de quiosco neste dispositivo de forma permanente?</translation>
 <translation id="1910721550319506122">Dámosche a benvida.</translation>
 <translation id="1910736334623230603">Non se poden buscar varias imaxes. Engade unha imaxe de cada vez.</translation>
@@ -1697,6 +1698,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2144536955299248197">Visualizador de certificados: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Programación de aplicacións para Android en Linux</translation>
 <translation id="2145468727756963476">Gemini estase actualizando…</translation>
+<translation id="2145688286532368277">A optimización de JavaScript está desactivada para este sitio.</translation>
 <translation id="2145917706968602070">Asegúrate de ter o teléfono preto, desbloqueado e co Bluetooth e a wifi activados</translation>
 <translation id="2146263598007866206">Os sitios poderían descargar automaticamente conxuntos de ficheiros relacionados para aforrarche tempo</translation>
 <translation id="2147218225094845757">Ocultar panel lateral</translation>
@@ -3693,6 +3695,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3527085408025491307">Cartafol</translation>
 <translation id="3528498924003805721">Atallos</translation>
 <translation id="3529851166527095708">Enderezos e moito máis</translation>
+<translation id="3530919970074558307">Deixar de enfocar grupo</translation>
 <translation id="3531070080754387701">Microsoft 365 non pode abrir <ph name="FILE_NAMES" /> desde este cartafol</translation>
 <translation id="3531883061432162622">Podes atopar a túa lista de lectura e os teus marcadores en Marcadores e listas</translation>
 <translation id="3532273508346491126">Xestión da sincronización</translation>
@@ -4049,6 +4052,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3757567010566591880">Deixar de fixar na barra de ferramentas</translation>
 <translation id="3757645900890881944">Ferramentas de busca</translation>
 <translation id="3757733214359997190">Non se atoparon sitios</translation>
+<translation id="3757825964096339958">Enfocar grupo</translation>
 <translation id="375841316537350618">Descargando script de proxy...</translation>
 <translation id="3758887577462995665">Consello:</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> mes</translation>
@@ -4347,6 +4351,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 
   Queres iniciar <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
+<translation id="3942558231079086184">A optimización de JavaScript está desactivada para este sitio. Actívaa para mellorar o rendemento.</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3945513714196326460">Proba cun nome máis curto</translation>
@@ -4838,6 +4843,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4292613336957320546">Aceleración</translation>
 <translation id="429312253194641664">Un sitio está reproducindo contido multimedia</translation>
 <translation id="4293219510510666933">Usa frases cotiás para facer buscas no historial de navegación e atopar sitios que visitases. Tamén podes facer preguntas e obter respostas en función do teu historial de navegación. Esta opción de configuración está activada.</translation>
+<translation id="429344752071832554">Deixar de enfocar grupo</translation>
 <translation id="4294392694389031609">Eliminouse <ph name="FILE_NAME" /> do historial de descargas, pero segue no teu dispositivo</translation>
 <translation id="4295072614469448764">A aplicación está dispoñible no terminal. Tamén pode haber unha icona no menú de aplicacións.</translation>
 <translation id="4295979599050707005">Volve iniciar sesión para confirmar que se pode utilizar a túa conta <ph name="USER_EMAIL" /> cos sitios web, aplicacións e extensións en Chrome e Google Play. Tamén podes quitar esta conta. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
@@ -4993,6 +4999,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4405224443901389797">Mover a…</translation>
 <translation id="4405781821077215583">Reduce ou amplía os elementos da pantalla, como o texto</translation>
 <translation id="4406308048672435032">Podes desactivar esta pestana ou actualizar a páxina para ver a lista completa de novo</translation>
+<translation id="4406881185911439342">Enfocar grupo</translation>
 <translation id="4406883609789734330">Subtítulos instantáneos</translation>
 <translation id="4406963243402726564">Datos non gardados</translation>
 <translation id="4408599188496843485">A&amp;xuda</translation>
@@ -10181,6 +10188,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8032569120109842252">Seguindo</translation>
 <translation id="8033827949643255796">seleccionados</translation>
 <translation id="8033958968890501070">Tempo de espera esgotado</translation>
+<translation id="8034399942062051455">A optimización de V8 está desactivada</translation>
 <translation id="8034697324150621782">Cambiar pola vista superior</translation>
 <translation id="8035059678007243127">Páxina de incógnito almacenada na memoria caché de páxinas anteriores e seguintes: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Axuda a mellorar a función Autocompletar</translation>

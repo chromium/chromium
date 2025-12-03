@@ -1340,6 +1340,7 @@
 <translation id="670498945988402717">গতকাল চেক করা হয়েছে</translation>
 <translation id="6710213216561001401">আগের</translation>
 <translation id="671481426037969117">আপনার <ph name="FQDN" /> টাইমারের মেয়াদ পেরিয়ে গেছে। আগামীকাল আবার এটি শুরু হবে।</translation>
+<translation id="6716434912087331834">নতুন উইন্ডো ফিরিয়ে আনতে, অ্যাক্টিভ উইন্ডোর মোট সংখ্যা কমিয়ে <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />টি বা তার কম করুন। ইনঅ্যাক্টিভ উইন্ডো ৬ মাস পরে মুছে দেওয়া হয়।</translation>
 <translation id="6723740634201835758">আপনার Google অ্যাকাউন্টে</translation>
 <translation id="6734310707649923383">আপনার ইতিহাস থেকে কোন কোন পৃষ্ঠায় গেছেন তা দেখতে বা সেগুলি মুছে দিতে পারবেন</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, পিন করা রেকর্ডিং ছদ্মবেশী ট্যাব</translation>
@@ -1657,6 +1658,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> পুরনো হয়ে গেছে।</translation>
 <translation id="7944772052836377867">সিঙ্ক করার আগে যাচাই করিয়ে নিতে হবে যে এটি আপনি করছেন</translation>
 <translation id="7951102827450076904">সবসময় ডাউনলোড করা পিডিএফ খুলুন</translation>
+<translation id="7952479614398473176">নতুন উইন্ডো খুলতে, অ্যাক্টিভ উইন্ডোর মোট সংখ্যা কমিয়ে <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />টি বা তার কম করুন।</translation>
 <translation id="7957413488482743710">আপনাকে সম্ভাব্য জালিয়াতির হাত থেকে রক্ষা করতে, ভার্চুয়াল কার্ড আসল কার্ডের ছদ্মবেশ ধারন করে। <ph name="BEGIN_LINK1" />ভার্চুয়াল কার্ড সম্পর্কে আরও জানুন<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">এই ডিভাইসের ট্যাব</translation>
 <translation id="7961926449547174351">আপনি স্টোরেজ অ্যাক্সেস বন্ধ করে রেখেছেন, 'সেটিংস' থেকে এটি চালু করতে পারবেন।</translation>

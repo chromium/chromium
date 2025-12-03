@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Списъкът с групите раздели е затворен</translation>
 <translation id="3194464645767632461">оценка</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Добавяне на <ph name="TABS_COUNT_ONE" /> раздел към група}other{Добавяне на <ph name="TABS_COUNT_MANY" /> раздела към група}}</translation>
-<translation id="3293080634164207409">Добавяне на раздели</translation>
 <translation id="3328308545011660196">Предложение: <ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{След 1 ден неактивност}other{След <ph name="DAY_COUNT_MANY" /> дни неактивност}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> нов раздел}other{<ph name="MANY_ADDED" /> нови раздела}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="855081842937141170">Фиксиране на раздела</translation>
 <translation id="8633025649649592204">Скорошна активност</translation>
+<translation id="8635822281281406185">Добавете до 10 файла, раздела или изображения</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8714939927607906138">По-ниска цена</translation>
 <translation id="8730621377337864115">Готово</translation>

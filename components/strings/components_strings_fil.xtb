@@ -966,6 +966,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2536110899380797252">Magdagdag ng Address</translation>
 <translation id="2537931901612099523">Hindi makikita ng iba pang gumagamit ng device na ito ang iyong aktibidad, kaya mas pribado kang makakapag-browse. Hindi nito babaguhin kung paano kinokolekta ang data ng mga website na binibisita mo at ng mga serbisyong ginagamit ng mga ito, kabilang ang Google. Mase-save ang mga download at bookmark.</translation>
 <translation id="2541219929084442027">Hindi mananatili ang mga page na titingnan mo sa mga tab na Incognito sa history, cookie store o history ng paghahanap ng iyong browser pagkatapos mong isara ang lahat ng iyong tab na incognito. Papanatilihin ang anumang file na ida-download o mga bookmark na gagawin mo.</translation>
+<translation id="2541474152868747095">Para makuha ang iyong history mula sa iba mo pang device, i-verify na ikaw ito. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="2542106216580219892">Surfing</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" /> – Para lumabas sa full screen, pindutin nang matagal ang |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Na-restart ng iyong administrator ang device mo</translation>
@@ -2031,6 +2032,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4255487295905690262">Makakatanggap ka ng mga alerto sa email kung bababa ang presyo sa anumang site.</translation>
 <translation id="425582637250725228">Maaaring hindi ma-save ang mga pagbabagong ginawa mo.</translation>
 <translation id="4258748452823770588">Maling lagda</translation>
+<translation id="4260407128682690669">Para makuha ang iyong history mula sa iba mo pang device, i-sync ang iyong history at mga tab sa <ph name="ACCOUNT_EMAIL" />. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="4265635050210404830">Ang mga loyalty card mo</translation>
 <translation id="4265872034478892965">Pinayagan ng iyong administrator</translation>
 <translation id="4267590181863312380">Para makuha ang iyong history mula sa iba mo pang device, mag-sign in at i-sync ang history. Makukuha mo rin ang iyong mga password at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
@@ -2065,6 +2067,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4299919199185766032">Lumampas ang pangalan ng shortcut sa maximum na pinapayagang haba na <ph name="MAX_LENGTH" /> (na) character.</translation>
 <translation id="4300272766492248925">Buksan ang app</translation>
 <translation id="4300675098767811073">Multiple punch right</translation>
+<translation id="4300841966382281549">Biyahe</translation>
 <translation id="4302514097724775343">I-tap ang dino para maglaro</translation>
 <translation id="4304049446746819918">{0,plural, =1{Hindi inirerekomenda ng patakaran ng administrator na ilipat ang file na ito sa <ph name="DESTINATION_NAME" />}one{Hindi inirerekomenda ng patakaran ng administrator na ilipat ang mga file na ito sa <ph name="DESTINATION_NAME" />}other{Hindi inirerekomenda ng patakaran ng administrator na ilipat ang mga file na ito sa <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Magbasa ng mga pagsusuri ng customer sa mga produkto, serbisyo, o experience para makatulong na mapahusay ang iyong mga desisyon sa mga review.</translation>
@@ -2166,6 +2169,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Hindi secure ang form na ito. Na-off ang autofill.</translation>
 <translation id="4477350412780666475">Susunod na Track</translation>
+<translation id="4479915773139026885">AI Mode sa Google Search</translation>
 <translation id="4480760608050410381">MP4 na Video</translation>
 <translation id="448363931695049633">Mga Pizzeria</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -2373,7 +2377,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4832388034239846146">Para mag-share ng mga grupo ng tab, i-update ang Chrome</translation>
 <translation id="483241715238664915">I-on ang mga babala</translation>
 <translation id="4832961164064927107">BBQ at Pag-iihaw</translation>
-<translation id="4834250788637067901">Mga paraan ng pagbabayad, alok, at address na gumagamit ng Google Pay</translation>
 <translation id="4840250757394056958">Tingnan ang iyong history sa Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Pag-scroll at pag-zoom ng mga naka-share na tab</translation>
@@ -3008,6 +3011,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5886961930368713749">Magpadala ng feedback para sa Maghambing</translation>
 <translation id="5887400589839399685">Na-save ang card</translation>
 <translation id="5887687176710214216">Huling binisita kahapon</translation>
+<translation id="5889251770650310375">Para makuha ang iyong history mula sa iba mo pang device, i-verify na ikaw ito at i-sync ang iyong history at mga tab. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="5890248301649767931">I-save ang numero ng pag-redress?</translation>
 <translation id="5895138241574237353">I-restart</translation>
 <translation id="5895187275912066135">Ibinigay Noong</translation>
@@ -3165,6 +3169,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6124432979022149706">Mga Chrome Enterprise Connector</translation>
 <translation id="6124996493718543728">Binuksan nang buo ang screen ng pag-usad ng Buy-Now-Pay-Later.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Higit pang detalye<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Enter para magtanong sa AI Mode sa Google Search</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6131824478727057281">lokasyon</translation>
 <translation id="6133320744616005677">Patuloy na pahintulutan</translation>
@@ -3435,6 +3440,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6539092367496845964">Nagkaproblema. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="6540488083026747005">Pinayagan mo ang third-party na cookies sa site na ito</translation>
 <translation id="6545864417968258051">Pag-scan ng Bluetooth</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> - <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Dual punch left</translation>
 <translation id="6549443526281184652">Mga costume</translation>
 <translation id="6550245281449521513">Hindi pinapayagan ang pag-lock ng mouse</translation>
@@ -3904,6 +3910,7 @@ Mga karagdagang detalye:
 <translation id="7337248890521463931">Magpakita ng mas marami pang linya</translation>
 <translation id="7337706099755338005">Hindi available sa iyong platform.</translation>
 <translation id="733923710415886693">Ang certificate ng server ay hindi inihayag sa pamamagitan ng Transparency ng Certificate.</translation>
+<translation id="73398226265793546">Button ng AI Mode, i-activate para magtanong sa AI Mode sa Google Search</translation>
 <translation id="7346048084945669753">Naka-affiliate:</translation>
 <translation id="7346062987309535530">Mga Gamit sa Pagkain</translation>
 <translation id="7346081071264046066">"masayang sumagot ng oo sa imbitasyon sa kasal na ito"</translation>
@@ -4709,6 +4716,7 @@ Mga karagdagang detalye:
 <translation id="8622864575115813231">Nakikipag-ugnayan sa iyong pinansyal na institusyon...</translation>
 <translation id="8624354461147303341">Makakuha ng mga diskwento</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">Magdagdag ng hanggang 10 file, tab, o larawan</translation>
 <translation id="8637362707224133343">May mga built-in na pangkaligtasang feature ang Chrome para maprotektahan ka habang nagba-browse ka — tulad ng Ligtas na Pag-browse sa Google na <ph name="BEGIN_LINK" />nakakita kamakailan ng phishing<ph name="END_LINK" /> sa site na sinubukan mong bisitahin. Nagpapanggap ang mga phishing site na ibang mga site para linlangin ka.<ph name="NEW_LINE" />Kung minsan, nakokompromiso rin ng mga attacker ang mga site na karaniwang ligtas. <ph name="BEGIN_ERROR_LINK" />Ipaalam sa amin<ph name="END_ERROR_LINK" /> kung sa palagay mo ay isa itong pagkakamali at hindi mapanganib ang site na ito.</translation>
 <translation id="8640996933372643759">Para mag-share ng mga tab at makipag-collaborate sa iba, dapat ay nakakapag-sign in ka sa Chrome</translation>
 <translation id="8641131559425911240">Envelope (Bond)</translation>
@@ -4821,6 +4829,7 @@ Mga karagdagang detalye:
 <translation id="8814547618907885931">Tingnan ang lahat ng talahanayan sa paghahambing</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para i-update ang Chrome mula sa iyong mga setting ng Chrome</translation>
+<translation id="8819855907485254989">I-save ang ticket sa transportasyon sa Wallet</translation>
 <translation id="8820817407110198400">Mga Bookmark</translation>
 <translation id="882338992931677877">Manual na Slot</translation>
 <translation id="8827067923357481311">Mga opsyon sa pay later</translation>

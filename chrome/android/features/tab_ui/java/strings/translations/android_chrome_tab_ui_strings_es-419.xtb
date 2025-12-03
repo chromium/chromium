@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Se cerró la lista de grupos de pestañas</translation>
 <translation id="3194464645767632461">calificación</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Agregar <ph name="TABS_COUNT_ONE" /> pestaña al grupo}other{Agregar <ph name="TABS_COUNT_MANY" /> pestañas al grupo}}</translation>
-<translation id="3293080634164207409">Agregar pestañas</translation>
 <translation id="3328308545011660196">Sugerencia: <ph name="NUMBER_OF_TABS" /> pestañas parecen estar relacionadas. ¿Deseas agruparlas?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Después de 1 día de inactividad}other{Después de <ph name="DAY_COUNT_MANY" /> días de inactividad}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestaña nueva}other{<ph name="MANY_ADDED" /> pestañas nuevas}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="855081842937141170">Fijar pestaña</translation>
 <translation id="8633025649649592204">Actividad reciente</translation>
+<translation id="8635822281281406185">Agrega hasta 10 archivos, pestañas o imágenes</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8714939927607906138">Precio más bajo</translation>
 <translation id="8730621377337864115">Listo</translation>

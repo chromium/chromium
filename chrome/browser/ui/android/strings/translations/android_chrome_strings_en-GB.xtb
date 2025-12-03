@@ -496,6 +496,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">More details</translation>
 <translation id="3123734510202723619">Announcements</translation>
+<translation id="3134385238404760368">No recent tabs</translation>
 <translation id="314939179385989105">Chrome’s homepage</translation>
 <translation id="3158667104057012316">Sorting by manual order</translation>
 <translation id="3159335509547415276">Learn about blocked accounts</translation>
@@ -817,6 +818,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4577115723294378384">Sort by A to Z</translation>
 <translation id="4578289292431526768">Let’s go</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minute ago}other{# minutes ago}}</translation>
+<translation id="4585751637295612750">Open a new tab to add it to your question</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">This offline page is from <ph name="CREATION_TIME" /> and may differ from the online version.</translation>
 <translation id="4595237294768457124">Open a New tab page</translation>
@@ -1338,6 +1340,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="670498945988402717">Checked yesterday</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="671481426037969117">Your <ph name="FQDN" /> timer ran out. It will start again tomorrow.</translation>
+<translation id="6716434912087331834">To restore a new window, reduce the total number of active windows to <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> or fewer. Inactive windows are deleted after 6 months.</translation>
 <translation id="6723740634201835758">In your Google Account</translation>
 <translation id="6734310707649923383">You can see the pages that you've visited or delete them from your history</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, pinned recording Incognito tab</translation>
@@ -1655,6 +1658,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is out of date.</translation>
 <translation id="7944772052836377867">Sync needs to verify that it's you</translation>
 <translation id="7951102827450076904">Always open downloaded PDFs</translation>
+<translation id="7952479614398473176">To open a new window, reduce the total number of active windows to <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> or fewer.</translation>
 <translation id="7957413488482743710">A virtual card hides your actual card to help protect you from potential fraud. <ph name="BEGIN_LINK1" />Learn more about virtual cards<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Tabs on this device</translation>
 <translation id="7961926449547174351">You have disabled storage access. Please go to settings to enable it.</translation>

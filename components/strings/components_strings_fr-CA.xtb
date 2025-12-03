@@ -2167,6 +2167,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ce formulaire n'est pas sécurisé. Le remplissage automatique a été désactivé.</translation>
 <translation id="4477350412780666475">Chanson suivante</translation>
+<translation id="4479915773139026885">Mode IA dans Recherche Google</translation>
 <translation id="4480760608050410381">Vidéo MP4</translation>
 <translation id="448363931695049633">Pizzerias</translation>
 <translation id="4489023393592172404">Enveloppe Kaku nᵒ 4</translation>
@@ -2374,7 +2375,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4832388034239846146">Pour partager des groupes d'onglets, mettez à jour Chrome</translation>
 <translation id="483241715238664915">Activer les avertissements</translation>
 <translation id="4832961164064927107">Barbecue et grillade</translation>
-<translation id="4834250788637067901">Modes de paiement, offres et adresses utilisant Google Pay</translation>
 <translation id="4840250757394056958">Afficher votre historique de Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Zoomer et faire défiler les onglets partagés</translation>
@@ -3166,6 +3166,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6124432979022149706">Connecteurs Chrome Enterprise</translation>
 <translation id="6124996493718543728">L'écran de progression Acheter maintenant, payer plus tard est ouvert à pleine hauteur.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Plus de détails<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Entrée pour poser une question au mode IA dans Recherche Google</translation>
 <translation id="6126565365696310362">Enveloppe chinoise nᵒ 2</translation>
 <translation id="6131824478727057281">lieu</translation>
 <translation id="6133320744616005677">Continuer l'autorisation</translation>
@@ -3905,6 +3906,7 @@ Détails supplémentaires :
 <translation id="7337248890521463931">Afficher plus de lignes</translation>
 <translation id="7337706099755338005">Non disponible sur votre plateforme.</translation>
 <translation id="733923710415886693">Le certificat du serveur n'a pas été divulgué par l'intermédiaire de l'outil Certificate Transparency.</translation>
+<translation id="73398226265793546">Bouton du mode IA, activez-le pour poser une question au mode IA dans Recherche Google</translation>
 <translation id="7346048084945669753">Affilié :</translation>
 <translation id="7346062987309535530">Vaisselle</translation>
 <translation id="7346081071264046066">« acceptez cette invitation à un mariage avec enthousiasme »</translation>
@@ -4710,6 +4712,7 @@ Détails supplémentaires :
 <translation id="8622864575115813231">Communication avec votre institution financière en cours…</translation>
 <translation id="8624354461147303341">Obtenir des rabais</translation>
 <translation id="8634957317623797170">54 mm x 86 mm</translation>
+<translation id="8635822281281406185">Ajoutez jusqu'à 10 fichiers, onglets ou images</translation>
 <translation id="8637362707224133343">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger pendant votre navigation, comme la Navigation sécurisée Google, qui a <ph name="BEGIN_LINK" />récemment détecté de l'hameçonnage<ph name="END_LINK" /> sur le site que vous avez essayé de visiter. Les sites d'hameçonnage se font passer pour d'autres sites pour vous tromper.<ph name="NEW_LINE" />Même les sites normalement sûrs sont parfois compromis par des pirates informatiques. <ph name="BEGIN_ERROR_LINK" />Indiquez-nous<ph name="END_ERROR_LINK" /> si vous pensez qu'il y a eu une erreur et que ce site ne présente aucun danger.</translation>
 <translation id="8640996933372643759">Pour partager des onglets et collaborer avec d'autres personnes, vous devez pouvoir vous connecter à Chrome</translation>
 <translation id="8641131559425911240">Envelope (bond)</translation>
@@ -4997,6 +5000,7 @@ Détails supplémentaires :
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour reprendre votre recherche et voir l'activité pertinente dans votre historique de Chrome</translation>
 <translation id="9119042192571987207">Téléversé</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> veut confirmer qu'il s'agit bien de vous</translation>
+<translation id="9119764377203471454">Impossible d'ajouter des pièces jointes</translation>
 <translation id="9120593907434185157">Enregistrer l'adresse</translation>
 <translation id="912327514020027767">Jupes</translation>
 <translation id="9128870381267983090">Connexion au réseau</translation>

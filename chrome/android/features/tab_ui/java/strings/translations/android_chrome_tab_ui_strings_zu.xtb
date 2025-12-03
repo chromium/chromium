@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Uhlu lweqembu lethebhu luvaliwe</translation>
 <translation id="3194464645767632461">isilinganisela</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Faka ithebhu engu-<ph name="TABS_COUNT_ONE" /> eqenjini}one{Faka amathebhu angu-<ph name="TABS_COUNT_MANY" /> eqenjini}other{Faka amathebhu angu-<ph name="TABS_COUNT_MANY" /> eqenjini}}</translation>
-<translation id="3293080634164207409">Faka amathebhu</translation>
 <translation id="3328308545011660196">Isiphakamiso: amathebhu a-<ph name="NUMBER_OF_TABS" /> abonakala ahlobene. Wenze iqembu?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Ngemuva kosuku olu-1 lokungasebenzi}one{Ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" /> kungasebenzi}other{Ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" /> kungasebenzi}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{Ithebhu entsha engu-<ph name="ONE_ADDED" />}one{Amathebhu amasha angu-<ph name="MANY_ADDED" />}other{Amathebhu amasha angu-<ph name="MANY_ADDED" />}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Izilungiselelo</translation>
 <translation id="855081842937141170">Phina ithebhu</translation>
 <translation id="8633025649649592204">Umsebenzi wakamuva</translation>
+<translation id="8635822281281406185">Yengeza amafayela, amathebhu, noma izithombe ezifika kweziyi-10</translation>
 <translation id="8712637175834984815">Ngiyitholile</translation>
 <translation id="8714939927607906138">Intengo ephansi</translation>
 <translation id="8730621377337864115">Kwenziwe</translation>

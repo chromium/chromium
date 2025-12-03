@@ -75,7 +75,6 @@
 <translation id="311432875115153175">Senarai kumpulan tab ditutup</translation>
 <translation id="3194464645767632461">rating</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Tambahkan <ph name="TABS_COUNT_ONE" /> tab pada kumpulan}other{Tambahkan <ph name="TABS_COUNT_MANY" /> tab pada kumpulan}}</translation>
-<translation id="3293080634164207409">Tambahkan tab</translation>
 <translation id="3328308545011660196">Cadangan: <ph name="NUMBER_OF_TABS" /> tab kelihatan berkaitan. Himpunkan semua tab itu?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Selepas tidak aktif selama 1 hari}other{Selepas tidak aktif selama <ph name="DAY_COUNT_MANY" /> hari}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab baharu}other{<ph name="MANY_ADDED" /> tab baharu}}</translation>
@@ -178,6 +177,7 @@
 <translation id="7326879924029668159">Lihat dasar pemulangan dan pelbagai lagi</translation>
 <translation id="7352298686197644113">Lihat item yang lebih murah dalam tab yang terbuka</translation>
 <translation id="7369451074646620503">Kumpulan tab "<ph name="TAB_GROUP_NAME" />" tidak tersedia lagi</translation>
+<translation id="7402375256128852434">Tambahkan tab terbaharu</translation>
 <translation id="7452985128687107478">Kumpulan tab disimpan dan dikemaskinikan secara automatik merentas semua peranti anda</translation>
 <translation id="747459581954555080">Pulihkan semua</translation>
 <translation id="7489558427602531799">Alihkan kumpulan tab ke kanan</translation>

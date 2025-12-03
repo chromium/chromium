@@ -607,7 +607,7 @@
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
 <translation id="3328801116991980348">פרטי אתר</translation>
 <translation id="333229797575847124">איך מפעילים את התכונה הזו</translation>
-<translation id="3344233834747405775">שם בעל הכרטיס לא תקין</translation>
+<translation id="3344233834747405775">השם של בעל הכרטיס לא תקין</translation>
 <translation id="3344485292736684439">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘ בחשבון שלך, {email}}one{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}two{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}other{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}}</translation>
 <translation id="334690320928261823">כרטיסיות אחרונות</translation>
 <translation id="3349031117032695619">חסימת חלונות קופצים</translation>
@@ -1005,6 +1005,7 @@
 <translation id="4877597489778380935">אני רוצה לקבל תזכורת אחר כך</translation>
 <translation id="4881695831933465202">פתיחה</translation>
 <translation id="4883766694719903356">תצוגה של כרטיסיות פרטיות</translation>
+<translation id="4884937942297374058">ההגנה המשופרת מושבתת</translation>
 <translation id="488785315393301722">הצגת פרטים</translation>
 <translation id="4889521386764567563">הפרופיל הנוכחי</translation>
 <translation id="4893713555726946316">הסתרה של 'חיפוש בדף'</translation>

@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">Կարդացեք այսօրվա նորությունները <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Այլ մանրամասներ</translation>
 <translation id="3123734510202723619">Հայտարարություններ</translation>
+<translation id="3134385238404760368">Վերջերս բացված ներդիրներ չկան</translation>
 <translation id="314939179385989105">Chrome-ի գլխավոր էջ</translation>
 <translation id="3158667104057012316">Ձեռքով տեսակավորում</translation>
 <translation id="3159335509547415276">Իմանալ ավելին արգելափակված հաշիվների մասին</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">Դասավորել Ա-ից Ֆ</translation>
 <translation id="4578289292431526768">Սկսել</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# րոպե առաջ}one{# րոպե առաջ}other{# րոպե առաջ}}</translation>
+<translation id="4585751637295612750">Բացեք նոր ներդիր՝ ձեր հարցին այն ավելացնելու համար</translation>
 <translation id="4587589328781138893">Կայքեր</translation>
 <translation id="4594952190837476234">Այս էջը պահվել է <ph name="CREATION_TIME" />-ին, և կարող է տարբերվել առցանց տարբերակից։</translation>
 <translation id="4595237294768457124">Բացեք նոր ներդիրի էջը</translation>
@@ -1338,6 +1340,7 @@
 <translation id="670498945988402717">Ստուգվել է երեկ</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="671481426037969117"><ph name="FQDN" />-ի համար նախատեսված ժամանակը լրացել է։ Վաղը այն նորից կաշխատի:</translation>
+<translation id="6716434912087331834">Նոր պատուհան վերականգնելու համար համոզվեք, որ ունեք ոչ ավելի, քան <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ակտիվ պատուհան։ Ոչ ակտիվ պատուհանները 6 ամիս հետո ջնջվում են։</translation>
 <translation id="6723740634201835758">Ձեր Google հաշվում</translation>
 <translation id="6734310707649923383">Դուք կարող եք դիտել ձեր այցելած էջերը կամ ջնջել դրանք պատմությունից</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, ամրացված ինկոգնիտո ներդիր, որում տեսագրում է արվում</translation>
@@ -1655,6 +1658,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />-ը հնացած է:</translation>
 <translation id="7944772052836377867">Համաժամացման համար անհրաժեշտ է հաստատել ձեր ինքնությունը</translation>
 <translation id="7951102827450076904">Միշտ բացել ներբեռնված PDF ֆայլերը</translation>
+<translation id="7952479614398473176">Նոր պատուհան բացելու համար համոզվեք, որ ունեք ոչ ավելի, քան <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ակտիվ պատուհան։</translation>
 <translation id="7957413488482743710">Վիրտուալ քարտը թաքցնում է ձեր իրական քարտը՝ օգնելով պաշտպանել ձեզ հնարավոր խարդախությունից։ <ph name="BEGIN_LINK1" />Իմանալ ավելին վիրտուալ քարտերի մասին<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Ներդիրները այս սարքում</translation>
 <translation id="7961926449547174351">Դուք անջատել եք հիշողության հասանելիությունը։ Միացնելու համար անցեք կարգավորումներ։</translation>

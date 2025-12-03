@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Itxi da fitxa taldeen zerrenda</translation>
 <translation id="3194464645767632461">balorazioa</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Gehitu fitxa <ph name="TABS_COUNT_ONE" /> taldean}other{Gehitu <ph name="TABS_COUNT_MANY" /> fitxa taldean}}</translation>
-<translation id="3293080634164207409">Gehitu fitxak</translation>
 <translation id="3328308545011660196">Iradokizuna: <ph name="NUMBER_OF_TABS" /> fitxa erlazionatuta daude. Taldekatu nahi al dituzu?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Egun batez inaktibo egon ostean}other{<ph name="DAY_COUNT_MANY" /> egunez inaktibo egon ostean}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fitxa berri}other{<ph name="MANY_ADDED" /> fitxa berri}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="855081842937141170">Ainguratu fitxa</translation>
 <translation id="8633025649649592204">Azkenaldiko jarduerak</translation>
+<translation id="8635822281281406185">Gehitu 10 fitxategi, fitxa edo irudi ere</translation>
 <translation id="8712637175834984815">Ados</translation>
 <translation id="8714939927607906138">Merkeagoa</translation>
 <translation id="8730621377337864115">Eginda</translation>

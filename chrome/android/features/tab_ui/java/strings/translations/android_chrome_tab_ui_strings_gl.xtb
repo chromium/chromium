@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Lista dos grupos de pestanas pechada</translation>
 <translation id="3194464645767632461">valoración</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Engadir <ph name="TABS_COUNT_ONE" /> pestana ao grupo}other{Engadir <ph name="TABS_COUNT_MANY" /> pestanas ao grupo}}</translation>
-<translation id="3293080634164207409">Engadir pestanas</translation>
 <translation id="3328308545011660196">Suxestión: Hai <ph name="NUMBER_OF_TABS" /> pestanas que parecen relacionadas. Queres agrupalas?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Despois de 1 día sen actividade}other{Despois de <ph name="DAY_COUNT_MANY" /> días sen actividade}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestana nova}other{<ph name="MANY_ADDED" /> pestanas novas}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="855081842937141170">Fixar pestana</translation>
 <translation id="8633025649649592204">Actividade recente</translation>
+<translation id="8635822281281406185">Engade 10 ficheiros, pestanas ou imaxes como máximo</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8714939927607906138">Prezo máis baixo</translation>
 <translation id="8730621377337864115">Feito</translation>

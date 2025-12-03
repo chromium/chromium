@@ -1963,6 +1963,10 @@ Bu politikayı ayarlarsanız kullanıcılar <ph name="PRODUCT_NAME" /> ürünün
 
       Politika, Devre Dışı değerine ayarlanırsa bu özellik kullanılamaz.</translation>
 <translation id="2342066287156668839">Kalıcı kotayı etkinleştir.</translation>
+<translation id="2343774133209251840">Bu politika etkinleştirildiğinde depolama alanı kotası API'leri, kullanım + minimum (10 GiB, disk en yakın 1 GiB'a yuvarlanır) değere eşit statik bir değer döndürür.
+Politika devre dışı bırakıldığında depolama alanı kotası API'leri, genellikle kullanımdan bağımsız olarak cihazda mevcut toplam alanla orantılı dinamik bir değer döndürür.
+Politika ayarlanmadan bırakılırsa davranış, tahmin edilebilir raporlanan depolama alanı kotası özelliğinin yayınlanması veya flag'ler tarafından belirlenir.
+Sınırsız depolama izni olan siteler bu ayardan etkilenmez. Zorunlu kılınan kota da etkilenmez.</translation>
 <translation id="2344033063256716138">Kullanıcının paylaşılan verilere ve özelliklere erişmesine izin verilip verilmeyeceğini kontrol etmek için politikaları yapılandırın.</translation>
 <translation id="2345547870894930157">DNS-over-HTTPS'i güvenli olmayan geçiş olmadan etkinleştir</translation>
 <translation id="2347695338560092641">İşlem dışı yazıcı sürücülerine izin veriliyor</translation>
@@ -3204,6 +3208,7 @@ adresinden hata bildiriminde bulunun ve kullanım alanınızı açıklayın. Sö
 <translation id="3169872426103732947">Varsayılan URL'yi göster, kullanıcıların tam URL'ye geçmesine izin ver</translation>
 <translation id="3171369832001535378">Cihaz ağı ana makine adı şablonu</translation>
 <translation id="3173844121395372156">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine "<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />" politikasını kullanın.</translation>
+<translation id="3175063338945713984">Depolama alanı kotası API'leri, özelliğin yayınlanma sürecine göre değer döndürür.</translation>
 <translation id="3177537290334203187">Web sitelerinin ağ uç noktalarına istekte bulunup bulunamayacağını belirlerken varsayılan çalışma biçimini kullanın.</translation>
 <translation id="3177802893484440532">Yerel güven bağlantıları için online OCSP/CRL denetimlerini gerekli kıl</translation>
 <translation id="3179533009079100620">Profil Seçiciyi Göster</translation>
@@ -3348,6 +3353,7 @@ Microsoft Outlook kartının kullanılabilmesi için ek yönetici yapılandırma
 
 <ph name="NTPCARDSVISIBLE" /> devre dışı bırakılırsa Outlook kartı gösterilmez. <ph name="NTPCARDSVISIBLE" /> etkinleştirilirse Outlook kartının gösterilmesi için bu politika da etkinleştirilmeli ve gösterilecek veri bulunmalıdır. <ph name="NTPCARDSVISIBLE" /> ayarlanmazsa Outlook kartının gösterilmesi için bu politikanın etkinleştirilmesi, ayrıca kullanıcının Chrome'u Özelleştir bölümünden kartı etkinleştirmesi ve gösterilecek veri bulunması gerekir.</translation>
 <translation id="3261592499545947104">Bir sertifikanın kullanım süresi dolmadan kaç saniye önce yenilemenin tetikleneceği</translation>
+<translation id="326182244921429468">Depolama alanı kotası API'leri dinamik değerler döndürür.</translation>
 <translation id="3262080895269946462">Üçüncü taraf bağlamında WebSQL'nin varsayılan olarak devre dışı bırakılmasına izin ver.</translation>
 <translation id="326341982850521928">Renk düzeltmeyi etkinleştir</translation>
 <translation id="3263892501786842604">Destekleniyorsa yeni sekme sayfasındaki arama kutusunda <ph name="GOOGLE_LENS_PRODUCT_NAME" /> düğmesinin gösterilmesine izin ver.</translation>
@@ -6465,6 +6471,34 @@ Not: Bu politika HSTS yükseltmeleri için geçerli değildir.</translation>
 
 Politika, Devre Dışı değerine ayarlanırsa tarayıcı geçmişi ve indirme geçmişi silinemez. Bu politika devre dışı bırakılsa bile tarama ve indirme geçmişinin saklanacağı garanti edilmez. Kullanıcılar geçmiş veritabanındaki dosyaları doğrudan düzenleyebilir veya silebilirler. Ayrıca tarayıcının kendisinin süresi dolabilir veya geçmiş öğelerinin herhangi birini veya tümünü her an arşive alabilir.</translation>
 <translation id="5322649594584715998">Pili standart bir hızda tam olarak şarj et. Bu mod, "Uyarlanabilir" ve "Sınırlı" şarjı devre dışı bırakır.</translation>
+<translation id="5322726025747768984">Bu politika ayarlandığında, hedef URL'ye ve diğer koşullara bağlı olarak tarayıcının kullanacağı proxy'yi belirleyen kurallar yapılandırılır. Bu politika; <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikası, <ph name="PROXY_SETTINGS_EXTENSION_API" /> uzantı API'si veya manuel kullanıcı ayarları aracılığıyla belirlenen proxy ayarlarına göre öncelikli olur.
+
+Politika ayarlanmadan bırakılırsa diğer proxy politikaları veya kullanıcı ayarları etkilenmez.
+
+Tarayıcının, kullanacağı proxy'ye karar vermesi gerektiğinde aşağıdaki noktaların tümünü karşılayan bir giriş bulunana kadar <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> politikasının girişleri sırayla değerlendirilir:
+  *<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> içindeki URL kalıplarından en az biriyle eşleşir.
+  *<ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> içindeki hiçbir URL kalıbı eşleşmez.
+  *<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> belirtilmişse ve boş olmayan bir listeyse girişleri tarafından temsil edilen tüm koşullar karşılanır.
+Bu tür bir eşleşme için proxy olarak <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> içindeki değer kullanılır. Eşleşme bulunamazsa proxy ayarları, <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasında ayarlanan değerlere geri döner.
+
+<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> ve <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> tarafından desteklenen URL kalıplarını https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns adresinde bulabilirsiniz.
+
+<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> alan girişleri, PAC dosyalarının dize değerlerine karşılık gelir. Örneğin:
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+Alternatif olarak proxy'yi doğrudan belirtmek için URL benzeri proxy tanımlayıcıları kullanılabilir. Örneğin:
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+Listedeki ulaşılabilecek ilk giriş, proxy olarak kullanılır. Listedeki geçersiz girişler yoksayılır.
+
+<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> alanı, geçersiz kılma kuralı kullanılarak proxy'ye karar verilmesi için karşılanması gereken koşulların listesini içerir. Ayarlanmadan bırakılırsa <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> içinde en az bir ana makine eşleştiği sürece giriş kullanılır.
+
+<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> koşulu, sağlanan DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> öğesinin bir IP adresine çözümlenip çözümlenemediğini kontrol eder. <ph name="PROXY_OVERRIDE_RULES_RESULT" /> değeri "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />" ise koşul karşılanmış kabul edilir. Değer <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" /> olarak ayarlanmışsa çözüm başarısız olduğunda koşul karşılanmış kabul edilir.</translation>
 <translation id="5323200200131319468">Giriş ekranında sözlü geri bildirimi etkinleştir</translation>
 <translation id="5323271643727095577">beforeunload etkinliği için event.preventDefault() çağrıldığında iptal iletişim kutusunu gösterme beforeunload event.returnValue, beforeunload etkinliği için boş dize olduğunda iptal iletişim kutusunu göster.</translation>
 <translation id="5324430722441910403">Site arama ayarları</translation>
@@ -10939,6 +10973,7 @@ Tüm işleme değerlerinin ayrıntılı açıklaması için RFC 8828 belgesinin 
       Politikayı ayarlamadan bırakırsanız <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> (ayarlanmışsa) bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
 
       Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. Ancak M85'ten itibaren ana makinede "*" ve "[*.]" joker karakterler olan kalıplar bu politika için desteklenmez.</translation>
+<translation id="8251975082850036657">Depolama alanı kotası API'leri statik değerler döndürür.</translation>
 <translation id="82530263956734297">Engellenenler listesinden muaf tutulacak uzantı kimlikleri</translation>
 <translation id="8254749125469750814">Bir uzantının yüklenip yüklenemeyeceğini bulut hizmetiyle doğrulama.</translation>
 <translation id="8256006033157034334">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> politikasını kullanın.</translation>
@@ -12059,6 +12094,7 @@ Ayrıntıları https://support.google.com/chrome/a/answer/9301891 adresinde bula
       Bu politika yalnızca Family Link kullanıcıları içindir.</translation>
 <translation id="8947415621777543415">Cihaz konumunu bildir</translation>
 <translation id="8948062138228904066">Kimlik doğrulama sunucusu izin verilenler listesi</translation>
+<translation id="8951145747995737852">Depolama alanı kotası API'lerinin statik değerler döndürüp döndürmeyeceğini kontrol et</translation>
 <translation id="8951350807133946005">Disk önbellek dizinini ayarla</translation>
 <translation id="8952611478149810182">Devre dışı bırakılan form kontrollerinde etkinlik gönderme, diğer tarayıcılarla uyumluluğu ve geliştirici deneyimini iyileştirmek için Chromium'da değiştirilecek.
 

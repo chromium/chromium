@@ -73,7 +73,6 @@
 <translation id="311432875115153175">分頁群組清單已關閉</translation>
 <translation id="3194464645767632461">評分</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個分頁加入群組}other{將 <ph name="TABS_COUNT_MANY" /> 個分頁加入群組}}</translation>
-<translation id="3293080634164207409">新增分頁</translation>
 <translation id="3328308545011660196">建議：似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要將這些分頁加入群組嗎？</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{閒置 1 天後}other{閒置 <ph name="DAY_COUNT_MANY" /> 天後}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{新增 <ph name="ONE_ADDED" /> 個分頁}other{新增 <ph name="MANY_ADDED" /> 個分頁}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">設定</translation>
 <translation id="855081842937141170">固定分頁</translation>
 <translation id="8633025649649592204">近期活動</translation>
+<translation id="8635822281281406185">最多可新增 10 個檔案、分頁或圖片</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8714939927607906138">較低價格</translation>
 <translation id="8730621377337864115">完成</translation>

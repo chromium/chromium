@@ -1350,6 +1350,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1907044622262489040">Skriv med stemmen. Bruk søketasten + D, og begynn å snakke.</translation>
 <translation id="1907659324308286326">Noe Thunderbolt- eller USB4-tilbehør trenger minnetilgang for å fungere skikkelig.</translation>
 <translation id="1908591798274282246">Åpne den lukkede gruppen igjen</translation>
+<translation id="1909677622563887527">Chrome kontrolleres av programvare for automatisk testing</translation>
 <translation id="1909880997794698664">Er du sikker på at du vil beholde denne enheten permanent i kioskmodus?</translation>
 <translation id="1910721550319506122">Velkommen!</translation>
 <translation id="1910736334623230603">Kan ikke søke etter flere bilder. Legg til ett bilde om gangen.</translation>
@@ -1704,6 +1705,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2144536955299248197">Visningsprogram for sertifikat: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Android-apputvikling i Linux</translation>
 <translation id="2145468727756963476">Gemini lastes inn på nytt …</translation>
+<translation id="2145688286532368277">JavaScript-optimalisering er av for dette nettstedet.</translation>
 <translation id="2145917706968602070">Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og wifi er slått på</translation>
 <translation id="2146263598007866206">Nettsteder kan automatisk laste ned beslektede filer sammen for å spare tid</translation>
 <translation id="2147218225094845757">Skjul sidepanelet</translation>
@@ -3705,6 +3707,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3527085408025491307">Mappe</translation>
 <translation id="3528498924003805721">Snarveimål</translation>
 <translation id="3529851166527095708">&amp;Adresser med mer</translation>
+<translation id="3530919970074558307">Avslutt fokus på gruppen</translation>
 <translation id="3531070080754387701">Microsoft 365 kan ikke åpne <ph name="FILE_NAMES" /> fra denne mappen</translation>
 <translation id="3531883061432162622">Finn leselisten din og bokmerkene dine i Bokmerker og lister</translation>
 <translation id="3532273508346491126">Synkroniseringsadministrasjon</translation>
@@ -4058,6 +4061,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3757567010566591880">Løsne fra verktøyraden</translation>
 <translation id="3757645900890881944">Søkeverktøy</translation>
 <translation id="3757733214359997190">Fant ingen nettsteder</translation>
+<translation id="3757825964096339958">Fokusgruppe</translation>
 <translation id="375841316537350618">Laster ned mellomtjenerskript ...</translation>
 <translation id="3758887577462995665">Tips:</translation>
 <translation id="375962596908891207">Måned for <ph name="DROPDOWN_NAME" /></translation>
@@ -4330,6 +4334,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Visnings- og tekststørrelse: <ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3924487862883651986">Sender nettadresser til Safe Browsing for å sjekke dem. Sender også et lite utvalg av sider, nedlastinger, utvidelsesaktivitet og systeminformasjon for å bidra til å oppdage nye trusler. Knytter disse dataene til Google-kontoen din midlertidig når du er pålogget, slik at du er beskyttet i alle Google-appene.</translation>
+<translation id="3924788966103416622">En ekstern app vil ha full kontroll over denne Chrome-økten for å feilsøke den. Dette inkluderer tilgang til de lagrede dataene dine, informasjonskapsler og nettstedsdata samt muligheten til å navigere til hvilken som helst nettadresse.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Andre brukere på denne enheten kan også bruke dette nettverket</translation>
 <translation id="3926002189479431949">Smart Lock-telefon endret</translation>
@@ -4354,6 +4359,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3941565636838060942">Hvis du vil skjule tilgangen til dette programmet, må du avinstallere det ved hjelp av  <ph name="CONTROL_PANEL_APPLET_NAME" /> i kontrollpanelet.
   Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostikk</translation>
+<translation id="3942558231079086184">JavaScript-optimalisering er av for dette nettstedet. Slå på for å få bedre ytelse.</translation>
 <translation id="3943582379552582368">Til&amp;bake</translation>
 <translation id="3943857333388298514">Lim inn</translation>
 <translation id="3945513714196326460">Prøv et kortere navn</translation>
@@ -4465,6 +4471,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4015250302257349679">Trykk på <ph name="ACCELERATOR" /> for å fokusere på denne boblen, og trykk en gang til for å fokusere på elementet den peker på.</translation>
 <translation id="4016762287427926315">Tillatelser du gir <ph name="APP_NAME" />, blir også gitt til denne appen. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Opprett en QR-kode for denne linken</translation>
+<translation id="4018953474106733212">Bare nettutviklere bør slå på denne funksjonen, og de bør bare bruke den med klarerte apper.</translation>
 <translation id="4019983356493507433">Rediger bokmerkeliste</translation>
 <translation id="4020701737692625681">Administratoren din kan ta opp skjermen din</translation>
 <translation id="4021279097213088397">–</translation>
@@ -4845,6 +4852,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4292613336957320546">Akselerasjon</translation>
 <translation id="429312253194641664">Et nettsted spiller av medier</translation>
 <translation id="4293219510510666933">Bruk dagligdags språk for å søke i nettleserloggen og finne nettsteder du har besøkt. Du kan også stille spørsmål og få svar basert på nettleserloggen din. Denne innstillingen er på.</translation>
+<translation id="429344752071832554">Avslutt fokus på gruppen</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> er slettet fra nedlastingsloggen, men er fortsatt lagret på enheten din</translation>
 <translation id="4295072614469448764">Appen er tilgjengelig i terminalen din. Det kan også være et ikon i appoversikten.</translation>
 <translation id="4295979599050707005">Logg på igjen for å bekrefte at kontoen din (<ph name="USER_EMAIL" />) kan brukes sammen med nettsteder, apper og utvidelser i Chrome og Google Play. Du kan også fjerne denne kontoen. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -5000,6 +5008,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4405224443901389797">Flytt til …</translation>
 <translation id="4405781821077215583">Gjør elementer på skjermen, inkludert tekst, mindre eller større</translation>
 <translation id="4406308048672435032">Du kan gjøre denne fanen inaktiv eller laste inn listen på nytt for å se hele listen igjen</translation>
+<translation id="4406881185911439342">Fokusgruppe</translation>
 <translation id="4406883609789734330">Direkteteksting</translation>
 <translation id="4406963243402726564">Ulagrede data</translation>
 <translation id="4408599188496843485">H&amp;jelp</translation>
@@ -10196,6 +10205,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8032569120109842252">Følger</translation>
 <translation id="8033827949643255796">valgt</translation>
 <translation id="8033958968890501070">Tidsavbrudd</translation>
+<translation id="8034399942062051455">V8-optimalisering er av</translation>
 <translation id="8034697324150621782">Bytt med øverste visning</translation>
 <translation id="8035059678007243127">Inkognitoside i frem-og-tilbake-bufferen: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Bidra til å gjøre autofyll bedre</translation>

@@ -496,6 +496,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3114507951000454849">Бүгүнкү жаңылыктарды окуңуз <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Толук маалымат</translation>
 <translation id="3123734510202723619">Жарыялар</translation>
+<translation id="3134385238404760368">Жакында ачылган өтмөктөр жок</translation>
 <translation id="314939179385989105">Chrome’дун башкы бети</translation>
 <translation id="3158667104057012316">Кол менен иреттелүүдө</translation>
 <translation id="3159335509547415276">Бөгөттөлгөн аккаунттар жөнүндө кеңири маалымат</translation>
@@ -817,6 +818,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4577115723294378384">А-Я тартибинде иргөө</translation>
 <translation id="4578289292431526768">Кеттик!</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# мүнөт мурун}other{# мүнөт мурун}}</translation>
+<translation id="4585751637295612750">Cурооңузга кошуу үчүн жаңы өтмөк ачыңыз</translation>
 <translation id="4587589328781138893">Сайттар</translation>
 <translation id="4594952190837476234">Бул оффлайн режиминдеги баракча <ph name="CREATION_TIME" /> сакталган жана онлайн версиясынан айырмаланышы мүмкүн.</translation>
 <translation id="4595237294768457124">Жаңы өтмөк бетин ачуу</translation>

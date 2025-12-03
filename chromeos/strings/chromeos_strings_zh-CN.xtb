@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">橙子</translation>
 <translation id="1275718070701477396">已选择</translation>
 <translation id="1290331692326790741">信号较弱</translation>
+<translation id="1292474106138697109">课堂工具显示屏</translation>
 <translation id="1300115153046603471">APN 是默认<ph name="ATTACH" />类型。</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">转换</translation>
@@ -1046,6 +1047,7 @@
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5600027863942488546">已测试<ph name="KEY_NAME" />键</translation>
 <translation id="5606865426897221650">Tab 键</translation>
+<translation id="5612205513582918357">课堂工具正在与“<ph name="RECEIVER_NAME" />”共享您的屏幕</translation>
 <translation id="5613201299517339763">您已退出账号</translation>
 <translation id="5620281292257375798">仅供内部使用</translation>
 <translation id="5628106863521633649">支持的语言</translation>

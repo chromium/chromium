@@ -6669,6 +6669,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="557722062034137776">Qurilmani asl holatiga qaytarsangiz, bu Google hisoblari yoki ularga sinxronlangan ma’lumotlarga ta’sir qilmaydi. Ammo, qurilmada saqlangan barcha fayllar o‘chirib tashlanadi.</translation>
 <translation id="5578059481725149024">Avtomatik kirish</translation>
 <translation id="5578387000057347457">Rasm yaratish uchun maxsus soʻrov kiriting yoki matnni ajratib belgilang</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 ta obyekt faqat shu qurilmaga saqlanadi. Boshqa qurilmalarda foydalanish uchun <ph name="BEGIN_LINK" />uni Google hisobingizda saqlang<ph name="END_LINK" />.}other{{ITEM_COUNT} ta obyekt faqat bu qurilmaga saqlanadi. Boshqa qurilmalarda foydalanish uchun <ph name="BEGIN_LINK" />ularni Google hisobingizda saqlang<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560"><ph name="SECTION_HEADER" /> roʻyxatidan <ph name="SITE" /> saytini olib tashlash</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> tiliga tarjima qilindi</translation>
 <translation id="558170650521898289">Microsoft Windows qurilmasi drayveri tekshiruvi</translation>
@@ -7157,6 +7158,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
     <ph name="LINE_BREAK" />
     Bu rasm Chromebook qurilmasining kirish va qulflash ekranida ko‘rinadi.</translation>
 <translation id="5925147183566400388">Tasdiqlash markazi reglamenti ko‘rsatkichi</translation>
+<translation id="5926936390113611560">Barcha profillarni ochish</translation>
 <translation id="5927132638760172455">Noma’lum qurilmaga translatsiya qilinmoqda</translation>
 <translation id="592740088639760830">Bu konteynerni toʻxtatish</translation>
 <translation id="592880897588170157">PDF fayllarni Chrome brauzerida avtomatik ochmasdan yuklab olish</translation>
@@ -7241,6 +7243,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5979421442488174909"><ph name="LANGUAGE" /> tiliga &amp;tarjima qilish</translation>
 <translation id="5979469435153841984">Sahifalarni xatcho‘plarga qo‘shish uchun manzillar qatoridagi yulduzchani bosing</translation>
 <translation id="5982578203375898585">Yuklab olinsa, koʻrsatilsin</translation>
+<translation id="598347738324022917">Bukmark shu qurilmaga saqlandi</translation>
 <translation id="5983716913605894570">Yaratilmoqda...</translation>
 <translation id="5984222099446776634">So‘nggi ochilgan sahifalar</translation>
 <translation id="5984334442529819751">DLC oʻrnatishda xatolik (koʻpincha qayta yuklash talab qilinadi, batafsil axborot uchun Sozlamalar\&gt;\&gt;ChromeOS haqida bandiga qarang).</translation>

@@ -338,6 +338,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1549470594296187301">Selle funktsiooni kasutamiseks peab JavaScript olema lubatud.</translation>
 <translation id="1553152622374372421">Talisport</translation>
 <translation id="1553358976309200471">Värskenda Chrome'i</translation>
+<translation id="1555014818414775661">Piltide lisamine</translation>
 <translation id="1555130319947370107">Sinine</translation>
 <translation id="1555191101192706055">Saidil, mida proovisite külastada, võivad ründajad meelitada teid installima kahjulikku tarkvara, mis mõjutab teie sirvimisviisi – näiteks muutes teie avalehte või näidates teile külastatavatel saitidel lisareklaame.</translation>
 <translation id="1559231233244409191">Papp (kolmekihiline)</translation>
@@ -965,6 +966,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2536110899380797252">Lisa aadress</translation>
 <translation id="2537931901612099523">Teised, kes seda seadet kasutavad, ei näe teie tegevusi, et saaksite privaatsemalt sirvida. See ei muuda seda, kuidas teie külastatavad veebisaidid ja nende kasutatavad teenused (sh Google) andmeid koguvad. Allalaaditud failid ja järjehoidjad salvestatakse.</translation>
 <translation id="2541219929084442027">Inkognito vahelehtedel kuvatavaid lehti ei talletata pärast inkognito vahelehtede sulgemist brauseri ajalukku, küpsistefailide salve ega otsinguajalukku. Allalaaditavad failid ja järjehoidjatesse lisatud sisu säilitatakse.</translation>
+<translation id="2541474152868747095">Selleks et saaksite kasutada oma muudest seadmetest pärit ajalugu, kinnitage oma isik. Sünkroonimise saate seadetes igal ajal lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="2542106216580219892">Surfamine</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" /> – täisekraanilt väljumiseks vajutage pikalt klahvi |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Administraator taaskäivitas teie seadme</translation>
@@ -1216,6 +1218,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2979424420072875974">Ressursid kirjanikele ja kirjutajatele</translation>
 <translation id="2979639724566107830">Ava uues aknas</translation>
 <translation id="2980742331521553164">Selle kaardi CVC krüpteeritakse ja salvestatakse teie Google'i kontole, et saaksite kiiremini maksta</translation>
+<translation id="2983311431122838216">Küsi Google'i otsingu AI-režiimis</translation>
 <translation id="2983666748527428214">Inkognito vahelehe avamine</translation>
 <translation id="2985306909656435243">Kui see on lubatud, salvestab Chromium teie kaardi koopia vormide kiiremaks täitmiseks sellesse seadmesse.</translation>
 <translation id="2985398929374701810">Sisestage kehtiv aadress</translation>
@@ -1394,6 +1397,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, rakenduses Google'i kalender kiirelt uue sündmuse loomiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
 <translation id="3261488570342242926">Lisateave virtuaalkaartide kohta</translation>
 <translation id="3262698603497362968">Ostuvalikud</translation>
+<translation id="3264315627780269177">Seda vahelehte ei saa jagada</translation>
 <translation id="3266367459139339908">Lisame uusi viise, kuidas piirata teavet, mida saidid teile isikupärastatud reklaame esitades teie kohta hankida saavad. Viisid hõlmavad näiteks järgmist.</translation>
 <translation id="3266793032086590337">Väärtus (konflikt)</translation>
 <translation id="3268451620468152448">Avatud vahelehed</translation>
@@ -1645,6 +1649,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3665100783276035932">Enamik saite peaks töötama ootuspäraselt</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Lisateave<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Number</translation>
+<translation id="3670159164851218963">AI-režiimi ajalugu</translation>
 <translation id="3670229581627177274">Lülita Bluetooth sisse</translation>
 <translation id="3671540257457995106">Kas lubada suuruse muutmine?</translation>
 <translation id="3672568546897166916">Viga asukohas <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
@@ -1873,6 +1878,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4031179711345676612">Mikrofon on lubatud</translation>
 <translation id="4036753017940930924">Krundid ja maa</translation>
 <translation id="4039506337798853114">Vajutage kursori kuvamiseks klahvi |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045070493270310437">Ava vahelehed uuesti</translation>
 <translation id="4045226534284799755">Enne uuesti proovimist logige oma Microsofti kontole sisse</translation>
 <translation id="4045441967987592849">Ava uuesti</translation>
 <translation id="4047351652147966654">18 × 24 tolli</translation>
@@ -2026,6 +2032,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4255487295905690262">Teile saadetakse meilimärguandeid, kui hind mõnel saidil langeb.</translation>
 <translation id="425582637250725228">Tehtud muudatusi ei pruugita salvestada.</translation>
 <translation id="4258748452823770588">Sobimatu allkiri</translation>
+<translation id="4260407128682690669">Selleks et saaksite kasutada oma muudest seadmetest pärit ajalugu, sünkroonige ajalugu ja vahelehed kontoga <ph name="ACCOUNT_EMAIL" />. Sünkroonimise saate seadetes igal ajal lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="4265635050210404830">Teie kliendikaardid</translation>
 <translation id="4265872034478892965">Lubas administraator</translation>
 <translation id="4267590181863312380">Oma ajaloo hankimiseks teistest seadmetest logige sisse ja sünkroonige ajalugu. Lisaks saate kõigis seadmetes oma paroole ja muud kasutada. Sünkroonimise võite igal ajal seadetes lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
@@ -2060,6 +2067,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4299919199185766032">Otsetee nimi ületab maksimaalset lubatud pikkust <ph name="MAX_LENGTH" /> tähemärki.</translation>
 <translation id="4300272766492248925">Ava rakendus</translation>
 <translation id="4300675098767811073">Mitu auku paremal</translation>
+<translation id="4300841966382281549">Reis</translation>
 <translation id="4302514097724775343">Mängimiseks puudutage dinosaurust</translation>
 <translation id="4304049446746819918">{0,plural, =1{Administraatori reegel ei soovita seda faili sihtkohta <ph name="DESTINATION_NAME" /> teisaldada}other{Administraatori reegel ei soovita neid faile sihtkohta <ph name="DESTINATION_NAME" /> teisaldada}}</translation>
 <translation id="4304485328308299773">Lugege klientide hinnanguid toodetele, teenustele või kogemustele, et saaksite arvustuste abil teha teadlikumaid otsuseid.</translation>
@@ -2124,6 +2132,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4406896451731180161">otsingutulemused</translation>
 <translation id="4407758156081352648">Turvalisuse tagamiseks ei luba teie organisatsioon Chrome’is paroole korduvalt kasutada. Paroolid on Chrome’is kasutaja privaatsuse kaitsmiseks krüpteeritud.</translation>
 <translation id="4408413947728134509">Küpsisefailid: <ph name="NUM_COOKIES" /></translation>
+<translation id="4409556632583862731">Uus lõim</translation>
 <translation id="4412074349188076601">See seadistus on märgitud installitavaks, kuid selle arhitektuuri jaoks pole esitatud ühtegi kujutist, seega ei saa seda installida.</translation>
 <translation id="4412377069090572315">Mida inimesed räägivad</translation>
 <translation id="4414452699610169758">Kasutage paroolide, makseviiside ja aadresside salvestamiseks ning täitmiseks Google'i paroolihaldurit ja Chrome'i automaattäidet</translation>
@@ -2368,7 +2377,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4832388034239846146">Vahelehegruppide jagamiseks värskendage Chrome'i</translation>
 <translation id="483241715238664915">Lülita hoiatused sisse</translation>
 <translation id="4832961164064927107">Grillimine ja BBQ</translation>
-<translation id="4834250788637067901">Makseviisid, pakkumised ja aadressid, mis kasutavad Google Payd</translation>
 <translation id="4840250757394056958">Chrome’i ajaloo vaatamine</translation>
 <translation id="484462545196658690">Automaatne</translation>
 <translation id="4844937814014739139">Jagatud vahelehtede kerimine ja suumimine</translation>
@@ -2774,6 +2782,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
     <ph name="LINE_BREAK" />
     Võtke ühendust süsteemiadministraatoriga.</translation>
 <translation id="5496804587179176046">Salvestage turvakoodid, praegu ei ole turvakoode salvestatud</translation>
+<translation id="5499229993630251170">Kas jätkata selle lõimega?</translation>
 <translation id="550365051221576010">Sisestage kõik</translation>
 <translation id="5506286895894263601">Loendis pole sobilikke otseteid.</translation>
 <translation id="5508443345185481044">Foto- ja videokaamerad</translation>
@@ -3002,6 +3011,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5886961930368713749">Saatke võrdlusfunktsiooni kohta tagasisidet</translation>
 <translation id="5887400589839399685">Kaart on salvestatud</translation>
 <translation id="5887687176710214216">Viimati külastati eile</translation>
+<translation id="5889251770650310375">Selleks et saaksite kasutada oma muudest seadmetest pärit ajalugu, kinnitage oma isik ning sünkroonige ajalugu ja vahelehed. Sünkroonimise saate seadetes igal ajal lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="5890248301649767931">Kas salvestada õiguskaitsenumber?</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
 <translation id="5895187275912066135">Väljastamiskuupäev</translation>
@@ -3084,6 +3094,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6018650639991193045">Kustutage Chrome'i seadetes oma sirvimisajalugu ja küpsised ning tühjendage vahemälu</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sünkroonitud)</translation>
+<translation id="6025471531651464742">Failide lisamine</translation>
 <translation id="6028591542479806248">Mobiili- ja meilimärguannete haldamine</translation>
 <translation id="6028833024483927901">Maailma köök</translation>
 <translation id="603068602130820122">Kaks kirjaklambrit paremal</translation>
@@ -3121,6 +3132,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6062405040252994646">Tööriist</translation>
 <translation id="6062937464449575061">Peata hinna jälgimine</translation>
 <translation id="6063415549109819824">Kodu finantseerimine</translation>
+<translation id="6069343053547121389">Esitage AI-režiimis selle vahelehe kohta küsimusi</translation>
 <translation id="6070432475334343308">Ühte faili ei laaditud üles teenuse <ph name="CLOUD_PROVIDER" /> kausta <ph name="FOLDER_NAME" /></translation>
 <translation id="6071503852498277813">Sisu järjehoidjate sõelumisteenus</translation>
 <translation id="6078069862923723141">Tsüaan 2</translation>
@@ -3365,6 +3377,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6443406338865242315">Millised laiendused ja pistikprogrammid olete installinud</translation>
 <translation id="6444329331928531170">Pensionile jäämine ja pension</translation>
 <translation id="6445051938772793705">Riik</translation>
+<translation id="6446256167362544629">AI külgpaneel</translation>
 <translation id="6446608382365791566">Lisateabe lisamine</translation>
 <translation id="6447842834002726250">Küpsised</translation>
 <translation id="6448371595882710519">Vaadake lisateavet andmete juhtelementide kohta</translation>
@@ -3427,6 +3440,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6539092367496845964">Midagi läks valesti. Proovige hiljem uuesti.</translation>
 <translation id="6540488083026747005">Lubasite sellel saidil kolmanda osapoole küpsisefailid</translation>
 <translation id="6545864417968258051">Bluetoothi otsimine</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> – <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Kaks auku vasakul</translation>
 <translation id="6549443526281184652">Kostüümid</translation>
 <translation id="6550245281449521513">Hiirelukk pole lubatud</translation>
@@ -3456,6 +3470,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6597665340361269064">90 kraadi</translation>
 <translation id="6598976221101665070">Draamad</translation>
 <translation id="6599642189720630047">Jälgitavad tooted</translation>
+<translation id="6608426252530537984">Lisage kuni 10 vahelehte</translation>
 <translation id="6613742613135780554">käeliigutuste jälgimine</translation>
 <translation id="6613866251791999074">Lisateave otsingumootori kohta Chrome'is</translation>
 <translation id="6615297766614333076">Virnastaja 2</translation>
@@ -3577,6 +3592,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6799145206637008376">Selle virtuaalkaardi CVC täitmine</translation>
 <translation id="6805030849054648206">Ümbrik B6/C4</translation>
 <translation id="6807791860691150411">Haridus</translation>
+<translation id="6808579246645021886">Jagatud vahelehed ja failid</translation>
 <translation id="681021252041861472">Kohustuslik väli</translation>
 <translation id="6810899417690483278">Kohandamise ID</translation>
 <translation id="6816109178681043245">Spordikaubad</translation>
@@ -4813,6 +4829,7 @@ Lisateave:
 <translation id="8814547618907885931">Vaadake kõiki võrdlustabeleid</translation>
 <translation id="8814707942599948500">Ümbrik C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage Chrome'i seadetes Chrome'i värskendamiseks tabulaatorit ja seejärel sisestusklahvi</translation>
+<translation id="8819855907485254989">Salvestage transpordipilet Walletisse</translation>
 <translation id="8820817407110198400">Järjehoidjad</translation>
 <translation id="882338992931677877">Käsitsi sisestamise ava</translation>
 <translation id="8827067923357481311">Hiljem maksmise võimalused</translation>
@@ -4987,6 +5004,7 @@ Lisateave:
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage tabulaatorit ja siis sisestusklahvi, et teekonda jätkata ning oma Chrome'i ajaloos asjakohaseid tegevusi näha</translation>
 <translation id="9119042192571987207">Üles laaditud</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> soovib teie isiku kinnitada</translation>
+<translation id="9119764377203471454">Manuseid ei saa lisada.</translation>
 <translation id="9120593907434185157">Salvestage aadress</translation>
 <translation id="912327514020027767">Seelikud</translation>
 <translation id="9128870381267983090">Ühendumine Internetiga</translation>
@@ -4995,6 +5013,7 @@ Lisateave:
 <translation id="9133985615769429248">Kui jagate seda seadet teistega, saate kasutada ekraanilukku, et salvestatud parooli kasutades oma isik kinnitada</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, virtuaalkaart</translation>
 <translation id="9138037198177304356">Märguanded on lubatud</translation>
+<translation id="913846191326613072">Vahelehtede jagamise korral saadetakse nende sisu ja URL-id Google'ile.</translation>
 <translation id="9139318394846604261">Ostlemine</translation>
 <translation id="9140198744651252040">Chrome'i brauser soovib kasutada paroolide automaattäitmiseks sõrmejälge</translation>
 <translation id="9141013498910525015">Aadresside haldamine</translation>
@@ -5086,6 +5105,7 @@ Lisateave:
 <translation id="955429569736351433">VR on lubatud</translation>
 <translation id="955627189349169688">Saate sellest reeglist loobuda <ph name="BEGIN_LINK" />Chrome'i sünkroonimisseadetes<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Kollane 2</translation>
+<translation id="961372935451193190">Vahelehed ja failid</translation>
 <translation id="961663415146723894">Köide all</translation>
 <translation id="961856697154696964">Sirvimisandmete kustutamine</translation>
 <translation id="961930410699694996">Asukoht seekord lubatud</translation>

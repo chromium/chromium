@@ -1356,6 +1356,7 @@
 <translation id="1907044622262489040">तुमचा आवाज वापरून टाइप करा. Search + D वापरा, त्यानंतर बोलणे सुरू करा.</translation>
 <translation id="1907659324308286326">काही थंडरबोल्ट किंवा USB4 अ‍ॅक्सेसरी योग्यरीत्या काम करण्यासाठी मेमरीचा अ‍ॅक्सेस आवश्यक आहे.</translation>
 <translation id="1908591798274282246">बंद केलेला गट पुन्हा उघडा</translation>
+<translation id="1909677622563887527">ऑटोमेटेड चाचणी सॉफ्टवेअरने Chrome नियंत्रित केले जात आहे</translation>
 <translation id="1909880997794698664">तुम्हाला खात्री आहे की तुम्ही कियोस्क मोडमध्ये हे डिव्हाइस कायमचे ठेवू इच्छिता?</translation>
 <translation id="1910721550319506122">सुस्वागतम!</translation>
 <translation id="1910736334623230603">एकाहून अधिक इमेज शोधू शकत नाही. एका वेळी एक इमेज जोडा.</translation>
@@ -1710,6 +1711,7 @@
 <translation id="2144536955299248197">सर्टिफिकेट दर्शक: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android अ‍ॅप डेव्हलपमेंट</translation>
 <translation id="2145468727756963476">Gemini रिफ्रेश होत आहे...</translation>
+<translation id="2145688286532368277">या साइटसाठी JavaScript ऑप्टिमायझेशन बंद आहे.</translation>
 <translation id="2145917706968602070">तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा</translation>
 <translation id="2146263598007866206">तुमचा वेळ वाचवण्यासाठी साइट संबंधित फाइल आपोआप एकत्रितपणे डाउनलोड करू शकतात</translation>
 <translation id="2147218225094845757">साइड पॅनल लपवा</translation>
@@ -4338,6 +4340,7 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">डिस्प्ले आणि मजकुराचा आकार <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">URL तपासण्यासाठी त्या सुरक्षित ब्राउझिंग ला पाठवतो. तसेच नवीन धोके शोधण्यात मदत करण्यासाठी पेज, डाउनलोड, एक्स्टेंशन अ‍ॅक्टिव्हिटी आणि सिस्टीम माहिती यांचे लहान नमुने पाठवतो. Google अ‍ॅप्सवर तुमचे संरक्षण करण्यासाठी, तुम्ही साइन इन केलेले असताना हा डेटा तुमच्या Google खाते शी तात्पुरता लिंक करतो.</translation>
+<translation id="3924788966103416622">बाह्य अ‍ॅपला हे Chrome सेशन डीबग करण्यासाठी त्यावर पूर्ण नियंत्रण हवे आहे. यामध्ये, तुमचा सेव्ह केलेला डेटा, कुकी व साइट डेटा यांचा अ‍ॅक्सेस आणि कोणत्याही URL वर नेव्हिगेट करण्याची क्षमता यांचा समावेश आहे.</translation>
 <translation id="3925573269917483990">कॅमेराः</translation>
 <translation id="3925926055063465902">या डिव्हाइसवरील इतर वापरकर्तेदेखील हे नेटवर्क वापरू शकतात</translation>
 <translation id="3926002189479431949">Smart Lock फोन बदलला</translation>
@@ -4364,6 +4367,7 @@
 
   तुम्ही <ph name="CONTROL_PANEL_APPLET_NAME" /> सुरुवात करू इच्छिता?</translation>
 <translation id="3942420633017001071">निदान</translation>
+<translation id="3942558231079086184">या साइटसाठी JavaScript ऑप्टिमायझेशन बंद आहे. आणखी चांगल्या परफॉर्मन्ससाठी सुरू करा.</translation>
 <translation id="3943582379552582368">&amp;मागील</translation>
 <translation id="3943857333388298514">पेस्ट करा</translation>
 <translation id="3945513714196326460">संक्षिप्त नाव वापरून पहा</translation>
@@ -4475,6 +4479,7 @@
 <translation id="4015250302257349679">या बबलवर फोकस करण्यासाठी <ph name="ACCELERATOR" /> दाबा, त्यानंतर तो ज्या घटकाकडे निर्देश करत आहे त्यावर फोकस करण्याकरिता ते पुन्हा दाबा.</translation>
 <translation id="4016762287427926315">तुम्ही <ph name="APP_NAME" /> साठी ज्या परवानग्यांना अनुमती देता, त्यांना या अ‍ॅपसाठीदेखील अनुमती दिली जाईल. <ph name="BEGIN_LINK" />व्यवस्थापित करा<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">या लिंकसाठी QR कोड तयार करा</translation>
+<translation id="4018953474106733212">फक्त वेब डेव्हलपरनी हे वैशिष्ट्य सुरू केले पाहिजे आणि ते फक्त विश्वसनीय ॲप्ससह वापरले पाहिजे.</translation>
 <translation id="4019983356493507433">बुकमार्क सूची संपादित करा</translation>
 <translation id="4020701737692625681">तुमचा ॲडमिनिस्ट्रेटर तुमची स्क्रीन रेकॉर्ड करू शकतो</translation>
 <translation id="4021279097213088397">–</translation>
@@ -10212,6 +10217,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8032569120109842252">फॉलो करत आहे</translation>
 <translation id="8033827949643255796">निवडलेले</translation>
 <translation id="8033958968890501070">वेळ संपली</translation>
+<translation id="8034399942062051455">V8 ऑप्टिमायझेशन बंद आहे</translation>
 <translation id="8034697324150621782">वरून दिसणाऱ्या दृश्यासह बदला</translation>
 <translation id="8035059678007243127">बॅक/फॉरवर्ड कॅशे केलेले गुप्त पेज: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">ऑटोफिल यामध्ये सुधारणा करण्यात मदत करा</translation>
@@ -11513,6 +11519,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8910987510378294980">डिव्हाइसची सूची लपवा</translation>
 <translation id="8912362522468806198">Google खाते</translation>
 <translation id="8912810933860534797">ऑटो- स्कॅन सुरू करा</translation>
+<translation id="8914030287343429787">तुम्ही Chrome किंवा Android वापरत नसतानाही <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> मध्ये साइन इन करून तुमचे पासवर्ड पहा</translation>
 <translation id="8914504000324227558">Chrome रीलाँच करा</translation>
 <translation id="8915307125957890427">टॅबवर राइट-क्लिक करा आणि "गटामध्ये टॅब जोडा" निवडा व त्यानंतर "नवीन गट" निवडा</translation>
 <translation id="8915370057835397490">सूचना लोड करीत आहे</translation>

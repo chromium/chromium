@@ -7,6 +7,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Crëwyd <ph name="NUM_YEARS_ONE" /> flwyddyn yn ôl}zero{Crëwyd <ph name="NUM_YEARS_MANY" /> blynedd yn ôl}two{Crëwyd <ph name="NUM_YEARS_MANY" /> flynedd yn ôl}few{Crëwyd <ph name="NUM_YEARS_MANY" /> blynedd yn ôl}many{Crëwyd <ph name="NUM_YEARS_MANY" /> blynedd yn ôl}other{Crëwyd <ph name="NUM_YEARS_MANY" /> blynedd yn ôl}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Bydd tabiau a grwpiau anweithredol yn cael eu cau ar ôl 1 mis}zero{Bydd tabiau a grwpiau anweithredol yn cael eu cau ar ôl <ph name="MONTH_COUNT_MANY" /> misoedd}two{Bydd tabiau a grwpiau anweithredol yn cael eu cau ar ôl <ph name="MONTH_COUNT_MANY" /> fis}few{Bydd tabiau a grwpiau anweithredol yn cael eu cau ar ôl <ph name="MONTH_COUNT_MANY" /> mis}many{Bydd tabiau a grwpiau anweithredol yn cael eu cau ar ôl <ph name="MONTH_COUNT_MANY" /> mis}other{Bydd tabiau a grwpiau anweithredol yn cael eu cau ar ôl <ph name="MONTH_COUNT_MANY" /> mis}}</translation>
 <translation id="1173894706177603556">Ailenwi</translation>
+<translation id="1203747227183434426">Yn recordio cyfryngau</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Agor <ph name="TITLE_OF_GROUP" /> gydag <ph name="TAB_COUNT2" /> tab}zero{Agor <ph name="TITLE_OF_GROUP" /> gyda <ph name="TAB_COUNT2" /> tab}two{Agor <ph name="TITLE_OF_GROUP" /> gyda <ph name="TAB_COUNT2" /> dab}few{Agor <ph name="TITLE_OF_GROUP" /> gyda <ph name="TAB_COUNT2" /> thab}many{Agor <ph name="TITLE_OF_GROUP" /> gyda <ph name="TAB_COUNT2" /> thab}other{Agor <ph name="TITLE_OF_GROUP" /> gyda <ph name="TAB_COUNT2" /> tab}}</translation>
 <translation id="1273910660700874265">Dewisiadau grŵp tabiau <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">Dewiswch pryd y caiff tabiau a grwpiau tab eu symud yn awtomatig i'r adran anweithredol.</translation>
@@ -21,6 +22,7 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> eitem anweithredol}zero{<ph name="TABS_COUNT_MANY" /> eitemau anweithredol}two{<ph name="TABS_COUNT_MANY" /> eitem anweithredol}few{<ph name="TABS_COUNT_MANY" /> eitem anweithredol}many{<ph name="TABS_COUNT_MANY" /> eitem anweithredol}other{<ph name="TABS_COUNT_MANY" /> eitem anweithredol}}</translation>
 <translation id="1645759014353344461">Mae <ph name="TABS_COUNT_MANY" /> o dabiau wedi'u grwpio</translation>
 <translation id="1657719826150349398">Symud tab i lawr</translation>
+<translation id="1670942869417022142">Sain wedi'i distewi</translation>
 <translation id="1697284962337958118">Ychwanegu at</translation>
 <translation id="1713541401465507417">Cau pob tab a grŵp</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{Nid yw <ph name="TAB_GROUPS_COUNT_ONE" /> grŵp tabiau ar gael mwyach}zero{Nid yw <ph name="TAB_GROUPS_COUNT_MANY" /> grŵp tabiau ar gael mwyach}two{Nid yw <ph name="TAB_GROUPS_COUNT_MANY" /> grŵp tabiau ar gael mwyach}few{Nid yw <ph name="TAB_GROUPS_COUNT_MANY" /> grŵp tabiau ar gael mwyach}many{Nid yw <ph name="TAB_GROUPS_COUNT_MANY" /> grŵp tabiau ar gael mwyach}other{Nid yw <ph name="TAB_GROUPS_COUNT_MANY" /> grŵp tabiau ar gael mwyach}}</translation>
@@ -73,7 +75,6 @@
 <translation id="311432875115153175">Rhestr grwpiau tabiau ar gau</translation>
 <translation id="3194464645767632461">sgôr</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Ychwanegu <ph name="TABS_COUNT_ONE" /> tab at grŵp}zero{Ychwanegu <ph name="TABS_COUNT_MANY" /> tab at grŵp}two{Ychwanegu <ph name="TABS_COUNT_MANY" /> dab at grŵp}few{Ychwanegu <ph name="TABS_COUNT_MANY" /> thab at grŵp}many{Ychwanegu <ph name="TABS_COUNT_MANY" /> thab at grŵp}other{Ychwanegu <ph name="TABS_COUNT_MANY" /> tab at grŵp}}</translation>
-<translation id="3293080634164207409">Ychwanegu tabiau</translation>
 <translation id="3328308545011660196">Awgrym: Mae <ph name="NUMBER_OF_TABS" /> o dabiau yn ymddangos yn berthnasol. Grwpio nhw?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Ar ôl 1 diwrnod yn anweithredol}zero{Ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod yn anweithredol}two{Ar ôl <ph name="DAY_COUNT_MANY" /> ddiwrnod yn anweithredol}few{Ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod yn anweithredol}many{Ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod yn anweithredol}other{Ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod yn anweithredol}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab newydd}zero{<ph name="MANY_ADDED" /> tab newydd}two{<ph name="MANY_ADDED" /> dab newydd}few{<ph name="MANY_ADDED" /> thab newydd}many{<ph name="MANY_ADDED" /> thab newydd}other{<ph name="MANY_ADDED" /> tab newydd}}</translation>
@@ -111,6 +112,7 @@
 <translation id="4871719318659334896">Cau'r grŵp</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Adfer ac agor grŵp tabiau <ph name="TITLE_OF_GROUP" /> gydag <ph name="TABS_COUNT_ONE" /> tab, lliw <ph name="COLOR_NAME" />.}zero{Adfer ac agor grŵp tabiau <ph name="TITLE_OF_GROUP" /> gyda <ph name="TABS_COUNT_MANY" /> tabiau, lliw <ph name="COLOR_NAME" />.}two{Adfer ac agor grŵp tabiau <ph name="TITLE_OF_GROUP" /> gyda <ph name="TABS_COUNT_MANY" /> dab, lliw <ph name="COLOR_NAME" />.}few{Adfer ac agor grŵp tabiau <ph name="TITLE_OF_GROUP" /> gyda <ph name="TABS_COUNT_MANY" /> thab, lliw <ph name="COLOR_NAME" />.}many{Adfer ac agor grŵp tabiau <ph name="TITLE_OF_GROUP" /> gyda <ph name="TABS_COUNT_MANY" /> thab, lliw <ph name="COLOR_NAME" />.}other{Adfer ac agor grŵp tabiau <ph name="TITLE_OF_GROUP" /> gyda <ph name="TABS_COUNT_MANY" /> tab, lliw <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">Agor</translation>
+<translation id="4894777338623123366">Rhannu sgrîn tab</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Cau tab}zero{Cau tabiau}two{Cau tabiau}few{Cau tabiau}many{Cau tabiau}other{Cau tabiau}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> grŵp wedi'u cadw (bydd yn cau tabiau ac yn dileu grwpiau)</translation>
 <translation id="492284538114688557">Wedi nodi gostyngiad pris</translation>
@@ -143,6 +145,7 @@
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Symud grŵp i ffenestr newydd}zero{Symud grŵp i ffenestr arall}two{Symud grŵp i ffenestr arall}few{Symud grŵp i ffenestr arall}many{Symud grŵp i ffenestr arall}other{Symud grŵp i ffenestr arall}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Symud tab i'r dde}zero{Symud tabiau i'r dde}two{Symud tabiau i'r dde}few{Symud tabiau i'r dde}many{Symud tabiau i'r dde}other{Symud tabiau i'r dde}}</translation>
 <translation id="6228793724645064692">(sgôr siop)</translation>
+<translation id="6251046978189636310">Wrthi'n chwarae sain</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Tynnu tab o'r grŵp}zero{Tynnu tabiau o'r grŵp}two{Tynnu tabiau o'r grŵp}few{Tynnu tabiau o'r grŵp}many{Tynnu tabiau o'r grŵp}other{Tynnu tabiau o'r grŵp}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Ychwanegu'r tab at grŵp newydd}zero{Ychwanegu'r tabiau at grŵp newydd}two{Ychwanegu'r tabiau at grŵp newydd}few{Ychwanegu'r tabiau at grŵp newydd}many{Ychwanegu'r tabiau at grŵp newydd}other{Ychwanegu'r tabiau at grŵp newydd}}</translation>
 <translation id="6333260925957816943">Gwybodaeth am y siop hon</translation>
@@ -174,6 +177,7 @@
 <translation id="7326879924029668159">Gweld y polisi dychwelyd a rhagor</translation>
 <translation id="7352298686197644113">Gweld pa eitem yn eich tabiau sydd ar agor sydd â phris is</translation>
 <translation id="7369451074646620503">Nid yw <ph name="TAB_GROUP_NAME" /> grŵp tabiau ar gael mwyach</translation>
+<translation id="7402375256128852434">Ychwanegu tabiau diweddar</translation>
 <translation id="7452985128687107478">Mae grwpiau tabiau yn cael eu cadw a'u diweddaru'n awtomatig ar draws eich holl ddyfeisiau</translation>
 <translation id="747459581954555080">Adfer popeth</translation>
 <translation id="7489558427602531799">Symud grŵp tabiau i'r dde</translation>
@@ -219,6 +223,7 @@
 <translation id="8428213095426709021">Gosodiadau</translation>
 <translation id="855081842937141170">Pinio tab</translation>
 <translation id="8633025649649592204">Gweithgarwch diweddar</translation>
+<translation id="8635822281281406185">Ychwanegwch hyd at 10 ffeil, tabiau neu luniau</translation>
 <translation id="8712637175834984815">Iawn</translation>
 <translation id="8714939927607906138">Pris is</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>

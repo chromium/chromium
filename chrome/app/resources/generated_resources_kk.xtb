@@ -1343,6 +1343,7 @@
 <translation id="1907044622262489040">Дауысыңызбен мәтін теріңіз. "Іздеу" + D перне тіркесімін басып, сөйлей бастаңыз.</translation>
 <translation id="1907659324308286326">Кейбір Thunderbolt немесе USB4 керек-жарақтары дұрыс жұмыс істеуі үшін, жадты пайдалануға рұқсат алуы қажет.</translation>
 <translation id="1908591798274282246">Жабылған топты қайта ашу</translation>
+<translation id="1909677622563887527">Chrome браузерін автоматты сынақ бағдарламалық құралы басқарып жатыр.</translation>
 <translation id="1909880997794698664">Бұл құрылғыны толық экран режимінде біржола сақтау керек пе?</translation>
 <translation id="1910721550319506122">Қош келдіңіз!</translation>
 <translation id="1910736334623230603">Бірнеше кескінді іздеу мүмкін емес. Кескіндерді бір-бірлеп қосыңыз.</translation>
@@ -1697,6 +1698,7 @@
 <translation id="2144536955299248197">Сертификат көру құралы: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux жүйесінде Android қолданбаларын әзірлеу</translation>
 <translation id="2145468727756963476">Gemini жаңартылып жатыр...</translation>
+<translation id="2145688286532368277">Бұл сайтта JavaScript оңтайландыру әдісі өшірілген.</translation>
 <translation id="2145917706968602070">Телефоныңыз жаныңызда болуы, оның құлпы ашық болуы және Bluetooth бен Wi-Fi қосылып тұруы керек.</translation>
 <translation id="2146263598007866206">Сайттар уақыт үнемдеу үшін ұқсас файлдарды автоматты түрде жүктеп ала алады.</translation>
 <translation id="2147218225094845757">Бүйірлік панельді жасыру</translation>
@@ -3693,6 +3695,7 @@
 <translation id="3527085408025491307">Қалта</translation>
 <translation id="3528498924003805721">Таңбаша нысандары</translation>
 <translation id="3529851166527095708">&amp;Мекенжайлар және т.б.</translation>
+<translation id="3530919970074558307">Топты ерекшелемеу</translation>
 <translation id="3531070080754387701">Microsoft 365 бұл қалтадан <ph name="FILE_NAMES" /> файлын аша алмайды</translation>
 <translation id="3531883061432162622">Оқу тізімі "Бетбелгілер мен тізімдер" бөлімінде пайда болады.</translation>
 <translation id="3532273508346491126">Синхрондауды басқару</translation>
@@ -4046,6 +4049,7 @@
 <translation id="3757567010566591880">Құралдар тақтасынан босату</translation>
 <translation id="3757645900890881944">Іздеу құралдары</translation>
 <translation id="3757733214359997190">Ешқандай сайт табылмады.</translation>
+<translation id="3757825964096339958">Топты ерекшелеу</translation>
 <translation id="375841316537350618">Прокси сценарийі жүктелуде…</translation>
 <translation id="3758887577462995665">Кеңес:</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> ай</translation>
@@ -4344,6 +4348,7 @@
 
   <ph name="CONTROL_PANEL_APPLET_NAME" /> іске қосқыңыз келе ме?</translation>
 <translation id="3942420633017001071">Диагностика</translation>
+<translation id="3942558231079086184">Бұл сайтта JavaScript оңтайландыру әдісі өшірілген. Өнімділікті арттыру үшін қосыңыз.</translation>
 <translation id="3943582379552582368">&amp;Артқа</translation>
 <translation id="3943857333388298514">Қою</translation>
 <translation id="3945513714196326460">Атты қысқартыңыз.</translation>
@@ -4835,6 +4840,7 @@
 <translation id="4292613336957320546">Жылдамдату</translation>
 <translation id="429312253194641664">Сайтта мультимедиа ойнатылуда</translation>
 <translation id="4293219510510666933">Браузерді қолдану тарихынан іздеу және кірген сайттарды табу үшін күнделікті тілді пайдаланыңыз. Браузерді қолдану тарихы бойынша сұрақ қоюға және жауаптар алуға да болады. Бұл параметр қосулы.</translation>
+<translation id="429344752071832554">Топты ерекшелемеу</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> жүктеп алу журналынан жойылды, бірақ құрылғыңызда сақтаулы тұр</translation>
 <translation id="4295072614469448764">Қолданба терминалда қолжетімді. Сонымен қатар Launcher қолданбасында белгіше болуы мүмкін.</translation>
 <translation id="4295979599050707005"><ph name="USER_EMAIL" /> аккаунтыңызды веб-сайттармен, қолданбалармен, Chrome және Google Play кеңейтімдерімен пайдалануға болатынын растау үшін аккаунтқа қайта кіріңіз. Сонымен қатар осы аккаунтты өшіре аласыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
@@ -4990,6 +4996,7 @@
 <translation id="4405224443901389797">Мына қалтаға жылжыту…</translation>
 <translation id="4405781821077215583">Экрандағы элементтерді (оның ішінде мәтінді) кішірейтіңіз немесе ұлғайтыңыз.</translation>
 <translation id="4406308048672435032">Бұл қойындыны әрекетсіз қылуға болады. Толық тізімді қайта көру үшін жаңартыңыз.</translation>
+<translation id="4406881185911439342">Топты ерекшелеу</translation>
 <translation id="4406883609789734330">Автоматты субтитр</translation>
 <translation id="4406963243402726564">Сақталмаған деректер</translation>
 <translation id="4408599188496843485">А&amp;нықтама</translation>
@@ -10181,6 +10188,7 @@
 <translation id="8032569120109842252">Жазылғансыз</translation>
 <translation id="8033827949643255796">таңдалды</translation>
 <translation id="8033958968890501070">Уақыт өтіп кетті</translation>
+<translation id="8034399942062051455">V8 оңтайландыру әдісі өшірулі</translation>
 <translation id="8034697324150621782">Жоғарғы көрініспен ауыстыру</translation>
 <translation id="8035059678007243127">Алға-артқа өту кэшінде сақталған инкогнито беті: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Автотолтыруды жақсартуға көмектесіңіз</translation>

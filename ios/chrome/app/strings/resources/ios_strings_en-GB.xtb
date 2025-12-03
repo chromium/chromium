@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">Lock Screen</translation>
 <translation id="1963976881984600709">Standard protection</translation>
 <translation id="1964507856799750384">Tap <ph name="BEGIN_BOLD" />Browser App<ph name="END_BOLD" /></translation>
+<translation id="1965633132497641148">Invalid security code</translation>
 <translation id="1966313166384086081">site data</translation>
 <translation id="1967461193809857427">{count,plural, =1{Pick up the tab you left on Android?}other{Pick up the tabs you left on Android?}}</translation>
 <translation id="1972325230031091483">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">Clear History and Website Data</translation>
 <translation id="3190736958609431397">Untrack</translation>
 <translation id="3208260410153224535">Your organisation turned off sign-in. New bookmarks, passwords and more will be saved only to this device.</translation>
+<translation id="3211969308836412674">Unpin site</translation>
 <translation id="3213807041830307252">Shop, translate and identify what you see using your camera and photo gallery.</translation>
 <translation id="3214379938835224220">You were signed out as part of your iPad reset. Tap continue below to sign in.</translation>
 <translation id="3218296450292600703">Signing in with your managed account helps you keep browsing related to your organisation (including tabs, history and passwords) separate from your other browsing</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">Address 2</translation>
 <translation id="3328801116991980348">Site information</translation>
 <translation id="333229797575847124">How to enable this feature</translation>
+<translation id="3344233834747405775">Invalid cardholder name</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark saved to ‘{title}’ in your account, {email}}other{Bookmarks saved to ‘{title}’ in your account, {email}}}</translation>
 <translation id="334690320928261823">Recent tabs</translation>
 <translation id="3349031117032695619">Block pop-ups</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">Remind me later</translation>
 <translation id="4881695831933465202">Open</translation>
 <translation id="4883766694719903356">Incognito tab grid</translation>
+<translation id="4884937942297374058">Enhanced protection is off</translation>
 <translation id="488785315393301722">Show details</translation>
 <translation id="4889521386764567563">Current profile</translation>
 <translation id="4893713555726946316">Hide Find in page</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">Create calendar events from dates</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Edit site</translation>
 <translation id="5233638681132016545">New tab</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bookmark saved in your Google Account, {email}.}other{Bookmarks saved in your Google Account, {email}.}}</translation>
 <translation id="5234764350956374838">Dismiss</translation>
@@ -1325,6 +1330,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6066301408025741299">Tap to cancel.</translation>
 <translation id="6074656473835429958">Get notifications</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) could not be uploaded</translation>
+<translation id="6076618233738284461">Pin site</translation>
 <translation id="6077126322656614846">Camera access allowed</translation>
 <translation id="607730456154980869">Get answers faster with Gemini in Chrome</translation>
 <translation id="6078236141387574983">Readjust the height of the sheet</translation>
@@ -1540,6 +1546,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
 <translation id="6779455296366983087">Your browsing data will be deleted</translation>
+<translation id="6782531425936234573">Export data</translation>
 <translation id="6791425686608802741">Tap 'Add tab to new group'</translation>
 <translation id="6794476726485507147">Choose a date and time to receive a reminder notification to revisit this page</translation>
 <translation id="6795481620482106033">Invalid data</translation>

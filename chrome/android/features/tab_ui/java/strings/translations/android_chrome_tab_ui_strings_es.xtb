@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Lista de grupos de pestañas cerrada</translation>
 <translation id="3194464645767632461">puntuación</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Añadir <ph name="TABS_COUNT_ONE" /> pestaña al grupo}other{Añadir <ph name="TABS_COUNT_MANY" /> pestañas al grupo}}</translation>
-<translation id="3293080634164207409">Añadir pestañas</translation>
 <translation id="3328308545011660196">Sugerencia: Hay <ph name="NUMBER_OF_TABS" /> pestañas que parecen relacionadas. ¿Quieres agruparlas?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Después de 1 día de inactividad}other{Después de <ph name="DAY_COUNT_MANY" /> días de inactividad}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestaña nueva}other{<ph name="MANY_ADDED" /> pestañas nuevas}}</translation>

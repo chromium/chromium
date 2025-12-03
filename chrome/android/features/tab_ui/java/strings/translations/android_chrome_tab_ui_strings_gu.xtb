@@ -73,7 +73,6 @@
 <translation id="311432875115153175">ટૅબના ગ્રૂપની સૂચિ બંધ કરવામાં આવી</translation>
 <translation id="3194464645767632461">રેટિંગ</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ગ્રૂપમાં ઉમેરો}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ગ્રૂપમાં ઉમેરો}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ગ્રૂપમાં ઉમેરો}}</translation>
-<translation id="3293080634164207409">ટૅબ ઉમેરો</translation>
 <translation id="3328308545011660196">સૂચન: <ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 દિવસ પછી નિષ્ક્રિય}one{<ph name="DAY_COUNT_MANY" /> દિવસ પછી નિષ્ક્રિય}other{<ph name="DAY_COUNT_MANY" /> દિવસ પછી નિષ્ક્રિય}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> નવું ટૅબ}one{<ph name="MANY_ADDED" /> નવું ટૅબ}other{<ph name="MANY_ADDED" /> નવા ટૅબ}}</translation>

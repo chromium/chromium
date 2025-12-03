@@ -1929,6 +1929,10 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Ist diese Richtlinie deaktiviert, ist diese Funktion nicht verfügbar.</translation>
 <translation id="2342066287156668839">Persistentes Kontingent aktivieren.</translation>
+<translation id="2343774133209251840">Wenn diese Richtlinie aktiviert ist, geben die Speicherkontingent-APIs einen statischen Wert zurück, der dem belegten Speicherplatz + mindestens 10 GiB (Laufwerk wird auf das nächste GiB aufgerundet) entspricht.
+Wenn diese Richtlinie deaktiviert ist, geben die Speicherkontingent-APIs in der Regel einen dynamischen Wert zurück, der proportional zum auf dem Gerät verfügbaren Gesamtspeicherplatz berechnet wird, unabhängig davon, wie viel Speicherplatz belegt ist.
+Ist die Richtlinie nicht konfiguriert, wird das Verhalten durch das vorhersehbare gemeldete Speicherkontingent beim Funktionsstart oder durch Flags bestimmt.
+Websites mit der Berechtigung zur unbegrenzten Speicherung sind von dieser Einstellung nicht betroffen. Auch das erzwungene Kontingent ist davon nicht betroffen.</translation>
 <translation id="2344033063256716138">Du kannst Richtlinien konfigurieren, um festzulegen, ob Nutzer auf geteilte Daten und Funktionen zugreifen dürfen.</translation>
 <translation id="2345547870894930157">DoH-Modus ohne unsicheres Fallback-Verhalten aktivieren</translation>
 <translation id="2347695338560092641">Out-of-Process-Druckertreiber zulässig</translation>
@@ -3119,6 +3123,7 @@ Wenn du die Richtlinie verwenden musst, damit entsprechenden Seitenaufrufe von �
 <translation id="3169872426103732947">Standard-URL anzeigen und Nutzern erlauben, zur vollständigen URL zu wechseln</translation>
 <translation id="3171369832001535378">Vorlage für Hostname im Gerätenetzwerk</translation>
 <translation id="3173844121395372156">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />“.</translation>
+<translation id="3175063338945713984">Speicherkontingent-APIs geben Werte basierend auf dem Prozess beim Funktionsstart zurück.</translation>
 <translation id="3177537290334203187">Standardverhalten anwenden, wenn festgelegt wird, ob Websites Anfragen an Netzwerkendpunkte senden können.</translation>
 <translation id="3177802893484440532">OCSP/CRL-Online-Prüfungen für lokale Vertrauensanker als erforderlich festlegen</translation>
 <translation id="3179533009079100620">Profilauswahl anzeigen</translation>
@@ -3264,6 +3269,7 @@ Die Microsoft Outlook-Karte muss von einem Administrator konfiguriert werden. De
 
 Wenn die Richtlinie <ph name="NTPCARDSVISIBLE" /> deaktiviert ist, wird die Outlook-Karte nicht angezeigt. Ist <ph name="NTPCARDSVISIBLE" /> aktiviert, wird die Outlook-Karte angezeigt, wenn diese Richtlinie ebenfalls aktiviert ist und Daten vorhanden sind, die angezeigt werden können. Wenn <ph name="NTPCARDSVISIBLE" /> nicht konfiguriert ist, wird die Outlook-Karte angezeigt, wenn diese Richtlinie ebenfalls aktiviert ist, der Nutzer die Karte in „Chrome anpassen“ aktiviert hat und Daten vorhanden sind, die angezeigt werden können.</translation>
 <translation id="3261592499545947104">Zeitpunkt, an dem eine Zertifikatsverlängerung ausgelöst werden soll, angegeben in Sekunden bis zum Zertifikatsablauf</translation>
+<translation id="326182244921429468">Speicherkontingent-APIs geben dynamische Werte zurück.</translation>
 <translation id="3262080895269946462">Zulassen, dass WebSQL im Zusammenhang mit Drittanbietern standardmäßig deaktiviert wird.</translation>
 <translation id="326341982850521928">Farbkorrektur aktivieren</translation>
 <translation id="3263892501786842604">Zulassen, dass die Schaltfläche „<ph name="GOOGLE_LENS_PRODUCT_NAME" />“ im Suchfeld auf der Seite „Neuer Tab“ angezeigt wird, wenn dies unterstützt wird.</translation>
@@ -6347,6 +6353,34 @@ Hinweis: Diese Richtlinie gilt nicht für HSTS-Umstellungen.</translation>
 
 Ist die Richtlinie deaktiviert, können der Browser‑ und der Downloadverlauf nicht gelöscht werden. Dies bedeutet jedoch nicht unbedingt, dass die Verläufe erhalten bleiben. Möglicherweise sind Nutzer berechtigt, die Dateien der Verlaufsdatenbanken direkt zu bearbeiten oder zu löschen. Außerdem kann der Browser jederzeit selbst einige oder alle Verlaufselemente archivieren oder nach deren Ablaufdatum löschen.</translation>
 <translation id="5322649594584715998">Lädt den Akku mit normaler Geschwindigkeit vollständig auf. In diesem Modus werden das adaptive und das begrenzte Laden deaktiviert.</translation>
+<translation id="5322726025747768984">Wenn du diese Richtlinie festlegst, werden Regeln konfiguriert, über die der vom Browser verwendete Proxy je nach der Ziel-URL und anderen Bedingungen ausgewählt wird. Diese Richtlinie hat Vorrang vor den Proxy-Einstellungen, die über die Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“, die Erweiterungs-API „<ph name="PROXY_SETTINGS_EXTENSION_API" />“ oder manuelle Nutzereinstellungen festgelegt werden, sofern vorhanden.
+
+Wenn die Richtlinie nicht festgelegt ist, hat dies keine Auswirkungen auf andere Proxy-Richtlinien oder Nutzereinstellungen.
+
+Wenn die Proxy-Auswahl über den Browser getroffen wird, werden die Einträge der Richtlinie „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ der Reihe nach ausgewertet, bis ein Eintrag alle folgenden Anforderungen erfüllt:
+  * Es besteht eine Übereinstimmung mit mindestens einem der URL-Muster in „<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />“.
+  * Es besteht keine Übereinstimmung mit den URL-Mustern in „<ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />“.
+  * Wenn das Feld „<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />“ angegeben und eine nicht leere Liste ist, sind alle durch die Einträge dargestellten Bedingungen erfüllt.
+Der Wert in „<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" />“ wird als Proxy für eine solche Übereinstimmung verwendet. Wenn keine Übereinstimmung gefunden wird, werden die Proxy-Einstellungen auf die in der Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ festgelegten Werte zurückgesetzt.
+
+Die von „<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />“ und „<ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />“ unterstützten URL-Muster sind unter https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns dokumentiert.
+
+Die Einträge im Feld „<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" />“ entsprechen Stringwerten von PAC-Dateien wie:
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+Alternativ können URL-ähnliche Proxy-Spezifizierer direkt zum Angeben des Proxys verwendet werden, z. B.:
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+Der erste erreichbare Eintrag in der Liste wird als Proxy verwendet. Ungültige Einträge in der Liste werden ignoriert.
+
+Das Feld „<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />“ enthält eine Liste von Bedingungen, die alle erfüllt sein müssen, damit die Überschreibungsregel zur Auswahl des zu verwendenden Proxys genutzt wird. Bei Nichtfestlegung wird der Eintrag verwendet, solange mindestens ein Host in „<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />“ übereinstimmt.
+
+Mit der Bedingung „<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" />“ wird geprüft, ob das angegebene DNS „<ph name="PROXY_OVERRIDE_RULES_HOST" />“ in eine IP-Adresse aufgelöst werden kann. Wenn der Wert von „<ph name="PROXY_OVERRIDE_RULES_RESULT" />“ „<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />“ ist, gilt die Bedingung als erfüllt. Wenn der Wert stattdessen auf „<ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />“ festgelegt ist, gilt die Bedingung als erfüllt, wenn die Auflösung fehlgeschlagen ist.</translation>
 <translation id="5323200200131319468">Gesprochenes Feedback auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="5323271643727095577">Dialogfeld zum Abbrechen nicht anzeigen, wenn „event.preventDefault()“ für ein „beforeunload“-Ereignis aufgerufen wird. Dialogfeld zum Abbrechen anzeigen, wenn „beforeunload event.returnValue“ der leere String für ein „beforeunload“-Ereignis ist.</translation>
 <translation id="5324430722441910403">Einstellungen für die Websitesuche</translation>
@@ -10702,6 +10736,7 @@ Eine ausführliche Beschreibung aller Werte findest du unter RFC 8828, Abschnit
       Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
 
       Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Allerdings werden ab M85 Muster mit den Platzhaltern „*“ und „[*.]“ auf dem Host für diese Richtlinie nicht mehr unterstützt.</translation>
+<translation id="8251975082850036657">Speicherkontingent-APIs geben statische Werte zurück.</translation>
 <translation id="82530263956734297">Aus der Sperrliste auszuschließende Erweiterungs-IDs</translation>
 <translation id="8254749125469750814">Nicht mit einem Cloud-Dienst prüfen, ob eine Erweiterung installiert werden kann oder nicht.</translation>
 <translation id="8256006033157034334">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen „<ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />“.</translation>
@@ -11802,6 +11837,7 @@ Weitere Informationen dazu findest du unter https://support.google.com/chrome/a/
       Diese Richtlinie wird nur für Nutzer von Family Link verwendet.</translation>
 <translation id="8947415621777543415">Gerätestandort melden</translation>
 <translation id="8948062138228904066">Zulassungsliste für Authentifizierungsserver</translation>
+<translation id="8951145747995737852">Steuern, ob Speicherkontingent-APIs statische Werte zurückgeben</translation>
 <translation id="8951350807133946005">Datenträger-Cache-Verzeichnis festlegen</translation>
 <translation id="8952611478149810182">Die Weiterleitung von Ereignissen bei deaktivierten Formularsteuerelementen wird in Chromium geändert, um die Kompatibilität mit anderen Browsern zu verbessern und die Arbeit von Entwicklern zu vereinfachen.
 

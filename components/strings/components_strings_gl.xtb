@@ -2060,6 +2060,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4299919199185766032">O nome do atallo supera a lonxitude máxima permitida de <ph name="MAX_LENGTH" /> caracteres.</translation>
 <translation id="4300272766492248925">Abrir aplicación</translation>
 <translation id="4300675098767811073">Varias perforacións na parte dereita</translation>
+<translation id="4300841966382281549">Viaxe</translation>
 <translation id="4302514097724775343">Toca o dinosauro para xogar</translation>
 <translation id="4304049446746819918">{0,plural, =1{A política do administrador non recomenda mover este ficheiro a este destino: <ph name="DESTINATION_NAME" />}other{A política do administrador non recomenda mover estes ficheiros a este destino: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Ler as avaliacións dos clientes sobre produtos, servizos ou experiencias para poder tomar decisións fundadas.</translation>
@@ -2160,6 +2161,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Este formulario non é seguro, polo que se desactivou a función de autocompletar.</translation>
 <translation id="4477350412780666475">Pista seguinte</translation>
+<translation id="4479915773139026885">Modo IA na Busca de Google</translation>
 <translation id="4480760608050410381">Vídeo MP4</translation>
 <translation id="448363931695049633">Pizzarías</translation>
 <translation id="4489023393592172404">Sobre Kaku-4</translation>
@@ -2367,7 +2369,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4832388034239846146">Para compartir grupos de pestanas, actualiza Chrome</translation>
 <translation id="483241715238664915">Activar advertencias</translation>
 <translation id="4832961164064927107">Grelladas e churrascadas</translation>
-<translation id="4834250788637067901">Métodos de pago, ofertas e enderezos que usan Google Pay</translation>
 <translation id="4840250757394056958">Ver historial de Chrome</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4844937814014739139">Desprazarse por pestanas compartidas e achegalas</translation>
@@ -3156,6 +3157,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6124432979022149706">Conectores de Chrome Enterprise</translation>
 <translation id="6124996493718543728">A pantalla de progreso de pago aprazado está aberta a altura completa.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Máis detalles<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme Introducir para facer preguntas co modo IA da Busca de Google</translation>
 <translation id="6126565365696310362">Sobre chinés n.º 2</translation>
 <translation id="6131824478727057281">localización</translation>
 <translation id="6133320744616005677">Continuar permitindo</translation>
@@ -3425,6 +3427,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6539092367496845964">Produciuse un erro. Téntao de novo máis tarde.</translation>
 <translation id="6540488083026747005">Permitiches o uso de cookies de terceiros neste sitio</translation>
 <translation id="6545864417968258051">Busca de dispositivos Bluetooth</translation>
+<translation id="654687379535971584"><ph name="ORIGIN" /> - <ph name="DESTINATION" /></translation>
 <translation id="6547208576736763147">Dúas perforacións na parte esquerda</translation>
 <translation id="6549443526281184652">Disfraces</translation>
 <translation id="6550245281449521513">Non está permitido bloquear o rato</translation>
@@ -3891,6 +3894,7 @@ Detalles adicionais:
 <translation id="7337248890521463931">Mostrar máis liñas</translation>
 <translation id="7337706099755338005">Non está dispoñible na túa plataforma.</translation>
 <translation id="733923710415886693">O certificado do servidor non se indicou mediante Certificate Transparency.</translation>
+<translation id="73398226265793546">Botón do modo IA, activar para facer preguntas no modo IA da Busca de Google</translation>
 <translation id="7346048084945669753">É colaborador:</translation>
 <translation id="7346062987309535530">Utensilios de mesa e vaixelas</translation>
 <translation id="7346081071264046066">"responde afirmativamente e con entusiasmo a esta invitación de voda"</translation>
@@ -4696,6 +4700,7 @@ Detalles adicionais:
 <translation id="8622864575115813231">Contactando coa túa entidade financeira...</translation>
 <translation id="8624354461147303341">Obter descontos</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">Engade 10 ficheiros, pestanas ou imaxes como máximo</translation>
 <translation id="8637362707224133343">Chrome inclúe funcións de seguranza para protexerte cando navegas, como, por exemplo, Navegación segura de Google, que <ph name="BEGIN_LINK" />detectou hai pouco phishing<ph name="END_LINK" /> no sitio ao que tentaches acceder. Os sitios de phishing fanse pasar por outros sitios para enganarte.<ph name="NEW_LINE" />Ás veces, mesmo os sitios que adoitan ser seguros poden verse vulnerados por atacantes. <ph name="BEGIN_ERROR_LINK" />Infórmanos<ph name="END_ERROR_LINK" /> se consideras que se cometeu un erro e que o sitio non representa ningún perigo.</translation>
 <translation id="8640996933372643759">Para compartir pestanas e colaborar con outras persoas, tes que poder iniciar sesión en Chrome</translation>
 <translation id="8641131559425911240">Sobre (carta)</translation>
@@ -4808,6 +4813,7 @@ Detalles adicionais:
 <translation id="8814547618907885931">Ver todas as táboas de comparación</translation>
 <translation id="8814707942599948500">Sobre C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para actualizar Chrome desde a configuración do navegador</translation>
+<translation id="8819855907485254989">Gardar o billete de transporte en Wallet</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="882338992931677877">Oco manual</translation>
 <translation id="8827067923357481311">Opcións de pago aprazado</translation>

@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">阅读今日新闻 <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">更多详情</translation>
 <translation id="3123734510202723619">通告</translation>
+<translation id="3134385238404760368">近期没有打开标签页</translation>
 <translation id="314939179385989105">Chrome 主页</translation>
 <translation id="3158667104057012316">手动排序</translation>
 <translation id="3159335509547415276">了解被屏蔽的账号</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">按从 A 到 Z 排序</translation>
 <translation id="4578289292431526768">开始查看</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分钟前}other{# 分钟前}}</translation>
+<translation id="4585751637295612750">打开新标签页，并将其添加到问题中</translation>
 <translation id="4587589328781138893">网站</translation>
 <translation id="4594952190837476234">此离线网页是在 <ph name="CREATION_TIME" />创建的，可能与在线版本有所不同。</translation>
 <translation id="4595237294768457124">打开“新标签页”页面</translation>

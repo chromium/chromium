@@ -2163,6 +2163,7 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Bu forma güvənli deyil. Avto doldurma deaktiv edilib.</translation>
 <translation id="4477350412780666475">Növbəti trek</translation>
+<translation id="4479915773139026885">Google Axtarışda Sİ rejimi</translation>
 <translation id="4480760608050410381">MP4 video</translation>
 <translation id="448363931695049633">Pizzacılar</translation>
 <translation id="4489023393592172404">Zərf Kaku 4</translation>
@@ -2370,7 +2371,6 @@
 <translation id="4832388034239846146">Tab qruplarını paylaşmaq üçün Chrome-u güncəlləyin</translation>
 <translation id="483241715238664915">Xəbərdarlıqları aktiv edin</translation>
 <translation id="4832961164064927107">Barbekü və Qril</translation>
-<translation id="4834250788637067901">Google Pay istifadə edən ödəniş metodları, təkliflər və ünvanlar</translation>
 <translation id="4840250757394056958">Chrome tarixçənizə baxın</translation>
 <translation id="484462545196658690">Avtomatik</translation>
 <translation id="4844937814014739139">Paylaşılan tabların sürüşdürülməsi və miqyasının dəyişdirilməsi</translation>
@@ -3162,6 +3162,7 @@
 <translation id="6124432979022149706">Chrome Enterprise Birləşdiriciləri</translation>
 <translation id="6124996493718543728">"İndi al, sonra ödə" gedişat ekranı tam hündürlükdə açılıb.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Axtarışda Sİ rejimindən soruşmaq üçün Enter düyməsinə basın</translation>
 <translation id="6126565365696310362">Zərf Çin #2</translation>
 <translation id="6131824478727057281">məkan</translation>
 <translation id="6133320744616005677">İcazəni davam etdirin</translation>
@@ -3901,6 +3902,7 @@
 <translation id="7337248890521463931">Daha çox sətir göstərin</translation>
 <translation id="7337706099755338005">Platformanızda əlçatan deyil.</translation>
 <translation id="733923710415886693">Serverin sertifikatı Sertifikat Şəffaflığı vasitəsi ilə aşkarlanmayıb.</translation>
+<translation id="73398226265793546">Sİ rejimi düyməsi, Google Axtarışda Sİ rejimindən soruşmaq üçün aktivləşdirin</translation>
 <translation id="7346048084945669753">Qoşulub:</translation>
 <translation id="7346062987309535530">Yemək ləvazimatları</translation>
 <translation id="7346081071264046066">"bu toy dəvətinə həyəcanla "hə" cavabı verin"</translation>
@@ -4706,6 +4708,7 @@
 <translation id="8622864575115813231">Maliyyə qurumunuzla əlaqə saxlanılır...</translation>
 <translation id="8624354461147303341">Endirim əldə edin</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">10-a qədər fayl, tab və ya şəkil əlavə edin</translation>
 <translation id="8637362707224133343">Chrome axtarış zamanı sizi qoruyan daxili güvənlik funksiyalarına malikdir. Daxil olmağa cəhd etdiyiniz saytda <ph name="BEGIN_LINK" />bu yaxınlarda fişinq tapan<ph name="END_LINK" /> Google güvənli baxış buna misaldır. Fişinq saytları sizi aldatmaq üçün özlərini digər saytlar kimi təqdim edir.<ph name="NEW_LINE" />Bəzən hücumçular təhlükəsiz saytları da ələ keçirir. Yanlışlıq olduğunu və saytın təhlükəli olmadığını düşünürsünüzsə, <ph name="BEGIN_ERROR_LINK" />bizə bildirin<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Tabları paylaşmaq və başqaları ilə əməkdaşlıq etmək üçün Chrome-a daxil ola bilməlisiniz</translation>
 <translation id="8641131559425911240">Zərf (yüksəkkeyfiyyətli)</translation>

@@ -338,6 +338,7 @@
 <translation id="1549470594296187301">Каб карыстацца гэтай функцыяй, трэба ўключыць JavaScript.</translation>
 <translation id="1553152622374372421">Зімовыя віды спорту</translation>
 <translation id="1553358976309200471">Абнавіць Chrome</translation>
+<translation id="1555014818414775661">Дадаць відарысы</translation>
 <translation id="1555130319947370107">Сіні</translation>
 <translation id="1555191101192706055">На сайце, які вы спрабавалі наведаць, дзейнічаюць зламыснікі. Яны могуць падманам прымусіць вас усталяваць шкоднае праграмнае забеспячэнне, якое перашкаджае прагляду змесціва ў інтэрнэце (напрыклад, змяняе галоўную старонку ці паказвае дадатковую рэкламу на сайтах).</translation>
 <translation id="1559231233244409191">Трохслойны гафрыраваны кардон</translation>
@@ -1217,6 +1218,7 @@
 <translation id="2979424420072875974">Рэсурсы для пісьменнікаў</translation>
 <translation id="2979639724566107830">Адкрыць у новым акне</translation>
 <translation id="2980742331521553164">Код CVC карткі будзе зашыфраваны і захаваны ва Уліковым запісе Google для больш хуткай аплаты</translation>
+<translation id="2983311431122838216">Уключыць рэжым "Задаць пытанне AI" ў Google Пошуку</translation>
 <translation id="2983666748527428214">Адкрыць укладку ў рэжыме інкогніта</translation>
 <translation id="2985306909656435243">Калі ўключана, Chromium будзе захоўваць копію вашай карткі на гэтай прыладзе ў мэтах хутчэйшага запаўнення форм.</translation>
 <translation id="2985398929374701810">Увядзіце сапраўдны адрас</translation>
@@ -1395,6 +1397,7 @@
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую падзею ў Google Календары, націсніце Tab, затым Enter</translation>
 <translation id="3261488570342242926">Даведацца больш пра віртуальныя карткі</translation>
 <translation id="3262698603497362968">Варыянты купляў</translation>
+<translation id="3264315627780269177">Не ўдалося абагуліць гэту ўкладку</translation>
 <translation id="3266367459139339908">Мы прадстаўляем новыя спосабы абмежавання звестак, якія сайты могуць збіраць пра вас пры паказе персаналізаванай рэкламы. Напрыклад:</translation>
 <translation id="3266793032086590337">Значэнне (канфліктуючае)</translation>
 <translation id="3268451620468152448">Адкрытыя ўкладкі</translation>
@@ -1645,6 +1648,7 @@
 <translation id="3665100783276035932">Большасць сайтаў павінны працаваць як належыць</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Даведацца больш<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Нумар</translation>
+<translation id="3670159164851218963">Гісторыя рэжыму AI</translation>
 <translation id="3670229581627177274">Уключыць Bluetooth</translation>
 <translation id="3671540257457995106">Дазволіць змяняць памер?</translation>
 <translation id="3672568546897166916">Памылка тут: <ph name="ERROR_PATH" />. <ph name="ERROR_MESSAGE" /></translation>
@@ -1873,6 +1877,7 @@
 <translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
 <translation id="4036753017940930924">Зямля і зямельныя ўчасткі</translation>
 <translation id="4039506337798853114">Каб паказаць курсор, націсніце |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045070493270310437">Адкрыць укладкі зноў</translation>
 <translation id="4045226534284799755">Увайдзіце ва ўліковы запіс Microsoft і паўтарыце спробу</translation>
 <translation id="4045441967987592849">Зноў адкрыць</translation>
 <translation id="4047351652147966654">18 x 24 цалі</translation>
@@ -2125,6 +2130,7 @@
 <translation id="4406896451731180161">вынікі пошуку</translation>
 <translation id="4407758156081352648">У мэтах бяспекі ваша арганізацыя не дазваляе паўторна выкарыстоўваць паролі ў Chrome. Для абароны прыватнасці карыстальнікаў паролі ў Chrome зашыфроўваюцца.</translation>
 <translation id="4408413947728134509">Файлы cookie: <ph name="NUM_COOKIES" /></translation>
+<translation id="4409556632583862731">Новы ланцужок</translation>
 <translation id="4412074349188076601">Гэта канфігурацыя пазначана як даступная для ўсталявання, але яе нельга ўсталяваць, бо для гэтай архітэктуры няма даступных вобразаў.</translation>
 <translation id="4412377069090572315">Што кажуць людзі</translation>
 <translation id="4414452699610169758">Выкарыстоўвайце Менеджар пароляў Google і функцыю аўтазапаўнення ў Chrome, каб захоўваць і ўводзіць паролі, спосабы аплаты і адрасы</translation>
@@ -2161,6 +2167,7 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Гэта форма не з’яўляецца бяспечнай. Аўтазапаўненне было выключана.</translation>
 <translation id="4477350412780666475">Наступны трэк</translation>
+<translation id="4479915773139026885">Рэжым AI ў Google Пошуку</translation>
 <translation id="4480760608050410381">Відэа ў фармаце MP4</translation>
 <translation id="448363931695049633">Піцэрыі</translation>
 <translation id="4489023393592172404">Канверт Kaku 4</translation>
@@ -2368,7 +2375,6 @@
 <translation id="4832388034239846146">Абнавіце версію Chrome, каб абагульваць групы ўкладак</translation>
 <translation id="483241715238664915">Уключыць папярэджанні</translation>
 <translation id="4832961164064927107">Барбекю і грыль</translation>
-<translation id="4834250788637067901">Спосабы аплаты, прапановы і адрасы, якія выкарыстоўваюць Google Pay</translation>
 <translation id="4840250757394056958">Праглядзець гісторыю Chrome</translation>
 <translation id="484462545196658690">Аўтаматычна</translation>
 <translation id="4844937814014739139">Прагортванне і змяненне маштабу абагуленых укладак</translation>
@@ -2773,6 +2779,7 @@
     <ph name="LINE_BREAK" />
     Звярніцеся да сістэмнага адміністратара.</translation>
 <translation id="5496804587179176046">Захоўваць коды бяспекі (цяпер захаваных кодаў няма)</translation>
+<translation id="5499229993630251170">Працягнуць гэты ланцужок?</translation>
 <translation id="550365051221576010">Запоўніць усе палі</translation>
 <translation id="5506286895894263601">У спісе няма сапраўдных ярлыкоў.</translation>
 <translation id="5508443345185481044">Фота- і відэакамеры</translation>
@@ -3083,6 +3090,7 @@
 <translation id="6018650639991193045">Выдаліць гісторыю прагляду сайтаў, файлы cookie, кэш і іншыя даныя ў наладах Chrome</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (сінхранізаваныя)</translation>
+<translation id="6025471531651464742">Дадаць файлы</translation>
 <translation id="6028591542479806248">Кіраванне мабільнымі апавяшчэннямі і апавяшчэннямі па электроннай пошце</translation>
 <translation id="6028833024483927901">Кухні ўсяго свету</translation>
 <translation id="603068602130820122">Дзве скабы справа</translation>
@@ -3120,6 +3128,7 @@
 <translation id="6062405040252994646">Інструмент</translation>
 <translation id="6062937464449575061">Перастаць адсочваць цану</translation>
 <translation id="6063415549109819824">Жыллёвае фінансаванне</translation>
+<translation id="6069343053547121389">Задавайце пытанні пра гэту ўкладку ў рэжыме AI</translation>
 <translation id="6070432475334343308">Адзін ці некалькі файлаў не былі запампаваны ў папку "<ph name="FOLDER_NAME" />" (у воблаку "<ph name="CLOUD_PROVIDER" />")</translation>
 <translation id="6071503852498277813">Сэрвіс "Аналізатар закладак змесціва"</translation>
 <translation id="6078069862923723141">Блакітны 2</translation>
@@ -3156,6 +3165,7 @@
 <translation id="6124432979022149706">Злучальнікі Chrome Enterprise</translation>
 <translation id="6124996493718543728">Экран прагрэсу куплі ў растэрміноўку адкрыты на ўсю вышыню.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Дадатковая інфармацыя<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, націсніце Увод, каб задаць пытанне ў рэжыме AI ў Google Пошуку</translation>
 <translation id="6126565365696310362">Канверт Chinese № 2</translation>
 <translation id="6131824478727057281">месца</translation>
 <translation id="6133320744616005677">Пакінуць дазвол</translation>
@@ -3363,6 +3373,7 @@
 <translation id="6443406338865242315">Якія пашырэнні і ўбудовы вы ўсталявалі.</translation>
 <translation id="6444329331928531170">Пенсія</translation>
 <translation id="6445051938772793705">Краіна</translation>
+<translation id="6446256167362544629">Бакавая панэль з AI</translation>
 <translation id="6446608382365791566">Дадаць болей звестак</translation>
 <translation id="6447842834002726250">Файлы cookie</translation>
 <translation id="6448371595882710519">Даведацца больш пра налады даных</translation>
@@ -3455,6 +3466,7 @@
 <translation id="6597665340361269064">90 градусаў</translation>
 <translation id="6598976221101665070">Драмы</translation>
 <translation id="6599642189720630047">Адсочванне тавараў</translation>
+<translation id="6608426252530537984">Можна дадаць да 10 укладак</translation>
 <translation id="6613742613135780554">адсочванне рухаў рук</translation>
 <translation id="6613866251791999074">Даведацца больш пра пошукавую сістэму, якая выкарыстоўваецца ў Chrome</translation>
 <translation id="6615297766614333076">Укладчык 2</translation>
@@ -3576,6 +3588,7 @@
 <translation id="6799145206637008376">Запоўніце код CVC для гэтай віртуальнай карткі</translation>
 <translation id="6805030849054648206">Канверт B6/C4</translation>
 <translation id="6807791860691150411">Адукацыя</translation>
+<translation id="6808579246645021886">Абагуленыя ўкладкі і файлы</translation>
 <translation id="681021252041861472">Абавязковае поле</translation>
 <translation id="6810899417690483278">Ідэнтыфікатар наладжвання</translation>
 <translation id="6816109178681043245">Спартыўныя тавары</translation>
@@ -3892,6 +3905,7 @@
 <translation id="7337248890521463931">Паказваць больш радкоў</translation>
 <translation id="7337706099755338005">Недаступна на вашай платформе.</translation>
 <translation id="733923710415886693">Сертыфікат сервера не быў раскрыты ў адпаведнасці са стандартам "Празрыстасць сертыфікатаў".</translation>
+<translation id="73398226265793546">Кнопка "Рэжым AI", націсніце, каб задаць пытанне ў рэжыме AI ў Google Пошуку</translation>
 <translation id="7346048084945669753">Карыстальнік далучаны:</translation>
 <translation id="7346062987309535530">Сталовы посуд</translation>
 <translation id="7346081071264046066">"Прымі запрашэнне на вяселле, выказаўшы пры гэтым захапленне".</translation>
@@ -4698,6 +4712,7 @@
 <translation id="8622864575115813231">Звяртаемся ў вашу фінансавую ўстанову...</translation>
 <translation id="8624354461147303341">Атрымаць скідкі</translation>
 <translation id="8634957317623797170">54 x 86 мм</translation>
+<translation id="8635822281281406185">Можна дадаць да 10 файлаў, укладак або відарысаў</translation>
 <translation id="8637362707224133343">Chrome мае ўбудаваныя функцыі бяспекі, якія абараняюць вас падчас прагляду вэб-старонак, – напрыклад, "Google Бяспечны прагляд". Гэта функцыя <ph name="BEGIN_LINK" />нядаўна выявіла фішынг<ph name="END_LINK" /> на сайце, які вы спрабавалі наведаць. Фішынгавыя сайты выдаюць сябе за іншыя пляцоўкі, каб падмануць вас.<ph name="NEW_LINE" />Часам зламыснікі ўзломваюць нават сайты, якія звычайна з’яўляюцца бяспечнымі. Калі вы лічыце, што гэта памылка і сайт не ўяўляе небяспекі, <ph name="BEGIN_ERROR_LINK" />паведаміце нам<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Вам трэба ўвайсці ў Chrome, каб абагульваць укладкі і супрацоўнічаць з іншымі карыстальнікамі</translation>
 <translation id="8641131559425911240">Канверт з паперы для дакументаў</translation>
@@ -4993,6 +5008,7 @@
 <translation id="9133985615769429248">Калі гэтай прыладай апроч вас карыстаецца нехта яшчэ, уключыце блакіроўку экрана, каб карыстацца вашымі захаванымі паролямі маглі толькі вы</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, віртуальная картка</translation>
 <translation id="9138037198177304356">Апавяшчэнні дазволены</translation>
+<translation id="913846191326613072">Калі ўкладкі абагульваюцца, іх змесціва і URL-адрасы адпраўляюцца ў Google.</translation>
 <translation id="9139318394846604261">Шопінг</translation>
 <translation id="9140198744651252040">Браўзер Chrome прапануе выкарыстоўваць адбітак пальца для аўтазапаўнення пароляў</translation>
 <translation id="9141013498910525015">Кіраваць адрасамі</translation>
@@ -5084,6 +5100,7 @@
 <translation id="955429569736351433">Доступ да VR дазволены</translation>
 <translation id="955627189349169688">Вы можаце адключыць гэта правіла ў <ph name="BEGIN_LINK" />наладах Сінхранізацыі Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Жоўты 2</translation>
+<translation id="961372935451193190">Укладкі і файлы</translation>
 <translation id="961663415146723894">Пераплёт знізу</translation>
 <translation id="961856697154696964">Выдаліць даныя пра работу ў браўзеры</translation>
 <translation id="961930410699694996">Гэтым разам доступ да месцазнаходжання дазволены</translation>

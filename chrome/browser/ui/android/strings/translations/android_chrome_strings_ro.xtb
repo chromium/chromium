@@ -496,6 +496,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3114507951000454849">Citește știrile de azi <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Mai multe detalii</translation>
 <translation id="3123734510202723619">Anunțuri</translation>
+<translation id="3134385238404760368">Nicio filă recentă</translation>
 <translation id="314939179385989105">Pagina de pornire Chrome</translation>
 <translation id="3158667104057012316">Se sortează după ordinea manuală</translation>
 <translation id="3159335509547415276">Află despre conturile blocate</translation>
@@ -817,6 +818,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4577115723294378384">Sortează de la A la Z</translation>
 <translation id="4578289292431526768">Să începem!</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Acum # minut}few{Acum # minute}other{Acum # de minute}}</translation>
+<translation id="4585751637295612750">Deschide o filă nouă pentru a o adăuga la întrebare</translation>
 <translation id="4587589328781138893">Site-uri</translation>
 <translation id="4594952190837476234">Această pagină offline este din data de <ph name="CREATION_TIME" /> și poate fi diferită de versiunea online.</translation>
 <translation id="4595237294768457124">Deschide o pagină Filă nouă</translation>
@@ -1338,6 +1340,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="670498945988402717">A rulat ieri</translation>
 <translation id="6710213216561001401">Înapoi</translation>
 <translation id="671481426037969117">Temporizatorul pentru <ph name="FQDN" /> s-a terminat. Va reîncepe mâine.</translation>
+<translation id="6716434912087331834">Pentru a restabili o fereastră nouă, redu numărul total de ferestre active la cel mult <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Ferestrele inactive se șterg după șase luni.</translation>
 <translation id="6723740634201835758">În Contul Google</translation>
 <translation id="6734310707649923383">Poți să vezi paginile pe care le-ai accesat sau să le ștergi din istoric</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, filă incognito de înregistrare fixată</translation>
@@ -1655,6 +1658,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> este învechit.</translation>
 <translation id="7944772052836377867">Sincronizarea trebuie să-ți confirme identitatea</translation>
 <translation id="7951102827450076904">Deschide întotdeauna fișierele PDF descărcate</translation>
+<translation id="7952479614398473176">Pentru a deschide o fereastră nouă, redu numărul total de ferestre active la cel mult <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7957413488482743710">Cardul virtual îți ascunde cardul fizic pentru a te proteja împotriva fraudelor. <ph name="BEGIN_LINK1" />Află mai multe despre cardurile virtuale<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Filele de pe acest dispozitiv</translation>
 <translation id="7961926449547174351">Ai dezactivat accesul la stocare. Accesează Setările pentru a-l activa.</translation>

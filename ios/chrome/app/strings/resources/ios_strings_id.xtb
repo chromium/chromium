@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">Kunci Layar</translation>
 <translation id="1963976881984600709">Perlindungan standar</translation>
 <translation id="1964507856799750384">Ketuk <ph name="BEGIN_BOLD" />Aplikasi Browser<ph name="END_BOLD" />.</translation>
+<translation id="1965633132497641148">Kode keamanan tidak valid</translation>
 <translation id="1966313166384086081">data situs</translation>
 <translation id="1967461193809857427">{count,plural, =1{Buka tab yang ditinggalkan di Android?}other{Buka tab yang ditinggalkan di Android?}}</translation>
 <translation id="1972325230031091483">Anda akan menjelajah lebih cepat karena konten dimuat secara proaktif berdasarkan halaman web yang sedang Anda buka</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">Hapus Histori dan Data Situs</translation>
 <translation id="3190736958609431397">Batalkan pemantauan</translation>
 <translation id="3208260410153224535">Organisasi Anda menonaktifkan login. Bookmark, sandi, dan data baru lainnya hanya akan disimpan ke perangkat ini.</translation>
+<translation id="3211969308836412674">Lepaskan sematan situs</translation>
 <translation id="3213807041830307252">Belanja, terjemahkan, dan identifikasi hal yang Anda lihat menggunakan kamera dan galeri foto.</translation>
 <translation id="3214379938835224220">Anda telah logout sebagai bagian dari proses reset iPad. Ketuk lanjutkan di bawah untuk login.</translation>
 <translation id="3218296450292600703">Login dengan akun terkelola Anda akan membantu penjelajahan yang terkait dengan organisasi Anda (termasuk tab, histori, dan sandi) terpisah dari penjelajahan lainnya</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">Alamat 2</translation>
 <translation id="3328801116991980348">Informasi situs</translation>
 <translation id="333229797575847124">Cara mengaktifkan fitur ini</translation>
+<translation id="3344233834747405775">Nama pemegang kartu tidak valid</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark disimpan ke "{title}" di akun Anda, {email}}other{Bookmark disimpan ke "{title}" di akun Anda, {email}}}</translation>
 <translation id="334690320928261823">Tab Terbaru</translation>
 <translation id="3349031117032695619">Blokir pop-up</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">Ingatkan saya nanti</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4883766694719903356">Petak Tab Samaran</translation>
+<translation id="4884937942297374058">Perlindungan yang ditingkatkan nonaktif</translation>
 <translation id="488785315393301722">Tampilkan Detail</translation>
 <translation id="4889521386764567563">Profil saat ini</translation>
 <translation id="4893713555726946316">Sembunyikan Cari di Halaman</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">Buat acara kalender melalui tanggal</translation>
 <translation id="5222676887888702881">Logout</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Edit Situs</translation>
 <translation id="5233638681132016545">Tab baru</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bookmark disimpan di Akun Google Anda, {email}.}other{Bookmark disimpan di Akun Google Anda, {email}.}}</translation>
 <translation id="5234764350956374838">Tutup</translation>
@@ -1325,6 +1330,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6066301408025741299">Ketuk untuk membatalkan.</translation>
 <translation id="6074656473835429958">Dapatkan notifikasi</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) tidak dapat diupload</translation>
+<translation id="6076618233738284461">Sematkan situs</translation>
 <translation id="6077126322656614846">Akses Kamera diizinkan</translation>
 <translation id="607730456154980869">Dapatkan jawaban lebih cepat dengan Gemini di Chrome</translation>
 <translation id="6078236141387574983">Sesuaikan kembali tinggi sheet</translation>
@@ -1540,6 +1546,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[DIPESAN]</translation>
 <translation id="6779455296366983087">Data penjelajahan Anda akan dihapus</translation>
+<translation id="6782531425936234573">Ekspor data</translation>
 <translation id="6791425686608802741">Ketuk "Tambahkan Tab ke Grup Baru"</translation>
 <translation id="6794476726485507147">Pilih tanggal dan waktu untuk menerima notifikasi pengingat guna membuka kembali halaman ini</translation>
 <translation id="6795481620482106033">Data Tidak Valid</translation>

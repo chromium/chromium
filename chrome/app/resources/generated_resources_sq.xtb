@@ -1343,6 +1343,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1907044622262489040">Shkruaj me zërin tënd. Përdor "Kërko" + D dhe më pas fillo të flasësh.</translation>
 <translation id="1907659324308286326">Disa aksesorë me Thunderbolt ose USB4 kanë nevojë për qasje te memoria për të funksionuar siç duhet.</translation>
 <translation id="1908591798274282246">Rihap grupin e mbyllur</translation>
+<translation id="1909677622563887527">Chrome po kontrollohet nga një softuer testues i automatizuar</translation>
 <translation id="1909880997794698664">Je i sigurt që do ta mbash këtë pajisje në modalitetin kioskë në mënyrë të përhershme?</translation>
 <translation id="1910721550319506122">Mirë se erdhe!</translation>
 <translation id="1910736334623230603">Nuk mund të kërkohet me shumë imazhe. Shtoji imazhet një nga një.</translation>
@@ -1697,6 +1698,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2144536955299248197">Paraqitësi i certifikatës: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Zhvillimi i aplikacionit Android për Linux</translation>
 <translation id="2145468727756963476">Gemini po rifreskohet...</translation>
+<translation id="2145688286532368277">Optimizimi i JavaScript është joaktiv për këtë sajt.</translation>
 <translation id="2145917706968602070">Sigurohu që telefoni yt të jetë në afërsi, i shkyçur dhe që Bluetooth-i dhe Wi-Fi të jenë aktivizuar</translation>
 <translation id="2146263598007866206">Sajtet mund të shkarkojnë automatikisht skedarë përkatës së bashku për të të kursyer kohë</translation>
 <translation id="2147218225094845757">Fshihe panelin anësor</translation>
@@ -3696,6 +3698,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3527085408025491307">Dosje</translation>
 <translation id="3528498924003805721">Objektivat e shkurtoreve</translation>
 <translation id="3529851166527095708">&amp;Adresat dhe më shumë</translation>
+<translation id="3530919970074558307">Anulo fokusimin e grupit</translation>
 <translation id="3531070080754387701">Microsoft 365 nuk mund të hapë <ph name="FILE_NAMES" /> nga kjo dosje</translation>
 <translation id="3531883061432162622">Gjej listën e leximit dhe faqeshënuesit te "Faqeshënuesit" dhe "Listat"</translation>
 <translation id="3532273508346491126">Menaxhimi i sinkronizimit</translation>
@@ -4049,6 +4052,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3757567010566591880">Zhgozhdo nga shiriti i veglave</translation>
 <translation id="3757645900890881944">Kërko veglat</translation>
 <translation id="3757733214359997190">Nuk u gjet asnjë sajt</translation>
+<translation id="3757825964096339958">Fokuso grupin</translation>
 <translation id="375841316537350618">Po shkarkon skriptin e përfaqësuesit...</translation>
 <translation id="3758887577462995665">Këshillë:</translation>
 <translation id="375962596908891207">Muaji <ph name="DROPDOWN_NAME" /></translation>
@@ -4347,6 +4351,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 
   Dëshiron që ta nisësh <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostikimi</translation>
+<translation id="3942558231079086184">Optimizimi i JavaScript është joaktiv për këtë sajt. Aktivizoje për performancë më të mirë.</translation>
 <translation id="3943582379552582368">&amp;Prapa</translation>
 <translation id="3943857333388298514">Ngjite</translation>
 <translation id="3945513714196326460">Provo një emër më të shkurtër</translation>
@@ -4838,6 +4843,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4292613336957320546">Përshpejtimi</translation>
 <translation id="429312253194641664">Një sajt po luan media</translation>
 <translation id="4293219510510666933">Përdor gjuhën e përditshme për të kërkuar te historiku i shfletimit dhe për të gjetur sajtet që ke vizituar. Gjithashtu mund të bësh pyetje dhe të marrësh përgjigje bazuar në historikun tënd të shfletimit. Ky cilësim është aktiv.</translation>
+<translation id="429344752071832554">Anulo fokusimin e grupit</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> u fshi nga historiku i shkarkimeve, por është akoma në pajisjen tënde</translation>
 <translation id="4295072614469448764">Aplikacioni ofrohet në terminalin tënd. Mund dhe të ketë një ikonë te "Nisësi" yt.</translation>
 <translation id="4295979599050707005">Identifikohu përsëri për të konfirmuar se llogaria jote <ph name="USER_EMAIL" /> mund të përdoret me uebsajtet, aplikacionet dhe shtesat në Chrome dhe në Google Play. Gjithashtu edhe mund ta heqësh këtë llogari. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -4993,6 +4999,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4405224443901389797">Zhvendos te…</translation>
 <translation id="4405781821077215583">Bëji artikujt në ekran më të vegjël ose më të mëdhenj, duke përfshirë edhe tekstin</translation>
 <translation id="4406308048672435032">Mund ta bësh këtë skedë joaktive ose mund ta rifreskosh për të shikuar përsëri listën e plotë</translation>
+<translation id="4406881185911439342">Fokuso grupin</translation>
 <translation id="4406883609789734330">Titra në çast</translation>
 <translation id="4406963243402726564">Të dhëna të paruajtura</translation>
 <translation id="4408599188496843485">N&amp;dihmë</translation>
@@ -10188,6 +10195,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8032569120109842252">Po ndjek</translation>
 <translation id="8033827949643255796">u zgjodh</translation>
 <translation id="8033958968890501070">Skadimi</translation>
+<translation id="8034399942062051455">Optimizimi i V8 është joaktiv</translation>
 <translation id="8034697324150621782">Ndërro me pamjen lart</translation>
 <translation id="8035059678007243127">Faqja e memories specifike të faqes së plotë "të fshehtë": <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Ndihmo në përmirësimin e "Plotësimit automatik"</translation>

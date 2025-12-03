@@ -496,6 +496,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3114507951000454849">Darllen y newyddion heddiw <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Rhagor o fanylion</translation>
 <translation id="3123734510202723619">Cyhoeddiadau</translation>
+<translation id="3134385238404760368">Dim tabiau diweddar</translation>
 <translation id="314939179385989105">Tudalen hafan Chrome</translation>
 <translation id="3158667104057012316">Wrthi'n trefnu yn ôl trefn bwrpasol</translation>
 <translation id="3159335509547415276">Dysgu am gyfrifon sydd wedi'u rhwystro</translation>
@@ -818,6 +819,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4577115723294378384">Trefnu yn ôl A i Z</translation>
 <translation id="4578289292431526768">I ffwrdd â ni</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# funud yn ôl}zero{# munud yn ôl}two{# funud yn ôl}few{# munud yn ôl}many{# munud yn ôl}other{# munud yn ôl}}</translation>
+<translation id="4585751637295612750">Agorwch dab newydd i'w ychwanegu at eich cwestiwn</translation>
 <translation id="4587589328781138893">Gwefannau</translation>
 <translation id="4594952190837476234">Daw'r dudalen all-lein hon o <ph name="CREATION_TIME" /> a gall fod yn wahanol i'r fersiwn ar-lein.</translation>
 <translation id="4595237294768457124">Agor tudalen Tab newydd</translation>
@@ -1339,6 +1341,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="670498945988402717">Gwiriwyd ddoe</translation>
 <translation id="6710213216561001401">Blaenorol</translation>
 <translation id="671481426037969117">Mae'ch amserydd <ph name="FQDN" /> wedi dirwyn i ben. Bydd yn dechrau eto yfory.</translation>
+<translation id="6716434912087331834">I adfer ffenestr newydd, lleihewch gyfanswm y ffenestri gweithredol i <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> neu lai. Mae ffenestri anweithredol yn cael eu dileu ar ôl 6 mis.</translation>
 <translation id="6723740634201835758">Yn eich Cyfrif Google</translation>
 <translation id="6734310707649923383">Gallwch weld y tudalennau rydych wedi ymweld â nhw neu gallwch eu dileu o'ch hanes</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, Tab Anhysbys Recordio wedi'i Binio</translation>
@@ -1656,6 +1659,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7942131818088350342">Mae <ph name="PRODUCT_NAME" /> yn hen.</translation>
 <translation id="7944772052836377867">Mae angen i gysoni gadarnhau mai chi sydd yno</translation>
 <translation id="7951102827450076904">Agor ffeiliau PDF sydd wedi'u lawrlwytho bob amser</translation>
+<translation id="7952479614398473176">I agor ffenestr newydd, lleihewch gyfanswm y ffenestri gweithredol i <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> neu lai.</translation>
 <translation id="7957413488482743710">Mae cerdyn rhithwir yn cuddio eich cerdyn go iawn i helpu i'ch amddiffyn rhag twyll posib. <ph name="BEGIN_LINK1" />Dysgu rhagor am gardiau rhithwir<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Tabiau ar y ddyfais hon</translation>
 <translation id="7961926449547174351">Rydych wedi analluogi mynediad Storio, ewch i'r Gosodiadau i'w alluogi.</translation>

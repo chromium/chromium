@@ -6666,6 +6666,7 @@
 <translation id="557722062034137776">Враћање уређаја на почетна подешавања не утиче на Google налоге нити било какве податке синхронизоване са њима. Међутим, све датотеке које су локално сачуване на уређају ће бити избрисане.</translation>
 <translation id="5578059481725149024">Аутоматско пријављивање</translation>
 <translation id="5578387000057347457">Унесите прилагођени упит или истакните текст да бисте направили слику</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 ставка је сачувана само на овом уређају. Да бисте је користили на другим уређајима, <ph name="BEGIN_LINK" />сачувајте је на Google налогу<ph name="END_LINK" />.}one{{ITEM_COUNT} ставка је сачувана само на овом уређају. Да бисте је користили на другим уређајима, <ph name="BEGIN_LINK" />сачувајте је на Google налогу<ph name="END_LINK" />.}few{{ITEM_COUNT} ставке су сачуване само на овом уређају. Да бисте их користили на другим уређајима, <ph name="BEGIN_LINK" />сачувајте их на Google налогу<ph name="END_LINK" />.}other{{ITEM_COUNT} ставки је сачувано само на овом уређају. Да бисте их користили на другим уређајима, <ph name="BEGIN_LINK" />сачувајте их на Google налогу<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Уклоните <ph name="SITE" /> са листе <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">Готов је превод на <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Верификација управљачких програма за хардвер у Microsoft Windows-у</translation>
@@ -7155,6 +7156,7 @@
     <ph name="LINE_BREAK" />
     Tа слика ће се приказивати на Chromebook екрану за пријављивање и закључаном екрану.</translation>
 <translation id="5925147183566400388">Показивач изјаве о пракси издавања сертификата</translation>
+<translation id="5926936390113611560">Отвори све профиле</translation>
 <translation id="5927132638760172455">Пребацује се на непознати пријемник</translation>
 <translation id="592740088639760830">Заустави овај контејнер</translation>
 <translation id="592880897588170157">Преузмите PDF датотеке да се не би аутоматски отварале у Chrome-у</translation>
@@ -7239,6 +7241,7 @@
 <translation id="5979421442488174909">&amp;Преведи на <ph name="LANGUAGE" /> </translation>
 <translation id="5979469435153841984">Да бисте обележили страницу, кликните на звездицу у траци за адресу.</translation>
 <translation id="5982578203375898585">Прикажи преузимања када се заврше</translation>
+<translation id="598347738324022917">Обележивач је сачуван на овом уређају</translation>
 <translation id="5983716913605894570">Генерише се…</translation>
 <translation id="5984222099446776634">Недавно посећено</translation>
 <translation id="5984334442529819751">Грешка при инсталирању садржаја за преузимање (често је потребно рестартовање, више информација потражите у одељку Подешавања\&gt;\&gt;О ChromeOS-у).</translation>
@@ -11507,6 +11510,7 @@
 <translation id="8910987510378294980">Сакријте листу уређаја</translation>
 <translation id="8912362522468806198">Google налога</translation>
 <translation id="8912810933860534797">Омогући аутоматско скенирање</translation>
+<translation id="8914030287343429787">Прегледајте лозинке чак и када не користите Chrome или Android тако што ћете се пријавити на <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Поново покрени Chrome</translation>
 <translation id="8915307125957890427">Кликните десним тастером на картицу и изаберите прво Додај картицу у групу, па Нова група</translation>
 <translation id="8915370057835397490">Учитавање предлога</translation>

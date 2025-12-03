@@ -496,6 +496,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3114507951000454849">Basahin ang balita ngayong araw <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Higit pang detalye</translation>
 <translation id="3123734510202723619">Mga Anunsyo</translation>
+<translation id="3134385238404760368">Walang kamakailang tab</translation>
 <translation id="314939179385989105">Homepage ng Chrome</translation>
 <translation id="3158667104057012316">Ibinubukod-bukod ayon sa manual na pagkakasunod-sunod</translation>
 <translation id="3159335509547415276">Matuto tungkol sa mga naka-block na account</translation>
@@ -817,6 +818,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4577115723294378384">Isaayos: A hanggang Z</translation>
 <translation id="4578289292431526768">Tara na</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuto ang nakalipas}one{# minuto ang nakalipas}other{# na minuto ang nakalipas}}</translation>
+<translation id="4585751637295612750">Magbukas ng bagong tab para idagdag ito sa iyong tanong</translation>
 <translation id="4587589328781138893">Mga Site</translation>
 <translation id="4594952190837476234">Naka-offline ang page na ito mula noong <ph name="CREATION_TIME" /> at maaaring iba ito sa online na bersyon.</translation>
 <translation id="4595237294768457124">Magbukas ng page ng Bagong tab.</translation>

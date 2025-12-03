@@ -496,6 +496,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3114507951000454849">Lees vandag se nuus <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Meer besonderhede</translation>
 <translation id="3123734510202723619">Aankondigings</translation>
+<translation id="3134385238404760368">Geen onlangse oortjies nie</translation>
 <translation id="314939179385989105">Chrome se tuisblad</translation>
 <translation id="3158667104057012316">Sorteer tans orde handmatig</translation>
 <translation id="3159335509547415276">Kry meer inligting oor geblokkeerde rekeninge</translation>
@@ -817,6 +818,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4577115723294378384">Rangskik volgens A na Z</translation>
 <translation id="4578289292431526768">Kom ons begin</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuut gelede}other{# minute gelede}}</translation>
+<translation id="4585751637295612750">Maak ’n nuwe oortjie oop om dit by jou vraag te voeg</translation>
 <translation id="4587589328781138893">Werwe</translation>
 <translation id="4594952190837476234">Hierdie vanlyn bladsy is van <ph name="CREATION_TIME" /> af en kan van die aanlyn weergawe verskil.</translation>
 <translation id="4595237294768457124">Maak ’n Nuwe oortjie-bladsy oop</translation>
@@ -1338,6 +1340,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="670498945988402717">Gister nagegaan</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="671481426037969117">Jou <ph name="FQDN" />-tydteller het uitgetel. Dit sal môre weer begin.</translation>
+<translation id="6716434912087331834">Verminder die totale aantal aktiewe vensters na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> of minder om ’n nuwe venster terug te stel. Onaktiewe vensters word ná 6 maande uitgevee.</translation>
 <translation id="6723740634201835758">In jou Google-rekening</translation>
 <translation id="6734310707649923383">Jy kan die bladsye sien wat jy besoek het of hulle van jou geskiedenis uitvee</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, vasgespelde Incognito-oortjie wat opgeneem word</translation>
@@ -1655,6 +1658,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is verouderd.</translation>
 <translation id="7944772052836377867">Sinkronisering moet verifieer dat dit jy is</translation>
 <translation id="7951102827450076904">Maak altyd afgelaaide PDF’s oop</translation>
+<translation id="7952479614398473176">Verminder die totale aantal aktiewe vensters na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> of minder om ’n nuwe venster oop te maak.</translation>
 <translation id="7957413488482743710">’n Virtuele kaart versteek jou werklike kaart om te help om jou teen potensiële bedrog te beskerm. <ph name="BEGIN_LINK1" />Kom meer te wete oor virtuele kaarte<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Oortjies op hierdie toestel</translation>
 <translation id="7961926449547174351">Jy het bergingtoegang gedeaktiveer. Gaan na Instellings om dit te aktiveer.</translation>

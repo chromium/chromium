@@ -47,6 +47,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="146866447420868597">Přihlásit se do Chromu?</translation>
 <translation id="1476347941828409626">&amp;Spravovat profily Chrome</translation>
 <translation id="1492280395845991349">Aktualizaci Chromu dokončíte opětovným spuštěním</translation>
+<translation id="1496875977627931224">Hezký den, <ph name="USER_NAME" />,<ph name="LINE_BREAK" />na co dnes myslíte?</translation>
 <translation id="1497802159252041924">Chyba instalace: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Přizpůsobte si svůj nový profil Chrome</translation>
 <translation id="1518627427551567882">Tahle stránka je chráněna</translation>
@@ -202,6 +203,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3112458742631356345">Chrome toto stahování zablokoval, protože tento soubor se běžně nestahuje a může být nebezpečný</translation>
 <translation id="3114643501466072395">Chcete-li zkontrolovat, zda jsou ostatní hesla v bezpečí před porušením zabezpečení údajů a ostatními bezpečnostními hrozbami, <ph name="BEGIN_LINK" />přihlaste se do Chromu<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome toto stahování zablokoval, protože tento soubor archivu obsahuje další soubory, které mohou skrývat malware</translation>
+<translation id="3130333203120345554">Nové vyhledávání</translation>
 <translation id="3135560418014806498">Přidat profil Chrome</translation>
 <translation id="3137969841538672700">Přetažením vyhledáte</translation>
 <translation id="3140883423282498090">Změny se projeví po příštím restartu prohlížeče Google Chrome.</translation>
@@ -274,6 +276,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4022972681110646219">Přeložit obrazovku</translation>
 <translation id="4023601594785368013">Původní jazyk: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Aktualizace se použije po restartování systému ChromeOS.</translation>
+<translation id="4039097928859803404">Vždy zobrazovat zkratky režimu AI</translation>
 <translation id="4050175100176540509">V nejnovější verzi jsou k dispozici důležitá vylepšení zabezpečení a nové funkce.</translation>
 <translation id="4053720452172726777">Přizpůsobit a ovládat Google Chrome</translation>
 <translation id="408393047846373801">Pokud svá hesla a další položky chcete mít na všech svých zařízeních, přihlaste se do Chromu Toto heslo se po přihlášení uloží do vašeho účtu Google.</translation>
@@ -355,6 +358,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4970880042055371251">Verze systému ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klikněte na Správce hesel Google</translation>
+<translation id="5043786843026425788">Další informace o vyhledávání pomocí Google Lens v Chromu</translation>
 <translation id="504867494566807945">Otevírejte v Chromu odkazy ze všech aplikací. Navíc se pro snadný přístup připne na hlavní panel.</translation>
 <translation id="5114340746415930644">Pokud chcete používat a ukládat data Chromu ve svém účtu <ph name="USER_EMAIL" />, zadejte heslovou frázi</translation>
 <translation id="5120334927898581447">Přihlášení do Chromu při přihlášení do jiných služeb Google</translation>
@@ -364,6 +368,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="5139423532931106058">Upravit profil Chrome</translation>
 <translation id="5163087008893166964">Vítá vás Chrome; bylo otevřeno nové okno prohlížeče</translation>
 <translation id="5166439563123238795">Chrome potřebuje oprávnění ke sledování vašich rukou</translation>
+<translation id="5167819546851111585">Na co dnes myslíte?</translation>
 <translation id="5170938038195470297">Nelze použít váš profil, protože byl vytvořen v novější verzi aplikace Google Chrome.
 
 Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu, nebo používejte novější verzi aplikace Chrome.</translation>
@@ -528,6 +533,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="683440813066116847">Pravidlo příchozího provozu pro aplikaci Google Chrome Canary, které povolí provoz mDNS.</translation>
 <translation id="6841242485723266823">Profily v Chromu vám pomůžou oddělit si různé části života. Přidejte nový profil.</translation>
 <translation id="684888714667046800">Nelze se připojit k internetu. Pokud používáte firewall, přidejte program <ph name="PRODUCT_EXE_NAME" /> na seznam povolených.</translation>
+<translation id="6859580922007887573">Pokračujte stisknutím tabulátoru</translation>
 <translation id="6877155553248388166">pravý dolní roh oblasti hledání: vpravo <ph name="RIGHT" /> %, dole <ph name="BOTTOM" /> %</translation>
 <translation id="6881299373831449287">Aktualizace Chromu</translation>
 <translation id="6885412569789873916">Chrome Beta – aplikace</translation>
@@ -627,6 +633,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7849037457735762883">Pokračujte od stavu, ve kterém jste skončili: Chrome může při každém restartu obnovit karty. Tuto funkci můžete zapnout v</translation>
 <translation id="7872446069773932638">Stahování… Zbývající čas: <ph name="SECONDS" /> s</translation>
 <translation id="7886087451482920026">Vyberte text pomocí Google Lens</translation>
+<translation id="7887929410013642057">Vždy zobrazovat zkratky režimu AI</translation>
 <translation id="7890208801193284374">Pokud počítač sdílíte s kamarády a členy rodiny, každý může web procházet samostatně a nastavit si Chrome podle svých požadavků.</translation>
 <translation id="7896673875602241923">Prohlížeč Chrome v tomto počítači je již přihlášen k účtu <ph name="ACCOUNT_EMAIL_LAST" />. Chcete-li své informace uchovat odděleně, vytvořte nového uživatele Chromu.</translation>
 <translation id="7904985524660297937">Vyzkoušejte Gemini v Google Chrome</translation>
@@ -643,6 +650,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8013993649590906847">Pokud obrázek nemá užitečný popis, Chrome se vám jej pokusí poskytnout. Za účelem vytváření popisů jsou obrázky odesílány do Googlu.</translation>
 <translation id="8019103195866286235">Toto rozšíření přestal vývojář publikovat a může být nebezpečné. Odstraňte ho z prohlížeče Chrome, aby již nemohlo číst a měnit data (včetně osobních údajů) na webech, které navštěvujete.</translation>
 <translation id="8040768861829554732">Rozšíření vyžaduje, abyste se do Chromu přihlásili</translation>
+<translation id="8041795619940733262">Zeptejte se Googlu<ph name="LINE_BREAK" />na tuhle kartu</translation>
 <translation id="80471789339884597">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je třeba restartovat všechny prohlížeče.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Další profily Chrome</translation>

@@ -1346,6 +1346,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1907044622262489040">Səsinizlə yazın. Axtarış + D düymələrindən istifadə edin, sonra danışmağa başlayın.</translation>
 <translation id="1907659324308286326">Bəzi Thunderbolt və ya USB4 aksesuarları düzgün işləmək üçün yaddaşa giriş tələb edir.</translation>
 <translation id="1908591798274282246">Qapalı Qrupu Yenidən Açın</translation>
+<translation id="1909677622563887527">Chrome avtomatlaşdırılmış test proqram təminatı vasitəsilə idarə edilir</translation>
 <translation id="1909880997794698664">Bu cihazı hazırda kiosk rejimində saxlamaq istəyirsiniz?</translation>
 <translation id="1910721550319506122">Xoş gəlmisiniz!</translation>
 <translation id="1910736334623230603">Bir neçə şəkil axtarmaq olmur. Eyni vaxtda bir şəkil əlavə etmək olar.</translation>
@@ -1700,6 +1701,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2144536955299248197">Sertifikat Oxuducu: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android tətbiqinin inkişafı ayarları</translation>
 <translation id="2145468727756963476">Gemini təzələnir...</translation>
+<translation id="2145688286532368277">Bu sayt üçün JavaScript optimallaşdırılması deaktivdir.</translation>
 <translation id="2145917706968602070">Telefon yaxınlıqda, kiliddən çıxarılmış olmalı, Bluetooth və Wi-Fi yandırılmış olmalıdır</translation>
 <translation id="2146263598007866206">Saytlar vaxtınıza qənaət etmək üçün əlaqəli faylları birlikdə avtomatik olaraq endirə bilər</translation>
 <translation id="2147218225094845757">Yan paneli gizlədin</translation>
@@ -4354,6 +4356,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 
   <ph name="CONTROL_PANEL_APPLET_NAME" /> funksiyasına başlamaq istəyirsiniz?</translation>
 <translation id="3942420633017001071">Diaqnostika</translation>
+<translation id="3942558231079086184">Bu sayt üçün JavaScript optimallaşdırılması deaktivdir. Daha yaxşı performans üçün aktivləşdirin.</translation>
 <translation id="3943582379552582368">Geri</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
 <translation id="3945513714196326460">Daha qısa ad seçin</translation>
@@ -10195,6 +10198,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8032569120109842252">İzlənilir</translation>
 <translation id="8033827949643255796">seçilib</translation>
 <translation id="8033958968890501070">Vaxtın bitməsi</translation>
+<translation id="8034399942062051455">V8 optimallaşdırması deaktivdir</translation>
 <translation id="8034697324150621782">Üst Görünüşlə Dəyişin</translation>
 <translation id="8035059678007243127">Anonim Geri/İrəli Keşlənmiş Səhifə: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Avto doldurmanı təkmilləşdirməyə yardım edin</translation>

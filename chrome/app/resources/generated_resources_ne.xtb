@@ -258,6 +258,7 @@
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> ट्याब <ph name="DESK_TITLE" /> डेस्कअन्तर्गत पर्छ</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> मा खुल्दै...</translation>
 <translation id="1168704243733734901"><ph name="STYLE" /> शैली र <ph name="MOOD" /> भएको <ph name="SUBJECT" /> को हालसालै AI प्रयोग गरी सिर्जना गरिएको थिम <ph name="INDEX" />।</translation>
+<translation id="1168799042879144934">Google लाई अघिल्लो पेजका बारेमा सोध्नुहोस्</translation>
 <translation id="116896278675803795">चयन गरिएको सामग्रीका आधारमा स्वतः भाषा बदलियोस्</translation>
 <translation id="1169266963600477608">गेम कन्ट्रोलहरू</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> मा संवेदनशील वा खतरनाक डेटा छ। तपाईंका एड्मिन यसो भन्छन्: "<ph name="CUSTOM_MESSAGE" />"</translation>
@@ -1346,6 +1347,7 @@
 <translation id="1907044622262489040">बोलेर टाइप गर्नुहोस्। Search + D थिच्नुहोस् अनि बोल्न थाल्नुहोस्।</translation>
 <translation id="1907659324308286326">केही Thunderbolt वा USB4 सहायक सामग्रीहरूले राम्रोसँग काम गर्न तिनलाई मेमोरी प्रयोग गर्न दिनु पर्ने हुन्छ।</translation>
 <translation id="1908591798274282246">बन्द गरिएको समूह फेरि खोल्नुहोस्</translation>
+<translation id="1909677622563887527">स्वचालित परीक्षण सफ्टवेयरले Chrome नियन्त्रण गरिरहेको छ</translation>
 <translation id="1909880997794698664">के तपाईं स्थायी रूपमा यो साधनलाई किस्क मोडमा राख्न चाहनुहुन्छ?</translation>
 <translation id="1910721550319506122">स्वागतम्!</translation>
 <translation id="1910736334623230603">एकभन्दा बढी फोटोहरू खोज्न मिल्दैन। एक पटकमा एउटा मात्र फोटो हाल्नुहोस्।</translation>
@@ -1427,6 +1429,7 @@
 <translation id="1956167375087861299">संरक्षित सामग्री प्ले गर्न आइडेन्टिफायर प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="1956390763342388273">यस कार्यले "<ph name="FOLDER_PATH" />" मा रहेका सबै फाइलहरू अपलोड गर्ने छ। तपाईंलाई साइटमाथि विश्वास छ भने मात्र यो कार्य गर्नुहोस्‌।</translation>
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{एउटा एक्स्टेन्सन समीक्षा गरिएको छ}other{{NUM_EXTENSIONS} वटा एक्स्टेन्सन समीक्षा गरिएका छन्}}</translation>
+<translation id="1957188536718247425">Google लाई अघिल्लो ट्याबका बारेमा सोध्नुहोस्</translation>
 <translation id="1957426642613794386">तपाईंको सेभ गरिएको जानकारी</translation>
 <translation id="1959421829481337178">आफ्नो सेवा प्रदायकले उपलब्ध गराएको एक्टिभेसन कोड हाल्नुहोस्।</translation>
 <translation id="1960211333621141174">भीर</translation>
@@ -1699,6 +1702,7 @@
 <translation id="2144536955299248197">प्रमाणपत्र दर्शक: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux मा Android एपको विकास</translation>
 <translation id="2145468727756963476">Gemini रिफ्रेस गरिँदै छ…</translation>
+<translation id="2145688286532368277">यो साइटका हकमा JavaScript अप्टिमाइजेसन अफ गरिएको छ।</translation>
 <translation id="2145917706968602070">तपाईंको फोन नजिकै हुनुका साथै अनलक गरिएको छ र त्यसमा ब्लुटुथ तथा Wi-Fi अन गरिएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="2146263598007866206">साइटहरूले तपाईंको समय बचत गर्न सम्बन्धित फाइलहरू स्वतः एकसाथ डाउनलोड गर्न सक्छन्</translation>
 <translation id="2147218225094845757">किनाराको प्यानल लुकाउनुहोस्</translation>
@@ -2922,6 +2926,7 @@
 <translation id="2981033191524548279">माफ गर्नुहोला, कुनै समस्या आयो। कृपया विवरणमा #bruschetta समावेश गरी प्रतिक्रिया पठाउनुहोस्। त्रुटिको कोड <ph name="ERROR" /> हो। कम्प्युटर रिबुट गरेर फेरि प्रयास गर्दा यो समस्याको समाधान हुन सक्छ।</translation>
 <translation id="2981113813906970160">ठुलो माउस कर्सर देखाउँनुहोस्</translation>
 <translation id="2983102365694924129">तपाईंले कुनै साइटमा गरेका गतिविधिका आधारमा। यो सेटिङ अफ छ।</translation>
+<translation id="2983311431122838216">Google Search मा उपलब्ध AI मोडलाई सोध्नुहोस्</translation>
 <translation id="2983373101216420412">केसमा <ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="2983818520079887040">सेटिङहरू...</translation>
 <translation id="2984384421572259426">प्रयोग नगरिएका ट्याबहरू हटाउनुहोस्</translation>
@@ -3502,6 +3507,7 @@
 <translation id="3402585168444815892">डेमो मोडमा दर्ता गर्दै</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">यो साइटका लागि कुनै पनि पासवर्ड सुरक्षित गरिएको छैन</translation>
+<translation id="3405382848027996799">तपाईं अब Google Beam को हार्डवेयर सेटअप गर्न सक्नुहुन्छ</translation>
 <translation id="3405664148539009465">फन्टहरूलाई  कस्टम गर्नुहोस्</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">भर्चुअल रियालिटी चल्ने यन्त्र र तिनमा भएका डेटा प्रयोग गर्ने अनुमति दिइएका साइटहरू</translation>
@@ -3694,6 +3700,7 @@
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3528498924003805721">सर्टकट लक्ष्यहरू</translation>
 <translation id="3529851166527095708">ठेगाना तथा थप कुराहरू</translation>
+<translation id="3530919970074558307">समूह अनफोकस गर्नुहोस्</translation>
 <translation id="3531070080754387701">Microsoft 365 ले यो फोल्डरबाट <ph name="FILE_NAMES" /> खोल्न सकेन</translation>
 <translation id="3531883061432162622">बुकमार्क तथा सूचीहरूमा गई आफ्नो रिडिङ लिस्ट र बुकमार्कहरू भेट्टाउनुहोस्</translation>
 <translation id="3532273508346491126">सिंकको व्यवस्थापन</translation>
@@ -4047,6 +4054,7 @@
 <translation id="3757567010566591880">टुलबारबाट अनपिन गर्नुहोस्</translation>
 <translation id="3757645900890881944">Search सम्बन्धी टुलहरू</translation>
 <translation id="3757733214359997190">कुनै पनि साइट फेला परेन</translation>
+<translation id="3757825964096339958">समूह फोकस गर्नुहोस्</translation>
 <translation id="375841316537350618">प्रोक्सी स्क्रिप्ट डाउनलोड गर्दै....</translation>
 <translation id="3758887577462995665">सुझाव:</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> महिना</translation>
@@ -4344,6 +4352,7 @@
 
 के तपाईं <ph name="CONTROL_PANEL_APPLET_NAME" /> सुरु गर्न चाहनुहुन्छ?</translation>
 <translation id="3942420633017001071">निदान</translation>
+<translation id="3942558231079086184">यो साइटका हकमा JavaScript अप्टिमाइजेसन अफ गरिएको छ। अझ राम्रो पर्फर्मेन्स प्राप्त गर्न यसलाई अन गर्नुहोस्।</translation>
 <translation id="3943582379552582368">&amp;पछाडि</translation>
 <translation id="3943857333388298514">टाँस्नुहोस्</translation>
 <translation id="3945513714196326460">अझ छोटो नाम राखी हेर्नुहोस्</translation>
@@ -4835,6 +4844,7 @@
 <translation id="4292613336957320546">एक्सिलेरेसन</translation>
 <translation id="429312253194641664">कुनै साइटले मिडियो प्ले गरिरहेको छ</translation>
 <translation id="4293219510510666933">ब्राउजिङ हिस्ट्री खोज्न र आफूले खोलेका साइटहरू भेट्टाउन बोलीचालीको भाषा प्रयोग गर्नुहोस्। तपाईं आफ्नो ब्राउजिङ हिस्ट्रीका आधारमा प्रश्नहरू सोध्न र जवाफहरू प्राप्त गर्न पनि सक्नुहुन्छ। यो सेटिङ अन छ।</translation>
+<translation id="429344752071832554">समूह अनफोकस गर्नुहोस्</translation>
 <translation id="4294392694389031609">डाउनलोड हिस्ट्रीबाट <ph name="FILE_NAME" /> मेटाइएको छ तर उक्त फाइल अझै पनि तपाईंको डिभाइसमा छ</translation>
 <translation id="4295072614469448764">यो एप तपाईंको टर्मिनलमा उपलब्ध छ। तपाईंको लन्चरमा कुनै आइकन पनि हुन सक्छ।</translation>
 <translation id="4295979599050707005">तपाईंको खाता <ph name="USER_EMAIL" /> Chrome तथा Google Play का वेबसाइट, एप र विस्तारहरूमा प्रयोग गर्न सकिने कुरा पुष्टि गर्न कृपया फेरि साइन इन गर्नुहोस्। तपाईं यो खाता हटाउन पनि सक्नुहुन्छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
@@ -4990,6 +5000,7 @@
 <translation id="4405224443901389797">यहाँ सार्नुहोस्…</translation>
 <translation id="4405781821077215583">तपाईंको स्क्रिनमा देखाइने टेक्स्टलगायतका सामग्री अझ ठुलो वा सानो बनाउनुहोस्</translation>
 <translation id="4406308048672435032">तपाईं यो ट्याब निष्क्रिय बनाउन वा फेरि पूर्ण सूची हेर्न यसलाई रिफ्रेस गर्न सक्नुहुन्छ</translation>
+<translation id="4406881185911439342">समूह फोकस गर्नुहोस्</translation>
 <translation id="4406883609789734330">लाइभ क्याप्सन</translation>
 <translation id="4406963243402726564">सेभ नगरिएको डेटा</translation>
 <translation id="4408599188496843485">म&amp;द्दत</translation>
@@ -5303,6 +5314,7 @@
 <translation id="4628762811416793313">Linux कन्टेनर सेटअप गर्ने कार्य पूरा भएन। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> नामक प्रोफाइल खोल्नुहोस्</translation>
 <translation id="4629803160911640220">विश्वसनीय</translation>
+<translation id="4631637535315947773">तपाईंले हालसालै आफ्ना सबैभन्दा बढी खोलिएका साइटहरूका सर्टकट प्रयोग नगरेकाले ती सर्टकट हटाइएका छन्</translation>
 <translation id="4631955550884380853">स्पष्ट आवाज</translation>
 <translation id="4632655012900268062">कार्डहरू आफूले चाहे जस्तो बनाउनुहोस्</translation>
 <translation id="4633003931260532286">विस्तारलाई कम्तीमा "<ph name="IMPORT_VERSION" />" संस्करणको "<ph name="IMPORT_NAME" />" आवश्यक पर्छ तर स्थापना संस्करण भने केवल "<ph name="INSTALLED_VERSION" />" हो</translation>
@@ -5632,6 +5644,7 @@
 <translation id="4854603338816296098">ठेगाना हटाइयो</translation>
 <translation id="485480310608090163">थप सेटिङ तथा अनुमति</translation>
 <translation id="4857304314344645169">गणितसम्बन्धी जुनसुकै समस्या हल गर्ने चरणबद्ध व्याख्या हेर्नुहोस्</translation>
+<translation id="4857506880242459832">Google लाई अघिल्लो पेजका बारेमा सोध्नुहोस्: <ph name="PAGE_TITLE" /></translation>
 <translation id="485806788160414322">मिडिया प्ले वा पज गर्नुहोस्</translation>
 <translation id="4858913220355269194">फ्रिट्ज</translation>
 <translation id="486213875233855629">तपाईंका एड्मिनले म्युट गर्नुभएको छ</translation>
@@ -6376,6 +6389,7 @@
 <translation id="5390677308841849479">गाढा रातो र सुन्तले</translation>
 <translation id="5392192690789334093">सूचना पठाउने अनुमति दिइएका साइटहरू</translation>
 <translation id="5393330235977997602">PIN का विकल्पहरू</translation>
+<translation id="5393474451146553463">Google लाई यो ट्याबका बारेमा सोध्नुहोस्</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{लिंक}other{# वटा लिंक}}</translation>
 <translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395353843367783642">तपाईंको खातामा सेभ गरिँदै छ…</translation>
@@ -8574,6 +8588,7 @@
 <translation id="6922763095098248079">तपाईंको सङ्गठनले तपाईंको यन्त्र व्यवस्थापन गर्छ। एड्मिनहरू यस यन्त्रमा रहेका जुनसुकै प्रोफाइलमा भएका डेटा एक्सेस गर्न सक्छन्।</translation>
 <translation id="6923633482430812883">आदान प्रदान माउन्ट गर्ने क्रममा त्रुटि भयो। आफूले जडान गर्न खोजिरहेको फाइल सर्भरले SMBv2 वा सोभन्दा नवीनतम संस्करण समर्थन गर्छ भन्ने कुरा जाँच गर्नुहोस्।</translation>
 <translation id="6924109527536857168">सिंक गर्नु पर्ने हुन्छ</translation>
+<translation id="6924940560840297548">तपाईंले हालसालै प्रयोग नगरेका कार्डहरू हटाइएका छन्</translation>
 <translation id="6927200998271693557">आफूले खोलेका साइटहरू छिटोछरितो रूपमा फेरि खोल्न आफ्ना ट्याब र हिस्ट्री <ph name="USER_EMAIL_ADDRESS" /> मा सिंक गर्नुहोस्</translation>
 <translation id="6928650056523249512">प्रयोग नगरिएका साइटलाई दिइएका अनुमति स्वतः रद्द गर्नुहोस्</translation>
 <translation id="6929126689972602640">अभिभावकीय नियन्त्रणहरू विद्यालयका खाताहरूमा प्रयोग गर्ने मिल्दैनन्। घरमा विद्यालयको कार्य गर्न सघाउन Google Classroom र अन्य वेबसाइटहरू प्रयोग गर्नका निम्ति विद्यालयको खाता हाल्नु पर्छ। विद्यालयको खाता हाल्न सर्वप्रथम सम्बन्धित बच्चाको व्यक्तिगत खाता प्रयोग गरी साइन इन गर्नुहोस्। तपाईं पछि सेटअप गर्ने क्रममा विद्यालयको खाता हाल्न सक्नुहुन्छ।</translation>
@@ -8796,6 +8811,7 @@
 <translation id="7082850163410901674">Mac को सिस्टम सेटिङमा सूचना प्राप्त गर्ने सुविधा अफ गरिएको छ</translation>
 <translation id="7083729794572207131">साइटमा तपाईंलाई अझ राम्रो अनुभव प्रदान गर्न उक्त साइटले सामान्यतया वेब एप इन्स्टल गर्ने अनुमति माग्छ</translation>
 <translation id="7083774521940805477">तपाईंको Chromebook मा Steam for Chromebook (बिटा) उपलब्ध छैन।</translation>
+<translation id="7084095352418993433">Google लाई यो पेजका बारेमा सोध्नुहोस्: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(कन्फिगर गरिएको छैन)</translation>
 <translation id="7086377898680121060">उज्यालो थप</translation>
 <translation id="7086672505018440886">अभिलेखमा Chrome का लग फाइलहरू समावेश गर्नुहोस्।</translation>
@@ -9013,6 +9029,7 @@
 <translation id="7246230585855757313">आफ्नो सुरक्षा साँचो पुनः प्रविष्टि गरी फेरि प्रयास गर्नुहोस्</translation>
 <translation id="7249197363678284330">एड्रेस बारमा गई यो सेटिङ बदल्नुहोस्।</translation>
 <translation id="7249764475759804559">फाइलहरू खोल्दा यो एप विकल्पका रूपमा समावेश गर्नुहोस्</translation>
+<translation id="7249885578105575587">Google लाई यो ट्याबका बारेमा सोध्नुहोस्: <ph name="TAB_TITLE" /></translation>
 <translation id="7250616558727237648">तपाईंले जुन यन्त्रसँग यो फाइल सेयर गर्न चाहनुहुन्छ उक्त यन्त्रबाट कुनै प्रतिक्रिया प्राप्त भएन। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="725109152065019550">माफ गर्नुहोस्, तपाईंको व्यवस्थापकले तपाईंखो यन्त्रमा बाह्य भन्डारणलाई अक्षम बनाएको छ।</translation>
 <translation id="7251635775446614726">तपाईंका एड्मिन यसो भन्छन्: "<ph name="CUSTOM_MESSAGE" />"</translation>
@@ -10180,6 +10197,7 @@
 <translation id="8032569120109842252">फलो गरिरहेको</translation>
 <translation id="8033827949643255796">चयन गरिएको</translation>
 <translation id="8033958968890501070">समयावधि सकियो</translation>
+<translation id="8034399942062051455">V8 अप्टिमाइजेसन अफ छ</translation>
 <translation id="8034697324150621782">माथिल्लो भ्यूसँग अदलबदल गर्नुहोस्</translation>
 <translation id="8035059678007243127">इन्कोग्निटो मोडमा ब्याक/फर्वार्ड क्यास गरिएको पेज: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">अटोफिल सुविधाको गुणस्तर सुधार गर्न मद्दत गर्नुहोस्</translation>
@@ -10346,6 +10364,7 @@
 <translation id="8143442547342702591">अमान्य एप</translation>
 <translation id="8144429778087524791">"पूरा भयो" का रूपमा चिन्ह लगाउनुहोस् र लुकाउनुहोस्</translation>
 <translation id="8145170459658034418">मेमोरी सेभर</translation>
+<translation id="8145219802299093106">Google लेन्स प्रयोग गरी यो पेजमा भएको कन्टेन्ट खोज्नुहोस्: <ph name="PAGE_TITLE" /></translation>
 <translation id="8146177459103116374">यदि तपाईंले यो डिभाइसमा पहिले नै दर्ता गराउनुभएको छ भने, तपाईंले <ph name="LINK2_START" />एउटा विद्यमान प्रयोगकर्ताको रूपमा साइन इन<ph name="LINK2_END" /> गर्न सक्नुहुन्छ।</translation>
 <translation id="8146287226035613638">आफूले चाहेका भाषाहरू हाल्नुहोस् र तिनको क्रम मिलाउनुहोस्। वेबसाइटहरूले सम्भव भएसम्म तपाईंले चाहेका भाषामा सामग्री देखाउने छन्। यी प्राथमिकताहरू तपाईंको ब्राउजरका सेटिङसँग सिंक गरिन्छन्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">साइन इन गर्न सकिएन। कृपया आफ्नो प्रशासकलाई सम्पर्क गर्नुहोस् वा फेरि प्रयास गर्नुहोस्।</translation>
@@ -11907,6 +11926,7 @@
 <translation id="9182556968660520230">साइटहरूलाई संरक्षित सामग्री प्ले गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="9183302530794969518">Google कागजात</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{एप}other{# वटा एप}}</translation>
+<translation id="9184211686591068713">Google लेन्स प्रयोग गरी यो ट्याबमा भएको कन्टेन्ट खोज्नुहोस्: <ph name="PAGE_TITLE" /></translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{तपाईंका एड्मिन <ph name="APP0_NAME" /> प्रयोग गरी तपाईंको स्क्रिन रेकर्ड गर्न सक्नुहुन्छ। रेकर्डिङ सुरु हुँदा तपाईंलाई नोटिफिकेसन पठाइने छैन।}=2{तपाईंका एड्मिन <ph name="APP0_NAME" /> र <ph name="APP1_NAME" /> प्रयोग गरी तपाईंको स्क्रिन रेकर्ड गर्न सक्नुहुन्छ। रेकर्डिङ सुरु हुँदा तपाईंलाई नोटिफिकेसन पठाइने छैन।}=3{तपाईंका एड्मिन <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> र अन्य एउटा एप प्रयोग गरी तपाईंको स्क्रिन रेकर्ड गर्न सक्नुहुन्छ। रेकर्डिङ सुरु हुँदा तपाईंलाई नोटिफिकेसन पठाइने छैन।}other{तपाईंका एड्मिन <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> र अन्य # वटा एप प्रयोग गरी तपाईंको स्क्रिन रेकर्ड गर्न सक्नुहुन्छ। रेकर्डिङ सुरु हुँदा तपाईंलाई नोटिफिकेसन पठाइने छैन।}}</translation>
 <translation id="9186963452600581158">आफ्ना बच्चाको Google खाता प्रयोग गरी साइन इन गर्नुहोस्</translation>
 <translation id="9187967020623675250">की मिलेन। तपाईं <ph name="RESPONSE" /> चाहनुहुन्छ भने कुनै की थिच्नुहोस्।</translation>
@@ -12006,6 +12026,7 @@
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> मार्फत फोटो खोज्नुहोस्</translation>
 <translation id="964286338916298286">तपाईंको IT एडमिनले तपाईंको डिभाइसमा Chrome Goodies लाई असक्षम पार्नुभएको छ।</translation>
 <translation id="964790508619473209">स्क्रिनका सेटिङ</translation>
+<translation id="964903383988132751">Google लाई अघिल्लो ट्याबका बारेमा सोध्नुहोस्: <ph name="TAB_TITLE" /></translation>
 <translation id="96535553604365597">Google Cast मा भएको कुनै समस्याका बारेमा उजुरी गर्नुहोस्</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{हालसालै थुप्रै सूचनाहरू पठाएको एउटा साइटको समीक्षा गर्नुहोस्}other{हालसालै थुप्रै सूचनाहरू पठाएका {NUM_SITES} वटा साइटको समीक्षा गर्नुहोस्}}</translation>
 <translation id="966588271015727539">कुनै ब्लुटुथ ब्रेल डिस्प्ले चयन गर्नुहोस्</translation>

@@ -496,6 +496,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3114507951000454849">Přečtěte si dnešní zprávy <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Další podrobnosti</translation>
 <translation id="3123734510202723619">Oznámení</translation>
+<translation id="3134385238404760368">Žádné nedávné karty</translation>
 <translation id="314939179385989105">Domovská stránka Chromu</translation>
 <translation id="3158667104057012316">Ruční řazení</translation>
 <translation id="3159335509547415276">Další informace o blokovaných účtech</translation>
@@ -817,6 +818,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4577115723294378384">Seřadit od A do Z</translation>
 <translation id="4578289292431526768">Jdeme na to</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{před # minutou}few{před # minutami}many{před # minuty}other{před # minutami}}</translation>
+<translation id="4585751637295612750">Otevřete novou kartu a přidejte ji do otázky</translation>
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4594952190837476234">Tato offline stránka je z <ph name="CREATION_TIME" /> a může se od online verze lišit.</translation>
 <translation id="4595237294768457124">Otevřete stránku Nová karta</translation>
@@ -1338,6 +1340,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="670498945988402717">Zkontrolováno včera</translation>
 <translation id="6710213216561001401">Předchozí</translation>
 <translation id="671481426037969117">Časovač <ph name="FQDN" /> vypršel. Spustí se zase zítra.</translation>
+<translation id="6716434912087331834">Pokud chcete obnovit nové okno, snižte celkový počet aktivních oken na maximálně <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Neaktivní okna se po 6 měsících smažou.</translation>
 <translation id="6723740634201835758">V účtu Google</translation>
 <translation id="6734310707649923383">Můžete si zobrazit stránky, které jste navštívili, a případně je z historie smazat</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, připnutá nahrávající anonymní karta</translation>
@@ -1655,6 +1658,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7942131818088350342">Aplikace <ph name="PRODUCT_NAME" /> je zastaralá.</translation>
 <translation id="7944772052836377867">Synchronizace potřebuje ověřit vaši totožnost</translation>
 <translation id="7951102827450076904">Stažené soubory PDF vždy otevřít</translation>
+<translation id="7952479614398473176">Pokud chcete otevřít nové okno, snižte celkový počet aktivních oken na maximálně <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7957413488482743710">Virtuální karta skryje vaši skutečnou kartu a chrání vás před případným podvodem. <ph name="BEGIN_LINK1" />Další informace o virtuálních kartách<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Karty na tomto zařízení</translation>
 <translation id="7961926449547174351">Zakázali jste přístup k úložišti. Přejděte do Nastavení a povolte ho.</translation>

@@ -6666,6 +6666,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="557722062034137776">Vraćanje uređaja na početna podešavanja ne utiče na Google naloge niti bilo kakve podatke sinhronizovane sa njima. Međutim, sve datoteke koje su lokalno sačuvane na uređaju će biti izbrisane.</translation>
 <translation id="5578059481725149024">Automatsko prijavljivanje</translation>
 <translation id="5578387000057347457">Unesite prilagođeni upit ili istaknite tekst da biste napravili sliku</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 stavka je sačuvana samo na ovom uređaju. Da biste je koristili na drugim uređajima, <ph name="BEGIN_LINK" />sačuvajte je na Google nalogu<ph name="END_LINK" />.}one{{ITEM_COUNT} stavka je sačuvana samo na ovom uređaju. Da biste je koristili na drugim uređajima, <ph name="BEGIN_LINK" />sačuvajte je na Google nalogu<ph name="END_LINK" />.}few{{ITEM_COUNT} stavke su sačuvane samo na ovom uređaju. Da biste ih koristili na drugim uređajima, <ph name="BEGIN_LINK" />sačuvajte ih na Google nalogu<ph name="END_LINK" />.}other{{ITEM_COUNT} stavki je sačuvano samo na ovom uređaju. Da biste ih koristili na drugim uređajima, <ph name="BEGIN_LINK" />sačuvajte ih na Google nalogu<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Uklonite <ph name="SITE" /> sa liste <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">Gotov je prevod na <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Verifikacija upravljačkih programa za hardver u Microsoft Windows-u</translation>
@@ -7155,6 +7156,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
     <ph name="LINE_BREAK" />
     Ta slika će se prikazivati na Chromebook ekranu za prijavljivanje i zaključanom ekranu.</translation>
 <translation id="5925147183566400388">Pokazivač izjave o praksi izdavanja sertifikata</translation>
+<translation id="5926936390113611560">Otvori sve profile</translation>
 <translation id="5927132638760172455">Prebacuje se na nepoznati prijemnik</translation>
 <translation id="592740088639760830">Zaustavi ovaj kontejner</translation>
 <translation id="592880897588170157">Preuzmite PDF datoteke da se ne bi automatski otvarale u Chrome-u</translation>
@@ -7239,6 +7241,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5979421442488174909">&amp;Prevedi na <ph name="LANGUAGE" /> </translation>
 <translation id="5979469435153841984">Da biste obeležili stranicu, kliknite na zvezdicu u traci za adresu.</translation>
 <translation id="5982578203375898585">Prikaži preuzimanja kada se završe</translation>
+<translation id="598347738324022917">Obeleživač je sačuvan na ovom uređaju</translation>
 <translation id="5983716913605894570">Generiše se…</translation>
 <translation id="5984222099446776634">Nedavno posećeno</translation>
 <translation id="5984334442529819751">Greška pri instaliranju sadržaja za preuzimanje (često je potrebno restartovanje, više informacija potražite u odeljku Podešavanja\&gt;\&gt;O ChromeOS-u).</translation>
@@ -11507,6 +11510,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="8910987510378294980">Sakrijte listu uređaja</translation>
 <translation id="8912362522468806198">Google naloga</translation>
 <translation id="8912810933860534797">Omogući automatsko skeniranje</translation>
+<translation id="8914030287343429787">Pregledajte lozinke čak i kada ne koristite Chrome ili Android tako što ćete se prijaviti na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Ponovo pokreni Chrome</translation>
 <translation id="8915307125957890427">Kliknite desnim tasterom na karticu i izaberite prvo Dodaj karticu u grupu, pa Nova grupa</translation>
 <translation id="8915370057835397490">Učitavanje predloga</translation>

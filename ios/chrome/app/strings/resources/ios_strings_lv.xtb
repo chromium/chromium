@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">Bloķēt ekrānu</translation>
 <translation id="1963976881984600709">Standarta aizsardzība</translation>
 <translation id="1964507856799750384">Pieskarieties vienumam <ph name="BEGIN_BOLD" />Browser App<ph name="END_BOLD" /> (Pārlūka lietotne).</translation>
+<translation id="1965633132497641148">Nederīgs drošības kods</translation>
 <translation id="1966313166384086081">vietņu dati</translation>
 <translation id="1967461193809857427">{count,plural, =1{Vai atvērt cilni, ko skatījāt Android ierīcē?}zero{Vai atvērt cilnes, ko skatījāt Android tālrunī?}one{Vai atvērt cilnes, ko skatījāt Android tālrunī?}other{Vai atvērt cilnes, ko skatījāt Android tālrunī?}}</translation>
 <translation id="1972325230031091483">Pārlūkošana būs ātrāka, jo saturs tiks iepriekš ielādēts, pamatojoties uz jūsu pašlaik apmeklēto tīmekļa lapu.</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">Clear History and Website Data (Notīrīt vēsturi un vietņu datus)</translation>
 <translation id="3190736958609431397">Atcelt izsekošanu</translation>
 <translation id="3208260410153224535">Jūsu organizācija izslēdza pierakstīšanos. Jaunas grāmatzīmes, paroles un citi dati tiks saglabāti tikai šajā ierīcē.</translation>
+<translation id="3211969308836412674">Atspraust vietni</translation>
 <translation id="3213807041830307252">Iepērcieties, tulkojiet un identificējiet redzamo saturu, izmantojot kameru un fotoattēlu galeriju.</translation>
 <translation id="3214379938835224220">Jūs tikāt izrakstīts, veicot iPad planšetdatora atiestatīšanu. Lai pierakstītos, pieskarieties vienumam Turpināt.</translation>
 <translation id="3218296450292600703">Pierakstīšanās, izmantojot pārvaldīto kontu, palīdz atdalīt ar organizāciju saistīto pārlūkošanas informāciju (tostarp cilnes, vēsturi un paroles) no pārējās pārlūkošanas informācijas.</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">2. adrese</translation>
 <translation id="3328801116991980348">Vietnes informācija</translation>
 <translation id="333229797575847124">Kā iespējot šo funkciju</translation>
+<translation id="3344233834747405775">Nederīgs kartes īpašnieka vārds</translation>
 <translation id="3344485292736684439">{count,plural, =1{Grāmatzīme ir saglabāta mapē “{title}” jūsu kontā ({email}).}zero{Grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}one{Grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}other{Grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}}</translation>
 <translation id="334690320928261823">Pēdējās cilnes</translation>
 <translation id="3349031117032695619">Uznirstošo logu bloķēšana</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">Atgādināt vēlāk</translation>
 <translation id="4881695831933465202">Atvērt</translation>
 <translation id="4883766694719903356">Inkognito ciļņu režģis</translation>
+<translation id="4884937942297374058">Uzlabota aizsardzība ir izslēgta</translation>
 <translation id="488785315393301722">Rādīt detaļas</translation>
 <translation id="4889521386764567563">Pašreizējais profils</translation>
 <translation id="4893713555726946316">Paslēpt vienumu “Atrast lapā”</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">Kalendāra pasākumu izveide no datumiem</translation>
 <translation id="5222676887888702881">Izrakstīties</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Rediģēt vietni</translation>
 <translation id="5233638681132016545">Jauna cilne</translation>
 <translation id="5234094073825090254">{count,plural, =1{Grāmatzīme tika saglabāta jūsu Google kontā ({email}).}zero{Grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}one{Grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}other{Grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}}</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
@@ -1325,6 +1330,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6066301408025741299">Pieskarieties, lai atceltu.</translation>
 <translation id="6074656473835429958">Paziņojumu saņemšana</translation>
 <translation id="607620096698446287">Nevarēja augšupielādēt failu “<ph name="FILENAME" />” (<ph name="FILESIZE" />)</translation>
+<translation id="6076618233738284461">Piespraust vietni</translation>
 <translation id="6077126322656614846">Piekļuve kamerai ir atļauta</translation>
 <translation id="607730456154980869">Iegūstiet atbildes ātrāk, izmantojot Gemini pārlūkā Chrome</translation>
 <translation id="6078236141387574983">Atkārtoti pielāgot lapas augstumu</translation>
@@ -1540,6 +1546,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[REZERVĒTS]</translation>
 <translation id="6779455296366983087">Jūsu pārlūkošanas dati tiks dzēsti</translation>
+<translation id="6782531425936234573">Eksportēt datus</translation>
 <translation id="6791425686608802741">Pieskarieties vienumam “Pievienot cilni jaunai grupai”.</translation>
 <translation id="6794476726485507147">Izvēlieties datumu un laiku, kad saņemt atgādinājuma paziņojumu par atgriešanos šajā lapā.</translation>
 <translation id="6795481620482106033">Nederīgi dati</translation>

@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Ciļņu grupu saraksts ir aizvērts.</translation>
 <translation id="3194464645767632461">vērtējums</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Pievienot grupai <ph name="TABS_COUNT_ONE" /> cilni}zero{Pievienot grupai <ph name="TABS_COUNT_MANY" /> cilnes}one{Pievienot grupai <ph name="TABS_COUNT_MANY" /> cilni}other{Pievienot grupai <ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
-<translation id="3293080634164207409">Pievienot cilnes</translation>
 <translation id="3328308545011660196">Ieteikums: šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Pēc vienas neaktivitātes dienas}zero{Pēc <ph name="DAY_COUNT_MANY" /> neaktivitātes dienām}one{Pēc <ph name="DAY_COUNT_MANY" /> neaktivitātes dienas}other{Pēc <ph name="DAY_COUNT_MANY" /> neaktivitātes dienām}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> jauna cilne}zero{<ph name="MANY_ADDED" /> jaunu ciļņu}one{<ph name="MANY_ADDED" /> jauna cilne}other{<ph name="MANY_ADDED" /> jaunas cilnes}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="855081842937141170">Piespraust cilni</translation>
 <translation id="8633025649649592204">Pēdējās darbības</translation>
+<translation id="8635822281281406185">Pievienojiet ne vairāk kā 10 failus, cilnes vai attēlus.</translation>
 <translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8714939927607906138">Zemāka cena</translation>
 <translation id="8730621377337864115">Gatavs</translation>

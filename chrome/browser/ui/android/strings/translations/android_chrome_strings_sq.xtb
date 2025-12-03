@@ -496,6 +496,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3114507951000454849">Lexo lajmet e sotme <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Më shumë detaje</translation>
 <translation id="3123734510202723619">Njoftime</translation>
+<translation id="3134385238404760368">Nuk ka skeda të fundit</translation>
 <translation id="314939179385989105">Faqja kryesore e Chrome</translation>
 <translation id="3158667104057012316">Po renditen sipas renditjes manuale</translation>
 <translation id="3159335509547415276">Mëso rreth llogarive të bllokuara</translation>
@@ -817,6 +818,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4577115723294378384">Rendit nga A-ja në Zh</translation>
 <translation id="4578289292431526768">Fillojmë</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minutë më parë}other{# minuta më parë}}</translation>
+<translation id="4585751637295612750">Hap një skedë të re për ta shtuar te pyetja jote</translation>
 <translation id="4587589328781138893">Sajtet</translation>
 <translation id="4594952190837476234">Kjo faqe offline është nga <ph name="CREATION_TIME" /> dhe mund të ndryshojë nga versioni online.</translation>
 <translation id="4595237294768457124">Hap një faqe të skedës së re</translation>

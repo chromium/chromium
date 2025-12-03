@@ -207,7 +207,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="189358972401248634">Otros idiomas</translation>
 <translation id="1899175549411605574">Hoja inferior de la información sobre precios</translation>
 <translation id="1900260903084164610">Si continúas, aceptas las <ph name="BEGIN_TOS_LINK" />Condiciones del Servicio<ph name="END_TOS_LINK" />.</translation>
-<translation id="1904580727789512086">Las URL que visitas se guardan en tu Cuenta de Google</translation>
+<translation id="1904580727789512086">Las URLs que visitas se guardan en tu Cuenta de Google</translation>
 <translation id="1910950723001426294">La lista de opciones para compartir está cerrada.</translation>
 <translation id="191726024256261717">Revisar permisos</translation>
 <translation id="1917766536967060661">Perderás de inmediato el acceso al grupo de pestañas “<ph name="GROUP_NAME" />”, y <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) ya no podrá interactuar contigo en los servicios de Google.</translation>
@@ -496,6 +496,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3114507951000454849">Lee las noticias de hoy <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Más detalles</translation>
 <translation id="3123734510202723619">Anuncios</translation>
+<translation id="3134385238404760368">No hay pestañas recientes</translation>
 <translation id="314939179385989105">Página principal de Chrome</translation>
 <translation id="3158667104057012316">Ordenados manualmente</translation>
 <translation id="3159335509547415276">Más información sobre cuentas bloqueadas</translation>
@@ -817,6 +818,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4577115723294378384">Ordenar de la A a la Z</translation>
 <translation id="4578289292431526768">Continuar</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Hace # minuto}other{Hace # minutos}}</translation>
+<translation id="4585751637295612750">Abre una pestaña nueva para agregarla a tu pregunta</translation>
 <translation id="4587589328781138893">Sitios</translation>
 <translation id="4594952190837476234">Esta página sin conexión se creó el <ph name="CREATION_TIME" /> y es posible que sea diferente con respecto a la versión en línea.</translation>
 <translation id="4595237294768457124">Abre una página Nueva pestaña</translation>
@@ -1169,7 +1171,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="6085886413119427067">Determina cómo conectarse a sitios web mediante una conexión segura</translation>
 <translation id="6087286598828478206">¿Quieres bloquear a ese miembro y salir del grupo?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> horas restantes</translation>
-<translation id="6095578583683628124">Si Google también es tu motor de búsqueda predeterminado, verás mejores sugerencias, relevantes según el contexto</translation>
+<translation id="6095578583683628124">Si Google también es tu motor de búsqueda predeterminado, verás mejores sugerencias, relacionadas con el contexto</translation>
 <translation id="6104768972315313991">Código QR generado</translation>
 <translation id="610630277578876674">Abre rápidamente vínculos en mensajes y mucho más</translation>
 <translation id="6108923351542677676">Configuración en curso…</translation>
@@ -1944,7 +1946,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="9131209053278896908">Los sitios que bloqueaste aparecen aquí</translation>
 <translation id="9133397713400217035">Explorar sin conexión</translation>
 <translation id="9143389653531441385">Regístrate con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="9148126808321036104">Accede nuevamente</translation>
+<translation id="9148126808321036104">Volver a acceder</translation>
 <translation id="9148564897242852377">Activar o desactivar la selección de pestañas</translation>
 <translation id="9153056436992761257">Elige la posición que prefieras</translation>
 <translation id="9157212632995922070">Elige una cuenta para continuar en <ph name="SITE_ETLD_PLUS_ONE" /></translation>

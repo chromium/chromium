@@ -496,6 +496,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3114507951000454849">Đọc tin tức hôm nay <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Thông tin chi tiết khác</translation>
 <translation id="3123734510202723619">Thông báo</translation>
+<translation id="3134385238404760368">Không có thẻ nào gần đây</translation>
 <translation id="314939179385989105">Trang chủ của Chrome</translation>
 <translation id="3158667104057012316">Sắp xếp thủ công</translation>
 <translation id="3159335509547415276">Tìm hiểu về tài khoản bị chặn</translation>
@@ -817,6 +818,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4577115723294378384">Sắp xếp từ A đến Z</translation>
 <translation id="4578289292431526768">Bắt đầu nào!</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# phút trước}other{# phút trước}}</translation>
+<translation id="4585751637295612750">Mở một thẻ mới để thêm vào câu hỏi của bạn</translation>
 <translation id="4587589328781138893">Trang web</translation>
 <translation id="4594952190837476234">Trang ngoại tuyến này được tạo từ lúc <ph name="CREATION_TIME" /> và có thể khác với phiên bản trực tuyến.</translation>
 <translation id="4595237294768457124">Mở trang Thẻ mới</translation>

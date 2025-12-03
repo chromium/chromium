@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Lapcsoportlista bezárva</translation>
 <translation id="3194464645767632461">értékelés</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap hozzáadása csoporthoz}other{<ph name="TABS_COUNT_MANY" /> lap hozzáadása csoporthoz}}</translation>
-<translation id="3293080634164207409">Lapok hozzáadása</translation>
 <translation id="3328308545011660196">Javaslat: Úgy tűnik, <ph name="NUMBER_OF_TABS" /> lap kapcsolódik egymáshoz. Csoportosítja őket?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 nap inaktivitás után}other{<ph name="DAY_COUNT_MANY" /> nap inaktivitás után}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> új lap}other{<ph name="MANY_ADDED" /> új lap}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Beállítások</translation>
 <translation id="855081842937141170">Lap rögzítése</translation>
 <translation id="8633025649649592204">Legutóbbi tevékenységek</translation>
+<translation id="8635822281281406185">Legfeljebb 10 fájlt, lapot vagy képet adhat hozzá</translation>
 <translation id="8712637175834984815">Értem</translation>
 <translation id="8714939927607906138">Alacsonyabb ár</translation>
 <translation id="8730621377337864115">Kész</translation>

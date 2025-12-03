@@ -496,6 +496,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3114507951000454849">Olvassa el a mai híreket <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">További részletek</translation>
 <translation id="3123734510202723619">Hirdetmények</translation>
+<translation id="3134385238404760368">Nincsenek nemrég megnyitott lapok</translation>
 <translation id="314939179385989105">A Chrome kezdőlapja</translation>
 <translation id="3158667104057012316">Manuális rendezés folyamatban</translation>
 <translation id="3159335509547415276">További információ a letiltott fiókokról</translation>
@@ -817,6 +818,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4577115723294378384">Rendezés A-tól Z-ig</translation>
 <translation id="4578289292431526768">Indítás</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# perce}other{# perce}}</translation>
+<translation id="4585751637295612750">Új lap megnyitása a kérdéshez való hozzáadáshoz</translation>
 <translation id="4587589328781138893">Webhelyek</translation>
 <translation id="4594952190837476234">Az offline oldal létrehozási ideje: <ph name="CREATION_TIME" />. Az oldal eltérhet az online változattól.</translation>
 <translation id="4595237294768457124">Nyisson meg egy Új lap oldalt.</translation>
@@ -1338,6 +1340,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="670498945988402717">Tegnap volt ellenőrizve</translation>
 <translation id="6710213216561001401">Előző</translation>
 <translation id="671481426037969117">A(z) <ph name="FQDN" /> alkalmazás időzítése lejárt. Holnap újraindul.</translation>
+<translation id="6716434912087331834">Új ablak visszaállításához csökkentse az aktív ablakok teljes számát legfeljebb ennyire: <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Az inaktív ablakokat 6 hónap elteltével törli a rendszer.</translation>
 <translation id="6723740634201835758">Google-fiókban</translation>
 <translation id="6734310707649923383">Megtekintheti a felkeresett oldalakat, és törölheti őket az előzmények közül.</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, rögzített, felvételt készítő inkognitó lap</translation>
@@ -1655,6 +1658,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7942131818088350342">A(z) <ph name="PRODUCT_NAME" /> elavult.</translation>
 <translation id="7944772052836377867">A szinkronizálás ellenőrizni szeretné az Ön személyazonosságát</translation>
 <translation id="7951102827450076904">Mindig nyissa meg a letöltött PDF-fájlokat</translation>
+<translation id="7952479614398473176">Új ablak megnyitásához csökkentse az aktív ablakok teljes számát legfeljebb ennyire: <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7957413488482743710">A virtuális kártya elrejti tényleges kártyáját, így segíthet az esetleges csalások elleni védekezésben. <ph name="BEGIN_LINK1" />További információ a virtuális kártyákról<ph name="END_LINK1" />.</translation>
 <translation id="7959485987650214982">Lapok ezen az eszközön</translation>
 <translation id="7961926449547174351">Letiltotta a tárhelyhez való hozzáférést. A Beállítások menüpontban ismét engedélyezheti.</translation>

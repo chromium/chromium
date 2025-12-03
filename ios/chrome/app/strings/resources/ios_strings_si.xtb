@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">අගුලු තිරය</translation>
 <translation id="1963976881984600709">සම්මත ආරක්ෂාව</translation>
 <translation id="1964507856799750384"><ph name="BEGIN_BOLD" />බ්‍රව්සර යෙදුම<ph name="END_BOLD" /> තට්ටු කරන්න</translation>
+<translation id="1965633132497641148">වලංගු නොවන ආරක්ෂක කේතය</translation>
 <translation id="1966313166384086081">වෙබ් අඩවි දත්ත</translation>
 <translation id="1967461193809857427">{count,plural, =1{ඔබ Android මත හැර ගිය පටිත්ත ගන්නද?}one{ඔබ Android මත හැර ගිය පටිති ගන්නද?}other{ඔබ Android මත හැර ගිය පටිති ගන්නද?}}</translation>
 <translation id="1972325230031091483">ඔබගේ වත්මන් වෙබ් පිටුවට පැමිණීම මත පදනම්ව අන්තර්ගතය ප්‍රගාමීව පූරණය කර ඇති නිසා ඔබ වේගයෙන් බ්‍රවුස් කරනු ඇත</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">ඉතිහාසය සහ වෙබ් අඩවි දත්ත හිස් කරන්න</translation>
 <translation id="3190736958609431397">හඹා නොයන්න</translation>
 <translation id="3208260410153224535">ඔබේ සංවිධානය පුරනය අක්‍රිය කළා. නව පිටුසන්, මුරපද, සහ තවත් ඒවා මෙම උපාංගයට පමණක් සුරකිනු ලැබේ.</translation>
+<translation id="3211969308836412674">අඩවිය නොඅමුණන්න</translation>
 <translation id="3213807041830307252">ඔබේ කැමරාව සහ ඡායාරූප ගැලරිය භාවිත කර ඔබ දකින දෙය මිලදී ගන්න, පරිවර්තන කරන්න, හඳුනා ගන්න.</translation>
 <translation id="3214379938835224220">ඔබේ iPad යළි පිහිටුවීමේ කොටසක් ලෙස ඔබ වරනය වී ඇත. පුරනය වීමට පහත ඉදිරියට යන්න තට්ටු කරන්න.</translation>
 <translation id="3218296450292600703">ඔබේ කළමනාකරණය කළ ගිණුම සමගින් පුරනය වීම ඔබේ සංවිධානයට අදාළ බ්‍රවුස් කිරීම (පටිති, ඉතිහාසය, සහ මුරපද ඇතුළුව) ඔබේ අනෙකුත් බ්‍රවුස් කිරීම් වලින් වෙන්ව තබා ගැනීමට උදවු වේ</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">ලිපිනය 2</translation>
 <translation id="3328801116991980348">අඩවි තොරතුරු</translation>
 <translation id="333229797575847124">මෙම විශේෂාංගය සබල කරන ආකාරය</translation>
+<translation id="3344233834747405775">වලංගු නොවන කාඩ්පත් හිමියාගේ නම</translation>
 <translation id="3344485292736684439">{count,plural, =1{පිටුසන ඔබේ ගිණුමේ, {email} "{title}" වෙත සුරකින ලදි}one{පිටුසන් ඔබේ ගිණුමේ, {email} "{title}" වෙත සුරකින ලදි}other{පිටුසන් ඔබේ ගිණුමේ, {email} "{title}" වෙත සුරකින ලදි}}</translation>
 <translation id="334690320928261823">මෑත පටිති</translation>
 <translation id="3349031117032695619">උත්පතන අවහිර කරන්න</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">මට පසුව සිහිකැඳවන්න</translation>
 <translation id="4881695831933465202">විවෘත කරන්න</translation>
 <translation id="4883766694719903356">අප්‍රසිද්ධ පටිත්ත ජාලකය</translation>
+<translation id="4884937942297374058">වැඩිදියුණු කළ ආරක්ෂාව ක්‍රියාවිරහිතයි</translation>
 <translation id="488785315393301722">විස්තර පෙන්වන්න</translation>
 <translation id="4889521386764567563">වත්මන් පැතිකඩ</translation>
 <translation id="4893713555726946316">පිටුවේ සොයා ගැනීම සඟවන්න</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">දින වෙතින් දිනදර්ශන සිදුවීම් සාදන්න</translation>
 <translation id="5222676887888702881">පිටවීම</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">අඩවිය සංස්කරණය කරන්න</translation>
 <translation id="5233638681132016545">නව ටැබය</translation>
 <translation id="5234094073825090254">{count,plural, =1{ඔබේ Google ගිණුමේ, {email} පිටුසන සුරැකී ඇත.}one{ඔබේ Google ගිණුමේ, පිටුසන් {email}ක් සුරැකී ඇත.}other{ඔබේ Google ගිණුමේ, පිටුසන් {email}ක් සුරැකී ඇත.}}</translation>
 <translation id="5234764350956374838">ඉවත් කරන්න</translation>
@@ -1325,6 +1330,7 @@
 <translation id="6066301408025741299">අවලංගු කිරීමට තට්ටු කරන්න.</translation>
 <translation id="6074656473835429958">දැනුම්දීම් ලබා ගන්න</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) උඩුගත කළ නොහැකි විය</translation>
+<translation id="6076618233738284461">අඩවිය අමුණන්න</translation>
 <translation id="6077126322656614846">කැමරා ප්‍රවේශයට ඉඩ දෙන ලදී</translation>
 <translation id="607730456154980869">Chrome හි Gemini සමග වේගයෙන් පිළිතුරු ලබා ගන්න</translation>
 <translation id="6078236141387574983">පත්‍රයේ උස නැවත සකසන්න</translation>
@@ -1540,6 +1546,7 @@
 <translation id="6761393919622941301">ශ්‍රව්‍ය</translation>
 <translation id="6770452996697898492">[වෙන් කළා]</translation>
 <translation id="6779455296366983087">ඔබේ බ්‍රවුස් කිරීමේ දත්ත මකා දැමෙනු ඇත</translation>
+<translation id="6782531425936234573">දත්ත නිර්යාත කරන්න</translation>
 <translation id="6791425686608802741">"නව සමූහයට පටිත්ත එක් කරන්න" තට්ටු කරන්න</translation>
 <translation id="6794476726485507147">මෙම පිටුවට නැවත පැමිණීම සඳහා මතක් කිරීමේ දැනුම්දීමක් ලබා ගැනීමට දිනයක් සහ වේලාවක් තෝරා ගන්න</translation>
 <translation id="6795481620482106033">අවලංගු දත්ත</translation>

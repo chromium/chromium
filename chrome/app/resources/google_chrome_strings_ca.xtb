@@ -273,6 +273,7 @@
 <translation id="4022972681110646219">Tradueix la pantalla</translation>
 <translation id="4023601594785368013">Idioma original: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Cal reiniciar Chrome OS per aplicar l'actualització.</translation>
+<translation id="4039097928859803404">Mostra sempre les dreceres del mode IA</translation>
 <translation id="4050175100176540509">La versió més recent incorpora millores de seguretat i funcions noves importants.</translation>
 <translation id="4053720452172726777">Personalitza i controla Google Chrome</translation>
 <translation id="408393047846373801">Per obtenir les teves contrasenyes i altres dades en tots els dispositius, inicia la sessió a Chrome. Aquesta contrasenya es desarà al teu Compte de Google després d'iniciar-hi la sessió.</translation>
@@ -354,6 +355,7 @@
 <translation id="4970880042055371251">Versió de Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Fes clic a Gestor de contrasenyes de Google</translation>
+<translation id="5043786843026425788">Més informació sobre la cerca amb Google Lens a Chrome</translation>
 <translation id="504867494566807945">Obre enllaços a Chrome des de qualsevol aplicació. A més, perquè sigui més fàcil accedir-hi, es fixa a la barra de tasques.</translation>
 <translation id="5114340746415930644">Introdueix la frase de contrasenya per utilitzar i desar les dades de Chrome al teu compte, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Inicia la sessió a Chrome quan iniciïs la sessió en altres serveis de Google</translation>
@@ -524,6 +526,7 @@
 <translation id="683440813066116847">Regla d'entrada de Google Chrome Canary per permetre el trànsit de mDNS.</translation>
 <translation id="6841242485723266823">Els perfils de Chrome t'ajuden a separar les diferents parts de la teva vida. Afegeix un perfil nou ara.</translation>
 <translation id="684888714667046800">No es pot connectar a Internet. Si fas servir un tallafoc, assegura't que <ph name="PRODUCT_EXE_NAME" /> sigui a la llista d'accés permès.</translation>
+<translation id="6859580922007887573">Prem el tabulador per continuar</translation>
 <translation id="6877155553248388166">extrem inferior dret de l'àrea de cerca: <ph name="RIGHT" /> % per la dreta i <ph name="BOTTOM" /> % per baix</translation>
 <translation id="6881299373831449287">S'està actualitzant Chrome</translation>
 <translation id="6885412569789873916">Aplicacions de Chrome Beta</translation>
@@ -623,6 +626,7 @@
 <translation id="7849037457735762883">Continua des d'on ho vas deixar: Chrome pot restaurar les teves pestanyes cada vegada que reiniciïs el navegador. Per activar-ho, ves a</translation>
 <translation id="7872446069773932638">S'està baixant… Queden <ph name="SECONDS" /> segons</translation>
 <translation id="7886087451482920026">Selecciona text amb Google Lens</translation>
+<translation id="7887929410013642057">Mostra sempre les dreceres del mode IA</translation>
 <translation id="7890208801193284374">Si compartiu un ordinador, els amics i els familiars poden navegar de manera independent i configurar Chrome com vulguin.</translation>
 <translation id="7896673875602241923">Algú ha iniciat anteriorment la sessió a Chrome en aquest ordinador com a <ph name="ACCOUNT_EMAIL_LAST" />. Crea un usuari de Chrome per mantenir la informació separada.</translation>
 <translation id="7904985524660297937">Prova Gemini a Google Chrome</translation>

@@ -45,6 +45,7 @@
 <translation id="146866447420868597">¿Quieres acceder a Chrome?</translation>
 <translation id="1476347941828409626">&amp;Administrar perfiles de Chrome</translation>
 <translation id="1492280395845991349">Reinicia para finalizar la actualización de Chrome</translation>
+<translation id="1496875977627931224">Hola, <ph name="USER_NAME" />.<ph name="LINE_BREAK" />¿En qué estás pensando hoy?</translation>
 <translation id="1497802159252041924">Error de instalación: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personaliza tu nuevo perfil de Chrome.</translation>
 <translation id="1518627427551567882">Esta página está protegida</translation>
@@ -198,6 +199,7 @@
 <translation id="3112458742631356345">Chrome bloqueó esta descarga porque el archivo no se descarga con frecuencia y puede ser peligroso</translation>
 <translation id="3114643501466072395">Para comprobar si tus otras contraseñas están a salvo de violaciones de la seguridad de los datos y otros problemas de seguridad, <ph name="BEGIN_LINK" />accede a Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome bloqueó esta descarga porque el archivo incluye otros archivos que pueden ocultar software malicioso</translation>
+<translation id="3130333203120345554">Nueva búsqueda</translation>
 <translation id="3135560418014806498">Agregar perfil de Chrome</translation>
 <translation id="3137969841538672700">Arrastrar para buscar</translation>
 <translation id="3140883423282498090">Los cambios se aplicarán la próxima vez que reinicies Google Chrome.</translation>
@@ -363,6 +365,7 @@
 <translation id="5139423532931106058">Personalizar tu perfil de Chrome</translation>
 <translation id="5163087008893166964">Te damos la bienvenida a Chrome; se abrió una nueva ventana del navegador</translation>
 <translation id="5166439563123238795">Chrome necesita permiso para hacer un seguimiento de tus manos</translation>
+<translation id="5167819546851111585">¿En qué estás pensando hoy?</translation>
 <translation id="5170938038195470297">No se puede usar tu perfil porque pertenece a una nueva versión de Google Chrome. Es posible que algunas características no estén disponibles. Especifica un directorio de perfil diferente o usa una nueva versión de Chrome.</translation>
 <translation id="5174969993834422967">Por lo general, bloqueas las notificaciones. Si quieres permitir que este sitio te envíe notificaciones, haz clic en el ícono de notificaciones que se encuentra en la esquina derecha de la barra de ubicación.</translation>
 <translation id="5174983315706567306">No hay espacio suficiente en el disco.</translation>
@@ -640,6 +643,7 @@
 <translation id="8013993649590906847">Si una imagen no tiene una descripción útil, Chrome intentará proporcionarte una. Para crear descripciones, se envían las imágenes a Google.</translation>
 <translation id="8019103195866286235">El desarrollador anuló la publicación de esta extensión y es posible que no sea segura. Quítala de Chrome para que ya no pueda ver ni cambiar tus datos en los sitios que visitas, incluida tu información personal.</translation>
 <translation id="8040768861829554732">Una extensión quiere que accedas a Chrome</translation>
+<translation id="8041795619940733262">Pregunta a Google<ph name="LINE_BREAK" />sobre esta pestaña</translation>
 <translation id="80471789339884597">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar todos los navegadores antes de usarlo.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>

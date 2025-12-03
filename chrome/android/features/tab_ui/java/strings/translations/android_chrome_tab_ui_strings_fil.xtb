@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Isinara ang listahan ng grupo ng tab</translation>
 <translation id="3194464645767632461">rating</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Magdagdag ng <ph name="TABS_COUNT_ONE" /> tab sa grupo}one{Magdagdag ng <ph name="TABS_COUNT_MANY" /> tab sa grupo}other{Magdagdag ng <ph name="TABS_COUNT_MANY" /> na tab sa grupo}}</translation>
-<translation id="3293080634164207409">Magdagdag ng mga tab</translation>
 <translation id="3328308545011660196">Suhestyon: Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Pagkalipas ng 1 araw na hindi aktibo}one{Pagkalipas ng <ph name="DAY_COUNT_MANY" /> araw na hindi aktibo}other{Pagkalipas ng <ph name="DAY_COUNT_MANY" /> na araw na hindi aktibo}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> bagong tab}one{<ph name="MANY_ADDED" /> bagong tab}other{<ph name="MANY_ADDED" /> na bagong tab}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="855081842937141170">Tab ng pin</translation>
 <translation id="8633025649649592204">Kamakailang aktibidad</translation>
+<translation id="8635822281281406185">Magdagdag ng hanggang 10 file, tab, o larawan</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8714939927607906138">Mas mababang presyo</translation>
 <translation id="8730621377337864115">Tapos na</translation>

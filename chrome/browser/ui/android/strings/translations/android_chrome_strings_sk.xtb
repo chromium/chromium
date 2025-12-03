@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">Prečítajte si dnešné správy <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Ďalšie podrobnosti</translation>
 <translation id="3123734510202723619">Oznámenia</translation>
+<translation id="3134385238404760368">Žiadne nedávne karty</translation>
 <translation id="314939179385989105">Domovská stránky Chromu</translation>
 <translation id="3158667104057012316">Zoraďuje sa manuálne</translation>
 <translation id="3159335509547415276">Ďalšie informácie o blokovaných účtoch</translation>
@@ -817,6 +818,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4577115723294378384">Zoradiť od A po Z</translation>
 <translation id="4578289292431526768">Začať</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{pred # minútou}few{pred # minútami}many{pred # minútou}other{pred # minútami}}</translation>
+<translation id="4585751637295612750">Otvorte novú kartu a pridajte tak dopyt do otázky</translation>
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4594952190837476234">Táto offline stránka je z <ph name="CREATION_TIME" /> a líši sa od online verzie.</translation>
 <translation id="4595237294768457124">Otvorte stránku na novej karte</translation>

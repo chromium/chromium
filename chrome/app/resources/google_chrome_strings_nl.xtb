@@ -276,6 +276,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4022972681110646219">Scherm vertalen</translation>
 <translation id="4023601594785368013">Oorspronkelijke taal: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS moet opnieuw worden gestart om de update uit te voeren.</translation>
+<translation id="4039097928859803404">Snelkoppelingen voor AI-modus altijd tonen</translation>
 <translation id="4050175100176540509">Er zijn belangrijke beveiligingsverbeteringen en nieuwe functies beschikbaar in de nieuwste versie.</translation>
 <translation id="4053720452172726777">Google Chrome aanpassen en beheren</translation>
 <translation id="408393047846373801">Log in bij Chrome om onder andere je wachtwoorden te gebruiken op al je apparaten. Dit wachtwoord wordt opgeslagen in je Google-account nadat je bent ingelogd.</translation>
@@ -357,6 +358,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4970880042055371251">Chrome OS-versie</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klik op Google Wachtwoordmanager</translation>
+<translation id="5043786843026425788">Meer informatie over zoeken met Google Lens in Chrome</translation>
 <translation id="504867494566807945">Open links in Chrome vanuit elke app. Voor snelle toegang wordt Chrome vastgezet op je taakbalk.</translation>
 <translation id="5114340746415930644">Voer je wachtwoordzin in om Chrome-gegevens in je account <ph name="USER_EMAIL" /> te gebruiken en op te slaan</translation>
 <translation id="5120334927898581447">Inloggen bij Chrome als je inlogt bij andere Google-services</translation>
@@ -529,6 +531,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="683440813066116847">Inkomende regel zodat Google Chrome Canary mDNS-verkeer toestaat.</translation>
 <translation id="6841242485723266823">Met Chrome-profielen kun je verschillende delen van je leven gescheiden houden. Voeg nu een nieuw profiel toe.</translation>
 <translation id="684888714667046800">Kan geen verbinding maken met internet. Als je een firewall gebruikt, zorg je dat <ph name="PRODUCT_EXE_NAME" /> op de toelatingslijst staat.</translation>
+<translation id="6859580922007887573">Druk op Tab om door te gaan</translation>
 <translation id="6877155553248388166">rechterbenedenhoek van zoekgebied: rechts <ph name="RIGHT" />%, onder <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chrome updaten</translation>
 <translation id="6885412569789873916">Chrome Bèta-apps</translation>
@@ -628,6 +631,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="7849037457735762883">Ga verder waar je gebleven was: Chrome kan je tabbladen herstellen elke keer dat je opnieuw opstart. Als je dit wilt aanzetten, ga je naar</translation>
 <translation id="7872446069773932638">Downloaden... Nog <ph name="SECONDS" /> seconden</translation>
 <translation id="7886087451482920026">Tekst selecteren met Google Lens</translation>
+<translation id="7887929410013642057">Snelkoppelingen voor AI-modus altijd tonen</translation>
 <translation id="7890208801193284374">Als je een computer deelt, kunnen vrienden en familie afzonderlijk surfen en Chrome configureren zoals zij dat willen.</translation>
 <translation id="7896673875602241923">Iemand heeft eerder bij Chrome op deze computer ingelogd als <ph name="ACCOUNT_EMAIL_LAST" />. Maak een nieuwe Chrome-gebruiker om je informatie gescheiden te houden.</translation>
 <translation id="7904985524660297937">Probeer Gemini in Google Chrome</translation>

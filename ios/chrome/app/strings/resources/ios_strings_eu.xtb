@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">Pantaila blokeatua</translation>
 <translation id="1963976881984600709">Babes estandarra</translation>
 <translation id="1964507856799750384">Sakatu <ph name="BEGIN_BOLD" />Browser App<ph name="END_BOLD" /> (arakatzaile-aplikazioa).</translation>
+<translation id="1965633132497641148">Segurtasun-kodeak ez du balio</translation>
 <translation id="1966313166384086081">webguneetako datuak</translation>
 <translation id="1967461193809857427">{count,plural, =1{Android-en utzi duzun fitxa ireki nahi duzu?}other{Android-en utzi dituzun fitxak ireki nahi dituzu?}}</translation>
 <translation id="1972325230031091483">Bizkorrago arakatuko duzu, edukia proaktiboki kargatuko delako bisitatzen ari zaren web-orriaren arabera</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">Clear History and Website Data (garbitu historiaren eta webguneen datuak)</translation>
 <translation id="3190736958609431397">Utzi jarraipena egiteari</translation>
 <translation id="3208260410153224535">Erakundeak saioa hasteko aukera desaktibatu du. Laster-marka, pasahitz eta bestelako elementu berriak gailu honetan soilik gordeko dira.</translation>
+<translation id="3211969308836412674">Kendu aingura webguneari</translation>
 <translation id="3213807041830307252">Erosi, itzuli eta identifikatu ikusten duzuna kameraren eta argazki-galeriaren bidez.</translation>
 <translation id="3214379938835224220">iPad-a berrezarri duzunez, saioa amaitu zaizu. Saioa hasteko, sakatu aurrera egiteko aukera.</translation>
 <translation id="3218296450292600703">Kontu kudeatuarekin saioa hasiz gero, errazagoa da erakundearekin erlazionatutako arakatzea bereiztea beste arakatzetik (fitxak, historia eta pasahitzak barne)</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">Helbidea (2)</translation>
 <translation id="3328801116991980348">Webgunearen informazioa</translation>
 <translation id="333229797575847124">Eginbidea gaitzeko argibideak</translation>
+<translation id="3344233834747405775">Txartelaren titularraren izenak ez du balio</translation>
 <translation id="3344485292736684439">{count,plural, =1{Gorde da laster-marka zure kontuko ({email}) "{title}" karpetan}other{Gorde dira laster-markak zure kontuko ({email}) "{title}" karpetan}}</translation>
 <translation id="334690320928261823">Azkenaldiko fitxak</translation>
 <translation id="3349031117032695619">Blokeatu leiho gainerakorrak</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">Gogorarazi geroago</translation>
 <translation id="4881695831933465202">Ireki</translation>
 <translation id="4883766694719903356">Ezkutuko moduko fitxen sareta</translation>
+<translation id="4884937942297374058">Babes hobetua desaktibatuta dago</translation>
 <translation id="488785315393301722">Erakutsi xehetasunak</translation>
 <translation id="4889521386764567563">Profil hau</translation>
 <translation id="4893713555726946316">Ezkutatu "Bilatu orrian"</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">Sortu egutegiko gertaerak daten bidez</translation>
 <translation id="5222676887888702881">Amaitu saioa</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Editatu webgunea</translation>
 <translation id="5233638681132016545">Fitxa berria</translation>
 <translation id="5234094073825090254">{count,plural, =1{Gorde da laster-marka Google-ko kontuan ({email}).}other{Gorde dira laster-markak Google-ko kontuan ({email}).}}</translation>
 <translation id="5234764350956374838">Baztertu</translation>
@@ -1325,6 +1330,7 @@
 <translation id="6066301408025741299">Sakatu bertan behera uzteko</translation>
 <translation id="6074656473835429958">Jaso jakinarazpenak</translation>
 <translation id="607620096698446287">Ezin izan da kargatu <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
+<translation id="6076618233738284461">Ainguratu webgunea</translation>
 <translation id="6077126322656614846">Kamerarako sarbidea gaituta dago</translation>
 <translation id="607730456154980869">Lortu erantzunak bizkorrago Chrome-ko Gemini-ri esker</translation>
 <translation id="6078236141387574983">Doitu orriaren altuera</translation>

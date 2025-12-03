@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">Lock Screen</translation>
 <translation id="1963976881984600709">Standard protection</translation>
 <translation id="1964507856799750384">I-tap ang <ph name="BEGIN_BOLD" />Browser App<ph name="END_BOLD" /></translation>
+<translation id="1965633132497641148">Invalid na security code</translation>
 <translation id="1966313166384086081">data ng site</translation>
 <translation id="1967461193809857427">{count,plural, =1{Ibalik ang tab na iniwan mo sa Android?}one{Ibalik ang mga tab na iniwan mo sa Android?}other{Ibalik ang mga tab na iniwan mo sa Android?}}</translation>
 <translation id="1972325230031091483">Makakapag-browse ka nang mas mabilis dahil aktibong naglo-load ng content batay sa kasalukuyan mong pagbisita sa webpage</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">I-clear ang History at Data ng Website</translation>
 <translation id="3190736958609431397">Huwag subaybayan</translation>
 <translation id="3208260410153224535">Ini-off ng iyong organisasyon ang pag-sign in. Sa device na ito lang mase-save ang mga bagong bookmark, password, at higit pa.</translation>
+<translation id="3211969308836412674">I-unpin ang site</translation>
 <translation id="3213807041830307252">Bilhin, isalin, at tukuyin ang nakikita mo gamit ang iyong camera at gallery ng larawan.</translation>
 <translation id="3214379938835224220">Na-sign out ka bilang bahagi ng pag-reset ng iyong iPad. I-tap ang magpatuloy sa ibaba para mag-sign in.</translation>
 <translation id="3218296450292600703">Nakakatulong ang pag-sign in gamit ang iyong pinamamahalaang account para maihiwalay ang pag-browse na nauugnay sa organisasyon mo (kabilang ang mga tab, history, at password) sa iba mo pang pag-browse</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">Address 2</translation>
 <translation id="3328801116991980348">Impormasyon ng site</translation>
 <translation id="333229797575847124">Paano i-enable ang feature na ito</translation>
+<translation id="3344233834747405775">Invalid na pangalan ng cardholder</translation>
 <translation id="3344485292736684439">{count,plural, =1{Na-save ang bookmark sa "{title}" sa iyong account, {email}}one{Na-save ang mga bookmark sa "{title}" sa iyong account, {email}}other{Na-save ang mga bookmark sa "{title}" sa iyong account, {email}}}</translation>
 <translation id="334690320928261823">Mga Kamakailang Tab</translation>
 <translation id="3349031117032695619">I-block ang mga pop-up</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">Ipaalala sa akin sa ibang pagkakataon</translation>
 <translation id="4881695831933465202">Buksan</translation>
 <translation id="4883766694719903356">Grid ng Tab na Incognito</translation>
+<translation id="4884937942297374058">Naka-off ang pinaigting na proteksyon</translation>
 <translation id="488785315393301722">Ipakita ang Mga Detalye</translation>
 <translation id="4889521386764567563">Kasalukuyang profile</translation>
 <translation id="4893713555726946316">I-hide ang Hanapin sa Page</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">Gumawa ng mga event sa kalendaryo mula sa mga petsa</translation>
 <translation id="5222676887888702881">Mag-sign out</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">I-edit ang Site</translation>
 <translation id="5233638681132016545">Bagong tab</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bookmark ang na-save sa iyong Google Account na {email}.}one{Bookmark ang na-save sa iyong Google Account na {email}.}other{na Bookmark ang na-save sa iyong Google Account na {email}.}}</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
@@ -1325,6 +1330,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6066301408025741299">Pindutin upang kanselahin.</translation>
 <translation id="6074656473835429958">Makatanggap ng mga notification</translation>
 <translation id="607620096698446287">Hindi ma-upload ang <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
+<translation id="6076618233738284461">I-pin ang site</translation>
 <translation id="6077126322656614846">Pinapayagan ang access sa Camera</translation>
 <translation id="607730456154980869">Makakuha ng mga sagot nang mas mabilis gamit ang Gemini sa Chrome</translation>
 <translation id="6078236141387574983">I-adjust ulit ang taas ng sheet</translation>

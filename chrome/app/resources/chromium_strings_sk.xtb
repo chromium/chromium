@@ -40,6 +40,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="141901961143729572">Zdieľajte svoje názory</translation>
 <translation id="1465192221147974788">Ak chcete zdieľať okno, povoľte prehliadaču Chromium nahrávať obrazovku v nastaveniach systému.</translation>
 <translation id="1478370723027452770">Získať pomoc s verziou Chrome for Testing</translation>
+<translation id="1496875977627931224">Dobrý deň, <ph name="USER_NAME" />,<ph name="LINE_BREAK" />čo vás dnes zaujíma?</translation>
 <translation id="1497802159252041924">Chyba inštalácie: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Táto stránka je chránená</translation>
 <translation id="1524282610922162960">Zdieľajte kartu prehliadača Chromium</translation>
@@ -193,6 +194,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3103660991484857065">Inštalačný program pri dekomprimácii archívu zlyhal. Stiahnite prehliadač Chromium znova.</translation>
 <translation id="310459126943037700">Úlohy sa nepodarilo dokončiť.</translation>
 <translation id="3130323860337406239">Chromium používa váš mikrofón.</translation>
+<translation id="3130333203120345554">Nové vyhľadávanie</translation>
 <translation id="3137969841538672700">Vyhľadávanie spustíte presunutím</translation>
 <translation id="3144188012276422546">Táto karta používa dodatočné zdroje. Prehliadač Chromium ju môže deaktivovať, aby zlepšil výkon.</translation>
 <translation id="3149163023759831301">Ak chcete zdieľať obrazovku, povoľte prehliadaču Chromium nahrávať obrazovku v nastaveniach systému</translation>
@@ -350,6 +352,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4994636714258228724">Pridajte si účet do prehliadača Chromium</translation>
 <translation id="5123973130450702873">Chromium vyžaduje povolenie sledovať vaše ruky</translation>
 <translation id="5141988424377517949">Tento web ste v poslednom čase nenavštívili. Chromium odstránil povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
+<translation id="5167819546851111585">Čo vás dnes zaujíma?</translation>
 <translation id="5174969993834422967">Upozornenia zvyčajne blokujete. Ak chcete tomuto webu povoliť odosielanie upozornení, kliknite na ikonu upozornení v pravom rohu panela s polohou.</translation>
 <translation id="5174983315706567306">Na disku nie je dostatok miesta.</translation>
 <translation id="5187123684706427865">Účet Chromium vyžaduje opätovné overenie</translation>
@@ -382,6 +385,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="5496810170689441661">Chromium sa pokúša upraviť heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="5524890928877629608">ľavý horný roh oblasti vyhľadávania: vľavo <ph name="LEFT" /> %, hore <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Otvoriť súbory PDF v prehliadači Chromium</translation>
+<translation id="5536164441519929134">Spýtajte sa<ph name="LINE_BREAK" />na túto kartu</translation>
 <translation id="5579324208890605088">Chyba pri spustení: spustite inštalátor ako bežný používateľ, nie ako správca.</translation>
 <translation id="5580770360767802657">Používajte Chromium ako predvolený prehliadač a pripnite si ho</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>

@@ -73,7 +73,6 @@
 <translation id="311432875115153175">Өтмөктөр тобунун тизмеси жабык</translation>
 <translation id="3194464645767632461">рейтинг</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктү топко кошуу}other{<ph name="TABS_COUNT_MANY" /> өтмөктү топто кошуу}}</translation>
-<translation id="3293080634164207409">Өтмөктөрдү кошуу</translation>
 <translation id="3328308545011660196">Сунуш: <ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 күндөн бери жигерсиз болсо}other{<ph name="DAY_COUNT_MANY" /> күндөн бери жигерсиз болсо}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> жаңы өтмөк}other{<ph name="MANY_ADDED" /> жаңы өтмөк}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="855081842937141170">Өтмөк кадоо</translation>
 <translation id="8633025649649592204">Соңку аракеттер</translation>
+<translation id="8635822281281406185">10 файлга, өтмөккө же сүрөткө чейин кошуңуз</translation>
 <translation id="8712637175834984815">Түшүндүм</translation>
 <translation id="8714939927607906138">Арзаныраак баа</translation>
 <translation id="8730621377337864115">Бүттү</translation>

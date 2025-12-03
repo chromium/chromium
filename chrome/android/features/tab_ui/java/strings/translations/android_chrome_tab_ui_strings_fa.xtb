@@ -73,7 +73,6 @@
 <translation id="311432875115153175">فهرست گروه زبانه بسته شد</translation>
 <translation id="3194464645767632461">رده‌بندی</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{افزودن <ph name="TABS_COUNT_ONE" /> زبانه به گروه}one{افزودن <ph name="TABS_COUNT_MANY" /> زبانه به گروه}other{افزودن <ph name="TABS_COUNT_MANY" /> زبانه به گروه}}</translation>
-<translation id="3293080634164207409">افزودن زبانه</translation>
 <translation id="3328308545011660196">پیشنهاد: به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{پس‌از ۱ روز غیرفعال بودن}one{پس‌از <ph name="DAY_COUNT_MANY" /> روز غیرفعال بودن}other{پس‌از <ph name="DAY_COUNT_MANY" /> روز غیرفعال بودن}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> زبانه جدید}one{‫<ph name="MANY_ADDED" /> زبانه جدید}other{‫<ph name="MANY_ADDED" /> زبانه جدید}}</translation>
@@ -219,6 +218,7 @@
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="855081842937141170">سنجاق کردن برگه</translation>
 <translation id="8633025649649592204">فعالیت اخیر</translation>
+<translation id="8635822281281406185">تا ۱۰ فایل، زبانه، یا تصویر اضافه کنید</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8714939927607906138">قیمت کمتر</translation>
 <translation id="8730621377337864115">تمام</translation>

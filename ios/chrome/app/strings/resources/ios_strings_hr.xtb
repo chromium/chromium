@@ -262,6 +262,7 @@
 <translation id="1962969542251276847">Zaključaj zaslon</translation>
 <translation id="1963976881984600709">Standardna zaštita</translation>
 <translation id="1964507856799750384">Dodirnite opciju <ph name="BEGIN_BOLD" />Aplikacija preglednika<ph name="END_BOLD" />.</translation>
+<translation id="1965633132497641148">Nevažeći sigurnosni kôd</translation>
 <translation id="1966313166384086081">podaci web-lokacije</translation>
 <translation id="1967461193809857427">{count,plural, =1{Želite li nastaviti na kartici na kojoj ste stali na Androidu?}one{Želite li nastaviti na karticama na kojima ste stali na Androidu?}few{Želite li nastaviti na karticama na kojima ste stali na Androidu?}other{Želite li nastaviti na karticama na kojima ste stali na Androidu?}}</translation>
 <translation id="1972325230031091483">Pregledavat ćete brže jer se sadržaj učitava proaktivno na temelju vašeg trenutačnog posjeta web-stranici</translation>
@@ -576,6 +577,7 @@
 <translation id="3186796054637504691">Izbriši povijest i podatke web-lokacija</translation>
 <translation id="3190736958609431397">Poništi praćenje</translation>
 <translation id="3208260410153224535">Vaša organizacija isključila je prijavljivanje. Nove oznake, zaporke i drugi podaci spremat će se samo na ovom uređaju.</translation>
+<translation id="3211969308836412674">Otkvači web-lokaciju</translation>
 <translation id="3213807041830307252">Kupujte, prevodite i identificirajte ono što vidite pomoću kamere i galerije fotografija.</translation>
 <translation id="3214379938835224220">Odjavljeni ste pri vraćanju iPada na zadano. U nastavku dodirnite Nastavi da biste se prijavili.</translation>
 <translation id="3218296450292600703">Prijavite se na upravljani račun kako biste pregledavanje povezano s vašom organizacijom (uključujući kartice, povijest i zaporke) lakše odvojili od ostatka pregledavanja</translation>
@@ -605,6 +607,7 @@
 <translation id="3324193307694657476">2. adresni redak</translation>
 <translation id="3328801116991980348">Informacije o web-lokaciji</translation>
 <translation id="333229797575847124">Kako omogućiti tu značajku</translation>
+<translation id="3344233834747405775">Nevažeće ime vlasnika kartice</translation>
 <translation id="3344485292736684439">{count,plural, =1{Oznaka je spremljena u "{title}" na vašem računu, {email}}one{Oznake spremljene na "{title}" na vašem računu, {email}}few{Oznake spremljene na "{title}" na vašem računu, {email}}other{Oznake spremljene na "{title}" na vašem računu, {email}}}</translation>
 <translation id="334690320928261823">Nedavne kartice</translation>
 <translation id="3349031117032695619">Blokiraj skočne prozore</translation>
@@ -1002,6 +1005,7 @@
 <translation id="4877597489778380935">Podsjeti me kasnije</translation>
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="4883766694719903356">Rešetka anonimne kartice</translation>
+<translation id="4884937942297374058">Isključena je poboljšana zaštita</translation>
 <translation id="488785315393301722">Pokaži pojedinosti</translation>
 <translation id="4889521386764567563">Trenutačni profil</translation>
 <translation id="4893713555726946316">Sakrij stavku Traži na stranici</translation>
@@ -1099,6 +1103,7 @@
 <translation id="5220945116117011963">Izrada događaja iz kalendara na temelju datuma</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5229315183665181733">Uredi web-lokaciju</translation>
 <translation id="5233638681132016545">Nova kartica</translation>
 <translation id="5234094073825090254">{count,plural, =1{Oznaka je spremljena na vaš Google račun, {email}}one{Oznake su spremljene na vaš Google račun, {email}.}few{Oznake su spremljene na vaš Google račun, {email}.}other{Oznake su spremljene na vaš Google račun, {email}.}}</translation>
 <translation id="5234764350956374838">Odbaci</translation>
@@ -1325,6 +1330,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6066301408025741299">Dotaknite da biste otkazali.</translation>
 <translation id="6074656473835429958">Primajte obavijesti</translation>
 <translation id="607620096698446287">Prijenos datoteke <ph name="FILENAME" /> (<ph name="FILESIZE" />) nije uspio</translation>
+<translation id="6076618233738284461">Prikvači web-lokaciju</translation>
 <translation id="6077126322656614846">Dopušten je pristup kameri</translation>
 <translation id="607730456154980869">Brže pronađite odgovore uz Gemini u Chromeu</translation>
 <translation id="6078236141387574983">Ponovno prilagodite visinu lista</translation>
@@ -1540,6 +1546,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6761393919622941301">Audiozapisi</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
 <translation id="6779455296366983087">Vaši će se podaci o pregledavanju izbrisati</translation>
+<translation id="6782531425936234573">Izvoz podataka</translation>
 <translation id="6791425686608802741">Dodirnite Dodaj karticu novoj grupi</translation>
 <translation id="6794476726485507147">Odaberite datum i vrijeme za primanje obavijesti o podsjetniku da biste ponovno posjetili ovu stranicu</translation>
 <translation id="6795481620482106033">Nevažeći podaci</translation>

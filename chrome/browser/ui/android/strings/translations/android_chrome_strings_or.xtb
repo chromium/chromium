@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">ଆଜିର ସମାଚାର ପଢ଼ନ୍ତୁ <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">ଅଧିକ ବିବରଣୀ</translation>
 <translation id="3123734510202723619">ଘୋଷଣାଗୁଡ଼ିକ</translation>
+<translation id="3134385238404760368">ବର୍ତ୍ତମାନର କୌଣସି ଟାବ ନାହିଁ</translation>
 <translation id="314939179385989105">Chromeର ମୂଳପୃଷ୍ଠା</translation>
 <translation id="3158667104057012316">ମାନୁଆଲ କ୍ରମରେ ସର୍ଟ କରାଯାଉଛି</translation>
 <translation id="3159335509547415276">ବ୍ଲକ କରାଯାଇଥିବା ଆକାଉଣ୍ଟଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">Aରୁ Z ଅନୁସାରେ ସର୍ଟ କର</translation>
 <translation id="4578289292431526768">ଚାଲନ୍ତୁ ଆରମ୍ଭ କରିବା</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# ମିନିଟ୍‌ ପୂର୍ବେ}other{#ମିନିଟ୍ ପୂର୍ବେ}}</translation>
+<translation id="4585751637295612750">ଏହାକୁ ଆପଣଙ୍କ ପ୍ରଶ୍ନରେ ଯୋଗ କରିବା ପାଇଁ ଏକ ନୂଆ ଟାବ ଖୋଲନ୍ତୁ</translation>
 <translation id="4587589328781138893">ସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="4594952190837476234">ଏହି ପୃଷ୍ଠା <ph name="CREATION_TIME" />ର ଅଟେ ଏବଂ ଅନ୍‌ଲାଇନ୍ ସଂସ୍କରଣ ଠାରୁ ଅଲଗା ହୋଇପାରେ।</translation>
 <translation id="4595237294768457124">ଏକ ନୂଆ ଟାବ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ</translation>
@@ -1338,6 +1340,7 @@
 <translation id="670498945988402717">ଗତକାଲି ଯାଞ୍ଚ କରାଯାଇଛି</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
 <translation id="671481426037969117">ଆପଣଙ୍କର <ph name="FQDN" /> ଟାଇମର୍‌ର ସମୟ ସମାପ୍ତ ହୋଇଗଲା। ଏହା ଆସନ୍ତାକାଲି କାର୍ଯ୍ୟାରମ୍ଭ କରିବ।</translation>
+<translation id="6716434912087331834">ଏକ ନୂଆ ୱିଣ୍ଡୋ ରିଷ୍ଟୋର କରିବା ପାଇଁ ସକ୍ରିୟ ୱିଣ୍ଡୋର ମୋଟ ସଂଖ୍ୟାକୁ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> କିମ୍ବା ତାଠାରୁ କମ କରନ୍ତୁ। 6 ମାସ ପରେ ନିଷ୍କ୍ରିୟ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଡିଲିଟ କରାଯାଏ।</translation>
 <translation id="6723740634201835758">ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ</translation>
 <translation id="6734310707649923383">ଆପଣ ଭିଜିଟ କରିଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଆପଣ ଦେଖିପାରିବେ କିମ୍ବା ଆପଣଙ୍କ ଇତିହାସରୁ ସେଗୁଡ଼ିକୁ ଡିଲିଟ କରିପାରିବେ</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, ପିନ କରାଯାଇଥିବା ରେକର୍ଡ କରୁଥିବା ଇନକଗ୍ନିଟୋ ଟାବ</translation>
@@ -1655,6 +1658,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />ର ସମୟସୀମା ଶେଷ ହୋଇଛି।</translation>
 <translation id="7944772052836377867">ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ସିଙ୍କ ଯାଞ୍ଚ କରିବାକୁ ଚାହେଁ</translation>
 <translation id="7951102827450076904">ଡାଉନଲୋଡ କରାଯାଇଥିବା PDFଗୁଡ଼ିକୁ ସର୍ବଦା ଖୋଲନ୍ତୁ</translation>
+<translation id="7952479614398473176">ଏକ ନୂଆ ୱିଣ୍ଡୋ ଖୋଲିବା ପାଇଁ ସକ୍ରିୟ ୱିଣ୍ଡୋର ମୋଟ ସଂଖ୍ୟାକୁ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> କିମ୍ବା ତାଠାରୁ କମ କରନ୍ତୁ।</translation>
 <translation id="7957413488482743710">ଆପଣଙ୍କୁ ସମ୍ଭାବ୍ୟ ଠକାମୀରୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ଏକ ଭର୍ଚୁଆଲ କାର୍ଡ ଆପଣଙ୍କ ପ୍ରକୃତ କାର୍ଡକୁ ଲୁଚାଇ ରଖିଥାଏ। <ph name="BEGIN_LINK1" />ଭର୍ଚୁଆଲ କାର୍ଡଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">ଏହି ଡିଭାଇସରେ ଟାବଗୁଡ଼ିକ</translation>
 <translation id="7961926449547174351">ଆପଣ ଷ୍ଟୋରେଜ୍ ଆକ୍ସେସକୁ ଅକ୍ଷମ କରିଛନ୍ତି, ଦୟାକରି ଏହାକୁ ସକ୍ଷମ କରିବା ପାଇଁ ସେଟିଂସକୁ ଯାଆନ୍ତୁ।</translation>

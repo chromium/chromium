@@ -496,6 +496,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3114507951000454849">Bugünün <ph name="NEWS_ICON" /> xəbərlərini oxuyun</translation>
 <translation id="3122883569442693641">Ətraflı məlumat</translation>
 <translation id="3123734510202723619">Elanlar</translation>
+<translation id="3134385238404760368">Son tab yoxdur</translation>
 <translation id="314939179385989105">Chrome’un əsas səhifəsi</translation>
 <translation id="3158667104057012316">Manual sıra ilə çeşidlənir</translation>
 <translation id="3159335509547415276">Bloklanmış hesablar haqqında məlumat əldə edin</translation>
@@ -817,6 +818,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4577115723294378384">A-dan Z-yə sıralayın</translation>
 <translation id="4578289292431526768">Başlayaq</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# dəqiqə öncə}other{# dəqiqə öncə}}</translation>
+<translation id="4585751637295612750">Suala əlavə etmək üçün yeni tab açın</translation>
 <translation id="4587589328781138893">Saytlar</translation>
 <translation id="4594952190837476234">Bu səhifə <ph name="CREATION_TIME" /> tarixində yaradılıb və onlayn versiyadan fərqli ola bilər.</translation>
 <translation id="4595237294768457124">Yeni tab səhifəsi açın</translation>
