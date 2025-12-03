@@ -11,6 +11,7 @@
 
 #include "base/android/requires_api.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -220,6 +221,7 @@ EncoderStatus VideoFrameGLSurfaceRenderer::RenderVideoFrame(
     scoped_refptr<VideoFrame> frame,
     base::TimeTicks presentation_timestamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("media", "VideoFrameGLSurfaceRenderer::RenderVideoFrame");
   ui::ScopedMakeCurrent smc(gl_context_.get(), gl_surface_.get());
   if (!smc.IsContextCurrent()) {
     return {EncoderStatus::Codes::kSystemAPICallError,
@@ -269,10 +271,13 @@ EncoderStatus VideoFrameGLSurfaceRenderer::RenderVideoFrame(
   gl_surface_->SetPresentationTimestamp(presentation_timestamp);
 
   // SwapBuffers submits the rendered frame to the surface.
-  if (gl_surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()) ==
-      gfx::SwapResult::SWAP_FAILED) {
-    return {EncoderStatus::Codes::kSystemAPICallError,
-            "GL surface SwapBuffers failed"};
+  {
+    TRACE_EVENT0("media", "VideoFrameGLSurfaceRenderer::SwapBuffers");
+    if (gl_surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()) ==
+        gfx::SwapResult::SWAP_FAILED) {
+      return {EncoderStatus::Codes::kSystemAPICallError,
+              "GL surface SwapBuffers failed"};
+    }
   }
   return EncoderStatus::Codes::kOk;
 }
@@ -324,9 +329,12 @@ EncoderStatus VideoFrameGLSurfaceRenderer::RenderYUVVideoFrame(
     api->glPixelStoreiFn(GL_UNPACK_ROW_LENGTH, unpack_row_length_pixels);
     api->glPixelStoreiFn(GL_UNPACK_ALIGNMENT, 1);
 
-    api->glTexSubImage2DFn(GL_TEXTURE_2D, 0, 0, 0, plane_size.width(),
-                           plane_size.height(), gl_format, GL_UNSIGNED_BYTE,
-                           pixels);
+    {
+      TRACE_EVENT0("media", "glTexSubImage2D");
+      api->glTexSubImage2DFn(GL_TEXTURE_2D, 0, 0, 0, plane_size.width(),
+                             plane_size.height(), gl_format, GL_UNSIGNED_BYTE,
+                             pixels);
+    }
   }
 
   // Start the rendering process.
@@ -405,9 +413,12 @@ EncoderStatus VideoFrameGLSurfaceRenderer::RenderRGBVideoFrame(
   api->glPixelStoreiFn(GL_UNPACK_ROW_LENGTH, unpack_row_length_pixels);
   api->glPixelStoreiFn(GL_UNPACK_ALIGNMENT, 4);
 
-  api->glTexSubImage2DFn(GL_TEXTURE_2D, 0, 0, 0, frame_size.width(),
-                         frame_size.height(), gl_format, GL_UNSIGNED_BYTE,
-                         pixels);
+  {
+    TRACE_EVENT0("media", "glTexSubImage2D");
+    api->glTexSubImage2DFn(GL_TEXTURE_2D, 0, 0, 0, frame_size.width(),
+                           frame_size.height(), gl_format, GL_UNSIGNED_BYTE,
+                           pixels);
+  }
 
   api->glUseProgramFn(gl_program_rgb_);
   api->glUniform1iFn(gl_rgb_tex_location_, 0);
@@ -468,6 +479,7 @@ EncoderStatus VideoFrameGLSurfaceRenderer::RenderSharedImageVideoFrame(
 }
 
 void VideoFrameGLSurfaceRenderer::UpdateTextures(const VideoFrame& frame) {
+  TRACE_EVENT0("media", "VideoFrameGLSurfaceRenderer::UpdateTextures");
   if (cached_textures_for_shared_image_ == frame.HasSharedImage() &&
       cached_frame_format_ == frame.format() &&
       cached_frame_size_ == frame.visible_rect().size()) {
@@ -533,6 +545,7 @@ void VideoFrameGLSurfaceRenderer::UpdateTextures(const VideoFrame& frame) {
 }
 
 void VideoFrameGLSurfaceRenderer::DrawQuad() {
+  TRACE_EVENT0("media", "VideoFrameGLSurfaceRenderer::DrawQuad");
   gl::GLApi* api = gl::g_current_gl_context;
   // Set up the vertex buffer and attribute pointers for the quad.
   api->glBindBufferFn(GL_ARRAY_BUFFER, gl_vbo_);

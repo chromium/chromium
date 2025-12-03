@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/encoder_status.h"
@@ -1002,6 +1003,7 @@ void NdkVideoEncodeAccelerator::OnSyncDone(VideoFrame::ID frame_id) {
 
 void NdkVideoEncodeAccelerator::FeedInputBuffer(scoped_refptr<VideoFrame> frame,
                                                 base::TimeDelta timestamp) {
+  TRACE_EVENT0("media", "NdkVideoEncodeAccelerator::FeedInputBuffer");
   const size_t buffer_idx = media_codec_->TakeInput();
   auto mc_input_buffer = media_codec_->GetInputBuffer(buffer_idx);
   if (mc_input_buffer.empty()) {
@@ -1042,6 +1044,7 @@ void NdkVideoEncodeAccelerator::FeedInputBuffer(scoped_refptr<VideoFrame> frame,
 
   bool converted = false;
   if (frame->format() == PIXEL_FORMAT_I420) {
+    TRACE_EVENT0("media", "libyuv::I420ToNV12");
     converted =
         !libyuv::I420ToNV12(frame->visible_data(VideoFrame::Plane::kY),
                             frame->stride(VideoFrame::Plane::kY),
@@ -1052,6 +1055,7 @@ void NdkVideoEncodeAccelerator::FeedInputBuffer(scoped_refptr<VideoFrame> frame,
                             dst_stride_y, dst_uv.data(), dst_stride_uv,
                             visible_size.width(), visible_size.height());
   } else if (frame->format() == PIXEL_FORMAT_NV12) {
+    TRACE_EVENT0("media", "libyuv::NV12Copy");
     converted =
         !libyuv::NV12Copy(frame->visible_data(VideoFrame::Plane::kY),
                           frame->stride(VideoFrame::Plane::kY),
@@ -1097,6 +1101,7 @@ media_status_t NdkVideoEncodeAccelerator::SendEndOfStream() {
 void NdkVideoEncodeAccelerator::FeedGLSurface(scoped_refptr<VideoFrame> frame,
                                               base::TimeDelta timestamp) {
   DCHECK(use_surface_as_input_);
+  TRACE_EVENT0("media", "NdkVideoEncodeAccelerator::FeedGLSurface");
   if (!gl_renderer_) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
                        "GL renderer is not initialized"});
@@ -1210,6 +1215,7 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
     return;
   }
 
+  TRACE_EVENT0("media", "NdkVideoEncodeAccelerator::DrainOutput");
   NdkMediaCodecWrapper::OutputInfo output_buffer = media_codec_->TakeOutput();
   AMediaCodecBufferInfo& mc_buffer_info = output_buffer.info;
   const size_t mc_buffer_size = static_cast<size_t>(mc_buffer_info.size);
