@@ -21,6 +21,7 @@ namespace secure_embed {
 
 // static
 size_t SecureEmbedHost::instance_count_for_testing_ = 0;
+size_t SecureEmbedHost::attached_instance_count_for_testing_ = 0;
 
 SecureEmbedHost::SecureEmbedHost(content::RenderFrameHost* render_frame_host)
     : render_frame_host_id_(render_frame_host->GetGlobalId()), secure_embed_() {
@@ -76,12 +77,16 @@ void SecureEmbedHost::Attach(int64_t content_id) {
     return;
   }
 
-
   know_have_focus_ = false;
   guest_contents_ = web_contents_to_attach->GetWeakPtr();
   content::SecureEmbedConnector::Attach(
       content::WebContents::FromRenderFrameHost(ParentFrame()),
       web_contents_to_attach);
+
+  ++attached_instance_count_for_testing_;
+  // TODO(secure-embed): decrement attached_instance_count_for_testing_ on
+  // detachment.
+
   auto* connector = GetConnector();
   connector->SetDelegate(this);
   if (web_contents_to_attach->IsCrashed()) {
@@ -120,6 +125,11 @@ void SecureEmbedHost::SetFocus(bool focused,
 // static
 size_t SecureEmbedHost::GetInstanceCountForTesting() {
   return instance_count_for_testing_;
+}
+
+// static
+size_t SecureEmbedHost::GetAttachedInstanceCountForTesting() {
+  return attached_instance_count_for_testing_;
 }
 
 void SecureEmbedHost::OnSecureEmbedDisconnected() {

@@ -70,6 +70,16 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
     });
   }
 
+  bool WaitForHostAttachment(size_t expected_count) {
+    // After host creation, the attachment happens asychronously when
+    // SecureEmbedHost::Attach() is called. Poll until the expected number of
+    // hosts are attachment.
+    return base::test::RunUntil([&]() {
+      return SecureEmbedHost::GetAttachedInstanceCountForTesting() >=
+             expected_count;
+    });
+  }
+
   // Helper to verify pixel colors at specific locations within a capture rect.
   // Polls repeatedly until all expected colors match or timeout occurs.
   // The points in `expected_colors` should be specified in device independent
@@ -163,7 +173,7 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
     std::string script =
         "createEmbed(" + base::NumberToString(guest_handle->id()) + ");";
     ASSERT_TRUE(content::ExecJs(web_contents(), script));
-    ASSERT_TRUE(WaitForHostCreation(expected_host_count));
+    ASSERT_TRUE(WaitForHostAttachment(expected_host_count));
     EXPECT_NE(guest_contents->GetSecureEmbedConnector(), nullptr);
   }
 

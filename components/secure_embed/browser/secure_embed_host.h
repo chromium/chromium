@@ -41,6 +41,7 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
   static SecureEmbedHost* GetFrom(content::WebContents* web_contents);
 
   static size_t GetInstanceCountForTesting();
+  static size_t GetAttachedInstanceCountForTesting();
 
   // mojom::SecureEmbedHost implementation:
   void SetSecureEmbed(
@@ -70,6 +71,8 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
 
   // Count of all alive instances for testing.
   static size_t instance_count_for_testing_;
+  // Count of all alive and attached instance for testing.
+  static size_t attached_instance_count_for_testing_;
 
   content::GlobalRenderFrameHostId render_frame_host_id_;
   base::WeakPtr<content::WebContents> guest_contents_ = nullptr;
