@@ -404,25 +404,29 @@ void GpuPersistentCache::InitializeCache(
   CHECK(!disk_cache_initialized_.IsSet());
   auto cache =
       persistent_cache::PersistentCache::Bind(std::move(pending_backend));
-  if (cache) {
-    disk_cache_ = base::MakeRefCounted<DiskCache>(
-        cache_prefix_, std::move(cache), async_write_options_,
-        std::move(use_shader_cache_shm_count));
-    disk_cache_initialized_.Set();
+  if (!cache) {
+    HandlePersistentCacheError(&use_shader_cache_shm_count->data,
+                               persistent_cache::TransactionError::kPermanent);
+    return;
+  }
 
-    if (memory_cache_) {
-      // If opening the persistent cache succeeded, copy all entries from the
-      // memory cache into it.
-      memory_cache_->ForEach([this](MemoryCacheEntry* memory_entry) {
-        // Query the existence of the disk cache entry by providing an empty
-        // buffer so no data is copied.
-        bool exists = disk_cache_->Load(
-            memory_entry->Key(), [](size_t) { return base::span<uint8_t>(); });
-        if (!exists) {
-          disk_cache_->Store(memory_entry);
-        }
-      });
-    }
+  disk_cache_ = base::MakeRefCounted<DiskCache>(
+      cache_prefix_, std::move(cache), async_write_options_,
+      std::move(use_shader_cache_shm_count));
+  disk_cache_initialized_.Set();
+
+  if (memory_cache_) {
+    // If opening the persistent cache succeeded, copy all entries from the
+    // memory cache into it.
+    memory_cache_->ForEach([this](MemoryCacheEntry* memory_entry) {
+      // Query the existence of the disk cache entry by providing an empty
+      // buffer so no data is copied.
+      bool exists = disk_cache_->Load(
+          memory_entry->Key(), [](size_t) { return base::span<uint8_t>(); });
+      if (!exists) {
+        disk_cache_->Store(memory_entry);
+      }
+    });
   }
 }
 
