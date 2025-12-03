@@ -82,6 +82,10 @@
 #include "base/test/test_support_android.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "partition_alloc/tagging.h"  // nogncheck
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
 #endif

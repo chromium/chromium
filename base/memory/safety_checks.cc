@@ -6,6 +6,7 @@
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/partition_alloc_support.h"
+#include "partition_alloc/partition_root.h"  // nogncheck
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 namespace base {
