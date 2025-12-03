@@ -1288,6 +1288,18 @@ void InputHandler::DidCommit() {
   // flush input here to make sure they got picked up by |PrepareTiles()|.
   if (input_handler_client_ && compositor_delegate_->IsInHighLatencyMode())
     input_handler_client_->DeliverInputForHighLatencyMode();
+
+  // Sync values back to pending tree for raster inducing overscroll effects.
+  if (scroll_elasticity_helper_) {
+    scroll_elasticity_helper_->ApplyStretchAmountsToPending();
+  }
+}
+
+void InputHandler::DidImplSideInvalidate() {
+  // Sync values back to pending tree for raster inducing overscroll effects.
+  if (scroll_elasticity_helper_) {
+    scroll_elasticity_helper_->ApplyStretchAmountsToPending();
+  }
 }
 
 void InputHandler::DidActivatePendingTree() {
@@ -1295,11 +1307,10 @@ void InputHandler::DidActivatePendingTree() {
   if (!CurrentlyScrollingNode())
     ClearCurrentlyScrollingNode();
 
-  // Activation of pending tree overwrites impl thread only modifications
-  // of the active tree. This clears applied overscroll effects, so we force
-  // re-application to transform nodes with overscroll effects.
+  // Elastic overscroll values in the `TransformTree` for composited scrollers
+  // will get clobbered, so manually update them.
   if (scroll_elasticity_helper_) {
-    scroll_elasticity_helper_->ForceApplyStretchAmounts();
+    scroll_elasticity_helper_->ApplyStretchAmountsToActive();
   }
 
   // Activation can change the root scroll offset, so inform the synchronous

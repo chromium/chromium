@@ -583,7 +583,7 @@ base::expected<bool, std::string> UpdateTransformTreeProperties(
 
   bool drawn_elastic_overscroll_changed =
       tree.drawn_elastic_overscroll() != update.drawn_elastic_overscroll;
-  tree.drawn_elastic_overscroll() = std::move(update.drawn_elastic_overscroll);
+  tree.drawn_elastic_overscroll() = update.drawn_elastic_overscroll;
   return drawn_elastic_overscroll_changed;
 }
 

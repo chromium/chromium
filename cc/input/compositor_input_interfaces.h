@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "cc/input/actively_scrolling_type.h"
@@ -60,6 +61,7 @@ class InputDelegateForCompositor {
   virtual void WillDraw() = 0;
   virtual void WillBeginImplFrame(const viz::BeginFrameArgs& args) = 0;
   virtual void DidCommit() = 0;
+  virtual void DidImplSideInvalidate() = 0;
   virtual void DidActivatePendingTree() = 0;
   virtual void DidFinishImplFrame() = 0;
   virtual void OnBeginImplFrameDeadline() = 0;

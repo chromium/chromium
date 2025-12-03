@@ -332,6 +332,16 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
     return drawn_elastic_overscroll_;
   }
 
+  bool SetDrawnElasticOverscroll(ElementId id,
+                                 const gfx::Vector2dF& elastic_overscroll);
+
+  gfx::Vector2dF GetDrawnElasticOverscroll(ElementId id) const;
+
+  std::pair<ElementId, gfx::Vector2dF>
+  FindDrawnElasticOverscrollFromTransformId(
+      int transform_id,
+      const ViewportPropertyIds* viewport_property_ids) const;
+
  private:
   // Returns true iff the node at |desc_id| is a descendant of the node at
   // |anc_id|.
@@ -639,6 +649,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   bool SetElasticOverscroll(const ScrollNode& scroll_node,
                             const gfx::Vector2dF& elastic_overscroll);
   gfx::Vector2dF GetElasticOverscroll(const ScrollNode& scroll_node) const;
+  gfx::Vector2dF GetElasticOverscrollFromElementId(ElementId id) const;
   std::pair<ElementId, gfx::Vector2dF> FindElasticOverscrollFromTransformId(
       int transform_id,
       const ViewportPropertyIds* viewport_property_ids) const;

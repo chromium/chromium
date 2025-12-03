@@ -546,6 +546,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   void WillDraw() override;
   void WillBeginImplFrame(const viz::BeginFrameArgs& args) override;
   void DidCommit() override;
+  void DidImplSideInvalidate() override;
   void DidActivatePendingTree() override;
   void DidFinishImplFrame() override;
   void OnBeginImplFrameDeadline() override;

@@ -468,6 +468,8 @@ cc_component("cc") {
     "trees/render_frame_metadata.h",
     "trees/render_frame_metadata_observer.h",
     "trees/scoped_abort_remaining_swap_promises.h",
+    "trees/scroll_elasticity_utils.cc",
+    "trees/scroll_elasticity_utils.h",
     "trees/scroll_node.cc",
     "trees/scroll_node.h",
     "trees/scroll_source_type.h",

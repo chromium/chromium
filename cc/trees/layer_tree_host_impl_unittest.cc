@@ -33,6 +33,7 @@
 #include "cc/input/input_handler.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/page_scale_animation.h"
+#include "cc/input/scroll_elasticity_helper.h"
 #include "cc/input/scroll_utils.h"
 #include "cc/input/scrollbar_controller.h"
 #include "cc/layers/append_quads_context.h"
@@ -16980,9 +16981,9 @@ TEST_P(LayerTreeHostImplTest, PageBasedScrollSnap) {
       position, kPageDelta, ui::ScrollInputType::kScrollbar);
   begin_state->data()->delta_granularity = ui::ScrollGranularity::kScrollByPage;
   EXPECT_EQ(ScrollThread::kScrollOnImplThread,
-          GetInputHandler()
-              .ScrollBegin(begin_state.get(), ui::ScrollInputType::kScrollbar)
-              .thread);
+            GetInputHandler()
+                .ScrollBegin(begin_state.get(), ui::ScrollInputType::kScrollbar)
+                .thread);
 
   auto update_state = UpdateState(
       position, kPageDelta, ui::ScrollInputType::kScrollbar);
@@ -18901,6 +18902,235 @@ TEST_P(ElasticOverscrollTest, ElasticOverscrollWithoutViewport) {
   host_impl_->GetInputHandler().DestroyScrollElasticityHelper();
 }
 INSTANTIATE_COMMIT_TO_TREE_TEST_P(ElasticOverscrollTest);
+
+class ElasticOverscrollInvalidationTest : public ElasticOverscrollTest {
+ public:
+  void SetupScroll(bool is_composited, uint32_t main_thread_repaint_reasons) {
+    SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(100, 100));
+    layer = AddScrollableLayer(OuterViewportScrollLayer(), gfx::Size(100, 100),
+                               gfx::Size(200, 200));
+
+    scroll_node =
+        host_impl_->active_tree()->property_trees()->scroll_tree_mutable().Node(
+            layer->scroll_tree_index());
+    scroll_node->is_composited = is_composited;
+    scroll_node->main_thread_repaint_reasons = main_thread_repaint_reasons;
+  }
+
+  void CreateElasticityHelper() {
+    helper = host_impl_->GetInputHandler().CreateScrollElasticityHelper();
+  }
+
+  void TearDown() override {
+    if (helper) {
+      helper = nullptr;
+      host_impl_->GetInputHandler().DestroyScrollElasticityHelper();
+    }
+    scroll_node = nullptr;
+    layer = nullptr;
+    ElasticOverscrollTest::TearDown();
+  }
+
+ protected:
+  raw_ptr<LayerImpl> layer = nullptr;
+  raw_ptr<ScrollNode> scroll_node = nullptr;
+  raw_ptr<ScrollElasticityHelper> helper = nullptr;
+};
+
+TEST_P(ElasticOverscrollInvalidationTest,
+       ElasticOverscrollInvalidationComposited) {
+  // Setup a composited scroller.
+  SetupScroll(true /*is_composited*/,
+              MainThreadScrollingReason::kNotScrollingOnMain);
+
+  CreateElasticityHelper();
+
+  // Apply stretch.
+  const gfx::Vector2dF stretch(10, 10);
+  helper->SetStretchAmount(layer->element_id(), stretch);
+  EXPECT_EQ(stretch, helper->StretchAmount(layer->element_id()));
+
+  EXPECT_FALSE(did_request_impl_side_invalidation_);
+}
+
+TEST_P(ElasticOverscrollInvalidationTest,
+       ElasticOverscrollInvalidationThreadedOnly) {
+  // Setup a non-composited, threaded scroller. (raster inducing)
+  SetupScroll(false /*is_composited*/,
+              MainThreadScrollingReason::kNotScrollingOnMain);
+
+  CreateElasticityHelper();
+
+  // Apply stretch.
+  const gfx::Vector2dF stretch(10, 10);
+  helper->SetStretchAmount(layer->element_id(), stretch);
+
+  if (host_impl_->CommitsToActiveTree()) {
+    EXPECT_EQ(gfx::Vector2dF(), helper->StretchAmount(layer->element_id()));
+    EXPECT_FALSE(did_request_impl_side_invalidation_);
+  } else {
+    EXPECT_EQ(stretch, helper->StretchAmount(layer->element_id()));
+    EXPECT_TRUE(did_request_impl_side_invalidation_);
+  }
+}
+
+TEST_P(ElasticOverscrollInvalidationTest,
+       ElasticOverscrollInvalidationMainOnly) {
+  // Setup a main thread only scroller. (disables overscroll effect)
+  SetupScroll(false /*is_composited*/,
+              MainThreadScrollingReason::kPreferNonCompositedScrolling);
+
+  CreateElasticityHelper();
+
+  // Apply stretch.
+  const gfx::Vector2dF stretch(10, 10);
+  helper->SetStretchAmount(layer->element_id(), stretch);
+  EXPECT_EQ(gfx::Vector2dF(), helper->StretchAmount(layer->element_id()));
+
+  EXPECT_FALSE(did_request_impl_side_invalidation_);
+}
+
+TEST_P(ElasticOverscrollInvalidationTest, ElasticOverscrollSyncsToPendingTree) {
+  // Configure as a threaded, non-composited scroller.
+  SetupScroll(false /*is_composited*/,
+              MainThreadScrollingReason::kNotScrollingOnMain);
+
+  ElementId id = layer->element_id();
+  EXPECT_EQ(id, scroll_node->element_id);
+
+  // Ensure pending and active trees exist and are updated.
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  CreateElasticityHelper();
+
+  const gfx::Vector2dF stretch(10, 10);
+
+  // Transform update is deferred on the active tree.
+  auto transform_node_active = [&, transform_id = scroll_node->transform_id]() {
+    return host_impl_->active_tree()->property_trees()->transform_tree().Node(
+        transform_id);
+  };
+  EXPECT_TRUE(transform_node_active()->local.IsIdentity());
+
+  EnsureSyncTree();
+  if (!host_impl_->CommitsToActiveTree()) {
+    // Setup root layer to allow usage of `UpdateDrawProperties()`
+    auto setup_root_layer = [&](LayerTreeImpl* tree) {
+      std::unique_ptr<LayerImpl> layer_impl =
+          LayerImpl::Create(tree, root_layer()->id());
+      layer_impl->SetScrollTreeIndex(scroll_node->id);
+      layer_impl->SetTransformTreeIndex(scroll_node->transform_id);
+      layer_impl->SetClipTreeIndex(0);
+      layer_impl->SetEffectTreeIndex(0);
+      host_impl_->pending_tree()->SetRootLayerForTesting(std::move(layer_impl));
+    };
+    // Setup pending tree
+    setup_root_layer(host_impl_->pending_tree());
+    host_impl_->pending_tree()->SetPropertyTrees(
+        *host_impl_->active_tree()->property_trees());
+
+    auto transform_node_pending = [&, element_id = scroll_node->element_id]() {
+      return host_impl_->pending_tree()
+          ->property_trees()
+          ->transform_tree()
+          .FindNodeFromElementId(element_id);
+    };
+
+    ASSERT_TRUE(transform_node_pending());
+    EXPECT_TRUE(transform_node_pending()->local.IsIdentity());
+
+    // Set initial stretch.
+    helper->SetStretchAmount(id, stretch);
+
+    const ScrollTree& scroll_tree =
+        host_impl_->active_tree()->property_trees()->scroll_tree();
+    const TransformTree& transform_tree =
+        host_impl_->active_tree()->property_trees()->transform_tree();
+    const TransformTree& pending_transform_tree =
+        host_impl_->pending_tree()->property_trees()->transform_tree();
+    const ElementId scroll_element_id = scroll_node->element_id;
+
+    // Stretch on `ScrollTree` is always kept up to date.
+    EXPECT_EQ(stretch, scroll_tree.GetElasticOverscroll(*scroll_node));
+
+    // Drawn stretch should not be set yet.
+    EXPECT_EQ(gfx::Vector2dF(),
+              transform_tree.GetDrawnElasticOverscroll(scroll_element_id));
+    EXPECT_EQ(
+        gfx::Vector2dF(),
+        pending_transform_tree.GetDrawnElasticOverscroll(scroll_element_id));
+
+    // Ensure transform invalidation has not happened yet.
+    EXPECT_FALSE(transform_node_pending()->needs_local_transform_update);
+    EXPECT_FALSE(transform_node_active()->needs_local_transform_update);
+
+    EXPECT_TRUE(transform_node_pending()->to_parent.IsIdentity());
+    EXPECT_TRUE(transform_node_active()->to_parent.IsIdentity());
+
+    // Pending transform tree should be updated for all scrollers.
+    helper->ApplyStretchAmountsToPending();
+
+    // Drawn stretch should be set only on pending.
+    EXPECT_EQ(gfx::Vector2dF(),
+              transform_tree.GetDrawnElasticOverscroll(scroll_element_id));
+    EXPECT_EQ(stretch, pending_transform_tree.GetDrawnElasticOverscroll(
+                           scroll_element_id));
+
+    // Ensure transforms have been invalidated, but not updated yet.
+    EXPECT_TRUE(transform_node_pending()->needs_local_transform_update);
+    EXPECT_FALSE(transform_node_active()->needs_local_transform_update);
+
+    EXPECT_TRUE(transform_node_pending()->to_parent.IsIdentity());
+    EXPECT_TRUE(transform_node_active()->to_parent.IsIdentity());
+
+    // Activation should force the transform update on the active tree
+    UpdateDrawProperties(host_impl_->pending_tree());
+
+    // Drawn stretch should be set only on pending.
+    EXPECT_EQ(gfx::Vector2dF(),
+              transform_tree.GetDrawnElasticOverscroll(scroll_element_id));
+    EXPECT_EQ(stretch, pending_transform_tree.GetDrawnElasticOverscroll(
+                           scroll_element_id));
+
+    // Ensure deferred update happens on pending tree.
+    EXPECT_FALSE(transform_node_pending()->needs_local_transform_update);
+    EXPECT_FALSE(transform_node_active()->needs_local_transform_update);
+
+    EXPECT_FALSE(transform_node_pending()->to_parent.IsIdentity());
+    EXPECT_TRUE(transform_node_active()->to_parent.IsIdentity());
+
+    layer = nullptr;
+    scroll_node = nullptr;
+    host_impl_->ActivateSyncTree();
+
+    // Drawn stretch should be propagated to active as well.
+    EXPECT_EQ(stretch,
+              transform_tree.GetDrawnElasticOverscroll(scroll_element_id));
+    EXPECT_EQ(stretch, pending_transform_tree.GetDrawnElasticOverscroll(
+                           scroll_element_id));
+
+    // Ensure update is copied over to the active tree.
+    EXPECT_FALSE(transform_node_active()->needs_local_transform_update);
+
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, elastic overscroll is implemented as a "stretch" effect.
+    // This modifies the scale of the transform rather than applying a
+    // translation.
+    EXPECT_FALSE(transform_node_active()->to_parent.IsIdentity());
+    EXPECT_NE(transform_node_active()->to_parent.To2dScale(),
+              gfx::Vector2dF(1.0f, 1.0f));
+#else
+    // On non-Android, elastic overscroll translates the scroll container.
+    // The transform is the inverse of the stretch vector (like scroll offset).
+    EXPECT_EQ(transform_node_active()->to_parent.To2dTranslation(), -stretch);
+#endif
+  } else {
+    helper->SetStretchAmount(id, stretch);
+    EXPECT_EQ(gfx::Vector2dF(), helper->StretchAmount(id));
+  }
+}
+
+INSTANTIATE_COMMIT_TO_TREE_TEST_P(ElasticOverscrollInvalidationTest);
 
 class OverscrollEffectTest : public LayerTreeHostImplTest {
  public:

@@ -59,7 +59,8 @@ class MockScrollElasticityHelper : public cc::ScrollElasticityHelper {
     stretch_amount_ = stretch_amount;
   }
   void ResetStretchAmounts() override { stretch_amount_ = gfx::Vector2dF(); }
-  void ForceApplyStretchAmounts() override {}
+  void ApplyStretchAmountsToPending() override {}
+  void ApplyStretchAmountsToActive() override {}
 
   Size ScrollBounds(cc::ElementId element_id) const override {
     return Size(800, 600);

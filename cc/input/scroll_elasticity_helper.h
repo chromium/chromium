@@ -5,6 +5,7 @@
 #ifndef CC_INPUT_SCROLL_ELASTICITY_HELPER_H_
 #define CC_INPUT_SCROLL_ELASTICITY_HELPER_H_
 
+#include "base/containers/flat_set.h"
 #include "cc/cc_export.h"
 #include "cc/paint/element_id.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -64,7 +65,10 @@ class CC_EXPORT ScrollElasticityHelper {
   virtual void SetStretchAmount(ElementId,
                                 const gfx::Vector2dF& stretch_amount) = 0;
   virtual void ResetStretchAmounts() = 0;
-  virtual void ForceApplyStretchAmounts() = 0;
+  // Applies stretch amounts to the pending transform tree.
+  virtual void ApplyStretchAmountsToPending() = 0;
+  // Applies stretch amounts to the active transform tree.
+  virtual void ApplyStretchAmountsToActive() = 0;
 
   // Functions for the scrolling of the scroll layer.
   virtual gfx::PointF ScrollOffset(ElementId) const = 0;

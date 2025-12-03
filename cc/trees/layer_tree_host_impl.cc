@@ -1775,6 +1775,10 @@ void LayerTreeHostImpl::InvalidateContentOnImplSide() {
     AnimatePendingTreeAfterCommit();
   }
 
+  if (input_delegate_) {
+    input_delegate_->DidImplSideInvalidate();
+  }
+
   UpdateSyncTreeAfterCommitOrImplSideInvalidation();
 }
 

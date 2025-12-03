@@ -239,6 +239,8 @@ TEST(PropertyTreeTest, UndoOverscroll) {
   viewport_property_ids.inner_scroll = scroll_node.id;
   scroll_tree.SetElasticOverscroll(scroll_node,
                                    overscroll_offset.OffsetFromOrigin());
+  transform_tree.SetDrawnElasticOverscroll(
+      scroll_node.element_id, overscroll_offset.OffsetFromOrigin());
 
   TransformNode fixed_node;
   fixed_node.should_undo_overscroll = true;
@@ -248,6 +250,16 @@ TEST(PropertyTreeTest, UndoOverscroll) {
                                   &viewport_property_ids);  // overscroll_node
   transform_tree.UpdateTransforms(3, &viewport_property_ids);  // fixed_node
 
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, we expect the UndoOverscroll to not run.
+  gfx::Transform expected;
+  expected.MakeIdentity();
+  EXPECT_TRANSFORM_EQ(expected, transform_tree.Node(fixed_node.id)->to_parent);
+
+  gfx::RectF expected_clip_rect(clip_rect);
+  EXPECT_EQ(clip_tree.Node(viewport_property_ids.outer_clip)->clip,
+            expected_clip_rect);
+#else
   gfx::Transform expected;
   expected.Translate(overscroll_offset.OffsetFromOrigin());
   EXPECT_TRANSFORM_EQ(expected, transform_tree.Node(fixed_node.id)->to_parent);
@@ -256,6 +268,7 @@ TEST(PropertyTreeTest, UndoOverscroll) {
   expected_clip_rect.set_height(clip_rect.height() + overscroll_offset.y());
   EXPECT_EQ(clip_tree.Node(viewport_property_ids.outer_clip)->clip,
             expected_clip_rect);
+#endif
 }
 
 // Tests that elastic overscroll is applied correctly when the content is
@@ -305,6 +318,8 @@ TEST(PropertyTreeTest, ElasticOverscrollWithScrollOffset) {
 
   const gfx::Vector2dF overscroll_delta(0.f, 50.f);
   scroll_tree.SetElasticOverscroll(scroll_node, overscroll_delta);
+  transform_tree.SetDrawnElasticOverscroll(scroll_node.element_id,
+                                           overscroll_delta);
 
   transform_tree.UpdateTransforms(transform_node.id, &viewport_property_ids);
 

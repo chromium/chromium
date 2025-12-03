@@ -4,22 +4,31 @@
 
 #include "cc/input/scroll_elasticity_helper.h"
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "cc/trees/scroll_elasticity_utils.h"
 #include "cc/trees/scroll_node.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 
 namespace {
 
-void MarkNodeNeedsUpdate(
-    LayerTreeHostImpl& host_impl,
-    const ScrollNode& scroll_node,
-    [[maybe_unused]] const gfx::Vector2dF& stretch_amount) {
-  LayerTreeImpl& active_tree = *host_impl.active_tree();
-  PropertyTrees& property_trees = *active_tree.property_trees();
+void ApplyDrawnStretchAmount(LayerTreeImpl& target_tree,
+                             const ScrollNode& scroll_node,
+                             const gfx::Vector2dF& stretch_amount) {
+  // Applies the drawn elastic overscroll to the `TransformTree`
+  if (!target_tree.property_trees()
+           ->transform_tree_mutable()
+           .SetDrawnElasticOverscroll(scroll_node.element_id, stretch_amount)) {
+    return;
+  }
+
+  PropertyTrees& property_trees = *target_tree.property_trees();
   // Invalidate transform node.
   TransformTree& transform_tree = property_trees.transform_tree_mutable();
   const bool is_root =
@@ -42,11 +51,13 @@ void MarkNodeNeedsUpdate(
     transform_tree.set_needs_update(true);
   }
   // Also invalidate tree and host impl.
-  active_tree.set_needs_update_draw_properties();
-  host_impl.SetNeedsRedraw(/*animation_only=*/false,
-                           /*skip_if_inside_draw=*/false);
-  if (is_root) {
-    host_impl.SetFullViewportDamage();
+  target_tree.set_needs_update_draw_properties();
+  if (LayerTreeHostImpl* host_impl = target_tree.host_impl()) {
+    host_impl->SetNeedsRedraw(/*animation_only=*/false,
+                              /*skip_if_inside_draw=*/false);
+    if (target_tree.IsActiveTree() && is_root) {
+      host_impl->SetFullViewportDamage();
+    }
   }
 }
 
@@ -60,7 +71,8 @@ class ScrollElasticityHelperImpl : public ScrollElasticityHelper {
   bool IsUserScrollableHorizontal(ElementId) const override;
   bool IsUserScrollableVertical(ElementId) const override;
   void ResetStretchAmounts() override;
-  void ForceApplyStretchAmounts() override;
+  void ApplyStretchAmountsToPending() override;
+  void ApplyStretchAmountsToActive() override;
   gfx::Vector2dF StretchAmount(ElementId) const override;
   gfx::Size ScrollBounds(ElementId) const override;
   void SetStretchAmount(ElementId,
@@ -75,6 +87,7 @@ class ScrollElasticityHelperImpl : public ScrollElasticityHelper {
   ScrollNode* GetNode(ElementId);
 
  private:
+  void ApplyStretchAmountsTo(LayerTreeImpl& target_tree);
   raw_ptr<LayerTreeHostImpl> host_impl_;
 };
 
@@ -135,7 +148,9 @@ gfx::Vector2dF ScrollElasticityHelperImpl::StretchAmount(
                                      ->scroll_tree()
                                      .GetElasticOverscroll(*scroll_node);
   // Ensure only composited non-root scrollers have elastic overscroll.
-  CHECK(is_root || scroll_node->is_composited || stretch.IsZero());
+  CHECK(scroll_elasticity_utils::ShouldAllowOverscrollEffect(
+            *scroll_node, host_impl_->GetScrollTree(), host_impl_) ||
+        stretch.IsZero());
   return stretch;
 }
 
@@ -160,23 +175,64 @@ void ScrollElasticityHelperImpl::ResetStretchAmounts() {
   elastic_overscroll.clear();
 }
 
-void ScrollElasticityHelperImpl::ForceApplyStretchAmounts() {
-  LayerTreeImpl& active_tree = *host_impl_->active_tree();
-  PropertyTrees& property_trees = *active_tree.property_trees();
-  const ScrollTree& scroll_tree = property_trees.scroll_tree();
+void ScrollElasticityHelperImpl::ApplyStretchAmountsToPending() {
+  // We only need to sync drawn values to pending tree if one can exist.
+  if (host_impl_->CommitsToActiveTree()) {
+    return;
+  }
+  ApplyStretchAmountsTo(*host_impl_->pending_tree());
+}
 
-  for (const auto& [element_id, stretch_amount] :
-       scroll_tree.elastic_overscroll()) {
-    if (stretch_amount.IsZero()) {
+void ScrollElasticityHelperImpl::ApplyStretchAmountsToActive() {
+  ApplyStretchAmountsTo(*host_impl_->active_tree());
+}
+
+void ScrollElasticityHelperImpl::ApplyStretchAmountsTo(
+    LayerTreeImpl& target_tree) {
+  const ScrollTree& active_scroll_tree =
+      host_impl_->active_tree()->property_trees()->scroll_tree();
+  const ScrollTree& target_scroll_tree =
+      target_tree.property_trees()->scroll_tree();
+  const auto& active_elastic_overscroll_map =
+      active_scroll_tree.elastic_overscroll();
+
+  // Remove drawn elastic overscrolls on the target `TransformTree` that no
+  // longer exist on the active `ScrollTree`.
+  std::vector<ElementId> to_remove;
+  for (auto& [element_id, _] : target_tree.property_trees()
+                                   ->transform_tree_mutable()
+                                   .drawn_elastic_overscroll()) {
+    if (!active_elastic_overscroll_map.contains(element_id)) {
+      to_remove.push_back(element_id);
+    }
+  }
+  for (const ElementId element_id : to_remove) {
+    const ScrollNode* scroll_node =
+        target_scroll_tree.FindNodeFromElementId(element_id);
+    if (!scroll_node) {
+      continue;
+    }
+    ApplyDrawnStretchAmount(target_tree, *scroll_node, gfx::Vector2dF());
+  }
+
+  // Loop over elastic overscroll values from the active `ScrollTree`.
+  for (const auto [element_id, elastic_overscroll] :
+       active_elastic_overscroll_map) {
+    const ScrollNode* scroll_node =
+        target_scroll_tree.FindNodeFromElementId(element_id);
+    CHECK(scroll_node);
+    if (!scroll_elasticity_utils::ShouldAllowOverscrollEffect(
+            *scroll_node, target_scroll_tree, host_impl_)) {
       continue;
     }
 
-    if (const ScrollNode* scroll_node =
-            IsRoot(element_id) ? host_impl_->InnerViewportScrollNode()
-                               : GetNode(element_id)) {
-      // Marks dirty flags on transform node and tree.
-      MarkNodeNeedsUpdate(*host_impl_, *scroll_node, stretch_amount);
+    // When targeting the active tree - only update composited scrollers.
+    if (target_tree.IsActiveTree() &&
+        !target_scroll_tree.CanRealizeScrollsOnActiveTree(*scroll_node)) {
+      continue;
     }
+    // Apply the deferred update to the target tree.
+    ApplyDrawnStretchAmount(target_tree, *scroll_node, elastic_overscroll);
   }
 }
 
@@ -190,18 +246,30 @@ void ScrollElasticityHelperImpl::SetStretchAmount(
     return;
   }
 
-  // Disable elastic overscroll for scrollers that are not composited, as a
-  // scroller must be composited to be able to have an elastic overscroll effect
-  // applied to it on the impl thread.
+  // Disable elastic overscroll for scrollers that are not threaded, as
+  // currently the elastic overscroll effect is impl thread only.
   const gfx::Vector2dF effective_stretch_amount =
-      is_root || scroll_node->is_composited ? stretch_amount : gfx::Vector2dF();
+      scroll_elasticity_utils::ShouldAllowOverscrollEffect(
+          *scroll_node, host_impl_->GetScrollTree(), host_impl_)
+          ? stretch_amount
+          : gfx::Vector2dF();
 
   LayerTreeImpl& active_tree = *host_impl_->active_tree();
   PropertyTrees& property_trees = *active_tree.property_trees();
-  if (property_trees.scroll_tree_mutable().SetElasticOverscroll(
+  if (!property_trees.scroll_tree_mutable().SetElasticOverscroll(
           *scroll_node, effective_stretch_amount)) {
-    // Marks dirty flags on transform node and tree.
-    MarkNodeNeedsUpdate(*host_impl_, *scroll_node, effective_stretch_amount);
+    return;
+  }
+  // Mark or defer update of `TransformTree`.
+  if (property_trees.scroll_tree().CanRealizeScrollsOnActiveTree(
+          *scroll_node)) {
+    // Directly update active tree.
+    ApplyDrawnStretchAmount(active_tree, *scroll_node,
+                            effective_stretch_amount);
+  } else if (property_trees.scroll_tree().CanRealizeScrollsOnPendingTree(
+                 *scroll_node)) {
+    // Defer update to pending tree.
+    host_impl_->RequestImplSideInvalidationForRasterInducingScroll(element_id);
   }
 }
 gfx::PointF ScrollElasticityHelperImpl::ScrollOffset(
