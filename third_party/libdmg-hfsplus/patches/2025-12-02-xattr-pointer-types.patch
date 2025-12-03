@@ -1,0 +1,110 @@
+diff --git a/third_party/libdmg-hfsplus/src/hfs/xattr.c b/third_party/libdmg-hfsplus/src/hfs/xattr.c
+index 8392483e383a9..54edf4e9ac4a0 100644
+--- a/third_party/libdmg-hfsplus/src/hfs/xattr.c
++++ b/third_party/libdmg-hfsplus/src/hfs/xattr.c
+@@ -1,6 +1,8 @@
+ #include <stdlib.h>
+ #include <string.h>
+-#include <hfs/hfsplus.h>
++
++#include "common.h"
++#include "hfs/hfsplus.h"
+ 
+ static inline void flipAttrData(HFSPlusAttrData* data) {
+   FLIPENDIAN(data->recordType);
+@@ -173,46 +175,54 @@ static BTKey* attrDataRead(off_t offset, io_func* io) {
+ 
+ static int updateAttributes(Volume* volume, HFSPlusAttrKey* skey, HFSPlusAttrRecord* srecord) {
+ 	HFSPlusAttrKey key;
+-	HFSPlusAttrRecord* record;
+-	int ret, len;
+ 	int exact;
+ 
+ 	// Must copy the leading `keyLength` field itself.
+ 	memcpy(&key, skey, skey->keyLength + sizeof(uint16_t));
+ 
+-	record = (HFSPlusAttrRecord*) search(volume->attrTree, (BTKey*)(&key), &exact, NULL, NULL);
+-	if(exact && record) {
+-		free(record);
+-		record = NULL;
++	HFSPlusAttrRecord* foundRecord =
++		(HFSPlusAttrRecord*) search(volume->attrTree, (BTKey*)(&key), &exact, NULL, NULL);
++
++	if(exact && foundRecord) {
++		free(foundRecord);
++		foundRecord = NULL;
+ 		removeFromBTree(volume->attrTree, (BTKey*)(&key));
+ 	}
+ 
+ 	switch(srecord->recordType) {
+-		case kHFSPlusAttrInlineData:
+-			len = srecord->attrData.size + sizeof(HFSPlusAttrData);
+-			record = (HFSPlusAttrRecord*) malloc(len);
+-      			memcpy(record, srecord, len);
+-			flipAttrData((HFSPlusAttrData*) record);
+-			ret = addToBTree(volume->attrTree, (BTKey*)(&key), len, (unsigned char *)record);
+-			free(record);
+-			break;
+-		case kHFSPlusAttrForkData:
+-			record = (HFSPlusAttrRecord*) malloc(sizeof(HFSPlusAttrForkData));
+-      			memcpy(record, srecord, sizeof(HFSPlusAttrForkData));
+-			flipAttrForkData((HFSPlusAttrForkData*) record);
+-			ret = addToBTree(volume->attrTree, (BTKey*)(&key), sizeof(HFSPlusAttrForkData), (unsigned char *)record);
+-			free(record);
+-			break;
+-		case kHFSPlusAttrExtents:
+-			record = (HFSPlusAttrRecord*) malloc(sizeof(HFSPlusAttrExtents));
+-      			memcpy(record, srecord, sizeof(HFSPlusAttrExtents));
+-			flipAttrExtents((HFSPlusAttrExtents*) record);
+-			ret = addToBTree(volume->attrTree, (BTKey*)(&key), sizeof(HFSPlusAttrExtents), (unsigned char *)record);
+-			free(record);
+-			break;
++		case kHFSPlusAttrInlineData: {
++			int len = srecord->attrData.size + sizeof(HFSPlusAttrData);
++			HFSPlusAttrData* dataRecord = malloc(len);
++			ASSERT(dataRecord, "updateAttributes (AttrInlineData) OOM");
++			memcpy(dataRecord, srecord, len);
++			flipAttrData(dataRecord);
++			int ret = addToBTree(volume->attrTree, (BTKey*)(&key), len, (unsigned char *)dataRecord);
++			free(dataRecord);
++			return ret;
++		}
++		case kHFSPlusAttrForkData: {
++			HFSPlusAttrForkData *forkRecord = malloc(sizeof(HFSPlusAttrForkData));
++			ASSERT(forkRecord, "updateAttributes (ForkData) OOM");
++			memcpy(forkRecord, srecord, sizeof(HFSPlusAttrForkData));
++			flipAttrForkData(forkRecord);
++			int ret = addToBTree(volume->attrTree, (BTKey*)(&key), sizeof(HFSPlusAttrForkData), (unsigned char *)forkRecord);
++			free(forkRecord);
++			return ret;
++		}
++		case kHFSPlusAttrExtents: {
++			HFSPlusAttrExtents* extentsRecord = malloc(sizeof(HFSPlusAttrExtents));
++			ASSERT(extentsRecord, "updateAttributes (Extents) OOM");
++			memcpy(extentsRecord, srecord, sizeof(HFSPlusAttrExtents));
++			flipAttrExtents(extentsRecord);
++			int ret = addToBTree(volume->attrTree, (BTKey*)(&key), sizeof(HFSPlusAttrExtents), (unsigned char *)extentsRecord);
++			free(extentsRecord);
++			return ret;
++		}
++		default: {
++			ASSERT(FALSE, "cannot updateAttributes with bad recordType");
++			return FALSE;  // unreachable
++		}
+ 	}
+-
+-	return ret;
+ }
+ 
+ size_t getAttribute(Volume* volume, uint32_t fileID, const char* name, uint8_t** data) {
+@@ -324,8 +334,8 @@ XAttrList* getAllExtendedAttributes(HFSCatalogNodeID CNID, Volume* volume) {
+ 		return NULL;
+ 
+ 	free(record);
+-	
+-	while(nodeNumber != 0) {    
++
++	while(nodeNumber != 0) {
+ 		descriptor = readBTNodeDescriptor(nodeNumber, tree);
+ 
+ 		while(recordNumber < descriptor->numRecords) {

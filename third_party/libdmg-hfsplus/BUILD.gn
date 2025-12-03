@@ -61,9 +61,6 @@ source_set("hfs_library") {
         "-Wno-implicit-fallthrough",
         "-Wno-unreachable-code-break",
 
-        # TODO(crbug.com/465158656): fix bad alloc in xattr.c
-        "-Wno-alloc-size",
-
         # libdmg-hfsplus relies on type punning via illegal pointer cast when
         # parsing HFS+ catalog data records. -fno-strict-aliasing makes this
         # behave as intended, at the cost of shutting off many optimizations
