@@ -2881,53 +2881,51 @@
   },
   {
     "name": "enable-accessibility-manifest-v3-accessibility-common",
-    "owners": [ "asurkov@igalia.com", "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 145
+    "owners": [ "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-accessibility-manifest-v3-braille-ime",
-    "owners": [ "spectranaut@igalia.com", "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 145
+    "owners": [ "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-accessibility-manifest-v3-chromevox",
-    "owners": [ "spectranaut@igalia.com", "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 145
+    "owners": [ "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-accessibility-manifest-v3-enhanced-network-tts",
-    "owners": [ "spectranaut@igalia.com", "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 145
+    "owners": [ "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-accessibility-manifest-v3-espeakng",
     "owners": [
       "mwoj@google.com",
-      "xiyuan@google.com",
-      "akihiroota@google.com",
+      "akihiroota@chromium.org",
       "//ui/accessibility/OWNERS"
     ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "enable-accessibility-manifest-v3-google-tts",
     "owners": [
-      "xiyuan@google.com",
       "mwoj@google.com",
-      "akihiroota@google.com",
+      "akihiroota@chromium.org",
       "//ui/accessibility/OWNERS"
     ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "enable-accessibility-manifest-v3-select-to-speak",
-    "owners": [ "spectranaut@igalia.com", "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 145
+    "owners": [ "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-accessibility-manifest-v3-switch-access",
-    "owners": [ "spectranaut@igalia.com", "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 145
+    "owners": [ "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-accessibility-mousekeys",
@@ -3564,7 +3562,7 @@
   {
     "name": "enable-experimental-accessibility-manifest-v3",
     "owners": [ "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "enable-experimental-accessibility-switch-access-text",
