@@ -94,7 +94,7 @@ bool CGImageHasAlphaData(CGImageRef image) {
   CGContextRef context =
       CGBitmapContextCreate(/*data=*/NULL, image_width, image_height,
                             /*bitsPerComponent=*/8, /*bytesPerRow=*/image_width,
-                            /*space=*/NULL, kCGImageAlphaOnly);
+                            /*space=*/NULL, (CGBitmapInfo)kCGImageAlphaOnly);
   CGContextDrawImage(context, CGRectMake(0, 0, image_width, image_height),
                      image);
   unsigned char* context_data = CGBitmapContextGetData(context);
