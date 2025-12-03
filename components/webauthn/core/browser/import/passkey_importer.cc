@@ -53,13 +53,20 @@ void PasskeyImporter::ProcessPasskeys(
     ProcessingCallback processing_callback) {
   ImportProcessingResult result;
   for (sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {
+    if (passkey_model_
+            ->GetPasskey(PasskeyModel::AnyRp(), passkey.credential_id(),
+                         PasskeyModel::ShadowedCredentials::kInclude)
+            .has_value()) {
+      duplicate_passkey_count_++;
+      continue;
+    }
+
     ImportedPasskeyStatus status = CheckImportedPasskey(passkey);
     if (status != ImportedPasskeyStatus::kOk) {
       result.errors.push_back(SpecificsToImportedPasskeyInfo(passkey, status));
       continue;
     }
 
-    // TODO(crbug.com/458337350): Sanity check only matching credential ID.
     if (passkey_model_->GetPasskeyByUserId(passkey.rp_id(), passkey.user_id())
             .has_value()) {
       result.conflicts.push_back(
@@ -88,8 +95,9 @@ void PasskeyImporter::ImportPasskeys(
     passkey_model_->CreatePasskey(conflicting_passkeys_[incoming_passkey_id]);
   }
 
-  size_t imported_passkeys_count =
-      valid_passkeys_.size() + selected_conflicting_passkey_ids.size();
+  size_t imported_passkeys_count = valid_passkeys_.size() +
+                                   selected_conflicting_passkey_ids.size() +
+                                   duplicate_passkey_count_;
   std::move(passkeys_imported_callback)
       .Run(static_cast<int>(imported_passkeys_count));
 }

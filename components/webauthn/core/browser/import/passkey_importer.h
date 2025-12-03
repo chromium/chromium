@@ -71,6 +71,10 @@ class PasskeyImporter {
   // already stored passkeys (e.g. having matching `user_id` and `rp_id`).
   std::vector<sync_pb::WebauthnCredentialSpecifics> conflicting_passkeys_;
 
+  // Count of passkeys that are already stored in user's account (with matching
+  // credential ID).
+  size_t duplicate_passkey_count_ = 0;
+
   base::WeakPtrFactory<PasskeyImporter> weak_ptr_factory_{this};
 };
 

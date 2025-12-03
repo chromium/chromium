@@ -93,6 +93,19 @@ TEST_F(PasskeyImporterTest, ProcessesInvalidPasskeys) {
   EXPECT_THAT(result.conflicts, IsEmpty());
 }
 
+TEST_F(PasskeyImporterTest, ProcessesDuplicatePasskey) {
+  sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey(kRpId, kUserId);
+  passkey_model_->AddNewPasskeyForTesting(passkey);
+
+  std::ignore = StartImport({passkey});
+  int passkeys_imported = FinishImport(/*selected_passkey_ids=*/{});
+
+  // Duplicate passkey should be reported as imported, but not actually added
+  // to the model.
+  EXPECT_EQ(passkeys_imported, 1);
+  EXPECT_THAT(passkey_model_->GetAllPasskeys(), SizeIs(1));
+}
+
 TEST_F(PasskeyImporterTest, ProcessesConflictingPasskeys) {
   passkey_model_->AddNewPasskeyForTesting(CreatePasskey(kRpId, kUserId));
 
