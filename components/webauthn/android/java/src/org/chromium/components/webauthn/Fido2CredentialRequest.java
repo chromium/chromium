@@ -86,6 +86,7 @@ public class Fido2CredentialRequest
     static final String CREDENTIAL_EXISTS_ERROR_MSG =
             "One of the excluded credentials exists on the local device";
     static final String LOW_LEVEL_ERROR_MSG = "Low level error 0x6a80";
+    static final String CANCELLED_ERROR_MSG = "[16] Cancelled by user.";
 
     // mPlayServicesAvailable caches whether the Play Services FIDO API is
     // available.
@@ -1385,6 +1386,9 @@ public class Fido2CredentialRequest
                         || NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG.equals(errorMsg)) {
                     return MakeCredentialOutcome.RK_NOT_SUPPORTED;
                 }
+                if (CANCELLED_ERROR_MSG.equals(errorMsg)) {
+                    return MakeCredentialOutcome.USER_CANCELLATION;
+                }
                 return MakeCredentialOutcome.PLATFORM_NOT_ALLOWED;
             case Fido2Api.CONSTRAINT_ERR:
                 if (NO_SCREENLOCK_ERROR_MSG.equals(errorMsg)) {
@@ -1414,6 +1418,9 @@ public class Fido2CredentialRequest
                 if (NON_EMPTY_ALLOWLIST_ERROR_MSG.equals(errorMsg)
                         || NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG.equals(errorMsg)) {
                     return GetAssertionOutcome.RK_NOT_SUPPORTED;
+                }
+                if (CANCELLED_ERROR_MSG.equals(errorMsg)) {
+                    return GetAssertionOutcome.USER_CANCELLATION;
                 }
                 return GetAssertionOutcome.PLATFORM_NOT_ALLOWED;
             case Fido2Api.CONSTRAINT_ERR:
