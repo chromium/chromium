@@ -44,26 +44,34 @@ void CollectionStorageObserver::OnChildrenRemoved(
     if (std::holds_alternative<TabCollection::Handle>(handle)) {
       const TabCollection* collection =
           std::get<TabCollection::Handle>(handle).Get();
-      service_->Remove(collection, position.parent_handle.Get());
+      service_->Remove(collection);
     } else {
       const TabInterface* tab = std::get<TabHandle>(handle).Get();
-      service_->Remove(tab, position.parent_handle.Get());
+      service_->Remove(tab);
     }
+    service_->SaveChildren(position.parent_handle.Get());
   }
 }
 
 void CollectionStorageObserver::OnChildMoved(
     const TabCollection::Position& to_position,
     const NodeData& node_data) {
-  TabCollection::NodeHandle handle = node_data.handle;
+  TabCollectionNodeHandle handle = node_data.handle;
+  const TabCollection* curr_parent;
   const TabCollection* prev_parent = node_data.position.parent_handle.Get();
-  if (std::holds_alternative<TabCollection::Handle>(handle)) {
+  if (std::holds_alternative<TabCollectionHandle>(handle)) {
     const TabCollection* collection =
         std::get<TabCollection::Handle>(handle).Get();
-    service_->Move(collection, prev_parent);
+    curr_parent = collection->GetParentCollection();
   } else {
     const TabInterface* tab = std::get<TabHandle>(handle).Get();
-    service_->Move(tab, prev_parent);
+    curr_parent = tab->GetParentCollection();
+  }
+
+  DCHECK(curr_parent) << "Child node should have parent";
+  service_->SaveChildren(curr_parent);
+  if (curr_parent != prev_parent) {
+    service_->SaveChildren(prev_parent);
   }
 }
 

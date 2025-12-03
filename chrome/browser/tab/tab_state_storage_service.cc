@@ -43,41 +43,6 @@ StorageId GetOrCreateStorageId(
   return storage_id;
 }
 
-// Adds a save children operation to the builder.
-void SaveChildrenInternal(TabStateStorageUpdaterBuilder& builder,
-                          const TabCollection* parent,
-                          TabStateStorageService* service,
-                          TabStoragePackager* packager) {
-  builder.SaveChildren(service->GetStorageId(parent), parent);
-}
-
-void RemoveNodeSequence(StorageId storage_id,
-                        const TabCollection* parent,
-                        TabStateStorageService* service,
-                        TabStoragePackager* packager,
-                        TabStateStorageBackend* backend) {
-  DCHECK(packager);
-
-  TabStateStorageUpdaterBuilder builder(*service, packager);
-  builder.RemoveNode(storage_id);
-
-  SaveChildrenInternal(builder, parent, service, packager);
-  backend->Update(builder.Build());
-}
-
-void MoveNodeSequence(const TabCollection* prev_parent,
-                      const TabCollection* curr_parent,
-                      TabStateStorageService* service,
-                      TabStoragePackager* packager,
-                      TabStateStorageBackend* backend) {
-  DCHECK(packager);
-
-  TabStateStorageUpdaterBuilder builder(*service, packager);
-  SaveChildrenInternal(builder, prev_parent, service, packager);
-  SaveChildrenInternal(builder, curr_parent, service, packager);
-  backend->Update(builder.Build());
-}
-
 }  // namespace
 
 TabStateStorageService::TabStateStorageService(
@@ -161,28 +126,22 @@ void TabStateStorageService::SaveChildren(const TabCollection* collection) {
   tab_backend_.Update(builder.Build());
 }
 
-void TabStateStorageService::Remove(const TabInterface* tab,
-                                    const TabCollection* prev_parent) {
-  RemoveNodeSequence(GetStorageId(tab), prev_parent, this, packager_.get(),
-                     &tab_backend_);
+void TabStateStorageService::Remove(const TabInterface* tab) {
+  DCHECK(packager_);
+
+  TabStateStorageUpdaterBuilder builder(*this, packager_.get());
+  builder.RemoveNode(GetStorageId(tab));
+
+  tab_backend_.Update(builder.Build());
 }
 
-void TabStateStorageService::Remove(const TabCollection* collection,
-                                    const TabCollection* prev_parent) {
-  RemoveNodeSequence(GetStorageId(collection), prev_parent, this,
-                     packager_.get(), &tab_backend_);
-}
+void TabStateStorageService::Remove(const TabCollection* collection) {
+  DCHECK(packager_);
 
-void TabStateStorageService::Move(const TabInterface* tab,
-                                  const TabCollection* prev_parent) {
-  MoveNodeSequence(prev_parent, tab->GetParentCollection(), this,
-                   packager_.get(), &tab_backend_);
-}
+  TabStateStorageUpdaterBuilder builder(*this, packager_.get());
+  builder.RemoveNode(GetStorageId(collection));
 
-void TabStateStorageService::Move(const TabCollection* collection,
-                                  const TabCollection* prev_parent) {
-  MoveNodeSequence(prev_parent, collection->GetParentCollection(), this,
-                   packager_.get(), &tab_backend_);
+  tab_backend_.Update(builder.Build());
 }
 
 void TabStateStorageService::LoadAllNodes(const std::string& window_tag,

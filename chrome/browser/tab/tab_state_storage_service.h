@@ -76,12 +76,8 @@ class TabStateStorageService : public KeyedService,
   void SavePayload(const TabCollection* collection);
   void SaveChildren(const TabCollection* collection);
 
-  void Move(const TabInterface* tab, const TabCollection* prev_parent);
-  void Move(const TabCollection* collection, const TabCollection* prev_parent);
-
-  void Remove(const TabInterface* tab, const TabCollection* prev_parent);
-  void Remove(const TabCollection* collection,
-              const TabCollection* prev_parent);
+  void Remove(const TabInterface* tab);
+  void Remove(const TabCollection* collection);
 
   void LoadAllNodes(const std::string& window_tag,
                     bool is_off_the_record,
