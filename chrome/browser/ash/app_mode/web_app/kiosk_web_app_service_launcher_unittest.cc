@@ -10,7 +10,6 @@
 #include <optional>
 
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -341,9 +340,7 @@ TEST_F(KioskWebAppServiceLauncherTest,
 }
 
 TEST_F(KioskWebAppServiceLauncherTest, FullFlowNotInstalled) {
-  // Do not preinstall teh app
-
-  base::HistogramTester histogram;
+  // Do not preinstall the app
 
   CreateWebAppWithManifest();
 
@@ -354,37 +351,16 @@ TEST_F(KioskWebAppServiceLauncherTest, FullFlowNotInstalled) {
   EXEC_AND_WAIT_FOR_CALL(launcher().LaunchApp(), observer(), OnAppLaunched());
 
   EXPECT_FALSE(IsAppInstalledAsPlaceholder());
-
-  // App isn't always ready by the time it's being launched. Therefore we
-  // check the total count of kLaunchAppReadinessUMA instead of individual
-  // cases.
-  histogram.ExpectTotalCount(
-      chromeos::KioskAppServiceLauncher::kLaunchAppReadinessUMA, 1);
-  histogram.ExpectUniqueSample(
-      KioskWebAppServiceLauncher::kWebAppInstallResultUMA,
-      webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 
 TEST_F(KioskWebAppServiceLauncherTest, FullFlowAlreadyInstalled) {
-  base::HistogramTester histogram;
-
   InstallApp();
 
   EXEC_AND_WAIT_FOR_CALL(launcher().Initialize(), observer(), OnAppPrepared());
   EXEC_AND_WAIT_FOR_CALL(launcher().LaunchApp(), observer(), OnAppLaunched());
-
-  // App isn't always ready by the time it's being launched. Therefore we
-  // check the total count of kLaunchAppReadinessUMA instead of individual
-  // cases.
-  histogram.ExpectTotalCount(
-      chromeos::KioskAppServiceLauncher::kLaunchAppReadinessUMA, 1);
-  histogram.ExpectTotalCount(
-      KioskWebAppServiceLauncher::kWebAppInstallResultUMA, 0);
 }
 
 TEST_F(KioskWebAppServiceLauncherTest, FullFlowPlaceholderReplaced) {
-  base::HistogramTester histogram;
-
   InstallAppAsPlaceholder();
 
   CreateWebAppWithManifest();
@@ -395,17 +371,6 @@ TEST_F(KioskWebAppServiceLauncherTest, FullFlowPlaceholderReplaced) {
   EXEC_AND_WAIT_FOR_CALL(launcher().LaunchApp(), observer(), OnAppLaunched());
 
   EXPECT_FALSE(IsAppInstalledAsPlaceholder());
-
-  // App isn't always ready by the time it's being launched. Therefore we
-  // check the total count of kLaunchAppReadinessUMA instead of individual
-  // cases.
-  histogram.ExpectTotalCount(
-      chromeos::KioskAppServiceLauncher::kLaunchAppReadinessUMA, 1);
-  histogram.ExpectUniqueSample(
-      KioskWebAppServiceLauncher::kWebAppInstallResultUMA,
-      webapps::InstallResultCode::kSuccessNewInstall, 1);
-  histogram.ExpectUniqueSample(
-      KioskWebAppServiceLauncher::kWebAppIsPlaceholderUMA, true, 1);
 }
 
 }  // namespace ash

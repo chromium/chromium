@@ -52,7 +52,6 @@ void KioskAppServiceLauncher::CheckAndMaybeLaunchApp(
       app_id_,
       [&readiness](apps::AppUpdate update) { readiness = update.Readiness(); });
 
-  base::UmaHistogramEnumeration(kLaunchAppReadinessUMA, readiness);
   switch (readiness) {
     case apps::Readiness::kUnknown:
     case apps::Readiness::kTerminated:
