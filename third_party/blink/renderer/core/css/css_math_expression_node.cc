@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 #include "ui/gfx/geometry/sin_cos_degrees.h"
 
 namespace blink {
@@ -824,6 +825,74 @@ CSSMathExpressionNodeWithOperator MaybeReplaceNodeWithCombined(
   return {op, node};
 }
 
+// Contains an operation node with arguments for processing (i.e.
+// collecting numeric children or combining numeric children from the
+// given CSSMathExpressionNode).
+struct NumericChildrenTraversalNode {
+  DISALLOW_NEW();
+
+  void Trace(Visitor* visitor) const { visitor->Trace(node); }
+
+  Member<const CSSMathExpressionNode> node;
+  CSSMathOperator op;
+  bool is_in_nesting;
+};
+
+template <typename T>
+void TraverseNumericChildrenFromNode(const CSSMathExpressionNode* root,
+                                     CSSMathOperator op,
+                                     T&& process_node,
+                                     bool is_in_nesting = false) {
+  HeapVector<NumericChildrenTraversalNode> operation_nodes;
+
+  auto should_traverse = [](const CSSMathExpressionNode* root,
+                            CSSMathOperator op) {
+    // Go deeper inside the operation node if possible.
+    // But don't try to go inside complex-typed operations such as 1rem * 1px /
+    // 1px, as those should not be sorted, because we don't know their unit
+    // type.
+    auto* operation = DynamicTo<CSSMathExpressionOperation>(root);
+    return operation && !operation->HasNestedIntermediateResult() &&
+           (op == CSSMathOperator::kMultiply ? operation->IsMultiplyOrDivide()
+                                             : operation->IsAddOrSubtract());
+  };
+  auto push_into_operation_nodes = [&](const CSSMathExpressionNode* node,
+                                       CSSMathOperator op, bool is_in_nesting) {
+    auto* operation = DynamicTo<CSSMathExpressionOperation>(node);
+    DCHECK(operation);
+    const CSSMathOperator operation_op = operation->OperatorType();
+    is_in_nesting |= operation->IsNestedCalc();
+
+    // Change the sign of expression, if we are nesting (inside brackets).
+    CSSMathOperator back_op =
+        MaybeChangeOperatorSignIfNesting(is_in_nesting, op, operation_op);
+
+    // Nest from the left (first op) to the right (second op).
+    // Since Traverse() pops the last element from `operation_nodes`
+    // and processes it, push `GetOperands().back()` first.
+    operation_nodes.emplace_back(operation->GetOperands().back(), back_op,
+                                 is_in_nesting);
+    operation_nodes.emplace_back(operation->GetOperands().front(), op,
+                                 is_in_nesting);
+  };
+
+  if (!should_traverse(root, op)) {
+    process_node(root, op);
+    return;
+  }
+  push_into_operation_nodes(root, op, is_in_nesting);
+
+  while (!operation_nodes.empty()) {
+    NumericChildrenTraversalNode last = operation_nodes.back();
+    operation_nodes.pop_back();
+    if (!should_traverse(last.node, last.op)) {
+      process_node(last.node, last.op);
+      continue;
+    }
+    push_into_operation_nodes(last.node, last.op, last.is_in_nesting);
+  }
+}
+
 // This function combines numeric values that have double value and are of the
 // same unit type together in numeric_children and saves all the non add/sub
 // (or mul, if op is kMultiply) operation children and their correct simplified
@@ -833,45 +902,29 @@ void CombineNumericChildrenFromNode(const CSSMathExpressionNode* root,
                                     UnitsHashMap& numeric_children,
                                     UnitsVector& all_children,
                                     bool is_in_nesting = false) {
-  // Go deeper inside the operation node if possible.
-  // But don't try to go inside complex-typed operations such as 1rem * 1px /
-  // 1px, as those should not be sorted, because we don't know their unit type.
-  if (auto* operation = DynamicTo<CSSMathExpressionOperation>(root);
-      operation && !operation->HasNestedIntermediateResult() &&
-      (op == CSSMathOperator::kMultiply ? operation->IsMultiplyOrDivide()
-                                        : operation->IsAddOrSubtract())) {
-    const CSSMathOperator operation_op = operation->OperatorType();
-    is_in_nesting |= operation->IsNestedCalc();
-    // Nest from the left (first op) to the right (second op).
-    CombineNumericChildrenFromNode(operation->GetOperands().front(), op,
-                                   numeric_children, all_children,
-                                   is_in_nesting);
-    // Change the sign of expression, if we are nesting (inside brackets).
-    op = MaybeChangeOperatorSignIfNesting(is_in_nesting, op, operation_op);
-    CombineNumericChildrenFromNode(operation->GetOperands().back(), op,
-                                   numeric_children, all_children,
-                                   is_in_nesting);
-    return;
-  }
-  // If we have numeric with double value - combine under one unit type.
-  if (IsNumericNodeWithDoubleValue(root)) {
-    const CSSPrimitiveValue::UnitType unit_type =
-        root->ResolvedUnitTypeForSimplification();
-    double value = op == CSSMathOperator::kSubtract ? -root->DoubleValue()
-                                                    : root->DoubleValue();
-    if (auto it = numeric_children.find(unit_type);
-        it != numeric_children.end()) {
-      if (op == CSSMathOperator::kMultiply) {
-        it->value *= value;
+  auto process_node = [&](const CSSMathExpressionNode* root,
+                          CSSMathOperator op) {
+    // If we have numeric with double value - combine under one unit type.
+    if (IsNumericNodeWithDoubleValue(root)) {
+      const CSSPrimitiveValue::UnitType unit_type =
+          root->ResolvedUnitTypeForSimplification();
+      double value = op == CSSMathOperator::kSubtract ? -root->DoubleValue()
+                                                      : root->DoubleValue();
+      if (auto it = numeric_children.find(unit_type);
+          it != numeric_children.end()) {
+        if (op == CSSMathOperator::kMultiply) {
+          it->value *= value;
+        } else {
+          it->value += value;
+        }
       } else {
-        it->value += value;
+        numeric_children.insert(unit_type, value);
       }
-    } else {
-      numeric_children.insert(unit_type, value);
     }
-  }
-  // Save all non add/sub (or non-mul, respectively) operations.
-  all_children.emplace_back(op, root);
+    // Save all non add/sub (or non-mul, respectively) operations.
+    all_children.emplace_back(op, root);
+  };
+  TraverseNumericChildrenFromNode(root, op, process_node, is_in_nesting);
 }
 
 // This function collects numeric values that have double value
@@ -882,42 +935,26 @@ void CollectNumericChildrenFromNode(const CSSMathExpressionNode* root,
                                     UnitsVectorHashMap& numeric_children,
                                     UnitsVector& complex_children,
                                     bool is_in_nesting = false) {
-  // Go deeper inside the operation node if possible.
-  // But don't try to go inside complex-typed operations such as 1rem * 1px /
-  // 1px, as those should not be sorted, because we don't know their unit type.
-  if (auto* operation = DynamicTo<CSSMathExpressionOperation>(root);
-      operation && !operation->HasNestedIntermediateResult() &&
-      (op == CSSMathOperator::kMultiply ? operation->IsMultiplyOrDivide()
-                                        : operation->IsAddOrSubtract())) {
-    const CSSMathOperator operation_op = operation->OperatorType();
-    is_in_nesting |= operation->IsNestedCalc();
-    // Nest from the left (first op) to the right (second op).
-    CollectNumericChildrenFromNode(operation->GetOperands().front(), op,
-                                   numeric_children, complex_children,
-                                   is_in_nesting);
-    // Change the sign of expression, if we are nesting (inside brackets).
-    op = MaybeChangeOperatorSignIfNesting(is_in_nesting, op, operation_op);
-    CollectNumericChildrenFromNode(operation->GetOperands().back(), op,
-                                   numeric_children, complex_children,
-                                   is_in_nesting);
-    return;
-  }
-  // If we have numeric with double value - collect in numeric_children.
-  if (IsNumericNodeWithDoubleValue(root)) {
-    CSSPrimitiveValue::UnitType unit_type =
-        root->ResolvedUnitTypeForSimplification();
-    if (auto it = numeric_children.find(unit_type);
-        it != numeric_children.end()) {
-      it->value->emplace_back(op, root);
-    } else {
-      numeric_children.insert(
-          unit_type, MakeGarbageCollected<GCedUnitsVector>(
-                         1, CSSMathExpressionNodeWithOperator(op, root)));
+  auto process_node = [&](const CSSMathExpressionNode* root,
+                          CSSMathOperator op) {
+    // If we have numeric with double value - collect in numeric_children.
+    if (IsNumericNodeWithDoubleValue(root)) {
+      CSSPrimitiveValue::UnitType unit_type =
+          root->ResolvedUnitTypeForSimplification();
+      if (auto it = numeric_children.find(unit_type);
+          it != numeric_children.end()) {
+        it->value->emplace_back(op, root);
+      } else {
+        numeric_children.insert(
+            unit_type, MakeGarbageCollected<GCedUnitsVector>(
+                           1, CSSMathExpressionNodeWithOperator(op, root)));
+      }
+      return;
     }
-    return;
-  }
-  // Save all non add/sub operations.
-  complex_children.emplace_back(op, root);
+    // Save all non add/sub operations.
+    complex_children.emplace_back(op, root);
+  };
+  TraverseNumericChildrenFromNode(root, op, process_node, is_in_nesting);
 }
 
 // This function follows:
@@ -1135,6 +1172,15 @@ CSSMathExpressionNode* MaybeDistributeArithmeticOperation(
 }
 
 }  // namespace
+
+template <>
+struct VectorTraits<NumericChildrenTraversalNode>
+    : VectorTraitsBase<NumericChildrenTraversalNode> {
+  static const bool kCanClearUnusedSlotsWithMemset = true;
+  static const bool kCanInitializeWithMemset = true;
+  static const bool kCanMoveWithMemcpy = true;
+  static const bool kCanTraceConcurrently = true;
+};
 
 // ------ Start of CSSMathExpressionNumericLiteral member functions ------
 
