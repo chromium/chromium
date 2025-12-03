@@ -2541,10 +2541,10 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SyncAutofillWalletCredentialData",
-                        "kAutofillEnableCvcStorageAndFilling",
-                        "kAutofillEnableCvcStorageAndFillingEnhancement",
-                        "kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement"
+                        "AutofillEnableCvcStorageAndFilling",
+                        "AutofillEnableCvcStorageAndFillingEnhancement",
+                        "AutofillEnableCvcStorageAndFillingStandaloneFormEnhancement",
+                        "SyncAutofillWalletCredentialData"
                     ]
                 }
             ]
