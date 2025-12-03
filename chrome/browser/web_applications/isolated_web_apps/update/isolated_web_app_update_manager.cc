@@ -43,6 +43,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -54,6 +55,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/browser/browser_thread.h"
@@ -275,12 +277,10 @@ std::vector<webapps::AppId> GetIwasAffectedByKeyRotation(
     WebAppProvider& provider) {
   std::vector<webapps::AppId> iwa_ids;
 
-  base::flat_map<web_package::SignedWebBundleId,
-                 std::reference_wrapper<const WebApp>>
-      installed_iwas = GetInstalledIwas(provider.registrar_unsafe());
-
   // Queue updates for all apps affected by key rotation.
-  for (const auto& [web_bundle_id, iwa] : installed_iwas) {
+  for (const auto& iwa :
+       provider.registrar_unsafe().GetApps(WebAppFilter::IsIsolatedApp())) {
+    auto web_bundle_id = IwaOrigin::Create(iwa.scope())->web_bundle_id();
     auto result = LookupRotatedKey(web_bundle_id);
     // If the rotated key is null, there's no point in updating the
     // app (as the update won't succeed anyway).
@@ -289,14 +289,14 @@ std::vector<webapps::AppId> GetIwasAffectedByKeyRotation(
     }
 
     KeyRotationData data =
-        GetKeyRotationData(web_bundle_id, *iwa.get().isolation_data());
+        GetKeyRotationData(web_bundle_id, *iwa.isolation_data());
     // If either the bundle or the pending update already includes the rotated
     // key, there's no need to rush with updates.
     if (data.current_installation_has_rk || data.pending_update_has_rk) {
       continue;
     }
 
-    iwa_ids.push_back(iwa.get().app_id());
+    iwa_ids.push_back(iwa.app_id());
   }
 
   return iwa_ids;
@@ -341,22 +341,13 @@ void IsolatedWebAppUpdateManager::Start() {
     return;
   }
 
-  for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {
-    if (!web_app.isolation_data().has_value() ||
-        !web_app.isolation_data()->pending_update_info().has_value()) {
+  for (const WebApp& web_app :
+       provider_->registrar_unsafe().GetApps(WebAppFilter::IsIsolatedApp())) {
+    if (!web_app.isolation_data()->pending_update_info().has_value()) {
       continue;
     }
-    auto url_info = IsolatedWebAppUrlInfo::Create(web_app.start_url());
-    if (!url_info.has_value()) {
-      LOG(ERROR) << "Unable to calculate IsolatedWebAppUrlInfo from "
-                 << web_app.start_url();
-
-      web_app::UmaLogExpectedStatus<IsolatedWebAppUpdateError>(
-          "WebApp.Isolated.Update",
-          base::unexpected(
-              IsolatedWebAppUpdateError::kCantCalculateIsolatedWebAppUrlInfo));
-      continue;
-    }
+    auto url_info = IsolatedWebAppUrlInfo::Create(web_app.scope());
+    CHECK(url_info.has_value());
 
     // Off the record profiles cannot have `ScopedProfileKeepAlive`s.
     auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
@@ -568,12 +559,9 @@ void IsolatedWebAppUpdateManager::QueueUpdatesForIwasAffectedByKeyRotation() {
 }
 
 bool IsolatedWebAppUpdateManager::IsAnyIwaInstalled() {
-  for (const WebApp& app : provider_->registrar_unsafe().GetApps()) {
-    if (app.isolation_data().has_value()) {
-      return true;
-    }
-  }
-  return false;
+  auto apps =
+      provider_->registrar_unsafe().GetApps(WebAppFilter::IsIsolatedApp());
+  return apps.begin() != apps.end();
 }
 
 size_t IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
@@ -585,7 +573,8 @@ size_t IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
       GetBundleIdToIsolatedWebAppsUpdateOptionsMap(&*profile_);
 
   size_t num_new_tasks = 0;
-  for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {
+  for (const WebApp& web_app :
+       provider_->registrar_unsafe().GetApps(WebAppFilter::IsIsolatedApp())) {
     if (MaybeQueueUpdateDiscoveryTask(web_app, id_to_update_manifest_map)) {
       ++num_new_tasks;
     }

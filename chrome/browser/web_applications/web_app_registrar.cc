@@ -1982,15 +1982,18 @@ bool WebAppRegistrar::GetWindowControlsOverlayEnabled(
   return web_app ? web_app->window_controls_overlay_enabled() : false;
 }
 
+WebAppRegistrar::AppSet::AppSet(const WebAppRegistrar* registrar,
+                                LambdaFilter filter)
+    : AppSet(registrar, base::BindRepeating(filter)) {}
+
 WebAppRegistrar::AppSet::AppSet(const WebAppRegistrar* registrar, Filter filter)
     : registrar_(registrar),
-      filter_(filter)
+      filter_(std::move(filter))
 #if DCHECK_IS_ON()
       ,
       mutations_count_(registrar->mutations_count_)
 #endif
 {
-  DCHECK(filter);
 }
 
 WebAppRegistrar::AppSet::~AppSet() {
@@ -2023,11 +2026,19 @@ WebAppRegistrar::AppSet WebAppRegistrar::GetAppsIncludingStubs() const {
   return AppSet(this, [](const WebApp& web_app) { return true; });
 }
 
-WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
-  return AppSet(this, [](const WebApp& web_app) {
-    return !web_app.is_from_sync_and_pending_installation() &&
-           !web_app.is_uninstalling();
-  });
+WebAppRegistrar::AppSet WebAppRegistrar::GetApps(
+    std::optional<WebAppFilter> filter) const {
+  return AppSet(
+      this,
+      base::BindRepeating(
+          [](const WebAppRegistrar* registrar,
+             std::optional<WebAppFilter> filter_param, const WebApp& web_app) {
+            return !web_app.is_from_sync_and_pending_installation() &&
+                   !web_app.is_uninstalling() &&
+                   (!filter_param ||
+                    registrar->AppMatches(web_app.app_id(), *filter_param));
+          },
+          this, std::move(filter)));
 }
 
 base::Value WebAppRegistrar::AsDebugValue() const {

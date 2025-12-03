@@ -18,6 +18,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -609,7 +610,7 @@ class WebAppRegistrar {
                                       PendingUpdateInfoChangePassKey);
 
   // A filter must return false to skip the |web_app|.
-  using Filter = bool (*)(const WebApp& web_app);
+  using Filter = base::RepeatingCallback<bool(const WebApp&)>;
 
   // Only range-based |for| loop supported. Don't use AppSet directly.
   // Doesn't support registration and unregistration of WebApp while iterating.
@@ -626,7 +627,7 @@ class WebAppRegistrar {
            Filter filter)
           : internal_iter_(std::move(internal_iter)),
             internal_end_(std::move(internal_end)),
-            filter_(filter) {
+            filter_(std::move(filter)) {
         FilterAndSkipApps();
       }
       Iter(Iter&&) noexcept = default;
@@ -645,8 +646,9 @@ class WebAppRegistrar {
 
      private:
       void FilterAndSkipApps() {
-        while (internal_iter_ != internal_end_ && !filter_(**this))
+        while (internal_iter_ != internal_end_ && !filter_.Run(**this)) {
           ++internal_iter_;
+        }
       }
 
       InternalIter internal_iter_;
@@ -654,8 +656,10 @@ class WebAppRegistrar {
       Filter filter_;
     };
 
+    using LambdaFilter = bool (*)(const WebApp&);
+    AppSet(const WebAppRegistrar* registrar, LambdaFilter filter);
     AppSet(const WebAppRegistrar* registrar, Filter filter);
-    AppSet(AppSet&&) = default;
+    AppSet(AppSet&&);
     AppSet(const AppSet&) = delete;
     AppSet& operator=(const AppSet&) = delete;
     ~AppSet();
@@ -670,7 +674,7 @@ class WebAppRegistrar {
 
    private:
     const raw_ptr<const WebAppRegistrar> registrar_;
-    const Filter filter_;
+    Filter filter_;
 #if DCHECK_IS_ON()
     const int mutations_count_;
 #endif
@@ -681,7 +685,7 @@ class WebAppRegistrar {
   // Returns all apps excluding stubs for apps in sync install. Apps in sync
   // install are being installed and should be hidden for most subsystems. This
   // is a subset of GetAppsIncludingStubs().
-  AppSet GetApps() const;
+  AppSet GetApps(std::optional<WebAppFilter> = std::nullopt) const;
 
   // Returns a dict with debug values for each app in the registry, including
   // registrar-evaluated effective fields.

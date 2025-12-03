@@ -43,8 +43,10 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -367,9 +369,11 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
             .IsBundleBlocklisted(install_options.web_bundle_id().id());
       });
 
-  base::flat_map<web_package::SignedWebBundleId,
-                 std::reference_wrapper<const WebApp>>
-      installed_iwas = GetInstalledIwas(lock.registrar());
+  base::flat_map<web_package::SignedWebBundleId, const WebApp*> installed_iwas;
+  for (const auto& iwa :
+       lock.registrar().GetApps(WebAppFilter::IsIsolatedApp())) {
+    installed_iwas[IwaOrigin::Create(iwa.scope())->web_bundle_id()] = &iwa;
+  }
   debug_info.Set(
       "installed_iwas",
       base::ToValueList(installed_iwas, [](const auto& installed_iwa) {
@@ -381,16 +385,14 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
   size_t number_of_install_tasks = 0;
   for (const IsolatedWebAppExternalInstallOptions& install_options :
        apps_in_policy) {
-    std::reference_wrapper<const WebApp>* maybe_installed_app =
-        base::FindOrNull(installed_iwas, install_options.web_bundle_id());
-    if (!maybe_installed_app) {
+    const auto* installed_iwa =
+        base::FindPtrOrNull(installed_iwas, install_options.web_bundle_id());
+    if (!installed_iwa) {
       app_actions.emplace(install_options.web_bundle_id(),
                           AppActionInstall(install_options));
       ++number_of_install_tasks;
       continue;
     }
-    const WebApp& installed_app = maybe_installed_app->get();
-
     static_assert(std::ranges::is_sorted(
         std::vector{WebAppManagement::Type::kIwaShimlessRma,
                     // Add further higher priority IWA sources here and make
@@ -401,7 +403,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
                     // that the `case` statements below are sorted
                     // appropriately...
                     WebAppManagement::Type::kIwaUserInstalled}));
-    switch (installed_app.GetHighestPrioritySource()) {
+    switch (installed_iwa->GetHighestPrioritySource()) {
       case WebAppManagement::kSystem:
       case WebAppManagement::kKiosk:
       case WebAppManagement::kPolicy:
@@ -432,7 +434,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
         }
 
         // Dev mode cannot co-exist with other install sources.
-        if (installed_app.isolation_data()->location().dev_mode()) {
+        if (installed_iwa->isolation_data()->location().dev_mode()) {
           app_actions.emplace(install_options.web_bundle_id(),
                               AppActionRemoveInstallSource(
                                   WebAppManagement::kIwaUserInstalled));
@@ -449,8 +451,8 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
     }
   }
 
-  for (const auto& [web_bundle_id, iwa] : installed_iwas) {
-    if (iwa.get().GetSources().Has(WebAppManagement::kIwaPolicy) &&
+  for (const auto& [web_bundle_id, installed_iwa] : installed_iwas) {
+    if (installed_iwa->GetSources().Has(WebAppManagement::kIwaPolicy) &&
         !base::Contains(apps_in_policy, web_bundle_id,
                         &IsolatedWebAppExternalInstallOptions::web_bundle_id)) {
       app_actions.emplace(web_bundle_id, AppActionRemoveInstallSource(
