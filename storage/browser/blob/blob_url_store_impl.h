@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/blob/blob_storage_constants.h"

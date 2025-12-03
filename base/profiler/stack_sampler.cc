@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_functions.h"

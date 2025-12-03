@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "net/base/features.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
 #include "storage/browser/blob/blob_url_utils.h"

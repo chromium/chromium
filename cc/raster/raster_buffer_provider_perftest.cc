@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"

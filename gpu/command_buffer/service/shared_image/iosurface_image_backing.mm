@@ -19,6 +19,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_nsobject.h"
 #include "base/bits.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_policy.h"
 #include "base/notimplemented.h"
 #include "base/trace_event/memory_dump_manager.h"

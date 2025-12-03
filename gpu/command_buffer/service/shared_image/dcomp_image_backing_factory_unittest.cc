@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image/dcomp_image_backing_factory.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/viz/common/resources/shared_image_format.h"

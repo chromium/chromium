@@ -7,6 +7,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/network_context_factory.h"

@@ -4,6 +4,7 @@
 
 #include "remoting/host/mojo_video_capturer_list.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "remoting/base/auto_thread_task_runner.h"

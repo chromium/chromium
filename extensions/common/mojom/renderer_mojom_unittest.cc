@@ -5,6 +5,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/host_id.mojom.h"

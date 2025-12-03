@@ -5,6 +5,7 @@
 #include "device/bluetooth/gatt_service.h"
 
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "device/bluetooth/bluetooth_adapter.h"
