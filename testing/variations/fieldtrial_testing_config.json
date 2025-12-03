@@ -9235,8 +9235,7 @@
                         "backend": "sql"
                     },
                     "enable_features": [
-                        "DiskCacheBackendExperiment",
-                        "HttpCacheInitializeDiskCacheBackendEarly"
+                        "DiskCacheBackendExperiment"
                     ]
                 }
             ]
@@ -12918,6 +12917,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "Hotspot"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HttpCacheInitializeDiskCacheBackendEarly": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HttpCacheInitializeDiskCacheBackendEarly"
                     ]
                 }
             ]
