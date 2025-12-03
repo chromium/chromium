@@ -36,6 +36,14 @@ void GlicInstanceHelper::OnPinnedByInstance(const InstanceId& instance_id) {
   metrics_.OnPinnedByInstance(instance_id);
 }
 
+void GlicInstanceHelper::SetIsDaisyChained() {
+  metrics_.SetIsDaisyChained();
+}
+
+void GlicInstanceHelper::OnDaisyChainAction(DaisyChainFirstAction action) {
+  metrics_.OnDaisyChainAction(action);
+}
+
 base::CallbackListSubscription GlicInstanceHelper::SubscribeToDestruction(
     base::RepeatingCallback<void(tabs::TabInterface*, const InstanceId&)>
         callback) {

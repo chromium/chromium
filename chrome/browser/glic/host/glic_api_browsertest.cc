@@ -55,6 +55,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
+#include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
@@ -2167,6 +2168,60 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testResizeWindowWithinBounds) {
   gfx::Rect final_widget_bounds = glic_widget->GetWindowBoundsInScreen();
   ASSERT_EQ(expected_size,
             glic_widget->WidgetToVisibleBounds(final_widget_bounds).size());
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testDaisyChainRecursiveAndInput) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Only supported with multi-instance.";
+  }
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  NavigateWebContents(kFirstTab, page_url()),
+                  OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  // 1. Trigger "createTab" from the first tab's Glic panel.
+  ExecuteJsTest({.params = base::Value("createTab")});
+
+  // 2. Verify new tab opened and switch to it.
+  auto* tab_strip = browser()->tab_strip_model();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return tab_strip->count() == 2; }));
+  tab_strip->ActivateTabAt(1);
+
+  // 3. Wait for Glic to open in the new (second) tab.
+  TrackGlicInstanceWithTabIndex(1);
+  WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents);
+
+  // 4. Verify no action yet.
+  histogram_tester->ExpectTotalCount(
+      "Glic.Instance.FirstActionInDaisyChainPanel", 0);
+
+  // 5. Trigger "createTab" (recursive) from the second tab's panel.
+  ExecuteJsTest({.params = base::Value("createTab")});
+
+  // 6. Verify third tab opened.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return tab_strip->count() == 3; }));
+  tab_strip->ActivateTabAt(2);
+
+  // 7. Verify recursive metric for the second tab (which was daisy chained).
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester->GetBucketCount(
+               "Glic.Instance.FirstActionInDaisyChainPanel",
+               DaisyChainFirstAction::kRecursiveDaisyChain) == 1;
+  }));
+
+  // 8. Open Glic in the new (third) tab.
+  TrackGlicInstanceWithTabIndex(2);
+  WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents);
+
+  // 9. Trigger "inputSubmitted" in the third tab's panel.
+  ExecuteJsTest({.params = base::Value("inputSubmitted")});
+
+  // 10. Verify inputSubmitted metric for the third tab.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester->GetBucketCount(
+               "Glic.Instance.FirstActionInDaisyChainPanel",
+               DaisyChainFirstAction::kInputSubmitted) == 1;
+  }));
 }
 
 class GlicApiTestSystemSettingsTest : public GlicApiTestWithOneTab {

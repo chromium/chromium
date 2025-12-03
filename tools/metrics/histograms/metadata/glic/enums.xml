@@ -171,6 +171,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:CaptureRegionErrorReason) -->
 
+<!-- LINT.IfChange(GlicDaisyChainFirstAction) -->
+
+<enum name="GlicDaisyChainFirstAction">
+  <int value="0" label="No Action"/>
+  <int value="1" label="Input Submitted"/>
+  <int value="2" label="Switched Conversation"/>
+  <int value="3" label="Recursive Daisy Chain"/>
+  <int value="4" label="Side Panel Closed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h:DaisyChainFirstAction) -->
+
 <!-- LINT.IfChange(GlicDetailedWebClientState) -->
 
 <enum name="GlicDetailedWebClientState">
