@@ -287,6 +287,10 @@ const char kLicenseCheckOAuth2Scope[] =
 // OAuth2 scope for manta.
 const char kMantaOAuth2Scope[] = "https://www.googleapis.com/auth/mdi.aratea";
 
+// OAuth2 scope for web history.
+const char kWebHistoryOAuth2Scope[] =
+    "https://www.googleapis.com/auth/webhistory";
+
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up
 // the ClientOAuth endpoint protocol.  The comment above each constant explains

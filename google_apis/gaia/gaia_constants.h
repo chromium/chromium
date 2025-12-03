@@ -163,6 +163,9 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kLicenseCheckOAuth2Scope[];
 // OAuth2 scope for manta.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kMantaOAuth2Scope[];
 
+// OAuth2 scope for web history.
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kWebHistoryOAuth2Scope[];
+
 // Constants for the Chrome Refresh Token Binding.
 inline constexpr std::string_view kTokenBindingAssertionSentinel =
     "DBSC_CHALLENGE_IF_REQUIRED";

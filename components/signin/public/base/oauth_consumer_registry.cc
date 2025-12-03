@@ -4,6 +4,7 @@
 
 #include "components/signin/public/base/oauth_consumer_registry.h"
 
+#include "base/feature_list.h"
 #include "google_apis/gaia/gaia_constants.h"
 
 namespace {
@@ -113,6 +114,8 @@ constexpr char kContextualTasksName[] = "contextual_tasks";
 }  // namespace
 
 namespace signin {
+
+BASE_FEATURE(kWebHistoryUseSpecificScope, base::FEATURE_ENABLED_BY_DEFAULT);
 
 OAuthConsumerRegistry::OAuthConsumerRegistry() = default;
 OAuthConsumerRegistry::~OAuthConsumerRegistry() = default;
@@ -262,9 +265,15 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*name=*/kPasswordSharingRecipientsDownloaderName,
           /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
     case OAuthConsumerId::kWebHistoryService:
-      return OAuthConsumer(
-          /*name=*/kWebHistoryServiceName,
-          /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
+      if (base::FeatureList::IsEnabled(kWebHistoryUseSpecificScope)) {
+        return OAuthConsumer(
+            /*name=*/kWebHistoryServiceName,
+            /*scopes=*/{GaiaConstants::kWebHistoryOAuth2Scope});
+      } else {
+        return OAuthConsumer(
+            /*name=*/kWebHistoryServiceName,
+            /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
+      }
     case OAuthConsumerId::kComposeboxQueryController:
       return OAuthConsumer(
           /*name=*/kComposeboxQueryControllerName,
