@@ -9,10 +9,15 @@
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
+#include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/synchronization/condition_variable.h"
+#include "base/synchronization/lock.h"
 #include "base/task/task_runner.h"
+#include "base/thread_annotations.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/persistent_cache/entry.h"
@@ -24,6 +29,7 @@ namespace {
 
 constexpr size_t kMaxLoadStoreForTrackingCacheAvailable = 100;
 constexpr base::TimeDelta kDiskWriteDelaySeconds = base::Seconds(1);
+constexpr base::TimeDelta kDiskOpWaitTimeoutMs = base::Milliseconds(20);
 
 class ScopedHistogramTimer {
  public:
@@ -72,6 +78,20 @@ std::string GetHistogramName(std::string_view prefix, std::string_view metric) {
          std::string(metric);
 }
 
+bool TimedWait(base::ConditionVariable& cond_var,
+               base::TimeDelta timeout,
+               base::FunctionRef<bool()> wait_condition) {
+  base::TimeTicks deadline = base::TimeTicks::Now() + timeout;
+  while (wait_condition()) {
+    base::TimeDelta remaining = deadline - base::TimeTicks::Now();
+    if (!remaining.is_positive()) {
+      return false;  // Timeout
+    }
+    cond_var.TimedWait(remaining);
+  }
+  return true;
+}
+
 }  // namespace
 
 // AsyncDiskWriteOpts
@@ -104,6 +124,7 @@ struct GpuPersistentCache::DiskCache
   friend class base::RefCountedThreadSafe<DiskCache>;
   ~DiskCache();
 
+  void SignalUsingCacheComplete();
   void DoStoreToDisk(std::string_view key, base::span<const uint8_t> value);
   void DoDelayedStoreToDisk(std::string key,
                             std::vector<uint8_t> value,
@@ -122,6 +143,11 @@ struct GpuPersistentCache::DiskCache
   std::atomic<size_t> pending_bytes_to_write_{0};
   const scoped_refptr<base::SequencedTaskRunner> disk_write_task_runner_;
   const size_t max_pending_bytes_to_write_;
+
+  // Synchronization primitives to enforce timed waits between reads & writes.
+  base::Lock cache_in_use_mutex_;
+  base::ConditionVariable cache_in_use_cond_var_{&cache_in_use_mutex_};
+  bool cache_in_use_ GUARDED_BY(cache_in_use_mutex_) = false;
 };
 
 GpuPersistentCache::DiskCache::DiskCache(
@@ -135,6 +161,16 @@ GpuPersistentCache::DiskCache::DiskCache(
           async_write_options.max_pending_bytes_to_write) {}
 GpuPersistentCache::DiskCache::~DiskCache() = default;
 
+void GpuPersistentCache::DiskCache::SignalUsingCacheComplete() {
+  {
+    base::AutoLock lock(cache_in_use_mutex_);
+    DCHECK(cache_in_use_);
+    cache_in_use_ = false;
+  }
+
+  cache_in_use_cond_var_.Signal();
+}
+
 std::unique_ptr<persistent_cache::Entry> GpuPersistentCache::DiskCache::Load(
     std::string_view key) {
   ScopedHistogramTimer timer(GetHistogramName(cache_prefix_, "Load"));
@@ -144,7 +180,32 @@ std::unique_ptr<persistent_cache::Entry> GpuPersistentCache::DiskCache::Load(
       current_idle_id_.fetch_add(1, std::memory_order_relaxed) + 1;
   trace_scope.SetIdleId(idle_id);
 
-  return cache_->Find(key);
+  // The persistent cache backend can't read and write in parallel. Wait for
+  // any pending writes/reads to complete before loading from the cache, to
+  // avoid long waits in the backend. We wait for a maximum of 10ms.
+  {
+    base::ScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
+    base::AutoLock lock(cache_in_use_mutex_);
+    if (!TimedWait(cache_in_use_cond_var_, kDiskOpWaitTimeoutMs,
+                   [this]() { return cache_in_use_; })) {
+      // Treat as cache miss
+      return nullptr;
+    }
+
+    cache_in_use_ = true;
+  }
+
+  // The work
+  std::unique_ptr<persistent_cache::Entry> entry;
+  {
+    TRACE_EVENT0("gpu", "GpuPersistentCache::DiskCache::Cache::Find");
+    entry = cache_->Find(key);
+  }
+
+  // Notify other threads
+  SignalUsingCacheComplete();
+
+  return entry;
 }
 
 void GpuPersistentCache::DiskCache::Store(std::string_view key,
@@ -180,7 +241,25 @@ void GpuPersistentCache::DiskCache::DoStoreToDisk(
     base::span<const uint8_t> value) {
   ScopedHistogramTimer timer(GetHistogramName(cache_prefix_, "Store"));
   TRACE_EVENT0("gpu", "GpuPersistentCache::DiskCache::DoStoreToDisk");
-  cache_->Insert(key, value);
+
+  {
+    base::ScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
+    base::AutoLock lock(cache_in_use_mutex_);
+    // Wait until the cache is not in use.
+    while (cache_in_use_) {
+      cache_in_use_cond_var_.Wait();
+    }
+    cache_in_use_ = true;
+  }
+
+  // The work.
+  {
+    TRACE_EVENT0("gpu", "GpuPersistentCache::DiskCache::Cache::Insert");
+    cache_->Insert(key, value);
+  }
+
+  // Unblock other threads.
+  SignalUsingCacheComplete();
 }
 
 void GpuPersistentCache::DiskCache::DoDelayedStoreToDisk(
