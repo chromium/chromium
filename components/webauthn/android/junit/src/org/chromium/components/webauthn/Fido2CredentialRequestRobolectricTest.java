@@ -39,12 +39,14 @@ import com.google.common.collect.ImmutableList;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowApplication;
@@ -113,10 +115,10 @@ public class Fido2CredentialRequestRobolectricTest {
     @Mock AuthenticationContextProvider mAuthenticationContextProviderMock;
     @Mock GmsCoreGetCredentialsHelper mGmsCoreGetCredentialsHelperMock;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
         ((ShadowApplication) shadowOf((Application) ApplicationProvider.getApplicationContext()))
                 .setSystemService(
                         Context.CREDENTIAL_SERVICE, Shadow.newInstanceOf(CredentialManager.class));
