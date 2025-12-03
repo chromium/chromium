@@ -2742,10 +2742,11 @@ deps = {
         'output_file': 'scroll_with_input_not_forwarded_to_renderer.pftrace'
       },
       {
-        "object_name": "test_data/loadline2_phone_perfetto_trace.pb.gz-446e12518282e078360cb1ab55ebb3e3788c3863b269601d2392c9e5d058a92c",
-        "sha256sum": "446e12518282e078360cb1ab55ebb3e3788c3863b269601d2392c9e5d058a92c",
-        "size_bytes": 1214995,
-        "generation": 1763134487216405
+        'object_name': 'test_data/loadline2_phone_perfetto_trace.pb.gz-446e12518282e078360cb1ab55ebb3e3788c3863b269601d2392c9e5d058a92c',
+        'sha256sum': '446e12518282e078360cb1ab55ebb3e3788c3863b269601d2392c9e5d058a92c',
+        'size_bytes': 1214995,
+        'generation': 1763134487216405,
+        'output_file': 'loadline2_phone_perfetto_trace.pb.gz'
       },
     ],
     'dep_type': 'gcs'
