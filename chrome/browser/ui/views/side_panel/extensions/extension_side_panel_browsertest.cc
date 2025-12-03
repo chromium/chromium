@@ -874,11 +874,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   // Show the extension side panel. This should show the tab-scoped side panel.
   side_panel_ui->Show(extension_key);
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser()
-        ->GetFeatures()
-        .side_panel_coordinator()
-        ->IsSidePanelEntryShowing(extension_key,
-                                  /*for_tab=*/true);
+    return browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+        extension_key,
+        /*for_tab=*/true);
   }));
 
   // Disable the extension's side panel for the current tab.
@@ -1005,7 +1003,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
     RunSetOptions(*extension, first_tab_id, "default_path.html",
                   /*enabled=*/true);
     waiter.WaitForRegistration();
-    browser()->GetFeatures().side_panel_coordinator()->Show(
+    SidePanelCoordinator::From(browser())->Show(
         {browser()->GetActiveTabInterface()->GetHandle(), extension_key},
         /*open_trigger=*/std::nullopt, /*suppress_animations=*/true);
 

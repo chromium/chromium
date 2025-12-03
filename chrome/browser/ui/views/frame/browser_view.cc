@@ -5202,8 +5202,7 @@ void BrowserView::AddedToWidget() {
   // TODO(pbos): Investigate whether the side panels should be creatable when
   // the ToolbarView does not create a button for them. This specifically seems
   // to hit web apps. See https://crbug.com/1267781.
-  auto* side_panel_coordinator =
-      browser_->GetFeatures().side_panel_coordinator();
+  auto* const side_panel_coordinator = SidePanelCoordinator::From(browser_);
   contents_height_side_panel_->AddObserver(side_panel_coordinator);
   toolbar_height_side_panel_->AddObserver(side_panel_coordinator);
 

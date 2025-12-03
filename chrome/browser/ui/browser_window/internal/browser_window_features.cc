@@ -669,7 +669,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   // making this for most browser.h types, we should also stop making the
   // contents_height_side_panel_.
   side_panel_coordinator_ =
-      std::make_unique<SidePanelCoordinator>(browser_view);
+      GetUserDataFactory().CreateInstance<SidePanelCoordinator>(*browser_,
+                                                                browser_view);
 
   if (HistorySidePanelCoordinator::IsSupported()) {
     history_side_panel_coordinator_ =

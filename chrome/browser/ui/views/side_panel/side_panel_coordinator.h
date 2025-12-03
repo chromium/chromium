@@ -16,9 +16,11 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_pinning_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui_base.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/view_observer.h"
 
 class BrowserView;
+class BrowserWindowInterface;
 class SidePanel;
 
 namespace views {
@@ -41,6 +43,11 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   SidePanelCoordinator(const SidePanelCoordinator&) = delete;
   SidePanelCoordinator& operator=(const SidePanelCoordinator&) = delete;
   ~SidePanelCoordinator() override;
+
+  DECLARE_USER_DATA(SidePanelCoordinator);
+
+  static SidePanelCoordinator* From(
+      BrowserWindowInterface* browser_window_interface);
 
   void Init(Browser* browser);
   void TearDownPreBrowserWindowDestruction();
@@ -108,6 +115,8 @@ class SidePanelCoordinator final : public SidePanelUIBase,
 
   std::unique_ptr<SidePanelToolbarPinningController>
       side_panel_toolbar_pinning_controller_;
+
+  ui::ScopedUnownedUserData<SidePanelCoordinator> scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_COORDINATOR_H_

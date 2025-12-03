@@ -206,7 +206,7 @@ int GlicSidePanelCoordinator::GetPreferredWidth() {
 SidePanelCoordinator* GlicSidePanelCoordinator::GetWindowSidePanelCoordinator()
     const {
   if (auto* window = tab_->GetBrowserWindowInterface()) {
-    return window->GetFeatures().side_panel_coordinator();
+    return SidePanelCoordinator::From(window);
   }
   return nullptr;
 }
