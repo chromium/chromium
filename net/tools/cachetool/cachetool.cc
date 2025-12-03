@@ -761,7 +761,7 @@ int main(int argc, char* argv[]) {
   BackendResult result = disk_cache::CreateCacheBackend(
       net::DISK_CACHE, backend_type, /*file_operations=*/nullptr, cache_path,
       INT_MAX, disk_cache::ResetHandling::kNeverReset, /*net_log=*/nullptr,
-      cb.callback());
+      /*cache_encryption_delegate=*/nullptr, cb.callback());
   result = cb.GetResult(std::move(result));
   if (result.net_error != net::OK) {
     std::cerr << "Invalid cache." << std::endl;

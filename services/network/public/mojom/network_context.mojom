@@ -13,6 +13,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/address_list.mojom";
+import "services/network/public/mojom/cache_encryption_provider.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 import "services/network/public/mojom/clear_data_filter.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
@@ -372,6 +373,10 @@ struct NetworkContextParams {
   // platforms (depending on the sandboxing mechanism the platform provides).
   pending_remote<HttpCacheBackendFileOperationsFactory>?
       http_cache_file_operations_factory;
+
+  // An optional provider for encrypting/decrypting cache data. If this is
+  // provided, the disk cache will use it to get an encryptor instance.
+  pending_remote<CacheEncryptionProvider>? encryption_provider;
 
   // Enabled protocols. Note that these apply to all fetches, including those
   // used to fetch PAC scripts. Note that currently data URLs are always enabled

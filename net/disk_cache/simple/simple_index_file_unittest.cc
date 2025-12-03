@@ -474,7 +474,7 @@ TEST_F(SimpleIndexFileTest, SimpleCacheUpgrade) {
   auto simple_cache = std::make_unique<disk_cache::SimpleBackendImpl>(
       /*file_operations_factory=*/nullptr, cache_path, cleanup_tracker,
       /*file_tracker=*/nullptr, 0, net::DISK_CACHE,
-      /*net_log=*/nullptr);
+      /*net_log=*/nullptr, /*cache_encryption_delegate=*/nullptr);
   net::TestCompletionCallback cb;
   simple_cache->Init(cb.callback());
   EXPECT_THAT(cb.WaitForResult(), IsOk());

@@ -109,13 +109,15 @@ HttpCache::DefaultBackend::DefaultBackend(
         file_operations_factory,
     const base::FilePath& path,
     int max_bytes,
-    bool hard_reset)
+    bool hard_reset,
+    net::CacheEncryptionDelegate* cache_encryption_delegate)
     : type_(type),
       backend_type_(backend_type),
       file_operations_factory_(std::move(file_operations_factory)),
       path_(path),
       max_bytes_(max_bytes),
-      hard_reset_(hard_reset) {}
+      hard_reset_(hard_reset),
+      cache_encryption_delegate_(std::move(cache_encryption_delegate)) {}
 
 HttpCache::DefaultBackend::~DefaultBackend() = default;
 
@@ -124,7 +126,9 @@ std::unique_ptr<HttpCache::BackendFactory> HttpCache::DefaultBackend::InMemory(
     int max_bytes) {
   return std::make_unique<DefaultBackend>(MEMORY_CACHE, CACHE_BACKEND_DEFAULT,
                                           /*file_operations_factory=*/nullptr,
-                                          base::FilePath(), max_bytes, false);
+                                          base::FilePath(), max_bytes, false,
+                                          /*cache_encryption_delegate=*/
+                                          nullptr);
 }
 
 disk_cache::BackendResult HttpCache::DefaultBackend::CreateBackend(
@@ -139,13 +143,13 @@ disk_cache::BackendResult HttpCache::DefaultBackend::CreateBackend(
   if (app_status_listener_getter_) {
     return disk_cache::CreateCacheBackend(
         type_, backend_type_, file_operations_factory_, path_, max_bytes_,
-        reset_handling, net_log, std::move(callback),
-        app_status_listener_getter_);
+        reset_handling, net_log, cache_encryption_delegate_,
+        std::move(callback), app_status_listener_getter_);
   }
 #endif
   return disk_cache::CreateCacheBackend(
       type_, backend_type_, file_operations_factory_, path_, max_bytes_,
-      reset_handling, net_log, std::move(callback));
+      reset_handling, net_log, cache_encryption_delegate_, std::move(callback));
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -22,6 +22,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
+#include "net/disk_cache/cache_encryption_delegate.h"
 #include "net/log/net_log_source.h"
 #include "net/net_buildflags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -296,6 +297,8 @@ class NET_EXPORT URLRequestContext final {
       NetworkQualityEstimator* network_quality_estimator);
   void set_client_socket_factory(
       std::unique_ptr<ClientSocketFactory> client_socket_factory);
+  void set_cache_encryption_delegate(
+      std::unique_ptr<CacheEncryptionDelegate> cache_encryption_delegate);
 #if BUILDFLAG(ENABLE_REPORTING)
   void set_persistent_reporting_and_nel_store(
       std::unique_ptr<PersistentReportingAndNelStore>
@@ -351,6 +354,7 @@ class NET_EXPORT URLRequestContext final {
   std::unique_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
   std::unique_ptr<QuicContext> quic_context_;
   std::unique_ptr<ClientSocketFactory> client_socket_factory_;
+  std::unique_ptr<CacheEncryptionDelegate> cache_encryption_delegate_;
 
   // The storage duplication for URLRequestJobFactory is needed because of
   // SetJobFactoryForTesting. Once this method is removable, we can only store a

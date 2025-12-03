@@ -243,6 +243,10 @@ void URLRequestContext::set_client_socket_factory(
     std::unique_ptr<ClientSocketFactory> client_socket_factory) {
   client_socket_factory_ = std::move(client_socket_factory);
 }
+void URLRequestContext::set_cache_encryption_delegate(
+    std::unique_ptr<CacheEncryptionDelegate> cache_encryption_delegate) {
+  cache_encryption_delegate_ = std::move(cache_encryption_delegate);
+}
 #if BUILDFLAG(ENABLE_REPORTING)
 void URLRequestContext::set_persistent_reporting_and_nel_store(
     std::unique_ptr<PersistentReportingAndNelStore>

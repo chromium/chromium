@@ -270,7 +270,8 @@ net::Error ServiceWorkerDiskCache::Init(net::CacheType cache_type,
   disk_cache::BackendResult result = disk_cache::CreateCacheBackend(
       cache_type, net::CACHE_BACKEND_SIMPLE, /*file_operations=*/nullptr,
       cache_directory, cache_size, disk_cache::ResetHandling::kNeverReset,
-      /*net_log=*/nullptr, std::move(post_cleanup_callback),
+      /*net_log=*/nullptr, /*cache_encryption_delegate=*/nullptr,
+      std::move(post_cleanup_callback),
       base::BindOnce(&CreateBackendCallbackShim::Callback,
                      create_backend_callback_));
   net::Error rv = result.net_error;

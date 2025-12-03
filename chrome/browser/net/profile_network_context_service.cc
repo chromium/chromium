@@ -1404,6 +1404,14 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
         ->AddCookieEncryptionManagerToNetworkContextParams(
             network_context_params);
 
+#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+    if (enterprise_encryption::ShouldEncryptHttpCache(profile_->GetPrefs())) {
+      g_browser_process->system_network_context_manager()
+          ->AddCacheEncryptionProviderToNetworkContextParams(
+              network_context_params);
+    }
+#endif  // BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+
     network_context_params->file_paths->trust_token_database_name =
         base::FilePath(chrome::kTrustTokenFilename);
 

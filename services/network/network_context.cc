@@ -113,6 +113,7 @@
 #include "services/network/devtools_durable_msg_collector.h"
 #include "services/network/disk_cache/mojo_backend_file_operations_factory.h"
 #include "services/network/enterprise/encryption/encrypted_backend_file_operations_factory.h"
+#include "services/network/enterprise/encryption/os_crypt_cache_encryption_delegate.h"
 #include "services/network/host_resolver.h"
 #include "services/network/http_auth_cache_proxy_copier.h"
 #include "services/network/http_server_properties_pref_delegate.h"
@@ -2838,6 +2839,15 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
             cache_params.app_status_listener_getter));
 #endif  // BUILDFLAG(IS_ANDROID)
     builder.EnableHttpCache(cache_params);
+
+    std::unique_ptr<net::CacheEncryptionDelegate> cache_encryption_delegate;
+    if (params_->encryption_provider) {
+      cache_encryption_delegate = std::make_unique<
+          enterprise_encryption::OSCryptCacheEncryptionDelegate>(
+          std::move(params_->encryption_provider));
+    }
+
+    builder.set_cache_encryption_delegate(std::move(cache_encryption_delegate));
   }
 
   std::unique_ptr<SSLConfigServiceMojo> ssl_config_service =

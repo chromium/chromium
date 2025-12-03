@@ -38,9 +38,10 @@ class ApplicationStatusListener;
 }  // namespace base
 
 namespace net {
+class CacheEncryptionDelegate;
 class IOBuffer;
 class NetLog;
-}
+}  // namespace net
 
 namespace disk_cache {
 
@@ -107,6 +108,7 @@ CreateCacheBackend(net::CacheType type,
                    int64_t max_bytes,
                    ResetHandling reset_handling,
                    net::NetLog* net_log,
+                   net::CacheEncryptionDelegate* cache_encryption_delegate,
                    BackendResultCallback callback);
 
 // Note: this is permitted to return nullptr when things are in process of
@@ -126,6 +128,7 @@ CreateCacheBackend(net::CacheType type,
                    int64_t max_bytes,
                    ResetHandling reset_handling,
                    net::NetLog* net_log,
+                   net::CacheEncryptionDelegate* cache_encryption_delegate,
                    BackendResultCallback callback,
                    ApplicationStatusListenerGetter app_status_listener_getter);
 #endif
@@ -147,6 +150,7 @@ CreateCacheBackend(net::CacheType type,
                    int64_t max_bytes,
                    ResetHandling reset_handling,
                    net::NetLog* net_log,
+                   net::CacheEncryptionDelegate* cache_encryption_delegate,
                    base::OnceClosure post_cleanup_callback,
                    BackendResultCallback callback);
 

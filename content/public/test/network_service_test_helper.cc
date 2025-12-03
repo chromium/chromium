@@ -712,6 +712,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
         base::MakeRefCounted<network::MojoBackendFileOperationsFactory>(
             std::move(factory)),
         path, 64 * 1024 * 1024, reset_mode, net::NetLog::Get(),
+        /*cache_encryption_delegate=*/nullptr,
         base::BindOnce(&NetworkServiceTestImpl::OnCacheCreated,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
     DCHECK_EQ(result.net_error, net::ERR_IO_PENDING);

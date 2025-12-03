@@ -268,6 +268,11 @@ void URLRequestContextBuilder::set_device_bound_session_service(
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
+void URLRequestContextBuilder::set_cache_encryption_delegate(
+    std::unique_ptr<net::CacheEncryptionDelegate> cache_encryption_delegate) {
+  cache_encryption_delegate_ = std::move(cache_encryption_delegate);
+}
+
 void URLRequestContextBuilder::BindToNetwork(
     handles::NetworkHandle network,
     std::optional<HostResolver::ManagerOptions> options) {
@@ -595,7 +600,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
       http_cache_backend = std::make_unique<HttpCache::DefaultBackend>(
           DISK_CACHE, backend_type, http_cache_params_.file_operations_factory,
           http_cache_params_.path, http_cache_params_.max_size,
-          http_cache_params_.reset_cache);
+          http_cache_params_.reset_cache, cache_encryption_delegate_.get());
       if (base::FeatureList::IsEnabled(features::kHttpCacheNoVarySearch) &&
           features::kHttpCacheNoVarySearchPersistenceEnabled.Get() &&
           !http_cache_params_.no_vary_search_path.empty()) {
@@ -617,6 +622,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
         std::move(file_operations));
   }
   context->set_http_transaction_factory(std::move(http_transaction_factory));
+  context->set_cache_encryption_delegate(std::move(cache_encryption_delegate_));
 
   std::unique_ptr<URLRequestJobFactory> job_factory =
       std::make_unique<URLRequestJobFactory>();

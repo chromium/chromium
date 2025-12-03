@@ -626,6 +626,7 @@ void GeneratedCodeCache::CreateBackend() {
       CodeCacheTypeToNetCacheType(cache_type_), net::CACHE_BACKEND_SIMPLE,
       /*file_operations=*/nullptr, path_, max_size_bytes_,
       disk_cache::ResetHandling::kResetOnError, /*net_log=*/nullptr,
+      /*cache_encryption_delegate=*/nullptr,
       base::BindOnce(&GeneratedCodeCache::DidCreateBackend,
                      weak_ptr_factory_.GetWeakPtr()));
   if (result.net_error != net::ERR_IO_PENDING) {

@@ -23,6 +23,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"  // For |Sleep()|.
@@ -34,6 +35,7 @@
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/net/profile_network_context_service_test_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -41,6 +43,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -51,6 +54,8 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/enterprise/encryption/core/features.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -853,4 +858,141 @@ IN_PROC_BROWSER_TEST_F(ReportingEndpointsPolicyTest,
   };
   EXPECT_EQ(expected_enterprise_endpoints,
             network_context_params.enterprise_reporting_endpoints);
+}
+
+// Base class for testing Cache Encryption with policy.
+// Subclasses must implement GetCacheEncryptionPolicyValue().
+class CacheEncryptionPolicyTestBase : public InProcessBrowserTest {
+ public:
+  CacheEncryptionPolicyTestBase() {
+#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+    scoped_feature_list_.InitAndEnableFeature(
+        enterprise_encryption::kEnableCacheEncryption);
+#endif
+  }
+
+  // Determine whether the policy should be enabled or disabled for this
+  // fixture.
+  virtual bool GetCacheEncryptionPolicyValue() const = 0;
+
+  void SetUp() override {
+    // Configure the mock policy provider to report that it's initialized.
+    EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillRepeatedly(testing::Return(true));
+
+    // Set the mock provider for the Chrome policy connector.
+    // This MUST be done before InProcessBrowserTest::SetUp() initializes the
+    // browser.
+    policy::ChromeBrowserPolicyConnector::SetPolicyProviderForTesting(
+        &provider_);
+
+    // Set the policy value *before* the browser fully starts, based on
+    // subclass.
+#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kCacheEncryptionEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD,  // Or other appropriate source
+                 base::Value(GetCacheEncryptionPolicyValue()), nullptr);
+    provider_.UpdateChromePolicy(policies);
+#endif
+
+    InProcessBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    // Clean up the testing provider.
+    policy::ChromeBrowserPolicyConnector::SetPolicyProviderForTesting(nullptr);
+    InProcessBrowserTest::TearDown();
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  // Helper function to call ComputeHttpCacheSize synchronously
+  int64_t ComputeHttpCacheSizeSync() {
+    network::mojom::NetworkContext* network_context =
+        browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext();
+
+    base::RunLoop run_loop;
+    int64_t result_size_or_error =
+        net::ERR_UNEXPECTED;  // Initialize with an error
+
+    network_context->ComputeHttpCacheSize(
+        base::Time(), base::Time::Max(),
+        base::BindLambdaForTesting(
+            [&](bool is_upper_bound, int64_t size_or_error) {
+              result_size_or_error = size_or_error;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return result_size_or_error;
+  }
+
+  void VerifyCacheBackendInitialized() {
+    // Navigate to a page to ensure the network stack is initialized.
+    GURL url = embedded_test_server()->GetURL("/empty.html");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    content::RunAllTasksUntilIdle();
+
+    browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
+        ->FlushNetworkInterfaceForTesting();
+    content::RunAllTasksUntilIdle();
+
+    int64_t cache_size_or_error = ComputeHttpCacheSizeSync();
+    LOG(INFO) << "ComputeHttpCacheSize result: " << cache_size_or_error;
+
+    EXPECT_GE(cache_size_or_error, 0)
+        << "Failed to compute cache size, backend might not be initialized. "
+           "Result: "
+        << net::ErrorToString(static_cast<int>(cache_size_or_error));
+  }
+
+ protected:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
+};
+
+// Subclass where CacheEncryptionEnabled policy is TRUE.
+class CacheEncryptionEnabledByPolicyTest
+    : public CacheEncryptionPolicyTestBase {
+ public:
+  bool GetCacheEncryptionPolicyValue() const override { return true; }
+};
+
+// Subclass where CacheEncryptionEnabled policy is FALSE.
+class CacheEncryptionDisabledByPolicyTest
+    : public CacheEncryptionPolicyTestBase {
+ public:
+  bool GetCacheEncryptionPolicyValue() const override { return false; }
+};
+
+IN_PROC_BROWSER_TEST_F(CacheEncryptionEnabledByPolicyTest,
+                       BackendInitializesWithPolicyEnabled) {
+  VerifyCacheBackendInitialized();
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+  EXPECT_TRUE(
+      prefs->GetBoolean(enterprise_connectors::kCacheEncryptionEnabledPref));
+  EXPECT_TRUE(prefs->IsManagedPreference(
+      enterprise_connectors::kCacheEncryptionEnabledPref));
+}
+
+IN_PROC_BROWSER_TEST_F(CacheEncryptionDisabledByPolicyTest,
+                       BackendInitializesWithPolicyDisabled) {
+  VerifyCacheBackendInitialized();
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+  EXPECT_FALSE(
+      prefs->GetBoolean(enterprise_connectors::kCacheEncryptionEnabledPref));
+  EXPECT_TRUE(prefs->IsManagedPreference(
+      enterprise_connectors::kCacheEncryptionEnabledPref));
 }

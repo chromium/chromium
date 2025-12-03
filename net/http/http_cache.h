@@ -45,6 +45,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
+#include "net/disk_cache/cache_encryption_delegate.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/no_vary_search_cache.h"
@@ -112,13 +113,17 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     // TrivialFileOperationsFactory is used. `path` is the destination for any
     // files used by the backend. If `max_bytes` is  zero, a default value
     // will be calculated automatically.
+    // `cache_encryption_delegate` can be null, in which case the cache will
+    // not be encrypted. The caller must ensure that the delegate outlives the
+    // backend.
     DefaultBackend(CacheType type,
                    BackendType backend_type,
                    scoped_refptr<disk_cache::BackendFileOperationsFactory>
                        file_operations_factory,
                    const base::FilePath& path,
                    int max_bytes,
-                   bool hard_reset);
+                   bool hard_reset,
+                   net::CacheEncryptionDelegate* cache_encryption_delegate);
     ~DefaultBackend() override;
 
     // Returns a factory for an in-memory cache.
@@ -144,6 +149,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     const base::FilePath path_;
     int max_bytes_;
     bool hard_reset_;
+    raw_ptr<net::CacheEncryptionDelegate> cache_encryption_delegate_;
 #if BUILDFLAG(IS_ANDROID)
     disk_cache::ApplicationStatusListenerGetter app_status_listener_getter_;
 #endif
@@ -801,6 +807,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // Variables ----------------------------------------------------------------
 
   raw_ptr<NetLog> net_log_;
+  raw_ptr<net::CacheEncryptionDelegate> cache_encryption_delegate_;
 
   // Used when lazily constructing the disk_cache_.
   std::unique_ptr<BackendFactory> backend_factory_;

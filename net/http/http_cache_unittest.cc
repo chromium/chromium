@@ -4047,7 +4047,7 @@ TEST_F(HttpCacheRangeGetTest, Enormous) {
   auto backend_factory = std::make_unique<HttpCache::DefaultBackend>(
       DISK_CACHE, CACHE_BACKEND_BLOCKFILE,
       /*file_operations_factory=*/nullptr, temp_dir.GetPath(), 1024 * 1024,
-      false);
+      false, nullptr);
   MockHttpCache cache(std::move(backend_factory));
 
   RangeTransactionServer handler;
@@ -14992,6 +14992,148 @@ TEST_P(HttpCacheNoVarySearchMockFileOperationsTest,
   EXPECT_FALSE(info.network_accessed);
   EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_USED);
   EXPECT_EQ(info.headers->response_code(), 200);
+}
+
+// A mock CacheEncryptionDelegate that allows controlling the init result.
+class MockCacheEncryptionDelegate : public net::CacheEncryptionDelegate {
+ public:
+  MockCacheEncryptionDelegate() = default;
+  ~MockCacheEncryptionDelegate() override = default;
+
+  // CacheEncryptionDelegate implementation:
+  void Init(base::OnceCallback<void(net::Error)> callback) override {
+    init_called_ = true;
+    if (init_result_ == net::ERR_IO_PENDING) {
+      pending_callback_ = std::move(callback);
+      return;
+    }
+    std::move(callback).Run(init_result_);
+  }
+
+  bool EncryptData(base::span<const uint8_t> plaintext,
+                   std::vector<uint8_t>* ciphertext) override {
+    return false;
+  }
+  bool DecryptData(base::span<const uint8_t> ciphertext,
+                   std::vector<uint8_t>* plaintext) override {
+    return false;
+  }
+
+  void SetInitResult(net::Error result) { init_result_ = result; }
+
+  void CompleteInit() {
+    CHECK(pending_callback_);
+    std::move(pending_callback_).Run(init_result_);
+  }
+
+  bool init_called() const { return init_called_; }
+
+ private:
+  bool init_called_ = false;
+  net::Error init_result_ = net::OK;
+  base::OnceCallback<void(net::Error)> pending_callback_;
+};
+
+// A backend factory that creates a disk cache and injects a mock
+// CacheEncryptionDelegate.
+class TestCacheBackendFactoryWithEncryption
+    : public net::HttpCache::BackendFactory {
+ public:
+  TestCacheBackendFactoryWithEncryption(CacheEncryptionDelegate* delegate,
+                                        const base::FilePath& path)
+      : delegate_(delegate), path_(path) {}
+
+  ~TestCacheBackendFactoryWithEncryption() override = default;
+
+  disk_cache::BackendResult CreateBackend(
+      NetLog* net_log,
+      base::OnceCallback<void(disk_cache::BackendResult)> callback) override {
+    return disk_cache::CreateCacheBackend(
+        DISK_CACHE, CACHE_BACKEND_DEFAULT,
+        /*file_operations=*/nullptr, path_, 1024 * 1024,
+        disk_cache::ResetHandling::kNeverReset, net_log, delegate_,
+        std::move(callback));
+  }
+
+ private:
+  raw_ptr<CacheEncryptionDelegate> delegate_;
+  const base::FilePath path_;
+};
+
+TEST_F(HttpCacheTest, EncryptionDelegateInitSuccess) {
+  MockCacheEncryptionDelegate mock_delegate;
+  mock_delegate.SetInitResult(net::OK);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  MockHttpCache cache(
+      std::make_unique<TestCacheBackendFactoryWithEncryption>(
+          &mock_delegate, temp_dir.GetPath()));
+
+  // Create a transaction to trigger cache creation.
+  MockHttpRequest request(kSimpleGET_Transaction);
+  TestCompletionCallback callback;
+  std::unique_ptr<HttpTransaction> transaction =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(transaction);
+
+  int rv =
+      transaction->Start(&request, callback.callback(), NetLogWithSource());
+  // The transaction start should be pending because backend creation is async.
+  EXPECT_THAT(rv, IsError(net::ERR_IO_PENDING));
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+  // The delegate's Init should have been called.
+  EXPECT_TRUE(mock_delegate.init_called());
+
+  // The transaction should now continue, resulting in a cache miss.
+  const HttpResponseInfo* response_info = transaction->GetResponseInfo();
+  ASSERT_TRUE(response_info);
+  EXPECT_FALSE(response_info->was_cached);
+
+  ReadAndVerifyTransaction(transaction.get(), kSimpleGET_Transaction);
+  transaction.reset();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(HttpCacheTest, EncryptionDelegateInitFailure) {
+  MockCacheEncryptionDelegate mock_delegate;
+  mock_delegate.SetInitResult(net::ERR_IO_PENDING);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  MockHttpCache cache(std::make_unique<TestCacheBackendFactoryWithEncryption>(
+      &mock_delegate, temp_dir.GetPath()));
+
+  // Create a transaction to trigger cache creation. The transaction should fail
+  // because the backend creation fails.
+  MockHttpRequest request(kSimpleGET_Transaction);
+  TestCompletionCallback callback;
+  std::unique_ptr<HttpTransaction> transaction =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(transaction);
+
+  int rv =
+      transaction->Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(net::ERR_IO_PENDING));
+
+  // Now complete the backend creation with failure.
+  mock_delegate.SetInitResult(net::ERR_FAILED);
+  mock_delegate.CompleteInit();
+
+  // The backend creation will fail, so the transaction will be served from the
+  // network.
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_TRUE(mock_delegate.init_called());
+
+  const HttpResponseInfo* response_info = transaction->GetResponseInfo();
+  ASSERT_TRUE(response_info);
+  EXPECT_FALSE(response_info->was_cached);
+
+  ReadAndVerifyTransaction(transaction.get(), kSimpleGET_Transaction);
+  transaction.reset();
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace net
