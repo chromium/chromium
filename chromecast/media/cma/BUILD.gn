@@ -58,6 +58,7 @@ cast_source_set("unittests") {
     "base/demuxer_stream_for_test.h",
     "base/multi_demuxer_stream_adapter_unittest.cc",
     "pipeline/audio_video_pipeline_impl_unittest.cc",
+    "pipeline/media_pipeline_impl_unittest.cc",
   ]
 
   deps = [
@@ -72,6 +73,7 @@ cast_source_set("unittests") {
     "//media",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx/geometry",
   ]
 
   # Building the required proto files here cause a linker issue on
