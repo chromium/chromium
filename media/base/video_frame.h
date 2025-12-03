@@ -122,16 +122,25 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // ClientSharedImage::ScopedMapping and remove this.
   class MEDIA_EXPORT ScopedMapping {
    public:
-    virtual ~ScopedMapping() = default;
+    ScopedMapping(
+        std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping);
+    ~ScopedMapping();
 
     // Returns a span pointing to the plane's memory.
-    virtual base::span<uint8_t> GetMemoryAsSpan(uint32_t plane_index) = 0;
+    base::span<uint8_t> GetMemoryAsSpan(uint32_t plane_index) {
+      return scoped_mapping_->GetMemoryForPlane(plane_index);
+    }
 
     // Returns plane stride.
-    virtual size_t Stride(uint32_t plane_index) = 0;
+    size_t Stride(uint32_t plane_index) {
+      return scoped_mapping_->Stride(plane_index);
+    }
 
     // Returns the size of the buffer.
-    virtual gfx::Size Size() = 0;
+    gfx::Size Size() { return scoped_mapping_->Size(); }
+
+   private:
+    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping_;
   };
 
   enum class FrameControlType {

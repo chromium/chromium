@@ -1763,29 +1763,13 @@ std::vector<size_t> VideoFrame::CalculatePlaneSize() const {
   return CalculatePlaneSize(layout_);
 }
 
-class ScopedMappingSIImpl : public VideoFrame::ScopedMapping {
- public:
-  ScopedMappingSIImpl(
-      std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping)
-      : scoped_mapping_(std::move(scoped_mapping)) {
-    CHECK(scoped_mapping_);
-  }
+VideoFrame::ScopedMapping::ScopedMapping(
+    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping)
+    : scoped_mapping_(std::move(scoped_mapping)) {
+  CHECK(scoped_mapping_);
+}
 
-  ~ScopedMappingSIImpl() override = default;
-
-  base::span<uint8_t> GetMemoryAsSpan(uint32_t plane_index) override {
-    return scoped_mapping_->GetMemoryForPlane(plane_index);
-  }
-
-  size_t Stride(uint32_t plane_index) override {
-    return scoped_mapping_->Stride(plane_index);
-  }
-
-  gfx::Size Size() override { return scoped_mapping_->Size(); }
-
- private:
-  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping_;
-};
+VideoFrame::ScopedMapping::~ScopedMapping() = default;
 
 std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapSharedImage() const {
   if (wrapped_frame_) {
@@ -1795,7 +1779,7 @@ std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapSharedImage() const {
     // If MappableSI is used, there must be a shared image.
     CHECK(HasSharedImage());
     if (auto mapping = shared_image_->Map()) {
-      return base::WrapUnique(new ScopedMappingSIImpl(std::move(mapping)));
+      return base::WrapUnique(new ScopedMapping(std::move(mapping)));
     }
   }
   return nullptr;
@@ -1806,7 +1790,7 @@ void VideoFrame::WrapScopedSharedImageMapping(
         result_cb,
     std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping) const {
   std::move(result_cb).Run(
-      mapping ? base::WrapUnique(new ScopedMappingSIImpl(std::move(mapping)))
+      mapping ? base::WrapUnique(new ScopedMapping(std::move(mapping)))
               : nullptr);
 }
 
