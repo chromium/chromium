@@ -113,7 +113,7 @@ RenditionManager::RenditionManager(scoped_refptr<MultivariantPlaylist> playlist,
                                         std::move(is_type_supported_cb));
   for (const auto& variant : selectable_variants_) {
     selectable_variant_tracks_.push_back(
-        std::get<0>(variant->GetImplicitRendition()));
+        std::get<0>(variant->GetVideoRenditionGroup().GetImplicitRendition()));
   }
 }
 
@@ -180,7 +180,8 @@ void RenditionManager::Reselect(SelectedCallonce cb) {
   if (active_variant_ != variant) {
     // Either this is initial selection or the active variant is changing due
     // to stream constraints.
-    selected_primary_ = variant->GetImplicitRendition();
+    selected_primary_ =
+        variant->GetVideoRenditionGroup().GetImplicitRendition();
     active_variant_ = variant;
     variant_changed = true;
   }
@@ -195,12 +196,12 @@ void RenditionManager::Reselect(SelectedCallonce cb) {
   // 3. Declaration order in manifest
   // It's possible that none of the renditions are marked for auto-selection
   // though, so we may get back nothing.
-  auto audio_renditions = variant->GetAudioRenditionGroup();
+  auto& audio_renditions = variant->GetAudioRenditionGroup();
   if (preferred_extra_rendition_.has_value()) {
-    extra_rendition = audio_renditions->MostSimilar(preferred_extra_rendition_);
+    extra_rendition = audio_renditions.MostSimilar(preferred_extra_rendition_);
   }
   if (!extra_rendition.has_value()) {
-    extra_rendition = audio_renditions->MostSimilar(selected_extra_);
+    extra_rendition = audio_renditions.MostSimilar(selected_extra_);
   }
   if (extra_rendition.has_value() &&
       !std::get<1>(extra_rendition.value())->GetUri().has_value()) {
@@ -249,7 +250,7 @@ void RenditionManager::SetPreferredAudioRendition(
   }
 
   preferred_extra_rendition_ =
-      active_variant_->GetAudioRenditionGroup()->GetRenditionById(*track_id);
+      active_variant_->GetAudioRenditionGroup().GetRenditionById(*track_id);
   Reselect(base::BindOnce(reselect_cb_, AdaptationReason::kUserSelection));
 }
 

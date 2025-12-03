@@ -109,9 +109,10 @@ class MEDIA_EXPORT RenditionManager {
   sequence::Sequence<MediaTrack> auto GetSelectableAudioRenditions() const {
     static const std::vector<MediaTrack> kEmpty;
     if (active_variant_) {
-      return active_variant_->GetAudioRenditionGroup()->GetTracks();
+      return active_variant_->GetAudioRenditionGroup().GetTracks();
     }
-    return sequence::Reference(kEmpty);
+    return sequence::Concat(sequence::EmptySinglet<const MediaTrack&>(),
+                            kEmpty);
   }
 
  private:

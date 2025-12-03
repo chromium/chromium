@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/rendition.h"
+#include "media/formats/hls/rendition_group.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
 
@@ -39,9 +40,8 @@ class MEDIA_EXPORT VariantStream {
                 std::optional<std::vector<std::string>> codecs,
                 std::optional<types::DecimalResolution> resolution,
                 std::optional<types::DecimalFloatingPoint> frame_rate,
-                scoped_refptr<RenditionGroup> audio_renditions,
-                scoped_refptr<RenditionGroup> video_rendition_group,
-                RenditionGroup::RenditionTrack implicit_rendition);
+                std::unique_ptr<RenditionGroup::View> audio_renditions,
+                std::unique_ptr<RenditionGroup::View> video_renditions);
   VariantStream(const VariantStream&) = delete;
   VariantStream(VariantStream&&);
   ~VariantStream();
@@ -118,16 +118,8 @@ class MEDIA_EXPORT VariantStream {
     return frame_rate_;
   }
 
-  // Returns the audio rendition group that should be used when playing this
-  // variant.
-  const scoped_refptr<RenditionGroup>& GetAudioRenditionGroup() const {
-    return audio_rendition_group_;
-  }
-
-  // Returns the implicit rendition created for this VariantStream's URI.
-  const RenditionGroup::RenditionTrack& GetImplicitRendition() const {
-    return implicit_rendition_;
-  }
+  const auto& GetAudioRenditionGroup() const { return *audio_renditions_; }
+  const auto& GetVideoRenditionGroup() const { return *video_renditions_; }
 
   void UpdateImplicitRenditionMediaTrackName(std::string name);
 
@@ -142,9 +134,8 @@ class MEDIA_EXPORT VariantStream {
   std::optional<std::vector<std::string>> codecs_;
   std::optional<types::DecimalResolution> resolution_;
   std::optional<types::DecimalFloatingPoint> frame_rate_;
-  scoped_refptr<RenditionGroup> audio_rendition_group_;
-  scoped_refptr<RenditionGroup> video_rendition_group_;
-  RenditionGroup::RenditionTrack implicit_rendition_;
+  std::unique_ptr<RenditionGroup::View> audio_renditions_;
+  std::unique_ptr<RenditionGroup::View> video_renditions_;
 };
 
 }  // namespace media::hls

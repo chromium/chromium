@@ -222,8 +222,10 @@ inline void HasFrameRate(std::optional<types::DecimalFloatingPoint> frame_rate,
 inline void HasAudioRenditionGroup(std::optional<std::string> group_id,
                                    const base::Location& from,
                                    const VariantStream& variant) {
-  CHECK(variant.GetAudioRenditionGroup());
-  EXPECT_EQ(variant.GetAudioRenditionGroup()->GetIdForTesting(), group_id)
+  CHECK(variant.GetAudioRenditionGroup().GetGroupForTesting());
+  EXPECT_EQ(
+      variant.GetAudioRenditionGroup().GetGroupForTesting()->GetIdForTesting(),
+      group_id)
       << from.ToString();
 }
 
@@ -268,8 +270,9 @@ inline void MayAutoSelect(bool value,
 inline void HasDefaultRendition(std::optional<std::string> name,
                                 const base::Location& from,
                                 const RenditionGroup& group) {
-  if (group.GetDefaultRendition().has_value()) {
-    EXPECT_EQ(std::get<1>(*group.GetDefaultRendition())->GetName(), name)
+  if (group.GetDefaultRenditionForTesting().has_value()) {
+    EXPECT_EQ(std::get<1>(*group.GetDefaultRenditionForTesting())->GetName(),
+              name)
         << from.ToString();
   } else {
     EXPECT_EQ(std::nullopt, name) << from.ToString();

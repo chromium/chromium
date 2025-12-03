@@ -65,7 +65,7 @@ void MultivariantPlaylistTestBuilder::VerifyExpectations(
   base::flat_map<std::optional<std::string>, scoped_refptr<RenditionGroup>>
       audio_rendition_groups;
   for (const auto& variant : playlist.GetVariants()) {
-    const auto& group = variant.GetAudioRenditionGroup();
+    const auto& group = variant.GetAudioRenditionGroup().GetGroupForTesting();
     if (group == nullptr) {
       continue;
     }

@@ -235,16 +235,17 @@ MultivariantPlaylist::Parse(std::string_view source,
     scoped_refptr<RenditionGroup> video_renditions =
         base::MakeRefCounted<RenditionGroup>(
             base::PassKey<MultivariantPlaylist>{}, "DEFAULT");
-    RenditionGroup::RenditionTrack implicit_rendition =
-        video_renditions->MakeImplicitRendition(
-            {}, MediaType::kVideo, variant_uri,
-            rendition_id_generator.GenerateNextId());
 
-    variants.emplace_back(
-        std::move(variant_uri), inf_tag->bandwidth, inf_tag->average_bandwidth,
-        inf_tag->score, std::move(inf_tag->codecs), inf_tag->resolution,
-        inf_tag->frame_rate, std::move(audio_renditions),
-        std::move(video_renditions), std::move(implicit_rendition));
+    variants.emplace_back(std::move(variant_uri), inf_tag->bandwidth,
+                          inf_tag->average_bandwidth, inf_tag->score,
+                          std::move(inf_tag->codecs), inf_tag->resolution,
+                          inf_tag->frame_rate,
+                          audio_renditions->MakeImplicitView(
+                              {}, MediaType::kAudio, variant_uri,
+                              rendition_id_generator.GenerateNextId()),
+                          video_renditions->MakeImplicitView(
+                              {}, MediaType::kVideo, variant_uri,
+                              rendition_id_generator.GenerateNextId()));
 
     // Reset per-variant tags
     inf_tag.reset();

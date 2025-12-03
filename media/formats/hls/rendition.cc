@@ -9,6 +9,7 @@
 #include "base/types/pass_key.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/quirks.h"
+#include "media/formats/hls/rendition_group.h"
 #include "media/formats/hls/tags.h"
 
 namespace media::hls {
