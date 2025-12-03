@@ -6,10 +6,10 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ui {
 
@@ -18,7 +18,8 @@ namespace {
 class TouchSelectionMagnifierAuraTest : public testing::Test {
  public:
   TouchSelectionMagnifierAuraTest()
-      : disable_animations_(ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+      : disable_animations_(
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
 
   TouchSelectionMagnifierAuraTest(const TouchSelectionMagnifierAuraTest&) =
       delete;
@@ -28,7 +29,7 @@ class TouchSelectionMagnifierAuraTest : public testing::Test {
   ~TouchSelectionMagnifierAuraTest() override = default;
 
  private:
-  ScopedAnimationDurationScaleMode disable_animations_;
+  gfx::ScopedAnimationDurationScaleMode disable_animations_;
 };
 
 // Tests that the magnifier is horizontally centered above a vertical caret.

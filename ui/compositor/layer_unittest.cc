@@ -60,7 +60,6 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/compositor/paint_recorder.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
@@ -73,6 +72,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/interpolated_transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/test/scoped_default_font_description.h"
 
 using cc::MatchesPNGFile;
@@ -2764,8 +2764,8 @@ TEST_P(LayerWithRealCompositorTest, SwitchCCLayerSolidColorWhileAnimating) {
   EXPECT_EQ(SK_ColorBLACK, root->GetTargetColor());
 
   auto long_duration_animation =
-      std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-          ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+      std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+          gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   {
     ui::ScopedLayerAnimationSettings animation(root->GetAnimator());
     animation.SetTransitionDuration(base::Milliseconds(1000));
@@ -2861,8 +2861,8 @@ TEST_P(LayerWithRealCompositorTest, SwitchCCLayerDeleteLayer) {
       base::BindLambdaForTesting([&]() { l1.reset(); }));
 
   auto long_duration_animation =
-      std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-          ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+      std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+          gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   {
     ui::ScopedLayerAnimationSettings animation(l1->GetAnimator());
     animation.AddObserver(&animation_observer);
@@ -2899,8 +2899,8 @@ TEST_P(LayerWithRealCompositorTest, TreeMutationDuringScaleFactorChange) {
   transform.Translate(10, 5);
 
   auto long_duration_animation =
-      std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-          ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+      std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+          gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   {
     ui::ScopedLayerAnimationSettings animation(layer_to_delete->GetAnimator());
     animation.AddObserver(&animation_observer);
@@ -2965,8 +2965,8 @@ TEST_P(LayerWithRealCompositorTest, TreeMutationDuringScaleFactorChange) {
       [&]() { root->StackChildrenAtBottom({child2.get()}); }));
 
   long_duration_animation =
-      std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-          ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+      std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+          gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   {
     ui::ScopedLayerAnimationSettings animation(child->GetAnimator());
     animation.AddObserver(&animation_observer);
@@ -3018,8 +3018,8 @@ TEST_P(LayerWithRealCompositorTest, ParentOrChildGoneDuringRemove) {
 
     // Schedule a bounds animation on |child|.
     auto long_duration_animation =
-        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-            ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
     {
       ui::ScopedLayerAnimationSettings animation(child->GetAnimator());
       animation.AddObserver(&animation_observer);
@@ -3202,8 +3202,8 @@ TEST(LayerDelegateTest, OnLayerBoundsChanged) {
 // Verify that LayerDelegate::OnLayerBoundsChanged() is called at every step of
 // a bounds animation.
 TEST(LayerDelegateTest, OnLayerBoundsChangedAnimation) {
-  ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   LayerAnimatorTestController test_controller(
       LayerAnimator::CreateImplicitAnimator());
   LayerAnimator* const animator = test_controller.animator();
@@ -3303,8 +3303,8 @@ TEST(LayerDelegateTest, OnLayerTransformedNotCalledWhenUnchanged) {
 // Verify that LayerDelegate::OnLayerTransformed() is called at every step of a
 // non-threaded transform transition.
 TEST(LayerDelegateTest, OnLayerTransformedNonThreadedAnimation) {
-  ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   LayerAnimatorTestController test_controller(
       LayerAnimator::CreateImplicitAnimator());
   LayerAnimator* const animator = test_controller.animator();
@@ -3373,8 +3373,8 @@ TEST(LayerDelegateTest, OnLayerTransformedNonThreadedAnimation) {
 // Verify that LayerDelegate::OnLayerTransformed() is called at the end of a
 // threaded transform transition.
 TEST(LayerDelegateTest, OnLayerTransformedThreadedAnimation) {
-  ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   LayerAnimatorTestController test_controller(
       LayerAnimator::CreateImplicitAnimator());
   LayerAnimator* const animator = test_controller.animator();
@@ -3440,8 +3440,8 @@ TEST(LayerDelegateTest, OnLayerOpacityChanged) {
 // Verify that LayerDelegate::OnLayerOpacityChanged() is called at the beginning
 // and at the end of a threaded opacity animation.
 TEST(LayerDelegateTest, OnLayerOpacityChangedAnimation) {
-  ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   LayerAnimatorTestController test_controller(
       LayerAnimator::CreateImplicitAnimator());
   LayerAnimator* const animator = test_controller.animator();

@@ -18,7 +18,6 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -26,6 +25,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -687,8 +687,8 @@ TEST_F(NotificationViewBaseTest, TestInlineReplyActivateWithKeyPress) {
 TEST_F(NotificationViewBaseTest, MAYBE_SlideOut) {
   SetHasMessageCenterView(/*has_message_center_view=*/false);
 
-  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_scope(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   EXPECT_FALSE(IsRemovedAfterIdle(kDefaultNotificationId));
 
@@ -717,8 +717,8 @@ TEST_F(NotificationViewBaseTest, MAYBE_SlideOutNested) {
   SetHasMessageCenterView(/*has_message_center_view=*/false);
 
   notification_view()->SetIsNested();
-  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_scope(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   BeginScroll();
   ScrollBy(-10);
@@ -742,8 +742,8 @@ TEST_F(NotificationViewBaseTest, MAYBE_SlideOutNested) {
 #define MAYBE_DisableSlideForcibly DisableSlideForcibly
 #endif
 TEST_F(NotificationViewBaseTest, MAYBE_DisableSlideForcibly) {
-  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_scope(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   notification_view()->DisableSlideForcibly(true);
 
@@ -770,8 +770,8 @@ TEST_F(NotificationViewBaseTest, MAYBE_DisableSlideForcibly) {
 
 TEST_F(NotificationViewBaseTest, SlideOutPinned) {
   notification_view()->SetIsNested();
-  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_scope(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_pinned(true);
@@ -811,8 +811,8 @@ TEST_F(NotificationViewBaseTest, Pinned) {
 }
 
 TEST_F(NotificationViewBaseTest, FixedViewMode) {
-  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_scope(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification_view()->SetSettingMode(true);
@@ -1206,8 +1206,8 @@ TEST_F(NotificationViewBaseTest, ShowTimestamp) {
 TEST_F(NotificationViewBaseTest, MAYBE_SlideOutWithMessageCenterView) {
   SetHasMessageCenterView(/*has_message_center_view=*/true);
 
-  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_scope(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   EXPECT_FALSE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
 
@@ -1234,8 +1234,8 @@ TEST_F(NotificationViewBaseTest, MAYBE_SlideOutWithMessageCenterView) {
 #define MAYBE_SlideOutByTrackpad SlideOutByTrackpad
 #endif
 TEST_F(NotificationViewBaseTest, MAYBE_SlideOutByTrackpad) {
-  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_scope(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   ui::test::EventGenerator generator(
       GetRootWindow(notification_view()->GetWidget()));

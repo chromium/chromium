@@ -13,12 +13,12 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
@@ -677,8 +677,8 @@ TEST_F(NotificationViewTest, UpdateType) {
 
 TEST_F(NotificationViewTest, InlineSettingsInkDropAnimation) {
   // TODO(crbug.com/40203399): This test is currently broken.
-  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_scope(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_type(NOTIFICATION_TYPE_SIMPLE);
   UpdateNotificationViews(*notification);

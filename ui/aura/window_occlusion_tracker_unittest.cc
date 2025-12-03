@@ -25,10 +25,10 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/gfx/interpolated_transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace aura {
 
@@ -648,8 +648,8 @@ TEST_F(WindowOcclusionTrackerTest, BoundsChanged) {
 // should be considered non-occluded and should not occlude other windows. The
 // animated window starts occluded.
 TEST_F(WindowOcclusionTrackerTest, OccludedWindowBoundsAnimated) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -702,8 +702,8 @@ TEST_F(WindowOcclusionTrackerTest, OccludedWindowBoundsAnimated) {
 
 // Same as the previous test, but the animated window starts non-occluded.
 TEST_F(WindowOcclusionTrackerTest, NonOccludedWindowBoundsAnimated) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -842,8 +842,8 @@ TEST_F(WindowOcclusionTrackerTest, TransformChanged) {
 // should be considered non-occluded and should not occlude other windows. The
 // animated window starts occluded.
 TEST_F(WindowOcclusionTrackerTest, OccludedWindowTransformAnimated) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -902,8 +902,8 @@ TEST_F(WindowOcclusionTrackerTest, OccludedWindowTransformAnimated) {
 
 // Same as the previous test, but the animated window starts non-occluded.
 TEST_F(WindowOcclusionTrackerTest, NonOccludedWindowTransformAnimated) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -1300,8 +1300,8 @@ TEST_F(WindowOcclusionTrackerTest, Clipping) {
 // and the window should be removed from |animated_windows_| before
 // OnWindowDestroyed() is called).
 TEST_F(WindowOcclusionTrackerTest, DestroyWindowWithPendingAnimation) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -1330,8 +1330,8 @@ TEST_F(WindowOcclusionTrackerTest, DestroyWindowWithPendingAnimation) {
 TEST_F(WindowOcclusionTrackerTest,
        DestroyOcclusionTrackerWithPendingAnimation) {
   auto occlusion_tracker = CreateSecondaryOcclusionTracker();
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -1361,8 +1361,8 @@ TEST_F(WindowOcclusionTrackerTest,
 // Verify that an animated window stops being considered as animated when its
 // layer is recreated.
 TEST_F(WindowOcclusionTrackerTest, RecreateLayerOfAnimatedWindow) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -1479,8 +1479,8 @@ class ObserverDestroyingWindowOnAnimationEnded
 // window before WindowOcclusionTracker is notified that the animation ended.
 TEST_P(WindowOcclusionTrackerOpacityTest,
        DestroyTrackedWindowFromLayerAnimationObserver) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -1512,8 +1512,8 @@ TEST_P(WindowOcclusionTrackerOpacityTest,
 // window and deleted.
 TEST_P(WindowOcclusionTrackerOpacityTest,
        DeleteNonTrackedAnimatedWindowRemovedFromTrackedRoot) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -1561,8 +1561,8 @@ TEST_P(WindowOcclusionTrackerOpacityTest,
 
 TEST_P(WindowOcclusionTrackerOpacityTest,
        OpacityAnimationShouldNotOccludeWindow) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -2532,8 +2532,8 @@ TEST_F(WindowOcclusionTrackerTest,
             occlusion_data.occluded_region);
 
   // Start animating |window_b| to fully occlude |window_a|.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -2591,8 +2591,8 @@ TEST_P(WindowOcclusionTrackerOpacityTest,
   EXPECT_EQ(SkRegion(), occlusion_data.occluded_region);
 
   // Start animating |window_b| to fully occlude |window_a|.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -2655,8 +2655,8 @@ TEST_F(WindowOcclusionTrackerTest,
   EXPECT_EQ(SkRegion(), occlusion_data.occluded_region);
 
   // Start animating |window_b| to fully occlude |window_a|.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -2727,8 +2727,8 @@ TEST_F(WindowOcclusionTrackerTest,
 
   // Set a target transform on |window_b| which should increase the size of
   // its child window, occluding |window_d|.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -2780,8 +2780,8 @@ TEST_F(WindowOcclusionTrackerTest, ComputeTargetOcclusionForAnimatedWindow) {
   EXPECT_FALSE(delegate_a->is_expecting_call());
 
   // Start animating |window_a| to be fully occluded by |window_b|.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(

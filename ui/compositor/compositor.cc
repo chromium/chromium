@@ -64,12 +64,12 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator_collection.h"
 #include "ui/compositor/overscroll/scroll_input_handler.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/presentation_feedback.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_switches.h"
 
@@ -280,8 +280,8 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   }
 
   if (command_line->HasSwitch(switches::kUISlowAnimations)) {
-    slow_animations_ = std::make_unique<ScopedAnimationDurationScaleMode>(
-        ScopedAnimationDurationScaleMode::SLOW_DURATION);
+    slow_animations_ = std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+        gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   }
 
   settings.disable_frame_rate_limit =

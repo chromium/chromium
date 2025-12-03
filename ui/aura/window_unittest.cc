@@ -44,7 +44,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/compositor/test/test_layers.h"
@@ -58,6 +57,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/overlay_transform_utils.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(const char*)
 
@@ -2056,8 +2056,8 @@ TEST_F(WindowTest, DeleteLayoutManagerBeforeOwnedProps) {
 
 TEST_F(WindowTest, SetBoundsInternalShouldCheckTargetBounds) {
   // We cannot short-circuit animations in this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::unique_ptr<Window> w1(
       CreateTestWindow({.parent = root_window(), .bounds = {100, 100}}));
@@ -2462,8 +2462,8 @@ TEST_F(WindowObserverTest, WindowBoundsChangedAnimation) {
   const gfx::Rect step_bounds =
       gfx::Tween::RectValueBetween(0.5, initial_bounds, kTargetBounds);
 
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
   window->layer()->SetBounds(kTargetBounds);
   ASSERT_EQ(0, window_opacity_info().changed_count);
@@ -2508,8 +2508,8 @@ TEST_F(WindowObserverTest, WindowOpacityChangedAnimation) {
       {.parent = root_window(), .bounds = {100, 100}, .window_id = 1}));
   window->AddObserver(this);
 
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
   window->layer()->SetOpacity(0.5f);
   ASSERT_EQ(1, window_opacity_info().changed_count);
@@ -2572,8 +2572,8 @@ TEST_F(WindowObserverTest, SetTransformAnimation) {
       {.parent = root_window(), .bounds = {100, 100}, .window_id = 1}));
   window->AddObserver(this);
 
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
   gfx::Transform target_transform;
   target_transform.Skew(10.0, 5.0);
@@ -2612,8 +2612,8 @@ TEST_F(WindowObserverTest, OnWindowLayerRecreatedWithOpacityAnimation) {
   std::unique_ptr<Window> window(CreateTestWindow(
       {.parent = root_window(), .bounds = {100, 100}, .window_id = 1}));
 
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
   window->layer()->SetOpacity(0.5);
   EXPECT_TRUE(window->layer()->GetAnimator()->IsAnimatingProperty(
@@ -2636,8 +2636,8 @@ TEST_F(WindowObserverTest, OnWindowLayerRecreatedWithTransformAnimation) {
   std::unique_ptr<Window> window(CreateTestWindow(
       {.parent = root_window(), .bounds = {100, 100}, .window_id = 1}));
 
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
   gfx::Transform target_transform;
   target_transform.Skew(10.0, 5.0);
@@ -3083,8 +3083,8 @@ TEST_F(WindowTest, RootWindowSetWhenReparenting) {
   parent1.AddChild(&child);
 
   // We need animations to start in order to observe the bounds changes.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ui::ScopedLayerAnimationSettings settings1(child.layer()->GetAnimator());
   settings1.SetTransitionDuration(base::Milliseconds(100));
   gfx::Rect new_bounds(gfx::Rect(35, 35, 50, 50));
@@ -3248,8 +3248,8 @@ TEST_F(WindowTest, DelegateNotifiedAsBoundsChange) {
   BoundsChangeDelegate delegate;
 
   // We cannot short-circuit animations in this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::unique_ptr<Window> window(
       aura::test::CreateTestWindow({.delegate = &delegate,
@@ -3285,8 +3285,8 @@ TEST_F(WindowTest, DelegateNotifiedAsBoundsChangeInHiddenLayer) {
   BoundsChangeDelegate delegate;
 
   // We cannot short-circuit animations in this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::unique_ptr<Window> window(
       aura::test::CreateTestWindow({.delegate = &delegate,
@@ -3630,8 +3630,8 @@ class TestLayerAnimationObserver : public ui::LayerAnimationObserver {
 };
 
 TEST_F(WindowTest, WindowDestroyCompletesAnimations) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   scoped_refptr<ui::LayerAnimator> animator =
       ui::LayerAnimator::CreateImplicitAnimator();
   TestLayerAnimationObserver observer;
@@ -3976,8 +3976,8 @@ INSTANTIATE_TEST_SUITE_P(All, WindowActualScreenBoundsTest, testing::Bool());
 // Verifies that the function to get the window's screen bounds works as
 // expected during layer animation.
 TEST_P(WindowActualScreenBoundsTest, VerifyWindowActualBoundsDuringAnimation) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto* viewport_layer = viewport_->layer();
   gfx::Transform initial_transform;

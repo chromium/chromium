@@ -30,7 +30,6 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -38,6 +37,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/gfx/interpolated_transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/window_properties.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/core/wm_core_switches.h"
@@ -727,9 +727,10 @@ bool WindowAnimationsDisabled(aura::Window* window) {
 
   // Tests of animations themselves should still run even if the machine is
   // being accessed via Remote Desktop.
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION)
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
     return false;
+  }
 
   // Let the user decide whether or not to play the animation.
   return !gfx::Animation::ShouldRenderRichAnimation();

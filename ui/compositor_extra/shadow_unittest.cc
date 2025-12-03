@@ -8,8 +8,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/shadow_util.h"
 #include "ui/gfx/shadow_value.h"
 
@@ -70,8 +70,8 @@ class ShadowTest : public testing::Test {
 
 // Test if the proper content bounds is calculated based on the current style.
 TEST_F(ShadowTest, SetContentBounds) {
-  ScopedAnimationDurationScaleMode zero_duration_mode(
-      ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   // Verify that layer bounds are outset from content bounds.
   Shadow shadow;
   {

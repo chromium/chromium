@@ -15,10 +15,10 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_delegate.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/transform_animation_curve_adapter.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/interpolated_transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ui {
 
@@ -853,10 +853,12 @@ std::string LayerAnimationElement::AnimatablePropertiesToString(
 // static
 base::TimeDelta LayerAnimationElement::GetEffectiveDuration(
     const base::TimeDelta& duration) {
-  if (ScopedAnimationDurationScaleMode::duration_multiplier() == 0)
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() == 0) {
     return base::TimeDelta();
+  }
 
-  return duration * ScopedAnimationDurationScaleMode::duration_multiplier();
+  return duration *
+         gfx::ScopedAnimationDurationScaleMode::duration_multiplier();
 }
 
 // static

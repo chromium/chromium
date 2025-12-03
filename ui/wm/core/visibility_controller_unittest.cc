@@ -12,8 +12,8 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace wm {
@@ -24,8 +24,8 @@ typedef aura::test::AuraTestBase VisibilityControllerTest;
 // ignored.
 TEST_F(VisibilityControllerTest, AnimateTransparencyToZeroAndHideHides) {
   // We cannot disable animations for this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   VisibilityController controller;
   aura::client::SetVisibilityClient(root_window(), &controller);
@@ -69,8 +69,8 @@ TEST_F(VisibilityControllerTest, AnimateTransparencyToZeroAndHideHides) {
 // Check that a hiding animation would not change a window's bounds in screen.
 TEST_F(VisibilityControllerTest, HideAnimationWindowBoundsTest) {
   // We cannot disable animations for this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   VisibilityController controller;
   aura::client::SetVisibilityClient(root_window(), &controller);
@@ -98,8 +98,8 @@ TEST_F(VisibilityControllerTest, HideAnimationWindowBoundsTest) {
 // window.
 TEST_F(VisibilityControllerTest, SetWindowVisibilityChagnesAnimated) {
   // We cannot disable animations for this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   VisibilityController controller;
   aura::client::SetVisibilityClient(root_window(), &controller);

@@ -12,11 +12,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer_animation_delegate.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_layer_animation_delegate.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ui {
 
