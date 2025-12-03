@@ -15,6 +15,10 @@
 
 @implementation TipsPromosTestCase
 
++ (BOOL)loadMinimalAppUI {
+  return YES;
+}
+
 #pragma mark - Helpers
 
 // Taps the primary action button on a PromoStyleViewController.
