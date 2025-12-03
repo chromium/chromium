@@ -221,6 +221,9 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   void MaybeDeleteThis();
   bool IsResponseAlreadyCommittedByRaceNetworkRequest();
 
+  // TODO(crbug.com/463388771): Remove after fixing the issue.
+  void ValidateResponseSentToClient();
+
   network::mojom::URLResponseHeadPtr response_head_;
   std::optional<net::RedirectInfo> redirect_info_;
   int redirect_limit_;
@@ -283,6 +286,10 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       forwarded_race_network_request_url_loader_factory_;
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       remote_forwarded_race_network_request_url_loader_factory_;
+
+  // OnReceivedResponse() can be called at most once. This check is added to
+  // debug crbug.com/463388771.
+  bool response_sent_to_client_ = false;
 
   base::WeakPtrFactory<ServiceWorkerSubresourceLoader> weak_factory_{this};
 };
