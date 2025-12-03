@@ -157,9 +157,12 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
     @Override
     public boolean openRecentlyClosedEntry(TabModel tabModel, RecentlyClosedEntry recentEntry) {
-        assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
+        assert mTabModelSelector.getModel(tabModel.isIncognitoBranded()) == tabModel
+                && recentEntry instanceof SessionRecentlyClosedEntry;
+        SessionRecentlyClosedEntry sessionRecentEntry = (SessionRecentlyClosedEntry) recentEntry;
         return RecentlyClosedBridgeJni.get()
-                .openRecentlyClosedEntry(mNativeBridge, tabModel, recentEntry.getSessionId());
+                .openRecentlyClosedEntry(
+                        mNativeBridge, tabModel, sessionRecentEntry.getSessionId());
     }
 
     @Override

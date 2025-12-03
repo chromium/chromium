@@ -245,15 +245,16 @@ public class RecentTabsManager
                         mRecentlyClosedTabManager.getRecentlyClosedEntries(
                                 RECENTLY_CLOSED_MAX_ENTRY_COUNT));
         for (RecentlyClosedEntry entry : mRecentlyClosedEntries) {
-            if (entry instanceof RecentlyClosedTab
-                    && !mTabSessionIdsRestored.containsKey(entry.getSessionId())) {
-                mTabSessionIdsRestored.put(entry.getSessionId(), false);
-            } else if (entry instanceof RecentlyClosedGroup
-                    && !mGroupSessionIdsRestored.containsKey(entry.getSessionId())) {
-                mGroupSessionIdsRestored.put(entry.getSessionId(), false);
-            } else if (entry instanceof RecentlyClosedBulkEvent
-                    && !mBulkSessionIdsRestored.containsKey(entry.getSessionId())) {
-                mBulkSessionIdsRestored.put(entry.getSessionId(), false);
+            assert entry instanceof SessionRecentlyClosedEntry;
+            if (entry instanceof RecentlyClosedTab closedTab
+                    && !mTabSessionIdsRestored.containsKey(closedTab.getSessionId())) {
+                mTabSessionIdsRestored.put(closedTab.getSessionId(), false);
+            } else if (entry instanceof RecentlyClosedGroup closedGroup
+                    && !mGroupSessionIdsRestored.containsKey(closedGroup.getSessionId())) {
+                mGroupSessionIdsRestored.put(closedGroup.getSessionId(), false);
+            } else if (entry instanceof RecentlyClosedBulkEvent closedBulkEvent
+                    && !mBulkSessionIdsRestored.containsKey(closedBulkEvent.getSessionId())) {
+                mBulkSessionIdsRestored.put(closedBulkEvent.getSessionId(), false);
             }
         }
         onUpdateDone();
@@ -318,12 +319,13 @@ public class RecentTabsManager
 
         assert !(entry instanceof RecentlyClosedTab)
                 : "Opening a RecentlyClosedTab should use openRecentlyClosedTab().";
+        assert entry instanceof SessionRecentlyClosedEntry;
 
-        if (entry instanceof RecentlyClosedGroup) {
-            mGroupSessionIdsRestored.put(entry.getSessionId(), true);
+        if (entry instanceof RecentlyClosedGroup closedGroup) {
+            mGroupSessionIdsRestored.put(closedGroup.getSessionId(), true);
             RecordUserAction.record("MobileRecentTabManagerRecentGroupOpened");
-        } else if (entry instanceof RecentlyClosedBulkEvent) {
-            mBulkSessionIdsRestored.put(entry.getSessionId(), true);
+        } else if (entry instanceof RecentlyClosedBulkEvent closedBulkEvent) {
+            mBulkSessionIdsRestored.put(closedBulkEvent.getSessionId(), true);
             RecordUserAction.record("MobileRecentTabManagerRecentBulkEventOpened");
         }
         mRecentlyClosedTabManager.openRecentlyClosedEntry(getTabModel(), entry);
