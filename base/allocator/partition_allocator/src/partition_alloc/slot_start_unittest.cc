@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_for_testing.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/use_death_tests.h"
@@ -39,7 +35,8 @@ TEST_F(SlotStartTest, SlotStartDoesntCrash) {
 #if !PA_BUILDFLAG(DCHECKS_ARE_ON)
   // This is _not_ a slot start, but with enforcement off, this also
   // must not crash.
-  SlotStart::Checked(static_cast<char*>(buffer) + 1, allocator_.root());
+  SlotStart::Checked(PA_UNSAFE_TODO(static_cast<char*>(buffer) + 1),
+                     allocator_.root());
 #endif
 
   allocator_.root()->Free(buffer);
@@ -51,7 +48,8 @@ TEST_F(SlotStartTest, SlotStartCrashes) {
 
   // `buffer + 1` is not a slot start, so this must crash.
   EXPECT_DEATH_IF_SUPPORTED(
-      SlotStart::Checked(static_cast<char*>(buffer) + 1, allocator_.root()),
+      SlotStart::Checked(PA_UNSAFE_TODO(static_cast<char*>(buffer) + 1),
+                         allocator_.root()),
       "");
 
   allocator_.root()->Free(buffer);
