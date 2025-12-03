@@ -335,6 +335,11 @@ crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateCo
 # Snapdragon X Elite
 crbug.com/452841787 [ win11 qualcomm-0x36334330 ] WebCodecs_FrameSizeChange_av01.0.04M.08_* [ Failure ]
 
+# vaInitialize fails on chromeos-board-amd64-generic VMs
+crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_copyTo_offscreen [ Failure ]
+crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_EncodeDecode_capture_vp8_prefer-software [ Failure ]
+crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_EncodeDecode_capture_avc1.42001E_prefer-software [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
