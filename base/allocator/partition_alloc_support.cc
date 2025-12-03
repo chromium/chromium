@@ -1242,6 +1242,14 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       }
 #endif  // BUILDFLAG(IS_ANDROID)
     }
+
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
+    if (base::FeatureList::IsEnabled(
+            base::features::kPartitionAllocLockTuneSpin)) {
+      partition_alloc::internal::SpinningMutex::SetSpinCount(
+          base::features::kPartitionAllocLockSpinCount.Get());
+    }
+#endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
   }
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
