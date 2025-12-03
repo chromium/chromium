@@ -219,10 +219,12 @@ void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
                                ->GetBrowserPolicyConnector()
                                ->chrome_browser_cloud_management_controller()
                                ->report_scheduler();
-  auto* profile_report_scheduler =
+  auto* profile_reporting_service =
       enterprise_reporting::CloudProfileReportingServiceFactoryIOS::
-          GetForProfile(ProfileIOS::FromWebUIIOS(web_ui()))
-              ->report_scheduler();
+          GetForProfile(ProfileIOS::FromWebUIIOS(web_ui()));
+  auto* profile_report_scheduler =
+      profile_reporting_service ? profile_reporting_service->report_scheduler()
+                                : nullptr;
 
   int report_count = 0;
   if (report_scheduler) {
