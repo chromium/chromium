@@ -1377,8 +1377,6 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
   if (is_new_profile) {
     ProfileMetrics::LogProfileAddNewUser(
         ProfileMetrics::ADD_NEW_USER_SIGNIN_INTERCEPTION);
-    // TODO(crbug.com/40775669): Remove the condition if Guest mode
-    // option is removed.
     if (!new_profile->IsGuestSession()) {
       // Apply the new color to the profile.
       ThemeServiceFactory::GetForProfile(new_profile)
@@ -1488,8 +1486,6 @@ void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {
   state_->interception_bubble_handle_.reset();  // Close the bubble now.
   state_->session_startup_helper_.reset();
 
-  // TODO(crbug.com/40775669): Remove |IsGuestSession| if Guest option is
-  // no more supported.
   if (!is_new_profile || profile_->IsGuestSession()) {
     return;
   }
