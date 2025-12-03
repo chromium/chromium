@@ -4,6 +4,8 @@
 
 package org.chromium.components.webauthn;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
@@ -15,6 +17,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -56,7 +59,13 @@ public class WebauthnRequestCallbackRobolectricTest {
         callback.onComplete(response);
 
         verify(mMakeCredentialCallback).call(AuthenticatorStatus.SUCCESS, responseData, null);
-        verify(mRecordOutcomeCallback).record(MakeCredentialOutcome.SUCCESS);
+        ArgumentCaptor<RequestMetrics> captor = ArgumentCaptor.forClass(RequestMetrics.class);
+        verify(mRecordOutcomeCallback).record(captor.capture());
+        RequestMetrics metrics = captor.getValue();
+        assertEquals((Integer) MakeCredentialOutcome.SUCCESS, metrics.getMakeCredentialOutcome());
+        assertNull(metrics.getGetAssertionOutcome());
+        assertNull(metrics.getGetAssertionResult());
+
         verify(mCompletionCallback).run();
     }
 
@@ -75,7 +84,15 @@ public class WebauthnRequestCallbackRobolectricTest {
         callback.onComplete(response);
 
         verify(mMakeCredentialCallback).call(AuthenticatorStatus.NOT_ALLOWED_ERROR, null, null);
-        verify(mRecordOutcomeCallback).record(MakeCredentialOutcome.USER_CANCELLATION);
+        ArgumentCaptor<RequestMetrics> captor = ArgumentCaptor.forClass(RequestMetrics.class);
+        verify(mRecordOutcomeCallback).record(captor.capture());
+        RequestMetrics metrics = captor.getValue();
+        assertEquals(
+                (Integer) MakeCredentialOutcome.USER_CANCELLATION,
+                metrics.getMakeCredentialOutcome());
+        assertNull(metrics.getGetAssertionOutcome());
+        assertNull(metrics.getGetAssertionResult());
+
         verify(mCompletionCallback).run();
     }
 
@@ -89,11 +106,20 @@ public class WebauthnRequestCallbackRobolectricTest {
 
         WebauthnRequestResponse response =
                 WebauthnRequestResponse.forSuccessfulGetAssertion(
-                        new GetAssertionAuthenticatorResponse());
+                        new GetAssertionAuthenticatorResponse(),
+                        new RequestMetrics.Builder()
+                                .setGetAssertionOutcome(GetAssertionOutcome.SUCCESS)
+                                .build());
         callback.onComplete(response);
 
         verify(mGetCredentialCallback).call(response.getGetCredentialResponse());
-        verify(mRecordOutcomeCallback).record(GetAssertionOutcome.SUCCESS);
+        ArgumentCaptor<RequestMetrics> captor = ArgumentCaptor.forClass(RequestMetrics.class);
+        verify(mRecordOutcomeCallback).record(captor.capture());
+        RequestMetrics metrics = captor.getValue();
+        assertEquals((Integer) GetAssertionOutcome.SUCCESS, metrics.getGetAssertionOutcome());
+        assertNull(metrics.getMakeCredentialOutcome());
+        assertNull(metrics.getGetAssertionResult());
+
         verify(mCompletionCallback).run();
     }
 
@@ -105,14 +131,24 @@ public class WebauthnRequestCallbackRobolectricTest {
                         mGetCredentialCallback, mRecordOutcomeCallback);
         callback.setCompletionCallback(mCompletionCallback);
 
+        RequestMetrics requestMetrics =
+                new RequestMetrics.Builder()
+                        .setGetAssertionOutcome(GetAssertionOutcome.USER_CANCELLATION)
+                        .build();
         WebauthnRequestResponse response =
                 WebauthnRequestResponse.forFailedGetCredential(
-                        AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                        GetAssertionOutcome.USER_CANCELLATION);
+                        AuthenticatorStatus.NOT_ALLOWED_ERROR, requestMetrics);
         callback.onComplete(response);
 
         verify(mGetCredentialCallback).call(response.getGetCredentialResponse());
-        verify(mRecordOutcomeCallback).record(GetAssertionOutcome.USER_CANCELLATION);
+        ArgumentCaptor<RequestMetrics> captor = ArgumentCaptor.forClass(RequestMetrics.class);
+        verify(mRecordOutcomeCallback).record(captor.capture());
+        RequestMetrics metrics = captor.getValue();
+        assertEquals(
+                (Integer) GetAssertionOutcome.USER_CANCELLATION, metrics.getGetAssertionOutcome());
+        assertNull(metrics.getMakeCredentialOutcome());
+        assertNull(metrics.getGetAssertionResult());
+
         verify(mCompletionCallback).run();
     }
 
@@ -127,7 +163,7 @@ public class WebauthnRequestCallbackRobolectricTest {
         callback.onComplete(response);
 
         verify(mReportCallback).call(AuthenticatorStatus.SUCCESS, null);
-        verify(mRecordOutcomeCallback, never()).record(0);
+        verify(mRecordOutcomeCallback, never()).record(any(RequestMetrics.class));
         verify(mCompletionCallback).run();
     }
 
@@ -149,7 +185,7 @@ public class WebauthnRequestCallbackRobolectricTest {
 
         verify(mMakeCredentialCallback, times(1))
                 .call(AuthenticatorStatus.SUCCESS, responseData, null);
-        verify(mRecordOutcomeCallback, times(1)).record(MakeCredentialOutcome.SUCCESS);
+        verify(mRecordOutcomeCallback, times(1)).record(any(RequestMetrics.class));
         verify(mCompletionCallback, times(1)).run();
     }
 
@@ -164,13 +200,17 @@ public class WebauthnRequestCallbackRobolectricTest {
         // This is a get credential response.
         GetCredentialResponse getCredentialResponseData = new GetCredentialResponse();
         WebauthnRequestResponse response =
-                WebauthnRequestResponse.forSuccessfulGetCredential(getCredentialResponseData);
+                WebauthnRequestResponse.forSuccessfulGetCredential(
+                        getCredentialResponseData,
+                        new RequestMetrics.Builder()
+                                .setGetAssertionOutcome(GetAssertionOutcome.SUCCESS)
+                                .build());
 
         // The callback is for make credential, so it should ignore a get credential response.
         callback.onComplete(response);
 
         verify(mMakeCredentialCallback, never()).call(anyInt(), any(), any());
-        verify(mRecordOutcomeCallback, never()).record(anyInt());
+        verify(mRecordOutcomeCallback, never()).record(any(RequestMetrics.class));
         verify(mCompletionCallback).run();
     }
 }

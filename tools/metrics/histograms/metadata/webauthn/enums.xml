@@ -259,6 +259,14 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Enclave failure"/>
   <int value="14" label="Other device success"/>
   <int value="15" label="Other device error"/>
+  <int value="16" label="Android FIDO2 success"/>
+  <int value="17" label="Android FIDO2 error"/>
+  <int value="18" label="Android CredMan success"/>
+  <int value="19" label="Android CredMan error"/>
+  <int value="20" label="Android FIDO2 hybrid success"/>
+  <int value="21" label="Android FIDO2 hybrid error"/>
+  <int value="22" label="Android FIDO2 legacy success"/>
+  <int value="23" label="Android FIDO2 legacy error"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/webauth/authenticator_request_outcome_enums.h:CredentialRequestResult) -->

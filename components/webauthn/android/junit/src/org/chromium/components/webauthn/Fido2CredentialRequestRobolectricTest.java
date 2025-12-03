@@ -369,7 +369,9 @@ public class Fido2CredentialRequestRobolectricTest {
         assertThat(mFido2ApiCallHelper.mHybridGetAssertionCalled).isTrue();
 
         // Simulate Cancel
-        mRequest.onResult(new Pair<>(Activity.RESULT_CANCELED, null));
+        mRequest.onResult(
+                new Pair<>(Activity.RESULT_CANCELED, null),
+                Fido2CredentialRequest.Fido2ApiRequestType.GET_ASSERTION_HYBRID);
 
         // Should return error
         assertThat(mCallback.getStatus())
@@ -796,7 +798,7 @@ public class Fido2CredentialRequestRobolectricTest {
                                 mCallback.onError(status);
                             }
                         },
-                        mCallback::onRequestOutcome);
+                        result -> mCallback.onRequestOutcome(result.getMakeCredentialOutcome()));
         Mockito.when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(callback);
     }
 
@@ -815,7 +817,7 @@ public class Fido2CredentialRequestRobolectricTest {
                                 }
                             }
                         },
-                        (outcome) -> mCallback.onRequestOutcome(outcome));
+                        (result) -> mCallback.onRequestOutcome(result.getGetAssertionOutcome()));
         Mockito.when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(callback);
     }
 

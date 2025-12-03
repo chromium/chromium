@@ -53,6 +53,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
     "java/src/org/chromium/components/webauthn/IsUvpaaResponseCallback.java",
     "java/src/org/chromium/components/webauthn/RecordOutcomeCallback.java",
+    "java/src/org/chromium/components/webauthn/RequestMetrics.java",
     "java/src/org/chromium/components/webauthn/WebauthnBrowserBridge.java",
     "java/src/org/chromium/components/webauthn/WebauthnCredentialDetails.java",
     "java/src/org/chromium/components/webauthn/WebauthnFeatureMap.java",

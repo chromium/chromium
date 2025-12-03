@@ -346,7 +346,11 @@ public class Fido2CredentialRequestTest {
                                 mCallback.onError(status);
                             }
                         },
-                        mCallback::onRequestOutcome);
+                        (metrics) -> {
+                            if (metrics.getMakeCredentialOutcome() != null) {
+                                mCallback.onRequestOutcome(metrics.getMakeCredentialOutcome());
+                            }
+                        });
         mRequest.handleMakeCredentialRequest(
                 options, browserOptions, origin, topOrigin, paymentOptions);
     }
@@ -376,7 +380,11 @@ public class Fido2CredentialRequestTest {
                                         /* response= */ null, response.getPasswordResponse());
                             }
                         },
-                        mCallback::onRequestOutcome);
+                        (metrics) -> {
+                            if (metrics.getGetAssertionOutcome() != null) {
+                                mCallback.onRequestOutcome(metrics.getGetAssertionOutcome());
+                            }
+                        });
         mRequest.handleGetCredentialRequest(options, origin, topOrigin, payment);
     }
 

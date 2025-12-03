@@ -114,13 +114,8 @@ public class WebauthnRequestCallback {
             logError(TAG, "No callbacks to handle response.");
             return;
         }
-        if (mCallbackType == CallbackType.MAKE_CREDENTIAL
-                && response.getMakeCredentialOutcomeMetricValue() != null) {
-            recordOutcome(response.getMakeCredentialOutcomeMetricValue());
-        }
-        if (mCallbackType == CallbackType.GET_CREDENTIAL
-                && response.getGetAssertionOutcomeMetricValue() != null) {
-            recordOutcome(response.getGetAssertionOutcomeMetricValue());
+        if (response.getRequestMetrics() != null) {
+            recordOutcome(response.getRequestMetrics());
         }
 
         switch (mCallbackType) {
@@ -158,10 +153,20 @@ public class WebauthnRequestCallback {
         mCompletionCallback = completionCallback;
     }
 
-    private void recordOutcome(int resultMetricValue) {
-        log(TAG, "recordOutcome, resultMetricValue: %d", resultMetricValue);
+    private void recordOutcome(RequestMetrics result) {
+        if ((mCallbackType == CallbackType.MAKE_CREDENTIAL
+                        && result.getMakeCredentialOutcome() == null)
+                || (mCallbackType == CallbackType.GET_CREDENTIAL
+                        && result.getGetAssertionOutcome() == null)) {
+            return;
+        }
+        if (result.getMakeCredentialOutcome() != null) {
+            log(TAG, "recordOutcome: makeCredentialOutcome=%d", result.getMakeCredentialOutcome());
+        } else if (result.getGetAssertionOutcome() != null) {
+            log(TAG, "recordOutcome: getAssertionOutcome=%d", result.getGetAssertionOutcome());
+        }
         if (mRecordingCallback != null) {
-            mRecordingCallback.record(resultMetricValue);
+            mRecordingCallback.record(result);
         }
     }
 

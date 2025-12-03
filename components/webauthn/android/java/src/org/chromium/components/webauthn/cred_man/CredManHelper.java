@@ -40,10 +40,12 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.CredManSupport;
+import org.chromium.components.webauthn.CredentialRequestResult;
 import org.chromium.components.webauthn.Fido2CredentialRequest.CancellableUiState;
 import org.chromium.components.webauthn.Fido2CredentialRequestJni;
 import org.chromium.components.webauthn.GetAssertionOutcome;
 import org.chromium.components.webauthn.MakeCredentialOutcome;
+import org.chromium.components.webauthn.RequestMetrics;
 import org.chromium.components.webauthn.WebauthnBrowserBridge;
 import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
@@ -294,10 +296,17 @@ public class CredManHelper {
                             if (!hasPublicKeyCredentials && !mRequestPasswords) {
                                 // TODO(https://crbug.com/408002783): This should have a distinct
                                 // GetAssertionOutcome for logging.
+                                RequestMetrics metrics =
+                                        new RequestMetrics.Builder()
+                                                .setGetAssertionOutcome(
+                                                        GetAssertionOutcome.OTHER_FAILURE)
+                                                .setGetAssertionResult(
+                                                        CredentialRequestResult
+                                                                .ANDROID_CRED_MAN_ERROR)
+                                                .build();
                                 callback.onComplete(
                                         WebauthnRequestResponse.forFailedGetCredential(
-                                                AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                                                GetAssertionOutcome.OTHER_FAILURE));
+                                                AuthenticatorStatus.NOT_ALLOWED_ERROR, metrics));
                                 return;
                             }
                             // This fallback should not be used because the prefetch identified
@@ -305,11 +314,20 @@ public class CredManHelper {
                             // getting deleted by other means. Setting a fallback avoids UI being
                             // shown when it should not be.
                             setNoCredentialsFallback(
-                                    () ->
-                                            callback.onComplete(
-                                                    WebauthnRequestResponse.forFailedGetCredential(
-                                                            AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                                                            GetAssertionOutcome.OTHER_FAILURE)));
+                                    () -> {
+                                        RequestMetrics metrics =
+                                                new RequestMetrics.Builder()
+                                                        .setGetAssertionOutcome(
+                                                                GetAssertionOutcome.OTHER_FAILURE)
+                                                        .setGetAssertionResult(
+                                                                CredentialRequestResult
+                                                                        .ANDROID_CRED_MAN_ERROR)
+                                                        .build();
+                                        callback.onComplete(
+                                                WebauthnRequestResponse.forFailedGetCredential(
+                                                        AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                                                        metrics));
+                                    });
                             barrierCallback =
                                     () ->
                                             startGetRequest(
@@ -418,10 +436,16 @@ public class CredManHelper {
                         }
                         if (errorType.equals(GetCredentialException.TYPE_USER_CANCELED)) {
                             if (mCancellableUiState == CancellableUiState.NONE) {
+                                RequestMetrics metrics =
+                                        new RequestMetrics.Builder()
+                                                .setGetAssertionOutcome(
+                                                        GetAssertionOutcome.USER_CANCELLATION)
+                                                .setGetAssertionResult(
+                                                        CredentialRequestResult.USER_CANCELLED)
+                                                .build();
                                 callback.onComplete(
                                         WebauthnRequestResponse.forFailedGetCredential(
-                                                AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                                                GetAssertionOutcome.USER_CANCELLATION));
+                                                AuthenticatorStatus.NOT_ALLOWED_ERROR, metrics));
                             }
 
                             mMetricsHelper.reportGetCredentialMetrics(
@@ -440,19 +464,32 @@ public class CredManHelper {
                             if (mNoCredentialsFallback != null) {
                                 mNoCredentialsFallback.run();
                             } else if (mCancellableUiState == CancellableUiState.NONE) {
+                                RequestMetrics metrics =
+                                        new RequestMetrics.Builder()
+                                                .setGetAssertionOutcome(
+                                                        GetAssertionOutcome
+                                                                .CREDENTIAL_NOT_RECOGNIZED)
+                                                .setGetAssertionResult(
+                                                        CredentialRequestResult
+                                                                .ANDROID_CRED_MAN_ERROR)
+                                                .build();
                                 callback.onComplete(
                                         WebauthnRequestResponse.forFailedGetCredential(
-                                                AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                                                GetAssertionOutcome.CREDENTIAL_NOT_RECOGNIZED));
+                                                AuthenticatorStatus.NOT_ALLOWED_ERROR, metrics));
                             }
                         } else {
                             // Includes:
                             //  * GetCredentialException.TYPE_UNKNOWN
                             //  * GetCredentialException.TYPE_NO_CREATE_OPTIONS
                             //  * GetCredentialException.TYPE_INTERRUPTED
+                            RequestMetrics metrics =
+                                    new RequestMetrics.Builder()
+                                            .setGetAssertionResult(
+                                                    CredentialRequestResult.ANDROID_CRED_MAN_ERROR)
+                                            .build();
                             callback.onComplete(
                                     WebauthnRequestResponse.forFailedGetCredential(
-                                            AuthenticatorStatus.UNKNOWN_ERROR, null));
+                                            AuthenticatorStatus.UNKNOWN_ERROR, metrics));
                             mMetricsHelper.reportGetCredentialMetrics(
                                     CredManGetRequestEnum.FAILURE, mCancellableUiState);
                         }
@@ -526,9 +563,14 @@ public class CredManHelper {
                                             ? CancellableUiState.WAITING_FOR_SELECTION
                                             : CancellableUiState.NONE;
                             notifyBrowserOnCredManClosed(false);
+                            RequestMetrics metrics =
+                                    new RequestMetrics.Builder()
+                                            .setGetAssertionResult(
+                                                    CredentialRequestResult.ANDROID_CRED_MAN_ERROR)
+                                            .build();
                             callback.onComplete(
                                     WebauthnRequestResponse.forFailedGetCredential(
-                                            AuthenticatorStatus.UNKNOWN_ERROR, null));
+                                            AuthenticatorStatus.UNKNOWN_ERROR, metrics));
                             return;
                         }
 
@@ -546,9 +588,14 @@ public class CredManHelper {
                                             ? CancellableUiState.WAITING_FOR_SELECTION
                                             : CancellableUiState.NONE;
                             notifyBrowserOnCredManClosed(false);
+                            RequestMetrics metrics =
+                                    new RequestMetrics.Builder()
+                                            .setGetAssertionResult(
+                                                    CredentialRequestResult.ANDROID_CRED_MAN_ERROR)
+                                            .build();
                             callback.onComplete(
                                     WebauthnRequestResponse.forFailedGetCredential(
-                                            AuthenticatorStatus.UNKNOWN_ERROR, null));
+                                            AuthenticatorStatus.UNKNOWN_ERROR, metrics));
                             return;
                         }
                         if (mClientDataJson != null) {
@@ -568,7 +615,14 @@ public class CredManHelper {
                         }
                         assumeNonNull(callback);
                         callback.onComplete(
-                                WebauthnRequestResponse.forSuccessfulGetAssertion(response));
+                                WebauthnRequestResponse.forSuccessfulGetAssertion(
+                                        response,
+                                        new RequestMetrics.Builder()
+                                                .setGetAssertionOutcome(GetAssertionOutcome.SUCCESS)
+                                                .setGetAssertionResult(
+                                                        CredentialRequestResult
+                                                                .ANDROID_CRED_MAN_SUCCESS)
+                                                .build()));
                     }
                 };
 

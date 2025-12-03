@@ -221,6 +221,8 @@ public class Barrier {
         if (mAuthenticationContextProvider.getRequestCallback() == null) return;
         mAuthenticationContextProvider
                 .getRequestCallback()
-                .onComplete(WebauthnRequestResponse.forFailedGetCredential(error, null));
+                .onComplete(
+                        WebauthnRequestResponse.forFailedGetCredential(
+                                error, new RequestMetrics.Builder().build()));
     }
 }

@@ -769,6 +769,15 @@ void MaybeRecordBrowserAssistedLogin(CredentialRequestResult request_result) {
     case CredentialRequestResult::kOtherError:
           // Ignore error cases.
       break;
+    case CredentialRequestResult::kAndroidFido2HybridSuccess:
+    case CredentialRequestResult::kAndroidFido2Success:
+    case CredentialRequestResult::kAndroidCredManSuccess:
+    case CredentialRequestResult::kAndroidFido2LegacySuccess:
+    case CredentialRequestResult::kAndroidFido2Error:
+    case CredentialRequestResult::kAndroidCredManError:
+    case CredentialRequestResult::kAndroidFido2HybridError:
+    case CredentialRequestResult::kAndroidFido2LegacyError:
+      NOTREACHED();
   }
   if (login_type.has_value()) {
     GetContentClient()->browser()->RecordAssistedLogin(*login_type);

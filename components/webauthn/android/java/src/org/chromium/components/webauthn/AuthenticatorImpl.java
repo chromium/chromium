@@ -152,7 +152,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         assert mIntentSender != null;
         assert mRenderFrameHost != null;
         WebauthnRequestCallback requestCallback =
-                WebauthnRequestCallback.forMakeCredential(callback, this::recordOutcomeEvent);
+                WebauthnRequestCallback.forMakeCredential(callback, this::recordRequestMetrics);
         if (mRequestCallback != null) {
             requestCallback.onComplete(
                     WebauthnRequestResponse.forFailedMakeCredential(
@@ -215,11 +215,12 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         assert mIntentSender != null;
         assert mRenderFrameHost != null;
         WebauthnRequestCallback requestCallback =
-                WebauthnRequestCallback.forGetCredential(callback, this::recordOutcomeEvent);
+                WebauthnRequestCallback.forGetCredential(callback, this::recordRequestMetrics);
         if (mRequestCallback != null) {
             requestCallback.onComplete(
                     WebauthnRequestResponse.forFailedGetCredential(
-                            AuthenticatorStatus.PENDING_REQUEST, null));
+                            AuthenticatorStatus.PENDING_REQUEST,
+                            new RequestMetrics.Builder().build()));
             return;
         }
         log(TAG, "getCredential");
@@ -233,10 +234,13 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         if (!GmsCoreUtils.isWebauthnSupported()
                 || (!isChrome(mWebContents) && !GmsCoreUtils.isResultReceiverSupported())
                 || options.publicKey == null) {
+            RequestMetrics metrics =
+                    new RequestMetrics.Builder()
+                            .setGetAssertionOutcome(GetAssertionOutcome.OTHER_FAILURE)
+                            .build();
             mRequestCallback.onComplete(
                     WebauthnRequestResponse.forFailedGetCredential(
-                            AuthenticatorStatus.NOT_IMPLEMENTED,
-                            GetAssertionOutcome.OTHER_FAILURE));
+                            AuthenticatorStatus.NOT_IMPLEMENTED, metrics));
             return;
         }
         assumeNonNull(options.publicKey);
@@ -454,25 +458,41 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         mPendingFido2CredentialRequest.cancelGetAssertion();
     }
 
-    /** Record outcome UKM at the request's completion time. */
-    private void recordOutcomeEvent(int resultMetricValue) {
+    /** Records metrics at the request's completion time. */
+    private void recordRequestMetrics(RequestMetrics result) {
+        log(TAG, "recordRequestMetrics");
         // mWebContents can be null in tests.
         if (mWebContents == null || !isChrome(mWebContents)) {
             return;
         }
+
+        if (result.getGetAssertionResult() != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "WebAuthentication.GetAssertion.Result",
+                    result.getGetAssertionResult(),
+                    CredentialRequestResult.MAX_VALUE + 1);
+        }
+
+        Integer resultMetricValue = null;
         String event;
         String resultMetricName;
         if (mRequestCallback != null
                 && mRequestCallback.getCallbackType()
                         == WebauthnRequestCallback.CallbackType.GET_CREDENTIAL) {
+            resultMetricValue = result.getGetAssertionOutcome();
             event = "WebAuthn.SignCompletion";
             resultMetricName = "SignCompletionResult";
         } else if (mRequestCallback != null
                 && mRequestCallback.getCallbackType()
                         == WebauthnRequestCallback.CallbackType.MAKE_CREDENTIAL) {
+            resultMetricValue = result.getMakeCredentialOutcome();
             event = "WebAuthn.RegisterCompletion";
             resultMetricName = "RegisterCompletionResult";
         } else {
+            return;
+        }
+
+        if (resultMetricValue == null) {
             return;
         }
 

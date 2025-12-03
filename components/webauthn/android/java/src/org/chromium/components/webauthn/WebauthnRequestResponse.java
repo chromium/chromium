@@ -21,10 +21,9 @@ public class WebauthnRequestResponse {
     private int mAuthenticatorStatus;
 
     private @Nullable MakeCredentialAuthenticatorResponse mMakeCredentialResponse;
-    private @Nullable @MakeCredentialOutcome Integer mMakeCredentialOutcomeMetricValue;
 
     private @Nullable GetCredentialResponse mGetCredentialResponse;
-    private @Nullable @GetAssertionOutcome Integer mGetAssertionOutcomeMetricValue;
+    private @Nullable RequestMetrics mRequestMetrics;
 
     private WebauthnRequestResponse() {}
 
@@ -33,7 +32,10 @@ public class WebauthnRequestResponse {
         WebauthnRequestResponse response = new WebauthnRequestResponse();
         response.mAuthenticatorStatus = AuthenticatorStatus.SUCCESS;
         response.mMakeCredentialResponse = makeCredentialResponse;
-        response.mMakeCredentialOutcomeMetricValue = MakeCredentialOutcome.SUCCESS;
+        response.mRequestMetrics =
+                new RequestMetrics.Builder()
+                        .setMakeCredentialOutcome(MakeCredentialOutcome.SUCCESS)
+                        .build();
         return response;
     }
 
@@ -42,23 +44,27 @@ public class WebauthnRequestResponse {
             @Nullable @MakeCredentialOutcome Integer makeCredentialOutcome) {
         WebauthnRequestResponse response = new WebauthnRequestResponse();
         response.mAuthenticatorStatus = makeCredentialStatus;
-        response.mMakeCredentialOutcomeMetricValue =
-                makeCredentialOutcome != null
-                        ? makeCredentialOutcome
-                        : MakeCredentialOutcome.OTHER_FAILURE;
+        response.mRequestMetrics =
+                new RequestMetrics.Builder()
+                        .setMakeCredentialOutcome(
+                                makeCredentialOutcome != null
+                                        ? makeCredentialOutcome
+                                        : MakeCredentialOutcome.OTHER_FAILURE)
+                        .build();
         return response;
     }
 
     public static WebauthnRequestResponse forSuccessfulGetCredential(
-            GetCredentialResponse getCredentialResponse) {
+            GetCredentialResponse getCredentialResponse, RequestMetrics result) {
         WebauthnRequestResponse response = new WebauthnRequestResponse();
         response.mGetCredentialResponse = getCredentialResponse;
-        response.mGetAssertionOutcomeMetricValue = GetAssertionOutcome.SUCCESS;
+        response.mRequestMetrics = result;
         return response;
     }
 
     public static WebauthnRequestResponse forSuccessfulGetAssertion(
-            GetAssertionAuthenticatorResponse getAssertionAuthenticatorResponse) {
+            GetAssertionAuthenticatorResponse getAssertionAuthenticatorResponse,
+            RequestMetrics result) {
         GetAssertionResponse getAssertionResponse = new GetAssertionResponse();
         getAssertionResponse.status = AuthenticatorStatus.SUCCESS;
         getAssertionResponse.credential = getAssertionAuthenticatorResponse;
@@ -68,7 +74,7 @@ public class WebauthnRequestResponse {
 
         WebauthnRequestResponse response = new WebauthnRequestResponse();
         response.mGetCredentialResponse = getCredentialResponse;
-        response.mGetAssertionOutcomeMetricValue = GetAssertionOutcome.SUCCESS;
+        response.mRequestMetrics = result;
         return response;
     }
 
@@ -76,12 +82,12 @@ public class WebauthnRequestResponse {
         WebauthnRequestResponse response = new WebauthnRequestResponse();
         response.mGetCredentialResponse = new GetCredentialResponse();
         response.mGetCredentialResponse.setPasswordResponse(credentialInfo);
+        response.mRequestMetrics = new RequestMetrics.Builder().build();
         return response;
     }
 
     public static WebauthnRequestResponse forFailedGetCredential(
-            Integer getCredentialStatus,
-            @Nullable @GetAssertionOutcome Integer getAssertionOutcome) {
+            Integer getCredentialStatus, RequestMetrics requestMetrics) {
         GetAssertionResponse assertionResponse = new GetAssertionResponse();
         assertionResponse.status = getCredentialStatus;
 
@@ -90,10 +96,8 @@ public class WebauthnRequestResponse {
 
         WebauthnRequestResponse response = new WebauthnRequestResponse();
         response.mGetCredentialResponse = getCredentialResponse;
-        response.mGetAssertionOutcomeMetricValue =
-                getAssertionOutcome != null
-                        ? getAssertionOutcome
-                        : GetAssertionOutcome.OTHER_FAILURE;
+        response.mRequestMetrics = requestMetrics;
+
         return response;
     }
 
@@ -115,11 +119,15 @@ public class WebauthnRequestResponse {
         return mGetCredentialResponse;
     }
 
+    public @Nullable RequestMetrics getRequestMetrics() {
+        return mRequestMetrics;
+    }
+
     public @Nullable @MakeCredentialOutcome Integer getMakeCredentialOutcomeMetricValue() {
-        return mMakeCredentialOutcomeMetricValue;
+        return mRequestMetrics != null ? mRequestMetrics.getMakeCredentialOutcome() : null;
     }
 
     public @Nullable @GetAssertionOutcome Integer getGetAssertionOutcomeMetricValue() {
-        return mGetAssertionOutcomeMetricValue;
+        return mRequestMetrics != null ? mRequestMetrics.getGetAssertionOutcome() : null;
     }
 }
