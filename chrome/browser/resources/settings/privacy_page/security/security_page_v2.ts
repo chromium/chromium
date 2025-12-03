@@ -10,6 +10,7 @@ import '../../controls/controlled_radio_button.js';
 import '../../controls/settings_radio_group.js';
 import '../../icons.html.js';
 import '../../controls/settings_toggle_button.js';
+import '../../settings_page/settings_section.js';
 import '../../settings_page/settings_subpage.js';
 import './security_page_feature_row.js';
 

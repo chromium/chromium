@@ -1,4 +1,4 @@
-<style include="cr-shared-style">
+<style include="cr-shared-style settings-shared settings-columned-section">
   :host {
     display: flex;
     flex-direction: column;
@@ -6,7 +6,6 @@
 
   .box {
     background-color: var(--cr-card-background-color);
-    box-shadow: var(--cr-card-shadow);
   }
 
   .card {
@@ -31,6 +30,26 @@
   .card-start:has(controlled-radio-button[checked]) {
     background-color: var(--google-blue-50);
   }
+  .settings-columned-section{
+    padding:0;
+  }
+
+  settings-radio-group:not([is-horizontal]) {
+    padding-inline-start: 40px;
+  }
+
+  settings-section > .title.first{
+    margin-top: 0px;
+  }
+
+  settings-section:not(:first-of-type) > :first-child {
+    border-start-end-radius: var(--cr-card-border-radius);
+    border-start-start-radius: var(--cr-card-border-radius);
+  }
+
+  settings-section > *:not(:last-child) {
+    border-bottom: var(--cr-separator-line);
+  }
 
   #bundlesRadioGroup controlled-radio-button::part(labelWrapper) {
     align-items: center;
@@ -38,6 +57,7 @@
     font-size: 112%;
     font-weight: 500;
     justify-content: space-between;
+    padding: 0;
   }
 
   #bundlesRadioGroup ul.icon-bulleted-list {
@@ -63,38 +83,18 @@
     margin-bottom: 16px;
     margin-top: 30px;
     width: 100%;
-    user-select: none;
-  }
-
-  .section-header.first{
-    margin-top: 0px;
-  }
-
-  #safeBrowsingRadioGroup {
-    padding-inline-start: 40px;
-  }
-
-  security-page-feature-row {
-    border-end-start-radius: var(--cr-card-border-radius);
-    border-end-end-radius: var(--cr-card-border-radius);
-  }
-
-  settings-toggle-button {
-    border-radius: var(--cr-card-border-radius);
   }
 </style>
 <settings-subpage page-title="$i18n{securityPageTitle}"
     learn-more-url="$i18n{safeBrowsingHelpCenterURL}"
-    route-path$="[[routePath]]" class="multi-card">
-  <h2 class="section-header cr-secondary-text first">
-    $i18n{securityTitle}
-  </h2>
-  <settings-radio-group id="bundlesRadioGroup"
-      class="card-container"
-      pref="{{prefs.generated.security_settings_bundle}}"
-      on-change="onSecurityBundleChanged_"
-      selectable-elements="controlled-radio-button"
-      nested-selectable is-horizontal>
+    route-path$="[[routePath]]" class="multi-card" >
+  <settings-section page-title="$i18n{securityTitle}">
+    <settings-radio-group id="bundlesRadioGroup"
+        class="card-container settings-columned-section"
+        pref="{{prefs.generated.security_settings_bundle}}"
+        on-change="onSecurityBundleChanged_"
+        selectable-elements="controlled-radio-button"
+        nested-selectable is-horizontal>
     <div class="box card card-start">
       <controlled-radio-button
           id="securitySettingsBundleStandard"
@@ -191,13 +191,13 @@
       </settings-radio-group>
     </div>
   </security-page-feature-row>
-  <h2 class="section-header cr-secondary-text">
-    $i18n{securityAccountAndNetworkSectionTitle}
-  </h2>
-  <settings-toggle-button id="passwordsLeakToggle"
-      pref="{{prefs.generated.password_leak_detection}}"
-      label="$i18n{securityPasswordsLeakDetectionTitle}"
-      sub-label="$i18n{securityPasswordsLeakDetectionDesc}"
-      class="box">
+  </settings-section>
+  <settings-section page-title="$i18n{securityAccountAndNetworkSectionTitle}">
+    <settings-toggle-button id="passwordsLeakToggle"
+        pref="{{prefs.generated.password_leak_detection}}"
+        label="$i18n{securityPasswordsLeakDetectionTitle}"
+        sub-label="$i18n{securityPasswordsLeakDetectionDesc}"
+        class="box">
   </settings-toggle-button>
+</settings-section>
 </settings-subpage>
