@@ -1634,7 +1634,17 @@ void LayoutObject::MarkParentForSpannerOrOutOfFlowPositionedChange() {
   //
   // Note that this isn't necessary if we're dealing with a column spanner here,
   // but in order to keep things simple, we'll make no difference.
-  object->SetNeedsCollectInlines();
+  bool is_atomic_inline_level = false;
+  if (RuntimeEnabledFeatures::SkipSetNeedsCollectInlinesEnabled()) {
+    if (auto* block_flow = DynamicTo<LayoutBlockFlow>(object)) {
+      if (block_flow->IsAtomicInlineLevel()) {
+        is_atomic_inline_level = true;
+      }
+    }
+  }
+  if (!is_atomic_inline_level) {
+    object->SetNeedsCollectInlines();
+  }
 
   const LayoutBlock* containing_block = ContainingBlock();
   while (object != containing_block) {
