@@ -186,8 +186,6 @@ public class SafetyCheckMediatorTest {
         when(mPasswordManagerHelperNativeMock.hasChosenToSyncPasswords(mSyncService))
                 .thenReturn(true);
 
-        // TODO(crbug.com/41483841): Parametrize the tests in SafetyCheckMediatorTest for local and
-        // account storage.
         // This will no longer be true once the local and account store split happens.
         if (mUseGmsApi) {
             when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
