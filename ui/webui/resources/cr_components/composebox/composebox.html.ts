@@ -15,7 +15,7 @@ export function getHtml(this: ComposeboxElement) {
         tabindex="-1"
         @click="${this.submitQuery_}"
         @focusin="${this.handleSubmitFocusIn_}">
-      <div id="submitOverlay"></div>
+      <div id="submitOverlay" part="submit-overlay"></div>
       <cr-icon-button
         class="action-icon icon-arrow-upward"
         id="submitIcon"
