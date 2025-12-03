@@ -103,7 +103,7 @@ inline constexpr int kDefaultNtpBrowserPromoIndividualPromoLimit = 1;
 }  // namespace
 
 BASE_FEATURE(kUserEducationExperienceVersion2Point5,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewBadgeTestFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 
