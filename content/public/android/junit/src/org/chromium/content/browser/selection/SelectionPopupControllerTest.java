@@ -907,6 +907,7 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
+    @SuppressWarnings("AssertSameIncompatible")
     public void testNewMenuIsProcessedForDifferentSelectionState() {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
 

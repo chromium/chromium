@@ -44,7 +44,7 @@ public class MetricsTestUtil {
     // Some implementation of java.util.Date broke the symmetric property, so
     // check both directions.
     public static void assertAfter(Date date1, Date date2) {
-        assertWithMessage("date1: " + date1.getTime() + ", date2: " + date2.getTime())
+        assertWithMessage("date1: %s, date2: %s", date1.getTime(), date2.getTime())
                 .that(date1.after(date2) || date1.equals(date2) || date2.equals(date1))
                 .isTrue();
     }

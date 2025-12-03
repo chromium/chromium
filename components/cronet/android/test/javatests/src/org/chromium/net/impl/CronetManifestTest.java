@@ -50,35 +50,35 @@ public class CronetManifestTest {
         for (CronetSource source : CronetSource.values()) {
             switch (source) {
                 case CRONET_SOURCE_STATICALLY_LINKED:
-                    assertWithMessage("Check failed for " + source)
+                    assertWithMessage("Check failed for %s", source)
                             .that(
                                     CronetManifest.isAppOptedInForTelemetry(
                                             mCronetTestFramework.getContext(), source))
                             .isFalse();
                     break;
                 case CRONET_SOURCE_PLATFORM:
-                    assertWithMessage("Check failed for " + source)
+                    assertWithMessage("Check failed for %s", source)
                             .that(
                                     CronetManifest.isAppOptedInForTelemetry(
                                             mCronetTestFramework.getContext(), source))
                             .isTrue();
                     break;
                 case CRONET_SOURCE_PLAY_SERVICES:
-                    assertWithMessage("Check failed for " + source)
+                    assertWithMessage("Check failed for %s", source)
                             .that(
                                     CronetManifest.isAppOptedInForTelemetry(
                                             mCronetTestFramework.getContext(), source))
                             .isTrue();
                     break;
                 case CRONET_SOURCE_FALLBACK:
-                    assertWithMessage("Check failed for " + source)
+                    assertWithMessage("Check failed for %s", source)
                             .that(
                                     CronetManifest.isAppOptedInForTelemetry(
                                             mCronetTestFramework.getContext(), source))
                             .isFalse();
                     break;
                 case CRONET_SOURCE_FAKE:
-                    assertWithMessage("Check failed for " + source)
+                    assertWithMessage("Check failed for %s", source)
                             .that(
                                     CronetManifest.isAppOptedInForTelemetry(
                                             mCronetTestFramework.getContext(), source))
@@ -86,7 +86,7 @@ public class CronetManifestTest {
                     break;
                 case CRONET_SOURCE_UNSPECIFIED:
                     // This shouldn't happen, but for safety check that it will be disabled.
-                    assertWithMessage("Check failed for " + source)
+                    assertWithMessage("Check failed for %s", source)
                             .that(
                                     CronetManifest.isAppOptedInForTelemetry(
                                             mCronetTestFramework.getContext(), source))
@@ -101,7 +101,7 @@ public class CronetManifestTest {
     public void testTelemetryOptIn_whenMetadataIsTrue() throws Exception {
         setTelemetryOptIn(true);
         for (CronetSource source : CronetSource.values()) {
-            assertWithMessage("Check failed for " + source)
+            assertWithMessage("Check failed for %s", source)
                     .that(
                             CronetManifest.isAppOptedInForTelemetry(
                                     mCronetTestFramework.getContext(), source))
@@ -114,7 +114,7 @@ public class CronetManifestTest {
     public void testTelemetryOptIn_whenMetadataIsFalse() throws Exception {
         setTelemetryOptIn(false);
         for (CronetSource source : CronetSource.values()) {
-            assertWithMessage("Check failed for " + source)
+            assertWithMessage("Check failed for %s", source)
                     .that(
                             CronetManifest.isAppOptedInForTelemetry(
                                     mCronetTestFramework.getContext(), source))

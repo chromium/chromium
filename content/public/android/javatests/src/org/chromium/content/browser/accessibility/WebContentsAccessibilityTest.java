@@ -3365,7 +3365,7 @@ public class WebContentsAccessibilityTest {
 
             // Find node matching test string for this test case
             int vvid = waitForNodeMatching(sTextMatcher, testString);
-            expect.withMessage("Could not find node for: " + testString)
+            expect.withMessage("Could not find node for: %s", testString)
                     .that(vvid)
                     .isNotEqualTo(View.NO_ID);
             if (vvid == View.NO_ID) {
@@ -3374,7 +3374,7 @@ public class WebContentsAccessibilityTest {
             }
             focusNode(vvid);
             mNodeInfo = createAccessibilityNodeInfo(vvid);
-            expect.withMessage("Could not create ANI for: " + testString)
+            expect.withMessage("Could not create ANI for: %s", testString)
                     .that(mNodeInfo)
                     .isNotNull();
             if (mNodeInfo == null) {
@@ -3396,10 +3396,10 @@ public class WebContentsAccessibilityTest {
             addSpansToList(actualSpans, spannableUnderTest, AbsoluteSizeSpan.class);
             addSpansToList(actualSpans, spannableUnderTest, LocaleSpan.class);
 
-            expect.withMessage("Verify spans on text: " + testString)
+            expect.withMessage("Verify spans on text: %s", testString)
                     .that(actualSpans)
                     .containsAtLeastElementsIn(expectedSpans);
-            expect.withMessage("Duplicate spans on text: " + testString)
+            expect.withMessage("Duplicate spans on text: %s", testString)
                     .that(actualSpans)
                     .containsNoDuplicates();
         }

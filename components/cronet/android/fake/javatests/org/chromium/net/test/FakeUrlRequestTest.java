@@ -78,12 +78,7 @@ public class FakeUrlRequestTest {
         for (int i = 1; i <= numberOfTimes; i++) {
             callback.startNextRead(request);
             callback.waitForNextStep();
-            assertWithMessage(
-                            "Expected read to happen "
-                                    + numberOfTimes
-                                    + " times but got "
-                                    + i
-                                    + " times.")
+            assertWithMessage("Expected read to happen %s times but got %s times", numberOfTimes, i)
                     .that(callback.mResponseStep)
                     .isEqualTo(ResponseStep.ON_READ_COMPLETED);
         }
