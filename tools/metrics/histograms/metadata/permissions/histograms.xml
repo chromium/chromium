@@ -615,6 +615,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.ClapperLoud.PageInfo.Reset" enum="Boolean"
+    expires_after="2026-05-03">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the reset action whenever the user clicks the Reset permission
+    button in the PageInfo Permissions subpage after having seen the
+    notification permission prompt. The permission request is resolved as
+    Dismissed.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.ClapperLoud.PageInfo.Subscribed" enum="Boolean"
     expires_after="2026-05-03">
   <owner>elklm@chromium.org</owner>

@@ -307,6 +307,12 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
 
     @Override
     public void onPermissionsReset() {
+        if (mHasRequestedNotificationsPermission) {
+            PermissionUtil.resolvePermissionRequest(
+                    mWebContents, ContentSettingsType.NOTIFICATIONS, ContentSetting.DEFAULT);
+            mHasRequestedNotificationsPermission = false;
+        }
+
         mMainController.recordAction(PageInfoAction.PAGE_INFO_PERMISSIONS_CLEARED);
         mDataIsStale = true;
         mMainController.exitSubpage();
