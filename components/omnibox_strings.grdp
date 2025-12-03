@@ -559,10 +559,6 @@
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_AI_MODE_NAME" desc = "The name of the Google AI Mode search engine as it appears on chrome://settings/searchEngines.">
     Google AI Mode
   </message>
-  <!-- TODO(b/463741789): Utilize "IDS_SEARCH_ENGINES_STARTER_PACK_AI_MODE_IN_GOOGLE_SEARCH_NAME" in the UI. -->
-  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_AI_MODE_IN_GOOGLE_SEARCH_NAME" desc = "The name of the Google AI Mode search engine as it appears on chrome://settings/searchEngines.">
-    AI Mode in Google Search
-  </message>
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_AI_MODE_KEYWORD" desc = "The keyword required to trigger the Google AI Mode search engine. This will be stripped of whitespace and prepended with an '@'.">
     AI Mode
   </message>
