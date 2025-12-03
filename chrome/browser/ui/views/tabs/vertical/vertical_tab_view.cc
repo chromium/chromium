@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_icon.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/favicon_size.h"
@@ -72,6 +73,8 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
   // TODO(crbug.com/444283717): Separate pinned and unpinned tabs.
 
   OnDataChanged();
+
+  set_context_menu_controller(this);
 }
 
 VerticalTabView::~VerticalTabView() = default;
@@ -170,6 +173,18 @@ void VerticalTabView::AlertStateChanged() {
   // TODO(crbug.com/457525548): Update hover card.
   UpdateAlertIndicatorVisibility();
   InvalidateLayout();
+}
+
+void VerticalTabView::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
+  if (collection_node_) {
+    if (auto* controller = collection_node_->GetController()) {
+      controller->ShowContextMenuForNode(collection_node_, source, point,
+                                         source_type);
+    }
+  }
 }
 
 void VerticalTabView::ResetCollectionNode() {

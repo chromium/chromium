@@ -59,6 +59,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kAddANoteTabMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kSplitTabsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kArrangeSplitTabsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kSwapSplitTabsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kAddNewTabAdjacentMenuItem);
 
 TabMenuModel::TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                            TabMenuModelDelegate* tab_menu_model_delegate,
@@ -129,6 +130,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   AddItemWithStringId(TabStripModel::CommandNewTabToRight,
                       base::i18n::IsRTL() ? IDS_TAB_CXMENU_NEWTABTOLEFT
                                           : IDS_TAB_CXMENU_NEWTABTORIGHT);
+  SetElementIdentifierAt(GetItemCount() - 1, kAddNewTabAdjacentMenuItem);
 
   // Reading list is moved lower when Split View is enabled.
   if (tab_strip->delegate()->SupportsReadLater() &&

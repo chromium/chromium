@@ -176,8 +176,8 @@ BrowserTabStripController::~BrowserTabStripController() {
   // When we get here the TabStrip is being deleted. We need to explicitly
   // cancel the menu, otherwise it may try to invoke something on the tabstrip
   // from its destructor.
-  if (context_menu_contents_.get()) {
-    context_menu_contents_.reset();
+  if (context_menu_controller_.get()) {
+    context_menu_controller_.reset();
   }
 
   model_->RemoveObserver(this);
@@ -505,7 +505,7 @@ void BrowserTabStripController::ShowContextMenuForTab(
     return;
   }
 
-  context_menu_contents_ = std::make_unique<TabContextMenuController>(
+  context_menu_controller_ = std::make_unique<TabContextMenuController>(
       base::BindRepeating(
           &BrowserTabStripController::IsContextMenuCommandChecked,
           base::Unretained(this)),
@@ -521,20 +521,20 @@ void BrowserTabStripController::ShowContextMenuForTab(
                           base::Unretained(this)));
 
   auto model = menu_model_factory_->Create(
-      context_menu_contents_.get(),
+      context_menu_controller_.get(),
       GetBrowserWindowInterface()->GetFeatures().tab_menu_model_delegate(),
       model_, tab_index.value());
 
-  context_menu_contents_->LoadModel(std::move(model));
+  context_menu_controller_->LoadModel(std::move(model));
 
-  context_menu_contents_->RunMenuAt(p, source_type, tabstrip_->GetWidget());
+  context_menu_controller_->RunMenuAt(p, source_type, tabstrip_->GetWidget());
   base::UmaHistogramEnumeration("TabStrip.Tab.Views.ActivationAction",
                                 TabActivationTypes::kContextMenu);
 }
 
 void BrowserTabStripController::CloseContextMenuForTesting() {
-  if (context_menu_contents_) {
-    context_menu_contents_->CloseMenu();
+  if (context_menu_controller_) {
+    context_menu_controller_->CloseMenu();
   }
 }
 

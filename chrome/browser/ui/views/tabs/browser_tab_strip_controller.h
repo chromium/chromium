@@ -201,7 +201,7 @@ class BrowserTabStripController : public TabStripController,
   raw_ptr<BrowserView> browser_view_;
 
   // If non-NULL it means we're showing a menu for the tab.
-  std::unique_ptr<TabContextMenuController> context_menu_contents_;
+  std::unique_ptr<TabContextMenuController> context_menu_controller_;
 
   // Helper for performing tab selection as a result of dragging over a tab.
   HoverTabSelector hover_tab_selector_;

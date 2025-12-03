@@ -7,8 +7,10 @@
 
 #include "base/callback_list.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
+#include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/context_menu_controller.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 
@@ -23,7 +25,8 @@ class Label;
 // View for a vertical tabstrip's tab.
 class VerticalTabView : public views::View,
                         public views::LayoutDelegate,
-                        public AlertIndicatorButton::Delegate {
+                        public AlertIndicatorButton::Delegate,
+                        public views::ContextMenuController {
   METADATA_HEADER(VerticalTabView, views::View)
 
  public:
@@ -41,6 +44,12 @@ class VerticalTabView : public views::View,
   void ToggleTabAudioMute() override;
   bool IsApparentlyActive() const override;
   void AlertStateChanged() override;
+
+  // ContextMenuController:
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   VerticalTabIcon* icon_for_testing() { return icon_; }
   AlertIndicatorButton* alert_indicator_for_testing() {

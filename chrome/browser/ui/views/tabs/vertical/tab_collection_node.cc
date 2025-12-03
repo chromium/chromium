@@ -53,6 +53,13 @@ void TabCollectionNode::SetViewFactoryForTesting(ViewFactory factory) {
   GetViewFactory() = std::move(factory);
 }
 
+void TabCollectionNode::SetController(VerticalTabStripController* controller) {
+  tab_strip_controller_ = controller;
+  for (const auto& child : children_) {
+    child->SetController(controller);
+  }
+}
+
 // static
 std::unique_ptr<views::View> TabCollectionNode::CreateViewForNode(
     TabCollectionNode* node_for_view) {
@@ -198,6 +205,7 @@ std::unique_ptr<views::View> TabCollectionNode::CreateAndSetView() {
 void TabCollectionNode::AddChild(std::unique_ptr<views::View> child_node_view,
                                  std::unique_ptr<TabCollectionNode> child_node,
                                  size_t model_index) {
+  child_node->SetController(tab_strip_controller_);
   children_.insert(children_.begin() + model_index, std::move(child_node));
   // Add child view after inserting the child node into children_, as adding the
   // view may depend on the order of the node in children_.

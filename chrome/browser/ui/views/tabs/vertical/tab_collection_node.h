@@ -20,6 +20,8 @@ namespace views {
 class View;
 }
 
+class VerticalTabStripController;
+
 // TODO(crbug.com/459824840): Animate views based on operation.
 class TabCollectionNode {
  public:
@@ -96,6 +98,8 @@ class TabCollectionNode {
 
   static void SetViewFactoryForTesting(ViewFactory factory);
   views::View* get_view_for_testing() { return node_view_; }
+  void SetController(VerticalTabStripController* controller);
+  VerticalTabStripController* GetController() { return tab_strip_controller_; }
 
  protected:
   // Returns the pass key to be used by derived classes so that methods such as
@@ -140,6 +144,9 @@ class TabCollectionNode {
   // The view created for this node. (for tab:tabview, for unpinned: the
   // unpinned_container_view).
   raw_ptr<views::View> node_view_ = nullptr;
+
+  // Allows views to create the Tab Context Menu.
+  raw_ptr<VerticalTabStripController> tab_strip_controller_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_TAB_COLLECTION_NODE_H_

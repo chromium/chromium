@@ -15,10 +15,13 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_bottom_container.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/background.h"
@@ -109,6 +112,23 @@ bool VerticalTabStripRegionView::IsPositionInWindowCaption(
   }
 
   return false;
+}
+
+void VerticalTabStripRegionView::CreateTabStripController(
+    BrowserView* browser_view) {
+  std::unique_ptr<TabMenuModelFactory> tab_menu_model_factory;
+  if (browser_view && browser_view->browser()->app_controller()) {
+    tab_menu_model_factory =
+        browser_view->browser()->app_controller()->GetTabMenuModelFactory();
+  }
+
+  tab_strip_controller_ = std::make_unique<VerticalTabStripController>(
+      browser_view->browser()->GetTabStripModel(), browser_view,
+      std::move(tab_menu_model_factory));
+
+  if (root_node_) {
+    root_node_->SetController(tab_strip_controller_.get());
+  }
 }
 
 views::View* VerticalTabStripRegionView::SetTabStripView(

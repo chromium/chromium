@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessible_pane_view.h"
@@ -79,6 +80,8 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
+  void CreateTabStripController(BrowserView* browser_view);
+
  private:
   views::View* SetTabStripView(std::unique_ptr<views::View> view);
 
@@ -91,6 +94,7 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
   raw_ptr<VerticalTabStripBottomContainer> bottom_button_container_ = nullptr;
   raw_ptr<views::View> gemini_button_ = nullptr;
   raw_ptr<views::ResizeArea> resize_area_ = nullptr;
+  std::unique_ptr<VerticalTabStripController> tab_strip_controller_;
   std::unique_ptr<RootTabCollectionNode> root_node_;
 
   raw_ptr<tabs::VerticalTabStripStateController> state_controller_;

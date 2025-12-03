@@ -5331,6 +5331,10 @@ void BrowserView::AddedToWidget() {
                 weak_ptr_factory_.GetWeakPtr()));
   }
 
+  if (tabs::IsVerticalTabsFeatureEnabled()) {
+    vertical_tab_strip_container_->CreateTabStripController(this);
+  }
+
   initialized_ = true;
 }
 
