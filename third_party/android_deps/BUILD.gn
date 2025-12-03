@@ -238,16 +238,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_jetbrains_kotlinx_atomicfu_jvm_java") {
-    jar_path = "cipd/libs/org_jetbrains_kotlinx_atomicfu_jvm/atomicfu-jvm.jar"
-    output_name = "org_jetbrains_kotlinx_atomicfu_jvm"
-    supports_android = true
-    requires_android = true
-    enable_bytecode_checks = false
-    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_guava_java") {
     jar_path = "cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_guava/kotlinx-coroutines-guava.jar"
     output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_guava"

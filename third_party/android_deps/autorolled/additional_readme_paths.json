@@ -98,6 +98,7 @@
     "committed/libs/org_checkerframework_checker_util",
     "committed/libs/org_codehaus_mojo_animal_sniffer_annotations",
     "committed/libs/org_conscrypt_conscrypt_openjdk_uber",
+    "committed/libs/org_jetbrains_kotlinx_atomicfu_jvm",
     "committed/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android",
     "committed/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
     "committed/libs/org_jetbrains_kotlinx_kotlinx_coroutines_play_services",

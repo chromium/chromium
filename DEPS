@@ -3203,7 +3203,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/autorolled',
-              'version': 'b9LVjZwQgZYKN3YpOOKYevXPVU3b0JEo-va9zgd91qAC',
+              'version': 'A-9pzGUkXSm8E7UPgdc18jEeJnB9vtsgawWofwVeg7AC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3338,17 +3338,6 @@ deps = {
           {
               'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_parcelize_runtime',
               'version': 'version:2@1.9.22.cr2',
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
-
-  'src/third_party/android_deps/cipd/libs/org_jetbrains_kotlinx_atomicfu_jvm': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlinx_atomicfu_jvm',
-              'version': 'version:2@0.23.2.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',

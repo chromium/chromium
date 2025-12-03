@@ -875,6 +875,16 @@ template("define_autorolled_targets") {
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    java_prebuilt("org_jetbrains_kotlinx_atomicfu_jvm_java") {
+      jar_path = "autorolled/cipd/libs/org_jetbrains_kotlinx_atomicfu_jvm/atomicfu-jvm.jar"
+      output_name = "org_jetbrains_kotlinx_atomicfu_jvm"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+      deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_android_java") {
       jar_path = "autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android.jar"
       output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_android"
