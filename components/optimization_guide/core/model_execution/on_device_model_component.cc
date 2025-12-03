@@ -492,4 +492,11 @@ void OnDeviceModelComponentStateManager::NotifyStateChanged() {
   }
 }
 
+void OnDeviceModelComponentStateManager::ForceUninstall() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/424764871): Likely will need to notify observers of the
+  // state change.
+  UninstallComponent();
+}
+
 }  // namespace optimization_guide

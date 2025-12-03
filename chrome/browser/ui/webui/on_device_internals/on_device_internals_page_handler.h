@@ -63,6 +63,7 @@ class PageHandler : public mojom::PageHandler,
   void GetDeviceAndPerformanceInfo(
       GetDeviceAndPerformanceInfoCallback callback) override;
   void GetDefaultModelPath(GetDefaultModelPathCallback callback) override;
+  void UninstallDefaultModel() override;
   void GetPageData(GetPageDataCallback callback) override;
   void SetFeatureRecentlyUsedState(int feature_key,
                                    bool is_recently_used) override;

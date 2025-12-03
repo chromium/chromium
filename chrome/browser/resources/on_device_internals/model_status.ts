@@ -73,6 +73,10 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
   private async getPageData_() {
     this.pageData_ = (await this.proxy_.handler.getPageData()).pageData;
   }
+
+  protected uninstallDefaultModel_() {
+    this.proxy_.handler.uninstallDefaultModel();
+  }
 }
 
 declare global {

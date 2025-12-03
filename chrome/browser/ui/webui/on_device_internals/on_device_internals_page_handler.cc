@@ -319,6 +319,15 @@ void PageHandler::GetDefaultModelPath(GetDefaultModelPathCallback callback) {
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 }
 
+void PageHandler::UninstallDefaultModel() {
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+  optimization_guide_keyed_service_->GetGlobalState()
+      .model_broker_state()
+      .component_state_manager()
+      .ForceUninstall();
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+}
+
 void PageHandler::OnLogMessageAdded(
     base::Time event_time,
     optimization_guide_common::mojom::LogSource log_source,

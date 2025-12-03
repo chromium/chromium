@@ -111,6 +111,9 @@ interface PageHandler {
   // Returns the path of the default model.
   GetDefaultModelPath() => (mojo_base.mojom.FilePath? model_path);
 
+  // Uninstalls the default model.
+  UninstallDefaultModel();
+
   // Returns the status of various on-device models.
   GetPageData() => (PageData page_data);
 

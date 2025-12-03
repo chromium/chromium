@@ -287,6 +287,9 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   // Called when the on-device component has been uninstalled.
   void UninstallComplete();
 
+  // Used by the chrome://on-device-internals page to uninstall the model.
+  void ForceUninstall();
+
   base::WeakPtr<OnDeviceModelComponentStateManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
