@@ -489,7 +489,6 @@ source_set("common_constants") {
     "../../policy_export.h",
     "cloud/cloud_policy_constants.cc",
     "cloud/cloud_policy_constants.h",
-    "policy_pref_names.cc",
     "policy_pref_names.h",
     "policy_switches.cc",
     "policy_switches.h",
