@@ -1492,7 +1492,8 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
   visit_info.is_known_to_sync = is_known_to_sync;
   visit_info.consider_for_ntp_most_visited = consider_for_ntp_most_visited;
   visit_info.app_id = app_id;
-  visit_info.visit_id = db_->AddVisit(&visit_info, visit_source);
+  visit_info.source = visit_source;
+  visit_info.visit_id = db_->AddVisit(&visit_info);
 
   if (visit_info.visit_time < first_recorded_time_)
     first_recorded_time_ = visit_info.visit_time;
@@ -1558,7 +1559,8 @@ void HistoryBackend::AddPagesWithDetails(const URLRows& urls,
                                     ui::PAGE_TRANSITION_CHAIN_END),
           /*arg_segment_id=*/0, /*arg_incremented_omnibox_typed_score=*/false,
           /*arg_opener_visit=*/0);
-      if (!db_->AddVisit(&visit_info, visit_source)) {
+      visit_info.source = visit_source;
+      if (!db_->AddVisit(&visit_info)) {
         DLOG(ERROR) << "AddPagesWithDetails: Adding visit failed: " << i->url();
         return;
       }

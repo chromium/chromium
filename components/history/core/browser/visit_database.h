@@ -41,9 +41,9 @@ class VisitDatabase {
 
   // Adds a line to the visit database with the given information, returning
   // the added row ID on success, 0 on failure. The given visit is updated with
-  // the new row ID on success. In addition, adds its source into visit_source
-  // table.
-  VisitID AddVisit(VisitRow* visit, VisitSource source);
+  // the new row ID on success. In addition, adds its `VisitRow.source` into
+  // `visit_source` table.
+  VisitID AddVisit(VisitRow* visit);
 
   // Deletes the given visit from the database. If a visit with the given ID
   // doesn't exist, it will not do anything.
