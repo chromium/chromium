@@ -692,8 +692,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             Intent intent, Bundle savedInstanceState) {
         // Detect if incoming intent is a result of Chrome recreating itself. For now, restrict this
         // path to reparenting to ensure the launching logic isn't disrupted.
-        // TODO(crbug.com/40681858): Unlock this codepath for all incoming intents once it's
-        // confirmed working and stable.
         if (savedInstanceState != null
                 && AsyncTabParamsManagerSingleton.getInstance().hasParamsWithTabToReparent()) {
             return LaunchIntentDispatcher.Action.CONTINUE;
