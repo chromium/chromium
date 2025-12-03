@@ -267,6 +267,8 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="Android FIDO2 hybrid error"/>
   <int value="22" label="Android FIDO2 legacy success"/>
   <int value="23" label="Android FIDO2 legacy error"/>
+  <int value="24" label="Android Identity Credentials Module success"/>
+  <int value="25" label="Android Identity Credentials Module error"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/webauth/authenticator_request_outcome_enums.h:CredentialRequestResult) -->

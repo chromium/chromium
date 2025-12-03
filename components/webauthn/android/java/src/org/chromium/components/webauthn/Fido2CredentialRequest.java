@@ -182,8 +182,16 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
         if (requestCallback == null) return;
         switch (requestCallback.getCallbackType()) {
             case WebauthnRequestCallback.CallbackType.MAKE_CREDENTIAL:
+                RequestMetrics.Builder makeBuilder = new RequestMetrics.Builder();
+                if (response != null) {
+                    makeBuilder.setMakeCredentialOutcome(response);
+                }
+                if (credentialRequestResult != null) {
+                    makeBuilder.setMakeCredentialResult(credentialRequestResult);
+                }
                 requestCallback.onComplete(
-                        WebauthnRequestResponse.forFailedMakeCredential(errorCode, response));
+                        WebauthnRequestResponse.forFailedMakeCredential(
+                                errorCode, makeBuilder.build()));
                 break;
             case WebauthnRequestCallback.CallbackType.GET_CREDENTIAL:
                 RequestMetrics.Builder builder =
@@ -380,7 +388,9 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                             clientDataHash);
             if (result != AuthenticatorStatus.SUCCESS) {
                 returnErrorAndResetCallback(
-                        result, /* response= */ null, /* credentialRequestResult= */ null);
+                        result,
+                        /* response= */ null,
+                        CredentialRequestResult.ANDROID_CRED_MAN_ERROR);
             }
             return;
         }
@@ -409,7 +419,9 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                             clientDataHash);
             if (result != AuthenticatorStatus.SUCCESS) {
                 returnErrorAndResetCallback(
-                        result, /* response= */ null, /* credentialRequestResult= */ null);
+                        result,
+                        /* response= */ null,
+                        CredentialRequestResult.ANDROID_CRED_MAN_ERROR);
             }
             return;
         }
@@ -1353,15 +1365,19 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
     }
 
     private @Nullable Integer getCredentialRequestResult(
-            @Fido2ApiRequestType int requestType,
-            boolean success,
-            @Nullable @GetAssertionOutcome Integer ukmOutcome) {
+            @Fido2ApiRequestType int requestType, boolean success, @Nullable Integer ukmOutcome) {
         log(TAG, "getCredentialRequestResult: success: " + success + " ukmOutcome: " + ukmOutcome);
         if (!success) {
             if (ukmOutcome != null && ukmOutcome == GetAssertionOutcome.USER_CANCELLATION) {
                 return CredentialRequestResult.USER_CANCELLED;
             }
             if (ukmOutcome != null && ukmOutcome == GetAssertionOutcome.UI_TIMEOUT) {
+                return CredentialRequestResult.TIMEOUT;
+            }
+            if (ukmOutcome != null && ukmOutcome == MakeCredentialOutcome.USER_CANCELLATION) {
+                return CredentialRequestResult.USER_CANCELLED;
+            }
+            if (ukmOutcome != null && ukmOutcome == MakeCredentialOutcome.UI_TIMEOUT) {
                 return CredentialRequestResult.TIMEOUT;
             }
         }
@@ -1377,6 +1393,10 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
             return success
                     ? CredentialRequestResult.ANDROID_FIDO2_LEGACY_SUCCESS
                     : CredentialRequestResult.ANDROID_FIDO2_LEGACY_ERROR;
+        } else if (requestType == Fido2ApiRequestType.MAKE_CREDENTIAL) {
+            return success
+                    ? CredentialRequestResult.ANDROID_FIDO2_SUCCESS
+                    : CredentialRequestResult.ANDROID_FIDO2_ERROR;
         }
         return null;
     }
@@ -1510,8 +1530,18 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                 if (mClientDataJson != null) {
                     creationResponse.info.clientDataJson = mClientDataJson;
                 }
+                Integer makeCredentialResult =
+                        getCredentialRequestResult(
+                                requestType, /* success= */ true, /* ukmOutcome= */ null);
+                RequestMetrics.Builder builder =
+                        new RequestMetrics.Builder()
+                                .setMakeCredentialOutcome(MakeCredentialOutcome.SUCCESS);
+                if (makeCredentialResult != null) {
+                    builder.setMakeCredentialResult(makeCredentialResult);
+                }
                 requestCallback.onComplete(
-                        WebauthnRequestResponse.forSuccessfulMakeCredential(creationResponse));
+                        WebauthnRequestResponse.forSuccessfulMakeCredential(
+                                creationResponse, builder.build()));
                 return;
             }
         } else if (requestCallbackType == WebauthnRequestCallback.CallbackType.GET_CREDENTIAL) {
@@ -1539,7 +1569,11 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
         }
 
         if (requestCallbackType == WebauthnRequestCallback.CallbackType.MAKE_CREDENTIAL) {
-            returnErrorAndResetCallback(errorCode, makeCredentialOutcome, null);
+            returnErrorAndResetCallback(
+                    errorCode,
+                    makeCredentialOutcome,
+                    getCredentialRequestResult(
+                            requestType, /* success= */ false, makeCredentialOutcome));
         } else if (requestCallbackType == WebauthnRequestCallback.CallbackType.GET_CREDENTIAL) {
             returnErrorAndResetCallback(
                     errorCode,

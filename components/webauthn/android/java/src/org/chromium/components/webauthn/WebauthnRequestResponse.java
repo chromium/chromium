@@ -28,29 +28,19 @@ public class WebauthnRequestResponse {
     private WebauthnRequestResponse() {}
 
     public static WebauthnRequestResponse forSuccessfulMakeCredential(
-            MakeCredentialAuthenticatorResponse makeCredentialResponse) {
+            MakeCredentialAuthenticatorResponse makeCredentialResponse, RequestMetrics result) {
         WebauthnRequestResponse response = new WebauthnRequestResponse();
         response.mAuthenticatorStatus = AuthenticatorStatus.SUCCESS;
         response.mMakeCredentialResponse = makeCredentialResponse;
-        response.mRequestMetrics =
-                new RequestMetrics.Builder()
-                        .setMakeCredentialOutcome(MakeCredentialOutcome.SUCCESS)
-                        .build();
+        response.mRequestMetrics = result;
         return response;
     }
 
     public static WebauthnRequestResponse forFailedMakeCredential(
-            int makeCredentialStatus,
-            @Nullable @MakeCredentialOutcome Integer makeCredentialOutcome) {
+            int makeCredentialStatus, RequestMetrics result) {
         WebauthnRequestResponse response = new WebauthnRequestResponse();
         response.mAuthenticatorStatus = makeCredentialStatus;
-        response.mRequestMetrics =
-                new RequestMetrics.Builder()
-                        .setMakeCredentialOutcome(
-                                makeCredentialOutcome != null
-                                        ? makeCredentialOutcome
-                                        : MakeCredentialOutcome.OTHER_FAILURE)
-                        .build();
+        response.mRequestMetrics = result;
         return response;
     }
 

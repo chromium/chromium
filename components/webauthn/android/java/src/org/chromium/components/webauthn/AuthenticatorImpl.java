@@ -156,7 +156,8 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         if (mRequestCallback != null) {
             requestCallback.onComplete(
                     WebauthnRequestResponse.forFailedMakeCredential(
-                            AuthenticatorStatus.PENDING_REQUEST, null));
+                            AuthenticatorStatus.PENDING_REQUEST,
+                            new RequestMetrics.Builder().build()));
             return;
         }
         log(TAG, "makeCredential");
@@ -169,7 +170,9 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             mRequestCallback.onComplete(
                     WebauthnRequestResponse.forFailedMakeCredential(
                             AuthenticatorStatus.NOT_IMPLEMENTED,
-                            MakeCredentialOutcome.OTHER_FAILURE));
+                            new RequestMetrics.Builder()
+                                    .setMakeCredentialOutcome(MakeCredentialOutcome.OTHER_FAILURE)
+                                    .build()));
             return;
         }
 
@@ -181,11 +184,17 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             if (!mCreateConfirmationUiDelegate.show(
                     () -> continueMakeCredential(options),
                     () -> {
+                        RequestMetrics metrics =
+                                new RequestMetrics.Builder()
+                                        .setMakeCredentialOutcome(
+                                                MakeCredentialOutcome.USER_CANCELLATION)
+                                        .setMakeCredentialResult(
+                                                CredentialRequestResult.USER_CANCELLED)
+                                        .build();
                         assumeNonNull(mRequestCallback)
                                 .onComplete(
                                         WebauthnRequestResponse.forFailedMakeCredential(
-                                                AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                                                MakeCredentialOutcome.USER_CANCELLATION));
+                                                AuthenticatorStatus.NOT_ALLOWED_ERROR, metrics));
                     })) {
                 continueMakeCredential(options);
             }
@@ -470,6 +479,12 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             RecordHistogram.recordEnumeratedHistogram(
                     "WebAuthentication.GetAssertion.Result",
                     result.getGetAssertionResult(),
+                    CredentialRequestResult.MAX_VALUE + 1);
+        }
+        if (result.getMakeCredentialResult() != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "WebAuthentication.MakeCredential.Result",
+                    result.getMakeCredentialResult(),
                     CredentialRequestResult.MAX_VALUE + 1);
         }
 

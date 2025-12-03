@@ -55,7 +55,11 @@ public class WebauthnRequestCallbackRobolectricTest {
         MakeCredentialAuthenticatorResponse responseData =
                 new MakeCredentialAuthenticatorResponse();
         WebauthnRequestResponse response =
-                WebauthnRequestResponse.forSuccessfulMakeCredential(responseData);
+                WebauthnRequestResponse.forSuccessfulMakeCredential(
+                        responseData,
+                        new RequestMetrics.Builder()
+                                .setMakeCredentialOutcome(MakeCredentialOutcome.SUCCESS)
+                                .build());
         callback.onComplete(response);
 
         verify(mMakeCredentialCallback).call(AuthenticatorStatus.SUCCESS, responseData, null);
@@ -80,7 +84,9 @@ public class WebauthnRequestCallbackRobolectricTest {
         WebauthnRequestResponse response =
                 WebauthnRequestResponse.forFailedMakeCredential(
                         AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                        MakeCredentialOutcome.USER_CANCELLATION);
+                        new RequestMetrics.Builder()
+                                .setMakeCredentialOutcome(MakeCredentialOutcome.USER_CANCELLATION)
+                                .build());
         callback.onComplete(response);
 
         verify(mMakeCredentialCallback).call(AuthenticatorStatus.NOT_ALLOWED_ERROR, null, null);
@@ -178,7 +184,11 @@ public class WebauthnRequestCallbackRobolectricTest {
         MakeCredentialAuthenticatorResponse responseData =
                 new MakeCredentialAuthenticatorResponse();
         WebauthnRequestResponse response =
-                WebauthnRequestResponse.forSuccessfulMakeCredential(responseData);
+                WebauthnRequestResponse.forSuccessfulMakeCredential(
+                        responseData,
+                        new RequestMetrics.Builder()
+                                .setMakeCredentialOutcome(MakeCredentialOutcome.SUCCESS)
+                                .build());
         callback.onComplete(response);
         // Second call should be ignored.
         callback.onComplete(response);

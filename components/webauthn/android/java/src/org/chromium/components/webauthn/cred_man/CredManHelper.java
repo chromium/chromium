@@ -131,7 +131,12 @@ public class CredManHelper {
                             callback.onComplete(
                                     WebauthnRequestResponse.forFailedMakeCredential(
                                             AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                                            MakeCredentialOutcome.USER_CANCELLATION));
+                                            new RequestMetrics.Builder()
+                                                    .setMakeCredentialOutcome(
+                                                            MakeCredentialOutcome.USER_CANCELLATION)
+                                                    .setMakeCredentialResult(
+                                                            CredentialRequestResult.USER_CANCELLED)
+                                                    .build()));
                             mMetricsHelper.recordCredManCreateRequestHistogram(
                                     CredManCreateRequestEnum.CANCELLED);
                         } else if (errorType.equals(
@@ -139,7 +144,14 @@ public class CredManHelper {
                             callback.onComplete(
                                     WebauthnRequestResponse.forFailedMakeCredential(
                                             AuthenticatorStatus.CREDENTIAL_EXCLUDED,
-                                            MakeCredentialOutcome.CREDENTIAL_EXCLUDED));
+                                            new RequestMetrics.Builder()
+                                                    .setMakeCredentialOutcome(
+                                                            MakeCredentialOutcome
+                                                                    .CREDENTIAL_EXCLUDED)
+                                                    .setMakeCredentialResult(
+                                                            CredentialRequestResult
+                                                                    .ANDROID_CRED_MAN_ERROR)
+                                                    .build()));
                             // This is successful from the point of view of the user.
                             mMetricsHelper.recordCredManCreateRequestHistogram(
                                     CredManCreateRequestEnum.SUCCESS);
@@ -150,7 +162,12 @@ public class CredManHelper {
                             //  * CreateCredentialException.TYPE_INTERRUPTED
                             callback.onComplete(
                                     WebauthnRequestResponse.forFailedMakeCredential(
-                                            AuthenticatorStatus.UNKNOWN_ERROR, null));
+                                            AuthenticatorStatus.UNKNOWN_ERROR,
+                                            new RequestMetrics.Builder()
+                                                    .setMakeCredentialResult(
+                                                            CredentialRequestResult
+                                                                    .ANDROID_CRED_MAN_ERROR)
+                                                    .build()));
                             mMetricsHelper.recordCredManCreateRequestHistogram(
                                     CredManCreateRequestEnum.FAILURE);
                         }
@@ -171,7 +188,12 @@ public class CredManHelper {
                         if (response == null) {
                             callback.onComplete(
                                     WebauthnRequestResponse.forFailedMakeCredential(
-                                            AuthenticatorStatus.UNKNOWN_ERROR, null));
+                                            AuthenticatorStatus.UNKNOWN_ERROR,
+                                            new RequestMetrics.Builder()
+                                                    .setMakeCredentialResult(
+                                                            CredentialRequestResult
+                                                                    .ANDROID_CRED_MAN_ERROR)
+                                                    .build()));
                             mMetricsHelper.recordCredManCreateRequestHistogram(
                                     CredManCreateRequestEnum.FAILURE);
                             return;
@@ -181,7 +203,15 @@ public class CredManHelper {
                         }
                         response.echoCredProps = options.credProps;
                         callback.onComplete(
-                                WebauthnRequestResponse.forSuccessfulMakeCredential(response));
+                                WebauthnRequestResponse.forSuccessfulMakeCredential(
+                                        response,
+                                        new RequestMetrics.Builder()
+                                                .setMakeCredentialOutcome(
+                                                        MakeCredentialOutcome.SUCCESS)
+                                                .setMakeCredentialResult(
+                                                        CredentialRequestResult
+                                                                .ANDROID_CRED_MAN_SUCCESS)
+                                                .build()));
                         mMetricsHelper.recordCredManCreateRequestHistogram(
                                 CredManCreateRequestEnum.SUCCESS);
                     }

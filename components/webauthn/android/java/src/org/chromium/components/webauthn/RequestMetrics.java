@@ -13,14 +13,17 @@ public class RequestMetrics {
     private final @Nullable @MakeCredentialOutcome Integer mMakeCredentialOutcome;
     private final @Nullable @GetAssertionOutcome Integer mGetAssertionOutcome;
     private final @Nullable @CredentialRequestResult Integer mGetAssertionResult;
+    private final @Nullable @CredentialRequestResult Integer mMakeCredentialResult;
 
     private RequestMetrics(
             @Nullable @MakeCredentialOutcome Integer makeCredentialOutcome,
             @Nullable @GetAssertionOutcome Integer getAssertionOutcome,
-            @Nullable @CredentialRequestResult Integer getAssertionResult) {
+            @Nullable @CredentialRequestResult Integer getAssertionResult,
+            @Nullable @CredentialRequestResult Integer makeCredentialResult) {
         mMakeCredentialOutcome = makeCredentialOutcome;
         mGetAssertionOutcome = getAssertionOutcome;
         mGetAssertionResult = getAssertionResult;
+        mMakeCredentialResult = makeCredentialResult;
     }
 
     public @Nullable @MakeCredentialOutcome Integer getMakeCredentialOutcome() {
@@ -35,10 +38,15 @@ public class RequestMetrics {
         return mGetAssertionResult;
     }
 
+    public @Nullable @CredentialRequestResult Integer getMakeCredentialResult() {
+        return mMakeCredentialResult;
+    }
+
     public static class Builder {
         private @Nullable @MakeCredentialOutcome Integer mMakeCredentialOutcome;
         private @Nullable @GetAssertionOutcome Integer mGetAssertionOutcome;
         private @Nullable @CredentialRequestResult Integer mGetAssertionResult;
+        private @Nullable @CredentialRequestResult Integer mMakeCredentialResult;
 
         public Builder setMakeCredentialOutcome(@MakeCredentialOutcome int makeCredentialOutcome) {
             mMakeCredentialOutcome = makeCredentialOutcome;
@@ -55,9 +63,17 @@ public class RequestMetrics {
             return this;
         }
 
+        public Builder setMakeCredentialResult(@CredentialRequestResult int makeCredentialResult) {
+            mMakeCredentialResult = makeCredentialResult;
+            return this;
+        }
+
         public RequestMetrics build() {
             return new RequestMetrics(
-                    mMakeCredentialOutcome, mGetAssertionOutcome, mGetAssertionResult);
+                    mMakeCredentialOutcome,
+                    mGetAssertionOutcome,
+                    mGetAssertionResult,
+                    mMakeCredentialResult);
         }
     }
 }

@@ -777,6 +777,8 @@ void MaybeRecordBrowserAssistedLogin(CredentialRequestResult request_result) {
     case CredentialRequestResult::kAndroidCredManError:
     case CredentialRequestResult::kAndroidFido2HybridError:
     case CredentialRequestResult::kAndroidFido2LegacyError:
+    case CredentialRequestResult::kAndroidIdentityCredentialsSuccess:
+    case CredentialRequestResult::kAndroidIdentityCredentialsError:
       NOTREACHED();
   }
   if (login_type.has_value()) {

@@ -74,7 +74,12 @@ public class IdentityCredentialsHelper {
             callback.onComplete(
                     WebauthnRequestResponse.forFailedMakeCredential(
                             AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                            MakeCredentialOutcome.OTHER_FAILURE));
+                            new RequestMetrics.Builder()
+                                    .setMakeCredentialOutcome(MakeCredentialOutcome.OTHER_FAILURE)
+                                    .setMakeCredentialResult(
+                                            CredentialRequestResult
+                                                    .ANDROID_IDENTITY_CREDENTIALS_ERROR)
+                                    .build()));
             return;
         }
     }
@@ -93,7 +98,13 @@ public class IdentityCredentialsHelper {
                     .onComplete(
                             WebauthnRequestResponse.forFailedMakeCredential(
                                     AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                                    MakeCredentialOutcome.OTHER_FAILURE));
+                                    new RequestMetrics.Builder()
+                                            .setMakeCredentialOutcome(
+                                                    MakeCredentialOutcome.OTHER_FAILURE)
+                                            .setMakeCredentialResult(
+                                                    CredentialRequestResult
+                                                            .ANDROID_IDENTITY_CREDENTIALS_ERROR)
+                                            .build()));
             return;
         }
         if (clientDataJson != null) {
@@ -101,7 +112,15 @@ public class IdentityCredentialsHelper {
         }
         response.echoCredProps = options.credProps;
         assumeNonNull(mAuthenticationContextProvider.getRequestCallback())
-                .onComplete(WebauthnRequestResponse.forSuccessfulMakeCredential(response));
+                .onComplete(
+                        WebauthnRequestResponse.forSuccessfulMakeCredential(
+                                response,
+                                new RequestMetrics.Builder()
+                                        .setMakeCredentialOutcome(MakeCredentialOutcome.SUCCESS)
+                                        .setMakeCredentialResult(
+                                                CredentialRequestResult
+                                                        .ANDROID_IDENTITY_CREDENTIALS_SUCCESS)
+                                        .build()));
     }
 
     private void onConditionalCreateFailure(Exception e) {
@@ -113,7 +132,12 @@ public class IdentityCredentialsHelper {
         callback.onComplete(
                 WebauthnRequestResponse.forFailedMakeCredential(
                         AuthenticatorStatus.NOT_ALLOWED_ERROR,
-                        MakeCredentialOutcome.CONDITIONAL_CREATE_FAILURE));
+                        new RequestMetrics.Builder()
+                                .setMakeCredentialOutcome(
+                                        MakeCredentialOutcome.CONDITIONAL_CREATE_FAILURE)
+                                .setMakeCredentialResult(
+                                        CredentialRequestResult.ANDROID_IDENTITY_CREDENTIALS_ERROR)
+                                .build()));
     }
 
     private Bundle requestBundle(String requestJson, byte @Nullable [] clientDataHash) {

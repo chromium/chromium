@@ -115,8 +115,10 @@ enum class CredentialRequestResult {
   kAndroidFido2HybridError = 21,
   kAndroidFido2LegacySuccess = 22,
   kAndroidFido2LegacyError = 23,
+  kAndroidIdentityCredentialsSuccess = 24,
+  kAndroidIdentityCredentialsError = 25,
 
-  kMaxValue = kAndroidFido2LegacyError,
+  kMaxValue = kAndroidIdentityCredentialsError,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WebAuthenticationCredentialRequestResult)
 
