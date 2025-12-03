@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/read_anything/immersive_read_anything_overlay_view.h"
+#include "chrome/browser/ui/read_anything/read_anything_immersive_overlay_view.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -103,10 +103,10 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
       AddChildView(std::make_unique<enterprise_watermark::WatermarkView>());
 
   if (features::IsImmersiveReadAnythingEnabled()) {
-    auto immersive_read_anything_overlay_view =
-        std::make_unique<ImmersiveReadAnythingOverlayView>();
-    immersive_read_anything_overlay_view_ =
-        AddChildView(std::move(immersive_read_anything_overlay_view));
+    auto read_anything_immersive_overlay_view =
+        std::make_unique<ReadAnythingImmersiveOverlayView>();
+    read_anything_immersive_overlay_view_ =
+        AddChildView(std::move(read_anything_immersive_overlay_view));
   }
 
   contents_scrim_view_ = AddChildView(std::make_unique<ScrimView>());
@@ -552,10 +552,10 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
 
   // Reading Mode overlay view bounds are the same as the contents view.
   if (features::IsImmersiveReadAnythingEnabled() &&
-      immersive_read_anything_overlay_view_) {
+      read_anything_immersive_overlay_view_) {
     layouts.child_layouts.emplace_back(
-        immersive_read_anything_overlay_view_.get(),
-        immersive_read_anything_overlay_view_->GetVisible(),
+        read_anything_immersive_overlay_view_.get(),
+        read_anything_immersive_overlay_view_->GetVisible(),
         non_devtools_contents_bounds, size_bounds);
   }
 

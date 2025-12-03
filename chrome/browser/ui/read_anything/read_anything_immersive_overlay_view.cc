@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/read_anything/immersive_read_anything_overlay_view.h"
+#include "chrome/browser/ui/read_anything/read_anything_immersive_overlay_view.h"
 
 #include <memory>
 
@@ -10,13 +10,13 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/fill_layout.h"
 
-ImmersiveReadAnythingOverlayView::ImmersiveReadAnythingOverlayView() {
+ReadAnythingImmersiveOverlayView::ReadAnythingImmersiveOverlayView() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetID(VIEW_ID_READ_ANYTHING_OVERLAY);
   SetVisible(false);
 }
 
-ImmersiveReadAnythingOverlayView::~ImmersiveReadAnythingOverlayView() = default;
+ReadAnythingImmersiveOverlayView::~ReadAnythingImmersiveOverlayView() = default;
 
-BEGIN_METADATA(ImmersiveReadAnythingOverlayView)
+BEGIN_METADATA(ReadAnythingImmersiveOverlayView)
 END_METADATA
