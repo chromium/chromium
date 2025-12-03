@@ -79,6 +79,7 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -369,8 +370,18 @@ class RootWindowTargeter : public aura::WindowTargeter {
       // adjust the location.
       bool bounded_click = ShouldConstrainMouseClick(event, has_capture_target);
       if (!has_capture_target || bounded_click) {
+        // TODO(crbug.com/462446075) : Remove this once the empty target window
+        // is identified.
+        if (window->bounds().IsEmpty()) {
+          LOG(ERROR) << " Window with empty bounds is target:"
+                     << window->GetName();
+          base::debug::DumpWithoutCrashing();
+        }
+        const gfx::Rect& window_bounds = window->bounds();
         gfx::Point new_location =
-            FitPointToBounds(event->location(), window->bounds());
+            window_bounds.IsEmpty()
+                ? event->location()
+                : FitPointToBounds(event->location(), window->bounds());
         // Do not change |location_f|. It's used to compute pixel position and
         // such client should know what they're doing.
         event->set_location(new_location);
