@@ -107,7 +107,6 @@ TAG_SPECIALIZATIONS = {
             'intel-gen-12',
             'intel-0xa2e',
             'intel-0xa011',
-            'intel-0xe20c',
             'intel-0x3e92',
             'intel-0x3e9b',
             'intel-0x4680',

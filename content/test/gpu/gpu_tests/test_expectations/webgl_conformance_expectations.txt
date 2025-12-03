@@ -38,9 +38,8 @@
 #         google google-0xffff google-0xc0de
 #         imagination
 #         imagination-technologies
-#         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xa011 intel-0xe20c
-#             intel-0x3e92 intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912
-#             intel-0x9bc5
+#         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xa011 intel-0x3e92
+#             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
 #         nvidia nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
 #         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
@@ -486,12 +485,6 @@ crbug.com/452924810 [ win11 qualcomm-0x36334330 angle-vulkan ] conformance/exten
 
 ## Win / Intel / D3D9
 crbug.com/395934162 [ angle-d3d9 intel-0x4680 passthrough win ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
-crbug.com/395934162 [ win intel-0xe20c angle-d3d9 passthrough ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
-
-## Win / Intel Arc B570 / Vulkan
-crbug.com/459746764 [ win intel-0xe20c angle-vulkan passthrough ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
-crbug.com/459746764 [ win intel-0xe20c angle-vulkan passthrough ] conformance/ogles/GL/cos/cos_001_to_006.html [ Failure ]
-crbug.com/459746764 [ win intel-0xe20c angle-vulkan passthrough ] conformance/ogles/GL/step/step_001_to_006.html [ Failure ]
 
 ####################
 # Mac failures     #

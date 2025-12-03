@@ -38,9 +38,8 @@
 #         google google-0xffff google-0xc0de
 #         imagination
 #         imagination-technologies
-#         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xa011 intel-0xe20c
-#             intel-0x3e92 intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912
-#             intel-0x9bc5
+#         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xa011 intel-0x3e92
+#             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
 #         nvidia nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
 #         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
@@ -260,15 +259,6 @@ crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineIn
 # crbug.com/329138770 [ win11 amd-0x150e ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
 # crbug.com/329138770 [ win11 amd-0x150e ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
 # crbug.com/329138770 [ win11 amd-0x150e ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
-
-# Win/Intel Arc B570 failures
-crbug.com/402989071 [ win11 intel-0xe20c ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
-crbug.com/398149367 [ win11 intel-0xe20c ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
-crbug.com/398149367 [ win11 intel-0xe20c ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
-crbug.com/398149367 [ win11 intel-0xe20c ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
-crbug.com/398149367 [ win11 intel-0xe20c ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
-crbug.com/398149367 [ win11 intel-0xe20c ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
-crbug.com/398149367 [ win11 intel-0xe20c ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 
 # New CopyToGpuMemoryBufferAsync events not found.
 crbug.com/397485312 [ win10 intel-0x9bc5 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
