@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <string_view>
+#include <utility>
 
 #include "base/check.h"
 #include "base/numerics/checked_math.h"
