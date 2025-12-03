@@ -12,7 +12,6 @@ import android.content.res.ColorStateList;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ValueChangedCallback;
@@ -24,7 +23,6 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.chrome_item_picker.TabItemPickerCoordinator.ItemPickerSelectionHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -299,13 +297,6 @@ class TabListEditorMediator
         mTabListEditorLayout.hideLoadingUi();
 
         mModel.set(TabListEditorProperties.IS_VISIBLE, true);
-
-        @StringRes
-        int titleId =
-                (mCreationMode == CreationMode.ITEM_PICKER)
-                        ? R.string.tab_selection_editor_toolbar_add_recent_tabs
-                        : R.string.tab_selection_editor_toolbar_select_items;
-        mModel.set(TabListEditorProperties.TOOLBAR_TITLE, mContext.getString(titleId));
 
         updateToolbar();
 

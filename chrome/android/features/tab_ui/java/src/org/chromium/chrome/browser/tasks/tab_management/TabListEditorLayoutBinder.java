@@ -31,6 +31,7 @@ public class TabListEditorLayoutBinder {
                     view.findViewById(R.id.action_view_layout);
             @CreationMode int creationMode = model.get(TabListEditorProperties.CREATION_MODE);
             actionViewLayout.setCreationMode(creationMode);
+            view.getToolbar().setCreationModeText(creationMode);
         } else if (propertyKey == TabListEditorProperties.DONE_BUTTON_CLICK_HANDLER) {
             view.getToolbar()
                     .getActionViewLayout()
