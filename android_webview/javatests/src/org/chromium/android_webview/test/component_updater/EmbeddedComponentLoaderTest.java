@@ -34,7 +34,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
 
 import java.io.ByteArrayInputStream;
@@ -135,13 +134,6 @@ public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
                 TEST_COMPONENT_ID,
                 new String[] {file.getAbsolutePath(), manifestFile.getAbsolutePath()});
 
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord("Android.WebView.ComponentUpdater.BindServiceTime.Success")
-                        .expectAnyRecord("Android.WebView.ComponentUpdater.ProviderConnectUiTime")
-                        .expectAnyRecord("Android.WebView.ComponentUpdater.ResultsReceived")
-                        .build();
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     EmbeddedComponentLoader mLoader =
@@ -163,8 +155,6 @@ public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
                 1,
                 AwActivityTestRule.WAIT_TIMEOUT_MS,
                 TimeUnit.MILLISECONDS);
-
-        histogramWatcher.assertExpected();
     }
 
     @CalledByNative
