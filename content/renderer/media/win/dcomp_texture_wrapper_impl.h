@@ -7,16 +7,11 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
-#include "content/common/content_export.h"
 #include "content/renderer/media/win/dcomp_texture_factory.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "media/base/video_frame.h"
 #include "media/base/win/dcomp_texture_wrapper.h"
 #include "ui/gfx/geometry/rect.h"
-
-namespace gpu {
-class ClientSharedImage;
-}  // namespace gpu
 
 namespace content {
 
@@ -36,9 +31,8 @@ class DCOMPTextureMailboxResources;
 // - We create a SharedImage mailbox representing the DCOMPTexture at a given
 //   size.
 // - We create a VideoFrame which takes ownership of this SharedImage mailbox.
-class CONTENT_EXPORT DCOMPTextureWrapperImpl
-    : public media::DCOMPTextureWrapper,
-      public DCOMPTextureHost::Listener {
+class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
+                                public DCOMPTextureHost::Listener {
  public:
   // Creates a media::DCOMPTextureWrapper implementation. Can return nullptr if
   // `factory` is null.
@@ -60,9 +54,6 @@ class CONTENT_EXPORT DCOMPTextureWrapperImpl
       SetDCOMPSurfaceHandleCB set_dcomp_surface_handle_cb) override;
   void CreateVideoFrame(const gfx::Size& natural_size,
                         CreateVideoFrameCB create_video_frame_cb) override;
-  void CreateVideoFrame(const gfx::Size& natural_size,
-                        gfx::GpuMemoryBufferHandle dx_handle,
-                        CreateDXVideoFrameCB create_video_frame_cb) override;
 
  private:
   DCOMPTextureWrapperImpl(
@@ -74,10 +65,6 @@ class CONTENT_EXPORT DCOMPTextureWrapperImpl
   // DCOMPTextureHost::Listener:
   void OnSharedImageMailboxBound(gpu::Mailbox mailbox) override;
   void OnOutputRectChange(gfx::Rect output_rect) override;
-
-  void OnDXVideoFrameDestruction(
-      const gpu::SyncToken& sync_token,
-      scoped_refptr<gpu::ClientSharedImage> shared_image);
 
   scoped_refptr<DCOMPTextureFactory> factory_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;

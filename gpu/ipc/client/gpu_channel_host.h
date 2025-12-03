@@ -163,9 +163,7 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
   // running tests and is otherwise ignored.
   void TerminateGpuProcessForTesting();
 
-  // Virtual for testing.
-  virtual scoped_refptr<SharedImageInterface>
-  CreateClientSharedImageInterface();
+  scoped_refptr<SharedImageInterface> CreateClientSharedImageInterface();
 
   // Calls ConnectionTracker::AddObserverIfNotAlreadyLost directly.
   [[nodiscard]] bool AddObserverIfNotAlreadyLost(GpuChannelLostObserver* obs);

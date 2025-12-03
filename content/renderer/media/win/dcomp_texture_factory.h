@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "cc/layers/video_frame_provider.h"
-#include "content/common/content_export.h"
 #include "content/renderer/media/win/dcomp_texture_host.h"
 #include "gpu/command_buffer/common/mailbox.h"
 
@@ -29,7 +28,7 @@ namespace content {
 // Threading Model: This class is created/constructed on the render main thread,
 // IsLost() is also called on the main task runner. Other than that, the class
 // lives and is destructed on the media task runner.
-class CONTENT_EXPORT DCOMPTextureFactory
+class DCOMPTextureFactory
     : public base::RefCountedThreadSafe<DCOMPTextureFactory> {
  public:
   static scoped_refptr<DCOMPTextureFactory> Create(
@@ -48,16 +47,14 @@ class CONTENT_EXPORT DCOMPTextureFactory
 
   gpu::SharedImageInterface* SharedImageInterface();
 
- protected:
+ private:
+  friend class base::RefCountedThreadSafe<DCOMPTextureFactory>;
   DCOMPTextureFactory(
       scoped_refptr<gpu::GpuChannelHost> channel,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner);
   DCOMPTextureFactory(const DCOMPTextureFactory&) = delete;
   DCOMPTextureFactory& operator=(const DCOMPTextureFactory&) = delete;
-  virtual ~DCOMPTextureFactory();
-
- private:
-  friend class base::RefCountedThreadSafe<DCOMPTextureFactory>;
+  ~DCOMPTextureFactory();
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;

@@ -217,52 +217,6 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
   std::move(create_video_frame_cb).Run(frame, mailbox_);
 }
 
-void DCOMPTextureWrapperImpl::CreateVideoFrame(
-    const gfx::Size& natural_size,
-    gfx::GpuMemoryBufferHandle dx_handle,
-    CreateDXVideoFrameCB create_video_frame_cb) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
-
-  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                   gpu::SHARED_IMAGE_USAGE_SCANOUT;
-
-  auto shared_image = sii->CreateSharedImage(
-      {viz::SinglePlaneFormat::kBGRA_8888, natural_size, gfx::ColorSpace(),
-       usage, "DCOMPTextureWrapperImpl"},
-      gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
-      std::move(dx_handle));
-  CHECK(shared_image);
-
-  gpu::Mailbox mailbox = shared_image->mailbox();
-  gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
-
-  auto video_frame_texture = media::VideoFrame::WrapMappableSharedImage(
-      shared_image, sync_token, base::NullCallback(), gfx::Rect(natural_size),
-      natural_size, base::TimeDelta::Min());
-  video_frame_texture->metadata().wants_promotion_hint = true;
-  video_frame_texture->metadata().allow_overlay = true;
-
-  video_frame_texture->AddDestructionObserver(base::BindPostTask(
-      media_task_runner_,
-      base::BindOnce(&DCOMPTextureWrapperImpl::OnDXVideoFrameDestruction,
-                     weak_factory_.GetWeakPtr(), sync_token,
-                     std::move(shared_image)),
-      FROM_HERE));
-
-  std::move(create_video_frame_cb).Run(video_frame_texture, mailbox);
-}
-
-void DCOMPTextureWrapperImpl::OnDXVideoFrameDestruction(
-    const gpu::SyncToken& sync_token,
-    scoped_refptr<gpu::ClientSharedImage> shared_image) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, std::move(shared_image));
-}
-
 void DCOMPTextureWrapperImpl::OnSharedImageMailboxBound(gpu::Mailbox mailbox) {
   DVLOG_FUNC(1);
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());

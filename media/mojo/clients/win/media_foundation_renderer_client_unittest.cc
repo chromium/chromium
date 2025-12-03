@@ -97,14 +97,6 @@ class FakeDCOMPTextureWrapper : public DCOMPTextureWrapper {
     std::move(cb).Run(std::move(video_frame), std::move(dcomp_mailbox_));
   }
 
-  void CreateVideoFrame(const gfx::Size& size,
-                        gfx::GpuMemoryBufferHandle,
-                        CreateDXVideoFrameCB cb) override {
-    // Frame Server CreateVideoFrame
-    scoped_refptr<VideoFrame> video_frame = VideoFrame::CreateBlackFrame(size);
-    std::move(cb).Run(std::move(video_frame), std::move(dcomp_mailbox_));
-  }
-
   // DCompTextureWrapper mocks.
   MOCK_METHOD(void, UpdateTextureSize, (const gfx::Size&), (override));
 
