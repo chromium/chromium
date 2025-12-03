@@ -319,9 +319,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.title);
-    // Some test cases have net errors, so NavigateToURL() may return true or
-    // false.
-    (void)NavigateToURL(GetActiveWebContents(), gurl);
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), gurl));
 
     // Navigate to a web page and then fetch the supplied subresource.
     static constexpr char kScriptTemplate[] = R"(
