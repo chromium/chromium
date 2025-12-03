@@ -106,8 +106,6 @@ class RenderFrameImplTest : public RenderViewTest {
   ~RenderFrameImplTest() override = default;
 
   void SetUp() override {
-    blink::WebRuntimeFeatures::EnableOverlayScrollbars(
-        ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar());
     RenderViewTest::SetUp();
     EXPECT_TRUE(GetMainRenderFrame()->is_main_frame_);
 
