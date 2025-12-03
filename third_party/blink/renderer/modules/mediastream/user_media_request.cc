@@ -1007,7 +1007,6 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       // they cannot be encountered by this method.
       NOTREACHED();
     case Result::REQUEST_CANCELLED:  // Deprecated, use FAILED_DUE_TO_SHUTDOWN
-    case Result::NUM_MEDIA_REQUEST_RESULTS:
       NOTREACHED();  // Not a valid enum value.
   }
   CHECK(exception_code.has_value());

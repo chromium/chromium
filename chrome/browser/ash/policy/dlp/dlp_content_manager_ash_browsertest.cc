@@ -1061,8 +1061,7 @@ class DlpContentManagerAshScreenShareBrowserTest
                              bool expect_warning) {
     // First check for the permission to start screen sharing.
     // It should call DlpContentManager::CheckScreenShareRestriction().
-    blink::mojom::MediaStreamRequestResult received_result =
-        blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS;
+    blink::mojom::MediaStreamRequestResult received_result;
     base::RunLoop run_loop;
     handler->HandleRequest(
         web_contents, request,

@@ -92,25 +92,22 @@ void UpdateRequestResult(UserMediaRequest* request,
     case UserMediaRequestType::kUserMedia: {
       if (request->IsGumExtensionRequest()) {
         base::UmaHistogramEnumeration(
-            "WebRTC.UserMediaRequest.GetUserMedia.Extension.Result", result,
-            mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS);
+            "WebRTC.UserMediaRequest.GetUserMedia.Extension.Result", result);
         return;
       } else {
         base::UmaHistogramEnumeration(
-            "WebRTC.UserMediaRequest.GetUserMedia.DeviceCapture.Result", result,
-            mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS);
+            "WebRTC.UserMediaRequest.GetUserMedia.DeviceCapture.Result",
+            result);
         return;
       }
     }
     case UserMediaRequestType::kDisplayMedia:
       base::UmaHistogramEnumeration(
-          "WebRTC.UserMediaRequest.GetDisplayMedia.Result", result,
-          mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS);
+          "WebRTC.UserMediaRequest.GetDisplayMedia.Result", result);
       return;
     case UserMediaRequestType::kAllScreensMedia:
       base::UmaHistogramEnumeration(
-          "WebRTC.UserMediaRequest.GetAllScreensMedia.Result", result,
-          mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS);
+          "WebRTC.UserMediaRequest.GetAllScreensMedia.Result", result);
       return;
   }
 }
@@ -183,8 +180,6 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "DLP_PERMISSION_DENIED";
     case MediaStreamRequestResult::REGISTRY_REQUEST_UNVERIFIED:
       return "REGISTRY_REQUEST_UNVERIFIED";
-    case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
-      break;
   }
   NOTREACHED();
 }
@@ -392,8 +387,6 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
     case MediaStreamRequestResult::INVALID_GUM_TAB_CAPTURE_CONSTRAINTS:
     case MediaStreamRequestResult::INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS:
       return "Invalid capture constraints";
-    case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
-      break;  // Not a valid enum value.
   }
   NOTREACHED();
 }
@@ -2266,7 +2259,6 @@ void UserMediaProcessor::DelayedGetUserMediaRequestFailed(
   DeleteUserMediaRequest(user_media_request);
   switch (result) {
     case MediaStreamRequestResult::OK:
-    case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       NOTREACHED();
     case MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED:
       user_media_request->FailConstraint(constraint_name, "");

@@ -54,7 +54,7 @@ enum MediaStreamType {
 };
 
 // Elements in this enum should not be deleted or rearranged; the only
-// permitted operation is to add new elements before NUM_MEDIA_REQUEST_RESULTS.
+// permitted operation is to add new elements at the end of the enum.
 //
 // This enum is used by GenerateStreams(), which is a critical part
 // of such Web API calls as getDisplayMedia() and getUserMedia().
@@ -107,7 +107,6 @@ enum MediaStreamRequestResult {
   PERMISSION_DENIED_BY_EMBEDDER_CONTEXT,
   DLP_PERMISSION_DENIED,
   REGISTRY_REQUEST_UNVERIFIED,
-  NUM_MEDIA_REQUEST_RESULTS,
 };
 
 // Type of state change for the corresponding requests.

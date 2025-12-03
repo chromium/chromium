@@ -656,8 +656,7 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
       local_audio_source_ = nullptr;
   SourceCreationStatus source_creation_status_ = SourceCreationStatus::kOk;
   Member<MediaStreamDescriptor> last_generated_descriptor_;
-  blink::mojom::blink::MediaStreamRequestResult result_ =
-      blink::mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS;
+  blink::mojom::blink::MediaStreamRequestResult result_;
   String constraint_name_;
   raw_ptr<RequestState> state_;
 };
