@@ -143,7 +143,7 @@ message GetHintsResponse {
 // enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29, 32, 66, 68, 72, 73, 89, 94, 95, 96, 101, 110, 111;
+  reserved 11, 12, 16, 29, 32, 66, 68, 72, 73, 89, 94, 95, 96, 101;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -357,6 +357,11 @@ enum OptimizationType {
   // Provides information about whether a page is eligible for walletable
   // boarding pass detection.
   WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST = 109;
+
+  // Blocklist for the NTP-Next deep dive action chip.
+  NTP_NEXT_DEEP_DIVE_ACTION_CHIP_BLOCKLIST = 110;
+  // Allowlist for the NTP-Next deep dive action chip.
+  NTP_NEXT_DEEP_DIVE_ACTION_CHIP_ALLOWLIST = 111;
 
   // This optimization provides information about the eligibility of a URL
   // for Reader Mode.

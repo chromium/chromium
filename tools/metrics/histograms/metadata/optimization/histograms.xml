@@ -440,6 +440,10 @@ chromium-metrics-reviews@google.com.
       summary="Provides trust data related to the merchant -- version 2."/>
   <variant name="MetadataFetchValidation"
       summary="Validates metadata fetch on navigation"/>
+  <variant name="NtpNextDeepDiveActionChipAllowlist"
+      summary="Allowlist for the NTP-Next deep dive action chip."/>
+  <variant name="NtpNextDeepDiveActionChipBlocklist"
+      summary="Blocklist for the NTP-Next deep dive action chip."/>
   <variant name="OptimizationGuideIconView"
       summary="Provides information for what to show in the debug
                optimization guide icon view."/>
