@@ -53,11 +53,15 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
       dm_protocol::GetChromeUserPolicyType(),
       dm_protocol::kGoogleUpdateMachineLevelAppsPolicyType,
       dm_protocol::kGoogleUpdateMachineLevelOmahaPolicyType,
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+      dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType,
   };
   const base::flat_set<std::string> kExtensionPolicyTypes{
       dm_protocol::kChromeExtensionPolicyType,
       dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
       dm_protocol::kChromeSigninExtensionPolicyType,
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+      dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType,
   };
 
   std::string request_device_token;
