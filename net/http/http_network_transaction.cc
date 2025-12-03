@@ -1610,9 +1610,14 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
       return ERR_METHOD_NOT_SUPPORTED;
   }
 
-  if (can_send_early_data_ &&
-      response_.headers->response_code() == HTTP_TOO_EARLY) {
-    return HandleIOError(ERR_EARLY_DATA_REJECTED);
+  if (response_.headers->response_code() == HTTP_TOO_EARLY) {
+    if (can_send_early_data_ && IsSecureRequest()) {
+      SSLInfo ssl_info;
+      stream_->GetSSLInfo(&ssl_info);
+      if (ssl_info.is_valid() && ssl_info.early_data_accepted) {
+        return HandleIOError(ERR_EARLY_DATA_REJECTED);
+      }
+    }
   }
 
   // Check for an intermediate 100 Continue response.  An origin server is

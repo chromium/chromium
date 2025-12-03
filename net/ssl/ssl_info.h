@@ -83,8 +83,9 @@ class NET_EXPORT SSLInfo {
   // set for server sockets.
   bool early_data_received = false;
 
-  // True if early data was accepted on the server. This field is only
-  // set for server sockets.
+  // True if early data was accepted. For server sockets, this means the server
+  // accepted early data from the client. For client sockets, this means the
+  // client sent early data and it was accepted by the server.
   bool early_data_accepted = false;
 
   // True if the connection negotiated the Encrypted ClientHello extension.

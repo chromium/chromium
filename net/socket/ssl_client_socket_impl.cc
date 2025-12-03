@@ -528,6 +528,8 @@ bool SSLClientSocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
                                  ? SSLInfo::HANDSHAKE_RESUME
                                  : SSLInfo::HANDSHAKE_FULL;
 
+  ssl_info->early_data_accepted = SSL_early_data_accepted(ssl_.get());
+
   return true;
 }
 

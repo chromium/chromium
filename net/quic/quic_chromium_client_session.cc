@@ -1471,6 +1471,8 @@ bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
   ssl_info->key_exchange_group = crypto_params.key_exchange_group;
   ssl_info->peer_signature_algorithm = crypto_params.peer_signature_algorithm;
   ssl_info->encrypted_client_hello = crypto_params.encrypted_client_hello;
+  ssl_info->early_data_accepted =
+      crypto_stream_->EarlyDataReason() == ssl_early_data_accepted;
   return true;
 }
 
