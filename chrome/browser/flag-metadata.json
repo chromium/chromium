@@ -9669,11 +9669,6 @@
     "expiry_milestone": 94
   },
   {
-    "name": "storage-access-api-follows-same-origin-policy",
-    "owners": [ "cfredric@chromium.org", "potassium-auth-embeds@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "strict-origin-isolation",
     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
     // This can be used to opt in to origin isolation which isolates full
