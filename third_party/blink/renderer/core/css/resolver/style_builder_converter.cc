@@ -3689,21 +3689,17 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
     if (RuntimeEnabledFeatures::ResponsiveIframesEnabled()) {
       const auto& identifier = To<CSSIdentifierValue>(list->Item(0));
       if (identifier.GetValueID() == CSSValueID::kFromElement) {
-        return StyleIntrinsicLength(
-            /*has_auto=*/false, /*matches_element=*/true,
+        return StyleIntrinsicLength::CreateFromElement(
             ConvertLengthOrNone(state, list->Item(1)));
       }
     }
     DCHECK(To<CSSIdentifierValue>(list->Item(0)).GetValueID() ==
            CSSValueID::kAuto);
-    return StyleIntrinsicLength(
-        /*has_auto=*/true, /*matches_element=*/false,
-        ConvertLengthOrNone(state, list->Item(1)));
+    return StyleIntrinsicLength(ConvertLengthOrNone(state, list->Item(1)),
+                                {.has_auto = true});
   }
 
-  return StyleIntrinsicLength(
-      /*has_auto=*/false, /*matches_element=*/false,
-      ConvertLengthOrNone(state, value));
+  return StyleIntrinsicLength(ConvertLengthOrNone(state, value));
 }
 
 ColorSchemeFlags StyleBuilderConverter::ExtractColorSchemes(

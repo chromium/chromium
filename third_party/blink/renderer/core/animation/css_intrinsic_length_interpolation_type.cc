@@ -209,15 +209,15 @@ void CSSIntrinsicLengthInterpolationType::ApplyStandardPropertyValue(
   if (non_interpolable->HasNone()) {
     SetIntrinsicDimension(
         state.StyleBuilder(),
-        StyleIntrinsicLength(non_interpolable->HasAuto(),
-                             /*matches_element*/ false, std::nullopt));
+        StyleIntrinsicLength(std::nullopt,
+                             {.has_auto = non_interpolable->HasAuto()}));
   } else {
     SetIntrinsicDimension(
         state.StyleBuilder(),
         StyleIntrinsicLength(
-            non_interpolable->HasAuto(), /*matches_element*/ false,
             interpolable.CreateLength(state.CssToLengthConversionData(),
-                                      Length::ValueRange::kNonNegative)));
+                                      Length::ValueRange::kNonNegative),
+            {.has_auto = non_interpolable->HasAuto()}));
   }
 }
 void CSSIntrinsicLengthInterpolationType::Composite(
