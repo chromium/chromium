@@ -37,6 +37,10 @@ class VerticalTabStripController {
   std::optional<int> GetIndexFromMojomTab(
       const tabs_api::mojom::Tab& mojom_tab);
 
+  TabContextMenuController* GetTabContextMenuController() {
+    return context_menu_controller_.get();
+  }
+
  private:
   bool IsContextMenuCommandChecked(
       TabStripModel::ContextMenuCommand command_id);

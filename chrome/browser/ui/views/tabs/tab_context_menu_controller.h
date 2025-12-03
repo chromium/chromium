@@ -63,6 +63,8 @@ class TabContextMenuController : public ui::SimpleMenuModel::Delegate {
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
 
+  ui::SimpleMenuModel* GetMenuModel() { return model_.get(); }
+
  private:
   std::unique_ptr<ui::SimpleMenuModel> model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;

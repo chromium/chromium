@@ -72,6 +72,10 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
     return bottom_button_container_;
   }
 
+  VerticalTabStripController* GetVerticalTabStripController() {
+    return tab_strip_controller_.get();
+  }
+
   // views::View:
   void Layout(PassKey) override;
 
