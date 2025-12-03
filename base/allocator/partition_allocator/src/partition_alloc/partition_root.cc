@@ -3,10 +3,6 @@
 // found in the LICENSE file.
 
 #include "partition_alloc/slot_start.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "partition_alloc/partition_root.h"
 
@@ -754,7 +750,7 @@ static void PartitionDumpBucketStats(PartitionBucketMemoryStats* stats_out,
     return;
   }
 
-  memset(stats_out, '\0', sizeof(*stats_out));
+  PA_UNSAFE_TODO(memset(stats_out, '\0', sizeof(*stats_out)));
   stats_out->is_valid = true;
   stats_out->is_direct_map = false;
   stats_out->num_full_slot_spans =
@@ -984,8 +980,8 @@ void ReserveBackupRefPtrGuardRegionIfNeeded() {
 
   size_t alignment = internal::PageAllocationGranularity();
   uintptr_t requested_address;
-  memset(&requested_address, internal::kQuarantinedByte,
-         sizeof(requested_address));
+  PA_UNSAFE_TODO(memset(&requested_address, internal::kQuarantinedByte,
+                        sizeof(requested_address)));
   requested_address = RoundDownToPageAllocationGranularity(requested_address);
 
   // Request several pages so that even unreasonably large C++ objects stay
@@ -1123,7 +1119,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
     // We mark the sentinel slot span as free to make sure it is skipped by our
     // logic to find a new active slot span.
-    memset(&sentinel_bucket, 0, sizeof(sentinel_bucket));
+    PA_UNSAFE_TODO(memset(&sentinel_bucket, 0, sizeof(sentinel_bucket)));
     sentinel_bucket.active_slot_spans_head =
         internal::SlotSpanMetadata::get_sentinel_slot_span_non_const();
 
@@ -1134,7 +1130,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
     for (size_t bucket_index = 0; bucket_index < BucketIndexLookup::kNumBuckets;
          ++bucket_index) {
       const size_t slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
-      buckets[bucket_index].Init(slot_size);
+      PA_UNSAFE_TODO(buckets[bucket_index]).Init(slot_size);
     }
 
 #if !PA_CONFIG(THREAD_CACHE_SUPPORTED)
@@ -1319,8 +1315,9 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
     // region) have been already initialized.
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-    memset(reinterpret_cast<void*>(slot_span_start.value() + current_slot_size),
-           internal::kUninitializedByte, recommit_slot_size_growth);
+    PA_UNSAFE_TODO(memset(
+        reinterpret_cast<void*>(slot_span_start.value() + current_slot_size),
+        internal::kUninitializedByte, recommit_slot_size_growth));
 #endif
   } else {
     // We can't perform the realloc in-place.
@@ -1349,7 +1346,8 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
 #if PA_BUILDFLAG(USE_PARTITION_COOKIE)
   if (settings.use_cookie) {
     auto* object = slot_span_start.AsSlotStart().Tag().ToObject();
-    internal::PartitionCookieWriteValue(object + GetSlotUsableSize(slot_span));
+    internal::PartitionCookieWriteValue(
+        PA_UNSAFE_TODO(object + GetSlotUsableSize(slot_span)));
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
 
@@ -1402,8 +1400,8 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
     // raw size (otherwise we wouldn't know where to look for it later).
 #if PA_BUILDFLAG(USE_PARTITION_COOKIE)
     if (settings.use_cookie) {
-      internal::PartitionCookieWriteValue(static_cast<unsigned char*>(object) +
-                                          GetSlotUsableSize(slot_span));
+      internal::PartitionCookieWriteValue(PA_UNSAFE_TODO(
+          static_cast<unsigned char*>(object) + GetSlotUsableSize(slot_span)));
     }
 #endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
   }
@@ -1462,7 +1460,7 @@ void PartitionRoot::PurgeMemory(int flags) {
       ::partition_alloc::internal::ScopedGuard guard{
           internal::PartitionRootLock(this)};
 
-      Bucket& bucket = buckets[bucket_index];
+      Bucket& bucket = PA_UNSAFE_TODO(buckets[bucket_index]);
 
       if (bucket.slot_size >= min_bucket_size_to_purge) {
         internal::PartitionPurgeBucket(this, &bucket);
@@ -1508,12 +1506,13 @@ void PartitionRoot::ShrinkEmptySlotSpansRing(size_t limit) {
   int16_t index = global_empty_slot_span_ring_index;
   int16_t starting_index = index;
   while (empty_slot_spans_dirty_bytes > limit) {
-    internal::SlotSpanMetadata* slot_span = global_empty_slot_span_ring[index];
+    internal::SlotSpanMetadata* slot_span =
+        PA_UNSAFE_TODO(global_empty_slot_span_ring[index]);
     // The ring is not always full, may be nullptr.
     if (slot_span) {
       slot_span->DecommitIfPossible(this);
       // DecommitIfPossible() should set the buffer to null.
-      PA_DCHECK(!global_empty_slot_span_ring[index]);
+      PA_UNSAFE_TODO(PA_DCHECK(!global_empty_slot_span_ring[index]));
     }
     index += 1;
     // Walk through the entirety of possible slots, even though the last ones
@@ -1591,16 +1590,22 @@ void PartitionRoot::DumpStats(const char* partition_name,
       // order to preserve a fast size->bucket map (see
       // PartitionRoot::Init() for details).
       if (!bucket->is_valid()) {
-        bucket_stats[i].is_valid = false;
+        PA_UNSAFE_TODO(bucket_stats[i]).is_valid = false;
       } else {
-        internal::PartitionDumpBucketStats(&bucket_stats[i], this, bucket);
+        internal::PartitionDumpBucketStats(&PA_UNSAFE_TODO(bucket_stats[i]),
+                                           this, bucket);
       }
-      if (bucket_stats[i].is_valid) {
-        stats.total_resident_bytes += bucket_stats[i].resident_bytes;
-        stats.total_active_bytes += bucket_stats[i].active_bytes;
-        stats.total_active_count += bucket_stats[i].active_count;
-        stats.total_decommittable_bytes += bucket_stats[i].decommittable_bytes;
-        stats.total_discardable_bytes += bucket_stats[i].discardable_bytes;
+      if (PA_UNSAFE_TODO(bucket_stats[i]).is_valid) {
+        stats.total_resident_bytes +=
+            PA_UNSAFE_TODO(bucket_stats[i]).resident_bytes;
+        stats.total_active_bytes +=
+            PA_UNSAFE_TODO(bucket_stats[i]).active_bytes;
+        stats.total_active_count +=
+            PA_UNSAFE_TODO(bucket_stats[i]).active_count;
+        stats.total_decommittable_bytes +=
+            PA_UNSAFE_TODO(bucket_stats[i]).decommittable_bytes;
+        stats.total_discardable_bytes +=
+            PA_UNSAFE_TODO(bucket_stats[i]).discardable_bytes;
       }
     }
 
@@ -1614,7 +1619,8 @@ void PartitionRoot::DumpStats(const char* partition_name,
       if (is_light_dump) {
         continue;
       }
-      direct_map_lengths[num_direct_mapped_allocations] = slot_size;
+      PA_UNSAFE_TODO(direct_map_lengths[num_direct_mapped_allocations]) =
+          slot_size;
     }
 
     stats.total_resident_bytes += direct_mapped_allocations_total_size;
@@ -1633,9 +1639,9 @@ void PartitionRoot::DumpStats(const char* partition_name,
         settings.scheduler_loop_quarantine_thread_local_config
             .enable_quarantine;
     if (stats.has_scheduler_loop_quarantine) {
-      memset(
+      PA_UNSAFE_TODO(memset(
           reinterpret_cast<void*>(&stats.scheduler_loop_quarantine_stats_total),
-          0, sizeof(SchedulerLoopQuarantineStats));
+          0, sizeof(SchedulerLoopQuarantineStats)));
       scheduler_loop_quarantine_root.AccumulateStats(
           stats.scheduler_loop_quarantine_stats_total);
     }
@@ -1650,7 +1656,7 @@ void PartitionRoot::DumpStats(const char* partition_name,
     }
 
     for (size_t i = 0; i < num_direct_mapped_allocations; ++i) {
-      uint32_t size = direct_map_lengths[i];
+      uint32_t size = PA_UNSAFE_TODO(direct_map_lengths[i]);
 
       PartitionBucketMemoryStats mapped_stats = {};
       mapped_stats.is_valid = true;

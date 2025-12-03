@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/address_pool_manager.h"
 
 #include <atomic>
@@ -18,6 +13,7 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/page_allocator_constants.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
 #include "partition_alloc/partition_alloc_check.h"
@@ -90,7 +86,7 @@ uintptr_t AddressPoolManager::GetPoolBaseAddress(pool_handle handle) {
 
 void AddressPoolManager::ResetForTesting() {
   for (size_t i = 0; i < std::size(pools_); ++i) {
-    pools_[i].Reset();
+    PA_UNSAFE_TODO(pools_[i]).Reset();
   }
 }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef PARTITION_ALLOC_ADDRESS_POOL_MANAGER_H_
 #define PARTITION_ALLOC_ADDRESS_POOL_MANAGER_H_
 
@@ -182,7 +177,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 
   PA_ALWAYS_INLINE Pool* GetPool(pool_handle handle) {
     PA_DCHECK(kNullPoolHandle < handle && handle <= kNumPools);
-    return &pools_[handle - 1];
+    return &PA_UNSAFE_TODO(pools_[handle - 1]);
   }
 
   // Gets the stats for the pool identified by `handle`, if

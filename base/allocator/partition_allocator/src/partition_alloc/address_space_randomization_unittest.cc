@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/address_space_randomization.h"
 
 #include <cstdint>
@@ -15,6 +10,7 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/page_allocator.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/random.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -164,7 +160,7 @@ void RandomBitCorrelation(int random_bit) {
 
       // Enter the new random value into the history.
       for (int i = ago; i >= 0; i--) {
-        history[i] = GetRandomBits();
+        PA_UNSAFE_TODO(history[i]) = GetRandomBits();
       }
 
       // Find out how many of the bits are the same as the prediction bit.
@@ -172,13 +168,13 @@ void RandomBitCorrelation(int random_bit) {
       for (int i = 0; i < kRepeats; i++) {
         uintptr_t random = GetRandomBits();
         for (int j = ago - 1; j >= 0; j--) {
-          history[j + 1] = history[j];
+          PA_UNSAFE_TODO(history[j + 1]) = PA_UNSAFE_TODO(history[j]);
         }
         history[0] = random;
 
         int predicted;
         if (predictor_bit >= 0) {
-          predicted = (history[ago] >> predictor_bit) & 1;
+          predicted = (PA_UNSAFE_TODO(history[ago]) >> predictor_bit) & 1;
         } else {
           predicted = predictor_bit == -2 ? 0 : 1;
         }

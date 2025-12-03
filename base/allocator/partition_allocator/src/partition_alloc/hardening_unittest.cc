@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <cstdint>
 #include <string>
 #include <vector>
 
 #include "partition_alloc/allocator_config.h"
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_for_testing.h"
 #include "partition_alloc/partition_freelist_entry.h"
@@ -123,7 +119,7 @@ TEST(HardeningTest, SuccessfulCorruption) {
       root.Alloc<AllocFlags::kZeroFill>(100 * sizeof(uintptr_t), ""));
   ASSERT_TRUE(zero_vector);
   // Pointer to the middle of an existing allocation.
-  uintptr_t* to_corrupt = zero_vector + 20;
+  uintptr_t* to_corrupt = PA_UNSAFE_TODO(zero_vector + 20);
 
   const size_t kAllocSize = 100;
   void* data = root.Alloc(kAllocSize);
@@ -214,7 +210,7 @@ TEST(HardeningTest, PoolOffsetSuccessfulCorruption) {
       root.Alloc<AllocFlags::kZeroFill>(100 * sizeof(uintptr_t), ""));
   ASSERT_TRUE(zero_vector);
   // Pointer to the middle of an existing allocation.
-  uintptr_t* to_corrupt = zero_vector + 20;
+  uintptr_t* to_corrupt = PA_UNSAFE_TODO(zero_vector + 20);
 
   const size_t kAllocSize = 100;
   void* data = root.Alloc(kAllocSize);
