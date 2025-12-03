@@ -90,11 +90,11 @@ pub fn contains_unsafe_code(input: &str) -> bool {
 
 #[cfg(test)]
 mod test {
-    use super::does_contain_unsafe_code;
+    use super::contains_unsafe_code;
 
     #[test]
     fn test_unsafe_expr() {
-        assert!(does_contain_unsafe_code(
+        assert!(contains_unsafe_code(
             r#"
                 fn foo() {
                     // SAFETY: safety requirements of `some_unsafe_fn` are met, because...
@@ -107,7 +107,7 @@ mod test {
     #[test]
     fn test_ignore_unsafe_fn_declarations() {
         // Calling an unsafe function is unsafe.  Declaring one is not.
-        assert!(!does_contain_unsafe_code(
+        assert!(!contains_unsafe_code(
             r#"
                 /// # Safety
                 ///
@@ -119,7 +119,7 @@ mod test {
 
     #[test]
     fn test_unsafe_impl() {
-        assert!(does_contain_unsafe_code(
+        assert!(contains_unsafe_code(
             r#"
                 // SAFETY: safety requirements of `SomeUnsafeTrait` are met, because...
                 unsafe impl SomeUnsafeTrait for SomeStruct {}
@@ -130,7 +130,7 @@ mod test {
     #[test]
     fn test_ignore_unsafe_trait_declarations() {
         // Implementing an unsafe trait is unsafe.  Declaring one is not.
-        assert!(!does_contain_unsafe_code(
+        assert!(!contains_unsafe_code(
             r#"
                 /// # Safety
                 ///
@@ -145,7 +145,7 @@ mod test {
 
     #[test]
     fn test_ignore_comments_and_strings_etc() {
-        assert!(!does_contain_unsafe_code(
+        assert!(!contains_unsafe_code(
             r#"
                 // This is not unsafe { 2 + 2 }
                 fn foo_unchecked() {
@@ -158,7 +158,7 @@ mod test {
 
     #[test]
     fn test_ignore_test_modules1() {
-        assert!(!does_contain_unsafe_code(
+        assert!(!contains_unsafe_code(
             r#"
                 #[cfg(test)]
                 mod bar {
@@ -172,7 +172,7 @@ mod test {
 
     #[test]
     fn test_ignore_test_modules2() {
-        assert!(!does_contain_unsafe_code(
+        assert!(!contains_unsafe_code(
             r#"
                 mod test {
                     fn foo() {
