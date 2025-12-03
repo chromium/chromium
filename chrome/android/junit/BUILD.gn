@@ -852,7 +852,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/notifications/tips/TipsUtilsUnitTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//third_party/android_deps:com_airbnb_android_lottie_java",
+    ]
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.ntp") {

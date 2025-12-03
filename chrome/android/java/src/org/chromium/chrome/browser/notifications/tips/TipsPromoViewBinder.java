@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.notifications.tips;
 
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
@@ -42,8 +41,6 @@ public class TipsPromoViewBinder {
             mainPageDescriptionView.setText(promoData.mainPageDescription);
             TextView detailPageTitleView = view.findViewById(R.id.details_page_title_text);
             detailPageTitleView.setText(promoData.detailPageTitle);
-            ImageView logoView = view.findViewById(R.id.main_page_logo);
-            logoView.setImageResource(promoData.mainPageLogoViewRes);
         } else if (key == TipsPromoProperties.DETAILS_BUTTON_CLICK_LISTENER) {
             ButtonCompat detailsButton = view.findViewById(R.id.tips_promo_details_button);
             detailsButton.setOnClickListener(

@@ -19,6 +19,9 @@ import android.widget.ViewFlipper;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
+import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieDrawable;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -171,7 +174,7 @@ public class TipsPromoCoordinator {
         mPropertyModel.set(TipsPromoProperties.CURRENT_SCREEN, ScreenType.MAIN_SCREEN);
         setupButtonClickHandlers(mFeatureType);
         setupDetailPageSteps(data.detailPageSteps);
-        onShowPromoForFeatureType(mFeatureType);
+        onShowPromoForFeatureType(mFeatureType, data.mainPageLogoViewRes);
         mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true);
     }
 
@@ -266,17 +269,25 @@ public class TipsPromoCoordinator {
         }
     }
 
-    private void onShowPromoForFeatureType(@TipsNotificationsFeatureType int featureType) {
+    private void onShowPromoForFeatureType(
+            @TipsNotificationsFeatureType int featureType, int logoViewRes) {
+        LottieAnimationView logoView = mContentView.findViewById(R.id.main_page_logo);
         recordFeatureTipPromoEventType(featureType, FeatureTipPromoEventType.SHOWN);
         switch (featureType) {
             case TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING:
+                logoView.setImageResource(logoViewRes);
                 break;
             case TipsNotificationsFeatureType.QUICK_DELETE:
+                logoView.setAnimation(logoViewRes);
+                logoView.setRepeatCount(LottieDrawable.INFINITE);
+                logoView.playAnimation();
                 break;
             case TipsNotificationsFeatureType.GOOGLE_LENS:
+                logoView.setImageResource(logoViewRes);
                 LensMetrics.recordShown(LensEntryPoint.TIPS_NOTIFICATIONS, /* isShown= */ true);
                 break;
             case TipsNotificationsFeatureType.BOTTOM_OMNIBOX:
+                logoView.setImageResource(logoViewRes);
                 break;
             default:
                 assert false : "Invalid feature type: " + featureType;

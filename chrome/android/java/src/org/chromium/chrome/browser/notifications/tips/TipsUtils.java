@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -76,7 +75,7 @@ public class TipsUtils {
         final @StringRes int positiveButtonTextRes;
         final @StringRes int mainPageTitleRes;
         final @StringRes int mainPageDescriptionRes;
-        final @DrawableRes int mainPageLogoViewRes;
+        final int mainPageLogoViewRes;
         final @StringRes int detailPageTitleRes;
         final List<String> detailPageSteps = new ArrayList<>();
 
@@ -98,7 +97,7 @@ public class TipsUtils {
                 positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text;
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_quick_delete;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_quick_delete;
-                mainPageLogoViewRes = R.drawable.tips_promo_quick_delete_logo;
+                mainPageLogoViewRes = R.raw.tips_notifications_quick_delete_logo_anim;
                 detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_quick_delete_short;
                 detailPageSteps.add(
                         context.getString(

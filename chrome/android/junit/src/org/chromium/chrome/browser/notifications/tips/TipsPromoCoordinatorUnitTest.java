@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.notifications.tips;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.eq;
@@ -18,6 +19,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.test.filters.SmallTest;
 
@@ -125,6 +127,7 @@ public class TipsPromoCoordinatorUnitTest {
 
         setUpTipsPromoCoordinator(TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING);
         mTipsPromoCoordinator.showBottomSheet();
+        assertNotNull(((ImageView) mView.findViewById(R.id.main_page_logo)).getDrawable());
 
         assertEquals(
                 ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
@@ -221,6 +224,7 @@ public class TipsPromoCoordinatorUnitTest {
         mTipsPromoCoordinator.setLensControllerForTesting(mLensController);
         mTipsPromoCoordinator.showBottomSheet();
         assertEquals(1, mActionTester.getActionCount("Notifications.Tips.LensShown"));
+        assertNotNull(((ImageView) mView.findViewById(R.id.main_page_logo)).getDrawable());
 
         assertEquals(
                 ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
@@ -269,6 +273,7 @@ public class TipsPromoCoordinatorUnitTest {
 
         setUpTipsPromoCoordinator(TipsNotificationsFeatureType.BOTTOM_OMNIBOX);
         mTipsPromoCoordinator.showBottomSheet();
+        assertNotNull(((ImageView) mView.findViewById(R.id.main_page_logo)).getDrawable());
 
         assertEquals(
                 ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));

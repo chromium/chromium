@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.notifications.tips;
 
 import android.view.View.OnClickListener;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
@@ -39,7 +38,7 @@ public class TipsPromoProperties {
         public final String positiveButtonText;
         public final String mainPageTitle;
         public final String mainPageDescription;
-        public final @DrawableRes int mainPageLogoViewRes;
+        public final int mainPageLogoViewRes;
         public final String detailPageTitle;
         public final List<String> detailPageSteps;
 
@@ -57,7 +56,7 @@ public class TipsPromoProperties {
                 String positiveButtonText,
                 String mainPageTitle,
                 String mainPageDescription,
-                @DrawableRes int mainPageLogoViewRes,
+                int mainPageLogoViewRes,
                 String detailPageTitle,
                 List<String> detailPageSteps) {
             this.positiveButtonText = positiveButtonText;
