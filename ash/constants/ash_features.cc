@@ -1101,9 +1101,6 @@ BASE_FEATURE(kImeRuleConfig, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables IME downloader experiment logic.
 BASE_FEATURE(kImeDownloaderExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled use the updated US English IME language models.
-BASE_FEATURE(kImeUsEnglishModelUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable or disable proto-based communication for IME Service.
 BASE_FEATURE(kImeServiceProto, base::FEATURE_DISABLED_BY_DEFAULT);
 

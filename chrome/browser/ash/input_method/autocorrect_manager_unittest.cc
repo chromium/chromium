@@ -513,8 +513,7 @@ DisabledFeaturesIncludingAutocorrectByDefault() {
 }
 
 std::vector<base::test::FeatureRef> RequiredForAutocorrectByDefault() {
-  return {ash::features::kAutocorrectByDefault,
-          ash::features::kImeUsEnglishModelUpdate};
+  return {ash::features::kAutocorrectByDefault};
 }
 
 class AutocorrectManagerTest : public testing::Test {

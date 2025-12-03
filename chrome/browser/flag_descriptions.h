@@ -7504,11 +7504,6 @@ inline constexpr char kImeSystemEmojiPickerVariantGroupingDescription[] =
     "Emoji picker global variant grouping syncs skin tone and gender "
     "preferences across emojis in each group.";
 
-inline constexpr char kImeUsEnglishModelUpdateName[] =
-    "Enable US English IME model update";
-inline constexpr char kImeUsEnglishModelUpdateDescription[] =
-    "Enable updated US English IME language models for native IME";
-
 inline constexpr char kJupiterScreensaverName[] = "Jupiter screensaver";
 inline constexpr char kJupiterScreensaverDescription[] =
     "Enable Jupiter screensaver on more device types.";

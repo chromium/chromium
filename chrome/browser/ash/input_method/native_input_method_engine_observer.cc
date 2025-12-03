@@ -792,9 +792,7 @@ void NativeInputMethodEngineObserver::OnFocusAck(
   if (text_client_ && text_client_->context_id == context_id) {
     text_client_->state = TextClientState::kActive;
   }
-  if ((base::FeatureList::IsEnabled(features::kAutocorrectByDefault) ||
-       base::FeatureList::IsEnabled(features::kImeUsEnglishModelUpdate)) &&
-      !metadata.is_null()) {
+  if (!metadata.is_null()) {
     autocorrect_manager_->OnConnectedToSuggestionProvider(
         metadata->autocorrect_suggestion_provider);
   }

@@ -161,7 +161,6 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
       &features::kAssistMultiWord,
       &features::kAutocorrectParamsTuning,
       &features::kImeDownloaderExperiment,
-      &features::kImeUsEnglishModelUpdate,
       &features::kAutocorrectByDefault,
       &features::kImeSwitchCheckConnectionStatus};
 
@@ -171,6 +170,7 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
       "ImeKoreanOnlyModeSwitchOnRightAlt",
       "ImeFstDecoderParamsUpdate",
       "ImeDownloaderUpdate",
+      "ImeUsEnglishModelUpdate",
   };
 
   // Use consistent feature flag names as in CrOS base::Feature::name and always

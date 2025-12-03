@@ -16152,7 +16152,6 @@ from previous Chrome versions.
   <int value="669105788"
       label="AutofillEnableAmountExtractionAllowlist:disabled"/>
   <int value="669958310" label="EnableSuggestedLocalFiles:disabled"/>
-  <int value="670404276" label="ImeUsEnglishModelUpdate:disabled"/>
   <int value="670987023" label="kEnterpriseBadgingForNtpFooter:enabled"/>
   <int value="671427343"
       label="DnsOverHttpsWithIdentifiersReuseOldPolicy:enabled"/>
@@ -16781,7 +16780,6 @@ from previous Chrome versions.
   <int value="879992337" label="disable-pull-to-refresh-effect"/>
   <int value="880201245" label="NewTabPageTilesTitleWrapAround:disabled"/>
   <int value="880510010" label="enable-permissions-bubbles"/>
-  <int value="880552542" label="ImeUsEnglishModelUpdate:enabled"/>
   <int value="880638328" label="DriveFsShowCSEFiles:enabled"/>
   <int value="880771977" label="NTPEnterpriseShortcuts:disabled"/>
   <int value="881920916" label="CrosWebAppInstallDialog:disabled"/>
