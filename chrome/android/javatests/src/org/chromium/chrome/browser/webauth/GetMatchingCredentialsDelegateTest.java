@@ -11,6 +11,7 @@ import androidx.test.filters.SmallTest;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,16 +23,18 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Fido2ApiCallHelper;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.FidoIntentSender;
 import org.chromium.components.webauthn.GetMatchingCredentialIdsDelegate;
 import org.chromium.components.webauthn.GetMatchingCredentialIdsDelegate.ResponseCallback;
+import org.chromium.components.webauthn.GmsCoreUtils;
 import org.chromium.components.webauthn.WebauthnCredentialDetails;
 import org.chromium.components.webauthn.WebauthnRequestCallback;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -156,11 +159,25 @@ public class GetMatchingCredentialsDelegateTest {
         mCallback = new GetMatchingCredentialIdsCallback();
         mFido2ApiCallHelper = new MockFido2ApiCallHelper();
         Fido2ApiCallHelper.overrideInstanceForTesting(mFido2ApiCallHelper);
+
+        ExternalAuthUtils.setInstanceForTesting(
+                new ExternalAuthUtils() {
+                    @Override
+                    public boolean canUseGooglePlayServices(
+                            UserRecoverableErrorHandler errorHandler) {
+                        return true;
+                    }
+                });
+        GmsCoreUtils.setGmsCoreVersionForTesting(223300000);
+    }
+
+    @After
+    public void tearDown() {
+        GmsCoreUtils.setGmsCoreVersionForTesting(0);
     }
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/465421209")
     public void testGetMatchingCredentialIds_success() {
         String relyingPartyId = "subdomain.example.test";
         byte[][] allowCredentialIds =
@@ -184,7 +201,6 @@ public class GetMatchingCredentialsDelegateTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/465421209")
     public void testGetMatchingCredentialIds_requireThirdPartyBit() {
         String relyingPartyId = "subdomain.example.test";
         byte[][] allowCredentialIds =
