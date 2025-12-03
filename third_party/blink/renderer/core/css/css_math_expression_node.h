@@ -1253,6 +1253,12 @@ class CORE_EXPORT CSSMathExpressionRandomFunction final
     NOTREACHED();
   }
   bool HasInvalidAnchorFunctions(const CSSLengthResolver&) const final;
+  RandomValueSharing GetRandomValueSharing() const {
+    return random_value_sharing_;
+  }
+  const CSSMathExpressionNode* Min() const { return min_; }
+  const CSSMathExpressionNode* Max() const { return max_; }
+  const CSSMathExpressionNode* Step() const { return step_; }
   void Trace(Visitor* visitor) const final;
 
  protected:

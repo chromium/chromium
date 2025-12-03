@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_math_min.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_negate.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_product.h"
+#include "third_party/blink/renderer/core/css/cssom/css_math_random.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_sum.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -152,6 +153,21 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
     CSSNumericValueVector values;
     values.push_back(value);
     return CSSMathSum::Create(std::move(values));
+  }
+
+  if (root.IsRandomFunction()) {
+    const auto& node = To<CSSMathExpressionRandomFunction>(root);
+    DCHECK(node.GetRandomValueSharing().IsFixed());
+    CSSNumericValue* min = CalcToNumericValue(*node.Min());
+    CSSNumericValue* max = CalcToNumericValue(*node.Max());
+    if (!node.Step()) {
+      return CSSMathRandom::Create(node.GetRandomValueSharing().GetFixed(),
+                                   std::move(min), std::move(max));
+    }
+    CSSNumericValue* step = CalcToNumericValue(*node.Step());
+    return CSSMathRandom::Create(node.GetRandomValueSharing().GetFixed(),
+                                 std::move(min), std::move(max),
+                                 std::move(step));
   }
 
   // TODO(crbug.com/40243221): Implement Typed OM API for `anchor()` and

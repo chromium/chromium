@@ -846,6 +846,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_math_negate.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_math_product.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_math_product.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_math_random.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_math_random.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_math_sum.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_math_sum.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_math_value.cc",

@@ -41,6 +41,7 @@ class CORE_EXPORT CSSStyleValue : public ScriptWrappable {
     kMinType,
     kMaxType,
     kClampType,
+    kRandomType,
     // End of CSSNumericValue subclasses
     kTransformType,
     kPositionType,

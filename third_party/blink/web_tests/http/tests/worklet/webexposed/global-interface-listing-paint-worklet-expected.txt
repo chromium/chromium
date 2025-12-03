@@ -74,6 +74,13 @@ CONSOLE MESSAGE: interface CSSMathProduct : CSSMathValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter values
 CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface CSSMathRandom : CSSMathValue
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter baseValue
+CONSOLE MESSAGE:     getter max
+CONSOLE MESSAGE:     getter min
+CONSOLE MESSAGE:     getter step
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CSSMathSum : CSSMathValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter values
@@ -573,6 +580,13 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CSSMathProduct : CSSMathValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter values
+CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface CSSMathRandom : CSSMathValue
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter baseValue
+CONSOLE MESSAGE:     getter max
+CONSOLE MESSAGE:     getter min
+CONSOLE MESSAGE:     getter step
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CSSMathSum : CSSMathValue
 CONSOLE MESSAGE:     attribute @@toStringTag

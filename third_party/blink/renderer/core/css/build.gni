@@ -404,6 +404,8 @@ blink_core_sources_css = [
   "cssom/css_math_negate.h",
   "cssom/css_math_product.cc",
   "cssom/css_math_product.h",
+  "cssom/css_math_random.cc",
+  "cssom/css_math_random.h",
   "cssom/css_math_sum.cc",
   "cssom/css_math_sum.h",
   "cssom/css_math_value.cc",

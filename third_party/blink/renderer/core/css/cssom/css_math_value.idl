@@ -12,6 +12,7 @@ enum CSSMathOperator {
   "min",
   "max",
   "clamp",
+  "random",
 };
 
 [
