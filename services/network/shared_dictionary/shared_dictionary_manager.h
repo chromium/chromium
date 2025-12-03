@@ -117,7 +117,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager
   // Called to create a SharedDictionaryStorage for the `isolation_key`. This is
   // called only when there is no matching storage in `storages_`.
   virtual scoped_refptr<SharedDictionaryStorage> CreateStorage(
-      const net::SharedDictionaryIsolationKey& isolation_key) = 0;
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      bool was_previously_evicted,
+      bool was_previously_evicted_by_memory_pressure) = 0;
 
   scoped_refptr<net::SharedDictionary> GetDictionaryImpl(
       mojom::RequestDestination request_destination,
@@ -154,6 +156,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager
       storages_;
   std::set<std::unique_ptr<PreloadedDictionaries>, base::UniquePtrComparator>
       preloaded_dictionaries_set_;
+
+  // TODO(crbug.com/465399205): Clean up after removing metrics that rely on
+  // tracking previous storage evictions.
+  std::set<net::SharedDictionaryIsolationKey> previously_evicted_keys_;
+  std::set<net::SharedDictionaryIsolationKey>
+      previously_evicted_by_memory_pressure_keys_;
 
   base::WeakPtrFactory<SharedDictionaryManager> weak_factory_{this};
 };

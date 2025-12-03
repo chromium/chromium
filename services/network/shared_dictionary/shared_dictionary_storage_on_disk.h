@@ -76,7 +76,9 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage,
       base::WeakPtr<SharedDictionaryManagerOnDisk> manager,
       const net::SharedDictionaryIsolationKey& isolation_key,
       base::ScopedClosureRunner on_deleted_closure_runner,
-      scoped_refptr<SharedDictionaryCache> dictionary_cache);
+      scoped_refptr<SharedDictionaryCache> dictionary_cache,
+      bool was_previously_evicted,
+      bool was_previously_evicted_by_memory_pressure);
 
   SharedDictionaryStorageOnDisk(const SharedDictionaryStorageOnDisk&) = delete;
   SharedDictionaryStorageOnDisk& operator=(
@@ -164,6 +166,9 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage,
   bool is_metadata_ready_ = false;
 
   std::vector<base::OnceClosure> pending_get_dictionary_tasks_;
+
+  bool was_previously_evicted_ = false;
+  bool was_previously_evicted_by_memory_pressure_ = false;
 
   base::WeakPtrFactory<SharedDictionaryStorageOnDisk> weak_factory_{this};
 };

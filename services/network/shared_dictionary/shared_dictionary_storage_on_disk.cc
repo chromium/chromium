@@ -89,11 +89,16 @@ SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
     base::WeakPtr<SharedDictionaryManagerOnDisk> manager,
     const net::SharedDictionaryIsolationKey& isolation_key,
     base::ScopedClosureRunner on_deleted_closure_runner,
-    scoped_refptr<SharedDictionaryCache> dictionary_cache)
+    scoped_refptr<SharedDictionaryCache> dictionary_cache,
+    bool was_previously_evicted,
+    bool was_previously_evicted_by_memory_pressure)
     : manager_(manager),
       isolation_key_(isolation_key),
       on_deleted_closure_runner_(std::move(on_deleted_closure_runner)),
-      dictionary_cache_(dictionary_cache) {
+      dictionary_cache_(dictionary_cache),
+      was_previously_evicted_(was_previously_evicted),
+      was_previously_evicted_by_memory_pressure_(
+          was_previously_evicted_by_memory_pressure) {
   memory_pressure_listener_registration_ =
       std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE,
@@ -126,6 +131,19 @@ SharedDictionaryStorageOnDisk::GetDictionarySync(
     base::UmaHistogramBoolean(
         "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse",
         is_metadata_ready_);
+
+    if (was_previously_evicted_) {
+      base::UmaHistogramBoolean(
+          "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+          "PreviouslyEvicted",
+          is_metadata_ready_);
+    }
+    if (was_previously_evicted_by_memory_pressure_) {
+      base::UmaHistogramBoolean(
+          "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
+          "PreviouslyEvictedByMemoryPressure",
+          is_metadata_ready_);
+    }
   }
 
   if (!manager_) {

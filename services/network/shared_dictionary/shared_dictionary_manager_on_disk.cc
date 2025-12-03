@@ -511,13 +511,16 @@ SharedDictionaryManagerOnDisk::~SharedDictionaryManagerOnDisk() = default;
 
 scoped_refptr<SharedDictionaryStorage>
 SharedDictionaryManagerOnDisk::CreateStorage(
-    const net::SharedDictionaryIsolationKey& isolation_key) {
+    const net::SharedDictionaryIsolationKey& isolation_key,
+    bool was_previously_evicted,
+    bool was_previously_evicted_by_memory_pressure) {
   return base::MakeRefCounted<SharedDictionaryStorageOnDisk>(
       weak_factory_.GetWeakPtr(), isolation_key,
       base::ScopedClosureRunner(
           base::BindOnce(&SharedDictionaryManager::OnStorageDeleted,
                          GetWeakPtr(), isolation_key)),
-      dictionary_cache_);
+      dictionary_cache_, was_previously_evicted,
+      was_previously_evicted_by_memory_pressure);
 }
 
 void SharedDictionaryManagerOnDisk::SetCacheMaxSize(uint64_t cache_max_size) {

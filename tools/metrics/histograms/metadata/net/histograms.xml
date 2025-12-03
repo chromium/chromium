@@ -7374,6 +7374,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse.PreviouslyEvicted"
+    enum="Boolean" expires_after="2026-11-28">
+  <owner>wbjacksonjr@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    Records whether the shared dictionary metadata has been read when
+    GetDictionary() is called for the first time, specifically for storages that
+    were previously evicted.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse.PreviouslyEvictedByMemoryPressure"
+    enum="Boolean" expires_after="2026-11-28">
+  <owner>wbjacksonjr@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    Records whether the shared dictionary metadata has been read when
+    GetDictionary() is called for the first time, specifically for storages that
+    were previously evicted due to memory pressure.
+  </summary>
+</histogram>
+
 <histogram name="Net.SharedDictionaryStorageOnDisk.MetadataReadTime.{Result}"
     units="ms" expires_after="2026-07-01">
   <owner>pmeenan@chromium.org</owner>

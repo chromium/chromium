@@ -30,7 +30,9 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
 
   // SharedDictionaryManager
   scoped_refptr<SharedDictionaryStorage> CreateStorage(
-      const net::SharedDictionaryIsolationKey& isolation_key) override;
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      bool was_previously_evicted,
+      bool was_previously_evicted_by_memory_pressure) override;
   void SetCacheMaxSize(uint64_t cache_max_size) override;
   void ClearData(base::Time start_time,
                  base::Time end_time,

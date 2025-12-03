@@ -131,7 +131,17 @@ scoped_refptr<SharedDictionaryStorage> SharedDictionaryManager::GetStorage(
     DCHECK(it->second);
     return it->second.get();
   }
-  scoped_refptr<SharedDictionaryStorage> storage = CreateStorage(isolation_key);
+  // TODO(crbug.com/465399205): Clean up after removing metrics that rely on
+  // tracking previous storage evictions.
+  bool was_previously_evicted = previously_evicted_keys_.find(isolation_key) !=
+                                previously_evicted_keys_.end();
+  bool was_previously_evicted_by_memory_pressure =
+      previously_evicted_by_memory_pressure_keys_.find(isolation_key) !=
+      previously_evicted_by_memory_pressure_keys_.end();
+
+  scoped_refptr<SharedDictionaryStorage> storage =
+      CreateStorage(isolation_key, was_previously_evicted,
+                    was_previously_evicted_by_memory_pressure);
   CHECK(storage);
   storages_.emplace(isolation_key, storage.get());
   if (memory_pressure_level_ == base::MEMORY_PRESSURE_LEVEL_NONE) {
@@ -144,6 +154,7 @@ void SharedDictionaryManager::OnStorageDeleted(
     const net::SharedDictionaryIsolationKey& isolation_key) {
   size_t removed_count = storages_.erase(isolation_key);
   DCHECK_EQ(1U, removed_count);
+  previously_evicted_keys_.insert(isolation_key);
 }
 
 base::WeakPtr<SharedDictionaryManager> SharedDictionaryManager::GetWeakPtr() {
@@ -154,6 +165,9 @@ void SharedDictionaryManager::OnMemoryPressure(
     base::MemoryPressureLevel level) {
   memory_pressure_level_ = level;
   if (memory_pressure_level_ != base::MEMORY_PRESSURE_LEVEL_NONE) {
+    for (const auto& it : cached_storages_) {
+      previously_evicted_by_memory_pressure_keys_.insert(it.first);
+    }
     cached_storages_.Clear();
     preloaded_dictionaries_set_.clear();
   }
