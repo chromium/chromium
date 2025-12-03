@@ -392,6 +392,13 @@ fn find_license_files_for_kinds(
 
 fn does_license_file_exist(path: &Path) -> Result<bool> {
     path.try_exists()
+        .map(|exists| {
+            // Check canonicalized filename to avoid https://crbug.com/465546463:
+            exists
+                && std::fs::canonicalize(path)
+                    .map(|canonical_path| canonical_path.file_name() == path.file_name())
+                    .unwrap_or(false)
+        })
         .with_context(|| format!("Failed to check if a license file exists at {}", path.display()))
 }
 
