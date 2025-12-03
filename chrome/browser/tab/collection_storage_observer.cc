@@ -5,6 +5,7 @@
 #include "chrome/browser/tab/collection_storage_observer.h"
 
 #include "chrome/browser/tab/tab_state_storage_service.h"
+#include "components/tabs/public/tab_collection.h"
 
 namespace tabs {
 
@@ -19,14 +20,20 @@ void CollectionStorageObserver::OnChildrenAdded(
     const tabs::TabCollectionNodes& handles,
     bool insert_from_detached) {
   for (const auto& handle : handles) {
+    const TabCollection* parent;
     if (std::holds_alternative<TabCollection::Handle>(handle)) {
       const TabCollection* collection =
           std::get<TabCollection::Handle>(handle).Get();
       service_->Save(collection);
+      parent = collection->GetParentCollection();
     } else {
       const TabInterface* tab = std::get<TabHandle>(handle).Get();
       service_->Save(tab);
+      parent = tab->GetParentCollection();
     }
+
+    DCHECK(parent) << "Child node should have parent";
+    service_->SaveChildren(parent);
   }
 }
 

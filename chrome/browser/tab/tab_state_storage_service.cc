@@ -152,6 +152,15 @@ void TabStateStorageService::SavePayload(const TabCollection* collection) {
   tab_backend_.Update(builder.Build());
 }
 
+void TabStateStorageService::SaveChildren(const TabCollection* collection) {
+  DCHECK(packager_);
+
+  StorageId storage_id = GetStorageId(collection);
+  TabStateStorageUpdaterBuilder builder(*this, packager_.get());
+  builder.SaveChildren(storage_id, collection);
+  tab_backend_.Update(builder.Build());
+}
+
 void TabStateStorageService::Remove(const TabInterface* tab,
                                     const TabCollection* prev_parent) {
   RemoveNodeSequence(GetStorageId(tab), prev_parent, this, packager_.get(),
