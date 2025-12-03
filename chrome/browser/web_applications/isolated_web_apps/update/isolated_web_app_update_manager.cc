@@ -330,8 +330,11 @@ void IsolatedWebAppUpdateManager::Start() {
 
   has_started_ = true;
   install_manager_observation_.Observe(&provider_->install_manager());
-  key_distribution_info_observation_.Observe(
-      &IwaKeyDistributionInfoProvider::GetInstance());
+  runtime_data_changed_subscription_ =
+      IwaKeyDistributionInfoProvider::GetInstance().OnRuntimeDataChanged(
+          base::BindRepeating(
+              &IsolatedWebAppUpdateManager::OnRuntimeDataChanged,
+              weak_factory_.GetWeakPtr()));
 
   if (!IsAnyIwaInstalled()) {
     // If no IWA is installed, then we do not need to regularly check for
@@ -393,6 +396,7 @@ void IsolatedWebAppUpdateManager::Shutdown() {
 
   // Stop all potentially ongoing tasks and avoid scheduling new tasks.
   install_manager_observation_.Reset();
+  runtime_data_changed_subscription_ = {};
   next_update_discovery_check_.Reset();
   task_queue_.Clear();
   update_apply_waiters_.clear();
@@ -521,13 +525,9 @@ void IsolatedWebAppUpdateManager::DiscoverApplyAndPrioritizeLocalDevModeUpdate(
                      std::move(callback)));
 }
 
-void IsolatedWebAppUpdateManager::OnComponentUpdateSuccess(bool is_preloaded) {
+void IsolatedWebAppUpdateManager::OnRuntimeDataChanged() {
   // The corresponding observer is added during `Start()`.
   CHECK(has_started_);
-
-  if (is_preloaded) {
-    return;
-  }
 
   if (!automatic_updates_enabled_) {
     return;

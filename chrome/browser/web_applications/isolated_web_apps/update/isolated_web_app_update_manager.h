@@ -26,7 +26,6 @@
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_waiter.h"
@@ -99,9 +98,7 @@ struct IsolatedWebAppUpdateOptions {
 
 // The `IsolatedWebAppUpdateManager` is responsible for discovery, download, and
 // installation of Isolated Web App updates.
-class IsolatedWebAppUpdateManager
-    : public WebAppInstallManagerObserver,
-      public IwaKeyDistributionInfoProvider::Observer {
+class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -289,8 +286,7 @@ class IsolatedWebAppUpdateManager
     base::Value::List update_apply_results_log_;
   };
 
-  // IwaKeyDistributionInfoProvider::Observer:
-  void OnComponentUpdateSuccess(bool is_preloaded) override;
+  void OnRuntimeDataChanged();
 
   void QueueUpdatesForIwasAffectedByKeyRotation();
 
@@ -393,9 +389,7 @@ class IsolatedWebAppUpdateManager
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};
 
-  base::ScopedObservation<IwaKeyDistributionInfoProvider,
-                          IwaKeyDistributionInfoProvider::Observer>
-      key_distribution_info_observation_{this};
+  base::CallbackListSubscription runtime_data_changed_subscription_;
 
   // Provides retry logic for updates initiated by key rotation.
   net::BackoffEntry key_rotation_backoff_retry_entry_;

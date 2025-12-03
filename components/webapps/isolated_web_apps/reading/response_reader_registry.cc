@@ -243,7 +243,9 @@ IsolatedWebAppReaderRegistry::IsolatedWebAppReaderRegistry(
       reader_factory_(std::move(reader_factory)),
       cache_(std::make_unique<Cache>()) {
   if (auto* provider = IwaClient::GetInstance()->GetRuntimeDataProvider()) {
-    key_provider_observation_.Observe(provider);
+    runtime_data_changed_subscription_ = provider->OnRuntimeDataChanged(
+        base::BindRepeating(&IsolatedWebAppReaderRegistry::OnRuntimeDataChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

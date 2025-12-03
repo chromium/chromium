@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
@@ -622,7 +623,7 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
  protected:
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
-    web_app::IwaKeyDistributionInfoProvider::GetInstance()
+    IwaKeyDistributionInfoProvider::GetInstance()
         .SkipManagedAllowlistChecksForTesting(true);
     test::WaitUntilWebAppProviderAndSubsystemsReady(&provider());
     SetUpFilesAndServer();
@@ -632,7 +633,7 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
 
   void TearDownOnMainThread() override {
     run_on_os_login_handler_.TearDown();
-    web_app::IwaKeyDistributionInfoProvider::GetInstance()
+    IwaKeyDistributionInfoProvider::GetInstance()
         .SkipManagedAllowlistChecksForTesting(false);
     IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
   }

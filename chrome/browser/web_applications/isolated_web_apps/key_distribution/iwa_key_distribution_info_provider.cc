@@ -57,6 +57,7 @@ bool GetSkipCaptureStartedNotification(
   }
   return multi_screen_capture.skip_capture_started_notification();
 }
+
 base::expected<IwaKeyDistribution, IwaComponentUpdateError>
 LoadKeyDistributionDataFile(const base::FilePath& file_path) {
   std::string key_distribution_data;
@@ -133,6 +134,12 @@ IwaKeyDistributionInfoProvider::GetKeyRotationInfo(
   return component_
              ? base::FindOrNull(component_->data.key_rotations, web_bundle_id)
              : nullptr;
+}
+
+base::CallbackListSubscription
+IwaKeyDistributionInfoProvider::OnRuntimeDataChanged(
+    base::RepeatingClosure callback) {
+  return on_runtime_data_updated_.Add(std::move(callback));
 }
 
 bool IwaKeyDistributionInfoProvider::IsBundleBlocklisted(
@@ -272,7 +279,7 @@ void IwaKeyDistributionInfoProvider::OnKeyDistributionDataFileLoaded(
                                     ? IwaComponentUpdateSource::kPreloaded
                                     : IwaComponentUpdateSource::kDownloaded);
   SignalOnDataReady(is_preloaded);
-  DispatchComponentUpdateSuccess(is_preloaded);
+  DispatchComponentUpdateSuccess();
 }
 
 base::expected<IwaKeyDistributionInfoProvider::Data, IwaComponentUpdateError>
@@ -326,31 +333,13 @@ IwaKeyDistributionInfoProvider::ParseKeyDistributionData(
               std::move(managed_allowlist), std::move(blocklist));
 }
 
-void IwaKeyDistributionInfoProvider::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void IwaKeyDistributionInfoProvider::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-void IwaKeyDistributionInfoProvider::AddObserver(
-    IwaRuntimeDataProvider::Observer* observer) {
-  key_provider_observers_.AddObserver(observer);
-}
-
-void IwaKeyDistributionInfoProvider::RemoveObserver(
-    IwaRuntimeDataProvider::Observer* observer) {
-  key_provider_observers_.RemoveObserver(observer);
-}
-
 void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
     base::PassKey<IwaInternalsHandler>,
     const std::string& web_bundle_id,
     const std::optional<std::vector<uint8_t>>& rotated_key) {
   GetDevModeKeyRotationData().insert_or_assign(
       web_bundle_id, IwaRuntimeDataProvider::KeyRotationInfo(rotated_key));
-  DispatchComponentUpdateSuccess(/*is_preloaded=*/false);
+  DispatchComponentUpdateSuccess();
 }
 
 base::OneShotEvent&
@@ -382,6 +371,13 @@ void IwaKeyDistributionInfoProvider::SetComponentDataForTesting(
 
   component_ = Component(component_version, is_preloaded,
                          component_internal_data.value());
+}
+
+base::CallbackListSubscription
+IwaKeyDistributionInfoProvider::OnComponentUpdatedForTesting(
+    base::RepeatingCallback<void(base::expected<void, IwaComponentUpdateError>)>
+        callback) {
+  return on_component_updated_for_testing_.Add(callback);
 }
 
 base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
@@ -439,17 +435,15 @@ void IwaKeyDistributionInfoProvider::WriteComponentMetadata(
   }
 }
 
-void IwaKeyDistributionInfoProvider::DispatchComponentUpdateSuccess(
-    bool is_preloaded) {
-  observers_.Notify(&Observer::OnComponentUpdateSuccess, is_preloaded);
-  key_provider_observers_.Notify(
-      &IwaRuntimeDataProvider::Observer::OnRuntimeDataChanged);
+void IwaKeyDistributionInfoProvider::DispatchComponentUpdateSuccess() {
+  on_runtime_data_updated_.Notify();
+  on_component_updated_for_testing_.Notify(base::ok());
 }
 
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateError(
     IwaComponentUpdateError error) {
   base::UmaHistogramEnumeration(kIwaKeyDistributionComponentUpdateError, error);
-  observers_.Notify(&Observer::OnComponentUpdateError, error);
+  on_component_updated_for_testing_.Notify(base::unexpected(error));
 }
 
 void IwaKeyDistributionInfoProvider::

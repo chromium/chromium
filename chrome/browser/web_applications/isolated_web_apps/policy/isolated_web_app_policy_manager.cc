@@ -40,7 +40,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
-#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -316,8 +315,11 @@ void IsolatedWebAppPolicyManager::ProcessPolicy() {
 }
 
 void IsolatedWebAppPolicyManager::ConfigureObserversOnSessionStart() {
-  key_distribution_info_observation_.Observe(
-      &IwaKeyDistributionInfoProvider::GetInstance());
+  runtime_data_changed_subscription_ =
+      IwaKeyDistributionInfoProvider::GetInstance().OnRuntimeDataChanged(
+          base::BindRepeating(
+              &IsolatedWebAppPolicyManager::OnRuntimeDataChanged,
+              weak_ptr_factory_.GetWeakPtr()));
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
@@ -636,8 +638,7 @@ void IsolatedWebAppPolicyManager::OnPolicyChanged() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void IsolatedWebAppPolicyManager::OnComponentUpdateSuccess(
-    bool is_preloaded) {
+void IsolatedWebAppPolicyManager::OnRuntimeDataChanged() {
   // We don't need to check `is_preloaded` here or route the processing through
   // `OnComponentDataReady()` as the observer (this func) for the component data
   // provider is only attached after the initial download check was completed.

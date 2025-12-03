@@ -7,9 +7,11 @@
 #include <optional>
 
 #include "base/base64.h"
+#include "base/callback_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/notimplemented.h"
 #include "base/path_service.h"
@@ -33,49 +35,19 @@ using ComponentMetadataOrError =
 
 using ComponentUpdateFuture = base::test::TestFuture<ComponentMetadataOrError>;
 
-class ComponentUpdateWaiter : public IwaKeyDistributionInfoProvider::Observer {
- public:
-  using UpdateCallback = base::OnceCallback<void(ComponentMetadataOrError)>;
-
-  // The waiter invokes the `on_update` callback when the updated
-  // component's version matches the provided `version`, or on the first
-  // update if no `version` is specified.
-  explicit ComponentUpdateWaiter(
-      UpdateCallback on_update,
-      std::optional<base::Version> wait_until_version = std::nullopt)
-      : on_update_(std::move(on_update)),
-        wait_until_version_(std::move(wait_until_version)) {
-    obs_.Observe(&IwaKeyDistributionInfoProvider::GetInstance());
-  }
-
-  // IwaKeyDistributionInfoProvider::Observer:
-  void OnComponentUpdateSuccess(bool is_preloaded) override {
-    const std::optional<base::Version> loaded_version =
-        IwaKeyDistributionInfoProvider::GetInstance().GetVersion();
-    CHECK(loaded_version.has_value());
-
-    if (wait_until_version_.has_value() &&
-        *wait_until_version_ != *loaded_version) {
-      return;
-    }
-    std::move(on_update_)
-        .Run(IwaComponentMetadata{.version = *loaded_version,
-                                  .is_preloaded = is_preloaded});
-    obs_.Reset();
-  }
-
-  void OnComponentUpdateError(IwaComponentUpdateError error) override {
-    std::move(on_update_).Run(base::unexpected(error));
-    obs_.Reset();
-  }
-
- private:
-  UpdateCallback on_update_;
-  std::optional<base::Version> wait_until_version_;
-  base::ScopedObservation<IwaKeyDistributionInfoProvider,
-                          IwaKeyDistributionInfoProvider::Observer>
-      obs_{this};
-};
+base::CallbackListSubscription SetOnComponentUpdatedForTesting(
+    base::RepeatingCallback<void(ComponentMetadataOrError)> callback) {
+  return IwaKeyDistributionInfoProvider::GetInstance()
+      .OnComponentUpdatedForTesting(
+          base::BindRepeating([](base::expected<void, IwaComponentUpdateError>
+                                     result) {
+            return result.transform([]() -> IwaComponentMetadata {
+              auto& instance = IwaKeyDistributionInfoProvider::GetInstance();
+              return {.version = *instance.GetVersion(),
+                      .is_preloaded = *instance.IsPreloadedForTesting()};
+            });
+          }).Then(callback));
+}
 
 }  // namespace
 
@@ -210,7 +182,7 @@ base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
     const base::Version& version,
     const base::FilePath& path) {
   ComponentUpdateFuture future;
-  auto waiter = ComponentUpdateWaiter(future.GetCallback(), version);
+  auto waiter = SetOnComponentUpdatedForTesting(future.GetRepeatingCallback());
   IwaKeyDistributionInfoProvider::GetInstance().LoadKeyDistributionData(
       version, path, /*is_preloaded=*/false);
   ASSIGN_OR_RETURN((auto [loaded_version, is_preloaded]), future.Take());
@@ -243,7 +215,7 @@ InstallIwaKeyDistributionComponent(const base::Version& version,
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   ComponentUpdateFuture future;
-  auto waiter = std::make_unique<ComponentUpdateWaiter>(future.GetCallback());
+  auto waiter = SetOnComponentUpdatedForTesting(future.GetRepeatingCallback());
 
   // Write the serialized proto to the attestation list file.
   auto install_dir = [&] {
@@ -305,7 +277,7 @@ InstallIwaKeyDistributionComponent(
 base::expected<IwaComponentMetadata, IwaComponentUpdateError>
 RegisterIwaKeyDistributionComponentAndWaitForLoad() {
   ComponentUpdateFuture future;
-  auto waiter = std::make_unique<ComponentUpdateWaiter>(future.GetCallback());
+  auto waiter = SetOnComponentUpdatedForTesting(future.GetRepeatingCallback());
   component_updater::RegisterIwaKeyDistributionComponent(
       g_browser_process->component_updater());
   return future.Take();

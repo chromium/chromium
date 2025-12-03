@@ -9,7 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "base/observer_list_types.h"
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/one_shot_event.h"
 #include "base/values.h"
 
@@ -35,21 +36,16 @@ class IwaRuntimeDataProvider {
     std::optional<PublicKeyData> public_key;
   };
 
-  class Observer : public base::CheckedObserver {
-   public:
-    // Called when the underlying runtime data (including key data) may have
-    // changed. Consumers should re-validate any data that depends on this
-    // information.
-    virtual void OnRuntimeDataChanged() = 0;
-  };
-
   virtual ~IwaRuntimeDataProvider() = default;
 
   virtual const KeyRotationInfo* GetKeyRotationInfo(
       const std::string& web_bundle_id) const = 0;
 
-  virtual void AddObserver(Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
+  // Called when the underlying runtime data (including key data) may have
+  // changed. Consumers should re-validate any data that depends on this
+  // information.
+  virtual base::CallbackListSubscription OnRuntimeDataChanged(
+      base::RepeatingClosure callback) = 0;
 
   // Allows a consumer to wait until the provider has the most up-to-date
   // data that it can have within a reasonable time budget. The concrete

@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -54,12 +55,6 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
   using QueueOnDemandUpdateCallback = base::RepeatingCallback<void(
       base::PassKey<IwaKeyDistributionInfoProvider>)>;
 
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnComponentUpdateSuccess(bool is_preloaded) {}
-    virtual void OnComponentUpdateError(IwaComponentUpdateError error) {}
-  };
-
   static IwaKeyDistributionInfoProvider& GetInstance();
   static void DestroyInstanceForTesting();
 
@@ -75,9 +70,8 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
   // IwaRuntimeDataProvider:
   const IwaRuntimeDataProvider::KeyRotationInfo* GetKeyRotationInfo(
       const std::string& web_bundle_id) const override;
-  void AddObserver(IwaRuntimeDataProvider::Observer* observer) override;
-  void RemoveObserver(IwaRuntimeDataProvider::Observer* observer) override;
-
+  base::CallbackListSubscription OnRuntimeDataChanged(
+      base::RepeatingClosure callback) override;
   // Use this to post IWA-related tasks if they rely on the key distribution
   // component. The event will be signalled
   //  * Immediately if the kIwaKeyDistributionComponent flag is disabled
@@ -111,9 +105,6 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
                                const base::FilePath& file_path,
                                bool is_preloaded);
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
   // Sets a custom key rotation outside of the component updater flow and
   // triggers an `OnComponentUpdateSuccess()` event. The usage of this function
   // is intentionally limited to chrome://web-app-internals.
@@ -132,6 +123,10 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
   void SetComponentDataForTesting(base::Version component_version,
                                   bool is_preloaded,
                                   IwaKeyDistribution component_data);
+
+  base::CallbackListSubscription OnComponentUpdatedForTesting(
+      base::RepeatingCallback<
+          void(base::expected<void, IwaComponentUpdateError>)> callback);
 
  private:
   IwaKeyDistributionInfoProvider();
@@ -183,7 +178,7 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
   base::expected<Data, IwaComponentUpdateError> ParseKeyDistributionData(
       const IwaKeyDistribution& key_distribution);
 
-  void DispatchComponentUpdateSuccess(bool is_preloaded);
+  void DispatchComponentUpdateSuccess();
 
   void DispatchComponentUpdateError(IwaComponentUpdateError error);
 
@@ -205,8 +200,10 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
   QueueOnDemandUpdateCallback queue_on_demand_update_;
 
   std::optional<Component> component_;
-  base::ObserverList<Observer> observers_;
-  base::ObserverList<IwaRuntimeDataProvider::Observer> key_provider_observers_;
+  base::RepeatingClosureList on_runtime_data_updated_;
+  base::RepeatingCallbackList<void(
+      base::expected<void, IwaComponentUpdateError>)>
+      on_component_updated_for_testing_;
   bool skip_managed_checks_for_testing_ = false;
 };
 
