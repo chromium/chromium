@@ -211,9 +211,7 @@ IwaBundleIdToUpdateOptionsMap GetIsolatedWebAppsWithOnlyUserManagement(
     }
 
     auto url_info = IsolatedWebAppUrlInfo::Create(web_app.start_url());
-    if (!url_info.has_value()) {
-      continue;
-    }
+    CHECK(url_info.has_value());
 
     if (!web_app.isolation_data()->update_manifest_url()) {
       continue;
