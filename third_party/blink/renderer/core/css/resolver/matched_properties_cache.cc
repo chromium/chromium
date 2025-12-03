@@ -45,7 +45,8 @@
 
 namespace blink {
 
-static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
+static unsigned ComputeMatchedPropertiesHash(const MatchResult& result,
+                                             unsigned additional_hash) {
   DCHECK(result.IsCacheable());
   const MatchedPropertiesHashVector& hashes = result.GetMatchedPropertiesHash();
   DCHECK(!std::any_of(hashes.begin(), hashes.end(),
@@ -55,6 +56,7 @@ static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
                       }))
       << "This should have been checked in AddMatchedProperties()";
   unsigned hash = StringHasher::HashMemory(base::as_byte_span(hashes));
+  hash = HashInts(hash, additional_hash);
 
   // See CSSPropertyValueSet::ComputeHash() for asserts that this is safe.
   if (hash == HashTraits<unsigned>::EmptyValue() ||
@@ -92,8 +94,7 @@ MatchedPropertiesCache::Key::Key(const MatchResult& result,
                                  AdditionalHash additional_hash)
     : result_(result),
       hash_(result.IsCacheable()
-                ? HashInts(ComputeMatchedPropertiesHash(result),
-                           additional_hash.hash)
+                ? ComputeMatchedPropertiesHash(result, additional_hash.hash)
                 : HashTraits<unsigned>::EmptyValue()) {}
 
 MatchedPropertiesCache::Key::Key(const MatchResult& result, unsigned hash)
