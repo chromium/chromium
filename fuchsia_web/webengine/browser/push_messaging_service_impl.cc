@@ -32,6 +32,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "fuchsia_web/webengine/browser/web_engine_config.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -43,13 +44,6 @@
 #include "url/gurl.h"
 
 namespace {
-
-bool IsPermissionGranted(const GURL& origin) {
-  // Very likely this should be a command line flag based solution.
-  // TODO(crbug.com/424479300): Implement the permission control of using the
-  // push-messaging api.
-  return true;
-}
 
 void SubscriptionError(content::PushMessagingService::RegisterCallback callback,
                        blink::mojom::PushRegistrationStatus status) {
@@ -337,7 +331,7 @@ void PushMessagingServiceImpl::DoSubscribe(
   // system, web engine would use a different way of managing the permissions
   // directly from the |origin| and the subscriptions from document
   // and service worker are treated the same.
-  if (!IsPermissionGranted(origin)) {
+  if (!IsProtectedServiceWorker(origin)) {
     SubscriptionError(std::move(callback),
                       blink::mojom::PushRegistrationStatus::PERMISSION_DENIED);
     return;
