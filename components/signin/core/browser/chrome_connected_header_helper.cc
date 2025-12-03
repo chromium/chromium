@@ -124,13 +124,21 @@ ManageAccountsParams ChromeConnectedHeaderHelper::BuildManageAccountsParams(
 bool ChromeConnectedHeaderHelper::ShouldBuildRequestHeader(
     const GURL& url,
     const content_settings::CookieSettings* cookie_settings) {
+  return ShouldBuildRequestHeader(url, cookie_settings,
+                                  /*check_only_gaia_url=*/false);
+}
+
+bool ChromeConnectedHeaderHelper::ShouldBuildRequestHeader(
+    const GURL& url,
+    const content_settings::CookieSettings* cookie_settings,
+    bool check_only_gaia_url) {
   // Check if url is eligible for the header.
   if (!IsUrlEligibleForRequestHeader(url)) {
     return false;
   }
 
   // If signin cookies are not allowed, don't add the header.
-  return SettingsAllowSigninCookies(cookie_settings);
+  return SettingsAllowSigninCookies(cookie_settings, check_only_gaia_url);
 }
 
 bool ChromeConnectedHeaderHelper::IsUrlEligibleToIncludeGaiaId(

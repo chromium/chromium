@@ -58,6 +58,13 @@ class ChromeConnectedHeaderHelper : public SigninHeaderHelper {
       const GURL& url,
       const content_settings::CookieSettings* cookie_settings) override;
 
+  // `check_only_gaia_url` is used for a special case on ChromeOS, where the
+  // check for `google.com` cookies should be omitted.
+  virtual bool ShouldBuildRequestHeader(
+      const GURL& url,
+      const content_settings::CookieSettings* cookie_settings,
+      bool check_only_gaia_url);
+
   // SigninHeaderHelper implementation:
   bool IsUrlEligibleForRequestHeader(const GURL& url) override;
 

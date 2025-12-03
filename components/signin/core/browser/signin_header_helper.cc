@@ -184,7 +184,30 @@ void AppendOrRemoveMirrorRequestHeader(
   const GURL& url = redirect_url.is_empty() ? request->GetUrl() : redirect_url;
   ChromeConnectedHeaderHelper chrome_connected_helper(account_consistency);
   std::string chrome_connected_header_value;
-  if (chrome_connected_helper.ShouldBuildRequestHeader(url, cookie_settings)) {
+
+#if BUILDFLAG(IS_CHROMEOS)
+  bool is_secondary_account_addition_disallowed =
+      (profile_mode_mask & PROFILE_MODE_ADD_ACCOUNT_DISABLED) != 0 &&
+      account_consistency == AccountConsistencyMethod::kMirror;
+#else
+  bool is_secondary_account_addition_disallowed = false;
+#endif
+
+  // If Gaia cookies are not allowed, the signin will fail anyway. Do not attach
+  // the header, so that the signin goes through the web and the page can show a
+  // friendly error message.
+  // If Gaia cookies are allowed but other google cookies are not (see
+  // https://crbug.com/463848190), then the signin may succeed initially, but
+  // the AccountReconcilor may not work properly. To avoid this, Mirror headers
+  // are generally not attached, which causes the user to be signed in to the
+  // web only and as a result Chrome is unaware of the account. However, when
+  // secondary accounts are disallowed by policy, this web-only signin state is
+  // not acceptable. In this case send the header anyway, and assume that the
+  // Chrome UI will block the signin (if this assumption is not true, then the
+  // user may experience inconsistencies due to AccountReconcilor malfunction).
+  if (chrome_connected_helper.ShouldBuildRequestHeader(
+          url, cookie_settings, /* check_only_gaia_url= */
+          is_secondary_account_addition_disallowed)) {
     chrome_connected_header_value = chrome_connected_helper.BuildRequestHeader(
         true /* is_header_request */, url, gaia_id, is_child_account,
         profile_mode_mask, source, force_account_consistency);
