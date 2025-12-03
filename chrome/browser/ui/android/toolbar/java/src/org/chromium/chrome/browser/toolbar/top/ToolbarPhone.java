@@ -323,7 +323,7 @@ public class ToolbarPhone extends ToolbarLayout
 
                 @Override
                 public void setValue(ToolbarPhone object, float value) {
-                    setUrlFocusChangeFraction(value);
+                    setUrlFocusChangeFraction(value, /* skipUrlExpansion= */ false);
                 }
             };
 
@@ -1156,11 +1156,12 @@ public class ToolbarPhone extends ToolbarLayout
      * Updates progress of current the URL focus change animation.
      *
      * @param fraction 1.0 is 100% focused, 0 is completely unfocused.
+     * @param skipUrlExpansion if the URL expansion animation should be skipped.
      */
-    private void setUrlFocusChangeFraction(float fraction) {
+    private void setUrlFocusChangeFraction(float fraction, boolean skipUrlExpansion) {
         mUrlFocusChangeFraction = fraction;
         updateUrlExpansionFraction();
-        invokeTransition();
+        invokeTransition(/* resetNtpTransition= */ false, skipUrlExpansion);
     }
 
     private void updateUrlExpansionFraction() {
@@ -1241,23 +1242,15 @@ public class ToolbarPhone extends ToolbarLayout
             locationBarBaseTranslationX += getLocationBarOffsetForFocusAnimation(hasFocus());
         }
 
-        boolean isLocationBarRtl =
-                mLocationBar.getPhoneCoordinator().getLayoutDirection() == LAYOUT_DIRECTION_RTL;
+        boolean isLocationBarRtl = isLocationBarRtl();
         if (isLocationBarRtl) {
             locationBarBaseTranslationX += mUnfocusedLocationBarLayoutWidth - currentWidth;
         }
 
         locationBarBaseTranslationX *= 1f - mUrlExpansionFraction;
 
-        boolean isLocationBarShownInNtp = isLocationBarShownInNtp();
-
-        float locationBarTranslationX;
-        if (isLocationBarRtl) {
-            locationBarTranslationX = locationBarBaseTranslationX + mLocationBarNtpOffsetRight;
-        } else {
-            locationBarTranslationX = locationBarBaseTranslationX + mLocationBarNtpOffsetLeft;
-        }
-
+        float locationBarTranslationX =
+                locationBarBaseTranslationX + getLocationBarNtpStartOffset(isLocationBarRtl);
         mLocationBar.getPhoneCoordinator().setTranslationX(locationBarTranslationX);
 
         if (!mOptionalButtonAnimationRunning) {
@@ -1270,13 +1263,7 @@ public class ToolbarPhone extends ToolbarLayout
                             locationBarBaseTranslationX,
                             isUrlFocusChangeInProgressWithScrollCompleted));
 
-            // A url expansion fraction < 1.0 fades and translates the DSE icon away from its final
-            // state. If the DSE icon is always visible on the NTP, it should stay at full alpha and
-            // in its final location rather than being affected by scroll offset.
-            float ntpUrlExpansionFraction =
-                    isLocationBarShownInNtp ? 1.0f : mNtpSearchBoxScrollFraction;
-            mLocationBar.setUrlFocusChangeFraction(
-                    ntpUrlExpansionFraction, mUrlFocusChangeFraction);
+            updateLocationBarFocusChangeFraction();
 
             // Update the location bar background color and corner radius using fraction.
             updateToolbarAndLocationBarColorForFocusChange();
@@ -1287,6 +1274,23 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBar.getPhoneCoordinator().invalidate();
         invalidate();
         TraceEvent.end("ToolbarPhone.updateLocationBarLayoutForExpansionAnimation");
+    }
+
+    private boolean isLocationBarRtl() {
+        return mLocationBar.getPhoneCoordinator().getLayoutDirection() == LAYOUT_DIRECTION_RTL;
+    }
+
+    private float getLocationBarNtpStartOffset(boolean isLocationBarRtl) {
+        return isLocationBarRtl ? mLocationBarNtpOffsetRight : mLocationBarNtpOffsetLeft;
+    }
+
+    private void updateLocationBarFocusChangeFraction() {
+        // A url expansion fraction < 1.0 fades and translates the DSE icon away from its final
+        // state. If the DSE icon is always visible on the NTP, it should stay at full alpha and in
+        // its final location rather than being affected by scroll offset.
+        float ntpUrlExpansionFraction =
+                isLocationBarShownInNtp() ? 1.0f : mNtpSearchBoxScrollFraction;
+        mLocationBar.setUrlFocusChangeFraction(ntpUrlExpansionFraction, mUrlFocusChangeFraction);
     }
 
     private void updateToolbarAndLocationBarColorForFocusChange() {
@@ -2555,11 +2559,19 @@ public class ToolbarPhone extends ToolbarLayout
 
         TransitionManager.beginDelayedTransition(this, transition);
 
+        // Update button properties.
         int toolbarBtnsVis = hasFocus ? INVISIBLE : VISIBLE;
         int homeBtnVis =
                 mHomeButtonDisplay.getVisibility() != GONE
                         ? toolbarBtnsVis
                         : mHomeButtonDisplay.getVisibility();
+        mToolbarButtonsContainer.setVisibility(toolbarBtnsVis);
+        mHomeButtonDisplay.getView().setVisibility(homeBtnVis);
+        getToolbarShadow().setVisibility(toolbarBtnsVis);
+
+        // Update location bar properties. Intentionally done after updating the buttons (as some
+        // properties, such as left margin, are dependent on the visibility of buttons.
+        updateUnfocusedLocationBarLayoutParams();
         int locationBarLeftMargin =
                 hasFocus
                         ? getFocusedLocationBarLeftMargin(0, true)
@@ -2568,10 +2580,6 @@ public class ToolbarPhone extends ToolbarLayout
                 hasFocus
                         ? getFocusedLocationBarWidth(getWidth(), 0, true)
                         : mUnfocusedLocationBarLayoutWidth;
-
-        mToolbarButtonsContainer.setVisibility(toolbarBtnsVis);
-        mHomeButtonDisplay.getView().setVisibility(homeBtnVis);
-        getToolbarShadow().setVisibility(toolbarBtnsVis);
         MarginLayoutParams layoutParams =
                 mLocationBar.getPhoneCoordinator().getMarginLayoutParams();
         layoutParams.leftMargin = locationBarLeftMargin;
@@ -2581,6 +2589,7 @@ public class ToolbarPhone extends ToolbarLayout
         // here causes this container to be visible in first frame during unfocus.
         mLocationBar.setUrlActionContainerVisibility(hasFocus);
 
+        // Update for NTP.
         float focusChangeFraction = hasFocus ? 1f : 0f;
         if (isLocationBarShownInNtp()) {
             NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
@@ -2589,14 +2598,19 @@ public class ToolbarPhone extends ToolbarLayout
                     /* expanded= */ hasFocus || mNtpSearchBoxScrollFraction == 1.f);
         }
         updateBackground(hasFocus);
+        mLocationBar
+                .getPhoneCoordinator()
+                .setTranslationX(getLocationBarNtpStartOffset(isLocationBarRtl()));
 
         // TODO(crbug.com/425817689): In the end state of the refactored animations, we don't want
         //  to rely on the interpolation methods that will be called by #setUrlFocusChangeFraction
         //  (namely #invokeTransition). We instead want to directly set the appropriate end state,
         //  like we do with the button visibility and location bar layout params above.
-        setUrlFocusChangeFraction(focusChangeFraction);
+        setUrlFocusChangeFraction(focusChangeFraction, /* skipUrlExpansion= */ true);
 
-        // Set after the fraction update, since this depends on the updated fraction.
+        // Set after the fraction update, since these depends on the updated fraction.
+        updateLocationBarFocusChangeFraction();
+        updateToolbarAndLocationBarColorForFocusChange();
         updateLocationBarBackgroundBounds(mLocationBarBackgroundBounds, mVisualState);
     }
 
@@ -2606,7 +2620,7 @@ public class ToolbarPhone extends ToolbarLayout
         NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
         ntpDelegate.getSearchBoxBounds(mNtpSearchBoxBounds, mNtpSearchBoxTranslation);
         if (expanded) {
-            mLocationBarBackgroundNtpOffset.set(0, 0, 0, 0);
+            mLocationBarBackgroundNtpOffset.setEmpty();
             mLocationBarNtpOffsetLeft = 0;
             mLocationBarNtpOffsetRight = 0;
             mLocationBar.getPhoneCoordinator().setTranslationY(0);
@@ -3065,6 +3079,12 @@ public class ToolbarPhone extends ToolbarLayout
             mLayoutUpdater.run();
         }
         updateShadowVisibility();
+        // TODO(crbug.com/463449054): It is possible to navigate from a NTP to a non-NTP without
+        //  focusing the fakebox (e.g. through the MVT or the GTS). In those cases, the refactored
+        //  transitions will not run, which also means that the location bar's position will not be
+        //  updated. This was previously handled by the URL expansion call that is now skipped in
+        //  the refactored flow (through skipUrlExpansion below). This is causing the location bar
+        //  to be mispositioned.
         invokeTransition(
                 /* resetNtpTransition= */ false,
                 /* skipUrlExpansion= */ ChromeFeatureList.sToolbarPhoneAnimationRefactor
