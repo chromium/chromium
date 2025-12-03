@@ -66,6 +66,10 @@ public class PageZoomIndicatorCoordinator {
     public void onNativeInitialized() {
         assert mZoomEventsObserver != null;
         mManager.addZoomEventsObserver(mZoomEventsObserver);
+        // Set initial zoom level.
+        if (mOnZoomLevelChangedCallback != null) {
+            mOnZoomLevelChangedCallback.onResult(mManager.getZoomLevel());
+        }
     }
 
     /**
@@ -104,8 +108,11 @@ public class PageZoomIndicatorCoordinator {
         mMediator.pushProperties();
         assumeNonNull(mView);
 
+        // Post the accessibility event to ensure the view is fully ready to receive focus before
+        // the announcement is made. This prevents a race condition where TalkBack might focus on an
+        // intermediate, unlabeled view.
+        mView.post(() -> sendPaneChangeAccessibilityEvent(/* isShowing= */ true));
         mMediator.showPopupWindow(mZoomIndicatorViewSupplier.get(), mPopupWindow);
-        sendPaneChangeAccessibilityEvent(/* isShowing= */ true);
 
         PageZoomUma.logZoomIndicatorClicked();
     }
