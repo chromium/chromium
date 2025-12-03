@@ -153,9 +153,13 @@ class WebNNContextDMLImplTest : public TestBase {
   void SetUp() override;
 
  protected:
-  WebNNContextDMLImplTest()
-      : scoped_feature_list_(
-            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
+  WebNNContextDMLImplTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{webnn::mojom::features::
+                                  kWebMachineLearningNeuralNetwork,
+                              webnn::mojom::features::kWebNNDirectML},
+        /*disabled_features=*/{webnn::mojom::features::kWebNNOnnxRuntime});
+  }
   ~WebNNContextDMLImplTest() override = default;
 
   bool CreateWebNNContext() {

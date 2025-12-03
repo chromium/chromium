@@ -291,9 +291,13 @@ void VerifyIsEqual(base::span<const T> actual, const OperandInfo<T>& expected) {
 #if BUILDFLAG(IS_WIN)
 class WebNNGraphImplBackendTest : public dml::TestBase {
  public:
-  WebNNGraphImplBackendTest()
-      : scoped_feature_list_(
-            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
+  WebNNGraphImplBackendTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{webnn::mojom::features::
+                                  kWebMachineLearningNeuralNetwork,
+                              webnn::mojom::features::kWebNNDirectML},
+        /*disabled_features=*/{webnn::mojom::features::kWebNNOnnxRuntime});
+  }
 
   void SetUp() override;
   void SetUpBase();

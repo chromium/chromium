@@ -24,6 +24,18 @@
 
 namespace webnn {
 
+// `WebNNContextProviderImplTest` only focuses on the non-supported platforms.
+// For supported platforms, it should be tested by the backend specific test
+// cases.
+//
+// For Windows platform, `dml::ContextImplDml` is implemented by the DirectML
+// backend. It relies on a real GPU adapter and is tested by
+// `WebNNContextDMLImplTest`.
+//
+// For platforms using TFLite, `tflite::ContextImplTflite` is always available.
+
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(WEBNN_USE_TFLITE)
+
 class WebNNContextProviderImplTest : public testing::Test {
  public:
   WebNNContextProviderImplTest(const WebNNContextProviderImplTest&) = delete;
@@ -40,18 +52,6 @@ class WebNNContextProviderImplTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
 };
-
-// `WebNNContextProviderImplTest` only focuses on the non-supported platforms.
-// For supported platforms, it should be tested by the backend specific test
-// cases.
-//
-// For Windows platform, `dml::ContextImplDml` is implemented by the DirectML
-// backend. It relies on a real GPU adapter and is tested by
-// `WebNNContextDMLImplTest`.
-//
-// For platforms using TFLite, `tflite::ContextImplTflite` is always available.
-
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(WEBNN_USE_TFLITE)
 
 TEST_F(WebNNContextProviderImplTest, NotSupported) {
 #if BUILDFLAG(IS_MAC)
@@ -82,6 +82,27 @@ TEST_F(WebNNContextProviderImplTest, NotSupported) {
 
 #if BUILDFLAG(IS_WIN)
 
+class WebNNContextProviderImplTest : public testing::Test {
+ public:
+  WebNNContextProviderImplTest(const WebNNContextProviderImplTest&) = delete;
+  WebNNContextProviderImplTest& operator=(const WebNNContextProviderImplTest&) =
+      delete;
+
+ protected:
+  WebNNContextProviderImplTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{webnn::mojom::features::
+                                  kWebMachineLearningNeuralNetwork,
+                              webnn::mojom::features::kWebNNDirectML},
+        /*disabled_features=*/{webnn::mojom::features::kWebNNOnnxRuntime});
+  }
+  ~WebNNContextProviderImplTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
+};
+
 TEST_F(WebNNContextProviderImplTest, CPUIsSupported) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
   test::WebNNTestEnvironment webnn_test_environment;
@@ -104,7 +125,6 @@ TEST_F(WebNNContextProviderImplTest, CPUIsSupported) {
 
 TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
-
   test::WebNNTestEnvironment webnn_test_environment(
       WebNNContextProviderImpl::WebNNStatus::kWebNNGpuDisabled);
   webnn_test_environment.BindWebNNContextProvider(
@@ -126,7 +146,6 @@ TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
 
 TEST_F(WebNNContextProviderImplTest, NPUNotSupported) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
-
   test::WebNNTestEnvironment webnn_test_environment(
       WebNNContextProviderImpl::WebNNStatus::kWebNNNpuDisabled);
   webnn_test_environment.BindWebNNContextProvider(
@@ -148,7 +167,6 @@ TEST_F(WebNNContextProviderImplTest, NPUNotSupported) {
 
 TEST_F(WebNNContextProviderImplTest, GpuFeatureStatusDisabled) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
-
   test::WebNNTestEnvironment webnn_test_environment(
       WebNNContextProviderImpl::WebNNStatus::kWebNNGpuFeatureStatusDisabled);
   webnn_test_environment.BindWebNNContextProvider(

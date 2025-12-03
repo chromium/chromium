@@ -84,9 +84,13 @@ struct CreateTensorSuccess {
 #if BUILDFLAG(IS_WIN)
 class WebNNTensorImplBackendTest : public dml::TestBase {
  public:
-  WebNNTensorImplBackendTest()
-      : scoped_feature_list_(
-            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
+  WebNNTensorImplBackendTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{webnn::mojom::features::
+                                  kWebMachineLearningNeuralNetwork,
+                              webnn::mojom::features::kWebNNDirectML},
+        /*disabled_features=*/{webnn::mojom::features::kWebNNOnnxRuntime});
+  }
 
   void SetUp() override;
   void TearDown() override;
