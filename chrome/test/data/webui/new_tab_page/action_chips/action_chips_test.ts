@@ -343,12 +343,12 @@ suite('NewTabPageActionChipsTest', () => {
                              .find(
                                  (e: Element) =>
                                      e.classList.contains('chip-title'))
-                             ?.textContent,
+                             ?.textContent.trim(),
                   body:
                       spans
                           .find(
                               (e: Element) => e.classList.contains('chip-body'))
-                          ?.textContent,
+                          ?.textContent.trim(),
                 };
               }));
         });

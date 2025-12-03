@@ -36,6 +36,10 @@
   max-width: calc(var(--ntp-chips-container-width) + 2px);
 }
 
+:host([show-simplified-ui_]) .action-chips-wrapper {
+  width: calc(var(--ntp-chips-container-width) + 2px);
+}
+
 .action-chips-container {
   display: flex;
   flex-wrap: wrap;
@@ -44,9 +48,19 @@
   width: 100%;
 }
 
+:host([show-simplified-ui_]) .action-chips-container {
+  flex-direction: column;
+  gap: 4px;
+}
+
 .banana {
   background-image: url(chrome://new-tab-page/icons/banana.svg);
   background-size: 24px;
+}
+
+:host([show-simplified-ui_]) .banana {
+  background-size: 20px;
+  mask-size: 20px;
 }
 
 .deep-dive {
@@ -59,6 +73,11 @@
   background-color: var(--color-sys-on-surface-subtle);
   background-size: 24px;
   -webkit-mask-image: url(chrome://new-tab-page/icons/deep_search.svg);
+}
+
+:host([show-simplified-ui_]) .deep-search {
+  background-size: 20px;
+  mask-size: 20px;
 }
 
 .action-chip {
@@ -78,6 +97,13 @@
   position: relative;
   transform: translateY(-56px);
   width: 240px;
+}
+
+:host([show-simplified-ui_]) .action-chip {
+  background-color: transparent;
+  height: 32px;
+  padding: 0px 20px;
+  width: 100%;
 }
 
 .action-chip:focus-visible {
@@ -128,10 +154,20 @@
   width: 24px;
 }
 
+:host([show-simplified-ui_]) .action-chip-icon-container {
+  height: 20px;
+  width: 20px;
+}
+
 .action-chip-recent-tab-favicon {
   border-radius: 2px;
   height: 24px;
   width: 24px;
+}
+
+:host([show-simplified-ui_]) .action-chip-recent-tab-favicon {
+  height: 20px;
+  width: 20px;
 }
 
 .action-chip-text-container {
@@ -141,6 +177,16 @@
   gap: 2px;
   min-width: 0;
   width: 100%;
+}
+
+:host([show-simplified-ui_]) .action-chip-text-container {
+  flex-direction: row;
+  gap: 4px;
+}
+
+:host([show-simplified-ui_]) .action-chip-text-container {
+  flex-direction: row;
+  gap: 4px;
 }
 
 .chip-title {
@@ -154,6 +200,12 @@
   width: 100%;
 }
 
+:host([show-simplified-ui_]) .chip-title {
+  line-height: 18px;
+  overflow: visible;
+  width: fit-content;
+}
+
 .chip-body {
   color: var(--color-sys-on-surface-subtle);
   font-size: 12px;
@@ -161,6 +213,11 @@
   line-height: 18px;
   text-align: start;
   width: 100%;
+}
+
+:host([show-simplified-ui_]) .chip-body {
+  font-size: 13px;
+  text-align: start;
 }
 
 .deep-dive-chip .chip-body {
