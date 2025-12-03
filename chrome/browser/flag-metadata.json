@@ -4604,7 +4604,9 @@
   {
     "name": "enable-unsafe-webgpu",
     "owners": [ "//third_party/blink/renderer/modules/webgpu/OWNERS" ],
-    "expiry_milestone": 145
+    // This flag is used by developers to test upcoming WebGPU features on
+    // their own content, before the features are considered stable.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-user-link-capturing-scope-extensions-pwa",

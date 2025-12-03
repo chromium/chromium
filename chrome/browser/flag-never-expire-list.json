@@ -75,6 +75,7 @@
   "enable-site-per-process",
   "enable-touchscreen-calibration",
   "enable-ui-devtools",
+  "enable-unsafe-webgpu",
   "enable-virtual-keyboard",
   "enable-vulkan",
   "enable-web-authentication-testing-api",
