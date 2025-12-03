@@ -526,7 +526,6 @@ bool VisitDatabase::GetRowForForeignVisit(
 
 bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
   // Don't store inconsistent data to the database.
-  DCHECK_NE(visit.visit_id, visit.referring_visit);
   if (visit.visit_id == visit.referring_visit) {
     return false;
   }
