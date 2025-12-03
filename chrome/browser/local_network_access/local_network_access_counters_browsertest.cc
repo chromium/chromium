@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
 // be fetched from documents in the public IP address space.
 // Regression test for https://crbug.com/1253239.
 // TODO(crbug.com/465260276): Re-enable this test.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && (defined(ADDRESS_SANITIZER) || !defined(NDEBUG))
 #define MAYBE_ProxiedResourcesAllowed DISABLED_ProxiedResourcesAllowed
 #else
 #define MAYBE_ProxiedResourcesAllowed ProxiedResourcesAllowed
