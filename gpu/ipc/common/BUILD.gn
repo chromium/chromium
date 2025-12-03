@@ -108,12 +108,6 @@ source_set("ipc_common_sources") {
       "dxguid.lib",
     ]
   }
-  if (use_ozone) {
-    sources += [
-      "legacy_gpu_memory_buffer_for_video.cc",
-      "legacy_gpu_memory_buffer_for_video.h",
-    ]
-  }
   if (is_android) {
     visibility += [ "//media/gpu" ]
   }
