@@ -229,8 +229,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   _locationBarViewController = locationBarViewController;
   if (locationBarViewController) {
     [self addChildViewController:locationBarViewController];
-    [locationBarViewController didMoveToParentViewController:self];
     [self.view setLocationBarView:locationBarViewController.view];
+    [locationBarViewController didMoveToParentViewController:self];
     self.view.locationBarContainer.hidden = NO;
     // Update the constraint of the location bar view to make sure the text is
     // centered.
