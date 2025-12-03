@@ -561,6 +561,8 @@ void ActorTask::ObserveTabOnce(tabs::TabHandle tab_handle) {
           .first;
   ActorControlledTabState* state = itr->second.get();
 
+  state->will_detach_subscription = tab->RegisterWillDetach(base::BindRepeating(
+      &ActorTask::OnTabWillDetach, weak_ptr_factory_.GetWeakPtr()));
   DidContentsEnterActorControl(state, tab->GetContents());
 }
 
@@ -568,6 +570,13 @@ void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
                                 tabs::TabInterface::DetachReason reason) {
   if (reason != tabs::TabInterface::DetachReason::kDelete) {
     return;
+  }
+  if (to_observe_tabs_.contains(tab->GetHandle())) {
+    // If the removed tab is only being observed, we can just remove it without
+    // disrupting the task. If the task hasn't gotten the observation it wanted
+    // for this tab, then won't be able to get it and will need to do something
+    // else.
+    to_observe_tabs_.erase(tab->GetHandle());
   }
   if (!HasTab(tab->GetHandle())) {
     return;
