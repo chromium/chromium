@@ -50,12 +50,12 @@ int gcd(int a, int b) {
   return (b);
 }
 
-}  // namespace
+constexpr int kY4MHeaderMaxSize = 200;
+constexpr char kY4MSimpleFrameDelimiter[] = "FRAME";
+constexpr int kY4MSimpleFrameDelimiterSize = 6;
+constexpr float kMJpegFrameRate = 30.0f;
 
-static const int kY4MHeaderMaxSize = 200;
-static const char kY4MSimpleFrameDelimiter[] = "FRAME";
-static const int kY4MSimpleFrameDelimiterSize = 6;
-static const float kMJpegFrameRate = 30.0f;
+}  // namespace
 
 int ParseY4MInt(std::string_view token) {
   int temp_int;
@@ -218,7 +218,7 @@ bool Y4mFileParser::Initialize(VideoCaptureFormat* capture_format) {
   }
 
   std::string header(kY4MHeaderMaxSize, '\0');
-  UNSAFE_TODO(file_->Read(0, &header[0], header.size()));
+  file_->Read(0, base::as_writable_byte_span(header));
   const size_t header_end = header.find(kY4MSimpleFrameDelimiter);
   CHECK_NE(header_end, header.npos);
 
