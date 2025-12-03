@@ -38,6 +38,10 @@ class AwWebPerformanceMetricsObserver
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
 
+  void OnTimingUpdate(
+      content::RenderFrameHost* subframe_rfh,
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+
   void OnUserTimingMarkFullyLoaded(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnUserTimingMarkFullyVisible(
@@ -47,6 +51,9 @@ class AwWebPerformanceMetricsObserver
   void OnCustomUserTimingMarkObserved(
       const std::vector<page_load_metrics::mojom::CustomUserTimingMarkPtr>&
           timings) override;
+
+ private:
+  uint64_t lcp_largest_reported_size_;
 };
 
 }  // namespace android_webview

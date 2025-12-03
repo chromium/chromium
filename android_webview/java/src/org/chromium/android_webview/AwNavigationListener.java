@@ -29,5 +29,7 @@ public interface AwNavigationListener {
 
     void onFirstContentfulPaint(AwPage page, long loadTimeUs);
 
+    void onLargestContentfulPaint(AwPage page, long durationMs);
+
     void onPerformanceMark(AwPage page, String markName, long markNameMs);
 }

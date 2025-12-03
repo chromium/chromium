@@ -28,6 +28,53 @@ AwWebPerformanceMetricsObserver::OnFencedFramesStart(
   return STOP_OBSERVING;
 }
 
+void AwWebPerformanceMetricsObserver::OnTimingUpdate(
+    content::RenderFrameHost* subframe_rfh,
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  // Buffered metrics aren't available for navigations that do not commit
+  // or haven't committed yet.
+  if (!GetDelegate().DidCommit()) {
+    return;
+  }
+
+  // Report largest contentful paint.
+  // Note: lcp is tracked separately for images and text, but we only want to
+  // report the largest paint overall. Below we compare the values from image
+  // lcp and text lcp, to see which is the largest overall. Additionally
+  // OnTimingUpdate is triggered when an updated PageLoadTiming is available at
+  // the page. It can be called multiple times over the course of the page load
+  // and not just when lcp is updated. Hence we also compare the values to the
+  // last lcp reported to determine whether lcp has been updated.
+  page_load_metrics::mojom::LargestContentfulPaintTimingPtr lcp_timing =
+      std::move(timing.paint_timing->largest_contentful_paint);
+  uint64_t lcp_image_size = lcp_timing->largest_image_paint_size;
+  std::optional<base::TimeDelta> lcp_image_duration =
+      lcp_timing->largest_image_paint;
+  uint64_t lcp_text_size = lcp_timing->largest_text_paint_size;
+  std::optional<base::TimeDelta> lcp_text_duration =
+      lcp_timing->largest_text_paint;
+  std::optional<base::TimeDelta> new_lcp;
+
+  if (lcp_image_size > lcp_largest_reported_size_ ||
+      lcp_text_size > lcp_largest_reported_size_) {
+    if (lcp_image_size > lcp_text_size) {
+      CHECK(lcp_image_duration);
+      new_lcp = lcp_image_duration;
+      lcp_largest_reported_size_ = lcp_image_size;
+    } else {
+      CHECK(lcp_text_duration);
+      new_lcp = lcp_text_duration;
+      lcp_largest_reported_size_ = lcp_text_size;
+    }
+
+    AwContents* aw_contents =
+        AwContents::FromWebContents(GetDelegate().GetWebContents());
+    if (aw_contents) {
+      aw_contents->OnLargestContentfulPaint(new_lcp.value());
+    }
+  }
+}
+
 void AwWebPerformanceMetricsObserver::OnUserTimingMarkFullyLoaded(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   // TODO: crbug.com/461774316 - Clean up check

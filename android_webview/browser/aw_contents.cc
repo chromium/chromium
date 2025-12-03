@@ -1782,6 +1782,13 @@ void AwContents::OnSafeBrowsingAllowListSet() {
       NotRestoredReason::kWebViewSafeBrowsingAllowlistChanged);
 }
 
+void AwContents::OnLargestContentfulPaint(const base::TimeDelta& duration) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_AwContents_onLargestContentfulPaint(
+      env, java_ref_.get(env), web_contents_->GetPrimaryPage().GetJavaPage(),
+      duration.InMilliseconds());
+}
+
 void AwContents::OnPerformanceMark(std::string mark_name,
                                    const base::TimeDelta& mark_time) {
   JNIEnv* env = AttachCurrentThread();

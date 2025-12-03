@@ -4116,6 +4116,12 @@ public class AwContents implements SmartClipProvider {
         return AwContentsJni.get().fromWebContents(webContents);
     }
 
+    // TODO: crbug.com/464257269 - remove the need for this and the onPerformanceMark methods
+    @CalledByNative
+    private void onLargestContentfulPaint(Page page, long durationMs) {
+        mNavigationClient.onLargestContentfulPaint(page, durationMs);
+    }
+
     @CalledByNative
     private void onPerformanceMark(Page page, String markName, long markTimeMs) {
         mNavigationClient.onPerformanceMark(page, markName, markTimeMs);

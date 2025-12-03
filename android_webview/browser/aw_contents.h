@@ -344,6 +344,8 @@ class AwContents : public FindHelper::Listener,
   void OnSafeBrowsingAllowListSet() override;
 
   // AwWebPerformanceMetricsObserver related methods
+  void OnLargestContentfulPaint(const base::TimeDelta& duration);
+
   void OnPerformanceMark(std::string mark_name,
                          const base::TimeDelta& mark_time);
 

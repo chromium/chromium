@@ -138,6 +138,13 @@ public class AwNavigationClient implements Page.PageDeletionListener {
         }
     }
 
+    public void onLargestContentfulPaint(Page page, long durationMs) {
+        AwPage awPage = getAwPageFor(page);
+        for (AwNavigationListener listener : mNavigationListeners) {
+            listener.onLargestContentfulPaint(awPage, durationMs);
+        }
+    }
+
     public void onPerformanceMark(Page page, String markName, long markTimeMs) {
         AwPage awPage = getAwPageFor(page);
         for (AwNavigationListener listener : mNavigationListeners) {

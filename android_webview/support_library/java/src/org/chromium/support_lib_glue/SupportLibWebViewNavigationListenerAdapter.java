@@ -148,5 +148,9 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
 
     // TODO: crbug.com/432696062 - Implement AndroidX methods
     @Override
+    public void onLargestContentfulPaint(AwPage page, long durationMs) {}
+
+    // TODO: crbug.com/432696062 - Implement AndroidX methods
+    @Override
     public void onPerformanceMark(AwPage page, String markName, long markNameMs) {}
 }
