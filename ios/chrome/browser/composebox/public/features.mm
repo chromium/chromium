@@ -64,3 +64,19 @@ BASE_FEATURE(kComposeboxMenuTitle, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsComposeboxMenuTitleEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxMenuTitle);
 }
+
+BASE_FEATURE(kComposeboxFetchContextualSuggestionsForImage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsComposeboxFetchContextualSuggestionsForImageEnabled() {
+  return base::FeatureList::IsEnabled(
+      kComposeboxFetchContextualSuggestionsForImage);
+}
+
+BASE_FEATURE(kComposeboxFetchContextualSuggestionsForMultipleAttachments,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsComposeboxFetchContextualSuggestionsForMultiAttachmentsEnabled() {
+  return base::FeatureList::IsEnabled(
+      kComposeboxFetchContextualSuggestionsForMultipleAttachments);
+}

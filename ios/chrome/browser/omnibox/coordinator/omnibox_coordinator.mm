@@ -344,8 +344,12 @@
   return self.viewController;
 }
 
-- (void)clearSuggestionsAndRestartAutocomplete {
-  [_omniboxAutocompleteController clearAndRestartAutocomplete];
+- (void)clearSuggestionsWithRestartAutocomplete:(BOOL)restartAutocomplete {
+  if (restartAutocomplete) {
+    [_omniboxAutocompleteController clearAndRestartAutocomplete];
+  } else {
+    [_omniboxAutocompleteController stopAutocompleteWithClearSuggestions:YES];
+  }
 }
 
 - (id<EditViewAnimatee>)animatee {

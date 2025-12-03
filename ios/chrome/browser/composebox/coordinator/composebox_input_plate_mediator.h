@@ -34,7 +34,7 @@ class ContextualSearchSessionHandle;
 // Delegate for the ComposeboxInputPlateMediator.
 @protocol ComposeboxInputPlateMediatorDelegate
 // Reloads the composebox autocomplete suggestions.
-- (void)reloadAutocompleteSuggestions;
+- (void)reloadAutocompleteSuggestionsRestarting:(BOOL)restart;
 // Informs the delegate that adding an attachment failed due to limit.
 - (void)showAttachmentLimitError;
 // Informs the delegate that item upload has failed.
