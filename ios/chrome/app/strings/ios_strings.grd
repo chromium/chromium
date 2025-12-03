@@ -7275,6 +7275,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_ACTION_SHEET_TITLE" desc="Title of the action sheet that confirms closing all tabs or non-pinned tabs only. [iOS only]">
         Close all tabs?
       </message>
+      <message name="IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_AND_GROUPS_ACTION_SHEET_MESSAGE" desc="Message of the action sheet that confirms closing all non-pinned tabs and tab groups. [iOS only]">
+        You can reopen closed items from the recent tabs or tab groups sections. Your pinned tabs won't be closed.
+      </message>
+      <message name="IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_AND_GROUPS_ACTION_SHEET_TITLE" desc="Title of the action sheet that confirms closing all non-pinned tabs and tab groups. [iOS only]">
+        Close all?
+      </message>
       <message name="IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION" desc="Title of the button in the action sheet that close all tabs. COUNT refers to the number of tabs open. According to its value, the string goes from singular to plural. [iOS only]">
         {COUNT, plural,
              =1 {Close {COUNT} tab}
