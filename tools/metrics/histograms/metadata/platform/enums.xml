@@ -609,6 +609,8 @@ metrics consent we also won't be able to send UMA metrics. -->
 <enum name="FlexInstallMethod">
   <int value="0" label="Unknown"/>
   <int value="1" label="Flexor"/>
+  <int value="2" label="Mass Deploy"/>
+  <int value="3" label="Remote Deploy"/>
 </enum>
 
 <enum name="FwupdReturnValue">
