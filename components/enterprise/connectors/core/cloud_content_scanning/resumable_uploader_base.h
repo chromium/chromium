@@ -9,6 +9,8 @@
 
 namespace enterprise_connectors {
 
+class BrowserThreadGuard;
+
 class ResumableUploadRequestBase : public ConnectorUploadRequest {
  public:
   using ContentUploadedCallback = base::OnceClosure;
@@ -35,7 +37,8 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
-      bool force_sync_upload);
+      bool force_sync_upload,
+      std::unique_ptr<BrowserThreadGuard> thread_guard);
 
   // Creates a ResumableUploadRequestBase, which will upload the `metadata` of
   // the page to the given `base_url`, and then the content of `page_region` if
@@ -50,7 +53,8 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
-      bool force_sync_upload);
+      bool force_sync_upload,
+      std::unique_ptr<BrowserThreadGuard> thread_guard);
 
   // Creates a ResumableUploadRequestBase, which will upload the `metadata` of a
   // pasted image to the given `base_url`, and then the `data` if necessary.
@@ -63,7 +67,8 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
-      bool force_sync_upload);
+      bool force_sync_upload,
+      std::unique_ptr<BrowserThreadGuard> thread_guard);
 
   ResumableUploadRequestBase(const ResumableUploadRequestBase&) = delete;
   ResumableUploadRequestBase& operator=(const ResumableUploadRequestBase&) =
@@ -74,29 +79,36 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
   ~ResumableUploadRequestBase() override;
 
   // Called whenever a content request finishes (on success or failure).
-  virtual void OnSendContentCompleted(
-      base::TimeTicks start_time,
-      std::optional<std::string> response_body) = 0;
+  void OnSendContentCompleted(base::TimeTicks start_time,
+                              std::optional<std::string> response_body);
 
   // Set the headers for the given metadata `request`.
   void SetMetadataRequestHeaders(network::ResourceRequest* request);
 
   std::string GetUploadInfo() override;
 
+  // Start the upload. This must be called on the UI thread. When complete, this
+  // will call `callback_` on the UI thread.
+  void Start() override;
+
  protected:
   // Called after a metadata request finishes successfully. Virtual for testing.
   virtual void SendContentSoon(const std::string& upload_url);
-
-  // Called whenever a metadata request finishes (on success or failure).
-  virtual void OnMetadataUploadCompleted(
-      base::TimeTicks start_time,
-      std::optional<std::string> response_body) = 0;
 
   // Called whenever a net request finishes (on success or failure). Protected
   // for testing
   void Finish(int net_error,
               int response_code,
               std::optional<std::string> response_body);
+
+  bool force_sync_upload() const { return force_sync_upload_; }
+
+  VerdictReceivedCallback verdict_received_callback_;
+
+ private:
+  // Called whenever a metadata request finishes (on success or failure).
+  void OnMetadataUploadCompleted(base::TimeTicks start_time,
+                                 std::optional<std::string> response_body);
 
   // Initialize `data_pipe_getter_`
   void CreateDatapipe(std::unique_ptr<network::ResourceRequest> request,
@@ -126,8 +138,6 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
   // feature is enabled and the `scan_type_` is ASYNC.
   bool ShouldUploadEncryptedFile();
 
-  bool force_sync_upload() const { return force_sync_upload_; }
-
   // Helper used by metrics logging code.
   std::string GetRequestType();
 
@@ -138,7 +148,8 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
     ASYNC = 3
   } scan_type_ = PENDING;
 
-  VerdictReceivedCallback verdict_received_callback_;
+  std::unique_ptr<BrowserThreadGuard> thread_guard_;
+
   ContentUploadedCallback content_uploaded_callback_;
   std::string access_token_;
 

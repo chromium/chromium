@@ -4,13 +4,29 @@
 
 #include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader_base.h"
 
+#include <memory>
+
+#include "base/base64.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
+#include "base/time/time.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/browser_thread_guard.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "net/http/http_status_code.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace enterprise_connectors {
 
@@ -30,6 +46,8 @@ constexpr char kUploadHeaderContentTypeHeader[] =
 constexpr char kUploadStatusHeader[] = "X-Goog-Upload-Status";
 constexpr char kUploadUrlHeader[] = "X-Goog-Upload-Url";
 constexpr char kUploadOffsetHeader[] = "X-Goog-Upload-Offset";
+constexpr char kUploadIntermediateHeader[] =
+    "X-Goog-Upload-Header-Cep-Response";
 
 // Content type of the upload contents.
 constexpr char kUploadContentType[] = "application/octet-stream";
@@ -60,7 +78,7 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
-    enterprise_connectors::ScanRequestUploadResult get_data_result,
+    ScanRequestUploadResult get_data_result,
     const base::FilePath& path,
     uint64_t file_size,
     bool is_obfuscated,
@@ -68,7 +86,8 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     VerdictReceivedCallback verdict_received_callback,
     ContentUploadedCallback content_uploaded_callback,
-    bool force_sync_upload)
+    bool force_sync_upload,
+    std::unique_ptr<BrowserThreadGuard> thread_guard)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
@@ -79,22 +98,26 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
                              traffic_annotation,
                              base::DoNothing()),
       verdict_received_callback_(std::move(verdict_received_callback)),
+      thread_guard_(std::move(thread_guard)),
       content_uploaded_callback_(std::move(content_uploaded_callback)),
       get_data_result_(get_data_result),
       is_obfuscated_(is_obfuscated),
-      force_sync_upload_(force_sync_upload) {}
+      force_sync_upload_(force_sync_upload) {
+  thread_guard_->AssertCalledOnUIThread();
+}
 
 ResumableUploadRequestBase::ResumableUploadRequestBase(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
-    enterprise_connectors::ScanRequestUploadResult get_data_result,
+    ScanRequestUploadResult get_data_result,
     base::ReadOnlySharedMemoryRegion page_region,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     VerdictReceivedCallback verdict_received_callback,
     ContentUploadedCallback content_uploaded_callback,
-    bool force_sync_upload)
+    bool force_sync_upload,
+    std::unique_ptr<BrowserThreadGuard> thread_guard)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
@@ -103,9 +126,12 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
                              traffic_annotation,
                              base::DoNothing()),
       verdict_received_callback_(std::move(verdict_received_callback)),
+      thread_guard_(std::move(thread_guard)),
       content_uploaded_callback_(std::move(content_uploaded_callback)),
       get_data_result_(get_data_result),
-      force_sync_upload_(force_sync_upload) {}
+      force_sync_upload_(force_sync_upload) {
+  thread_guard_->AssertCalledOnUIThread();
+}
 
 ResumableUploadRequestBase::ResumableUploadRequestBase(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -116,7 +142,8 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     VerdictReceivedCallback verdict_received_callback,
     ContentUploadedCallback content_uploaded_callback,
-    bool force_sync_upload)
+    bool force_sync_upload,
+    std::unique_ptr<BrowserThreadGuard> thread_guard)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
@@ -125,11 +152,38 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
                              traffic_annotation,
                              base::DoNothing()),
       verdict_received_callback_(std::move(verdict_received_callback)),
+      thread_guard_(std::move(thread_guard)),
       content_uploaded_callback_(std::move(content_uploaded_callback)),
-      get_data_result_(enterprise_connectors::ScanRequestUploadResult::SUCCESS),
-      force_sync_upload_(force_sync_upload) {}
+      get_data_result_(ScanRequestUploadResult::SUCCESS),
+      force_sync_upload_(force_sync_upload) {
+  thread_guard_->AssertCalledOnUIThread();
+}
 
 ResumableUploadRequestBase::~ResumableUploadRequestBase() = default;
+
+void ResumableUploadRequestBase::OnSendContentCompleted(
+    base::TimeTicks start_time,
+    std::optional<std::string> response_body) {
+  thread_guard_->AssertCalledOnUIThread();
+
+  // If this has already been called after the metadata check, that means that
+  // we have set the value to ASYNC.
+  if (!verdict_received_callback_.is_null()) {
+    scan_type_ = FULL_CONTENT;
+  }
+
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"Enterprise.ResumableRequest.ContentCheck.",
+                    GetRequestType(), ".Duration"}),
+      base::TimeTicks::Now() - start_time, base::Milliseconds(1),
+      base::Minutes(6), 50);
+
+  int response_code = 0;
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
+    response_code = url_loader_->ResponseInfo()->headers->response_code();
+  }
+  Finish(url_loader_->NetError(), response_code, std::move(response_body));
+}
 
 void ResumableUploadRequestBase::SetMetadataRequestHeaders(
     network::ResourceRequest* request) {
@@ -172,6 +226,11 @@ std::string ResumableUploadRequestBase::GetUploadInfo() {
   }
 
   return base::StrCat({"Resumable - ", scan_info});
+}
+
+void ResumableUploadRequestBase::Start() {
+  thread_guard_->AssertCalledOnUIThread();
+  SendMetadataRequest();
 }
 
 std::string ResumableUploadRequestBase::GetRequestType() {
@@ -309,6 +368,64 @@ void ResumableUploadRequestBase::SendContentNow(
       url_loader_factory_.get(),
       base::BindOnce(&ResumableUploadRequestBase::OnSendContentCompleted,
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+}
+
+void ResumableUploadRequestBase::OnMetadataUploadCompleted(
+    base::TimeTicks start_time,
+    std::optional<std::string> response_body) {
+  thread_guard_->AssertCalledOnUIThread();
+  scan_type_ = METADATA_ONLY;
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"Enterprise.ResumableRequest.MetadataCheck.",
+                    GetRequestType(), ".Duration"}),
+      base::TimeTicks::Now() - start_time, base::Milliseconds(1),
+      base::Minutes(6), 50);
+  int response_code = 0;
+  if (!url_loader_->ResponseInfo() || !url_loader_->ResponseInfo()->headers) {
+    // TODO(b/322005992): Add retry logics.
+    Finish(url_loader_->NetError(), response_code, std::move(response_body));
+    return;
+  }
+
+  auto headers = url_loader_->ResponseInfo()->headers;
+  // If there is an error or if no content upload is required,
+  // CanUploadContent() returns false.
+  response_code = headers->response_code();
+  if (!CanUploadContent(headers)) {
+    Finish(url_loader_->NetError(), response_code, std::move(response_body));
+    return;
+  }
+
+  if (!force_sync_upload_) {
+    if (headers->HasHeader(kUploadIntermediateHeader)) {
+      response_body = headers->GetNormalizedHeader(kUploadIntermediateHeader);
+
+      std::string output;
+      bool is_decoded = base::Base64Decode(response_body.value(), &output);
+
+      if (output.empty() || !is_decoded) {
+        Finish(net::ERR_FAILED, net::HTTP_BAD_REQUEST, std::nullopt);
+        return;
+      }
+
+      scan_type_ = ASYNC;
+      std::move(verdict_received_callback_)
+          .Run(IsSuccess(url_loader_->NetError(), response_code), response_code,
+               output);
+    }
+  }
+
+  // If chrome is being told to upload the content but the content is too large
+  // or is encrypted and encrypted file upload is not enabled, fail now.
+  if (get_data_result_ == ScanRequestUploadResult::FILE_TOO_LARGE ||
+      (get_data_result_ == ScanRequestUploadResult::FILE_ENCRYPTED &&
+       !ShouldUploadEncryptedFile())) {
+    Finish(net::ERR_FAILED, net::HTTP_BAD_REQUEST, std::move(response_body));
+    return;
+  }
+
+  // At this point, we are guaranteed to have the upload url header
+  SendContentSoon(headers->GetNormalizedHeader(kUploadUrlHeader).value());
 }
 
 bool ResumableUploadRequestBase::CanUploadContent(

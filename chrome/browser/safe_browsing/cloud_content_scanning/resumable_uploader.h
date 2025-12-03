@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_data_pipe_getter.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
@@ -135,22 +134,8 @@ class ResumableUploadRequest
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload);
-
-  // Start the upload. This must be called on the UI thread. When complete, this
-  // will call `callback_` on the UI thread.
-  void Start() override;
-
- private:
-  // Called whenever a metadata request finishes (on success or failure).
-  void OnMetadataUploadCompleted(
-      base::TimeTicks start_time,
-      std::optional<std::string> response_body) override;
-
-  // Called whenever a content request finishes (on success or failure).
-  void OnSendContentCompleted(
-      base::TimeTicks start_time,
-      std::optional<std::string> response_body) override;
 };
+
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_H_
