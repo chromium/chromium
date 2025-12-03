@@ -115,13 +115,11 @@ BASE_FEATURE(kWebAuthnAmbientSignin,
              "WebAuthenticationAmbientSignin",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This is a deprecation flag. It is now enabled by default, but we want to
-// disable it eventually.
-// Must not be disabled until kWebAuthnHybridLinking is disabled by default.
+// Deprecation flag. Disabled by default in M145. Remove in or after M148.
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kWebAuthnPublishPrelinkingInfo,
              "WebAuthenticationPublishPrelinkingInfo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Disabled by default.
