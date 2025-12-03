@@ -49,7 +49,7 @@ export {ABOUT_PAGE_PRIVACY_POLICY_URL} from './about_page/about_page.js';
 export {AboutPageBrowserProxyImpl, UpdateStatus} from './about_page/about_page_browser_proxy.js';
 export type {AboutPageBrowserProxy} from './about_page/about_page_browser_proxy.js';
 // <if expr="_google_chrome and is_macosx">
-export {PromoteUpdaterStatus} from './about_page/about_page_browser_proxy.js';
+export type {PromoteUpdaterStatus} from './about_page/about_page_browser_proxy.js';
 // </if>
 // clang-format on
 export {SettingsAiInfoCardElement} from './ai_page/ai_info_card.js';
