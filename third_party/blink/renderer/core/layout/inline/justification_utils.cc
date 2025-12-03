@@ -16,6 +16,7 @@ namespace blink {
 namespace {
 
 constexpr UChar kTextCombineItemMarker = 0x3042;  // U+3042 Hiragana Letter A
+constexpr UChar kBaseShorterRubyMarker = uchar::kObjectReplacementCharacter;
 
 // Build the source text for ShapeResultSpacing. This needs special handling
 // for text-combine items, ruby annotations, and hyphenations.
@@ -67,7 +68,7 @@ String BuildJustificationText(const String& text_content,
                 base_end, base_line.MayHaveTextCombineOrRubyItem()));
           }
         } else {
-          line_text_builder.Append(uchar::kObjectReplacementCharacter);
+          line_text_builder.Append(kBaseShorterRubyMarker);
         }
         continue;
       }
@@ -182,9 +183,9 @@ float JustifyResults(const String& text_content,
         }
         [[maybe_unused]] const auto [spacing_before, spacing_after] =
             spacing.ComputeExpansion(offset);
-        // ShapeResultSpacing doesn't ask for adding space to OBJECT
-        // REPLACEMENT CHARACTER, and asks for adding space to the next item
-        // instead.
+        // ShapeResultSpacing doesn't ask for adding space to
+        // kBaseShorterRubyMarker, which is OBJECT REPLACEMENT CHARACTER, and
+        // asks for adding space to the next item instead.
         DCHECK_EQ(spacing_before, TextRunLayoutUnit());
         DCHECK_EQ(spacing_after, TextRunLayoutUnit());
       }
