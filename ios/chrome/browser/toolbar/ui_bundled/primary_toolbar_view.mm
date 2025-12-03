@@ -810,7 +810,7 @@ const CGFloat kPaddingForXCircleCancelIcon = 20;
   }
 
   [self.locationBarContainer addSubview:locationBarView];
-  AddSameConstraints(self.locationBarView, self.locationBarContainer);
+  AddSameConstraints(locationBarView, self.locationBarContainer);
   [self.locationBarContainer.trailingAnchor
       constraintGreaterThanOrEqualToAnchor:self.locationBarView.trailingAnchor]
       .active = YES;
