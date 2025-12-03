@@ -37,8 +37,7 @@ base::TimeDelta ComputeAdpfTarget(const BeginFrameArgs& args) {
 
 bool AdpfCanUseSetThreads() {
 #if BUILDFLAG(IS_ANDROID)
-  return android_get_device_api_level() >= __ANDROID_API_U__ &&
-         base::FeatureList::IsEnabled(features::kEnableADPFSetThreads);
+  return android_get_device_api_level() >= __ANDROID_API_U__;
 #else
   return false;
 #endif

@@ -113,7 +113,6 @@ VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
 VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kADPFSocManufacturerBlocklist;
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFSeparateRendererMainSession);
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFSetThreads);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFWorkloadIncreaseOnPageLoad);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFWorkloadReset);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDisplaySDRMaxLuminanceNits);

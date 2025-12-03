@@ -268,11 +268,6 @@ const base::FeatureParam<std::string> kADPFSocManufacturerBlocklist{
 BASE_FEATURE(kEnableADPFSeparateRendererMainSession,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Chrome uses SetThreads instead of recreating an
-// ADPF(Android Dynamic Performance Framework) hint session when the set of
-// threads in the session changes.
-BASE_FEATURE(kEnableADPFSetThreads, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, Chrome uses notifyWorkloadIncrease ADPF(Android Dynamic
 // Performance Framework) method before CrRendererMain starts running a heavy
 // workload during page load.
