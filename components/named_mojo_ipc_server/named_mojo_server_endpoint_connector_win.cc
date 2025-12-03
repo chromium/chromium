@@ -94,6 +94,11 @@ NamedMojoServerEndpointConnectorWin::~NamedMojoServerEndpointConnectorWin() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pending_named_pipe_handle_.is_valid()) {
     CancelIoEx(pending_named_pipe_handle_.Get(), &connect_overlapped_);
+
+    // `CancelIoEx` is asynchronous, so the following code blocks the
+    // destruction of `NamedMojoServerEndpointConnectorWin` on the kernel
+    // writing the final status into `connect_overlapped_` to avoid a
+    // use-after-free.
     DWORD bytes = 0;
     GetOverlappedResult(pending_named_pipe_handle_.Get(), &connect_overlapped_,
                         &bytes, TRUE);
