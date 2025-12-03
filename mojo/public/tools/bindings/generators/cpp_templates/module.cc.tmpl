@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+{%- if not contains_only_enums %}
 {%- from 'cpp_macros.tmpl' import
     namespace_begin, namespace_end, variant_path %}
 
@@ -193,3 +194,4 @@ void {{interface.name}}AsyncWaiter::{{method.name}}(
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+{%- endif %}
