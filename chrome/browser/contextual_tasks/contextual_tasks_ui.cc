@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/uuid.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
@@ -36,6 +37,7 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
@@ -49,6 +51,19 @@
 #include "ui/webui/webui_util.h"
 
 namespace {
+
+void AddToolEligibilityBooleans(content::WebUIDataSource* source,
+                                Profile* profile) {
+  AimEligibilityService* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  source->AddBoolean("composeboxShowDeepSearchButton",
+                     aim_eligibility_service &&
+                         aim_eligibility_service->IsDeepSearchEligible());
+  source->AddBoolean("composeboxShowCreateImageButton",
+                     aim_eligibility_service &&
+                         aim_eligibility_service->IsCreateImagesEligible());
+}
+
 BrowserWindowInterface* FromWebContents(content::WebContents* web_contents) {
   BrowserWindow* window =
       BrowserWindow::FindBrowserWindowWithWebContents(web_contents);
@@ -153,8 +168,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddString("composeCreateImagePlaceholder", "[i18n] Create image...");
   source->AddBoolean("composeboxShowPdfUpload", false);
   source->AddBoolean("composeboxSmartComposeEnabled", false);
-  source->AddBoolean("composeboxShowDeepSearchButton", false);
-  source->AddBoolean("composeboxShowCreateImageButton", false);
+  AddToolEligibilityBooleans(source, Profile::FromWebUI(web_ui));
   source->AddBoolean("composeboxShowRecentTabChip", false);
   source->AddBoolean("composeboxShowSubmit", true);
   source->AddBoolean("composeboxContextDragAndDropEnabled", false);
