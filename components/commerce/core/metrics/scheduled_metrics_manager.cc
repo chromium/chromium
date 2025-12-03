@@ -63,15 +63,18 @@ void ScheduledMetricsManager::RunDailyTask() {
     shopping_service_->GetAllSubscriptions(
         SubscriptionType::kPriceTrack,
         base::BindOnce(
-            [](PrefService* pref_service,
+            [](base::WeakPtr<ScheduledMetricsManager> manager,
                std::vector<CommerceSubscription> tracked_products) {
               base::UmaHistogramCounts100(kTrackedProductCountHistogramName,
                                           tracked_products.size());
 
+              PrefService* pref_service =
+                  manager ? manager->pref_service_ : nullptr;
               PriceNotificationEmailState state =
                   PriceNotificationEmailState::kNotResponded;
               if (tracked_products.size() > 0) {
-                if (pref_service->GetBoolean(kPriceEmailNotificationsEnabled)) {
+                if (pref_service &&
+                    pref_service->GetBoolean(kPriceEmailNotificationsEnabled)) {
                   state = PriceNotificationEmailState::kEnabled;
                 } else {
                   state = PriceNotificationEmailState::kDisabled;
@@ -80,7 +83,7 @@ void ScheduledMetricsManager::RunDailyTask() {
               base::UmaHistogramEnumeration(
                   kPriceNotificationEmailHistogramName, state);
             },
-            pref_service_));
+            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

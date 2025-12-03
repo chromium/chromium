@@ -616,17 +616,18 @@ void RemoveDanglingSubscriptions(
          base::OnceCallback<void(size_t)> completed_callback) {
         auto subs_callback = base::BindOnce(
             [](base::WeakPtr<ShoppingService> service,
-               bookmarks::BookmarkModel* model,
+               base::WeakPtr<bookmarks::BookmarkModel> model,
                base::OnceCallback<void(size_t)> callback,
                std::vector<CommerceSubscription> subscriptions) {
-              if (!service) {
+              if (!service || !model) {
                 std::move(callback).Run(0);
                 return;
               }
-              RemoveDanglingSubscriptionsImpl(
-                  service.get(), model, std::move(callback), subscriptions);
+              RemoveDanglingSubscriptionsImpl(service.get(), model.get(),
+                                              std::move(callback),
+                                              subscriptions);
             },
-            service, model, std::move(completed_callback));
+            service, model->AsWeakPtr(), std::move(completed_callback));
 
         service->GetAllSubscriptions(commerce::SubscriptionType::kPriceTrack,
                                      std::move(subs_callback));
