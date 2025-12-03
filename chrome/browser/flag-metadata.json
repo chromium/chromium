@@ -10665,7 +10665,7 @@
   {
     "name": "web-app-installation-api",
     "owners": [ "liahiscock@microsoft.com", "pwa-team@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 149
   },
   {
     "name": "web-app-manifest-protocol-handlers",
