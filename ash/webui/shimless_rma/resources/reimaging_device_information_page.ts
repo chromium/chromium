@@ -124,6 +124,11 @@ export class ReimagingDeviceInformationPage extends
         value: false,
       },
 
+      serialNumberLabel: {
+        type: String,
+        value: '',
+      },
+
       originalSerialNumber: {
         type: String,
         value: '',
@@ -244,6 +249,7 @@ export class ReimagingDeviceInformationPage extends
   protected disableModifyCustomLabel: boolean;
   protected disableModifyDramPartNumber: boolean;
   protected disableModifyFeatureLevel: boolean;
+  protected serialNumberLabel: string;
   protected originalSerialNumber: string;
   protected serialNumber: string;
 
@@ -256,6 +262,7 @@ export class ReimagingDeviceInformationPage extends
     this.getOriginalDramPartNumber();
     this.getOriginalFeatureLevel();
     this.updateInputFieldModifiabilities();
+    this.updateSerialNumberNaming();
 
     focusPageTitle(this);
   }
@@ -543,6 +550,23 @@ export class ReimagingDeviceInformationPage extends
     this.disableModifyCustomLabel = !properties.customLabelModifiable;
     this.disableModifyDramPartNumber = !properties.dramPartNumberModifiable;
     this.disableModifyFeatureLevel = !properties.featureLevelModifiable;
+  }
+
+  private async updateSerialNumberNaming(): Promise<void> {
+    this.serialNumberLabel = this.i18n('confirmDeviceInfoSerialNumberLabel');
+    if (!loadTimeData.getBoolean('flexibleSerialNumberNameEnabled')) {
+      return;
+    }
+
+    const result = await this.shimlessRmaService.getStateProperties();
+    const properties =
+        result?.statePropertyResult.property?.updateDeviceInfoStateProperty;
+    if (properties === undefined ||
+        properties.customizedSerialNumberNaming === '') {
+      return;
+    }
+
+    this.serialNumberLabel = properties.customizedSerialNumberNaming;
   }
 
   protected isInputDisabled(inputDisabled: boolean): boolean {

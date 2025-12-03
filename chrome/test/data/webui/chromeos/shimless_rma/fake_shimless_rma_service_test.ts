@@ -68,6 +68,7 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
           customLabelModifiable: false,
           dramPartNumberModifiable: false,
           featureLevelModifiable: false,
+          customizedSerialNumberNaming: 'TEST SN NAME',
         },
       },
     };

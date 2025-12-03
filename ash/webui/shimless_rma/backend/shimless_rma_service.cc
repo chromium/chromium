@@ -155,7 +155,10 @@ ShimlessRmaService::CreateUpdateDeviceInfoStateProperty() {
               /*dram_part_number_modifiable=*/
               state_proto_.update_device_info().dram_part_number_modifiable(),
               /*feature_level_modifiable=*/
-              state_proto_.update_device_info().feature_level_modifiable())));
+              state_proto_.update_device_info().feature_level_modifiable(),
+              /*customized_serial_number_naming=*/
+              state_proto_.update_device_info()
+                  .customized_serial_number_naming())));
 }
 
 mojom::StateResultPtr ShimlessRmaService::CreateStateResult(
