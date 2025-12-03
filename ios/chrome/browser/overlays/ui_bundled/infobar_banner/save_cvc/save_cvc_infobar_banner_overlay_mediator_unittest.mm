@@ -36,13 +36,13 @@ using SaveCvcPromptResultIOS =
 using autofill::autofill_metrics::SaveCardPromptOffer;
 
 constexpr char kSaveCvcPromptOfferHistogramStringForLocalSave[] =
-    "Autofill.SaveCvcPromptOffer.Local";
+    "Autofill.SaveCvcPromptOffer.IOS.Local";
 constexpr char kSaveCvcPromptOfferHistogramStringForUploadSave[] =
-    "Autofill.SaveCvcPromptOffer.Upload";
+    "Autofill.SaveCvcPromptOffer.IOS.Upload";
 constexpr char kSaveCvcPromptResultHistogramStringForLocalSave[] =
-    "Autofill.SaveCvcPromptResult.Local";
+    "Autofill.SaveCvcPromptResult.IOS.Local";
 constexpr char kSaveCvcPromptResultHistogramStringForUploadSave[] =
-    "Autofill.SaveCvcPromptResult.Upload";
+    "Autofill.SaveCvcPromptResult.IOS.Upload";
 }  // namespace
 
 // Test fixture for SaveCVCInfobarBannerOverlayMediator.
