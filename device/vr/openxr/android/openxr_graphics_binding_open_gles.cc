@@ -242,9 +242,10 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
 
   // TODO(crbug.com/459811463): We don't use GL_TEXTURE_CUBE_MAP because
   // AHARDWAREBUFFER_USAGE_GPU_CUBE_MAP is not always supported. So we put
-  // 6 faces inside a 2D texture aligned from bottom to top.
+  // 6 faces inside a 2D texture, 3 tiles per row, 2 rows in total.
   if (layer.type() == OpenXrCompositionLayer::Type::kCube) {
-    transfer_size.set_height(transfer_size.height() * 6);
+    transfer_size.set_width(transfer_size.width() * 3);
+    transfer_size.set_height(transfer_size.height() * 2);
   }
 
   if (!open_gles_layer_data.using_shared_images ||

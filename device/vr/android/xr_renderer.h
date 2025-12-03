@@ -41,7 +41,8 @@ class XrRenderer {
     GLuint texture_handle_ = 0;
     GLuint uv_transform_ = 0;
     GLuint opacity_ = 0;
-    GLuint face_index_ = 0;
+    GLuint column_index_ = 0;
+    GLuint row_index_ = 0;
   };
 
   Program CreateProgram(const std::string& vertex, const std::string& fragment);

@@ -468,7 +468,9 @@ void OpenXrGraphicsBinding::SetEnabledCompositionLayers(
   for (auto& [id, layer] : layers_) {
     if (enabled_layers.contains(id)) {
       if (!layer->HasColorSwapchain()) {
-        layer->CreateSwapchain(session, swapchain_sample_count);
+        XrResult result =
+            layer->CreateSwapchain(session, swapchain_sample_count);
+        CHECK_EQ(result, XR_SUCCESS);
         CreateSharedImages(*layer, sii);
       }
       if (layer->type() == OpenXrCompositionLayer::Type::kProjection) {

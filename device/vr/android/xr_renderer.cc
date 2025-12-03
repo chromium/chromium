@@ -64,13 +64,17 @@ static constexpr char const* kFragmentShaderCubemap = OEIE_SHADER(
   uniform sampler2D u_Texture;
   varying vec2 v_TexCoordinate;
   uniform float u_Opacity;
-  uniform float u_FaceIndex;
+  uniform float u_ColumnIndex;
+  uniform float u_RowIndex;
 
   void main() {
-    // The coordinate's range is from 0.0 to 1.0.
-    float newY = (v_TexCoordinate.y + u_FaceIndex) / 6.0;
-    vec2 coord = vec2(v_TexCoordinate.x, newY);
-    gl_FragColor = texture2D(u_Texture, coord) * u_Opacity;
+    // We have 3 tiles per row, and total 2 rows.
+    // Scale the 0..1 UV to the size of a single tile (1/3 width, 1/2 height)
+    float x = (v_TexCoordinate.x + u_ColumnIndex) / 3.0;
+    float y = (v_TexCoordinate.y + u_RowIndex) / 2.0;
+
+    // Keep the pixels premultiplied.
+    gl_FragColor = texture2D(u_Texture, vec2(x, y)) * u_Opacity;
   }
 );
 // clang-format on
@@ -105,8 +109,10 @@ XrRenderer::Program XrRenderer::CreateProgram(const std::string& vertex,
   result.uv_transform_ =
       glGetUniformLocation(result.program_handle_, "u_UvTransform");
   result.opacity_ = glGetUniformLocation(result.program_handle_, "u_Opacity");
-  result.face_index_ =
-      glGetUniformLocation(result.program_handle_, "u_FaceIndex");
+  result.column_index_ =
+      glGetUniformLocation(result.program_handle_, "u_ColumnIndex");
+  result.row_index_ =
+      glGetUniformLocation(result.program_handle_, "u_RowIndex");
 
   return result;
 }
@@ -170,8 +176,10 @@ void XrRenderer::Draw(const Program& program,
   glUniform1f(program.opacity_, std::clamp(opacity, 0.f, 1.f));
 
   if (face_index >= 0) {
-    // Set face index for cubemap.
-    glUniform1f(program.face_index_, static_cast<float>(face_index));
+    CHECK(face_index < 6);
+    // 6 faces are placed as 3 tiles per row.
+    glUniform1f(program.column_index_, static_cast<float>(face_index % 3));
+    glUniform1f(program.row_index_, static_cast<float>(face_index / 3));
   }
 
   // Blit texture to buffer

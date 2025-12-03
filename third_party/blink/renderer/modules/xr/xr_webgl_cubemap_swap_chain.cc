@@ -20,41 +20,43 @@ constexpr GLfloat kQuadVertices[] = {
     -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, -0.5f,
 };
 
-constexpr char kVertexShader[] = R"(#version 300 es
+constexpr char kVertexShader[] = R"(#version 100
   precision highp float;
-  in vec2 a_Position;    // Quad vertex position (0.0 to 1.0)
-  uniform int u_FaceIndex;    // The face index (0 to 5)
-  out vec3 v_TexCoord3D;  // 3D direction vector for fragment shader
+
+  attribute vec2 a_Position;
+  // Use a float uniform for better ES 2.0 compatibility
+  uniform float u_FaceIndex;
+  varying vec3 v_TexCoord3D;
 
   void main() {
     vec2 uv = a_Position * 2.0;
 
-    if (u_FaceIndex == 0) { // +X
+    // We use comparisons (< 0.5, < 1.5, etc.) to safely detect the integer value
+    // stored in the float.
+    if (u_FaceIndex < 0.5) { // Face 0 (+X)
       v_TexCoord3D = vec3(1.0, -uv.y, -uv.x);
-    } else if (u_FaceIndex == 1) { // -X
+    } else if (u_FaceIndex < 1.5) { // Face 1 (-X)
       v_TexCoord3D = vec3(-1.0, -uv.y, uv.x);
-    } else if (u_FaceIndex == 2) { // +Y
+    } else if (u_FaceIndex < 2.5) { // Face 2 (+Y)
       v_TexCoord3D = vec3(uv.x, 1.0, uv.y);
-    } else if (u_FaceIndex == 3) { // -Y
+    } else if (u_FaceIndex < 3.5) { // Face 3 (-Y)
       v_TexCoord3D = vec3(uv.x, -1.0, -uv.y);
-    } else if (u_FaceIndex == 4) { // +Z
+    } else if (u_FaceIndex < 4.5) { // Face 4 (+Z)
       v_TexCoord3D = vec3(uv.x, -uv.y, 1.0);
-    } else { // -Z (u_FaceIndex == 5)
+    } else { // Face 5 (-Z)
       v_TexCoord3D = vec3(-uv.x, -uv.y, -1.0);
     }
 
     gl_Position = vec4(uv.x, uv.y, 0.0, 1.0);
   })";
 
-constexpr char kFragmentShader[] = R"(#version 300 es
+constexpr char kFragmentShader[] = R"(#version 100
   precision highp float;
-  in vec3 v_TexCoord3D;
-  uniform samplerCube u_Cubemap;
-  out vec4 outColor;
+  varying vec3 v_TexCoord3D;
+  uniform highp samplerCube u_Cubemap;
 
   void main() {
-      // Sample the cubemap using the 3D direction
-      outColor = texture(u_Cubemap, v_TexCoord3D);
+    gl_FragColor = textureCube(u_Cubemap, v_TexCoord3D);
   })";
 
 void VerifyShader(gpu::gles2::GLES2Interface* gl, GLuint shader_id) {
@@ -262,11 +264,11 @@ void XRWebGLCubemapSwapChain::OnFrameEnd() {
   const GLenum draw_buffers[] = {GL_COLOR_ATTACHMENT0};
   gl->DrawBuffersEXT(1, draw_buffers);
 
-  // 6 faces are placed from bottom to top.
+  // 6 faces are placed as 3 tiles per row.
   for (int i = 0; i < 6; ++i) {
-    gl->Viewport(0, descriptor().height * i, descriptor().width,
-                 descriptor().height);
-    gl->Uniform1i(face_index_uniform_, i);
+    gl->Viewport(descriptor().width * (i % 3), descriptor().height * (i / 3),
+                 descriptor().width, descriptor().height);
+    gl->Uniform1f(face_index_uniform_, i);
     gl->DrawElements(GL_TRIANGLES, std::size(kQuadIndices), GL_UNSIGNED_SHORT,
                      nullptr);
   }
