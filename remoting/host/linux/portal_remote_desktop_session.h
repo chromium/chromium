@@ -39,6 +39,15 @@ class PortalRemoteDesktopSession {
   PortalRemoteDesktopSession& operator=(const PortalRemoteDesktopSession&) =
       delete;
 
+  // Sets whether the remote desktop session should create a virtual monitor, or
+  // capture an existing one. The default is `true`. Must be called before
+  // Init() is called.
+  // TODO: crbug.com/445973705 - This is a hack to allow IT2ME to work. Ideally,
+  // if Portal supports adding virtual monitors after the remote desktop session
+  // has started, then the session can simply be started by just capturing
+  // `MONITOR`.
+  void SetCreateVirtualMonitor(bool create_virtual_monitor);
+
   // Initializes the PortalRemoteDesktopSession, which includes creation of a
   // virtual monitor and the corresponding screencast stream, then calls
   // `callback`.
@@ -124,6 +133,7 @@ class PortalRemoteDesktopSession {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  bool create_virtual_monitor_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
   InitializationState initialization_state_ GUARDED_BY_CONTEXT(
       sequence_checker_) = InitializationState::kNotInitialized;
   base::OnceCallbackList<InitCallbackSignature> init_callbacks_

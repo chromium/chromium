@@ -18,6 +18,7 @@
 #include "remoting/host/linux/gdbus_connection_ref.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
 namespace remoting {
 
@@ -26,8 +27,8 @@ class ScopedPortalRequest;
 
 // This class is used to create and manage a list of Pipewire capture streams
 // that are created through the XDG desktop portal.
-// The current implementation will always create one virtual stream after Init()
-// is called. It is not possible to add or remove virtual streams afterwards.
+// The current implementation does not support adding or removing virtual
+// streams after the stream manager is initialized.
 class PortalCaptureStreamManager final : public CaptureStreamManager {
  public:
   using InitCallbackSignature = void(base::expected<void, std::string>);
@@ -43,11 +44,14 @@ class PortalCaptureStreamManager final : public CaptureStreamManager {
   // Initializes the stream manager. Must be called once before calling other
   // methods of this class.
   //
+  // If `create_virtual_monitor` is true, a new virtual monitor will be created.
+  // Otherwise, the stream manager will capture existing monitors instead.
   // `remote_desktop_session_handle` is a session handle that has been created
   // with the `org.freedesktop.portal.RemoteDesktop.CreateSession` method. This
   // method will select the VIRTUAL source and call Start on the specified
   // session handle.
-  void Init(GDBusConnectionRef connection,
+  void Init(bool create_virtual_monitor,
+            GDBusConnectionRef connection,
             gvariant::ObjectPath remote_desktop_session_handle,
             InitCallback callback);
 
@@ -61,12 +65,30 @@ class PortalCaptureStreamManager final : public CaptureStreamManager {
   base::flat_map<webrtc::ScreenId, base::WeakPtr<CaptureStream>>
   GetActiveStreams() override;
 
+  // Returns all active stream IDs and their initial desktop rects. They are
+  // reported by the Portal API when the stream just started, and are not
+  // updated afterwards.
+  base::flat_map<webrtc::ScreenId, const webrtc::DesktopRect*>
+  GetActiveStreamInitialRects();
+
   base::WeakPtr<PortalCaptureStreamManager> GetWeakPtr();
 
  private:
   struct PendingStream {
     uint32_t pipewire_node_id;
     std::string mapping_id;
+    webrtc::DesktopRect initial_rect;
+  };
+
+  struct StreamInfo {
+    StreamInfo();
+    StreamInfo(StreamInfo&&);
+    ~StreamInfo();
+
+    StreamInfo& operator=(StreamInfo&&);
+
+    std::unique_ptr<PipewireCaptureStream> stream;
+    webrtc::DesktopRect initial_rect;
   };
 
   // Calls `success_method` if the returned callback is called with a result,
@@ -97,8 +119,8 @@ class PortalCaptureStreamManager final : public CaptureStreamManager {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // We are using the PipeWire node ID as the screen ID.
-  base::flat_map<webrtc::ScreenId, std::unique_ptr<PipewireCaptureStream>>
-      streams_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_map<webrtc::ScreenId, StreamInfo> streams_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   InitCallback init_callback_;
   gvariant::ObjectPath remote_desktop_session_handle_;

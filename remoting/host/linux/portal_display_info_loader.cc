@@ -13,31 +13,29 @@
 namespace remoting {
 
 PortalDisplayInfoLoader::PortalDisplayInfoLoader(
-    CaptureStreamManager& stream_manager)
+    PortalCaptureStreamManager& stream_manager)
     : stream_manager_(&stream_manager) {}
 
 PortalDisplayInfoLoader::~PortalDisplayInfoLoader() = default;
 
 DesktopDisplayInfo PortalDisplayInfoLoader::GetCurrentDisplayInfo() {
   DesktopDisplayInfo display_info;
-  // TODO: crbug.com/445973705 - See if logical layout makes sense on other DEs.
+  // TODO: crbug.com/445973705 - Use PipeWire metadata instead of the initial
+  // rects if it has been implemented, since the display layout and sizes can
+  // change over time.
+  // TODO: crbug.com/445973705 - Fix this for high-DPI/mixed-DPI setups. On
+  // GNOME in logical layout mode, the initial rects are all in DIPs. However,
+  // the Portal API does not return the display scales or pixel type.
   display_info.set_pixel_type(DesktopDisplayInfo::PixelType::PHYSICAL);
-  int current_x = 0;
   bool first = true;
-  for (const auto& [id, stream] : stream_manager_->GetActiveStreams()) {
-    if (!stream) {
-      LOG(ERROR) << "Stream for id " << id << " is null";
-      continue;
-    }
-    webrtc::DesktopSize resolution = stream->resolution();
-    // TODO: crbug.com/445973705 - We just assume that the monitors are
-    // horizontal start-aligned, and the left-most display is the primary
-    // display, which may be wrong.
+  for (const auto& [id, initial_rect] :
+       stream_manager_->GetActiveStreamInitialRects()) {
+    // TODO: crbug.com/445973705 - We just assume that the left-most display is
+    // the primary display, which may be wrong.
     display_info.AddDisplay(
-        DisplayGeometry(id, current_x, 0, resolution.width(),
-                        resolution.height(), kDefaultDpi, 32, first, ""));
-    current_x += resolution.width();
-    first = false;
+        DisplayGeometry(id, initial_rect->left(), initial_rect->top(),
+                        initial_rect->width(), initial_rect->height(),
+                        kDefaultDpi, /*bpp=*/32, /*is_default=*/first, ""));
   }
   return display_info;
 }

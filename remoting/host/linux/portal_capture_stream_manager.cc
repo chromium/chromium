@@ -10,6 +10,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -26,6 +27,7 @@
 #include "remoting/host/linux/portal_utils.h"
 #include "remoting/host/linux/scoped_portal_request.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/portal/scoped_glib.h"
 
 namespace remoting {
@@ -37,11 +39,17 @@ using gvariant::GVariantRef;
 
 }  // namespace
 
-PortalCaptureStreamManager::PortalCaptureStreamManager() = default;
+PortalCaptureStreamManager::StreamInfo::StreamInfo() = default;
+PortalCaptureStreamManager::StreamInfo::StreamInfo(StreamInfo&&) = default;
+PortalCaptureStreamManager::StreamInfo::~StreamInfo() = default;
+PortalCaptureStreamManager::StreamInfo&
+PortalCaptureStreamManager::StreamInfo::operator=(StreamInfo&&) = default;
 
+PortalCaptureStreamManager::PortalCaptureStreamManager() = default;
 PortalCaptureStreamManager::~PortalCaptureStreamManager() = default;
 
 void PortalCaptureStreamManager::Init(
+    bool create_virtual_monitor,
     GDBusConnectionRef connection,
     gvariant::ObjectPath remote_desktop_session_handle,
     InitCallback callback) {
@@ -56,12 +64,14 @@ void PortalCaptureStreamManager::Init(
           &PortalCaptureStreamManager::OnSelectSourcesResponse,
           &select_sources_request_, "ScreenCast.SelectSources failed"));
 
+  // https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.ScreenCast.html#org-freedesktop-portal-screencast-availablesourcetypes
+  uint32_t types = create_virtual_monitor ? /*VIRTUAL*/ 4u : /*MONITOR*/ 1u;
+
   GVariantRef<"a{sv}"> options =
       GVariantDictBuilder()
           .Add("handle_token", select_sources_request_->token())
           .Add("multiple", true)
-          // https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.ScreenCast.html#org-freedesktop-portal-screencast-availablesourcetypes
-          .Add("types", /*VIRTUAL*/ 4u)
+          .Add("types", types)
           // https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.ScreenCast.html#org-freedesktop-portal-screencast-availablecursormodes
           .Add("cursor_mode", /*METADATA*/ 4u)
           .Build();
@@ -94,7 +104,7 @@ base::WeakPtr<CaptureStream> PortalCaptureStreamManager::GetStream(
   if (it == streams_.end()) {
     return nullptr;
   }
-  return it->second->GetWeakPtr();
+  return it->second.stream->GetWeakPtr();
 }
 
 void PortalCaptureStreamManager::AddVirtualStream(
@@ -112,8 +122,18 @@ base::flat_map<webrtc::ScreenId, base::WeakPtr<CaptureStream>>
 PortalCaptureStreamManager::GetActiveStreams() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::flat_map<webrtc::ScreenId, base::WeakPtr<CaptureStream>> result;
-  for (auto const& [screen_id, stream] : streams_) {
-    result[screen_id] = stream->GetWeakPtr();
+  for (auto const& [screen_id, stream_info] : streams_) {
+    result[screen_id] = stream_info.stream->GetWeakPtr();
+  }
+  return result;
+}
+
+base::flat_map<webrtc::ScreenId, const webrtc::DesktopRect*>
+PortalCaptureStreamManager::GetActiveStreamInitialRects() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::flat_map<webrtc::ScreenId, const webrtc::DesktopRect*> result;
+  for (auto const& [screen_id, stream_info] : streams_) {
+    result[screen_id] = &stream_info.initial_rect;
   }
   return result;
 }
@@ -231,22 +251,44 @@ void PortalCaptureStreamManager::OnStartResponse(GVariantRef<"a{sv}"> result) {
     uint32_t pipewire_node_id;
     GVariantRef<"a{sv}"> options;
     stream_variant.Destructure(pipewire_node_id, options);
-    auto mapping_id_opt = options.LookUp("mapping_id");
     std::string mapping_id;
-    if (!mapping_id_opt) {
+    auto mapping_id_expected =
+        ReadGVariantDictValue<std::string>(options, "mapping_id");
+    if (mapping_id_expected.has_value()) {
+      mapping_id = std::move(*mapping_id_expected);
+    } else {
       // Some DEs do not support mapping IDs, in which case we will just use an
       // empty string.
-      HOST_LOG << "No mapping id found for stream " << pipewire_node_id;
-    } else {
-      auto mapping_id_boxed = mapping_id_opt->TryInto<Boxed<std::string>>();
-      if (!mapping_id_boxed.has_value()) {
-        LOG(ERROR) << "Failed to convert mapping_id variant: "
-                   << mapping_id_boxed.error();
-      } else {
-        mapping_id = mapping_id_boxed->value;
-      }
+      HOST_LOG << "No mapping id found for stream " << pipewire_node_id << ": "
+               << mapping_id_expected.error();
     }
-    pending_streams_.emplace_back(pipewire_node_id, mapping_id);
+    // KDE can currently only negotiate stream format at 1920x1080:
+    // https://bugs.kde.org/show_bug.cgi?id=512620
+    static const webrtc::DesktopSize kDefaultResolution =
+        webrtc::DesktopSize(1920, 1080);
+    webrtc::DesktopRect initial_rect;
+    auto position_expected =
+        ReadGVariantDictValue<std::tuple<int, int>>(options, "position");
+    if (position_expected.has_value()) {
+      initial_rect = webrtc::DesktopRect::MakeOriginSize(
+          std::make_from_tuple<webrtc::DesktopVector>(*position_expected),
+          kDefaultResolution);
+    } else {
+      LOG(WARNING) << "No position found for stream " << pipewire_node_id
+                   << ": " << position_expected.error();
+      initial_rect = webrtc::DesktopRect::MakeSize(kDefaultResolution);
+    }
+    auto size_expected =
+        ReadGVariantDictValue<std::tuple<int, int>>(options, "size");
+    if (size_expected.has_value()) {
+      initial_rect = webrtc::DesktopRect::MakeOriginSize(
+          initial_rect.top_left(),
+          std::make_from_tuple<webrtc::DesktopSize>(*size_expected));
+    } else {
+      LOG(WARNING) << "No size found for stream " << pipewire_node_id << ": "
+                   << size_expected.error();
+    }
+    pending_streams_.emplace_back(pipewire_node_id, mapping_id, initial_rect);
   }
 
   if (pending_streams_.empty()) {
@@ -282,17 +324,16 @@ void PortalCaptureStreamManager::OnPipeWireStreamOpened(
   for (PendingStream& pending_stream : pending_streams_) {
     auto stream = std::make_unique<PipewireCaptureStream>();
     webrtc::ScreenId screen_id = pending_stream.pipewire_node_id;
-
-    // KDE can currently only negotiate stream format at 1920x1080:
-    // https://bugs.kde.org/show_bug.cgi?id=512620
     stream->SetPipeWireStream(pending_stream.pipewire_node_id,
-                              /*initial_resolution=*/{1920, 1080},
+                              /*initial_resolution=*/{},
                               pending_stream.mapping_id, pipewire_fd_.get());
     stream->set_screen_id(screen_id);
     stream->StartVideoCapture();
 
     auto weak_ptr = stream->GetWeakPtr();
-    streams_[screen_id] = std::move(stream);
+    auto& stream_info = streams_[screen_id];
+    stream_info.stream = std::move(stream);
+    stream_info.initial_rect = pending_stream.initial_rect;
     observers_.Notify(&Observer::OnPipewireCaptureStreamAdded, weak_ptr);
     HOST_LOG << "Stream " << screen_id << " added.";
   }

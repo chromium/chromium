@@ -47,6 +47,13 @@ PortalRemoteDesktopSession::~PortalRemoteDesktopSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void PortalRemoteDesktopSession::SetCreateVirtualMonitor(
+    bool create_virtual_monitor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(initialization_state_, InitializationState::kNotInitialized);
+  create_virtual_monitor_ = create_virtual_monitor;
+}
+
 void PortalRemoteDesktopSession::Init(InitCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (initialization_state_ == InitializationState::kInitialized) {
@@ -206,7 +213,7 @@ void PortalRemoteDesktopSession::OnSelectDevicesResponse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   capture_stream_manager_.Init(
-      connection_, portal_session_->session_handle(),
+      create_virtual_monitor_, connection_, portal_session_->session_handle(),
       base::BindOnce(&PortalRemoteDesktopSession::OnCaptureStreamInitResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }

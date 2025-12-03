@@ -73,6 +73,11 @@
 #include "remoting/host/chromeos/features.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "remoting/host/linux/gnome_remote_desktop_session.h"
+#include "remoting/host/linux/portal_remote_desktop_session.h"
+#endif
+
 namespace remoting {
 
 using protocol::ErrorCode;
@@ -278,6 +283,12 @@ void It2MeHost::ConnectOnNetworkThread(
   }
 
   SetState(It2MeHostState::kStarting, ErrorCode::OK);
+
+#if BUILDFLAG(IS_LINUX)
+  if (!GnomeRemoteDesktopSession::IsRunningUnderGnome()) {
+    PortalRemoteDesktopSession::GetInstance()->SetCreateVirtualMonitor(false);
+  }
+#endif
 
   auto connection_context = std::move(create_context).Run(host_context_.get());
   signal_strategy_ = std::move(connection_context->signal_strategy);

@@ -8,14 +8,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/desktop_display_info_loader.h"
-#include "remoting/host/linux/capture_stream_manager.h"
+#include "remoting/host/linux/portal_capture_stream_manager.h"
 
 namespace remoting {
 
 class PortalDisplayInfoLoader : public DesktopDisplayInfoLoader {
  public:
   // `stream_manager` must outlive `this`.
-  explicit PortalDisplayInfoLoader(CaptureStreamManager& stream_manager);
+  explicit PortalDisplayInfoLoader(PortalCaptureStreamManager& stream_manager);
   PortalDisplayInfoLoader(const PortalDisplayInfoLoader&) = delete;
   PortalDisplayInfoLoader& operator=(const PortalDisplayInfoLoader&) = delete;
   ~PortalDisplayInfoLoader() override;
@@ -26,7 +26,7 @@ class PortalDisplayInfoLoader : public DesktopDisplayInfoLoader {
   base::WeakPtr<PortalDisplayInfoLoader> GetWeakPtr();
 
  private:
-  raw_ptr<CaptureStreamManager> stream_manager_;
+  raw_ptr<PortalCaptureStreamManager> stream_manager_;
   base::WeakPtrFactory<PortalDisplayInfoLoader> weak_ptr_factory_{this};
 };
 
