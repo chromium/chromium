@@ -432,8 +432,14 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
 // This test verifies that resources proxied through a proxy on localhost can
 // be fetched from documents in the public IP address space.
 // Regression test for https://crbug.com/1253239.
+// TODO(crbug.com/465260276): Re-enable this test.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ProxiedResourcesAllowed DISABLED_ProxiedResourcesAllowed
+#else
+#define MAYBE_ProxiedResourcesAllowed ProxiedResourcesAllowed
+#endif
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
-                       ProxiedResourcesAllowed) {
+                       MAYBE_ProxiedResourcesAllowed) {
   EXPECT_TRUE(
       content::NavigateToURL(web_contents(), PublicSecureURL(https_server())));
 
