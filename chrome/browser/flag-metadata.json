@@ -7941,11 +7941,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "omnibox-zero-suggest-prefetching",
-    "owners": [ "mahmadi@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "omnibox-zero-suggest-prefetching-on-srp",
     "owners": [ "khalidpeer@chromium.org", "mahmadi@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 150

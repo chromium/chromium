@@ -6982,11 +6982,6 @@ const FeatureEntry kFeatureEntries[] = {
          kOmniboxZeroSuggestPrefetchDebouncingVariations,
          "OmniboxZeroSuggestPrefetchDebouncing")},
 
-    {"omnibox-zero-suggest-prefetching",
-     flag_descriptions::kOmniboxZeroSuggestPrefetchingName,
-     flag_descriptions::kOmniboxZeroSuggestPrefetchingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kZeroSuggestPrefetching)},
-
     {"omnibox-zero-suggest-prefetching-on-srp",
      flag_descriptions::kOmniboxZeroSuggestPrefetchingOnSRPName,
      flag_descriptions::kOmniboxZeroSuggestPrefetchingOnSRPDescription, kOsAll,

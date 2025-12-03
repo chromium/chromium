@@ -385,9 +385,6 @@ extern const base::FeatureParam<bool> kZeroSuggestPrefetchDebounceFromLastRun;
 // Determines the maximum number of entries stored by the in-memory ZPS cache.
 extern const base::FeatureParam<int> kZeroSuggestCacheMaxSize;
 
-// Returns true if any of the zero-suggest prefetching features are enabled.
-bool IsZeroSuggestPrefetchingEnabled();
-
 // Returns whether zero-suggest prefetching is enabled in the given context.
 bool IsZeroSuggestPrefetchingEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification);

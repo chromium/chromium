@@ -1319,12 +1319,6 @@ const char kOmniboxZeroSuggestInMemoryCachingName[] =
 const char kOmniboxZeroSuggestInMemoryCachingDescription[] =
     "Enables in-memory caching of zero prefix suggestions.";
 
-const char kOmniboxZeroSuggestPrefetchingName[] =
-    "Omnibox Zero Prefix Suggestion Prefetching on NTP";
-const char kOmniboxZeroSuggestPrefetchingDescription[] =
-    "Enables prefetching of the zero prefix suggestions for eligible users "
-    "on the New Tab page.";
-
 const char kOmniboxZeroSuggestPrefetchingOnSRPName[] =
     "Omnibox Zero Prefix Suggestion Prefetching on SRP";
 const char kOmniboxZeroSuggestPrefetchingOnSRPDescription[] =

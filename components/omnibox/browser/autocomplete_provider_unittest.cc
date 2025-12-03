@@ -1865,12 +1865,6 @@ TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_NonPrefetch) {
 
 TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_Prefetch) {
   // Add a test provider that supports prefetch requests.
-
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kZeroSuggestPrefetching},
-      /*disabled_features=*/{});
-
   TestProvider* provider = new TestProvider(kResultsPerProvider, u"http://a",
                                             kTestTemplateURLKeyword, client_);
   provider->set_supports_prefetch(true);
@@ -1907,10 +1901,6 @@ TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_Prefetch) {
 }
 
 TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_OngoingNonPrefetch) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kZeroSuggestPrefetching},
-      /*disabled_features=*/{});
   // Add a test provider that supports prefetch requests.
   TestProvider* provider = new TestProvider(kResultsPerProvider, u"http://a",
                                             kTestTemplateURLKeyword, client_);
@@ -1958,10 +1948,6 @@ TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_OngoingNonPrefetch) {
 }
 
 TEST_F(AutocompleteProviderPrefetchTest, UnsupportedProvider_Prefetch) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kZeroSuggestPrefetching},
-      /*disabled_features=*/{});
   // Add a test provider that does not support prefetch requests.
   TestProvider* provider = new TestProvider(kResultsPerProvider, u"http://a",
                                             kTestTemplateURLKeyword, client_);

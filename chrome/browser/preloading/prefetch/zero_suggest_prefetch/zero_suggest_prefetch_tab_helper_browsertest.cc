@@ -90,7 +90,7 @@ class ZeroSuggestPrefetchTabHelperBrowserTestOnNTP
  public:
   ZeroSuggestPrefetchTabHelperBrowserTestOnNTP() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{omnibox::kZeroSuggestPrefetching},
+        /*enabled_features=*/{},
         /*disabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP,
                                omnibox::kZeroSuggestPrefetchingOnWeb});
   }
@@ -102,8 +102,7 @@ class ZeroSuggestPrefetchTabHelperBrowserTestOnSRP
   ZeroSuggestPrefetchTabHelperBrowserTestOnSRP() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP},
-        /*disabled_features=*/{omnibox::kZeroSuggestPrefetching,
-                               omnibox::kZeroSuggestPrefetchingOnWeb});
+        /*disabled_features=*/{omnibox::kZeroSuggestPrefetchingOnWeb});
   }
 };
 
@@ -113,8 +112,7 @@ class ZeroSuggestPrefetchTabHelperBrowserTestOnWeb
   ZeroSuggestPrefetchTabHelperBrowserTestOnWeb() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnWeb},
-        /*disabled_features=*/{omnibox::kZeroSuggestPrefetching,
-                               omnibox::kZeroSuggestPrefetchingOnSRP});
+        /*disabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP});
   }
 };
 

@@ -597,17 +597,11 @@ const base::FeatureParam<int> kZeroSuggestCacheMaxSize(
     "ZeroSuggestCacheMaxSize",
     5);
 
-bool IsZeroSuggestPrefetchingEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching) ||
-         base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnSRP) ||
-         base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnWeb);
-}
-
 bool IsZeroSuggestPrefetchingEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification) {
   switch (page_classification) {
     case metrics::OmniboxEventProto::NTP_ZPS_PREFETCH:
-      return base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching);
+      return true;
     case metrics::OmniboxEventProto::SRP_ZPS_PREFETCH:
       return base::FeatureList::IsEnabled(
           omnibox::kZeroSuggestPrefetchingOnSRP);

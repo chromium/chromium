@@ -3019,12 +3019,6 @@ inline constexpr char kOmniboxZeroSuggestPrefetchDebouncingDescription[] =
     "Enables the use of a request debouncer to throttle the volume of ZPS "
     "prefetch requests issued to the remote Suggest service.";
 
-inline constexpr char kOmniboxZeroSuggestPrefetchingName[] =
-    "Omnibox Zero Prefix Suggestion Prefetching on NTP";
-inline constexpr char kOmniboxZeroSuggestPrefetchingDescription[] =
-    "Enables prefetching of the zero prefix suggestions for eligible users "
-    "on the New Tab page.";
-
 inline constexpr char kOmniboxZeroSuggestPrefetchingOnSRPName[] =
     "Omnibox Zero Prefix Suggestion Prefetching on SRP";
 inline constexpr char kOmniboxZeroSuggestPrefetchingOnSRPDescription[] =

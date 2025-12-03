@@ -313,8 +313,7 @@ void ZeroSuggestProviderTest::SetUp() {
 
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list_->InitWithFeatures(
-      /*enabled_features=*/{omnibox::kZeroSuggestPrefetching,
-                            omnibox::kZeroSuggestPrefetchingOnSRP,
+      /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP,
                             omnibox::kZeroSuggestPrefetchingOnWeb},
       /*disabled_features=*/{});
 }
@@ -1884,7 +1883,7 @@ TEST_F(ZeroSuggestProviderTest,
   // Enable ZPS prefetching on NTP and disable in-memory ZPS caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kZeroSuggestPrefetching},
+      /*enabled_features=*/{},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   // Set up the pref to cache the response from the previous run.
@@ -2595,7 +2594,6 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestPrefetchingOnSRPCounterfactual) {
     features.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
-            {omnibox::kZeroSuggestPrefetching, {}},
             {omnibox::kZeroSuggestPrefetchingOnSRP,
              {{"ZeroSuggestPrefetchingOnSRPCounterfactual", "true"}}},
             {omnibox::kZeroSuggestPrefetchingOnWeb, {}},
@@ -2645,7 +2643,6 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestPrefetchingOnSRPCounterfactual) {
     features.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
-            {omnibox::kZeroSuggestPrefetching, {}},
             {omnibox::kZeroSuggestPrefetchingOnSRP,
              {{"ZeroSuggestPrefetchingOnSRPCounterfactual", "false"}}},
             {omnibox::kZeroSuggestPrefetchingOnWeb, {}},
@@ -2695,7 +2692,6 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestPrefetchingOnSRPCounterfactual) {
     features.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
-            {omnibox::kZeroSuggestPrefetching, {}},
             {omnibox::kZeroSuggestPrefetchingOnSRP,
              {{"ZeroSuggestPrefetchingOnSRPCounterfactual", "true"}}},
             {omnibox::kZeroSuggestPrefetchingOnWeb, {}},
@@ -2745,7 +2741,6 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestPrefetchingOnSRPCounterfactual) {
     features.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
-            {omnibox::kZeroSuggestPrefetching, {}},
             {omnibox::kZeroSuggestPrefetchingOnSRP,
              {{"ZeroSuggestPrefetchingOnSRPCounterfactual", "false"}}},
             {omnibox::kZeroSuggestPrefetchingOnWeb, {}},
@@ -2795,7 +2790,6 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestPrefetchingOnSRPCounterfactual) {
     features.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
-            {omnibox::kZeroSuggestPrefetching, {}},
             {omnibox::kZeroSuggestPrefetchingOnSRP,
              {{"ZeroSuggestPrefetchingOnSRPCounterfactual", "true"}}},
             {omnibox::kZeroSuggestPrefetchingOnWeb, {}},
@@ -2845,7 +2839,6 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestPrefetchingOnSRPCounterfactual) {
     features.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
-            {omnibox::kZeroSuggestPrefetching, {}},
             {omnibox::kZeroSuggestPrefetchingOnSRP,
              {{"ZeroSuggestPrefetchingOnSRPCounterfactual", "false"}}},
             {omnibox::kZeroSuggestPrefetchingOnWeb, {}},
@@ -3084,7 +3077,7 @@ TEST_F(ZeroSuggestProviderTest, TestDeleteMatchClearsPrefsBasedCache) {
   // Enable ZPS prefetching on NTP and disable in-memory ZPS caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kZeroSuggestPrefetching},
+      /*enabled_features=*/{},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   // Set up the pref to cache the response from the previous run.

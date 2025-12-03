@@ -655,11 +655,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   UMABrowsingActivityObserver::TabHelper::CreateForWebContents(web_contents);
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
-  if (OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabled() ||
-      omnibox_feature_configs::ContextualSearch::Get()
-          .IsEnabledWithPrefetch()) {
-    ZeroSuggestPrefetchTabHelper::CreateForWebContents(web_contents);
-  }
+  ZeroSuggestPrefetchTabHelper::CreateForWebContents(web_contents);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

@@ -19462,7 +19462,6 @@ from previous Chrome versions.
   <int value="1813205714" label="PageInfoHistoryDesktop:disabled"/>
   <int value="1813370929"
       label="MigrateDefaultChromeAppToWebAppsNonGSuite:enabled"/>
-  <int value="1813741175" label="ZeroSuggestPrefetching:enabled"/>
   <int value="1814039202"
       label="CrossOriginEmbedderPolicyCredentialless:disabled"/>
   <int value="1814310862" label="WebKioskEnableLacros:enabled"/>
@@ -19697,7 +19696,6 @@ from previous Chrome versions.
   <int value="1889198874" label="TabSwitcherOnReturn:disabled"/>
   <int value="1889735222" label="NtpChromeCartInHistoryClusterModule:disabled"/>
   <int value="1889840958" label="ForceSigninFlowInProfilePicker:disabled"/>
-  <int value="1889885696" label="ZeroSuggestPrefetching:disabled"/>
   <int value="1890329937"
       label="SafeBrowsingEnhancedProtectionMessageInInterstitials:disabled"/>
   <int value="1890700065" label="EdgeToEdgeWebOptIn:disabled"/>
