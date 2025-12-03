@@ -40,8 +40,6 @@ class TestPasskeyModel : public PasskeyModel {
       ShadowedCredentials shadowed_credentials) const override;
   std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
       const override;
-  std::vector<sync_pb::WebauthnCredentialSpecifics> GetUnShadowedPasskeys()
-      const override;
   std::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskeyByCredentialId(
       const std::string& rp_id,
       const std::string& credential_id) const override;

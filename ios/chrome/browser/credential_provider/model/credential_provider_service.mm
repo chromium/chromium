@@ -326,7 +326,9 @@ void CredentialProviderService::SyncAllCredentials(
   // We only sync passkeys into the account store.
   if (passkey_model_ && (store == account_password_store_)) {
     AddCredentials(memoryCredentialStore,
-                   passkey_model_->GetUnShadowedPasskeys());
+                   passkey_model_->GetPasskeys(
+                       webauthn::PasskeyModel::AnyRp(),
+                       webauthn::PasskeyModel::ShadowedCredentials::kExclude));
   }
   SyncStore();
 }
