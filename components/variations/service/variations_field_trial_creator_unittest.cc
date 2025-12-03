@@ -737,8 +737,16 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_FutureMilestone) {
 }
 
 // Verify that unexpired safe seeds are used.
+// TODO(crbug.com/465773235): test is flaky.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SetUpFieldTrials_ValidSafeSeed_NewBinaryUsesSeed \
+  DISABLED_SetUpFieldTrials_ValidSafeSeed_NewBinaryUsesSeed
+#else
+#define MAYBE_SetUpFieldTrials_ValidSafeSeed_NewBinaryUsesSeed \
+  SetUpFieldTrials_ValidSafeSeed_NewBinaryUsesSeed
+#endif
 TEST_P(FieldTrialCreatorFetchAndLaunchTimeTest,
-       SetUpFieldTrials_ValidSafeSeed_NewBinaryUsesSeed) {
+       MAYBE_SetUpFieldTrials_ValidSafeSeed_NewBinaryUsesSeed) {
   const auto& test_case = GetParam();
   // Fast forward the clock to build time.
   base::ScopedMockClockOverride mock_clock;
