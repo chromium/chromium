@@ -163,8 +163,7 @@ bool LensOverlayEntryPointController::IsEnabled() const {
   lens::prefs::LensOverlaySettingsPolicyValue policy_value =
       static_cast<lens::prefs::LensOverlaySettingsPolicyValue>(
           pref_service->GetInteger(lens::prefs::kLensOverlaySettings));
-  if (policy_value ==
-      lens::prefs::LensOverlaySettingsPolicyValue::kDisabled) {
+  if (policy_value == lens::prefs::LensOverlaySettingsPolicyValue::kDisabled) {
     return false;
   }
 
@@ -317,8 +316,12 @@ void LensOverlayEntryPointController::OnDidChangeFocus(views::View* before,
     // `tab_interface` can be null early during browser startup.
     if (auto* tab_interface =
             browser_window_interface_->GetActiveTabInterface()) {
-      LensOverlayHomeworkPageActionController::From(*tab_interface)
-          ->UpdatePageActionIcon();
+      // The controller may be null during tab destruction, which triggers the
+      // focus change leading to this.
+      if (auto* controller =
+              LensOverlayHomeworkPageActionController::From(*tab_interface)) {
+        controller->UpdatePageActionIcon();
+      }
     }
   }
 }
