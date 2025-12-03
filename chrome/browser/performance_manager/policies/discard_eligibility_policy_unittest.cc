@@ -276,8 +276,6 @@ TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPdf) {
       {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 }
 
-// TODO(crbug.com/422767952): Add a test case for Glic-pinned tabs.
-
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPageWithoutMainFrame) {
   ResetFrameNode();
 
