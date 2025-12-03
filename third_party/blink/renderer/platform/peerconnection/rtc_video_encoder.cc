@@ -1216,7 +1216,7 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
           use_native_input_ = false;
         }
       } else if (frame->storage_type() ==
-                     media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER ||
+                     media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE ||
                  frame->HasSharedImage()) {
         if (!use_native_input_) {
           use_native_input_ = true;
@@ -2381,7 +2381,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
         frame->UpdateAcquireSyncToken(token);
       }
     } else if (frame->storage_type() !=
-               media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+               media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
       // If the frame is not backed by a GPU memory buffer and the VEA does not
       // support SI encoding, we need to guarantee the frame must be converted
       // to a mappable frame.
@@ -2394,7 +2394,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
         return;
       }
       CHECK_EQ(frame->storage_type(),
-               media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+               media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
     }
   }
   DoNativeEncodeWithNativeInput(frame_chunk, frame);

@@ -37,7 +37,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::MapFrame(
   }
 
   if (video_frame->storage_type() !=
-      VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
+      VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE) {
     VLOGF(1) << "VideoFrame's storage type is not GPU_MEMORY_BUFFER: "
              << video_frame->storage_type();
     return nullptr;

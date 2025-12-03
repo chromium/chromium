@@ -412,7 +412,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
 
   // Creates a self-releasing ScopedVASurface from |frame|. The created object
   // shares the ownership of the underlying buffer represented by |frame|.
-  // |frame|->StorageType() must either be STORAGE_GPU_MEMORY_BUFFER or
+  // |frame|->StorageType() must either be STORAGE_MAPPABLE_SHARED_IMAGE or
   // STORAGE_DMABUFS. The ownership of the surface is transferred to the caller.
   // A caller can destroy |frame| after this method returns and the underlying
   // buffer will be kept alive by the ScopedVASurface. |protected_content|

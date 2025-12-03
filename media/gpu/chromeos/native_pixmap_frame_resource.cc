@@ -132,7 +132,7 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
 
   // Note: |buffer_usage| is not set. As a result, the constructed
   // NativePixmapFrameResource cannot be converted to a
-  // STORAGE_GPU_MEMORY_BUFFER VideoFrame.
+  // STORAGE_MAPPABLE_SHARED_IMAGE VideoFrame.
   return base::MakeRefCounted<NativePixmapFrameResource>(
       base::PassKey<NativePixmapFrameResource>(), layout, visible_rect,
       natural_size, timestamp, *si_format, base::UnguessableToken::Create(),
@@ -300,8 +300,9 @@ NativePixmapFrameResource::CreateGpuMemoryBufferHandle() const {
 
 std::unique_ptr<VideoFrame::ScopedMapping>
 NativePixmapFrameResource::MapSharedImage() const {
-  // This accessor is used for frames with STORAGE_GPU_MEMORY_BUFFER. This class
-  // is coded to advertise STORAGE_DMABUFS, so this always returns nullptr.
+  // This accessor is used for frames with STORAGE_MAPPABLE_SHARED_IMAGE. This
+  // class is coded to advertise STORAGE_DMABUFS, so this always returns
+  // nullptr.
   return nullptr;
 }
 
@@ -445,8 +446,9 @@ std::string NativePixmapFrameResource::AsHumanReadableString() const {
 
 gfx::GpuMemoryBufferHandle
 NativePixmapFrameResource::GetGpuMemoryBufferHandleForTesting() const {
-  // This accessor is used for frames with STORAGE_GPU_MEMORY_BUFFER. This class
-  // is coded to advertise STORAGE_DMABUFS, so this always returns empty handle.
+  // This accessor is used for frames with STORAGE_MAPPABLE_SHARED_IMAGE. This
+  // class is coded to advertise STORAGE_DMABUFS, so this always returns empty
+  // handle.
   return gfx::GpuMemoryBufferHandle();
 }
 

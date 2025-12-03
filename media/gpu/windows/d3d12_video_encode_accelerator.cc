@@ -656,7 +656,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource>
 D3D12VideoEncodeAccelerator::CreateResourceForGpuMemoryBufferVideoFrame(
     const VideoFrame& frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  CHECK_EQ(frame.storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  CHECK_EQ(frame.storage_type(), VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
 
   gfx::GpuMemoryBufferHandle handle = frame.GetGpuMemoryBufferHandle();
   Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
@@ -835,7 +835,7 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
 
   scoped_refptr<VideoFrame> frame = input_frame.frame;
   Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
-  if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     if (frame->HasNativeGpuMemoryBuffer()) {
       input_texture = CreateResourceForGpuMemoryBufferVideoFrame(*frame);
     } else {

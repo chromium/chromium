@@ -429,7 +429,7 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
   // textures.
   if (video_frame->HasSharedImage() &&
       video_frame->storage_type() !=
-          media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+          media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     DoDeliverFrame(std::move(video_frame), estimated_capture_time);
     return;
   }

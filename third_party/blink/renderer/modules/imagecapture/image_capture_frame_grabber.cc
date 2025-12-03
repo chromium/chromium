@@ -178,7 +178,8 @@ static sk_sp<SkImage> ConvertFrame(media::VideoFrame* frame) {
   bool need_rotate = rotation != media::VIDEO_ROTATION_0;
   scoped_refptr<media::VideoFrame> i420_frame;
 
-  if (frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (frame->storage_type() ==
+      media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_NV12);
     auto scoped_mapping = frame->MapSharedImage();
     if (!scoped_mapping) {

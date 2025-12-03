@@ -340,7 +340,7 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
   scoped_refptr<VideoFrame> dst_frame;
   switch (dst_storage_type) {
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-    case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
+    case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
     case VideoFrame::STORAGE_DMABUFS:
       if (!dst_buffer_usage) {
         LOG(ERROR) << "Buffer usage is not specified for a graphic buffer";
@@ -373,7 +373,7 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
     return nullptr;
   }
 
-  if (dst_storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (dst_storage_type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     // Here, the content in |src_frame| is already copied to |dst_frame|, which
     // is a DMABUF based VideoFrame.
     // Create GpuMemoryBuffer based VideoFrame from |dst_frame|.
@@ -387,8 +387,10 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
 scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
     const VideoFrame* const frame) {
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-  if (!frame || frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER)
+  if (!frame ||
+      frame->storage_type() != VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     return nullptr;
+  }
   gfx::GpuMemoryBufferHandle gmb_handle = frame->GetGpuMemoryBufferHandle();
   DCHECK_EQ(gmb_handle.type, gfx::GpuMemoryBufferType::NATIVE_PIXMAP);
   std::vector<ColorPlaneLayout> planes;

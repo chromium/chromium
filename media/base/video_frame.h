@@ -93,8 +93,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     STORAGE_DMABUFS = 5,  // Each plane is stored into a DmaBuf.
 #endif
-    STORAGE_GPU_MEMORY_BUFFER = 6,
-    STORAGE_MAX = STORAGE_GPU_MEMORY_BUFFER,
+    STORAGE_MAPPABLE_SHARED_IMAGE = 6,
+    STORAGE_MAX = STORAGE_MAPPABLE_SHARED_IMAGE,
   };
 
   // CB to be called on the mailbox backing this frame when the frame is

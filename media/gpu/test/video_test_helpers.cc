@@ -619,7 +619,7 @@ AlignedDataHelper::AlignedDataHelper(const RawVideo* video,
   // Otherwise timestamps will be generated when GetNextFrame() is called
   UpdateFrameRate(frame_rate);
 
-  if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (storage_type_ == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
 // TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     layout_ = GetPlatformVideoFrameLayout(
@@ -698,7 +698,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
 scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
     const VideoFrameData& video_frame_data,
     base::TimeDelta frame_timestamp) const {
-  if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (storage_type_ == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     const auto& gmb_handle = video_frame_data.gmb_handle;
     auto dup_handle = gmb_handle.Clone();
     if (dup_handle.is_null()) {
@@ -765,7 +765,7 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
          "source buffer resolution";
   const VideoPixelFormat pixel_format = src_layout.format();
   const gfx::Size& resolution = src_layout.coded_size();
-  if (storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (storage_type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
 // TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     // First write into on-memory frame.
@@ -783,7 +783,7 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
     // Create GpuMemoryBuffer VideoFrame from the on-memory VideoFrame.
     auto frame =
         CloneVideoFrame(memory_frame.get(), dst_layout, test_sii,
-                        VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+                        VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
                         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     LOG_ASSERT(!!frame) << "Failed creating GpuMemoryBuffer VideoFrame";
 

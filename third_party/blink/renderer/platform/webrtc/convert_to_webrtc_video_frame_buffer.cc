@@ -268,7 +268,7 @@ bool CanConvertToWebRtcVideoFrameBuffer(const media::VideoFrame* frame) {
           base::Contains(GetPixelFormatsMappableToWebRtcVideoFrameBuffer(),
                          frame->format())) ||
          frame->storage_type() ==
-             media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER ||
+             media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE ||
          frame->HasSharedImage();
 }
 
@@ -300,7 +300,7 @@ webrtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
   };
 
   if (video_frame->storage_type() ==
-      media::VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
+      media::VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE) {
     auto converted_frame =
         shared_resources
             ? shared_resources->ConstructVideoFrameFromGpu(video_frame)

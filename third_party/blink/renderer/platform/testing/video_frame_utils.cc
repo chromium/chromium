@@ -38,7 +38,7 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
     case media::VideoFrame::STORAGE_OWNED_MEMORY:
       return media::VideoFrame::CreateZeroInitializedFrame(
           pixel_format, coded_size, visible_rect, natural_size, timestamp);
-    case media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER: {
+    case media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE: {
       CHECK(test_sii);
       std::optional<viz::SharedImageFormat> si_format =
           media::VideoPixelFormatToSharedImageFormat(pixel_format);

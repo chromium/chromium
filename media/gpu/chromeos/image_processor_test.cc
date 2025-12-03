@@ -278,7 +278,7 @@ scoped_refptr<VideoFrame> CreateNV12Frame(
     gpu::TestSharedImageInterface* test_sii) {
   const gfx::Rect visible_rect(size);
   constexpr base::TimeDelta kNullTimestamp;
-  if (type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     return CreateMappableVideoFrame(
         VideoPixelFormat::PIXEL_FORMAT_NV12, size, visible_rect, size,
         kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, test_sii);
@@ -524,7 +524,7 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_MemToMem) {
 
   const bool is_scaling = (input_image.PixelFormat() == PIXEL_FORMAT_NV12 &&
                            output_image.PixelFormat() == PIXEL_FORMAT_NV12);
-  const auto storage = is_scaling ? VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+  const auto storage = is_scaling ? VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
                                   : VideoFrame::STORAGE_OWNED_MEMORY;
   auto ip_client =
       CreateImageProcessorClient(input_image, storage, &output_image, storage);
@@ -556,7 +556,7 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToMem) {
     GTEST_SKIP() << "Skipping Dmabuf format " << input_image.PixelFormat();
   const bool is_scaling = (input_image.PixelFormat() == PIXEL_FORMAT_NV12 &&
                            output_image.PixelFormat() == PIXEL_FORMAT_NV12);
-  const auto storage = is_scaling ? VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+  const auto storage = is_scaling ? VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
                                   : VideoFrame::STORAGE_OWNED_MEMORY;
   auto ip_client =
       CreateImageProcessorClient(input_image, storage, &output_image, storage);
@@ -621,8 +621,8 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
   }
 
   auto ip_client = CreateImageProcessorClient(
-      input_image, VideoFrame::STORAGE_GPU_MEMORY_BUFFER, &output_image,
-      VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+      input_image, VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, &output_image,
+      VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
   if (!ip_client && g_backend_type.has_value()) {
     GTEST_SKIP() << "Forced backend " << ToString(*g_backend_type)
                  << " does not support this test";
@@ -746,11 +746,13 @@ TEST(ImageProcessorBackendTest, CompareLibYUVAndGLBackendsForMM21Image) {
   ASSERT_TRUE(input_frame) << "Error creating input frame";
 
   auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-  scoped_refptr<VideoFrame> gl_output_frame = CreateNV12Frame(
-      kTestImageSize, VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii.get());
+  scoped_refptr<VideoFrame> gl_output_frame =
+      CreateNV12Frame(kTestImageSize, VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
+                      test_sii.get());
   ASSERT_TRUE(gl_output_frame) << "Error creating GL output frame";
-  scoped_refptr<VideoFrame> libyuv_output_frame = CreateNV12Frame(
-      kTestImageSize, VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii.get());
+  scoped_refptr<VideoFrame> libyuv_output_frame =
+      CreateNV12Frame(kTestImageSize, VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
+                      test_sii.get());
   ASSERT_TRUE(libyuv_output_frame) << "Error creating LibYUV output frame";
 
   int outstanding_processors = 2;

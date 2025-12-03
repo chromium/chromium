@@ -213,8 +213,8 @@ TEST_P(VideoFrameImageUtilTest, WillCreateAcceleratedImagesFromVideoFrame) {
   {
     auto cpu_frame = CreateTestFrame(
         kTestSize, gfx::Rect(kTestSize), kTestSize,
-        media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER, media::PIXEL_FORMAT_XRGB,
-        base::TimeDelta(), test_sii_.get());
+        media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
+        media::PIXEL_FORMAT_XRGB, base::TimeDelta(), test_sii_.get());
     EXPECT_EQ(WillCreateAcceleratedImagesFromVideoFrame(cpu_frame.get()),
               expect_accelerated_images());
   }
@@ -242,10 +242,10 @@ TEST_P(VideoFrameImageUtilTest, CreateImageFromVideoFrameSoftwareFrame) {
 }
 
 TEST_P(VideoFrameImageUtilTest, CreateImageFromVideoFrameGpuMemoryBufferFrame) {
-  auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
-                                   media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-                                   media::PIXEL_FORMAT_NV12, base::TimeDelta(),
-                                   test_sii_.get());
+  auto cpu_frame = CreateTestFrame(
+      kTestSize, gfx::Rect(kTestSize), kTestSize,
+      media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
+      media::PIXEL_FORMAT_NV12, base::TimeDelta(), test_sii_.get());
   auto image = DoCreateImageFromVideoFrame(cpu_frame);
   EXPECT_EQ(image->IsTextureBacked(), expect_accelerated_images());
 }

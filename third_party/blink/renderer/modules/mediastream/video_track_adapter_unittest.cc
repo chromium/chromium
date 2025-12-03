@@ -487,7 +487,7 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_MappableSI) {
   const double kFrameRate = 30.0;
   auto mappable_si_frame = CreateTestFrame(
       kCodedSize, kVisibleRect, kNaturalSize,
-      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii_.get());
+      media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, test_sii_.get());
 
   // Initialize the VideoTrackAdapter to handle MappableSI. NV12 is the
   // only pixel format supported at the moment.
@@ -503,7 +503,7 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_MappableSI) {
           base::TimeTicks estimated_capture_time) {
         // We should get the original frame as-is here.
         EXPECT_EQ(frame->storage_type(),
-                  media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+                  media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
         EXPECT_EQ(frame->shared_image(), mappable_si_frame->shared_image());
         EXPECT_EQ(frame->coded_size(), kCodedSize);
         EXPECT_EQ(frame->visible_rect(), kVisibleRect);
@@ -522,7 +522,7 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_MappableSI) {
         // The original frame should be wrapped in a new frame, with
         // |kDesiredSize| exposed as natural size of the wrapped frame.
         EXPECT_EQ(frame->storage_type(),
-                  media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+                  media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
         EXPECT_EQ(frame->shared_image(), mappable_si_frame->shared_image());
         EXPECT_EQ(frame->coded_size(), kCodedSize);
         EXPECT_EQ(frame->visible_rect(), kVisibleRect);
@@ -541,7 +541,7 @@ TEST_F(VideoTrackAdapterFixtureTest,
   const double kFrameRate = 30.0;
   auto mappable_si_frame = CreateTestFrame(
       kCodedSize, kVisibleRect, kNaturalSize,
-      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii_.get());
+      media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, test_sii_.get());
 
   // Create an adapter that has a display capture device as its source.
   const media::VideoCaptureFormat stream_format(kCodedSize, kFrameRate,
@@ -555,7 +555,7 @@ TEST_F(VideoTrackAdapterFixtureTest,
                              base::TimeTicks estimated_capture_time) {
     // We should get the original frame as-is here.
     EXPECT_EQ(frame->storage_type(),
-              media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+              media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
     EXPECT_EQ(frame->shared_image(), mappable_si_frame->shared_image());
     EXPECT_EQ(frame->coded_size(), kCodedSize);
     EXPECT_EQ(frame->visible_rect(), kVisibleRect);
@@ -592,7 +592,7 @@ TEST_F(
   const double kFrameRate = 30.0;
   auto mappable_si_frame = CreateTestFrame(
       kCodedSize, kVisibleRect, kNaturalSize,
-      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii_.get());
+      media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, test_sii_.get());
 
   // Create an adapter that has a display capture device as its source.
   const media::VideoCaptureFormat stream_format(kCodedSize, kFrameRate,
@@ -606,7 +606,7 @@ TEST_F(
                              base::TimeTicks estimated_capture_time) {
     // We should get the original frame as-is here.
     EXPECT_EQ(frame->storage_type(),
-              media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+              media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
     EXPECT_EQ(frame->shared_image(), mappable_si_frame->shared_image());
     EXPECT_EQ(frame->coded_size(), kCodedSize);
     EXPECT_EQ(frame->visible_rect(), kVisibleRect);
@@ -623,7 +623,7 @@ TEST_F(
                           base::TimeTicks estimated_capture_time) {
     // We should get the original frame as-is here.
     EXPECT_EQ(frame->storage_type(),
-              media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+              media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
     EXPECT_EQ(frame->shared_image(), mappable_si_frame->shared_image());
     EXPECT_EQ(frame->coded_size(), kCodedSize);
     EXPECT_EQ(frame->visible_rect(), kVisibleRect);
@@ -641,7 +641,7 @@ TEST_F(VideoTrackAdapterFixtureTest,
   const gfx::Size kNaturalSize(1280, 720);
   TestDeliversFrameWithVisibleRectWithEvenOriginAndSize(
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+                      media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
                       test_sii_.get()),
       media::PIXEL_FORMAT_NV12, kDesiredSize);
 }
@@ -666,7 +666,7 @@ TEST_F(VideoTrackAdapterFixtureTest,
   const gfx::Size kNaturalSize(1280, 720);
   TestDeliversFrameWithVisibleRectWithEvenOriginAndSize(
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+                      media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
                       test_sii_.get()),
       media::PIXEL_FORMAT_NV12, kDesiredSize);
 }

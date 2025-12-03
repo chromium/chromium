@@ -78,8 +78,8 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter final
   // |frame| will be used directly. |frame| or the FrameResource that it wraps
   // must be able to be used to create a GpuMemoryBufferHandle. This means that
   // its storage type must be either STORAGE_DMABUFS or
-  // STORAGE_GPU_MEMORY_BUFFER. The generated gpu::Mailbox is kept alive until
-  // the underlying frame is destroyed.
+  // STORAGE_MAPPABLE_SHARED_IMAGE. The generated gpu::Mailbox is kept alive
+  // until the underlying frame is destroyed.
   void ConvertFrameImpl(scoped_refptr<FrameResource> frame) override;
   bool UsesGetOriginalFrameCBImpl() const override;
   void OnError(const base::Location& location, const std::string& msg) override;

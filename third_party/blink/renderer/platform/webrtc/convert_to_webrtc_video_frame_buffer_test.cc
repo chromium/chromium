@@ -56,7 +56,7 @@ std::vector<ConvertToWebRtcVideoFrameBufferParamTest::ParamType> TestParams() {
         media::VideoFrame::StorageType::STORAGE_OWNED_MEMORY, format);
   }
   test_params.emplace_back(
-      media::VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER,
+      media::VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE,
       media::VideoPixelFormat::PIXEL_FORMAT_NV12);
   return test_params;
 }
@@ -125,9 +125,9 @@ TEST_F(ConvertToWebRtcVideoFrameBufferTest,
   const gfx::Size kNaturalSize = kVisibleRect.size();
   auto resources = WebRtcVideoFrameAdapter::SharedResources::Create(nullptr);
 
-  auto gmb_frame = CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                                   media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-                                   test_sii_.get());
+  auto gmb_frame = CreateTestFrame(
+      kCodedSize, kVisibleRect, kNaturalSize,
+      media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, test_sii_.get());
 
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by GpuMemoryBuffer.
@@ -157,9 +157,9 @@ TEST_F(ConvertToWebRtcVideoFrameBufferTest, Nv12ScalesGmbWithFeature) {
   const gfx::Size kNaturalSize(640, 360);
   auto resources = WebRtcVideoFrameAdapter::SharedResources::Create(nullptr);
 
-  auto gmb_frame = CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                                   media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-                                   test_sii_.get());
+  auto gmb_frame = CreateTestFrame(
+      kCodedSize, kVisibleRect, kNaturalSize,
+      media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, test_sii_.get());
 
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by GpuMemoryBuffer.

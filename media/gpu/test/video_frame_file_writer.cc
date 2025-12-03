@@ -172,7 +172,7 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
   // in the end of function.
   auto frame = video_frame;
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-  if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     // TODO(andrescj): This is a workaround. ClientNativePixmapFactoryDmabuf
     // creates ClientNativePixmapOpaque for SCANOUT_VDA_WRITE buffers which
     // does not allow us to map GpuMemoryBuffers easily for testing.

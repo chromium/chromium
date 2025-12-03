@@ -936,7 +936,7 @@ HRESULT GenerateSampleFromVideoFrame(
   RETURN_ON_HR_FAILURE(hr, "Failed to create sample", hr);
 
   if (frame->storage_type() ==
-          VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER &&
+          VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE &&
       dxgi_device_manager != nullptr) {
     gfx::GpuMemoryBufferHandle buffer_handle =
         frame->GetGpuMemoryBufferHandle();

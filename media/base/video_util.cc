@@ -258,7 +258,8 @@ void FillYUVA(VideoFrame* frame, uint8_t y, uint8_t u, uint8_t v, uint8_t a) {
 void LetterboxVideoFrame(VideoFrame* frame, const gfx::Rect& view_area) {
   std::unique_ptr<VideoFrame::ScopedMapping> scoped_mapping;
   if (!frame->IsMappable() &&
-      frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+      frame->storage_type() ==
+          media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     scoped_mapping = frame->MapSharedImage();
     CHECK(scoped_mapping);
   }

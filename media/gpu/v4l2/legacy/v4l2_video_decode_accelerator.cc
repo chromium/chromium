@@ -2237,7 +2237,7 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
         /*force_linear_buffer_mapper=*/true);
     if (!output_frame_mapper) {
       output_frame_mapper = VideoFrameMapperFactory::CreateMapper(
-          PIXEL_FORMAT_NV12, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+          PIXEL_FORMAT_NV12, VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
           /*force_linear_buffer_mapper=*/true);
     }
     if (!output_frame_mapper) {

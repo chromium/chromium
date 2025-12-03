@@ -73,7 +73,8 @@ namespace {
 
 // Specifies frame type for test.
 enum class TestFrameType {
-  kNv12GpuMemoryBuffer,  // Implies media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+  kNv12GpuMemoryBuffer,  // Implies
+                         // media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
   kNv12Software,         // Implies media::VideoFrame::STORAGE_OWNED_MEMORY
   kI420                  // Implies media::VideoFrame::STORAGE_OWNED_MEMORY
 };
@@ -409,7 +410,7 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
         padded_size, gfx::Rect(frame_size), frame_size,
         frame_type == TestFrameType::kNv12Software
             ? media::VideoFrame::STORAGE_OWNED_MEMORY
-            : media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+            : media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
         media::VideoPixelFormat::PIXEL_FORMAT_NV12, base::TimeDelta(),
         test_sii_.get());
     scoped_refptr<media::VideoFrame> video_frame2 = video_frame;
@@ -806,7 +807,7 @@ TEST_P(VideoTrackRecorderTestParam, EncodeFrameRGB) {
                 base::TimeDelta())
           : blink::CreateTestFrame(
                 frame_size, gfx::Rect(frame_size), frame_size,
-                media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER, pixel_format,
+                media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, pixel_format,
                 base::TimeDelta(), test_sii_.get());
 
   base::RunLoop run_loop;

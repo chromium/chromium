@@ -137,7 +137,7 @@ void MailboxVideoFrameConverter::ConvertFrameImpl(
 
   if (!frame ||
       (frame->storage_type() != VideoFrame::STORAGE_DMABUFS &&
-       frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER)) {
+       frame->storage_type() != VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE)) {
     return OnError(FROM_HERE, "Invalid frame.");
   }
 

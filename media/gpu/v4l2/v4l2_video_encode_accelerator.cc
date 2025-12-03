@@ -504,7 +504,7 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
   }
 
   VideoFrame::StorageType input_storage_type =
-      native_input_mode_ ? VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+      native_input_mode_ ? VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
                          : VideoFrame::STORAGE_SHMEM;
   auto input_config = VideoFrameLayoutToPortConfig(
       *ip_input_layout, input_visible_rect, input_storage_type);
@@ -528,7 +528,7 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
   }
   auto output_config =
       VideoFrameLayoutToPortConfig(*output_layout, output_visible_rect,
-                                   VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+                                   VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
   if (!output_config) {
     LOG(ERROR) << "Failed to create ImageProcessor output config";
     return false;
@@ -584,7 +584,7 @@ bool V4L2VideoEncodeAccelerator::AllocateImageProcessorOutputBuffers(
       image_processor_->output_config();
   for (size_t i = 0; i < count; i++) {
     switch (output_config.storage_type) {
-      case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
+      case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
         CHECK(sii_);
         image_processor_output_buffers_[i] = CreateMappableVideoFrame(
             output_config.fourcc.ToVideoPixelFormat(), output_config.size,
@@ -609,7 +609,7 @@ bool V4L2VideoEncodeAccelerator::InitInputMemoryType(const Config& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   if (image_processor_) {
     const auto storage_type = image_processor_->output_config().storage_type;
-    if (storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+    if (storage_type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
       input_memory_type_ = V4L2_MEMORY_DMABUF;
     } else if (VideoFrame::IsStorageTypeMappable(storage_type)) {
       input_memory_type_ = V4L2_MEMORY_USERPTR;
@@ -950,7 +950,7 @@ void V4L2VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
     // |frame| can be nullptr to indicate a flush.
     const bool is_expected_storage_type =
         native_input_mode_
-            ? frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+            ? frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
             : frame->IsMappable();
     if (!is_expected_storage_type) {
       SetErrorState({EncoderStatus::Codes::kInvalidInputFrame,

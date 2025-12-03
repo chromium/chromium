@@ -87,7 +87,7 @@ std::string VideoFrame::StorageTypeToString(
     case VideoFrame::STORAGE_DMABUFS:
       return "DMABUFS";
 #endif
-    case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
+    case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
       return "GPU_MEMORY_BUFFER";
   }
 
@@ -405,7 +405,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapMappableSharedImage(
   if (!format) {
     return nullptr;
   }
-  constexpr StorageType storage = STORAGE_GPU_MEMORY_BUFFER;
+  constexpr StorageType storage = STORAGE_MAPPABLE_SHARED_IMAGE;
   const gfx::Size& coded_size = shared_image->size();
   if (!IsValidConfig(*format, storage, coded_size, visible_rect,
                      natural_size)) {
@@ -1173,7 +1173,7 @@ bool VideoFrame::HasSharedImage() const {
 }
 
 bool VideoFrame::HasMappableGpuBuffer() const {
-  return storage_type_ == STORAGE_GPU_MEMORY_BUFFER;
+  return storage_type_ == STORAGE_MAPPABLE_SHARED_IMAGE;
 }
 
 bool VideoFrame::IsMappableSharedImageEnabled() const {

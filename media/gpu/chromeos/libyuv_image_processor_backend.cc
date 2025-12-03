@@ -145,7 +145,7 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
   // input.
   std::unique_ptr<VideoFrameMapper> input_frame_mapper;
   if (input_config.storage_type == VideoFrame::STORAGE_DMABUFS ||
-      input_config.storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+      input_config.storage_type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     input_frame_mapper = VideoFrameMapperFactory::CreateMapper(
         input_config.fourcc.ToVideoPixelFormat(), input_config.storage_type,
         /*force_linear_buffer_mapper=*/true);
@@ -159,7 +159,7 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
 
   std::unique_ptr<VideoFrameMapper> output_frame_mapper;
   if (output_config.storage_type == VideoFrame::STORAGE_DMABUFS ||
-      output_config.storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+      output_config.storage_type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     output_frame_mapper = VideoFrameMapperFactory::CreateMapper(
         output_config.fourcc.ToVideoPixelFormat(), output_config.storage_type,
         /*force_linear_buffer_mapper=*/true);
@@ -274,7 +274,8 @@ void LibYUVImageProcessorBackend::ProcessFrame(
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
   DVLOGF(4);
   if (input_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
-      input_frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+      input_frame->storage_type() ==
+          VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     DCHECK_NE(input_frame_mapper_.get(), nullptr);
     int mapping_permissions = PROT_READ;
     if (input_frame->storage_type() != VideoFrame::STORAGE_DMABUFS)
@@ -293,7 +294,8 @@ void LibYUVImageProcessorBackend::ProcessFrame(
   // is the output of ImageProcessor.
   scoped_refptr<FrameResource> mapped_frame = output_frame;
   if (output_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
-      output_frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+      output_frame->storage_type() ==
+          VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     DCHECK_NE(output_frame_mapper_.get(), nullptr);
     scoped_refptr<VideoFrame> mapped_output_frame =
         output_frame_mapper_->MapFrame(output_frame, PROT_READ | PROT_WRITE);

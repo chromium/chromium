@@ -241,7 +241,7 @@ std::vector<WebRtcVideoTrackSourceTest::ParamType> TestParams() {
         media::VideoFrame::StorageType::STORAGE_OWNED_MEMORY, format);
   }
   test_params.emplace_back(
-      media::VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER,
+      media::VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE,
       media::VideoPixelFormat::PIXEL_FORMAT_NV12);
   test_params.emplace_back(media::VideoFrame::STORAGE_OPAQUE,
                            media::VideoPixelFormat::PIXEL_FORMAT_NV12);
@@ -688,7 +688,7 @@ TEST_P(WebRtcVideoTrackSourceTest, PassesMappedFramesInOrder) {
       .storage_type = std::get<0>(GetParam()),
       .pixel_format = std::get<1>(GetParam())};
   if (frame_parameters.storage_type !=
-      media::VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
+      media::VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE) {
     // Mapping is only valid for GMB backed frames.
     return;
   }
@@ -769,7 +769,7 @@ TEST_P(WebRtcVideoTrackSourceTest, DoesntCrashOnLateCallbacks) {
       .storage_type = std::get<0>(GetParam()),
       .pixel_format = std::get<1>(GetParam())};
   if (frame_parameters.storage_type !=
-      media::VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
+      media::VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE) {
     // Mapping is only valid for GMB backed frames.
     return;
   }

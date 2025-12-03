@@ -554,7 +554,7 @@ TEST(VideoFrame, WrapMappableSharedImage) {
     EXPECT_EQ(frame->layout().planes()[i].stride,
               static_cast<size_t>(coded_size.width()));
   }
-  EXPECT_EQ(frame->storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  EXPECT_EQ(frame->storage_type(), VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
   EXPECT_EQ(frame->coded_size(), coded_size);
   EXPECT_EQ(frame->visible_rect(), visible_rect);
   EXPECT_EQ(frame->timestamp(), timestamp);
@@ -568,7 +568,7 @@ TEST(VideoFrame, WrapMappableSharedImage) {
       frame, frame->format(), visible_rect, visible_rect.size());
   ASSERT_NE(wrapped_frame, nullptr);
   EXPECT_EQ(wrapped_frame->storage_type(),
-            VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+            VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
   EXPECT_EQ(wrapped_frame->coded_size(), coded_size);
   EXPECT_EQ(wrapped_frame->visible_rect(), visible_rect);
   EXPECT_EQ(wrapped_frame->timestamp(), timestamp);

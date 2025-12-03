@@ -148,7 +148,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
 
   const VideoFrame::StorageType storage_types[] = {
       VideoFrame::STORAGE_DMABUFS,
-      VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+      VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
   };
   for (const auto& storage_type : storage_types) {
     scoped_refptr<VideoFrame> frame;
@@ -158,7 +158,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
             CreatePlatformVideoFrame(kPixelFormat, kCodedSize, kVisibleRect,
                                      kNaturalSize, kTimeStamp, kBufferUsage);
         break;
-      case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
+      case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
         frame = CreateMappableVideoFrame(kPixelFormat, kCodedSize, kVisibleRect,
                                          kNaturalSize, kTimeStamp, kBufferUsage,
                                          test_sii.get());
@@ -179,7 +179,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
       case VideoFrame::STORAGE_DMABUFS:
         EXPECT_FALSE(frame->NumDmabufFds() == 0);
         break;
-      case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
+      case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
         EXPECT_FALSE(frame->GetGpuMemoryBufferHandle().is_null());
         break;
       default:

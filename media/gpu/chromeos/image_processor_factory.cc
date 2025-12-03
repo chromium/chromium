@@ -370,7 +370,7 @@ ImageProcessorFactory::CreateLibYUVImageProcessorWithInputCandidatesForTesting(
     ImageProcessor::ErrorCB error_cb) {
   return CreateLibYUVImageProcessorWithInputCandidates(
       input_candidates, input_visible_rect, output_size,
-      VideoFrame::STORAGE_GPU_MEMORY_BUFFER, client_task_runner,
+      VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, client_task_runner,
       out_format_picker, error_cb);
 }
 
@@ -386,7 +386,7 @@ ImageProcessorFactory::CreateGLImageProcessorWithInputCandidatesForTesting(
 #if defined(ARCH_CPU_ARM_FAMILY)
   return CreateGLImageProcessorWithInputCandidates(
       input_candidates, input_visible_rect, output_size,
-      VideoFrame::STORAGE_GPU_MEMORY_BUFFER, client_task_runner,
+      VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, client_task_runner,
       out_format_picker, error_cb);
 #else
   return nullptr;

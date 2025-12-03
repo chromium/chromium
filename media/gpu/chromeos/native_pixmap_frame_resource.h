@@ -129,7 +129,7 @@ class NativePixmapFrameResource : public FrameResource {
 
   // CreateMappableVideoFrame() is used to create a VideoFrame from the
   // underlying NativePixmap. The DMABuf FDs are duplicated and a VideoFrame
-  // with storage type STORAGE_GPU_MEMORY_BUFFER is created.
+  // with storage type STORAGE_MAPPABLE_SHARED_IMAGE is created.
   scoped_refptr<VideoFrame> CreateMappableVideoFrame(
       gpu::SharedImageInterface* sii) const;
 
@@ -142,7 +142,7 @@ class NativePixmapFrameResource : public FrameResource {
   // |buffer_usage_| affects how a buffer can be used. It is only set if it was
   // provided by the caller of Create(), or if the NativePixmap was allocated by
   // MiniGBM. If this not set, then a CreateVideoFrame() should not be used to
-  // create a STORAGE_GPU_MEMORY_BUFFER VideoFrame.
+  // create a STORAGE_MAPPABLE_SHARED_IMAGE VideoFrame.
   const std::optional<gfx::BufferUsage> buffer_usage_;
 
   // VideoFrameLayout (includes format, coded_size, and strides). Per-plane
