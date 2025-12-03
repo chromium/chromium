@@ -45,17 +45,9 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler {
   // webview.
   void HandleWebviewMessage(const std::vector<uint8_t>& message);
 
-  void OpenAutocompleteMatch(uint8_t line,
-                             const GURL& url,
-                             bool are_matches_showing,
-                             uint8_t mouse_button,
-                             bool alt_key,
-                             bool ctrl_key,
-                             bool meta_key,
-                             bool shift_key) override;
+  void CreateAndSendQueryMessage(const std::string& query);
 
  private:
-  void CreateAndSendQueryMessage(const std::string& query);
 
   raw_ptr<ContextualTasksUI> web_ui_controller_;
 };
