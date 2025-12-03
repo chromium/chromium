@@ -12,6 +12,7 @@
 #include "base/base_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/profiler/frame.h"
 #include "base/profiler/register_context.h"
 #include "base/sequence_checker.h"
@@ -31,10 +32,10 @@ using UnwinderCapture =
 
 // StackUnwindData is an implementation detail of StackSamplingProfiler. It
 // contains data so that we can unwind stacks off the sampling thread.
-class BASE_EXPORT StackUnwindData {
+class BASE_EXPORT StackUnwindData
+    : public base::RefCountedThreadSafe<StackUnwindData> {
  public:
   explicit StackUnwindData(std::unique_ptr<ProfileBuilder> profile_builder);
-  ~StackUnwindData();
 
   ProfileBuilder* profile_builder() { return profile_builder_.get(); }
 
@@ -54,6 +55,9 @@ class BASE_EXPORT StackUnwindData {
   void AddAuxUnwinder(std::unique_ptr<Unwinder> unwinder);
 
  private:
+  friend class base::RefCountedThreadSafe<StackUnwindData>;
+  ~StackUnwindData();
+
   SEQUENCE_CHECKER(sampling_thread_sequence_checker_);
   SEQUENCE_CHECKER(worker_sequence_checker_);
 

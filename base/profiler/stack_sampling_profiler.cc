@@ -876,7 +876,7 @@ StackSamplingProfiler::StackSamplingProfiler(
       params_(params),
       sampler_(StackSampler::Create(
           thread_token,
-          std::make_unique<StackUnwindData>(std::move(profile_builder)),
+          base::MakeRefCounted<StackUnwindData>(std::move(profile_builder)),
           std::move(core_unwinders_factory),
           std::move(record_sample_callback),
           test_delegate)),

@@ -146,12 +146,12 @@ void StackSampler::AddAuxUnwinder(std::unique_ptr<Unwinder> unwinder) {
     thread_pool_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(
-            [](StackUnwindData* unwind_data,
+            [](scoped_refptr<StackUnwindData> unwind_data,
                std::unique_ptr<Unwinder> unwinder) {
               unwinder->Initialize(unwind_data->module_cache());
               return unwinder;
             },
-            base::Unretained(unwind_data_.get()), std::move(unwinder)),
+            unwind_data_, std::move(unwinder)),
         base::BindOnce(&StackSampler::AddAuxUnwinderWithoutInit,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
@@ -263,15 +263,15 @@ void StackSampler::RecordStackFrames(StackBuffer* stack_buffer,
     thread_pool_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(
-            [](StackUnwindData* unwind_data,
+            [](scoped_refptr<StackUnwindData> unwind_data,
                std::vector<UnwinderCapture> unwinders,
                RegisterContext thread_context,
                std::unique_ptr<StackBuffer> stack, uintptr_t stack_top) {
               return WalkStack(unwind_data->module_cache(), &thread_context,
                                stack_top, std::move(unwinders));
             },
-            base::Unretained(unwind_data_.get()), std::move(unwinders),
-            OwnedRef(thread_context), std::move(cloned_stack), stack_top),
+            unwind_data_, std::move(unwinders), OwnedRef(thread_context),
+            std::move(cloned_stack), stack_top),
         base::BindOnce(&StackSampler::UnwindComplete,
                        weak_ptr_factory_.GetWeakPtr(), timestamp,
                        std::move(done_callback)));
@@ -307,7 +307,7 @@ std::vector<Frame> StackSampler::WalkStackForTesting(
 // static
 std::unique_ptr<StackSampler> StackSampler::CreateForTesting(
     std::unique_ptr<StackCopier> stack_copier,
-    std::unique_ptr<StackUnwindData> stack_unwind_data,
+    scoped_refptr<StackUnwindData> stack_unwind_data,
     UnwindersFactory core_unwinders_factory,
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate) {
@@ -318,7 +318,7 @@ std::unique_ptr<StackSampler> StackSampler::CreateForTesting(
 }
 
 StackSampler::StackSampler(std::unique_ptr<StackCopier> stack_copier,
-                           std::unique_ptr<StackUnwindData> stack_unwind_data,
+                           scoped_refptr<StackUnwindData> stack_unwind_data,
                            UnwindersFactory core_unwinders_factory,
                            RepeatingClosure record_sample_callback,
                            StackSamplerTestDelegate* test_delegate)
