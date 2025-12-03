@@ -71,13 +71,15 @@ std::optional<std::vector<uint8_t>> DecryptMetadataPayload(
 bool VerifyMetadataEncryptionKeyTag(
     base::span<const uint8_t> decrypted_metadata_key,
     base::span<const uint8_t> metadata_encryption_key_tag) {
-  // This array of 0x00 is used to conform with the GmsCore implementation.
-  std::vector<uint8_t> key(kNearbyShareNumBytesMetadataEncryptionKeyTag, 0x00);
+  const auto tag =
+      metadata_encryption_key_tag.to_fixed_extent<crypto::hash::kSha256Size>();
 
-  std::vector<uint8_t> result(kNearbyShareNumBytesMetadataEncryptionKeyTag);
-  crypto::HMAC hmac(crypto::HMAC::HashAlgorithm::SHA256);
-  return hmac.Init(key) &&
-         hmac.Verify(decrypted_metadata_key, metadata_encryption_key_tag);
+  // This array of 0x00 is used to conform with the GmsCore implementation. This
+  // turns HMAC into a slow hash function; see b/433801272.
+  constexpr std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeyTag>
+      key = {0};
+  return tag.has_value() &&
+         crypto::hmac::VerifySha256(key, decrypted_metadata_key, *tag);
 }
 
 }  // namespace
