@@ -58,7 +58,6 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
     content::WebContents* web_contents,
     const GURL& main_frame_url,
     const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
-    bool should_trigger_reporting,
     std::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -103,7 +102,7 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
       ui_manager, web_contents, main_frame_url, unsafe_resources,
       CreateControllerClient(web_contents, unsafe_resources, ui_manager,
                              blocked_page_shown_timestamp),
-      display_options, should_trigger_reporting,
+      display_options,
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(

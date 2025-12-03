@@ -105,7 +105,6 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client,
       const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options,
-      bool should_trigger_reporting,
       history::HistoryService* history_service,
       SafeBrowsingNavigationObserverManager* navigation_observer_manager,
       SafeBrowsingMetricsCollector* metrics_collector,

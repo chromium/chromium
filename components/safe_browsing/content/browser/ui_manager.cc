@@ -410,7 +410,7 @@ SafeBrowsingUIManager::CreateBlockingPage(
   }
   blocking_page = blocking_page_factory_->CreateSafeBrowsingPage(
       this, contents, blocked_url, {unsafe_resource},
-      /*should_trigger_reporting=*/true, blocked_page_shown_timestamp);
+      blocked_page_shown_timestamp);
 
   // Report that we showed an interstitial.
   if (forward_extension_event) {

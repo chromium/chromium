@@ -31,7 +31,6 @@ class SafeBrowsingBlockingPageFactory {
       content::WebContents* web_contents,
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
-      bool should_trigger_reporting,
       std::optional<base::TimeTicks> blocked_page_shown_timestamp) = 0;
 
   virtual security_interstitials::SecurityInterstitialPage*
