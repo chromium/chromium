@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/strings/escape.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -450,7 +451,9 @@ void NotificationTelemetryService::OnGetServiceWorkerBehaviors(
     base::UmaHistogramCounts1M("SafeBrowsing.NotificationTelemetry.CSBRR.Size",
                                serialized_report.size());
   }
-  if (ui_manager_ && profile_ && kNotificationTelemetrySwbSendReports.Get()) {
+  if (ui_manager_ && profile_ && kNotificationTelemetrySwbSendReports.Get() &&
+      base::RandDouble() <
+          kNotificationTelemetrySwbReportingProbability.Get()) {
     ui_manager_->SendThreatDetails(profile_, std::move(report));
   }
   // Whether we've sent a report or not, clear the database to avoid build up.

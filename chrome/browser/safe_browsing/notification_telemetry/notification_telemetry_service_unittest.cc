@@ -583,6 +583,28 @@ TEST_P(NotificationTelemetryServiceTest, OnGetServiceWorkerBehaviors) {
       true, std::move(entries));
 }
 
+TEST_P(NotificationTelemetryServiceTest,
+       OnGetServiceWorkerBehaviors_Downsampled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams params;
+  params["NotificationTelemetrySwbReportingProbability"] =
+      "0.0";  // Never send a report
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kNotificationTelemetrySwb, params);
+
+  CSBRR::ServiceWorkerBehavior swb_push = MakeServiceWorkerPushBehavior(
+      GURL("https://script.com"),
+      std::vector<GURL>{GURL("https://request1.com")});
+
+  auto entries = std::make_unique<std::vector<CSBRR::ServiceWorkerBehavior>>(
+      std::vector<CSBRR::ServiceWorkerBehavior>{swb_push});
+
+  EXPECT_CALL(*ui_manager(), SendThreatDetails(_, _)).Times(0);
+  EXPECT_CALL(*(GetNotificationTelemetryStore()), DeleteAll(_)).Times(1);
+
+  notification_telemetry_service()->OnGetServiceWorkerBehaviors(
+      true, std::move(entries));
+}
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          NotificationTelemetryServiceTest,
                          ::testing::Bool());

@@ -322,6 +322,10 @@ BASE_DECLARE_FEATURE(kNotificationTelemetry);
 // Enable the collection of ServiceWorkerBehaviors via the
 // NotificationTelemetryService.
 BASE_DECLARE_FEATURE(kNotificationTelemetrySwb);
+// Specifies the probability of sending a ServiceWorkerBehavior CSBRR off
+// device.
+extern const base::FeatureParam<double>
+    kNotificationTelemetrySwbReportingProbability;
 // Specifies the polling interval in minutes.
 extern const base::FeatureParam<int> kNotificationTelemetrySwbPollingInterval;
 // Determines whether CSBRRs are sent to Safe Browsing.
