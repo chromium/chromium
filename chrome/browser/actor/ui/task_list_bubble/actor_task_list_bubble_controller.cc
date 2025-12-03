@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -54,12 +55,15 @@ void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view) {
   for (const auto& task : task_id_to_state) {
     param_list.emplace_back(CreateRowButtonParamsForTaskState(task.second));
   }
+  const size_t param_list_size = param_list.size();
   bubble_widget_ =
       ActorTaskListBubble::ShowBubble(anchor_view, std::move(param_list));
   if (widget_observation_.IsObserving()) {
     widget_observation_.Reset();
   }
   widget_observation_.Observe(bubble_widget_);
+
+  actor::ui::RecordTaskListBubbleRows(param_list_size);
 }
 
 ActorTaskListBubbleRowButtonParams
@@ -127,6 +131,7 @@ void ActorTaskListBubbleController::GetOnTaskRowClickCallback(
   if (bubble_widget_) {
     bubble_widget_->Close();
   }
+  actor::ui::LogTaskListBubbleRowClicked();
 #endif
 }
 

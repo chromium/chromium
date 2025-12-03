@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
@@ -174,5 +175,46 @@ TEST_F(ActorTaskListBubbleControllerTest, RemoveRowFromBubbleOnClick) {
       actor_task_list_bubble_controller_->GetBubbleWidget());
 
   EXPECT_EQ(0u, content_view->children().size());
+#endif
+}
+
+TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
+#if BUILDFLAG(ENABLE_GLIC)
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile_.get());
+  tabs::GlicActorTaskIconManager* manager =
+      tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile_.get());
+  actor_service->GetPolicyChecker().SetActOnWebForTesting(true);
+  actor::TaskId task_id = actor_service->CreateTask();
+  actor_service->GetTask(task_id)->Pause(true);
+  manager->UpdateTaskListBubble(task_id);
+
+  base::HistogramTester histogram_tester;
+
+  actor_task_list_bubble_controller_->ShowBubble(
+      anchor_widget_->GetContentsView());
+
+  histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 1, 1);
+
+  // Stop previous task, Add and Pause 3 more tasks, and ensure histogram bucket
+  // for 1 row stays the same while the bucket for 3 rows is incremented.
+  actor_service->StopTask(task_id,
+                          actor::ActorTask::StoppedReason::kTaskComplete);
+  manager->UpdateTaskListBubble(task_id);
+
+  for (int i = 0; i < 3; i++) {
+    actor::TaskId new_task_id = actor_service->CreateTask();
+    actor_service->GetTask(new_task_id)->Pause(true);
+    manager->UpdateTaskListBubble(new_task_id);
+  }
+
+  actor_task_list_bubble_controller_->ShowBubble(
+      anchor_widget_->GetContentsView());
+
+  histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 1, 1);
+  histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 3, 1);
+  EXPECT_EQ(
+      2u,
+      histogram_tester.GetAllSamples("Actor.Ui.TaskListBubble.Rows").size());
 #endif
 }

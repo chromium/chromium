@@ -20,9 +20,16 @@ void LogHandoffButtonClick(HandoffButtonState::ControlOwnership ownership);
 // Logs a click on the task icon.
 void LogTaskIconClick();
 
+// Logs a click on a row in the task list bubble.
+void LogTaskListBubbleRowClicked();
+
 // Logs a click on the task nudge.
 // This fails if the nudge is in the default state.
 void LogTaskNudgeClick(ActorTaskNudgeState nudge_state);
+
+// Recorded when the task list bubble is shown.
+// `count` is the number of rows shown in the bubble.
+void RecordTaskListBubbleRows(size_t count);
 
 // Recorded when the task nudge is shown.
 void RecordTaskNudgeShown(ActorTaskNudgeState nudge_state);

@@ -3494,6 +3494,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Actor.Ui.TaskListBubble.Row.Click">
+  <owner>mjenn@google.com</owner>
+  <owner>kenok@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when the user clicks on a row in the Task List Bubble.
+  </description>
+</action>
+
 <action name="Actor.Ui.TaskNudge.{NudgeText}.Click">
   <owner>chrstne@google.com</owner>
   <owner>kenok@google.com</owner>
