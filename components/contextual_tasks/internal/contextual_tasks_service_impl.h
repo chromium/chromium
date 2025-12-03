@@ -138,6 +138,9 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   void NotifyTaskAdded(const ContextualTask& task, TriggerSource source);
   void NotifyTaskUpdated(const ContextualTask& task, TriggerSource source);
   void NotifyTaskRemoved(const base::Uuid& task_id, TriggerSource source);
+  void NotifyTaskAssociatedToTab(const base::Uuid& task_id, SessionID tab_id);
+  void NotifyTaskDisassociatedFromTab(const base::Uuid& task_id,
+                                      SessionID tab_id);
   ContextualTask AddTaskAndNotify(ContextualTask task);
 
   void OnDataStoresLoaded();

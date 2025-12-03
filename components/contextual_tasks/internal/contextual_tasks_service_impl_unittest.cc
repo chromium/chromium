@@ -99,6 +99,14 @@ class MockContextualTasksObserver : public ContextualTasksService::Observer {
               (const base::Uuid& task_id,
                ContextualTasksService::TriggerSource source),
               (override));
+  MOCK_METHOD(void,
+              OnTaskAssociatedToTab,
+              (const base::Uuid& task_id, SessionID tab_id),
+              (override));
+  MOCK_METHOD(void,
+              OnTaskDisassociatedFromTab,
+              (const base::Uuid& task_id, SessionID tab_id),
+              (override));
 };
 
 class MockCompositeContextDecorator : public CompositeContextDecorator {
@@ -885,15 +893,21 @@ TEST_F(ContextualTasksServiceImplTest, DetachUrlFromTask) {
 }
 
 TEST_F(ContextualTasksServiceImplTest, AssociateTabWithTask) {
+  service_->AddObserver(&observer_);
   ContextualTask task = service_->CreateTask();
   SessionID tab_id = SessionID::FromSerializedValue(1);
 
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnTaskAssociatedToTab(task.GetTaskId(), tab_id))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   service_->AssociateTabWithTask(task.GetTaskId(), tab_id);
+  run_loop.Run();
 
   std::optional<ContextualTask> recent_task =
       service_->GetContextualTaskForTab(tab_id);
   ASSERT_TRUE(recent_task.has_value());
   EXPECT_EQ(task.GetTaskId(), recent_task->GetTaskId());
+  service_->RemoveObserver(&observer_);
 }
 
 TEST_F(ContextualTasksServiceImplTest, AssociateTabWithInvalidTask) {
@@ -911,14 +925,20 @@ TEST_F(ContextualTasksServiceImplTest, AssociateTabWithInvalidTask) {
 }
 
 TEST_F(ContextualTasksServiceImplTest, DisassociateTabFromTask) {
+  service_->AddObserver(&observer_);
   ContextualTask task = service_->CreateTask();
   SessionID tab_id = SessionID::FromSerializedValue(1);
 
   service_->AssociateTabWithTask(task.GetTaskId(), tab_id);
   EXPECT_TRUE(service_->GetContextualTaskForTab(tab_id));
 
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnTaskDisassociatedFromTab(task.GetTaskId(), tab_id))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   service_->DisassociateTabFromTask(task.GetTaskId(), tab_id);
+  run_loop.Run();
   EXPECT_FALSE(service_->GetContextualTaskForTab(tab_id));
+  service_->RemoveObserver(&observer_);
 }
 
 TEST_F(ContextualTasksServiceImplTest, GetContextualTaskForTab_NotFound) {

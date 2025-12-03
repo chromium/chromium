@@ -18,6 +18,7 @@
 #include "components/contextual_tasks/internal/conversions.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
@@ -244,6 +245,10 @@ void ContextualTasksServiceImpl::AssociateTabWithTask(const base::Uuid& task_id,
 
   tab_to_task_[tab_id] = task_id;
   it->second.AddTabId(tab_id);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskAssociatedToTab,
+                     weak_ptr_factory_.GetWeakPtr(), task_id, tab_id));
 }
 
 void ContextualTasksServiceImpl::DisassociateTabFromTask(
@@ -260,6 +265,11 @@ void ContextualTasksServiceImpl::DisassociateTabFromTask(
   if (!it->second.GetThread() && it->second.GetTabIds().empty()) {
     RemoveTaskInternal(task_id, TriggerSource::kLocal);
   }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &ContextualTasksServiceImpl::NotifyTaskDisassociatedFromTab,
+          weak_ptr_factory_.GetWeakPtr(), task_id, tab_id));
 }
 
 std::optional<ContextualTask>
@@ -513,6 +523,21 @@ void ContextualTasksServiceImpl::NotifyTaskRemoved(const base::Uuid& task_id,
   for (auto& observer : observers_) {
     observer.OnTaskRemoved(task_id, source);
   }
+}
+
+void ContextualTasksServiceImpl::NotifyTaskAssociatedToTab(
+    const base::Uuid& task_id,
+    SessionID tab_id) {
+  observers_.Notify(&ContextualTasksService::Observer::OnTaskAssociatedToTab,
+                    task_id, tab_id);
+}
+
+void ContextualTasksServiceImpl::NotifyTaskDisassociatedFromTab(
+    const base::Uuid& task_id,
+    SessionID tab_id) {
+  observers_.Notify(
+      &ContextualTasksService::Observer::OnTaskDisassociatedFromTab, task_id,
+      tab_id);
 }
 
 ContextualTask ContextualTasksServiceImpl::AddTaskAndNotify(
