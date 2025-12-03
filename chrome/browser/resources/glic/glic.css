@@ -412,7 +412,7 @@ cr-progress {
   border-radius: 12px;
 }
 
-#fre-app-container .a {
+#fre-app-container #freLoadingPanel .a {
   width: 90px;
   height: 45px;
   border-radius: 48px;
@@ -420,21 +420,21 @@ cr-progress {
   margin-bottom: 16px;
 }
 
-#fre-app-container .b {
+#fre-app-container #freLoadingPanel .b {
   height: 56px;
   margin-bottom: 16px;
 }
 
-#fre-app-container .c {
+#fre-app-container #freLoadingPanel .c {
   height: 118px;
 }
 
-#fre-app-container .e {
-  height: 94px;
+#fre-app-container #freLoadingPanel .e {
+  height: 98px;
   margin-bottom: 16px;
 }
 
-#fre-app-container .f {
+#fre-app-container #freLoadingPanel .f {
   height: 32px;
   margin-bottom: 12px;
 }
