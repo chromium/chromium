@@ -11,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
-#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/data_type_limits.h"
@@ -25,7 +24,7 @@
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
-#include "services/webnn/scoped_sequence.h"
+#include "services/webnn/scoped_gpu_sequence.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_builder_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
@@ -45,8 +44,7 @@ WebNNContextImpl::WebNNContextImpl(
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
-    gpu::CommandBufferId command_buffer_id,
-    std::unique_ptr<ScopedSequence> sequence,
+    std::unique_ptr<ScopedGpuSequence> gpu_sequence,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
@@ -55,12 +53,11 @@ WebNNContextImpl::WebNNContextImpl(
                       blink::WebNNContextToken,
                       mojo::Receiver<mojom::WebNNContext>>(
           std::move(receiver),
-          sequence->scheduler_task_runner()),
+          gpu_sequence->scheduler_task_runner()),
       context_provider_(std::move(context_provider)),
       properties_(IntersectWithBaseProperties(std::move(properties))),
       options_(std::move(options)),
-      command_buffer_id_(command_buffer_id),
-      sequence_(std::move(sequence)),
+      gpu_sequence_(std::move(gpu_sequence)),
       write_tensor_consumer_(std::move(write_tensor_consumer)),
       read_tensor_producer_(std::move(read_tensor_producer)),
       memory_type_tracker_(std::move(memory_tracker)),
@@ -207,34 +204,15 @@ void WebNNContextImpl::CreateTensor(
 const scoped_refptr<gpu::SchedulerTaskRunner>&
 WebNNContextImpl::scheduler_task_runner() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  return sequence_->scheduler_task_runner();
+  return gpu_sequence_->scheduler_task_runner();
 }
 
 void WebNNContextImpl::WaitSyncToken(const gpu::SyncToken& fence) {
-  // Prevent WebNN from performing further operations until the specified
-  // SyncToken fence has been released.
-  base::OnceClosure nop_task = base::DoNothing();
-  sequence_->scheduler().ScheduleTask(gpu::Scheduler::Task(
-      sequence_->sequence_id(), std::move(nop_task), {fence}));
+  gpu_sequence_->WaitSyncToken(fence);
 }
 
 gpu::SyncToken WebNNContextImpl::GenVerifiedSyncToken() {
-  gpu::SyncToken verified_release(
-      gpu::CommandBufferNamespace::WEBNN_CONTEXT_INTERFACE, command_buffer_id_,
-      ++last_sync_token_release_id_);
-
-  // Release the sync token once the sequence has completed execution by
-  // appending a no-op task - the sync token will be automatically signaled
-  // by the scheduler after this task executes.
-  base::OnceClosure nop_task = base::DoNothing();
-  sequence_->scheduler().ScheduleTask(gpu::Scheduler::Task(
-      sequence_->sequence_id(), std::move(nop_task), {}, verified_release));
-
-  // Verify the release since the sync token could be passed to another Mojo
-  // interface which requires verification. The release token was verified by
-  // returning it to the renderer only after ScheduleTask was called.
-  verified_release.SetVerifyFlush();
-  return verified_release;
+  return gpu_sequence_->GenVerifiedSyncToken();
 }
 
 bool WebNNContextImpl::HasValidWriteTensorConsumer() const {

@@ -19,7 +19,6 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
-#include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/scheduler_task_runner.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -46,7 +45,7 @@ namespace webnn {
 class WebNNContextProviderImpl;
 class WebNNGraphBuilderImpl;
 class WebNNTensorImpl;
-class ScopedSequence;
+class ScopedGpuSequence;
 
 // A WebNNContextImpl owns a collection of graphs and tensors and may be bound
 // to a device such as a GPU or NPU. It is created and destroyed on its
@@ -71,8 +70,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       mojom::CreateContextOptionsPtr options,
       mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
       mojo::ScopedDataPipeProducerHandle read_tensor_producer,
-      gpu::CommandBufferId command_buffer_id,
-      std::unique_ptr<ScopedSequence> sequence,
+      std::unique_ptr<ScopedGpuSequence> gpu_sequence,
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       gpu::SharedImageManager* shared_image_manager,
@@ -278,17 +276,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
                       mojo::AssociatedReceiver<mojom::WebNNGraph>>::Comparator>
       graph_impls_;
 
-  const gpu::CommandBufferId command_buffer_id_;
-
   // WebNN context API operations execute tasks in a sequence.
   // Within a WebNN context, tasks are orderered, but remain async with respect
   // to tasks in other WebNN contexts or sequences.
-  std::unique_ptr<ScopedSequence> sequence_;
-
-  // Marks the completion of previously scheduled tasks.
-  // Used to generate a SyncToken for the renderer which can be passed
-  // to another message pipe to wait on WebNN work.
-  uint64_t last_sync_token_release_id_ = 0;
+  std::unique_ptr<ScopedGpuSequence> gpu_sequence_;
 
   // Data pipe handles for transferring tensor data across processes.
   mojo::ScopedDataPipeConsumerHandle write_tensor_consumer_;

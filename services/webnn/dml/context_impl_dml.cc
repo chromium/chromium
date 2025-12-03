@@ -31,7 +31,7 @@
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
-#include "services/webnn/scoped_sequence.h"
+#include "services/webnn/scoped_gpu_sequence.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 
@@ -595,8 +595,7 @@ ContextImplDml::ContextImplDml(
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     std::unique_ptr<CommandRecorder> command_recorder,
     const gpu::GpuFeatureInfo& gpu_feature_info,
-    gpu::CommandBufferId command_buffer_id,
-    std::unique_ptr<ScopedSequence> sequence,
+    std::unique_ptr<ScopedGpuSequence> gpu_sequence,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
@@ -607,8 +606,7 @@ ContextImplDml::ContextImplDml(
                        std::move(options),
                        std::move(write_tensor_consumer),
                        std::move(read_tensor_producer),
-                       command_buffer_id,
-                       std::move(sequence),
+                       std::move(gpu_sequence),
                        std::move(memory_tracker),
                        std::move(owning_task_runner),
                        shared_image_manager,

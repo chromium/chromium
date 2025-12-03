@@ -13,7 +13,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
-#include "services/webnn/scoped_sequence.h"
+#include "services/webnn/scoped_gpu_sequence.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
@@ -38,8 +38,7 @@ std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> ContextImplOrt::Create(
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     scoped_refptr<Environment> env,
-    gpu::CommandBufferId command_buffer_id,
-    std::unique_ptr<ScopedSequence> sequence,
+    std::unique_ptr<ScopedGpuSequence> gpu_sequence,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
@@ -48,13 +47,13 @@ std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> ContextImplOrt::Create(
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
   auto task_runner = owning_task_runner;
   std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> context_impl(
-      new ContextImplOrt(
-          std::move(receiver), std::move(context_provider),
-          std::move(ep_workarounds), std::move(options), device_type,
-          std::move(write_tensor_consumer), std::move(read_tensor_producer),
-          std::move(env), command_buffer_id, std::move(sequence),
-          std::move(memory_tracker), std::move(owning_task_runner),
-          shared_image_manager, std::move(main_task_runner)),
+      new ContextImplOrt(std::move(receiver), std::move(context_provider),
+                         std::move(ep_workarounds), std::move(options),
+                         device_type, std::move(write_tensor_consumer),
+                         std::move(read_tensor_producer), std::move(env),
+                         std::move(gpu_sequence), std::move(memory_tracker),
+                         std::move(owning_task_runner), shared_image_manager,
+                         std::move(main_task_runner)),
       OnTaskRunnerDeleter(std::move(task_runner)));
   return context_impl;
 }
@@ -68,8 +67,7 @@ ContextImplOrt::ContextImplOrt(
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle write_tensor_producer,
     scoped_refptr<Environment> env,
-    gpu::CommandBufferId command_buffer_id,
-    std::unique_ptr<ScopedSequence> sequence,
+    std::unique_ptr<ScopedGpuSequence> gpu_sequence,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
@@ -81,8 +79,7 @@ ContextImplOrt::ContextImplOrt(
           std::move(options),
           std::move(write_tensor_consumer),
           std::move(write_tensor_producer),
-          command_buffer_id,
-          std::move(sequence),
+          std::move(gpu_sequence),
           std::move(memory_tracker),
           std::move(owning_task_runner),
           shared_image_manager,

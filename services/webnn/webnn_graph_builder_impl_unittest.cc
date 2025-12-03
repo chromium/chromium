@@ -20,7 +20,7 @@
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
-#include "services/webnn/scoped_sequence.h"
+#include "services/webnn/scoped_gpu_sequence.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
@@ -79,8 +79,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
   FakeWebNNContextImpl(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       base::WeakPtr<WebNNContextProviderImpl> context_provider,
-      gpu::CommandBufferId command_buffer_id,
-      std::unique_ptr<ScopedSequence> sequence,
+      std::unique_ptr<ScopedGpuSequence> gpu_sequence,
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       gpu::SharedImageManager* shared_image_manager,
@@ -91,8 +90,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
                          mojom::CreateContextOptions::New(),
                          mojo::ScopedDataPipeConsumerHandle(),
                          mojo::ScopedDataPipeProducerHandle(),
-                         command_buffer_id,
-                         std::move(sequence),
+                         std::move(gpu_sequence),
                          std::move(memory_tracker),
                          std::move(owning_task_runner),
                          shared_image_manager,
@@ -161,8 +159,7 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
   std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> CreateWebNNContext(
       base::WeakPtr<WebNNContextProviderImpl> context_provider_impl,
       mojom::CreateContextOptionsPtr options,
-      gpu::CommandBufferId command_buffer_id,
-      std::unique_ptr<ScopedSequence> sequence,
+      std::unique_ptr<ScopedGpuSequence> gpu_sequence,
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       gpu::SharedImageManager* shared_image_manager,
@@ -174,10 +171,9 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
     std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> context_impl(
         new FakeWebNNContextImpl(
             remote.InitWithNewPipeAndPassReceiver(),
-            std::move(context_provider_impl), command_buffer_id,
-            std::move(sequence), std::move(memory_tracker),
-            std::move(owning_task_runner), shared_image_manager,
-            std::move(main_task_runner)),
+            std::move(context_provider_impl), std::move(gpu_sequence),
+            std::move(memory_tracker), std::move(owning_task_runner),
+            shared_image_manager, std::move(main_task_runner)),
         OnTaskRunnerDeleter(std::move(task_runner)));
     ContextProperties context_properties = context_impl->properties();
     // The receiver bound to FakeWebNNContext.

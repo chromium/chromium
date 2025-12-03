@@ -6,8 +6,6 @@
 #define SERVICES_WEBNN_DML_CONTEXT_PROVIDER_DML_H_
 
 #include "base/types/expected.h"
-#include "gpu/command_buffer/common/command_buffer_id.h"
-#include "gpu/command_buffer/service/sequence_id.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -22,7 +20,7 @@ class SharedImageManager;
 
 namespace webnn {
 
-class ScopedSequence;
+class ScopedGpuSequence;
 class WebNNContextProviderImpl;
 
 namespace dml {
@@ -43,8 +41,7 @@ CreateContextFromOptions(
     const gpu::SharedContextState* shared_context_state,
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
-    gpu::CommandBufferId command_buffer_id,
-    std::unique_ptr<ScopedSequence> sequence,
+    std::unique_ptr<ScopedGpuSequence> gpu_sequence,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,

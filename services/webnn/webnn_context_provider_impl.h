@@ -32,7 +32,7 @@ class Scheduler;
 
 namespace webnn {
 
-class ScopedSequence;
+class ScopedGpuSequence;
 
 // Maintain a set of WebNNContextImpl instances that are created by the context
 // provider.
@@ -100,8 +100,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
     virtual WebNNContextImplPtr CreateWebNNContext(
         base::WeakPtr<WebNNContextProviderImpl> context_provider_impl,
         mojom::CreateContextOptionsPtr options,
-        gpu::CommandBufferId command_buffer_id,
-        std::unique_ptr<ScopedSequence> sequence,
+        std::unique_ptr<ScopedGpuSequence> gpu_sequence,
         scoped_refptr<gpu::MemoryTracker> memory_tracker,
         scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
         gpu::SharedImageManager* shared_image_manager,
@@ -162,7 +161,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       mojo::ScopedDataPipeProducerHandle read_tensor_producer,
       mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
       gpu::CommandBufferId command_buffer_id,
-      std::unique_ptr<ScopedSequence> sequence,
+      std::unique_ptr<ScopedGpuSequence> gpu_sequence,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       mojo::PendingRemote<mojom::WebNNContext> remote,
@@ -178,7 +177,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       mojo::ScopedDataPipeProducerHandle read_tensor_producer,
       mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
       gpu::CommandBufferId command_buffer_id,
-      std::unique_ptr<ScopedSequence> sequence,
+      std::unique_ptr<ScopedGpuSequence> gpu_sequence,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       mojo::PendingRemote<mojom::WebNNContext> remote,

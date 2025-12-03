@@ -34,8 +34,8 @@ component("webnn_service") {
 
   sources = [
     "error.h",
-    "scoped_sequence.cc",
-    "scoped_sequence.h",
+    "scoped_gpu_sequence.cc",
+    "scoped_gpu_sequence.h",
     "sequence_deleter.cc",
     "sequence_deleter.h",
     "webnn_constant_operand.cc",
