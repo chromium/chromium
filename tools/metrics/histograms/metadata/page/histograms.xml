@@ -1506,7 +1506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.GWSSessionState.PageLoadCount{SessionType}"
+    name="PageLoad.Clients.GoogleSearch.GWSSession.PageLoadCount{SessionType}"
     units="count" expires_after="2026-12-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
