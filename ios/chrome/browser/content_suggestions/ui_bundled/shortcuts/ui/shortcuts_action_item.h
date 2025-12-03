@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHORTCUTS_UI_SHORTCUTS_ACTION_ITEM_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHORTCUTS_UI_SHORTCUTS_ACTION_ITEM_H_
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_action_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_action_item.h"
 
 // Item containing an action button in shortcuts tile in the magic stack.
-@interface ShortcutsActionItem : ContentSuggestionsMostVisitedActionItem
+@interface ShortcutsActionItem : ContentSuggestionsActionItem
 
 - (nonnull instancetype)initWithCollectionShortcutType:
     (NTPCollectionShortcutType)type;

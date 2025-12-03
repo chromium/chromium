@@ -27,8 +27,7 @@ namespace {
 // Matcher for a tile containing `text`.
 id<GREYMatcher> TileWithText(NSString* text) {
   return grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(text),
-                    grey_ancestor(grey_kindOfClassName(
-                        @"ContentSuggestionsMostVisitedTileView")),
+                    grey_ancestor(grey_kindOfClassName(@"MostVisitedTileView")),
                     nil);
 }
 

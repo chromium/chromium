@@ -6,12 +6,10 @@ import("//ios/build/chrome_build.gni")
 
 source_set("cells") {
   sources = [
-    "content_suggestions_most_visited_constants.h",
-    "content_suggestions_most_visited_constants.mm",
-    "content_suggestions_most_visited_item.h",
-    "content_suggestions_most_visited_item.mm",
-    "content_suggestions_most_visited_tile_view.h",
-    "content_suggestions_most_visited_tile_view.mm",
+    "content_suggestions_action_item.h",
+    "content_suggestions_action_item.mm",
+    "content_suggestions_action_tile_view.h",
+    "content_suggestions_action_tile_view.mm",
     "content_suggestions_tile_view.h",
     "content_suggestions_tile_view.mm",
     "icon_detail_view.h",
@@ -22,7 +20,6 @@ source_set("cells") {
     "icon_view.mm",
     "icon_view_configuration.h",
     "icon_view_configuration.mm",
-    "most_visited_tiles_commands.h",
     "multi_row_container_view.h",
     "multi_row_container_view.mm",
   ]
@@ -45,100 +42,41 @@ source_set("cells") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
-    "//ios/chrome/common/ui/favicon",
-    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
     "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
-    "//ui/base",
-    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("most_visited_tiles") {
+source_set("tile_saver") {
   sources = [
-    "content_suggestions_plus_button_item.h",
-    "content_suggestions_plus_button_item.mm",
     "content_suggestions_tile_saver.h",
     "content_suggestions_tile_saver.mm",
-    "most_visited_tiles_collection_view.h",
-    "most_visited_tiles_collection_view.mm",
-    "most_visited_tiles_config.h",
-    "most_visited_tiles_config.mm",
-    "most_visited_tiles_mediator.h",
-    "most_visited_tiles_mediator.mm",
-    "most_visited_tiles_stack_view.h",
-    "most_visited_tiles_stack_view.mm",
   ]
   deps = [
-    ":cells",
-    ":constants",
-    ":most_visited_action",
+    "//base",
     "//components/favicon/core",
     "//components/ntp_tiles",
-    "//components/ntp_tiles:pref_names",
-    "//components/strings",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:metrics",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:ui_util",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public:constants",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public:utils",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:magic_stack_module_content_view_delegate",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:public",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_switches",
+    "//crypto",
+    "//google_apis",
     "//ios/chrome/browser/favicon/ui_bundled",
-    "//ios/chrome/browser/menu/ui_bundled",
-    "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/ntp/ui_bundled",
-    "//ios/chrome/browser/ntp_tiles/model",
-    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/prefs",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/model/profile:features",
-    "//ios/chrome/browser/shared/model/utils",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/public/snackbar",
-    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:system_identity",
-    "//ios/chrome/browser/url_loading/model",
-    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/chrome/browser/widget_kit/model:features",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/ntp_tile",
     "//ios/chrome/common/ui/favicon",
-    "//ui/base",
+    "//net",
   ]
   if (ios_enable_widget_kit_extension) {
     deps += [ "//ios/chrome/browser/widget_kit/model:model_swift" ]
   }
-}
-
-source_set("most_visited_action") {
-  sources = [
-    "content_suggestions_most_visited_action_item.h",
-    "content_suggestions_most_visited_action_item.mm",
-    "content_suggestions_most_visited_action_tile_view.h",
-    "content_suggestions_most_visited_action_tile_view.mm",
-  ]
-  deps = [
-    ":cells",
-    ":constants",
-    "//ios/chrome/browser/ntp/ui_bundled:theme",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/util",
-    "//ios/chrome/common/ui/util:dynamic_type_util",
-  ]
 }
 
 source_set("constants") {
@@ -160,14 +98,11 @@ source_set("constants") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "content_suggestions_tile_saver_unittest.mm",
-    "most_visited_tiles_mediator_unittest.mm",
-  ]
+  sources = [ "content_suggestions_tile_saver_unittest.mm" ]
   deps = [
     ":cells",
     ":constants",
-    ":most_visited_tiles",
+    ":tile_saver",
     "//base",
     "//base/test:test_support",
     "//components/feature_engagement/test:test_support",

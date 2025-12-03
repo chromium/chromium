@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller.h"
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_image_data_source.h"
@@ -13,6 +11,8 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_module_container.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -102,8 +102,7 @@
     [self createAndInsertMostVisitedModule];
   }
 
-  for (ContentSuggestionsMostVisitedItem* item in _mostVisitedTileConfig
-           .mostVisitedItems) {
+  for (MostVisitedItem* item in _mostVisitedTileConfig.mostVisitedItems) {
     [self.contentSuggestionsMetricsRecorder
         recordMostVisitedTileShown:item
                            atIndex:item.index];

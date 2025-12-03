@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_ACTION_ITEM_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_ACTION_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_ACTION_ITEM_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_ACTION_ITEM_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_constants.h"
 
-// Item containing a most visited action button.
-@interface ContentSuggestionsMostVisitedActionItem : NSObject
+// Configurstion for a `ContentSuggestionsActionTileView`.
+@interface ContentSuggestionsActionItem : NSObject
 
 // Text for the title of the tile view.
 @property(nonatomic, strong, nonnull) NSString* title;
@@ -30,4 +30,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_ACTION_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_ACTION_ITEM_H_

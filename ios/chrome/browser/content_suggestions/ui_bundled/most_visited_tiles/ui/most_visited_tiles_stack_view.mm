@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_stack_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_stack_view.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_tile_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_commands.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public/magic_stack_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_module_content_view_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tile_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_commands.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -37,20 +37,20 @@
 
 - (void)populateStackViewWithTiles:(MostVisitedTilesConfig*)config {
   NSInteger index = 0;
-  for (ContentSuggestionsMostVisitedItem* item in config.mostVisitedItems) {
-    ContentSuggestionsMostVisitedTileView* view =
-        base::apple::ObjCCastStrict<ContentSuggestionsMostVisitedTileView>(
+  for (MostVisitedItem* item in config.mostVisitedItems) {
+    MostVisitedTileView* view =
+        base::apple::ObjCCastStrict<MostVisitedTileView>(
             [item makeContentView]);
     view.accessibilityIdentifier = [NSString
         stringWithFormat:
             @"%@%li",
             kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix, index];
 
-    __weak ContentSuggestionsMostVisitedItem* weakItem = item;
-    __weak ContentSuggestionsMostVisitedTileView* weakView = view;
+    __weak MostVisitedItem* weakItem = item;
+    __weak MostVisitedTileView* weakView = view;
     void (^completion)(FaviconAttributes*) = ^(FaviconAttributes* attributes) {
-      ContentSuggestionsMostVisitedTileView* strongView = weakView;
-      ContentSuggestionsMostVisitedItem* strongItem = weakItem;
+      MostVisitedTileView* strongView = weakView;
+      MostVisitedItem* strongItem = weakItem;
       if (!strongView || !strongItem) {
         return;
       }

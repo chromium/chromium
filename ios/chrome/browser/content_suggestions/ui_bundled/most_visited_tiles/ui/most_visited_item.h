@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_ITEM_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_MOST_VISITED_TILES_UI_MOST_VISITED_ITEM_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_MOST_VISITED_TILES_UI_MOST_VISITED_ITEM_H_
 
 #import <UIKit/UIKit.h>
 
@@ -16,7 +16,7 @@ class GURL;
 @protocol MostVisitedTilesCommands;
 
 // Item containing a Most Visited suggestion.
-@interface ContentSuggestionsMostVisitedItem : NSObject <UIContentConfiguration>
+@interface MostVisitedItem : NSObject <UIContentConfiguration>
 
 // Text for the title and the accessibility label of the cell.
 @property(nonatomic, copy) NSString* title;
@@ -44,4 +44,4 @@ class GURL;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_MOST_VISITED_TILES_UI_MOST_VISITED_ITEM_H_

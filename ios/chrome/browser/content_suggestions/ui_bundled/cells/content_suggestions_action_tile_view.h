@@ -2,25 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_ACTION_TILE_VIEW_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_ACTION_TILE_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_ACTION_TILE_VIEW_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_ACTION_TILE_VIEW_H_
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_view.h"
 
-@class ContentSuggestionsMostVisitedActionItem;
+@class ContentSuggestionsActionItem;
 
 // A tile view displaying an action in content suggestions section. Accepts a
 // simple icon and optionally supports a badge, for example for reading list new
 // item count.
-@interface ContentSuggestionsMostVisitedActionTileView
-    : ContentSuggestionsTileView
-
-// Initializes and configures the view with `config`.
-- (instancetype)initWithConfiguration:
-    (ContentSuggestionsMostVisitedActionItem*)config;
-
-// Updates the configuration for this view to the new `config`.
-- (void)updateConfiguration:(ContentSuggestionsMostVisitedActionItem*)config;
+@interface ContentSuggestionsActionTileView : ContentSuggestionsTileView
 
 // View for action icon.
 @property(nonatomic, strong, readonly) UIImageView* iconView;
@@ -32,12 +24,17 @@
 @property(nonatomic, strong, readonly) UILabel* countLabel;
 
 // Configuration for this view.
-@property(nonatomic, strong, readonly)
-    ContentSuggestionsMostVisitedActionItem* config;
+@property(nonatomic, strong, readonly) ContentSuggestionsActionItem* config;
 
 // Tap gesture recognizer for this view.
 @property(nonatomic, strong) UITapGestureRecognizer* tapRecognizer;
 
+// Initializes and configures the view with `config`.
+- (instancetype)initWithConfiguration:(ContentSuggestionsActionItem*)config;
+
+// Updates the configuration for this view to the new `config`.
+- (void)updateConfiguration:(ContentSuggestionsActionItem*)config;
+
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_ACTION_TILE_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_ACTION_TILE_VIEW_H_

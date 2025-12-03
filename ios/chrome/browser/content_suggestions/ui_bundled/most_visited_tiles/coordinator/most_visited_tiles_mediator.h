@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_MOST_VISITED_TILES_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_MOST_VISITED_TILES_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_MOST_VISITED_TILES_COORDINATOR_MOST_VISITED_TILES_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_MOST_VISITED_TILES_COORDINATOR_MOST_VISITED_TILES_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
 #include <memory>
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_image_data_source.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_commands.h"
 
 namespace favicon {
 class LargeIconService;
-}
+}  // namespace favicon
 
 namespace ntp_tiles {
 class MostVisitedSites;
-}
+}  // namespace ntp_tiles
 
 @class BrowserActionFactory;
 class ChromeAccountManagerService;
@@ -88,4 +88,4 @@ class UrlLoadingBrowserAgent;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_MOST_VISITED_TILES_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_MOST_VISITED_TILES_COORDINATOR_MOST_VISITED_TILES_MEDIATOR_H_

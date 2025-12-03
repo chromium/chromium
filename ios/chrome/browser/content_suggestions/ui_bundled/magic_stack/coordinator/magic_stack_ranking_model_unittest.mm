@@ -33,15 +33,15 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_config.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/coordinator/magic_stack_ranking_model+testing.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/coordinator/magic_stack_ranking_model_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/coordinator/price_tracking_promo_mediator+testing.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/coordinator/price_tracking_promo_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/ui/price_tracking_promo_item.h"
@@ -162,8 +162,7 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 - (MostVisitedTilesConfig*)mostVisitedConfig {
   if (!_config) {
     _config = [[MostVisitedTilesConfig alloc] init];
-    _config.mostVisitedItems =
-        @[ [[ContentSuggestionsMostVisitedItem alloc] init] ];
+    _config.mostVisitedItems = @[ [[MostVisitedItem alloc] init] ];
   }
   return _config;
 }

@@ -10,8 +10,7 @@
 
 @implementation ContentSuggestionsShortcutTileView
 
-- (instancetype)initWithConfiguration:
-    (ContentSuggestionsMostVisitedActionItem*)config {
+- (instancetype)initWithConfiguration:(ContentSuggestionsActionItem*)config {
   CHECK([config isKindOfClass:ShortcutsActionItem.class]);
   return [super initWithConfiguration:config];
 }

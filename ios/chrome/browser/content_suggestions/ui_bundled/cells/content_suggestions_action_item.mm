@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_action_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_action_item.h"
 
-@implementation ContentSuggestionsMostVisitedActionItem
+@implementation ContentSuggestionsActionItem
 
 #pragma mark - Accessors
 

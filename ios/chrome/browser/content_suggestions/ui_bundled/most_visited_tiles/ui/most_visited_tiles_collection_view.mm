@@ -2,24 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_collection_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_cells_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_plus_button_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_layout_util.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public/magic_stack_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_config.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_plus_button_item.h"
 #import "url/gurl.h"
 
 namespace {
 
-/// Section identifier for the only section in`MostVisitedTilesCollectionView`.
+/// Size of the favicon or icon.
+const CGFloat kIconSize = 56;
+
+/// Section identifier for the only section
+/// in`MostVisitedTilesCollectionView`.
 NSString* const kSectionIdentifier =
     @"MostVisitedTilesCollectionViewSectionIdentifier";
 
@@ -116,7 +119,7 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
 
 @implementation MostVisitedTilesCollectionView {
   /// Current most visited tiles items being displayed.
-  NSArray<ContentSuggestionsMostVisitedItem*>* _items;
+  NSArray<MostVisitedItem*>* _items;
   /// Data source for favicons of each site.
   id<ContentSuggestionsImageDataSource> _imageDataSource;
   /// Data source object powering the display of the collection view.
@@ -199,7 +202,7 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
           @"%@%li", kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
           identifier.longValue];
   if (identifier.intValue == kPlusButtonIdentifier) {
-    cell.contentConfiguration = [[ContentSuggestionsPlusButtonItem alloc] init];
+    cell.contentConfiguration = [[MostVisitedTilesPlusButtonItem alloc] init];
   } else {
     [self loadFaviconIfNeeded:identifier];
     cell.contentConfiguration = _items[identifier.unsignedIntValue];
@@ -209,7 +212,7 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
 
 /// Loads the favicon for item with `identifier`.
 - (void)loadFaviconIfNeeded:(NSNumber*)identifier {
-  ContentSuggestionsMostVisitedItem* item = _items[identifier.unsignedIntValue];
+  MostVisitedItem* item = _items[identifier.unsignedIntValue];
   if (!item.attributes) {
     __weak MostVisitedTilesCollectionView* weakSelf = self;
     void (^completion)(FaviconAttributes*) = ^(FaviconAttributes* attributes) {

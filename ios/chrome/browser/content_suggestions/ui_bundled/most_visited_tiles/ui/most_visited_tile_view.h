@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_TILE_VIEW_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_TILE_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_MOST_VISITED_TILES_UI_MOST_VISITED_TILE_VIEW_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_MOST_VISITED_TILES_UI_MOST_VISITED_TILE_VIEW_H_
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
 
 @protocol ContentSuggestionsMenuElementsProvider;
@@ -14,14 +14,13 @@
 @protocol MagicStackModuleContentViewDelegate;
 
 // NTP Tile representing a most visited website. Displays a favicon and a title.
-@interface ContentSuggestionsMostVisitedTileView
+@interface MostVisitedTileView
     : ContentSuggestionsTileView <NewTabPageColorUpdating,
                                   UIContentView,
                                   UIContextMenuInteractionDelegate>
 
 // Initializes and configures the view with `config`.
-- (instancetype)initWithConfiguration:
-    (ContentSuggestionsMostVisitedItem*)config;
+- (instancetype)initWithConfiguration:(MostVisitedItem*)config;
 
 // FaviconView displaying the favicon.
 @property(nonatomic, strong, readonly) FaviconView* faviconView;
@@ -35,4 +34,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_TILE_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_MOST_VISITED_TILES_UI_MOST_VISITED_TILE_VIEW_H_

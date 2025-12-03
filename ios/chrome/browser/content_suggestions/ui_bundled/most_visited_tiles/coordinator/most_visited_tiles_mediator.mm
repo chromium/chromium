@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
@@ -18,16 +18,16 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_saver.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_menu_elements_provider.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tile_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -68,7 +68,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   std::unique_ptr<ntp_tiles::MostVisitedSitesObserverBridge> _mostVisitedBridge;
   FaviconAttributesProvider* _mostVisitedAttributesProvider;
   std::map<GURL, FaviconCompletionHandler> _mostVisitedFetchFaviconCallbacks;
-  NSMutableArray<ContentSuggestionsMostVisitedItem*>* _freshMostVisitedItems;
+  NSMutableArray<MostVisitedItem*>* _freshMostVisitedItems;
   // Most visited items from the MostVisitedSites service currently displayed.
   MostVisitedTilesConfig* _mostVisitedConfig;
   // Whether incognito mode is available.
@@ -152,7 +152,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   _freshMostVisitedItems = [NSMutableArray array];
   int index = 0;
   for (const ntp_tiles::NTPTile& tile : mostVisited) {
-    ContentSuggestionsMostVisitedItem* item = [self convertNTPTile:tile];
+    MostVisitedItem* item = [self convertNTPTile:tile];
     item.commandHandler = self;
     item.incognitoAvailable = _incognitoAvailable;
     item.index = index;
@@ -176,8 +176,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
       siteURL, _mostVisitedAttributesProvider,
       app_group::ShortcutsWidgetFaviconsFolder(), _accountManagerService);
 
-  for (ContentSuggestionsMostVisitedItem* item in _mostVisitedConfig
-           .mostVisitedItems) {
+  for (MostVisitedItem* item in _mostVisitedConfig.mostVisitedItems) {
     if (item.URL == siteURL) {
       FaviconCompletionHandler completion =
           _mostVisitedFetchFaviconCallbacks[siteURL];
@@ -203,10 +202,10 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 #pragma mark - MostVisitedTilesCommands
 
 - (void)mostVisitedTileTapped:(UIGestureRecognizer*)sender {
-  ContentSuggestionsMostVisitedTileView* mostVisitedView =
-      static_cast<ContentSuggestionsMostVisitedTileView*>(sender.view);
-  ContentSuggestionsMostVisitedItem* mostVisitedItem =
-      base::apple::ObjCCastStrict<ContentSuggestionsMostVisitedItem>(
+  MostVisitedTileView* mostVisitedView =
+      static_cast<MostVisitedTileView*>(sender.view);
+  MostVisitedItem* mostVisitedItem =
+      base::apple::ObjCCastStrict<MostVisitedItem>(
           mostVisitedView.configuration);
 
   [self logMostVisitedOpening:mostVisitedItem atIndex:mostVisitedItem.index];
@@ -216,7 +215,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   _URLLoadingBrowserAgent->Load(params);
 }
 
-- (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
+- (void)openNewTabWithMostVisitedItem:(MostVisitedItem*)item
                             incognito:(BOOL)incognito
                               atIndex:(NSInteger)index
                             fromPoint:(CGPoint)point {
@@ -229,7 +228,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   [self openNewTabWithURL:item.URL incognito:incognito originPoint:point];
 }
 
-- (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
+- (void)openNewTabWithMostVisitedItem:(MostVisitedItem*)item
                             incognito:(BOOL)incognito
                               atIndex:(NSInteger)index {
   if (incognito && IsIncognitoModeDisabled(_prefService)) {
@@ -241,14 +240,14 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   [self openNewTabWithURL:item.URL incognito:incognito originPoint:CGPointZero];
 }
 
-- (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
+- (void)openNewTabWithMostVisitedItem:(MostVisitedItem*)item
                             incognito:(BOOL)incognito {
   [self openNewTabWithMostVisitedItem:item
                             incognito:incognito
                               atIndex:item.index];
 }
 
-- (void)removeMostVisited:(ContentSuggestionsMostVisitedItem*)item {
+- (void)removeMostVisited:(MostVisitedItem*)item {
   [self.contentSuggestionsMetricsRecorder recordMostVisitedTileRemoved];
   [self blockMostVisitedURL:item.URL];
   [self showMostVisitedUndoForURL:item.URL];
@@ -257,7 +256,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 #pragma mark - ContentSuggestionsMenuProvider
 
 - (NSArray<UIMenuElement*>*)defaultContextMenuElementsForItem:
-                                (ContentSuggestionsMostVisitedItem*)item
+                                (MostVisitedItem*)item
                                                      fromView:(UIView*)view {
   // Record that this context menu was shown to the user.
   RecordMenuShown(kMenuScenarioHistogramMostVisitedEntry);
@@ -339,7 +338,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   base::Value::List oldMostVisitedSites =
       _prefService->GetList(prefs::kIosLatestMostVisitedSites).Clone();
   base::Value::List freshMostVisitedSites;
-  for (ContentSuggestionsMostVisitedItem* item in _freshMostVisitedItems) {
+  for (MostVisitedItem* item in _freshMostVisitedItems) {
     freshMostVisitedSites.Append(item.URL.spec());
   }
 
@@ -364,7 +363,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 }
 
 // Logs a histogram due to a Most Visited item being opened.
-- (void)logMostVisitedOpening:(ContentSuggestionsMostVisitedItem*)item
+- (void)logMostVisitedOpening:(MostVisitedItem*)item
                       atIndex:(NSInteger)mostVisitedIndex {
   [self.NTPActionsDelegate mostVisitedTileOpened];
   [self.contentSuggestionsMetricsRecorder
@@ -451,12 +450,10 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   }
 }
 
-// Converts a ntp_tiles::NTPTile `tile` to a ContentSuggestionsMostVisitedItem
+// Converts a ntp_tiles::NTPTile `tile` to a MostVisitedItem
 // with a `sectionInfo`.
-- (ContentSuggestionsMostVisitedItem*)convertNTPTile:
-    (const ntp_tiles::NTPTile&)tile {
-  ContentSuggestionsMostVisitedItem* suggestion =
-      [[ContentSuggestionsMostVisitedItem alloc] init];
+- (MostVisitedItem*)convertNTPTile:(const ntp_tiles::NTPTile&)tile {
+  MostVisitedItem* suggestion = [[MostVisitedItem alloc] init];
 
   suggestion.title = base::SysUTF16ToNSString(tile.title);
   suggestion.URL = tile.url;

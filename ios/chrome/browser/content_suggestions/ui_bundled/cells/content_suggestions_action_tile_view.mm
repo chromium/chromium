@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_action_tile_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_action_tile_view.h"
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_action_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_cells_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
@@ -25,7 +25,7 @@ const CGFloat kCountBorderWidth = 24;
 
 }  // namespace
 
-@implementation ContentSuggestionsMostVisitedActionTileView
+@implementation ContentSuggestionsActionTileView
 @synthesize countLabel = _countLabel;
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -53,8 +53,7 @@ const CGFloat kCountBorderWidth = 24;
   return self;
 }
 
-- (instancetype)initWithConfiguration:
-    (ContentSuggestionsMostVisitedActionItem*)config {
+- (instancetype)initWithConfiguration:(ContentSuggestionsActionItem*)config {
   self = [self initWithFrame:CGRectZero];
   if (self) {
     self.accessibilityCustomActions = nil;
@@ -67,7 +66,7 @@ const CGFloat kCountBorderWidth = 24;
   return self;
 }
 
-- (void)updateConfiguration:(ContentSuggestionsMostVisitedActionItem*)config {
+- (void)updateConfiguration:(ContentSuggestionsActionItem*)config {
   _config = config;
   self.titleLabel.text = config.title;
   self.titleLabel.font = [self titleLabelFont];

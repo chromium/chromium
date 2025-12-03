@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_tile_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tile_view.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "components/favicon_base/fallback_icon_style.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_cells_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_menu_elements_provider.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_module_content_view_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_with_payload.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -26,7 +26,7 @@
 #import "skia/ext/skia_utils_ios.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface ContentSuggestionsMostVisitedTileView ()
+@interface MostVisitedTileView ()
 
 // Command handler for actions.
 @property(nonatomic, weak) id<MostVisitedTilesCommands> commandHandler;
@@ -36,7 +36,7 @@
 
 @end
 
-@implementation ContentSuggestionsMostVisitedTileView
+@implementation MostVisitedTileView
 
 @synthesize configuration = _configuration;
 
@@ -86,8 +86,7 @@
   return self;
 }
 
-- (instancetype)initWithConfiguration:
-    (ContentSuggestionsMostVisitedItem*)config {
+- (instancetype)initWithConfiguration:(MostVisitedItem*)config {
   self = [self initWithFrame:CGRectZero];
   if (self) {
     [self setConfiguration:config];
@@ -98,11 +97,10 @@
 #pragma mark - UIContentView
 
 - (void)setConfiguration:(id<UIContentConfiguration>)config {
-  if (![config isKindOfClass:ContentSuggestionsMostVisitedItem.class]) {
+  if (![config isKindOfClass:MostVisitedItem.class]) {
     return;
   }
-  ContentSuggestionsMostVisitedItem* item =
-      base::apple::ObjCCastStrict<ContentSuggestionsMostVisitedItem>(config);
+  MostVisitedItem* item = base::apple::ObjCCastStrict<MostVisitedItem>(config);
   BOOL hasPreviousItem = _configuration;
   _configuration = [item copy];
   // Update the layout according to `item`.
@@ -244,7 +242,7 @@
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
   // Favicon monogram will only be applied if defaultBackgroundColor is set.
-  ContentSuggestionsMostVisitedItem* configuration = [self mostVisitedItem];
+  MostVisitedItem* configuration = [self mostVisitedItem];
   if (configuration.attributes.defaultBackgroundColor) {
     if (colorPalette) {
       // If a color palette is available, apply its tint and background
@@ -285,10 +283,9 @@
 
 #pragma mark - Private
 
-// Returns the `ContentSuggestionsMostVisitedItem` casted `self.configuration`.
-- (ContentSuggestionsMostVisitedItem*)mostVisitedItem {
-  return base::apple::ObjCCastStrict<ContentSuggestionsMostVisitedItem>(
-      self.configuration);
+// Returns the `MostVisitedItem` casted `self.configuration`.
+- (MostVisitedItem*)mostVisitedItem {
+  return base::apple::ObjCCastStrict<MostVisitedItem>(self.configuration);
 }
 
 // Registers a list of UITraits to observe and invokes the

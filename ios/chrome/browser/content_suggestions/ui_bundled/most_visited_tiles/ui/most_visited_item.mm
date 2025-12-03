@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_item.h"
 
 #import "base/check.h"
 #import "components/ntp_tiles/tile_source.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_tile_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_commands.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tile_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -15,7 +15,7 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-@implementation ContentSuggestionsMostVisitedItem
+@implementation MostVisitedItem
 
 #pragma mark - AccessibilityCustomAction
 
@@ -78,8 +78,7 @@
 #pragma mark - UIContentConfiguration
 
 - (id<UIContentView>)makeContentView {
-  return [[ContentSuggestionsMostVisitedTileView alloc]
-      initWithConfiguration:self];
+  return [[MostVisitedTileView alloc] initWithConfiguration:self];
 }
 
 - (instancetype)updatedConfigurationForState:(id<UIConfigurationState>)state {
@@ -90,8 +89,7 @@
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone*)zone {
-  ContentSuggestionsMostVisitedItem* newCopy =
-      [[ContentSuggestionsMostVisitedItem alloc] init];
+  MostVisitedItem* newCopy = [[MostVisitedItem alloc] init];
   newCopy.title = self.title;
   newCopy.URL = self.URL;
   newCopy.source = self.source;

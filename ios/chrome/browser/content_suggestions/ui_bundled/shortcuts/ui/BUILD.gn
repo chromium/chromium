@@ -15,8 +15,8 @@ source_set("ui") {
     "shortcuts_tile_view.mm",
   ]
   public_deps = [
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:most_visited_action",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui",
   ]
   deps = [
     "//base",

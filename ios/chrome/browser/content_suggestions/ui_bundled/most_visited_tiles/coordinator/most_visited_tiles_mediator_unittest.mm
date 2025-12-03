@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/types/cxx23_to_underlying.h"
 #import "components/ntp_tiles/icon_cacher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tile_view.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
@@ -101,12 +101,10 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
 // Tests that the command is sent to the loader when opening a most visited.
 TEST_F(MostVisitedTilesMediatorTest, TestOpenMostVisited) {
   GURL url = GURL("http://chromium.org");
-  ContentSuggestionsMostVisitedItem* item =
-      [[ContentSuggestionsMostVisitedItem alloc] init];
+  MostVisitedItem* item = [[MostVisitedItem alloc] init];
   item.URL = url;
-  ContentSuggestionsMostVisitedTileView* view =
-      [[ContentSuggestionsMostVisitedTileView alloc]
-          initWithConfiguration:item];
+  MostVisitedTileView* view =
+      [[MostVisitedTileView alloc] initWithConfiguration:item];
   UIGestureRecognizer* recognizer = [[UIGestureRecognizer alloc] init];
   [view addGestureRecognizer:recognizer];
   OCMExpect([mediator_.NTPActionsDelegate mostVisitedTileOpened]);
