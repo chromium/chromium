@@ -167,8 +167,7 @@ class GlicInstanceMetrics {
 
   // Called when GlicInstanceImpl::SwitchConversation is called from this
   // instance (usually via 'start new chat' or re etn chats selection).
-  void OnSwitchFromConversation(const ShowOptions& show_options,
-                                const std::optional<EmbedderKey>& key);
+  void OnSwitchFromConversation(const ShowOptions& show_options);
 
   // Called when GlicInstanceImpl::SwitchConversation is called to activate this
   // instance (usually via 'start new chat' or recent chats selection).
@@ -336,7 +335,6 @@ class GlicInstanceMetrics {
   std::map<tabs::TabHandle, int> tab_depths_;
 
   base::CallbackListSubscription pinned_tabs_changed_subscription_;
-  raw_ptr<GlicSharingManager> sharing_manager_ = nullptr;
 };
 
 }  // namespace glic

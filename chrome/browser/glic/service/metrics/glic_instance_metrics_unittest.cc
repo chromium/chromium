@@ -15,16 +15,12 @@
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace glic {
 class GlicInstanceMetricsTest : public testing::Test {
  public:
-  GlicInstanceMetricsTest() {
-    EXPECT_CALL(mock_tab_, GetUnownedUserDataHost())
-        .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
-  }
+  GlicInstanceMetricsTest() = default;
 
  protected:
   base::test::TaskEnvironment task_environment_{
@@ -32,7 +28,6 @@ class GlicInstanceMetricsTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   GlicInstanceMetrics metrics_;
   tabs::MockTabInterface mock_tab_;
-  ui::UnownedUserDataHost unowned_user_data_host_;
   base::UserActionTester user_action_tester_;
 };
 
