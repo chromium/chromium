@@ -57,10 +57,10 @@ namespace {
 // This must match the certificate used (quic-chain.pem and quic-leaf-cert.key).
 constexpr char kTestServerHost[] = "test.example.com";
 
-// Host that does not support QUIC, and whose hostname does not resolve. In some
-// tests, an alt service record for this host is added, pointing at
-// `kTestServerHost`.
+// Hosts that do not support QUIC. In some tests, an alt service record for this
+// host is added, pointing at `kTestServerHost`.
 constexpr char kOtherHost[] = "other.test";
+constexpr char kOtherHost2[] = "other2.test";
 
 // Used as a simple response from the server.
 constexpr char kHelloPath[] = "/hello.txt";
@@ -221,9 +221,11 @@ class URLRequestQuicWithTcpTest : public URLRequestQuicTest {
   // it's possible to get a TCP error instead of a QUIC error, so tests should
   // tolerate both types of failures, but it makes tests able to more thorougly
   // test production code behavior.
-  URLRequestQuicWithTcpTest() : URLRequestQuicTest(/*force_quic=*/false) {
-    // Replace the HostResolver, configuring an HTTPS record for
-    // `kTestServerHost`.
+  URLRequestQuicWithTcpTest() : URLRequestQuicTest(/*force_quic=*/false) {}
+
+  // Replaces the HostResolver, configuring an HTTPS record for
+  // `kTestServerHost`. Must be called before BuildContext().
+  void SetUpHttpsRecord() {
     auto host_resolver = std::make_unique<MockHostResolver>(
         /*default_result=*/ERR_NAME_NOT_RESOLVED);
 
@@ -243,16 +245,26 @@ class URLRequestQuicWithTcpTest : public URLRequestQuicTest {
     context_builder_->set_host_resolver(std::move(host_resolver));
   }
 
-  // Sets up alt service entry directing requests to `kOtherHost` (on any port)
-  // to `kTestServerHost` on the port that `server_` is listening on. It's
-  // important to use `kTestServerHost` instead of a localhost IP, because the
-  // server is using `kTestServerHost` in its cert (which we should not allow
-  // when connecting to `kOtherHost`).
-  void SetUpAltService(URLRequestContext& context) {
-    url::SchemeHostPort alt_server(OtherHostUrlFromPath("/"));
+  // Replaces the HostResolver, making the passed in hostname resolve to
+  // localhost. Must be called before BuildContext().
+  void SetUpLocalhostDnsRecord(std::string_view host) {
+    auto host_resolver = std::make_unique<MockHostResolver>(
+        /*default_result=*/ERR_NAME_NOT_RESOLVED);
+    host_resolver->rules()->AddRule(host, "127.0.0.1");
+    context_builder_->set_host_resolver(std::move(host_resolver));
+  }
+
+  // Sets up alt service entry directing requests for `source` (on any port)
+  // to `dest` on the port that `server_` is listening on. It's important for
+  // some tests to use a hostname for `dest` instead of a localhost IP, because
+  // the the test cert is only usable when it matches the destination.
+  void ConfigureAltService(URLRequestContext& context,
+                           std::string_view source,
+                           std::string_view dest) {
+    url::SchemeHostPort alt_server(UrlFromHostAndPath(source, "/"));
     base::Time expiration = base::Time::Now() + base::Days(1);
-    AlternativeService alternative_service(
-        NextProto::kProtoQUIC, HostPortPair(kTestServerHost, server_port()));
+    AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                           HostPortPair(dest, server_port()));
     context.http_server_properties()->SetQuicAlternativeService(
         alt_server, NetworkAnonymizationKey(), alternative_service, expiration,
         {version()});
@@ -295,10 +307,14 @@ class URLRequestQuicWithTcpTest : public URLRequestQuicTest {
     return url;
   }
 
-  static GURL OtherHostUrlFromPath(std::string_view path) {
-    GURL url(base::StrCat({"https://", kOtherHost, path}));
+  static GURL UrlFromHostAndPath(std::string_view host, std::string_view path) {
+    GURL url(base::StrCat({"https://", host, path}));
     CHECK(url.is_valid());
     return url;
+  }
+
+  static GURL OtherHostUrlFromPath(std::string_view path) {
+    return UrlFromHostAndPath(kOtherHost, path);
   }
 };
 
@@ -498,12 +514,16 @@ TEST_P(URLRequestQuicTest, DelayedResponseStart) {
             timing_info.receive_headers_start);
 }
 
-// Checks that an alt service request fail when the cert is wrong. Tests with
+// Checks that an alt service request fails when the cert is wrong. Tests with
 // mock sockets entirely skip checking certs when establishing connections, so
 // it's good to have a test at this layer, using a "real" MockCertVerifier.
 TEST_P(URLRequestQuicWithTcpTest, AltServiceWrongCert) {
+  // An HTTPS record should have no impact on whether this test succeeds or
+  // fails.
+  SetUpHttpsRecord();
+
   auto context = BuildContext();
-  SetUpAltService(*context);
+  ConfigureAltService(*context, kOtherHost, kTestServerHost);
 
   GURL alt_url = OtherHostUrlFromPath(kHelloPath);
 
@@ -520,6 +540,31 @@ TEST_P(URLRequestQuicWithTcpTest, AltServiceWrongCert) {
   ExpectQuicCertErrorOrNameNotResolved(*request, delegate);
 }
 
+// Checks that an alt service request succeeds when the cert is correct. In this
+// case, the `kTestServerHost` alt service entry points to `kOtherHost`, which
+// is the only hostname that resolves (and serves a response using a
+// `kTestServerHost` cert).
+TEST_P(URLRequestQuicWithTcpTest, AltServiceRightCert) {
+  SetUpLocalhostDnsRecord(kOtherHost);
+  auto context = BuildContext();
+  ConfigureAltService(*context, kTestServerHost, kOtherHost);
+
+  GURL url = UrlFromPath(kHelloPath);
+
+  base::RunLoop run_loop;
+  TestDelegate delegate;
+  delegate.set_on_complete(run_loop.QuitClosure());
+  std::unique_ptr<URLRequest> request =
+      CreateRequest(context.get(), url, &delegate);
+
+  request->Start();
+  ASSERT_TRUE(request->is_pending());
+  run_loop.Run();
+
+  EXPECT_EQ(OK, delegate.request_status());
+  EXPECT_EQ(kHelloBodyValue, delegate.data_received());
+}
+
 // Tests that the alt service destination checks block alt-service requests from
 // reusing a non-alt-service QUIC session with the same destination, when the
 // connection attempts are both alive at once.
@@ -530,8 +575,10 @@ TEST_P(URLRequestQuicWithTcpTest,
     // case. Fix case and enable test.
     GTEST_SKIP();
   }
+
+  SetUpHttpsRecord();
   auto context = BuildContext();
-  SetUpAltService(*context);
+  ConfigureAltService(*context, kOtherHost, kTestServerHost);
 
   GURL url = UrlFromPathWithPort(kHelloPath);
   GURL alt_url = OtherHostUrlFromPath(kHelloPath);
@@ -569,8 +616,10 @@ TEST_P(URLRequestQuicWithTcpTest,
     // case. Fix case and enable test.
     GTEST_SKIP();
   }
+
+  SetUpHttpsRecord();
   auto context = BuildContext();
-  SetUpAltService(*context);
+  ConfigureAltService(*context, kOtherHost, kTestServerHost);
 
   GURL url = UrlFromPathWithPort(kHelloPath);
   GURL alt_url = OtherHostUrlFromPath(kHelloPath);
@@ -604,8 +653,9 @@ TEST_P(URLRequestQuicWithTcpTest,
 // destination.
 TEST_P(URLRequestQuicWithTcpTest,
        AltServiceWrongCertExistingNonAltServiceQuicSession) {
+  SetUpHttpsRecord();
   auto context = BuildContext();
-  SetUpAltService(*context);
+  ConfigureAltService(*context, kOtherHost, kTestServerHost);
 
   GURL url = UrlFromPathWithPort(kHelloPath);
   GURL alt_url = OtherHostUrlFromPath(kHelloPath);
@@ -629,6 +679,123 @@ TEST_P(URLRequestQuicWithTcpTest,
   request2->Start();
   ASSERT_TRUE(request2->is_pending());
   run_loop2.Run();
+  ExpectQuicCertErrorOrNameNotResolved(*request2, delegate2);
+}
+
+// Tests the case where two hosts have the same QUIC alt service destination,
+// but the server only serves a response that's valid for one of the two hosts.
+TEST_P(URLRequestQuicWithTcpTest, TwoAltServiceRequestsOneWrongCert) {
+  if (happy_eyeballs_v3_enabled()) {
+    // TODO(crbug.com/455891789): This case is currently broken in the HEv3
+    // case. Fix case and enable test.
+    GTEST_SKIP();
+  }
+
+  SetUpLocalhostDnsRecord(kOtherHost2);
+  auto context = BuildContext();
+  ConfigureAltService(*context, kTestServerHost, kOtherHost2);
+  ConfigureAltService(*context, kOtherHost, kOtherHost2);
+
+  GURL url = UrlFromPath(kHelloPath);
+  GURL alt_url = OtherHostUrlFromPath(kHelloPath);
+
+  base::RunLoop run_loop1;
+  CheckLoadTimingDelegate delegate1(/*session_reused=*/false);
+  delegate1.set_on_complete(run_loop1.QuitClosure());
+  std::unique_ptr<URLRequest> request1 =
+      CreateRequest(context.get(), url, &delegate1);
+
+  base::RunLoop run_loop2;
+  TestDelegate delegate2;
+  delegate2.set_on_complete(run_loop2.QuitClosure());
+  std::unique_ptr<URLRequest> request2 =
+      CreateRequest(context.get(), alt_url, &delegate2);
+
+  request1->Start();
+  request2->Start();
+  ASSERT_TRUE(request1->is_pending());
+  ASSERT_TRUE(request2->is_pending());
+  run_loop1.Run();
+  run_loop2.Run();
+
+  EXPECT_EQ(OK, delegate1.request_status());
+  EXPECT_EQ(kHelloBodyValue, delegate1.data_received());
+  ExpectQuicCertErrorOrNameNotResolved(*request2, delegate2);
+}
+
+// Same as above, but with the order flipped.
+TEST_P(URLRequestQuicWithTcpTest,
+       TwoAltServiceRequestsOneWrongCertReverseOrder) {
+  if (happy_eyeballs_v3_enabled()) {
+    // TODO(crbug.com/455891789): This case is currently broken in the HEv3
+    // case. Fix case and enable test.
+    GTEST_SKIP();
+  }
+
+  SetUpLocalhostDnsRecord(kOtherHost2);
+  auto context = BuildContext();
+  ConfigureAltService(*context, kTestServerHost, kOtherHost2);
+  ConfigureAltService(*context, kOtherHost, kOtherHost2);
+
+  GURL url = UrlFromPath(kHelloPath);
+  GURL alt_url = OtherHostUrlFromPath(kHelloPath);
+
+  base::RunLoop run_loop1;
+  CheckLoadTimingDelegate delegate1(/*session_reused=*/false);
+  delegate1.set_on_complete(run_loop1.QuitClosure());
+  std::unique_ptr<URLRequest> request1 =
+      CreateRequest(context.get(), url, &delegate1);
+
+  base::RunLoop run_loop2;
+  TestDelegate delegate2;
+  delegate2.set_on_complete(run_loop2.QuitClosure());
+  std::unique_ptr<URLRequest> request2 =
+      CreateRequest(context.get(), alt_url, &delegate2);
+
+  request2->Start();
+  request1->Start();
+  ASSERT_TRUE(request1->is_pending());
+  ASSERT_TRUE(request2->is_pending());
+  run_loop2.Run();
+  run_loop1.Run();
+
+  EXPECT_EQ(OK, delegate1.request_status());
+  EXPECT_EQ(kHelloBodyValue, delegate1.data_received());
+  ExpectQuicCertErrorOrNameNotResolved(*request2, delegate2);
+}
+
+// Tests that the alt service destination checks block alt-service requests from
+// reusing a pre-existing alt-service QUIC session with the same destination,
+// but different target origin.
+TEST_P(URLRequestQuicWithTcpTest,
+       AltServiceRequestWrongCertExistingAltServiceQuicSession) {
+  SetUpLocalhostDnsRecord(kOtherHost2);
+  auto context = BuildContext();
+  ConfigureAltService(*context, kTestServerHost, kOtherHost2);
+  ConfigureAltService(*context, kOtherHost, kOtherHost2);
+
+  GURL url = UrlFromPath(kHelloPath);
+  GURL alt_url = OtherHostUrlFromPath(kHelloPath);
+
+  base::RunLoop run_loop1;
+  CheckLoadTimingDelegate delegate1(/*session_reused=*/false);
+  delegate1.set_on_complete(run_loop1.QuitClosure());
+  std::unique_ptr<URLRequest> request1 =
+      CreateRequest(context.get(), url, &delegate1);
+  request1->Start();
+  ASSERT_TRUE(request1->is_pending());
+  run_loop1.Run();
+  EXPECT_EQ(OK, delegate1.request_status());
+
+  base::RunLoop run_loop2;
+  TestDelegate delegate2;
+  delegate2.set_on_complete(run_loop2.QuitClosure());
+  std::unique_ptr<URLRequest> request2 =
+      CreateRequest(context.get(), alt_url, &delegate2);
+  request2->Start();
+  ASSERT_TRUE(request2->is_pending());
+  run_loop2.Run();
+  EXPECT_EQ(kHelloBodyValue, delegate1.data_received());
   ExpectQuicCertErrorOrNameNotResolved(*request2, delegate2);
 }
 
