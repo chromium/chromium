@@ -455,6 +455,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   // Observer for auth service status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge>
       _authServiceObserverBridge;
+  BOOL _handleExternalIntentsInProgress;
 }
 
 // Navigation View controller for the settings.
@@ -673,6 +674,14 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 }
 
 - (BOOL)handleExternalIntents {
+  // TODO(crbug.com/462018636): Remove once the startup refactore is done.
+  // Early return when a recursive call is done, while the fuction is still
+  // being executed.
+  if (_handleExternalIntentsInProgress) {
+    return NO;
+  }
+  base::AutoReset<BOOL> autoResetHandleExternalIntents(
+      &_handleExternalIntentsInProgress, YES);
   if (![self canHandleIntents]) {
     return NO;
   }
