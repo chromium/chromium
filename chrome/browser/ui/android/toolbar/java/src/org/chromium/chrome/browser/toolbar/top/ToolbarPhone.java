@@ -973,7 +973,6 @@ public class ToolbarPhone extends ToolbarLayout
             }
 
             updateButtonsTranslationY();
-            updateToolbarBackgroundFromState(mVisualState);
             updateLocationBarTranslationOnScroll();
             float oldScrollFraction = mNtpSearchBoxScrollFraction;
             if (scrollFraction > 0.f && mNtpSearchBoxScrollFraction != 1.f) {
@@ -1031,6 +1030,11 @@ public class ToolbarPhone extends ToolbarLayout
 
     private void createAndRunNtpFocusAnimatorRefactored() {
         mRefactoredNtpStartingOffset = getLocationBarTranslationY();
+        // The scroll fraction will have just changed, so update the expansion fraction accordingly.
+        // This is also used to determine the alpha of the toolbar background, so update now before
+        // capturing the transparent background color in the upcoming transition.
+        updateUrlExpansionFraction();
+        updateToolbarBackgroundFromState(mVisualState);
         // TODO(crbug.com/462492387): Cleanup this flow. It's unclear if we still need to call
         //  #updateLocationBarForNtp here. We likely can also refactor the transition helpers, so
         //  we don't #triggerUrlFocusAnimation here, and instead only set up the transitions
