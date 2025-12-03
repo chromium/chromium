@@ -4,8 +4,13 @@
 
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/on_device_model/public/cpp/cpu.h"
+#include "services/on_device_model/public/cpp/features.h"
+#include "services/on_device_model/public/cpp/service_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -70,6 +75,87 @@ TEST(PerformanceClassTest, GroupsAreUnique) {
     outputs.insert(SyntheticTrialGroupForPerformanceClass(mojo_val));
   }
   EXPECT_EQ(outputs.size(), inputs.size());
+}
+
+class PerformanceClassPossibleHintsTest : public testing::Test {
+ public:
+  PerformanceClassPossibleHintsTest()
+      : client_(base::BindRepeating(
+            [](::mojo::PendingReceiver<
+                on_device_model::mojom::OnDeviceModelService>) {})) {
+    model_execution::prefs::RegisterLocalStatePrefs(prefs_.registry());
+    UpdatePerformanceClassPref(&prefs_,
+                               OnDeviceModelPerformanceClass::kUnknown);
+    classifier_ =
+        std::make_unique<PerformanceClassifier>(&prefs_, client_.GetSafeRef());
+  }
+
+  void SetUp() override {
+    if (!on_device_model::IsCpuCapable()) {
+      GTEST_SKIP() << "CPU not supported";
+    }
+  }
+
+ protected:
+  TestingPrefServiceSimple& prefs() { return prefs_; }
+  PerformanceClassifier& classifier() { return *classifier_; }
+
+ private:
+  TestingPrefServiceSimple prefs_;
+  on_device_model::ServiceClient client_;
+  std::unique_ptr<PerformanceClassifier> classifier_;
+};
+
+TEST_F(PerformanceClassPossibleHintsTest, VeryLowDevice) {
+  UpdatePerformanceClassPref(&prefs(), OnDeviceModelPerformanceClass::kVeryLow);
+  EXPECT_THAT(
+      classifier().GetPossibleHints(),
+      testing::ElementsAre(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU));
+}
+
+TEST_F(PerformanceClassPossibleHintsTest, LowDevice) {
+  UpdatePerformanceClassPref(&prefs(), OnDeviceModelPerformanceClass::kLow);
+  EXPECT_THAT(classifier().GetPossibleHints(),
+              testing::ElementsAre(
+                  proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE,
+                  proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU));
+}
+
+TEST_F(PerformanceClassPossibleHintsTest, MediumDevice) {
+  UpdatePerformanceClassPref(&prefs(), OnDeviceModelPerformanceClass::kMedium);
+  EXPECT_THAT(classifier().GetPossibleHints(),
+              testing::ElementsAre(
+                  proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE,
+                  proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU));
+}
+
+TEST_F(PerformanceClassPossibleHintsTest, HighDevice) {
+  UpdatePerformanceClassPref(&prefs(), OnDeviceModelPerformanceClass::kHigh);
+  EXPECT_THAT(classifier().GetPossibleHints(),
+              testing::ElementsAre(
+                  proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY,
+                  proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE,
+                  proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU));
+}
+
+TEST_F(PerformanceClassPossibleHintsTest, VeryHighDevice) {
+  UpdatePerformanceClassPref(&prefs(),
+                             OnDeviceModelPerformanceClass::kVeryHigh);
+  EXPECT_THAT(classifier().GetPossibleHints(),
+              testing::ElementsAre(
+                  proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY,
+                  proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE,
+                  proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU));
+}
+
+TEST_F(PerformanceClassPossibleHintsTest, ForceCpu) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      on_device_model::features::kOnDeviceModelForceCpuBackend);
+  UpdatePerformanceClassPref(&prefs(),
+                             OnDeviceModelPerformanceClass::kVeryHigh);
+  EXPECT_THAT(
+      classifier().GetPossibleHints(),
+      testing::ElementsAre(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU));
 }
 
 }  // namespace
