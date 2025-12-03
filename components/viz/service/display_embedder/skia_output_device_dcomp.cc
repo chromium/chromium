@@ -39,10 +39,8 @@
 namespace viz {
 
 namespace {
-// With DirectComposition, resize surface based on root render pass size to
-// avoid gutter which shows stale pixels.
-BASE_FEATURE(kDirectCompositionResizeBasedOnRootSurface,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Apply fixes for crbug.com/457463689.
+BASE_FEATURE(kDirectCompositionResizeFixes, base::FEATURE_ENABLED_BY_DEFAULT);
 
 base::TimeTicks g_last_reshape_failure = base::TimeTicks();
 
@@ -161,7 +159,14 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
   capabilities_.supports_viewporter = presenter_->SupportsViewporter();
   capabilities_.supports_non_backed_solid_color_overlays = true;
   capabilities_.resize_based_on_root_surface =
-      base::FeatureList::IsEnabled(kDirectCompositionResizeBasedOnRootSurface);
+      base::FeatureList::IsEnabled(kDirectCompositionResizeFixes);
+  // With delegated compositing or a buffer queue, |Present| and |Commit| are
+  // synchronized and the clear is not needed.
+  capabilities_.clear_drawn_areas_outside_viewport =
+      base::FeatureList::IsEnabled(kDirectCompositionResizeFixes) &&
+      !IsDelegatedCompositingSupportedAndEnabled(
+          capabilities_.dc_support_level) &&
+      !IsBufferQueueSupportedAndEnabled(capabilities_.dc_support_level);
 
   DCHECK(context_state_);
   DCHECK(context_state_->gr_context() ||
