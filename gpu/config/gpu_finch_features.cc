@@ -104,16 +104,6 @@ const base::FeatureParam<std::string>
         &kRelaxLimitAImageReaderMaxSizeToOne,
         "RelaxLimitAImageReaderMaxSizeToOneModelBlocklist", ""};
 
-// Allows using recommended AHardwareBuffer usage from Vulkan, that should allow
-// drivers to pick most optimal layout.
-BASE_FEATURE(kUseHardwareBufferUsageFlagsFromVulkan,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Same as above (and depends on it) and allows using extra usage even if we use
-// USAGE_COMPOSER_OVERLAY.
-BASE_FEATURE(kAllowHardwareBufferUsageFlagsFromVulkanForScanout,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif
 
 // Enable GPU Rasterization by default. This can still be overridden by

@@ -870,46 +870,23 @@ AHardwareBufferImageBackingFactory::MakeBacking(
   hwb_desc.height = size.height();
   hwb_desc.format = format_info.ahb_format;
 
-  if (base::FeatureList::IsEnabled(
-          features::kUseHardwareBufferUsageFlagsFromVulkan)) {
-    hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
-                     AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
-    if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
-      hwb_desc.usage |= AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY;
-    }
+  hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
+                   AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
+  if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
+    hwb_desc.usage |= AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY;
+  }
 
-    if (!usage.Has(SHARED_IMAGE_USAGE_SCANOUT) ||
-        base::FeatureList::IsEnabled(
-            features::kAllowHardwareBufferUsageFlagsFromVulkanForScanout)) {
-      if (vulkan_context_provider_) {
-        std::optional<uint64_t> ahb_usage =
-            GetRecommendedAHBUsage(vulkan_context_provider_->GetDeviceQueue()
-                                       ->GetVulkanPhysicalDevice(),
-                                   format);
-        if (!ahb_usage.has_value()) {
-          return nullptr;
-        }
-        hwb_desc.usage |= ahb_usage.value();
-      } else {
-        // For GL we use flags from SurfaceControl::RequiredUsage.
-        // TODO(crbug.com/40836080): Add support for Dawn
-        if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
-          hwb_desc.usage |= gfx::SurfaceControl::RequiredUsage();
-        }
-      }
-    } else {
-      // Fallback to old behaviour if we're adding
-      // AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY and
-      // kAllowHardwareBufferUsageFlagsFromVulkanForScanout is off.
-      if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
-        hwb_desc.usage |= gfx::SurfaceControl::RequiredUsage();
-      }
+  if (vulkan_context_provider_) {
+    std::optional<uint64_t> ahb_usage = GetRecommendedAHBUsage(
+        vulkan_context_provider_->GetDeviceQueue()->GetVulkanPhysicalDevice(),
+        format);
+    if (!ahb_usage.has_value()) {
+      return nullptr;
     }
+    hwb_desc.usage |= ahb_usage.value();
   } else {
-    // Set usage so that gpu can both read as a texture/write as a framebuffer
-    // attachment.
-    hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
-                     AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
+    // For GL we use flags from SurfaceControl::RequiredUsage.
+    // TODO(crbug.com/40836080): Add support for Dawn
     if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
       hwb_desc.usage |= gfx::SurfaceControl::RequiredUsage();
     }

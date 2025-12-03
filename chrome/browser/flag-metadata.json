@@ -10277,14 +10277,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "use-ahardwarebuffer-usage-flags-from-vulkan",
-    "owners": [
-      "vasilyt@chromium.org",
-      "kylechar@chromium.org"
-    ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "use-android-buffered-input-dispatch",
     "owners": [
       "woa-performance-team@google.com",

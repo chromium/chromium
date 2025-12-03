@@ -11545,14 +11545,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNewTabPagePrefetchDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kNewTabPageTriggerForPrefetch)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"use-ahardwarebuffer-usage-flags-from-vulkan",
-     flag_descriptions::kUseHardwareBufferUsageFlagsFromVulkanName,
-     flag_descriptions::kUseHardwareBufferUsageFlagsFromVulkanDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(::features::kUseHardwareBufferUsageFlagsFromVulkan)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING) && \
     PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"partition-alloc-memory-tagging",

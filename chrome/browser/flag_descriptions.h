@@ -5871,11 +5871,6 @@ inline constexpr char kUseAngleDescriptionAndroid[] =
 inline constexpr char kUseAngleGLES[] = "OpenGL ES";
 inline constexpr char kUseAngleVulkan[] = "Vulkan";
 
-inline constexpr char kUseHardwareBufferUsageFlagsFromVulkanName[] =
-    "Use recommended AHardwareBuffer usage flags from Vulkan";
-inline constexpr char kUseHardwareBufferUsageFlagsFromVulkanDescription[] =
-    "Allows querying recommended AHardwareBuffer usage flags from Vulkan API";
-
 inline constexpr char kWebFeedAwarenessName[] = "Web Feed Awareness";
 inline constexpr char kWebFeedAwarenessDescription[] =
     "Helps the user discover the web feed.";
