@@ -1419,6 +1419,10 @@ const char kRcapsDynamicProfileCountryDescription[] =
     "When enabled, Chrome updates the country associated with "
     "the profile on open";
 
+const char kReaderModeBadgeSupportName[] = "Enable Reader Mode Badge Support";
+const char kReaderModeBadgeSupportDescription[] =
+    "Enable Reader Mode Badge Support.";
+
 const char kReaderModeName[] = "Enables Reader Mode";
 const char kReaderModeDescription[] =
     "Enables Reader Mode UI and entry points.";

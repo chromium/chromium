@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_placeholder_type.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -305,8 +306,10 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
           _contextualPanelCurrentlyAnimating);
   }
 
-  // Other badges can be visible only outside of Reader mode.
-  if (!readerModeChipShouldBeVisibleFinal) {
+  // Other badges can be visible only outside of Reader mode unless badge
+  // support is explicitly enabled.
+  if (!readerModeChipShouldBeVisibleFinal ||
+      IsReaderModeBadgeSupportEnabled()) {
     // The badge view used by e.g. Translate, Permissions, etc, is visible if it
     // wants to be visible and `IsDiamondPrototypeEnabled()` returns false.
     badgeViewShouldBeVisibleFinal =
@@ -321,14 +324,16 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
     // 4. The placeholder type is NOT the page action menu placeholder.
     contextualPanelEntrypointShouldBeVisibleFinal =
         _contextualPanelEntrypointShouldBeVisible &&
+        !readerModeChipShouldBeVisibleFinal &&
         (_contextualPanelCurrentlyAnimating || badgeViewShouldBeVisibleFinal ||
          _contextualPanelItemType != ContextualPanelItemType::ReaderModeItem ||
          _placeholderType != LocationBarPlaceholderType::kPageActionMenu);
-    // Finally the placeholder is visible if both the badge view and contextual
-    // panel entrypoint are hidden.
+    // Finally the placeholder is visible if the badge view, Reader Mode, and
+    // contextual panel entrypoint are hidden.
     placeholderViewShouldBeVisibleFinal =
         !badgeViewShouldBeVisibleFinal &&
-        !contextualPanelEntrypointShouldBeVisibleFinal;
+        !contextualPanelEntrypointShouldBeVisibleFinal &&
+        !readerModeChipShouldBeVisibleFinal;
   }
 
   SetViewHiddenIfNecessary(self.readerModeChipView,

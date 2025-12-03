@@ -44,6 +44,8 @@ BASE_FEATURE(kEnableReaderModePageEligibilityForToolsMenu,
 BASE_FEATURE(kEnableReaderModeOptimizationGuideEligibility,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableReaderModeBadgeSupport, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kReaderModeHeuristicPageLoadDelayDurationStringName[] =
     "reader-mode-heuristic-page-load-delay-duration-string";
 
@@ -88,4 +90,8 @@ bool IsReaderModeTranslationAvailable() {
 bool IsReaderModeOptimizationGuideEligibilityAvailable() {
   return base::FeatureList::IsEnabled(
       kEnableReaderModeOptimizationGuideEligibility);
+}
+
+bool IsReaderModeBadgeSupportEnabled() {
+  return base::FeatureList::IsEnabled(kEnableReaderModeBadgeSupport);
 }
