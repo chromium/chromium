@@ -259,7 +259,7 @@ void LetterboxVideoFrame(VideoFrame* frame, const gfx::Rect& view_area) {
   std::unique_ptr<VideoFrame::ScopedMapping> scoped_mapping;
   if (!frame->IsMappable() &&
       frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    scoped_mapping = frame->MapGMBOrSharedImage();
+    scoped_mapping = frame->MapSharedImage();
     CHECK(scoped_mapping);
   }
 
@@ -567,7 +567,7 @@ scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
   CHECK(video_frame);
   CHECK(video_frame->HasMappableGpuBuffer());
 
-  auto scoped_mapping = video_frame->MapGMBOrSharedImage();
+  auto scoped_mapping = video_frame->MapSharedImage();
   if (!scoped_mapping) {
     return nullptr;
   }
@@ -609,7 +609,7 @@ void ConvertToMemoryMappedFrameAsync(
   CHECK(video_frame);
   CHECK(video_frame->HasMappableGpuBuffer());
 
-  video_frame->MapGMBOrSharedImageAsync(base::BindOnce(
+  video_frame->MapSharedImageAsync(base::BindOnce(
       &ProcessAsyncMappingResult, video_frame, std::move(result_cb)));
 }
 

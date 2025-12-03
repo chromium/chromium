@@ -1191,11 +1191,11 @@ bool VideoFrame::HasNativeGpuMemoryBuffer() const {
   return false;
 }
 
-void VideoFrame::MapGMBOrSharedImageAsync(
+void VideoFrame::MapSharedImageAsync(
     base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
         result_cb) const {
   if (wrapped_frame_) {
-    wrapped_frame_->MapGMBOrSharedImageAsync(std::move(result_cb));
+    wrapped_frame_->MapSharedImageAsync(std::move(result_cb));
     return;
   }
   if (is_mappable_si_enabled_) {
@@ -1787,10 +1787,9 @@ class ScopedMappingSIImpl : public VideoFrame::ScopedMapping {
   std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping_;
 };
 
-std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()
-    const {
+std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapSharedImage() const {
   if (wrapped_frame_) {
-    return wrapped_frame_->MapGMBOrSharedImage();
+    return wrapped_frame_->MapSharedImage();
   }
   if (is_mappable_si_enabled_) {
     // If MappableSI is used, there must be a shared image.

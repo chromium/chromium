@@ -180,7 +180,7 @@ static sk_sp<SkImage> ConvertFrame(media::VideoFrame* frame) {
 
   if (frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_NV12);
-    auto scoped_mapping = frame->MapGMBOrSharedImage();
+    auto scoped_mapping = frame->MapSharedImage();
     if (!scoped_mapping) {
       DLOG(ERROR) << "Failed to get the mapped memory.";
       return nullptr;

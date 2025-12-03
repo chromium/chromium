@@ -514,7 +514,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // TODO(crbug.com/40263579): Note that once MappableSI is fully launched and
   // enabled for VideoFrame, rename this method to MapSharedImage(). It can
   // then directly return ClientSharedImage::ScopedMapping object instead.
-  std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage() const;
+  std::unique_ptr<VideoFrame::ScopedMapping> MapSharedImage() const;
 
   // Gets the ScopedMapping object which clients can use to access the CPU
   // visible memory and other metadata for the gpu buffer backing this
@@ -528,7 +528,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // TODO(crbug.com/40263579): Note that once MappableSI is fully launched and
   // enabled for VideoFrame, rename this method to MapSharedImageAsync(). It can
   // then directly return ClientSharedImage::ScopedMapping object instead.
-  void MapGMBOrSharedImageAsync(
+  void MapSharedImageAsync(
       base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
           result_cb) const;
 
