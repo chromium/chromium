@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/performance_manager/policies/cannot_discard_reason.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -45,7 +47,10 @@ namespace {
 
 class DiscardEligibilityPolicyBrowserTest : public InProcessBrowserTest {
  protected:
-  DiscardEligibilityPolicyBrowserTest() = default;
+  DiscardEligibilityPolicyBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(::features::kSideBySide);
+  }
+
   ~DiscardEligibilityPolicyBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -54,19 +59,13 @@ class DiscardEligibilityPolicyBrowserTest : public InProcessBrowserTest {
   }
 
   GURL GetTestingURL() { return embedded_test_server()->GetURL("/empty.html"); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Disable CannotDiscardVisibleInSplit on Chrome OS build because it's flaky
-// on linux-chromeos-chrome, bots that aren't on the CQ.
-// TODO(crbug.com/464057202): Try to enable this test on Chrome OS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CannotDiscardVisibleInSplit DISABLED_CannotDiscardVisibleInSplit
-#else
-#define MAYBE_CannotDiscardVisibleInSplit CannotDiscardVisibleInSplit
-#endif
-
 IN_PROC_BROWSER_TEST_F(DiscardEligibilityPolicyBrowserTest,
-                       MAYBE_CannotDiscardVisibleInSplit) {
+                       CannotDiscardVisibleInSplit) {
   // Open tabs for testing.
   const int index1 = 1, index2 = 2, index3 = 3;
   ASSERT_TRUE(
