@@ -1265,7 +1265,7 @@ BASE_FEATURE(kAccessibilityPopulateSupplementalDescriptionApi,
 
 // Enables the reactive synchronization of accessibility and keyboard focus,
 // relying on new Android framework behavior.
-BASE_FEATURE(kAccessibilitySequentialFocus, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAccessibilitySequentialFocus, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, set selectable on all nodes with text, and support
 // ACTION_SET_SELECTION.
