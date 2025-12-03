@@ -62,6 +62,7 @@ public class CustomTabContextMenuTest {
 
     @Before
     public void setUp() {
+        ChromeContextMenuPopulator.setIsDefaultBrowserForTesting(false);
         ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
 
         EmbeddedTestServer testServer =
