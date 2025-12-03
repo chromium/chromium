@@ -162,6 +162,7 @@ cr-most-visited {
 }
 
 #searchboxContainer {
+  --cr-focus-outline-color: var(--color-searchbox-results-icon-focused-outline);
   display: inherit;
   margin-bottom: 16px;
   position: relative;

@@ -13,7 +13,6 @@
 }
 
 #composeButton {
-  --cr-focus-outline-color: var(--color-searchbox-results-icon-focused-outline);
   background-color: #F3F5F6;
   color: #1F1F1F;
   font-weight: 400;

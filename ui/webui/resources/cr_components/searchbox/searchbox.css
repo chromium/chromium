@@ -270,7 +270,7 @@ cr-searchbox-icon {
 }
 
 :host-context(.focus-outline-visible) .searchbox-icon-button-container:focus-within {
-  box-shadow: var(--ntp-focus-shadow);
+  box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
 }
 
 :host(:not([use-webkit-search-icons_])) #voiceSearchButton {
