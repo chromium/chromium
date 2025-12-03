@@ -35,6 +35,8 @@ ReaderModeModel::~ReaderModeModel() = default;
 void ReaderModeModel::FetchConfigurationForWebState(
     web::WebState* web_state,
     FetchConfigurationForWebStateCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   ReaderModeTabHelper* reader_mode_tab_helper =
       ReaderModeTabHelper::FromWebState(web_state);
   if (!reader_mode_tab_helper) {
