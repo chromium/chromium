@@ -802,6 +802,8 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // the discarding. See `NavigationDiscardReason` for the various cases.
   virtual std::optional<NavigationDiscardReason>
   GetNavigationDiscardReason() = 0;
+
+  virtual bool NeedsUrlLoader() = 0;
 };
 
 }  // namespace content
