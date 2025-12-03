@@ -181,6 +181,9 @@ const CGFloat kCloseButtonPadding = 16.0f;
     (CGFloat)additionalVerticalContentInset {
   self.tableView.contentInset =
       UIEdgeInsetsMake(kTopPadding + additionalVerticalContentInset, 0, 0, 0);
+  [self.tableView
+      setContentOffset:CGPointMake(0, -self.tableView.contentInset.top)
+              animated:YES];
 }
 
 - (void)toggleOmniboxDebuggerView {
