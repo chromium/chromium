@@ -715,9 +715,11 @@ DevToolsAPI._fetch = function(url) {
   });
 };
 
-testRunner.dumpAsText();
-testRunner.waitUntilDone();
-testRunner.setPopupBlockingEnabled(false);
+if (window["testRunner"]) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+  testRunner.setPopupBlockingEnabled(false);
+}
 
 window.addEventListener('load', () => {
   var params = new URLSearchParams(window.location.search);

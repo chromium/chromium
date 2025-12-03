@@ -8,13 +8,6 @@ found in the LICENSE file.
 <script>
 let fulfillDone = () => {};
 const output = [];
-const testRunner = {};
-testRunner.dumpAsText = () => {};
-testRunner.waitUntilDone = () => {};
-testRunner.setPopupBlockingEnabled = () => {};
-testRunner.notifyDone = () => {
-  return fulfillDone(output.join('\n'));
-};
 DevToolsHost = {};
 DevToolsHost.sendMessageToEmbedder = (message) => {
   const object = JSON.parse(message);
@@ -27,6 +20,9 @@ DevToolsHost.dummyPageURL = `http://127.0.0.1:${window.location.port}/protocol/i
 <script src="../../resources/inspector-protocol-test.js"></script>
 <script>
 DevToolsAPI._log = text => output.push(text);
+DevToolsAPI._completeTest = function() {
+  fulfillDone(output.join('\n'));
+}
 
 window.cdp.onmessage = json => {
   DevToolsAPI.dispatchMessage(json);
