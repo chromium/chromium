@@ -293,20 +293,11 @@ void PictureLayerImpl::AppendQuadsSpecialization(
   gfx::Rect scaled_viewport_for_tile_priority = gfx::ScaleToEnclosingRect(
       viewport_rect_for_tile_priority_in_content_space_, max_contents_scale);
 
-  std::optional<gfx::Rect> scaled_cull_rect;
+  std::optional<gfx::Rect> scaled_cull_rect =
+      CalculateScaledCullRect(max_contents_scale);
+
   const ScrollTree& scroll_tree =
       layer_tree_impl()->property_trees()->scroll_tree();
-  if (const ScrollNode* scroll_node = scroll_tree.Node(scroll_tree_index())) {
-    if (transform_tree_index() == scroll_node->transform_id) {
-      if (const gfx::Rect* cull_rect =
-              scroll_tree.ScrollingContentsCullRect(scroll_node->element_id)) {
-        scaled_cull_rect = gfx::ToEnclosingRect(gfx::ScaleRect(
-            // Convert into layer space.
-            gfx::RectF(*cull_rect) - offset_to_transform_parent(),
-            max_contents_scale));
-      }
-    }
-  }
 
   if (const auto& display_list = raster_source_->GetDisplayItemList()) {
     for (auto& [element_id, info] : display_list->raster_inducing_scrolls()) {

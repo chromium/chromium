@@ -190,22 +190,8 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
   // unused can be considered for removal.
   last_append_quads_scales_.clear();
 
-  // TODO(crbug.com/40902346): Use scaled_cull_rect to set
-  // append_quads_data->checkerboarded_needs_record.
-  std::optional<gfx::Rect> scaled_cull_rect;
-  const ScrollTree& scroll_tree =
-      layer_tree_impl()->property_trees()->scroll_tree();
-  if (const ScrollNode* scroll_node = scroll_tree.Node(scroll_tree_index())) {
-    if (transform_tree_index() == scroll_node->transform_id) {
-      if (const gfx::Rect* cull_rect =
-              scroll_tree.ScrollingContentsCullRect(scroll_node->element_id)) {
-        scaled_cull_rect = gfx::ToEnclosingRect(gfx::ScaleRect(
-            // Convert into layer space.
-            gfx::RectF(*cull_rect) - offset_to_transform_parent(),
-            max_contents_scale));
-      }
-    }
-  }
+  // TODO(crbug.com/40902346): Use CalculateScaledCullRect() to set
+  // append_quads_data->checkerboarded_needs_record as PictureLayerImpl does.
 
   const float ideal_scale_key = GetIdealContentsScaleKey();
   const gfx::Rect scaled_recorded_bounds =
