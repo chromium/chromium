@@ -5,6 +5,7 @@
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 
 #include "chrome/browser/android/persisted_tab_data/sensitivity_data.pb.h"
+#include "components/content_capture/browser/onscreen_content_provider.h"
 
 SensitivityPersistedTabDataAndroid::SensitivityPersistedTabDataAndroid(
     TabAndroid* tab_android)
@@ -77,6 +78,17 @@ void SensitivityPersistedTabDataAndroid::OnPageContentAnnotated(
     return;
   }
   set_sensitivity_score(result.GetContentVisibilityScore());
+
+  if (!tab_->web_contents()) {
+    return;
+  }
+  content_capture::OnscreenContentProvider* onscreen_content_provider =
+      content_capture::OnscreenContentProvider::FromWebContents(
+          tab_->web_contents());
+  if (onscreen_content_provider) {
+    onscreen_content_provider->DidUpdateSensitivityScore(
+        result.GetContentVisibilityScore());
+  }
 }
 
 void SensitivityPersistedTabDataAndroid::ExistsForTesting(

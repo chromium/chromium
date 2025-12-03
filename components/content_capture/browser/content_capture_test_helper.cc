@@ -104,6 +104,10 @@ void ContentCaptureConsumerHelper::DidUpdateTitle(
 void ContentCaptureConsumerHelper::DidUpdateFavicon(
     const ContentCaptureFrame& main_frame) {}
 
+void ContentCaptureConsumerHelper::DidUpdateSensitivityScore(
+    const GURL& url,
+    float sensitivity_score) {}
+
 bool ContentCaptureConsumerHelper::ShouldCapture(const GURL& url) {
   return false;
 }

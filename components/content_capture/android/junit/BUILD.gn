@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 
 robolectric_library("components_content_capture_junit_tests") {
   sources = [
+    "src/org/chromium/components/content_capture/OnscreenContentProviderTest.java",
     "src/org/chromium/components/content_capture/PlatformAPIWrapperTest.java",
     "src/org/chromium/components/content_capture/PlatformContentCaptureControllerTest.java",
     "src/org/chromium/components/content_capture/UrlAllowlistTest.java",
@@ -15,6 +16,7 @@ robolectric_library("components_content_capture_junit_tests") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/content_capture/android:java",
+    "//components/content_capture/android/proto:proto_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
