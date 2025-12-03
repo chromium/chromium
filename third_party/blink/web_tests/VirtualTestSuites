@@ -1363,7 +1363,7 @@
     ],
     "owners": [
       "dtseng@chromium.org",
-      "aleventhal@chromium.org"
+      "lucasradaelli@google.com"
     ],
     "bases": [
       "accessibility/accessibility-beforematch-marker-crash.html",
@@ -1389,7 +1389,7 @@
     ],
     "owners": [
       "dtseng@chromium.org",
-      "aleventhal@chromium.org"
+      "lucasradaelli@google.com"
     ],
     "bases": [
       "external/wpt/accessibility/crashtests/removed-from-flat-tree.html"

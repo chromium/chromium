@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.Accessibility.NumTreeUpdatesQueuedBeforeLayout"
     units="updates" expires_after="2023-03-05">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>
     Records how many tree updates were queued at the time updates are being

@@ -2114,7 +2114,7 @@ should be able to be added at any place in this file.
 
 <action name="Accel_Toggle_High_Contrast">
   <owner>dtseng@chromium.org</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <description>
     Metric recorded when the user toggles Chrome OS High Contrast mode with the
     keyboard accelerator.
@@ -2171,7 +2171,7 @@ should be able to be added at any place in this file.
 
 <action name="Accel_Toggle_Spoken_Feedback">
   <owner>dtseng@chromium.org</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <description>Toggles Spoken Feedback (ChromeVox)</description>
 </action>
 
@@ -3275,7 +3275,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accessibility.NativeApi.DoDefault">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>ui/accessibility/OWNERS</owner>
   <description>
@@ -3289,7 +3289,7 @@ should be able to be added at any place in this file.
     Removed in March 2020 because most events were being trimmed due to the cap
     on the number of user actions that can be reported in a single log.
   </obsolete>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>dtseng@chromium.org</owner>
   <description>
     The HitTest action has been called on an accessibility node using a native
@@ -3298,7 +3298,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accessibility.NativeApi.ScrollToMakeVisible">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>ui/accessibility/OWNERS</owner>
   <description>
@@ -3308,7 +3308,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accessibility.NativeApi.SetFocus">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>ui/accessibility/OWNERS</owner>
   <description>

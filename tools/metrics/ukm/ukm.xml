@@ -261,8 +261,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Accessibility.CanvasHasNonTrivialFallback">
-  <owner>aleventhal@chromium.org</owner>
-  <owner>aleventhal@google.com</owner>
+  <owner>lucasradaelli@google.com</owner>
   <summary>
     Recorded once for any page that had a canvas element with non-trivial
     fallback content beyond plain text. Only recorded if a11y is turned on (~10%
@@ -484,7 +483,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Accessibility.Renderer">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>nektar@chromium.org</owner>
   <summary>
     Tracks the amount of time sending accessibility events from web renderers.

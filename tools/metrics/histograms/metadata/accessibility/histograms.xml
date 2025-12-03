@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.ActiveTime" units="ms"
     expires_after="2026-06-01">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Accessibility.Android.InlineTextBoxes.Bundle.{CallLocation}"
     enum="AccessibilityModeBundleEnum" expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>
     Tracks the combinations of mode flags that are set when there is a request
@@ -236,7 +236,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Accessibility.Android.InlineTextBoxes.DuplicateRequest"
     enum="Boolean" expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>
     Tracks if the inline text boxes for a node have already been requested and
@@ -754,7 +754,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.AutoDisabled.BlockedAfter.{EventType}"
     enum="AssistiveTech" expires_after="2026-06-01">
-  <owner>aleventhal@google.com</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     After an auto-disable heuristic was triggered without matching A11y API
@@ -1406,7 +1406,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>Tracks whether the Chrome OS Spoken Feedback feature is on.</summary>
 </histogram>
@@ -1680,7 +1680,7 @@ even if they fit the naming pattern. -->
 <histogram name="Accessibility.DisabledAfterHide" enum="BooleanHit"
     expires_after="2026-06-01">
   <owner>grt@chromium.org</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <summary>
     Recorded each time accessibility for a single WebContents is disabled due to
     the ProgressiveAccessibility feature.
@@ -1727,7 +1727,7 @@ even if they fit the naming pattern. -->
 <histogram name="Accessibility.EngineUse.PageNavsUntilStart" units="count"
     expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     This histogram tracks the number of page navigations from start-up until the
@@ -1739,7 +1739,7 @@ even if they fit the naming pattern. -->
 <histogram name="Accessibility.EngineUse.TimeUntilStart" units="ms"
     expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     This histogram tracks the time from start-up until the kWebContents AXMode
@@ -1751,7 +1751,7 @@ even if they fit the naming pattern. -->
 <histogram name="Accessibility.EventProcessingTime3{Variation}" units="ms"
     expires_after="2026-06-01">
   <owner>grt@chromium.org</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <summary>
     The round-trip time to send a set of accessibility mode flags from the
     browser process to a renderer and receive and process the first set of
@@ -1799,7 +1799,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.FocusHighlight.ToggleEnabled"
     enum="BooleanEnabled" expires_after="never">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The value of the &quot;show a quick focus highlight&quot; setting, logged
@@ -1936,7 +1936,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.InactiveTime" units="ms"
     expires_after="2026-06-01">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>abigailbklein@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <summary>
@@ -1949,7 +1949,7 @@ even if they fit the naming pattern. -->
 <histogram name="Accessibility.InlineTextBoxes.Count" units="count"
     expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>
     Tracks the number of nodes that have inline text boxes loaded per
@@ -1963,7 +1963,7 @@ even if they fit the naming pattern. -->
 <histogram name="Accessibility.InlineTextBoxes.PresentInUpdate" enum="Boolean"
     expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>
     Tracks whether or not a given AXTreeUpdate contains any inline text boxes.
@@ -2336,7 +2336,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.ManuallyEnabled" enum="BooleanEnabled"
     expires_after="2026-06-01">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2348,7 +2348,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.ModeFlag" enum="AccessibilityModeFlagEnum"
     expires_after="2026-06-01">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Whether individual accessibility mode flags are set. Tracked when each mode
@@ -2591,7 +2591,7 @@ even if they fit the naming pattern. -->
 <!-- expires-never: vital accessibility performance metric -->
 
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -2618,7 +2618,7 @@ even if they fit the naming pattern. -->
     name="Accessibility.Performance.BrowserAccessibilityManager::OnLocationChanges"
     units="microseconds" expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -2638,7 +2638,7 @@ even if they fit the naming pattern. -->
     units="microseconds" expires_after="2026-06-01">
   <owner>lucasradaelli@google.com</owner>
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -2657,7 +2657,7 @@ even if they fit the naming pattern. -->
 <histogram name="Accessibility.Performance.HandleAXEvents2"
     units="microseconds" expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks time spent on the browser main thread handling accessibility events
@@ -2689,7 +2689,7 @@ even if they fit the naming pattern. -->
     units="microseconds" expires_after="2026-06-01">
   <owner>lucasradaelli@google.com</owner>
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -2709,7 +2709,7 @@ even if they fit the naming pattern. -->
     name="Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad2"
     units="microseconds" expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -2731,7 +2731,7 @@ even if they fit the naming pattern. -->
 <!-- expires-never: vital accessibility performance metric -->
 
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -2751,7 +2751,7 @@ even if they fit the naming pattern. -->
     units="microseconds" expires_after="2026-06-01">
   <owner>lucasradaelli@google.com</owner>
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -2770,7 +2770,7 @@ even if they fit the naming pattern. -->
 <histogram name="Accessibility.Performance.SerializeLocationChanges"
     units="microseconds" expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -2792,7 +2792,7 @@ even if they fit the naming pattern. -->
     units="microseconds" expires_after="2026-06-01">
   <owner>lucasradaelli@google.com</owner>
   <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -2810,7 +2810,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.Performance.Tree.Unserialize2"
     units="microseconds" expires_after="2026-06-01">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>kevers@chromium.org</owner>
@@ -2829,7 +2829,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.Performance.WinAPIs.{API}" units="microseconds"
     expires_after="2025-05-04">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>kschmi@microsoft.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>dlibby@microsoft.com</owner>
@@ -2889,7 +2889,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.Performance.WinAPIs2.{Target}.{API}"
     units="microseconds" expires_after="2026-06-01">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>javiercon@microsoft.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>benjamin.beaudry@microsoft.com</owner>
@@ -3349,7 +3349,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.Reliability.Tree.UnserializeError"
     enum="AccessibilityTreeUnserializeError" expires_after="2026-06-01">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3650,7 +3650,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.SetValue.Role" enum="AccessibilityRole"
     expires_after="2026-06-01">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>aluh@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3765,7 +3765,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.WinAPIs" enum="AccessibilityWinAPIEnum"
     expires_after="2026-06-01">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>nektar@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>Tracks usage of all public Windows accessibility APIs.</summary>
@@ -3773,7 +3773,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.WinAPIs.GetPropertyValue"
     enum="AccessibilityWinAPIGetPropertyValueEnum" expires_after="2026-06-01">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>nektar@chromium.org</owner>
   <owner>dlibby@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -3785,7 +3785,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.WinAPIs.UIAutomation" enum="BooleanEnabled"
     expires_after="2026-06-01">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>almaher@microsoft.com</owner>
   <owner>benjamin.beaudry@microsoft.com</owner>
   <owner>janewman@microsoft.com</owner>
@@ -3796,7 +3796,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.WinHighContrastTheme"
     enum="AccessibilityHighContrastColorScheme" expires_after="2026-06-01">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>almaher@microsoft.com</owner>
   <summary>
     Tracks which Windows high contrast theme is set in system settings (logged
@@ -3809,7 +3809,7 @@ even if they fit the naming pattern. -->
     expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>benjamin.beaudry@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3823,7 +3823,7 @@ even if they fit the naming pattern. -->
     expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>benjamin.beaudry@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3837,7 +3837,7 @@ even if they fit the naming pattern. -->
     expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>benjamin.beaudry@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3852,7 +3852,7 @@ even if they fit the naming pattern. -->
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
   <owner>kenjibaheux@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Whether Windows system settings show that Sticky Keys are enabled.
@@ -3863,7 +3863,7 @@ even if they fit the naming pattern. -->
     expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks whether the third-party ZoomText screen magnifier is running on
@@ -3875,7 +3875,7 @@ even if they fit the naming pattern. -->
     expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

@@ -381,7 +381,6 @@ class _BlinkPerfBenchmark(perf_benchmark.PerfBenchmark):
 
 
 @benchmark.Info(emails=[
-                    'aleventhal@chromium.org',
                     'gregoryd@google.com',
                     'lucasradaelli@google.com'
                 ],
