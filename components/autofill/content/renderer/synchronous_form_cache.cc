@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/containers/map_util.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/types/optional_ref.h"
@@ -41,13 +42,13 @@ std::optional<FormData> SynchronousFormCache::GetOrExtractForm(
     const CallTimerState& timer_state,
     form_util::ButtonTitlesCache* button_titles_cache) const {
   if (!cache_.empty()) {
-    if (FormRendererId form_id = form_util::GetFormRendererId(form_element);
-        cache_.contains(form_id)) {
-      auto it = cache_.find(form_id);
-      // Even if the cache returns a null form, we do not try to extract because
-      // this means extraction happened synchronously before and failed, meaning
-      // that it would fail again if we do it now.
-      return it->second ? std::optional(*it->second) : std::nullopt;
+    if (const base::optional_ref<const FormData>* cached_form =
+            base::FindOrNull(cache_,
+                             form_util::GetFormRendererId(form_element))) {
+      // Even if the cache returns a null form, we do not try to extract
+      // because this means extraction happened synchronously before and
+      // failed, meaning that it would fail again if we do it now.
+      return cached_form->CopyAsOptional();
     }
 #if !BUILDFLAG(IS_ANDROID)
     // This codepath should not be reached, as it would mean that we populated
