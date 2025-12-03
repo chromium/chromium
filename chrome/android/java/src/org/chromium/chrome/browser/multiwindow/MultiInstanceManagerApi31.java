@@ -937,9 +937,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
-    public void initialize(int instanceId, int taskId) {
+    public void initialize(int instanceId, int taskId, @SupportedProfileType int profileType) {
         mInstanceId = instanceId;
         updateTaskMap(instanceId, taskId);
+        writeProfileType(instanceId, profileType);
         installTabModelObserver();
         recordInstanceCountHistogram();
         recordActivityCountHistogram();
@@ -1377,6 +1378,16 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     @VisibleForTesting
     static @SupportedProfileType int readProfileType(int index) {
         return ChromeSharedPreferences.getInstance().readInt(profileTypeKey(index));
+    }
+
+    private static void writeProfileType(int instanceId, @SupportedProfileType int profileType) {
+        // TODO(crbug.com/439670064): Only preserve regular and incognito type until we finalize the
+        // upgrade path.
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()
+                && (profileType == SupportedProfileType.REGULAR
+                        || profileType == SupportedProfileType.OFF_THE_RECORD)) {
+            ChromeSharedPreferences.getInstance().writeInt(profileTypeKey(instanceId), profileType);
+        }
     }
 
     @VisibleForTesting

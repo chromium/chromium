@@ -995,7 +995,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mModalDialogManagerSupplier,
                         mMenuOrKeyboardActionController,
                         mDesktopWindowStateManagerSupplier);
-        multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
+        multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57, SupportedProfileType.MIXED);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
@@ -1103,7 +1103,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mModalDialogManagerSupplier,
                         mMenuOrKeyboardActionController,
                         mDesktopWindowStateManagerSupplier);
-        multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
+        multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57, SupportedProfileType.MIXED);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
         when(mTab1.isIncognito()).thenReturn(false);
@@ -1188,7 +1188,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mModalDialogManagerSupplier,
                         mMenuOrKeyboardActionController,
                         mDesktopWindowStateManagerSupplier);
-        multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
+        multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57, SupportedProfileType.MIXED);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
@@ -2089,7 +2089,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMenuOrKeyboardActionController,
                         mDesktopWindowStateManagerSupplier);
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
-        multiInstanceManager0.initialize(0, TASK_ID_62);
+        multiInstanceManager0.initialize(0, TASK_ID_62, SupportedProfileType.MIXED);
         multiInstanceManager0.onTopResumedActivityChanged(true);
         long instance0CreationTime = MultiInstanceManagerApi31.readLastAccessedTime(0);
 
@@ -2105,7 +2105,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMenuOrKeyboardActionController,
                         mDesktopWindowStateManagerSupplier);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
-        multiInstanceManager1.initialize(1, TASK_ID_63);
+        multiInstanceManager1.initialize(1, TASK_ID_63, SupportedProfileType.MIXED);
         multiInstanceManager0.onTopResumedActivityChanged(false);
         multiInstanceManager1.onTopResumedActivityChanged(true);
         long instance1CreationTime = MultiInstanceManagerApi31.readLastAccessedTime(1);
@@ -2480,7 +2480,7 @@ public class MultiInstanceManagerApi31UnitTest {
     public void testShowNameWindowDialog_UsesCustomTitle() {
         Activity realActivity = Robolectric.setupActivity(Activity.class);
         var manager = createMultiInstanceManager(realActivity);
-        manager.initialize(INSTANCE_ID_1, TASK_ID_56);
+        manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
 
         final String customTitle = "Custom Title";
         final String defaultTitle = "Default Title";
@@ -2503,7 +2503,7 @@ public class MultiInstanceManagerApi31UnitTest {
     public void testShowNameWindowDialog_UsesRegularTitleAsFallback() {
         Activity realActivity = Robolectric.setupActivity(Activity.class);
         var manager = createMultiInstanceManager(realActivity);
-        manager.initialize(INSTANCE_ID_1, TASK_ID_56);
+        manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
 
         final String defaultTitle = "Default Title";
         MultiInstanceManagerApi31.writeTitle(INSTANCE_ID_1, defaultTitle);
@@ -2526,7 +2526,7 @@ public class MultiInstanceManagerApi31UnitTest {
     public void testShowNameWindowDialog_DialogCallbackUpdatesTitle() {
         Activity realActivity = Robolectric.setupActivity(Activity.class);
         var manager = createMultiInstanceManager(realActivity);
-        manager.initialize(INSTANCE_ID_1, TASK_ID_56);
+        manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
         final String defaultTitle = "Default Title";
         MultiInstanceManagerApi31.writeTitle(INSTANCE_ID_1, defaultTitle);
 
@@ -2552,7 +2552,7 @@ public class MultiInstanceManagerApi31UnitTest {
     public void testShowNameWindowDialog_DialogCallbackIgnoresDefaultTitle() {
         Activity realActivity = Robolectric.setupActivity(Activity.class);
         var manager = createMultiInstanceManager(realActivity);
-        manager.initialize(INSTANCE_ID_1, TASK_ID_56);
+        manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
         final String defaultTitle = "Default Title";
         MultiInstanceManagerApi31.writeTitle(INSTANCE_ID_1, defaultTitle);
 

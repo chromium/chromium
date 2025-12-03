@@ -373,8 +373,9 @@ public abstract class MultiInstanceManager {
      *
      * @param instanceId Instance ID of the activity.
      * @param taskId Task ID of the activity.
+     * @param profileType The type of tab/profile the activity supports
      */
-    public void initialize(int instanceId, int taskId) {}
+    public void initialize(int instanceId, int taskId, @SupportedProfileType int profileType) {}
 
     /** Perform initialization tasks for the manager after the tab state is initialized. */
     public void onTabStateInitialized() {}

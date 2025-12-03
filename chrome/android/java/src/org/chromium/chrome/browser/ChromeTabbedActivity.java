@@ -3305,7 +3305,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 }
             }
 
-            mMultiInstanceManager.initialize(assignedIndex, taskId);
+            mMultiInstanceManager.initialize(assignedIndex, taskId, mSupportedProfileType);
         }
 
         mTabModelSelector = assertNonNull(mTabModelOrchestrator.getTabModelSelector());
@@ -3341,19 +3341,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     }
                 };
         if (startIncognito) mTabModelSelector.selectModel(true);
-        // TODO(crbug.com/439670064): Only preserve regular and incognito type until we finalize the
-        // upgrade path.
-        // TODO(crbug.com/457231293): Move the "writeProfileType()" logic out of CTA to
-        // MultiInstanceManagerApi31#initialize().
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()
-                && (mSupportedProfileType == SupportedProfileType.REGULAR
-                        || mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD)) {
-            ChromeSharedPreferences.getInstance()
-                    .writeInt(
-                            ChromePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(
-                                    String.valueOf(mWindowId)),
-                            mSupportedProfileType);
-        }
     }
 
     TabModelSelectorObserver getTabModelSelectorObserverForTesting() {
