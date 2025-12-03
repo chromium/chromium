@@ -33,9 +33,9 @@ class Locale;
 
 namespace device {
 
-constexpr size_t kCableEphemeralIdSize = 16;
-constexpr size_t kCableSessionPreKeySize = 32;
-constexpr size_t kCableNonceSize = 8;
+inline constexpr size_t kCableEphemeralIdSize = 16;
+inline constexpr size_t kCableSessionPreKeySize = 32;
+inline constexpr size_t kCableNonceSize = 8;
 
 using CableEidArray = std::array<uint8_t, kCableEphemeralIdSize>;
 using CableSessionPreKeyArray = std::array<uint8_t, kCableSessionPreKeySize>;

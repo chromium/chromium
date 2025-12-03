@@ -18,61 +18,62 @@ namespace device {
 
 // Length of the U2F challenge parameter:
 // https://goo.gl/y75WrX#registration-request-message---u2f_register
-constexpr size_t kU2fChallengeParamLength = 32;
+inline constexpr size_t kU2fChallengeParamLength = 32;
 
 // Length of the U2F application parameter:
 // https://goo.gl/y75WrX#registration-request-message---u2f_register
-constexpr size_t kU2fApplicationParamLength = 32;
+inline constexpr size_t kU2fApplicationParamLength = 32;
 
 // Offset of the length of the U2F registration key handle:
 // https://goo.gl/y75WrX#registration-response-message-success
-constexpr size_t kU2fKeyHandleLengthOffset = 66;
+inline constexpr size_t kU2fKeyHandleLengthOffset = 66;
 
 // Offset of the U2F registration key handle:
 // https://goo.gl/y75WrX#registration-response-message-success
-constexpr size_t kU2fKeyHandleOffset = 67;
+inline constexpr size_t kU2fKeyHandleOffset = 67;
 
 // Length of the SHA-256 hash of the JSON-serialized client data:
 // https://www.w3.org/TR/webauthn/#collectedclientdata-hash-of-the-serialized-client-data
-constexpr size_t kClientDataHashLength = 32;
+inline constexpr size_t kClientDataHashLength = 32;
 
 // Length of the SHA-256 hash of the RP ID asssociated with the credential:
 // https://www.w3.org/TR/webauthn/#sec-authenticator-data
-constexpr size_t kRpIdHashLength = 32;
+inline constexpr size_t kRpIdHashLength = 32;
 
 // Length of the key used to encrypt large blobs.
 // TODO(nsatragno): add a link to the spec once it's published.
-constexpr size_t kLargeBlobKeyLength = 32;
+inline constexpr size_t kLargeBlobKeyLength = 32;
 
 // Max length for the user handle:
 // https://www.w3.org/TR/webauthn/#user-handle
-constexpr size_t kUserHandleMaxLength = 64;
+inline constexpr size_t kUserHandleMaxLength = 64;
 
 static_assert(kU2fApplicationParamLength == kRpIdHashLength,
               "kU2fApplicationParamLength must be equal to kRpIdHashLength.");
 
 // Length of the flags:
 // https://www.w3.org/TR/webauthn/#sec-authenticator-data
-constexpr size_t kFlagsLength = 1;
+inline constexpr size_t kFlagsLength = 1;
 
 // Length of the signature counter, 32-bit unsigned big-endian integer:
 // https://www.w3.org/TR/webauthn/#sec-authenticator-data
-constexpr size_t kSignCounterLength = 4;
+inline constexpr size_t kSignCounterLength = 4;
 
 // Length of the AAGUID of the authenticator:
 // https://www.w3.org/TR/webauthn/#sec-attested-credential-data
-constexpr size_t kAaguidLength = 16;
+inline constexpr size_t kAaguidLength = 16;
 
 // Length of the byte length L of Credential ID, 16-bit unsigned big-endian
 // integer: https://www.w3.org/TR/webauthn/#sec-attested-credential-data
-constexpr size_t kCredentialIdLengthLength = 2;
+inline constexpr size_t kCredentialIdLengthLength = 2;
 
 // Length of an X9.62-encoded, uncompresed, P-256 public key.
-constexpr size_t kP256X962Length = 1 /* type byte */ + 32 /* x */ + 32 /* y */;
+inline constexpr size_t kP256X962Length =
+    1 /* type byte */ + 32 /* x */ + 32 /* y */;
 
-constexpr uint32_t kMinPinLength = 4;
+inline constexpr uint32_t kMinPinLength = 4;
 
-constexpr uint32_t kDefaultMaxTemplateFriendlyName = 64;
+inline constexpr uint32_t kDefaultMaxTemplateFriendlyName = 64;
 
 // CTAP protocol device response code, as specified in
 // https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html#authenticator-api
@@ -134,7 +135,7 @@ enum class CtapDeviceResponseCode : uint8_t {
   kCtap2ErrVendorLast = 0xFF
 };
 
-constexpr auto kCtapResponseCodeList = base::MakeFixedFlatSet<uint8_t>({
+inline constexpr auto kCtapResponseCodeList = base::MakeFixedFlatSet<uint8_t>({
     static_cast<uint8_t>(CtapDeviceResponseCode::kSuccess),
     static_cast<uint8_t>(CtapDeviceResponseCode::kCtap1ErrInvalidCommand),
     static_cast<uint8_t>(CtapDeviceResponseCode::kCtap1ErrInvalidParameter),
@@ -210,7 +211,8 @@ enum class FidoHidDeviceCommand : uint8_t {
   kLock = 0x04,
 };
 
-constexpr std::array<FidoHidDeviceCommand, 9> GetFidoHidDeviceCommandList() {
+inline constexpr std::array<FidoHidDeviceCommand, 9>
+GetFidoHidDeviceCommandList() {
   return {FidoHidDeviceCommand::kMsg,       FidoHidDeviceCommand::kCbor,
           FidoHidDeviceCommand::kInit,      FidoHidDeviceCommand::kPing,
           FidoHidDeviceCommand::kCancel,    FidoHidDeviceCommand::kError,
@@ -232,8 +234,8 @@ enum class FidoBleDeviceCommand : uint8_t {
 
 // Relevant LE Discoverable Mode bits. Reference:
 // Bluetooth Core Specification Supplement, Part A, section 1.3
-constexpr uint8_t kLeLimitedDiscoverableModeBit = 0;
-constexpr uint8_t kLeGeneralDiscoverableModeBit = 1;
+inline constexpr uint8_t kLeLimitedDiscoverableModeBit = 0;
+inline constexpr uint8_t kLeGeneralDiscoverableModeBit = 1;
 
 // Fido Service Data Flags as specified in
 // https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-client-to-authenticator-protocol-v2.0-id-20180227.html#ble-pairing-authnr-considerations
@@ -331,7 +333,7 @@ COMPONENT_EXPORT(FIDO_PUBLIC)
 extern const std::array<uint8_t, 32> kBogusChallenge;
 
 // String used as Relying Party ID to check for user presence.
-constexpr char kDummyRpID[] = ".dummy";
+inline constexpr char kDummyRpID[] = ".dummy";
 
 // String key values for CTAP request optional parameters and
 // AuthenticatorGetInfo response.
@@ -358,60 +360,62 @@ COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kAlwaysUvKey[];
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kMakeCredUvNotRqdKey[];
 
 // HID transport specific constants.
-constexpr uint32_t kHidBroadcastChannel = 0xffffffff;
-constexpr size_t kHidInitPacketHeaderSize = 7;
-constexpr size_t kHidContinuationPacketHeaderSize = 5;
-constexpr size_t kHidMaxPacketSize = 64;
+inline constexpr uint32_t kHidBroadcastChannel = 0xffffffff;
+inline constexpr size_t kHidInitPacketHeaderSize = 7;
+inline constexpr size_t kHidContinuationPacketHeaderSize = 5;
+inline constexpr size_t kHidMaxPacketSize = 64;
 
-constexpr uint8_t kHidMaxLockSeconds = 10;
+inline constexpr uint8_t kHidMaxLockSeconds = 10;
 
 // Messages are limited to an initiation packet and 128 continuation packets.
-constexpr size_t kHidMaxMessageSize = 7609;
+inline constexpr size_t kHidMaxMessageSize = 7609;
 
 // U2F APDU encoding constants, as specified in
 // https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-raw-message-formats-v1.2-ps-20170411.html#bib-U2FHeader
-constexpr size_t kU2fMaxResponseSize = 65536;
+inline constexpr size_t kU2fMaxResponseSize = 65536;
 
 // P1 instructions.
-constexpr uint8_t kP1TupRequired = 0x01;
-constexpr uint8_t kP1TupConsumed = 0x02;
-constexpr uint8_t kP1TupRequiredConsumed = kP1TupRequired | kP1TupConsumed;
+inline constexpr uint8_t kP1TupRequired = 0x01;
+inline constexpr uint8_t kP1TupConsumed = 0x02;
+inline constexpr uint8_t kP1TupRequiredConsumed =
+    kP1TupRequired | kP1TupConsumed;
 
 // Control byte used for check-only setting. The check-only command is used to
 // determine if the provided key handle was originally created by this token
 // and whether it was created for the provided application parameter.
-constexpr uint8_t kP1CheckOnly = 0x07;
+inline constexpr uint8_t kP1CheckOnly = 0x07;
 
 // Indicates that an individual attestation certificate is acceptable to
 // return with this registration.
-constexpr uint8_t kP1IndividualAttestation = 0x80;
-constexpr size_t kMaxKeyHandleLength = 255;
+inline constexpr uint8_t kP1IndividualAttestation = 0x80;
+inline constexpr size_t kMaxKeyHandleLength = 255;
 
 // kCableWebSocketProtocol is the name of the WebSocket subprotocol used by
 // caBLEv2. See https://tools.ietf.org/html/rfc6455#section-1.9.
-constexpr char kCableWebSocketProtocol[] = "fido.cable";
+inline constexpr char kCableWebSocketProtocol[] = "fido.cable";
 
 // kCableShardIdHeader is the name of an HTTP header that is sent in the reply
 // from the tunnel server and which specifies the server's chosen shard number.
 // TODO(agl): remove. Only being kept around to allow things to compile.
-constexpr char kCableShardIdHeader[] = "X-caBLE-Shard";
+inline constexpr char kCableShardIdHeader[] = "X-caBLE-Shard";
 
 // kCableRoutingIdHeader is the name of an HTTP header that is sent in the reply
 // from the tunnel server and which specifies the server's chosen routing ID
 // which other parties can use to reach the same tunnel server.
-constexpr char kCableRoutingIdHeader[] = "X-caBLE-Routing-ID";
+inline constexpr char kCableRoutingIdHeader[] = "X-caBLE-Routing-ID";
 
 // kCableClientPayloadHeader is the name of an HTTP header that is to
 // the tunnel server when performing a state-assisted handshake and which
 // includes the client's nonce and pairing ID.
-constexpr char kCableClientPayloadHeader[] = "X-caBLE-Client-Payload";
+inline constexpr char kCableClientPayloadHeader[] = "X-caBLE-Client-Payload";
 
 // kCableSignalConnectionHeader is the name of an HTTP header that indicates to
 // the tunnel server that a client supports getting a signal when the
 // authenticator connects to the tunnel server during a state-assisted
 // transaction. The tunnel server echos this header to indicate that the signal
 // will be sent.
-constexpr char kCableSignalConnectionHeader[] = "X-caBLE-Signal-Connection";
+inline constexpr char kCableSignalConnectionHeader[] =
+    "X-caBLE-Signal-Connection";
 
 // Maximum wait time before client error outs on device.
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const base::TimeDelta kDeviceTimeout;
@@ -445,9 +449,9 @@ COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kCableClientHelloMessage[];
 
 // The list of CTAP versions returned in the getInfo response for different
 // minor versions.
-constexpr Ctap2Version kCtap2Versions2_0[] = {Ctap2Version::kCtap2_0};
-constexpr Ctap2Version kCtap2Versions2_1[] = {Ctap2Version::kCtap2_0,
-                                              Ctap2Version::kCtap2_1};
+inline constexpr Ctap2Version kCtap2Versions2_0[] = {Ctap2Version::kCtap2_0};
+inline constexpr Ctap2Version kCtap2Versions2_1[] = {Ctap2Version::kCtap2_0,
+                                                     Ctap2Version::kCtap2_1};
 
 // Protocol version strings.
 // https://fidoalliance.org/specs/fido-v2.0-ps-20190130/fido-client-to-authenticator-protocol-v2.0-ps-20190130.html#authenticatorGetInfo
@@ -467,7 +471,7 @@ COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionMinPINLength[];
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionPRF[];
 
 // Constants for the prf extension
-constexpr size_t kExtensionPRFOutputSize = 32;
+inline constexpr size_t kExtensionPRFOutputSize = 32;
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionPRFEnabled[];
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionPRFEval[];
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionPRFEvalByCredential[];

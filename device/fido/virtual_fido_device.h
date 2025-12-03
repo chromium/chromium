@@ -36,9 +36,9 @@ namespace device {
 
 struct PublicKey;
 
-constexpr size_t kMaxPinRetries = 8;
+inline constexpr size_t kMaxPinRetries = 8;
 
-constexpr size_t kMaxUvRetries = 5;
+inline constexpr size_t kMaxUvRetries = 5;
 
 class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
  public:

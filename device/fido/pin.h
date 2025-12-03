@@ -69,7 +69,7 @@ enum class Permissions : uint8_t {
 
 // Some commands that validate PinUvAuthTokens include this padding to ensure a
 // PinUvAuthParam cannot be reused across different commands.
-constexpr std::array<uint8_t, 32> kPinUvAuthTokenSafetyPadding = {
+inline constexpr std::array<uint8_t, 32> kPinUvAuthTokenSafetyPadding = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
@@ -93,10 +93,10 @@ PINEntryError ValidatePIN(
 // will accept. Since the PIN is UTF-8 encoded, this could be a single code
 // point. However, the platform is supposed to additionally enforce a 4
 // *character* minimum
-constexpr size_t kMinBytes = 4;
+inline constexpr size_t kMinBytes = 4;
 // kMaxBytes is the maximum number of bytes of PIN data that a CTAP2 device will
 // accept.
-constexpr size_t kMaxBytes = 63;
+inline constexpr size_t kMaxBytes = 63;
 
 // EncodeCOSEPublicKey converts an X9.62 public key to a COSE structure.
 COMPONENT_EXPORT(DEVICE_FIDO)

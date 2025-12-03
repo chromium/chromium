@@ -41,11 +41,11 @@ enum class LargeBlobDataKeys : uint8_t {
 
 using LargeBlobKey = std::array<uint8_t, kLargeBlobKeyLength>;
 
-constexpr size_t kLargeBlobDefaultMaxFragmentLength = 960;
-constexpr size_t kLargeBlobReadEncodingOverhead = 64;
-constexpr size_t kLargeBlobArrayNonceLength = 12;
-constexpr size_t kMinLargeBlobSize = 1024;
-constexpr std::array<uint8_t, 2> kLargeBlobPinPrefix = {0x0c, 0x00};
+inline constexpr size_t kLargeBlobDefaultMaxFragmentLength = 960;
+inline constexpr size_t kLargeBlobReadEncodingOverhead = 64;
+inline constexpr size_t kLargeBlobArrayNonceLength = 12;
+inline constexpr size_t kMinLargeBlobSize = 1024;
+inline constexpr std::array<uint8_t, 2> kLargeBlobPinPrefix = {0x0c, 0x00};
 
 // A complete but still compressed large blob.
 struct COMPONENT_EXPORT(DEVICE_FIDO) LargeBlob {
