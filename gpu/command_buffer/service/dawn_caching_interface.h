@@ -19,23 +19,16 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/memory_dump_provider.h"
-#include "components/persistent_cache/persistent_cache.h"
-#include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/command_buffer/service/memory_cache.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 
-namespace gpu {
-
-class GpuPersistentCache;
-
-namespace webgpu {
+namespace gpu::webgpu {
 
 class DawnCachingInterfaceFactory;
 
 // Provides a wrapper class around an in-memory DawnMemoryCache and a disk
-// cache. The disk cache controller can be provided either via a
-// CacheBlobCallback or a GpuPersistentCache pointer.
+// cache.
 class GPU_GLES2_EXPORT DawnCachingInterface
     : public dawn::platform::CachingInterface {
  public:
@@ -44,10 +37,6 @@ class GPU_GLES2_EXPORT DawnCachingInterface
                                    const std::string& blob)>;
 
   ~DawnCachingInterface() override;
-
-  void InitializePersistentCache(
-      persistent_cache::PendingBackend pending_backend,
-      scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count);
 
   size_t LoadData(const void* key,
                   size_t key_size,
@@ -68,21 +57,12 @@ class GPU_GLES2_EXPORT DawnCachingInterface
   // the factory.
   explicit DawnCachingInterface(scoped_refptr<MemoryCache> backend,
                                 CacheBlobCallback callback = {});
-  explicit DawnCachingInterface(
-      scoped_refptr<MemoryCache> backend,
-      scoped_refptr<GpuPersistentCache> persistent_cache);
 
   // Caching interface owns a reference to the backend.
   scoped_refptr<MemoryCache> memory_cache_backend_ = nullptr;
 
   // The callback provides ability to store cache entries to persistent disk.
   CacheBlobCallback cache_blob_callback_;
-
-  // The interface that allows storing and loading cache entries directly
-  // to/from disk.
-  // TODO(crbug.com/399642827): Remove the above callback once we migrate
-  // everything to use GpuPersistentCache API.
-  scoped_refptr<GpuPersistentCache> persistent_cache_;
 };
 
 // Factory class for producing and managing DawnCachingInterfaces.
@@ -105,10 +85,6 @@ class GPU_GLES2_EXPORT DawnCachingInterfaceFactory
   std::unique_ptr<DawnCachingInterface> CreateInstance(
       const gpu::GpuDiskCacheHandle& handle,
       DawnCachingInterface::CacheBlobCallback callback = {});
-
-  std::unique_ptr<DawnCachingInterface> CreateInstance(
-      const gpu::GpuDiskCacheHandle& handle,
-      scoped_refptr<GpuPersistentCache> persistent_cache);
 
   // Returns a pointer to a DawnCachingInterface that owns the in memory
   // backend. This is used for incognito cases where the cache should not be
@@ -147,7 +123,6 @@ class GPU_GLES2_EXPORT DawnCachingInterfaceFactory
   base::flat_map<gpu::GpuDiskCacheHandle, scoped_refptr<MemoryCache>> backends_;
 };
 
-}  // namespace webgpu
-}  // namespace gpu
+}  // namespace gpu::webgpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_DAWN_CACHING_INTERFACE_H_

@@ -29,6 +29,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
+#include "gpu/command_buffer/service/gpu_persistent_cache.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/memory_program_cache.h"
 #include "gpu/command_buffer/service/passthrough_program_cache.h"
@@ -339,7 +340,8 @@ GpuChannelManager::GpuChannelManager(
     DawnContextProvider* dawn_context_provider,
     webgpu::DawnCachingInterfaceFactory* dawn_caching_interface_factory,
     const SharedContextState::GrContextOptionsProvider*
-        gr_context_options_provider)
+        gr_context_options_provider,
+    GpuPersistentCacheCollection* persistent_caches)
     : task_runner_(task_runner),
       io_task_runner_(io_task_runner),
       gpu_preferences_(gpu_preferences),
@@ -363,6 +365,7 @@ GpuChannelManager::GpuChannelManager(
       vulkan_context_provider_(vulkan_context_provider),
       metal_context_provider_(metal_context_provider),
       dawn_context_provider_(dawn_context_provider),
+      persistent_caches_(persistent_caches),
       peak_memory_monitor_(base::MakeRefCounted<GpuPeakMemoryMonitor>()),
       gr_context_options_provider_(gr_context_options_provider) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -841,6 +844,10 @@ void GpuChannelManager::OnMemoryPressure(
     dawn_caching_interface_factory()->PurgeMemory(memory_pressure_level);
   }
 #endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+
+  if (persistent_caches_) {
+    persistent_caches_->PurgeMemory(memory_pressure_level);
+  }
 
 #if BUILDFLAG(IS_WIN)
   TrimD3DResources(shared_context_state_);

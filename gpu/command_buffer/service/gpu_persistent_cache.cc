@@ -18,10 +18,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
 #include "components/persistent_cache/persistent_cache.h"
@@ -719,9 +722,18 @@ GpuPersistentCacheCollection::GpuPersistentCacheCollection(
     size_t max_in_memory_cache_size,
     GpuPersistentCache::AsyncDiskWriteOpts async_write_options)
     : max_in_memory_cache_size_(max_in_memory_cache_size),
-      async_write_options_(async_write_options) {}
+      async_write_options_(async_write_options) {
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+        this, "GpuPersistentCache",
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
+}
 
-GpuPersistentCacheCollection::~GpuPersistentCacheCollection() = default;
+GpuPersistentCacheCollection::~GpuPersistentCacheCollection() {
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
+}
 
 scoped_refptr<GpuPersistentCache> GpuPersistentCacheCollection::GetCache(
     const GpuDiskCacheHandle& handle) {
@@ -739,6 +751,32 @@ scoped_refptr<GpuPersistentCache> GpuPersistentCacheCollection::GetCache(
                   std::move(memory_cache), async_write_options_));
   DCHECK(inserted);
   return iter->second;
+}
+
+void GpuPersistentCacheCollection::PurgeMemory(
+    base::MemoryPressureLevel memory_pressure_level) {
+  base::AutoLock lock(mutex_);
+  for (auto& [_, cache] : caches_) {
+    cache->PurgeMemory(memory_pressure_level);
+  }
+}
+
+bool GpuPersistentCacheCollection::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  base::AutoLock lock(mutex_);
+  for (auto& [handle, cache] : caches_) {
+    std::ostringstream dump_name;
+    dump_name << "gpu/shader_cache/"
+              << GetCacheHistogramPrefix(GetHandleType(handle));
+    if (!IsReservedGpuDiskCacheHandle(handle)) {
+      int32_t value = GetHandleValue(handle);
+      DCHECK_GE(value, 0);
+      dump_name << "_" << value;
+    }
+    cache->OnMemoryDump(dump_name.str(), pmd);
+  }
+  return true;
 }
 
 }  // namespace gpu

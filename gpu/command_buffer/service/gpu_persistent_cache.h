@@ -155,14 +155,20 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
 void BindCacheToCurrentOpenGLContext(GpuPersistentCache* cache);
 void UnbindCacheFromCurrentOpenGLContext();
 
-class GPU_GLES2_EXPORT GpuPersistentCacheCollection {
+class GPU_GLES2_EXPORT GpuPersistentCacheCollection
+    : public base::trace_event::MemoryDumpProvider {
  public:
   explicit GpuPersistentCacheCollection(
       size_t max_in_memory_cache_size,
       GpuPersistentCache::AsyncDiskWriteOpts async_write_options);
-  ~GpuPersistentCacheCollection();
+  ~GpuPersistentCacheCollection() override;
 
   scoped_refptr<GpuPersistentCache> GetCache(const GpuDiskCacheHandle& handle);
+
+  void PurgeMemory(base::MemoryPressureLevel memory_pressure_level);
+
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
 
  private:
   const size_t max_in_memory_cache_size_;

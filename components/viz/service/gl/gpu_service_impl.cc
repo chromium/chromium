@@ -236,11 +236,11 @@ GpuServiceImpl::GpuServiceImpl(
     if (dawn_context_provider_) {
       // GpuServiceImpl holds the instance of DawnContextProvider, so it
       // outlives the DawnContextProvider.
-      std::unique_ptr<gpu::webgpu::DawnCachingInterface> caching_interface;
       if (features::kSkiaGraphiteDawnUsePersistentCache.Get()) {
-        caching_interface = dawn_caching_interface_factory_->CreateInstance(
-            gpu::kGraphiteDawnGpuDiskCacheHandle,
-            persistent_caches_.GetCache(gpu::kGraphiteDawnGpuDiskCacheHandle));
+        auto persistent_cache =
+            persistent_caches_.GetCache(gpu::kGraphiteDawnGpuDiskCacheHandle);
+        dawn_context_provider_->SetCachingInterface(
+            std::move(persistent_cache));
       } else {
         auto cache_blob_callback = base::BindRepeating(
             [](GpuServiceImpl* self, const std::string& key,
@@ -249,11 +249,13 @@ GpuServiceImpl::GpuServiceImpl(
                                     blob);
             },
             base::Unretained(this));
-        caching_interface = dawn_caching_interface_factory_->CreateInstance(
-            gpu::kGraphiteDawnGpuDiskCacheHandle,
-            std::move(cache_blob_callback));
+        auto dawn_caching_interface =
+            dawn_caching_interface_factory_->CreateInstance(
+                gpu::kGraphiteDawnGpuDiskCacheHandle,
+                std::move(cache_blob_callback));
+        dawn_context_provider_->SetCachingInterface(
+            std::move(dawn_caching_interface));
       }
-      dawn_context_provider_->SetCachingInterface(std::move(caching_interface));
     }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
   } else if (gpu_preferences_.gr_context_type ==
@@ -488,7 +490,7 @@ void GpuServiceImpl::InitializeWithHostInternal(
       &use_shader_cache_shm_count_->data, std::move(default_offscreen_surface),
       vulkan_context_provider(), metal_context_provider(),
       dawn_context_provider(), dawn_caching_interface_factory(),
-      gr_context_options_provider_);
+      gr_context_options_provider_, &persistent_caches_);
 
   media_gpu_channel_manager_ = std::make_unique<media::MediaGpuChannelManager>(
       gpu_channel_manager_.get());

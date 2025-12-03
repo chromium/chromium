@@ -63,6 +63,7 @@ class ImageDecodeAcceleratorWorker;
 struct GpuPreferences;
 class GpuChannel;
 class GpuChannelManagerDelegate;
+class GpuPersistentCacheCollection;
 class GpuWatchdogThread;
 class Scheduler;
 class SharedImageManager;
@@ -103,7 +104,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
       webgpu::DawnCachingInterfaceFactory* dawn_caching_interface_factory =
           nullptr,
       const SharedContextState::GrContextOptionsProvider*
-          gr_context_options_provider = nullptr);
+          gr_context_options_provider = nullptr,
+      GpuPersistentCacheCollection* persistent_caches = nullptr);
 
   GpuChannelManager(const GpuChannelManager&) = delete;
   GpuChannelManager& operator=(const GpuChannelManager&) = delete;
@@ -369,6 +371,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   // With features::SkiaGraphite, |dawn_context_provider_| will be set from
   // viz::GpuServiceImpl. The raster decoders may use it for rasterization.
   raw_ptr<DawnContextProvider> dawn_context_provider_ = nullptr;
+
+  const raw_ptr<GpuPersistentCacheCollection> persistent_caches_;
 
   scoped_refptr<GpuPeakMemoryMonitor> peak_memory_monitor_;
 

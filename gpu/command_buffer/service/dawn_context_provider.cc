@@ -444,7 +444,8 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
                   const GpuDriverBugWorkarounds& workarounds,
                   DawnContextProvider::ValidateAdapterFn validate_adapter_fn);
   void SetCachingInterface(
-      std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
+      std::unique_ptr<webgpu::DawnCachingInterface> dawn_caching_interface);
+  void SetCachingInterface(scoped_refptr<GpuPersistentCache> persistent_cache);
 
   wgpu::Device GetDevice() const { return device_; }
   wgpu::BackendType backend_type() const { return backend_type_; }
@@ -537,31 +538,6 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
  private:
   friend class base::RefCountedThreadSafe<DawnSharedContext>;
-
-  // Provided to wgpu::Device as caching callback.
-  static size_t LoadCachedData(const void* key,
-                               size_t key_size,
-                               void* value,
-                               size_t value_size,
-                               void* userdata) {
-    if (auto& caching_interface =
-            static_cast<DawnSharedContext*>(userdata)->caching_interface_) {
-      return caching_interface->LoadData(key, key_size, value, value_size);
-    }
-    return 0;
-  }
-
-  // Provided to wgpu::Device as caching callback.
-  static void StoreCachedData(const void* key,
-                              size_t key_size,
-                              const void* value,
-                              size_t value_size,
-                              void* userdata) {
-    if (auto& caching_interface =
-            static_cast<DawnSharedContext*>(userdata)->caching_interface_) {
-      caching_interface->StoreData(key, key_size, value, value_size);
-    }
-  }
 
   // Provided to wgpu::Device as logging callback.
   static void DeviceLogInfo(wgpu::LoggingType type,
@@ -666,7 +642,11 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  std::unique_ptr<webgpu::DawnCachingInterface> caching_interface_;
+  // caching_interface_ is null or set to either dawn_caching_interface_ or
+  // persistent_cache_
+  std::unique_ptr<webgpu::DawnCachingInterface> dawn_caching_interface_;
+  scoped_refptr<GpuPersistentCache> persistent_cache_;
+  raw_ptr<dawn::platform::CachingInterface> caching_interface_ = nullptr;
 
   Platform platform_;
   std::unique_ptr<webgpu::DawnInstance> instance_;
@@ -861,8 +841,23 @@ bool DawnSharedContext::Initialize(
 
   // Start initializing dawn device here.
   wgpu::DawnCacheDeviceDescriptor cache_desc;
-  cache_desc.loadDataFunction = &DawnSharedContext::LoadCachedData;
-  cache_desc.storeDataFunction = &DawnSharedContext::StoreCachedData;
+  cache_desc.loadDataFunction = [](const void* key, size_t key_size,
+                                   void* value, size_t value_size,
+                                   void* userdata) -> size_t {
+    if (auto caching_interface =
+            static_cast<DawnSharedContext*>(userdata)->caching_interface_) {
+      return caching_interface->LoadData(key, key_size, value, value_size);
+    }
+    return 0;
+  };
+  cache_desc.storeDataFunction = [](const void* key, size_t key_size,
+                                    const void* value, size_t value_size,
+                                    void* userdata) {
+    if (auto caching_interface =
+            static_cast<DawnSharedContext*>(userdata)->caching_interface_) {
+      caching_interface->StoreData(key, key_size, value, value_size);
+    }
+  };
   // The dawn device is owned by this so a pointer back here is safe.
   cache_desc.functionUserdata = this;
   cache_desc.nextInChain = &toggles_desc;
@@ -978,9 +973,17 @@ bool DawnSharedContext::Initialize(
 }
 
 void DawnSharedContext::SetCachingInterface(
-    std::unique_ptr<webgpu::DawnCachingInterface> caching_interface) {
+    std::unique_ptr<webgpu::DawnCachingInterface> dawn_caching_interface) {
   CHECK(!caching_interface_);
-  caching_interface_ = std::move(caching_interface);
+  dawn_caching_interface_ = std::move(dawn_caching_interface);
+  caching_interface_ = dawn_caching_interface_.get();
+}
+
+void DawnSharedContext::SetCachingInterface(
+    scoped_refptr<GpuPersistentCache> persistent_cache) {
+  CHECK(!caching_interface_);
+  persistent_cache_ = std::move(persistent_cache);
+  caching_interface_ = persistent_cache_.get();
 }
 
 std::optional<error::ContextLostReason> DawnSharedContext::GetResetStatus()
@@ -1235,10 +1238,17 @@ bool DawnContextProvider::InitializeGraphiteContext(
 }
 
 void DawnContextProvider::SetCachingInterface(
-    std::unique_ptr<webgpu::DawnCachingInterface> caching_interface) {
+    std::unique_ptr<webgpu::DawnCachingInterface> dawn_caching_interface) {
   CHECK(dawn_shared_context_->HasOneRef());
   CHECK(!graphite_shared_context_);
-  dawn_shared_context_->SetCachingInterface(std::move(caching_interface));
+  dawn_shared_context_->SetCachingInterface(std::move(dawn_caching_interface));
+}
+
+void DawnContextProvider::SetCachingInterface(
+    scoped_refptr<GpuPersistentCache> persistent_cache) {
+  CHECK(dawn_shared_context_->HasOneRef());
+  CHECK(!graphite_shared_context_);
+  dawn_shared_context_->SetCachingInterface(std::move(persistent_cache));
 }
 
 #if BUILDFLAG(IS_WIN)
