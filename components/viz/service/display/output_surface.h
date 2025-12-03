@@ -307,6 +307,9 @@ class VIZ_SERVICE_EXPORT OutputSurface {
 // `features::IsDelegatedCompositingEnabled()`.
 bool IsDelegatedCompositingSupportedAndEnabled(
     OutputSurface::DCSupportLevel support_level);
+
+bool IsBufferQueueSupportedAndEnabled(
+    OutputSurface::DCSupportLevel support_level);
 #endif
 
 }  // namespace viz

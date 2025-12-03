@@ -120,12 +120,6 @@ namespace {
 BASE_FEATURE(kDumpWithoutCrashingOnMissingRenderPassBacking,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN)
-// Use BufferQueue for the primary plane instead of a DXGI swap chain or DComp
-// surface.
-BASE_FEATURE(kBufferQueue, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Smallest unit that impacts anti-aliasing output. We use this to determine
 // when an exterior edge (with AA) has been clipped (no AA). The specific value
 // was chosen to match that used by gl_renderer.
@@ -991,10 +985,8 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
 
   // It's possible to use BufferQueue with DComp textures, so we can optionally
   // enable it behind a feature flag.
-  const bool want_buffer_queue =
-      output_surface_->capabilities().dc_support_level >=
-          OutputSurface::DCSupportLevel::kDCompDynamicTexture &&
-      base::FeatureList::IsEnabled(kBufferQueue);
+  const bool want_buffer_queue = IsBufferQueueSupportedAndEnabled(
+      output_surface_->capabilities().dc_support_level);
 #else
   const bool want_buffer_queue = true;
 #endif
