@@ -65,7 +65,6 @@ export interface StoreClientMixinLitInterface extends
 
   /**
    * Helper to dispatch an asynchronous action to the store.
-   * TODO(b/296440261) remove `dispatchAsync` in favor of promises.
    */
   dispatchAsync(action: DeferredAction<Action>): void;
 
