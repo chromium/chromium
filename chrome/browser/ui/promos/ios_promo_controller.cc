@@ -13,8 +13,10 @@
 #include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "ui/views/widget/widget.h"
 
 using desktop_to_mobile_promos::PromoType;
 
@@ -62,9 +64,14 @@ IOSPromoController* IOSPromoController::From(
 
 void IOSPromoController::OnPromoTriggered(PromoType promo_type) {
   BrowserWindow* window = browser_->window();
-  // Don't show the promo if the window is not active or the toolbar is not
-  // visible.
-  if (!window || !window->IsActive() || !window->IsToolbarVisible()) {
+  // Don't show the promo if the toolbar is not visible.
+  if (!window || !window->IsToolbarVisible()) {
+    return;
+  }
+
+  // Do not show the promo if the window is not active.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  if (!browser_view || !browser_view->GetWidget()->ShouldPaintAsActive()) {
     return;
   }
 
