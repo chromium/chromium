@@ -515,12 +515,9 @@ void MostVisitedSitesProvider::DeleteMatch(const AutocompleteMatch& match) {
     history_service->DeleteURLs({match.destination_url});
 
     // Delete site from cache if prefetching is enabled.
-    cached_sites_.erase(
-        std::remove_if(cached_sites_.begin(), cached_sites_.end(),
-                       [&match](const history::MostVisitedURL& site) {
-                         return site.url == match.destination_url;
-                       }),
-        cached_sites_.end());
+    std::erase_if(cached_sites_, [&match](const history::MostVisitedURL& site) {
+      return site.url == match.destination_url;
+    });
   } else {
     BlockURL(match.destination_url);
   }
