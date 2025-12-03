@@ -107,7 +107,6 @@ class TestOmniboxPopupFileSelector : public OmniboxPopupFileSelector {
   void OpenFileUploadDialog(
       content::WebContents* web_contents,
       bool is_image,
-      contextual_search::ContextualSearchContextController* query_controller,
       OmniboxEditModel* edit_model,
       std::optional<lens::ImageEncodingOptions> image_encoding_options)
       override {
