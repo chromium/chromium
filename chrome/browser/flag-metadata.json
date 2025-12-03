@@ -810,7 +810,7 @@
   {
     "name": "autofill-credit-card-scanner-ios",
     "owners": [ "smcgruer@chromium.org", "chrome-payments-eng@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 155
   },
   { "name": "autofill-disable-bnpl-country-check-for-testing",
     "owners": [ "vinnypersky@google.com", "payments-autofill-team@google.com"],
