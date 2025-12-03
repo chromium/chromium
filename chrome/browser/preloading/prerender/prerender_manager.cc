@@ -456,7 +456,7 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
   if (!base::FeatureList::IsEnabled(features::kPrewarm)) {
     return PrewarmDecision::kDisabled;
   }
-  if (headless::IsHeadlessMode() || headless::IsOldHeadlessMode()) {
+  if (headless::IsHeadlessMode()) {
     return PrewarmDecision::kInHeadlessMode;
   }
   if (content::DevToolsAgentHost::IsDebuggerAttached(web_contents()) &&

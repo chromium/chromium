@@ -103,14 +103,9 @@ bool GetDefaultUserDataDirectory(const InstallConstants& mode,
   return true;
 }
 
-// Returns true if the |command_line| contains --headless or --headless=<value>
-// where "<value>" is anything but "old". Note that the value checking portion
-// should go away when the old headless code is removed from the Chrome binary,
-// see https://crbug.com/366381673.
+// Returns true if the |command_line| contains --headless switch.
 bool IsHeadlessMode(const std::wstring& command_line) {
-  std::optional<std::wstring> opt =
-      GetCommandLineSwitch(command_line, L"headless");
-  return opt ? opt.value() != L"old" : false;
+  return GetCommandLineSwitch(command_line, L"headless").has_value();
 }
 
 }  // namespace

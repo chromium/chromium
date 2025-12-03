@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check_deref.h"
 #include "build/build_config.h"
 #include "ui/gfx/switches.h"
 
@@ -36,30 +37,6 @@
 namespace headless {
 
 namespace {
-const char kNewHeadlessModeSwitchValue[] = "new";
-const char kOldHeadlessModeSwitchValue[] = "old";
-
-enum HeadlessMode {
-  kNoHeadlessMode,
-  kOldHeadlessMode,
-  kNewHeadlessMode,
-  kDefaultHeadlessMode = kNewHeadlessMode
-};
-
-HeadlessMode GetHeadlessMode() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kHeadless))
-    return kNoHeadlessMode;
-
-  std::string switch_value =
-      command_line->GetSwitchValueASCII(switches::kHeadless);
-  if (switch_value == kOldHeadlessModeSwitchValue)
-    return kOldHeadlessMode;
-  if (switch_value == kNewHeadlessModeSwitchValue)
-    return kNewHeadlessMode;
-
-  return kDefaultHeadlessMode;
-}
 
 class HeadlessModeHandleImpl : public HeadlessModeHandle {
  public:
@@ -178,16 +155,15 @@ class HeadlessModeHandleImpl : public HeadlessModeHandle {
 }  // namespace
 
 bool IsHeadlessMode() {
-  return GetHeadlessMode() == kNewHeadlessMode;
-}
-
-bool IsOldHeadlessMode() {
-  return GetHeadlessMode() == kOldHeadlessMode;
+  const base::CommandLine& command_line =
+      CHECK_DEREF(base::CommandLine::ForCurrentProcess());
+  return command_line.HasSwitch(switches::kHeadless);
 }
 
 bool IsChromeSchemeUrlAllowed() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(switches::kAllowChromeSchemeUrl);
+  const base::CommandLine& command_line =
+      CHECK_DEREF(base::CommandLine::ForCurrentProcess());
+  return command_line.HasSwitch(switches::kAllowChromeSchemeUrl);
 }
 
 base::expected<std::unique_ptr<HeadlessModeHandle>, std::string>
@@ -205,17 +181,6 @@ namespace headless {
 
 bool IsHeadlessMode() {
   return false;
-}
-
-bool IsOldHeadlessMode() {
-  // In addition to Linux, Windows and Mac (which are handled above),
-  // the old headless mode is also supported on ChromeOS, see chrome_main.cc.
-#if BUILDFLAG(IS_CHROMEOS)
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(switches::kHeadless);
-#else
-  return false;
-#endif
 }
 
 bool IsChromeSchemeUrlAllowed() {

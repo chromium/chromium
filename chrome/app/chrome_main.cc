@@ -52,36 +52,6 @@
 #define DLLEXPORT __declspec(dllexport)
 #endif  // BUILDFLAG(IS_WIN)
 
-// This is only here so that we can display an informational message when
-// Chrome is started with --headless=old switch. This should be deleted
-// sometime after old headless code is removed from Chrome.
-// See https://crbug.com/373672160.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-#define ENABLE_OLD_HEADLESS_INFO
-#endif
-
-#ifdef ENABLE_OLD_HEADLESS_INFO
-namespace {
-void ShowOldHeadlessInfoMaybe(const base::CommandLine* command_line) {
-  // Show warning only if in browser process.
-  if (!command_line->GetSwitchValueASCII(::switches::kProcessType).empty()) {
-    return;
-  }
-
-  std::cerr
-      << "Old Headless mode has been removed from the Chrome binary. "
-         "Please use the new Headless mode "
-         "(https://developer.chrome.com/docs/chromium/new-headless) or the "
-         "chrome-headless-shell which is a standalone implementation of "
-         "the old Headless mode "
-         "(https://developer.chrome.com/blog/chrome-headless-shell)."
-      << std::endl
-      << std::endl;
-}
-}  // namespace
-#endif  // ENABLE_OLD_HEADLESS_INFO
-
 #if BUILDFLAG(IS_WIN)
 // We use extern C for the prototype DLLEXPORT to avoid C++ name mangling.
 extern "C" {
@@ -209,13 +179,6 @@ int ChromeMain(int argc, const char** argv) {
     }
 
     headless_mode_handle = std::move(init_headless_mode.value());
-  } else {
-#ifdef ENABLE_OLD_HEADLESS_INFO
-    if (headless::IsOldHeadlessMode()) {
-      ShowOldHeadlessInfoMaybe(command_line);
-      return EXIT_FAILURE;
-    }
-#endif  // ENABLE_OLD_HEADLESS_INFO
   }
 
 #if BUILDFLAG(IS_MAC)

@@ -19,14 +19,9 @@ class HeadlessModeHandle {
   virtual ~HeadlessModeHandle() = default;
 };
 
-// Returns positive if new headless mode is in effect. The new headless mode
-// is Chrome browser running without any visible UI.
+// Returns positive if Chrome headless mode is in effect. In this mode Chrome is
+// running without any visible UI.
 bool IsHeadlessMode();
-
-// Returns positive if old headless mode is in effect. The old headless mode
-// is a minimalistic browser implementation found in //headless which lacks
-// most of the full fledged Chrome browser functionality.
-bool IsOldHeadlessMode();
 
 // Returns positive if headless mode can access any URL whose scheme is
 // chrome://.
