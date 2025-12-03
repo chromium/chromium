@@ -145,8 +145,6 @@ const base::FeatureParam<bool>
 BASE_FEATURE(kPrivacySandboxAdTopicsContentParity,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivacySandboxNoticeQueue, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrivacySandboxSentimentSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kPrivacySandboxSentimentSurveyTriggerId{

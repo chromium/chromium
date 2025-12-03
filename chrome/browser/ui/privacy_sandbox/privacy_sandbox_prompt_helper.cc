@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/navigation_handle.h"
@@ -226,9 +225,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
           PrivacySandboxServiceFactory::GetForProfile(profile())) {
     privacy_sandbox::PrivacySandboxQueueManager& queue_manager =
         privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager();
-    if (base::FeatureList::IsEnabled(
-            privacy_sandbox::kPrivacySandboxNoticeQueue) &&
-        !queue_manager.IsHoldingHandle()) {
+    if (!queue_manager.IsHoldingHandle()) {
       queue_manager.MaybeEmitQueueStateMetrics();
       return;
     }

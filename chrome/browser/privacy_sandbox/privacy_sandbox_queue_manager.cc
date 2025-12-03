@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/user_education/common/product_messaging_controller.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -40,11 +39,6 @@ PrivacySandboxQueueManager::GetProductMessagingController() {
 }
 
 void PrivacySandboxQueueManager::SetSuppressQueue(bool suppress_queue) {
-  if (!base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxNoticeQueue)) {
-    return;
-  }
-
   suppress_queue_ = suppress_queue;
 }
 
@@ -72,25 +66,15 @@ bool PrivacySandboxQueueManager::IsHoldingHandle() {
 
 void PrivacySandboxQueueManager::HoldQueueHandle(
     user_education::RequiredNoticePriorityHandle messaging_priority_handle) {
-  if (!base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxNoticeQueue)) {
-    return;
-  }
   notice_handle_ = std::move(messaging_priority_handle);
 }
 
 void PrivacySandboxQueueManager::SetQueueHandleShown() {
-  if (!base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxNoticeQueue)) {
-    return;
-  }
   notice_handle_.SetShown();
 }
 
 void PrivacySandboxQueueManager::MaybeUnqueueNotice() {
-  if (!base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxNoticeQueue) ||
-      suppress_queue_) {
+  if (suppress_queue_) {
     return;
   }
 
@@ -113,9 +97,7 @@ bool PrivacySandboxQueueManager::IsNoticeQueued() {
 }
 
 void PrivacySandboxQueueManager::MaybeQueueNotice() {
-  if (!base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxNoticeQueue) ||
-      suppress_queue_) {
+  if (suppress_queue_) {
     return;
   }
 

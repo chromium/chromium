@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -28,7 +27,6 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -118,9 +116,6 @@ std::unique_ptr<KeyedService> BuildPrivacySandboxServiceTest(
 class PrivacySandboxQueueNoticeBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
-    feature_list_.InitWithFeatures(
-        {privacy_sandbox::kPrivacySandboxNoticeQueue}, {});
-
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
@@ -390,62 +385,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueNoticeWithSearchEngineBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // After second nav do not queue or hold the handle.
-  ASSERT_FALSE(queue_manager().IsNoticeQueued());
-  ASSERT_FALSE(queue_manager().IsHoldingHandle());
-}
-
-// TODO(crbug.com/409386887): This test can be removed once end-to-end tests are
-// written.
-class PrivacySandboxQueueNoticeFeatureDisabledBrowserTest
-    : public PrivacySandboxQueueNoticeBrowserTest {
- public:
-  void SetUpInProcessBrowserTestFixture() override {
-    feature_list_.InitWithFeatures(
-        /*enabled=*/{}, {privacy_sandbox::kPrivacySandboxNoticeQueue});
-
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating([](content::BrowserContext* context) {
-                  PrivacySandboxServiceFactory::GetInstance()
-                      ->SetTestingFactory(
-                          context,
-                          base::BindRepeating(&BuildPrivacySandboxServiceTest));
-                }));
-  }
-};
-
-// Navigate to a page and click a button.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueNoticeFeatureDisabledBrowserTest,
-                       ShowAndClickPrompt) {
-  // Should not be queued after browser startup
-  ASSERT_FALSE(queue_manager().IsNoticeQueued());
-  ASSERT_FALSE(queue_manager().IsHoldingHandle());
-
-  // Navigate
-  views::NamedWidgetShownWaiter waiter(
-      views::test::AnyWidgetTestPasskey{},
-      PrivacySandboxDialogView::kViewClassName);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUISettingsURL),
-      WindowOpenDisposition::NEW_WINDOW,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-
-  auto* dialog_widget = static_cast<PrivacySandboxDialogView*>(
-      waiter.WaitIfNeededAndGet()->widget_delegate()->GetContentsView());
-
-  // Before we click, should still be holding handle.
-  ASSERT_FALSE(queue_manager().IsNoticeQueued());
-  ASSERT_FALSE(queue_manager().IsHoldingHandle());
-
-  // Click ack button.
-  const std::string& code = element_path_ + ".click();";
-  EXPECT_TRUE(content::ExecJs(web_contents(dialog_widget), code,
-                              content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-                              1 /* world_id */));
-
-  // After click, should release handle.
   ASSERT_FALSE(queue_manager().IsNoticeQueued());
   ASSERT_FALSE(queue_manager().IsHoldingHandle());
 }

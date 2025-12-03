@@ -20103,24 +20103,6 @@
             ]
         }
     ],
-    "PrivacySandboxNoticeQueue": [
-        {
-            "platforms": [
-                "linux",
-                "windows",
-                "mac",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivacySandboxNoticeQueue"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacySandboxSentimentSurvey": [
         {
             "platforms": [
