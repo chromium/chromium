@@ -27,9 +27,12 @@ BASE_EXPORT ProcessId GetExplorerPid();
 BASE_EXPORT bool IsProcessRunningAtMediumOrLower(ProcessId process_id);
 
 // Runs `command_line` de-elevated and returns the spawned process. Returns a
-// Windows error code on failure.
+// Windows error code on failure. If `medium_process_id` is not provided,
+// `GetExplorerPid` is used to find the PID of `explorer.exe` running in the
+// current session.
 BASE_EXPORT expected<Process, DWORD> RunDeElevated(
-    const CommandLine& command_line);
+    const CommandLine& command_line,
+    std::optional<ProcessId> medium_process_id = {});
 
 // Runs `command_line` de-elevated. The function does not wait for the spawned
 // process.

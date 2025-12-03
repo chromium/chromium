@@ -1440,16 +1440,6 @@ std::vector<DWORD> FindProcessesInSession(const std::wstring& process_name,
   return pids;
 }
 
-// Returns the first instance found of explorer.exe.
-std::optional<DWORD> GetExplorerPid() {
-  std::vector<DWORD> pids =
-      FindProcessesInSession(L"EXPLORER.EXE", GetActiveSessionId());
-  if (pids.empty()) {
-    return {};
-  }
-  return pids[0];
-}
-
 // Returns an impersonation token for the user running process_id.
 HResultOr<ScopedKernelHANDLE> GetImpersonationToken(
     std::optional<DWORD> process_id) {
@@ -1478,6 +1468,15 @@ HResultOr<ScopedKernelHANDLE> GetImpersonationToken(
 }
 
 }  // namespace
+
+std::optional<DWORD> GetExplorerPid() {
+  std::vector<DWORD> pids =
+      FindProcessesInSession(L"EXPLORER.EXE", GetActiveSessionId());
+  if (pids.empty()) {
+    return {};
+  }
+  return pids[0];
+}
 
 HResultOr<ScopedKernelHANDLE> GetLoggedOnUserToken() {
   return GetImpersonationToken(GetExplorerPid());

@@ -35,6 +35,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/version.h"
+#include "base/win/elevation_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
@@ -1122,8 +1123,15 @@ LegacyProcessLauncherImpl::LegacyProcessLauncherImpl() = default;
 LegacyProcessLauncherImpl::~LegacyProcessLauncherImpl() = default;
 
 STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLine(const WCHAR* cmd_line) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
+  if (!cmd_line || !cmd_line[0]) {
+    return E_INVALIDARG;
+  }
+
+  RETURN_IF_ERROR(
+      base::win::RunDeElevated(base::CommandLine::FromString(cmd_line),
+                               GetExplorerPid()),
+      [](DWORD error_code) { return HRESULT_FROM_WIN32(error_code); });
+  return S_OK;
 }
 
 STDMETHODIMP LegacyProcessLauncherImpl::LaunchBrowser(DWORD browser_type,

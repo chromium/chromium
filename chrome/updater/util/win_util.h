@@ -456,6 +456,9 @@ std::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key);
 // or it defaults to US English.
 std::wstring GetTextForSystemError(int error);
 
+// Returns the first instance found of explorer.exe.
+std::optional<DWORD> GetExplorerPid();
+
 // Retrieves the logged on user token for the active explorer process if one
 // exists.
 HResultOr<ScopedKernelHANDLE> GetLoggedOnUserToken();

@@ -542,6 +542,13 @@ TEST(WinUtil, GetTextForSystemError) {
       L"0x80040200");
 }
 
+TEST(WinUtil, GetExplorerPid) {
+  if (!::IsUserAnAdmin() || !IsUACOn()) {
+    GTEST_SKIP();
+  }
+  ASSERT_NE(GetExplorerPid(), std::nullopt);
+}
+
 TEST(WinUtil, GetLoggedOnUserToken) {
   if (!::IsUserAnAdmin() || !IsUACOn()) {
     return;
