@@ -310,6 +310,12 @@ const char kComposeboxAIMNudgeDescription[] =
     "Enables the AIM nudge button in the composebox, tapping on the button "
     "enables AIM. This is conditionned by AIM availability.";
 
+const char kComposeboxAttachmentsTypedStateName[] =
+    "Enable contextual suggestions for typed state";
+const char kComposeboxAttachmentsTypedStateDescription[] =
+    "Enables showing suggestions for multiple composebox attachments in a "
+    "typed state.";
+
 const char kComposeboxAutoattachTabName[] =
     "Automatically attach current tab within the composebox";
 const char kComposeboxAutoattachTabDescription[] =
@@ -325,6 +331,17 @@ const char kComposeboxDevToolsName[] = "Enable Composebox Dev Tools";
 const char kComposeboxDevToolsDescription[] =
     "Enables development tools for the composebox, allowing simulation of "
     "delays and failures.";
+
+const char kComposeboxFetchContextualSuggestionsForImageName[] =
+    "Enable Composebox Fetch Contextual Suggestions For image attachment";
+const char kComposeboxFetchContextualSuggestionsForImageDescription[] =
+    "Enables showing suggestions for image attachment.";
+
+const char kComposeboxFetchContextualSuggestionsForMultipleAttachmentsName[] =
+    "Enable Composebox Fetch Contextual Suggestions For multiple attachments";
+const char
+    kComposeboxFetchContextualSuggestionsForMultipleAttachmentsDescription[] =
+        "Enables showing suggestions for multiple attachments";
 
 const char kComposeboxForceTopName[] = "ComposeboxForceTop";
 const char kComposeboxForceTopDescription[] =

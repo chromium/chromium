@@ -185,6 +185,9 @@ extern const char kCollaborationMessagingDescription[];
 extern const char kComposeboxAIMNudgeName[];
 extern const char kComposeboxAIMNudgeDescription[];
 
+extern const char kComposeboxAttachmentsTypedStateName[];
+extern const char kComposeboxAttachmentsTypedStateDescription[];
+
 extern const char kComposeboxAutoattachTabName[];
 extern const char kComposeboxAutoattachTabDescription[];
 
@@ -193,6 +196,14 @@ extern const char kComposeboxCompactModeDescription[];
 
 extern const char kComposeboxDevToolsName[];
 extern const char kComposeboxDevToolsDescription[];
+
+extern const char kComposeboxFetchContextualSuggestionsForImageName[];
+extern const char kComposeboxFetchContextualSuggestionsForImageDescription[];
+
+extern const char
+    kComposeboxFetchContextualSuggestionsForMultipleAttachmentsName[];
+extern const char
+    kComposeboxFetchContextualSuggestionsForMultipleAttachmentsDescription[];
 
 extern const char kComposeboxForceTopName[];
 extern const char kComposeboxForceTopDescription[];
