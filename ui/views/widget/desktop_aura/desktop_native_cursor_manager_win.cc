@@ -40,7 +40,7 @@ bool IsSystemCursorVisible() {
     // not on the active desktop, which includes lock (win+L), sleep, remote
     // connection, sign in as other user, etc.. In these cases, we assume the
     // cursor is visible.
-    PLOG(ERROR) << "Unable to get cursor info. Error = " << GetLastError();
+    PLOG(INFO) << "Unable to get cursor info. Error = " << GetLastError();
     return true;
   }
 
