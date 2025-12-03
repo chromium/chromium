@@ -222,7 +222,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
 
     @Test
     public void testIncognitoReauthCallback() {
-        assertNull(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier().get());
+        assertTrue(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier().get());
         checkNewTabButton(/* enabled= */ false);
 
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthController);

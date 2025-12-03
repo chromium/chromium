@@ -26,8 +26,7 @@ public interface Pane extends BackPressHandler {
     ViewGroup getRootView();
 
     /** Returns the {@link MenuOrKeyboardActionHandler} for the Pane. */
-    @Nullable
-    MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler();
+    @Nullable MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler();
 
     /** Returns whether the menu button should be visible for the Pane. */
     boolean getMenuButtonVisible();
@@ -59,7 +58,7 @@ public interface Pane extends BackPressHandler {
     ObservableSupplier<FullButtonData> getActionButtonDataSupplier();
 
     /** Returns the visuals for creating a button to navigate to this pane. */
-    ObservableSupplier<@Nullable DisplayButtonData> getReferenceButtonDataSupplier();
+    NullableObservableSupplier<DisplayButtonData> getReferenceButtonDataSupplier();
 
     /** Returns whether to show the hairline for the pane. */
     NonNullObservableSupplier<Boolean> getHairlineVisibilitySupplier();
@@ -89,8 +88,8 @@ public interface Pane extends BackPressHandler {
             HubContainerView hubContainerView);
 
     /** Returns whether to enable the state of hub search. */
-    ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier();
+    NonNullObservableSupplier<Boolean> getHubSearchEnabledStateSupplier();
 
     /** Returns whether the hub search box should be visible. */
-    ObservableSupplier<Boolean> getHubSearchBoxVisibilitySupplier();
+    NonNullObservableSupplier<Boolean> getHubSearchBoxVisibilitySupplier();
 }

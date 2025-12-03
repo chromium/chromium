@@ -31,7 +31,6 @@ android_library("helper_java") {
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
-    "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDevicePane.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/ForeignSessionHelper.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsController.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsControllerDelegate.java",
@@ -61,6 +60,7 @@ android_library_factory("factory_java") {
   deps = [
     ":java",
     "//base:supplier_java",
+    "//chrome/browser/hub:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/edge_to_edge:java",

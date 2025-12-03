@@ -155,7 +155,7 @@ public class HubToolbarMediator {
             Pane pane = paneManager.getPaneForId(paneId);
             if (pane == null) continue;
 
-            ObservableSupplier<@Nullable DisplayButtonData> supplier =
+            NullableObservableSupplier<DisplayButtonData> supplier =
                     pane.getReferenceButtonDataSupplier();
             Callback<@Nullable DisplayButtonData> observer =
                     (data) -> onReferenceButtonChange(paneId, data);
@@ -169,8 +169,8 @@ public class HubToolbarMediator {
 
             mRemoveReferenceButtonObservers.add(() -> supplier.removeObserver(observer));
 
-            pane.getHubSearchEnabledStateSupplier().addObserver(mOnHubSearchEnabledStateChange);
-            pane.getHubSearchBoxVisibilitySupplier().addObserver(mOnSearchBoxVisibilityChange);
+            pane.getHubSearchEnabledStateSupplier().addSyncObserver(mOnHubSearchEnabledStateChange);
+            pane.getHubSearchBoxVisibilitySupplier().addSyncObserver(mOnSearchBoxVisibilityChange);
         }
         mHairlineVisibilitySupplier =
                 paneManager
@@ -312,8 +312,7 @@ public class HubToolbarMediator {
 
         // Reset the enabled state of hub search to the supplier value or true if uninitialized
         // when toggling panes to account for a potential disabled state from incognito reauth.
-        Boolean hubSearchEnabledState = focusedPane.getHubSearchEnabledStateSupplier().get();
-        boolean enabled = hubSearchEnabledState == null ? true : hubSearchEnabledState;
+        boolean enabled = focusedPane.getHubSearchEnabledStateSupplier().get();
         mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, enabled);
 
         mPropertyModel.set(MENU_BUTTON_VISIBLE, focusedPane.getMenuButtonVisible());

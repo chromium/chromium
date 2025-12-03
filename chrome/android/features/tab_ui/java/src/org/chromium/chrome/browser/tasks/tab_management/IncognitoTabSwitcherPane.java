@@ -15,8 +15,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -128,8 +128,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     private final ResourceButtonData mReferenceButtonData;
     private final FullButtonData mEnabledNewTabButtonData;
     private final FullButtonData mDisabledNewTabButtonData;
-    private final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
-            new ObservableSupplierImpl<>();
 
     private boolean mIsNativeInitialized;
     private int mLastClosedTabId;
@@ -163,6 +161,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         super(
+                PaneId.INCOGNITO_TAB_SWITCHER,
                 context,
                 factory,
                 /* isIncognito= */ true,
@@ -173,6 +172,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 tabGroupCreationUiDelegate,
                 xrSpaceModeObservableSupplier);
 
+        mColorScheme = HubColorScheme.INCOGNITO;
         mIncognitoTabGroupModelFilterSupplier = incognitoTabGroupModelFilterSupplier;
         mLastClosedTabId = Tab.INVALID_TAB_ID;
 
@@ -211,16 +211,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         } else {
             setNewTabButtonEnabledState(/* enabled= */ true);
         }
-    }
-
-    @Override
-    public @PaneId int getPaneId() {
-        return PaneId.INCOGNITO_TAB_SWITCHER;
-    }
-
-    @Override
-    public @HubColorScheme int getColorScheme() {
-        return HubColorScheme.INCOGNITO;
     }
 
     @Override
@@ -423,7 +413,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     private static class IncognitoTabSwitcherPaneCleaner {
         private final @Nullable ObservableSupplier<Boolean> mIsAnimatingSupplier;
         private final Callback<Boolean> mOnAnimationStatusChange = this::onAnimationStatusChange;
-        private final ObservableSupplierImpl<@Nullable DisplayButtonData>
+        private final SettableNullableObservableSupplier<DisplayButtonData>
                 mReferenceButtonDataSupplier;
         private final Runnable mCleanUpRunnable;
         private final @Nullable PaneHubController mController;
@@ -442,7 +432,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
          */
         public IncognitoTabSwitcherPaneCleaner(
                 @Nullable ObservableSupplier<Boolean> isAnimatingSupplier,
-                ObservableSupplierImpl<@Nullable DisplayButtonData> referenceButtonDataSupplier,
+                SettableNullableObservableSupplier<DisplayButtonData> referenceButtonDataSupplier,
                 Runnable cleanUpRunnable,
                 @Nullable PaneHubController controller,
                 boolean isFocused,
@@ -526,7 +516,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
          * @param cleanUpRunnable Runnable to run when cleanup should occur.
          */
         public static void cleanUp(
-                ObservableSupplierImpl<@Nullable DisplayButtonData> referenceButtonDataSupplier,
+                SettableNullableObservableSupplier<DisplayButtonData> referenceButtonDataSupplier,
                 boolean isFocused,
                 @Nullable PaneHubController controller,
                 @Nullable Runnable cleanUpRunnable) {
@@ -539,11 +529,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 cleanUpRunnable.run();
             }
         }
-    }
-
-    @Override
-    public ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier() {
-        return mHubSearchEnabledStateSupplier;
     }
 
     /** Returns whether the incognito reauth screen is showing. */

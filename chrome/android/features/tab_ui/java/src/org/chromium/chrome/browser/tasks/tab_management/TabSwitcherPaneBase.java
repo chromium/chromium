@@ -19,8 +19,6 @@ import android.graphics.RectF;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
@@ -37,7 +35,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -50,7 +47,6 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubContainerView;
@@ -59,7 +55,9 @@ import org.chromium.chrome.browser.hub.HubLayoutAnimatorProvider;
 import org.chromium.chrome.browser.hub.HubUtils;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
+import org.chromium.chrome.browser.hub.PaneBase;
 import org.chromium.chrome.browser.hub.PaneHubController;
+import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ShrinkExpandAnimationData;
 import org.chromium.chrome.browser.hub.ShrinkExpandHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.hub.TabListHubLayoutAnimationFactory;
@@ -87,28 +85,25 @@ import java.util.function.Supplier;
  * incognito modes.
  */
 @NullMarked
-public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitcherResetHandler {
+public abstract class TabSwitcherPaneBase extends PaneBase
+        implements TabSwitcher, TabSwitcherResetHandler {
     private static final String TAG = "TabSwitcherPaneBase";
     private static final int ON_SHOWN_IPH_DELAY = 700;
 
     private static boolean sShowIphForTesting;
 
-    protected final ObservableSupplierImpl<@Nullable DisplayButtonData>
-            mReferenceButtonDataSupplier = new ObservableSupplierImpl<>();
     protected final SettableObservableSupplier<FullButtonData> mNewTabButtonDataSupplier =
             ObservableSuppliers.createMonotonic();
 
     protected final UserEducationHelper mUserEducationHelper;
     protected final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     protected final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    private final ObservableSupplierImpl<Boolean> mIsVisibleSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mIsVisibleSupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean> mIsAnimatingSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final SettableNullableObservableSupplier<View> mOverlayViewSupplier =
             ObservableSuppliers.createNullable();
-    private final SettableNonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier =
-            ObservableSuppliers.createNonNull(false);
     private final Callback<Boolean> mVisibilityObserver = this::onVisibilityChanged;
     private final Handler mHandler = new Handler();
     private final Runnable mSoftCleanupRunnable = this::softCleanupInternal;
@@ -117,29 +112,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     private final TabSwitcherCustomViewManager mTabSwitcherCustomViewManager =
             new TabSwitcherCustomViewManager();
 
-    private final MenuOrKeyboardActionHandler mMenuOrKeyboardActionHandler =
-            new MenuOrKeyboardActionHandler() {
-                @Override
-                public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
-                    if (id == R.id.menu_select_tabs) {
-                        @Nullable TabSwitcherPaneCoordinator coordinator =
-                                mTabSwitcherPaneCoordinatorSupplier.get();
-                        if (coordinator == null) return false;
-
-                        coordinator.showTabListEditor();
-                        RecordUserAction.record("MobileMenuSelectTabs");
-                        return true;
-                    } else if (id == R.id.new_tab_group_menu_id) {
-                        mUiFlow.newTabGroupFlow();
-                        RecordUserAction.record("MobileMenuNewTabGroup");
-                        if (mTracker != null) {
-                            mTracker.notifyEvent("tab_switcher_add_to_group_clicked");
-                        }
-                        return true;
-                    }
-                    return false;
-                }
-            };
     private final SettableObservableSupplier<TabSwitcherPaneCoordinator>
             mTabSwitcherPaneCoordinatorSupplier = ObservableSuppliers.createMonotonic();
 
@@ -147,10 +119,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             mTabSwitcherPaneCoordinatorSupplier.createTransitiveNonNull(
                     false, TabSwitcherPaneCoordinator::getHandleBackPressChangedSupplier);
 
-    private final FrameLayout mRootView;
     private final TabSwitcherPaneCoordinatorFactory mFactory;
     private final boolean mIsIncognito;
-    private final DoubleConsumer mOnToolbarAlphaChange;
     private final TabGroupCreationUiDelegate mUiFlow;
     private final HubLayoutAnimationListener mAnimationListener =
             new HubLayoutAnimationListener() {
@@ -191,6 +161,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
      *     space mode, false otherwise.
      */
     TabSwitcherPaneBase(
+            @PaneId int paneId,
             Context context,
             TabSwitcherPaneCoordinatorFactory factory,
             boolean isIncognito,
@@ -200,19 +171,40 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+        super(paneId, context, onToolbarAlphaChange);
+        mMenuButtonVisible = true;
         mFactory = factory;
         mIsIncognito = isIncognito;
-
-        mRootView = new FrameLayout(context);
-        mIsVisibleSupplier.set(false);
         mIsVisibleSupplier.addObserver(mVisibilityObserver);
-        mIsAnimatingSupplier.set(false);
-        mOnToolbarAlphaChange = onToolbarAlphaChange;
         mUserEducationHelper = userEducationHelper;
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mUiFlow = tabGroupCreationUiDelegate;
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
+
+        mMenuOrKeyboardActionHandler =
+                new MenuOrKeyboardActionHandler() {
+                    @Override
+                    public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
+                        if (id == R.id.menu_select_tabs) {
+                            @Nullable TabSwitcherPaneCoordinator coordinator =
+                                    mTabSwitcherPaneCoordinatorSupplier.get();
+                            if (coordinator == null) return false;
+
+                            coordinator.showTabListEditor();
+                            RecordUserAction.record("MobileMenuSelectTabs");
+                            return true;
+                        } else if (id == R.id.new_tab_group_menu_id) {
+                            mUiFlow.newTabGroupFlow();
+                            RecordUserAction.record("MobileMenuNewTabGroup");
+                            if (mTracker != null) {
+                                mTracker.notifyEvent("tab_switcher_add_to_group_clicked");
+                            }
+                            return true;
+                        }
+                        return false;
+                    }
+                };
     }
 
     @Override
@@ -223,32 +215,16 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     }
 
     @Override
-    public ViewGroup getRootView() {
-        return mRootView;
-    }
-
-    @Override
-    public @Nullable MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler() {
-        return mMenuOrKeyboardActionHandler;
-    }
-
-    @Override
-    public boolean getMenuButtonVisible() {
-        return true;
-    }
-
-    @Override
     public void setPaneHubController(@Nullable PaneHubController paneHubController) {
         mPaneHubController = paneHubController;
 
+        boolean showSearch = false;
         if (isFocused()) {
             int screenWidthDp =
                     mRootView.getContext().getResources().getConfiguration().screenWidthDp;
-            boolean isTablet = HubUtils.isScreenWidthTablet(screenWidthDp);
-            mHubSearchBoxVisibilitySupplier.set(!isTablet);
-        } else {
-            mHubSearchBoxVisibilitySupplier.set(false);
+            showSearch = !HubUtils.isScreenWidthTablet(screenWidthDp);
         }
+        mHubSearchBoxVisibilitySupplier.set(showSearch);
     }
 
     @Override
@@ -296,26 +272,12 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     }
 
     @Override
-    public ObservableSupplier<@Nullable DisplayButtonData> getReferenceButtonDataSupplier() {
-        return mReferenceButtonDataSupplier;
-    }
-
-    /**
-     * Tab switcher pane manages its own hairline and hence, doesn't use central hub's hairline.
-     * Check {@link TabSwitcherPaneCoordinator} for more details.
-     */
-    @Override
-    public NonNullObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
-        return ObservableSuppliers.alwaysFalse();
-    }
-
-    @Override
     public NullableObservableSupplier<View> getHubOverlayViewSupplier() {
         return mOverlayViewSupplier;
     }
 
     @Override
-    public @Nullable HubLayoutAnimationListener getHubLayoutAnimationListener() {
+    public HubLayoutAnimationListener getHubLayoutAnimationListener() {
         return mAnimationListener;
     }
 
@@ -684,11 +646,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
         if (mNativeInitialized) {
             coordinator.initWithNative();
         }
-    }
-
-    @Override
-    public NonNullObservableSupplier<Boolean> getHubSearchBoxVisibilitySupplier() {
-        return mHubSearchBoxVisibilitySupplier;
     }
 
     /**

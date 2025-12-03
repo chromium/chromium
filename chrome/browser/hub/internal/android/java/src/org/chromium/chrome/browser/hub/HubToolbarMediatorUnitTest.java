@@ -57,6 +57,8 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -104,18 +106,14 @@ public class HubToolbarMediatorUnitTest {
     @Mock private Runnable mExitHubRunnable;
     @Mock private HubColorMixer mColorMixer;
 
-    private ObservableSupplierImpl<FullButtonData> mActionButtonSupplier;
     private ObservableSupplierImpl<Pane> mFocusedPaneSupplier;
     private ObservableSupplierImpl<DisplayButtonData> mTabSwitcherReferenceButtonDataSupplier1;
-    private ObservableSupplierImpl<Boolean> mRegularHubSearchEnabledStateSupplier;
-    private ObservableSupplierImpl<Boolean> mIncognitoHubSearchEnabledStateSupplier;
-    private ObservableSupplierImpl<Boolean> mGroupsHubSearchEnabledStateSupplier;
-    private ObservableSupplierImpl<Boolean> mHistoryHubSearchEnabledStateSupplier;
-    private ObservableSupplierImpl<Boolean> mTabSwitcherSearchBoxVisibilitySupplier;
-    private ObservableSupplierImpl<Boolean> mIncognitoTabSwitcherSearchBoxVisibilitySupplier;
-    private ObservableSupplierImpl<Boolean> mTabGroupsSearchBoxVisibilitySupplier;
-    private ObservableSupplierImpl<Boolean> mBookmarksSearchBoxVisibilitySupplier;
-    private ObservableSupplierImpl<Boolean> mHistorySearchBoxVisibilitySupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mRegularHubSearchEnabledStateSupplier =
+            ObservableSuppliers.createNonNull(true);
+    private final SettableNonNullObservableSupplier<Boolean>
+            mIncognitoHubSearchEnabledStateSupplier = ObservableSuppliers.createNonNull(true);
+    private final SettableNonNullObservableSupplier<Boolean>
+            mTabSwitcherSearchBoxVisibilitySupplier = ObservableSuppliers.createNonNull(true);
     private ObservableSupplierImpl<DisplayButtonData>
             mIncognitoTabSwitcherReferenceButtonDataSupplier2;
     private ObservableSupplierImpl<Tab> mCurrentTabSupplier;
@@ -123,19 +121,9 @@ public class HubToolbarMediatorUnitTest {
 
     @Before
     public void setUp() {
-        mActionButtonSupplier = new ObservableSupplierImpl<>();
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
         mTabSwitcherReferenceButtonDataSupplier1 = new ObservableSupplierImpl<>();
         mIncognitoTabSwitcherReferenceButtonDataSupplier2 = new ObservableSupplierImpl<>();
-        mRegularHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
-        mIncognitoHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
-        mGroupsHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
-        mHistoryHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
-        mTabSwitcherSearchBoxVisibilitySupplier = new ObservableSupplierImpl<>();
-        mIncognitoTabSwitcherSearchBoxVisibilitySupplier = new ObservableSupplierImpl<>();
-        mTabGroupsSearchBoxVisibilitySupplier = new ObservableSupplierImpl<>();
-        mBookmarksSearchBoxVisibilitySupplier = new ObservableSupplierImpl<>();
-        mHistorySearchBoxVisibilitySupplier = new ObservableSupplierImpl<>();
         mCurrentTabSupplier = new ObservableSupplierImpl<>();
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
         mModel =
@@ -164,23 +152,24 @@ public class HubToolbarMediatorUnitTest {
         when(mTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
                 .thenReturn(mTabSwitcherSearchBoxVisibilitySupplier);
         when(mIncognitoTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
-                .thenReturn(mIncognitoTabSwitcherSearchBoxVisibilitySupplier);
+                .thenReturn(ObservableSuppliers.alwaysFalse());
         when(mTabGroupsPane.getHubSearchBoxVisibilitySupplier())
-                .thenReturn(mTabGroupsSearchBoxVisibilitySupplier);
+                .thenReturn(ObservableSuppliers.alwaysFalse());
         when(mBookmarksPane.getHubSearchBoxVisibilitySupplier())
-                .thenReturn(mBookmarksSearchBoxVisibilitySupplier);
+                .thenReturn(ObservableSuppliers.alwaysFalse());
         when(mHistoryPane.getHubSearchBoxVisibilitySupplier())
-                .thenReturn(mHistorySearchBoxVisibilitySupplier);
+                .thenReturn(ObservableSuppliers.alwaysFalse());
         when(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier())
                 .thenReturn(mIncognitoHubSearchEnabledStateSupplier);
         when(mTabGroupsPane.getHubSearchEnabledStateSupplier())
-                .thenReturn(mGroupsHubSearchEnabledStateSupplier);
+                .thenReturn(ObservableSuppliers.alwaysFalse());
         when(mHistoryPane.getHubSearchEnabledStateSupplier())
-                .thenReturn(mHistoryHubSearchEnabledStateSupplier);
+                .thenReturn(ObservableSuppliers.alwaysFalse());
 
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mTabSwitcherReferenceButtonDataSupplier1);
-        when(mTabSwitcherPane.getActionButtonDataSupplier()).thenReturn(mActionButtonSupplier);
+        when(mTabSwitcherPane.getActionButtonDataSupplier())
+                .thenReturn(ObservableSuppliers.alwaysNull());
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
 

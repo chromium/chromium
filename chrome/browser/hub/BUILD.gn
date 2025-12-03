@@ -5,6 +5,17 @@
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 
+# Split out to avoid a circular dependency between :java and :factory_java.
+android_library("pane_base_java") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/hub/PaneBase.java" ]
+  deps = [
+    ":factory_java",
+    ":java",
+    "//base:supplier_java",
+    "//components/browser_ui/widget/android:java",
+  ]
+}
+
 android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/DefaultPaneOrderController.java",

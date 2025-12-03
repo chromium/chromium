@@ -28,6 +28,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.hub.HubContainerView;
 import org.chromium.chrome.browser.hub.HubLayoutAnimationType;
 import org.chromium.chrome.browser.hub.LoadHint;
+import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 
@@ -41,7 +42,7 @@ public class CrossDevicePaneUnitTest {
     @Mock private HubContainerView mHubContainerView;
     @Mock private DoubleConsumer mOnToolbarAlphaChange;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
-    private CrossDevicePane mCrossDevicePane;
+    private Pane mCrossDevicePane;
     private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
 
