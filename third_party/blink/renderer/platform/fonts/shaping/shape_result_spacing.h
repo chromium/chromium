@@ -54,6 +54,7 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   void SetSpacing(const FontDescription&, bool normalize_space);
 
   // Set the expansion for the justification.
+  // This function scans the whole `text_`.
   void SetExpansion(TextJustify method,
                     InlineLayoutUnit expansion,
                     TextDirection,
@@ -61,7 +62,8 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
                     bool allows_trailing_expansion = false);
 
   // An RAII class to prepare expansion.
-  class ExpansionSetup {
+  // This is useful when pouring strings manually.
+  class PLATFORM_EXPORT ExpansionSetup {
     STACK_ALLOCATED();
 
    public:
@@ -71,7 +73,9 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
                    bool allows_trailing_expansion = false);
     ~ExpansionSetup();
 
+    ShapeResultSpacing* Spacing() const { return spacing_; }
     void CountOpportunities(TextJustify method, StringView text, TextDirection);
+    void CountOpportunities(TextJustify method, UChar ch);
 
    private:
     ShapeResultSpacing* const spacing_;
@@ -106,10 +110,21 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   std::pair<TextRunLayoutUnit, TextRunLayoutUnit> ComputeExpansion(
       unsigned index,
       bool is_cursive_script = false);
+  // Compute spacings to justify the specified character.
+  // This function returns a pair of
+  //  * Space amount to be added before the glyph, and
+  //  * Space amount to be added after the glyph.
+  std::pair<TextRunLayoutUnit, TextRunLayoutUnit> ComputeExpansion(
+      TextJustify method,
+      UChar ch);
 
  private:
   bool IsAfterExpansion() const { return is_after_expansion_; }
 
+  // A helper for ComputeExpansion().
+  std::pair<TextRunLayoutUnit, TextRunLayoutUnit> FinalizeComputeExpansion(
+      bool opportunity_before,
+      bool opportunity_after);
   TextRunLayoutUnit NextExpansion();
 
   String text_;

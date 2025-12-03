@@ -73,6 +73,12 @@ void ShapeResultSpacing::ExpansionSetup::CountOpportunities(
   }
 }
 
+void ShapeResultSpacing::ExpansionSetup::CountOpportunities(TextJustify method,
+                                                            UChar ch) {
+  spacing_->expansion_opportunity_count_ +=
+      CountJustificationOpportunity16(method, ch, is_after_expansion_);
+}
+
 void ShapeResultSpacing::SetExpansion(TextJustify method,
                                       InlineLayoutUnit expansion,
                                       TextDirection direction,
@@ -154,9 +160,6 @@ ShapeResultSpacing::ComputeExpansion(unsigned index, bool is_cursive_script) {
   DCHECK(!normalize_space_);
   DCHECK(!allow_tabs_);
 
-  TextRunLayoutUnit spacing_before;
-  TextRunLayoutUnit spacing_after;
-
   bool opportunity_before = false;
   bool opportunity_after = false;
   if (text_.Is8Bit()) {
@@ -172,6 +175,26 @@ ShapeResultSpacing::ComputeExpansion(unsigned index, bool is_cursive_script) {
     opportunity_after = pair.second;
   }
 
+  return FinalizeComputeExpansion(opportunity_before, opportunity_after);
+}
+
+std::pair<TextRunLayoutUnit, TextRunLayoutUnit>
+ShapeResultSpacing::ComputeExpansion(TextJustify method, UChar ch) {
+  if (!HasExpansion()) {
+    return {TextRunLayoutUnit(), TextRunLayoutUnit()};
+  }
+  DCHECK(!normalize_space_);
+  DCHECK(!allow_tabs_);
+  auto [opportunity_before, opportunity_after] =
+      CheckJustificationOpportunity16(method, ch, is_after_expansion_);
+  return FinalizeComputeExpansion(opportunity_before, opportunity_after);
+}
+
+std::pair<TextRunLayoutUnit, TextRunLayoutUnit>
+ShapeResultSpacing::FinalizeComputeExpansion(bool opportunity_before,
+                                             bool opportunity_after) {
+  TextRunLayoutUnit spacing_before;
+  TextRunLayoutUnit spacing_after;
   if (opportunity_before) {
     // Take the expansion opportunity before this ideograph.
     spacing_before = NextExpansion();
