@@ -369,8 +369,8 @@ if (!is_android && !is_mac) {
 
     data_deps += [
       "//chrome/browser/resources/media/mei_preload:component",
+      "//chrome/browser/web_applications/isolated_web_apps/key_distribution/preload:component",
       "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
-      "//components/webapps/isolated_web_apps/preload:component",
       "//third_party/widevine/cdm",
     ]
 
@@ -1184,8 +1184,8 @@ if (is_win) {
       ":swiftshader_binaries",
       ":widevine_cdm_library",
       "//chrome/browser/resources/media/mei_preload:component_bundle",
+      "//chrome/browser/web_applications/isolated_web_apps/key_distribution/preload:component_bundle",
       "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component_bundle",
-      "//components/webapps/isolated_web_apps/preload:component_bundle",
     ]
 
     if (is_chrome_branded) {

@@ -659,6 +659,7 @@ source_set("web_applications") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/web_applications/isolated_web_apps/key_distribution",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/browser/web_applications/proto",
     "//chrome/browser/web_applications/proto:proto_extras",
@@ -666,7 +667,7 @@ source_set("web_applications") {
     "//chrome/browser/web_applications/ui_manager",
     "//components/permissions",
     "//components/services/app_service",
-    "//components/webapps/isolated_web_apps/proto",
+    "//components/webapps/isolated_web_apps/public",
   ]
 }
 
@@ -772,8 +773,8 @@ source_set("web_applications_test_support") {
   ]
 
   public_deps = [
+    "//chrome/browser/web_applications/isolated_web_apps/key_distribution/proto",
     "//components/webapps/common:mojo_bindings",
-    "//components/webapps/isolated_web_apps/proto",
   ]
 
   deps = [
@@ -1313,10 +1314,10 @@ source_set("app_service_browser_tests") {
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/notifications",
+    "//chrome/browser/web_applications/isolated_web_apps/key_distribution",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/webapps/browser",
-    "//components/webapps/isolated_web_apps:key_distribution",
     "//components/webapps/isolated_web_apps/test_support",
   ]
 

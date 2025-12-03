@@ -52,15 +52,8 @@ class IwaKeyDistributionComponentInstallerPolicy
   IwaKeyDistributionComponentInstallerPolicy operator=(
       const IwaKeyDistributionComponentInstallerPolicy&) = delete;
 
-  // Tells whether the component is supported on a particular platform wrt to
-  // the feature flags.
-  static bool IsSupported();
-
-  // Triggers an on-demand update for the component. Returns whether the update
-  // has been queued.
-  // This function is supposed to be used by `IwaKeyDistributionInfoProvider`.
   // Takes no effect if called before the component registration completes.
-  static bool QueueOnDemandUpdate(
+  static void QueueOnDemandUpdate(
       base::PassKey<web_app::IwaKeyDistributionInfoProvider>);
 
  private:

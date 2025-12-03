@@ -6,8 +6,7 @@ import("//third_party/protobuf/proto_library.gni")
 
 protoc_convert("key_distribution_binary") {
   sources = [ "key_distribution.textproto" ]
-  inputs =
-      [ "//components/webapps/isolated_web_apps/proto/key_distribution.proto" ]
+  inputs = [ "//chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.proto" ]
 
   # Output becomes:
   output_pattern = "$target_gen_dir/{{source_name_part}}.pb"
@@ -15,8 +14,9 @@ protoc_convert("key_distribution_binary") {
     "--encode=web_app.IwaKeyDistribution",
     "-I",
     rebase_path("//", root_build_dir),
-    "components/webapps/isolated_web_apps/proto/key_distribution.proto",
+    "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.proto",
   ]
+  deps = [ "//chrome/browser/web_applications/isolated_web_apps/key_distribution/proto" ]
 }
 
 copy("generated_key_distribution_pb") {

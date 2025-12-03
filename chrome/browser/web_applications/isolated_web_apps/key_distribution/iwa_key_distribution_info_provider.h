@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
-#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
 
 #include <optional>
 #include <string>
@@ -22,8 +22,8 @@
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "components/webapps/isolated_web_apps/iwa_key_distribution_histograms.h"
-#include "components/webapps/isolated_web_apps/proto/key_distribution.pb.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 #include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
 namespace base {
@@ -36,8 +36,6 @@ class IwaInternalsHandler;
 
 // This class is a singleton responsible for processing the IWA Key Distribution
 // Component data.
-//
-// TODO(crbug.com/431980377): This class will be moved to `chrome/` and renamed.
 class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
  public:
   struct SpecialAppPermissionsInfo {
@@ -53,7 +51,7 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
   using SpecialAppPermissions =
       base::flat_map<std::string, SpecialAppPermissionsInfo>;
 
-  using QueueOnDemandUpdateCallback = base::RepeatingCallback<bool(
+  using QueueOnDemandUpdateCallback = base::RepeatingCallback<void(
       base::PassKey<IwaKeyDistributionInfoProvider>)>;
 
   class Observer : public base::CheckedObserver {
@@ -71,6 +69,8 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
       delete;
   IwaKeyDistributionInfoProvider& operator=(
       const IwaKeyDistributionInfoProvider&) = delete;
+
+  void SetUp(QueueOnDemandUpdateCallback callback);
 
   // IwaRuntimeDataProvider:
   const IwaRuntimeDataProvider::KeyRotationInfo* GetKeyRotationInfo(
@@ -103,10 +103,6 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
 
   // When set to true both above functions always return true
   void SkipManagedAllowlistChecksForTesting(bool skip_managed_checks);
-
-  // Sets up the `IwaKeyDistributionInfoProvider`, i.e. adds the capability to
-  // schedule on demand callbacks.
-  void SetUp(bool is_on_demand_supported, QueueOnDemandUpdateCallback callback);
 
   // Asynchronously loads new component data and replaces the current `data_`
   // upon success and if `component_version` is greater than the stored one, and
@@ -205,7 +201,6 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
   base::OneShotEvent maybe_downloaded_data_ready_;
 
   bool maybe_queue_component_update_posted_ = false;
-  bool is_on_demand_supported_ = false;
 
   QueueOnDemandUpdateCallback queue_on_demand_update_;
 
@@ -217,4 +212,4 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
 
 }  // namespace web_app
 
-#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_

@@ -3130,10 +3130,10 @@ if (!is_android) {
     data_deps = [
       "//chrome:browser_tests_pak",
       "//chrome/browser/resources/media/mei_preload:component",
+      "//chrome/browser/web_applications/isolated_web_apps/key_distribution/preload:component",
       "//chrome/test/data/cast:generate_test_files",
       "//components/policy/proto",
       "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
-      "//components/webapps/isolated_web_apps/preload:component",
       "//testing:test_scripts_shared",
       "//testing/buildbot/filters:browser_tests_filters",
       "//testing/buildbot/filters:linux_trusty_rel_browser_tests_filters",

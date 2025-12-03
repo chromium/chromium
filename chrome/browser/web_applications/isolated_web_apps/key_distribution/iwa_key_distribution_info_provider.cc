@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 
 #include <memory>
 #include <string_view>
@@ -21,9 +21,10 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/optional_ref.h"
-#include "components/webapps/isolated_web_apps/features.h"
-#include "components/webapps/isolated_web_apps/iwa_key_distribution_histograms.h"
-#include "components/webapps/isolated_web_apps/proto/key_distribution.pb.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/features.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
 namespace web_app {
 
@@ -113,6 +114,11 @@ void IwaKeyDistributionInfoProvider::DestroyInstanceForTesting() {
   GetGlobalIwaKeyDistributionInfoProviderInstance().reset();
 }
 
+void IwaKeyDistributionInfoProvider::SetUp(
+    QueueOnDemandUpdateCallback callback) {
+  queue_on_demand_update_ = callback;
+}
+
 const IwaRuntimeDataProvider::KeyRotationInfo*
 IwaKeyDistributionInfoProvider::GetKeyRotationInfo(
     const std::string& web_bundle_id) const {
@@ -179,13 +185,6 @@ void IwaKeyDistributionInfoProvider::SkipManagedAllowlistChecksForTesting(
     bool skip_managed_checks) {
   CHECK_IS_TEST();
   skip_managed_checks_for_testing_ = skip_managed_checks;
-}
-
-void IwaKeyDistributionInfoProvider::SetUp(
-    bool is_on_demand_supported,
-    QueueOnDemandUpdateCallback callback) {
-  is_on_demand_supported_ = is_on_demand_supported;
-  queue_on_demand_update_ = callback;
 }
 
 void IwaKeyDistributionInfoProvider::LoadKeyDistributionData(
@@ -356,7 +355,7 @@ void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
 
 base::OneShotEvent&
 IwaKeyDistributionInfoProvider::OnBestEffortRuntimeDataReady() {
-  if (!is_on_demand_supported_) {
+  if (!queue_on_demand_update_) {
     return AlreadySignalled();
   }
 
@@ -468,7 +467,6 @@ void IwaKeyDistributionInfoProvider::
 void IwaKeyDistributionInfoProvider::MaybeQueueComponentUpdate() {
   CHECK(maybe_queue_component_update_posted_);
   CHECK(any_data_ready_.is_signaled());
-  CHECK(is_on_demand_supported_);
   CHECK(queue_on_demand_update_);
 
   if (!component_ || component_->is_preloaded) {
