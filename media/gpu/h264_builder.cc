@@ -167,4 +167,60 @@ void BuildPackedH264PPS(H26xAnnexBBitstreamBuilder& bitstream_builder,
   bitstream_builder.FinishNALU();
 }
 
+std::vector<uint8_t> BuildPrefixNALU(int nal_ref_idc,
+                                     H264NALU::Type associated_nalu_type,
+                                     uint8_t temporal_id) {
+  H26xAnnexBBitstreamBuilder bitstream_builder;
+  // G.7.4.1: NAL unit semantics
+  // For NAL units with nal_unit_type equal to 14, nal_ref_idc shall be
+  // identical to nal_ref_idc of the associated NAL unit, which succeeds the NAL
+  // unit with nal_unit_type equal to 14 in decoding order.
+  bitstream_builder.BeginNALU(H264NALU::kPrefix, nal_ref_idc);
+  // 7.3.1: nal_unit()
+  bitstream_builder.AppendBool(true);  // svc_extension_flag.
+
+  // G.7.3.1.1:  nal_unit_header_svc_extension()
+
+  const bool idr_flag = associated_nalu_type == H264NALU::Type::kIDRSlice;
+  CHECK_EQ(idr_flag, associated_nalu_type != H264NALU::Type::kNonIDRSlice);
+  bitstream_builder.AppendBool(idr_flag);
+
+  // We don't use the sub-bitstreams, so set priority_id to zero (higher
+  // priority) simply.
+  bitstream_builder.AppendBits(6, 0);  // priority_id.
+  // For prefix NAL units, no_inter_layer_pred_flag shall be equal to 1.
+  bitstream_builder.AppendBool(true);  // no_inter_layer_pred_flag.
+
+  // dependency_id shall be equal to 0 in prefix NAL units.
+  bitstream_builder.AppendBits(3, 0);  // dependency_id.
+  // quality_id shall be equal to 0 in prefix NAL units.
+  bitstream_builder.AppendBits(4, 0);  // quality_id.
+
+  CHECK(!idr_flag || temporal_id == 0);
+  bitstream_builder.AppendBits(3, temporal_id);
+
+  // Our encoder does not use the reference base pictures.
+  bitstream_builder.AppendBool(false);  // use_ref_base_pic_flag.
+  //|discardable_flag| = 0 means if the frame is used for a frame which belongs
+  // to higher |dependency_id| and |quality_id|. As they are both zero,
+  // |discardable_flag| should be 1.
+  bitstream_builder.AppendBool(true);  // discardable_flag.
+  // Our encoder always produces the output video frame.
+  bitstream_builder.AppendBool(true);  // output_flag
+  bitstream_builder.AppendBits(2, 3);  // reserved_three_2bits
+
+  // G.7.3.1.1:  prefix_nal_unit_svc()
+  if (nal_ref_idc != 0) {
+    // Our encoder does not use the reference base pictures.
+    bitstream_builder.AppendBool(false);  // store_ref_base_pic_flag
+    // Our encoder doesn't use any own customized svc extension value.
+    // additional_prefix_nal_unit_extension_flag
+    bitstream_builder.AppendBool(false);
+  }
+  bitstream_builder.FinishNALU();
+
+  base::span<const uint8_t> data = bitstream_builder.data();
+  return std::vector<uint8_t>(data.begin(), data.end());
+}
+
 }  // namespace media
