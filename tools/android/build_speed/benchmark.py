@@ -140,13 +140,9 @@ class Benchmark:
     from_string: str = ''
     to_string: str = ''
     change_file: str = ''
-
-    # Both of these require an emulator to be present.
-    can_install: bool = False
+    can_install: bool = False  # If true, requires an emulator.
     can_run: bool = False
-
-    # Useful for large test apks to not run every test in it.
-    test_filter: str = ''
+    test_filter: str = ''  # Avoid running all tests in large targets.
 
 
 _BENCHMARKS = [
@@ -228,8 +224,19 @@ _BENCHMARKS = [
         'public void NewInterface<sub>Method(){};public void testStartOnBlankPage() {',  # pylint: disable=line-too-long
         change_file=
         'chrome/android/javatests/src/org/chromium/chrome/browser/ExampleFreshCtaTest.java',  # pylint: disable=line-too-long
+        can_install=True,
         can_run=True,
         test_filter='*ExampleFreshCtaTest*',
+    ),
+    Benchmark(
+        name='chrome_junit_sig',
+        from_string='public void callCacheTabThumbnail() {',
+        to_string=
+        'public void NewInterface<sub>Method(){};public void callCacheTabThumbnail() {',  # pylint: disable=line-too-long
+        change_file=
+        'chrome/android/junit/src/org/chromium/chrome/browser/ExampleRobolectricTest.java',  # pylint: disable=line-too-long
+        can_run=True,
+        test_filter='*ExampleRobolectricTest*',
     ),
 ]
 
@@ -398,7 +405,9 @@ def _run_test(out_dir: pathlib.Path, target: str, device_serial: str,
               test_filter: str, *, dry_run: bool) -> float:
     # Example script path: out/Debug/bin/run_chrome_public_test_apk
     script_path = out_dir / 'bin' / f'run_{target}'
-    cmd = [str(script_path), '--fast-local-dev', '--device', device_serial]
+    cmd = [str(script_path), '--fast-local-dev']
+    if device_serial:
+        cmd += ['--device', device_serial]
     if test_filter:
         cmd += ['-f', test_filter]
     if logging.getLogger().isEnabledFor(logging.DEBUG):
@@ -410,23 +419,24 @@ def _execute_benchmark_stages(benchmark: Benchmark, out_dir: pathlib.Path,
                               target: str,
                               emulator: Optional[device_utils.DeviceUtils], *,
                               dry_run: bool) -> List[Tuple[str, float]]:
-    if benchmark.can_install or benchmark.can_run:
+    if benchmark.can_install:
         assert emulator, f'An emulator is required for {benchmark}'
     results = [(f'{benchmark.name}_compile',
                 _compile(out_dir, target, dry_run=dry_run))]
-    if benchmark.can_install:
+    if benchmark.can_run:
+        serial = emulator.serial if emulator else ''
+        results.append((f'{benchmark.name}_run',
+                        _run_test(out_dir,
+                                  target,
+                                  serial,
+                                  benchmark.test_filter,
+                                  dry_run=dry_run)))
+    elif benchmark.can_install:
         results.append((f'{benchmark.name}_install',
                         _run_install(out_dir,
                                      target,
                                      emulator.serial,
                                      dry_run=dry_run)))
-    if benchmark.can_run:
-        results.append((f'{benchmark.name}_run',
-                        _run_test(out_dir,
-                                  target,
-                                  emulator.serial,
-                                  benchmark.test_filter,
-                                  dry_run=dry_run)))
     return results
 
 

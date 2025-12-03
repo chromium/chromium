@@ -239,7 +239,7 @@ class TimeallTest(unittest.TestCase):
         mock_run_benchmarks.assert_called_once()
         _, kwargs = mock_run_benchmarks.call_args
         benchmark_options = kwargs['benchmark_options']
-        self.assertEqual(len(benchmark_options), 32)
+        self.assertEqual(len(benchmark_options), 40)
 
         # Spot check the first and last generated options
         first_options = benchmark_options[0]
@@ -252,10 +252,9 @@ class TimeallTest(unittest.TestCase):
         self.assertTrue(first_options.s)
 
         last_options = benchmark_options[-1]
-        self.assertEqual(last_options.benchmark, 'cta_test_sig')
+        self.assertEqual(last_options.benchmark, 'chrome_junit_sig')
         self.assertEqual(last_options.r, 3)
-        self.assertEqual(last_options.e,
-                         'android_31_google_apis_x64_local.textpb')
+        self.assertEqual(last_options.e, '')
         self.assertTrue(last_options.i)
         self.assertFalse(last_options.n)
         self.assertFalse(last_options.s)

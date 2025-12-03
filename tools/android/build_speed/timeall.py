@@ -73,6 +73,8 @@ def _run_benchmark(options: _Options):
     outdir_name = f"out/Debug"
     if '_test_' in options.benchmark:
         target = "chrome_test_apk"
+    elif 'chrome_junit_' in options.benchmark:
+        target = "chrome_junit_tests"
     else:
         target = "chrome_apk"
     cmd = [
@@ -116,6 +118,7 @@ def run(debug: bool):
         "chrome_nosig",
         "base_sig",
         "cta_test_sig",
+        "chrome_junit_sig",
     ]
 
     if debug:
@@ -149,6 +152,11 @@ def run(debug: bool):
 
     benchmark_options = []
     for benchmark, emulator in itertools.product(benchmarks, emulators):
+        # No emulator required for junit benchmarks.
+        if 'junit' in benchmark:
+            e = ''
+        else:
+            e = emulator
         # i: incremental_install, n: no_component_build, s: server
         build_options = [(i, n, s) for i, n, s in itertools.product(
             incremental_opts, nocomponent_opts, server_opts)]
@@ -159,12 +167,7 @@ def run(debug: bool):
             build_options = build_options[:_MAX_BUILD_COMBINATIONS]
         for i, n, s in build_options:
             benchmark_options.append(
-                _Options(benchmark=benchmark,
-                         r=repeat,
-                         e=emulator,
-                         i=i,
-                         n=n,
-                         s=s))
+                _Options(benchmark=benchmark, r=repeat, e=e, i=i, n=n, s=s))
 
     # shuffle benchmark_options
     if debug:
