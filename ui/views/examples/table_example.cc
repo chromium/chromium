@@ -98,15 +98,18 @@ void TableExample::CreateExampleView(View* container) {
               .SetProperty(kFlexBehaviorKey, full_flex),
           Builder<FlexLayoutView>()
               .SetOrientation(LayoutOrientation::kHorizontal)
-              .AddChildren(
-                  make_checkbox(u"Fruit column visible", 0, &table_,
-                                &column1_visible_checkbox_, full_flex),
-                  make_checkbox(u"Color column visible", 1, &table_,
-                                &column2_visible_checkbox_, full_flex),
-                  make_checkbox(u"Origin column visible", 2, &table_,
-                                &column3_visible_checkbox_, full_flex),
-                  make_checkbox(u"Price column visible", 3, &table_,
-                                &column4_visible_checkbox_, full_flex)))
+              .AddChildren(make_checkbox(u"Fruit column visible", 0, &table_,
+                                         &column1_visible_checkbox_, full_flex),
+                           make_checkbox(u"Color column visible", 1, &table_,
+                                         &column2_visible_checkbox_, full_flex),
+                           make_checkbox(u"Origin column visible", 2, &table_,
+                                         &column3_visible_checkbox_, full_flex),
+                           make_checkbox(u"Price column visible", 3, &table_,
+                                         &column4_visible_checkbox_, full_flex))
+              .SetProperty(views::kFlexBehaviorKey,
+                           FlexSpecification(MinimumFlexSizeRule::kScaleToZero,
+                                             MaximumFlexSizeRule::kUnbounded)
+                               .WithWeight(1)))
       .BuildChildren();
 }
 
