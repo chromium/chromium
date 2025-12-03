@@ -64,7 +64,9 @@ WalletablePassIngestionController::~WalletablePassIngestionController() =
 
 void WalletablePassIngestionController::RegisterOptimizationTypes() {
   client_->GetOptimizationGuideDecider()->RegisterOptimizationTypes(
-      {optimization_guide::proto::WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST});
+      {optimization_guide::proto::WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST,
+       optimization_guide::proto::
+           WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST});
 }
 
 void WalletablePassIngestionController::StartWalletablePassDetectionFlow(
@@ -103,6 +105,15 @@ WalletablePassIngestionController::GetPassCategoryForURL(
           /*optimization_metadata=*/nullptr) ==
       optimization_guide::OptimizationGuideDecision::kTrue) {
     return PassCategory::kLoyaltyCard;
+  }
+
+  if (client_->GetOptimizationGuideDecider()->CanApplyOptimization(
+          url,
+          optimization_guide::proto::
+              WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST,
+          /*optimization_metadata=*/nullptr) ==
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    return PassCategory::kBoardingPass;
   }
 
   // TODO(crbug.com/455680372): Check more allowlists.

@@ -30,6 +30,8 @@ using base::test::EqualsProto;
 using optimization_guide::ModelBasedCapabilityKey::kWalletablePassExtraction;
 using optimization_guide::OptimizationGuideDecision::kFalse;
 using optimization_guide::OptimizationGuideDecision::kTrue;
+using optimization_guide::proto::
+    WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST;
 using optimization_guide::proto::WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST;
 using testing::_;
 using testing::Eq;
@@ -191,7 +193,7 @@ TEST_F(WalletablePassIngestionControllerTest,
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
-       GetPassCategoryForURL_AllowlistedUrl) {
+       GetPassCategoryForURL_LoyaltyCardAllowlistedUrl) {
   GURL https_url("https://example.com");
   EXPECT_CALL(
       mock_decider(),
@@ -204,12 +206,35 @@ TEST_F(WalletablePassIngestionControllerTest,
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
+       GetPassCategoryForURL_BoardingPassAllowlistedUrl) {
+  GURL https_url("https://example.com");
+  EXPECT_CALL(
+      mock_decider(),
+      CanApplyOptimization(
+          https_url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+      .WillOnce(Return(kFalse));
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(
+                  https_url, WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST,
+                  nullptr))
+      .WillOnce(Return(kTrue));
+
+  EXPECT_EQ(test_api(controller()).GetPassCategoryForURL(https_url),
+            PassCategory::kBoardingPass);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
        GetPassCategoryForURL_NotAllowlistedUrl) {
   GURL http_url("http://example.com");
   EXPECT_CALL(
       mock_decider(),
       CanApplyOptimization(
           http_url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+      .WillOnce(Return(kFalse));
+  EXPECT_CALL(
+      mock_decider(),
+      CanApplyOptimization(
+          http_url, WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST, nullptr))
       .WillOnce(Return(kFalse));
 
   EXPECT_EQ(test_api(controller()).GetPassCategoryForURL(http_url),
@@ -318,6 +343,11 @@ TEST_F(WalletablePassIngestionControllerTest,
   EXPECT_CALL(mock_decider(),
               CanApplyOptimization(
                   url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+      .WillOnce(Return(kFalse));
+  EXPECT_CALL(
+      mock_decider(),
+      CanApplyOptimization(
+          url, WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST, nullptr))
       .WillOnce(Return(kFalse));
 
   EXPECT_CALL(*controller(), GetAnnotatedPageContent).Times(0);
