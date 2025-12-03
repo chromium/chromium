@@ -103,10 +103,6 @@ class AutofillProfileEditMediatorTest : public PlatformTest {
         autofill::PersonalDataManagerFactory::GetForProfile(profileIOS_.get());
     personal_data_manager_->SetSyncServiceForTest(nullptr);
 
-    personal_data_manager_->address_data_manager()
-        .get_alternative_state_name_map_updater_for_testing()
-        ->set_local_state_for_testing(local_state());
-
     profile_ = std::make_unique<autofill::AutofillProfile>(
         autofill::test::GetFullProfile());
 

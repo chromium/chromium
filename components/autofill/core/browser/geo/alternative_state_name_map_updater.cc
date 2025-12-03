@@ -62,9 +62,8 @@ std::string ExtractAlternativeStateNames(const std::string& country_code) {
 }  // namespace
 
 AlternativeStateNameMapUpdater::AlternativeStateNameMapUpdater(
-    PrefService* local_state,
     AddressDataManager* address_data_manager)
-    : address_data_manager_(address_data_manager), local_state_(local_state) {
+    : address_data_manager_(address_data_manager) {
   adm_observer_.Observe(address_data_manager_);
 }
 
@@ -122,23 +121,13 @@ void AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap(
     parsed_state_values_.insert({country, normalized_state});
   }
 
-  LoadStatesData(std::move(country_to_state_names_map), local_state_,
-                 std::move(callback));
+  LoadStatesData(std::move(country_to_state_names_map), std::move(callback));
 }
 
-// TODO(crbug.com/419316544): Remove unused `pref_service` and deprecate
-// `prefs::kAutofillStatesDataDir` following:
-// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/prefs/README.md;l=66;drc=1d8dcb0b6e365c292fefaf7670df48fa83c7dff5
 void AlternativeStateNameMapUpdater::LoadStatesData(
     CountryToStateNamesListMapping country_to_state_names_map,
-    PrefService* pref_service,
     base::OnceClosure done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Would be null in the case of tests.
-  if (!pref_service) {
-    return;
-  }
 
   const std::vector<std::string>& country_codes =
       CountryDataMap::GetInstance()->country_codes();

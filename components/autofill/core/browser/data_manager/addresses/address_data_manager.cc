@@ -95,8 +95,6 @@ AddressDataManager::AddressDataManager(
       identity_manager_(identity_manager),
       sync_service_(sync_service),
       app_locale_(std::move(app_locale)) {
-  alternative_state_name_map_updater_ =
-      std::make_unique<AlternativeStateNameMapUpdater>(local_state, this);
   if (webdata_service_) {
     // The `webdata_service_` is null when the TestPDM is used.
     webdata_service_observer_.Observe(webdata_service_.get());
@@ -120,6 +118,9 @@ AddressDataManager::AddressDataManager(
       autofill_metrics::LogAutofillProfileDisabledReasonAtStartup(
           *pref_service_);
     }
+
+    alternative_state_name_map_updater_ =
+        std::make_unique<AlternativeStateNameMapUpdater>(this);
     address_data_cleaner_ = std::make_unique<AddressDataCleaner>(
         *this, sync_service, *pref_service_,
         alternative_state_name_map_updater_.get());
@@ -256,20 +257,18 @@ std::vector<const AutofillProfile*> AddressDataManager::GetProfilesToSuggest()
   const bool should_promote_name_email_profile =
       !pref_service_->GetBoolean(prefs::kAutofillWasNameAndEmailProfileUsed) &&
       (pref_service_->GetInteger(
-          prefs::kAutofillNameAndEmailProfileNotSelectedCounter) == 0);
+           prefs::kAutofillNameAndEmailProfileNotSelectedCounter) == 0);
   // Move the kAccountNameEmail profile to the front (or back) depending on
   // the `should_promote_name_email_profile`.
   std::ranges::stable_partition(
-      profiles, [should_promote_name_email_profile](
-                    const AutofillProfile* p) {
+      profiles, [should_promote_name_email_profile](const AutofillProfile* p) {
         bool is_name_email_profile =
             p->record_type() == AutofillProfile::RecordType::kAccountNameEmail;
         // stable_partition() moves all elements where the predicate returns
         // true to the front. The name/email profile should be in front when
         // it hasn't been used before and in the back otherwise.
-        return should_promote_name_email_profile
-                   ? is_name_email_profile
-                   : !is_name_email_profile;
+        return should_promote_name_email_profile ? is_name_email_profile
+                                                 : !is_name_email_profile;
       });
 
   return profiles;

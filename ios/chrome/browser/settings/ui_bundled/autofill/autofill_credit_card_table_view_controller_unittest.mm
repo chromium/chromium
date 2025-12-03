@@ -84,9 +84,6 @@ class AutofillCreditCardTableViewControllerTest
     }
     personal_data_manager->payments_data_manager()
         .OnAcceptedLocalCreditCardSave(credit_card);
-    personal_data_manager->address_data_manager()
-        .get_alternative_state_name_map_updater_for_testing()
-        ->set_local_state_for_testing(local_state());
     std::move(waiter).Wait();  // Wait for completion of the async operation.
   }
 

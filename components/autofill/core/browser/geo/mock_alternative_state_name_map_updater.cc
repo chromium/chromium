@@ -15,9 +15,8 @@ MockAlternativeStateNameMapUpdater::~MockAlternativeStateNameMapUpdater() =
 
 MockAlternativeStateNameMapUpdater::MockAlternativeStateNameMapUpdater(
     base::OnceClosure callback,
-    PrefService* local_state,
     AddressDataManager* address_data_manager)
-    : AlternativeStateNameMapUpdater(local_state, address_data_manager),
+    : AlternativeStateNameMapUpdater(address_data_manager),
       callback_(std::move(callback)) {}
 
 void MockAlternativeStateNameMapUpdater::OnAddressDataChanged() {

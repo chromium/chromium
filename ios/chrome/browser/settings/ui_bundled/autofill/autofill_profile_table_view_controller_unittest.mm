@@ -91,9 +91,6 @@ class AutofillProfileTableViewControllerTest
   void AddProfile(const std::string& name, const std::string& address) {
     autofill::PersonalDataManager* personal_data_manager =
         autofill::PersonalDataManagerFactory::GetForProfile(profile_.get());
-    personal_data_manager->address_data_manager()
-        .get_alternative_state_name_map_updater_for_testing()
-        ->set_local_state_for_testing(local_state());
     personal_data_manager->SetSyncServiceForTest(nullptr);
     autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
 
