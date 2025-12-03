@@ -1136,7 +1136,7 @@ ios_builder(
             "debug_static_builder",
             "remoteexec",
             "ios_catalyst",
-            "x64",
+            "arm64",
             "asan",
             "libfuzzer",
             "no_dsyms",
