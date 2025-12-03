@@ -2158,6 +2158,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SyncSetupIncompleteMigrationDecision"
+    enum="SyncSetupIncompleteMigrationDecision" expires_after="2026-11-28">
+  <owner>ankushkush@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    The decision whether to migrate the user from sync-setup-incomplete state to
+    signed-in history-off state. This is recorded for all users upon profile
+    load.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SyncStoppedReported" enum="Boolean"
     expires_after="2026-05-24">
   <owner>rushans@google.com</owner>

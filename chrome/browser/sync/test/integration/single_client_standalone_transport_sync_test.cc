@@ -16,6 +16,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -648,5 +649,83 @@ IN_PROC_BROWSER_TEST_F(ReplaceSyncWithSigninMigrationSyncTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+// On ChromeOS, there exists no sync setup incomplete state.
+#if !BUILDFLAG(IS_CHROMEOS)
+class SyncSetupIncompleteMigrationSyncTest : public SyncTest {
+ public:
+  SyncSetupIncompleteMigrationSyncTest() : SyncTest(SINGLE_CLIENT) {
+    std::vector<base::test::FeatureRef> features = {
+        switches::kMigrateOutOfSyncSetupIncompleteState,
+        syncer::kUnoPhase2FollowUp};
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features = {
+        // This is disabled because if enabled, the sync to sign-in migration is
+        // triggered which also migrates the sync setup incomplete users.
+        switches::kMigrateSyncingUserToSignedIn};
+    if (content::IsPreTest()) {
+      disabled_features.insert(disabled_features.end(), features.begin(),
+                               features.end());
+    } else {
+      enabled_features.insert(enabled_features.end(), features.begin(),
+                              features.end());
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SyncSetupIncompleteMigrationSyncTest,
+                       PRE_MigratesSyncSetupIncompleteUser) {
+  ASSERT_TRUE(SetupClients());
+
+  // Using `SetupSyncWithCustomSettings` with `base::DoNothing()` doesn't set
+  // the sync-setup-complete bit.
+  ASSERT_TRUE(GetClient(0)->SetupSyncWithCustomSettings(base::DoNothing()));
+  ASSERT_TRUE(GetSyncService(0)->HasSyncConsent());
+  ASSERT_FALSE(GetSyncService(0)
+                   ->GetUserSettings()
+                   ->IsInitialSyncFeatureSetupComplete());
+}
+
+IN_PROC_BROWSER_TEST_F(SyncSetupIncompleteMigrationSyncTest,
+                       MigratesSyncSetupIncompleteUser) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  // The user is not syncing anymore.
+  EXPECT_FALSE(GetSyncService(0)->HasSyncConsent());
+  // History is toggled off.
+  EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+}
+
+IN_PROC_BROWSER_TEST_F(SyncSetupIncompleteMigrationSyncTest,
+                       PRE_DoesNotMigrateSyncSetupCompleteUser) {
+  ASSERT_TRUE(SetupClients());
+
+  ASSERT_TRUE(GetClient(0)->SetupSyncWithCustomSettings(base::DoNothing()));
+  ASSERT_TRUE(GetSyncService(0)->HasSyncConsent());
+
+  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  ASSERT_TRUE(GetSyncService(0)
+                  ->GetUserSettings()
+                  ->IsInitialSyncFeatureSetupComplete());
+}
+
+IN_PROC_BROWSER_TEST_F(SyncSetupIncompleteMigrationSyncTest,
+                       DoesNotMigrateSyncSetupCompleteUser) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  EXPECT_TRUE(GetSyncService(0)->HasSyncConsent());
+  EXPECT_TRUE(GetSyncService(0)
+                  ->GetUserSettings()
+                  ->IsInitialSyncFeatureSetupComplete());
+  EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

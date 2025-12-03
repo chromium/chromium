@@ -179,6 +179,11 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, NotSignedIn) {
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, PRE_Syncing) {
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), kTestEmail,
                                       signin::ConsentLevel::kSync);
+  // TODO(crbug.com/464457988): Mark sync setup as complete by default in the
+  // sign-in helper method.
+  GetSyncService()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  ASSERT_TRUE(GetSyncService()->IsSyncFeatureEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, Syncing) {
@@ -1629,6 +1634,11 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationBrowserTest,
                        PRE_DoesNotMigrateSyncingUser) {
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), kTestEmail,
                                       signin::ConsentLevel::kSync);
+  // TODO(crbug.com/464457988): Mark sync setup as complete by default in the
+  // sign-in helper method.
+  GetSyncService()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  ASSERT_TRUE(GetSyncService()->IsSyncFeatureEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationBrowserTest,
