@@ -234,6 +234,11 @@ class AutofillCrowdsourcingManagerTest
     CreateAutofillDriver();
   }
 
+  ~AutofillCrowdsourcingManagerTest() override {
+    // See https://crbug.com/462152757.
+    autofill_client().set_shared_url_loader_factory(nullptr);
+  }
+
   base::WeakPtr<AutofillCrowdsourcingManagerTest> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
