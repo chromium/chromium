@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
@@ -208,7 +209,7 @@ void ContextualTasksSidePanelCoordinator::Show(bool transition_from_tab) {
   ObserveWebContentsOnActiveTab();
   browser_window_->GetFeatures()
       .contextual_tasks_active_task_context_provider()
-      ->OnSidePanelStateUpdated(IsSidePanelOpenForContextualTask());
+      ->OnSidePanelStateUpdated(GetContextualSearchSessionHandleForSidePanel());
 }
 
 void ContextualTasksSidePanelCoordinator::Close() {
@@ -219,7 +220,7 @@ void ContextualTasksSidePanelCoordinator::Close() {
 
   browser_window_->GetFeatures()
       .contextual_tasks_active_task_context_provider()
-      ->OnSidePanelStateUpdated(IsSidePanelOpenForContextualTask());
+      ->OnSidePanelStateUpdated(/*session_handle=*/nullptr);
 }
 
 bool ContextualTasksSidePanelCoordinator::IsSidePanelOpen() {
@@ -313,6 +314,17 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
   task_id_to_web_contents_cache_[new_task_id] = std::move(cache_item);
 }
 
+contextual_search::ContextualSearchSessionHandle*
+ContextualTasksSidePanelCoordinator::
+    GetContextualSearchSessionHandleForSidePanel() {
+  if (!web_view_ || !web_view_->GetWebContents()) {
+    return nullptr;
+  }
+  auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
+      web_view_->GetWebContents());
+  return helper ? helper->session_handle() : nullptr;
+}
+
 std::optional<ContextualTask>
 ContextualTasksSidePanelCoordinator::GetCurrentTask() {
   tabs::TabInterface* active_tab_interface =
@@ -400,7 +412,10 @@ void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
 
   browser_window_->GetFeatures()
       .contextual_tasks_active_task_context_provider()
-      ->OnSidePanelStateUpdated(IsSidePanelOpenForContextualTask());
+      ->OnSidePanelStateUpdated(
+          IsSidePanelOpenForContextualTask()
+              ? GetContextualSearchSessionHandleForSidePanel()
+              : nullptr);
 }
 
 void ContextualTasksSidePanelCoordinator::OnTabStripModelChanged(
@@ -492,7 +507,7 @@ void ContextualTasksSidePanelCoordinator::Hide() {
 
   browser_window_->GetFeatures()
       .contextual_tasks_active_task_context_provider()
-      ->OnSidePanelStateUpdated(IsSidePanelOpenForContextualTask());
+      ->OnSidePanelStateUpdated(/*session_handle=*/nullptr);
 }
 
 void ContextualTasksSidePanelCoordinator::Unhide() {
@@ -508,7 +523,7 @@ void ContextualTasksSidePanelCoordinator::Unhide() {
 
   browser_window_->GetFeatures()
       .contextual_tasks_active_task_context_provider()
-      ->OnSidePanelStateUpdated(IsSidePanelOpenForContextualTask());
+      ->OnSidePanelStateUpdated(GetContextualSearchSessionHandleForSidePanel());
 }
 
 void ContextualTasksSidePanelCoordinator::ObserveWebContentsOnActiveTab() {

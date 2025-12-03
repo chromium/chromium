@@ -38,7 +38,8 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
       const ActiveTaskContextProviderImpl&) = delete;
 
   // ActiveTaskContextProvider implementation.
-  void OnSidePanelStateUpdated(bool is_open) override;
+  void OnSidePanelStateUpdated(contextual_search::ContextualSearchSessionHandle*
+                                   session_handle) override;
   void OnPendingContextUpdated(
       const contextual_search::ContextualSearchSessionHandle& session_handle)
       override;
@@ -68,9 +69,10 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
   // Handle to the compose plate of the active tab.
   std::optional<base::UnguessableToken> last_session_id_;
 
-  // Cached last value of side panel visibility notified via
-  // `OnSidePanelStateUpdated()`.
-  bool is_side_panel_open_ = false;
+  // The active session handle from the side panel. If null, side panel is
+  // closed.
+  base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
+      active_session_handle_;
 
   // An autoincrementing callback ID to filter out stale requests.
   int callback_id_ = 0;

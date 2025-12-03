@@ -160,6 +160,10 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // active tab does not have an open state.
   void MaybeInitTabScopedOpenState();
 
+  // Helper method to get the session handle from the side panel's web contents.
+  contextual_search::ContextualSearchSessionHandle*
+  GetContextualSearchSessionHandleForSidePanel();
+
   // Browser window of the current side panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
 

@@ -39,10 +39,13 @@ class ActiveTaskContextProvider {
       const contextual_search::ContextualSearchSessionHandle&
           session_handle) = 0;
 
-  // Called to notify the state of side panel. Called :
-  // 1. After every tab switch with the correct state of `is_open`.
+  // Called to notify the state of side panel on the active tab.
+  // `session_handle` represents the session associated with the task open on
+  // the side panel. `nullptr` if the side panel is closed.
+  // 1. After every tab switch with the correct state of side panel.
   // 2. Whenever the side panel is opened or closed, e.g. due to user action.
-  virtual void OnSidePanelStateUpdated(bool is_open) = 0;
+  virtual void OnSidePanelStateUpdated(
+      contextual_search::ContextualSearchSessionHandle* session_handle) = 0;
 
   virtual ~ActiveTaskContextProvider() = default;
 };

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -14,6 +15,50 @@
 #include "components/tabs/public/tab_interface.h"
 
 namespace contextual_tasks {
+
+namespace {
+
+std::set<tabs::TabHandle> GetTabsFromContext(
+    const ContextualTaskContext& context,
+    BrowserWindowInterface* browser_window) {
+  std::set<tabs::TabHandle> tabs;
+
+  // Add the tabs from context if they exist in the current browser window.
+  std::set<SessionID> context_session_ids;
+  for (const auto& attachment : context.GetUrlAttachments()) {
+    SessionID id = attachment.GetTabSessionId();
+    if (id.is_valid()) {
+      context_session_ids.insert(id);
+    }
+  }
+
+  if (context_session_ids.empty()) {
+    return tabs;
+  }
+
+  TabStripModel* tab_strip_model = browser_window->GetTabStripModel();
+  if (!tab_strip_model) {
+    return tabs;
+  }
+
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
+    if (!web_contents) {
+      continue;
+    }
+    SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
+    if (context_session_ids.contains(tab_id)) {
+      if (tabs::TabInterface* tab =
+              tabs::TabInterface::GetFromContents(web_contents)) {
+        tabs.insert(tab->GetHandle());
+      }
+    }
+  }
+
+  return tabs;
+}
+
+}  // namespace
 
 ActiveTaskContextProviderImpl::ActiveTaskContextProviderImpl(
     BrowserWindowInterface* browser_window,
@@ -36,10 +81,12 @@ void ActiveTaskContextProviderImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void ActiveTaskContextProviderImpl::OnSidePanelStateUpdated(bool is_open) {
+void ActiveTaskContextProviderImpl::OnSidePanelStateUpdated(
+    contextual_search::ContextualSearchSessionHandle* session_handle) {
   // The side panel was just opened or closed or we might have switched to a
   // different tab. Update the context.
-  is_side_panel_open_ = is_open;
+  active_session_handle_ =
+      session_handle ? session_handle->AsWeakPtr() : nullptr;
   RefreshContext();
 }
 
@@ -67,6 +114,11 @@ void ActiveTaskContextProviderImpl::RefreshContext() {
   // Increment the callback ID to invalidate any outstanding callbacks.
   callback_id_++;
 
+  if (!active_session_handle_) {
+    ResetStateAndNotifyObservers();
+    return;
+  }
+
   tabs::TabInterface* active_tab = browser_window_->GetActiveTabInterface();
   if (!active_tab) {
     ResetStateAndNotifyObservers();
@@ -79,24 +131,11 @@ void ActiveTaskContextProviderImpl::RefreshContext() {
     return;
   }
 
-  auto* session_handle_tab_helper =
-      ContextualSearchWebContentsHelper::FromWebContents(web_contents);
-  auto* session_handle = session_handle_tab_helper
-                             ? session_handle_tab_helper->session_handle()
-                             : nullptr;
-  if (!session_handle) {
-    ResetStateAndNotifyObservers();
-    return;
-  }
+  auto* session_handle = active_session_handle_.get();
 
   bool session_handle_changed =
       last_session_id_ != session_handle->session_id();
   last_session_id_ = session_handle->session_id();
-
-  if (!is_side_panel_open_) {
-    ResetStateAndNotifyObservers();
-    return;
-  }
 
   auto task = contextual_tasks_service_->GetContextualTaskForTab(
       sessions::SessionTabHelper::IdForTab(web_contents));
@@ -137,10 +176,17 @@ void ActiveTaskContextProviderImpl::OnGetContextForTask(
     return;
   }
 
-  // TODO(shaktisahu): Retrieve the tab handles from `context`.
-  std::set<tabs::TabHandle> context_tabs;
+  std::set<tabs::TabHandle> tabs_to_underline =
+      GetTabsFromContext(*context, browser_window_);
+
+  // Add the associated tab as well. The active tab should be always underlined.
+  tabs::TabInterface* active_tab = browser_window_->GetActiveTabInterface();
+  if (active_tab) {
+    tabs_to_underline.insert(active_tab->GetHandle());
+  }
+
   for (auto& obs : observers_) {
-    obs.OnContextTabsChanged(context_tabs);
+    obs.OnContextTabsChanged(tabs_to_underline);
   }
 }
 
