@@ -622,7 +622,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, UninstallDoesNotReinstall) {
             0ul);
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NoShortcutsCreatedOnSync) {
+// TODO(crbug.com/465061769): Flaky on Linux TSan.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_NoShortcutsCreatedOnSync DISABLED_NoShortcutsCreatedOnSync
+#else
+#define MAYBE_NoShortcutsCreatedOnSync NoShortcutsCreatedOnSync
+#endif
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
+                       MAYBE_NoShortcutsCreatedOnSync) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
