@@ -38,6 +38,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -87,6 +88,11 @@ namespace {
 const int64_t kBackingStoreGracePeriodSeconds = 2;
 
 std::optional<bool> g_should_use_sqlite_for_testing;
+
+base::OnceClosure& GetTeardownExtraStepForTesting() {
+  static base::NoDestructor<base::OnceClosure> g_teardown_override_for_testing;
+  return *g_teardown_override_for_testing;
+}
 
 // This struct facilitates requesting bucket space usage from the quota manager.
 // There have been reports of the callback being passed to the quota manager
@@ -221,6 +227,10 @@ BucketContext::~BucketContext() {
 
   delegate_.on_ready_for_destruction.Reset();
   ResetBackingStore();
+
+  if (delegate_.on_destroyed) {
+    std::move(delegate_.on_destroyed).Run();
+  }
 }
 
 void BucketContext::ForceClose(bool doom, const std::string& message) {
@@ -829,6 +839,12 @@ BucketContext::OverrideShouldUseSqliteForTesting(bool use_sqlite) {
   return scoped_override;
 }
 
+// static
+void BucketContext::InsertTeardownStepForTesting(
+    base::OnceClosure on_teardown) {
+  GetTeardownExtraStepForTesting() = std::move(on_teardown);
+}
+
 void BucketContext::HandleBackingStoreCorruption(
     const std::string& error_message) {
   std::string sanitized_error_message = SanitizeErrorMessage(error_message);
@@ -1062,9 +1078,12 @@ void BucketContext::ResetBackingStore() {
   weak_factory_.InvalidateWeakPtrs();
 
   if (backing_store_) {
+    const auto start = base::TimeTicks::Now();
     base::WaitableEvent leveldb_destruct_event;
     backing_store_->TearDown(&leveldb_destruct_event);
-    const auto start = base::TimeTicks::Now();
+    if (!GetTeardownExtraStepForTesting().is_null()) {
+      std::move(GetTeardownExtraStepForTesting()).Run();
+    }
     backing_store_.reset();
     leveldb_destruct_event.Wait();
     base::UmaHistogramTimes("IndexedDB.BackingStoreCloseDuration",

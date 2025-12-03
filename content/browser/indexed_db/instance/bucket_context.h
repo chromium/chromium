@@ -100,6 +100,8 @@ class CONTENT_EXPORT BucketContext
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
+    base::OnceClosure on_destroyed;
+
     // Called when the bucket context is ready to be destroyed. After this is
     // called, the bucket context will no longer accept new IDBFactory
     // connections (receivers in `receivers_`).
@@ -147,6 +149,10 @@ class CONTENT_EXPORT BucketContext
   // object will use SQLite iff `use_sqlite` is true.
   static base::AutoReset<std::optional<bool>> OverrideShouldUseSqliteForTesting(
       bool use_sqlite);
+
+  // Inserts an extra step during BackingStore teardown; used for testing
+  // crbug.com/340398745.
+  static void InsertTeardownStepForTesting(base::OnceClosure on_teardown);
 
   bool ShouldUseSqlite() const { return should_use_sqlite_; }
 

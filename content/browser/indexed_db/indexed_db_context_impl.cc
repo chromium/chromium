@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -29,9 +30,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_features.h"
@@ -101,6 +104,87 @@ base::TaskTraits GetTaskTraits() {
               : base::TaskPriority::USER_VISIBLE,
           // BLOCK_SHUTDOWN to support clearing session-only storage.
           base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
+}
+
+// Manages bucket-level synchronization. Each bucket is uniquely identified by
+// a file path (the first path returned by GetStoragePaths() is used). This
+// object is a leaky singleton and all methods are thread safe.
+//
+// *** Why is this necessary? ***
+//
+// Although there should normally only be a single BucketContext per bucket at
+// any given time, this rule can transiently be broken during Profile reloading.
+// The duration of this "transient" period depends on how long it takes a
+// BucketContext to be destroyed. Specifically, when a Profile is destroyed, its
+// IndexedDBContextImpl and BucketContext instances are destroyed on a
+// background thread. This can take a while, e.g. if the backing store has
+// cleanup tasks to perform. The Profile can be re-created, and a whole new tree
+// of C++ objects created in memory, which will start clashing with existing,
+// destructing BucketContext instances. In the case of IndexedDBContextImpl,
+// this is handled with
+// base::ThreadPool::CreateSequencedTaskRunnerForResource(). BucketContext could
+// do something similar, except that the task runners in the map managed by
+// ThreadPoolImpl are leaked, and there can be an unbounded number of
+// BucketContexts over the course of program execution. Thus, the main point of
+// this class is to allow destruction of the sequence when no longer needed.
+//
+// Why not locks or other primitives? The bucket work is done in a thread pool,
+// and locks require acquisition and release on the same thread, not just the
+// same sequence. Likewise, base::WaitableEvent will sleep an entire thread,
+// rather than just blocking a sequence.
+class TaskRunnerMap {
+ public:
+  using Key = base::FilePath;
+  struct Value {
+    scoped_refptr<base::SequencedTaskRunner> task_runner;
+    size_t ref_count;
+  };
+
+  TaskRunnerMap() = default;
+  ~TaskRunnerMap() = default;
+
+  // Returns the task runner for the bucket represented by `key`. If there is no
+  // task runner, creates one, unless `fallback_task_runner` is provided, in
+  // which case that one is used.
+  scoped_refptr<base::SequencedTaskRunner> GetTaskRunner(
+      Key key,
+      scoped_refptr<base::SequencedTaskRunner> fallback_task_runner) {
+    base::AutoLock lock(sequences_for_buckets_lock_);
+    auto iter = sequences_for_buckets_.find(key);
+    if (iter != sequences_for_buckets_.end()) {
+      Value& value = iter->second;
+      ++value.ref_count;
+      return value.task_runner;
+    }
+    if (!fallback_task_runner) {
+      fallback_task_runner =
+          base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits());
+    }
+    sequences_for_buckets_[key] = {fallback_task_runner, 1U};
+    return fallback_task_runner;
+  }
+
+  void MaybeCleanupTaskRunner(Key key) {
+    base::AutoLock lock(sequences_for_buckets_lock_);
+    auto iter = sequences_for_buckets_.find(key);
+    CHECK(iter != sequences_for_buckets_.end());
+    if (--iter->second.ref_count == 0) {
+      sequences_for_buckets_.erase(iter);
+    }
+  }
+
+ private:
+  base::Lock sequences_for_buckets_lock_;
+  // Maps from a bucket to the sequence used for that bucket, if the bucket has
+  // a BucketContext. Otherwise, there shouldn't be an entry present in the map
+  // for the bucket.
+  base::flat_map<Key, Value> sequences_for_buckets_
+      GUARDED_BY(sequences_for_buckets_lock_);
+};
+
+TaskRunnerMap& GetTaskRunnerMap() {
+  static base::NoDestructor<TaskRunnerMap> task_runner_map;
+  return *task_runner_map;
 }
 
 bool IsAllowedPath(const std::vector<base::FilePath>& allowed_paths,
@@ -1170,10 +1254,15 @@ void IndexedDBContextImpl::EnsureBucketContext(
           base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits());
     }
     bucket_task_runner = task_runner_limiter.overflow_task_runner;
-  } else {
-    bucket_task_runner =
-        base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits());
   }
+
+  base::FilePath bucket_key = GetStoragePaths(bucket_locator).front();
+  bucket_task_runner = GetTaskRunnerMap().GetTaskRunner(
+      bucket_key, std::move(bucket_task_runner));
+  // Note that this one can run on any sequence.
+  bucket_delegate.on_destroyed =
+      base::BindOnce(&TaskRunnerMap::MaybeCleanupTaskRunner,
+                     base::Unretained(&GetTaskRunnerMap()), bucket_key);
 
   const auto& [iter, inserted] = bucket_contexts_.emplace(
       bucket_locator.id,

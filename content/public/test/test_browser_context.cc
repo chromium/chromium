@@ -45,15 +45,16 @@ TestBrowserContext::~TestBrowserContext() {
   NotifyWillBeDestroyed();
   ShutdownStoragePartitions();
 
+  if (!browser_context_dir_.IsValid()) {
+    return;
+  }
   // Various things that were just torn down above post tasks to other
   // sequences that eventually bounce back to the main thread and out again.
   // Run all such tasks now before the instance is destroyed so that the
   // |browser_context_dir_| can be fully cleaned up.
   RunAllPendingInMessageLoop(BrowserThread::IO);
   RunAllTasksUntilIdle();
-
-  EXPECT_TRUE(!browser_context_dir_.IsValid() || browser_context_dir_.Delete())
-      << browser_context_dir_.GetPath();
+  EXPECT_TRUE(browser_context_dir_.Delete()) << browser_context_dir_.GetPath();
 }
 
 base::FilePath TestBrowserContext::TakePath() {

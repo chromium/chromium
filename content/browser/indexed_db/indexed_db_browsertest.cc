@@ -32,6 +32,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
 #include "base/test/thread_test_helper.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -62,6 +63,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/base/net_errors.h"
@@ -364,6 +366,55 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, TransactionGetTest) {
 
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, KeyTypesTest) {
   SimpleTest(GetTestUrl("indexeddb", "key_types_test.html"));
+}
+
+// Verifies what happens when a BrowserContext and its StoragePartition and IDB
+// classes are destroyed, but the browser process is not destroyed, and then a
+// BrowserContext is opened again for the same Profile dir. Regression test for
+// crbug.com/340398745.
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest,
+                       ProfileReloadAndSlowDestructionTest) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // The first time a BucketContext shuts down, force it to take a long time.
+  // This has to be long enough such that it's usually held open until the
+  // second window is opened, but not so long that the test times out.
+  BucketContext::InsertTeardownStepForTesting(base::BindOnce(
+      &base::PlatformThread::Sleep, TestTimeouts::action_timeout()));
+
+  // Create a secondary BrowserContext/Profile and a window; run basic IDB test.
+  std::unique_ptr<TestBrowserContext> other_profile =
+      CreateTestBrowserContext();
+  Shell* other_shell =
+      Shell::CreateNewWindow(other_profile.get(), GURL(), nullptr, gfx::Size());
+  SimpleTest(GetTestUrl("indexeddb", "transaction_get_test.html"), other_shell);
+
+  // Close window; delete BrowserContext *but not the directory*.
+  std::exchange(other_shell, nullptr)->Close();
+  // By calling `TakePath`, we prevent `TestBrowserContext` from deleting the
+  // files, or waiting for all threadpool tasks to complete (similar to
+  // production).
+  const base::FilePath other_profile_dir = other_profile->TakePath();
+  other_profile.reset();
+
+  // Recreate the BrowserContext in memory, and its tree of C++ objects,
+  // including IDB objects. Run the same test again. It will fail if it does not
+  // synchronize with the first bucket context which is still holding locks on
+  // the database files.
+  other_profile = std::make_unique<TestBrowserContext>(other_profile_dir);
+  other_shell =
+      Shell::CreateNewWindow(other_profile.get(), GURL(), nullptr, gfx::Size());
+  SimpleTest(GetTestUrl("indexeddb", "transaction_get_test.html"), other_shell);
+  std::exchange(other_shell, nullptr)->Close();
+
+  // This is necessary to prevent flakiness. Normally, `TestBrowserContext`
+  // cleans up (deletes) its directory on destruction, but to do so more
+  // robustly, it should use `RunUntil`. Unfortunately, adding `RunUntil` there
+  // causes certain tests unrelated to this one to fail due to being outside of
+  // a `ScopedRunLoopTimeout`, so we only apply the fix here.
+  EXPECT_EQ(other_profile_dir, other_profile->TakePath());
+  other_profile.reset();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return base::DeletePathRecursively(other_profile_dir); }));
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, ObjectStoreTest) {
