@@ -14046,6 +14046,7 @@ from previous Chrome versions.
   <int value="-70602185" label="LensOverlayVisualSelectionUpdates:disabled"/>
   <int value="-70595606" label="ash-enable-unified-desktop"/>
   <int value="-70434056" label="UseGles2ForOopR:enabled"/>
+  <int value="-69919375" label="ShimlessRMAFlexibleSerialNumberName:enabled"/>
   <int value="-69427025" label="OfflinePagesPrefetchingUI:enabled"/>
   <int value="-69224661" label="FeedAblation:enabled"/>
   <int value="-68877684" label="BackgroundVideoTrackOptimization:enabled"/>
@@ -15988,6 +15989,7 @@ from previous Chrome versions.
   <int value="621484660" label="ReorderBookmarks:disabled"/>
   <int value="621827872" label="GlicPanelResetOnSessionTimeout:disabled"/>
   <int value="622027416" label="HoldingSpaceSuggestions:disabled"/>
+  <int value="622252986" label="ShimlessRMAFlexibleSerialNumberName:disabled"/>
   <int value="623112705"
       label="IPH_KeyboardAccessoryPaymentVirtualCard:disabled"/>
   <int value="623444592" label="AndroidCaretBrowsing:enabled"/>

@@ -7711,6 +7711,11 @@ inline constexpr char kShimlessRMADynamicDeviceInfoInputsName[] =
 inline constexpr char kShimlessRMADynamicDeviceInfoInputsDescription[] =
     "Turns on Dynamic Device Info Inputs in Shimless RMA";
 
+inline constexpr char kShimlessRMAFlexibleSerialNumberNameName[] =
+    "Enable Customized Serial Number Namings in Shimless RMA";
+inline constexpr char kShimlessRMAFlexibleSerialNumberNameDescription[] =
+    "Turns on Customized Serial Number Namings in Shimless RMA";
+
 inline constexpr char kSchedulerConfigurationName[] = "Scheduler Configuration";
 inline constexpr char kSchedulerConfigurationDescription[] =
     "Instructs the OS to use a specific scheduler configuration setting.";

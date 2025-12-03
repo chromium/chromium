@@ -1872,6 +1872,10 @@ BASE_FEATURE(kShimlessRMAHardwareValidationSkip,
 BASE_FEATURE(kShimlessRMADynamicDeviceInfoInputs,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables the option to allow customized Serial Number namings.
+BASE_FEATURE(kShimlessRMAFlexibleSerialNumberName,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, system shortcuts will utilize state machiens instead of
 // keeping track of entire history of keys pressed.
 BASE_FEATURE(kShortcutStateMachines, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3361,6 +3365,10 @@ bool IsShimlessRMAHardwareValidationSkipEnabled() {
 
 bool IsShimlessRMADynamicDeviceInfoInputsEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMADynamicDeviceInfoInputs);
+}
+
+bool IsShimlessRMAFlexibleSerialNumberNameEnabled() {
+  return base::FeatureList::IsEnabled(kShimlessRMAFlexibleSerialNumberName);
 }
 
 bool IsShowSharingUserInLauncherContinueSectionEnabled() {

@@ -441,6 +441,9 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "dynamicDeviceInfoInputsEnabled",
       features::IsShimlessRMADynamicDeviceInfoInputsEnabled());
+  html_source->AddBoolean(
+      "flexibleSerialNumberNameEnabled",
+      features::IsShimlessRMAFlexibleSerialNumberNameEnabled());
 }
 
 }  // namespace
