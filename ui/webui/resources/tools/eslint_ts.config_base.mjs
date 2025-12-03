@@ -36,6 +36,9 @@ export const defaultConfig = [
       '@typescript-eslint/require-await' : 'error',
       '@typescript-eslint/no-unnecessary-type-assertion': 'error',
 
+      // https://google.github.io/styleguide/tsguide.html#export-type
+      '@typescript-eslint/consistent-type-exports': 'error',
+
       '@webui-eslint/lit-property-accessor': 'error',
       '@webui-eslint/polymer-property-declare': 'error',
       '@webui-eslint/polymer-property-class-member': 'error',

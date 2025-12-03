@@ -176,7 +176,8 @@ export type {EntityDataManagerProxy, EntityInstancesChangedListener} from './aut
 export {SettingsIbanEditDialogElement} from './autofill_page/iban_edit_dialog.js';
 export {SettingsIbanListEntryElement} from './autofill_page/iban_list_entry.js';
 // <if expr="is_win or is_macosx">
-export {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './autofill_page/passkeys_browser_proxy.js';
+export {PasskeysBrowserProxyImpl} from './autofill_page/passkeys_browser_proxy.js';
+export type {Passkey, PasskeysBrowserProxy} from './autofill_page/passkeys_browser_proxy.js';
 export {SettingsPasskeysSubpageElement} from './autofill_page/passkeys_subpage.js';
 // </if>
 export {SettingsPayOverTimeIssuerListEntryElement} from './autofill_page/pay_over_time_issuer_list_entry.js';
