@@ -68,9 +68,9 @@ bool DoesBeginSlashWindowsDriveSpec(const CHAR* spec, int start_offset,
 #endif  // WIN32
 
 template <typename CHAR>
-bool IsValidScheme(const CHAR* url, const Component& scheme) {
+bool IsValidScheme(std::basic_string_view<CHAR> scheme) {
   // Caller should ensure that the |scheme| is not empty.
-  DCHECK_NE(0, scheme.len);
+  DCHECK_NE(0u, scheme.length());
 
   // From https://url.spec.whatwg.org/#scheme-start-state:
   //   scheme start state:
@@ -80,7 +80,7 @@ bool IsValidScheme(const CHAR* url, const Component& scheme) {
   //        state, and decrease pointer by one.
   //     3. Otherwise, validation error, return failure.
   // Note that both step 2 and step 3 mean that the scheme was not valid.
-  if (!base::IsAsciiAlpha(UNSAFE_TODO(url[scheme.begin]))) {
+  if (!base::IsAsciiAlpha(scheme[0])) {
     return false;
   }
 
@@ -90,11 +90,10 @@ bool IsValidScheme(const CHAR* url, const Component& scheme) {
   //        (.), append c, lowercased, to buffer.
   //     2. Otherwise, if c is U+003A (:), then [...]
   //
-  // We begin at |scheme.begin + 1|, because the character at |scheme.begin| has
-  // already been checked by base::IsAsciiAlpha above.
-  int scheme_end = scheme.end();
-  for (int i = scheme.begin + 1; i < scheme_end; i++) {
-    if (!CanonicalSchemeChar(UNSAFE_TODO(url[i]))) {
+  // We begin at `1`, because the character at `scheme[0]` has already been
+  // checked by base::IsAsciiAlpha above.
+  for (size_t i = 1; i < scheme.length(); ++i) {
+    if (!CanonicalSchemeChar(scheme[i])) {
       return false;
     }
   }
@@ -165,7 +164,7 @@ bool DoIsRelativeUrl(std::string_view base,
   }
 
   // If the scheme isn't valid, then it's relative.
-  if (!IsValidScheme(url.data(), scheme)) {
+  if (!IsValidScheme(scheme.AsViewOn(url))) {
     if (url[0] == '#') {
       // |url| is a bare fragment (e.g. "#foo:bar"). This can be resolved
       // against any base. Fall-through.
