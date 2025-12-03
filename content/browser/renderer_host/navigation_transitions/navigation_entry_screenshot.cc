@@ -143,10 +143,6 @@ bool NavigationEntryScreenshot::SharedImageProvider::
   return true;
 }
 
-void NavigationEntryScreenshot::SharedImageProvider::DoRelease(
-    const gpu::SyncToken& sync_token,
-    bool is_lost) {}
-
 NavigationEntryScreenshot::SharedImageProvider::SharedImageProvider() = default;
 NavigationEntryScreenshot::SharedImageProvider::~SharedImageProvider() =
     default;
@@ -271,6 +267,9 @@ void NavigationEntryScreenshot::HardwareBufferHolder::DoRelease(
     const gpu::SyncToken& sync_token,
     bool is_lost) {
   pending_transferable_resource_ = true;
+  if (cached_shared_image_) {
+    cached_shared_image_->UpdateDestructionSyncToken(sync_token);
+  }
 }
 
 void NavigationEntryScreenshot::HardwareBufferHolder::OnContextLost() {
@@ -292,8 +291,8 @@ NavigationEntryScreenshot::HardwareBufferHolder::HardwareBufferHolder(
     base::ScopedClosureRunner release_callback)
     : nav_controller_delegate_(nav_controller_delegate),
       hardware_buffer_(std::move(hardware_buffer)),
-      size_(GetSizeFromHardwareBuffer(hardware_buffer_.get())),
-      release_callback_(std::move(release_callback)) {}
+      release_callback_(std::move(release_callback)),
+      size_(GetSizeFromHardwareBuffer(hardware_buffer_.get())) {}
 
 // static
 const void* const NavigationEntryScreenshot::kUserDataKey =
