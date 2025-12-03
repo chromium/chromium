@@ -152,8 +152,8 @@ EmbeddedPolicyTestServer::EmbeddedPolicyTestServer()
 
 EmbeddedPolicyTestServer::~EmbeddedPolicyTestServer() = default;
 
-bool EmbeddedPolicyTestServer::Start() {
-  return http_server_.Start();
+bool EmbeddedPolicyTestServer::Start(int port, std::string_view address) {
+  return http_server_.Start(port, address);
 }
 
 GURL EmbeddedPolicyTestServer::GetServiceURL() const {

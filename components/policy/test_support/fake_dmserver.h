@@ -107,7 +107,8 @@ void ParseFlags(const base::CommandLine& command_line,
                 std::optional<std::string>& log_path,
                 base::ScopedFD& startup_pipe,
                 bool& log_to_console,
-                int& min_log_level);
+                int& min_log_level,
+                int& port);
 
 // TODO(b/293451778): Move this to its own file.
 class RemoteCommandsWaitOperation;
@@ -125,7 +126,8 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   // shut down on its own when the destructor is called.
   // Starts the gRPC server on the same thread as the fake_dmserver_main thread.
   // Returns true if it's starts the servers successfully and false otherwise.
-  bool StartFakeServer();
+  // If `port` is 0, the server will listen on a random port.
+  bool StartFakeServer(int port = 0);
 
   // Writes the host and port of the EmbeddedPolicyTestServer to the given pipe
   // in a json format {"host": "localhost", "port": 1234}, it will return true
