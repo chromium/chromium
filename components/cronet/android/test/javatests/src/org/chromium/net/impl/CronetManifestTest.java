@@ -147,4 +147,35 @@ public class CronetManifestTest {
         setReadHttpFlags(false);
         assertThat(CronetManifest.shouldReadHttpFlags(mCronetTestFramework.getContext())).isFalse();
     }
+
+    @Test
+    @SmallTest
+    public void testLegacyUserAgent_whenNoMetadata() throws Exception {
+        assertThat(
+                        CronetManifest.shouldUseLegacyDefaultUserAgent(
+                                mCronetTestFramework.getContext()))
+                .isFalse();
+    }
+
+    @Test
+    @SmallTest
+    public void testLegacyUserAgent_whenMetadataIsTrue() throws Exception {
+        mCronetTestFramework.interceptContext(
+                UserAgentTestUtil.getContextInterceptorWithLegacyUserAgent(true));
+        assertThat(
+                        CronetManifest.shouldUseLegacyDefaultUserAgent(
+                                mCronetTestFramework.getContext()))
+                .isTrue();
+    }
+
+    @Test
+    @SmallTest
+    public void testLegacyUserAgent_whenMetadataIsFalse() throws Exception {
+        mCronetTestFramework.interceptContext(
+                UserAgentTestUtil.getContextInterceptorWithLegacyUserAgent(false));
+        assertThat(
+                        CronetManifest.shouldUseLegacyDefaultUserAgent(
+                                mCronetTestFramework.getContext()))
+                .isFalse();
+    }
 }

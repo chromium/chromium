@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 
+import org.chromium.net.impl.CronetLogger.CronetSource;
+
 import java.util.Locale;
 
 /** Constructs a User-Agent string. */
@@ -22,19 +24,26 @@ public final class UserAgent {
     private UserAgent() {}
 
     /**
-     * Constructs a User-Agent string including application name and version,
-     * system build version, model and Id, and Cronet version.
-     * @param context the context to fetch the application name and version
-     *         from.
+     * Constructs a User-Agent string including application name and version, system build version,
+     * model and Id, and Cronet version.
+     *
+     * @param context the context to fetch the application name and version from.
+     * @param source type of the Cronet build.
+     * @param version the version of the Cronet build.
      * @return User-Agent string.
      */
-    public static String from(Context context) {
+    public static String from(Context context, CronetSource source, String version) {
         StringBuilder builder = new StringBuilder();
 
-        // Our package name and version.
-        builder.append(context.getPackageName());
-        builder.append('/');
-        builder.append(versionFromContext(context));
+        if (source == CronetSource.CRONET_SOURCE_PLATFORM
+                && !CronetManifest.shouldUseLegacyDefaultUserAgent(context)) {
+            builder.append("AndroidHttpClient");
+        } else {
+            // Our package name and version.
+            builder.append(context.getPackageName());
+            builder.append('/');
+            builder.append(versionFromContext(context));
+        }
 
         // The platform version.
         builder.append(" (Linux; U; Android ");
@@ -55,7 +64,7 @@ public final class UserAgent {
         }
 
         builder.append(";");
-        appendCronetVersion(builder);
+        appendCronetVersion(builder, version);
 
         builder.append(')');
 
@@ -63,17 +72,17 @@ public final class UserAgent {
     }
 
     /**
-     * Constructs default QUIC User Agent Id string including application name
-     * and Cronet version.
+     * Constructs default QUIC User Agent Id string including application name and Cronet version.
+     *
      * @param context the context to fetch the application name from.
      * @return User-Agent string.
      */
-    static String getQuicUserAgentIdFrom(Context context) {
+    static String getQuicUserAgentIdFrom(Context context, String version) {
         StringBuilder builder = new StringBuilder();
 
         // Application name and cronet version.
         builder.append(context.getPackageName());
-        appendCronetVersion(builder);
+        appendCronetVersion(builder, version);
 
         return builder.toString();
     }
@@ -94,8 +103,8 @@ public final class UserAgent {
         }
     }
 
-    private static void appendCronetVersion(StringBuilder builder) {
+    private static void appendCronetVersion(StringBuilder builder, String version) {
         builder.append(" Cronet/");
-        builder.append(ImplVersion.getCronetVersion());
+        builder.append(version);
     }
 }

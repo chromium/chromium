@@ -7,6 +7,7 @@ package org.chromium.net.impl;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 
+import android.content.Context;
 import android.net.http.HttpEngine;
 import android.util.Log;
 
@@ -18,6 +19,7 @@ import org.chromium.build.BuildConfig;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.telemetry.ExperimentalOptions;
 import org.chromium.net.telemetry.OptionalBoolean;
 
@@ -33,21 +35,29 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
 
     private static boolean sLibraryLoaderUnsupportedLogged;
     private static boolean sNQEUnsupportedLogged;
+    private boolean mHasCustomUserAgent;
 
+    private final Context mContext;
     private final HttpEngine.Builder mBackend;
 
-    public AndroidHttpEngineBuilderWrapper(HttpEngine.Builder backend) {
+    public AndroidHttpEngineBuilderWrapper(Context context, HttpEngine.Builder backend) {
+        this.mContext = context;
         this.mBackend = backend;
     }
 
     @Override
     public String getDefaultUserAgent() {
-        return mBackend.getDefaultUserAgent();
+        // This code cannot simply delegate to mBackend.getDefaultUserAgent(). This override is
+        // necessary to make sure that older versions of HttpEngine used through the wrapper use the
+        // correct UserAgent.
+        return UserAgent.from(
+                mContext, CronetSource.CRONET_SOURCE_PLATFORM, HttpEngine.getVersionString());
     }
 
     @Override
     public ICronetEngineBuilder setUserAgent(String userAgent) {
         mBackend.setUserAgent(userAgent);
+        mHasCustomUserAgent = userAgent != null;
         return this;
     }
 
@@ -162,6 +172,12 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
      */
     @Override
     public ExperimentalCronetEngine build() {
+        // Here developers are using CronetEngine APIs backed by HttpEngine. Their default
+        // user agent differs. To maintain consistent behavior we pick the default user agent based
+        // on the API layer/side used by the developers.
+        if (!mHasCustomUserAgent) {
+            setUserAgent(getDefaultUserAgent());
+        }
         return new AndroidHttpEngineWrapper(mBackend.build());
     }
 

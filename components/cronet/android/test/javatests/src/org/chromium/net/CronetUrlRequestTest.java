@@ -5,7 +5,6 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
 import static com.google.common.truth.TruthJUnit.assume;
 
 import static org.junit.Assert.assertThrows;
@@ -836,29 +835,6 @@ public class CronetUrlRequestTest {
         callback.blockForDone();
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo(userAgentValue);
-    }
-
-    @Test
-    @SmallTest
-    public void testDefaultUserAgent() throws Exception {
-        TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        String headerName = "User-Agent";
-        UrlRequest.Builder builder =
-                mTestRule
-                        .getTestFramework()
-                        .getEngine()
-                        .newUrlRequestBuilder(
-                                mNativeTestServer.getEchoHeaderURL(headerName),
-                                callback,
-                                callback.getExecutor());
-        builder.build().start();
-        callback.blockForDone();
-        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
-        assertWithMessage(
-                        "Default User-Agent should contain Cronet/n.n.n.n but is "
-                                + callback.mResponseAsString)
-                .that(callback.mResponseAsString)
-                .matches(Pattern.compile(".+Cronet/\\d+\\.\\d+\\.\\d+\\.\\d+.+"));
     }
 
     @Test

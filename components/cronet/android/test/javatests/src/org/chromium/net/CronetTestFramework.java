@@ -26,7 +26,6 @@ import org.chromium.net.impl.HttpEngineNativeProvider;
 import org.chromium.net.impl.JavaCronetEngine;
 import org.chromium.net.impl.JavaCronetProvider;
 import org.chromium.net.impl.NativeCronetProvider;
-import org.chromium.net.impl.UserAgent;
 import org.chromium.net.impl.VersionSafeCallbacks;
 
 import java.io.File;
@@ -142,11 +141,7 @@ public class CronetTestFramework implements AutoCloseable {
         assert sContextWrapper.getBaseContext() == ApplicationProvider.getApplicationContext();
         sContextWrapper.setBaseContext(mContextWrapper);
         setHttpFlags(flags);
-        mBuilder =
-                implementation
-                        .createBuilder(sContextWrapper)
-                        .setUserAgent(UserAgent.from(sContextWrapper))
-                        .enableQuic(true);
+        mBuilder = implementation.createBuilder(sContextWrapper);
         mImplementation = implementation;
         mTestName = testName;
         mNetLogEnabled = netLogEnabled;
