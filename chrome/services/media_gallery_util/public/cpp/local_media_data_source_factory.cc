@@ -4,9 +4,10 @@
 
 #include "chrome/services/media_gallery_util/public/cpp/local_media_data_source_factory.h"
 
+#include <optional>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -47,16 +48,14 @@ void ReadFile(const base::FilePath& file_path,
   }
 
   auto buffer = std::vector<char>(length);
-  int bytes_read = UNSAFE_TODO(file.Read(position, buffer.data(), length));
-  if (bytes_read == -1) {
+  std::optional<size_t> bytes_read =
+      file.Read(position, base::as_writable_byte_span(buffer));
+  if (!bytes_read) {
     OnReadComplete(main_task_runner, std::move(cb), false /*success*/,
                    std::vector<char>());
     return;
   }
-  DCHECK_GE(bytes_read, 0);
-  if (bytes_read < length)
-    buffer.resize(bytes_read);
-
+  buffer.resize(*bytes_read);
   OnReadComplete(main_task_runner, std::move(cb), true /*success*/,
                  std::move(buffer));
 }
