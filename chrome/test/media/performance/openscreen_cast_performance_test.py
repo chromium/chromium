@@ -205,18 +205,31 @@ def run_performance_test(video_file: str, framerate: int,
 
     host_recording_cmd = [
         'ffmpeg',
+        # Overwrite output files without asking.
         '-y',
+        # Set the input format to Video4Linux2.
         '-f', 'video4linux2',
+        # Set the capturing frame rate.
         '-framerate', str(fps),
+        # Set the video size of the captured video.
         '-video_size', f'{width}x{height}',
+        # Set the input pixel format.
         '-input_format', 'yuyv422',
+        # Specify the input file (video device).
         '-i', '/dev/video0',
+        # Set the size of the input buffer to help prevent dropped frames.
         '-thread_queue_size', '1024',
+        # Set the video codec to libx264 (H.264).
         '-c:v', 'libx264',
+        # Use the ultrafast preset for real-time encoding.
         '-preset', 'ultrafast',
+        # Set the Constant Rate Factor for quality (lower is better).
         '-crf', '28',
+        # Set the output pixel format for compatibility.
         '-pix_fmt', 'yuv420p',
+        # Set the Group of Pictures (GOP) size for better seeking.
         '-g', '60',
+        # Set the duration of the recording.
         '-t', '35',
         output_file
     ]
