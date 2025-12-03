@@ -514,6 +514,11 @@ void ContextualTasksSidePanelCoordinator::Unhide() {
 void ContextualTasksSidePanelCoordinator::ObserveWebContentsOnActiveTab() {
   CHECK(browser_window_);
 
+  if (!IsSidePanelOpenForContextualTask()) {
+    Observe(nullptr);
+    return;
+  }
+
   tabs::TabInterface* active_tab_interface =
       browser_window_->GetActiveTabInterface();
   if (!active_tab_interface) {
