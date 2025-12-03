@@ -48,7 +48,7 @@ void SaveChildrenInternal(TabStateStorageUpdaterBuilder& builder,
                           const TabCollection* parent,
                           TabStateStorageService* service,
                           TabStoragePackager* packager) {
-  builder.SaveChildren(service->GetStorageId(parent), parent->GetHandle());
+  builder.SaveChildren(service->GetStorageId(parent), parent);
 }
 
 void RemoveNodeSequence(StorageId storage_id,
