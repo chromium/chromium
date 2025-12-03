@@ -212,10 +212,6 @@ blink::mojom::PresentationConnectionMessagePtr CreateReceiverActionMessage(
 base::Value::Dict CreateAppMessageBody(
     const std::string& session_id,
     const openscreen::cast::proto::CastMessage& cast_message) {
-  // TODO(crbug.com/41400942): Investigate whether it is possible to move
-  // instead of copying the contents of |cast_message|. Right now copying is
-  // done because the message is passed as a const ref at the
-  // CastSocket::Observer level.
   base::Value::Dict message;
   message.Set("sessionId", base::Value(session_id));
   message.Set("namespaceName", base::Value(cast_message.namespace_()));
