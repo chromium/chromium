@@ -193,7 +193,8 @@ class FilteringNetworkManagerTest : public testing::Test {
       network_manager_.reset(new EmptyNetworkManager(
           base_network_manager_.get(), base_network_manager_->AsWeakPtr()));
     }
-    network_manager_->SubscribeNetworksChanged([this] { OnNetworksChanged(); });
+    network_manager_->SubscribeNetworksChanged(this,
+                                               [this] { OnNetworksChanged(); });
   }
 
   void RunTests(base::span<TestEntry> tests) {
