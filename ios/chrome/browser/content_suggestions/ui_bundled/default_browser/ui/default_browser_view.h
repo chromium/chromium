@@ -7,17 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/ui/default_browser_commands.h"
-
+@protocol DefaultBrowserCommands;
 @class DefaultBrowserConfig;
 
 @interface DefaultBrowserView : UIView
 
+// The object that should handler user events.
+@property(nonatomic, weak) id<DefaultBrowserCommands> defaultBrowserHandler;
+
 // Default initializer.
 - (instancetype)initWithConfig:(DefaultBrowserConfig*)config;
 
-// The object that should handler user events.
-@property(nonatomic, weak) id<DefaultBrowserCommands> commandHandler;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
 @end
 

@@ -33,8 +33,8 @@
   if ((self = [super init])) {
     CHECK(profilePrefService);
     _profilePrefService = profilePrefService;
-    self.config = [[DefaultBrowserConfig alloc] init];
-    self.config.commandHandler = self;
+    _config = [[DefaultBrowserConfig alloc] init];
+    _config.defaultBrowserHandler = self;
 
     if (!_prefObserverBridge) {
       _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);

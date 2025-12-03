@@ -266,7 +266,7 @@
 // Returns a `DefaultBrowserView` for a given `DefaultBrowserConfig`.
 - (UIView*)defaultBrowserViewForConfig:(DefaultBrowserConfig*)config {
   DefaultBrowserView* view = [[DefaultBrowserView alloc] initWithConfig:config];
-  view.commandHandler = config.commandHandler;
+  view.defaultBrowserHandler = config.defaultBrowserHandler;
 
   return view;
 }

@@ -13,7 +13,7 @@
 @interface DefaultBrowserConfig : MagicStackModule
 
 // Command handler for user actions.
-@property(nonatomic, weak) id<DefaultBrowserCommands> commandHandler;
+@property(nonatomic, weak) id<DefaultBrowserCommands> defaultBrowserHandler;
 
 @end
 
