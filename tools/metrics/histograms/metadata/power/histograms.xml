@@ -1800,11 +1800,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ShutdownReason" enum="ShutdownReason"
-    expires_after="2025-06-08">
-  <owner>tbroch@chromium.org</owner>
+    expires_after="2026-06-08">
+  <owner>mqg@chromium.org</owner>
+  <owner>sammc@chromium.org</owner>
+  <owner>chromeos-power-team@google.com</owner>
   <summary>
     The reason for the Chrome OS power manager shutting down or rebooting the
     system.
+
+    Warning: this histogram was expired from 2025-06-08 to 2025-11-26; data may
+    be missing.
   </summary>
 </histogram>
 
