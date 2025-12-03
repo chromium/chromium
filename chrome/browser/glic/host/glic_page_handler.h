@@ -34,7 +34,6 @@ class GlicPageHandler : public glic::mojom::PageHandler,
                         public PanelStateObserver {
  public:
   GlicPageHandler(content::WebContents* webui_contents,
-                  Host* host,
                   mojo::PendingReceiver<glic::mojom::PageHandler> receiver,
                   mojo::PendingRemote<glic::mojom::Page> page);
 
@@ -74,13 +73,6 @@ class GlicPageHandler : public glic::mojom::PageHandler,
 
   void EnableDragResize(bool enabled) override;
 
-  // TODO(crbug.com/454120908): Remove this method after WebContents warming is
-  // rolled out.
-  // Called any time the ready state of the profile changes.
-  // `ready_state` = `GlicEnabling::GetProfileReadyState()`.
-  void SetProfileReadyState(glic::mojom::ProfileReadyState ready_state);
-  void UpdateProfileReadyState();
-
   // Notifies the web client about zero state suggestions.
   void ZeroStateSuggestionChanged(mojom::ZeroStateSuggestionsV2Ptr suggestions,
                                   mojom::ZeroStateSuggestionsOptions options);
@@ -93,13 +85,15 @@ class GlicPageHandler : public glic::mojom::PageHandler,
 
   void UpdatePageState(mojom::PanelStateKind panelStateKind);
 
-  Host& host() { return host_.get(); }
+  Host& host() { return *host_; }
 
  private:
+  void UpdateProfileReadyState();
+
   GlicKeyedService* GetGlicService();
 
   // HostManager keeps the host alive while GlicPageHandler is alive.
-  raw_ref<Host> host_;
+  raw_ptr<Host> host_;
   // There should at most one WebClientHandler at a time. A new one is created
   // each time the webview loads a page.
   std::unique_ptr<GlicWebClientHandler> web_client_handler_;

@@ -9,8 +9,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/host/glic_ui.h"
-#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/glic_view.h"
@@ -19,10 +17,8 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_ui.h"
 #include "ui/views/controls/webview/webview.h"
 
 namespace glic {
@@ -40,12 +36,14 @@ content::WebContents::CreateParams MakeCreateParams(Profile* profile,
 
 }  // namespace
 
-WebUIContentsContainer::WebUIContentsContainer(Profile* profile,
-                                               bool initially_hidden)
+WebUIContentsContainer::WebUIContentsContainer(
+    Profile* profile,
+    GlicWindowController* glic_window_controller,
+    bool initially_hidden)
     : profile_keep_alive_(profile, ProfileKeepAliveOrigin::kGlicView),
       web_contents_(content::WebContents::Create(
           MakeCreateParams(profile, initially_hidden))),
-      profile_(profile) {
+      glic_window_controller_(glic_window_controller) {
   CHECK(web_contents_);
   Observe(web_contents_.get());
   web_contents_->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
@@ -61,29 +59,9 @@ WebUIContentsContainer::~WebUIContentsContainer() {
   if (!glic_profile_manager) {
     return;
   }
-  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      glic_window_controller_->profile());
   glic_profile_manager->OnUnloadingClientForService(glic_service);
-}
-
-void WebUIContentsContainer::AttachToHost(Host* host) {
-  // This is only allowed to be called once.
-  CHECK(!host_);
-  host_ = host;
-  auto* glic_ui =
-      static_cast<GlicUI*>(web_contents_->GetWebUI()->GetController());
-  glic_ui->AttachToHost(host);
-}
-
-void WebUIContentsContainer::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (host_ && navigation_handle->IsInPrimaryMainFrame() &&
-      navigation_handle->HasCommitted()) {
-    // Re-attach to the (possibly new) GlicUI.
-    if (auto* glic_ui =
-            static_cast<GlicUI*>(web_contents_->GetWebUI()->GetController())) {
-      glic_ui->AttachToHost(host_);
-    }
-  }
 }
 
 void WebUIContentsContainer::PrimaryMainFrameRenderProcessGone(
@@ -93,7 +71,8 @@ void WebUIContentsContainer::PrimaryMainFrameRenderProcessGone(
   if (status != base::TERMINATION_STATUS_NORMAL_TERMINATION) {
     base::RecordAction(base::UserMetricsAction("GlicSessionWebUiCrash"));
   }
-  auto* keyed_service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
+  auto* keyed_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      web_contents_->GetBrowserContext());
   if (GlicEnabling::IsMultiInstanceEnabled()) {
     // TODO(crbug.com/454120908): swap for a reloaded host in case of a crash.
     keyed_service->CloseAndShutdown(web_contents_->GetPrimaryMainFrame());

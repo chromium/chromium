@@ -87,8 +87,7 @@ class GlicInstanceCoordinatorImpl
   void ContextAccessIndicatorChanged(GlicInstanceImpl& instance,
                                      bool enabled) override;
 
-  // GlicWindowController and GlicInstanceCoordinatorMetrics::DataProvider
-  // implementation
+  // GlicWindowController and GlicInstanceCoordinatorMetrics::DataProvider implementation
   std::vector<GlicInstance*> GetInstances() override;
   // GlicWindowController implementation
   HostManager& host_manager() override;
@@ -160,7 +159,6 @@ class GlicInstanceCoordinatorImpl
   GlicInstanceImpl* GetInstanceImplForTab(const tabs::TabInterface* tab) const;
   GlicInstanceImpl* GetOrCreateInstanceImplForFloaty();
   GlicInstanceImpl* CreateGlicInstance();
-  std::unique_ptr<GlicInstanceImpl> CreateInstanceImpl();
   void CreateWarmedInstance();
 
   void ToggleFloaty(bool prevent_close, glic::mojom::InvocationSource source);

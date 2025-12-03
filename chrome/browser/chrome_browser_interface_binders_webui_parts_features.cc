@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
+
 #include "chrome/common/buildflags.h"
 #include "components/compose/buildflags.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -109,8 +110,6 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
     // restrict access if needed. This isn't required for the GlicFreUI.
     RegisterWebUIControllerInterfaceBinder<glic::mojom::PageHandlerFactory,
                                            glic::GlicUI>(map);
-    RegisterWebUIControllerInterfaceBinder<
-        glic::mojom::GlicPreloadHandlerFactory, glic::GlicUI>(map);
   }
 #endif
 

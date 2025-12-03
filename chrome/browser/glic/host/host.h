@@ -483,7 +483,7 @@ class HostManager {
   void Shutdown();
 
   // Called when a `GlicPageHandler` is created.
-  void WebUIPageHandlerAdded(GlicPageHandler* page_handler, Host* host);
+  Host* WebUIPageHandlerAdded(GlicPageHandler* page_handler);
   // Called when a `GlicPageHandler` is about to be destroyed.
   void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
 
@@ -498,10 +498,6 @@ class HostManager {
 
   // Get pointers to all Hosts, including those for chrome://glic in a tab.
   std::vector<Host*> GetAllHosts();
-
-  // Returns the host for the given web contents, creating one if necessary
-  // (e.g. if the web contents is a tab).
-  Host* GetOrCreateHostForTab(content::WebContents* web_contents);
 
   Host* FindHostForTabForTesting(tabs::TabInterface& tab);
 
