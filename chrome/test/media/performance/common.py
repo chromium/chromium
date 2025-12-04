@@ -414,8 +414,12 @@ def start_ssh_tunnel(args):
       'ssh',
       '-i',
       f'~/.ssh/id_ed25519',
+      # Send a keep-alive message every 60 seconds to prevent the tunnel from
+      # closing due to inactivity.
+      '-o',
+      'ServerAliveInterval=60',
       '-L',
-    f'{CHROMEDRIVER_PORT}:{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}',
+      f'{CHROMEDRIVER_PORT}:{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}',
       '-R',
       f'{SERVER_PORT}:{LOCAL_HOST_IP}:{SERVER_PORT}',
       f'{args.username}@{args.sender}',
