@@ -4444,16 +4444,10 @@ Element* LayoutObject::OffsetParent(const Element* base) const {
     return nullptr;
 
   bool in_position_fixed = IsFixedPositioned();
-  if (in_position_fixed &&
-      !RuntimeEnabledFeatures::
-          OffsetParentNewSpecBehaviorForFixedPositionEnabled()) {
-    return nullptr;
-  }
-
   HeapHashSet<Member<TreeScope>> ancestor_tree_scopes;
-  if (base)
+  if (base) {
     ancestor_tree_scopes = base->GetAncestorTreeScopes();
-
+  }
   float effective_zoom = StyleRef().EffectiveZoom();
   Node* node = nullptr;
   for (LayoutObject* ancestor = Parent(); ancestor;
@@ -4468,26 +4462,17 @@ Element* LayoutObject::OffsetParent(const Element* base) const {
     // we will eventually get to a node which is not closed shadow hidden from
     // |base|. https://github.com/w3c/csswg-drafts/issues/159
     if (base && !ancestor_tree_scopes.Contains(&node->GetTreeScope())) {
-      if (RuntimeEnabledFeatures::
-              OffsetParentNewSpecBehaviorForFixedPositionEnabled()) {
-        // If a fixed position containing block is found within the shadow tree,
-        // we should treat it as exiting the fixed position mode.
-        if (ancestor->CanContainFixedPositionObjects()) {
-          in_position_fixed = false;
-        } else if (ancestor->IsFixedPositioned()) {
-          in_position_fixed = true;
-        }
-      } else {
-        if (ancestor->IsFixedPositioned()) {
-          return nullptr;
-        }
+      // If a fixed position containing block is found within the shadow tree,
+      // we should treat it as exiting the fixed position mode.
+      if (ancestor->CanContainFixedPositionObjects()) {
+        in_position_fixed = false;
+      } else if (ancestor->IsFixedPositioned()) {
+        in_position_fixed = true;
       }
       continue;
     }
 
-    if (RuntimeEnabledFeatures::
-            OffsetParentNewSpecBehaviorForFixedPositionEnabled() &&
-        in_position_fixed) {
+    if (in_position_fixed) {
       // If the computed value of the position property of ancestor is fixed,
       // and no ancestor establishes a fixed position containing block,
       // terminate this algorithm and return null.

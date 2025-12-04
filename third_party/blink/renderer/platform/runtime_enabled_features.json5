@@ -3584,10 +3584,6 @@
       status: "stable",
     },
     {
-      name: "OffsetParentNewSpecBehaviorForFixedPosition",
-      status: "stable",
-    },
-    {
       name: "OmitBlurEventOnElementRemoval",
       status: "test"
     },
