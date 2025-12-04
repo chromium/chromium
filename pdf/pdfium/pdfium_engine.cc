@@ -3873,7 +3873,6 @@ gfx::Rect PDFiumEngine::GetScreenRect(const gfx::Rect& rect) const {
 
 std::vector<gfx::Rect> PDFiumEngine::GetNoTextPageScreenRectsForCaret(
     PDFiumPage* page) const {
-  // TODO(crbug.com/437807125): Determine default caret offset and size.
   static constexpr float kCaretOffset = 10.0f;
   static constexpr float kCaretSize = 12.0f;
 
