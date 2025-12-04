@@ -433,6 +433,16 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             protected OtrProfileId createOffTheRecordProfileId() {
                 switch (getIntentDataProvider().getCustomTabMode()) {
                     case CustomTabProfileType.INCOGNITO:
+                        // If an incognito popup is being created by Chrome, this should use
+                        // the same primary OTR profile associated with the requester's profile.
+                        if (getIntentDataProvider().getUiType() == CustomTabsUiType.POPUP) {
+                            if (!getIntentDataProvider().isOpenedByChrome()) {
+                                throw new IllegalStateException(
+                                        "Incognito CCTs should have unique OTR profiles unless"
+                                                + " Chrome opened them as a popup window.");
+                            }
+                            return null;
+                        }
                         return OtrProfileId.createUniqueIncognitoCctId();
                     case CustomTabProfileType.EPHEMERAL:
                         return OtrProfileId.createUnique("CCT:Ephemeral");
@@ -992,6 +1002,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         super.initializeCompositor();
         var tabModelOrchestrator = getCustomTabActivityTabFactory().getTabModelOrchestrator();
         tabModelOrchestrator.onNativeLibraryReady(getTabContentManager());
+        // This ensures that an off-the-record TabModel is the current model before it is needed.
+        tabModelOrchestrator
+                .getTabModelSelector()
+                .selectModel(mIntentDataProvider.isOffTheRecord());
 
         @BrowserWindowType Integer browserWindowType = getSupportedBrowserWindowType();
         if (browserWindowType != null) {
