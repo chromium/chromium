@@ -59,6 +59,7 @@
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/ssl_browsertest_util.h"
+#include "chrome/browser/ssl/ssl_client_certificate_selector.h"
 #include "chrome/browser/ssl/ssl_error_controller_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -122,6 +123,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_entry_restore_context.h"
@@ -177,6 +179,7 @@
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_info.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -1792,6 +1795,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrowserUseClientCertStore) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   DCHECK(profile);
+  // This reproduces the AutoSelectCertificateForUrls policy payload: an array
+  // of JSON dictionaries, each containing optional filters. An empty filter
+  // dictionary means “allow any matching certificate”, which is enough for the
+  // test to auto-select the single certificate offered by the stub store.
   base::Value::List filters;
   filters.Append(base::Value::Dict());
   base::Value::Dict setting;
@@ -1805,6 +1812,66 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrowserUseClientCertStore) {
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
                                                             https_url, 1);
   EXPECT_EQ("pass", tab->GetLastCommittedURL().GetRef());
+}
+
+// Tests that dynamically updating AutoSelectCertificateForUrls content setting
+// triggers the network service to pick up the change and allows automatic
+// client cert selection without requiring a browser restart.
+IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrowserUseClientCertStoreDynamicUpdate) {
+  // 1. Setup: Full Cert Store.
+  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+      ->set_client_cert_store_factory_for_testing(
+          base::BindRepeating(&CreateCertStore));
+
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  net::SSLServerConfig ssl_config;
+  ssl_config.client_cert_type =
+      net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
+  GURL https_url =
+      https_server.GetURL("/ssl/browser_use_client_cert_store.html");
+
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
+  DCHECK(profile);
+
+  // 2. Initial Navigation (No Policy) -> Fail.
+  // Install a hook to auto-cancel the certificate selector prompt.
+  SetShowSSLClientCertificateSelectorHookForTest(base::BindRepeating(
+      [](content::WebContents* contents,
+         net::SSLCertRequestInfo* cert_request_info,
+         net::ClientCertIdentityList client_certs,
+         std::unique_ptr<content::ClientCertificateDelegate> delegate) {
+        delegate->ContinueWithCertificate(nullptr, nullptr);
+        return base::OnceClosure();
+      }));
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
+                                                            https_url, 1);
+  // Expect failure (did not reach "pass").
+  EXPECT_NE("pass", tab->GetLastCommittedURL().GetRef());
+
+  // 3. Set AutoSelect Policy.
+  base::Value::List filters;
+  filters.Append(base::Value::Dict());
+  base::Value::Dict setting;
+  setting.Set("filters", std::move(filters));
+  HostContentSettingsMapFactory::GetForProfile(profile)
+      ->SetWebsiteSettingDefaultScope(
+          https_url, GURL(), ContentSettingsType::AUTO_SELECT_CERTIFICATE,
+          base::Value(std::move(setting)));
+
+  // 4. Retry Navigation -> Expect Success.
+  // The policy should cause auto-selection, bypassing the selector hook.
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
+                                                            https_url, 1);
+  EXPECT_EQ("pass", tab->GetLastCommittedURL().GetRef());
+
+  // Cleanup hook.
+  SetShowSSLClientCertificateSelectorHookForTest(
+      ShowSSLClientCertificateSelectorTestingHook());
 }
 
 // Tests that requests from service workers can also use certificates

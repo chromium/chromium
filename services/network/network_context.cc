@@ -3483,6 +3483,15 @@ void NetworkContext::FlushMatchingCachedClientCert(
   }
 }
 
+void NetworkContext::FlushClientCertCache() {
+  net::HttpNetworkSession* http_session =
+      url_request_context_->http_transaction_factory()->GetSession();
+  DCHECK(http_session);
+  if (http_session->ssl_client_context()) {
+    http_session->ssl_client_context()->OnClientCertStoreChanged();
+  }
+}
+
 void NetworkContext::RevokeNetworkForNonces(
     std::vector<mojom::NonceAndAllowlistedPatternsPtr> nonces_to_patterns,
     RevokeNetworkForNoncesCallback callback) {

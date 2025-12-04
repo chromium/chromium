@@ -1742,6 +1742,10 @@ interface NetworkContext {
   // the cached certificate.
   FlushMatchingCachedClientCert(X509Certificate certificate);
 
+  // Flushes all cached client certificate decisions. Used when client cert
+  // selection policy changes (e.g., AutoSelectCertificateForUrls).
+  FlushClientCertCache();
+
   // Clients should revoke network access for nonces using
   // `StoragePartitionImpl::RevokeNetworkForNoncesInNetworkContext` instead of
   // this function. This is because `RevokeNetworkForNoncesInNetworkContext`
