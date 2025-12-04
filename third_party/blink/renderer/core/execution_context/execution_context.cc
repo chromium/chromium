@@ -489,21 +489,21 @@ void ExecutionContext::ParseAndSetReferrerPolicy(
       error_reason =
           "A policy specified by a meta element must contain only one token.";
     } else {
-      error_reason =
-          "The value '" + policy + "' is not one of " +
-          ((source == kPolicySourceMetaTag)
-               ? "'always', 'default', 'never', 'origin-when-crossorigin', "
-               : "") +
-          "'no-referrer', 'no-referrer-when-downgrade', 'origin', "
-          "'origin-when-cross-origin', 'same-origin', 'strict-origin', "
-          "'strict-origin-when-cross-origin', or 'unsafe-url'.";
+      error_reason = StrCat(
+          {"The value '", policy, "' is not one of ",
+           ((source == kPolicySourceMetaTag)
+                ? "'always', 'default', 'never', 'origin-when-crossorigin', "
+                : ""),
+           "'no-referrer', 'no-referrer-when-downgrade', 'origin', "
+           "'origin-when-cross-origin', 'same-origin', 'strict-origin', "
+           "'strict-origin-when-cross-origin', or 'unsafe-url'."});
     }
 
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kRendering,
         mojom::ConsoleMessageLevel::kError,
-        "Failed to set referrer policy: " + error_reason +
-            " The referrer policy has been left unchanged."));
+        StrCat({"Failed to set referrer policy: ", error_reason,
+                " The referrer policy has been left unchanged."})));
   }
 }
 

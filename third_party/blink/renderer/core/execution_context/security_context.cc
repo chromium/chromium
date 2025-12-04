@@ -62,10 +62,10 @@ String SelectivePermissionInterventionMessage(
   }
   DCHECK(!feature_name.empty());
 
-  return "Blocked call to " + feature_name +
-         " because ad-script was in the JavaScript stack at the time of the "
-         "call. See http://crbug.com/435223477 for more information about this "
-         "intervention.";
+  return StrCat({"Blocked call to ", feature_name,
+                 " because ad-script was in the JavaScript stack at the time "
+                 "of the call. See http://crbug.com/435223477 for more "
+                 "information about this intervention."});
 }
 
 }  // namespace
@@ -230,7 +230,7 @@ SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
             // Add debugging cross-site data to the devtools console that
             // shouldn't be in the intervention report.
             String console_message =
-                intervention_message + " " + ad_ancestry.ToString();
+                StrCat({intervention_message, " ", ad_ancestry.ToString()});
             Intervention::GenerateReport(frame, "SelectivePermissions",
                                          intervention_message, console_message);
           }

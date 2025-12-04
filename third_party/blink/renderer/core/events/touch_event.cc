@@ -120,10 +120,10 @@ void TouchEvent::preventDefault() {
     case PassiveMode::kNotPassiveDefault:
       if (!cancelable()) {
         id = "IgnoredEventCancel";
-        message = "Ignored attempt to cancel a " + type() +
-                  " event with cancelable=false, for example "
-                  "because scrolling is in progress and "
-                  "cannot be interrupted.";
+        message =
+            StrCat({"Ignored attempt to cancel a ", type(),
+                    " event with cancelable=false, for example because "
+                    "scrolling is in progress and cannot be interrupted."});
       }
       break;
     case PassiveMode::kPassiveForcedDocumentLevel:

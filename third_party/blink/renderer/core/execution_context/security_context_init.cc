@@ -241,10 +241,11 @@ void SecurityContextInit::ApplyPermissionsPolicy(
                 MakeGarbageCollected<ConsoleMessage>(
                     mojom::blink::ConsoleMessageSource::kSecurity,
                     mojom::blink::ConsoleMessageLevel::kWarning,
-                    "The permissions policy '" +
-                        GetNameForFeature(policy.feature, is_isolated_context) +
-                        "' is disallowed in fenced frames and will not be "
-                        "enabled."));
+                    StrCat(
+                        {"The permissions policy '",
+                         GetNameForFeature(policy.feature, is_isolated_context),
+                         "' is disallowed in fenced frames and will not be "
+                         "enabled."})));
           }
         }
       } else {
