@@ -132,6 +132,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
 
         ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
         View spinner = mView.findViewById(R.id.attachment_spinner);
+        TextView textView = mView.findViewById(R.id.attachment_title);
 
         assertEquals(View.GONE, imageView.getVisibility());
         assertEquals(View.VISIBLE, spinner.getVisibility());
@@ -139,6 +140,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                 mView.getResources()
                         .getDimensionPixelSize(R.dimen.fusebox_attachment_loading_width),
                 mView.getLayoutParams().width);
+        assertEquals(View.GONE, textView.getVisibility());
 
         attachment.setUploadIsComplete();
         FuseboxAttachmentViewBinder.bind(mModel, mView, FuseboxAttachmentProperties.ATTACHMENT);
@@ -148,5 +150,6 @@ public class FuseboxAttachmentViewBinderUnitTest {
                 mView.getLayoutParams().width);
         assertEquals(View.GONE, spinner.getVisibility());
         assertEquals(View.VISIBLE, imageView.getVisibility());
+        assertEquals(View.VISIBLE, textView.getVisibility());
     }
 }
