@@ -15,6 +15,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/test/views_drawing_test_utils.h"
 #include "ui/views/test/views_test_utils.h"
 

@@ -25,10 +25,10 @@ namespace views {
 
 class View;
 
+namespace internal {
+
 template <typename T>
 class Builder {};
-
-namespace internal {
 
 template <typename T>
 class ViewClassTrait {};

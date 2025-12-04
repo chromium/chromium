@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {

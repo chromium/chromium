@@ -12,6 +12,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 
 // Represents the bubble top border offset, with respect to the
 // Picture-in-Picture window title bar. Used to allow the Bubble to overlap the

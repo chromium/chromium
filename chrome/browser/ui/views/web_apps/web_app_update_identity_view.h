@@ -7,6 +7,7 @@
 
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace web_app {

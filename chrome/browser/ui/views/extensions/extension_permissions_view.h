@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace extensions {

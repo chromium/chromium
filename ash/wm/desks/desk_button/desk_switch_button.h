@@ -9,6 +9,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 

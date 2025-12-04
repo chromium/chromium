@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace content {

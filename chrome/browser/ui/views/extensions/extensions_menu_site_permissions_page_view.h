@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_id.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace ui {

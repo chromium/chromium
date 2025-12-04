@@ -7,6 +7,7 @@
 
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "base/timer/timer.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace views {
 class AnimatedImageView;

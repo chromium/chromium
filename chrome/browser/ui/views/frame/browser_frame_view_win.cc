@@ -53,6 +53,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/win/icon_util.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/win/hwnd_util.h"

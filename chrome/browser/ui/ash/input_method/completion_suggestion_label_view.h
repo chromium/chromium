@@ -8,6 +8,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ui {
 namespace ime {

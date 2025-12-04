@@ -23,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace apps::chrome_app_deprecation {
 

@@ -14,6 +14,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/views_export.h"
 
 namespace views::internal {

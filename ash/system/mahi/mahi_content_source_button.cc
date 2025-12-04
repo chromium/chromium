@@ -29,6 +29,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 
