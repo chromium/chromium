@@ -106,11 +106,20 @@ source_set("constants") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "home_customization_image_view_unittest.mm" ]
+  sources = [
+    "home_customization_background_cell_unittest.mm",
+    "home_customization_image_view_unittest.mm",
+  ]
   deps = [
     ":ui",
     "//base/test:test_support",
+    "//components/strings",
+    "//ios/chrome/browser/home_customization/coordinator",
+    "//ios/chrome/browser/ntp/search_engine_logo/mediator",
+    "//ios/chrome/browser/price_insights/ui:price_insights_ui",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
+    "//url",
   ]
 }
