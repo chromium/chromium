@@ -1147,6 +1147,7 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"PersonalizedGoogleServices", "RenderTest"})
+    @DisabledTest(message = "Flaky - crbug.com/466094740")
     public void testLinkedServicesSettingEea() throws Exception {
         when(mRegionalCapabilities.isInEeaCountry()).thenReturn(true);
         mSyncTestRule.setUpAccountAndSignInForTesting();
