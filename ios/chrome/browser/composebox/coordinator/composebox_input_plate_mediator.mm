@@ -35,6 +35,7 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
+#import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/util.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
@@ -46,6 +47,7 @@
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -135,6 +137,9 @@ CreateInputDataFromAnnotatedPageContent(
 
 }  // namespace
 
+@interface ComposeboxInputPlateMediator () <SearchEngineObserving>
+@end
+
 @implementation ComposeboxInputPlateMediator {
   // The ordered list of items for display.
   NSMutableArray<ComposeboxInputItem*>* _items;
@@ -151,6 +156,10 @@ CreateInputDataFromAnnotatedPageContent(
   raw_ptr<FaviconLoader> _faviconLoader;
   // A browser agent for retrieving APC from the cache.
   raw_ptr<PersistTabContextBrowserAgent> _persistTabContextAgent;
+  // A template URL service.
+  raw_ptr<TemplateURLService> _templateURLService;
+  // Observer for the TemplateURLService.
+  std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
 
   // Stores the page context wrappers for the duration of the APC retrieval.
   std::unordered_map<web::WebStateID, PageContextWrapper*> _pageContextWrappers;
@@ -183,7 +192,8 @@ CreateInputDataFromAnnotatedPageContent(
              persistTabContextAgent:
                  (PersistTabContextBrowserAgent*)persistTabContextAgent
                         isIncognito:(BOOL)isIncognito
-                         modeHolder:(ComposeboxModeHolder*)modeHolder {
+                         modeHolder:(ComposeboxModeHolder*)modeHolder
+                 templateURLService:(TemplateURLService*)templateURLService {
   self = [super init];
   if (self) {
     _items = [NSMutableArray array];
@@ -200,6 +210,9 @@ CreateInputDataFromAnnotatedPageContent(
     _isIncognito = isIncognito;
     _modeHolder = modeHolder;
     [_modeHolder addObserver:self];
+    _templateURLService = templateURLService;
+    _searchEngineObserver =
+        std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
   }
   return self;
 }
@@ -211,6 +224,8 @@ CreateInputDataFromAnnotatedPageContent(
   _faviconLoader = nullptr;
   _webStateDeferredExecutor = nil;
   _persistTabContextAgent = nullptr;
+  _searchEngineObserver.reset();
+  _templateURLService = nullptr;
   _composeboxObserverBridge.reset();
   if (_contextualSearchSession) {
     _contextualSearchSession->NotifySessionAbandoned();
@@ -283,6 +298,7 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   [self updateCompactModeIfNeeded];
+  [self updateShowsExtendedControls];
 }
 
 - (void)processPDFFileURL:(GURL)PDFFileURL {
@@ -983,6 +999,16 @@ CreateInputDataFromAnnotatedPageContent(
   return NO;
 }
 
+// Updates the consumer about whether the extended controls should be shown.
+- (void)updateShowsExtendedControls {
+  if (!_templateURLService) {
+    return;
+  }
+  const BOOL showsExtendedControls =
+      search::DefaultSearchProviderIsGoogle(_templateURLService);
+  [self.consumer setShowsExtendedControls:showsExtendedControls];
+}
+
 #pragma mark - ComposeboxOmniboxClientDelegate
 
 - (std::optional<lens::proto::LensOverlaySuggestInputs>)suggestInputs {
@@ -1022,9 +1048,7 @@ CreateInputDataFromAnnotatedPageContent(
                isSearchQuery:(BOOL)isSearchQuery
          userInputInProgress:(BOOL)userInputInProgress {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  // Update send, lens and mic button visibility.
-  [self.consumer hideLensAndMicButton:text.length()];
-  [self.consumer hideSendButton:!text.length()];
+  [self.consumer setShowsSendButton:text.length()];
 }
 
 - (ComposeboxMode)composeboxMode {
@@ -1086,6 +1110,7 @@ CreateInputDataFromAnnotatedPageContent(
   }
 }
 
+/// Updates the consumer whether to show in compact mode.
 - (void)updateCompactModeIfNeeded {
   BOOL compactModeAllowed = IsComposeboxCompactModeEnabled();
   BOOL requiresExpansion = _isMultiline ||
@@ -1093,6 +1118,17 @@ CreateInputDataFromAnnotatedPageContent(
                            _modeHolder.mode == ComposeboxMode::kImageGeneration;
   BOOL compact = !requiresExpansion && compactModeAllowed;
   [self.consumer setCompact:compact];
+}
+
+#pragma mark - SearchEngineObserving
+
+- (void)searchEngineChanged {
+  [self updateShowsExtendedControls];
+}
+
+- (void)templateURLServiceShuttingDown:(TemplateURLService*)urlService {
+  CHECK_EQ(urlService, _templateURLService);
+  _templateURLService = nullptr;
 }
 
 #pragma mark - TextFieldViewContainingHeightDelegate

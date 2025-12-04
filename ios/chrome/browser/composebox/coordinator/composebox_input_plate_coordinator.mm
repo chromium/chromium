@@ -137,22 +137,24 @@ const CGFloat kSnackbarBottomMargin = 10;
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
 
-  auto query_contoller_config_params = std::make_unique<
+  auto query_controller_config_params = std::make_unique<
       contextual_search::ContextualSearchContextController::ConfigParams>();
-  query_contoller_config_params->send_lns_surface = false;
-  query_contoller_config_params->enable_multi_context_input_flow = true;
-  query_contoller_config_params->enable_viewport_images = true;
+  query_controller_config_params->send_lns_surface = false;
+  query_controller_config_params->enable_multi_context_input_flow = true;
+  query_controller_config_params->enable_viewport_images = true;
 
   _contextualService =
       ContextualSearchServiceFactory::GetForProfile(self.profile);
 
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       contextualSearchSession = _contextualService->CreateSession(
-          std::move(query_contoller_config_params),
+          std::move(query_controller_config_params),
           contextual_search::ContextualSearchSource::kOmnibox);
 
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForProfile(self.profile);
   _mediator = [[ComposeboxInputPlateMediator alloc]
       initWithContextualSearchSession:std::move(contextualSearchSession)
                          webStateList:self.browser->GetWebStateList()
@@ -160,7 +162,8 @@ const CGFloat kSnackbarBottomMargin = 10;
                persistTabContextAgent:PersistTabContextBrowserAgent::
                                           FromBrowser(self.browser)
                           isIncognito:self.isOffTheRecord
-                           modeHolder:_modeHolder];
+                           modeHolder:_modeHolder
+                   templateURLService:templateURLService];
   _mediator.URLLoader = _URLLoader;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
