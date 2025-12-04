@@ -1400,7 +1400,6 @@ static_library("browser") {
     "signin/signin_profile_attributes_updater_factory.cc",
     "signin/signin_profile_attributes_updater_factory.h",
     "signin/signin_promo_util.cc",
-    "signin/signin_promo_util.h",
     "signin/signin_util.cc",
     "signin/signin_util.h",
     "site_isolation/about_flags.h",

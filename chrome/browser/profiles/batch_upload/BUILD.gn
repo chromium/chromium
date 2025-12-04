@@ -72,7 +72,7 @@ source_set("unit_tests") {
     ":batch_upload",
     ":test_support",
     "//base/test:test_support",
-    "//chrome/browser",
+    "//chrome/browser/signin",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
