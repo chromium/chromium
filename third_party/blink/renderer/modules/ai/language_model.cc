@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"

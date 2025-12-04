@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"

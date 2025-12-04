@@ -10,6 +10,7 @@
 #include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/device_bound_sessions/host_patterns.h"

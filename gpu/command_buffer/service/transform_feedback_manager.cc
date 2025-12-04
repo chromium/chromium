@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/transform_feedback_manager.h"
 
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
 #include "ui/gl/gl_version_info.h"

@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"

@@ -7,6 +7,7 @@
 #include <functional>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"

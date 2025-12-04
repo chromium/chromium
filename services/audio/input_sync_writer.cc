@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"

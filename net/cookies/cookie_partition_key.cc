@@ -12,6 +12,7 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/types/optional_util.h"
 #include "net/base/cronet_buildflags.h"
 #include "net/base/features.h"

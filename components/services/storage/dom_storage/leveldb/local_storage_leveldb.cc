@@ -4,6 +4,8 @@
 
 #include "components/services/storage/dom_storage/leveldb/local_storage_leveldb.h"
 
+#include "base/check.h"
+#include "base/strings/string_view_util.h"
 #include "base/types/expected_macros.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"

@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 #include "sql/sandboxed_vfs.h"

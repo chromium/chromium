@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"

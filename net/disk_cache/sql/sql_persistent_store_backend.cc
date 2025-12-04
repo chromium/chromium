@@ -21,6 +21,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/sys_byteorder.h"
 #include "base/system/sys_info.h"

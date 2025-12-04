@@ -5,7 +5,10 @@
 #ifndef SERVICES_WEBNN_PUBLIC_CPP_OPERAND_DESCRIPTOR_H_
 #define SERVICES_WEBNN_PUBLIC_CPP_OPERAND_DESCRIPTOR_H_
 
+#include <algorithm>
+#include <functional>
 #include <numeric>
+#include <type_traits>
 #include <vector>
 
 #include "base/component_export.h"

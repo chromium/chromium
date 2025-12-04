@@ -7,6 +7,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

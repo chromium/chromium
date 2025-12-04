@@ -21,6 +21,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/google/core/common/google_util.h"

@@ -15,6 +15,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"

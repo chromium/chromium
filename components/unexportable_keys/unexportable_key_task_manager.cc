@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/types/expected.h"
