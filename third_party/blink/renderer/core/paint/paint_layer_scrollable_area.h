@@ -697,8 +697,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
   struct StyleBasedScrollbarData {
     EOverflow overflow_x;
     EOverflow overflow_y;
-    unsigned gutter;
+    ScrollbarGutter gutter;
     EScrollbarWidth width;
+    WritingMode writing_mode;
   };
   gfx::Size ComputeScrollbarWidthsForViewportUnits(
       StyleBasedScrollbarData) const;

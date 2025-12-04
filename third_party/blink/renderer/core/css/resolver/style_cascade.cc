@@ -657,8 +657,10 @@ void StyleCascade::ApplyViewportUnitAffecting(CascadeResolver& resolver) {
   }
   PaintLayerScrollableArea::StyleBasedScrollbarData some_scroll_properties{
       state_.StyleBuilder().OverflowX(), state_.StyleBuilder().OverflowY(),
-      state_.StyleBuilder().ScrollbarGutter(),
-      state_.StyleBuilder().ScrollbarWidth()};
+      static_cast<ScrollbarGutter>(state_.StyleBuilder().ScrollbarGutter()),
+      state_.StyleBuilder().ScrollbarWidth(),
+      // WritingMode is resolved early in `ApplyCascadeAffecting`.
+      state_.StyleBuilder().GetWritingMode()};
 
   LayoutView* view = state_.GetDocument().GetLayoutView();
   DCHECK(view);
