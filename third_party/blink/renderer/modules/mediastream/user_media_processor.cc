@@ -180,6 +180,10 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "DLP_PERMISSION_DENIED";
     case MediaStreamRequestResult::REGISTRY_REQUEST_UNVERIFIED:
       return "REGISTRY_REQUEST_UNVERIFIED";
+    case MediaStreamRequestResult::INVALID_DEVICE_TYPE_REQUEST:
+      return "INVALID_DEVICE_TYPE_REQUEST";
+    case MediaStreamRequestResult::INVALID_EXTENSION_TYPE_REQUEST:
+      return "INVALID_EXTENSION_TYPE_REQUEST";
   }
   NOTREACHED();
 }
@@ -344,6 +348,8 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
     case MediaStreamRequestResult::INVALID_STATE:
     case MediaStreamRequestResult::INVALID_VIDEO_DEVICE_ID:
     case MediaStreamRequestResult::REGISTRY_REQUEST_UNVERIFIED:
+    case MediaStreamRequestResult::INVALID_DEVICE_TYPE_REQUEST:
+    case MediaStreamRequestResult::INVALID_EXTENSION_TYPE_REQUEST:
       return "Invalid state";
     case MediaStreamRequestResult::NO_HARDWARE:
       return "Requested device not found";

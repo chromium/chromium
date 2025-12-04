@@ -344,6 +344,10 @@ const char* RequestResultToString(
       return "DLP_PERMISSION_DENIED";
     case blink::mojom::MediaStreamRequestResult::REGISTRY_REQUEST_UNVERIFIED:
       return "REGISTRY_REQUEST_UNVERIFIED";
+    case blink::mojom::MediaStreamRequestResult::INVALID_DEVICE_TYPE_REQUEST:
+      return "INVALID_DEVICE_TYPE_REQUEST";
+    case blink::mojom::MediaStreamRequestResult::INVALID_EXTENSION_TYPE_REQUEST:
+      return "INVALID_EXTENSION_TYPE_REQUEST";
   }
   NOTREACHED();
 }

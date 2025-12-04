@@ -107,6 +107,8 @@ enum MediaStreamRequestResult {
   PERMISSION_DENIED_BY_EMBEDDER_CONTEXT,
   DLP_PERMISSION_DENIED,
   REGISTRY_REQUEST_UNVERIFIED,
+  INVALID_DEVICE_TYPE_REQUEST,
+  INVALID_EXTENSION_TYPE_REQUEST,
 };
 
 // Type of state change for the corresponding requests.

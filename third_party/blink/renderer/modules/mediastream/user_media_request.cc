@@ -942,6 +942,9 @@ void UserMediaRequest::Fail(Result error, const String& message) {
     case Result::PERMISSION_DENIED:
     case Result::PERMISSION_DENIED_BY_SYSTEM:
     case Result::PERMISSION_DISMISSED:
+    case Result::INVALID_DEVICE_TYPE_REQUEST:
+      // TODO(crbug.com/453600255): Use `result_enum` kAbortError for
+      // INVALID_DEVICE_TYPE_REQUEST once all new enum values are added.
     case Result::ANDROID_CANT_REQUEST_PERMISSION:
     case Result::PERMISSION_DENIED_BY_EMBEDDER_CONTEXT:
     case Result::DLP_PERMISSION_DENIED:
@@ -970,6 +973,7 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       // TODO(crbug.com/453600255): Use `result_enum` kContextDestroyed and
       // `exception_code` kInvalidStateError for
       // FAILED_DUE_TO_SHUTDOWN once all new enum values are added.
+    case Result::INVALID_EXTENSION_TYPE_REQUEST:
     case Result::TAB_CAPTURE_FAILURE:
     case Result::STREAM_NOT_FOUND_IN_REGISTRY:
     case Result::REGISTRY_REQUEST_UNVERIFIED:

@@ -351,7 +351,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::INVALID_STATE,
+             MediaStreamRequestResult::INVALID_EXTENSION_TYPE_REQUEST,
              /*ui=*/nullptr);
     return;
   }

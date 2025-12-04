@@ -133,6 +133,14 @@ MediaStreamRequestResult2 MapResultToResult2(
       // TODO(crbug.com/453600255): Add a new value once all new enum values are
       // added.
       return MediaStreamRequestResult2::kInvalidState;
+    case MediaStreamRequestResult::INVALID_DEVICE_TYPE_REQUEST:
+      // TODO(crbug.com/453600255): Add a new value once all new enum values are
+      // added.
+      return MediaStreamRequestResult2::kPermissionDismissed;
+    case MediaStreamRequestResult::INVALID_EXTENSION_TYPE_REQUEST:
+      // TODO(crbug.com/453600255): Add a new value once all new enum values are
+      // added.
+      return MediaStreamRequestResult2::kInvalidState;
   }
   NOTREACHED();
 }

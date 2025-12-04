@@ -137,7 +137,7 @@ void ControlledFrameMediaAccessHandler::HandleRequest(
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED,
+        blink::mojom::MediaStreamRequestResult::INVALID_DEVICE_TYPE_REQUEST,
         std::unique_ptr<content::MediaStreamUI>());
     return;
   }
