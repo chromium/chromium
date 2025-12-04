@@ -32,6 +32,7 @@ enum class GlicPinTrigger {
   kUnknown,
   kInstanceCreation,
   kDaisyChain,
+  kNewTabDaisyChain,
   kConversationChange,
   kRestore,
   kContextMenu,
