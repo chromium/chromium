@@ -31,6 +31,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "base/version.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -904,6 +906,39 @@ class InstallIsolatedWebAppCommandBundleInstallSourceTest
 };
 
 TEST_P(InstallIsolatedWebAppCommandBundleInstallSourceTest,
+       BlocklistBlocksInstallationFromAllSources) {
+  auto app = IsolatedWebAppBuilder(ManifestBuilder())
+                 .BuildBundle(test::GetDefaultEd25519KeyPair());
+  app->FakeInstallPageState(profile());
+  app->TrustSigningKey();
+  IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
+  IsolatedWebAppInstallSource install_source =
+      GetParam().install_source(app->path());
+
+  test::KeyDistributionComponentBuilder(base::Version("1.0.0"))
+      // Make sure it is not allowlist what blocks the installation
+      .AddToManagedAllowlist(url_info.web_bundle_id())
+      .AddToBlocklist(url_info.web_bundle_id())
+      .Build()
+      .InjectComponentDataDirectly();
+
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info,
+                                        .install_source = install_source}),
+              Not(HasValue()));
+  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
+              BucketsAre(base::Bucket(false, 1)));
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
+              BucketsAre(base::Bucket(false, 1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples("WebApp.Isolated.InstallError"),
+      BucketsAre(base::Bucket(/*IWAInstallError::kAppNotPermitted*/ 8, 1)));
+
+  const WebApp* web_app = web_app_registrar().GetAppById(url_info.app_id());
+  ASSERT_THAT(web_app, IsNull());
+}
+
+TEST_P(InstallIsolatedWebAppCommandBundleInstallSourceTest,
        InstallationFinalizedWithCorrectInstallSurface) {
   auto app = IsolatedWebAppBuilder(ManifestBuilder())
                  .BuildBundle(test::GetDefaultEd25519KeyPair());
@@ -912,6 +947,11 @@ TEST_P(InstallIsolatedWebAppCommandBundleInstallSourceTest,
   IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
   IsolatedWebAppInstallSource install_source =
       GetParam().install_source(app->path());
+
+  test::KeyDistributionComponentBuilder(base::Version("1.0.0"))
+      .AddToManagedAllowlist(url_info.web_bundle_id())
+      .Build()
+      .InjectComponentDataDirectly();
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info,
                                         .install_source = install_source}),

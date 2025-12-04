@@ -142,7 +142,8 @@ class InstallIsolatedWebAppCommand
     kCantValidateManifest = 5,
     kCantRetrieveIcons = 6,
     kCantInstall = 7,
-    kMaxValue = kCantInstall
+    kAppNotPermitted = 8,
+    kMaxValue = kAppNotPermitted
   };
 
   void ReportFailure(InstallIwaError error,
@@ -152,7 +153,7 @@ class InstallIsolatedWebAppCommand
 
   Profile& profile();
 
-  void CheckNotInstalledAlready(base::OnceClosure next_step_callback);
+  void CheckCanBeInstalled(base::OnceClosure next_step_callback);
 
   void CopyToProfileDirectory(base::OnceClosure next_step_callback);
 

@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -157,7 +158,7 @@ void InstallIsolatedWebAppCommand::StartWithLock(
 
   RunChainedWeakCallbacks(
       weak_factory_.GetWeakPtr(),
-      &InstallIsolatedWebAppCommand::CheckNotInstalledAlready,
+      &InstallIsolatedWebAppCommand::CheckCanBeInstalled,
       &InstallIsolatedWebAppCommand::CopyToProfileDirectory,
       &InstallIsolatedWebAppCommand::CheckTrustAndSignatures,
       &InstallIsolatedWebAppCommand::CreateStoragePartition,
@@ -166,8 +167,22 @@ void InstallIsolatedWebAppCommand::StartWithLock(
       &InstallIsolatedWebAppCommand::FinalizeInstall);
 }
 
-void InstallIsolatedWebAppCommand::CheckNotInstalledAlready(
+void InstallIsolatedWebAppCommand::CheckCanBeInstalled(
     base::OnceClosure next_step_callback) {
+  // Check 1: App not on the blocklist
+
+  // Although IWA installation may be blocked earlier for performance reasons,
+  // this is the final check for all installation paths to ensure that apps are
+  // not installed if they are on the blocklist.
+  if (IwaKeyDistributionInfoProvider::GetInstance().IsBundleBlocklisted(
+          url_info_.web_bundle_id().id())) {
+    ReportFailure(InstallIwaError::kAppNotPermitted,
+                  webapps::InstallResultCode::kNotInstallable,
+                  "App is on the blocklist");
+    return;
+  }
+
+  // Check 2: App is not already installed
   ASSIGN_OR_RETURN(
       const WebApp& app,
       GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id()),
