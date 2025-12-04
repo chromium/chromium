@@ -4,6 +4,10 @@
 
 #include "components/memory_pressure/system_memory_pressure_evaluator_win.h"
 
+#include <windows.h>
+
+#include <ntstatus.h>
+
 #include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/memory/mock_memory_pressure_listener.h"
@@ -15,10 +19,6 @@
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#endif
 
 namespace memory_pressure {
 namespace win {
@@ -35,6 +35,17 @@ constexpr char kCommitAvailableMBHistogramName[] = "Memory.CommitAvailableMB";
 constexpr char kCommitPercentageUsedHistogramName[] =
     "Memory.CommitPercentageUsed";
 
+constexpr char kZeroMemoryListHistogramName[] =
+    "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds.ZeroList";
+constexpr char kFreeMemoryListHistogramName[] =
+    "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds.FreeList";
+constexpr char kFreeListCountHistogramName[] =
+    "Memory.SystemMemoryLists.FreePageCount";
+constexpr char kZeroListCountHistogramName[] =
+    "Memory.SystemMemoryLists.ZeroPageCount";
+constexpr char kModifiedListCountHistogramName[] =
+    "Memory.SystemMemoryLists.ModifiedPageCount";
+
 }  // namespace
 
 // This is outside of the anonymous namespace so that it can be seen as a friend
@@ -43,6 +54,7 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
  public:
   using SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel;
   using SystemMemoryPressureEvaluator::CheckMemoryPressure;
+  using SystemMemoryPressureEvaluator::CheckSystemMemoryListPageCounts;
   using SystemMemoryPressureEvaluator::RecordCommitHistograms;
 
   explicit TestSystemMemoryPressureEvaluator(
@@ -74,6 +86,16 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
   TestSystemMemoryPressureEvaluator& operator=(
       const TestSystemMemoryPressureEvaluator&) = delete;
 
+  void SetFreeList(uintptr_t size) {
+    memory_list_information_.FreePageCount = size;
+  }
+  void SetZeroList(uintptr_t size) {
+    memory_list_information_.ZeroPageCount = size;
+  }
+  void SetModifiedList(uintptr_t size) {
+    memory_list_information_.ModifiedPageCount = size;
+  }
+
   // Sets up the memory status to reflect the provided absolute memory left.
   void SetMemoryFree(base::ByteCount phys_left) {
     // ullTotalPhys is set in the constructor and not modified.
@@ -104,13 +126,20 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
   MEMORYSTATUSEX GetSystemMemoryStatusForTesting() { return mem_status_; }
 
  private:
-  bool GetSystemMemoryStatus(MEMORYSTATUSEX* mem_status) override {
+  bool GetSystemMemoryStatus(MEMORYSTATUSEX& mem_status) override {
     // Simply copy the memory status set by the test fixture.
-    *mem_status = mem_status_;
+    mem_status = mem_status_;
     return true;
   }
 
-  MEMORYSTATUSEX mem_status_;
+  NTSTATUS GetSystemMemoryListInformation(
+      SYSTEM_MEMORY_LIST_INFORMATION& memory_list_info) override {
+    memory_list_info = memory_list_information_;
+    return STATUS_SUCCESS;
+  }
+
+  MEMORYSTATUSEX mem_status_{};
+  SYSTEM_MEMORY_LIST_INFORMATION memory_list_information_{};
 };
 
 class WinSystemMemoryPressureEvaluatorTest : public testing::Test {
@@ -337,6 +366,48 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, PotentialUnderflow) {
   histogram_tester.ExpectUniqueSample(kCommitLimitMBHistogramName, 50, 1);
   histogram_tester.ExpectUniqueSample(kCommitAvailableMBHistogramName, 100, 1);
   histogram_tester.ExpectUniqueSample(kCommitPercentageUsedHistogramName, 0, 1);
+}
+
+// Verifies that we correctly set an empty memory list to be exhausted.
+TEST(WinSystemMemoryPressureEvaluatorMemoryList, SystemListCheckEmptyList) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester;
+  TestSystemMemoryPressureEvaluator evaluator(nullptr);
+
+  evaluator.SetFreeList(0);
+  evaluator.SetModifiedList(0);
+  evaluator.SetZeroList(0);
+
+  task_environment.FastForwardBy(base::Seconds(40));
+  evaluator.CheckSystemMemoryListPageCounts();
+
+  histogram_tester.ExpectUniqueSample(kZeroMemoryListHistogramName, 1, 1);
+  histogram_tester.ExpectUniqueSample(kFreeMemoryListHistogramName, 1, 1);
+  histogram_tester.ExpectUniqueSample(kFreeListCountHistogramName, 0, 1);
+  histogram_tester.ExpectUniqueSample(kZeroListCountHistogramName, 0, 1);
+  histogram_tester.ExpectUniqueSample(kModifiedListCountHistogramName, 0, 1);
+}
+
+// Verifies that we correctly set a non-empty memory list as non-exhausted.
+TEST(WinSystemMemoryPressureEvaluatorMemoryList, SystemListCheckNonEmptyList) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester;
+  TestSystemMemoryPressureEvaluator evaluator(nullptr);
+
+  evaluator.SetFreeList(1);
+  evaluator.SetModifiedList(1);
+  evaluator.SetZeroList(1);
+
+  task_environment.FastForwardBy(base::Seconds(40));
+  evaluator.CheckSystemMemoryListPageCounts();
+
+  histogram_tester.ExpectUniqueSample(kZeroMemoryListHistogramName, 0, 1);
+  histogram_tester.ExpectUniqueSample(kFreeMemoryListHistogramName, 0, 1);
+  histogram_tester.ExpectUniqueSample(kFreeListCountHistogramName, 1, 1);
+  histogram_tester.ExpectUniqueSample(kZeroListCountHistogramName, 1, 1);
+  histogram_tester.ExpectUniqueSample(kModifiedListCountHistogramName, 1, 1);
 }
 
 }  // namespace win
