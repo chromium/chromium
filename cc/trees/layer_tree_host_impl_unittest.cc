@@ -15523,6 +15523,7 @@ class MsaaIsSlowLayerTreeHostImplTest
             .AllContexts(&viz::TestRasterInterface::set_gpu_rasterization, true)
             .AllContexts(&viz::TestRasterInterface::set_avoid_stencil_buffers,
                          avoid_stencil_buffers)
+            .EnableGpuTileRasterizationFeatureInWorkerContext()
             .Build();
     EXPECT_TRUE(CreateHostImpl(settings, std::move(frame_sink)));
   }
