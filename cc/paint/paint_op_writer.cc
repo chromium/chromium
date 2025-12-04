@@ -288,9 +288,7 @@ void PaintOpWriter::WriteSizeAt(void* memory, size_t size) {
 
 void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
   auto id = path.getGenerationID();
-  if (!options_.for_identifiability_study) {
-    Write(id);
-  }
+  Write(id);
 
   DCHECK(use_paint_cache == UsePaintCache::kEnabled ||
          !options_.paint_cache->Get(PaintCacheDataType::kPath, id));
@@ -774,9 +772,7 @@ void PaintOpWriter::Write(const PaintShader* shader,
   if (shader->record_) {
     Write(true);
     DCHECK_NE(shader->id_, PaintShader::kInvalidRecordShaderId);
-    if (!options_.for_identifiability_study) {
-      Write(shader->id_);
-    }
+    Write(shader->id_);
     const gfx::Rect playback_rect(
         gfx::ToEnclosingRect(gfx::SkRectToRectF(shader->tile())));
 
