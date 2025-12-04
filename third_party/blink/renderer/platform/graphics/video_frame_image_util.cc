@@ -18,6 +18,7 @@
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -111,18 +112,18 @@ bool WillCreateAcceleratedImagesFromVideoFrame(const media::VideoFrame* frame) {
 
 scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
-    CanvasResourceProvider* resource_provider,
+    CanvasSnapshotProvider* snapshot_provider,
     media::PaintCanvasVideoRenderer* video_renderer,
     bool prefer_tagged_orientation,
     bool reinterpret_video_as_srgb) {
   DCHECK(frame);
-  if (!resource_provider) {
-    DLOG(ERROR) << "An external CanvasResourceProvider must be provided";
+  if (!snapshot_provider) {
+    DLOG(ERROR) << "An external CanvasSnapshotProvider must be provided";
     return nullptr;
   }
 
   auto raster_context_provider = GetRasterContextProvider();
-  if (resource_provider->IsAccelerated()) {
+  if (snapshot_provider->IsAccelerated()) {
     prefer_tagged_orientation = false;
   }
 
@@ -136,7 +137,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   // If the provider isn't accelerated, avoid GPU round trips to upload frame
   // data from GpuMemoryBuffer backed frames which aren't mappable.
   if (frame->HasMappableGpuBuffer() && !frame->IsMappable() &&
-      !resource_provider->IsAccelerated()) {
+      !snapshot_provider->IsAccelerated()) {
     frame = media::ConvertToMemoryMappedFrame(std::move(frame));
     if (!frame) {
       DLOG(ERROR) << "Failed to map VideoFrame.";
@@ -164,13 +165,13 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   }
 
   media::PaintCanvasVideoRenderer::PaintParams params;
-  params.dest_rect = gfx::RectF(resource_provider->Size());
+  params.dest_rect = gfx::RectF(snapshot_provider->Size());
   params.transformation =
       prefer_tagged_orientation
           ? media::kNoTransformation
           : frame->metadata().transformation.value_or(media::kNoTransformation);
   params.reinterpret_as_srgb = reinterpret_video_as_srgb;
-  return resource_provider->DoExternalDrawAndSnapshot(
+  return snapshot_provider->DoExternalDrawAndSnapshot(
       [&](MemoryManagedPaintCanvas& canvas) {
         video_renderer->Paint(frame.get(), &canvas, media_flags, params,
                               raster_context_provider.get());

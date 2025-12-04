@@ -35,6 +35,7 @@ class PaintFlags;
 
 namespace blink {
 class CanvasResourceProvider;
+class CanvasSnapshotProvider;
 class StaticBitmapImage;
 
 // Converts a media orientation into a blink one or vice versa.
@@ -45,7 +46,7 @@ ImageOrientationToVideoTransformation(ImageOrientationEnum orientation);
 
 // Returns true if CreateImageFromVideoFrame() expects to create an
 // AcceleratedStaticBitmapImage. Note: This may be overridden if a software
-// |resource_provider| is given to CreateImageFromVideoFrame().
+// |snapshot_provider| is given to CreateImageFromVideoFrame().
 PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame(
     const media::VideoFrame* frame);
 
@@ -55,15 +56,15 @@ PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame(
 // |video_renderer| may optionally be provided in cases where the same frame may
 // end up repeatedly converted.
 //
-// Likewise |resource_provider| may be provided to prevent thrashing when this
+// Likewise |snapshot_provider| may be provided to prevent thrashing when this
 // method is called with high frequency.
 //
-// The default resource provider size is the frame's visible size. The default
+// The default snapshot provider size is the frame's visible size. The default
 // |dest_rect| is the visible size aligned to the origin. Callers may choose to
-// provide their own |resource_provider| and |dest_rect| for rendering to the
+// provide their own |snapshot_provider| and |dest_rect| for rendering to the
 // frame's natural size.
 //
-// When an external |resource_provider| is provided a |dest_rect| may also be
+// When an external |snapshot_provider| is provided a |dest_rect| may also be
 // provided to control where in the canvas the VideoFrame will be drawn. A
 // non-empty |dest_rect| will disable zero copy image support.
 //
@@ -77,7 +78,7 @@ PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame(
 // Returns nullptr if a StaticBitmapImage can't be created.
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
-    CanvasResourceProvider* resource_provider = nullptr,
+    CanvasSnapshotProvider* snapshot_provider = nullptr,
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
     bool prefer_tagged_orientation = true,
     bool reinterpret_video_as_srgb = false);

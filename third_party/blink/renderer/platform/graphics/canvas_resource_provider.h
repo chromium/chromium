@@ -19,6 +19,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -90,6 +91,7 @@ enum class RasterMode {
 class PLATFORM_EXPORT CanvasResourceProvider
     : public base::CheckedObserver,
       public CanvasMemoryDumpClient,
+      public CanvasSnapshotProvider,
       public MemoryManagedPaintRecorder::Client,
       public ScopedRasterTimer::Host {
  public:
@@ -197,11 +199,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) = 0;
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) = 0;
-  virtual scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
-      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
-      ImageOrientation orientation) {
-    NOTREACHED();
-  }
 
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
 
@@ -219,12 +216,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
   viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
   gfx::ColorSpace GetColorSpace() const { return color_space_; }
   SkAlphaType GetAlphaType() const { return alpha_type_; }
-  gfx::Size Size() const { return size_; }
+  gfx::Size Size() const override { return size_; }
   virtual bool IsValid() const = 0;
   virtual base::ByteCount EstimatedSizeInBytes() const {
     return base::ByteCount(format_.EstimatedSizeInBytes(size_));
   }
-  virtual bool IsAccelerated() const = 0;
   // Returns true if the resource can be used by the display compositor.
   virtual bool SupportsDirectCompositing() const = 0;
   uint32_t ContentUniqueID() const;
