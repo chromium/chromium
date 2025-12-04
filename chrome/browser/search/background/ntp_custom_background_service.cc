@@ -397,6 +397,8 @@ void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
 
   const base::Value::Dict& background_info =
       pref_service_->GetDict(prefs::kNtpCustomBackgroundDict);
+
+#if !BUILDFLAG(IS_ANDROID)
   int64_t refresh_timestamp = 0;
   const base::Value* timestamp_value =
       background_info.Find(kNtpCustomBackgroundRefreshTimestamp);
@@ -405,13 +407,16 @@ void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
   if (refresh_timestamp == 0)
     return;
 
-  if (clock_->Now().ToTimeT() > refresh_timestamp) {
-    std::string collection_id =
-        background_info.Find(kNtpCustomBackgroundCollectionId)->GetString();
-    std::string resume_token =
-        background_info.Find(kNtpCustomBackgroundResumeToken)->GetString();
-    background_service_->FetchNextCollectionImage(collection_id, resume_token);
+  if (clock_->Now().ToTimeT() <= refresh_timestamp) {
+    return;
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  std::string collection_id =
+      background_info.Find(kNtpCustomBackgroundCollectionId)->GetString();
+  std::string resume_token =
+      background_info.Find(kNtpCustomBackgroundResumeToken)->GetString();
+  background_service_->FetchNextCollectionImage(collection_id, resume_token);
 }
 
 std::optional<CustomBackground>
