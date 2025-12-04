@@ -37,11 +37,13 @@ export function getHtml(this: ProfileCustomizationAppElement) {
       <div id="body">
         <div id="title">${this.welcomeTitle_}</div>
       </div>
-
+        <div id="inputTitle" ?hidden="${!this.shouldShowDefaultProfileName_}">
+          $i18n{profileCustomizationInputTitle}
+        </div>
         <cr-input id="nameInput" pattern=".*\\S.*" .value="${this.profileName_}"
             @value-changed="${this.onProfileNameChanged_}"
             aria-label="$i18n{profileCustomizationInputLabel}" auto-validate
-            placeholder="$i18n{profileCustomizationInputPlaceholder}" autofocus
+            placeholder="${this.getNameInputPlaceHolder_()}" autofocus
             error-message="$i18n{profileCustomizationInputErrorMessage}"
             required spellcheck="false" @blur="${this.validateInputOnBlur_}"
             ?disabled="${this.hasEnterpriseLabel}">

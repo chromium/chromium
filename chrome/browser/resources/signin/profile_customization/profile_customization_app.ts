@@ -145,6 +145,12 @@ export class ProfileCustomizationAppElement extends
         this.i18n('profileCustomizationTitle');
   }
 
+  protected getNameInputPlaceHolder_(): string {
+    return this.shouldShowDefaultProfileName_ ?
+        '' :
+        this.i18n('profileCustomizationInputPlaceholder');
+  }
+
   protected shouldShowCancelButton_(): boolean {
     return !this.isLocalProfileCreation_;
   }
