@@ -18,28 +18,17 @@ TransferableResource TransferableResource::Make(
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     ResourceSource source,
     const gpu::SyncToken& sync_token,
-    const MetadataOverride& override) {
+    const MetadataOverride& metadata_override) {
   CHECK(shared_image);
 
   TransferableResource resource;
-  resource.is_software = shared_image->is_software();
-  resource.memory_buffer_id_ = shared_image->mailbox();
+  resource.shared_image_ = shared_image;
   resource.sync_token_ = sync_token;
   resource.resource_source = source;
-  resource.format = shared_image->format();
-  resource.set_texture_target(shared_image->GetTextureTarget());
-  resource.size = shared_image->size();
-
+  resource.metadata_override_ = metadata_override;
   // Passed in format must be either single or multiplane and not default set.
-  CHECK(resource.format.is_single_plane() || resource.format.is_multi_plane());
-  resource.is_overlay_candidate = override.is_overlay_candidate.value_or(
-      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT));
-  resource.color_space =
-      override.color_space.value_or(shared_image->color_space());
-  resource.origin = override.origin.value_or(shared_image->surface_origin());
-  SkAlphaType alpha_type =
-      override.alpha_type.value_or(shared_image->alpha_type());
-  resource.alpha_type = alpha_type;
+  CHECK(resource.GetFormat().is_single_plane() ||
+        resource.GetFormat().is_multi_plane());
 
   return resource;
 }
@@ -74,7 +63,7 @@ void TransferableResource::AsValueInto(
     base::trace_event::TracedValue* value) const {
   // Skip |id| because it's different between client and viz.
   value->SetBoolean("is_software", GetIsSoftware());
-  value->SetString("memory_buffer_id", memory_buffer_id_.ToDebugString());
+  value->SetString("memory_buffer_id", mailbox().ToDebugString());
   value->SetString("sync_token", sync_token_.ToDebugString());
   value->SetInteger("texture_target", texture_target());
   value->SetString("size", GetSize().ToString());

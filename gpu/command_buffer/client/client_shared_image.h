@@ -165,7 +165,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   const Mailbox& mailbox() const { return mailbox_; }
   viz::SharedImageFormat format() const { return metadata_.format; }
   base::ByteCount EstimatedSizeInBytes() const {
-    return base::ByteCount(format().EstimatedSizeInBytes(size()));
+    return base::ByteCount::FromUnsigned(format().EstimatedSizeInBytes(size()));
   }
   gfx::Size size() const { return metadata_.size; }
   const gfx::ColorSpace& color_space() const { return metadata_.color_space; }
