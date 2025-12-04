@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_view.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_mutator.h"
 #import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
+#import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -290,6 +291,7 @@ UIImage* SendButtonImage(BOOL highlighted) {
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
   _editView = editView;
   _editView.translatesAutoresizingMaskIntoConstraints = NO;
+  _editView.accessibilityIdentifier = kComposeboxAccessibilityIdentifier;
   [_omniboxContainer addSubview:editView];
   AddSameConstraints(_editView, _omniboxContainer);
 }
@@ -824,6 +826,8 @@ UIImage* SendButtonImage(BOOL highlighted) {
       forState:UIControlStateNormal];
   plusButton.translatesAutoresizingMaskIntoConstraints = NO;
   plusButton.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+  plusButton.accessibilityIdentifier =
+      kComposeboxPlusButtonAccessibilityIdentifier;
 
   AddSizeConstraints(plusButton,
                      CGSizeMake(kAIMButtonHeight, kAIMButtonHeight));
@@ -858,6 +862,8 @@ UIImage* SendButtonImage(BOOL highlighted) {
                            CGAffineTransformMakeScale(scale, scale);
                      }];
   };
+  sendButton.accessibilityIdentifier =
+      kComposeboxSendButtonAccessibilityIdentifier;
 
   [sendButton addTarget:self
                  action:@selector(sendButtonTapped)
@@ -873,6 +879,8 @@ UIImage* SendButtonImage(BOOL highlighted) {
       [self createButtonWithImage:CustomSymbolWithPointSize(
                                       kVoiceSymbol, kSymbolActionPointSize)];
   micButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+  micButton.accessibilityIdentifier =
+      kComposeboxMicButtonAccessibilityIdentifier;
 
   [micButton addTarget:self
                 action:@selector(micButtonTapped)
@@ -886,6 +894,9 @@ UIImage* SendButtonImage(BOOL highlighted) {
       createButtonWithImage:CustomSymbolWithPointSize(kCameraLensSymbol,
                                                       kSymbolActionPointSize)];
   lensButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+  lensButton.accessibilityIdentifier =
+      kComposeboxLensButtonAccessibilityIdentifier;
+
   [lensButton addTarget:self
                  action:@selector(lensButtonTapped)
        forControlEvents:UIControlEventTouchUpInside];

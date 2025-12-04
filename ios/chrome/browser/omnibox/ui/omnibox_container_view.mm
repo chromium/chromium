@@ -141,7 +141,7 @@ UIButton* CreateClearButton() {
   clear_button.configuration = conf;
   clear_button.tintColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
   SetA11yLabelAndUiAutomationName(clear_button, IDS_IOS_ACCNAME_CLEAR_TEXT,
-                                  @"Clear Text");
+                                  kOmniboxClearButtonAccessibilityIdentifier);
   clear_button.pointerInteractionEnabled = YES;
   clear_button.pointerStyleProvider =
       CreateLiftEffectCirclePointerStyleProvider();
