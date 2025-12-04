@@ -48,9 +48,8 @@ gfx::NativeWindow GetBrowserParentWindow() {
         if (browser.GetType() != ash::BrowserType::kNormal) {
           return ash::BrowserController::kContinueIteration;
         }
-        if (aura::Window* native_window = browser.GetNativeWindow();
-            !chromeos::DesksHelper::Get(native_window)
-                 ->BelongsToActiveDesk(native_window)) {
+        if (!chromeos::DesksHelper::Get()->BelongsToActiveDesk(
+                browser.GetNativeWindow())) {
           return ash::BrowserController::kContinueIteration;
         }
         if (browser.IsAttemptingToClose() || browser.IsClosing()) {

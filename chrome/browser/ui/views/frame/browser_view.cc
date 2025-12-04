@@ -1531,8 +1531,7 @@ bool BrowserView::IsOnCurrentWorkspace() const {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  return chromeos::DesksHelper::Get(native_win)
-      ->BelongsToActiveDesk(native_win);
+  return chromeos::DesksHelper::Get()->BelongsToActiveDesk(native_win);
 #elif BUILDFLAG(IS_WIN)
   std::optional<bool> on_current_workspace =
       native_win->GetHost()->on_current_workspace();

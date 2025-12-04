@@ -23,8 +23,7 @@ void FrameContextMenuController::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
-  if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
-          widget_->GetNativeWindow())) {
+  if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu()) {
     return;
   }
 

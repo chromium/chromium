@@ -205,8 +205,7 @@ void WebAppMenuModel::Build() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
-          browser()->window()->GetNativeWindow())) {
+  if (chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     move_to_desks_submenu_ = std::make_unique<chromeos::MoveToDesksMenuModel>(
         std::make_unique<chromeos::MoveToDesksMenuDelegate>(

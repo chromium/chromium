@@ -238,8 +238,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
   ASSERT_TRUE(visible_on_all_desks_window->GetProperty(
                   aura::client::kWindowWorkspaceKey) ==
               aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
-  ASSERT_TRUE(chromeos::DesksHelper::Get(visible_on_all_desks_window)
-                  ->BelongsToActiveDesk(visible_on_all_desks_window));
+  ASSERT_TRUE(chromeos::DesksHelper::Get()->BelongsToActiveDesk(
+      visible_on_all_desks_window));
 
   // Check that there are two browsers, the default one and the visible on all
   // desks browser.
@@ -270,8 +270,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
   // even if there is a desk switch.
   aura::Window* const visible_on_all_desks_window =
       visible_on_all_desks_browser->GetWindow()->GetNativeWindow();
-  EXPECT_TRUE(chromeos::DesksHelper::Get(visible_on_all_desks_window)
-                  ->BelongsToActiveDesk(visible_on_all_desks_window));
+  EXPECT_TRUE(chromeos::DesksHelper::Get()->BelongsToActiveDesk(
+      visible_on_all_desks_window));
 
   RemoveInactiveDesks();
 }

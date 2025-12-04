@@ -158,7 +158,7 @@ BrowserWindowInterface* FindTabOnDeskAtIndex(const GURL& url,
                                              int& out_tab_index,
                                              size_t src_desk_index) {
   out_tab_index = -1;
-  auto* desks_helper = chromeos::DesksHelper::Get(nullptr);
+  auto* desks_helper = chromeos::DesksHelper::Get();
   BrowserWindowInterface* found_browser = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {

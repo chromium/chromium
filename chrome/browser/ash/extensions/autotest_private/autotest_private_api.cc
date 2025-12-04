@@ -3986,7 +3986,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
     window_info.can_focus = window->CanFocus();
     window_info.has_focus = window->HasFocus();
     window_info.on_active_desk =
-        chromeos::DesksHelper::Get(window)->BelongsToActiveDesk(window);
+        chromeos::DesksHelper::Get()->BelongsToActiveDesk(window);
     window_info.is_active = wm::IsActiveWindow(window);
     window_info.has_capture = window->HasCapture();
     window_info.can_resize =
