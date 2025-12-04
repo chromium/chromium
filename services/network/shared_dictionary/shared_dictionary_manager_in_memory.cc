@@ -90,8 +90,7 @@ SharedDictionaryManagerInMemory::~SharedDictionaryManagerInMemory() = default;
 scoped_refptr<SharedDictionaryStorage>
 SharedDictionaryManagerInMemory::CreateStorage(
     const net::SharedDictionaryIsolationKey& isolation_key,
-    bool was_previously_evicted,
-    bool was_previously_evicted_by_memory_pressure) {
+    SharedDictionaryStorageEvictionReason previous_eviction_reason) {
   return base::MakeRefCounted<SharedDictionaryStorageInMemory>(
       weak_factory_.GetWeakPtr(), isolation_key,
       base::ScopedClosureRunner(

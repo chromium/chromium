@@ -7411,6 +7411,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.SharedDictionaryStorageOnDisk.MemoryCache.PreviousEvictionReason"
+    enum="SharedDictionaryStorageEvictionReason" expires_after="2026-11-28">
+  <owner>wbjacksonjr@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    Records the specific reason a Shared Dictionary Storage instance was
+    previously evicted from the in-memory cache. This metric is emitted when
+    `GetDictionarySync()` is called for the first time on a re-created storage
+    instance for the same site isolation key. It provides insight into the
+    causes of dictionary unavailability when a storage needs to be reloaded,
+    helping to understand the real-world effectiveness of the feature,
+    especially on memory-constrained devices.
+  </summary>
+</histogram>
+
 <histogram name="Net.SharedDictionaryStorageOnDisk.MetadataReadTime.{Result}"
     units="ms" expires_after="2026-07-01">
   <owner>pmeenan@chromium.org</owner>

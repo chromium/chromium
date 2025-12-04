@@ -2943,6 +2943,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="Automatic with DoH fallback, by enterprise policy"/>
 </enum>
 
+<!-- LINT.IfChange(SharedDictionaryStorageEvictionReason) -->
+
+<enum name="SharedDictionaryStorageEvictionReason">
+  <int value="0" label="Not Evicted"/>
+  <int value="1" label="Memory Pressure Moderate"/>
+  <int value="2" label="Memory Pressure Critical"/>
+  <int value="3" label="Cache Full"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/shared_dictionary/shared_dictionary_manager.h:SharedDictionaryStorageEvictionReason) -->
+
 <!-- LINT.IfChange(SharedDictionaryStorageResult) -->
 
 <enum name="SharedDictionaryStorageResult">

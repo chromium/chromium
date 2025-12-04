@@ -22,6 +22,7 @@
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
 #include "net/extras/sqlite/sqlite_persistent_shared_dictionary_store.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
 #include "url/gurl.h"
@@ -77,8 +78,7 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage,
       const net::SharedDictionaryIsolationKey& isolation_key,
       base::ScopedClosureRunner on_deleted_closure_runner,
       scoped_refptr<SharedDictionaryCache> dictionary_cache,
-      bool was_previously_evicted,
-      bool was_previously_evicted_by_memory_pressure);
+      SharedDictionaryStorageEvictionReason previous_eviction_reason);
 
   SharedDictionaryStorageOnDisk(const SharedDictionaryStorageOnDisk&) = delete;
   SharedDictionaryStorageOnDisk& operator=(
@@ -171,8 +171,8 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage,
 
   std::vector<base::OnceClosure> pending_get_dictionary_tasks_;
 
-  bool was_previously_evicted_ = false;
-  bool was_previously_evicted_by_memory_pressure_ = false;
+  SharedDictionaryStorageEvictionReason previous_eviction_reason_ =
+      SharedDictionaryStorageEvictionReason::kNotEvicted;
 
   base::WeakPtrFactory<SharedDictionaryStorageOnDisk> weak_factory_{this};
 };

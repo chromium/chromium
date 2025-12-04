@@ -93,15 +93,12 @@ SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
     const net::SharedDictionaryIsolationKey& isolation_key,
     base::ScopedClosureRunner on_deleted_closure_runner,
     scoped_refptr<SharedDictionaryCache> dictionary_cache,
-    bool was_previously_evicted,
-    bool was_previously_evicted_by_memory_pressure)
+    SharedDictionaryStorageEvictionReason previous_eviction_reason)
     : manager_(manager),
       isolation_key_(isolation_key),
       on_deleted_closure_runner_(std::move(on_deleted_closure_runner)),
       dictionary_cache_(dictionary_cache),
-      was_previously_evicted_(was_previously_evicted),
-      was_previously_evicted_by_memory_pressure_(
-          was_previously_evicted_by_memory_pressure) {
+      previous_eviction_reason_(previous_eviction_reason) {
   memory_pressure_listener_registration_ =
       std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE,
@@ -170,13 +167,21 @@ SharedDictionaryStorageOnDisk::GetDictionarySyncInternal(
         "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse",
         is_metadata_ready_);
 
-    if (was_previously_evicted_) {
+    if (previous_eviction_reason_ !=
+        SharedDictionaryStorageEvictionReason::kNotEvicted) {
       base::UmaHistogramBoolean(
           "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
           "PreviouslyEvicted",
           is_metadata_ready_);
+      base::UmaHistogramEnumeration(
+          "Net.SharedDictionaryStorageOnDisk.MemoryCache."
+          "PreviousEvictionReason",
+          previous_eviction_reason_);
     }
-    if (was_previously_evicted_by_memory_pressure_) {
+    if (previous_eviction_reason_ ==
+            SharedDictionaryStorageEvictionReason::kMemoryPressureModerate ||
+        previous_eviction_reason_ ==
+            SharedDictionaryStorageEvictionReason::kMemoryPressureCritical) {
       base::UmaHistogramBoolean(
           "Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse."
           "PreviouslyEvictedByMemoryPressure",
