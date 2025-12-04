@@ -454,6 +454,14 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
 
 // Updates the tap overlay button visibility.
 - (void)updateTapOverlayButtonVisibility {
+  _containerStackView.userInteractionEnabled = NO;
+
+  if (_disableProactiveOverlay) {
+    _tapOverlayButton.hidden = YES;
+    _containerStackView.userInteractionEnabled = YES;
+    return;
+  }
+
   if ([self hasVisibleBadges]) {
     _tapOverlayButton.hidden = NO;
     return;
