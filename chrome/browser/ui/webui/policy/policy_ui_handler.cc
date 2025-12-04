@@ -423,7 +423,7 @@ void PolicyUIHandler::HandleRestartBrowser(const base::Value::List& args) {
 }
 
 void PolicyUIHandler::HandleSetUserAffiliated(const base::Value::List& args) {
-  CHECK_EQ(static_cast<int>(args.size()), 2);
+  CHECK_EQ(args.size(), 2u);
   bool affiliated = args[1].GetBool();
 
   auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
@@ -436,7 +436,7 @@ void PolicyUIHandler::HandleSetUserAffiliated(const base::Value::List& args) {
 
 void PolicyUIHandler::HandleGetAppliedTestPolicies(
     const base::Value::List& args) {
-  CHECK_EQ(static_cast<int>(args.size()), 1);
+  CHECK_EQ(args.size(), 1u);
 
   auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
       g_browser_process->browser_policy_connector()

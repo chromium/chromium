@@ -1614,7 +1614,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
   }
 
   void StoreAlreadyCreatedDelegatedInkPoints() {
-    DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
+    DCHECK_EQ(ink_points_.size(), 1u);
     StoreAlreadyCreatedDelegatedInkPoints(ink_points_.begin()->first);
   }
 
@@ -1634,7 +1634,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
       float diameter,
       SkColor4f color,
       const gfx::RectF& presentation_area) {
-    DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
+    DCHECK_EQ(ink_points_.size(), 1u);
     return MakeAndSendMetadataFromStoredInkPoint(
         ink_points_.begin()->first, index, diameter, color, presentation_area);
   }
@@ -1699,7 +1699,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
   }
 
   const gfx::DelegatedInkPoint& ink_point(int index) {
-    DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
+    DCHECK_EQ(ink_points_.size(), 1u);
     return ink_point(ink_points_.begin()->first, index);
   }
 
@@ -1716,7 +1716,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
   }
 
   int ink_points_size() {
-    DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
+    DCHECK_EQ(ink_points_.size(), 1u);
     return ink_points_.begin()->second.size();
   }
 

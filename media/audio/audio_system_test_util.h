@@ -236,8 +236,8 @@ TYPED_TEST_P(AudioSystemTestTemplate,
              GetInputDeviceDescriptionsNoInputDevices) {
   this->output_device_descriptions_.emplace_back(
       "output_device_name", "output_device_id", "group_id");
-  EXPECT_EQ(0, static_cast<int>(this->input_device_descriptions_.size()));
-  EXPECT_EQ(1, static_cast<int>(this->output_device_descriptions_.size()));
+  EXPECT_EQ(0u, this->input_device_descriptions_.size());
+  EXPECT_EQ(1u, this->output_device_descriptions_.size());
 
   base::RunLoop wait_loop;
   this->audio_system()->GetDeviceDescriptions(
@@ -254,8 +254,8 @@ TYPED_TEST_P(AudioSystemTestTemplate, GetInputDeviceDescriptions) {
       "input_device_name1", "input_device_id1", "group_id1");
   this->input_device_descriptions_.emplace_back(
       "input_device_name2", "input_device_id2", "group_id2");
-  EXPECT_EQ(2, static_cast<int>(this->input_device_descriptions_.size()));
-  EXPECT_EQ(1, static_cast<int>(this->output_device_descriptions_.size()));
+  EXPECT_EQ(2u, this->input_device_descriptions_.size());
+  EXPECT_EQ(1u, this->output_device_descriptions_.size());
 
   base::RunLoop wait_loop;
   this->audio_system()->GetDeviceDescriptions(
@@ -269,8 +269,8 @@ TYPED_TEST_P(AudioSystemTestTemplate,
              GetOutputDeviceDescriptionsNoInputDevices) {
   this->input_device_descriptions_.emplace_back("input_device_name",
                                                 "input_device_id", "group_id");
-  EXPECT_EQ(0, static_cast<int>(this->output_device_descriptions_.size()));
-  EXPECT_EQ(1, static_cast<int>(this->input_device_descriptions_.size()));
+  EXPECT_EQ(0u, this->output_device_descriptions_.size());
+  EXPECT_EQ(1u, this->input_device_descriptions_.size());
 
   base::RunLoop wait_loop;
   this->audio_system()->GetDeviceDescriptions(
@@ -287,8 +287,8 @@ TYPED_TEST_P(AudioSystemTestTemplate, GetOutputDeviceDescriptions) {
       "output_device_name1", "output_device_id1", "group_id1");
   this->output_device_descriptions_.emplace_back(
       "output_device_name2", "output_device_id2", "group_id2");
-  EXPECT_EQ(2, static_cast<int>(this->output_device_descriptions_.size()));
-  EXPECT_EQ(1, static_cast<int>(this->input_device_descriptions_.size()));
+  EXPECT_EQ(2u, this->output_device_descriptions_.size());
+  EXPECT_EQ(1u, this->input_device_descriptions_.size());
 
   base::RunLoop wait_loop;
   this->audio_system()->GetDeviceDescriptions(

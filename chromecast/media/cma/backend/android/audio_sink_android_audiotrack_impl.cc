@@ -288,7 +288,7 @@ int AudioSinkAndroidAudioTrackImpl::ReformatData() {
   // left samples first, then all right -> "LLLLLLLLLLLLLLLLRRRRRRRRRRRRRRRR").
   // AudioTrack needs interleaved format -> "LRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLR").
   DCHECK(direct_pcm_buffer_address_);
-  DCHECK_EQ(0, static_cast<int>(pending_data_->data_size() % sizeof(float)));
+  DCHECK_EQ(0u, pending_data_->data_size() % sizeof(float));
   CHECK_LT(static_cast<int>(pending_data_->data_size()), kDirectBufferSize);
   int num_of_samples = pending_data_->data_size() / sizeof(float);
   int num_of_frames = num_of_samples / num_channels_;

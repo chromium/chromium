@@ -116,7 +116,7 @@ TEST_F(FocusManagerTest, ViewFocusCallbacks) {
   GetContentsView()->AddChildViewRaw(view2);
 
   view1->RequestFocus();
-  ASSERT_EQ(1, static_cast<int>(event_list->vec.size()));
+  ASSERT_EQ(1u, event_list->vec.size());
   EXPECT_EQ(ON_FOCUS, event_list->vec[0].type);
   EXPECT_EQ(kView1ID, event_list->vec[0].view_id);
   EXPECT_EQ(FocusChangeReason::kDirectFocusChange,
@@ -124,7 +124,7 @@ TEST_F(FocusManagerTest, ViewFocusCallbacks) {
 
   event_list->vec.clear();
   view2->RequestFocus();
-  ASSERT_EQ(2, static_cast<int>(event_list->vec.size()));
+  ASSERT_EQ(2u, event_list->vec.size());
   EXPECT_EQ(ON_BLUR, event_list->vec[0].type);
   EXPECT_EQ(kView1ID, event_list->vec[0].view_id);
   EXPECT_EQ(ON_FOCUS, event_list->vec[1].type);
@@ -136,7 +136,7 @@ TEST_F(FocusManagerTest, ViewFocusCallbacks) {
 
   event_list->vec.clear();
   GetFocusManager()->ClearFocus();
-  ASSERT_EQ(1, static_cast<int>(event_list->vec.size()));
+  ASSERT_EQ(1u, event_list->vec.size());
   EXPECT_EQ(ON_BLUR, event_list->vec[0].type);
   EXPECT_EQ(kView2ID, event_list->vec[0].view_id);
   EXPECT_EQ(FocusChangeReason::kDirectFocusChange,
@@ -159,17 +159,17 @@ TEST_F(FocusManagerTest, FocusChangeListener) {
   views::View* null_view = nullptr;
 
   view1->RequestFocus();
-  ASSERT_EQ(1, static_cast<int>(listener.focus_changes().size()));
+  ASSERT_EQ(1u, listener.focus_changes().size());
   EXPECT_TRUE(listener.focus_changes()[0] == ViewPair(null_view, view1));
   listener.ClearFocusChanges();
 
   view2->RequestFocus();
-  ASSERT_EQ(1, static_cast<int>(listener.focus_changes().size()));
+  ASSERT_EQ(1u, listener.focus_changes().size());
   EXPECT_TRUE(listener.focus_changes()[0] == ViewPair(view1, view2));
   listener.ClearFocusChanges();
 
   GetFocusManager()->ClearFocus();
-  ASSERT_EQ(1, static_cast<int>(listener.focus_changes().size()));
+  ASSERT_EQ(1u, listener.focus_changes().size());
   EXPECT_TRUE(listener.focus_changes()[0] == ViewPair(view2, null_view));
 
   RemoveFocusChangeListener(&listener);
@@ -849,7 +849,7 @@ TEST_F(FocusManagerTest, StoreFocusedView) {
   EXPECT_EQ(nullptr, GetFocusManager()->GetFocusedView());
   EXPECT_TRUE(GetFocusManager()->RestoreFocusedView());
   EXPECT_EQ(view, GetFocusManager()->GetStoredFocusView());
-  ASSERT_EQ(3, static_cast<int>(event_list->vec.size()));
+  ASSERT_EQ(3u, event_list->vec.size());
   EXPECT_EQ(ON_FOCUS, event_list->vec[0].type);
   EXPECT_EQ(kView1ID, event_list->vec[0].view_id);
   EXPECT_EQ(FocusChangeReason::kDirectFocusChange,
@@ -870,7 +870,7 @@ TEST_F(FocusManagerTest, StoreFocusedView) {
   EXPECT_EQ(nullptr, GetFocusManager()->GetFocusedView());
   EXPECT_TRUE(GetFocusManager()->RestoreFocusedView());
   EXPECT_EQ(view, GetFocusManager()->GetStoredFocusView());
-  ASSERT_EQ(2, static_cast<int>(event_list->vec.size()));
+  ASSERT_EQ(2u, event_list->vec.size());
   EXPECT_EQ(ON_BLUR, event_list->vec[0].type);
   EXPECT_EQ(kView1ID, event_list->vec[0].view_id);
   EXPECT_EQ(FocusChangeReason::kDirectFocusChange,

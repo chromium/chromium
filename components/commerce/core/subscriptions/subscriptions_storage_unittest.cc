@@ -285,7 +285,7 @@ TEST_F(SubscriptionsStorageTest, TestGetUniqueNonExistingSubscriptions) {
       base::BindOnce(
           [](base::RunLoop* run_loop,
              std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
-            ASSERT_EQ(1, static_cast<int>(subscriptions->size()));
+            ASSERT_EQ(1u, subscriptions->size());
             auto subscription = (*subscriptions)[0];
             ASSERT_EQ(SubscriptionType::kPriceTrack, subscription.type);
             ASSERT_EQ(IdentifierType::kProductClusterId, subscription.id_type);
@@ -310,7 +310,7 @@ TEST_F(SubscriptionsStorageTest, TestGetUniqueExistingSubscriptions) {
       base::BindOnce(
           [](base::RunLoop* run_loop,
              std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
-            ASSERT_EQ(1, static_cast<int>(subscriptions->size()));
+            ASSERT_EQ(1u, subscriptions->size());
             auto subscription = (*subscriptions)[0];
             ASSERT_EQ(SubscriptionType::kPriceTrack, subscription.type);
             ASSERT_EQ(IdentifierType::kProductClusterId, subscription.id_type);

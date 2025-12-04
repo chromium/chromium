@@ -166,22 +166,22 @@ class CountingPolicyTest : public testing::Test {
 
   static void RetrieveActions_FetchFilteredActions0(
       std::unique_ptr<std::vector<scoped_refptr<Action>>> i) {
-    ASSERT_EQ(0, static_cast<int>(i->size()));
+    ASSERT_EQ(0u, i->size());
   }
 
   static void RetrieveActions_FetchFilteredActions1(
       std::unique_ptr<std::vector<scoped_refptr<Action>>> i) {
-    ASSERT_EQ(1, static_cast<int>(i->size()));
+    ASSERT_EQ(1u, i->size());
   }
 
   static void RetrieveActions_FetchFilteredActions2(
       std::unique_ptr<std::vector<scoped_refptr<Action>>> i) {
-    ASSERT_EQ(2, static_cast<int>(i->size()));
+    ASSERT_EQ(2u, i->size());
   }
 
   static void RetrieveActions_FetchFilteredActions300(
       std::unique_ptr<std::vector<scoped_refptr<Action>>> i) {
-    ASSERT_EQ(300, static_cast<int>(i->size()));
+    ASSERT_EQ(300u, i->size());
   }
 
   static void Arguments_Stripped(std::unique_ptr<Action::ActionVector> i) {
@@ -193,14 +193,14 @@ class CountingPolicyTest : public testing::Test {
 
   static void Arguments_GetSinglesAction(
       std::unique_ptr<Action::ActionVector> actions) {
-    ASSERT_EQ(1, static_cast<int>(actions->size()));
+    ASSERT_EQ(1u, actions->size());
     CheckAction(*actions->at(0), "punky", Action::ACTION_DOM_ACCESS, "lets", "",
                 "http://www.google.com/", "", "", 1);
   }
 
   static void Arguments_GetTodaysActions(
       std::unique_ptr<Action::ActionVector> actions) {
-    ASSERT_EQ(3, static_cast<int>(actions->size()));
+    ASSERT_EQ(3u, actions->size());
     CheckAction(*actions->at(0), "punky", Action::ACTION_API_CALL, "brewster",
                 "", "", "", "", 2);
     CheckAction(*actions->at(1), "punky", Action::ACTION_DOM_ACCESS, "lets", "",
@@ -212,7 +212,7 @@ class CountingPolicyTest : public testing::Test {
 
   static void Arguments_GetOlderActions(
       std::unique_ptr<Action::ActionVector> actions) {
-    ASSERT_EQ(2, static_cast<int>(actions->size()));
+    ASSERT_EQ(2u, actions->size());
     CheckAction(*actions->at(0), "punky", Action::ACTION_DOM_ACCESS, "lets", "",
                 "http://www.google.com/", "", "", 1);
     CheckAction(*actions->at(1), "punky", Action::ACTION_API_CALL, "brewster",
@@ -246,7 +246,7 @@ class CountingPolicyTest : public testing::Test {
   }
 
   static void AllURLsRemoved(std::unique_ptr<Action::ActionVector> actions) {
-    ASSERT_EQ(2, static_cast<int>(actions->size()));
+    ASSERT_EQ(2u, actions->size());
     CheckAction(*actions->at(0), "punky", Action::ACTION_DOM_ACCESS, "lets", "",
                 "", "", "", 1);
     CheckAction(*actions->at(1), "punky", Action::ACTION_DOM_ACCESS, "lets", "",
@@ -255,7 +255,7 @@ class CountingPolicyTest : public testing::Test {
 
   static void SomeURLsRemoved(std::unique_ptr<Action::ActionVector> actions) {
     // These will be in the vector in reverse time order.
-    ASSERT_EQ(5, static_cast<int>(actions->size()));
+    ASSERT_EQ(5u, actions->size());
     CheckAction(*actions->at(0), "punky", Action::ACTION_DOM_ACCESS, "lets", "",
                 "http://www.google.com/", "Google", "http://www.args-url.com/",
                 1);
@@ -347,12 +347,12 @@ class CountingPolicyTest : public testing::Test {
   }
 
   static void AllActionsDeleted(std::unique_ptr<Action::ActionVector> actions) {
-    ASSERT_EQ(0, static_cast<int>(actions->size()));
+    ASSERT_EQ(0u, actions->size());
   }
 
   static void NoActionsDeleted(std::unique_ptr<Action::ActionVector> actions) {
     // These will be in the vector in reverse time order.
-    ASSERT_EQ(2, static_cast<int>(actions->size()));
+    ASSERT_EQ(2u, actions->size());
     CheckAction(*actions->at(0), "punky2", Action::ACTION_API_CALL, "lets2", "",
                 "http://www.google2.com/", "Google2",
                 "http://www.args-url2.com/", 2);
@@ -365,7 +365,7 @@ class CountingPolicyTest : public testing::Test {
 
   static void Action1Deleted(std::unique_ptr<Action::ActionVector> actions) {
     // These will be in the vector in reverse time order.
-    ASSERT_EQ(1, static_cast<int>(actions->size()));
+    ASSERT_EQ(1u, actions->size());
     CheckAction(*actions->at(0), "punky2", Action::ACTION_API_CALL, "lets2", "",
                 "http://www.google2.com/", "Google2",
                 "http://www.args-url2.com/", 2);
@@ -374,7 +374,7 @@ class CountingPolicyTest : public testing::Test {
 
   static void Action2Deleted(std::unique_ptr<Action::ActionVector> actions) {
     // These will be in the vector in reverse time order.
-    ASSERT_EQ(1, static_cast<int>(actions->size()));
+    ASSERT_EQ(1u, actions->size());
     CheckAction(*actions->at(0), "punky1", Action::ACTION_DOM_ACCESS, "lets1",
                 "", "http://www.google1.com/", "Google1",
                 "http://www.args-url1.com/", 2);

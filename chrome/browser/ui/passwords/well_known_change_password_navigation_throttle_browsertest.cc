@@ -136,7 +136,7 @@ class WellKnownChangePasswordNavigationThrottleBrowserTest
 
     auto entries = test_recorder_->GetEntriesByName(UkmBuilder::kEntryName);
     // Expect one recorded metric.
-    ASSERT_EQ(1, static_cast<int>(entries.size()));
+    ASSERT_EQ(1u, entries.size());
     test_recorder_->ExpectEntryMetric(
         entries[0], UkmBuilder::kWellKnownChangePasswordResultName,
         static_cast<int64_t>(expected));

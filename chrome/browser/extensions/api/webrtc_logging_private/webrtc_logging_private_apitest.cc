@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest, TestStartStopUpload) {
   std::vector<std::string> multipart_lines =
       base::SplitStringUsingSubstr(upload_request_content_, "\r\n",
                                    base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  ASSERT_EQ(31, static_cast<int>(multipart_lines.size()));
+  ASSERT_EQ(31u, multipart_lines.size());
 
   EXPECT_STREQ(&boundary[0], multipart_lines[0].c_str());
   EXPECT_STREQ("Content-Disposition: form-data; name=\"prod\"",

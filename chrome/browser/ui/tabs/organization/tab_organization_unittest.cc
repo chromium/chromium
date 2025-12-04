@@ -430,12 +430,12 @@ TEST_F(TabOrganizationTest, TabOrganizationIDs) {
 
 TEST_F(TabOrganizationTest, TabOrganizationAddingTabData) {
   TabOrganization organization({}, {u"default_name"});
-  EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 0);
+  EXPECT_EQ(organization.tab_datas().size(), 0u);
   tabs::TabInterface* tab = AddTab();
   std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(tab);
 
   organization.AddTabData(std::move(tab_data));
-  EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 1);
+  EXPECT_EQ(organization.tab_datas().size(), 1u);
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationRemovingTabData) {
@@ -444,10 +444,10 @@ TEST_F(TabOrganizationTest, TabOrganizationRemovingTabData) {
   std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(tab);
   TabData::TabID tab_data_id = tab_data->tab_id();
   organization.AddTabData(std::move(tab_data));
-  EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 1);
+  EXPECT_EQ(organization.tab_datas().size(), 1u);
 
   organization.RemoveTabData(tab_data_id);
-  EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 0);
+  EXPECT_EQ(organization.tab_datas().size(), 0u);
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationChangingCurrentName) {
@@ -455,12 +455,12 @@ TEST_F(TabOrganizationTest, TabOrganizationChangingCurrentName) {
   std::u16string name_1 = u"name_1";
   TabOrganization organization({}, {name_0, name_1});
   EXPECT_TRUE(std::holds_alternative<size_t>(organization.current_name()));
-  EXPECT_EQ(static_cast<int>(std::get<size_t>(organization.current_name())), 0);
+  EXPECT_EQ(std::get<size_t>(organization.current_name()), 0u);
   EXPECT_EQ(organization.GetDisplayName(), name_0);
 
   organization.SetCurrentName(1u);
   EXPECT_TRUE(std::holds_alternative<size_t>(organization.current_name()));
-  EXPECT_EQ(static_cast<int>(std::get<size_t>(organization.current_name())), 1);
+  EXPECT_EQ(std::get<size_t>(organization.current_name()), 1u);
   EXPECT_EQ(organization.GetDisplayName(), name_1);
 
   std::u16string custom_name = u"custom_name";

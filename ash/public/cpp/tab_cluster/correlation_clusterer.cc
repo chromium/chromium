@@ -181,8 +181,8 @@ void CorrelationClusterer::MoveNodeToCluster(const int node,
   cluster_sizes_[old_cluster] -= 1;
   cluster_weights_[old_cluster] -= weight;
   if (cluster_sizes_[old_cluster] == 0) {
-    DCHECK_EQ(static_cast<int>(cluster_sizes_.erase(old_cluster)), 1);
-    DCHECK_EQ(static_cast<int>(cluster_weights_.erase(old_cluster)), 1);
+    DCHECK_EQ(cluster_sizes_.erase(old_cluster), 1u);
+    DCHECK_EQ(cluster_weights_.erase(old_cluster), 1u);
   }
   clustering_[node] = new_cluster;
   cluster_sizes_[new_cluster] += 1;

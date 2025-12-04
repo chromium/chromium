@@ -78,7 +78,7 @@ TEST_F(AutocompleteScoringModelExecutorTest, ExecuteModel) {
       execution_callback = base::BindOnce(
           [](base::RunLoop* run_loop,
              const std::optional<ModelOutput>& output) {
-            ASSERT_EQ(1, static_cast<int>(output.value().size()));
+            ASSERT_EQ(1u, output.value().size());
             // 1 + 2 = 3
             EXPECT_NEAR(3, output.value().front(), 1e-1);
             run_loop->Quit();

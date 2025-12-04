@@ -187,7 +187,7 @@ class FakeHistoryAdapter : public DownloadHistory::HistoryAdapter {
   void ExpectNoDownloadsRemoved() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     content::RunAllPendingInMessageLoop(content::BrowserThread::UI);
-    EXPECT_EQ(0, static_cast<int>(remove_downloads_.size()));
+    EXPECT_EQ(0u, remove_downloads_.size());
   }
 
   void ExpectDownloadsRemoved(const IdSet& ids) {

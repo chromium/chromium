@@ -716,7 +716,7 @@ TEST_P(PowerNotificationControllerWithBatterySaverTest,
         message_center()->FindVisibleNotificationById("battery");
     const std::vector<message_center::ButtonInfo> buttons =
         notification->buttons();
-    EXPECT_EQ(static_cast<int>(buttons.size()), 1);
+    EXPECT_EQ(buttons.size(), 1u);
   }
 
   // Plug in charger.
@@ -759,7 +759,7 @@ TEST_P(PowerNotificationControllerWithBatterySaverTest,
         message_center()->FindVisibleNotificationById("battery");
     const std::vector<message_center::ButtonInfo> buttons =
         notification->buttons();
-    EXPECT_EQ(static_cast<int>(buttons.size()), 1);
+    EXPECT_EQ(buttons.size(), 1u);
 
     // Simulate Clicking Opt-Out/In
     notification->delegate()->Click(0, std::nullopt);
