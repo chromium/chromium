@@ -19,6 +19,8 @@ source_set("ui") {
     "snippet_search_engine_button.mm",
     "snippet_search_engine_element.h",
     "snippet_search_engine_element.mm",
+    "snippet_search_engine_text_view.h",
+    "snippet_search_engine_text_view.mm",
   ]
   deps = [
     ":constants",
