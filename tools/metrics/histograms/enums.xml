@@ -12233,6 +12233,7 @@ from previous Chrome versions.
   <int value="-711422585" label="kSignInProfileCreationEnterprise:disabled"/>
   <int value="-710794209" label="PersonalizationJelly:enabled"/>
   <int value="-710538344" label="AAudioPerStreamDeviceSelection:disabled"/>
+  <int value="-709527670" label="PersistAcrossReboots:enabled"/>
   <int value="-709058455" label="ui-slow-animations"/>
   <int value="-708583766" label="SupportOpeningDraggedLinksInSameTab:disabled"/>
   <int value="-708482536" label="Cormorant:disabled"/>
@@ -18770,6 +18771,7 @@ from previous Chrome versions.
   <int value="1577205328"
       label="DataReductionProxyEnabledWithNetworkService:enabled"/>
   <int value="1577651674" label="SafetyHub:enabled"/>
+  <int value="1578770829" label="PersistAcrossReboots:disabled"/>
   <int value="1579084737" label="TemporaryUnexpireFlagsM80:disabled"/>
   <int value="1579461102" label="MemoryCoordinator:disabled"/>
   <int value="1579627455" label="BoardingPassDetector:enabled"/>

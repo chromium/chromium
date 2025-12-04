@@ -13503,6 +13503,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(extensions_features::kEnableShouldShowPromotion)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"persist-across-reboots", flag_descriptions::kPersistAcrossRebootsName,
+     flag_descriptions::kPersistAcrossRebootsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kPersistAcrossReboots)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

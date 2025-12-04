@@ -8325,6 +8325,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "persist-across-reboots",
+    "owners": ["clhager@google.com", "twellington@chromium.org"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "persist-tab-context",
     "owners": [ "cloutierc@google.com", "nicolasmacbeth@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 160

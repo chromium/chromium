@@ -5603,6 +5603,10 @@ inline constexpr char kOmniboxShortcutsAndroidDescription[] =
     "Enables storing successful query/match in the omnibox shortcut database "
     "on Android";
 
+inline constexpr char kPersistAcrossRebootsName[] = "persist-across-reboots";
+inline constexpr char kPersistAcrossRebootsDescription[] =
+    "When this is enabled, state will be persisted across reboots on devices.";
+
 inline constexpr char kRecentlyClosedTabsAndWindowsName[] =
     "Recently Closed Tabs And Windows";
 inline constexpr char kRecentlyClosedTabsAndWindowsDescription[] =
