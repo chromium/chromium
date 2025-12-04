@@ -74,6 +74,10 @@
   width: 240px;
 }
 
+.action-chip:focus-visible {
+  outline-offset: 4px;
+}
+
 .action-chips-container .action-chip:nth-child(1) {
   animation:
     chips-slide var(--chip-slide-duration) 250ms
