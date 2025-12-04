@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "base/functional/callback_helpers.h"
+#include "base/functional/is_callback.h"
 #include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/interaction/element_tracker.h"

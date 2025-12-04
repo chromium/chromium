@@ -1048,7 +1048,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         [
             # Has tests that template trait helpers don't unintentionally match
             # std::function.
-            r'base/functional/callback_helpers_unittest\.cc',
+            r'base/functional/is_callback_unittest\.cc',
             # Required to implement interfaces from the third-party perfetto
             # library.
             r'base/tracing/perfetto_task_runner\.cc',
