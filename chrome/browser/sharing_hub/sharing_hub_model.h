@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SHARING_HUB_SHARING_HUB_MODEL_H_
 #define CHROME_BROWSER_SHARING_HUB_SHARING_HUB_MODEL_H_
 
-#include <map>
 #include <string>
 #include <vector>
 

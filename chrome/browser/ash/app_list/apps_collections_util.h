@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_APPS_COLLECTIONS_UTIL_H_
 #define CHROME_BROWSER_ASH_APP_LIST_APPS_COLLECTIONS_UTIL_H_
 
-#include <map>
 #include <string>
 #include <vector>
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_INSTANTMESSAGING_SEND_MESSAGE_EXPRESS_H_
 #define CHROME_BROWSER_NEARBY_SHARING_INSTANTMESSAGING_SEND_MESSAGE_EXPRESS_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEMORY_DETAILS_H_
 #define CHROME_BROWSER_MEMORY_DETAILS_H_
 
-#include <map>
 #include <optional>
 #include <string>
 #include <vector>

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_DIALOGS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_DIALOGS_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>

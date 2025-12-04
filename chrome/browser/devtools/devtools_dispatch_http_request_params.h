@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_DEVTOOLS_DISPATCH_HTTP_REQUEST_PARAMS_H_
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_DISPATCH_HTTP_REQUEST_PARAMS_H_
 
-#include <map>
 #include <optional>
 #include <string>
 #include <vector>

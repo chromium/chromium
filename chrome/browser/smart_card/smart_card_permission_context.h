@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SMART_CARD_SMART_CARD_PERMISSION_CONTEXT_H_
 
 #include <cstdint>
-#include <map>
 #include <set>
 
 #include "base/containers/flat_map.h"

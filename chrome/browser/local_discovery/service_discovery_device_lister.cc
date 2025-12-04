@@ -4,6 +4,7 @@
 
 #include "chrome/browser/local_discovery/service_discovery_device_lister.h"
 
+#include <map>
 #include <utility>
 #include <vector>
 

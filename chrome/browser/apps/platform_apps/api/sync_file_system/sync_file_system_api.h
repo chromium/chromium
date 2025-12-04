@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
-
 #include "chrome/browser/sync_file_system/conflict_resolution_policy.h"
 #include "chrome/browser/sync_file_system/sync_file_status.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"

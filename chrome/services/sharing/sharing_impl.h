@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_SHARING_SHARING_IMPL_H_
 #define CHROME_SERVICES_SHARING_SHARING_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 

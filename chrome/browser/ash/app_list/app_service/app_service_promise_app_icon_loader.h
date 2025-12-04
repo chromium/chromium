@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_PROMISE_APP_ICON_LOADER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_PROMISE_APP_ICON_LOADER_H_
 
-#include <map>
 #include <string>
 
 #include "base/memory/raw_ptr.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_FAVICON_SOURCE_H_
 #define CHROME_BROWSER_UI_WEBUI_FAVICON_SOURCE_H_
 
-#include <map>
 #include <string>
 
 #include "base/memory/raw_ptr.h"

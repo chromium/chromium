@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TAB_GROUP_SYNC_ANDROID_TAB_GROUP_SYNC_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_TAB_GROUP_SYNC_ANDROID_TAB_GROUP_SYNC_DELEGATE_ANDROID_H_
 
-#include <map>
 #include <memory>
 
 #include "base/android/jni_android.h"

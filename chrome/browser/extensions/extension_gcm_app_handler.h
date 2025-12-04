@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_GCM_APP_HANDLER_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_GCM_APP_HANDLER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 

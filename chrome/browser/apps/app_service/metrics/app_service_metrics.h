@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_SERVICE_METRICS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_SERVICE_METRICS_H_
 
-#include <map>
 #include <string>
 
 #include "build/build_config.h"

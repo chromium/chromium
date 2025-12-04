@@ -6,7 +6,6 @@
 #define CHROME_TEST_INTERACTION_WEBCONTENTS_INTERACTION_TEST_UTIL_H_
 
 #include <initializer_list>
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>

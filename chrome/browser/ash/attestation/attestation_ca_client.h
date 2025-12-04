@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ATTESTATION_ATTESTATION_CA_CLIENT_H_
 
 #include <list>
-#include <map>
 #include <optional>
 #include <string>
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SHELL_INTEGRATION_H_
 #define CHROME_BROWSER_SHELL_INTEGRATION_H_
 
-#include <map>
 #include <string>
 
 #include "base/files/file_path.h"

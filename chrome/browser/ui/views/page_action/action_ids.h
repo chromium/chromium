@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_ACTION_IDS_H_
 
 #include <array>
-#include <map>
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 

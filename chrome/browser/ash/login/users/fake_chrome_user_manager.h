@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_USERS_FAKE_CHROME_USER_MANAGER_H_
 #define CHROME_BROWSER_ASH_LOGIN_USERS_FAKE_CHROME_USER_MANAGER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>

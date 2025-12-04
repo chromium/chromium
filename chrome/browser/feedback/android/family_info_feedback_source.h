@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_FEEDBACK_ANDROID_FAMILY_INFO_FEEDBACK_SOURCE_H_
 #define CHROME_BROWSER_FEEDBACK_ANDROID_FAMILY_INFO_FEEDBACK_SOURCE_H_
 
-#include <map>
 #include <memory>
 
 #include "base/android/jni_android.h"

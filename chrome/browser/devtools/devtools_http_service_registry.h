@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_DEVTOOLS_HTTP_SERVICE_REGISTRY_H_
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_HTTP_SERVICE_REGISTRY_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

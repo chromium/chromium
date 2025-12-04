@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_OOBE_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_OOBE_UI_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

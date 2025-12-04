@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_ONE_TIME_PERMISSION_PROVIDER_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_ONE_TIME_PERMISSION_PROVIDER_H_
 
-#include <map>
 #include <set>
 
 #include "base/memory/raw_ptr.h"

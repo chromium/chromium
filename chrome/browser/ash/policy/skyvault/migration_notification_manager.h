@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_SKYVAULT_MIGRATION_NOTIFICATION_MANAGER_H_
 #define CHROME_BROWSER_ASH_POLICY_SKYVAULT_MIGRATION_NOTIFICATION_MANAGER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
