@@ -3242,12 +3242,6 @@
    "owners": ["robsc@chromium.org", "amoylan@chromium.org"],
    "expiry_milestone": 149
   },
-
-  {
-    "name": "enable-cleanup-legacy-tabstate",
-    "owners": [ "davidjm@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 150
-  },
   {
     "name": "enable-client-certificate-provisioning-on-android",
     "owners": [ "eliashomsi@google.com", "cbe-cep-eng@google.com" ],
@@ -3873,11 +3867,6 @@
       "lingqi@chromium.org",
       "//content/browser/preloading/prerender/OWNERS"
     ],
-    "expiry_milestone": 143
-  },
-  {
-    "name": "enable-legacy-tabstate-deprecation",
-    "owners": [ "davidjm@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 143
   },
   {
