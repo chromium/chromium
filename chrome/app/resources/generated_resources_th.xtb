@@ -4325,6 +4325,7 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">ขนาดการแสดงผลและข้อความ <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">ส่ง URL ให้ Google Safe Browsing ตรวจสอบ รวมถึงส่งตัวอย่างส่วนเล็กๆ ของหน้าเว็บ การดาวน์โหลด กิจกรรมของส่วนขยาย และข้อมูลระบบเพื่อช่วยค้นหาภัยคุกคามใหม่ๆ ลิงก์ข้อมูลนี้กับบัญชี Google เป็นการชั่วคราวเมื่อคุณลงชื่อเข้าใช้ เพื่อปกป้องคุณในแอปต่างๆ ของ Google</translation>
+<translation id="3924788966103416622">แอปภายนอกต้องการควบคุมเซสชัน Chrome นี้อย่างเต็มรูปแบบเพื่อแก้ไขข้อบกพร่อง ซึ่งรวมถึงการเข้าถึงข้อมูลที่บันทึกไว้ คุกกี้และข้อมูลเว็บไซต์ และความสามารถในการไปยัง URL ใดก็ได้</translation>
 <translation id="3925573269917483990">กล้อง:</translation>
 <translation id="3925926055063465902">ผู้ใช้คนอื่นๆ ในอุปกรณ์จะใช้เครือข่ายนี้ได้เช่นกัน</translation>
 <translation id="3926002189479431949">โทรศัพท์ของ Smart Lock มีการเปลี่ยนแปลง</translation>
@@ -4463,6 +4464,7 @@
 <translation id="4015250302257349679">กด <ph name="ACCELERATOR" /> เพื่อโฟกัสลูกโป่งนี้ จากนั้นกดอีกครั้งเพื่อโฟกัสองค์ประกอบที่ลูกโป่งชี้ไป</translation>
 <translation id="4016762287427926315">สิทธิ์ที่คุณให้แก่ <ph name="APP_NAME" /> จะให้แก่แอปนี้ด้วย <ph name="BEGIN_LINK" />จัดการ<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">สร้างคิวอาร์โค้ดสำหรับลิงก์นี้</translation>
+<translation id="4018953474106733212">เฉพาะนักพัฒนาเว็บเท่านั้นที่ควรเปิดใช้ฟีเจอร์นี้ และควรใช้กับแอปที่เชื่อถือได้เท่านั้น</translation>
 <translation id="4019983356493507433">แก้ไขรายการบุ๊กมาร์ก</translation>
 <translation id="4020701737692625681">ผู้ดูแลระบบสามารถบันทึกหน้าจอของคุณได้</translation>
 <translation id="4021279097213088397">–</translation>
@@ -5055,6 +5057,7 @@
 <translation id="443196770280837407">เปิด Gemini ด้วยแป้นพิมพ์ลัด</translation>
 <translation id="4432621511648257259">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="4434611816075088065">ไม่มีกิจกรรมใดที่คุณต้องตรวจสอบในขณะนี้</translation>
+<translation id="4435020454241191356">เพิ่มชื่อหรือป้ายกำกับสำหรับโปรไฟล์ของคุณ</translation>
 <translation id="443503224864902151">นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่ แต่คุณจะยังลงชื่อเข้าใช้บัญชี Google อยู่เพื่อให้ลบข้อมูลที่ซิงค์ได้</translation>
 <translation id="4437879751057074691">เสนอให้บันทึกรหัสผ่านและพาสคีย์</translation>
 <translation id="4437947179446780764">เพิ่มผู้ให้บริการ DNS ที่กำหนดเอง</translation>
@@ -5066,6 +5069,7 @@
 <translation id="4441928470323187829">ผู้ดูแลระบบปักหมุดไว้</translation>
 <translation id="4442863809158514979">ดูสิทธิ์ของเว็บ</translation>
 <translation id="4442937638623063085">ไม่พบโปรไฟล์ โปรดป้อนรหัสเปิดใช้งานที่ได้รับจากผู้ให้บริการ</translation>
+<translation id="4443111948803895537">การปกป้องบัญชีและเครือข่าย</translation>
 <translation id="4443536555189480885">&amp;ความช่วยเหลือ</translation>
 <translation id="4444304522807523469">เข้าถึงเครื่องสแกนเอกสารที่เชื่อมต่อผ่าน USB หรือบนเครือข่าย LAN</translation>
 <translation id="4444512841222467874">หากไม่เพิ่มพื้นที่ว่าง ระบบอาจลบผู้ใช้และข้อมูลโดยอัตโนมัติ</translation>
@@ -6385,6 +6389,7 @@
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> ต้องการใช้ข้อมูลส่วนบุคคลจากกระเป๋าเงินดิจิทัล ดำเนินการต่อในกรณีที่คุณเชื่อถือเว็บไซต์นี้เท่านั้น เว็บไซต์อันตรายอาจหลอกล่อให้คุณเปิดเผยข้อมูล เช่น ชื่อตามกฎหมายหรือหมายเลขบัตรประจำตัว</translation>
 <translation id="5390677308841849479">สีแดงเข้มและสีส้ม</translation>
 <translation id="5392192690789334093">อนุญาตให้ส่งการแจ้งเตือนได้</translation>
+<translation id="5392864580775235956">เพิ่มและแก้ไขรูปภาพ</translation>
 <translation id="5393330235977997602">ตัวเลือก PIN</translation>
 <translation id="5393474451146553463">ถาม Google เกี่ยวกับแท็บนี้</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{ลิงก์}other{# ลิงก์}}</translation>
@@ -6664,6 +6669,7 @@
 <translation id="557722062034137776">การรีเซ็ตอุปกรณ์ของคุณจะไม่ส่งผลต่อบัญชี Google ของคุณหรือข้อมูลใดๆ ที่ซิงค์กับบัญชีเหล่านี้ อย่างไรก็ตาม ไฟล์ทั้งหมดที่บันทึกอยู่ภายในอุปกรณ์จะถูกลบ</translation>
 <translation id="5578059481725149024">ลงชื่อเข้าใช้อัตโนมัติ</translation>
 <translation id="5578387000057347457">ป้อนพรอมต์ที่กำหนดเองหรือไฮไลต์ข้อความเพื่อสร้างรูปภาพ</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{ระบบบันทึกข้อมูล 1 รายการไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้<ph name="BEGIN_LINK" />บันทึกไว้ในบัญชี Google<ph name="END_LINK" />}other{ระบบบันทึกข้อมูล {ITEM_COUNT} รายการไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้<ph name="BEGIN_LINK" />บันทึกไว้ในบัญชี Google<ph name="END_LINK" />}}</translation>
 <translation id="5579225964082017560">นำ <ph name="SITE" /> ออกจากรายการ <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">การแปลเป็นภาษา<ph name="LANGUAGE" />เสร็จสมบูรณ์</translation>
 <translation id="558170650521898289">การตรวจสอบโปรแกรมควบคุมฮาร์ดแวร์ของ Microsoft Windows</translation>
@@ -7150,6 +7156,7 @@
     <ph name="LINE_BREAK" />
     ภาพนี้จะแสดงในหน้าลงชื่อเข้าใช้และหน้าจอล็อกของ Chromebook</translation>
 <translation id="5925147183566400388">ตัวชี้ไปยังคำชี้แจงเกี่ยวกับแนวทางปฏิบัติสำหรับใบรับรอง</translation>
+<translation id="5926936390113611560">เปิดโปรไฟล์ทั้งหมด</translation>
 <translation id="5927132638760172455">กำลังแคสต์ไปยังเครื่องรับที่ไม่รู้จัก</translation>
 <translation id="592740088639760830">หยุดการทำงานของคอนเทนเนอร์นี้</translation>
 <translation id="592880897588170157">ดาวน์โหลดไฟล์ PDF แทนการเปิดโดยอัตโนมัติใน Chrome</translation>
@@ -7233,6 +7240,7 @@
 <translation id="5979421442488174909">&amp;แปลเป็น<ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">หากต้องการบุ๊กมาร์กหน้าต่างๆ ให้คลิกรูปดาวในแถบที่อยู่เว็บ</translation>
 <translation id="5982578203375898585">แสดงการดาวน์โหลดเมื่อเสร็จแล้ว</translation>
+<translation id="598347738324022917">บันทึกบุ๊กมาร์กไปยังอุปกรณ์นี้แล้ว</translation>
 <translation id="5983716913605894570">กำลังสร้าง...</translation>
 <translation id="5984222099446776634">เข้าชมล่าสุด</translation>
 <translation id="5984334442529819751">เกิดข้อผิดพลาดขณะติดตั้ง DLC (โดยปกติจะต้องรีบูต โปรดดูข้อมูลเพิ่มเติมที่การตั้งค่า\&gt;\&gt;เกี่ยวกับ ChromeOS)</translation>
@@ -7333,6 +7341,7 @@
 <translation id="6057381398996433816">เว็บไซต์นี้ถูกบล็อกไม่ให้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวและแสง</translation>
 <translation id="6059276912018042191">แท็บ Chrome ล่าสุด</translation>
 <translation id="6059652578941944813">ลำดับชั้นใบรับรอง</translation>
+<translation id="6059775313639803773">รับคำตอบที่เจาะลึกมากขึ้นพร้อมแหล่งข้อมูลเพิ่มเติมในเวลาที่นานขึ้นเล็กน้อย</translation>
 <translation id="6059925163896151826">อุปกรณ์ USB</translation>
 <translation id="6061408389284235459">ส่งการแจ้งเตือนไปที่ "<ph name="DEVICE_NAME" />" แล้ว</translation>
 <translation id="6063284707309177505">สร้างคิวอาร์โค้ด</translation>
@@ -9658,6 +9667,7 @@
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> แอป</translation>
 <translation id="7674542105240814168">ปฏิเสธไม่ให้เข้าถึงตำแหน่ง</translation>
 <translation id="7675175806582227035">ได้รับอนุญาตให้ควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่</translation>
+<translation id="7676019765091965045">การตรวจหารหัสผ่านที่ถูกละเมิด</translation>
 <translation id="7676119992609591770">พบ <ph name="NUM" /> แท็บสำหรับ "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">ส่งเสียงของคุณไปยัง Google เพื่อให้พิมพ์ตามคำบอกในช่องข้อความต่างๆ</translation>
 <translation id="7678588695732963732">รีเซ็ตสิทธิ์ทั้งหมดของอุปกรณ์ USB ไหม</translation>
@@ -10751,6 +10761,7 @@
 <translation id="8405118833120731611">{0,plural, =1{ปิดโปรไฟล์นี้}other{ปิดโปรไฟล์นี้ (# หน้าต่าง)}}</translation>
 <translation id="8407199357649073301">ระดับบันทึก:</translation>
 <translation id="8408270600235826886">คุณควบคุมข้อมูลที่จะแชร์กับ Google ได้ คุณเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อในการตั้งค่า ทั้งนี้จะมีการนำข้อมูลไปใช้ตาม<ph name="BEGIN_LINK" />นโยบายความเป็นส่วนตัว<ph name="END_LINK" />ของ Google</translation>
+<translation id="8410079205308393430">แสดงคำแนะนำ</translation>
 <translation id="8410133743809404768">คุณสามารถค้นหาในแถบที่อยู่โดยใช้ "@history" รวมถึงจากหน้าประวัติการเข้าชมได้</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">เต็มหน้าจอ</translation>
@@ -11494,6 +11505,7 @@
 <translation id="8910987510378294980">ซ่อนรายการอุปกรณ์</translation>
 <translation id="8912362522468806198">บัญชี Google</translation>
 <translation id="8912810933860534797">เปิดใช้การสแกนอัตโนมัติ</translation>
+<translation id="8914030287343429787">ดูรหัสผ่านได้แม้ไม่ได้ใช้ Chrome หรือ Android โดยลงชื่อเข้าใช้ที่ <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">เปิด Chrome ขึ้นใหม่</translation>
 <translation id="8915307125957890427">คลิกขวาที่แท็บแล้วเลือก "เพิ่มแท็บไปยังกลุ่ม" จากนั้นเลือก "กลุ่มใหม่"</translation>
 <translation id="8915370057835397490">กำลังโหลดคำแนะนำ</translation>

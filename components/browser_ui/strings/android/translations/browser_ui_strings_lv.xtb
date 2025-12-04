@@ -184,6 +184,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="2903493209154104877">Adreses</translation>
 <translation id="2910701580606108292">Jautāt, pirms atļaut vietnēm atskaņot aizsargātu saturu</translation>
 <translation id="2918484639460781603">Pāriet uz iestatījumiem</translation>
+<translation id="293060180538644702">Saņemiet paziņojumus par Chrome padomiem</translation>
 <translation id="2932883381142163287">Ziņot par ļaunprātīgu izmantošanu</translation>
 <translation id="2939338015096024043">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izsekot kameras pozīciju un iegūt informāciju par jūsu apkārtni. Kad šis slēdzis ir izslēgts, vietnes nevar izsekot kameras pozīciju un iegūt informāciju par jūsu apkārtni.</translation>
 <translation id="2968755619301702150">Sertifikātu skatītājs</translation>
@@ -244,6 +245,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="3611658447322220736">Atļaut nesen aizvērtām vietnēm pabeigt datu nosūtīšanu un saņemšanu</translation>
 <translation id="3619294456800709762">Vietnēs drīkst automātiski aktivizēt režīmu “Attēls attēlā”</translation>
 <translation id="3628308229821498208">Ieteiktie meklēšanas vaicājumi</translation>
+<translation id="3632460243282703117">Abonēt</translation>
 <translation id="363748948745453283">Tiek izmantota aptuvena atrašanās vieta.</translation>
 <translation id="3641456520301071208">Atļaut vietnēm pieprasīt atļauju piekļūt jūsu atrašanās vietas datiem</translation>
 <translation id="3658847490588580244">Noklusējuma pārlūka ekrāna apakšdaļas lapa</translation>
@@ -522,6 +524,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="662080504995468778">Palikt</translation>
 <translation id="6630443592285535486">Šeit ievadiet heksadecimālo kodu</translation>
 <translation id="6635327442719709864">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot seriālos portus. Kad tas ir izslēgts, vietnes nevar izmantot seriālos portus.</translation>
+<translation id="6669390930482049506">Paziņot man</translation>
 <translation id="6678072580827808850">Pārskatīt drošības pārbaudi</translation>
 <translation id="6682057173375416470">Saņemiet ieteiktos rakstus jaunas cilnes lapā</translation>
 <translation id="6683865262523156564">Šī vietne ir grupā, un visu grupas vietņu īpašnieki var skatīt jūsu darbības. Grupa ir definēta atbilstoši domēnam <ph name="RWS_OWNER" /></translation>
@@ -631,6 +634,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="7990211076305263060">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot jūsu mikrofonu. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot mikrofonu.</translation>
 <translation id="8007176423574883786">Izslēgts šai ierīcei</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
+<translation id="8033047164036749181">Abonēt paziņojumus no šīs vietnes</translation>
 <translation id="8042586301629853791">Kārtot pēc:</translation>
 <translation id="8051193500142930381">Funkcijas, kurām nepieciešama piekļuve kamerai, nedarbosies</translation>
 <translation id="8056330801132235235">Chrome noklusējums</translation>

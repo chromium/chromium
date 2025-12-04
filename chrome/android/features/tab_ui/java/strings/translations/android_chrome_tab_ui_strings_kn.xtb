@@ -7,6 +7,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> ವರ್ಷದ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}one{<ph name="NUM_YEARS_MANY" /> ವರ್ಷಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}other{<ph name="NUM_YEARS_MANY" /> ವರ್ಷಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಗುಂಪುಗಳನ್ನು 1 ತಿಂಗಳ ನಂತರ ಮುಚ್ಚಲಾಗುತ್ತದೆ}one{ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಗುಂಪುಗಳನ್ನು <ph name="MONTH_COUNT_MANY" /> ತಿಂಗಳ ನಂತರ ಮುಚ್ಚಲಾಗುತ್ತದೆ}other{ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಗುಂಪುಗಳನ್ನು <ph name="MONTH_COUNT_MANY" /> ತಿಂಗಳ ನಂತರ ಮುಚ್ಚಲಾಗುತ್ತದೆ}}</translation>
 <translation id="1173894706177603556">ಮರುಹೆಸರಿಸು</translation>
+<translation id="1203747227183434426">ಮೀಡಿಯಾವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> ಟ್ಯಾಬ್‌ನೊಂದಿಗೆ <ph name="TITLE_OF_GROUP" /> ಅನ್ನು ತೆರೆಯಿರಿ}one{<ph name="TAB_COUNT2" /> ಟ್ಯಾಬ್‌ಗಳೊಂದಿಗೆ <ph name="TITLE_OF_GROUP" /> ಅನ್ನು ತೆರೆಯಿರಿ}other{<ph name="TAB_COUNT2" /> ಟ್ಯಾಬ್‌ಗಳೊಂದಿಗೆ <ph name="TITLE_OF_GROUP" /> ಅನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪಿನ ಆಯ್ಕೆಗಳು</translation>
 <translation id="1300188005269437765">ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿಷ್ಕ್ರಿಯ ವಿಭಾಗಕ್ಕೆ ಸರಿಸಿದಾಗ ಆಯ್ಕೆಮಾಡಿ.</translation>
@@ -21,6 +22,7 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ನಿಷ್ಕ್ರಿಯ ಐಟಂ}one{<ph name="TABS_COUNT_MANY" /> ನಿಷ್ಕ್ರಿಯ ಐಟಂಗಳು}other{<ph name="TABS_COUNT_MANY" /> ನಿಷ್ಕ್ರಿಯ ಐಟಂಗಳು}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1657719826150349398">ಟ್ಯಾಬ್ ಅನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಿ</translation>
+<translation id="1670942869417022142">ಮ್ಯೂಟ್ ಮಾಡಲಾದ ಆಡಿಯೋ</translation>
 <translation id="1697284962337958118">ಇದಕ್ಕೆ ಸೇರಿಸಿ</translation>
 <translation id="1713541401465507417">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಗುಂಪುಗಳನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಗುಂಪು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ}one{<ph name="TAB_GROUPS_COUNT_MANY" /> ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ}other{<ph name="TAB_GROUPS_COUNT_MANY" /> ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ}}</translation>
@@ -73,7 +75,6 @@
 <translation id="311432875115153175">ಟ್ಯಾಬ್ ಗುಂಪು ಪಟ್ಟಿಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="3194464645767632461">ರೇಟಿಂಗ್</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{ಗುಂಪಿಗೆ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಸೇರಿಸಿ}one{ಗುಂಪಿಗೆ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಗುಂಪಿಗೆ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
-<translation id="3293080634164207409">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="3328308545011660196">ಸಲಹೆ: <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು ಸಂಬಂಧಿಸಿರುವ ಹಾಗೆ ಕಾಣುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಗುಂಪು ಮಾಡಬೇಕೆ?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 ದಿನದ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ}one{<ph name="DAY_COUNT_MANY" /> ದಿನಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ}other{<ph name="DAY_COUNT_MANY" /> ದಿನಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ಹೊಸ ಟ್ಯಾಬ್}one{<ph name="MANY_ADDED" /> ಹೊಸ ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="MANY_ADDED" /> ಹೊಸ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
@@ -111,6 +112,7 @@
 <translation id="4871719318659334896">ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಮರುಸ್ಥಾಪಿಸಿ ಹಾಗೂ ತೆರೆಯಿರಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಮರುಸ್ಥಾಪಿಸಿ ಹಾಗೂ ತೆರೆಯಿರಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಮರುಸ್ಥಾಪಿಸಿ ಹಾಗೂ ತೆರೆಯಿರಿ.}}</translation>
 <translation id="4881695831933465202">ತೆರೆ</translation>
+<translation id="4894777338623123366">ಟ್ಯಾಬ್ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿರಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> ಗುಂಪುಗಳನ್ನು ಸೇವ್‌ಮಾಡಲಾಗಿದೆ (ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚುತ್ತದೆ ಮತ್ತು ಗುಂಪುಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ)</translation>
 <translation id="492284538114688557">ದರ ಇಳಿಕೆ ಕಂಡುಬಂದಿದೆ</translation>
@@ -143,6 +145,7 @@
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ಹೊಸ ವಿಂಡೋಗೆ ಗುಂಪನ್ನು ಸರಿಸಿ}one{ಗುಂಪನ್ನು ಮತ್ತೊಂದು ವಿಂಡೋಗೆ ಸರಿಸಿ}other{ಗುಂಪನ್ನು ಮತ್ತೊಂದು ವಿಂಡೋಗೆ ಸರಿಸಿ}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಿ}}</translation>
 <translation id="6228793724645064692">(ಸ್ಟೋರ್ ರೇಟಿಂಗ್)</translation>
+<translation id="6251046978189636310">ಆಡಿಯೋ ಪ್ಲೇ ಆಗುತ್ತಿದೆ</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{ಗುಂಪಿನಿಂದ ಟ್ಯಾಬ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ}one{ಗುಂಪಿನಿಂದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ}other{ಗುಂಪಿನಿಂದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ಹೊಸ ಗುಂಪಿಗೆ ಟ್ಯಾಬ್ ಸೇರಿಸಿ}one{ಹೊಸ ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಹೊಸ ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
 <translation id="6333260925957816943">ಈ ಸ್ಟೋರ್‌ನ ಕುರಿತಾದ ಮಾಹಿತಿ</translation>
@@ -174,6 +177,7 @@
 <translation id="7326879924029668159">ಹಿಂತಿರುಗಿಸುವಿಕೆ ನೀತಿ ಹಾಗೂ ಮುಂತಾದವುಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="7352298686197644113">ನೀವು ತೆರೆದಿರುವ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಯಾವ ಐಟಂ ಕಡಿಮೆ ಬೆಲೆಯನ್ನು ಹೊಂದಿದೆ ಎಂಬುದನ್ನು ನೋಡಿ</translation>
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿಲ್ಲ</translation>
+<translation id="7402375256128852434">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="7452985128687107478">ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೇವ್‌ ಆಗುತ್ತವೆ ಮತ್ತು ಅಪ್‌ಡೇಟ್‌ ಆಗುತ್ತವೆ</translation>
 <translation id="747459581954555080">ಎಲ್ಲವನ್ನು ಮರುಸಂಗ್ರಹಿಸಿ</translation>
 <translation id="7489558427602531799">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಿ</translation>

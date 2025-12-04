@@ -47,6 +47,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="146866447420868597">Chrome-n saioa hasi nahi duzu?</translation>
 <translation id="1476347941828409626">Kudeatu Chrome-ko profilak</translation>
 <translation id="1492280395845991349">Chrome eguneratzen amaitzeko, exekuta ezazu berriro</translation>
+<translation id="1496875977627931224">Kaixo, <ph name="USER_NAME" />:<ph name="LINE_BREAK" />Zer darabilzu buruan gaur?</translation>
 <translation id="1497802159252041924">Instalazio-errorea: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Pertsonalizatu Chrome-ko profil berria</translation>
 <translation id="1518627427551567882">Orri hau babestuta dago</translation>
@@ -79,7 +80,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Arakatzailea mantsotzen duen fitxa pausatzea gomendatzen du Chrome-k}other{Arakatzailea mantsotzen duten fitxak pausatzea gomendatzen du Chrome-k}}</translation>
 <translation id="1832046143430087831">Webguneen abiadura handitzen du Chrome-ren V8 motorrarekin, baina erasoen aurrean Chrome apur bat ahultzen du. Desaktibatuta dago ezarpena.</translation>
 <translation id="1838374766361614909">Garbitu bilaketa</translation>
-<translation id="1843347690926158494">Bilatu fitxa hau Google Lens-ekin</translation>
+<translation id="1843347690926158494">Bilatu fitxa honetan Google Lens-ekin</translation>
 <translation id="1849248141818021764">Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />kontuko Chrome-ko datuak ezabatu beharko dituzu<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome-k webgune honen izenean kamera erabiltzeko baimena behar du</translation>
 <translation id="1873233029667955273">Google Chrome ez da arakatzaile lehenetsia</translation>
@@ -202,6 +203,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3112458742631356345">Chrome-k deskarga hau blokeatu du, fitxategia normalean deskargatzen ez delako eta agian arriskutsua delako</translation>
 <translation id="3114643501466072395">Gainerako pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazoen aurka babestuta dauden egiaztatzeko, <ph name="BEGIN_LINK" />hasi saioa Chrome-n<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome-k deskarga hau blokeatu du, artxibo-fitxategi honek beste fitxategi batzuk dituelako, eta agian haietan malwarea dagoelako</translation>
+<translation id="3130333203120345554">Bilaketa berria</translation>
 <translation id="3135560418014806498">Gehitu Chrome-ko profil bat</translation>
 <translation id="3137969841538672700">Arrastatu bilatzeko</translation>
 <translation id="3140883423282498090">Aldaketek Google Chrome abiarazten duzun hurrengo aldian izango dute eragina.</translation>
@@ -366,6 +368,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="5139423532931106058">Pertsonalizatu Chrome-ko profila</translation>
 <translation id="5163087008893166964">Ongi etorri Chrome-ra; beste leiho bat ireki da arakatzailean</translation>
 <translation id="5166439563123238795">Chrome-k zure eskuen jarraipena egiteko baimena behar du</translation>
+<translation id="5167819546851111585">Zer darabilzu buruan gaur?</translation>
 <translation id="5170938038195470297">Ezin da profila erabili Google Chrome-ren bertsio berriago batekoa delako.
 
 Agian eginbide batzuk ez dira erabilgarri egongo. Zehaztu profilaren beste direktorio bat edo erabili Chrome-ren bertsio berriagoa.</translation>
@@ -626,6 +629,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7804364787702057554">Zure kontua Chrome-n</translation>
 <translation id="7808348361785373670">Kendu Chrome-tik…</translation>
 <translation id="7827099906024714326">Chrome-k zeu zarela egiaztatu behar du datu batzuk zure Google-ko kontuan gorde eta gailu guztietan erabili baino lehen. Orain amaitzen baduzu saioa, ezabatu egingo dira datuak.</translation>
+<translation id="7832314606810669113">Laster-markak eta bestelako datuak zure gailu guztietan erabili ahal izateko, hasi saioa Chrome-n. Saioa hasi ondoren, laster-marka hau zure Google-ko kontuan gordeko da.</translation>
 <translation id="7845233973568007926">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, ordenagailua berrabiarazi behar duzu.</translation>
 <translation id="7849037457735762883">Jarraitu utzi zenuen tokitik: Chrome-k fitxak lehenera ditzake berrabiarazten duzun bakoitzean. Aukera hori aktibatzeko, joan hona:</translation>
 <translation id="7872446069773932638">Deskargatzen… <ph name="SECONDS" /> segundo geratzen dira.</translation>
@@ -647,6 +651,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8013993649590906847">Irudiren batek ez badu azalpen lagungarririk, halako bat lortzen ahaleginduko da Chrome. Azalpen horiek sortzeko, irudiak Google-ri bidaltzen zaizkio.</translation>
 <translation id="8019103195866286235">Garatzaileak luzapena desargitaratu du, eta agian ez da segurua. Ken ezazu Chrome-tik, bisitatzen dituzun webguneetan zure datuak ikusi eta aldatu ezin izan ditzan, informazio pertsonala barne.</translation>
 <translation id="8040768861829554732">Luzapen batek Chrome-n saioa has dezazun behar du</translation>
+<translation id="8041795619940733262">Galdetu Google-ri<ph name="LINE_BREAK" />fitxa honi buruz</translation>
 <translation id="80471789339884597">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, arakatzaile guztiak berrabiarazi behar dituzu.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Chrome-ko beste profilak</translation>

@@ -4489,6 +4489,11 @@ Nếu bạn đặt chính sách này thành <ph name="ENABLE_FOR_FORCED_EXTENSIO
 
 
 Khả năng sử dụng tiện ích vẫn chịu sự kiểm soát của các chính sách khác.</translation>
+<translation id="4112585124048467596">Nếu bạn đặt chính sách này, thì hệ thống sẽ loại trừ tất cả các loại dữ liệu đã chỉ định khỏi quá trình đồng bộ hoá của <ph name="CHROME_SYNC_NAME" /> cũng như quá trình đồng bộ hoá cấu hình chuyển vùng. Cách này có thể giúp giảm kích thước của cấu hình chuyển vùng hoặc giới hạn loại dữ liệu được tải lên Máy chủ <ph name="CHROME_SYNC_NAME" />.
+
+      Chính sách này hiện áp dụng cho các loại dữ liệu sau: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "productComparison", "readingList", "tabs", "themes", "typedUrls", "wifiConfigurations". Tên của các loại dữ liệu đó phân biệt chữ hoa chữ thường!
+
+      Lưu ý: Tính năng Làm mới chính sách động chỉ được hỗ trợ trong <ph name="PRODUCT_NAME" /> phiên bản 123 trở lên. Việc tắt tính năng "tự động điền" cũng sẽ vô hiệu hoá tính năng "thanh toán". "typedUrls" là tất cả nhật ký duyệt web.</translation>
 <translation id="4115501011761259824">Bật First-Party Sets cho mọi người dùng trong phạm vi tác động</translation>
 <translation id="4120401094617902941">Chu kỳ lấy mẫu và thu thập từ bộ đếm thời gian chạy. Thời gian tối thiểu cho phép là 1 ngày.
 

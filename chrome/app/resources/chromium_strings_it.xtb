@@ -269,6 +269,7 @@
 <translation id="4023601594785368013">Lingua originale: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Apri i link in Chromium da qualsiasi app. Inoltre, per un accesso più facile, l'app viene fissata sulla barra delle applicazioni.</translation>
 <translation id="4036079820698952681">Contribuisci a migliorare Chromium indicando le <ph name="BEGIN_LINK" />impostazioni attuali<ph name="END_LINK" /></translation>
+<translation id="4039097928859803404">Mostra sempre le scorciatoie di AI Mode</translation>
 <translation id="4050175100176540509">Nell'ultima versione sono stati apportati miglioramenti rilevanti in materia di sicurezza e sono state aggiunte nuove funzioni.</translation>
 <translation id="4055805654398742145">Gestore delle p&amp;assword</translation>
 <translation id="4061696872429826774">Un altro programma sul computer ha aggiunto un'estensione che potrebbe modificare il funzionamento di Chromium.
@@ -499,6 +500,7 @@
 Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory per il profilo o utilizza una versione più recente di Chromium.</translation>
 <translation id="6729124504294600478">Per accedere alla personalizzazione e ad altre funzionalità, includi Chromium in Attività web e app e nei servizi Google collegati</translation>
 <translation id="6734291798041940871">Chromium è già installato per tutti gli utenti sul computer.</translation>
+<translation id="6742093177587589736">Accedi a Chromium per vedere i tuoi preferiti e altro ancora su tutti i dispositivi. Questo preferito verrà salvato nel tuo Account Google dopo che avrai eseguito l'accesso.</translation>
 <translation id="6751374565094704799">Consente di accelerare i siti con il motore V8 di Chromium, ma rende Chromium leggermente meno resistente agli attacchi. Questa impostazione è attiva.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Alcuni dati di Chromium non sono ancora stati salvati nel tuo Account Google. Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati (1 elemento) verranno eliminati.}other{Alcuni dati di Chromium non sono ancora stati salvati nel tuo Account Google. Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati ({count} elementi) verranno eliminati.}}</translation>
 <translation id="67706546131546258">Chromium consiglia di analizzare questo file perché potrebbe essere pericoloso.</translation>
@@ -507,6 +509,7 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="6847869444787758381">Chromium ti avvisa se le tue password vengono compromesse</translation>
 <translation id="684888714667046800">Impossibile connettersi a internet. Se utilizzi un firewall, assicurati che <ph name="PRODUCT_EXE_NAME" /> sia nella lista consentita.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
+<translation id="6859580922007887573">Tocca per continuare</translation>
 <translation id="6862030660799253820">Cerca in questa immagine con la Ricerca immagini</translation>
 <translation id="6873893289264747459">Chromium ha rilevato che l'estensione "<ph name="EXTENSION_NAME" />" contiene malware</translation>
 <translation id="6877155553248388166">angolo in basso a destra dell'area di ricerca: destra <ph name="RIGHT" />%, in basso <ph name="BOTTOM" />%</translation>
@@ -592,6 +595,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7872446069773932638">Download in corso… Secondi rimanenti: <ph name="SECONDS" /></translation>
 <translation id="7873537467422636035">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Chromium nel tuo account<ph name="END_LINK" /></translation>
 <translation id="7877212753140190672">Chiedi informazioni su questa immagine</translation>
+<translation id="7887929410013642057">Mostra sempre le scorciatoie di AI Mode</translation>
 <translation id="7888981273428720788">Imposta Chromium come browser predefinito</translation>
 <translation id="7934340546140346950">Quando possibile, Chromium esegue automaticamente l'upgrade delle connessioni non sicure a HTTPS</translation>
 <translation id="7937630085815544518">Hai eseguito l'accesso a Chromium come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
@@ -639,6 +643,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8416884904046428725">Chromium deve verificare la tua identità per poter salvare alcuni dati nel tuo Account Google e utilizzarli su tutti i tuoi dispositivi. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Riavvia Chromium entro un giorno}other{Riavvia Chromium entro # giorni}}</translation>
 <translation id="8438543370129609977">Quando utilizzi la ricerca immagini, il titolo della pagina, l'URL e i contenuti, inclusi i PDF, vengono inviati al server. <ph name="LEARN_MORE" /></translation>
+<translation id="8447525028100794994">Scopri di più sulla ricerca con la ricerca immagini in Chromium</translation>
 <translation id="8453117565092476964">L'archivio di installazione è danneggiato o non valido. Scarica di nuovo Chromium.</translation>
 <translation id="8458614432758743027">Chromium richiede Windows 10 o versioni successive.</translation>
 <translation id="8463672209299734063">(Facoltativo) Contribuisci a migliorare le funzionalità e le prestazioni di Chromium OS inviando automaticamente a Google dati diagnostici e sull'utilizzo.</translation>

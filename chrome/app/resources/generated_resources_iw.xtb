@@ -1355,7 +1355,7 @@
 <translation id="1907044622262489040">‏שימוש בהקלדה קולית. מקישים על מקש החיפוש + D ומתחילים לדבר.</translation>
 <translation id="1907659324308286326">‏לאביזרים מסוימים של Thunderbolt או USB4 דרושה גישה לזיכרון כדי לפעול באופן תקין.</translation>
 <translation id="1908591798274282246">פתיחה מחדש של קבוצה שנסגרה</translation>
-<translation id="1909677622563887527">‏Chrome מבוקר על ידי תוכנת בדיקה אוטומטית.</translation>
+<translation id="1909677622563887527">‏תוכנת בדיקה אוטומטית מבצעת בקרה על Chrome.</translation>
 <translation id="1909880997794698664">ברצונך באמת להשאיר מכשיר זה במצב קיוסק באופן קבוע?</translation>
 <translation id="1910721550319506122">ברוכים הבאים!</translation>
 <translation id="1910736334623230603">אי אפשר לחפש מספר תמונות. צריך להוסיף תמונה אחת בכל פעם.</translation>
@@ -4339,6 +4339,7 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">גודל הטקסט והתצוגה: <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">‏כשההגדרה 'גלישה בטוחה' מופעלת, כתובות URL נשלחות לבדיקה. בנוסף, נשלחת דוגמית קטנה הכוללת דפים, הורדות, פעילות של תוספים ופרטי מערכת במטרה לאתר איומים חדשים. כדי להגן עליך בכל האפליקציות של Google, הנתונים האלה מקושרים באופן זמני לחשבון Google שלך. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
+<translation id="3924788966103416622">‏אפליקציה של צד שלישי רוצה לקבל שליטה מלאה בסשן הזה של Chrome כדי לבצע בו ניפוי באגים. ההרשאות האלה כוללות גישה לנתונים השמורים, לקובצי Cookie ולנתונים מאתרים, וגם את היכולת לנווט לכל כתובת URL.</translation>
 <translation id="3925573269917483990">מצלמה:</translation>
 <translation id="3925926055063465902">גם משתמשים אחרים במכשיר הזה יכולים להשתמש ברשת הזו</translation>
 <translation id="3926002189479431949">‏הטלפון המשמש ל-Smart Lock הוחלף</translation>
@@ -4477,6 +4478,7 @@
 <translation id="4015250302257349679">מקישים על <ph name="ACCELERATOR" /> כדי להתמקד בבועה הזו, ומקישים שוב כדי להתמקד ברכיב שאליו היא מפנה.</translation>
 <translation id="4016762287427926315">ההרשאות שמוענקות לאפליקציה <ph name="APP_NAME" /> יוענקו גם לאפליקציה הזו. <ph name="BEGIN_LINK" />לניהול ההרשאות<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">‏צריך ליצור קוד QR לקישור הזה</translation>
+<translation id="4018953474106733212">רק מפתחי אתרים צריכים להפעיל את התכונה הזו, ורק באפליקציות מהימנות.</translation>
 <translation id="4019983356493507433">עריכה של רשימת הסימניות</translation>
 <translation id="4020701737692625681">האדמין יכול להקליט את המסך שלך</translation>
 <translation id="4021279097213088397">‏–</translation>
@@ -6681,6 +6683,7 @@
 <translation id="557722062034137776">‏איפוס של המכשיר לא ישפיע על חשבונות Google שלך או על נתונים המסונכרנים לחשבונות אלה. אך כל הקבצים המאוחסנים במכשיר באופן מקומי יימחקו.</translation>
 <translation id="5578059481725149024">כניסה אוטומטית</translation>
 <translation id="5578387000057347457">מזינים הנחיה מותאמת אישית או מדגישים טקסט כדי ליצור תמונה</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{‏פריט אחד שמור רק במכשיר הזה. כדי להשתמש בו במכשירים אחרים, <ph name="BEGIN_LINK" />צריך לשמור אותו בחשבון Google<ph name="END_LINK" />.}one{‏‫{ITEM_COUNT} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, <ph name="BEGIN_LINK" />צריך לשמור אותם בחשבון Google<ph name="END_LINK" />.}two{‏‫{ITEM_COUNT} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, <ph name="BEGIN_LINK" />צריך לשמור אותם בחשבון Google<ph name="END_LINK" />.}other{‏‫{ITEM_COUNT} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, <ph name="BEGIN_LINK" />צריך לשמור אותם בחשבון Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">הסרה של <ph name="SITE" /> מהרשימה <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">התרגום ל<ph name="LANGUAGE" /> הושלם</translation>
 <translation id="558170650521898289">‏אימות מנהל התקן חומרה של Microsoft Windows </translation>
@@ -7169,6 +7172,7 @@
     <ph name="LINE_BREAK" />
     התמונה תופיע במסך הכניסה ובמסך הנעילה ב-Chromebook.</translation>
 <translation id="5925147183566400388">מצביע על הצהרת הליכי אישור</translation>
+<translation id="5926936390113611560">פתיחת כל הפרופילים</translation>
 <translation id="5927132638760172455">מעביר למקבל לא ידוע</translation>
 <translation id="592740088639760830">עצירת הקונטיינר הזה</translation>
 <translation id="592880897588170157">‏הורדת קובצי PDF במקום פתיחה אוטומטית שלהם ב-Chrome</translation>
@@ -7253,6 +7257,7 @@
 <translation id="5979421442488174909">&amp;תרגום ל-<ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">כדי להוסיף דפים לסימניות, אפשר ללחוץ על הכוכב בשורת כתובת האתר</translation>
 <translation id="5982578203375898585">הצגת ההורדות אחרי שהושלמו</translation>
+<translation id="598347738324022917">הסימנייה נשמרה במכשיר הזה</translation>
 <translation id="5983716913605894570">המערכת יוצרת תמונות…</translation>
 <translation id="5984222099446776634">ביקרת לאחרונה</translation>
 <translation id="5984334442529819751">‏שגיאה בהתקנת DLC (לעיתים קרובות נדרשת הפעלה מחדש. לקבלת מידע נוסף, אפשר לבדוק ב"הגדרות"\&gt;\&gt;"מידע על ChromeOS").</translation>
@@ -11523,6 +11528,7 @@
 <translation id="8910987510378294980">הסתרת רשימת המכשירים</translation>
 <translation id="8912362522468806198">‏חשבון Google</translation>
 <translation id="8912810933860534797">הפעלת סריקה אוטומטית</translation>
+<translation id="8914030287343429787">‏כדי לראות את הסיסמאות גם כשלא משתמשים ב-Chrome או ב-Android, נכנסים לחשבון בכתובת <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">‏הפעלה מחדש של Chrome</translation>
 <translation id="8915307125957890427">לוחצים לחיצה ימנית על הכרטיסייה ובוחרים באפשרות 'הוספת כרטיסייה לקבוצה' ואז באפשרות 'קבוצה חדשה'</translation>
 <translation id="8915370057835397490">טעינת ההצעה מתבצעת...</translation>

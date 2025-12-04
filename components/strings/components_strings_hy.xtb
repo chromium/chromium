@@ -77,6 +77,7 @@
 <translation id="1113000785583998331">Պահե՞լ IBAN-ը</translation>
 <translation id="1113869188872983271">&amp;Հետարկել վերադասավորումը</translation>
 <translation id="1118429183611783760">Փոշեկուլներ և հատակի խնամք</translation>
+<translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա՝ Enter, որպեսզի ընտրեք, թե Chrome-ի ինչ տվյալներ պահել ձեր Google հաշվում</translation>
 <translation id="1122714970786750095">Էլեկտրոնիկա և էլեկտրական սարքեր</translation>
 <translation id="1123753900084781868">Կենդանի ենթագրերն այս պահին հասանելի չեն</translation>
 <translation id="112840717907525620">Քաղաքականության քեշում սխալներ չեն գտնվել</translation>
@@ -342,6 +343,7 @@
 <translation id="1549470594296187301">Այս հատկությունից օգտվելու համար հարկավոր է միացնել JavaScript-ը:</translation>
 <translation id="1553152622374372421">Ձմեռային մարզաձևեր</translation>
 <translation id="1553358976309200471">Թարմացնել Chrome-ը</translation>
+<translation id="1555014818414775661">Ավելացնել պատկերներ</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
 <translation id="1555191101192706055">Կայքում, որը փորձում էիք այցելել, հաքերները կարող էին խաբեությամբ ստիպել ձեզ վնասաբեր ծրագրեր տեղադրել, որոնք ազդում են համացանցում ձեր դիտարկման վրա (օրինակ՝ փոխում են ձեր գլխավոր էջը կամ ձեր այցելած կայքերում լրացուցիչ գովազդ ցուցադրում)։</translation>
 <translation id="1559231233244409191">Ստվարաթուղթ (եռաշերտ)</translation>
@@ -1136,6 +1138,7 @@
 <translation id="2839501879576190149">Կայքը, որը պատրաստվում եք այցելել, կեղծ է</translation>
 <translation id="2843623755398178332">Ոլորումով փոխե՞լ ընդհանուր ներդիրի մասշտաբը</translation>
 <translation id="2851291081585704741">Դուք օֆլայն եք</translation>
+<translation id="2854163610915391726">Ընտրել, թե Chrome-ի ինչ տվյալներ պահել Google հաշվում</translation>
 <translation id="2858134430383535011">200 x 300 մմ</translation>
 <translation id="2859383374160668142">Դուք ցանկացած պահի կարող եք դիտել հետագծվող ապրանքների գների նվազումները։</translation>
 <translation id="2859806420264540918">Այս կայքը հոգնեցնող կամ մոլորեցնող գովազդ է ցուցադրում։</translation>
@@ -1223,6 +1226,7 @@
 <translation id="2979424420072875974">Գրողների ռեսուրսներ</translation>
 <translation id="2979639724566107830">Բացել նոր պատուհանում</translation>
 <translation id="2980742331521553164">Այս քարտի CVC կոդը կգաղտնագրվի և կպահվի ձեր Google հաշվում՝ ավելի արագ վճարման համար</translation>
+<translation id="2983311431122838216">Օգտագործեք ԱԲ ռեժիմը Google Որոնման համար</translation>
 <translation id="2983666748527428214">Բացել ինկոգնիտո ներդիր</translation>
 <translation id="2985306909656435243">Եթե միացված է, Chromium-ն այս սարքում կպահի ձեր քարտի կրկնօրինակը՝ ձևն արագ լրացնելու համար:</translation>
 <translation id="2985398929374701810">Մուտքագրեք վավեր հասցե</translation>
@@ -1401,6 +1405,7 @@
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google Օրացույցում արագ միջոցառում ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="3261488570342242926">Իմանալ ավելին վիրտուալ քարտերի մասին</translation>
 <translation id="3262698603497362968">Գնման տարբերակներ</translation>
+<translation id="3264315627780269177">Այս ներդիրով հնարավոր չէ կիսվել</translation>
 <translation id="3266367459139339908">Մենք ներդնում ենք նոր եղանակներ՝ սահմանափակելու կայքերի կողմից ձեր մասին տեղեկությունների հավաքումն անհատականացված գովազդ ցուցադրելիս, օրինակ՝</translation>
 <translation id="3266793032086590337">Արժեքը (հակասական)</translation>
 <translation id="3268451620468152448">Բաց ներդիրները</translation>
@@ -1622,6 +1627,7 @@
 <translation id="3623041590998910684">Ձեր տեսախցիկն օգտագործելու համար անցեք <ph name="LINK" /> և Chrome-ին թույլտվություն տրամադրեք։</translation>
 <translation id="3623398832322170566">Ռոմանտիկ ֆիլմեր</translation>
 <translation id="3624292976554877583">Պիտակներ (անփայլ)</translation>
+<translation id="3626483107624019072">Կառավարել հաշվի տվյալները</translation>
 <translation id="3628905806504633297">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը տեղափոխել <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը տեղափոխել <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը տեղափոխել <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Եթե այն արդեն նշված է որպես ցանցին կապակցվելու թույլտվություն ունեցող ծրագիր, փորձեք
         հեռացնել այն և նորից ավելացնել:</translation>
@@ -1652,6 +1658,7 @@
 <translation id="3665100783276035932">Կայքերի մեծ մասը պետք է պատշաճ կերպով աշխատի</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Իմանալ ավելին<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Քարտի համարը</translation>
+<translation id="3670159164851218963">ԱԲ ռեժիմի պատմություն</translation>
 <translation id="3670229581627177274">Միացնել Bluetooth-ը</translation>
 <translation id="3671540257457995106">Թույլատրե՞լ չափի փոփոխումը</translation>
 <translation id="3672568546897166916">Սխալ <ph name="ERROR_PATH" />. <ph name="ERROR_MESSAGE" /></translation>
@@ -1880,6 +1887,7 @@
 <translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="4036753017940930924">Հողամասեր և հողատարածքներ</translation>
 <translation id="4039506337798853114">Նշորդը ցույց տալու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045070493270310437">Նորից բացել ներդիրները</translation>
 <translation id="4045226534284799755">Մուտք գործեք ձեր Microsoft հաշիվ նախքան նորից փորձելը</translation>
 <translation id="4045441967987592849">Նորից բացել</translation>
 <translation id="4047351652147966654">18 x 24 դյույմ</translation>
@@ -2133,6 +2141,7 @@
 <translation id="4406896451731180161">որոնման արդյունքներ</translation>
 <translation id="4407758156081352648">Անվտանգության նկատառումներից ելնելով՝ ձեր կազմակերպությունը թույլ չի տալիս գաղտնաբառերի կրկնօգտագործումը Chrome-ում։ Chrome-ում գաղտնաբառերը գաղտնագրվում են՝ օգտատերերի գաղտնիությունը պաշտպանելու նպատակով։</translation>
 <translation id="4408413947728134509">Քուքիներ՝ <ph name="NUM_COOKIES" /></translation>
+<translation id="4409556632583862731">Նոր նամակագրություն</translation>
 <translation id="4412074349188076601">Այս կազմաձևը նշված է որպես տեղադրման համար հասանելի, բայց քանի որ այս կառուցվածքի համար պատկեր տրամադրված չէ, այն հնարավոր չէ տեղադրել։</translation>
 <translation id="4412377069090572315">Օգտատերերի կարծիքները</translation>
 <translation id="4414452699610169758">Օգտագործեք Google գաղտնաբառերի կառավարիչը և Chrome-ի ինքնալրացման գործառույթը՝ գաղտնաբառերը, հասցեներն ու վճարման եղանակները պահելու և լրացնելու համար</translation>
@@ -2169,6 +2178,7 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />։ <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Այս ձևն ապահով չէ։ Ինքնալրացումն անջատվել է։</translation>
 <translation id="4477350412780666475">Հաջորդ կատարումը</translation>
+<translation id="4479915773139026885">Google Որոնման ԱԲ ռեժիմ</translation>
 <translation id="4480760608050410381">MP4 տեսանյութ</translation>
 <translation id="448363931695049633">Պիցցերիաներ</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -2376,7 +2386,6 @@
 <translation id="4832388034239846146">Ներդիրների խմբերով կիսվելու համար թարմացրեք Chrome-ը</translation>
 <translation id="483241715238664915">Միացնել զգուշացումները</translation>
 <translation id="4832961164064927107">Խորոված և գրիլ</translation>
-<translation id="4834250788637067901">Վճարման եղանակներ, առաջարկներ ու հասցեներ Google Pay-ից</translation>
 <translation id="4840250757394056958">Դիտել Chrome-ի պատմությունը</translation>
 <translation id="484462545196658690">Ավտոմատ</translation>
 <translation id="4844937814014739139">Ոլորել և խոշորացնել ընդհանուր ներդիրները</translation>
@@ -2785,6 +2794,7 @@
     <ph name="LINE_BREAK" />
     Փորձեք կապվել ձեր համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="5496804587179176046">Պահել անվտանգության կոդերը․ այս պահին անվտանգության ոչ մի կոդ պահված չէ</translation>
+<translation id="5499229993630251170">Շարունակե՞լ այս նամակագրությունը</translation>
 <translation id="550365051221576010">Լրացնել բոլոր տվյալները</translation>
 <translation id="5506286895894263601">Ցանկում վավեր դյուրանցումներ չկան։</translation>
 <translation id="5508443345185481044">Ֆոտոխցիկներ և տեսախցիկներ</translation>
@@ -3096,6 +3106,7 @@
 <translation id="6018650639991193045">Ջնջել այցելությունների պատմությունը, քուքիները, քեշը և այլ տվյալներ Chrome-ի կարգավորումներում</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (համաժամացված)</translation>
+<translation id="6025471531651464742">Ավելացնել ֆայլեր</translation>
 <translation id="6028591542479806248">Կառավարեք բջջային և փոստային ծանուցումները</translation>
 <translation id="6028833024483927901">Աշխարհի ժողովուրդների խոհանոց</translation>
 <translation id="603068602130820122">Երկու ամրակ աջ կողմում</translation>
@@ -3133,6 +3144,7 @@
 <translation id="6062405040252994646">Գործիք</translation>
 <translation id="6062937464449575061">Այլևս չհետագծել գինը</translation>
 <translation id="6063415549109819824">Հիփոթեքային վարկեր</translation>
+<translation id="6069343053547121389">Հարցեր տվեք այս ներդիրի մասին ԱԲ ռեժիմում</translation>
 <translation id="6070432475334343308">Ֆայլերից մեկը կամ մի քանիսը չեն վերբեռնվել <ph name="CLOUD_PROVIDER" />-ի <ph name="FOLDER_NAME" /> պանակ</translation>
 <translation id="6071503852498277813">Բովանդակության էջանշման վերլուծիչի ծառայություն</translation>
 <translation id="6078069862923723141">Երկնագույն 2</translation>
@@ -3160,6 +3172,7 @@
 <translation id="6108849843016142864">Սողուններ և երկկենցաղներ</translation>
 <translation id="611018310643025551">Ձեր որոնման հարցումները, լավագույն համընկնումները և գտնված էջերի բովանդակությունը կուղարկվեն Google-ին և կարող են դիտվել մասնագետների կողմից՝ գործառույթը բարելավելու համար։</translation>
 <translation id="6116338172782435947">Տեսնել սեղմատախտակին պատճենված տեքստը և պատկերները</translation>
+<translation id="6116500665626559298">«Կառավարել հաշվի տվյալները» կոճակ․ սեղմեք, որպեսզի ընտրեք, թե Chrome-ի ինչ տվյալներ պահել ձեր Google հաշվում</translation>
 <translation id="6117833587752089929">Ֆոտոթուղթ (ատլաս)</translation>
 <translation id="6118782133429281336">Աղբյուրների ցանկը դատարկ է։</translation>
 <translation id="6120950591512958208">Կոդն օգտագործեք վճարման ժամանակ։</translation>
@@ -3169,6 +3182,7 @@
 <translation id="6124432979022149706">Chrome Enterprise-ի միակցիչներ</translation>
 <translation id="6124996493718543728">Ապառիկ գնման գործընթացի էկրանն ամբողջությամբ բացված է։</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Այլ մանրամասներ<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, սեղմեք Enter՝ Google Որոնման ԱԲ ռեժիմում հարց տալու համար</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6131824478727057281">տեղադրություն</translation>
 <translation id="6133320744616005677">Թույլատրել</translation>
@@ -3376,6 +3390,7 @@
 <translation id="6443406338865242315">Ինչ ընդլայնումներ և փլագիններ եք դուք տեղադրել</translation>
 <translation id="6444329331928531170">Կենսաթոշակ</translation>
 <translation id="6445051938772793705">Երկիր</translation>
+<translation id="6446256167362544629">ԱԲ կողային վահանակ</translation>
 <translation id="6446608382365791566">Ավելացրեք լրացուցիչ տեղեկություններ</translation>
 <translation id="6447842834002726250">Cookie ֆայլեր</translation>
 <translation id="6448371595882710519">Իմանալ ավելին Տվյալների կառավարման տարրերի մասին</translation>
@@ -3468,6 +3483,7 @@
 <translation id="6597665340361269064">90 աստիճան</translation>
 <translation id="6598976221101665070">Դրամաներ</translation>
 <translation id="6599642189720630047">Ապրանքներ, որոնց հետևում եք</translation>
+<translation id="6608426252530537984">Ավելացրեք մինչև 10 ներդիր</translation>
 <translation id="6613742613135780554">ձեռքերի շարժումների հետագծում</translation>
 <translation id="6613866251791999074">Իմանալ ավելին իմ որոնողական համակարգի մասին Chrome-ում</translation>
 <translation id="6615297766614333076">Շեղջիչ 2</translation>
@@ -3589,6 +3605,7 @@
 <translation id="6799145206637008376">Լրացրեք այս վիրտուալ քարտի CVC-ն</translation>
 <translation id="6805030849054648206">Envelope B6/C4</translation>
 <translation id="6807791860691150411">Կրթություն</translation>
+<translation id="6808579246645021886">Ընդհանուր ներդիրներ և ֆայլեր</translation>
 <translation id="681021252041861472">Պարտադիր դաշտ</translation>
 <translation id="6810899417690483278">Կարգավորման ID</translation>
 <translation id="6816109178681043245">Սպորտային ապրանքներ</translation>
@@ -3905,6 +3922,7 @@
 <translation id="7337248890521463931">Ցույց տալ ավելի շատ տողեր</translation>
 <translation id="7337706099755338005">Հասանելի չէ ձեր հարթակում:</translation>
 <translation id="733923710415886693">Սերվերի վկայագիրը չի բացահայտվել «Վկայագրերի թափանցիկություն» կանոնի միջոցով:</translation>
+<translation id="73398226265793546">ԱԲ ռեժիմի կոճակ, ակտիվացրեք՝ Google Որոնման ԱԲ ռեժիմում հարց տալու համար</translation>
 <translation id="7346048084945669753">Փոխկապակցված է՝</translation>
 <translation id="7346062987309535530">Սպասք</translation>
 <translation id="7346081071264046066">«ոգևորությամբ պատասխանեք «այո» այս հարսանեկան հրավերին»</translation>
@@ -4710,6 +4728,7 @@
 <translation id="8622864575115813231">Կապի հաստատում ֆինանսական հաստատության հետ…</translation>
 <translation id="8624354461147303341">Ստանալ զեղչեր</translation>
 <translation id="8634957317623797170">54 x 86 մմ</translation>
+<translation id="8635822281281406185">Ավելացրեք մինչև 10 ֆայլ, ներդիր կամ պատկեր</translation>
 <translation id="8637362707224133343">Chrome-ում կան անվտանգության ներկառուցված գործառույթներ, որոնք պաշտպանում են ձեզ դիտարկման ընթացքում։ Դրանցից է, օրինակ, Google Ապահով դիտարկումը, որը <ph name="BEGIN_LINK" />վերջերս ֆիշինգ է հայտնաբերել<ph name="END_LINK" /> կայքում, որը փորձում էիք այցելել։ Ֆիշինգային կայքերը ներկայանում են այլ կայքերի անվան տակ՝ ձեր անձնական տվյալները հափշտակելու նպատակով։<ph name="NEW_LINE" />Հիշեք, որ հաքերները կարող են կոտրել անգամ անվտանգ կայքերը։ Եթե կարծում եք, որ սխալ է տեղի ունեցել, և այս կայքը վտանգ չի ներկայացնում, <ph name="BEGIN_ERROR_LINK" />հայտնեք մեզ այդ մասին<ph name="END_ERROR_LINK" />։</translation>
 <translation id="8640996933372643759">Այլ օգտատերերի հետ համատեղ աշխատելու և նրանց հետ ներդիրներով կիսվելու համար դուք պետք է կարողանաք մուտք գործել Chrome</translation>
 <translation id="8641131559425911240">Ծրար (բոնդ)</translation>
@@ -4997,6 +5016,7 @@
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի պատմության մեջ նման հարցումները դիտելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="9119042192571987207">Վերբեռնված է</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> կայքն ուզում է հաստատել ձեր ինքնությունը</translation>
+<translation id="9119764377203471454">Չհաջողվեց ավելացնել առդիրները</translation>
 <translation id="9120593907434185157">Պահել հասցեն</translation>
 <translation id="912327514020027767">Կիսաշրջազգեստներ</translation>
 <translation id="9128870381267983090">Կապակցեք ցանցին</translation>
@@ -5005,6 +5025,7 @@
 <translation id="9133985615769429248">Եթե այս սարքից օգտվում եք այլ օգտատերերի հետ համատեղ, ապա կարող եք էկրանի կողպման միջոցով հաստատել ձեր ինքնությունն ամեն անգամ, երբ պահված գաղտնաբառ եք օգտագործում։</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, վիրտուալ քարտ</translation>
 <translation id="9138037198177304356">Ծանուցումների ուղարկումը թույլատրված է</translation>
+<translation id="913846191326613072">Երբ կիսվում եք ներդիրներով, դրանց բովանդակությունը և URL-ները ուղարկվում են Google-ին։</translation>
 <translation id="9139318394846604261">Գնումներ</translation>
 <translation id="9140198744651252040">Գաղտնաբառերի ինքնալրացման համար Chrome դիտարկիչը ցանկանում է օգտագործել մատնահետքը</translation>
 <translation id="9141013498910525015">Կառավարել հասցեները</translation>
@@ -5095,6 +5116,7 @@
 <translation id="955429569736351433">Տրամադրվել է VR-ի օգտագործման թույլտվություն</translation>
 <translation id="955627189349169688">Դուք կարող եք անջատել այս գործառույթը <ph name="BEGIN_LINK" />Chrome Sync-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="95721182352849470">Դեղին 2</translation>
+<translation id="961372935451193190">Ներդիրներ և ֆայլեր</translation>
 <translation id="961663415146723894">Ամրակար ներքևում</translation>
 <translation id="961856697154696964">Ջնջել այցելությունները</translation>
 <translation id="961930410699694996">Տրվել է տեղադրության տվյալներն օգտագործելու մեկանգամյա թույլտվություն</translation>

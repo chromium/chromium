@@ -47,6 +47,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="146866447420868597">Sign in to Chrome?</translation>
 <translation id="1476347941828409626">&amp;Manage Chrome profiles</translation>
 <translation id="1492280395845991349">Relaunch to finish Chrome update</translation>
+<translation id="1496875977627931224">Hi <ph name="USER_NAME" />,<ph name="LINE_BREAK" />what's on your mind today?</translation>
 <translation id="1497802159252041924">Install error: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Customise your new Chrome profile</translation>
 <translation id="1518627427551567882">This page is protected</translation>
@@ -202,6 +203,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3112458742631356345">Chrome blocked this download because the file isn't commonly downloaded and it may be dangerous</translation>
 <translation id="3114643501466072395">To check if your other passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome blocked this download because the archive file includes other files that may hide malware</translation>
+<translation id="3130333203120345554">New search</translation>
 <translation id="3135560418014806498">Add Chrome profile</translation>
 <translation id="3137969841538672700">Drag to search</translation>
 <translation id="3140883423282498090">Your changes will take effect the next time you relaunch Google Chrome.</translation>
@@ -275,6 +277,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4022972681110646219">Translate screen</translation>
 <translation id="4023601594785368013">Original language: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS needs to be restarted to apply the update.</translation>
+<translation id="4039097928859803404">Always show AI Mode shortcuts</translation>
 <translation id="4050175100176540509">Important security improvements and new features are available in the latest version.</translation>
 <translation id="4053720452172726777">Customise and control Google Chrome</translation>
 <translation id="408393047846373801">To get your passwords and more on all your devices, sign in to Chrome. This password will be saved in your Google Account after you sign in.</translation>
@@ -356,6 +359,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4970880042055371251">Chrome OS version</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Click 'Google Password Manager'</translation>
+<translation id="5043786843026425788">Learn more about searching with Google Lens in Chrome</translation>
 <translation id="504867494566807945">Open links in Chrome from any app. Plus for easy access, it gets pinned to your taskbar.</translation>
 <translation id="5114340746415930644">Enter your passphrase to use and save Chrome data in your account, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Sign in to Chrome when you sign in to other Google services</translation>
@@ -365,6 +369,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5139423532931106058">Customise your Chrome profile</translation>
 <translation id="5163087008893166964">Welcome to Chrome; new browser window opened</translation>
 <translation id="5166439563123238795">Chrome needs permission to track your hands</translation>
+<translation id="5167819546851111585">What's on your mind today?</translation>
 <translation id="5170938038195470297">Your profile cannot be used because it is from a newer version of Google Chrome.
 
 Some features may be unavailable. Please specify a different profile directory or use a newer version of Chrome.</translation>
@@ -529,6 +534,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="683440813066116847">Inbound rule for Google Chrome Canary to allow mDNS traffic.</translation>
 <translation id="6841242485723266823">Chrome profiles help you separate different parts of your life. Add a new profile now.</translation>
 <translation id="684888714667046800">Unable to connect to the Internet. If you use a firewall, please ensure that <ph name="PRODUCT_EXE_NAME" /> is in the allowlist.</translation>
+<translation id="6859580922007887573">Tab to continue</translation>
 <translation id="6877155553248388166">bottom-right corner of search area: right <ph name="RIGHT" />%, bottom <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Updating Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta apps</translation>
@@ -624,10 +630,12 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7804364787702057554">Your account in Chrome</translation>
 <translation id="7808348361785373670">Remove from Chrome...</translation>
 <translation id="7827099906024714326">Chrome needs to verify that it's you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data will be deleted.</translation>
+<translation id="7832314606810669113">To get your bookmarks and more on all your devices, sign in to Chrome. This bookmark will be saved in your Google Account after you sign in.</translation>
 <translation id="7845233973568007926">Thanks for installing. You must restart your computer before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Continue where you left off: Chrome can restore your tabs every time you restart. To turn this on, go to</translation>
 <translation id="7872446069773932638">Downloading… <ph name="SECONDS" /> second(s) remaining</translation>
 <translation id="7886087451482920026">Select text with Google Lens</translation>
+<translation id="7887929410013642057">Always show AI Mode shortcuts</translation>
 <translation id="7890208801193284374">If you share a computer, friends and family can browse separately and set up Chrome just the way they want.</translation>
 <translation id="7896673875602241923">Someone previously signed in to Chrome on this computer as <ph name="ACCOUNT_EMAIL_LAST" />. Please create a new Chrome user to keep your information separate.</translation>
 <translation id="7904985524660297937">Try Gemini in Google Chrome</translation>
@@ -644,6 +652,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8013993649590906847">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google.</translation>
 <translation id="8019103195866286235">This extension was unpublished by its developer and might be unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
 <translation id="8040768861829554732">An extension wants you to sign in to Chrome</translation>
+<translation id="8041795619940733262">Ask Google<ph name="LINE_BREAK" />about this tab</translation>
 <translation id="80471789339884597">Thanks for installing. You must restart all your browsers before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">Other Chrome profiles</translation>

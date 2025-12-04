@@ -818,7 +818,7 @@
 <translation id="4577115723294378384">അ മുതൽ റ വരെയുള്ള ക്രമം</translation>
 <translation id="4578289292431526768">തുടങ്ങാം</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# മിനിറ്റ് മുമ്പ്}other{# മിനിറ്റ് മുമ്പ്}}</translation>
-<translation id="4585751637295612750">നിങ്ങളുടെ ചോദ്യത്തിലേക്ക് ഇത് ചേർക്കാൻ, പുതിയൊരു ടാബ് തുറക്കുക</translation>
+<translation id="4585751637295612750">നിങ്ങളുടെ ചോദ്യത്തിലേക്ക് ഒരു ടാബ് ചേർക്കാൻ, പുതിയൊരു ടാബ് തുറക്കുക</translation>
 <translation id="4587589328781138893">സൈറ്റുകള്‍</translation>
 <translation id="4594952190837476234">ഈ ഓഫ്‌ലൈൻ പേജ് <ph name="CREATION_TIME" /> -ന് സൃഷ്‌ടിച്ചതാണ്, അതിനാൽ ഓൺലൈൻ പതിപ്പിൽ നിന്ന് വ്യത്യസ്തമായിരിക്കാം.</translation>
 <translation id="4595237294768457124">പുതിയ ടാബ് പേജ് തുറക്കുക</translation>
@@ -1941,6 +1941,7 @@
 <translation id="9104217018994036254">ടാബ് പങ്കിടാനാകുന്ന ഉപകരണങ്ങളുടെ ലിസ്‌റ്റ്.</translation>
 <translation id="9106148373857059373">ബുക്ക്‌മാർക്ക് സംരക്ഷിക്കൽ ഫ്ലോ അടച്ചു</translation>
 <translation id="9108808586816295166">എപ്പോഴും സുരക്ഷിത DNS ലഭ്യമായേക്കില്ല</translation>
+<translation id="9112483451228487295">ബ്രൗസിംഗ് ഡാറ്റ വേഗം ഇല്ലാതാക്കൂ</translation>
 <translation id="9124978074365039456">ക്യാമറയും ഫോട്ടോ ഗാലറിയും ഉപയോഗിച്ച് ഷോപ്പ് ചെയ്യുക, വിവർത്തനം ചെയ്യുക, നിങ്ങൾ കാണുന്നത് തിരിച്ചറിയുക</translation>
 <translation id="9130135798965366513">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ <ph name="FIELDS_STRING" /> ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സ്വകാര്യതാ നയവും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />സേവന നിബന്ധനകളും<ph name="END_LINK2" /> കാണുക.</translation>
 <translation id="9131209053278896908">ബ്ലോക്ക് ചെയ്ത സൈറ്റുകൾ ഇവിടെ ദൃശ്യമാകും</translation>

@@ -498,6 +498,7 @@
 Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tayinlang yoki yangiroq Chromium versiyasidan foydalaning.</translation>
 <translation id="6729124504294600478">Moslashtirish va boshqa funksiyalarni olish uchun Veb va ilovalardagi faoliyat tarixi va ulangan Google xizmatlarida Chromiumni kiriting</translation>
 <translation id="6734291798041940871">Chromium allaqachon kompyuterdagi barcha foydalanuvchilar uchun o‘rnatilgan.</translation>
+<translation id="6742093177587589736">Barcha qurilmalarda bukmarklarni olish uchun Chromium hisobiga kiring Hisobga kirilgandan keyin bu bukmark Google hisobida saqlanadi.</translation>
 <translation id="6751374565094704799">Chromium V8 tizimi bilan saytlar ishlashini tezlashtiradi, ammo Chromium brauzerining hujumlardan himoyasini biroz pasaytiradi. Bu sozlama yoniq.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Ayrim Chromium maʼlumotlari Google hisobingizga hali saqlanmagan. Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar (1 obyekt) oʻchib ketadi.}other{Ayrim Chromium maʼlumotlari Google hisobingizga hali saqlanmagan. Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar ({count} obyekt) oʻchib ketadi.}}</translation>
 <translation id="67706546131546258">Bu fayl xavfli boʻlishi mumkin, Chromium uni tekshirishni tavsiya qiladi.</translation>
@@ -649,6 +650,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8493179195440786826">Chromium versiyasi eskirgan</translation>
 <translation id="850264194101621529">Chromiumni birlamchi brauzer etib belgilaganingiz uchun rahmat!</translation>
 <translation id="8522801943730206384">Chromium faqat saqlangan parollaringizni tekshira oladi</translation>
+<translation id="8548787790260785208">Chromium parollaringiz ommaviy oshkor qilinganini aniqlaganda xabar qilsin</translation>
 <translation id="8555465886620020932">Xizmat xatosi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Rasm orqali qidiruvga tezkor ruxsat olish uchun yon panelning yuqori qismidagi "Mahkamlash" tugmasini bosing</translation>
 <translation id="856656450041460113">Tillar roʻyxatidan qidirish</translation>

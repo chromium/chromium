@@ -184,6 +184,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="2903493209154104877">Adreces</translation>
 <translation id="2910701580606108292">Pregunta abans de permetre que els llocs web reprodueixin contingut protegit</translation>
 <translation id="2918484639460781603">Ves a la configuració</translation>
+<translation id="293060180538644702">Rep notificacions de Consells de Chrome</translation>
 <translation id="2932883381142163287">Informa d'un ús abusiu</translation>
 <translation id="2939338015096024043">Quan aquesta opció està activada, els llocs web poden demanar permís per fer un seguiment de la posició de la càmera i obtenir informació sobre el teu entorn. Quan aquesta opció està desactivada, els llocs web no poden fer un seguiment de la posició de la càmera ni obtenir informació sobre el teu entorn.</translation>
 <translation id="2968755619301702150">Lector de certificats</translation>
@@ -244,6 +245,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="3611658447322220736">Els llocs web tancats recentment poden acabar d'enviar i de rebre dades</translation>
 <translation id="3619294456800709762">Els llocs web poden entrar automàticament al mode d'imatge sobre imatge</translation>
 <translation id="3628308229821498208">Cerques suggerides</translation>
+<translation id="3632460243282703117">Subscriu-me</translation>
 <translation id="363748948745453283">S'està utilitzant una ubicació aproximada</translation>
 <translation id="3641456520301071208">Els llocs web poden demanar-te la ubicació</translation>
 <translation id="3658847490588580244">Full inferior del navegador predeterminat</translation>
@@ -522,6 +524,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="662080504995468778">No surtis</translation>
 <translation id="6630443592285535486">Escriu el valor hexadecimal aquí</translation>
 <translation id="6635327442719709864">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar els ports en sèrie. Quan aquesta opció està desactivada, els llocs web no poden utilitzar els ports en sèrie.</translation>
+<translation id="6669390930482049506">Vull rebre notificacions</translation>
 <translation id="6678072580827808850">Revisa Comprovació de seguretat</translation>
 <translation id="6682057173375416470">Obtén articles suggerits a la pàgina Pestanya nova</translation>
 <translation id="6683865262523156564">Aquest lloc web forma part d'un grup que pot veure la teva activitat. <ph name="RWS_OWNER" /> defineix el grup.</translation>
@@ -631,6 +634,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="7990211076305263060">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar el micròfon. Quan aquesta opció està desactivada, els llocs web no poden utilitzar el micròfon.</translation>
 <translation id="8007176423574883786">Aquesta ubicació està desactivada per a aquest dispositiu</translation>
 <translation id="802154636333426148">Error de baixada</translation>
+<translation id="8033047164036749181">Subscriu-te per rebre notificacions d'aquest lloc web</translation>
 <translation id="8042586301629853791">Ordena per:</translation>
 <translation id="8051193500142930381">Les funcions que necessiten una càmera no funcionaran</translation>
 <translation id="8056330801132235235">Predeterminat de Chrome</translation>

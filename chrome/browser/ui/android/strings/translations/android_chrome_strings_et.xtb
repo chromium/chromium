@@ -1340,6 +1340,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="670498945988402717">Kontrolliti eile</translation>
 <translation id="6710213216561001401">Eelmine</translation>
 <translation id="671481426037969117">Teie rakenduse <ph name="FQDN" /> taimeri aeg sai otsa. See alustab uuesti homme.</translation>
+<translation id="6716434912087331834">Uue akna taastamiseks vähendage aktiivsete akende koguarv väärtusele <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> või alla selle. Mitteaktiivsed aknad kustutatakse kuue kuu pärast.</translation>
 <translation id="6723740634201835758">Teie Google’i kontol</translation>
 <translation id="6734310707649923383">Saate vaadata külastatud lehti või need ajaloost kustutada</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, kinnitatud salvestav inkognito vaheleht</translation>
@@ -1657,6 +1658,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7942131818088350342">Teenus <ph name="PRODUCT_NAME" /> on aegunud.</translation>
 <translation id="7944772052836377867">Sünkroonimisfunktsioon peab teie isiku kinnitama</translation>
 <translation id="7951102827450076904">Ava alati allalaaditud PDF-id</translation>
+<translation id="7952479614398473176">Uue akna avamiseks vähendage aktiivsete akende koguarv väärtusele <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> või alla selle.</translation>
 <translation id="7957413488482743710">Virtuaalkaart peidab teie päriskaardi, et teid võimalike pettuste eest kaitsta. <ph name="BEGIN_LINK1" />Lisateave virtuaalkaartide kohta<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Vahekaardid selles seadmes</translation>
 <translation id="7961926449547174351">Olete keelanud juurdepääsu salvestusruumile. Selle lubamiseks avage menüü Seaded.</translation>
@@ -1939,6 +1941,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="9104217018994036254">Vahelehe jagamise seadmete loend.</translation>
 <translation id="9106148373857059373">Järjehoidja salvestamise voog on suletud</translation>
 <translation id="9108808586816295166">Turvaline DNS ei pruugi alati saadaval olla</translation>
+<translation id="9112483451228487295">Sirvimisandmete kiire kustutamine</translation>
 <translation id="9124978074365039456">Ostke, tõlkige ja tuvastage, mida näete, kasutades oma kaamerat ja fotogaleriid</translation>
 <translation id="9130135798965366513">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie andmeid (<ph name="FIELDS_STRING" />). Vaadake selle saidi <ph name="BEGIN_LINK1" />privaatsuseeskirju<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />teenusetingimusi<ph name="END_LINK2" />.</translation>
 <translation id="9131209053278896908">Blokeeritud saidid kuvatakse siin</translation>

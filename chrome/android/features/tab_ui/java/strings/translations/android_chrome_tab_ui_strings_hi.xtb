@@ -7,6 +7,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> साल पहले बनाया गया}one{<ph name="NUM_YEARS_MANY" /> साल पहले बनाया गया}other{<ph name="NUM_YEARS_MANY" /> साल पहले बनाया गया}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{इनऐक्टिव टैब और ग्रुप, 1 महीने के बाद बंद हो जाएंगे}one{इनऐक्टिव टैब और ग्रुप, <ph name="MONTH_COUNT_MANY" /> महीने के बाद बंद हो जाएंगे}other{इनऐक्टिव टैब और ग्रुप, <ph name="MONTH_COUNT_MANY" /> महीनों के बाद बंद हो जाएंगे}}</translation>
 <translation id="1173894706177603556">नाम बदलें</translation>
+<translation id="1203747227183434426">मीडिया रिकॉर्ड किया जा रहा है</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> टैब वाले <ph name="TITLE_OF_GROUP" /> ग्रुप को खोलें}one{<ph name="TAB_COUNT2" /> टैब वाले <ph name="TITLE_OF_GROUP" /> ग्रुप को खोलें}other{<ph name="TAB_COUNT2" /> टैब वाले <ph name="TITLE_OF_GROUP" /> ग्रुप को खोलें}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> टैब ग्रुप के विकल्प</translation>
 <translation id="1300188005269437765">चुनें कि टैब और टैब ग्रुप, इनऐक्टिव सेक्शन में कब अपने-आप मूव हो जाएंगे.</translation>
@@ -21,6 +22,7 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> इनऐक्टिव आइटम}one{<ph name="TABS_COUNT_MANY" /> इनऐक्टिव आइटम}other{<ph name="TABS_COUNT_MANY" /> इनऐक्टिव आइटम}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> टैब ग्रुप में शामिल किए गए</translation>
 <translation id="1657719826150349398">टैब को नीचे ले जाएं</translation>
+<translation id="1670942869417022142">ऑडियो म्यूट किया गया है</translation>
 <translation id="1697284962337958118">इनमें शामिल करें</translation>
 <translation id="1713541401465507417">सभी टैब और ग्रुप बंद करें</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> टैब ग्रुप अब मौजूद नहीं है}one{<ph name="TAB_GROUPS_COUNT_MANY" /> टैब ग्रुप अब मौजूद नहीं है}other{<ph name="TAB_GROUPS_COUNT_MANY" /> टैब ग्रुप अब मौजूद नहीं हैं}}</translation>
@@ -73,7 +75,6 @@
 <translation id="311432875115153175">टैब ग्रुप की सूची बंद कर दी गई है</translation>
 <translation id="3194464645767632461">रेटिंग</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब को ग्रुप में जोड़ें}one{<ph name="TABS_COUNT_MANY" /> टैब को ग्रुप में जोड़ें}other{<ph name="TABS_COUNT_MANY" /> टैब, ग्रुप में जोड़ें}}</translation>
-<translation id="3293080634164207409">टैब जोड़ें</translation>
 <translation id="3328308545011660196">सुझाव: ऐसा लगता है कि <ph name="NUMBER_OF_TABS" /> टैब एक-दूसरे से मिलते-जुलते हैं. इनका ग्रुप बनाएं?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 दिन तक कोई गतिविधि न होने पर}one{<ph name="DAY_COUNT_MANY" /> दिन तक कोई गतिविधि न होने पर}other{<ph name="DAY_COUNT_MANY" /> दिनों तक कोई गतिविधि न होने पर}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> नया टैब}one{<ph name="MANY_ADDED" /> नया टैब}other{<ph name="MANY_ADDED" /> नए टैब}}</translation>
@@ -111,6 +112,7 @@
 <translation id="4871719318659334896">ग्रुप बंद करें</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_ONE" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को वापस लाएं और खोलें.}one{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को वापस लाएं और खोलें.}other{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को वापस लाएं और खोलें.}}</translation>
 <translation id="4881695831933465202">खोलें</translation>
+<translation id="4894777338623123366">टैब की स्क्रीन शेयर की जा रही है</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{टैब को बंद करें}one{टैब को बंद करें}other{टैब को बंद करें}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> के टैब ग्रुप सेव किए गए (इससे टैब बंद हो जाएंगे और ग्रुप मिट जाएंगे)</translation>
 <translation id="492284538114688557">कीमत में कमी देखी गई</translation>
@@ -143,6 +145,7 @@
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ग्रुप को दूसरी विंडो पर ले जाएं}one{ग्रुप को दूसरी विंडो पर ले जाएं}other{ग्रुप को दूसरी विंडो पर ले जाएं}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{टैब को दाईं ओर ले जाएं}one{टैब को दाईं ओर ले जाएं}other{टैब दाईं ओर ले जाएं}}</translation>
 <translation id="6228793724645064692">(स्टोर की रेटिंग)</translation>
+<translation id="6251046978189636310">ऑडियो चल रहा है</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{ग्रुप से टैब को हटाएं}one{ग्रुप से टैब को हटाएं}other{ग्रुप से टैब हटाएं}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{नए ग्रुप में टैब को जोड़ें}one{नए ग्रुप में टैब को जोड़ें}other{नए ग्रुप में टैब जोड़ें}}</translation>
 <translation id="6333260925957816943">इस स्टोर के बारे में जानकारी</translation>
@@ -174,6 +177,7 @@
 <translation id="7326879924029668159">सामान लौटाने की नीति वगैरह देखें</translation>
 <translation id="7352298686197644113">देखें कि आपके खोले गए टैब में मौजूद किस आइटम की कीमत कम हुई है</translation>
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" टैब ग्रुप अब मौजूद नहीं है</translation>
+<translation id="7402375256128852434">हाल ही में खोले गए टैब जोड़ें</translation>
 <translation id="7452985128687107478">टैब ग्रुप आपके सभी डिवाइसों पर, अपने-आप सेव और अपडेट हो जाते हैं</translation>
 <translation id="747459581954555080">सभी को पुनर्स्थापित करें</translation>
 <translation id="7489558427602531799">टैब ग्रुप को दाईं ओर ले जाएं</translation>
@@ -219,6 +223,7 @@
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="855081842937141170">टैब छोटा करें</translation>
 <translation id="8633025649649592204">हाल की गतिविधि</translation>
+<translation id="8635822281281406185">ज़्यादा से ज़्यादा 10 फ़ाइलें, टैब या इमेज जोड़ें</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8714939927607906138">कम कीमत</translation>
 <translation id="8730621377337864115">हो गया</translation>

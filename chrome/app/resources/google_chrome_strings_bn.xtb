@@ -275,6 +275,7 @@
 <translation id="4022972681110646219">স্ক্রিনে থাকা সব কন্টেন্ট অনুবাদ করুন</translation>
 <translation id="4023601594785368013">মূল ভাষা: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">আপডেটটি প্রয়োগ করতে ChromeOS আবার চালু করা প্রয়োজন।</translation>
+<translation id="4039097928859803404">সবসময় AI মোড শর্টকাট দেখুন</translation>
 <translation id="4050175100176540509">গুরুত্বপূর্ণ নিরাপত্তা উন্নতি এবং নতুন বৈশিষ্ট্যগুলি সর্বশেষ ভার্সনে উপলভ্য।</translation>
 <translation id="4053720452172726777">Google Chrome কাস্টমাইজ ও নিয়ন্ত্রণ করুন</translation>
 <translation id="408393047846373801">নিজের সব ডিভাইসে পাসওয়ার্ড ও আরও অনেক কিছু পেতে, Chrome-এ সাইন-ইন করুন। সাইন-ইন করার পরে, আপনার Google অ্যাকাউন্টে এই পাসওয়ার্ড সেভ করা হবে।</translation>
@@ -323,6 +324,7 @@
 <translation id="459622048091363950">Chrome অ্যাক্সেস পেলেই, ওয়েবসাইটগুলি আপনাকে অ্যাক্সেসের অনুরোধ করতে পারবে।</translation>
 <translation id="4598116752460667024">তালিকা থেকে কোনও প্রসেস সার্চ করে দেখুন।</translation>
 <translation id="4600710005438004015">Chrom লেটেস্ট ভার্সনে আপডেট করা যাচ্ছে না, তাই আপনি নতুন বৈশিষ্ট্য এবং সুরক্ষা সমাধানগুলি পাচ্ছেন না।</translation>
+<translation id="4606805686144157064">সর্বজনীন ডেটা নিরাপত্তা লঙ্ঘনের কারণে Chrome আপনার কোনও পাসওয়ার্ড খুঁজে পেলে সতর্কতা পান</translation>
 <translation id="4608435347866444037">Google Lens ব্যবহার করে এই ছবিটি সার্চ করুন</translation>
 <translation id="4624065194742029982">Chrome-এর 'ছদ্মবেশী' মোড</translation>
 <translation id="4627412468266359539">ঐচ্ছিক: Google-কে অটোমেটিক ডায়াগনস্টিক ও ব্যবহারের ডেটা পাঠিয়ে ChromeOS Flex-এর ফিচার ও পারফর্ম্যান্সের উন্নতিতে সাহায্য করুন।</translation>
@@ -356,6 +358,7 @@
 <translation id="4970880042055371251">ChromeOS ভার্সন</translation>
 <translation id="4990567037958725628">Google Chrome  ক্যানারি</translation>
 <translation id="5003967926796347400">“Google Password Manager”-এ ক্লিক করুন</translation>
+<translation id="5043786843026425788">Chrome-এ Google Lens ব্যবহার করে সার্চ করা সম্পর্কে আরও জানুন</translation>
 <translation id="504867494566807945">যেকোনও অ্যাপ থেকে Chrome-এ লিঙ্ক খুলুন। এর সাথে, সহজ অ্যাক্সেসের জন্য এটি আপনার টাস্কবারে পিন করা থাকে।</translation>
 <translation id="5114340746415930644">আপনার অ্যাকাউন্ট, <ph name="USER_EMAIL" />-এ Chrome ডেটা ব্যবহার এবং সেভ করার জন্য পাসফ্রেজ লিখুন</translation>
 <translation id="5120334927898581447">অন্যান্য Google পরিষেবায় সাইন-ইন করার সময় Chrome-এ সাইন-ইন করুন</translation>
@@ -528,6 +531,7 @@
 <translation id="683440813066116847">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome Canary এর জন্য ইনবাউন্ড নিয়ম।</translation>
 <translation id="6841242485723266823">Chrome প্রোফাইল আপনার জীবনের বিভিন্ন অংশকে আলাদা করতে সাহায্য করে। এখনই নতুন প্রোফাইল যোগ করুন।</translation>
 <translation id="684888714667046800">ইন্টারনেটের সাথে কানেক্ট করা যায়নি। আপনি ফায়ারওয়াল ব্যবহার করলে, <ph name="PRODUCT_EXE_NAME" /> সাদাতালিকায় আছে কিনা দেখে নিন।</translation>
+<translation id="6859580922007887573">চালিয়ে যেতে ট্যাব করুন</translation>
 <translation id="6877155553248388166">সার্চের নিচে ডানদিকের কোণা: ডানদিক থেকে <ph name="RIGHT" />%, নিচের দিকে <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chrome আপডেট হচ্ছে</translation>
 <translation id="6885412569789873916">Chrome বিটা অ্যাপ</translation>
@@ -623,10 +627,12 @@
 <translation id="7804364787702057554">Chrome-এ আপনার অ্যাকাউন্ট</translation>
 <translation id="7808348361785373670">Chrome থেকে সরান...</translation>
 <translation id="7827099906024714326">Chrome আপনার পরিচয় যাচাই করে নেওয়ার পর আপনি Google অ্যাকাউন্টে কিছু ডেটা সেভ করতে ও সবকটি ডিভাইসে তা ব্যবহার করতে পারবেন। আপনি এখনই সাইন-আউট করলে, এই ডেটা মুছে যাবে।</translation>
+<translation id="7832314606810669113">আপনার সব ডিভাইসে বুকমার্কে ও আরও অনেক কিছু পেতে, Chrome-এ সাইন-ইন করুন। সাইন-ইন করার পরে, আপনার Google অ্যাকাউন্টে এই বুকমার্ক সেভ করা হবে।</translation>
 <translation id="7845233973568007926">ইনস্টল করার জন্য ধন্যবাদ। <ph name="BUNDLE_NAME" /> ব্যবহার করার আগে আপনাকে অবশ্যই কম্পিউটার রিস্টার্ট করতে হবে।</translation>
 <translation id="7849037457735762883">আপনি যেখান থেকে শেষ করেছিলেন সেখান থেকেই চালিয়ে যান: আপনি প্রত্যেকবার রিস্টার্ট করার সময় Chrome আপনার ট্যাব ফিরিয়ে আনতে পারবে। এটি চালু করতে, এখানে যান</translation>
 <translation id="7872446069773932638">ডাউনলোড হচ্ছে... <ph name="SECONDS" /> সেকেন্ড বাকি আছে</translation>
 <translation id="7886087451482920026">Google Lens-এর সাহায্যে টেক্সট বেছে নিন</translation>
+<translation id="7887929410013642057">সবসময় AI মোড শর্টকাট দেখুন</translation>
 <translation id="7890208801193284374">যদি আপনি একটি কম্পিউটার শেয়ার করেন, তাহলে বন্ধু ও পরিবারের লোকজন পৃথকভাবে ব্রাউজ করতে পারবেন এবং তাদের ইচ্ছা অনুযায়ী Chrome-এর সেটআপ করতে পারবেন৷</translation>
 <translation id="7896673875602241923">আগে কোনো একজন এই কম্পিউটারে <ph name="ACCOUNT_EMAIL_LAST" /> হিসাবে Chrome-এ সাইন-ইন করেছেন। আপনার তথ্য আলাদা রাখার জন্য অনুগ্রহ করে একটি নতুন Chrome ব্যবহারকারী তৈরি করুন।</translation>
 <translation id="7904985524660297937">Google Chrome-এ Gemini ব্যবহার করে দেখুন</translation>

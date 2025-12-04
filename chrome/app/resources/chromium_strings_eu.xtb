@@ -40,6 +40,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="141901961143729572">Partekatu burutazioak</translation>
 <translation id="1465192221147974788">Leihoa partekatzeko, eman pantaila grabatzeko baimena Chromium-i sistemaren ezarpenetan.</translation>
 <translation id="1478370723027452770">Lortu Chrome for Testing-en inguruko laguntza</translation>
+<translation id="1496875977627931224">Kaixo, <ph name="USER_NAME" />:<ph name="LINE_BREAK" />Zer darabilzu buruan gaur?</translation>
 <translation id="1497802159252041924">Instalazio-errorea: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Orri hau babestuta dago</translation>
 <translation id="1524282610922162960">Partekatu Chromium-eko fitxa bat</translation>
@@ -193,6 +194,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3103660991484857065">Instalatzaileak ezin izan du artxiboa deskonprimitu. Deskargatu berriro Chromium.</translation>
 <translation id="310459126943037700">Ezin izan dira amaitu zereginak.</translation>
 <translation id="3130323860337406239">Chromium zure mikrofonoa erabiltzen ari da.</translation>
+<translation id="3130333203120345554">Bilaketa berria</translation>
 <translation id="3137969841538672700">Arrastatu bilatzeko</translation>
 <translation id="3144188012276422546">Fitxa honek baliabide gehiago erabiltzen ditu. Errendimendua hobetzeko, eman fitxa inaktibo ezartzeko baimena Chromium-i.</translation>
 <translation id="3149163023759831301">Pantaila partekatzeko, eman pantaila grabatzeko baimena Chromium-i sistemaren ezarpenetan</translation>
@@ -350,6 +352,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4994636714258228724">Gaitu zure burua Chromium-en</translation>
 <translation id="5123973130450702873">Chromium-ek zure eskuen jarraipena egiteko baimena behar du</translation>
 <translation id="5141988424377517949">Azkenaldian ez duzu bisitatu webgune hau. Chromium-ek <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta <ph name="PERMISSION_3" /> erabiltzeko baimena kendu dio.</translation>
+<translation id="5167819546851111585">Zer darabilzu buruan gaur?</translation>
 <translation id="5174969993834422967">Jakinarazpenak blokeatu ohi dituzu. Webgune honen jakinarazpenak jasotzeko, sakatu kokapenaren barrako eskuineko izkinan dagoen jakinarazpen-ikonoa.</translation>
 <translation id="5174983315706567306">Ez dago nahikoa tokirik diskoan.</translation>
 <translation id="5187123684706427865">Berriro autentifikatu behar da Chromium-eko kontua</translation>
@@ -382,6 +385,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="5496810170689441661">Pasahitzak editatzen saiatzen ari da Chromium. Hori baimentzeko, idatzi Windows-eko pasahitza.</translation>
 <translation id="5524890928877629608">bilaketa-eremuaren goiko ezkerreko ertza: % <ph name="LEFT" /> ezkerrean, % <ph name="TOP" /> goian</translation>
 <translation id="5527463683072221100">Ireki PDFak Chromium-en</translation>
+<translation id="5536164441519929134">Galdetu<ph name="LINE_BREAK" />fitxa honi buruz</translation>
 <translation id="5579324208890605088">Abiarazte-errorea: exekutatu instalatzailea erabiltzaile arrunt gisa, ez administratzaile gisa.</translation>
 <translation id="5580770360767802657">Erabili Chromium modu lehenetsian eta aingura ezazu</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
@@ -498,6 +502,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio bat edo erabili Chromium bertsio berriago bat.</translation>
 <translation id="6729124504294600478">Pertsonalizazioa eta beste eginbide batzuk eskuratzeko, sartu Chromium sareko eta aplikazioetako jardueretan eta lotutako Google-ren zerbitzuetan</translation>
 <translation id="6734291798041940871">Ordenagailuko erabiltzaile guztientzat dago instalatuta Chromium.</translation>
+<translation id="6742093177587589736">Laster-markak eta bestelako datuak zure gailu guztietan erabili ahal izateko, hasi saioa Chromium-en. Saioa hasi ondoren, laster-marka hau zure Google-ko kontuan gordeko da.</translation>
 <translation id="6751374565094704799">Webguneen abiadura handitzen du Chromium-en V8 motorrarekin, baina erasoen aurrean Chromium apur bat ahulagoa da. Aktibatuta dago ezarpena.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Chromium-eko datu batzuk ez dira gorde Google-ko kontuan oraindik. Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datu horiek (elementu bat) ezabatuko dira.}other{Chromium-eko datu batzuk ez dira gorde Google-ko kontuan oraindik. Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datu horiek ({count} elementu) ezabatuko dira.}}</translation>
 <translation id="67706546131546258">Chromium-ek fitxategia aztertzea gomendatzen du, agian arriskutsua delako.</translation>

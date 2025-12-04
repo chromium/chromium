@@ -6675,6 +6675,7 @@
 <translation id="557722062034137776">重設裝置並不會影響您的 Google 帳戶，以及任何與這些帳戶同步處理的數據。不過，裝置中所有本機儲存檔案將被刪除。</translation>
 <translation id="5578059481725149024">自動登入</translation>
 <translation id="5578387000057347457">輸入自訂提示或醒目顯示文字，即可製作圖像</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 個項目只會儲存至此裝置。如要在其他裝置上使用，請<ph name="BEGIN_LINK" />儲存至 Google 帳戶<ph name="END_LINK" />。}other{{ITEM_COUNT} 個項目只會儲存至此裝置。如要在其他裝置上使用，請<ph name="BEGIN_LINK" />儲存至 Google 帳戶<ph name="END_LINK" />。}}</translation>
 <translation id="5579225964082017560">從「<ph name="SECTION_HEADER" />」清單移除 <ph name="SITE" /></translation>
 <translation id="5581134892342029705">已經完成翻譯去<ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Microsoft Windows 硬件驅動程式驗證</translation>
@@ -7161,6 +7162,7 @@
     <ph name="LINE_BREAK" />
     這張圖片會在 Chromebook 的登入畫面和上鎖畫面上顯示。</translation>
 <translation id="5925147183566400388">憑證實務基準指標</translation>
+<translation id="5926936390113611560">開啟所有設定檔</translation>
 <translation id="5927132638760172455">正在投放到不明接收端</translation>
 <translation id="592740088639760830">停止執行這個容器</translation>
 <translation id="592880897588170157">下載 PDF 檔案，而不是在 Chrome 中自動開啟</translation>
@@ -7244,6 +7246,7 @@
 <translation id="5979421442488174909">翻譯成<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="5979469435153841984">如要將網頁加入書籤，請按一下網址列中的星號</translation>
 <translation id="5982578203375898585">下載完成後顯示下載檔案</translation>
+<translation id="598347738324022917">書籤已儲存至此裝置</translation>
 <translation id="5983716913605894570">生成緊…</translation>
 <translation id="5984222099446776634">最近瀏覽的網站</translation>
 <translation id="5984334442529819751">安裝 DLC 時發生錯誤 (通常需要重新啟動，請前往「設定」\&gt;\&gt; [關於 ChromeOS] 瞭解詳情)。</translation>
@@ -11366,7 +11369,7 @@
 <translation id="8821268776955756404"><ph name="APP_NAME" /> 已可使用。</translation>
 <translation id="8821647731831124007">沒有可用的熱點</translation>
 <translation id="882204272221080310">更新韌體以提高安全性。</translation>
-<translation id="8822690627597552656">讓某些不熟悉的網站減慢速度，以封鎖常見攻擊</translation>
+<translation id="8822690627597552656">減慢部分陌生網站的速度，以封鎖常見攻擊</translation>
 <translation id="8823514049557262177">複製連結文字(&amp;X)</translation>
 <translation id="8823704566850948458">建議密碼…</translation>
 <translation id="8823963789776061136">您亦可選取打印機 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -11499,6 +11502,7 @@
 <translation id="8910987510378294980">隱藏裝置清單</translation>
 <translation id="8912362522468806198">Google 帳戶</translation>
 <translation id="8912810933860534797">啟用自動掃瞄</translation>
+<translation id="8914030287343429787">即使沒有在使用 Chrome 或 Android，只要登入 <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> 就能查看自己的密碼</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8915307125957890427">在分頁上按一下右鍵，並選取「將分頁加入群組」和「新群組」</translation>
 <translation id="8915370057835397490">正在載入建議</translation>

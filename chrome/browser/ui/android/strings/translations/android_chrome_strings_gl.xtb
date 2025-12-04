@@ -496,6 +496,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3114507951000454849">Le as noticias do día <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Máis detalles</translation>
 <translation id="3123734510202723619">Avisos</translation>
+<translation id="3134385238404760368">Non hai ningunha pestana recente</translation>
 <translation id="314939179385989105">Páxina de inicio de Chrome</translation>
 <translation id="3158667104057012316">Ordenando de maneira manual</translation>
 <translation id="3159335509547415276">Máis información acerca das contas bloqueadas</translation>
@@ -817,6 +818,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4577115723294378384">Ordenar do A ao Z</translation>
 <translation id="4578289292431526768">Vamos aló</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Hai # minuto}other{Hai # minutos}}</translation>
+<translation id="4585751637295612750">Abre unha pestana nova para engadila á túa pregunta</translation>
 <translation id="4587589328781138893">Sitios</translation>
 <translation id="4594952190837476234">Esta páxina sen conexión creouse o <ph name="CREATION_TIME" /> e pode ser diferente da versión en liña.</translation>
 <translation id="4595237294768457124">Abre unha páxina Nova pestana</translation>
@@ -1338,6 +1340,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="670498945988402717">A comprobación realizouse onte</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">O temporizador de <ph name="FQDN" /> chegou ao final. Volverá comezar mañá.</translation>
+<translation id="6716434912087331834">Para restaurar unha nova ventá, reduce o número total das que estean activas a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou menos. As ventás inactivas elimínanse despois de seis meses.</translation>
 <translation id="6723740634201835758">Na túa Conta de Google</translation>
 <translation id="6734310707649923383">Podes ver as páxinas que visitaches ou eliminalas do teu historial</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, pestana do modo de incógnito con gravación en curso fixada</translation>
@@ -1655,6 +1658,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> está desactualizado.</translation>
 <translation id="7944772052836377867">A sincronización necesita verificar a túa identidade</translation>
 <translation id="7951102827450076904">Abrir sempre os PDF descargados</translation>
+<translation id="7952479614398473176">Para abrir unha nova ventá, reduce o número total das que estean activas a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou menos.</translation>
 <translation id="7957413488482743710">As tarxetas virtuais ocultan as tarxetas reais para protexerte de posibles fraudes. <ph name="BEGIN_LINK1" />Máis información sobre as tarxetas virtuais<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Pestanas neste dispositivo</translation>
 <translation id="7961926449547174351">Desactivaches o acceso ao almacenamento. Actívao en Configuración.</translation>

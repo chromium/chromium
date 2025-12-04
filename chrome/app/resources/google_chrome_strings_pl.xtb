@@ -45,6 +45,7 @@
 <translation id="146866447420868597">Chcesz zalogować się w Chrome?</translation>
 <translation id="1476347941828409626">Za&amp;rządzaj profilami Chrome</translation>
 <translation id="1492280395845991349">Uruchom ponownie, aby dokończyć aktualizację Chrome</translation>
+<translation id="1496875977627931224">Cześć <ph name="USER_NAME" />,<ph name="LINE_BREAK" />nco dziś chodzi Ci po głowie?</translation>
 <translation id="1497802159252041924">Błąd instalacji: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Dostosuj swój nowy profil w Chrome</translation>
 <translation id="1518627427551567882">Ta strona jest zabezpieczona</translation>
@@ -198,6 +199,7 @@
 <translation id="3112458742631356345">Pobieranie zostało zablokowane przez Chrome, ponieważ ten plik nie jest często pobierany i może być niebezpieczny</translation>
 <translation id="3114643501466072395">Aby sprawdzić, czy Twoje pozostałe hasła są chronione przed naruszeniami bezpieczeństwa danych i innymi zagrożeniami tego typu, <ph name="BEGIN_LINK" />zaloguj się w Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Pobieranie zostało zablokowane przez Chrome, ponieważ plik archiwum zawiera inne pliki, które mogą ukrywać złośliwe oprogramowanie</translation>
+<translation id="3130333203120345554">Nowe wyszukiwanie</translation>
 <translation id="3135560418014806498">Dodaj profil Chrome</translation>
 <translation id="3137969841538672700">Przeciągnij, aby wyszukać</translation>
 <translation id="3140883423282498090">Zmiany zaczną obowiązywać po ponownym uruchomieniu Google Chrome.</translation>
@@ -362,6 +364,7 @@
 <translation id="5139423532931106058">Dostosuj swój profil Chrome</translation>
 <translation id="5163087008893166964">Witamy w Chrome. Zostało otwarte nowe okno przeglądarki.</translation>
 <translation id="5166439563123238795">Chrome potrzebuje uprawnień do śledzenia rąk</translation>
+<translation id="5167819546851111585">Co dziś chodzi Ci po głowie?</translation>
 <translation id="5170938038195470297">Nie można użyć Twojego profilu, ponieważ został utworzony w nowszej wersji Google Chrome. Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub użyj nowszej wersji Chrome.</translation>
 <translation id="5174969993834422967">Zazwyczaj blokujesz powiadomienia. Aby zezwolić tej stronie na wysyłanie powiadomień, kliknij ikonę powiadomienia w prawym rogu paska lokalizacji.</translation>
 <translation id="5174983315706567306">Za mało miejsca na dysku.</translation>
@@ -618,6 +621,7 @@
 <translation id="7804364787702057554">Twoje konto w Chrome</translation>
 <translation id="7808348361785373670">Usuń z Chrome...</translation>
 <translation id="7827099906024714326">Aby niektóre dane mogły być zapisywane na Twoim koncie Google i używane na wszystkich Twoich urządzeniach, Chrome musi zweryfikować Twoją tożsamość. Jeśli wylogujesz się teraz, te dane zostaną usunięte.</translation>
+<translation id="7832314606810669113">Aby mieć dostęp do zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome. Ta zakładka zostanie zapisana na Twoim koncie Google, gdy się zalogujesz.</translation>
 <translation id="7845233973568007926">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić komputer.</translation>
 <translation id="7849037457735762883">Wznawianie przeglądania od tego samego miejsca: Chrome może po każdym ponownym uruchomieniu przywracać karty. Aby włączyć tę funkcję, otwórz</translation>
 <translation id="7872446069773932638">Pobieram… Pozostało: <ph name="SECONDS" /> s.</translation>
@@ -639,6 +643,7 @@
 <translation id="8013993649590906847">Jeśli obraz nie ma przydatnego opisu, Chrome spróbuje go dla Ciebie stworzyć. W tym celu obrazy zostaną wysłane do Google.</translation>
 <translation id="8019103195866286235">To rozszerzenie zostało wycofane przez dewelopera i może być niebezpieczne. Usuń je z Chrome, aby nie odczytywało ani nie zmieniało Twoich danych na stronach, które odwiedzasz. Dotyczy to także Twoich danych osobowych.</translation>
 <translation id="8040768861829554732">Rozszerzenie chce, żebyś zalogował(a) się w Chrome</translation>
+<translation id="8041795619940733262">Zapytaj Google<ph name="LINE_BREAK" />o tę kartę</translation>
 <translation id="80471789339884597">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić wszystkie przeglądarki.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Inne profile Chrome</translation>

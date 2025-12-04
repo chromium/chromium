@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">Читайте сьогоднішні новини <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Докладніше</translation>
 <translation id="3123734510202723619">Оголошення</translation>
+<translation id="3134385238404760368">Немає нещодавніх вкладок</translation>
 <translation id="314939179385989105">Головна сторінка Chrome</translation>
 <translation id="3158667104057012316">Сортування вручну</translation>
 <translation id="3159335509547415276">Докладніше про заблоковані облікові записи</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">Сортувати від А до Я</translation>
 <translation id="4578289292431526768">Почати</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# хвилину тому}one{# хвилину тому}few{# хвилини тому}many{# хвилин тому}other{# хвилини тому}}</translation>
+<translation id="4585751637295612750">Відкрийте нову вкладку, щоб додати її до запитання</translation>
 <translation id="4587589328781138893">Сайти</translation>
 <translation id="4594952190837476234">Цю сторінку створено <ph name="CREATION_TIME" />. Вона може відрізнятися від онлайн-версії.</translation>
 <translation id="4595237294768457124">Відкрийте сторінку нової вкладки</translation>
@@ -1338,6 +1340,7 @@
 <translation id="670498945988402717">Перевірено вчора</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Вийшов час на таймері веб-сайту <ph name="FQDN" />. Завтра він знову запрацює.</translation>
+<translation id="6716434912087331834">Щоб відновити нове вікно, переконайтеся, що загальна кількість активних вікон не перевищує <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Неактивні вікна видаляються через 6 місяців.</translation>
 <translation id="6723740634201835758">В обліковому записі Google</translation>
 <translation id="6734310707649923383">Ви можете переглядати сторінки, які відвідували, або видаляти їх з історії</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" /> (закріплена анонімна вкладка, на якій увімкнено запис)</translation>
@@ -1655,6 +1658,7 @@
 <translation id="7942131818088350342">Застаріла версія <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7944772052836377867">Для синхронізації потрібно підтвердити вашу особу</translation>
 <translation id="7951102827450076904">Завжди відкривати завантажені файли PDF</translation>
+<translation id="7952479614398473176">Щоб відкрити нове вікно, переконайтеся, що загальна кількість активних вікон не перевищує <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7957413488482743710">Для захисту від потенційного шахрайства замість справжньої картки можна використовувати віртуальну. <ph name="BEGIN_LINK1" />Докладніше про віртуальні картки<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Вкладки на цьому пристрої</translation>
 <translation id="7961926449547174351">Ви вимкнули доступ до пам'яті. Відкрийте налаштування, щоб увімкнути його.</translation>

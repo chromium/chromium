@@ -184,6 +184,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="2903493209154104877">Alamat</translation>
 <translation id="2910701580606108292">Tanyakan sebelum mengizinkan situs untuk memutar konten yang dilindungi</translation>
 <translation id="2918484639460781603">Buka setelan</translation>
+<translation id="293060180538644702">Dapatkan notifikasi Tips Chrome</translation>
 <translation id="2932883381142163287">Laporkan penyalahgunaan</translation>
 <translation id="2939338015096024043">Jika diaktifkan, situs dapat meminta untuk melacak posisi kamera dan mempelajari lingkungan sekitar Anda. Jika dinonaktifkan, situs tidak dapat melacak posisi kamera Anda atau mempelajari lingkungan sekitar Anda.</translation>
 <translation id="2968755619301702150">Penampil sertifikat</translation>
@@ -244,6 +245,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3611658447322220736">Situs yang baru saja ditutup dapat menyelesaikan pengiriman dan penerimaan data</translation>
 <translation id="3619294456800709762">Situs dapat masuk ke mode picture-in-picture secara otomatis</translation>
 <translation id="3628308229821498208">Penelusuran yang disarankan</translation>
+<translation id="3632460243282703117">Berlangganan</translation>
 <translation id="363748948745453283">Menggunakan perkiraan lokasi</translation>
 <translation id="3641456520301071208">Situs dapat meminta lokasi Anda</translation>
 <translation id="3658847490588580244">Sheet bawah browser default</translation>
@@ -522,6 +524,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="662080504995468778">Tinggal</translation>
 <translation id="6630443592285535486">Ketik kode hex di sini</translation>
 <translation id="6635327442719709864">Jika diaktifkan, situs dapat meminta untuk menggunakan port serial. Jika dinonaktifkan, situs tidak dapat menggunakan port serial.</translation>
+<translation id="6669390930482049506">Beri tahu saya</translation>
 <translation id="6678072580827808850">Tinjau Pemeriksaan Keamanan</translation>
 <translation id="6682057173375416470">Dapatkan artikel yang disarankan di halaman Tab Baru</translation>
 <translation id="6683865262523156564">Situs ini berada dalam grup yang dapat melihat aktivitas Anda. Grup ditentukan oleh <ph name="RWS_OWNER" /></translation>
@@ -631,6 +634,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="7990211076305263060">Jika diaktifkan, situs dapat meminta untuk menggunakan mikrofon Anda. Jika dinonaktifkan, situs tidak dapat menggunakan mikrofon Anda.</translation>
 <translation id="8007176423574883786">Dinonaktifkan untuk perangkat ini</translation>
 <translation id="802154636333426148">Download gagal</translation>
+<translation id="8033047164036749181">Berlangganan untuk mendapatkan notifikasi dari situs ini</translation>
 <translation id="8042586301629853791">Urutkan menurut:</translation>
 <translation id="8051193500142930381">Fitur yang memerlukan kamera tidak akan berfungsi</translation>
 <translation id="8056330801132235235">Default Chrome</translation>

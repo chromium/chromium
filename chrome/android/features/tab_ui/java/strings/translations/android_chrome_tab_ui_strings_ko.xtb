@@ -7,6 +7,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" />년 전 생성됨}other{<ph name="NUM_YEARS_MANY" />년 전 생성됨}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{비활성 탭 및 그룹은 1개월 후에 닫힙니다.}other{비활성 탭 및 그룹은 <ph name="MONTH_COUNT_MANY" />개월 후에 닫힙니다.}}</translation>
 <translation id="1173894706177603556">이름 바꾸기</translation>
+<translation id="1203747227183434426">미디어 녹화 중</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" />개의 탭이 있는 <ph name="TITLE_OF_GROUP" /> 그룹 열기}other{<ph name="TAB_COUNT2" />개의 탭이 있는 <ph name="TITLE_OF_GROUP" /> 그룹 열기}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> 탭 그룹 옵션</translation>
 <translation id="1300188005269437765">탭 및 탭 그룹이 비활성 섹션으로 자동 이동되는 시점을 선택합니다.</translation>
@@ -21,6 +22,7 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{비활성 항목 <ph name="TABS_COUNT_ONE" />개}other{비활성 항목 <ph name="TABS_COUNT_MANY" />개}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" />개의 탭 그룹화됨</translation>
 <translation id="1657719826150349398">탭을 아래로 이동</translation>
+<translation id="1670942869417022142">오디오 음소거됨</translation>
 <translation id="1697284962337958118">추가할 위치</translation>
 <translation id="1713541401465507417">모든 탭 및 그룹 닫기</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{탭 그룹 <ph name="TAB_GROUPS_COUNT_ONE" />개를 더 이상 사용할 수 없음}other{탭 그룹 <ph name="TAB_GROUPS_COUNT_MANY" />개를 더 이상 사용할 수 없음}}</translation>
@@ -73,7 +75,6 @@
 <translation id="311432875115153175">탭 그룹 목록 닫힘</translation>
 <translation id="3194464645767632461">평점</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{그룹에 탭 <ph name="TABS_COUNT_ONE" />개 추가}other{그룹에 탭 <ph name="TABS_COUNT_MANY" />개 추가}}</translation>
-<translation id="3293080634164207409">탭 추가</translation>
 <translation id="3328308545011660196">제안: 탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1일 동안 비활성 상태인 경우}other{<ph name="DAY_COUNT_MANY" />일 동안 비활성 상태인 경우}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{새 탭 <ph name="ONE_ADDED" />개}other{새 탭 <ph name="MANY_ADDED" />개}}</translation>
@@ -111,6 +112,7 @@
 <translation id="4871719318659334896">그룹 닫기</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> 색상이며 <ph name="TABS_COUNT_ONE" />개 탭이 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 복원하고 엽니다.}other{<ph name="COLOR_NAME" /> 색상이며 <ph name="TABS_COUNT_MANY" />개 탭이 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 복원하고 엽니다.}}</translation>
 <translation id="4881695831933465202">열기</translation>
+<translation id="4894777338623123366">탭 화면 공유 중</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{탭 닫기}other{탭 닫기}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> 그룹 저장됨(탭 닫고 그룹 삭제)</translation>
 <translation id="492284538114688557">가격 인하 항목 발견</translation>
@@ -143,6 +145,7 @@
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{그룹을 새 창으로 이동}other{그룹을 다른 창으로 이동}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{탭을 오른쪽으로 이동}other{탭을 오른쪽으로 이동}}</translation>
 <translation id="6228793724645064692">(매장 평점)</translation>
+<translation id="6251046978189636310">오디오 재생 중</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{그룹에서 탭 삭제}other{그룹에서 탭 삭제}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{새 그룹에 탭 추가}other{새 그룹에 탭 추가}}</translation>
 <translation id="6333260925957816943">매장에 관한 정보</translation>
@@ -174,6 +177,7 @@
 <translation id="7326879924029668159">반품 정책 등 확인하기</translation>
 <translation id="7352298686197644113">열려 있는 탭의 상품 중 가격이 더 낮은 상품을 확인합니다.</translation>
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" 탭 그룹을 더 이상 사용할 수 없음</translation>
+<translation id="7402375256128852434">최근 탭 추가</translation>
 <translation id="7452985128687107478">탭 그룹이 모든 기기에서 자동으로 저장되고 업데이트됩니다.</translation>
 <translation id="747459581954555080">모두 복원</translation>
 <translation id="7489558427602531799">탭 그룹을 오른쪽으로 이동</translation>
@@ -219,6 +223,7 @@
 <translation id="8428213095426709021">설정</translation>
 <translation id="855081842937141170">탭 고정</translation>
 <translation id="8633025649649592204">최근 활동</translation>
+<translation id="8635822281281406185">파일, 탭 또는 이미지를 최대 10개 추가하세요.</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8714939927607906138">더 낮은 가격</translation>
 <translation id="8730621377337864115">완료</translation>

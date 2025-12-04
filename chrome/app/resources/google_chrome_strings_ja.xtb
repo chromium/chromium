@@ -45,6 +45,7 @@
 <translation id="146866447420868597">Chrome にログインしますか？</translation>
 <translation id="1476347941828409626">Chrome プロフィールを管理(&amp;M)</translation>
 <translation id="1492280395845991349">Chrome の更新を完了するには再起動してください</translation>
+<translation id="1496875977627931224"><ph name="USER_NAME" /> さん、<ph name="LINE_BREAK" />何かお手伝いできることはありますか？</translation>
 <translation id="1497802159252041924">インストール エラー: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">新しい Chrome プロフィールをカスタマイズ</translation>
 <translation id="1518627427551567882">このページは保護されています</translation>
@@ -198,6 +199,7 @@
 <translation id="3112458742631356345">このダウンロードは Chrome でブロックされました。ファイルが一般的にダウンロードされるものではなく、危害を及ぼす可能性があります</translation>
 <translation id="3114643501466072395">他のパスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chrome にログイン<ph name="END_LINK" />してください。</translation>
 <translation id="3119573284443908657">このダウンロードは Chrome でブロックされました。アーカイブ ファイルに他のファイルが含まれており、マルウェアが隠されている可能性があります</translation>
+<translation id="3130333203120345554">新しい検索</translation>
 <translation id="3135560418014806498">Chrome プロファイルを追加</translation>
 <translation id="3137969841538672700">ドラッグして検索</translation>
 <translation id="3140883423282498090">変更内容は次に Google Chrome を再起動したときに有効になります。</translation>
@@ -270,6 +272,7 @@
 <translation id="4022972681110646219">画面を翻訳</translation>
 <translation id="4023601594785368013">元の言語: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">更新を適用するには、ChromeOS を再起動する必要があります。</translation>
+<translation id="4039097928859803404">AI モードのショートカットを常に表示する</translation>
 <translation id="4050175100176540509">最新バージョンに更新すると、重要なセキュリティ更新と新機能が適用されます。</translation>
 <translation id="4053720452172726777">Google Chrome の設定</translation>
 <translation id="408393047846373801">すべてのデバイスでパスワードやその他の設定を使用するには、Chrome にログインしてください。このパスワードは、ログイン後に Google アカウントに保存されます。</translation>
@@ -318,6 +321,7 @@
 <translation id="459622048091363950">Chrome にアクセスを許可すると、ウェブサイトからアクセスをリクエストできるようになります。</translation>
 <translation id="4598116752460667024">リストからプロセスを検索します。</translation>
 <translation id="4600710005438004015">Chrome を最新版に更新できませんでした。新しい機能とセキュリティ修正は適用されていません。</translation>
+<translation id="4606805686144157064">一般に報告されているデータ侵害でパスワードが検出された場合、警告が表示されます</translation>
 <translation id="4608435347866444037">Google レンズでこの画像を検索する</translation>
 <translation id="4624065194742029982">Chrome のシークレット モード</translation>
 <translation id="4627412468266359539">オプション: 診断と使用状況のデータを Google に自動送信して ChromeOS Flex の機能と動作の改善に役立てる。</translation>
@@ -351,6 +355,7 @@
 <translation id="4970880042055371251">ChromeOS のバージョン</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">[Google パスワード マネージャー] をクリックします</translation>
+<translation id="5043786843026425788">Chrome で Google レンズを使用して検索する方法を確認</translation>
 <translation id="504867494566807945">他のアプリから Chrome でリンクを開くことができます。Chrome はタスクバーに固定され、簡単にアクセスできます。</translation>
 <translation id="5114340746415930644">アカウント「<ph name="USER_EMAIL" />」で Chrome のデータを使用、保存するには、パスフレーズを入力してください</translation>
 <translation id="5120334927898581447">他の Google サービスにログインしたときに Chrome にログインする</translation>
@@ -360,6 +365,7 @@
 <translation id="5139423532931106058">Chrome プロファイルをカスタマイズ</translation>
 <translation id="5163087008893166964">Chrome へようこそ。新しいブラウザ ウィンドウが開いています</translation>
 <translation id="5166439563123238795">Chrome がハンド トラッキングの許可を求めています</translation>
+<translation id="5167819546851111585">何かお手伝いできることはありますか？</translation>
 <translation id="5170938038195470297">バージョンが新しい Google Chrome のプロファイルは使用できません。一部の機能が利用できない可能性があります。別の場所のプロファイルを指定するか、新しいバージョンの Chrome をご使用ください。</translation>
 <translation id="5174969993834422967">通知はデフォルトでブロックされています。このサイトの通知を表示するには、ロケーション バーの右上にある通知アイコンをクリックしてください。</translation>
 <translation id="5174983315706567306">ディスクの空き容量が不足しています。</translation>
@@ -520,6 +526,7 @@
 <translation id="683440813066116847">mDNS トラフィックを許可する Google Chrome Canary のインバウンド ルールです。</translation>
 <translation id="6841242485723266823">Chrome プロフィールを使用すると、用途別にブラウジング環境を分けることができます。新しいプロフィールを今すぐ追加しましょう。</translation>
 <translation id="684888714667046800">インターネットに接続できません。ファイアウォールを使用している場合は、<ph name="PRODUCT_EXE_NAME" /> が許可リストに含まれていることを確認してください。</translation>
+<translation id="6859580922007887573">タブキーで続行</translation>
 <translation id="6877155553248388166">検索範囲の右下隅: 右 <ph name="RIGHT" />%、下 <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chrome を更新しています</translation>
 <translation id="6885412569789873916">Chrome ベータ版アプリ</translation>
@@ -615,10 +622,12 @@
 <translation id="7804364787702057554">Chrome のアカウント設定</translation>
 <translation id="7808348361785373670">Chrome から削除...</translation>
 <translation id="7827099906024714326">Google アカウントに一部のデータを保存してすべてのデバイスで使用できるようにするには、Chrome で本人確認を行う必要があります。今すぐログアウトすると、このデータは削除されます。</translation>
+<translation id="7832314606810669113">すべてのデバイスで同じブックマークやその他の設定を使用するには、Chrome にログインしてください。このブックマークは、ログイン後に Google アカウントに保存されます。</translation>
 <translation id="7845233973568007926">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはコンピュータを再起動してください。</translation>
 <translation id="7849037457735762883">前回開いていたページを開く: Chrome で再起動するたびにタブを復元できます。この機能をオンにするには、</translation>
 <translation id="7872446069773932638">ダウンロードしています... 残り <ph name="SECONDS" /> 秒です</translation>
 <translation id="7886087451482920026">Google レンズでテキストを選択します</translation>
+<translation id="7887929410013642057">AI モードのショートカットを常に表示する</translation>
 <translation id="7890208801193284374">パソコンを共有している場合、友だちや家族はそれぞれ Chrome を自分専用のブラウザとして自分用の設定をして使うことができます。</translation>
 <translation id="7896673875602241923">前回このパソコンで別のユーザー（<ph name="ACCOUNT_EMAIL_LAST" />）が Chrome にログインしました。情報を個別に保持するには、新しい Chrome ユーザーを作成してください。</translation>
 <translation id="7904985524660297937">Gemini in Google Chrome にアクセス</translation>
@@ -635,6 +644,7 @@
 <translation id="8013993649590906847">画像に有効な説明が設定されていない場合に、Chrome で説明を自動的に生成できるよう Google に画像が送信されます。</translation>
 <translation id="8019103195866286235">この拡張機能はデベロッパーが非公開にしており、安全でない可能性があります。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chrome からこの拡張機能を削除してください。</translation>
 <translation id="8040768861829554732">拡張機能が Chrome へのログインを求めています</translation>
+<translation id="8041795619940733262">このタブについて <ph name="LINE_BREAK" />Google に質問する</translation>
 <translation id="80471789339884597">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはすべてのブラウザを再起動してください。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">その他の Chrome プロファイル</translation>

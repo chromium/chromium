@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">اخبار <ph name="NEWS_ICON" /> امروز را بخوانید</translation>
 <translation id="3122883569442693641">جزئیات بیشتر</translation>
 <translation id="3123734510202723619">اطلاعیه‌ها</translation>
+<translation id="3134385238404760368">زبانه اخیری وجود ندارد</translation>
 <translation id="314939179385989105">‏صفحه اصلی Chrome</translation>
 <translation id="3158667104057012316">براساس ترتیب دستی</translation>
 <translation id="3159335509547415276">آشنایی با حساب‌های مسدودشده</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">ترتیب براساس الف تا ی</translation>
 <translation id="4578289292431526768">بیایید شروع کنیم</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# دقیقه قبل}one{# دقیقه قبل}other{# دقیقه قبل}}</translation>
+<translation id="4585751637295612750">زبانه جدیدی باز کنید تا به سؤالتان اضافه شود</translation>
 <translation id="4587589328781138893">سایت‌ها</translation>
 <translation id="4594952190837476234">این صفحه آفلاین مربوط به تاریخ <ph name="CREATION_TIME" /> است و ممکن است با نسخه آنلاین متفاوت باشد.</translation>
 <translation id="4595237294768457124">صفحه «زبانه جدید» را باز کنید</translation>
@@ -1302,7 +1304,7 @@
 <translation id="6554822972009632311">فیلتر محتوا روشن است</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> و <ph name="TAB_COUNT_ONE" /> زبانه دیگر بسته خواهند شد}one{<ph name="TAB_TITLE" /> و <ph name="TAB_COUNT_MANY" /> زبانه دیگر بسته خواهند شد}other{<ph name="TAB_TITLE" /> و <ph name="TAB_COUNT_MANY" /> زبانه دیگر بسته خواهند شد}}</translation>
 <translation id="6560414384669816528">‏جستجو با Sogou</translation>
-<translation id="656065428026159829">موارد بیشتر</translation>
+<translation id="656065428026159829">بیشتر دیدن</translation>
 <translation id="6564820424018738527">‏دستگاه Android شما ممکن است تنظیم مشابهی داشته باشد. اگر «سنجش آگهی» در Chrome و دستگاه Android شما روشن باشد، ممکن است شرکتی بتواند اثربخشی آگهی را در وب‌سایت‌هایی که بازدید می‌کنید و برنامه‌هایی که استفاده می‌کنید بسنجد.</translation>
 <translation id="6565959834589222080">‏استفاده از Wi-Fi هنگام دردسترس بودن</translation>
 <translation id="6569373978618239158">‏اکنون وقتی زبانه جدیدی باز می‌کنید، داستان‌هایی از <ph name="SITE_NAME" /> خواهید دید. سایت‌هایی که دنبال می‌کنید در «حساب Google» شما ذخیره می‌شوند. می‌توانید در تنظیمات «یافته‌ها»، آن‌ها را مدیریت کنید.</translation>
@@ -1982,7 +1984,7 @@
 <translation id="981121421437150478">آفلاین</translation>
 <translation id="983192555821071799">بستن همه زبانه‌ها</translation>
 <translation id="984756705737569814">‏نمی‌توان گذرواژه‌های ذخیره‌شده در «حساب Google» شما را بررسی کرد</translation>
-<translation id="987264212798334818">موارد کلی</translation>
+<translation id="987264212798334818">عمومی</translation>
 <translation id="988091779042748639">برای حذف کردن سابقه مرور «حالت ناشناس» از دستگاه، همه برگه‌های «ناشناس» را ببندید</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> برگه</translation>
 <translation id="996149300115483134">منوی کارت فید بسته شد</translation>

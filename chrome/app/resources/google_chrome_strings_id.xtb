@@ -45,6 +45,7 @@
 <translation id="146866447420868597">Login ke Chrome?</translation>
 <translation id="1476347941828409626">&amp;Kelola profil Chrome</translation>
 <translation id="1492280395845991349">Luncurkan kembali untuk menyelesaikan update Chrome</translation>
+<translation id="1496875977627931224">Halo <ph name="USER_NAME" />,<ph name="LINE_BREAK" />apa yang Anda pikirkan hari ini?</translation>
 <translation id="1497802159252041924">Error saat penginstalan: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Sesuaikan profil Chrome baru Anda</translation>
 <translation id="1518627427551567882">Halaman ini dilindungi</translation>
@@ -198,6 +199,7 @@
 <translation id="3112458742631356345">Chrome memblokir download ini karena file tersebut tidak biasa didownload dan mungkin berbahaya</translation>
 <translation id="3114643501466072395">Untuk memeriksa apakah sandi Anda yang lain aman dari pelanggaran data dan masalah keamanan lainnya, <ph name="BEGIN_LINK" />login ke Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome memblokir download ini karena file arsip menyertakan file lain yang mungkin menyembunyikan malware</translation>
+<translation id="3130333203120345554">Penelusuran baru</translation>
 <translation id="3135560418014806498">Tambahkan Profil Chrome</translation>
 <translation id="3137969841538672700">Tarik untuk menelusuri</translation>
 <translation id="3140883423282498090">Perubahan Anda akan berlaku pada peluncuran ulang Google Chrome selanjutnya.</translation>
@@ -271,6 +273,7 @@
 <translation id="4022972681110646219">Terjemahkan layar</translation>
 <translation id="4023601594785368013">Bahasa asli: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ChromeOS harus dimulai ulang untuk menerapkan update.</translation>
+<translation id="4039097928859803404">Selalu tampilkan pintasan Mode AI</translation>
 <translation id="4050175100176540509">Peningkatan keamanan dan fitur baru yang penting tersedia di versi terbaru.</translation>
 <translation id="4053720452172726777">Sesuaikan dan kontrol Google Chrome</translation>
 <translation id="408393047846373801">Untuk mendapatkan sandi dan info Anda yang lain di semua perangkat Anda, login ke Chrome. Sandi ini akan disimpan di Akun Google Anda setelah Anda login.</translation>
@@ -352,6 +355,7 @@
 <translation id="4970880042055371251">Versi ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klik “Pengelola Sandi Google”</translation>
+<translation id="5043786843026425788">Pelajari lebih lanjut cara menelusuri dengan Google Lens di Chrome</translation>
 <translation id="504867494566807945">Buka link di Chrome dari aplikasi apa pun. Selain itu, Chrome akan disematkan ke taskbar Anda untuk memudahkan akses.</translation>
 <translation id="5114340746415930644">Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Login ke Chrome saat Anda login ke layanan Google lainnya</translation>
@@ -361,6 +365,7 @@
 <translation id="5139423532931106058">Sesuaikan profil Chrome Anda</translation>
 <translation id="5163087008893166964">Selamat datang di Chrome; jendela browser baru terbuka</translation>
 <translation id="5166439563123238795">Chrome memerlukan izin untuk melacak tangan Anda</translation>
+<translation id="5167819546851111585">Apa yang Anda pikirkan hari ini?</translation>
 <translation id="5170938038195470297">Profil Anda tidak dapat digunakan karena berasal dari versi terbaru Google Chrome. Beberapa fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda atau gunakan versi Chrome yang lebih anyar.</translation>
 <translation id="5174969993834422967">Anda biasanya memblokir notifikasi. Untuk mengizinkan situs ini memberi Anda notifikasi, klik ikon notifikasi di sudut kanan kolom lokasi.</translation>
 <translation id="5174983315706567306">Kapasitas disk tidak cukup.</translation>
@@ -521,6 +526,7 @@
 <translation id="683440813066116847">Inbound rule untuk Google Chrome Canary guna mengizinkan lalu lintas mDNS.</translation>
 <translation id="6841242485723266823">Profil Chrome membantu Anda memisahkan berbagai bagian dalam hidup Anda. Tambahkan profil baru sekarang.</translation>
 <translation id="684888714667046800">Tidak dapat terhubung ke internet. Jika Anda menggunakan firewall, pastikan <ph name="PRODUCT_EXE_NAME" /> tercantum dalam daftar yang diizinkan.</translation>
+<translation id="6859580922007887573">Tab untuk melanjutkan</translation>
 <translation id="6877155553248388166">pojok kanan bawah area penelusuran: kanan <ph name="RIGHT" />%, bawah <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Mengupdate Chrome</translation>
 <translation id="6885412569789873916">Aplikasi Chrome Beta</translation>
@@ -616,10 +622,12 @@
 <translation id="7804364787702057554">Akun Anda di Chrome</translation>
 <translation id="7808348361785373670">Hapus dari Chrome...</translation>
 <translation id="7827099906024714326">Chrome perlu memverifikasi diri Anda sebelum beberapa data dapat disimpan di Akun Google Anda dan digunakan di semua perangkat Anda. Jika Anda logout sekarang, data ini akan dihapus.</translation>
+<translation id="7832314606810669113">Untuk mendapatkan bookmark dan info Anda yang lain di semua perangkat Anda, login ke Chrome. Bookmark ini akan disimpan di Akun Google Anda setelah Anda login.</translation>
 <translation id="7845233973568007926">Terima kasih telah menginstal. Anda harus memulai ulang komputer sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Lanjutkan dari halaman terakhir yang dibuka: Chrome dapat memulihkan tab Anda setiap kali Anda memulai ulang. Untuk mengaktifkannya, buka</translation>
 <translation id="7872446069773932638">Mendownload ... <ph name="SECONDS" /> detik lagi</translation>
 <translation id="7886087451482920026">Pilih teks dengan Google Lens</translation>
+<translation id="7887929410013642057">Selalu Tampilkan Pintasan Mode AI</translation>
 <translation id="7890208801193284374">Jika Anda berbagi komputer, teman dan keluarga bisa menjelajah secara terpisah dan menyiapkan Chrome sesuai keinginannya.</translation>
 <translation id="7896673875602241923">Seseorang telah masuk ke Chrome pada komputer ini sebagai <ph name="ACCOUNT_EMAIL_LAST" />. Harap buat pengguna Chrome baru untuk memisahkan informasi Anda.</translation>
 <translation id="7904985524660297937">Coba Gemini di Google Chrome</translation>
@@ -636,6 +644,7 @@
 <translation id="8013993649590906847">Jika gambar tidak memiliki deskripsi yang berguna, Chrome akan mencoba memberikan deskripsi untuk Anda. Untuk membuat deskripsi, gambar akan dikirim ke Google.</translation>
 <translation id="8019103195866286235">Ekstensi ini dibatalkan publikasinya oleh developer, dan mungkin tidak aman. Hapus dari Chrome agar ekstensi ini tidak dapat lagi melihat dan mengubah data Anda di situs yang Anda kunjungi, termasuk info pribadi Anda.</translation>
 <translation id="8040768861829554732">Salah satu ekstensi ingin Anda login ke Chrome</translation>
+<translation id="8041795619940733262">Tanya Google<ph name="LINE_BREAK" />tentang tab ini</translation>
 <translation id="80471789339884597">Terima kasih telah menginstal. Anda harus memulai ulang semua browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Profil Chrome lainnya</translation>

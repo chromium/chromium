@@ -184,6 +184,7 @@
 <translation id="2903493209154104877">주소</translation>
 <translation id="2910701580606108292">사이트에서 보호된 콘텐츠를 재생하도록 허용하기 전에 확인</translation>
 <translation id="2918484639460781603">설정으로 이동</translation>
+<translation id="293060180538644702">Chrome 도움말 알림 받기</translation>
 <translation id="2932883381142163287">악용사례 신고</translation>
 <translation id="2939338015096024043">사용 설정하면 사이트에서 카메라 위치 추적 및 주변 환경 확인을 요청할 수 있습니다. 사용 중지하면 사이트에서 카메라 위치를 추적하거나 주변 환경을 확인할 수 없습니다.</translation>
 <translation id="2968755619301702150">인증서 뷰어</translation>
@@ -244,6 +245,7 @@
 <translation id="3611658447322220736">최근에 닫은 사이트에서 데이터 송수신을 완료할 수 있음</translation>
 <translation id="3619294456800709762">사이트에서 PIP 모드를 자동으로 시작할 수 있음</translation>
 <translation id="3628308229821498208">추천 검색어</translation>
+<translation id="3632460243282703117">수신</translation>
 <translation id="363748948745453283">대략적인 위치 사용 중</translation>
 <translation id="3641456520301071208">사이트에서 위치 정보를 요청할 수 있음</translation>
 <translation id="3658847490588580244">기본 브라우저 하단 시트</translation>
@@ -522,6 +524,7 @@
 <translation id="662080504995468778">머무르기</translation>
 <translation id="6630443592285535486">여기에 16진수 입력</translation>
 <translation id="6635327442719709864">사용 설정하면 사이트에서 직렬 포트 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 직렬 포트를 사용할 수 없습니다.</translation>
+<translation id="6669390930482049506">알림 받기</translation>
 <translation id="6678072580827808850">안전 확인 검토</translation>
 <translation id="6682057173375416470">새 탭 페이지에서 추천 기사 보기</translation>
 <translation id="6683865262523156564">이 사이트는 내 활동을 볼 수 있는 그룹에 있습니다. 그룹 정의 기준: <ph name="RWS_OWNER" /></translation>
@@ -631,6 +634,7 @@
 <translation id="7990211076305263060">사용 설정하면 사이트에서 마이크 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 마이크를 사용할 수 없습니다.</translation>
 <translation id="8007176423574883786">기기에 대해 사용 중지됨</translation>
 <translation id="802154636333426148">다운로드 실패</translation>
+<translation id="8033047164036749181">이 사이트의 알림 수신</translation>
 <translation id="8042586301629853791">정렬 기준:</translation>
 <translation id="8051193500142930381">카메라가 필요한 기능이 작동하지 않음</translation>
 <translation id="8056330801132235235">Chrome 기본값</translation>

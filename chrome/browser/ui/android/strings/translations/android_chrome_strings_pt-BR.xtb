@@ -496,6 +496,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3114507951000454849">Leia as notícias de hoje <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Mais detalhes</translation>
 <translation id="3123734510202723619">Anúncios</translation>
+<translation id="3134385238404760368">Nenhuma guia recente</translation>
 <translation id="314939179385989105">Página inicial do Chrome</translation>
 <translation id="3158667104057012316">Ordenar manualmente</translation>
 <translation id="3159335509547415276">Saiba mais sobre contas bloqueadas.</translation>
@@ -818,6 +819,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4577115723294378384">Ordenar de A a Z</translation>
 <translation id="4578289292431526768">Vamos lá</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuto atrás}one{# minutos atrás}other{# minutos atrás}}</translation>
+<translation id="4585751637295612750">Abra uma nova guia para adicioná-la à sua pergunta</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Esta página off-line é de <ph name="CREATION_TIME" /> e pode ser diferente da versão on-line.</translation>
 <translation id="4595237294768457124">Abra uma página Nova Guia.</translation>
@@ -1339,6 +1341,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="670498945988402717">Verificado ontem</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">Seu timer para <ph name="FQDN" /> chegou ao fim. Ele será iniciado novamente amanhã.</translation>
+<translation id="6716434912087331834">Para restaurar uma nova janela, reduza o total de janelas ativas para <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou menos. As janelas inativas são excluídas após 6 meses.</translation>
 <translation id="6723740634201835758">Na Conta do Google</translation>
 <translation id="6734310707649923383">Você pode consultar as páginas visitadas ou excluir os registros do histórico</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, guia anônima com gravação fixada</translation>
@@ -1656,6 +1659,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> está desatualizado.</translation>
 <translation id="7944772052836377867">A sincronização precisa confirmar sua identidade</translation>
 <translation id="7951102827450076904">Sempre abrir PDFs baixados</translation>
+<translation id="7952479614398473176">Para abrir uma nova janela, reduza o total de janelas ativas para <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou menos.</translation>
 <translation id="7957413488482743710">Com o cartão virtual, você oculta o físico e se protege contra tentativas de fraude. <ph name="BEGIN_LINK1" />Saiba mais sobre cartões virtuais<ph name="END_LINK1" />.</translation>
 <translation id="7959485987650214982">Guias neste dispositivo</translation>
 <translation id="7961926449547174351">Você desativou o acesso ao armazenamento. Acesse as Configurações para reativá-lo.</translation>

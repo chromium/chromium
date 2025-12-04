@@ -38,6 +38,7 @@
 <translation id="141901961143729572">Podziel się swoimi wrażeniami</translation>
 <translation id="1465192221147974788">Aby udostępnić okno, pozwól Chromium na nagrywanie ekranu w ustawieniach systemu.</translation>
 <translation id="1478370723027452770">Pomoc dotycząca Chrome for Testing</translation>
+<translation id="1496875977627931224">Cześć <ph name="USER_NAME" />,<ph name="LINE_BREAK" />nco dziś chodzi Ci po głowie?</translation>
 <translation id="1497802159252041924">Błąd instalacji: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Ta strona jest zabezpieczona</translation>
 <translation id="1524282610922162960">Udostępnij kartę Chromium</translation>
@@ -191,6 +192,7 @@
 <translation id="3103660991484857065">Instalator nie może prawidłowo rozpakować archiwum. Pobierz Chromium ponownie.</translation>
 <translation id="310459126943037700">Nie udało się ukończyć zadań.</translation>
 <translation id="3130323860337406239">Chromium używa Twojego mikrofonu.</translation>
+<translation id="3130333203120345554">Nowe wyszukiwanie</translation>
 <translation id="3137969841538672700">Przeciągnij, aby wyszukać</translation>
 <translation id="3144188012276422546">Ta karta wykorzystuje dodatkowe zasoby. Aby zwiększyć wydajność, pozwól Chromium ją dezaktywować.</translation>
 <translation id="3149163023759831301">Aby udostępnić ekran, pozwól Chromium na nagrywanie ekranu w ustawieniach systemu</translation>
@@ -346,6 +348,7 @@
 <translation id="4994636714258228724">Dodaj siebie do Chromium</translation>
 <translation id="5123973130450702873">Chromium potrzebuje uprawnień do śledzenia rąk</translation>
 <translation id="5141988424377517949">Od jakiegoś czasu nie odwiedzasz tej witryny. Przeglądarka Chromium usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
+<translation id="5167819546851111585">Co dziś chodzi Ci po głowie?</translation>
 <translation id="5174969993834422967">Zazwyczaj blokujesz powiadomienia. Aby zezwolić tej stronie na wysyłanie powiadomień, kliknij ikonę powiadomienia w prawym rogu paska lokalizacji.</translation>
 <translation id="5174983315706567306">Za mało miejsca na dysku.</translation>
 <translation id="5187123684706427865">Konto Chromium wymaga ponownego uwierzytelnienia</translation>
@@ -378,6 +381,7 @@
 <translation id="5496810170689441661">Chromium próbuje edytować hasła. Aby na to zezwolić, podaj swoje hasło do systemu Windows.</translation>
 <translation id="5524890928877629608">lewy górny róg obszaru wyszukiwania: po lewej stronie <ph name="LEFT" />%, u góry <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Otwieranie plików PDF w Chromium</translation>
+<translation id="5536164441519929134">Zapytaj<ph name="LINE_BREAK" />o tę kartę</translation>
 <translation id="5579324208890605088">Błąd uruchamiania: uruchom instalator jako zwykły użytkownik, a nie jako administrator.</translation>
 <translation id="5580770360767802657">Używaj domyślnie przeglądarki Chromium i przypnij ją</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
@@ -494,6 +498,7 @@
 Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub użyj nowszej wersji Chromium.</translation>
 <translation id="6729124504294600478">Aby korzystać z personalizacji i innych funkcji, uwzględnij Chromium w Aktywności w internecie i aplikacjach oraz w połączonych usługach Google</translation>
 <translation id="6734291798041940871">Chromium jest już zainstalowany dla wszystkich użytkowników tego komputera.</translation>
+<translation id="6742093177587589736">Aby mieć dostęp do zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chromium. Ta zakładka zostanie zapisana na Twoim koncie Google, gdy się zalogujesz.</translation>
 <translation id="6751374565094704799">Witryny będą działać szybciej dzięki mechanizmowi V8 w przeglądarce Chromium, ale będzie ona trochę mniej odporna na ataki. To ustawienie jest włączone.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Niektóre dane z Chromium nie zostały jeszcze zapisane na Twoim koncie Google. Zanim się wylogujesz, odczekaj kilka minut. Jeśli wylogujesz się teraz, te dane (1 element) zostaną usunięte.}few{Niektóre dane z Chromium nie zostały jeszcze zapisane na Twoim koncie Google. Zanim się wylogujesz, odczekaj kilka minut. Jeśli wylogujesz się teraz, te dane ({count} elementy) zostaną usunięte.}many{Niektóre dane z Chromium nie zostały jeszcze zapisane na Twoim koncie Google. Zanim się wylogujesz, odczekaj kilka minut. Jeśli wylogujesz się teraz, te dane ({count} elementów) zostaną usunięte.}other{Niektóre dane z Chromium nie zostały jeszcze zapisane na Twoim koncie Google. Zanim się wylogujesz, odczekaj kilka minut. Jeśli wylogujesz się teraz, te dane ({count} elementu) zostaną usunięte.}}</translation>
 <translation id="67706546131546258">Chromium zaleca przeskanowanie tego pliku, bo może on być niebezpieczny.</translation>

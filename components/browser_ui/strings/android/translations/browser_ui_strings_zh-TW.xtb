@@ -184,6 +184,7 @@
 <translation id="2903493209154104877">地址</translation>
 <translation id="2910701580606108292">允許網站播放受保護的內容前，必須先詢問你</translation>
 <translation id="2918484639460781603">前往設定</translation>
+<translation id="293060180538644702">接收 Chrome 提示通知</translation>
 <translation id="2932883381142163287">檢舉濫用情形</translation>
 <translation id="2939338015096024043">如果啟用，網站就可以要求追蹤攝影機位置，並瞭解周遭環境動靜。如果停用，網站將無法追蹤攝影機位置，也無法瞭解周遭環境動靜。</translation>
 <translation id="2968755619301702150">憑證檢視器</translation>
@@ -244,6 +245,7 @@
 <translation id="3611658447322220736">最近關閉的網站可以完成資料收發作業</translation>
 <translation id="3619294456800709762">網站可以自動進入子母畫面</translation>
 <translation id="3628308229821498208">建議搜尋</translation>
+<translation id="3632460243282703117">訂閱</translation>
 <translation id="363748948745453283">使用大概位置</translation>
 <translation id="3641456520301071208">網站可以要求取得你的位置資訊</translation>
 <translation id="3658847490588580244">預設瀏覽器底部功能表</translation>
@@ -522,6 +524,7 @@
 <translation id="662080504995468778">不離開</translation>
 <translation id="6630443592285535486">在這裡輸入十六進位值</translation>
 <translation id="6635327442719709864">如果啟用，網站就可以要求使用序列埠。如果停用，網站將無法使用序列埠。</translation>
+<translation id="6669390930482049506">通知我</translation>
 <translation id="6678072580827808850">查看安全檢查</translation>
 <translation id="6682057173375416470">在新分頁顯示推薦文章</translation>
 <translation id="6683865262523156564">這個網站所屬的群組可以查看你的活動。這是由 <ph name="RWS_OWNER" /> 定義的群組</translation>
@@ -631,6 +634,7 @@
 <translation id="7990211076305263060">如果啟用，網站就可以要求使用麥克風。如果停用，網站將無法使用麥克風。</translation>
 <translation id="8007176423574883786">已在這個裝置上關閉</translation>
 <translation id="802154636333426148">下載失敗</translation>
+<translation id="8033047164036749181">訂閱這個網站的通知</translation>
 <translation id="8042586301629853791">排序依據：</translation>
 <translation id="8051193500142930381">需要攝影機的功能將無法運作</translation>
 <translation id="8056330801132235235">Chrome 預設主題</translation>

@@ -75,7 +75,6 @@
 <translation id="311432875115153175">ჩანართების ჯგუფების სია დახურულია</translation>
 <translation id="3194464645767632461">შეფასება</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართის დამატება ჯგუფში}other{<ph name="TABS_COUNT_MANY" /> ჩანართის დამატება ჯგუფში}}</translation>
-<translation id="3293080634164207409">ჩანართების დამატება</translation>
 <translation id="3328308545011660196">შემოთავაზება: როგორც ჩანს, <ph name="NUMBER_OF_TABS" /> ჩანართი დაკავშირებულია. გსურთ მათი დაჯგუფება?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1-დღიანი არააქტიურობის შემდეგ}other{<ph name="DAY_COUNT_MANY" />-დღიანი არააქტიურობის შემდეგ}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ახალი ჩანართი}other{<ph name="MANY_ADDED" /> ახალი ჩანართი}}</translation>
@@ -178,6 +177,7 @@
 <translation id="7326879924029668159">იხილეთ დაბრუნების წესები და სხვა ინფორმაცია</translation>
 <translation id="7352298686197644113">იხილეთ, რომელ ერთეულს აქვს უფრო დაბალი ფასი თქვენს გახსნილ ჩანართებში</translation>
 <translation id="7369451074646620503">ჩანართების ჯგუფი „<ph name="TAB_GROUP_NAME" />“ აღარაა ხელმისაწვდომი</translation>
+<translation id="7402375256128852434">ბოლო ჩანართების დამატება</translation>
 <translation id="7452985128687107478">ჩანართების ჯგუფები ავტომატურად შეინახება და განახლდება თქვენს ყველა მოწყობილობაში</translation>
 <translation id="747459581954555080">ყველას აღდგენა</translation>
 <translation id="7489558427602531799">ჩანართების ჯგუფის მარჯვნივ გადატანა</translation>

@@ -184,6 +184,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="2903493209154104877">Adresser</translation>
 <translation id="2910701580606108292">Spørg, før websites begynder at afspille beskyttet indhold</translation>
 <translation id="2918484639460781603">Gå til indstillinger</translation>
+<translation id="293060180538644702">Få notifikationer med tips til Chrome</translation>
 <translation id="2932883381142163287">Rapportér misbrug</translation>
 <translation id="2939338015096024043">Når dette er slået til, kan websites anmode om tilladelse til at registrere din kameraposition og få oplysninger om dine omgivelser. Når dette er slået fra, kan websites ikke registrere din kameraposition eller få oplysninger om dine omgivelser.</translation>
 <translation id="2968755619301702150">Certifikatfremviser</translation>
@@ -244,6 +245,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="3611658447322220736">Nyligt lukkede websites kan gennemføre afsendelse og modtagelse af data</translation>
 <translation id="3619294456800709762">Websites kan automatisk åbne integreret billede</translation>
 <translation id="3628308229821498208">Foreslåede søgninger</translation>
+<translation id="3632460243282703117">Abonner</translation>
 <translation id="363748948745453283">Bruger omtrentlig lokation</translation>
 <translation id="3641456520301071208">Websites kan anmode om adgang til din lokation</translation>
 <translation id="3658847490588580244">Felt i bunden med standardbrowser</translation>
@@ -522,6 +524,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="662080504995468778">Bliv her</translation>
 <translation id="6630443592285535486">Angiv hex-kode her</translation>
 <translation id="6635327442719709864">Når denne indstilling er aktiveret, kan websites anmode om at anvende serieporte. Når denne indstilling er deaktiveret, kan websites ikke anvende serieporte.</translation>
+<translation id="6669390930482049506">Send mig notifikationer</translation>
 <translation id="6678072580827808850">Gennemgå sikkerhedstjek</translation>
 <translation id="6682057173375416470">Få forslag til artikler på siden Ny fane</translation>
 <translation id="6683865262523156564">Dette website er i en gruppe, der kan se din aktivitet. Gruppen er defineret af <ph name="RWS_OWNER" /></translation>
@@ -631,6 +634,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7990211076305263060">Når dette er slået til, kan websites anmode om at anvende din mikrofon. Når dette er slået fra, kan websites ikke anvende din mikrofon.</translation>
 <translation id="8007176423574883786">Deaktiveret på denne enhed</translation>
 <translation id="802154636333426148">Download mislykkedes</translation>
+<translation id="8033047164036749181">Abonner på notifikationer fra dette website</translation>
 <translation id="8042586301629853791">Sortér efter:</translation>
 <translation id="8051193500142930381">Funktioner, der skal bruge et kamera, fungerer ikke</translation>
 <translation id="8056330801132235235">Standard i Chrome</translation>

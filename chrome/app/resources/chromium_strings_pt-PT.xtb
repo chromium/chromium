@@ -501,6 +501,7 @@
 Algumas funcionalidades podem não estar disponíveis. Especifique um diretório de perfil diferente ou utilize uma versão mais recente do Chromium.</translation>
 <translation id="6729124504294600478">Para usar a personalização e outras funcionalidades, inclua o Chromium na Atividade da Web e de apps e nos serviços Google associados</translation>
 <translation id="6734291798041940871">O Chromium já está instalado para todos os utilizadores no seu computador.</translation>
+<translation id="6742093177587589736">Para aceder aos seus marcadores e muito mais em todos os seus dispositivos, inicie sessão no Chromium. Este marcador é guardado na sua Conta Google depois de iniciar sessão.</translation>
 <translation id="6751374565094704799">Acelera os sites com o motor V8 do Chromium, mas torna o Chromium ligeiramente menos resistente a ataques. Esta definição está ativada.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Alguns dos seus dados do Chromium ainda não foram guardados na sua Conta Google. Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados (1 item) são eliminados.}other{Alguns dos seus dados do Chromium ainda não foram guardados na sua Conta Google. Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados ({count} itens) vão ser eliminados.}}</translation>
 <translation id="67706546131546258">O Chromium recomenda que analise este ficheiro porque pode ser perigoso.</translation>
@@ -652,6 +653,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8493179195440786826">O Chromium Está Desatualizado</translation>
 <translation id="850264194101621529">Obrigado por escolher o Chromium como o navegador predefinido!</translation>
 <translation id="8522801943730206384">O Chromium consegue verificar as suas palavras-passe quando as guarda</translation>
+<translation id="8548787790260785208">Receba um aviso se o Chromium encontrar uma das suas palavras-passe numa violação de dados pública</translation>
 <translation id="8555465886620020932">Erro no serviço: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Pode fixar a pesquisa de imagens para acesso fácil. Clique no botão Fixar na parte superior do painel lateral</translation>
 <translation id="856656450041460113">Pesquisar na lista de idiomas</translation>

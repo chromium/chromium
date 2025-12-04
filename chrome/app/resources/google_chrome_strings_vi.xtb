@@ -45,6 +45,7 @@
 <translation id="146866447420868597">Bạn muốn đăng nhập vào Chrome?</translation>
 <translation id="1476347941828409626">&amp;Quản lý hồ sơ trên Chrome</translation>
 <translation id="1492280395845991349">Chạy lại để hoàn tất quá trình cập nhật Chrome</translation>
+<translation id="1496875977627931224">Chào <ph name="USER_NAME" />,<ph name="LINE_BREAK" />hôm nay bạn đang nghĩ gì vậy?</translation>
 <translation id="1497802159252041924">Lỗi cài đặt: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Tùy chỉnh hồ sơ mới của bạn trên Chrome</translation>
 <translation id="1518627427551567882">Trang này được bảo vệ</translation>
@@ -200,6 +201,7 @@
 <translation id="3112458742631356345">Chrome đã chặn tệp tải xuống này vì tệp này ít được tải xuống và có thể nguy hiểm</translation>
 <translation id="3114643501466072395">Để kiểm tra xem các mật khẩu khác của bạn có bị ảnh hưởng bởi các vụ rò rỉ dữ liệu và sự cố bảo mật khác hay không, hãy <ph name="BEGIN_LINK" />đăng nhập vào Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome đã chặn tệp tải xuống này vì tệp lưu trữ gồm các tệp khác có thể ẩn chứa phần mềm độc hại</translation>
+<translation id="3130333203120345554">Lượt tìm kiếm mới</translation>
 <translation id="3135560418014806498">Thêm hồ sơ Chrome</translation>
 <translation id="3137969841538672700">Kéo để tìm</translation>
 <translation id="3140883423282498090">Thay đổi của bạn sẽ có hiệu lực vào lần tiếp theo bạn chạy lại Google Chrome.</translation>
@@ -322,6 +324,7 @@
 <translation id="459622048091363950">Sau khi Chrome có quyền truy cập, các trang web sẽ có thể yêu cầu bạn cấp quyền truy cập.</translation>
 <translation id="4598116752460667024">Tìm quy trình bất kỳ trong danh sách.</translation>
 <translation id="4600710005438004015">Chrome không thể cập nhật lên phiên bản mới nhất nên bạn đang bỏ lỡ các tính năng và bản vá bảo mật mới.</translation>
+<translation id="4606805686144157064">Nhận cảnh báo nếu Chrome phát hiện một trong những mật khẩu của bạn bị lộ trong sự cố rò rỉ dữ liệu công khai</translation>
 <translation id="4608435347866444037">Sử dụng Google Ống kính để tìm kiếm hình ảnh này</translation>
 <translation id="4624065194742029982">Chế độ ẩn danh trên Chrome</translation>
 <translation id="4627412468266359539">Không bắt buộc: Giúp cải thiện các tính năng và hiệu suất của ChromeOS Flex bằng cách tự động gửi dữ liệu sử dụng và thông tin chẩn đoán cho Google.</translation>
@@ -365,6 +368,7 @@
 <translation id="5139423532931106058">Tuỳ chỉnh hồ sơ của bạn trên Chrome</translation>
 <translation id="5163087008893166964">Chào mừng bạn đến với Chrome. Cửa sổ trình duyệt mới đã mở ra</translation>
 <translation id="5166439563123238795">Chrome cần có quyền theo dõi cử chỉ tay của bạn</translation>
+<translation id="5167819546851111585">Hôm nay, bạn đang nghĩ gì?</translation>
 <translation id="5170938038195470297">Không thể sử dụng hồ sơ của bạn vì hồ sơ được tạo từ phiên bản Google Chrome mới hơn.
 
 Một số tính năng có thể không khả dụng. Vui lòng chỉ định thư mục hồ sơ khác hoặc sử dụng phiên bản Chrome mới hơn.</translation>
@@ -623,6 +627,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7804364787702057554">Tài khoản của bạn trong Chrome</translation>
 <translation id="7808348361785373670">Xóa khỏi Chrome...</translation>
 <translation id="7827099906024714326">Chrome cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất bây giờ, dữ liệu này sẽ bị xoá.</translation>
+<translation id="7832314606810669113">Để sử dụng dấu trang và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome. Dấu trang này sẽ được lưu trong Tài khoản Google của bạn sau khi bạn đăng nhập.</translation>
 <translation id="7845233973568007926">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại máy tính trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Tiếp tục từ nơi bạn đã dừng lại: Chrome có thể khôi phục các thẻ của bạn mỗi khi bạn khởi động lại. Để bật tính năng này, hãy chuyển đến</translation>
 <translation id="7872446069773932638">Đang tải xuống... Còn <ph name="SECONDS" /> giây</translation>
@@ -644,6 +649,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8013993649590906847">Chrome sẽ cố gắng mô tả cho bạn những hình ảnh không có nội dung mô tả hữu ích. Để tạo nội dung mô tả, các hình ảnh sẽ được gửi đến Google.</translation>
 <translation id="8019103195866286235">Tiện ích này đã bị nhà phát triển huỷ phát hành và có thể không an toàn. Hãy xoá khỏi Chrome để tiện ích này không thể xem và thay đổi dữ liệu của bạn (bao gồm cả thông tin cá nhân) trên các trang web bạn truy cập nữa.</translation>
 <translation id="8040768861829554732">Một tiện ích muốn bạn đăng nhập vào Chrome</translation>
+<translation id="8041795619940733262">Hỏi Google<ph name="LINE_BREAK" />về thẻ này</translation>
 <translation id="80471789339884597">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại tất cả trình duyệt trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Các hồ sơ khác trên Chrome</translation>

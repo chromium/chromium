@@ -496,6 +496,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">세부정보 더보기</translation>
 <translation id="3123734510202723619">공지사항</translation>
+<translation id="3134385238404760368">최근 탭 없음</translation>
 <translation id="314939179385989105">Chrome 홈페이지</translation>
 <translation id="3158667104057012316">직접 정렬</translation>
 <translation id="3159335509547415276">차단된 계정에 관해 자세히 알아보기</translation>
@@ -817,6 +818,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4577115723294378384">오름차순으로 정렬</translation>
 <translation id="4578289292431526768">시작</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{#분 전}other{#분 전}}</translation>
+<translation id="4585751637295612750">새 탭을 열어 질문에 추가하세요.</translation>
 <translation id="4587589328781138893">사이트</translation>
 <translation id="4594952190837476234">이 오프라인 페이지는 <ph name="CREATION_TIME" />에 생성되었으며 온라인 버전과 다를 수 있습니다.</translation>
 <translation id="4595237294768457124">새 탭 페이지를 엽니다.</translation>
@@ -1338,6 +1340,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="670498945988402717">어제 확인됨</translation>
 <translation id="6710213216561001401">이전</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> 타이머가 종료되었습니다. 타이머는 내일 다시 시작됩니다.</translation>
+<translation id="6716434912087331834">새 창을 복원하려면 활성 창의 총개수를 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />개 이하로 줄이세요. 비활성 창은 6개월 후에 삭제됩니다.</translation>
 <translation id="6723740634201835758">내 Google 계정에서</translation>
 <translation id="6734310707649923383">방문한 페이지를 확인하거나 방문 기록에서 삭제할 수 있습니다</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, 고정되고 녹화 중인 시크릿 탭</translation>
@@ -1655,6 +1658,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />이(가) 이전 버전입니다.</translation>
 <translation id="7944772052836377867">동기화를 위해 본인 인증 필요</translation>
 <translation id="7951102827450076904">다운로드한 PDF 항상 열기</translation>
+<translation id="7952479614398473176">새 창을 열려면 활성 창의 총개수를 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />개 이하로 줄이세요.</translation>
 <translation id="7957413488482743710">가상 카드는 실제 카드를 숨겨서 사기당할 위험을 줄여줍니다. <ph name="BEGIN_LINK1" />가상 카드 자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">이 기기의 탭</translation>
 <translation id="7961926449547174351">저장소 액세스 권한을 사용 중지했습니다. 설정으로 이동하여 사용 설정해 주세요.</translation>

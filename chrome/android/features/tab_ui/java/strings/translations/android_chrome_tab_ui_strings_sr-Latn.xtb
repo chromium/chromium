@@ -75,7 +75,6 @@
 <translation id="311432875115153175">Lista grupe kartica je zatvorena</translation>
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Dodajte <ph name="TABS_COUNT_ONE" /> karticu u grupu}one{Dodajte <ph name="TABS_COUNT_MANY" /> karticu u grupu}few{Dodajte <ph name="TABS_COUNT_MANY" /> kartice u grupu}other{Dodajte <ph name="TABS_COUNT_MANY" /> kartica u grupu}}</translation>
-<translation id="3293080634164207409">Dodajte kartice</translation>
 <translation id="3328308545011660196">Predlog: Kartice (<ph name="NUMBER_OF_TABS" />) deluju povezano. Želite li da ih grupišete?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Posle 1 dana neaktivnosti}one{Posle <ph name="DAY_COUNT_MANY" /> dana neaktivnosti}few{Posle <ph name="DAY_COUNT_MANY" /> dana neaktivnosti}other{Posle <ph name="DAY_COUNT_MANY" /> dana neaktivnosti}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nova kartica}one{<ph name="MANY_ADDED" /> nova kartica}few{<ph name="MANY_ADDED" /> nove kartice}other{<ph name="MANY_ADDED" /> novih kartica}}</translation>
@@ -178,6 +177,7 @@
 <translation id="7326879924029668159">Pogledajte smernice za vraćanje i drugo</translation>
 <translation id="7352298686197644113">Pogledajte koja stavka na otvorenim karticama ima nižu cenu</translation>
 <translation id="7369451074646620503">Grupa kartica <ph name="TAB_GROUP_NAME" /> više nije dostupna</translation>
+<translation id="7402375256128852434">Dodajte nedavne kartice</translation>
 <translation id="7452985128687107478">Grupe kartica se automatski čuvaju i ažuriraju na svim uređajima</translation>
 <translation id="747459581954555080">Vrati sve</translation>
 <translation id="7489558427602531799">Premesti grupu kartica nadesno</translation>

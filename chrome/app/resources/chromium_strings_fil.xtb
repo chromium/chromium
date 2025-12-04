@@ -41,6 +41,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="141901961143729572">I-share ang iyong mga naiisip</translation>
 <translation id="1465192221147974788">Para i-share ang iyong window, payagan ang pag-record ng screen para sa Chromium sa System Settings.</translation>
 <translation id="1478370723027452770">Humingi ng tulong para sa Chrome na Pang-test</translation>
+<translation id="1496875977627931224">Kumusta <ph name="USER_NAME" />,<ph name="LINE_BREAK" />ano ang iniisip mo ngayon?</translation>
 <translation id="1497802159252041924">Error sa pag-install: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Pinoprotektahan ang page na ito</translation>
 <translation id="1524282610922162960">Magbahagi ng tab ng Chromium</translation>
@@ -194,6 +195,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3103660991484857065">Nabigong i-uncompress ng installer ang archive. Mangyaring i-download muli ang Chromium.</translation>
 <translation id="310459126943037700">Hindi natapos ang (mga) gawain.</translation>
 <translation id="3130323860337406239">Ginagamit ng Chromium ang iyong mikropono.</translation>
+<translation id="3130333203120345554">Bagong paghahanap</translation>
 <translation id="3137969841538672700">Mag-drag para maghanap</translation>
 <translation id="3144188012276422546">Gumagamit ang tab na ito ng mga karagdagang resource. Para pahusayin ang iyong performance, hayaan ang Chromium na gawin itong hindi aktibo.</translation>
 <translation id="3149163023759831301">Para i-share ang iyong screen, payagan ang pag-record ng screen para sa Chromium sa System Settings</translation>
@@ -351,6 +353,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4994636714258228724">Idagdag ang iyong sarili sa Chromium</translation>
 <translation id="5123973130450702873">Kailangan ng Chromium ng pahintulot para i-track ang iyong mga kamay</translation>
 <translation id="5141988424377517949">Hindi mo ito binisita kamakailan. Inalis ng Chromium ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
+<translation id="5167819546851111585">Ano ang iniisip mo ngayon?</translation>
 <translation id="5174969993834422967">Kadalasan mong bina-block ang mga notification. Para hayaan ang site na itong abisuhan ka, i-click ang icon ng notification sa kanang sulok ng iyong bar ng lokasyon.</translation>
 <translation id="5174983315706567306">Hindi sapat ang disk space.</translation>
 <translation id="5187123684706427865">Nagre-require ang Chromium account ng pag-authenticate ulit</translation>
@@ -383,6 +386,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5496810170689441661">Sinusubukan ng Chromium na i-edit ang mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="5524890928877629608">kaliwang sulok sa itaas ng lugar para sa paghahanap: kaliwa <ph name="LEFT" />%, itaas <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Magbukas ng mga PDF sa Chromium</translation>
+<translation id="5536164441519929134">Magtanong<ph name="LINE_BREAK" />tungkol sa tab na ito</translation>
 <translation id="5579324208890605088">Nagkaroon ng error sa startup: patakbuhin ang installer bilang karaniwang user, hindi bilang administrator.</translation>
 <translation id="5580770360767802657">Gamitin ang Chromium bilang default at i-pin ito</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
@@ -499,6 +503,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktoryo ng profile o gumamit ng mas bagong bersyon ng Chromium.</translation>
 <translation id="6729124504294600478">Para makuha ang pag-personalize at iba pang feature, isama ang Chromium sa Aktibidad sa Web at App at mga naka-link na serbisyo ng Google</translation>
 <translation id="6734291798041940871">Naka-install na ang Chromium para sa lahat ng user sa iyong computer.</translation>
+<translation id="6742093177587589736">Para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo, mag-sign in sa Chromium. Mase-save ang bookmark na ito sa iyong Google Account pagkatapos mong mag-sign in.</translation>
 <translation id="6751374565094704799">Pinapabilis ang mga site gamit ang V8 na engine ng Chromium pero ginagawang bahagyang hindi gaanong resistant sa mga attack ang Chromium. Naka-on ang setting na ito.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium. Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito (1 item).}one{Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium. Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito ({count} item).}other{Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium. Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito ({count} na item).}}</translation>
 <translation id="67706546131546258">Inirerekomenda ng Chromium na i-scan ang file na ito dahil posibleng mapanganib ito.</translation>

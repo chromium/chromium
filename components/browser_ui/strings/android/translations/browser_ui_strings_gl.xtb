@@ -184,6 +184,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="2903493209154104877">Enderezos</translation>
 <translation id="2910701580606108292">Preguntar antes de permitir que os sitios reproduzan contido protexido</translation>
 <translation id="2918484639460781603">Ir a Configuración</translation>
+<translation id="293060180538644702">Recibe notificacións de Consellos de Chrome</translation>
 <translation id="2932883381142163287">Informar de uso inadecuado</translation>
 <translation id="2939338015096024043">Cando esta opción está activada, os sitios poden pedirche permiso para facer un seguimento da posición da cámara e obter información do que te rodea. Cando esta opción está desactivada, os sitios non poden facer o seguimento da posición da cámara nin obter información do que te rodea.</translation>
 <translation id="2968755619301702150">Visor de certificados</translation>
@@ -244,6 +245,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="3611658447322220736">Os sitios pechados recentemente poden rematar de enviar e recibir datos</translation>
 <translation id="3619294456800709762">Os sitios poden acceder ao modo de pantalla superposta automaticamente</translation>
 <translation id="3628308229821498208">Buscas suxeridas</translation>
+<translation id="3632460243282703117">Subscribirse</translation>
 <translation id="363748948745453283">Estase usando a localización aproximada</translation>
 <translation id="3641456520301071208">Os sitios poden pedirche permiso para acceder á localización</translation>
 <translation id="3658847490588580244">Panel inferior do navegador predeterminado</translation>
@@ -522,6 +524,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="662080504995468778">Quedar</translation>
 <translation id="6630443592285535486">Escribe o valor hexadecimal da cor aquí</translation>
 <translation id="6635327442719709864">Cando esta opción está activada, os sitios poden pedir permiso para utilizar portos de serie. Cando está desactivada, os sitios non poden usar eses portos.</translation>
+<translation id="6669390930482049506">Recibir notificación</translation>
 <translation id="6678072580827808850">Revisar Comprobación de seguranza</translation>
 <translation id="6682057173375416470">Obter artículos suxeridos na páxina Nova pestana</translation>
 <translation id="6683865262523156564">Este sitio está nun grupo que pode ver a túa actividade. O grupo está definido por <ph name="RWS_OWNER" /></translation>
@@ -631,6 +634,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7990211076305263060">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar o micrófono. Cando esta opción está desactivada, os sitios non poden utilizar o micrófono.</translation>
 <translation id="8007176423574883786">Desactivada para este dispositivo</translation>
 <translation id="802154636333426148">Produciuse un erro na descarga</translation>
+<translation id="8033047164036749181">Subscribirse ás notificacións deste sitio</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8051193500142930381">As funcións que requiran unha cámara non estarán dispoñibles</translation>
 <translation id="8056330801132235235">Chrome predeterminado</translation>

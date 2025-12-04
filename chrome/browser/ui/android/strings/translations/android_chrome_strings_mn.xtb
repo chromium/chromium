@@ -1340,6 +1340,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="670498945988402717">Өчигдөр шалгасан</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
 <translation id="671481426037969117">Таны <ph name="FQDN" />-н цаг хэмжигчийн хугацаа дууссан байна. Энэ нь маргааш дахин эхэлнэ.</translation>
+<translation id="6716434912087331834">Шинэ цонх сэргээхийн тулд идэвхтэй цонхны нийт тоог <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> эсвэл түүнээс цөөн болгож багасгана уу. Идэвхгүй цонхыг 6 сарын дараа устгадаг.</translation>
 <translation id="6723740634201835758">Таны Google бүртгэлд</translation>
 <translation id="6734310707649923383">Та түүхээсээ зочилсон хуудсаа харах эсвэл устгах боломжтой</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, Бэхлэгдэж, бичлэг хийж буй нууцлалтай таб</translation>
@@ -1657,6 +1658,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />-н хугацаа дууссан.</translation>
 <translation id="7944772052836377867">Синк таныг мөн болохыг баталгаажуулах шаардлагатай байна</translation>
 <translation id="7951102827450076904">Татсан PDF-үүдийг үргэлж нээх</translation>
+<translation id="7952479614398473176">Шинэ цонх нээхийн тулд идэвхтэй цонхны нийт тоог <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> эсвэл түүнээс цөөн болгож багасгана уу.</translation>
 <translation id="7957413488482743710">Виртуал карт нь таныг болзошгүй залилангаас хамгаалахад туслахын тулд таны жинхэнэ картыг нуудаг. <ph name="BEGIN_LINK1" />Виртуал картын талаар нэмэлт мэдээлэл авах<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Энэ төхөөрөмж дээрх табууд</translation>
 <translation id="7961926449547174351">Та хадгалах сангийн хандалтыг идэвхгүй болгосон байна, идэвхжүүлэхийн тулд Тохиргоо руу очно уу</translation>

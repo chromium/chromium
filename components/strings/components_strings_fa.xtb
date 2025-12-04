@@ -34,7 +34,7 @@
 <translation id="1060136083665017312">سیستم‌های بازی و کنسول</translation>
 <translation id="1060320201901229167">پاکت کاکو ۵</translation>
 <translation id="1060985736456216896">‏‫Google Pay، نشان‌واره Zip</translation>
-<translation id="1062407476771304334">جایگزینی</translation>
+<translation id="1062407476771304334">جایگزین کردن</translation>
 <translation id="1063822554756965137">فایل‌ها باموفقیت حذف شد</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1065369186007547872">‏‫Chrome تشخیص داده است شما اعلان‌های این سایت را نمی‌خواهید. بنابراین درخواست‌ها پنهان شده‌اند تا از ایجاد مزاحمت جلوگیری شود.</translation>
@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">‏‫IBAN ذخیره شود؟</translation>
 <translation id="1113869188872983271">&amp;واگرد تغییر ترتیب</translation>
 <translation id="1118429183611783760">جاروبرقی و مراقبت از کف</translation>
+<translation id="1119009590493440389">‏‫<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای مدیریت اطلاعات Chrome که در «حساب Google» ذخیره می‌کنید، کلید «جهش» و سپس Enter را فشار دهید</translation>
 <translation id="1122714970786750095">دستگاه‌های الکترونیکی و برقی</translation>
 <translation id="1123753900084781868">درحال‌حاضر «زیرنویس زنده ناشنوایان» در دسترس نیست</translation>
 <translation id="112840717907525620">حافظه پنهان خط‌مشی مورد تأیید است</translation>
@@ -205,7 +206,7 @@
 <translation id="1319245136674974084">برای این برنامه دوباره پرسیده نشود</translation>
 <translation id="1322083935398004629">سیاست</translation>
 <translation id="132301787627749051">جستجوی تصویر بریده‌دان</translation>
-<translation id="1323433172918577554">نمایش موارد بیشتر</translation>
+<translation id="1323433172918577554">بیشتر نشان دادن</translation>
 <translation id="1329916999021038454">ارسال گزارش</translation>
 <translation id="1330449323196174374">سمت چپ تاخوردگی دروازه‌ای</translation>
 <translation id="1333745675627230582">‏بازی کردن بازی «دایناسور Chrome»</translation>
@@ -237,7 +238,7 @@
 <translation id="1374468813861204354">پیشنهادات</translation>
 <translation id="1375198122581997741">درباره نسخه</translation>
 <translation id="1375293861397106342">همه گزینه‌ها در محدوده قیمت معمول <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> قرار دارند</translation>
-<translation id="1376836354785490390">نمایش موارد کمتر</translation>
+<translation id="1376836354785490390">کمتر نشان دادن</translation>
 <translation id="1380591466760231819">تاخوردگی نامه‌مانند</translation>
 <translation id="138218114945450791">آبی روشن</translation>
 <translation id="1382194467192730611">‏سرپرست دستگاه USB را مجاز کرد</translation>
@@ -300,7 +301,7 @@
 <translation id="1465457928007067810">‏‫IBAN در «حساب Google» شما ذخیره شد</translation>
 <translation id="1467432559032391204">چپ</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> کد شما برای <ph name="EMBEDDED_ORIGIN" /> جهت ادامه دادن در <ph name="TOP_ORIGIN" /> است</translation>
-<translation id="1472675084647422956">نمایش بیشتر</translation>
+<translation id="1472675084647422956">بیشتر نشان دادن</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">برای دریافت کمک در نوشتن، ۳ کلمه یا بیشتر وارد کنید</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -966,6 +967,7 @@
 <translation id="2536110899380797252">افزودن نشانی</translation>
 <translation id="2537931901612099523">‏افراد دیگری که از این دستگاه استفاده می‌کنند فعالیت شما را نخواهند دید تا بتوانید مرور خصوصی‌تری داشته باشید. نحوه جمع‌آوری داده‌ها توسط وب‌سایت‌هایی که بازدید می‌کنید و سرویس‌هایی که استفاده می‌کنید (شامل Google) تغییر نخواهد کرد. بارگیری‌ها و نشانک‌ها ذخیره خواهند شد.</translation>
 <translation id="2541219929084442027">صفحه‌هایی که در «برگه‌های ناشناس» مشاهده می‌کنید، پس‌از بستن همه «برگه‌های ناشناس»، در حافظه کوکی، سابقه «جستجو»، یا سابقه مرورگرتان باقی نمی‌ماند. هر فایلی که بارگیری می‌کنید یا نشانکی که ایجاد می‌کنید حفظ می‌شود.</translation>
+<translation id="2541474152868747095">‏برای دریافت سابقه خود از سایر دستگاه‌هایتان، هویتتان را درستی‌سنجی کنید. همیشه می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. Google ممکن است «جستجو» و سایر سرویس‌ها را براساس سابقه‌تان شخصی‌سازی کند.</translation>
 <translation id="2542106216580219892">موج‌سواری</translation>
 <translation id="2543236854123609690">‫<ph name="ORIGIN" />برای خارج شدن از تمام‌صفحه، |<ph name="ACCELERATOR" />| را فشار دهید و نگه دارید</translation>
 <translation id="2544546346215446551">سرپرستْ دستگاهتان را بازراه‌اندازی کرده است</translation>
@@ -1132,6 +1134,7 @@
 <translation id="2839501879576190149">سایت پیش رو جعلی است</translation>
 <translation id="2843623755398178332">به زبانه هم‌رسانی‌شده پیمایش و بزرگ‌نمایی شود؟</translation>
 <translation id="2851291081585704741">آفلاین هستید</translation>
+<translation id="2854163610915391726">‏مدیریت کردن اطلاعات Chrome که در «حساب Google» خود ذخیره می‌کنید</translation>
 <translation id="2858134430383535011">۳۰۰ × ۲۰۰ میلی‌متر</translation>
 <translation id="2859383374160668142">هرزمان خواستید می‌توانید کاهش قیمت محصولاتی را که پیگیری می‌کنید مشاهده کنید.</translation>
 <translation id="2859806420264540918">این سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد.</translation>
@@ -1249,7 +1252,7 @@
 <translation id="3027915437837548462">‏تصویر قالب SVG</translation>
 <translation id="3030331669969285614">این پرچم‌ها از تغییر ناگهانی جلوگیری می‌کنند یا آن را لغو می‌کنند و فقط برای مدت محدودی دردسترس خواهند بود.</translation>
 <translation id="3030542417256082866">وسیله نقلیه ذخیره شود؟</translation>
-<translation id="3033200136993730761">‏نشانی خانه می‌تواند در انجام کارها در سراسر سرویس‌های Google به شما کمک کند، مانند نتایج «جستجو» و مسیرهای مربوط‌تر در Google Maps. می‌توانید در<ph name="BEGIN_LINK" />در «حساب Google» خود (<ph name="ACCOUNT" />)<ph name="END_LINK" /> نشانی‌تان را ویرایش یا حذف کنید.</translation>
+<translation id="3033200136993730761">‏نشانی خانه می‌تواند در انجام کارها در سراسر سرویس‌های Google به شما کمک کند، مانند نتایج «جستجو» و مسیرهای مربوط‌تر در Google Maps. می‌توانید <ph name="BEGIN_LINK" />در «حساب Google» خود (<ph name="ACCOUNT" />)<ph name="END_LINK" /> نشانی‌تان را ویرایش یا حذف کنید.</translation>
 <translation id="3034526003882782781">پیمایش و بزرگ‌نمایی مجاز است</translation>
 <translation id="3036894576201005614">لوازم تمیزکاری خانگی</translation>
 <translation id="3037177537145227281">درحال پیگیری قیمت</translation>
@@ -1618,6 +1621,7 @@
 <translation id="3623041590998910684">‏برای استفاده از دوربین، در <ph name="LINK" /> به Chrome دسترسی دهید.</translation>
 <translation id="3623398832322170566">فیلم‌های عاشقانه</translation>
 <translation id="3624292976554877583">برچسب (مات)</translation>
+<translation id="3626483107624019072">مدیریت داده‌های ذخیره‌شده در حساب</translation>
 <translation id="3628905806504633297">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را به <ph name="DESTINATION_NAME" /> منتقل کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را به <ph name="DESTINATION_NAME" /> منتقل کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را به <ph name="DESTINATION_NAME" /> منتقل کنید}}</translation>
 <translation id="3630155396527302611">اگر درحال حاضر به‌عنوان برنامه‌ای برای دسترسی به شبکه در فهرست قرار دارد،
       سعی کنید آن را از فهرست حذف کرده و دوباره به فهرست اضافه کنید.</translation>
@@ -2031,6 +2035,7 @@
 <translation id="4255487295905690262">اگر قیمت در هر سایتی کاهش پیدا کند، هشدار ایمیلی دریافت خواهید کرد.</translation>
 <translation id="425582637250725228">تغییراتی که انجام داده‌اید ممکن است ذخیره نشده باشند.</translation>
 <translation id="4258748452823770588">امضای نادرست</translation>
+<translation id="4260407128682690669">‏برای دریافت سابقه خود از سایر دستگاه‌هایتان، سابقه و زبانه‌ها را با <ph name="ACCOUNT_EMAIL" /> همگام‌سازی کنید. همیشه می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. Google ممکن است «جستجو» و سایر سرویس‌ها را براساس سابقه‌تان شخصی‌سازی کند.</translation>
 <translation id="4265635050210404830">کارت‌های وفاداری شما</translation>
 <translation id="4265872034478892965">توسط سرپرست مجاز شده است</translation>
 <translation id="4267590181863312380">‏برای اینکه به سابقه‌تان در سایر دستگاه‌ها دسترسی داشته باشید، به سیستم وارد شوید و سابقه را همگام‌سازی کنید. به گذرواژه‌هایتان و اطلاعات دیگر نیز در همه دستگاه‌هایتان دسترسی خواهید داشت. همیشه می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی‌سازی کند.</translation>
@@ -2167,6 +2172,7 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">این فرم ایمن نیست. تکمیل خودکار خاموش شده است.</translation>
 <translation id="4477350412780666475">آهنگ بعدی</translation>
+<translation id="4479915773139026885">‏«حالت هوش مصنوعی» در «جستجوی Google»</translation>
 <translation id="4480760608050410381">‏ویدیو MP4</translation>
 <translation id="448363931695049633">پیتزا فروشی</translation>
 <translation id="4489023393592172404">پاکت کاکو ۴</translation>
@@ -2374,7 +2380,6 @@
 <translation id="4832388034239846146">‏برای هم‌رسانی گروه‌های زبانه‌ها، Chrome را به‌روزرسانی کنید</translation>
 <translation id="483241715238664915">روشن کردن هشدارها</translation>
 <translation id="4832961164064927107">باربیکیو و کباب کردن</translation>
-<translation id="4834250788637067901">‏روش‌های پرداخت، پیشنهادها، و نشانی‌های استفاده‌شده در Google Pay</translation>
 <translation id="4840250757394056958">‏مشاهده سابقه Chrome</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4844937814014739139">پیمایش و بزرگ‌نمایی برگه‌های هم‌رسانی‌شده</translation>
@@ -2566,7 +2571,7 @@
 <translation id="5136841603454277753">کد صحیح را وارد کنید</translation>
 <translation id="5137761395480718572">‏این برنامه برای نصب اطلاعات اعتباری Wi-Fi اجازه می‌خواهد. پس‌از راه‌اندازی، <ph name="DEVICE_TYPE" /> به‌طور خودکار به شبکه‌های Wi-Fi شرکت‌کننده متصل خواهد شد. برای حذف این اطلاعات اعتباری، برنامه را حذف نصب کنید. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">کارت مجازی درحال‌حاضر دردسترس نیست، لطفاً با بانکتان تماس بگیرید</translation>
-<translation id="5138227688689900538">نمایش کمتر</translation>
+<translation id="5138227688689900538">کمتر نشان دادن</translation>
 <translation id="5140155249377545621">گواهینامه رانندگی</translation>
 <translation id="5144613843429436866">شما <ph name="PERMISSION" /> را برای این سایت مجاز کرده‌اید</translation>
 <translation id="5145883236150621069">کد خطا در پاسخ خط‌مشی موجود است</translation>
@@ -3009,6 +3014,7 @@
 <translation id="5886961930368713749">ارسال بازخورد برای «مقایسه»</translation>
 <translation id="5887400589839399685">کارت ذخیره‌ شد</translation>
 <translation id="5887687176710214216">آخرین بازدید: دیروز</translation>
+<translation id="5889251770650310375">‏برای دریافت سابقه خود از سایر دستگاه‌هایتان، هویتتان را درستی‌سنجی کنید و سابقه و زبانه‌ها را همگام‌سازی کنید. همیشه می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. Google ممکن است «جستجو» و سایر سرویس‌ها را براساس سابقه‌تان شخصی‌سازی کند.</translation>
 <translation id="5890248301649767931">شماره جبران خسارت ذخیره شود؟</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
 <translation id="5895187275912066135">تاریخ صدور</translation>
@@ -3157,6 +3163,7 @@
 <translation id="6108849843016142864">خزندگان و دوزیستان</translation>
 <translation id="611018310643025551">‏برای بهبود این ویژگی، جستجوهای شما، منطبق‌ترین نتایج، و محتوای صفحه آن‌ها به Google ارسال می‌شود و ممکن است افراد بازبین آن‌ها را ببینند.</translation>
 <translation id="6116338172782435947">به نوشتار و تصاویر کپی‌شده در بریده‌دان دسترسی پیدا کند</translation>
+<translation id="6116500665626559298">‏دکمه «مدیریت داده‌های ذخیره‌شده در حساب»، برای مدیریت اطلاعات Chrome که در «حساب Google» ذخیره می‌کنید، آن را فعال کنید</translation>
 <translation id="6117833587752089929">عکس (ساتن)</translation>
 <translation id="6118782133429281336">فهرست مبدأ خالی است.</translation>
 <translation id="6120950591512958208">هنگام تسویه‌حساب از این کد استفاده کنید.</translation>
@@ -3166,6 +3173,7 @@
 <translation id="6124432979022149706">‏رابط‌های Chrome Enterprise</translation>
 <translation id="6124996493718543728">صفحه پیشرفت «حالا خرید کنید، بعداً بپردازید» به‌صورت کامل باز شده است.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />جزئیات بیشتر<ph name="END_LINK" /></translation>
+<translation id="6125935847555014178">‏‫<ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای پرسیدن از «حالت هوش مصنوعی» در «جستجوی Google»، کلید Enter را فشار دهید</translation>
 <translation id="6126565365696310362">پاکت چینی شماره ۲</translation>
 <translation id="6131824478727057281">مکان</translation>
 <translation id="6133320744616005677">دسترسی ادامه یابد</translation>
@@ -3906,6 +3914,7 @@
 <translation id="7337248890521463931">نمایش خطوط بیشتر</translation>
 <translation id="7337706099755338005">در پلتفورم شما دردسترس نیست.</translation>
 <translation id="733923710415886693">گواهی سرور از طریق شفافیت گواهینامه نشان داده نشده بود.</translation>
+<translation id="73398226265793546">‏دکمه «حالت هوش مصنوعی»، آن را فعال کنید تا از «حالت هوش مصنوعی» در «جستجوی Google» بپرسید</translation>
 <translation id="7346048084945669753">وابسته است:</translation>
 <translation id="7346062987309535530">ظروف غذاخوری</translation>
 <translation id="7346081071264046066">«پاسخ مثبت با هیجان به این دعوت عروسی»</translation>
@@ -4355,7 +4364,7 @@
 <translation id="8028993641010258682">اندازه</translation>
 <translation id="8029829038322015001">قرمز ۱</translation>
 <translation id="8030729864112325446">آموزش شغلی و مداوم</translation>
-<translation id="8032546467100845887">شفافیت</translation>
+<translation id="8032546467100845887">شفاف</translation>
 <translation id="8035152190676905274">قلم</translation>
 <translation id="8035264638816032066">‏عنوان زبانه‌ها و نشانی وب صفحه‌هایی که به جدول اضافه می‌کنید برای Google ارسال می‌شود</translation>
 <translation id="8037117624646282037">افرادی که اخیراً از دستگاه استفاده کرده‌اند</translation>
@@ -4711,6 +4720,7 @@
 <translation id="8622864575115813231">درحال برقراری ارتباط با مؤسسه مالی شما…</translation>
 <translation id="8624354461147303341">دریافت تخفیف</translation>
 <translation id="8634957317623797170">۸۶ × ۵۴ میلی‌متر</translation>
+<translation id="8635822281281406185">تا ۱۰ فایل، زبانه، یا تصویر اضافه کنید</translation>
 <translation id="8637362707224133343">‏‫Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند — مثل «مرور ایمن Google»، که اخیراً در سایتی که می‌خواستید بازدید کنید <ph name="BEGIN_LINK" />رمزگیری پیدا کرده است<ph name="END_LINK" />. سایت‌های رمزگیری وانمود می‌کنند که سایت‌های دیگری هستند تا شما را فریب دهند.<ph name="NEW_LINE" />حتی سایت‌هایی که معمولاً امن هستند گاهی اوقات توسط مهاجمان درمعرض خطر قرار می‌گیرند. اگر فکر می‌کنید اشتباهی روی داده است و این سایت خطری ندارد، <ph name="BEGIN_ERROR_LINK" />به ما اطلاع دهید<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">‏برای هم‌رسانی زبانه‌ها و مشارکت کردن با دیگران، باید بتوانید به سیستم Chrome وارد شوید</translation>
 <translation id="8641131559425911240">پاکت (باند)</translation>
@@ -4998,6 +5008,7 @@
 <translation id="9118692854637641831">‏<ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />، کلید Tab و سپس Enter را فشار دهید تا مسیر را ازسر بگیرید و فعالیت‌های مرتبط را در سابقه Chrome ببینید</translation>
 <translation id="9119042192571987207">بارگذاری‌شده</translation>
 <translation id="9119308212838450857">‫<ph name="PROVIDER_ORIGIN" /> می‌خواهد هویتتان را درستی‌سنجی کند</translation>
+<translation id="9119764377203471454">پیوست اضافه نشد</translation>
 <translation id="9120593907434185157">ذخیره کردن نشانی</translation>
 <translation id="912327514020027767">دامن</translation>
 <translation id="9128870381267983090">اتصال به شبکه</translation>
@@ -5120,7 +5131,7 @@
 <translation id="984275831282074731">روش‌های پرداخت</translation>
 <translation id="985199708454569384">‏&lt;p&gt;اگر تاریخ و زمان رایانه یا دستگاه همراهتان درست نباشد این خطا را می‌بینید.&lt;/p&gt;
     &lt;p&gt;برای برطرف کردن این خطا، ساعت دستگاه را باز کنید. مطمئن شوید تاریخ و زمان صحیح است.&lt;/p&gt;</translation>
-<translation id="987264212798334818">موارد کلی</translation>
+<translation id="987264212798334818">عمومی</translation>
 <translation id="988159990683914416">ساخت برنامه‌نویس</translation>
 <translation id="989988560359834682">ویرایش نشانی</translation>
 <translation id="991413375315957741">حسگرهای نوری یا حرکتی</translation>

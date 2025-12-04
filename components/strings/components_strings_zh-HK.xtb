@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">要儲存 IBAN 嗎？</translation>
 <translation id="1113869188872983271">復原重新排序(&amp;U)</translation>
 <translation id="1118429183611783760">吸塵機和地板護理</translation>
+<translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理 Google 帳戶儲存邊啲 Chrome 資料</translation>
 <translation id="1122714970786750095">電子及電機產品</translation>
 <translation id="1123753900084781868">目前無法使用即時字幕</translation>
 <translation id="112840717907525620">政策快取正確</translation>
@@ -966,6 +967,7 @@
 <translation id="2536110899380797252">新增地址</translation>
 <translation id="2537931901612099523">此裝置的其他使用者不會看到你的活動，瀏覽活動記錄的私隱更有保障。無痕模式不會影響網站及其使用的服務 (包括 Google) 收集資料的方式，且下載檔案和書籤仍會保留在裝置上。</translation>
 <translation id="2541219929084442027">當您關閉所有無痕式分頁後，您在其中瀏覽的網頁都不會保留在瀏覽器記錄、Cookie 儲存庫或搜尋記錄中。不過，您下載的檔案或建立的書籤將會全部保留。</translation>
+<translation id="2541474152868747095">如要查看其他裝置上的記錄，請驗證你的身分。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="2542106216580219892">滑浪</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" /> - 如要離開全螢幕，請按住 |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">管理員已重新啟動您的裝置</translation>
@@ -1132,6 +1134,7 @@
 <translation id="2839501879576190149">您將要瀏覽假網站</translation>
 <translation id="2843623755398178332">要捲動和縮放已分享的分頁嗎？</translation>
 <translation id="2851291081585704741">您已離線</translation>
+<translation id="2854163610915391726">管理要儲存在 Google 帳戶中的 Chrome 資料</translation>
 <translation id="2858134430383535011">200 x 300 毫米</translation>
 <translation id="2859383374160668142">你可隨時查看所追蹤產品的降價消息。</translation>
 <translation id="2859806420264540918">此網站顯示滋擾性或誤導廣告。</translation>
@@ -1617,6 +1620,7 @@
 <translation id="3623041590998910684">如要使用攝錄機，請在<ph name="LINK" />向 Chrome 授予存取權。</translation>
 <translation id="3623398832322170566">愛情電影</translation>
 <translation id="3624292976554877583">標籤 (啞面)</translation>
+<translation id="3626483107624019072">管理帳戶中的資料</translation>
 <translation id="3628905806504633297">{0,plural, =1{管理員政策不建議傳輸此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議傳輸這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">如果程式已列在允許存取網絡的清單中，建議您
       從清單中移除該程式，然後重新加入。</translation>
@@ -2030,6 +2034,7 @@
 <translation id="4255487295905690262">如果產品在任何網站上降價，系統將會向您傳送電郵警示。</translation>
 <translation id="425582637250725228">系統可能不會儲存您的變更。</translation>
 <translation id="4258748452823770588">簽名有誤</translation>
+<translation id="4260407128682690669">如要查看其他裝置上的記錄，請同步記錄和分頁至 <ph name="ACCOUNT_EMAIL" />。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="4265635050210404830">你的會員卡</translation>
 <translation id="4265872034478892965">根據管理員的設定允許</translation>
 <translation id="4267590181863312380">如要查看其他裝置上的記錄，請登入並同步記錄。你也可在你的所有裝置上取得密碼和其他資料。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
@@ -2374,7 +2379,6 @@
 <translation id="4832388034239846146">如要共用分頁群組，請更新 Chrome</translation>
 <translation id="483241715238664915">開啟警告</translation>
 <translation id="4832961164064927107">燒烤</translation>
-<translation id="4834250788637067901">使用 Google Pay 儲存的付款方法、優惠和地址</translation>
 <translation id="4840250757394056958">查看 Chrome 記錄</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4844937814014739139">捲動及縮放已分享的分頁</translation>
@@ -3009,6 +3013,7 @@
 <translation id="5886961930368713749">提供有關「比較」功能的意見</translation>
 <translation id="5887400589839399685">已儲存的付款卡</translation>
 <translation id="5887687176710214216">上次瀏覽日期：昨天</translation>
+<translation id="5889251770650310375">如要查看其他裝置上的記錄，請驗證你的身分並同步記錄和分頁。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="5890248301649767931">要儲存身分識別碼嗎？</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5895187275912066135">發行日期</translation>
@@ -3157,6 +3162,7 @@
 <translation id="6108849843016142864">爬蟲類和兩棲類</translation>
 <translation id="611018310643025551">你的搜尋、最相符項目及相應頁面內容會傳送給 Google，並可能送交人手審查以改善有關功能。</translation>
 <translation id="6116338172782435947">查看複製到剪貼簿的文字和圖片</translation>
+<translation id="6116500665626559298">管理帳戶資料按鈕，啟動之後就可以管理喺 Google 帳戶度儲存邊啲 Chrome 資料</translation>
 <translation id="6117833587752089929">相紙 (光滑)</translation>
 <translation id="6118782133429281336">來源清單空白。</translation>
 <translation id="6120950591512958208">在結帳時使用此折扣代碼。</translation>
@@ -5001,6 +5007,7 @@
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以恢復瀏覽過程，同埋睇到 Chrome 記錄入面嘅相關活動</translation>
 <translation id="9119042192571987207">已上載</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> 想驗證你的身分</translation>
+<translation id="9119764377203471454">無法新增附件</translation>
 <translation id="9120593907434185157">儲存地址</translation>
 <translation id="912327514020027767">短裙</translation>
 <translation id="9128870381267983090">連接網絡</translation>

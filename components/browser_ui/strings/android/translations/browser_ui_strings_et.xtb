@@ -184,6 +184,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="2903493209154104877">Aadressid</translation>
 <translation id="2910701580606108292">Küsi enne saitidel kaitstud sisu esitamise lubamist</translation>
 <translation id="2918484639460781603">Ava seaded</translation>
+<translation id="293060180538644702">Chrome’i nõuannete märguannete saamine</translation>
 <translation id="2932883381142163287">Teata väärkasutusest</translation>
 <translation id="2939338015096024043">Kui see on sisse lülitatud, võivad saidid küsida luba teie kaamera asendi jälgimiseks ja teie ümbruse kohta teabe saamiseks. Kui see on välja lülitatud, ei saa saidid teie kaamera asendit jälgida ega teie ümbruse kohta teavet saada.</translation>
 <translation id="2968755619301702150">Sertifikaadikuvaja</translation>
@@ -244,6 +245,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="3611658447322220736">Hiljuti suletud saidid saavad lõpetada andmete saatmise ja vastuvõtmise</translation>
 <translation id="3619294456800709762">Saidid saavad automaatselt pilt pildis režiimi siseneda</translation>
 <translation id="3628308229821498208">Soovitatud otsingud</translation>
+<translation id="3632460243282703117">Telli</translation>
 <translation id="363748948745453283">Kasutatakse ligikaudset asukohta</translation>
 <translation id="3641456520301071208">Saidid saavad küsida teie asukohta</translation>
 <translation id="3658847490588580244">Vaikebrauseri alumine leht</translation>
@@ -522,6 +524,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="662080504995468778">Jää siia</translation>
 <translation id="6630443592285535486">Sisestage kuueteistkümnendkood siia</translation>
 <translation id="6635327442719709864">Kui see on sisse lülitatud, saavad saidid küsida jadaportide kasutamist. Kui see on välja lülitatud, ei saa saidid jadaporte kasutada.</translation>
+<translation id="6669390930482049506">Teavita mind</translation>
 <translation id="6678072580827808850">Ohutuskontrolli ülevaatamine</translation>
 <translation id="6682057173375416470">Soovitatud artiklite kuvamine lehel Uus vaheleht</translation>
 <translation id="6683865262523156564">See sait on grupis, mis näeb teie tegevusi. Grupi on määratlenud <ph name="RWS_OWNER" />.</translation>
@@ -631,6 +634,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="7990211076305263060">Kui see on sisse lülitatud, võivad saidid küsida luba teie mikrofoni kasutamiseks. Kui see on välja lülitatud, ei saa saidid teie mikrofoni kasutada.</translation>
 <translation id="8007176423574883786">Selle seadme puhul on välja lülitatud</translation>
 <translation id="802154636333426148">Allalaadimine ebaõnnestus</translation>
+<translation id="8033047164036749181">Selle saidi märguannete tellimine</translation>
 <translation id="8042586301629853791">Sortimisalus:</translation>
 <translation id="8051193500142930381">Kaamerat vajavad funktsioonid ei tööta</translation>
 <translation id="8056330801132235235">Chrome (vaikevalik)</translation>

@@ -496,6 +496,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3114507951000454849">Lestu fréttir dagsins <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Nánari upplýsingar</translation>
 <translation id="3123734510202723619">Tilkynningar</translation>
+<translation id="3134385238404760368">Engir nýlegir flipar</translation>
 <translation id="314939179385989105">Heimasíða Chrome</translation>
 <translation id="3158667104057012316">Raðað handvirkt</translation>
 <translation id="3159335509547415276">Nánar um reikninga á bannlista</translation>
@@ -817,6 +818,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4577115723294378384">Flokka frá A til Ö</translation>
 <translation id="4578289292431526768">Hefjumst handa</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Fyrir # mínútu}one{Fyrir # mínútu}other{Fyrir # mínútum}}</translation>
+<translation id="4585751637295612750">Opnaðu nýjan flipa til að bæta honum við spurninguna þína</translation>
 <translation id="4587589328781138893">Svæði</translation>
 <translation id="4594952190837476234">Þessi síða án nettengingar er frá <ph name="CREATION_TIME" /> og hún gæti verið frábrugðin útgáfunni sem er á netinu.</translation>
 <translation id="4595237294768457124">Opnaðu síðu nýrra flipa</translation>
@@ -1338,6 +1340,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="670498945988402717">Athugað í gær</translation>
 <translation id="6710213216561001401">Til baka</translation>
 <translation id="671481426037969117">Tímamælir <ph name="FQDN" /> rann út. Hann byrjar aftur á morgun.</translation>
+<translation id="6716434912087331834">Til að endurheimta nýjan glugga skaltu fækka virkum gluggum í <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eða færri. Óvirkum gluggum er eytt eftir sex mánuði.</translation>
 <translation id="6723740634201835758">Á Google reikningnum þínum</translation>
 <translation id="6734310707649923383">Þú getur skoðað síður sem þú hefur opnað eða eytt þeim úr ferlinum þínum</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, festur huliðsflipi sem er að taka upp</translation>
@@ -1655,6 +1658,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> er úrelt.</translation>
 <translation id="7944772052836377867">Samstilling verður að staðfesta að þetta sért þú</translation>
 <translation id="7951102827450076904">Alltaf opna sótt PDF-skjöl</translation>
+<translation id="7952479614398473176">Til að opna nýjan glugga skaltu fækka virkum gluggum í <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eða færri.</translation>
 <translation id="7957413488482743710">Sýndarkort felur raunverulega kortið þitt og hjálpar þannig til við að koma í veg fyrir svik. <ph name="BEGIN_LINK1" />Nánar um sýndarkort<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Flipar í þessu tæki</translation>
 <translation id="7961926449547174351">Þú lokaðir fyrir aðgang að geymslurými. Farðu í stillingar og leyfðu aðgang.</translation>

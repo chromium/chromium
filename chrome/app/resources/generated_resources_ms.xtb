@@ -5072,6 +5072,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="443196770280837407">Buka Gemini dengan pintasan papan kekunci.</translation>
 <translation id="4432621511648257259">Kata laluan salah</translation>
 <translation id="4434611816075088065">Tiada perkara lain yang memerlukan perhatian anda sekarang</translation>
+<translation id="4435020454241191356">Tambahkan nama atau label untuk profil anda</translation>
 <translation id="443503224864902151">Mengelog keluar anda dari kebanyakan laman. Anda akan kekal dilog masuk ke Google Account supaya data anda yang disegerakkan dapat dipadamkan.</translation>
 <translation id="4437879751057074691">Tawarkan untuk menyimpan kata laluan dan kunci laluan</translation>
 <translation id="4437947179446780764">Tambahkan penyedia perkhidmatan DNS tersuai</translation>
@@ -5083,6 +5084,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4441928470323187829">Disemat oleh pentadbir anda</translation>
 <translation id="4442863809158514979">Lihat kebenaran web</translation>
 <translation id="4442937638623063085">Tiada profil ditemukan. Sila masukkan kod pengaktifan yang disediakan oleh pembawa anda.</translation>
+<translation id="4443111948803895537">Perlindungan akaun dan rangkaian</translation>
 <translation id="4443536555189480885">&amp;Bantuan</translation>
 <translation id="4444304522807523469">Akses pengimbas dokumen yang disambungkan melalui USB atau pada rangkaian tempatan</translation>
 <translation id="4444512841222467874">Jika ruang tidak dikosongkan, pengguna dan data mungkin dialih keluar secara automatik.</translation>
@@ -6404,6 +6406,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> mahu menggunakan maklumat peribadi daripada dompet digital anda. Teruskan hanya jika anda mempercayai laman ini. Laman berbahaya mungkin memperdaya anda untuk mendedahkan maklumat seperti nama sah atau nombor ID anda.</translation>
 <translation id="5390677308841849479">Merah gelap dan jingga</translation>
 <translation id="5392192690789334093">Dibenarkan untuk menghantar pemberitahuan</translation>
+<translation id="5392864580775235956">Tambahkan dan edit imej</translation>
 <translation id="5393330235977997602">Pilihan PIN</translation>
 <translation id="5393474451146553463">Tanya Google tentang tab ini</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Pautan}other{# pautan}}</translation>
@@ -6683,6 +6686,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="557722062034137776">Penetapan semula peranti anda tidak akan menjejaskan Google Account anda atau sebarang data yang disegerakkan ke akaun ini. Walau bagaimanapun, semua fail yang disimpan secara setempat pada peranti anda akan dipadamkan.</translation>
 <translation id="5578059481725149024">Auto log masuk</translation>
 <translation id="5578387000057347457">Masukkan gesaan tersuai atau serlahkan teks untuk membuat imej</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 item disimpan pada peranti ini sahaja. Untuk menggunakan item pada peranti anda yang lain, <ph name="BEGIN_LINK" />simpan item dalam Google Account anda<ph name="END_LINK" />.}other{{ITEM_COUNT} item disimpan pada peranti ini sahaja. Untuk menggunakan item pada peranti anda yang lain, <ph name="BEGIN_LINK" />simpan item dalam Google Account anda<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Alih keluar <ph name="SITE" /> daripada senarai <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">Penterjemahan kepada <ph name="LANGUAGE" /> selesai</translation>
 <translation id="558170650521898289">Pengesahan Pemacu Perkakasan Microsoft Windows</translation>
@@ -7171,6 +7175,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
     <ph name="LINE_BREAK" />
     Gambar ini akan dipaparkan pada skrin log masuk dan kunci skrin Chromebook.</translation>
 <translation id="5925147183566400388">Penuding Pernyataan Amalan Pensijilan</translation>
+<translation id="5926936390113611560">Buka semua profil</translation>
 <translation id="5927132638760172455">Menghantar ke penerima yang tidak diketahui</translation>
 <translation id="592740088639760830">Hentikan bekas ini</translation>
 <translation id="592880897588170157">Muat turun fail PDF dan bukannya membuka fail dalam Chrome secara automatik</translation>
@@ -7255,6 +7260,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5979421442488174909">&amp;Terjemahkan ke <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Untuk menandai halaman, klik bintang dalam bar alamat</translation>
 <translation id="5982578203375898585">Tunjukkan muat turun setelah muat turun selesai</translation>
+<translation id="598347738324022917">Penanda halaman disimpan pada peranti ini</translation>
 <translation id="5983716913605894570">Menjana...</translation>
 <translation id="5984222099446776634">Dilawati Baru-baru Ini</translation>
 <translation id="5984334442529819751">Terdapat ralat semasa memasang DLC (sering kali but semula diperlukan, semak Tetapan\&gt;\&gt;Perihal ChromeOS untuk mendapatkan maklumat lanjut).</translation>
@@ -7355,6 +7361,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6057381398996433816">Tapak ini telah disekat daripada menggunakan penderia gerakan dan cahaya.</translation>
 <translation id="6059276912018042191">Tab Chrome baru-baru ini</translation>
 <translation id="6059652578941944813">Hierarki Sijil</translation>
+<translation id="6059775313639803773">Dapatkan respons yang lebih mendalam dengan lebih banyak sumber, dalam sedikit masa tambahan</translation>
 <translation id="6059925163896151826">Peranti USB</translation>
 <translation id="6061408389284235459">Pemberitahuan telah dihantar kepada <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Buat Kod QR</translation>
@@ -9681,6 +9688,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apl</translation>
 <translation id="7674542105240814168">Akses lokasi ditolak</translation>
 <translation id="7675175806582227035">Dibenarkan untuk mengawal dan mengatur cara semula peranti MIDI anda</translation>
+<translation id="7676019765091965045">Pengesanan kata laluan yang terjejas</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> Tab untuk '<ph name="SEARCH_TEXT" />' Ditemukan</translation>
 <translation id="7676867886086876795">Hantar suara anda kepada Google untuk membolehkan pengimlakan dalam mana-mana medan teks.</translation>
 <translation id="7678588695732963732">Tetapkan semula semua kebenaran peranti USB?</translation>
@@ -10775,6 +10783,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8405118833120731611">{0,plural, =1{Tutup profil ini}other{Tutup profil ini (# tetingkap)}}</translation>
 <translation id="8407199357649073301">Tahap Log:</translation>
 <translation id="8408270600235826886">Anda boleh mengawal data yang dikongsi dengan Google. Anda boleh menukar pilihan ini pada bila-bila masa dalam Tetapan. Data akan digunakan menurut <ph name="BEGIN_LINK" />Dasar Privasi<ph name="END_LINK" /> Google.</translation>
+<translation id="8410079205308393430">Tunjukkan cadangan</translation>
 <translation id="8410133743809404768">Anda boleh mencari dalam bar alamat menggunakan "@history" serta daripada halaman Sejarah</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">skrin penuh</translation>

@@ -45,6 +45,7 @@
 <translation id="146866447420868597">登录 Chrome？</translation>
 <translation id="1476347941828409626">管理 Chrome 个人资料(&amp;M)</translation>
 <translation id="1492280395845991349">重新启动即可完成 Chrome 更新</translation>
+<translation id="1496875977627931224"><ph name="USER_NAME" />，您好！<ph name="LINE_BREAK" />今天想聊点什么？</translation>
 <translation id="1497802159252041924">安装时出错：<ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">自定义您的新 Chrome 个人资料</translation>
 <translation id="1518627427551567882">此页面受保护</translation>
@@ -198,6 +199,7 @@
 <translation id="3112458742631356345">Chrome 阻止了此项下载操作，因为这不是常下载的文件，可能具有危险性</translation>
 <translation id="3114643501466072395">若要检查您的其他密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chrome<ph name="END_LINK" />。</translation>
 <translation id="3119573284443908657">Chrome 阻止了此项下载操作，因为归档文件包含可能隐藏恶意软件的其他文件</translation>
+<translation id="3130333203120345554">新搜索</translation>
 <translation id="3135560418014806498">添加 Chrome 个人资料</translation>
 <translation id="3137969841538672700">拖动即可搜索</translation>
 <translation id="3140883423282498090">您所做的更改会在下次重新启动 Google Chrome 时生效。</translation>
@@ -362,6 +364,7 @@
 <translation id="5139423532931106058">自定义您的 Chrome 个人资料</translation>
 <translation id="5163087008893166964">欢迎使用 Chrome；已打开新的浏览器窗口</translation>
 <translation id="5166439563123238795">Chrome 需要获得权限，才能跟踪您的手部动作</translation>
+<translation id="5167819546851111585">今天想聊点什么？</translation>
 <translation id="5170938038195470297">您的个人资料来自新版 Google Chrome 浏览器，因此无法使用。某些功能可能无法使用。请指定其他个人资料目录，或使用新版 Chrome 浏览器。</translation>
 <translation id="5174969993834422967">您通常会屏蔽通知。要允许此网站向您发送通知，请点击位置栏右侧的通知图标。</translation>
 <translation id="5174983315706567306">磁盘可用空间不足。</translation>
@@ -618,6 +621,7 @@
 <translation id="7804364787702057554">设置 Chrome 账号</translation>
 <translation id="7808348361785373670">从Chrome中移除…</translation>
 <translation id="7827099906024714326">Chrome 需要先验证您的身份，然后才能将某些数据保存到您的 Google 账号中，供您在所有设备上使用。如果现在就退出账号，这些数据将被删除。</translation>
+<translation id="7832314606810669113">如需在您的所有设备上获取书签等信息，请登录 Chrome。登录后，此书签将保存到您的 Google 账号。</translation>
 <translation id="7845233973568007926">感谢您完成安装。您必须重启计算机才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7849037457735762883">从上次停下的地方继续：Chrome 可在您每次重启后恢复标签页。如需开启此功能，请前往</translation>
 <translation id="7872446069773932638">正在下载…还需 <ph name="SECONDS" /> 秒</translation>
@@ -639,6 +643,7 @@
 <translation id="8013993649590906847">如果图片缺少有用的说明，则 Chrome 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。</translation>
 <translation id="8019103195866286235">此扩展程序已被其开发者取消发布，可能不安全。请将其从 Chrome 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="8040768861829554732">某个扩展程序需要您登录 Chrome</translation>
+<translation id="8041795619940733262">向 Google<ph name="LINE_BREAK" />询问关于此标签页的问题</translation>
 <translation id="80471789339884597">感谢您完成安装。您必须重启所有浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">其他 Chrome 个人资料</translation>

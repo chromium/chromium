@@ -7,6 +7,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> বছর আগে তৈরি করা হয়েছে}one{<ph name="NUM_YEARS_MANY" /> বছর আগে তৈরি করা হয়েছে}other{<ph name="NUM_YEARS_MANY" /> বছর আগে তৈরি করা হয়েছে}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{ইনঅ্যাক্টিভ ট্যাব ও গ্রুপগুলি ১ মাস পরে বন্ধ হয়ে যায়}one{ইনঅ্যাক্টিভ ট্যাব ও গ্রুপগুলি <ph name="MONTH_COUNT_MANY" /> মাস পরে বন্ধ হয়ে যায়}other{ইনঅ্যাক্টিভ ট্যাব ও গ্রুপগুলি <ph name="MONTH_COUNT_MANY" /> মাস পরে বন্ধ হয়ে যায়}}</translation>
 <translation id="1173894706177603556">পুনঃনামকরণ</translation>
+<translation id="1203747227183434426">মিডিয়া রেকর্ড করা হচ্ছে</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" />টি ট্যাব সহ <ph name="TITLE_OF_GROUP" /> খুলুন}one{<ph name="TAB_COUNT2" />টি ট্যাব সহ <ph name="TITLE_OF_GROUP" /> খুলুন}other{<ph name="TAB_COUNT2" />টি ট্যাব সহ <ph name="TITLE_OF_GROUP" /> খুলুন}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপের বিকল্প</translation>
 <translation id="1300188005269437765">ট্যাব ও ট্যাব গ্রুপ কখন ইনঅ্যাক্টিভ বিভাগে অটোমেটিক সরানো হবে তা বেছে নিন।</translation>
@@ -21,6 +22,7 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ইনঅ্যাক্টিভ আইটেম}one{<ph name="TABS_COUNT_MANY" />টি ইনঅ্যাক্টিভ আইটেম}other{<ph name="TABS_COUNT_MANY" />টি ইনঅ্যাক্টিভ আইটেম}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" />টি ট্যাব, গ্রুপ করা হয়েছে</translation>
 <translation id="1657719826150349398">ট্যাব নিচে সরান</translation>
+<translation id="1670942869417022142">মিউট করা অডিও</translation>
 <translation id="1697284962337958118">এতে যোগ করুন</translation>
 <translation id="1713541401465507417">সব ট্যাব ও গ্রুপ বন্ধ করুন</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" />টি ট্যাব গ্রুপ আর উপলভ্য নেই}one{<ph name="TAB_GROUPS_COUNT_MANY" />টি ট্যাব গ্রুপ আর উপলভ্য নেই}other{<ph name="TAB_GROUPS_COUNT_MANY" />টি ট্যাব গ্রুপ আর উপলভ্য নেই}}</translation>
@@ -73,7 +75,6 @@
 <translation id="311432875115153175">ট্যাব গ্রুপের তালিকা বন্ধ আছে</translation>
 <translation id="3194464645767632461">রেটিং</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{গ্রুপে <ph name="TABS_COUNT_ONE" />টি ট্যাব যোগ করুন}one{গ্রুপে <ph name="TABS_COUNT_MANY" />টি ট্যাব যোগ করুন}other{গ্রুপে <ph name="TABS_COUNT_MANY" />টি ট্যাব যোগ করুন}}</translation>
-<translation id="3293080634164207409">ট্যাব যোগ করুন</translation>
 <translation id="3328308545011660196">সাজেশন: মনে হচ্ছে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্পর্কযুক্ত। সেগুলি গ্রুপ করতে চান?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{১ দিন ইনঅ্যাক্টিভ থাকার পরে}one{<ph name="DAY_COUNT_MANY" /> দিন ইনঅ্যাক্টিভ থাকার পরে}other{<ph name="DAY_COUNT_MANY" /> দিন ইনঅ্যাক্টিভ থাকার পরে}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" />টি নতুন ট্যাব}one{<ph name="MANY_ADDED" />টি নতুন ট্যাব}other{<ph name="MANY_ADDED" />টি নতুন ট্যাব}}</translation>
@@ -111,6 +112,7 @@
 <translation id="4871719318659334896">গ্রুপ বন্ধ করুন</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ রিস্টোর করে <ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> রঙ সহ আবার খুলুন।}one{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ রিস্টোর করে <ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> রঙ সহ আবার খুলুন।}other{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ রিস্টোর করে <ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> রঙ সহ আবার খুলুন।}}</translation>
 <translation id="4881695831933465202">খুলুন</translation>
+<translation id="4894777338623123366">ট্যাবের স্ক্রিন শেয়ার করা হচ্ছে</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{ট্যাব বন্ধ করুন}one{ট্যাব বন্ধ করুন}other{ট্যাব বন্ধ করুন}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> গ্রুপ সেভ করা হয়েছে (ট্যাব বন্ধ হয়ে যাবে ও গ্রুপ মুছে যাবে)</translation>
 <translation id="492284538114688557">দাম কমেছে বোঝা গেছে</translation>
@@ -143,6 +145,7 @@
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{নতুন উইন্ডোতে গ্রুপ সরান}one{অন্য উইন্ডোতে গ্রুপ সরান}other{অন্য উইন্ডোতে গ্রুপ সরান}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ট্যাব ডানদিকে সরান}one{ট্যাব ডানদিকে সরান}other{ট্যাব ডানদিকে সরান}}</translation>
 <translation id="6228793724645064692">(স্টোর রেটিং)</translation>
+<translation id="6251046978189636310">অডিও চালানো হচ্ছে</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{গ্রুপ থেকে ট্যাব সরিয়ে দিন}one{গ্রুপ থেকে ট্যাব সরান}other{গ্রুপ থেকে ট্যাব সরান}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{নতুন গ্রুপে ট্যাব যোগ করুন}one{নতুন গ্রুপে ট্যাব যোগ করুন}other{নতুন গ্রুপে ট্যাব যোগ করুন}}</translation>
 <translation id="6333260925957816943">এই স্টোরের বিষয়ে তথ্য</translation>
@@ -174,6 +177,7 @@
 <translation id="7326879924029668159">ফেরত দেওয়ার নীতি এবং আরও অনেক কিছু দেখুন</translation>
 <translation id="7352298686197644113">কোন আইটেমের দাম কম তা খোলা থাকা ট্যাবগুলিতে দেখুন</translation>
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" ট্যাব গ্রুপ আর উপলভ্য নেই</translation>
+<translation id="7402375256128852434">সাম্প্রতিক ট্যাব যোগ করুন</translation>
 <translation id="7452985128687107478">আপনার সবকটি ডিভাইস জুড়ে ট্যাব গ্রুপ অটোমেটিক সেভ এবং আপডেট হয়</translation>
 <translation id="747459581954555080">সকল পুনরুদ্ধার করুন</translation>
 <translation id="7489558427602531799">ট্যাব গ্রুপ ডানদিকে সরান</translation>

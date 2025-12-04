@@ -1337,12 +1337,13 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1901213235765457754">Pídele al administrador que actualice esta app</translation>
 <translation id="1901303067676059328">Seleccionar &amp;todo</translation>
 <translation id="1901760057081700494">Actualmente, la zona horaria está configurada como <ph name="TIME_ZONE_ENTRY" />. Para actualizar automáticamente la zona horaria, <ph name="BEGIN_LINK" />activa el acceso a la ubicación del sistema<ph name="END_LINK" />.</translation>
-<translation id="1904580727789512086">Las URL que visitas se guardan en tu Cuenta de Google</translation>
+<translation id="1904580727789512086">Las URLs que visitas se guardan en tu Cuenta de Google</translation>
 <translation id="1906181697255754968">Por lo general los sitios acceden a archivos y carpetas de tu dispositivo para habilitar funciones, como la de guardar las tareas de forma automática.</translation>
 <translation id="1906488504371069394">Descubre más extensiones y temas en <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Escribe con la voz. Usa Búsqueda + D y, luego, comienza a hablar.</translation>
 <translation id="1907659324308286326">Algunos accesorios Thunderbolt o USB4 necesitan acceso a la memoria para funcionar correctamente.</translation>
 <translation id="1908591798274282246">Volver a abrir el grupo cerrado</translation>
+<translation id="1909677622563887527">Un software de prueba automatizado está controlando Chrome</translation>
 <translation id="1909880997794698664">¿Confirmas que deseas que este dispositivo se mantenga siempre en modo kiosco?</translation>
 <translation id="1910721550319506122">¡Te damos la bienvenida!</translation>
 <translation id="1910736334623230603">No se pueden buscar varias imágenes. Agrega una imagen a la vez.</translation>
@@ -1697,6 +1698,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2144536955299248197">Visualizador de certificados: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Desarrollo de apps para Android en Linux</translation>
 <translation id="2145468727756963476">Gemini se está actualizando…</translation>
+<translation id="2145688286532368277">La optimización de JavaScript está desactivada para este sitio.</translation>
 <translation id="2145917706968602070">Asegúrate de que el teléfono esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas</translation>
 <translation id="2146263598007866206">Es posible que los sitios descarguen automáticamente archivos relacionados de forma conjunta para ahorrar tiempo.</translation>
 <translation id="2147218225094845757">Ocultar panel lateral</translation>
@@ -1822,7 +1824,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2234876718134438132">Sincronización y servicios de Google</translation>
 <translation id="2235344399760031203">Se bloquearon las cookies de terceros</translation>
 <translation id="2236949375853147973">Mi actividad</translation>
-<translation id="2236963250883149540">¿Quieres quitar tu dirección de trabajo de la función autocompletar de Chrome?</translation>
+<translation id="2236963250883149540">¿Quieres quitar tu dirección de trabajo de la función Autocompletar de Chrome?</translation>
 <translation id="2238379619048995541">Datos de estado de frecuencia</translation>
 <translation id="2240582393605484605">Los datos que se guarden solo en este dispositivo permanecerán en el perfil existente</translation>
 <translation id="2241053333139545397">Leer y modificar tus datos en una serie de sitios web</translation>
@@ -2399,7 +2401,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2624142942574147739">Esta página está accediendo a la cámara y al micrófono.</translation>
 <translation id="2626799779920242286">Vuelve a intentarlo más tarde.</translation>
 <translation id="2627424346328942291">No se puede compartir</translation>
-<translation id="2628258844236035475">¿Quieres quitar tu dirección de casa de la función autocompletar de Chrome?</translation>
+<translation id="2628258844236035475">¿Quieres quitar tu dirección de casa de la función Autocompletar de Chrome?</translation>
 <translation id="2628770867680720336">Para habilitar la depuración de adb, es necesario restablecer la configuración de fábrica de esta Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Desarrollar apps para Android</translation>
 <translation id="2629437048544561682">Borrar lienzo</translation>
@@ -3695,6 +3697,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3528498924003805721">Destinos de accesos directos</translation>
 <translation id="3529851166527095708">&amp;Direcciones y más</translation>
+<translation id="3530919970074558307">Dejar de enfocar el grupo</translation>
 <translation id="3531070080754387701">Microsoft 365 no puede abrir <ph name="FILE_NAMES" /> desde esta carpeta</translation>
 <translation id="3531883061432162622">Encuentra tu lista de lectura y tus favoritos en Favoritos y Listas</translation>
 <translation id="3532273508346491126">Administración de la sincronización</translation>
@@ -4048,6 +4051,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3757567010566591880">Dejar de fijar en la Barra de herramientas</translation>
 <translation id="3757645900890881944">Herramientas de Búsqueda</translation>
 <translation id="3757733214359997190">No se encontraron sitios</translation>
+<translation id="3757825964096339958">Enfocar el grupo</translation>
 <translation id="375841316537350618">Descargando secuencia de comandos proxy...</translation>
 <translation id="3758887577462995665">Sugerencia:</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> mes</translation>
@@ -4320,6 +4324,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Tamaño de la pantalla y el texto <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Envía las URL a la Navegación segura para verificarlas. También envía una pequeña muestra de páginas, descargas, información del sistema y actividad de extensiones para ayudar a descubrir nuevas amenazas. Vincula estos datos de manera temporal con tu Cuenta de Google cuando accedes a ella para protegerte en todas las apps de Google.</translation>
+<translation id="3924788966103416622">Una app externa quiere tener control total de esta sesión de Chrome para depurarla. Esto incluye el acceso a los datos de sitios, cookies y tus datos guardados, y la capacidad de navegar a cualquier URL.</translation>
 <translation id="3925573269917483990">Cámara:</translation>
 <translation id="3925926055063465902">Otros usuarios de este dispositivo también pueden usar esta red</translation>
 <translation id="3926002189479431949">Cambió el teléfono con Smart Lock</translation>
@@ -4346,6 +4351,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 
   ¿Quieres iniciar <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnóstico</translation>
+<translation id="3942558231079086184">La optimización de JavaScript está desactivada para este sitio. Habilita esta opción para obtener un mejor rendimiento.</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3945513714196326460">Prueba un nombre más corto.</translation>
@@ -4457,6 +4463,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4015250302257349679">Presiona <ph name="ACCELERATOR" /> para enfocar el cuadro y, luego, otra vez para enfocar el elemento al que señala.</translation>
 <translation id="4016762287427926315">Los permisos que otorgues para <ph name="APP_NAME" /> también se otorgarán para esta app. <ph name="BEGIN_LINK" />Administrar<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crear un código QR para este vínculo</translation>
+<translation id="4018953474106733212">Solo los desarrolladores web deben activar esta función y solo deben usarla con apps de confianza.</translation>
 <translation id="4019983356493507433">Editar lista de Favoritos</translation>
 <translation id="4020701737692625681">El administrador puede grabar tu pantalla</translation>
 <translation id="4021279097213088397">–</translation>
@@ -4837,6 +4844,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4292613336957320546">Aceleración</translation>
 <translation id="429312253194641664">Un sitio está reproduciendo contenido multimedia</translation>
 <translation id="4293219510510666933">Usa el lenguaje cotidiano para buscar en tu historial de navegación y encontrar los sitios que visitaste. También puedes hacer preguntas y obtener respuestas basadas en tu historial de navegación. Este parámetro de configuración está activado.</translation>
+<translation id="429344752071832554">Dejar de enfocar el grupo</translation>
 <translation id="4294392694389031609">Se borró <ph name="FILE_NAME" /> del historial de descargas, pero aún está en tu dispositivo</translation>
 <translation id="4295072614469448764">La app está disponible en tu terminal. Es posible que haya un ícono en el Selector.</translation>
 <translation id="4295979599050707005">Vuelve a acceder para confirmar que tu cuenta <ph name="USER_EMAIL" /> se puede usar con sitios web, apps y extensiones en Chrome y Google Play. También puedes quitarla. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -4992,6 +5000,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4405224443901389797">Mover a…</translation>
 <translation id="4405781821077215583">Aumenta o reduce el tamaño de los elementos que se muestran en la pantalla, incluido el texto</translation>
 <translation id="4406308048672435032">Puedes desactivar esta pestaña o actualizarla para volver a ver la lista completa</translation>
+<translation id="4406881185911439342">Enfocar el grupo</translation>
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4406963243402726564">Datos sin guardar</translation>
 <translation id="4408599188496843485">A&amp;yuda</translation>
@@ -5243,7 +5252,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4581774856936278355">Se produjo un error al restablecer Linux</translation>
 <translation id="4582297591746054421">Por lo general los sitios leen el portapapeles para habilitar funciones, como la de conservar el formato del texto que copias.</translation>
 <translation id="4582563038311694664">Restablecer toda la configuración</translation>
-<translation id="4584094413232466841">¿Quieres quitar esta información de la función autocompletar de Chrome?</translation>
+<translation id="4584094413232466841">¿Quieres quitar esta información de la función Autocompletar de Chrome?</translation>
 <translation id="4584770411839426377">Ventana</translation>
 <translation id="4584836561445313300">Tu organización podrá ver y administrar los datos de navegación existentes, como las contraseñas y mucho más</translation>
 <translation id="4585793705637313973">Editar página</translation>
@@ -5374,7 +5383,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4675828034887792601">Crea atajos para realizar búsquedas en sitios y administra tu motor de búsqueda.</translation>
 <translation id="4676543021048806071">Ingresa tu PIN de 6 dígitos del Administrador de contraseñas de Google</translation>
 <translation id="4676595058027112862">Phone Hub, más información</translation>
-<translation id="4676616966096505747">Aún no se guardan algunos datos en tu cuenta</translation>
+<translation id="4676616966096505747">Aún no se han guardado algunos datos en tu cuenta</translation>
 <translation id="4677772697204437347">Memoria de la GPU</translation>
 <translation id="467809019005607715">Presentaciones de Google</translation>
 <translation id="4678848110205818817">Tarjeta de crédito o débito</translation>
@@ -6658,6 +6667,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="557722062034137776">Restablecer el dispositivo no afectará las cuentas de Google ni los datos sincronizados con esas cuentas. Sin embargo, se eliminarán todos los archivos guardados localmente en el dispositivo.</translation>
 <translation id="5578059481725149024">Acceso automático</translation>
 <translation id="5578387000057347457">Ingresa una instrucción personalizada o destaca texto para crear una imagen</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 elemento se guarda solo en este dispositivo. Para usarlo en tus otros dispositivos, <ph name="BEGIN_LINK" />guárdalo en tu Cuenta de Google<ph name="END_LINK" />.}other{{ITEM_COUNT} elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, <ph name="BEGIN_LINK" />guárdalos en tu Cuenta de Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Quitar <ph name="SITE" /> de la lista <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">Se completó la traducción al <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Verificación de controladores de hardware de Windows, Microsoft</translation>
@@ -7146,6 +7156,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
           <ph name="LINE_BREAK" />
           Se mostrará esta imagen en la pantalla bloqueada y de acceso de Chromebook.</translation>
 <translation id="5925147183566400388">Puntero de declaración de práctica de certificación</translation>
+<translation id="5926936390113611560">Abrir todos los perfiles</translation>
 <translation id="5927132638760172455">Transmitiendo a un receptor desconocido</translation>
 <translation id="592740088639760830">Detener este contenedor</translation>
 <translation id="592880897588170157">Descargar los archivos PDF en lugar de abrirlos de forma automática en Chrome</translation>
@@ -7230,6 +7241,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5979421442488174909">&amp;Traducir al <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Para agregar páginas a Favoritos, haz clic en la estrella que se encuentra en la barra de direcciones</translation>
 <translation id="5982578203375898585">Mostrar las descargas cuando finalicen</translation>
+<translation id="598347738324022917">Se guardó el favorito en este dispositivo</translation>
 <translation id="5983716913605894570">Generando…</translation>
 <translation id="5984222099446776634">Visitados recientemente</translation>
 <translation id="5984334442529819751">Se produjo un error al instalar el DLC (a menudo, se necesita un reinicio; consulta Configuración\&gt;\&gt;Acerca de ChromeOS para obtener más información).</translation>
@@ -8645,7 +8657,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6972754398087986839">Comenzar</translation>
 <translation id="697312151395002334">Puede enviar ventanas emergentes y usar redireccionamientos</translation>
 <translation id="6973611239564315524">Hay disponible una actualización a Debian 10 (Buster)</translation>
-<translation id="69739764870135975">Si Google también es tu motor de búsqueda predeterminado, verás sugerencias mejores y relevantes según el contexto</translation>
+<translation id="69739764870135975">Si Google también es tu motor de búsqueda predeterminado, verás mejores sugerencias, relacionadas con el contexto</translation>
 <translation id="697508444536771064">Cerrar Linux</translation>
 <translation id="6978121630131642226">Motores de búsqueda</translation>
 <translation id="6978717888677691380">Sitios que bloqueaste</translation>
@@ -10191,6 +10203,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8032569120109842252">Siguiendo</translation>
 <translation id="8033827949643255796">seleccionados</translation>
 <translation id="8033958968890501070">Se agotó el tiempo de espera</translation>
+<translation id="8034399942062051455">La optimización de V8 está desactivada</translation>
 <translation id="8034697324150621782">Intercambiar con la vista superior</translation>
 <translation id="8035059678007243127">Página de incógnito en la Memoria caché atrás/adelante: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Ayuda a mejorar Autocompletar</translation>
@@ -11491,6 +11504,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8910987510378294980">Ocultar lista de dispositivos</translation>
 <translation id="8912362522468806198">Cuenta de Google</translation>
 <translation id="8912810933860534797">Habilitar la búsqueda automática</translation>
+<translation id="8914030287343429787">Para ver tus contraseñas incluso cuando no estés usando Chrome o Android, accede a <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8915307125957890427">Haz clic con el botón derecho en una pestaña, selecciona "Agregar pestaña al grupo" y, luego, selecciona "Grupo nuevo"</translation>
 <translation id="8915370057835397490">Cargando sugerencia</translation>
@@ -11863,7 +11877,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9143922477019434797">Protege tus contraseñas.</translation>
 <translation id="9147392381910171771">&amp;Opciones</translation>
 <translation id="9148058034647219655">Salir</translation>
-<translation id="9148126808321036104">Accede nuevamente</translation>
+<translation id="9148126808321036104">Volver a acceder</translation>
 <translation id="9148963623915467028">Este sitio puede acceder a tu ubicación.</translation>
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9150045010208374699">Usar tu cámara</translation>

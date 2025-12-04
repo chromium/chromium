@@ -2009,6 +2009,10 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
       Se a política for definida como "Desativada", esse recurso não estará disponível.</translation>
 <translation id="2342066287156668839">Ativar cota persistente.</translation>
+<translation id="2343774133209251840">Quando ativadas, as APIs de cota de armazenamento vão retornar um valor estático igual ao uso e mais um mínimo de 10 GiB de disco, arredondado para o próximo 1 GiB.
+Quando desativadas, as APIs de cota de armazenamento geralmente vão retornar um valor dinâmico proporcional ao espaço total disponível no dispositivo, não importando o uso.
+Se não forem definidas, o comportamento será determinado pelo lançamento de recursos ou pelas flags da cota de armazenamento informada e previsível.
+Os sites com permissões de armazenamento ilimitado não são afetados por essa configuração. A cota obrigatória também não é impactada.</translation>
 <translation id="2344033063256716138">Configure políticas para controlar se o usuário tem permissão para acessar dados e recursos compartilhados.</translation>
 <translation id="2345547870894930157">Ativar DNS sobre HTTPS sem substituto inseguro</translation>
 <translation id="2347695338560092641">Drivers de impressão fora do processo são permitidos</translation>
@@ -3276,6 +3280,7 @@ do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3169872426103732947">Mostrar o URL padrão e permitir que os usuários mudem para o URL completo</translation>
 <translation id="3171369832001535378">Modelo de nome do host da rede do dispositivo</translation>
 <translation id="3173844121395372156">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />.</translation>
+<translation id="3175063338945713984">As APIs de cota de armazenamento retornam valores com base no processo de lançamento de recursos.</translation>
 <translation id="3177537290334203187">Usar o comportamento padrão ao determinar se os sites podem fazer solicitações para endpoints de rede.</translation>
 <translation id="3177802893484440532">Exigir verificações on-line de OCSP/CRL para âncoras de confiança locais</translation>
 <translation id="3179533009079100620">Mostrar seletor de perfil</translation>
@@ -3422,6 +3427,7 @@ O card do Microsoft Outlook vai precisar de mais configurações administrativas
 
 Se a política <ph name="NTPCARDSVISIBLE" /> for desativada, o card do Outlook não vai aparecer. Se <ph name="NTPCARDSVISIBLE" /> for ativada, o card do Outlook vai aparecer se essa política também estiver ativada e houver dados para mostrar. Se <ph name="NTPCARDSVISIBLE" /> não for definida, o card do Outlook vai aparecer se esta política também estiver ativada, o usuário tiver ativado o card em "Personalizar o Chrome" e houver dados para mostrar.</translation>
 <translation id="3261592499545947104">Número de segundos antes da expiração de um certificado quando a renovação precisa ser acionada.</translation>
+<translation id="326182244921429468">As APIs de cota de armazenamento retornam valores dinâmicos.</translation>
 <translation id="3262080895269946462">Permitir que o WebSQL em contextos de terceiros fique desativado por padrão.</translation>
 <translation id="326341982850521928">Ativar a correção de cor</translation>
 <translation id="3263892501786842604">Permitir que o botão do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> apareça na caixa de pesquisa na página "Nova guia", se houver suporte.</translation>
@@ -4608,6 +4614,11 @@ Se a política for definida como <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3),
 
 
 A disponibilidade das extensões ainda é controlada por outras políticas.</translation>
+<translation id="4112585124048467596">Se esta política for definida, todos os tipos de dados especificados serão excluídos da sincronização, tanto para a <ph name="CHROME_SYNC_NAME" /> quanto para a sincronização de perfil de roaming. Isso pode ajudar a reduzir o tamanho do perfil de roaming ou limitar o tipo de dado que será enviado por upload aos servidores da <ph name="CHROME_SYNC_NAME" />.
+
+      Atualmente, os tipos de dados para esta política são: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "productComparison", "readingList", "tabs", "themes", "typedUrls" e "wifiConfigurations". Esses nomes diferenciam letras maiúsculas de minúsculas.
+
+      Observações: a atualização dinâmica de políticas está disponível apenas na versão 123 e mais recentes do <ph name="PRODUCT_NAME" />. Desativar a opção "autofill" também desativa "payments". "typedUrls" refere-se a todo o histórico de navegação.</translation>
 <translation id="4115501011761259824">Ativar o First-Party Sets para todos os usuários afetados</translation>
 <translation id="4120401094617902941">Taxa em que os contadores de tempo de execução são amostrados e coletados. O mínimo permitido é de um dia.
 
@@ -6599,6 +6610,34 @@ Observação: esta política não se aplica a HSTS Upgrades.</translation>
 
 Se a política for desativada, o histórico de navegação e o de downloads não poderão ser excluídos. Mesmo que a política esteja desativada, não há garantia de que o histórico de navegação e o de downloads serão preservados. Os usuários poderão editar ou excluir os arquivos de banco de dados de histórico diretamente, e o próprio navegador poderá expirar ou arquivar todo ou qualquer item de histórico a qualquer momento.</translation>
 <translation id="5322649594584715998">Carrega totalmente a bateria na velocidade padrão. Esse modo desativa o carregamento adaptável e limitado.</translation>
+<translation id="5322726025747768984">A definição desta política configura regras que selecionam qual proxy o navegador usa, dependendo do URL de destino e de outras condições. Esta política terá precedência sobre as configurações de proxy definidas pela política <ph name="PROXY_SETTINGS_POLICY_NAME" />, pela API de extensão <ph name="PROXY_SETTINGS_EXTENSION_API" /> ou pelas configurações manuais do usuário, se alguma delas estiver definida.
+
+Se a política não for definida, isso não vai afetar outras políticas de proxy ou configurações do usuário.
+
+Quando o navegador precisa decidir qual proxy usar, as entradas da política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> são avaliadas em sequência até que uma delas satisfaça todos os pontos a seguir:
+  * Pelo menos um dos padrões de URL em <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> é correspondente.
+  * Nenhum dos padrões de URL em <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> é correspondente.
+  * Se <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> for especificado e for uma lista não vazia, todas as condições representadas pelas entradas serão satisfeitas.
+O valor em <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> será usado como proxy para essa correspondência. Se nenhuma correspondência for encontrada, as configurações de proxy vão voltar para o que está definido na política <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+Os padrões de URL compatíveis com <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> e <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> estão documentados em https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+As entradas do campo <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> correspondem a valores de string de arquivos PAC, como:
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+Como alternativa, especificadores de proxy semelhantes a URLs podem ser usados diretamente para especificar o proxy, por exemplo:
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+A primeira entrada acessível na lista será usada como proxy. As entradas inválidas na lista são ignoradas.
+
+O campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> tem uma lista de condições que precisam ser atendidas para que a regra de substituição seja usada para decidir o proxy. Se for deixado sem definição, a entrada será usada desde que tenha correspondência com pelo menos um host em <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
+
+A condição <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica se o <ph name="PROXY_OVERRIDE_RULES_HOST" /> DNS fornecido pode ser resolvido para um endereço IP. Se o valor de <ph name="PROXY_OVERRIDE_RULES_RESULT" /> for "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />", a condição será considerada atendida. Se o valor for definido como <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, a condição será considerada atendida se a resolução falhar.</translation>
 <translation id="5323200200131319468">Ativar a resposta falada na tela de login.</translation>
 <translation id="5323271643727095577">Não mostrar a caixa de diálogo de cancelamento quando event.preventDefault() for chamado para o evento beforeunload. Mostrar a caixa de diálogo de cancelamento quando beforeunload event.returnValue for a string vazia para o evento beforeunload.</translation>
 <translation id="5324430722441910403">Configurações da pesquisa no site</translation>
@@ -11178,6 +11217,7 @@ Consulte a seção 5.2 do RFC 8828 (https://tools.ietf.org/html/rfc8828.html#sec
       Se a política não tiver definição, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
 
       Para saber mais sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. A partir da versão M85, padrões com caracteres curinga "*" e "[*.]" no host não serão mais compatíveis com esta política.</translation>
+<translation id="8251975082850036657">As APIs de cota de armazenamento retornam valores estáticos.</translation>
 <translation id="82530263956734297">IDs de extensão que serão isentos da lista de bloqueio</translation>
 <translation id="8254749125469750814">Não valide se uma extensão pode ser instalada ou não com um serviço de nuvem.</translation>
 <translation id="8256006033157034334">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
@@ -12325,6 +12365,7 @@ Veja mais detalhes em https://support.google.com/chrome/a/answer/9301891.</trans
       Esta política é usada apenas para usuários do Family Link.</translation>
 <translation id="8947415621777543415">Informar a localização do dispositivo</translation>
 <translation id="8948062138228904066">Lista de permissões do servidor de autenticação</translation>
+<translation id="8951145747995737852">Controlar se as APIs de cota de armazenamento vão retornar valores estáticos</translation>
 <translation id="8951350807133946005">Definir o diretório de cache de disco</translation>
 <translation id="8952611478149810182">O envio de eventos em controles de formulário desativados está sendo modificado no Chromium para melhorar a compatibilidade com outros navegadores e a experiência do desenvolvedor.
 

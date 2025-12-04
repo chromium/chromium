@@ -1339,6 +1339,7 @@
 <translation id="1907044622262489040">使用语音输入内容。使用搜索键 + D，然后开始说话。</translation>
 <translation id="1907659324308286326">某些 Thunderbolt 或 USB4 配件需拥有内存访问权限才能正常工作。</translation>
 <translation id="1908591798274282246">重新打开已关闭的群组</translation>
+<translation id="1909677622563887527">Chrome 正受到自动测试软件的控制</translation>
 <translation id="1909880997794698664">您确定要让此设备永远处于自助服务终端模式吗？</translation>
 <translation id="1910721550319506122">欢迎使用！</translation>
 <translation id="1910736334623230603">无法搜索多张图片。一次只能添加 1 张图片。</translation>
@@ -1693,6 +1694,7 @@
 <translation id="2144536955299248197">证书查看者：<ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android 应用开发</translation>
 <translation id="2145468727756963476">Gemini 正在刷新…</translation>
+<translation id="2145688286532368277">此网站已关闭 JavaScript 优化功能。</translation>
 <translation id="2145917706968602070">请确保手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi</translation>
 <translation id="2146263598007866206">网站可能会自动将相关文件一起下载，从而为您节省时间</translation>
 <translation id="2147218225094845757">隐藏侧边栏</translation>
@@ -3688,6 +3690,7 @@
 <translation id="3527085408025491307">文件夹</translation>
 <translation id="3528498924003805721">快捷方式目标</translation>
 <translation id="3529851166527095708">地址和其他信息(&amp;A)</translation>
+<translation id="3530919970074558307">为分组撤销焦点效果</translation>
 <translation id="3531070080754387701">Microsoft 365 无法从此文件夹中打开 <ph name="FILE_NAMES" /></translation>
 <translation id="3531883061432162622">在“书签和清单”部分中查找您的阅读清单和书签</translation>
 <translation id="3532273508346491126">同步管理</translation>
@@ -4041,6 +4044,7 @@
 <translation id="3757567010566591880">取消固定到工具栏</translation>
 <translation id="3757645900890881944">搜索工具</translation>
 <translation id="3757733214359997190">未找到任何网站</translation>
+<translation id="3757825964096339958">为分组添加焦点效果</translation>
 <translation id="375841316537350618">正在下载代理脚本...</translation>
 <translation id="3758887577462995665">提示：</translation>
 <translation id="375962596908891207"><ph name="DROPDOWN_NAME" /> 个月</translation>
@@ -4313,6 +4317,7 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">显示大小和文字大小：<ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">系统会将网址发送给“安全浏览”功能进行检查，还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁。当您登录后，会暂时将这些数据关联到您的 Google 账号，以便在各个 Google 应用中为您提供保护。</translation>
+<translation id="3924788966103416622">一款外部应用请求完全控制此 Chrome 会话以进行调试。这包括访问您保存的数据、Cookie 和网站数据，以及前往任意网址。</translation>
 <translation id="3925573269917483990">摄像头：</translation>
 <translation id="3925926055063465902">此设备上的其他用户也可以使用此网络</translation>
 <translation id="3926002189479431949">Smart Lock 的配对手机已更改</translation>
@@ -4338,6 +4343,7 @@
 
   要启动“<ph name="CONTROL_PANEL_APPLET_NAME" />”吗？</translation>
 <translation id="3942420633017001071">诊断</translation>
+<translation id="3942558231079086184">此网站已关闭 JavaScript 优化功能。启用后可提升性能。</translation>
 <translation id="3943582379552582368">返回(&amp;B)</translation>
 <translation id="3943857333388298514">粘贴</translation>
 <translation id="3945513714196326460">请尝试缩短名称</translation>
@@ -4449,6 +4455,7 @@
 <translation id="4015250302257349679">按 <ph name="ACCELERATOR" /> 可聚焦于此气泡，再次按下可聚焦于它所指向的元素。</translation>
 <translation id="4016762287427926315">您向“<ph name="APP_NAME" />”授予的权限也会授给此应用。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">为此链接创建二维码</translation>
+<translation id="4018953474106733212">此功能只应由 Web 开发者开启，且只能与受信任的应用搭配使用。</translation>
 <translation id="4019983356493507433">修改书签列表</translation>
 <translation id="4020701737692625681">管理员可以录制您的屏幕</translation>
 <translation id="4021279097213088397">–</translation>
@@ -4829,6 +4836,7 @@
 <translation id="4292613336957320546">加速</translation>
 <translation id="429312253194641664">某个网站正在播放媒体内容</translation>
 <translation id="4293219510510666933">使用日常用语搜索您的浏览记录，并查找您访问过的网站。您还可以提出问题，系统会根据您的浏览记录提供答案。此设置已开启。</translation>
+<translation id="429344752071832554">为分组撤销焦点效果</translation>
 <translation id="4294392694389031609">“<ph name="FILE_NAME" />”已从下载记录中删除，但仍保留在您的设备上</translation>
 <translation id="4295072614469448764">应用已可在您的终端上使用，且可能在启动器中显示图标。</translation>
 <translation id="4295979599050707005">请重新登录，以确认您的账号 (<ph name="USER_EMAIL" />) 可用于 Chrome 和 Google Play 中的网站、应用和扩展程序。您还可以移除此账号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -4984,6 +4992,7 @@
 <translation id="4405224443901389797">移动到…</translation>
 <translation id="4405781821077215583">放大或缩小屏幕上的内容（包括文字）</translation>
 <translation id="4406308048672435032">您可以将此标签页设为非活跃状态，或刷新以再次查看完整列表</translation>
+<translation id="4406881185911439342">为分组添加焦点效果</translation>
 <translation id="4406883609789734330">实时字幕</translation>
 <translation id="4406963243402726564">未保存的数据</translation>
 <translation id="4408599188496843485">帮助(&amp;E)</translation>
@@ -6648,6 +6657,7 @@
 <translation id="557722062034137776">重置您的设备不会影响您的 Google 账号或已同步到这些账号的任何数据，但您的设备中本地保存的所有文件都将被删除。</translation>
 <translation id="5578059481725149024">自动登录</translation>
 <translation id="5578387000057347457">输入自定义提示或突出显示文本，以创建图片</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{有 1 项内容只保存到此设备上。若要在其他设备上使用它，请<ph name="BEGIN_LINK" />将它保存到 Google 账号中<ph name="END_LINK" />。}other{有 {ITEM_COUNT} 项内容只保存到此设备上。若要在其他设备上使用它们，请<ph name="BEGIN_LINK" />将它们保存到 Google 账号中<ph name="END_LINK" />。}}</translation>
 <translation id="5579225964082017560">从“<ph name="SECTION_HEADER" />”列表中移除 <ph name="SITE" /></translation>
 <translation id="5581134892342029705">已将源语言翻译成<ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Microsoft Windows 硬件驱动程序验证</translation>
@@ -7134,6 +7144,7 @@
     <ph name="LINE_BREAK" />
     此图片将会显示在 Chromebook 的登录屏幕和锁定屏幕上。</translation>
 <translation id="5925147183566400388">核证作业准则 (Certification Practice Statement) 指针</translation>
+<translation id="5926936390113611560">打开所有资料</translation>
 <translation id="5927132638760172455">正在投放至未知接收器</translation>
 <translation id="592740088639760830">停止运行此容器</translation>
 <translation id="592880897588170157">下载 PDF 文件，而不是在 Chrome 中自动打开它们</translation>
@@ -7217,6 +7228,7 @@
 <translation id="5979421442488174909">翻译成<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="5979469435153841984">要为网页添加书签，请点击地址栏中的星形图标</translation>
 <translation id="5982578203375898585">下载完成后显示下载内容</translation>
+<translation id="598347738324022917">书签已保存到此设备</translation>
 <translation id="5983716913605894570">正在生成…</translation>
 <translation id="5984222099446776634">最近访问过的内容</translation>
 <translation id="5984334442529819751">安装 DLC 时出错（通常需要重新启动，请依次查看“设置”\&gt;\&gt;“关于 ChromeOS”了解详情）。</translation>
@@ -10178,6 +10190,7 @@
 <translation id="8032569120109842252">已关注</translation>
 <translation id="8033827949643255796">已选中</translation>
 <translation id="8033958968890501070">已超时</translation>
+<translation id="8034399942062051455">已关闭 V8 优化功能</translation>
 <translation id="8034697324150621782">与顶部视图交换</translation>
 <translation id="8035059678007243127">无痕式往返缓存版页面：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">帮助改进自动填充功能</translation>
@@ -11478,6 +11491,7 @@
 <translation id="8910987510378294980">隐藏设备列表</translation>
 <translation id="8912362522468806198">Google 账号</translation>
 <translation id="8912810933860534797">启用自动扫描</translation>
+<translation id="8914030287343429787">登录 <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />，即使在不使用 Chrome 或 Android 的情况下也能查看自己的密码</translation>
 <translation id="8914504000324227558">重启 Chrome</translation>
 <translation id="8915307125957890427">右键点击某个标签页，选择“向组中添加标签页”，然后选择“新建组”</translation>
 <translation id="8915370057835397490">正在加载建议</translation>

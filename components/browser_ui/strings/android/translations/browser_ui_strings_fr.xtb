@@ -184,6 +184,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="2903493209154104877">Adresses</translation>
 <translation id="2910701580606108292">Demander avant d'autoriser les sites à lire les contenus protégés</translation>
 <translation id="2918484639460781603">Accéder aux paramètres</translation>
+<translation id="293060180538644702">Recevez des notifications sur les astuces Chrome</translation>
 <translation id="2932883381142163287">Signaler un abus</translation>
 <translation id="2939338015096024043">Lorsque cette option est activée, les sites peuvent demander à suivre la position de la caméra et à en savoir plus sur ce qui vous entoure. Lorsqu'elle est désactivée, les sites ne peuvent pas suivre la position de la caméra ni en savoir plus sur ce qui vous entoure.</translation>
 <translation id="2968755619301702150">Lecteur de certificat</translation>
@@ -244,6 +245,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="3611658447322220736">Les sites fermés récemment peuvent terminer l'envoi et la réception de données</translation>
 <translation id="3619294456800709762">Les sites peuvent passer en Picture-in-picture automatiquement</translation>
 <translation id="3628308229821498208">Recherches suggérées</translation>
+<translation id="3632460243282703117">S'abonner</translation>
 <translation id="363748948745453283">Position approximative utilisée</translation>
 <translation id="3641456520301071208">Les sites peuvent demander votre position</translation>
 <translation id="3658847490588580244">Bottom sheet du navigateur par défaut</translation>
@@ -522,6 +524,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="662080504995468778">Rester</translation>
 <translation id="6630443592285535486">Saisissez le code hexadécimal ici</translation>
 <translation id="6635327442719709864">Les sites peuvent demander à utiliser des ports série quand cette option est activée et ne peuvent pas quand elle est désactivée.</translation>
+<translation id="6669390930482049506">M'avertir</translation>
 <translation id="6678072580827808850">Examiner le contrôle de sécurité</translation>
 <translation id="6682057173375416470">Recevoir des articles suggérés sur la page "Nouvel onglet"</translation>
 <translation id="6683865262523156564">Ce site fait partie d'un groupe qui peut voir votre activité. Le groupe est défini par <ph name="RWS_OWNER" />.</translation>
@@ -631,6 +634,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="7990211076305263060">Lorsque cette option est activée, les sites peuvent demander à utiliser votre micro. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser votre micro.</translation>
 <translation id="8007176423574883786">Désactivée pour cet appareil</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
+<translation id="8033047164036749181">S'abonner aux notifications de ce site</translation>
 <translation id="8042586301629853791">Trier par :</translation>
 <translation id="8051193500142930381">Les fonctionnalités qui nécessitent une caméra ne seront pas disponibles</translation>
 <translation id="8056330801132235235">Option par défaut Chrome</translation>

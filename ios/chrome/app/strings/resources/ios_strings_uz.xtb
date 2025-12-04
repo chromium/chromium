@@ -211,6 +211,7 @@
 <translation id="1764070164487214210">Qanday boriladi</translation>
 <translation id="1767766085187034454">Google Tarjimon</translation>
 <translation id="1771016937398045251">Asboblar menyusi</translation>
+<translation id="1772468122139624049">Varaqlar qayta yuklanmadi</translation>
 <translation id="1779354709911146450">Autentifikatsiya xatosi yuz berdi</translation>
 <translation id="1780152987505130652">Guruhni yopish</translation>
 <translation id="178400879184240105">Parollaringiz takrorlanmagan</translation>
@@ -577,7 +578,7 @@
 <translation id="3186796054637504691">Tarix va sayt maʼlumotlarini tozalash</translation>
 <translation id="3190736958609431397">Kuzatilmasin</translation>
 <translation id="3208260410153224535">Hisobga kirish tashkilotingiz tomonidan faolsizlantirilgan. Yangi bukmarklar, parollar va boshqalar faqat shu qurilmada saqlanadi.</translation>
-<translation id="3211969308836412674">Saytni yechish</translation>
+<translation id="3211969308836412674">Saytni yechib olish</translation>
 <translation id="3213807041830307252">Kamera yoki galereya rasmi bilan mahsulot toping, matn tarjima qiling va atrofdagi obyektlar axborotini oling.</translation>
 <translation id="3214379938835224220">iPad qurilmasini tiklash mobaynida hisobingizdan chiqarildingiz. Hisobga kirish uchun quyida davom etish ustiga bosing.</translation>
 <translation id="3218296450292600703">Boshqariladigan hisob orqali kirsangiz, varaqlar, parollar va tarix kabi tashkilotingizga oid brauzer maʼlumotlari alohida saqlanadi.</translation>
@@ -709,6 +710,7 @@
 <translation id="3779810277399252432">Internetga ulanmagansiz</translation>
 <translation id="3782614601387961027">Ogohlantirishni yopish</translation>
 <translation id="3789841737615482174">O‘rnatish</translation>
+<translation id="3789849526426236410">Yangi varaq ochish</translation>
 <translation id="380329542618494757">Ism</translation>
 <translation id="3803696231112616155">Bu saytda tarjima taklif qilinsin</translation>
 <translation id="3810973564298564668">Sozlash</translation>
@@ -1006,6 +1008,7 @@
 <translation id="4877597489778380935">Keyinroq eslatilsin</translation>
 <translation id="4881695831933465202">Ochish</translation>
 <translation id="4883766694719903356">Inkognito varaq katagi</translation>
+<translation id="4884937942297374058">Kuchaytirilgan himoya oʻchiq</translation>
 <translation id="488785315393301722">Tafsilotlarini ko‘rsatish</translation>
 <translation id="4889521386764567563">Joriy profil</translation>
 <translation id="4893713555726946316">Sahifa ichidan qidirishni yopish</translation>

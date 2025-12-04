@@ -1931,6 +1931,10 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
       Si cette règle est désactivée, cette fonctionnalité n'est pas disponible.</translation>
 <translation id="2342066287156668839">Activer le quota persistant.</translation>
+<translation id="2343774133209251840">Lorsque cette règle est activée, les API de quota de stockage renvoient une valeur statique égale à l'utilisation + min (10 Gio, espace disque arrondi à l'entier le plus proche de 1 Gio).
+Lorsque cette règle est désactivée, les API de quota de stockage renvoient généralement une valeur dynamique proportionnelle à l'espace total disponible sur l'appareil, quelle que soit l'utilisation.
+Si cette règle n'est pas définie, le lancement de la fonctionnalité de quota de stockage enregistré prévisible ou les flags déterminent le comportement.
+Les sites disposant d'autorisations de stockage illimité ne sont pas concernés par ce paramètre. Le quota appliqué n'est pas non plus affecté.</translation>
 <translation id="2344033063256716138">Configurer des règles pour déterminer si l'utilisateur est autorisé à accéder aux données et fonctionnalités partagées.</translation>
 <translation id="2345547870894930157">Activer DNS-over-HTTPS sans solution de secours à risque</translation>
 <translation id="2347695338560092641">Pilotes d'impression hors processus autorisés</translation>
@@ -3122,6 +3126,7 @@ Si vous devez utiliser cette règle pour désactiver la suppression de window.na
 <translation id="3169872426103732947">Afficher l'URL par défaut, permettre aux utilisateurs de passer à l'URL complète</translation>
 <translation id="3171369832001535378">Modèle de nom d'hôte du réseau de l'appareil</translation>
 <translation id="3173844121395372156">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" /> à la place.</translation>
+<translation id="3175063338945713984">Les API de quota de stockage renvoient des valeurs basées sur le processus de lancement de la fonctionnalité.</translation>
 <translation id="3177537290334203187">Utiliser le comportement par défaut pour déterminer si des sites Web peuvent envoyer des requêtes aux points de terminaison du réseau.</translation>
 <translation id="3177802893484440532">Exiger des contrôles OCSP/CRL en ligne pour les ancres d'approbation locales</translation>
 <translation id="3179533009079100620">Affichez le sélecteur de profil</translation>
@@ -3268,6 +3273,7 @@ La carte Microsoft Outlook nécessite une configuration supplémentaire par l'a
 
 Si <ph name="NTPCARDSVISIBLE" /> est désactivé, la carte Outlook ne s'affiche pas. Si <ph name="NTPCARDSVISIBLE" /> est activé, la carte Outlook s'affiche si cette règle est également activée et s'il y a des données à afficher. Si <ph name="NTPCARDSVISIBLE" /> n'est pas défini, la carte Outlook s'affiche si cette règle est également activée, si l'utilisateur a activé la carte dans "Personnaliser Chrome" et s'il y a des données à afficher.</translation>
 <translation id="3261592499545947104">Nombre de secondes avant l'expiration d'un certificat lorsque le renouvellement doit être déclenché.</translation>
+<translation id="326182244921429468">Les API de quota de stockage renvoient des valeurs dynamiques.</translation>
 <translation id="3262080895269946462">Autoriser la désactivation par défaut de WebSQL dans des contextes tiers.</translation>
 <translation id="326341982850521928">Activer la correction des couleurs</translation>
 <translation id="3263892501786842604">Autoriser l'affichage du bouton <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le champ de recherche de la page "Nouvel onglet", s'il est disponible.</translation>
@@ -4427,6 +4433,11 @@ Si cette règle est définie sur <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3),
 
 
 La disponibilité des extensions est toujours contrôlée par d'autres règles.</translation>
+<translation id="4112585124048467596">Si cette règle est configurée, tous les types de données spécifiés ne seront pas synchronisés avec <ph name="CHROME_SYNC_NAME" /> ni avec le profil itinérant. Cela peut permettre de réduire la taille du profil itinérant ou de limiter les types de données importés sur les serveurs <ph name="CHROME_SYNC_NAME" />.
+
+      Les types de données actuels pour cette règle sont : "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "productComparison", "readingList", "tabs", "themes", "typedUrls" et "wifiConfigurations". Ces noms sont sensibles à la casse.
+
+      Remarques : L'actualisation dynamique des stratégies n'est disponible qu'à partir de la version 123 de <ph name="PRODUCT_NAME" />. La désactivation du type de données "autofill" désactive également le type "payments". "typedUrls" fait référence à tout l'historique de navigation.</translation>
 <translation id="4115501011761259824">Activer les ensembles propriétaires pour tous les utilisateurs concernés</translation>
 <translation id="4120401094617902941">Fréquence d'échantillonnage et de collecte des compteurs d'exécution. La valeur minimale autorisée est de 1 jour.
 
@@ -6350,6 +6361,34 @@ Remarque : Cette règle ne s'applique pas aux mises à niveau HSTS.</translatio
 
 Si cette règle est désactivée, ces deux historiques ne peuvent pas être supprimés. Même si cette règle est désactivée, cela ne garantit pas que ces historiques soient conservés. En effet, les utilisateurs peuvent modifier ou supprimer directement les fichiers de ces historiques. De même, le navigateur peut arriver à expiration ou archiver l'historique partiellement ou intégralement à tout moment.</translation>
 <translation id="5322649594584715998">Recharge complète de la batterie en mode standard. Ce mode désactive les recharges adaptative et limitée.</translation>
+<translation id="5322726025747768984">Cette règle, quand elle est configurée, permet de sélectionner le proxy que le navigateur utilise en fonction de l'URL de destination et d'autres conditions. Elle prévaut sur les paramètres de proxy définis dans la règle <ph name="PROXY_SETTINGS_POLICY_NAME" />, l'API d'extension <ph name="PROXY_SETTINGS_EXTENSION_API" /> ou manuellement dans les paramètres utilisateur, le cas échéant.
+
+Si cette règle n'est pas configurée, cela n'a aucune incidence sur les autres règles de proxy ou les paramètres utilisateur.
+
+Lorsque le navigateur doit décider quel proxy utiliser, les entrées de la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> sont évaluées dans l'ordre jusqu'à ce qu'une entrée remplisse toutes les conditions suivantes :
+  * Au moins un des formats d'URL dans <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> correspond.
+  * Aucun des formats d'URL dans <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> ne correspond.
+  * Si <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> est spécifié et qu'il s'agit d'une liste non vide, toutes les conditions représentées par ses entrées sont remplies.
+En cas de correspondance, la valeur de <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> sera utilisée comme proxy. Si aucune correspondance n'est trouvée, les paramètres de proxy seront ceux définis dans la règle <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+Les formats d'URL acceptés par <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> et <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> sont décrits sur https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+Les entrées du champ <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> correspondent à des valeurs de chaîne de fichiers PAC, telles que :
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+Vous pouvez aussi utiliser directement des spécificateurs de proxy de type URL pour spécifier le proxy, par exemple :
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+La première entrée accessible de la liste sera utilisée comme proxy. Les entrées non valides de la liste sont ignorées.
+
+Le champ <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contient une liste de conditions qui doivent toutes être remplies pour que la règle de remplacement serve à déterminer le proxy à utiliser. Si ce champ n'est pas défini, l'entrée sera utilisée tant qu'au moins un hôte dans <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> correspondra.
+
+La condition <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> vérifie si l’<ph name="PROXY_OVERRIDE_RULES_HOST" /> DNS fourni peut être résolu en une adresse IP. La condition est considérée comme remplie, si la valeur de <ph name="PROXY_OVERRIDE_RULES_RESULT" /> est "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />". Si la valeur est définie sur <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, la condition est considérée comme remplie si la résolution a échoué.</translation>
 <translation id="5323200200131319468">Activer la lecture vocale sur l'écran de connexion</translation>
 <translation id="5323271643727095577">Ne pas afficher de boîte de dialogue d'annulation quand event.preventDefault() est appelé pour l'événement beforeunload. Afficher la boîte de dialogue d'annulation quand beforeunload event.returnValue est la chaîne vide de l'événement beforeunload.</translation>
 <translation id="5324430722441910403">Paramètres de recherche sur site</translation>
@@ -10727,6 +10766,7 @@ Consultez la section 5.2 du document RFC 8828 (https://tools.ietf.org/html/rfc
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> s'applique à tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
 
       Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. Sachez toutefois qu'à partir de la version M85, les formats contenant les caractères génériques "*" et "[*.]" dans l'hôte ne sont plus acceptés pour cette règle.</translation>
+<translation id="8251975082850036657">Les API de quota de stockage renvoient des valeurs statiques.</translation>
 <translation id="82530263956734297">Identifiants d'extension à exclure de la liste de blocage</translation>
 <translation id="8254749125469750814">Ne pas valider si une extension peut être installée ou non avec un service cloud.</translation>
 <translation id="8256006033157034334">Cette règle est obsolète et incompatible, veuillez utiliser la règle <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> à la place.</translation>
@@ -11820,6 +11860,7 @@ Pour en savoir plus, consultez https://support.google.com/chrome/a/answer/930189
       Cette règle ne s'applique qu'aux utilisateurs de Family Link.</translation>
 <translation id="8947415621777543415">Indiquer l'emplacement de l'appareil</translation>
 <translation id="8948062138228904066">Liste d'autorisation des serveurs d'authentification</translation>
+<translation id="8951145747995737852">Contrôler si les API de quota de stockage renvoient des valeurs statiques</translation>
 <translation id="8951350807133946005">Définir le répertoire du cache disque</translation>
 <translation id="8952611478149810182">L'envoi des événements sur les commandes de formulaire désactivées est modifié dans Chromium afin d'améliorer l'expérience développeur et la compatibilité avec les autres navigateurs.
 

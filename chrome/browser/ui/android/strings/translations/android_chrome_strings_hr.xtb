@@ -496,6 +496,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3114507951000454849">Pročitajte današnje vijesti <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Više pojedinosti</translation>
 <translation id="3123734510202723619">Najave</translation>
+<translation id="3134385238404760368">Nema nedavnih kartica</translation>
 <translation id="314939179385989105">Početna stranica Chromea</translation>
 <translation id="3158667104057012316">Sortiranje prema ručnom redoslijedu</translation>
 <translation id="3159335509547415276">Saznajte više o blokiranim računima</translation>
@@ -817,6 +818,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4577115723294378384">Poredaj od A do Ž</translation>
 <translation id="4578289292431526768">Započnimo</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{prije # minute}one{prije # minute}few{prije # minute}other{prije # minuta}}</translation>
+<translation id="4585751637295612750">Otvorite novu karticu da biste je dodali u pitanje</translation>
 <translation id="4587589328781138893">Web-lokacije</translation>
 <translation id="4594952190837476234">Ova offline stranica nastala je <ph name="CREATION_TIME" /> i možda se razlikuje od online verzije.</translation>
 <translation id="4595237294768457124">Otvorite stranicu Nova kartica</translation>
@@ -1338,6 +1340,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="670498945988402717">Provjera je izvršena jučer</translation>
 <translation id="6710213216561001401">Prethodno</translation>
 <translation id="671481426037969117">Isteklo je odbrojavanje za aplikaciju <ph name="FQDN" />. Ponovo će se pokrenuti sutra.</translation>
+<translation id="6716434912087331834">Da biste vratili novi prozor, smanjite ukupan broj aktivnih prozora na najviše <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Neaktivni prozori brišu se nakon šest mjeseci.</translation>
 <translation id="6723740634201835758">Na vašem Google računu</translation>
 <translation id="6734310707649923383">Možete pogledati stranice koje ste posjetili ili ih izbrisati iz povijesti</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, prikvačena anonimna kartica koja snima</translation>
@@ -1655,6 +1658,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7942131818088350342">Proizvod <ph name="PRODUCT_NAME" /> zastario je.</translation>
 <translation id="7944772052836377867">Sinkronizacija treba potvrditi da ste to vi</translation>
 <translation id="7951102827450076904">Uvijek otvaraj preuzete PDF-ove</translation>
+<translation id="7952479614398473176">Da biste otvorili novi prozor, smanjite ukupan broj aktivnih prozora na najviše <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7957413488482743710">Virtualna kartica skriva vašu stvarnu karticu kako bi vas bolje zaštitila od potencijalne prijevare. <ph name="BEGIN_LINK1" />Saznajte više o virtualnim karticama<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Kartice na ovom uređaju</translation>
 <translation id="7961926449547174351">Onemogućili ste pristup pohrani. Omogućite ga u Postavkama.</translation>

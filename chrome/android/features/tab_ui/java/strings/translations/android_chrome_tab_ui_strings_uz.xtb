@@ -75,7 +75,6 @@
 <translation id="311432875115153175">Varaqlar guruhlari roʻyxati yopildi</translation>
 <translation id="3194464645767632461">reyting</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqni guruhga kiritish}other{<ph name="TABS_COUNT_MANY" /> ta varaqni guruhga kiritish}}</translation>
-<translation id="3293080634164207409">Varaqlarni kiriting</translation>
 <translation id="3328308545011660196">Taklif: <ph name="NUMBER_OF_TABS" /> ta varaq aloqador. Ular guruhlansinmi?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 kun nofaol boʻlganidan keyin}other{<ph name="DAY_COUNT_MANY" /> kun nofaol boʻlganidan keyin}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ta yangi varaq}other{<ph name="MANY_ADDED" /> ta yangi varaq}}</translation>
@@ -178,6 +177,7 @@
 <translation id="7326879924029668159">Qaytarish siyosati va boshqalar</translation>
 <translation id="7352298686197644113">Ochiq varaqlardagi qaysi narsalar narxi arzonlaganini bilish</translation>
 <translation id="7369451074646620503">“<ph name="TAB_GROUP_NAME" />” varaqlar guruhi endi mavjud emas</translation>
+<translation id="7402375256128852434">Oxirgi varaqlarni kiritish</translation>
 <translation id="7452985128687107478">Varaqlar guruhi barcha qurilmalarda avtomatik saqlanadi va yangilanib turadi</translation>
 <translation id="747459581954555080">Barchasini qayta tiklash</translation>
 <translation id="7489558427602531799">Varaqlar guruhini oʻngga surish</translation>

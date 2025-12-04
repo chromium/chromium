@@ -39,6 +39,7 @@
 <translation id="141901961143729572">Del det du har på hjertet</translation>
 <translation id="1465192221147974788">For å dele vinduet, tillat skjermopptak for Chromium i Systeminnstillinger.</translation>
 <translation id="1478370723027452770">Få hjelp med Chrome for testing</translation>
+<translation id="1496875977627931224">Hei, <ph name="USER_NAME" />.<ph name="LINE_BREAK" />Hva tenker du på i dag?</translation>
 <translation id="1497802159252041924">Installasjonsfeil: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Denne siden er beskyttet</translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
@@ -192,6 +193,7 @@
 <translation id="3103660991484857065">Installasjonsprogrammet kunne ikke dekomprimere arkivet. Last ned Chromium på nytt.</translation>
 <translation id="310459126943037700">Kunne ikke avslutte oppgaven(e).</translation>
 <translation id="3130323860337406239">Chromium bruker mikrofonen din.</translation>
+<translation id="3130333203120345554">Nytt søk</translation>
 <translation id="3137969841538672700">Dra for å søke</translation>
 <translation id="3144188012276422546">Denne fanen bruker ekstra ressurser. For å få bedre ytelse kan du la Chromium gjøre den inaktiv.</translation>
 <translation id="3149163023759831301">For å dele skjermen, tillat skjermopptak for Chromium i Systeminnstillinger</translation>
@@ -349,6 +351,7 @@
 <translation id="4994636714258228724">Legg til deg selv i Chromium</translation>
 <translation id="5123973130450702873">Chromium trenger tillatelse til å spore hendene dine</translation>
 <translation id="5141988424377517949">Du har ikke vært her i det siste. Chromium har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" />.</translation>
+<translation id="5167819546851111585">Hva tenker du på i dag?</translation>
 <translation id="5174969993834422967">Du blokkerer vanligvis varsler. For å la dette nettstedet sende deg varsler, klikk på varselikonet i høyre hjørne av adressefeltet.</translation>
 <translation id="5174983315706567306">Det er for lite diskplass.</translation>
 <translation id="5187123684706427865">Chromium-kontoen krever ny autentisering</translation>
@@ -381,6 +384,7 @@
 <translation id="5496810170689441661">Chromium prøver å redigere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="5524890928877629608">øverst til venstre i søkefeltet: venstre<ph name="LEFT" /> %, øverst <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Åpne PDF-filer i Chromium</translation>
+<translation id="5536164441519929134">Spør<ph name="LINE_BREAK" />om denne fanen</translation>
 <translation id="5579324208890605088">Oppstartsfeil: Kjør installasjonsprogrammet som vanlig bruker, ikke som administrator.</translation>
 <translation id="5580770360767802657">Bruk Chromium som standard, og fest den</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
@@ -497,6 +501,7 @@
 Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilkatalog eller bruk en nyere versjon av Chromium.</translation>
 <translation id="6729124504294600478">For å få personlig tilpasning og andre funksjoner må du inkludere Chromium i Nett- og appaktivitet og tilknyttede Google-tjenester</translation>
 <translation id="6734291798041940871">Chromium er allerede installert for alle brukerne på datamaskinen din.</translation>
+<translation id="6742093177587589736">For å få bokmerkene dine med mer på alle enhetene dine, logg på Chromium. Dette bokmerket lagres i Google-kontoen din når du logger på.</translation>
 <translation id="6751374565094704799">Gjør nettsteder raskere med V8-motoren i Chromium, men gjør Chromium litt mindre motstandsdyktig mot angrep. Denne innstillingen er på.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Noen av Chromium-dataene dine er ikke lagret i Google-kontoen din ennå. Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, slettes disse dataene (1 element).}other{Noen av Chromium-dataene dine er ikke lagret i Google-kontoen din ennå. Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, slettes disse dataene ({count} elementer).}}</translation>
 <translation id="67706546131546258">Chromium anbefaler å skanne denne filen ettersom den kan være farlig.</translation>
@@ -648,6 +653,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8493179195440786826">Chromium er utdatert</translation>
 <translation id="850264194101621529">Takk for at du har valgt Chromium som standardnettleser!</translation>
 <translation id="8522801943730206384">Chromium kan sjekke passordene dine når du lagrer dem</translation>
+<translation id="8548787790260785208">Få en advarsel hvis Chromium finner et av passordene dine i et offentlig databrudd</translation>
 <translation id="8555465886620020932">Tjenestefeil: ‏<ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Du kan feste bildesøk for enklere tilgang. Klikk på Fest-knappen øverst i sidepanelet.</translation>
 <translation id="856656450041460113">Søk på språklisten</translation>

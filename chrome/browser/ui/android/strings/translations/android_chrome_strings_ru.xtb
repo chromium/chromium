@@ -207,7 +207,7 @@
 <translation id="189358972401248634">Другие языки</translation>
 <translation id="1899175549411605574">Нижний экран с информацией о ценах</translation>
 <translation id="1900260903084164610">Продолжая, вы принимаете <ph name="BEGIN_TOS_LINK" />Условия использования<ph name="END_TOS_LINK" />.</translation>
-<translation id="1904580727789512086">URL посещаемых сайтов сохраняются в аккаунте Google.</translation>
+<translation id="1904580727789512086">URL посещаемых сайтов будут сохраняться в аккаунте Google.</translation>
 <translation id="1910950723001426294">Список способов отправки закрыт.</translation>
 <translation id="191726024256261717">Проверка разрешений</translation>
 <translation id="1917766536967060661">Вы сразу потеряете доступ к группе вкладок "<ph name="GROUP_NAME" />", а <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) больше не сможет взаимодействовать с вами в сервисах Google.</translation>
@@ -1941,12 +1941,13 @@
 <translation id="9104217018994036254">Список устройств для отправки вкладки.</translation>
 <translation id="9106148373857059373">Страница сохранения закладки закрыта</translation>
 <translation id="9108808586816295166">Иногда безопасный DNS-сервер может быть недоступен.</translation>
+<translation id="9112483451228487295">Быстрое удаление данных о работе в браузере</translation>
 <translation id="9124978074365039456">Находите товары, переводите тексты и получайте информацию о том, что вас окружает, используя камеру или фото из галереи.</translation>
 <translation id="9130135798965366513">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши данные (<ph name="FIELDS_STRING" />). Ознакомьтесь с <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" /> сайта.</translation>
 <translation id="9131209053278896908">Здесь появятся заблокированные сайты.</translation>
 <translation id="9133397713400217035">Офлайн-контент</translation>
 <translation id="9143389653531441385">Зарегистрируйтесь с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="9148126808321036104">Повторите вход</translation>
+<translation id="9148126808321036104">Войти снова</translation>
 <translation id="9148564897242852377">Включить или отключить режим выбора вкладок</translation>
 <translation id="9153056436992761257">Выберите расположение.</translation>
 <translation id="9157212632995922070">Выберите аккаунт, который хотите использовать на сайте <ph name="SITE_ETLD_PLUS_ONE" />.</translation>

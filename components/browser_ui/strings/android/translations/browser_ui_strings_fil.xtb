@@ -184,6 +184,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="2903493209154104877">Mga Address</translation>
 <translation id="2910701580606108292">Magtanong bago payagan ang mga site na mag-play ng pinoprotektahang content</translation>
 <translation id="2918484639460781603">Pumunta sa mga setting</translation>
+<translation id="293060180538644702">Makakuha ng mga notification sa Mga Tip sa Chrome</translation>
 <translation id="2932883381142163287">I-ulat ang pang-aabuso</translation>
 <translation id="2939338015096024043">Kapag naka-on, puwedeng hilingin ng mga site na i-track ang posisyon ng iyong camera at malaman ang tungkol sa paligid mo. Kapag naka-off, hindi mata-track ng mga site ang posisyon ng iyong camera o malalaman ang tungkol sa paligid mo.</translation>
 <translation id="2968755619301702150">Viewer ng certificate</translation>
@@ -244,6 +245,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="3611658447322220736">Puwedeng tapusin ng mga kamakailang isinarang site ang pagpapadala at pagtanggap ng data</translation>
 <translation id="3619294456800709762">Awtomatikong makakapasok sa picture-in-picture ang mga site</translation>
 <translation id="3628308229821498208">Mga iminumungkahing paghahanap</translation>
+<translation id="3632460243282703117">Mag-subscribe</translation>
 <translation id="363748948745453283">Gumagamit ng tinatayang lokasyon</translation>
 <translation id="3641456520301071208">Puwedeng hilingin ng mga site ang iyong lokasyon</translation>
 <translation id="3658847490588580244">Bottom sheet ng default browser</translation>
@@ -522,6 +524,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="662080504995468778">Manatili</translation>
 <translation id="6630443592285535486">I-type ang hex dito</translation>
 <translation id="6635327442719709864">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga serial port. Kapag naka-off, hindi magagamit ng mga site ang mga serial port.</translation>
+<translation id="6669390930482049506">Abisuhan ako</translation>
 <translation id="6678072580827808850">Suriin ang Pag-check sa Kaligtasan</translation>
 <translation id="6682057173375416470">Makakuha ng mga iminumungkahing artikulo sa page na Bagong Tab</translation>
 <translation id="6683865262523156564">Ang site na ito ay nasa isang grupong makakakita ng iyong aktibidad. Tinukoy ng <ph name="RWS_OWNER" /> ang grupo</translation>
@@ -631,6 +634,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="7990211076305263060">Kapag naka-on, puwedeng hilingin ng mga site na gamitin ang iyong mikropono. Kapag naka-off, hindi magagamit ng mga site ang iyong mikropono.</translation>
 <translation id="8007176423574883786">Naka-off para sa device na ito</translation>
 <translation id="802154636333426148">Hindi na-download</translation>
+<translation id="8033047164036749181">Mag-subscribe para sa mga notification mula sa site na ito</translation>
 <translation id="8042586301629853791">Pagbukud-bukurin ayon sa:</translation>
 <translation id="8051193500142930381">Hindi gagana ang mga feature na nangangailangan ng camera</translation>
 <translation id="8056330801132235235">Default ng Chrome</translation>

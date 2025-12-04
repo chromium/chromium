@@ -496,6 +496,7 @@
 <translation id="3114507951000454849">Чытайце сённяшнія навіны <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Дадатковая інфармацыя</translation>
 <translation id="3123734510202723619">Апавяшчэнні</translation>
+<translation id="3134385238404760368">Няма нядаўніх укладак</translation>
 <translation id="314939179385989105">Галоўная старонка Chrome</translation>
 <translation id="3158667104057012316">Адсартавана ўручную</translation>
 <translation id="3159335509547415276">Даведацца больш пра заблакіраваныя ўліковыя запісы</translation>
@@ -817,6 +818,7 @@
 <translation id="4577115723294378384">Па алфавіце (ад А да Я)</translation>
 <translation id="4578289292431526768">Пачаць</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{1 хвіліну таму}one{# хвіліну таму}few{# хвіліны таму}many{# хвілін таму}other{# хвіліны таму}}</translation>
+<translation id="4585751637295612750">Адкрыйце новую ўкладку, каб дадаць яе ў пытанне</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4594952190837476234">Гэта пазасеткавая старонка створана <ph name="CREATION_TIME" /> і можа адрознівацца ад сваёй інтэрнэт-версіі.</translation>
 <translation id="4595237294768457124">Адкрыйце старонку з новай укладкай.</translation>
@@ -1338,6 +1340,7 @@
 <translation id="670498945988402717">Праверка праводзілася ўчора</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Спрацаваў таймер праграмы "<ph name="FQDN" />". Заўтра ён зноў будзе запушчаны.</translation>
+<translation id="6716434912087331834">Каб аднавіць новае акно, скараціце агульную колькасць актыўных вокнаў да <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ці менш. Неактыўныя вокны выдаляюцца праз шэсць месяцаў.</translation>
 <translation id="6723740634201835758">У вашым Уліковым запісе Google</translation>
 <translation id="6734310707649923383">Вы можаце прагледзець наведаныя старонкі або выдаліць іх з гісторыі</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта, на якой ідзе запіс</translation>
@@ -1655,6 +1658,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> – версія састарэла.</translation>
 <translation id="7944772052836377867">Для сінхранізацыі неабходна спраўдзіць вашу асобу</translation>
 <translation id="7951102827450076904">Заўсёды адкрываць спампаваныя PDF</translation>
+<translation id="7952479614398473176">Каб адкрыць новае акно, скараціце агульную колькасць актыўных вокнаў да <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ці менш.</translation>
 <translation id="7957413488482743710">Каб абараніць вас ад патэнцыяльнага махлярства, замест захаванай вамі карткі будзе паказвацца віртуальная. <ph name="BEGIN_LINK1" />Даведацца больш пра віртуальныя карткі<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Укладкі на гэтай прыладзе</translation>
 <translation id="7961926449547174351">Вы забаранілі доступ да сховішча. Каб дазволіць доступ зноў, перайдзіце ў Налады.</translation>

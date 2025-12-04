@@ -184,6 +184,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="2910701580606108292">Web-lokacije moraju tražiti dopuštenje za reprodukciju zaštićenog sadržaja</translation>
 <translation id="2918484639460781603">Idite na postavke</translation>
+<translation id="293060180538644702">Primajte obavijesti sa savjetima za Chrome</translation>
 <translation id="2932883381142163287">Prijavi zloupotrebu</translation>
 <translation id="2939338015096024043">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za praćenje položaja kamere i podatke o vašoj okolini. Kad je ta postavka isključena, web-lokacije ne mogu pratiti položaj kamere niti saznati više o vašoj okolini.</translation>
 <translation id="2968755619301702150">Preglednik certifikata</translation>
@@ -244,6 +245,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="3611658447322220736">Nedavno zatvorene web-lokacije mogu dovršiti slanje i primanje podataka</translation>
 <translation id="3619294456800709762">Web-lokacije mogu automatski pristupiti slici u slici</translation>
 <translation id="3628308229821498208">Predložena pretraživanja</translation>
+<translation id="3632460243282703117">Pretplatite se</translation>
 <translation id="363748948745453283">Upotreba približne lokacije</translation>
 <translation id="3641456520301071208">Web-lokacije mogu zatražiti vašu lokaciju</translation>
 <translation id="3658847490588580244">Donja tablica zadanog preglednika</translation>
@@ -522,6 +524,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="662080504995468778">Ostani</translation>
 <translation id="6630443592285535486">Ovdje upišite heksadecimalni kôd</translation>
 <translation id="6635327442719709864">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu serijskih priključaka. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati serijske priključke.</translation>
+<translation id="6669390930482049506">Obavijesti me</translation>
 <translation id="6678072580827808850">Pregledajte sigurnosnu provjeru</translation>
 <translation id="6682057173375416470">Predloženi članci će vam se prikazivati na stranici Nova kartica</translation>
 <translation id="6683865262523156564">Ova je web-lokacija u grupi koja može vidjeti vaše aktivnosti. Grupu je definirao <ph name="RWS_OWNER" /></translation>
@@ -631,6 +634,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="7990211076305263060">Kada je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu mikrofona. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati vaš mikrofon.</translation>
 <translation id="8007176423574883786">Isključeno za ovaj uređaj</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
+<translation id="8033047164036749181">Pretplatite se na obavijesti s ove web-lokacije</translation>
 <translation id="8042586301629853791">Kriterij razvrstavanja:</translation>
 <translation id="8051193500142930381">Značajke kojima je potrebna kamera neće raditi</translation>
 <translation id="8056330801132235235">Chrome – zadano</translation>

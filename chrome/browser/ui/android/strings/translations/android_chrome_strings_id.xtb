@@ -496,6 +496,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3114507951000454849">Baca berita hari ini <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Detail selengkapnya</translation>
 <translation id="3123734510202723619">Pengumuman</translation>
+<translation id="3134385238404760368">Tidak ada tab terbaru</translation>
 <translation id="314939179385989105">Halaman beranda Chrome</translation>
 <translation id="3158667104057012316">Mengurutkan berdasarkan urutan manual</translation>
 <translation id="3159335509547415276">Pelajari artikel tentang akun yang diblokir</translation>
@@ -817,6 +818,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4577115723294378384">Urutkan menurut A ke Z</translation>
 <translation id="4578289292431526768">Mulai</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# menit yang lalu}other{# menit yang lalu}}</translation>
+<translation id="4585751637295612750">Buka tab baru untuk menambahkannya ke pertanyaan Anda</translation>
 <translation id="4587589328781138893">Situs</translation>
 <translation id="4594952190837476234">Halaman offline ini dibuat pada <ph name="CREATION_TIME" /> dan mungkin berbeda dengan versi onlinenya.</translation>
 <translation id="4595237294768457124">Buka halaman Tab baru</translation>
@@ -1338,6 +1340,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="670498945988402717">Diperiksa kemarin</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="671481426037969117">Timer <ph name="FQDN" /> Anda telah berakhir. Timer akan dimulai lagi besok.</translation>
+<translation id="6716434912087331834">Untuk memulihkan jendela baru, kurangi jumlah total jendela aktif menjadi <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> atau kurang. Jendela yang tidak aktif akan dihapus setelah 6 bulan.</translation>
 <translation id="6723740634201835758">Di Akun Google Anda</translation>
 <translation id="6734310707649923383">Anda dapat melihat halaman yang pernah Anda buka atau menghapusnya dari histori</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, Tab Samaran yang Sedang Merekam dan Disematkan</translation>
@@ -1655,6 +1658,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> sudah usang.</translation>
 <translation id="7944772052836377867">Sinkronisasi perlu memverifikasi diri Anda</translation>
 <translation id="7951102827450076904">Selalu buka PDF yang didownload</translation>
+<translation id="7952479614398473176">Untuk membuka jendela baru, kurangi jumlah total jendela aktif menjadi <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> atau kurang.</translation>
 <translation id="7957413488482743710">Kartu virtual menyembunyikan kartu Anda yang sebenarnya untuk membantu melindungi Anda dari kemungkinan penipuan. <ph name="BEGIN_LINK1" />Pelajari kartu virtual lebih lanjut<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Tab di perangkat ini</translation>
 <translation id="7961926449547174351">Anda telah menonaktifkan Akses penyimpanan, buka Setelan untuk mengaktifkannya.</translation>

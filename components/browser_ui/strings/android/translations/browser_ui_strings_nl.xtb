@@ -184,6 +184,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="2903493209154104877">Adressen</translation>
 <translation id="2910701580606108292">Vragen voordat sites beschermde content mogen afspelen</translation>
 <translation id="2918484639460781603">Ga naar instellingen</translation>
+<translation id="293060180538644702">Meldingen van Chrome-tips krijgen</translation>
 <translation id="2932883381142163287">Misbruik melden</translation>
 <translation id="2939338015096024043">Als deze optie aanstaat, kunnen sites vragen of ze je camerapositie mogen volgen en meer informatie over je omgeving mogen krijgen. Staat de optie uit, dan kunnen sites je camerapositie niet volgen en geen informatie over je omgeving krijgen.</translation>
 <translation id="2968755619301702150">Certificaatviewer</translation>
@@ -244,6 +245,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3611658447322220736">Onlangs gesloten sites kunnen het sturen en ontvangen van gegevens afronden</translation>
 <translation id="3619294456800709762">Sites kunnen automatisch scherm-in-scherm openen</translation>
 <translation id="3628308229821498208">Voorgestelde zoekopdrachten</translation>
+<translation id="3632460243282703117">Abonneren</translation>
 <translation id="363748948745453283">Geschatte locatie gebruiken</translation>
 <translation id="3641456520301071208">Sites kunnen om je locatie vragen</translation>
 <translation id="3658847490588580244">Blad onderaan voor standaardbrowser</translation>
@@ -522,6 +524,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="662080504995468778">Blijven</translation>
 <translation id="6630443592285535486">Typ hier de hexadecimale code</translation>
 <translation id="6635327442719709864">Als deze optie aanstaat, kunnen sites vragen of ze seriële poorten mogen gebruiken. Staat de optie uit, dan kunnen sites geen seriële poorten gebruiken.</translation>
+<translation id="6669390930482049506">Melding sturen</translation>
 <translation id="6678072580827808850">Veiligheidscheck controleren</translation>
 <translation id="6682057173375416470">Voorgestelde artikelen krijgen op de pagina Nieuw tabblad</translation>
 <translation id="6683865262523156564">Deze site zit in een groep die je activiteit kan bekijken. De groep wordt gedefinieerd door <ph name="RWS_OWNER" /></translation>
@@ -631,6 +634,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7990211076305263060">Als deze optie aanstaat, kunnen sites om toegang tot je microfoon vragen. Staat de optie uit, dan kunnen sites je microfoon niet gebruiken.</translation>
 <translation id="8007176423574883786">Uitgezet voor dit apparaat</translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
+<translation id="8033047164036749181">Abonneren op meldingen van deze site</translation>
 <translation id="8042586301629853791">Sorteren op:</translation>
 <translation id="8051193500142930381">Functies waarvoor een camera nodig is, werken niet</translation>
 <translation id="8056330801132235235">Standaardthema van Chrome</translation>

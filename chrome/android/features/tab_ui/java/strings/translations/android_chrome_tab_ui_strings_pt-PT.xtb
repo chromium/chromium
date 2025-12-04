@@ -75,7 +75,6 @@
 <translation id="311432875115153175">Lista de grupos de separadores fechada</translation>
 <translation id="3194464645767632461">classificação</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> separador ao grupo}other{Adicionar <ph name="TABS_COUNT_MANY" /> separadores ao grupo}}</translation>
-<translation id="3293080634164207409">Adicionar separadores</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Quer agrupá-los?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Após 1 dia de inatividade}other{Após <ph name="DAY_COUNT_MANY" /> dias de inatividade}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> novo separador}other{<ph name="MANY_ADDED" /> novos separadores}}</translation>
@@ -178,6 +177,7 @@
 <translation id="7326879924029668159">Veja a Política de Devolução e muito mais</translation>
 <translation id="7352298686197644113">Veja qual dos itens nos seus separadores abertos tem um preço mais baixo.</translation>
 <translation id="7369451074646620503">Grupo de separadores "<ph name="TAB_GROUP_NAME" />" indisponível</translation>
+<translation id="7402375256128852434">Adicione separadores recentes</translation>
 <translation id="7452985128687107478">Os grupos de separadores são guardados e atualizados automaticamente em todos os seus dispositivos</translation>
 <translation id="747459581954555080">Restaurar tudo</translation>
 <translation id="7489558427602531799">Mover grupo de separadores para a direita</translation>

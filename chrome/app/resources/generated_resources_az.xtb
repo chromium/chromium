@@ -1346,6 +1346,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1907044622262489040">Səsinizlə yazın. Axtarış + D düymələrindən istifadə edin, sonra danışmağa başlayın.</translation>
 <translation id="1907659324308286326">Bəzi Thunderbolt və ya USB4 aksesuarları düzgün işləmək üçün yaddaşa giriş tələb edir.</translation>
 <translation id="1908591798274282246">Qapalı Qrupu Yenidən Açın</translation>
+<translation id="1909677622563887527">Chrome avtomatlaşdırılmış test proqram təminatı vasitəsilə idarə edilir</translation>
 <translation id="1909880997794698664">Bu cihazı hazırda kiosk rejimində saxlamaq istəyirsiniz?</translation>
 <translation id="1910721550319506122">Xoş gəlmisiniz!</translation>
 <translation id="1910736334623230603">Bir neçə şəkil axtarmaq olmur. Eyni vaxtda bir şəkil əlavə etmək olar.</translation>
@@ -1700,6 +1701,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2144536955299248197">Sertifikat Oxuducu: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android tətbiqinin inkişafı ayarları</translation>
 <translation id="2145468727756963476">Gemini təzələnir...</translation>
+<translation id="2145688286532368277">Bu sayt üçün JavaScript optimallaşdırılması deaktivdir.</translation>
 <translation id="2145917706968602070">Telefon yaxınlıqda, kiliddən çıxarılmış olmalı, Bluetooth və Wi-Fi yandırılmış olmalıdır</translation>
 <translation id="2146263598007866206">Saytlar vaxtınıza qənaət etmək üçün əlaqəli faylları birlikdə avtomatik olaraq endirə bilər</translation>
 <translation id="2147218225094845757">Yan paneli gizlədin</translation>
@@ -4328,6 +4330,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Displey və mətn ölçüsü <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">URL'ləri yoxlamaq üçün onları Təhlükəsiz Baxışa göndərir. Həmçinin yeni təhlükələri aşkarlamaqda kömək məqsədilə səhifə, endirmə, artırma fəaliyyətindən ibarət kiçik nümunə göndərir. Daxil olduğunuzda sizi Google tətbiqlərində qorumaq üçün bu datanı Google Hesabınız ilə müvəqqəti olaraq əlaqələndirir.</translation>
+<translation id="3924788966103416622">Xarici tətbiq xətaları aradan qaldırmaq üçün bu Chrome sessiyasına tam nəzarət etmək istəyir. Buraya yadda saxlanılmış dataya, kukilərə və sayt datasına giriş və istənilən URL-ə keçmək imkanı daxildir.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Bu cihazdakı digər istifadəçilər də bu şəbəkədən istifadə edə bilər</translation>
 <translation id="3926002189479431949">Smart Kilid telefonu dəyişdi</translation>
@@ -4354,6 +4357,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 
   <ph name="CONTROL_PANEL_APPLET_NAME" /> funksiyasına başlamaq istəyirsiniz?</translation>
 <translation id="3942420633017001071">Diaqnostika</translation>
+<translation id="3942558231079086184">Bu sayt üçün JavaScript optimallaşdırılması deaktivdir. Daha yaxşı performans üçün aktivləşdirin.</translation>
 <translation id="3943582379552582368">Geri</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
 <translation id="3945513714196326460">Daha qısa ad seçin</translation>
@@ -4465,6 +4469,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4015250302257349679">Bu qabarcığı fokuslamaq üçün <ph name="ACCELERATOR" /> düyməsini basın, sonra onun yönəldiyi elementi fokuslamaq üçün yenidən basın.</translation>
 <translation id="4016762287427926315"><ph name="APP_NAME" /> icazələri bu tətbiq üçün də keçərli olacaq. <ph name="BEGIN_LINK" />İdarə edin<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Bu keçid üçün QR Kodu yaradın</translation>
+<translation id="4018953474106733212">Yalnız veb-tərtibatçılar bu funksiyanı aktiv etməli və etibarlı tətbiqlərlə istifadə etməlidirlər.</translation>
 <translation id="4019983356493507433">Əlfəcin Siyahısını redaktə edin</translation>
 <translation id="4020701737692625681">Administrator ekranınızı qeydə ala bilər</translation>
 <translation id="4021279097213088397">-</translation>
@@ -6666,6 +6671,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="557722062034137776">Cihazınızın sıfırlanması Google hesablarınıza və ya bu hesablara sinxronizasiya edilmiş dataya təsir etməyəcək. Cihazınızda yerli olaraq saxlanılan bütün fayllar silinəcək.</translation>
 <translation id="5578059481725149024">Hesaba avtomatik giriş</translation>
 <translation id="5578387000057347457">Şəkil yaratmaq üçün fərdi sorğu daxil edin və ya mətni vurğulayın</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 element yalnız bu cihazda yadda saxlanılır. Onu digər cihazlarda istifadə etmək üçün <ph name="BEGIN_LINK" />Google Hesabınızda yadda saxlayın<ph name="END_LINK" />.}other{{ITEM_COUNT} element yalnız bu cihazda yadda saxlanılır. Digər cihazlarda istifadə etmək üçün <ph name="BEGIN_LINK" />Google Hesabınızda yadda saxlayın<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560"><ph name="SITE" /> saytını <ph name="SECTION_HEADER" /> siyahısından silin</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> dilinə tərcümə tamamlanıb</translation>
 <translation id="558170650521898289">Microsoft Windows Avadanlıq Drayver Doğrulanması</translation>
@@ -7152,6 +7158,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5924438086390153180">Microsoft fayllarını Google Diskə kopyalamazdan və ya köçürməzdən əvvəl soruşulsun</translation>
 <translation id="5924527146239595929">Yeni foto çəkin və ya mövcud foto, yaxud ikona seçin. <ph name="LINE_BREAK" /> Bu şəkil, Chromebook giriş və kilid ekranında görünəcək.</translation>
 <translation id="5925147183566400388">Sertifikatlaşdırma Praktikası Bəyanat Göstəricisi</translation>
+<translation id="5926936390113611560">Bütün profilləri açın</translation>
 <translation id="5927132638760172455">Naməlum alıcı Döküm</translation>
 <translation id="592740088639760830">Bu konteyneri dayandırın</translation>
 <translation id="592880897588170157">PDF faylları Chrome'da avtomatik açmaq əvəzinə onları endirin</translation>
@@ -7236,6 +7243,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5979421442488174909"><ph name="LANGUAGE" /> dilinə tərcümə edin</translation>
 <translation id="5979469435153841984">Səhifələri qeyd etmək üçün ünvan panelindəki ulduza klikləyin.</translation>
 <translation id="5982578203375898585">Hazır olduqda endirmələr göstərilsin</translation>
+<translation id="598347738324022917">Əlfəcin bu cihazda yadda saxlanıldı</translation>
 <translation id="5983716913605894570">Yaradılır...</translation>
 <translation id="5984222099446776634">Son Ziyarət</translation>
 <translation id="5984334442529819751">DLC quraşdırarkən xəta baş verdi (çox vaxt yenidən yükləmə tələb olunur, əlavə məlumat üçün Ayarlar\&gt;\&gt;ChromeOS bölməsinə baxın).</translation>
@@ -10195,6 +10203,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8032569120109842252">İzlənilir</translation>
 <translation id="8033827949643255796">seçilib</translation>
 <translation id="8033958968890501070">Vaxtın bitməsi</translation>
+<translation id="8034399942062051455">V8 optimallaşdırması deaktivdir</translation>
 <translation id="8034697324150621782">Üst Görünüşlə Dəyişin</translation>
 <translation id="8035059678007243127">Anonim Geri/İrəli Keşlənmiş Səhifə: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Avto doldurmanı təkmilləşdirməyə yardım edin</translation>
@@ -11493,6 +11502,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="8910987510378294980">Cihaz siyahısını gizlədin</translation>
 <translation id="8912362522468806198">Google Hesabı</translation>
 <translation id="8912810933860534797">Avtomatik skanı aktiv edin</translation>
+<translation id="8914030287343429787">Hətta Chrome və ya Android istifadə etmədikdə belə <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> ünvanına daxil olmaqla parollara baxın</translation>
 <translation id="8914504000324227558">Chrome'u yenidən başladın</translation>
 <translation id="8915307125957890427">Tab üzərinə sağ düymə ilə toxunun və "Qrupa tab əlavə edin" seçimini, sonra "Yeni qrup" seçimini edin</translation>
 <translation id="8915370057835397490">Təklif yüklənir</translation>

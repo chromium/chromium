@@ -184,6 +184,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="2903493209154104877">Naslovi</translation>
 <translation id="2910701580606108292">Prikaži poziv, preden se spletnim mestom dovoli predvajanje zaščitene vsebine</translation>
 <translation id="2918484639460781603">Pojdi v nastavitve</translation>
+<translation id="293060180538644702">Prejemanje obvestil z nasveti za Chrome</translation>
 <translation id="2932883381142163287">Prijavite zlorabo</translation>
 <translation id="2939338015096024043">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo spremljanje položaja kamere in pridobivanje informacij o vaši okolici. Če je ta možnost izklopljena, spletna mesta ne smejo spremljati položaja kamere ali pridobivati informacij o vaši okolici.</translation>
 <translation id="2968755619301702150">Pregledovalnik potrdil</translation>
@@ -244,6 +245,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="3611658447322220736">Nedavno zaprta spletna mesta lahko dokončajo pošiljanje in prejemanje podatkov.</translation>
 <translation id="3619294456800709762">Spletna mesta lahko samodejno preklopijo v način slike v sliki</translation>
 <translation id="3628308229821498208">Predlagane iskalne poizvedbe</translation>
+<translation id="3632460243282703117">Naročite se</translation>
 <translation id="363748948745453283">Uporaba približne lokacije</translation>
 <translation id="3641456520301071208">Spletna mesta lahko zahtevajo lokacijo.</translation>
 <translation id="3658847490588580244">Razdelek na dnu zaslona za privzeti brskalnik</translation>
@@ -522,6 +524,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="662080504995468778">Ostani</translation>
 <translation id="6630443592285535486">Tukaj vnesite šestnajstiško kodo</translation>
 <translation id="6635327442719709864">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo serijskih vrat. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati serijskih vrat.</translation>
+<translation id="6669390930482049506">Obvesti me</translation>
 <translation id="6678072580827808850">Pregled varnostnega preverjanja</translation>
 <translation id="6682057173375416470">Prejemanje predlaganih člankov na strani »Nov zavihek«</translation>
 <translation id="6683865262523156564">To spletno mesto je v skupini, ki si lahko ogleda vašo dejavnost. To skupino je definiralo spletno mesto <ph name="RWS_OWNER" /></translation>
@@ -631,6 +634,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="7990211076305263060">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo mikrofona. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati mikrofona.</translation>
 <translation id="8007176423574883786">Izklopljeno za to napravo</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
+<translation id="8033047164036749181">Naročite se na obvestila tega spletnega mesta</translation>
 <translation id="8042586301629853791">Razvrsti po:</translation>
 <translation id="8051193500142930381">Funkcije, ki potrebujejo kamero, ne bodo delovale</translation>
 <translation id="8056330801132235235">Privzeto za Chrome</translation>

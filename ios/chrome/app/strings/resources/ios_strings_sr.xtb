@@ -211,6 +211,7 @@
 <translation id="1764070164487214210">Путања</translation>
 <translation id="1767766085187034454">Google преводилац</translation>
 <translation id="1771016937398045251">Мени Алатке</translation>
+<translation id="1772468122139624049">Поновно учитавање картица није успело</translation>
 <translation id="1779354709911146450">Грешка потврде идентитета</translation>
 <translation id="1780152987505130652">Затвори групу</translation>
 <translation id="178400879184240105">Ваше лозинке су јединствене</translation>
@@ -344,7 +345,7 @@
 <translation id="2245007488813216650">Преводи се…</translation>
 <translation id="2249119578464404734">У врху екрана додирните икону Претрага</translation>
 <translation id="2251686759395008410">Мени → Историја</translation>
-<translation id="2252378061043785266">Никада не приказуј овај сајт</translation>
+<translation id="2252378061043785266">Никад не приказуј овај сајт</translation>
 <translation id="2252749852083403809">Чува се на Диску за <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">Организација вам дозвољава да се пријавите само помоћу одређених налога.</translation>
 <translation id="2257567812274161158">Синхронизација не ради.</translation>
@@ -709,6 +710,7 @@
 <translation id="3779810277399252432">Нема интернет везе.</translation>
 <translation id="3782614601387961027">Одбаци упозорење</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
+<translation id="3789849526426236410">Отвори нову картицу</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Понуди превод овог сајта</translation>
 <translation id="3810973564298564668">Управљај</translation>
@@ -1006,6 +1008,7 @@
 <translation id="4877597489778380935">Подсети ме касније</translation>
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="4883766694719903356">Мрежа картица без архивирања</translation>
+<translation id="4884937942297374058">Побољшана заштита је искључена</translation>
 <translation id="488785315393301722">Прикажи детаље</translation>
 <translation id="4889521386764567563">Актуелни профил</translation>
 <translation id="4893713555726946316">Сакриј опцију Пронађи на страници</translation>

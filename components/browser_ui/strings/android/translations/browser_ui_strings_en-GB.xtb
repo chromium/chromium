@@ -184,6 +184,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="2903493209154104877">Addresses</translation>
 <translation id="2910701580606108292">Ask before allowing sites to play protected content</translation>
 <translation id="2918484639460781603">Go to settings</translation>
+<translation id="293060180538644702">Get Chrome tips notifications</translation>
 <translation id="2932883381142163287">Report abuse</translation>
 <translation id="2939338015096024043">When on, sites can ask to track your camera position and learn about your surroundings. When off, sites can't track your camera position or learn about your surroundings.</translation>
 <translation id="2968755619301702150">Certificate viewer</translation>
@@ -244,6 +245,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3611658447322220736">Recently closed sites can finish sending and receiving data</translation>
 <translation id="3619294456800709762">Sites can enter picture-in-picture automatically</translation>
 <translation id="3628308229821498208">Suggested searches</translation>
+<translation id="3632460243282703117">Subscribe</translation>
 <translation id="363748948745453283">Using approximate location</translation>
 <translation id="3641456520301071208">Sites can ask for your location</translation>
 <translation id="3658847490588580244">Default browser bottom sheet</translation>
@@ -522,6 +524,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="662080504995468778">Stay</translation>
 <translation id="6630443592285535486">Type hex here</translation>
 <translation id="6635327442719709864">When on, sites can ask to use serial ports. When off, sites can't use serial ports.</translation>
+<translation id="6669390930482049506">Notify me</translation>
 <translation id="6678072580827808850">Review Safety Check</translation>
 <translation id="6682057173375416470">Get suggested articles on the New tab page</translation>
 <translation id="6683865262523156564">This site is in a group that can see your activity. The group is defined by <ph name="RWS_OWNER" /></translation>
@@ -631,6 +634,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="7990211076305263060">When on, sites can ask to use your microphone. When off, sites can't use your microphone.</translation>
 <translation id="8007176423574883786">Turned off for this device</translation>
 <translation id="802154636333426148">Download failed</translation>
+<translation id="8033047164036749181">Subscribe for notifications from this site</translation>
 <translation id="8042586301629853791">Sort by:</translation>
 <translation id="8051193500142930381">Features that need a camera won't work</translation>
 <translation id="8056330801132235235">Chrome default</translation>
