@@ -664,6 +664,8 @@ static_library("ui") {
     "//v8:v8_version",
   ]
 
+  allow_circular_includes_from = []
+
   if (!is_android || is_desktop_android) {
     sources += [
       "browser_navigator.h",
@@ -684,7 +686,12 @@ static_library("ui") {
       deps += [
         "//chrome/browser/ui/android/extensions/windowing/internal",
         "//chrome/browser/ui/browser_window:create_browser_window",
+        "//chrome/browser/ui/browser_window/internal",
       ]
+
+      # This can be removed when browser_navigator.h is modularized (see below TODOs).
+      allow_circular_includes_from +=
+          [ "//chrome/browser/ui/browser_window/internal" ]
     }
   }
 
@@ -706,7 +713,7 @@ static_library("ui") {
   # TODO(crbug.com/41437292): Remove this circular dependency.
   # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
   # These are all-platform circular includes.
-  allow_circular_includes_from = [
+  allow_circular_includes_from += [
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/autofill/payments:impl",
 

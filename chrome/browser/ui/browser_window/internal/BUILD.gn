@@ -28,6 +28,7 @@ source_set("internal") {
     ]
     deps += [
       ":jni",
+      "//chrome/browser/ui:browser_navigator_params_headers",
       "//ui/android",
     ]
   } else {
@@ -288,17 +289,21 @@ if (is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "android/android_base_window_browsertest.cc",
+      "android/android_browser_window_browsertest.cc",
       "android/create_browser_window_android_browsertest.cc",
     ]
     deps = [
       "//base",
+      "//chrome/browser",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/profiles",
+      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/tabs:tab_list_interface",
       "//chrome/test:test_support_ui_android",
       "//components/feed:feature_list",
+      "//net:test_support",
       "//testing/gtest",
       "//ui/android",
     ]
