@@ -112,6 +112,15 @@ void SetupJustificationOpportunity(
     TextDirection base_direction,
     ShapeResultSpacing::ExpansionSetup& spacing_setup);
 
+TextJustify GetTextJustify(const InlineItemResult& item_result) {
+  if (!item_result.item->GetLayoutObject()) {
+    // We can't justify items without LayoutObject such as control characters
+    // and anonymous ruby containers.
+    return TextJustify::kNone;
+  }
+  return item_result.item->Style()->GetTextJustify();
+}
+
 NOINLINE void SetupItemJustificationOpportunity(
     const InlineItemResult& item_result,
     unsigned end_offset,
@@ -123,10 +132,11 @@ NOINLINE void SetupItemJustificationOpportunity(
   if (item_result.has_only_pre_wrap_trailing_spaces) {
     return;
   }
+  TextJustify method = GetTextJustify(item_result);
   if (item_result.shape_result) {
     wtf_size_t start_index = item_result.shape_result->StartIndex();
     spacing_setup.CountOpportunities(
-        item_result.item->Style()->GetTextJustify(),
+        method,
         StringView(spacing_setup.Spacing()->Text(), start_index,
                    std::min(item_result.shape_result->EndIndex(), end_offset) -
                        start_index),
@@ -135,8 +145,7 @@ NOINLINE void SetupItemJustificationOpportunity(
     const LineInfo& base_line = item_result.ruby_column->base_line;
     if (item_result.inline_size > base_line.Width()) {
       // Don't justify base-shorter rubies.
-      spacing_setup.CountOpportunities(
-          item_result.item->Style()->GetTextJustify(), kBaseShorterRubyMarker);
+      spacing_setup.CountOpportunities(method, kBaseShorterRubyMarker);
       return;
     }
     const InlineItemResults& base_results = base_line.Results();
@@ -147,10 +156,10 @@ NOINLINE void SetupItemJustificationOpportunity(
         base_results, std::min(base_results.back().EndOffset(), end_offset),
         base_line.BaseDirection(), spacing_setup);
   } else if (item_result.item->Type() == InlineItem::kAtomicInline) {
-    spacing_setup.CountOpportunities(
-        item_result.item->Style()->GetTextJustify(),
-        item_result.item->IsTextCombine() ? kTextCombineItemMarker
-                                          : uchar::kObjectReplacementCharacter);
+    spacing_setup.CountOpportunities(method,
+                                     item_result.item->IsTextCombine()
+                                         ? kTextCombineItemMarker
+                                         : uchar::kObjectReplacementCharacter);
   }
 }
 
@@ -168,9 +177,9 @@ void SetupJustificationOpportunity(
     // Handle items in the reversed order. Justification is applied before
     // BiDi reorder.
     if (results.back().hyphen) {
-      spacing_setup.CountOpportunities(
-          results.back().item->Style()->GetTextJustify(),
-          results.back().hyphen.Text(), base_direction);
+      spacing_setup.CountOpportunities(GetTextJustify(results.back()),
+                                       results.back().hyphen.Text(),
+                                       base_direction);
     }
     for (const auto& item_result : base::Reversed(results)) {
       SetupItemJustificationOpportunity(item_result, end_offset, base_direction,
@@ -182,9 +191,9 @@ void SetupJustificationOpportunity(
                                         spacing_setup);
     }
     if (results.back().hyphen) {
-      spacing_setup.CountOpportunities(
-          results.back().item->Style()->GetTextJustify(),
-          results.back().hyphen.Text(), base_direction);
+      spacing_setup.CountOpportunities(GetTextJustify(results.back()),
+                                       results.back().hyphen.Text(),
+                                       base_direction);
     }
   }
 }
@@ -210,6 +219,7 @@ float JustifyResults(const String& text_content,
     if (item_result.has_only_pre_wrap_trailing_spaces) {
       break;
     }
+    TextJustify method = GetTextJustify(item_result);
     if (item_result.shape_result) {
 #if DCHECK_IS_ON()
       // This `if` is necessary for external/wpt/css/css-text/text-justify/
@@ -242,12 +252,12 @@ float JustifyResults(const String& text_content,
       const unsigned line_text_offset =
           item_result.StartOffset() - line_text_start_offset;
       const auto [spacing_before, spacing_after] =
-          apply_line_text ? spacing.ComputeExpansion(line_text_offset)
-                          : spacing.ComputeExpansion(
-                                item_result.item->Style()->GetTextJustify(),
-                                item_result.item->IsTextCombine()
-                                    ? kTextCombineItemMarker
-                                    : uchar::kObjectReplacementCharacter);
+          apply_line_text
+              ? spacing.ComputeExpansion(line_text_offset)
+              : spacing.ComputeExpansion(
+                    method, item_result.item->IsTextCombine()
+                                ? kTextCombineItemMarker
+                                : uchar::kObjectReplacementCharacter);
       if (item_result.item->IsTextCombine()) [[unlikely]] {
         // |spacing_before| is non-zero if this |item_result| is after
         // non-CJK character. See "text-combine-justify.html".
@@ -285,10 +295,9 @@ float JustifyResults(const String& text_content,
           offset += item_result.item->Length();
         }
         [[maybe_unused]] const auto [spacing_before, spacing_after] =
-            apply_line_text ? spacing.ComputeExpansion(offset)
-                            : spacing.ComputeExpansion(
-                                  item_result.item->Style()->GetTextJustify(),
-                                  kBaseShorterRubyMarker);
+            apply_line_text
+                ? spacing.ComputeExpansion(offset)
+                : spacing.ComputeExpansion(method, kBaseShorterRubyMarker);
         // ShapeResultSpacing doesn't ask for adding space to
         // kBaseShorterRubyMarker, which is OBJECT REPLACEMENT CHARACTER, and
         // asks for adding space to the next item instead.
