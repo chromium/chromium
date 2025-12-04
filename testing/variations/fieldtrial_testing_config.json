@@ -26300,27 +26300,6 @@
             ]
         }
     ],
-    "UserEducationExperienceVersion2Point5": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithMediumIdleTimeout",
-                    "params": {
-                        "idle_before_heavyweight": "2s"
-                    },
-                    "enable_features": [
-                        "UserEducationExperienceVersion2Point5"
-                    ]
-                }
-            ]
-        }
-    ],
     "UserLevelMemoryPressureSignal": [
         {
             "platforms": [
