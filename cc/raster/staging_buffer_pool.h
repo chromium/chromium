@@ -134,7 +134,7 @@ class CC_EXPORT StagingBufferPool final
   // |lock_| must be acquired when accessing the following members.
   using StagingBufferSet =
       std::set<raw_ptr<const StagingBuffer, SetExperimental>>;
-  StagingBufferSet buffers_;
+  StagingBufferSet buffers_ GUARDED_BY(lock_);
   using StagingBufferDeque =
       base::circular_deque<std::unique_ptr<StagingBuffer>>;
   StagingBufferDeque free_buffers_ GUARDED_BY(lock_);
