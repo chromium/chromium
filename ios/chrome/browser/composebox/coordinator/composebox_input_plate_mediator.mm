@@ -31,6 +31,7 @@
 #import "components/contextual_search/contextual_search_session_handle.h"
 #import "components/lens/contextual_input.h"
 #import "components/lens/lens_bitmap_processing.h"
+#import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
@@ -160,6 +161,10 @@ CreateInputDataFromAnnotatedPageContent(
   raw_ptr<TemplateURLService> _templateURLService;
   // Observer for the TemplateURLService.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
+  // Service to check for AI mode eligibility.
+  raw_ptr<AimEligibilityService> _aimEligibilityService;
+  // Subscription for AIM eligibility changes.
+  base::CallbackListSubscription _aimEligibilitySubscription;
 
   // Stores the page context wrappers for the duration of the APC retrieval.
   std::unordered_map<web::WebStateID, PageContextWrapper*> _pageContextWrappers;
@@ -193,7 +198,9 @@ CreateInputDataFromAnnotatedPageContent(
                  (PersistTabContextBrowserAgent*)persistTabContextAgent
                         isIncognito:(BOOL)isIncognito
                          modeHolder:(ComposeboxModeHolder*)modeHolder
-                 templateURLService:(TemplateURLService*)templateURLService {
+                 templateURLService:(TemplateURLService*)templateURLService
+              aimEligibilityService:
+                  (AimEligibilityService*)aimEligibilityService {
   self = [super init];
   if (self) {
     _items = [NSMutableArray array];
@@ -213,6 +220,15 @@ CreateInputDataFromAnnotatedPageContent(
     _templateURLService = templateURLService;
     _searchEngineObserver =
         std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
+    _aimEligibilityService = aimEligibilityService;
+    if (_aimEligibilityService) {
+      __weak __typeof(self) weakSelf = self;
+      _aimEligibilitySubscription =
+          _aimEligibilityService->RegisterEligibilityChangedCallback(
+              base::BindRepeating(^{
+                [weakSelf updateEligibleToAIMode];
+              }));
+    }
   }
   return self;
 }
@@ -226,6 +242,8 @@ CreateInputDataFromAnnotatedPageContent(
   _persistTabContextAgent = nullptr;
   _searchEngineObserver.reset();
   _templateURLService = nullptr;
+  _aimEligibilitySubscription = {};
+  _aimEligibilityService = nullptr;
   _composeboxObserverBridge.reset();
   if (_contextualSearchSession) {
     _contextualSearchSession->NotifySessionAbandoned();
@@ -297,6 +315,7 @@ CreateInputDataFromAnnotatedPageContent(
     [self attachCurrentTabContent];
   }
 
+  [self updateEligibleToAIMode];
   [self updateCompactModeIfNeeded];
   [self updateShowsExtendedControls];
 }
@@ -997,6 +1016,14 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   return NO;
+}
+
+// Updates the consumer about whether the user is eligible to use AI Mode.
+- (void)updateEligibleToAIMode {
+  if (!_aimEligibilityService) {
+    return;
+  }
+  [self.consumer setEligibleToAIMode:_aimEligibilityService->IsAimEligible()];
 }
 
 // Updates the consumer about whether the extended controls should be shown.

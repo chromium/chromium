@@ -15,6 +15,7 @@
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_mediator.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
@@ -163,7 +164,9 @@ const CGFloat kSnackbarBottomMargin = 10;
                                           FromBrowser(self.browser)
                           isIncognito:self.isOffTheRecord
                            modeHolder:_modeHolder
-                   templateURLService:templateURLService];
+                   templateURLService:templateURLService
+                aimEligibilityService:IOSChromeAimEligibilityServiceFactory::
+                                          GetForProfile(self.profile)];
   _mediator.URLLoader = _URLLoader;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;

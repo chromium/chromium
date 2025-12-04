@@ -149,6 +149,8 @@ UIImage* SendButtonImage(BOOL highlighted) {
       _dataSource;
   /// The view containing the input text field and action buttons.
   UIView* _inputPlateContainerView;
+  /// Whether the user is eligible for AI mode.
+  BOOL _eligibleToAIMode;
   /// The button to toggle AI mode.
   UIButton* _aimButton;
   UIImageView* _aimButtonXIndicator;
@@ -378,6 +380,14 @@ UIImage* SendButtonImage(BOOL highlighted) {
     _sendButton.enabled = NO;
     [_editView forceDisableReturnKey:YES];
   }
+}
+
+- (void)setEligibleToAIMode:(BOOL)eligibleToAIMode {
+  if (_eligibleToAIMode == eligibleToAIMode) {
+    return;
+  }
+  _eligibleToAIMode = eligibleToAIMode;
+  [self updateButtonsVisibility];
 }
 
 - (void)setShowsSendButton:(BOOL)showsSendButton {
@@ -695,7 +705,7 @@ UIImage* SendButtonImage(BOOL highlighted) {
 }
 
 - (void)updateButtonsVisibility {
-  _plusButton.hidden = !_showsExtendedControls;
+  _plusButton.hidden = !_showsExtendedControls || !_eligibleToAIMode;
   _aimButton.hidden = !self.AIModeEnabled;
   _micButton.hidden = _showsSendButton;
   _lensButton.hidden = _showsSendButton || !_showsExtendedControls;
