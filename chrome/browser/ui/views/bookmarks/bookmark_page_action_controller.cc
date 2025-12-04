@@ -76,11 +76,11 @@ void BookmarkPageActionController::URLStarredChanged(
 
 void BookmarkPageActionController::ObserveBookmarkTabHelper(
     content::WebContents* contents) {
+  tab_helper_observation_.Reset();
   if (auto* bookmark_helper = BookmarkTabHelper::FromWebContents(contents)) {
     tab_helper_observation_.Observe(bookmark_helper);
     SetStarred(bookmark_helper->is_starred());
   } else {
-    tab_helper_observation_.Reset();
     SetStarred(false);
   }
 }
