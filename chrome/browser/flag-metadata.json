@@ -2342,9 +2342,9 @@
     "expiry_milestone": 143
   },
   {
-    "name": "default-browser-promo-ipad_instructions",
+    "name": "default-browser-promo-ipad-instructions",
     "owners": [ "cheickcisse@google.com", "bling-mony-pod@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "default-browser-promo-refresh",
