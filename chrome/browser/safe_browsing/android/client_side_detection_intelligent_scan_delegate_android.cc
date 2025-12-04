@@ -29,7 +29,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
  public:
   Inquiry(ClientSideDetectionIntelligentScanDelegateAndroid* parent,
           const base::UnguessableToken& session_id,
-          InquireOnDeviceModelDoneCallback callback);
+          IntelligentScanDoneCallback callback);
   ~Inquiry();
 
   void Start(const std::string& rendered_texts);
@@ -48,7 +48,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
   const raw_ptr<ClientSideDetectionIntelligentScanDelegateAndroid> parent_;
   std::unique_ptr<ModelExecutorSession> session_;
   base::UnguessableToken session_id_;
-  InquireOnDeviceModelDoneCallback callback_;
+  IntelligentScanDoneCallback callback_;
   std::string rendered_texts_;
   base::TimeTicks session_creation_start_time_;
   base::TimeTicks session_execution_start_time_;
@@ -59,7 +59,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
 ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Inquiry(
     ClientSideDetectionIntelligentScanDelegateAndroid* parent,
     const base::UnguessableToken& session_id,
-    InquireOnDeviceModelDoneCallback callback)
+    IntelligentScanDoneCallback callback)
     : parent_(parent),
       session_id_(session_id),
       callback_(std::move(callback)) {}
@@ -193,7 +193,7 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::
 }
 
 bool ClientSideDetectionIntelligentScanDelegateAndroid::
-    IsOnDeviceModelAvailable(bool log_failed_eligibility_reason) {
+    IsIntelligentScanAvailable(bool log_failed_eligibility_reason) {
   if (!model_broker_client_) {
     return false;
   }
@@ -218,10 +218,10 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::
 }
 
 std::optional<base::UnguessableToken>
-ClientSideDetectionIntelligentScanDelegateAndroid::InquireOnDeviceModel(
+ClientSideDetectionIntelligentScanDelegateAndroid::StartIntelligentScan(
     std::string rendered_texts,
-    InquireOnDeviceModelDoneCallback callback) {
-  if (!IsOnDeviceModelAvailable(/*log_failed_eligibility_reason=*/false)) {
+    IntelligentScanDoneCallback callback) {
+  if (!IsIntelligentScanAvailable(/*log_failed_eligibility_reason=*/false)) {
     std::move(callback).Run(IntelligentScanResult::Failure(
         IntelligentScanResult::kModelVersionUnavailable));
     return std::nullopt;

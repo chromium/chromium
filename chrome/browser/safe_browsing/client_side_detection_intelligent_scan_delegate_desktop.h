@@ -39,10 +39,10 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
 
   // IntelligentScanDelegate implementation.
   bool ShouldRequestIntelligentScan(ClientPhishingRequest* verdict) override;
-  bool IsOnDeviceModelAvailable(bool log_failed_eligibility_reason) override;
-  std::optional<base::UnguessableToken> InquireOnDeviceModel(
+  bool IsIntelligentScanAvailable(bool log_failed_eligibility_reason) override;
+  std::optional<base::UnguessableToken> StartIntelligentScan(
       std::string rendered_texts,
-      InquireOnDeviceModelDoneCallback callback) override;
+      IntelligentScanDoneCallback callback) override;
   bool CancelSession(const base::UnguessableToken& session_id) override;
   bool ShouldShowScamWarning(
       std::optional<IntelligentScanVerdict> verdict) override;

@@ -56,7 +56,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktop::Inquiry {
  public:
   Inquiry(ClientSideDetectionIntelligentScanDelegateDesktop* parent,
           const base::UnguessableToken& session_id,
-          InquireOnDeviceModelDoneCallback callback);
+          IntelligentScanDoneCallback callback);
   ~Inquiry();
 
   void Start(const std::string& rendered_texts);
@@ -69,7 +69,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktop::Inquiry {
   const raw_ptr<ClientSideDetectionIntelligentScanDelegateDesktop> parent_;
   std::unique_ptr<optimization_guide::OnDeviceSession> session_;
   base::UnguessableToken session_id_;
-  InquireOnDeviceModelDoneCallback callback_;
+  IntelligentScanDoneCallback callback_;
   std::string rendered_texts_;
   base::TimeTicks session_execution_start_time_;
 
@@ -79,7 +79,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktop::Inquiry {
 ClientSideDetectionIntelligentScanDelegateDesktop::Inquiry::Inquiry(
     ClientSideDetectionIntelligentScanDelegateDesktop* parent,
     const base::UnguessableToken& session_id,
-    InquireOnDeviceModelDoneCallback callback)
+    IntelligentScanDoneCallback callback)
     : parent_(parent),
       session_id_(session_id),
       callback_(std::move(callback)) {}
@@ -210,7 +210,7 @@ bool ClientSideDetectionIntelligentScanDelegateDesktop::
 }
 
 bool ClientSideDetectionIntelligentScanDelegateDesktop::
-    IsOnDeviceModelAvailable(bool log_failed_eligibility_reason) {
+    IsIntelligentScanAvailable(bool log_failed_eligibility_reason) {
   if (log_failed_eligibility_reason && !on_device_model_available_) {
     LogOnDeviceModelEligibilityReason();
   }
@@ -247,12 +247,12 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::OnPrefsUpdated() {
 }
 
 std::optional<base::UnguessableToken>
-ClientSideDetectionIntelligentScanDelegateDesktop::InquireOnDeviceModel(
+ClientSideDetectionIntelligentScanDelegateDesktop::StartIntelligentScan(
     std::string rendered_texts,
-    InquireOnDeviceModelDoneCallback callback) {
+    IntelligentScanDoneCallback callback) {
   // We have checked the model availability prior to calling this function, but
   // we want to check one last time before creating a session.
-  if (!IsOnDeviceModelAvailable(/*log_failed_eligibility_reason=*/false)) {
+  if (!IsIntelligentScanAvailable(/*log_failed_eligibility_reason=*/false)) {
     std::move(callback).Run(IntelligentScanResult::Failure(
         IntelligentScanResult::kModelVersionUnavailable));
     return std::nullopt;

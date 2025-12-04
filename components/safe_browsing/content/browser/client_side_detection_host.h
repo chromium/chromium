@@ -106,7 +106,8 @@ class ClientSideDetectionHost
     // Returns the inner text from the tab, which is combined inner-text of all
     // suitable iframes . The callback is used to retrieve a string back from
     // the delegate when the inner text function is completed. This string is
-    // then used to provide the on-device model the information about the page.
+    // then used to provide the intelligent scan delegate the information about
+    // the page.
     virtual void GetInnerText(HostInnerTextCallback callback) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -115,8 +116,7 @@ class ClientSideDetectionHost
 #endif
   };
 
-  // Delegate for handling intelligent scanning using on-device models. This
-  // object is responsible for all interactions with the on-device model.
+  // Delegate for handling intelligent scanning.
   class IntelligentScanDelegate : public KeyedService {
    public:
     // Represents the result of an intelligent scan.
@@ -129,7 +129,7 @@ class ClientSideDetectionHost
       int model_version;
       bool execution_success;
     };
-    using InquireOnDeviceModelDoneCallback =
+    using IntelligentScanDoneCallback =
         base::OnceCallback<void(IntelligentScanResult)>;
 
     ~IntelligentScanDelegate() override = default;
@@ -138,19 +138,18 @@ class ClientSideDetectionHost
     // verdict.
     virtual bool ShouldRequestIntelligentScan(
         ClientPhishingRequest* verdict) = 0;
-    // Returns |on_device_model_available_| which indicates the availability of
-    // on-device model session creation. Also logs failed eligibility reason
-    // histograms if |log_failed_eligibility_reason| is true.
-    virtual bool IsOnDeviceModelAvailable(
+    // Returns the availability of intelligent scan. Also logs failed
+    // eligibility reason histograms if |log_failed_eligibility_reason| is true.
+    virtual bool IsIntelligentScanAvailable(
         bool log_failed_eligibility_reason) = 0;
-    // Gets the intelligent scan result from the on-device model. The callback
-    // will return an empty optional if the on-device model is not available.
+    // Gets the intelligent scan result. The callback
+    // will return an empty optional if intelligent scan is not available.
     // Returns a token that can be used to cancel the request. The token will be
     // std::nullopt in case the inquiry fails immediately without start.
-    virtual std::optional<base::UnguessableToken> InquireOnDeviceModel(
+    virtual std::optional<base::UnguessableToken> StartIntelligentScan(
         std::string rendered_texts,
-        InquireOnDeviceModelDoneCallback callback) = 0;
-    // Cancels a specific on-device model session. If the |session_id| is
+        IntelligentScanDoneCallback callback) = 0;
+    // Cancels a specific intelligent scan session. If the |session_id| is
     // ongoing, it will return true, and false otherwise.
     virtual bool CancelSession(const base::UnguessableToken& session_id) = 0;
     // Determines if a scam warning should be shown based on the intelligent
@@ -296,8 +295,6 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionRTLookupResponseForceRequestTest,
       AsyncCheckTrackerTriggersClassificationRequestOnAllowlistMatch);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostScamDetectionTest,
-                           KeyboardLockRequestTriggersOnDeviceLLM);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostClipboardTest,
                            ClipboardApiTriggersPreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostClipboardTest,
@@ -399,8 +396,8 @@ class ClientSideDetectionHost
       std::optional<mojo_base::ProtoWrapper> image_feature_embedding);
 
   // |verdict| is an encoded ClientPhishingRequest protocol message, which will
-  // contain on device model output if the execution is successful.
-  void MaybeInquireOnDeviceForScamDetection(
+  // contain the intelligent scan result if the execution is successful.
+  void MaybeStartIntelligentScanForScamDetection(
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist);
 
@@ -409,7 +406,7 @@ class ClientSideDetectionHost
   void MaybeGetAccessToken(
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
-      bool is_on_device_model_invoked);
+      bool is_intelligent_scan_invoked);
 
   // Callback that is called when the server ping back is
   // done. Display an interstitial if |is_phishing| is true.
@@ -515,16 +512,16 @@ class ClientSideDetectionHost
   bool CanSendSamplePing();
 
   // Callback function when GetInnerText is completed in the delegate. This
-  // inner text is fetched as part of querying the on-device model through the
+  // inner text is fetched as part of intelligent scan through the
   // CSD service class.
   void OnInnerTextComplete(
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
       std::string inner_text);
 
-  // Callback function when InquireOnDeviceModel from the intelligent scan
+  // Callback function when StartIntelligentScan from the intelligent scan
   // delegate is completed.
-  void OnInquireOnDeviceModelDone(
+  void OnIntelligentScanDone(
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
       IntelligentScanDelegate::IntelligentScanResult response);

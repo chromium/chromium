@@ -97,7 +97,7 @@ const float kProbabilityForSendingSampleRequest = 0.000001;
 // trigger and force request types. More information on why this value was
 // chosen can be found at go/crca-cspp-expand-allowlist.
 const float kProbabilityForAcceptingHCAllowlistTrigger = 0.9999;
-// Threshold value used to skip the on-device model inquiry.
+// Threshold value used to skip the intelligent scan.
 const int kInnerTextMinThresholdBytes = 5;
 
 // Set of suspicious tokens that could be used to construct a malicious command.
@@ -1263,8 +1263,14 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
   if (should_classify) {
     bool intelligent_scan_session_ongoing =
         intelligent_scan_session_id_.has_value();
+    // TODO(crbug.com/462643935): Remove the OnDevice* histograms once the new
+    // IntelligentScan* histograms is in Stable. Update chirp alerts to use the
+    // new histograms.
     base::UmaHistogramBoolean(
         "SBClientPhishing.OnDeviceModelSessionAliveOnNewPreclassification",
+        intelligent_scan_session_ongoing);
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.IntelligentScanSessionAliveOnNewPreclassification",
         intelligent_scan_session_ongoing);
     if (intelligent_scan_session_ongoing) {
       intelligent_scan_delegate_->CancelSession(*intelligent_scan_session_id_);
@@ -1402,7 +1408,7 @@ void ClientSideDetectionHost::PhishingDetectionDone(
 
 // To keep the flow consistent, we want to append additional information to the
 // ClientPhishingRequest message based on feature availability in the following
-// order: image embedding, on-device model output, then token fetch. If one
+// order: image embedding, intelligent scan, then token fetch. If one
 // feature is not available, we will move on to the next in the order until we
 // ultimately send the request.
 void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
@@ -1633,8 +1639,8 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
     return;
   }
 
-  MaybeInquireOnDeviceForScamDetection(std::move(verdict),
-                                       did_match_high_confidence_allowlist);
+  MaybeStartIntelligentScanForScamDetection(
+      std::move(verdict), did_match_high_confidence_allowlist);
 }
 
 void ClientSideDetectionHost::PhishingImageEmbeddingDone(
@@ -1670,16 +1676,16 @@ void ClientSideDetectionHost::PhishingImageEmbeddingDone(
     }
   }
 
-  MaybeInquireOnDeviceForScamDetection(std::move(verdict),
-                                       did_match_high_confidence_allowlist);
+  MaybeStartIntelligentScanForScamDetection(
+      std::move(verdict), did_match_high_confidence_allowlist);
 }
 
-void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
+void ClientSideDetectionHost::MaybeStartIntelligentScanForScamDetection(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist) {
   // Use the address of the verdict object as the unique track_id.
   TRACE_EVENT_BEGIN(/*category=*/"safe_browsing",
-                    /*name=*/"OnDeviceScamDetection",
+                    /*name=*/"IntelligentScanScamDetection",
                     perfetto::Track::FromPointer(verdict.get()));
   if (verdict->has_llama_forced_trigger_info()) {
     LogLlamaForcedTriggerInfoFields(verdict->llama_forced_trigger_info());
@@ -1695,23 +1701,33 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
           std::move(intelligent_scan_info);
       MaybeGetAccessToken(std::move(verdict),
                           did_match_high_confidence_allowlist,
-                          /*is_on_device_model_invoked=*/false);
+                          /*is_intelligent_scan_invoked=*/false);
       return;
     }
 
-    bool on_device_model_available =
-        intelligent_scan_delegate_->IsOnDeviceModelAvailable(
+    bool intelligent_scan_eligible =
+        intelligent_scan_delegate_->IsIntelligentScanAvailable(
             /*log_failed_eligibility_reason=*/true);
 
+    // TODO(crbug.com/462643935): Remove the OnDevice* histograms once the new
+    // IntelligentScan* histograms is in Stable. Update chirp alerts to use the
+    // new histograms.
     base::UmaHistogramBoolean(
         "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime",
-        on_device_model_available);
+        intelligent_scan_eligible);
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime",
+        intelligent_scan_eligible);
     base::UmaHistogramBoolean(
         "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime." +
             GetRequestTypeName(verdict->client_side_detection_type()),
-        on_device_model_available);
+        intelligent_scan_eligible);
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime." +
+            GetRequestTypeName(verdict->client_side_detection_type()),
+        intelligent_scan_eligible);
 
-    if (!on_device_model_available) {
+    if (!intelligent_scan_eligible) {
       IntelligentScanInfo intelligent_scan_info;
       intelligent_scan_info.set_no_info_reason(
           IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE);
@@ -1719,7 +1735,7 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
           std::move(intelligent_scan_info);
       MaybeGetAccessToken(std::move(verdict),
                           did_match_high_confidence_allowlist,
-                          /*is_on_device_model_invoked=*/false);
+                          /*is_intelligent_scan_invoked=*/false);
       return;
     }
 
@@ -1731,17 +1747,26 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
   }
 
   MaybeGetAccessToken(std::move(verdict), did_match_high_confidence_allowlist,
-                      /*is_on_device_model_invoked=*/false);
+                      /*is_intelligent_scan_invoked=*/false);
 }
 
 void ClientSideDetectionHost::OnInnerTextComplete(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist,
     std::string inner_text) {
+  // TODO(crbug.com/462643935): Remove the OnDevice* histograms once the new
+  // IntelligentScan* histograms is in Stable. Update chirp alerts to use the
+  // new histograms.
   base::UmaHistogramCounts100000("SBClientPhishing.OnDeviceModelInnerTextSize",
                                  inner_text.size());
   base::UmaHistogramCounts100000(
+      "SBClientPhishing.IntelligentScanInnerTextSize", inner_text.size());
+  base::UmaHistogramCounts100000(
       "SBClientPhishing.OnDeviceModelInnerTextSize." +
+          GetRequestTypeName(verdict->client_side_detection_type()),
+      inner_text.size());
+  base::UmaHistogramCounts100000(
+      "SBClientPhishing.IntelligentScanInnerTextSize." +
           GetRequestTypeName(verdict->client_side_detection_type()),
       inner_text.size());
   if (inner_text.size() <= kInnerTextMinThresholdBytes) {
@@ -1756,28 +1781,38 @@ void ClientSideDetectionHost::OnInnerTextComplete(
     *verdict->mutable_intelligent_scan_info() =
         std::move(intelligent_scan_info);
     MaybeGetAccessToken(std::move(verdict), did_match_high_confidence_allowlist,
-                        /*is_on_device_model_invoked=*/false);
+                        /*is_intelligent_scan_invoked=*/false);
     return;
   }
 
   intelligent_scan_session_id_ =
-      intelligent_scan_delegate_->InquireOnDeviceModel(
+      intelligent_scan_delegate_->StartIntelligentScan(
           inner_text,
-          base::BindOnce(&ClientSideDetectionHost::OnInquireOnDeviceModelDone,
+          base::BindOnce(&ClientSideDetectionHost::OnIntelligentScanDone,
                          weak_factory_.GetWeakPtr(), std::move(verdict),
                          did_match_high_confidence_allowlist));
 }
 
-void ClientSideDetectionHost::OnInquireOnDeviceModelDone(
+void ClientSideDetectionHost::OnIntelligentScanDone(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist,
     IntelligentScanDelegate::IntelligentScanResult response) {
   intelligent_scan_session_id_.reset();
+  // TODO(crbug.com/462643935): Remove the OnDevice* histograms once the new
+  // IntelligentScan* histograms is in Stable. Update chirp alerts to use the
+  // new histograms.
   base::UmaHistogramBoolean(
       "SBClientPhishing.OnDeviceModelHasSuccessfulResponse",
       response.execution_success);
   base::UmaHistogramBoolean(
+      "SBClientPhishing.IntelligentScanHasSuccessfulResponse",
+      response.execution_success);
+  base::UmaHistogramBoolean(
       "SBClientPhishing.OnDeviceModelHasSuccessfulResponse." +
+          GetRequestTypeName(verdict->client_side_detection_type()),
+      response.execution_success);
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.IntelligentScanHasSuccessfulResponse." +
           GetRequestTypeName(verdict->client_side_detection_type()),
       response.execution_success);
   IntelligentScanInfo intelligent_scan_info;
@@ -1795,16 +1830,17 @@ void ClientSideDetectionHost::OnInquireOnDeviceModelDone(
   *verdict->mutable_intelligent_scan_info() = std::move(intelligent_scan_info);
 
   MaybeGetAccessToken(std::move(verdict), did_match_high_confidence_allowlist,
-                      /*is_on_device_model_invoked=*/true);
+                      /*is_intelligent_scan_invoked=*/true);
 }
 
 void ClientSideDetectionHost::MaybeGetAccessToken(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist,
-    bool is_on_device_model_invoked) {
+    bool is_intelligent_scan_invoked) {
   TRACE_EVENT_END(
       /*category=*/"safe_browsing", perfetto::Track::FromPointer(verdict.get()),
-      /*arg=*/"inquired_on_device_model", /*value=*/is_on_device_model_invoked);
+      /*arg=*/"inquired_intelligent_scan",
+      /*value=*/is_intelligent_scan_invoked);
   if (CanGetAccessToken()) {
     token_fetcher_->Start(base::BindOnce(
         &ClientSideDetectionHost::OnGotAccessToken, weak_factory_.GetWeakPtr(),

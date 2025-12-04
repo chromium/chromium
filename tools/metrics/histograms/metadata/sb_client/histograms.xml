@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".VibrationApi" summary="Vibration API"/>
 </variants>
 
-<variants name="ClientSideDetectionOnDeviceModelRequestType">
+<variants name="ClientSideDetectionIntelligentScanRequestType">
   <variant name="" summary="all request types"/>
   <variant name=".ForceRequest" summary="Force request"/>
   <variant name=".KeyboardLockRequested" summary="Keyboard lock requested"/>
@@ -764,6 +764,50 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="SBClientPhishing.IntelligentScanHasSuccessfulResponse{IntelligentScanRequestType}"
+    enum="BooleanSuccess" expires_after="2026-05-03">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the intelligent scan has a successful response. This is
+    logged in the callback after the intelligent scan call in the host class
+    that was requested by {IntelligentScanRequestType}.
+  </summary>
+  <token key="IntelligentScanRequestType"
+      variants="ClientSideDetectionIntelligentScanRequestType"/>
+</histogram>
+
+<histogram
+    name="SBClientPhishing.IntelligentScanInnerTextSize{IntelligentScanRequestType}"
+    units="bytes" expires_after="2026-05-17">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the size (in bytes) of the inner text extracted from the page during
+    the intelligent scan. We can use this histogram to inform the size of the
+    context window we need. Note that to convert bytes to tokens, we need to
+    estimate the number of letters in a word and the number of tokens in a word.
+    This is logged when the intelligent scan is inquired and requested by
+    {IntelligentScanRequestType}.
+  </summary>
+  <token key="IntelligentScanRequestType"
+      variants="ClientSideDetectionIntelligentScanRequestType"/>
+</histogram>
+
+<histogram
+    name="SBClientPhishing.IntelligentScanSessionAliveOnNewPreclassification"
+    enum="BooleanExists" expires_after="2026-04-14">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether or not the intelligent scan session was alive when a new
+    preclassification happens. This is logged when a new request happens through
+    a new preclassification check and the current existing session will be
+    destroyed.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.IntelligentScanVerdict"
     enum="IntelligentScanVerdict" expires_after="2026-04-26">
   <owner>andysjlim@chromium.org</owner>
@@ -776,17 +820,35 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram
-    name="SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime{OnDeviceModelRequestType}"
+    name="SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime{IntelligentScanRequestType}"
+    enum="BooleanSuccess" expires_after="2026-05-03">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the intelligent scan is available at the time of inquiry.
+    This is logged in the service class at the start of the inquiry function
+    call requested by {IntelligentScanRequestType}.
+  </summary>
+  <token key="IntelligentScanRequestType"
+      variants="ClientSideDetectionIntelligentScanRequestType"/>
+</histogram>
+
+<histogram
+    name="SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime{IntelligentScanRequestType}"
     enum="BooleanSuccess" expires_after="2026-05-03">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the on device model is available at the time of inquiry.
     This is logged in the service class at the start of the inquiry function
-    call requested by {OnDeviceModelRequestType}.
+    call requested by {IntelligentScanRequestType}.
+
+    TODO(crbug.com/462643935): Remove this histogram once the new
+    IsIntelligentScanAvailableAtInquiryTime histogram is in Stable. Also update
+    chirp alerts to use the new histogram.
   </summary>
-  <token key="OnDeviceModelRequestType"
-      variants="ClientSideDetectionOnDeviceModelRequestType"/>
+  <token key="IntelligentScanRequestType"
+      variants="ClientSideDetectionIntelligentScanRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.LlamaForcedTriggerInfo.IntelligentScan"
@@ -964,21 +1026,25 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram
-    name="SBClientPhishing.OnDeviceModelHasSuccessfulResponse{OnDeviceModelRequestType}"
+    name="SBClientPhishing.OnDeviceModelHasSuccessfulResponse{IntelligentScanRequestType}"
     enum="BooleanSuccess" expires_after="2026-05-03">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the on device model inquiry has a successful response. This
     is logged in the callback after the inquiry call in the host class that was
-    requested by {OnDeviceModelRequestType}.
+    requested by {IntelligentScanRequestType}.
+
+    TODO(crbug.com/462643935): Remove this histogram once the new
+    IntelligentScanHasSuccessfulResponse histogram is in Stable. Also update
+    chirp alerts to use the new histogram.
   </summary>
-  <token key="OnDeviceModelRequestType"
-      variants="ClientSideDetectionOnDeviceModelRequestType"/>
+  <token key="IntelligentScanRequestType"
+      variants="ClientSideDetectionIntelligentScanRequestType"/>
 </histogram>
 
 <histogram
-    name="SBClientPhishing.OnDeviceModelInnerTextSize{OnDeviceModelRequestType}"
+    name="SBClientPhishing.OnDeviceModelInnerTextSize{IntelligentScanRequestType}"
     units="bytes" expires_after="2026-05-17">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -988,10 +1054,14 @@ useful for Chirp alerts (go/crca-alerts). -->
     the context window we need. Note that to convert bytes to tokens, we need to
     estimate the number of letters in a word and the number of tokens in a word.
     This is logged when the model is inquired and requested by
-    {OnDeviceModelRequestType}.
+    {IntelligentScanRequestType}.
+
+    TODO(crbug.com/462643935): Remove this histogram once the new
+    IntelligentScanInnerTextSize histogram is in Stable. Also update chirp
+    alerts to use the new histogram.
   </summary>
-  <token key="OnDeviceModelRequestType"
-      variants="ClientSideDetectionOnDeviceModelRequestType"/>
+  <token key="IntelligentScanRequestType"
+      variants="ClientSideDetectionIntelligentScanRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.OnDeviceModelResponseParseSuccess"
@@ -1025,6 +1095,10 @@ useful for Chirp alerts (go/crca-alerts). -->
     preclassification happens. This is logged when a new request happens through
     a new preclassification check and the current existing session will be
     destroyed.
+
+    TODO(crbug.com/462643935): Remove this histogram once the new
+    IntelligentScanSessionAliveOnNewPreclassification histogram is in Stable.
+    Also update chirp alerts to use the new histogram.
   </summary>
 </histogram>
 
@@ -1072,7 +1146,7 @@ useful for Chirp alerts (go/crca-alerts). -->
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the reason why the on-device model is unavailable at the time of
-    inquiry on Android. This is logged when IsOnDeviceModelAvailable is called
+    inquiry on Android. This is logged when IsIntelligentScanAvailable is called
     with log_failed_eligibility_reason=true and the model is not available.
   </summary>
 </histogram>
