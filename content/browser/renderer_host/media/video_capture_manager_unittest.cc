@@ -333,7 +333,8 @@ class VideoCaptureManagerTest : public testing::Test {
 
     VideoCaptureControllerID client_id = base::UnguessableToken::Create();
     vcm_->ConnectClient(
-        session_id, params, client_id, frame_observer_.get(), std::nullopt,
+        session_id, params, client_id, render_frame_host_id_,
+        frame_observer_.get(), std::nullopt,
         base::BindOnce(&VideoCaptureManagerTest::OnGotControllerCallback,
                        base::Unretained(this), client_id, expect_success));
     base::RunLoop().RunUntilIdle();
@@ -386,6 +387,7 @@ class VideoCaptureManagerTest : public testing::Test {
   raw_ptr<WrappedDeviceFactory> video_capture_device_factory_;
   blink::MediaStreamDevices devices_;
   content::TestBrowserContext browser_context_;
+  GlobalRenderFrameHostId render_frame_host_id_ = GlobalRenderFrameHostId(1, 1);
 };
 
 // Test cases

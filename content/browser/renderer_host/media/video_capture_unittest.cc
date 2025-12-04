@@ -84,7 +84,7 @@ class MockRenderFrameHostDelegate
  public:
   MOCK_METHOD0(NotifyStreamAdded, void());
   MOCK_METHOD0(NotifyStreamRemoved, void());
-  MOCK_CONST_METHOD0(GetRenderFrameHostId, GlobalRenderFrameHostId());
+  MOCK_CONST_METHOD0(render_frame_host_id, GlobalRenderFrameHostId());
 };
 
 // This is an integration test of VideoCaptureHost in conjunction with
@@ -424,6 +424,8 @@ TEST_F(VideoCaptureTest, IncrementMatchesDecrementCalls) {
   std::unique_ptr<MockRenderFrameHostDelegate> mock_delegate =
       std::make_unique<MockRenderFrameHostDelegate>();
   MockRenderFrameHostDelegate* const mock_delegate_ptr = mock_delegate.get();
+  EXPECT_CALL(*mock_delegate_ptr, render_frame_host_id())
+      .WillRepeatedly(Return(GlobalRenderFrameHostId()));
   std::unique_ptr<VideoCaptureHost> host =
       std::make_unique<VideoCaptureHost>(std::move(mock_delegate), nullptr);
 

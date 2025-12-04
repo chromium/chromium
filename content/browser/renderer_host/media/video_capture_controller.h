@@ -27,6 +27,8 @@
 
 namespace content {
 
+struct GlobalRenderFrameHostId;
+
 class VideoCaptureDeviceLaunchObserver;
 
 // Implementation of media::VideoFrameReceiver that distributes received frames
@@ -60,6 +62,7 @@ class CONTENT_EXPORT VideoCaptureController
   // Buffers will be shared to the client as necessary. The client will continue
   // to receive frames from the device until RemoveClient() is called.
   void AddClient(const VideoCaptureControllerID& id,
+                 const GlobalRenderFrameHostId& render_frame_host_id,
                  VideoCaptureControllerEventHandler* event_handler,
                  const media::VideoCaptureSessionId& session_id,
                  const media::VideoCaptureParams& params,

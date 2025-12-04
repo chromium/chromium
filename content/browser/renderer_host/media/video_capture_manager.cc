@@ -425,6 +425,7 @@ void VideoCaptureManager::ConnectClient(
     const media::VideoCaptureSessionId& session_id,
     const media::VideoCaptureParams& params,
     VideoCaptureControllerID client_id,
+    const GlobalRenderFrameHostId& render_frame_host_id,
     VideoCaptureControllerEventHandler* client_handler,
     std::optional<url::Origin> origin,
     DoneCB done_cb) {
@@ -472,7 +473,8 @@ void VideoCaptureManager::ConnectClient(
 
   // Run the callback first, as AddClient() may trigger OnFrameInfo().
   std::move(done_cb).Run(controller->GetWeakPtrForIOThread());
-  controller->AddClient(client_id, client_handler, session_id, params, origin);
+  controller->AddClient(client_id, render_frame_host_id, client_handler,
+                        session_id, params, origin);
 }
 
 void VideoCaptureManager::DisconnectClient(

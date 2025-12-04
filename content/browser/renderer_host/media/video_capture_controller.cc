@@ -22,9 +22,11 @@
 #include "base/token.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator_impl.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -213,6 +215,7 @@ VideoCaptureController::GetWeakPtrForIOThread() {
 
 void VideoCaptureController::AddClient(
     const VideoCaptureControllerID& id,
+    const GlobalRenderFrameHostId& render_frame_host_id,
     VideoCaptureControllerEventHandler* event_handler,
     const media::VideoCaptureSessionId& session_id,
     const media::VideoCaptureParams& params,
@@ -275,6 +278,19 @@ void VideoCaptureController::AddClient(
   // If we already have gotten frame_info from the device, repeat it to the new
   // client.
   controller_clients_.push_back(std::move(client));
+
+#if BUILDFLAG(IS_MAC)
+  if (stream_type_ == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE) {
+    const auto desktop_media_id = DesktopMediaID::Parse(device_id_);
+    if (desktop_media_id.type == DesktopMediaID::TYPE_SCREEN) {
+      PipScreenCaptureCoordinatorProxy::CaptureInfo capture_info;
+      capture_info.session_id = session_id;
+      capture_info.render_frame_host_id = render_frame_host_id;
+      capture_info.desktop_media_id = desktop_media_id;
+      PipScreenCaptureCoordinatorImpl::AddCapture(std::move(capture_info));
+    }
+  }
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 base::UnguessableToken VideoCaptureController::RemoveClient(
@@ -288,6 +304,15 @@ base::UnguessableToken VideoCaptureController::RemoveClient(
   ControllerClient* client = FindClient(id, event_handler);
   if (!client)
     return base::UnguessableToken();
+
+#if BUILDFLAG(IS_MAC)
+  if (stream_type_ == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE) {
+    const auto desktop_media_id = DesktopMediaID::Parse(device_id_);
+    if (desktop_media_id.type == DesktopMediaID::TYPE_SCREEN) {
+      PipScreenCaptureCoordinatorImpl::RemoveCapture(client->session_id);
+    }
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   for (const auto& buffer_id : client->buffers_in_use) {
     OnClientFinishedConsumingBuffer(client, buffer_id,

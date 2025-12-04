@@ -41,6 +41,8 @@
 #endif
 
 namespace content {
+struct GlobalRenderFrameHostId;
+
 class VideoCaptureController;
 class VideoCaptureControllerEventHandler;
 
@@ -122,6 +124,7 @@ class CONTENT_EXPORT VideoCaptureManager
   void ConnectClient(const media::VideoCaptureSessionId& session_id,
                      const media::VideoCaptureParams& capture_params,
                      VideoCaptureControllerID client_id,
+                     const GlobalRenderFrameHostId& render_frame_host_id,
                      VideoCaptureControllerEventHandler* client_handler,
                      std::optional<url::Origin> origin,
                      DoneCB done_cb);

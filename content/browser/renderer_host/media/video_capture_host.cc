@@ -81,6 +81,10 @@ class VideoCaptureHost::RenderFrameHostDelegateImpl
                        render_frame_host_id_));
   }
 
+  GlobalRenderFrameHostId render_frame_host_id() const override {
+    return render_frame_host_id_;
+  }
+
  private:
   const GlobalRenderFrameHostId render_frame_host_id_;
 };
@@ -299,6 +303,7 @@ void VideoCaptureHost::Start(
 
   controllers_[controller_id] = base::WeakPtr<VideoCaptureController>();
   ConnectClient(session_id, params, controller_id,
+                render_frame_host_delegate_->render_frame_host_id(),
                 base::BindOnce(&VideoCaptureHost::OnControllerAdded,
                                weak_factory_.GetWeakPtr(), device_id));
 }
@@ -573,15 +578,17 @@ void VideoCaptureHost::NotifyAllStreamsRemoved() {
     NotifyStreamRemoved();
 }
 
-void VideoCaptureHost::ConnectClient(const base::UnguessableToken session_id,
-                                     const media::VideoCaptureParams& params,
-                                     VideoCaptureControllerID controller_id,
-                                     VideoCaptureManager::DoneCB done_cb) {
+void VideoCaptureHost::ConnectClient(
+    const base::UnguessableToken session_id,
+    const media::VideoCaptureParams& params,
+    VideoCaptureControllerID controller_id,
+    const GlobalRenderFrameHostId& render_frame_host_id,
+    VideoCaptureManager::DoneCB done_cb) {
   std::optional<url::Origin> origin =
       media_stream_manager_->GetOriginByVideoSessionId(session_id);
   media_stream_manager_->video_capture_manager()->ConnectClient(
-      session_id, params, controller_id, this, std::move(origin),
-      std::move(done_cb));
+      session_id, params, controller_id, render_frame_host_id, this,
+      std::move(origin), std::move(done_cb));
 }
 
 }  // namespace content

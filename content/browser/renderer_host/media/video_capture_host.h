@@ -57,6 +57,7 @@ class CONTENT_EXPORT VideoCaptureHost
     virtual ~RenderFrameHostDelegate();
     virtual void NotifyStreamAdded() = 0;
     virtual void NotifyStreamRemoved() = 0;
+    virtual GlobalRenderFrameHostId render_frame_host_id() const = 0;
   };
 
  private:
@@ -134,6 +135,7 @@ class CONTENT_EXPORT VideoCaptureHost
   void ConnectClient(const base::UnguessableToken session_id,
                      const media::VideoCaptureParams& params,
                      VideoCaptureControllerID controller_id,
+                     const GlobalRenderFrameHostId& render_frame_host_id,
                      VideoCaptureManager::DoneCB done_cb);
 
   class RenderFrameHostDelegateImpl;

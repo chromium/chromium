@@ -217,7 +217,7 @@ class VideoCaptureBrowserTest
         params_.resolution_to_use, kFrameRateToRequest,
         params_.GetPixelFormatToUse());
     video_capture_manager_->ConnectClient(
-        session_id_, capture_params, stub_client_id_,
+        session_id_, capture_params, stub_client_id_, render_frame_host_id_,
         &mock_controller_event_handler_, std::nullopt,
         base::BindOnce(
             &VideoCaptureBrowserTest::OnConnectClientToControllerAnswer,
@@ -245,6 +245,7 @@ class VideoCaptureBrowserTest
   MockMediaStreamProviderListener mock_stream_provider_listener_;
   MockVideoCaptureControllerEventHandler mock_controller_event_handler_;
   base::WeakPtr<VideoCaptureController> controller_;
+  GlobalRenderFrameHostId render_frame_host_id_ = GlobalRenderFrameHostId(1, 1);
 };
 
 IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest, StartAndImmediatelyStop) {
