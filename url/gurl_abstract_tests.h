@@ -40,7 +40,7 @@ TYPED_TEST_P(AbstractUrlTest, IsAboutBlankTest) {
   // See https://tools.ietf.org/html/rfc6694 which explicitly allows
   // `about-query` and `about-fragment` parts in about: URLs.
   const std::string kAboutBlankUrls[] = {"about:blank", "about:blank?foo",
-                                         "about:blank/#foo",
+                                         "about:blank#foo", "about:blank/#foo",
                                          "about:blank?foo#foo"};
   for (const auto& input : kAboutBlankUrls) {
     SCOPED_TRACE(testing::Message() << "Test input: " << input);
