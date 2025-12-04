@@ -404,18 +404,20 @@ public class BookmarkBarCoordinator
     public void onBrowserControlsOffsetUpdate(int layerYOffset, boolean reachRestingPosition) {
         // When we are given yOffsets, we must handle translation of the Android widgets manually.
         // See comment in {@link TopControlLayer} for full details. The yOffset is the positive
-        // distance from the top of the window. We need to shift the Android widgets up, which is
-        // negative in the Android coordinate system. The amount to shift up is the difference
-        // between the top of the Bookmark Bar (total top controls height minus bookmark bar height)
-        // and the layerYOffset. Therefore we subtract the layerYOffset from the above and negate.
-
-        // TODO(crbug.com/417238089): This assumes that the bookmark bar is the lowest item in the
-        // top controls. We will assume this for now to reconcile one frame animation flash.
-        mView.setTranslationY(
-                -1.0f
-                        * (mBrowserControlsStateProvider.getTopControlsHeight()
-                                - getTopControlHeight()
-                                - layerYOffset));
+        // distance from the top of the window. The view will already be shifted by the top margin
+        // amount, but we do not want to continue to adjust that because it requires a layout pass
+        // and would be janky. Instead we adjust to the yOffset using translationY, and when the
+        // view has reached its resting position, we can switch back to using a top margin only.
+        if (!reachRestingPosition) {
+            // The view is positioned at TOP_MARGIN, but it is supposed to be positioned at the
+            // |layerYOffset|. If the |layerYOffset| is greater than TOP_MARGIN, this means the view
+            // is currently too high on the screen and needs to shift down, and vice versa.
+            mView.setTranslationY(layerYOffset - mModel.get(BookmarkBarProperties.TOP_MARGIN));
+        } else {
+            // Once we have reached our resting position, we only need a top margin.
+            mMediator.setTopMargin(layerYOffset);
+            mView.setTranslationY(0);
+        }
     }
 
     @Override
