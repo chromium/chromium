@@ -122,20 +122,28 @@ void InfoBarContainerWithPriority::OnInfoBarRemoved(InfoBar* infobar,
   // An infobar is being removed from the manager. It could be in our visible
   // list or our pending list. We must remove it from whichever list it's in
   // to prevent holding a dangling pointer.
-  std::erase_if(pending_infobars_, [infobar](const PendingInfoBarEntry& entry) {
-    return entry.infobar == infobar;
-  });
+  //
+  // 1. Try to remove from pending.
+  size_t pending_removed = std::erase_if(
+      pending_infobars_, [infobar](const PendingInfoBarEntry& entry) {
+        return entry.infobar == infobar;
+      });
 
-  const size_t removed_from_visible = ClearVisible(infobar);
+  // 2. Try to remove from visible.
+  size_t visible_removed = ClearVisible(infobar);
 
-  // Only try to promote a new infobar if a visible slot was actually freed.
-  if (removed_from_visible > 0) {
+  if (visible_removed > 0) {
+    // It was visible, so it is in the base container.
+    // We must call base::OnInfoBarRemoved to clear owner and remove from view.
+    InfoBarContainer::OnInfoBarRemoved(infobar, animate);
+
+    // Now that a slot is free, try to promote from pending.
     Promote();
+  } else {
+    // It was not visible. It must have been pending. Do NOT call
+    // base::OnInfoBarRemoved because it was never added to the base container.
+    CHECK(pending_removed > 0 || !infobar->delegate());
   }
-
-  // The base class needs to be called to handle the actual view removal and
-  // animation.
-  InfoBarContainer::OnInfoBarRemoved(infobar, animate);
 }
 
 void InfoBarContainerWithPriority::OnInfoBarReplaced(InfoBar* old_infobar,
