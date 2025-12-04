@@ -96,11 +96,11 @@ std::optional<PendingBackend> BackendStorageDelegate::MakePendingBackend(
   auto db_file_path =
       directory.Append(base_name).AddExtension(kDbFileExtension);
   pending_backend.sqlite_data.db_file = base::File(db_file_path, create_flags);
+  base::UmaHistogramExactLinear(
+      "PersistentCache.Sqlite.DbFile.CreateResult",
+      -pending_backend.sqlite_data.db_file.error_details(),
+      -base::File::FILE_ERROR_MAX);
   if (!pending_backend.sqlite_data.db_file.IsValid()) {
-    base::UmaHistogramExactLinear(
-        "PersistentCache.Sqlite.DbFile.CreateError",
-        -pending_backend.sqlite_data.db_file.error_details(),
-        -base::File::FILE_ERROR_MAX);
     return std::nullopt;
   }
 
@@ -108,11 +108,11 @@ std::optional<PendingBackend> BackendStorageDelegate::MakePendingBackend(
       directory.Append(base_name).AddExtension(kJournalFileExtension);
   pending_backend.sqlite_data.journal_file =
       base::File(journal_file_path, create_flags);
+  base::UmaHistogramExactLinear(
+      "PersistentCache.Sqlite.JournalFile.CreateResult",
+      -pending_backend.sqlite_data.journal_file.error_details(),
+      -base::File::FILE_ERROR_MAX);
   if (!pending_backend.sqlite_data.journal_file.IsValid()) {
-    base::UmaHistogramExactLinear(
-        "PersistentCache.Sqlite.JournalFile.CreateError",
-        -pending_backend.sqlite_data.journal_file.error_details(),
-        -base::File::FILE_ERROR_MAX);
     return std::nullopt;
   }
 
@@ -121,11 +121,11 @@ std::optional<PendingBackend> BackendStorageDelegate::MakePendingBackend(
         directory.Append(base_name).AddExtension(kWalJournalFileExtension);
     pending_backend.sqlite_data.wal_file =
         base::File(wal_file_path, create_flags);
+    base::UmaHistogramExactLinear(
+        "PersistentCache.Sqlite.WalJournalFile.CreateResult",
+        -pending_backend.sqlite_data.wal_file.error_details(),
+        -base::File::FILE_ERROR_MAX);
     if (!pending_backend.sqlite_data.wal_file.IsValid()) {
-      base::UmaHistogramExactLinear(
-          "PersistentCache.Sqlite.WalJournalFile.CreateError",
-          -pending_backend.sqlite_data.wal_file.error_details(),
-          -base::File::FILE_ERROR_MAX);
       return std::nullopt;
     }
   }

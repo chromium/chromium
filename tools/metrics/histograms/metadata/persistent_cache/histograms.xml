@@ -111,13 +111,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PersistentCache.Sqlite.LockError" enum="PlatformFileError"
+<histogram name="PersistentCache.Sqlite.LockResult" enum="PlatformFileError"
     expires_after="2026-11-06">
   <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Reports the error recevied when locking a PersistentCache's primary database
-    file when opened for use by only a single connection.
+    Reports the result of locking a PersistentCache's primary database file when
+    opened for use by only a single connection.
   </summary>
 </histogram>
 
@@ -126,12 +126,12 @@ chromium-metrics-reviews@google.com.
   <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Reports the error recevied when {Operation} a PersistentCache's {FileType}.
+    Reports the result of {Operation} a PersistentCache's {FileType}.
   </summary>
   <token key="FileType" variants="FileType"/>
   <token key="Operation">
-    <variant name="CreateError" summary="creating or opening"/>
-    <variant name="SetLengthError" summary="deleting"/>
+    <variant name="CreateResult" summary="creating or opening"/>
+    <variant name="SetLengthResult" summary="deleting"/>
   </token>
 </histogram>
 

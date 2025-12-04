@@ -126,17 +126,15 @@ int SqliteSandboxedVfsDelegate::DeleteFile(const base::FilePath& file_path,
   auto it = sandboxed_files_map_.find(file_path);
   if (it != sandboxed_files_map_.end()) {
     auto& file = it->second->GetFile();
-    if (!file.SetLength(0)) {
-      const base::File::Error file_error = base::File::GetLastFileError();
-      base::UmaHistogramExactLinear(
-          base::StrCat(
-              {"PersistentCache.Sqlite.",
-               SqliteVfsFileSet::GetVirtualFileHistogramVariant(file_path),
-               ".SetLengthError"}),
-          -file_error, -base::File::FILE_ERROR_MAX);
-      return SQLITE_IOERR_DELETE;
-    }
-    return SQLITE_OK;
+    const auto file_error = file.SetLength(0) ? base::File::FILE_OK
+                                              : base::File::GetLastFileError();
+    base::UmaHistogramExactLinear(
+        base::StrCat(
+            {"PersistentCache.Sqlite.",
+             SqliteVfsFileSet::GetVirtualFileHistogramVariant(file_path),
+             ".SetLengthResult"}),
+        -file_error, -base::File::FILE_ERROR_MAX);
+    return file_error == base::File::FILE_OK ? SQLITE_OK : SQLITE_IOERR_DELETE;
   }
 
   return SQLITE_NOTFOUND;

@@ -492,14 +492,9 @@ SharedAtomicLock& SandboxedFile::GetSharedAtomicLock() {
 bool SandboxedFile::AcquireSingleConnectionlock() {
   CHECK(underlying_file_.IsValid());
   const auto error = underlying_file_.Lock(base::File::LockMode::kExclusive);
-  if (error == base::File::FILE_OK) {
-    return true;
-  }
-
-  base::UmaHistogramExactLinear("PersistentCache.Sqlite.LockError", -error,
+  base::UmaHistogramExactLinear("PersistentCache.Sqlite.LockResult", -error,
                                 -base::File::FILE_ERROR_MAX);
-
-  return false;
+  return error == base::File::FILE_OK;
 }
 
 void SandboxedFile::ReleaseSingleConnectionlock() {

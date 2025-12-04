@@ -237,7 +237,7 @@ TEST_F(SqliteSandboxedVfsTest, DeleteFileFails) {
   }
   // The exact error reported differs by platform, so accept any value.
   histogram_tester.ExpectTotalCount(
-      "PersistentCache.Sqlite.DbFile.SetLengthError", 1);
+      "PersistentCache.Sqlite.DbFile.SetLengthResult", 1);
 }
 
 TEST_F(SqliteSandboxedVfsTest, OpenFile) {
