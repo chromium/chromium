@@ -1066,6 +1066,9 @@ void GenerateResourceOnSyncTokenReleased(
       shared_image_manager->ProduceVideo(
           shared_d3d11_device, frame->shared_image()->mailbox(),
           command_buffer_helper->GetMemoryTypeTracker());
+  RETURN_ON_FAILURE_WITH_CALLBACK(image_representation ? S_OK : E_FAIL,
+                                  "Failed to produce video");
+
   auto scoped_read_access = image_representation->BeginScopedReadAccess();
   Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture =
       scoped_read_access->GetD3D11Texture();
