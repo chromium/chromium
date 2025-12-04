@@ -214,9 +214,13 @@ base::expected<std::optional<EntryMetadata>, int> SqliteBackendImpl::FindImpl(
     std::string_view key,
     BufferProvider buffer_provider) {
   // Begin an explicit read transaction under which multiple statements will be
-  // used to read from the database.
-  sql::Transaction transaction(&*db_);
-  if (!transaction.Begin()) {
+  // used to read from the database if the database may have multiple
+  // connections. A transaction is not necessary if the database is opened for a
+  // single connection, as it is not possible for another connection to modify
+  // the database between the statements below.
+  std::optional<sql::Transaction> transaction;
+  if (!vfs_file_set_.is_single_connection() &&
+      !transaction.emplace(&*db_).Begin()) {
     return base::unexpected(db_->GetErrorCode());
   }
 
@@ -265,10 +269,14 @@ base::expected<void, int> SqliteBackendImpl::InsertImpl(
     std::string_view key,
     base::span<const uint8_t> content,
     EntryMetadata metadata) {
-  // Use a transaction for insertions so that the creation of the row and the
-  // writing of the data are a single atomic operation.
-  sql::Transaction transaction(&*db_);
-  if (!transaction.Begin()) {
+  // Use a transaction for insertions if the database may have multiple
+  // connections so that the creation of the row and the writing of the data are
+  // a single atomic operation. A transaction is not necessary if the database
+  // is opened for a single connection, as it is not possible for another
+  // connection to access or modify the database between the statements below.
+  std::optional<sql::Transaction> transaction;
+  if (!vfs_file_set_.is_single_connection() &&
+      !transaction.emplace(&*db_).Begin()) {
     return base::unexpected(db_->GetErrorCode());
   }
 
@@ -293,7 +301,7 @@ base::expected<void, int> SqliteBackendImpl::InsertImpl(
     return base::unexpected(db_->GetErrorCode());
   }
 
-  if (!transaction.Commit()) {
+  if (transaction && !transaction->Commit()) {
     return base::unexpected(db_->GetErrorCode());
   }
 
