@@ -8,7 +8,7 @@
 #include "base/check_deref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/navigation_handle.h"
@@ -41,8 +41,8 @@ IsolatedWebAppThrottle::WillStartRequest() {
     return PROCEED;
   }
 
-  IwaKeyDistributionInfoProvider& key_distribution_info_provider =
-      IwaKeyDistributionInfoProvider::GetInstance();
+  ChromeIwaRuntimeDataProvider& key_distribution_info_provider =
+      ChromeIwaRuntimeDataProvider::GetInstance();
   WebAppProvider& provider =
       CHECK_DEREF(WebAppProvider::GetForWebApps(profile()));
   if (provider.is_registry_ready() &&

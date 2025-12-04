@@ -11,7 +11,7 @@
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -24,7 +24,7 @@ namespace multi_capture {
 MultiCaptureDataService::MultiCaptureDataService(
     web_app::WebAppProvider* provider,
     PrefService* prefs)
-    : info_provider_(web_app::IwaKeyDistributionInfoProvider::GetInstance()),
+    : data_provider_(web_app::ChromeIwaRuntimeDataProvider::GetInstance()),
       provider_(provider),
       prefs_(prefs) {
   CHECK(provider_);
@@ -127,7 +127,7 @@ void MultiCaptureDataService::Init() {
                          weak_ptr_factory_.GetWeakPtr()));
   provider_->on_registry_ready().Post(FROM_HERE,
                                       initialized_components_barrier);
-  info_provider_->OnBestEffortRuntimeDataReady().Post(
+  data_provider_->OnBestEffortRuntimeDataReady().Post(
       FROM_HERE, initialized_components_barrier);
 }
 
@@ -139,7 +139,7 @@ void MultiCaptureDataService::LoadData() {
           .Clone();
 
   const std::vector<std::string> app_without_notification_bundle_ids_vector =
-      info_provider_->GetSkipMultiCaptureNotificationBundleIds();
+      data_provider_->GetSkipMultiCaptureNotificationBundleIds();
   app_without_notification_bundle_ids_ = {
       app_without_notification_bundle_ids_vector.begin(),
       app_without_notification_bundle_ids_vector.end()};

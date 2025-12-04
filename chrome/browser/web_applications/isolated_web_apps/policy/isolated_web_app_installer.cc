@@ -15,8 +15,8 @@
 #include "base/types/optional_util.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -189,7 +189,7 @@ IwaInstaller::IwaInstaller(
 IwaInstaller::~IwaInstaller() = default;
 
 void IwaInstaller::Start() {
-  if (!IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(
+  if (!ChromeIwaRuntimeDataProvider::GetInstance().IsManagedInstallPermitted(
           install_options_.web_bundle_id().id())) {
     base::UmaHistogramEnumeration(
         kNonAllowlistedAppInstallationRejectedHistogramName,

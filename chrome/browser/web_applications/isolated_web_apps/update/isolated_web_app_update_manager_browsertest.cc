@@ -331,9 +331,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
-  ASSERT_FALSE(
-      IwaKeyDistributionInfoProvider::GetInstance().IsManagedUpdatePermitted(
-          GetWebBundleId().id()));
+  ASSERT_FALSE(web_app::ChromeIwaRuntimeDataProvider::GetInstance()
+                   .IsManagedUpdatePermitted(GetWebBundleId().id()));
   EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(0ul));
 
   histogram_tester.ExpectBucketCount(

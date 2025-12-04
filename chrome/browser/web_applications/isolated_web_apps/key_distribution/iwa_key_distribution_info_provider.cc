@@ -96,13 +96,7 @@ base::TaskPriority GetLoadTaskPriority() {
 }
 }  // namespace
 
-base::Value
-IwaKeyDistributionInfoProvider::SpecialAppPermissionsInfo::AsDebugValue()
-    const {
-  return base::Value(base::Value::Dict().Set(
-      "skip_capture_started_notification", skip_capture_started_notification));
-}
-
+// static
 IwaKeyDistributionInfoProvider& IwaKeyDistributionInfoProvider::GetInstance() {
   auto& instance = GetGlobalIwaKeyDistributionInfoProviderInstance();
   if (!instance) {
@@ -111,6 +105,7 @@ IwaKeyDistributionInfoProvider& IwaKeyDistributionInfoProvider::GetInstance() {
   return *instance.get();
 }
 
+// static
 void IwaKeyDistributionInfoProvider::DestroyInstanceForTesting() {
   GetGlobalIwaKeyDistributionInfoProviderInstance().reset();
 }
@@ -355,6 +350,7 @@ IwaKeyDistributionInfoProvider::OnBestEffortRuntimeDataReady() {
 std::optional<bool> IwaKeyDistributionInfoProvider::IsPreloadedForTesting()
     const {
   CHECK_IS_TEST();
+
   return component_ ? std::make_optional(component_->is_preloaded)
                     : std::nullopt;
 }
@@ -367,6 +363,7 @@ void IwaKeyDistributionInfoProvider::SetComponentDataForTesting(
 
   auto component_internal_data =
       ParseKeyDistributionData(std::move(component_data));
+
   CHECK(component_internal_data.has_value());
 
   component_ = Component(component_version, is_preloaded,
@@ -419,8 +416,7 @@ base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
   return base::Value(std::move(debug_data));
 }
 
-// Writes component metadata (version and whether it's preloaded) to `log`.
-void IwaKeyDistributionInfoProvider::WriteComponentMetadata(
+void IwaKeyDistributionInfoProvider::WriteDebugMetadata(
     base::Value::Dict& log) const {
   if (!component_) {
     // Will be displayed as <null>.

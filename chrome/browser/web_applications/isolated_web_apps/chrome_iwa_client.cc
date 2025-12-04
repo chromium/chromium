@@ -12,7 +12,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -168,7 +168,7 @@ void ChromeIwaClient::GetIwaSourceForRequest(
 }
 
 IwaRuntimeDataProvider* ChromeIwaClient::GetRuntimeDataProvider() {
-  return &IwaKeyDistributionInfoProvider::GetInstance();
+  return &ChromeIwaRuntimeDataProvider::GetInstance();
 }
 
 }  // namespace web_app

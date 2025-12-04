@@ -36,9 +36,9 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_discovery_task.h"
@@ -331,7 +331,7 @@ void IsolatedWebAppUpdateManager::Start() {
   has_started_ = true;
   install_manager_observation_.Observe(&provider_->install_manager());
   runtime_data_changed_subscription_ =
-      IwaKeyDistributionInfoProvider::GetInstance().OnRuntimeDataChanged(
+      ChromeIwaRuntimeDataProvider::GetInstance().OnRuntimeDataChanged(
           base::BindRepeating(
               &IsolatedWebAppUpdateManager::OnRuntimeDataChanged,
               weak_factory_.GetWeakPtr()));
@@ -612,7 +612,7 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
     return false;
   }
 
-  if (!IwaKeyDistributionInfoProvider::GetInstance().IsManagedUpdatePermitted(
+  if (!ChromeIwaRuntimeDataProvider::GetInstance().IsManagedUpdatePermitted(
           url_info.web_bundle_id().id())) {
     LOG(WARNING) << "The app " << url_info.app_id()
                  << " cannot be updated because it's not allowlisted.";

@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -25,11 +26,8 @@
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
-
-namespace base {
-class FilePath;
-}  // namespace base
 
 namespace web_app {
 
@@ -37,14 +35,8 @@ class IwaInternalsHandler;
 
 // This class is a singleton responsible for processing the IWA Key Distribution
 // Component data.
-class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
+class IwaKeyDistributionInfoProvider : public ChromeIwaRuntimeDataProvider {
  public:
-  struct SpecialAppPermissionsInfo {
-    base::Value AsDebugValue() const;
-
-    bool skip_capture_started_notification;
-  };
-
   using KeyRotations =
       base::flat_map<std::string, IwaRuntimeDataProvider::KeyRotationInfo>;
   using ManagedAllowlist = base::flat_set<std::string>;
@@ -82,18 +74,19 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
   //  newer version.
   base::OneShotEvent& OnBestEffortRuntimeDataReady() override;
 
+  // ChromeIwaRuntimeDataProvider:
   const SpecialAppPermissionsInfo* GetSpecialAppPermissionsInfo(
-      const std::string& web_bundle_id) const;
-  std::vector<std::string> GetSkipMultiCaptureNotificationBundleIds() const;
-  std::optional<base::Version> GetVersion() const;
-
+      const std::string& web_bundle_id) const override;
+  std::vector<std::string> GetSkipMultiCaptureNotificationBundleIds()
+      const override;
   // All installations of blocklisted bundles are removed from the device.
   // Installation is prevented.
-  bool IsBundleBlocklisted(std::string_view web_bundle_id) const;
-
-  // Only bundles present in the managed allowlist can be installed and updated.
-  bool IsManagedInstallPermitted(std::string_view web_bundle_id) const;
-  bool IsManagedUpdatePermitted(std::string_view web_bundle_id) const;
+  bool IsBundleBlocklisted(std::string_view web_bundle_id) const override;
+  bool IsManagedInstallPermitted(std::string_view web_bundle_id) const override;
+  bool IsManagedUpdatePermitted(std::string_view web_bundle_id) const override;
+  base::Value AsDebugValue() const;
+  void WriteDebugMetadata(base::Value::Dict& log) const override;
+  std::optional<base::Version> GetVersion() const;
 
   // When set to true both above functions always return true
   void SkipManagedAllowlistChecksForTesting(bool skip_managed_checks);
@@ -112,12 +105,6 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
       base::PassKey<IwaInternalsHandler>,
       const std::string& web_bundle_id,
       const std::optional<std::vector<uint8_t>>& rotated_key);
-
-  // Dumps the entire component data to web-app-internals.
-  base::Value AsDebugValue() const;
-
-  // Writes component metadata (version and whether it's preloaded) to `log`.
-  void WriteComponentMetadata(base::Value::Dict& log) const;
 
   std::optional<bool> IsPreloadedForTesting() const;
   void SetComponentDataForTesting(base::Version component_version,

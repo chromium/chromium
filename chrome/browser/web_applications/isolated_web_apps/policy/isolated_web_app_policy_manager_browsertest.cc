@@ -535,9 +535,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
   // Empty the allowlist, so the app install is not allowed.
   SetIwaAllowlist(/*managed_allowlist=*/{});
 
-  EXPECT_FALSE(
-      IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(
-          kWebBundleId1.id()));
+  EXPECT_FALSE(web_app::ChromeIwaRuntimeDataProvider::GetInstance()
+                   .IsManagedInstallPermitted(kWebBundleId1.id()));
 
   base::RunLoop run_loop;
   IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
