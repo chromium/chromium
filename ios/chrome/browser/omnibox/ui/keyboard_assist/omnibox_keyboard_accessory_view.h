@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 
-@protocol HelpCommands;
 @protocol OmniboxTextInput;
 class TemplateURLService;
 
@@ -27,7 +26,6 @@ class TemplateURLService;
                     pasteTarget:(id<UIPasteConfigurationSupporting>)pasteTarget
              templateURLService:(TemplateURLService*)templateURLService
                       responder:(UIResponder*)responder
-                    helpHandler:(id<HelpCommands>)helpHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;

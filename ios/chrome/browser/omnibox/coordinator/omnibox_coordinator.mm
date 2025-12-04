@@ -282,6 +282,7 @@
     self.keyboardAccessoryView.templateURLService = nil;
   }
 
+  _keyboardMediator.delegate = nil;
   _keyboardMediator = nil;
   self.keyboardAccessoryView = nil;
   self.mediator = nil;
@@ -381,6 +382,12 @@
   [self.popupCoordinator toggleOmniboxDebuggerView];
 }
 
+- (void)presentLensKeyboardInProductHelper {
+  id<HelpCommands> helpHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
+  [helpHandler presentInProductHelpWithType:InProductHelpType::kLensKeyboard];
+}
+
 #pragma mark - OmniboxMediatorDelegate
 
 - (void)omniboxMediatorDidBeginEditing:(OmniboxMediator*)mediator {
@@ -400,8 +407,7 @@
         ios::TemplateURLServiceFactory::GetForProfile(self.profile);
     self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
         self.viewController.textInput, kDotComTLD, _keyboardMediator,
-        templateURLService,
-        HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands));
+        templateURLService);
   }
 }
 

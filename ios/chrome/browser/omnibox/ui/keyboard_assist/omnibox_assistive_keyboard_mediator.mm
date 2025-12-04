@@ -82,6 +82,10 @@
   [self.omniboxTextInput insertTextWhileEditing:text];
 }
 
+- (void)presentLensKeyboardInProductHelper {
+  [self.delegate presentLensKeyboardInProductHelper];
+}
+
 #pragma mark - Private
 
 /// Returns 'com' without the period if cursor is directly after a period.

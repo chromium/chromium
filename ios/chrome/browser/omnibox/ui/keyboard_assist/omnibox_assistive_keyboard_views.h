@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol HelpCommands;
 @protocol OmniboxAssistiveKeyboardDelegate;
 @class OmniboxKeyboardAccessoryView;
 @protocol OmniboxTextInput;
@@ -29,7 +28,6 @@ OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
     id<OmniboxTextInput> textInput,
     NSString* dotComTLD,
     id<OmniboxAssistiveKeyboardDelegate> delegate,
-    TemplateURLService* templateURLService,
-    id<HelpCommands> helpHandler);
+    TemplateURLService* templateURLService);
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_KEYBOARD_ASSIST_OMNIBOX_ASSISTIVE_KEYBOARD_VIEWS_H_

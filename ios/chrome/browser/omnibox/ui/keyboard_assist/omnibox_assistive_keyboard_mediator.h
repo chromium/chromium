@@ -22,6 +22,9 @@
 /// available when `experimental_flags::IsOmniboxDebuggingEnabled()`.
 - (void)omniboxAssistiveKeyboardDidTapDebuggerButton;
 
+/// Presents the in product help for the lens button in the keyboard accessory.
+- (void)presentLensKeyboardInProductHelper;
+
 @end
 
 /// Mediator for interactions in the omnibox assistive keyboard.
