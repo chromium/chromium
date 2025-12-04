@@ -1897,21 +1897,6 @@
             ]
         }
     ],
-    "AskGeminiChip": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AskGeminiChip"
-                    ]
-                }
-            ]
-        }
-    ],
     "AssistMultiWord": [
         {
             "platforms": [
@@ -15411,6 +15396,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "LocalNetworkAccessChecksWebTransport"
+                    ]
+                }
+            ]
+        }
+    ],
+    "LocationBarBadge": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AskGeminiChip"
                     ]
                 }
             ]
