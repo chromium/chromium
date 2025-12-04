@@ -225,6 +225,15 @@ class FuseboxViewBinder {
         addButton.setImageTintList(
                 OmniboxResourceProvider.getPrimaryIconTintList(context, brandedColorScheme));
 
+        views.navigateButton
+                .getDrawable()
+                .setTint(
+                        OmniboxResourceProvider.getSendIconContrastColor(
+                                context, brandedColorScheme));
+        @ColorInt
+        int colorPrimary = OmniboxResourceProvider.getColorPrimary(context, brandedColorScheme);
+        views.navigateButton.getBackground().setTint(colorPrimary);
+
         ButtonCompat typeButton = views.requestType;
         if (showFuseboxToolbar
                 && (isAiModeUsed || isImageGenerationUsed || showDedicatedModeButton)) {
@@ -245,9 +254,6 @@ class FuseboxViewBinder {
                                 context, brandedColorScheme);
                 textAppearanceRes =
                         OmniboxResourceProvider.getAiModeButtonTextRes(brandedColorScheme);
-                @ColorInt
-                int colorPrimary =
-                        OmniboxResourceProvider.getAiModeIconTintColor(context, brandedColorScheme);
                 startDrawable =
                         assumeNonNull(context.getDrawable(R.drawable.search_spark_black_24dp))
                                 .mutate();

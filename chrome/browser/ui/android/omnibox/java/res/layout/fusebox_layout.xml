@@ -89,7 +89,6 @@ found in the LICENSE file.
         android:scaleType="centerInside"
         android:background="@drawable/oval_baseline_primary_50"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/margin_spacer"
-        app:tint="@macro/default_icon_color_inverse"/>
+        app:layout_constraintEnd_toStartOf="@id/margin_spacer"/>
 
 </merge>
