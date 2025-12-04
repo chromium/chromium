@@ -93,6 +93,25 @@ TEST_F(SdJwtTest, JwkParsingAndSerializingRs256) {
   EXPECT_EQ(parsed->e, "e-value");
 }
 
+TEST_F(SdJwtTest, JwkParsingAndSerializingEdDsa) {
+  Jwk jwk;
+  jwk.kty = "OKP";
+  jwk.alg = "EdDSA";
+  jwk.crv = "Ed25519";
+  jwk.x = "x-value";
+
+  auto serialized = jwk.Serialize();
+  ASSERT_TRUE(serialized);
+
+  auto parsed = Jwk::From(*base::JSONReader::ReadDict(
+      *serialized, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
+  ASSERT_TRUE(parsed);
+  EXPECT_EQ(parsed->kty, "OKP");
+  EXPECT_EQ(parsed->alg, "EdDSA");
+  EXPECT_EQ(parsed->crv, "Ed25519");
+  EXPECT_EQ(parsed->x, "x-value");
+}
+
 TEST_F(SdJwtTest, DisclosureParsing) {
   // Example from
   // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-13.html#section-4.2.1

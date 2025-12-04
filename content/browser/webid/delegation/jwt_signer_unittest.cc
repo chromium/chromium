@@ -23,6 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "url/gurl.h"
@@ -94,6 +95,14 @@ void VerifyRs256(const std::vector<uint8_t>& public_key,
   EXPECT_TRUE(verifier.VerifyFinal());
 }
 
+void VerifyEdDsa(const crypto::keypair::PublicKey& public_key,
+                 base::span<const uint8_t> signature,
+                 const std::string& message) {
+  EXPECT_TRUE(crypto::sign::Verify(crypto::sign::SignatureKind::ED25519,
+                                   public_key, base::as_byte_span(message),
+                                   signature));
+}
+
 TEST_F(JwtSignerTest, JwtSigner) {
   auto private_key = crypto::keypair::PrivateKey::GenerateEcP256();
   std::vector<uint8_t> public_key = private_key.ToSubjectPublicKeyInfo();
@@ -122,6 +131,7 @@ TEST_F(JwtSignerTest, ExportPublicKeyRs256) {
   ASSERT_TRUE(jwk);
   EXPECT_EQ(jwk->kty, "RSA");
   EXPECT_EQ(jwk->alg, "RS256");
+  EXPECT_TRUE(jwk->crv.empty());
   EXPECT_FALSE(jwk->n.empty());
   EXPECT_FALSE(jwk->e.empty());
 }
@@ -163,6 +173,17 @@ TEST_F(JwtSignerTest, CreateJwt) {
 
   std::string message = header_base64 + "." + payload_base64;
   VerifyEs256(public_key, base::as_byte_span(*signature), message);
+}
+
+TEST_F(JwtSignerTest, ExportPublicKeyEc256) {
+  auto private_key = crypto::keypair::PrivateKey::GenerateEcP256();
+  auto jwk = ExportPublicKey(private_key);
+  ASSERT_TRUE(jwk);
+  EXPECT_EQ(jwk->kty, "EC");
+  EXPECT_EQ(jwk->alg, "ES256");
+  EXPECT_EQ(jwk->crv, "P-256");
+  EXPECT_FALSE(jwk->x.empty());
+  EXPECT_FALSE(jwk->y.empty());
 }
 
 TEST_F(JwtSignerTest, CreateSdJwtKb) {
@@ -219,17 +240,30 @@ TEST_F(JwtSignerTest, CreateSdJwtKb) {
 }
 
 TEST_F(JwtSignerTest, InvalidKeyType) {
-  // Create a key that is not EC or RSA.
-  auto private_key = crypto::keypair::PrivateKey::GenerateEd25519();
+  // Create a key that is not the supported EC, RSA or ED methods.
+  auto private_key = crypto::keypair::PrivateKey::GenerateEcP384();
 
-  // Test CreateJwtSigner with an invalid key type.
+  // Test CreateJwtSigner with an EcP384 key type.
   auto signer = CreateJwtSigner(private_key);
   auto signature = std::move(signer).Run("message");
   EXPECT_FALSE(signature);
 
-  // Test ExportPublicKey with an invalid key type.
+  // Test ExportPublicKey with an EcP384 key type.
   auto jwk = ExportPublicKey(private_key);
   EXPECT_FALSE(jwk);
+}
+
+TEST_F(JwtSignerTest, SignWithEd25519AndExportPublicKey) {
+  auto private_key = crypto::keypair::PrivateKey::GenerateEd25519();
+
+  // Test CreateJwtSigner with an Ed25519 key type.
+  auto signer = CreateJwtSigner(private_key);
+  auto signature = std::move(signer).Run("message");
+  EXPECT_TRUE(signature);
+
+  // Test ExportPublicKey with an Ed25519 key type.
+  auto jwk = ExportPublicKey(private_key);
+  EXPECT_TRUE(jwk);
 }
 
 TEST_F(JwtSignerTest, MismatchedKeyTypes) {
@@ -244,6 +278,39 @@ TEST_F(JwtSignerTest, MismatchedKeyTypes) {
   auto es256_signer = CreateJwtSigner(std::move(rsa_private_key));
   auto es256_signature = std::move(es256_signer).Run("message");
   EXPECT_TRUE(es256_signature);
+}
+
+TEST_F(JwtSignerTest, JwtSignerEdDsa) {
+  auto private_key = crypto::keypair::PrivateKey::GenerateEd25519();
+  auto public_key_raw = private_key.ToEd25519PublicKey();
+  auto public_key =
+      crypto::keypair::PublicKey::FromEd25519PublicKey(public_key_raw);
+
+  const std::string message = "hello wold";
+  auto signer = CreateJwtSigner(std::move(private_key));
+  auto signature = std::move(signer).Run(message);
+
+  ASSERT_TRUE(signature);
+
+  VerifyEdDsa(public_key, base::as_byte_span(*signature), message);
+}
+
+TEST_F(JwtSignerTest, ExportPublicKeyEdDsa) {
+  crypto::keypair::PrivateKey private_key =
+      crypto::keypair::PrivateKey::GenerateEd25519();
+  std::optional<Jwk> jwk = ExportPublicKey(private_key);
+
+  ASSERT_TRUE(jwk.has_value());
+  EXPECT_EQ(jwk->kty, "OKP");
+  EXPECT_EQ(jwk->crv, "Ed25519");
+  EXPECT_EQ(jwk->alg, "EdDSA");
+  EXPECT_FALSE(jwk->x.empty());
+
+  std::array<uint8_t, 32> public_key_raw = private_key.ToEd25519PublicKey();
+  std::string expected_x;
+  base::Base64UrlEncode(public_key_raw,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING, &expected_x);
+  EXPECT_EQ(jwk->x, expected_x);
 }
 
 }  // namespace content::sdjwt

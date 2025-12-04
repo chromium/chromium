@@ -85,6 +85,18 @@ std::optional<Jwk> Jwk::From(const base::Value::Dict& dict) {
       return std::nullopt;
     }
     result.e = *e;
+  } else if (result.kty == "OKP") {
+    auto* crv = dict.FindString("crv");
+    if (!crv) {
+      return std::nullopt;
+    }
+    result.crv = *crv;
+
+    auto* x = dict.FindString("x");
+    if (!x) {
+      return std::nullopt;
+    }
+    result.x = *x;
   } else {
     return std::nullopt;
   }
@@ -114,6 +126,10 @@ base::Value::Dict Jwk::ToDict() const {
   } else if (kty == "RSA") {
     result.Set("n", n);
     result.Set("e", e);
+  } else if (kty == "OKP") {
+    result.Set("crv", crv);
+    result.Set("alg", alg);
+    result.Set("x", x);
   } else {
     NOTREACHED() << "Unsupported key type: " << kty;
   }

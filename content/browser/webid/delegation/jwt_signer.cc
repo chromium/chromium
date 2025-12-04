@@ -24,6 +24,7 @@
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
@@ -81,6 +82,9 @@ std::optional<std::vector<uint8_t>> SignJwtEs256(
 
   const auto sig = crypto::sign::Sign(crypto::sign::SignatureKind::ECDSA_SHA256,
                                       private_key, base::as_byte_span(message));
+
+  // TODO(crbug.com/380367784): should we move this call into the caller so that
+  // we can generalize signing between ES256, RS256 and ED?
   return crypto::ConvertEcdsaDerSignatureToRaw(
       crypto::keypair::PublicKey::FromPrivateKey(private_key), sig);
 }
@@ -94,6 +98,18 @@ std::optional<std::vector<uint8_t>> SignJwtRs256(
 
   return crypto::sign::Sign(crypto::sign::SignatureKind::RSA_PKCS1_SHA256,
                             private_key, base::as_byte_span(message));
+}
+
+std::optional<std::vector<uint8_t>> SignJwtEdDsa(
+    crypto::keypair::PrivateKey private_key,
+    const std::string_view& message) {
+  if (!private_key.IsEd25519()) {
+    return std::nullopt;
+  }
+  std::vector<uint8_t> sig =
+      crypto::sign::Sign(crypto::sign::SignatureKind::ED25519, private_key,
+                         base::as_byte_span(message));
+  return sig;
 }
 
 std::optional<Jwk> ExportPublicKeyEs256(
@@ -165,18 +181,36 @@ std::optional<Jwk> ExportPublicKeyRsa256(
   return jwk;
 }
 
+std::optional<Jwk> ExportPublicKeyEdDsa(
+    const crypto::keypair::PrivateKey& private_key) {
+  Jwk jwk;
+
+  jwk.kty = "OKP";
+  jwk.crv = "Ed25519";
+  jwk.alg = "EdDSA";
+
+  std::array<uint8_t, 32> public_key_raw = private_key.ToEd25519PublicKey();
+
+  std::string x_base64;
+  base::Base64UrlEncode(public_key_raw,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING, &x_base64);
+
+  jwk.x = x_base64;
+
+  return jwk;
+}
+
 }  // namespace
 
 std::optional<Jwk> ExportPublicKey(
     const crypto::keypair::PrivateKey& private_key) {
   if (private_key.IsEcP256()) {
     return ExportPublicKeyEs256(private_key);
-  }
-
-  if (private_key.IsRsa()) {
+  } else if (private_key.IsRsa()) {
     return ExportPublicKeyRsa256(private_key);
+  } else if (private_key.IsEd25519()) {
+    return ExportPublicKeyEdDsa(private_key);
   }
-
   return std::nullopt;
 }
 
@@ -186,6 +220,8 @@ Signer CreateJwtSigner(crypto::keypair::PrivateKey private_key) {
       return base::BindOnce(&SignJwtEs256, std::move(private_key));
     case EVP_PKEY_RSA:
       return base::BindOnce(&SignJwtRs256, std::move(private_key));
+    case EVP_PKEY_ED25519:
+      return base::BindOnce(&SignJwtEdDsa, std::move(private_key));
     default:
       return base::BindOnce(
           [](const std::string_view&) -> std::optional<std::vector<uint8_t>> {
