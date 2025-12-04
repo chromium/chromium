@@ -19,12 +19,15 @@ config("compiler") {
     import("//build/config/arm.gni")
     cflags = []
     asmflags = []
+    rustflags = []
     if (arm_control_flow_integrity == "standard") {
       cflags += [ "-mbranch-protection=standard" ]
       asmflags += [ "-mbranch-protection=standard" ]
+      rustflags += [ "-Zbranch-protection=pac-ret,bti" ]
     } else if (arm_control_flow_integrity == "pac") {
       cflags += [ "-mbranch-protection=pac-ret" ]
       asmflags += [ "-mbranch-protection=pac-ret" ]
+      rustflags += [ "-Zbranch-protection=pac-ret" ]
     }
   }
 }
@@ -66,5 +69,21 @@ if (use_glib) {
       "GLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_2_56",
       "GLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_56",
     ]
+  }
+}
+
+config("lld_branch_target_hardening") {
+  # Config opts a shared library into BTI linker hardening. This
+  # is an opt-in config (rather than default-enabled) to avoid
+  # interfering with the V8 CFI bots (crbug.com/1334614).
+  if (current_cpu == "arm64") {
+    import("//build/config/arm.gni")
+    if (arm_control_flow_integrity == "standard") {
+      # Linking objects without GNU_PROPERTY_AARCH64_FEATURE_1_BTI
+      # in their .gnu.note section implicitly results in the final
+      # binary losing Branch Target Identification (BTI) support.
+      # Issue a warning if this happens.
+      ldflags = [ "-Wl,-z,force-bti" ]
+    }
   }
 }
