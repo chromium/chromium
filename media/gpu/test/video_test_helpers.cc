@@ -780,7 +780,7 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
           VideoFrame::RowBytes(i, pixel_format, resolution.width()),
           VideoFrame::Rows(i, pixel_format, resolution.height()));
     }
-    // Create GpuMemoryBuffer VideoFrame from the on-memory VideoFrame.
+    // Create MappableSI-backed VideoFrame from the on-memory VideoFrame.
     auto frame =
         CloneVideoFrame(memory_frame.get(), dst_layout, test_sii,
                         VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
