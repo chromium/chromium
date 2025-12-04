@@ -4377,7 +4377,7 @@
         Go to Settings…
       </message>
       <message name="IDS_IOS_OPEN_NEW_TAB" desc="Text of the primary button to open a new tab. [iOS only]">
-        Open New Tab
+        Open new tab
       </message>
       <message name="IDS_IOS_OPEN_PASSWORD_MANAGER" desc="Text of the primary button to open chrome password manager. [iOS only]">
         Open Password Manager
