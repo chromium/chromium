@@ -778,7 +778,10 @@ void RootView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
   widget_->ViewHierarchyChanged(details);
 
-  if (!details.is_add && !details.move_view) {
+  const bool is_removal = !details.is_add && !details.move_view;
+  const bool is_moved_to_another_tree =
+      !details.is_add && !Contains(details.move_view);
+  if (is_removal || is_moved_to_another_tree) {
     if (mouse_pressed_handler_ == details.child) {
       SetMouseHandler(nullptr);
     }
