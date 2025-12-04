@@ -16,7 +16,7 @@ interface PageHandlerFactory {
 // Browser-side handler for requests from WebUI document.
 interface PageHandler {
   // Gets an update from the batch upload service.
-  GetBatchUploadPromoLocalDataCount() => (int64 local_data_count);
+  GetBatchUploadPromoLocalDataCount() => (int32 local_data_count);
   // Opens the batch upload dialog.
   OnBatchUploadPromoClicked();
 };
@@ -24,5 +24,5 @@ interface PageHandler {
 // WebUI-side handler for requests from the browser.
 interface Page {
   // Sends the updated `local_data_count` to the UI.
-  OnLocalDataCountChanged(int64 local_data_count);
+  OnLocalDataCountChanged(int32 local_data_count);
 };

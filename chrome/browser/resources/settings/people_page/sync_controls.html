@@ -68,6 +68,12 @@
       <div class="cr-row continuation">
         <div class="cr-secondary-text flex">$i18n{accountDataTypesBody}</div>
       </div>
+      <div class="cr-row continuation" hidden="[[!shouldShowBatchUploadPromo_(
+            batchUploadPromoLocalDataCount_, isAccountSettingsPage_)]]">
+        <div class="cr-secondary-text flex"
+            inner-h-t-m-l="[[getSubtitleString_(batchUploadPromoString_)]]">
+        </div>
+      </div>
     </div>
 </if>
 
