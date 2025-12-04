@@ -1,0 +1,17 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_init.h"
+
+#include "chrome/browser/web_applications/isolated_web_apps/chrome_iwa_client.h"
+#include "components/webapps/isolated_web_apps/identity/iwa_identity_validator.h"
+
+namespace web_app {
+
+void InitializeIsolatedWebAppRuntime() {
+  web_app::IwaIdentityValidator::CreateSingleton();
+  web_app::ChromeIwaClient::CreateSingleton();
+}
+
+}  // namespace web_app

@@ -160,6 +160,8 @@ source_set("web_applications") {
     "isolated_web_apps/policy/isolated_web_app_policy_manager.h",
     "isolated_web_apps/remove_isolated_web_app_data.cc",
     "isolated_web_apps/remove_isolated_web_app_data.h",
+    "isolated_web_apps/runtime_init.cc",
+    "isolated_web_apps/runtime_init.h",
     "isolated_web_apps/signed_web_bundle_metadata.cc",
     "isolated_web_apps/signed_web_bundle_metadata.h",
     "isolated_web_apps/update/isolated_web_app_update_apply_task.cc",
