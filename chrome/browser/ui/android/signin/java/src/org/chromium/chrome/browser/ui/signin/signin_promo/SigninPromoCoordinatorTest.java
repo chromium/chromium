@@ -624,13 +624,13 @@ public class SigninPromoCoordinatorTest {
         setUpSignInPromo(accessPoint);
         mRenderTestRule.render(
                 mPromoView,
-                "NoAccountThenWithAccount_noAccount_"
+                "NoAccountThenWithAccount_noAccount_twoButtons_"
                         + getParamToRenderId(accessPoint, nightModeEnabled));
 
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         mRenderTestRule.render(
                 mPromoView,
-                "NoAccountThenWithAccount_withAccount_"
+                "NoAccountThenWithAccount_withAccount_twoButtons_"
                         + getParamToRenderId(accessPoint, nightModeEnabled));
     }
 
@@ -653,13 +653,13 @@ public class SigninPromoCoordinatorTest {
         setUpSignInPromo(accessPoint);
         mRenderTestRule.render(
                 mPromoView,
-                "NoAccountThenWithAccount_noAccount_"
+                "NoAccountThenWithAccount_noAccount_compact_"
                         + getParamToRenderId(accessPoint, nightModeEnabled));
 
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         mRenderTestRule.render(
                 mPromoView,
-                "NoAccountThenWithAccount_withAccount_"
+                "NoAccountThenWithAccount_withAccount_compact_"
                         + getParamToRenderId(accessPoint, nightModeEnabled));
     }
 
