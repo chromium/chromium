@@ -96,14 +96,6 @@ BASE_FEATURE(kBeforeUnloadBrowserResponseQueue,
 #endif
 );
 
-// When this feature is enabled, requests to localhost initiated from non-secure
-// contexts in the `unknown` IP address space are blocked.
-//
-// See also:
-//  - kBlockInsecurePrivateNetworkRequests
-BASE_FEATURE(kBlockInsecurePrivateNetworkRequestsFromUnknown,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // Whether to hide paste popup on GestureScrollBegin or GestureScrollUpdate.
 BASE_FEATURE(kHidePastePopupOnGSB, base::FEATURE_ENABLED_BY_DEFAULT);

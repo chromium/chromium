@@ -177,25 +177,6 @@ BASE_FEATURE(kBackForwardTransitionsNativePageSharedImage,
 // If enabled, makes battery saver request heavy align wake ups.
 BASE_FEATURE(kBatterySaverModeAlignWakeUps, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When this feature is enabled, private network requests initiated from
-// non-secure contexts in the `public` address space  are blocked.
-//
-// See also:
-//  - https://wicg.github.io/private-network-access/#integration-fetch
-//  - kBlockInsecurePrivateNetworkRequestsFromPrivate
-//  - kBlockInsecurePrivateNetworkRequestsFromUnknown
-BASE_FEATURE(kBlockInsecurePrivateNetworkRequests,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When this feature is enabled, requests to localhost initiated from non-secure
-// contexts in the `private` IP address space are blocked.
-//
-// See also:
-//  - https://wicg.github.io/private-network-access/#integration-fetch
-//  - kBlockInsecurePrivateNetworkRequests
-BASE_FEATURE(kBlockInsecurePrivateNetworkRequestsFromPrivate,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Broker file operations on disk cache in the Network Service.
 // This is no-op if the network service is hosted in the browser process.
 BASE_FEATURE(kBrokerFileOperationsOnDiskCacheInNetworkService,

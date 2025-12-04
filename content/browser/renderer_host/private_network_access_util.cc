@@ -121,19 +121,13 @@ Policy DerivePolicyForNonSecureContext(
       // Requests from the `unknown` address space are controlled separately
       // because it is unclear why they happen in the first place. The goal is
       // to reduce instances of this happening before enabling this feature.
-      return base::FeatureList::IsEnabled(
-                 features::kBlockInsecurePrivateNetworkRequestsFromUnknown)
-                 ? Policy::kBlock
-                 : Policy::kAllow;
+      return Policy::kAllow;
     case AddressSpace::kLocal:
       // Requests from the non secure contexts in the `local` address space
       // to localhost are blocked only if the right feature is enabled.
       // This is controlled separately because private network websites face
       // additional hurdles compared to public websites. See crbug.com/1234044.
-      return base::FeatureList::IsEnabled(
-                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate)
-                 ? Policy::kBlock
-                 : Policy::kWarn;
+      return Policy::kWarn;
     case AddressSpace::kPublic:
     case AddressSpace::kLoopback:
       // Private network requests from non secure contexts are blocked if the
@@ -143,10 +137,7 @@ Policy DerivePolicyForNonSecureContext(
       // has no effect. Indeed, requests initiated from the local address space
       // are never considered private network requests - they cannot target
       // more-private address spaces.
-      return base::FeatureList::IsEnabled(
-                 features::kBlockInsecurePrivateNetworkRequests)
-                 ? Policy::kBlock
-                 : Policy::kWarn;
+      return Policy::kWarn;
   }
 }
 
