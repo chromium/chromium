@@ -56,6 +56,35 @@ IN_PROC_BROWSER_TEST_F(ActorPageToolBrowserTest, Timeout) {
   ExpectErrorResult(result, mojom::ActionResultCode::kToolTimeout);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorPageToolBrowserTest, RemovedElement) {
+  const GURL url = embedded_test_server()->GetURL("/actor/link.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#link");
+  ASSERT_TRUE(input_id);
+  {
+    // Click initially works.
+    ActResultFuture result;
+    std::unique_ptr<ToolRequest> action =
+        MakeClickRequest(*main_frame(), input_id.value());
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+  }
+  ASSERT_TRUE(content::EvalJs(web_contents(), R"(
+    let el = document.querySelector('#link');
+    el.parentNode.removeChild(el);
+  )")
+                  .is_ok());
+  {
+    // After element removed, it doesn't work
+    ActResultFuture result;
+    std::unique_ptr<ToolRequest> action =
+        MakeClickRequest(*main_frame(), input_id.value());
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectErrorResult(result, mojom::ActionResultCode::kInvalidDomNodeId);
+  }
+}
+
 }  // namespace
 
 }  // namespace actor

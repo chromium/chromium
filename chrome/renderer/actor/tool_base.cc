@@ -174,7 +174,7 @@ ToolBase::ResolveResult ToolBase::ResolveTarget(
 
   WebNode node =
       GetNodeFromIdIncludingPopup(frame_.get(), target.get_dom_node_id());
-  if (node.IsNull()) {
+  if (node.IsNull() || !node.IsConnected()) {
     return base::unexpected(
         MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));
   }

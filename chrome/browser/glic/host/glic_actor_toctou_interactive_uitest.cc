@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, ToctouCheckFailWhenNodeRemoved) {
     ExecuteJs(kNewActorTabId,
               "()=>{document.getElementById('clickable').remove();}"),
     ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE,
-                    actor::mojom::ActionResultCode::kElementOffscreen)
+                    actor::mojom::ActionResultCode::kInvalidDomNodeId)
       // clang-format on
   );
 }
