@@ -239,8 +239,9 @@ float JustifyResults(const String& text_content,
       DCHECK_GE(item_result.StartOffset(), line_text_start_offset);
       DCHECK_EQ(shape_result->NumCharacters(), item_result.Length());
       last_glyph_spacing = shape_result->ApplyExpansion(
-          spacing, item_result.StartOffset() - line_text_start_offset -
-                       shape_result->StartIndex());
+          method, spacing,
+          item_result.StartOffset() - line_text_start_offset -
+              shape_result->StartIndex());
       item_result.inline_size = shape_result->SnappedWidth();
       if (item_result.is_hyphenated) [[unlikely]] {
         item_result.inline_size += item_result.hyphen.InlineSize();
@@ -253,7 +254,7 @@ float JustifyResults(const String& text_content,
           item_result.StartOffset() - line_text_start_offset;
       const auto [spacing_before, spacing_after] =
           apply_line_text
-              ? spacing.ComputeExpansion(line_text_offset)
+              ? spacing.ComputeExpansion(method, line_text_offset)
               : spacing.ComputeExpansion(
                     method, item_result.item->IsTextCombine()
                                 ? kTextCombineItemMarker
@@ -296,7 +297,7 @@ float JustifyResults(const String& text_content,
         }
         [[maybe_unused]] const auto [spacing_before, spacing_after] =
             apply_line_text
-                ? spacing.ComputeExpansion(offset)
+                ? spacing.ComputeExpansion(method, offset)
                 : spacing.ComputeExpansion(method, kBaseShorterRubyMarker);
         // ShapeResultSpacing doesn't ask for adding space to
         // kBaseShorterRubyMarker, which is OBJECT REPLACEMENT CHARACTER, and

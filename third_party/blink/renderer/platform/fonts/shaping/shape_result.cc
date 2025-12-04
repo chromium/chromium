@@ -985,7 +985,7 @@ inline bool IsCursiveScript(hb_script_t script) {
 
 TextRunLayoutUnit ShapeResult::ApplySpacingOrExpansion(
     ShapeResultSpacing& spacing,
-    bool is_expansion,
+    std::optional<TextJustify> method,
     int text_start_offset) {
   float total_advance = 0;
   TextRunLayoutUnit spacing_after;
@@ -1009,8 +1009,8 @@ TextRunLayoutUnit ShapeResult::ApplySpacingOrExpansion(
           .index = run_start_index + glyph_data.character_index,
           .original_advance = glyph_data.advance};
       TextRunLayoutUnit spacing_before;
-      if (is_expansion) {
-        auto result = spacing.ComputeExpansion(parameters.index,
+      if (method) {
+        auto result = spacing.ComputeExpansion(*method, parameters.index,
                                                IsCursiveScript(run->script_));
         spacing_before = result.first;
         spacing_after = result.second;
@@ -1046,17 +1046,18 @@ void ShapeResult::ApplySpacing(ShapeResultSpacing& spacing,
   // time, please get rid of below |DCHECK()|.
   DCHECK(!is_applied_spacing_) << this;
   is_applied_spacing_ = true;
-  ApplySpacingOrExpansion(spacing, /* is_expansion */ false, text_start_offset);
+  ApplySpacingOrExpansion(spacing, /* method */ std::nullopt,
+                          text_start_offset);
 }
 
-TextRunLayoutUnit ShapeResult::ApplyExpansion(ShapeResultSpacing& spacing,
+TextRunLayoutUnit ShapeResult::ApplyExpansion(TextJustify method,
+                                              ShapeResultSpacing& spacing,
                                               int text_start_offset) {
   // For simplicity, we apply spacing once only. If you want to do multiple
   // time, please get rid of below |DCHECK()|.
   DCHECK(!is_applied_spacing_) << this;
   is_applied_spacing_ = true;
-  return ApplySpacingOrExpansion(spacing, /* is_expansion */ true,
-                                 text_start_offset);
+  return ApplySpacingOrExpansion(spacing, method, text_start_offset);
 }
 
 void ShapeResult::ApplyLeadingExpansion(LayoutUnit expansion) {

@@ -270,7 +270,9 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // |StartIndex()| is larger than the text in |ShapeResultSpacing|.
   //
   // The function returns spacing amount on the right of the last glyph.
-  TextRunLayoutUnit ApplyExpansion(ShapeResultSpacing&, int text_start_offset);
+  TextRunLayoutUnit ApplyExpansion(TextJustify method,
+                                   ShapeResultSpacing&,
+                                   int text_start_offset);
   // Add `expansion` space before the first glyph.
   void ApplyLeadingExpansion(LayoutUnit expansion);
   // Add `expansion` space after the last glyph.
@@ -422,8 +424,10 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   void ComputePositionData() const;
   void RecalcCharacterPositions() const;
 
+  // if `method` is std::nullopt, this handles letter-spacing/word-spacing.
+  // Otherwise, this handles expansion.
   TextRunLayoutUnit ApplySpacingOrExpansion(ShapeResultSpacing&,
-                                            bool is_expansion,
+                                            std::optional<TextJustify> method,
                                             int text_start_offset = 0);
   template <bool is_horizontal_run>
   void ComputeGlyphPositions(ShapeResultRun*,

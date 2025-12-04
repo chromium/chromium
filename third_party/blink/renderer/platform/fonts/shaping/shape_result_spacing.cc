@@ -153,7 +153,9 @@ TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(
 }
 
 std::pair<TextRunLayoutUnit, TextRunLayoutUnit>
-ShapeResultSpacing::ComputeExpansion(unsigned index, bool is_cursive_script) {
+ShapeResultSpacing::ComputeExpansion(TextJustify method,
+                                     unsigned index,
+                                     bool is_cursive_script) {
   if (!HasExpansion() || index >= text_.length()) {
     return {TextRunLayoutUnit(), TextRunLayoutUnit()};
   }
@@ -163,14 +165,13 @@ ShapeResultSpacing::ComputeExpansion(unsigned index, bool is_cursive_script) {
   bool opportunity_before = false;
   bool opportunity_after = false;
   if (text_.Is8Bit()) {
-    auto pair = CheckJustificationOpportunity8(
-        justification_method_, text_[index], is_after_expansion_);
+    auto pair = CheckJustificationOpportunity8(method, text_[index],
+                                               is_after_expansion_);
     opportunity_before = pair.first;
     opportunity_after = pair.second;
   } else {
     auto pair = CheckJustificationOpportunity16(
-        justification_method_, CodePointAt(text_.Span16(), index),
-        is_after_expansion_);
+        method, CodePointAt(text_.Span16(), index), is_after_expansion_);
     opportunity_before = pair.first;
     opportunity_after = pair.second;
   }

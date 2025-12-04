@@ -108,6 +108,7 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   // This function must be called incrementally since it keeps states and
   // counts consumed justification opportunities.
   std::pair<TextRunLayoutUnit, TextRunLayoutUnit> ComputeExpansion(
+      TextJustify method,
       unsigned index,
       bool is_cursive_script = false);
   // Compute spacings to justify the specified character.
