@@ -80,6 +80,8 @@ using bookmarks::android::JavaBookmarkIdGetId;
 using bookmarks::android::JavaBookmarkIdGetType;
 using content::BrowserThread;
 using power_bookmarks::PowerBookmarkMeta;
+using reading_list::ReadingListManager;
+using reading_list::ReadingListManagerImpl;
 
 namespace {
 // The key used to connect the instance of the bookmark bridge to the bookmark

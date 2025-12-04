@@ -25,6 +25,8 @@ constexpr char kReadStatusKey[] = "read_status";
 constexpr char kReadStatusRead[] = "true";
 constexpr char kReadStatusUnread[] = "false";
 
+namespace reading_list {
+
 namespace {
 
 // Sync the bookmark node with |entry|. Returns whether the conversion is
@@ -322,3 +324,5 @@ void ReadingListManagerImpl::NotifyReadingListChanged() {
   for (Observer& observer : observers_)
     observer.ReadingListChanged();
 }
+
+}  // namespace reading_list

@@ -26,7 +26,7 @@
 
 using BookmarkNode = bookmarks::BookmarkNode;
 
-namespace {
+namespace reading_list {
 
 constexpr char kURL[] = "https://www.example.com";
 constexpr char kURL1[] = "https://www.anotherexample.com";
@@ -399,4 +399,4 @@ TEST_F(ReadingListManagerImplTest, EmptyBatchUpdatesDontTriggerObserver) {
   update.reset();
 }
 
-}  // namespace
+}  // namespace reading_list
