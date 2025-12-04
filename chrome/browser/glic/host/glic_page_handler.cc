@@ -1821,7 +1821,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       mojo_credentials.push_back(actor::webui::mojom::Credential::New(
           credential.id.value(), base::UTF16ToUTF8(credential.username),
           base::UTF16ToUTF8(credential.source_site_or_app),
-          credential.request_origin));
+          credential.request_origin,
+          base::UTF16ToUTF8(credential.display_origin)));
     }
     base::flat_map<std::string, SkBitmap> mojo_icons;
     for (const auto& [site_or_app, image] : icons) {

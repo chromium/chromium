@@ -278,6 +278,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsFiltersByDomain) {
   EXPECT_EQ(credentials[0].source_site_or_app, u"https://foo.com/");
   EXPECT_EQ(future.Get().value()[0].request_origin,
             url::Origin::Create(GURL("https://foo.com")));
+  EXPECT_EQ(future.Get().value()[0].display_origin, u"foo.com");
   EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
   EXPECT_FALSE(credentials[0].has_persistent_permission);
 

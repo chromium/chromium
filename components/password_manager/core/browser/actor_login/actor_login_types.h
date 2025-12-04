@@ -58,6 +58,9 @@ struct Credential {
   // The origin for which this credential was requested.
   url::Origin request_origin;
 
+  // The value of `request_origin` formatted for display to the user.
+  std::u16string display_origin;
+
   // The type of the credential used for the login process.
   // It may be presented to a user if mapped to a user-friendly localized
   // descriptor string.

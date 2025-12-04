@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/url_formatter/elide_url.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "url/origin.h"
 
@@ -101,6 +102,10 @@ Credential PasswordFormToCredential(
   credential.source_site_or_app =
       actor_login::ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(form.url);
   credential.request_origin = request_origin;
+  // NOTE: Actor logins are only allowed in secure contexts, so omitting the
+  // scheme for display is permissible.
+  credential.display_origin = url_formatter::FormatOriginForSecurityDisplay(
+      request_origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
   credential.immediatelyAvailableToLogin = immediately_available_to_login;
   credential.has_persistent_permission = form.actor_login_approved;
   return credential;

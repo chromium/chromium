@@ -36,6 +36,7 @@ source_set("delegate") {
     "//components/password_manager/core/browser/actor_login:common",
     "//components/password_manager/core/browser/features:password_features",
     "//components/strings:components_strings",
+    "//components/url_formatter",
     "//services/metrics/public/cpp:metrics_cpp",
     "//url",
   ]
