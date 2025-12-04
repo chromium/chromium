@@ -188,7 +188,6 @@ class PlatformHandleImpl : public PlatformHandle {
         return;
       }
       default:
-        std::move(callback).Run();
         NOTREACHED();
     }
   }
