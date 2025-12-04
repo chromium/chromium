@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `find-msvc-tools-0.1.4` crate.
+# `find-msvc-tools-0.1.5` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "find-msvc-tools"
-version = "0.1.4"
+version = "0.1.5"
 
 [package.metadata.gnrt]
 is_placeholder = true
