@@ -95,7 +95,11 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
 
 }  // namespace
 
-ChromeFeatureListCreator::ChromeFeatureListCreator() = default;
+// static
+ChromeFeatureListCreator* ChromeFeatureListCreator::GetInstance() {
+  static base::NoDestructor<ChromeFeatureListCreator> instance;
+  return instance.get();
+}
 
 ChromeFeatureListCreator::~ChromeFeatureListCreator() = default;
 
@@ -153,6 +157,8 @@ ChromeFeatureListCreator::TakeInitialPrefs() {
   return std::move(installer_initial_prefs_);
 }
 #endif
+
+ChromeFeatureListCreator::ChromeFeatureListCreator() = default;
 
 void ChromeFeatureListCreator::CreatePrefService() {
   base::FilePath local_state_file;

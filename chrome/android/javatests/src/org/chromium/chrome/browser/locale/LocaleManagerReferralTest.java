@@ -11,7 +11,6 @@ import static org.hamcrest.CoreMatchers.not;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,27 +18,24 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.TestLocale;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.search_engines.TemplateUrlService;
 
-import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Tests that verify the end to end behavior of appending referral IDs to search engines. */
 @RunWith(BaseJUnit4ClassRunner.class)
+@TestLocale("ru-RU")
 public class LocaleManagerReferralTest {
-    private Locale mDefaultLocale;
     private String mYandexReferralId = "";
 
     @Before
     public void setUp() throws ExecutionException {
-        mDefaultLocale = Locale.getDefault();
-        Locale.setDefault(new Locale("ru", "RU"));
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LocaleManager.getInstance()
@@ -60,11 +56,6 @@ public class LocaleManagerReferralTest {
                         return null;
                     }
                 });
-    }
-
-    @After
-    public void tearDown() {
-        Locale.setDefault(mDefaultLocale);
     }
 
     @SmallTest

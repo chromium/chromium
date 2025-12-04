@@ -196,6 +196,7 @@ public class SplitCompatApplication extends Application {
 
         maybeInitProcessType();
         LibraryLoader.getInstance().setLinkerImplementation(ProductConfig.USE_CHROMIUM_LINKER);
+        ResourceBundle.setAvailablePakLocales(ProductConfig.LOCALES);
 
         // Renderer and GPU processes have command line passed to them via IPC
         // (see ChildProcessService.java).
@@ -204,12 +205,21 @@ public class SplitCompatApplication extends Application {
                     COMMAND_LINE_FILE, SplitCompatApplication::shouldUseDebugFlags);
         }
 
+        if (isBrowserProcess
+                && ChromeFeatureList.sLoadNativeEarly.isEnabled()
+                && ChromeFeatureList.sInitFeatureListEarly.getValue()) {
+            PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
+            // Register for activity lifecycle callbacks. Must be done before any activities are
+            // created and is needed only by processes that use the ApplicationStatus api (which
+            // for Chrome is just the browser process).
+            ApplicationStatus.initialize(this);
+        }
+
         if (isBrowserProcess) {
             performBrowserProcessPreloading(context);
         }
 
         AsyncTask.takeOverAndroidThreadPool();
-        ResourceBundle.setAvailablePakLocales(ProductConfig.LOCALES);
 
         if (!isBrowserProcess) {
             EarlyTraceEvent.earlyEnableInChildWithoutCommandLine();
@@ -218,7 +228,11 @@ public class SplitCompatApplication extends Application {
             checkAppBeingReplaced();
             DexFixer.scheduleDexFix();
 
-            PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
+            if (!ChromeFeatureList.sLoadNativeEarly.isEnabled()
+                    || !ChromeFeatureList.sInitFeatureListEarly.getValue()) {
+                PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
+            }
+
             // Renderer and GPU processes have command line passed to them via IPC
             // (see ChildProcessService.java).
             if (!ChromeFeatureList.sLoadNativeEarly.isEnabled()) {
@@ -232,7 +246,11 @@ public class SplitCompatApplication extends Application {
             // Register for activity lifecycle callbacks. Must be done before any activities are
             // created and is needed only by processes that use the ApplicationStatus api (which
             // for Chrome is just the browser process).
-            ApplicationStatus.initialize(this);
+            if (!ChromeFeatureList.sLoadNativeEarly.isEnabled()
+                    || !ChromeFeatureList.sInitFeatureListEarly.getValue()) {
+                ApplicationStatus.initialize(this);
+            }
+
             ColdStartTracker.initialize();
 
             // Register and initialize application status listener for crashes, this needs to be

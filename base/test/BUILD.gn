@@ -292,6 +292,7 @@ static_library("test_support") {
       "android/content_uri_test_utils.h",
       "android/java_handler_thread_helpers.cc",
       "android/java_handler_thread_helpers.h",
+      "android/scoped_feature_list_test_utils.cc",
       "android/url_utils.cc",
       "android/url_utils.h",
       "multiprocess_test_android.cc",
@@ -304,6 +305,7 @@ static_library("test_support") {
     deps += [
       ":base_unittests_jni_headers",
       ":test_support_jni_headers",
+      "//base:base_java_test_support_uncommon_jni",
     ]
   }
 
@@ -504,7 +506,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/base/MainReturnCodeResult.java",
       "android/java/src/org/chromium/base/MultiprocessTestClientLauncher.java",
-      "android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java",
+      "android/java/src/org/chromium/base/ScopedFeatureListTestUtils.java",
       "android/javatests/src/org/chromium/base/test/util/UrlUtils.java",
     ]
   }

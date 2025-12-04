@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -80,6 +81,8 @@ public class HierarchicalMenuTest {
         mActivity = mActivityTestRule.launchActivity(/* startIntent= */ null);
         mDismissRunnableExecuted = new AtomicBoolean(false);
         mExecutedItemRunnableTitle = new AtomicReference<String>(null);
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -170,6 +173,8 @@ public class HierarchicalMenuTest {
                             mFlyoutHandler, mPopupWindow, /* drillDownOverrideValue= */ null);
                     mFlyoutController = mController.getFlyoutController();
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         CriteriaHelper.pollUiThread(
                 () -> {

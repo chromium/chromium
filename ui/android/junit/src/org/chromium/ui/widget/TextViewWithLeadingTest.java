@@ -72,6 +72,7 @@ public class TextViewWithLeadingTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(UiAndroidFeatures.REQUIRE_LEADING_IN_TEXT_VIEW_WITH_LEADING)
     public void testBadTextAppearance() {
         inflate(R.layout.text_view_with_leading_bad_text_appearance);
     }

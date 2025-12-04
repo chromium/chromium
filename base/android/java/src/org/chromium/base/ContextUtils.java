@@ -30,6 +30,9 @@ public class ContextUtils {
     private static final String TAG = "ContextUtils";
     private static @Nullable Context sApplicationContext;
 
+    // Used to allow test classes to set the command-line before feature list is initialized.
+    public static @Nullable Runnable sDoFeatureListInitHookForTesting;
+
     /** Initialization-on-demand holder. This exists for thread-safe lazy initialization. */
     private static class Holder {
         // Not final for tests.

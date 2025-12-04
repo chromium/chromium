@@ -15288,6 +15288,15 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_InitFeatureListEarly",
+                    "params": {
+                        "init_feature_list_early": "true"
+                    },
+                    "enable_features": [
+                        "LoadNativeEarly"
+                    ]
+                },
+                {
                     "name": "Enabled",
                     "enable_features": [
                         "LoadNativeEarly"
