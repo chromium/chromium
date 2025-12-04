@@ -5516,7 +5516,7 @@ targets.bundle(
 )
 
 # Please also change ios_code_coverage_tests for any change in this suite.
-# TODO(crbug.com/441038354): comebine simulators for the same test target once
+# TODO(crbug.com/441038354): combine simulators for the same test target once
 # iOS26 performance issue is resolved on the VMs
 targets.bundle(
     name = "ios_simulator_full_configs_tests",
@@ -5574,6 +5574,7 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
+                "SIM_IPAD_PRO_7TH_GEN_26_0",
                 "SIM_IPHONE_16_26_0",
             ],
         ),
