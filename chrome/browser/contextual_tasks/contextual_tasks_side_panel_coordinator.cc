@@ -34,6 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/navigation_entry.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/webview/webview.h"
@@ -435,6 +436,15 @@ void ContextualTasksSidePanelCoordinator::OnTabStripModelChanged(
       tabs::TabInterface* opener =
           tab_strip_model->GetOpenerOfTabAt(content.index);
       if (!opener) {
+        continue;
+      }
+      // Check if the new tab is opened through a link click
+      content::NavigationController& controller =
+          content.contents->GetController();
+      if (!controller.GetActiveEntry() ||
+          !ui::PageTransitionCoreTypeIs(
+              controller.GetActiveEntry()->GetTransitionType(),
+              ui::PAGE_TRANSITION_LINK)) {
         continue;
       }
       std::optional<ContextualTask> task =
