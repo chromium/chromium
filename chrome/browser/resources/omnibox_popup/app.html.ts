@@ -29,7 +29,7 @@ ${this.showContextEntrypoint_ ? html`
       exportparts="composebox-entrypoint, context-menu-entrypoint-icon"
       entrypoint-name="Omnibox"
       searchbox-layout-mode="${this.searchboxLayoutMode_}"
-      ?show-dropdown="${!this.hasVisibleMatches_}"
+      ?show-dropdown="${this.hasVisibleMatches_}"
       @context-menu-entrypoint-click="${this.onContextualEntryPointClicked_}">
     ${searchboxDropdown}
   </contextual-entrypoint-and-carousel>
