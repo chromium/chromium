@@ -11,9 +11,11 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_media_session.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,6 +90,24 @@ class GlicMediaContextTest : public ChromeRenderViewHostTestHarness {
   void SetMetadata(const media_session::MediaMetadata& metadata) {
     metadata_ = metadata;
   }
+  // Helper to simulate audio capture for a given WebContents.
+  // Returns a stream object whose lifetime controls the capture.
+  std::unique_ptr<content::MediaStreamUI> SimulateAudioCapture(
+      content::WebContents* web_contents) {
+    scoped_refptr<MediaStreamCaptureIndicator> capture_indicator =
+        MediaCaptureDevicesDispatcher::GetInstance()
+            ->GetMediaStreamCaptureIndicator();
+    const blink::MediaStreamDevice audio_device(
+        blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "id", "name");
+    blink::mojom::StreamDevices devices(audio_device, {});
+    std::unique_ptr<content::MediaStreamUI> stream =
+        capture_indicator->RegisterMediaStream(web_contents, devices);
+    stream->OnStarted(base::DoNothing(),
+                      content::MediaStreamUI::SourceCallback(), std::string(),
+                      {}, content::MediaStreamUI::StateChangeCallback());
+    EXPECT_TRUE(capture_indicator->IsCapturingAudio(web_contents));
+    return stream;
+  }
 
  private:
   media_session::MediaMetadata metadata_;
@@ -158,19 +178,7 @@ TEST_F(GlicMediaContextTest, ContextContainsButReplacesNonFinal) {
 }
 
 TEST_F(GlicMediaContextTest, AudioCaptureStopsTranscription) {
-  auto capture_dispatcher = MediaCaptureDevicesDispatcher::GetInstance()
-                                ->GetMediaStreamCaptureIndicator();
-  const blink::MediaStreamDevice audio_device(
-      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "id", "name");
-  blink::mojom::StreamDevices devices(audio_device, {});
-  auto stream =
-      capture_dispatcher->RegisterMediaStream(web_contents(), devices);
-  stream->OnStarted(base::DoNothing(), content::MediaStreamUI::SourceCallback(),
-                    std::string(), {},
-                    content::MediaStreamUI::StateChangeCallback());
-  // It must report that the tab is capturing audio, else we've done something
-  // wrong setting this up.
-  ASSERT_TRUE(capture_dispatcher->IsCapturingAudio(web_contents()));
+  auto stream = SimulateAudioCapture(web_contents());
 
   // Send a transcription and verify that it is ignored.
   EXPECT_TRUE(context()->OnResult(
@@ -178,6 +186,29 @@ TEST_F(GlicMediaContextTest, AudioCaptureStopsTranscription) {
   EXPECT_EQ(context()->GetContext(), "");
 
   stream.reset();
+}
+
+TEST_F(GlicMediaContextTest, AudioCaptureInPiPStopsTranscription) {
+  // Create a new WebContents to simulate a Document Picture-in-Picture window.
+  std::unique_ptr<content::WebContents> pip_web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          web_contents()->GetBrowserContext(), nullptr);
+  content::DocumentPictureInPictureWindowController* pip_controller =
+      content::PictureInPictureWindowController::
+          GetOrCreateDocumentPictureInPictureController(web_contents());
+  pip_controller->SetChildWebContents(pip_web_contents.get());
+
+  // Simulate audio capture in the PiP window.
+  auto stream = SimulateAudioCapture(pip_web_contents.get());
+
+  // Send transcripts to the opener WebContents and verify that the transcripts
+  // are dropped.
+  EXPECT_TRUE(context()->OnResult(
+      media::SpeechRecognitionResult("ABC", /*is_final=*/true)));
+  EXPECT_EQ(context()->GetContext(), "");
+
+  stream.reset();
+  pip_controller->Close(false);
 }
 
 TEST_F(GlicMediaContextTest, PeerConnectionStopsTranscription) {
@@ -198,17 +229,7 @@ TEST_F(GlicMediaContextTest, PeerConnectionAddedAndRemovedResetsExclusion) {
 
 TEST_F(GlicMediaContextTest, ExclusionRemainsIfUserMediaIsActive) {
   // Enable user media capture.
-  auto capture_dispatcher = MediaCaptureDevicesDispatcher::GetInstance()
-                                ->GetMediaStreamCaptureIndicator();
-  const blink::MediaStreamDevice audio_device(
-      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "id", "name");
-  blink::mojom::StreamDevices devices(audio_device, {});
-  auto stream =
-      capture_dispatcher->RegisterMediaStream(web_contents(), devices);
-  stream->OnStarted(base::DoNothing(), content::MediaStreamUI::SourceCallback(),
-                    std::string(), {},
-                    content::MediaStreamUI::StateChangeCallback());
-  ASSERT_TRUE(capture_dispatcher->IsCapturingAudio(web_contents()));
+  auto stream = SimulateAudioCapture(web_contents());
 
   // Add and remove a peer connection.
   context()->OnPeerConnectionAdded();

@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -258,12 +259,38 @@ void GlicMediaContext::OnPeerConnectionRemoved() {
 }
 
 bool GlicMediaContext::IsExcludedFromTranscript() const {
+  // Exclude transcripts if there are active peer connections.
+  if (num_peer_connections_ > 0) {
+    return true;
+  }
+
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
-  return num_peer_connections_ > 0 ||
-         MediaCaptureDevicesDispatcher::GetInstance()
-             ->GetMediaStreamCaptureIndicator()
-             ->IsCapturingUserMedia(web_contents);
+  if (!web_contents) {
+    return true;
+  }
+
+  // Check if the main web contents is capturing media.
+  if (MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator()
+          ->IsCapturingUserMedia(web_contents)) {
+    return true;
+  }
+
+  // Check if any document picture-in-picture window is capturing media.
+  auto* pip_controller = content::PictureInPictureWindowController::
+      GetOrCreateDocumentPictureInPictureController(web_contents);
+  if (pip_controller) {
+    if (auto* pip_web_contents = pip_controller->GetChildWebContents()) {
+      if (MediaCaptureDevicesDispatcher::GetInstance()
+              ->GetMediaStreamCaptureIndicator()
+              ->IsCapturingUserMedia(pip_web_contents)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 void GlicMediaContext::RemoveOverlappingChunks(
