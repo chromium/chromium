@@ -164,10 +164,6 @@ class TabStripModelDelegate {
   virtual bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) = 0;
 
-  // Returns whether favicon should be shown.
-  virtual bool ShouldDisplayFavicon(
-      content::WebContents* web_contents) const = 0;
-
   // Returns whether the delegate allows reloading of WebContents.
   virtual bool CanReload() const = 0;
 

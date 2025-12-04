@@ -189,9 +189,8 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs, TabsTest) {
       Browser::WindowFeature::kFeatureTabStrip));
 
   // No favicons shown for web apps.
-  EXPECT_FALSE(
-      app_browser_->tab_strip_model()->delegate()->ShouldDisplayFavicon(
-          app_browser_->tab_strip_model()->GetActiveWebContents()));
+  EXPECT_FALSE(app_browser_->ShouldDisplayFavicon(
+      app_browser_->tab_strip_model()->GetActiveWebContents()));
 
   // Tabbed PWAs only open URLs within the scope of the app. The manifest is
   // another URL besides |tabbed_app_url_| in scope.

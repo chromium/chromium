@@ -11,6 +11,7 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
@@ -83,9 +84,11 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   TabUIHelper* const tab_ui_helper = features->tab_ui_helper();
   data.favicon = tab_ui_helper->GetFavicon();
   data.title = tab_ui_helper->GetTitle();
+  auto* const bwi = tab->GetBrowserWindowInterface();
+  Browser* browser = bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
 
   // Note that in unit tests, this may be null.
-  if (auto* const bwi = tab->GetBrowserWindowInterface()) {
+  if (bwi) {
     // Tabbed web apps should use the app icon on the home tab.
     if (auto* const app_controller =
             web_app::WebAppBrowserController::From(bwi);
@@ -131,7 +134,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   data.crashed_status = contents->GetCrashedStatus();
   data.pinned = tab->IsPinned();
   data.show_icon =
-      data.pinned || model->delegate()->ShouldDisplayFavicon(contents);
+      data.pinned || (browser && browser->ShouldDisplayFavicon(contents));
   data.blocked = model->IsTabBlocked(index);
   data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
   data.alert_state = tabs::TabAlertController::From(tab)->GetAllActiveAlerts();

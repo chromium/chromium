@@ -825,8 +825,8 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, NoFavicons) {
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
 
   // No favicons shown for web apps.
-  EXPECT_FALSE(tab_strip->delegate()->ShouldDisplayFavicon(
-      tab_strip->GetActiveWebContents()));
+  EXPECT_FALSE(
+      app_browser->ShouldDisplayFavicon(tab_strip->GetActiveWebContents()));
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,

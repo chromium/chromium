@@ -282,19 +282,6 @@ bool BrowserTabStripModelDelegate::ShouldRunUnloadListenerBeforeClosing(
   return browser_->ShouldRunUnloadListenerBeforeClosing(contents);
 }
 
-bool BrowserTabStripModelDelegate::ShouldDisplayFavicon(
-    content::WebContents* contents) const {
-  // Don't show favicon when on an interstitial.
-  security_interstitials::SecurityInterstitialTabHelper*
-      security_interstitial_tab_helper = security_interstitials::
-          SecurityInterstitialTabHelper::FromWebContents(contents);
-  if (security_interstitial_tab_helper &&
-      security_interstitial_tab_helper->IsDisplayingInterstitial()) {
-    return false;
-  }
-
-  return browser_->ShouldDisplayFavicon(contents);
-}
 
 bool BrowserTabStripModelDelegate::CanReload() const {
   return chrome::CanReload(browser_);

@@ -1250,8 +1250,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestNoFaviconOnInterstitial) {
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(tab));
-  EXPECT_FALSE(
-      browser()->tab_strip_model()->delegate()->ShouldDisplayFavicon(tab));
+  EXPECT_FALSE(browser()->ShouldDisplayFavicon(tab));
 }
 
 class SSLUITestWithWebApps : public SSLUITest {
