@@ -669,7 +669,12 @@ void TabStripActionContainer::OnGlicActorTaskIconClicked() {
             tab_strip_controller_->GetBrowserWindowInterface()
                 ->GetTabStripModel();
         int tab_index = tab_strip_model->GetIndexOfTab(last_updated_tab);
-        tab_strip_model->ActivateTabAt(tab_index);
+
+        // In the case where the tab is currently detached (such as being moved
+        // between windows), the tab may not have an index.
+        if (tab_index != TabStripModel::kNoTab) {
+          tab_strip_model->ActivateTabAt(tab_index);
+        }
       }
     }
     actor::ui::LogTaskIconClick();
