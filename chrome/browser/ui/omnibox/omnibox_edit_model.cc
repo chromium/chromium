@@ -755,6 +755,12 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
 }
 
 void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
+  std::u16string query_text =
+      AutocompleteMatch::IsSearchType(current_match_.type)
+          ? current_match_.contents
+          : u"";
+  RecordAiModeMetrics(query_text, /*activated=*/true, via_keyboard);
+
   if (controller_->client()->IsAimPopupEnabled()) {
     // In general, adding a context will always open the AIM popup, while the
     // AIM button will prefer to navigate to the AI page with a query
@@ -787,12 +793,6 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
       return;
     }
   }
-
-  std::u16string query_text =
-      AutocompleteMatch::IsSearchType(current_match_.type)
-          ? current_match_.contents
-          : u"";
-  RecordAiModeMetrics(query_text, /*activated=*/true, via_keyboard);
 
   GURL ai_mode_url =
       GetUrlForAim(controller_->client()->GetTemplateURLService(),

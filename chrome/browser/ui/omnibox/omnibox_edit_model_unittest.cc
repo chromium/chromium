@@ -1687,3 +1687,50 @@ TEST_F(OmniboxEditModelPopupTest, KeywordStateObserver) {
 
   model()->RemoveObserver(&observer);
 }
+
+TEST_F(OmniboxEditModelPopupTest, AimPopupDisabled) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*client(), OpenUrl(_)).Times(1);
+
+  model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/false);
+
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.AimEntrypoint.Activated.ViaKeyboard", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.AimEntrypoint.Activated.UserTextPresent", false, 1);
+}
+
+TEST_F(OmniboxEditModelPopupTest, AimPopupEnabledNavigationFallback) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*client(), OpenUrl(_)).Times(1);
+
+  model()->SetUserText(u"query");  // User input in progress.
+
+  model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/false);
+
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.AimEntrypoint.Activated.ViaKeyboard", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.AimEntrypoint.Activated.UserTextPresent", true, 1);
+}
+
+TEST_F(OmniboxEditModelPopupTest, AimPopupEnabledPopupOpened) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*client(), OpenUrl(_)).Times(0);
+
+  model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/true);
+
+  EXPECT_EQ(OmniboxPopupState::kAim,
+            controller()->popup_state_manager()->popup_state());
+
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.AimEntrypoint.Activated.ViaKeyboard", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.AimEntrypoint.Activated.UserTextPresent", false, 1);
+}
