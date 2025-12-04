@@ -43,6 +43,8 @@
 #import "ios/chrome/browser/history/ui_bundled/public/history_presentation_delegate.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h"
 #import "ios/chrome/browser/main/ui_bundled/bvc_container_view_controller.h"
 #import "ios/chrome/browser/menu/ui_bundled/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -76,6 +78,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -257,6 +260,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
 // The action sheet coordinator, if one is currently being shown.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
+// The coordinator for the page action menu.
+@property(nonatomic, strong)
+    PageActionMenuCoordinator* pageActionMenuCoordinator;
 // Coordinator for snackbar presentation on `_regularBrowser`.
 @property(nonatomic, strong) SnackbarCoordinator* snackbarCoordinator;
 // Coordinator for snackbar presentation on `_incognitoBrowser`.
@@ -1215,6 +1221,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [_bookmarksCoordinator stop];
   _bookmarksCoordinator = nil;
 
+  [self.pageActionMenuCoordinator stop];
+  self.pageActionMenuCoordinator = nil;
+
   [_mediator disconnect];
 }
 
@@ -1786,6 +1795,17 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                 delegate:self];
   [_guidedTourCoordinator start];
   _guidedTourCompletionBlock = completion;
+}
+
+- (void)showPageActionMenuFromTabGrid {
+  // TODO(crbug.com/465505528) Propagate page action menu entry point source to
+  // page action menu coordinator.
+  self.pageActionMenuCoordinator = [[PageActionMenuCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.regularBrowser];
+  self.pageActionMenuCoordinator.pageActionMenuHandler = HandlerForProtocol(
+      self.regularBrowser->GetCommandDispatcher(), PageActionMenuCommands);
+  [self.pageActionMenuCoordinator start];
 }
 
 #pragma mark - GuidedTourCoordinatorDelegate

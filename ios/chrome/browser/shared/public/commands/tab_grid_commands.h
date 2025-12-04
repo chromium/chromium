@@ -37,6 +37,9 @@ class TabGroup;
 - (void)showGuidedTourLongPressStepWithDismissalCompletion:
     (ProceduralBlock)completion;
 
+// Presents the page action menu from the tab grid, registering the source.
+- (void)showPageActionMenuFromTabGrid;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_TAB_GRID_COMMANDS_H_

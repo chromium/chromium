@@ -93,8 +93,7 @@
         self.browser->GetCommandDispatcher(), PageActionMenuCommands);
     // The flow when Page Action is available is to show the Page action menu.
     // The user will have to tap RM options button again from there.
-    [pageActionMenuHandler
-        showPageActionMenuFromEntryPoint:PageActionMenuEntryPointLocationBar];
+    [pageActionMenuHandler showPageActionMenu];
     return;
   }
   if (_optionsCoordinator) {

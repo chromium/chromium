@@ -402,6 +402,23 @@ const CGFloat kDividerWidth = 1.0;
         forControlEvents:UIControlEventTouchUpInside];
   [stackView addArrangedSubview:_lensButton];
 
+  if (IsSmartTabGroupingEnabled()) {
+    // TODO(crbug.com/465505814): Add smart tab grouping strings for
+    // translation.
+    UIButton* smartTabGroupingButton =
+        [self createSmallButtonWithIcon:DefaultSymbolWithPointSize(
+                                            kTabsSymbol, kSmallButtonIconSize)
+                                  title:@"Organize Tabs"
+                                enabled:YES
+                accessibilityIdentifier:
+                    @"AIHubSmartTabGroupingButtonAccessibilityIdentifier"];
+    [smartTabGroupingButton
+               addTarget:self
+                  action:@selector(handleSmartTabGroupingButtonTapped:)
+        forControlEvents:UIControlEventTouchUpInside];
+    [stackView addArrangedSubview:smartTabGroupingButton];
+  }
+
   if (IsReaderModeAvailable() && ![self.mutator isReaderModeActive]) {
     UIImage* readerModeImage = DefaultSymbolWithPointSize(
         GetReaderModeSymbolName(), kSmallButtonIconSize);
@@ -567,6 +584,11 @@ const CGFloat kDividerWidth = 1.0;
   }];
 }
 
+// Handles the tap on the Smart Tab Grouping button.
+- (void)handleSmartTabGroupingButtonTapped:(UIButton*)button {
+  // TODO(crbug.com/463712780): Implement smart tab grouping view controller.
+}
+
 // Dismisses the view controller and starts Reader mode.
 - (void)handleReaderModeTapped:(UIButton*)button {
   RecordAIHubAction(IOSAIHubAction::kReaderMode);
@@ -667,7 +689,7 @@ const CGFloat kDividerWidth = 1.0;
     [self rebuildFeatureRows];
   }
 
-  // Horizontal stack view for the 2 side-by-side buttons.
+  // Horizontal stack view for the side-by-side buttons.
   _smallButtonsStackView = [self createSmallButtonsStackView];
   [_contentStackView addArrangedSubview:_smallButtonsStackView];
   [_contentStackView setCustomSpacing:kStackViewMargins

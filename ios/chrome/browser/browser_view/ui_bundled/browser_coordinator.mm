@@ -3269,12 +3269,9 @@ const char kChromeAppStoreUrl[] =
 
 #pragma mark - PageActionMenuCommands
 
-- (void)showPageActionMenuFromEntryPoint:(PageActionMenuEntryPoint)entryPoint {
-  if (entryPoint != PageActionMenuEntryPointLocationBar) {
-    // TODO(crbug.com/463712780): Implement Smart Tab Grouping View Controller
-    return;
-  }
-
+- (void)showPageActionMenu {
+  // TODO(crbug.com/465505528) Propagate page action menu entry point source to
+  // page action menu coordinator.
   _pageActionMenuCoordinator = [[PageActionMenuCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];

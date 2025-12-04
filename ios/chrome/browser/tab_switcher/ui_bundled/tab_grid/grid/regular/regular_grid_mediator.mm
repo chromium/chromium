@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_data.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_consumer.h"
@@ -236,9 +236,9 @@ using ScopedTabGroupSyncObservation =
 - (void)pageActionMenuEntrypointTapped:(id)sender {
   CHECK(IsPageActionMenuEnabled() && IsSmartTabGroupingEnabled());
   // Dispatch the command to show the Page Action Menu.
-  id<PageActionMenuCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), PageActionMenuCommands);
-  [handler showPageActionMenuFromEntryPoint:PageActionMenuEntryPointTabGrid];
+  id<TabGridCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), TabGridCommands);
+  [handler showPageActionMenuFromTabGrid];
 }
 
 #pragma mark - Parent's function
