@@ -158,6 +158,7 @@ if (!is_android) {
       "test/data/",
       "//components/headless/test/data",
       "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/inspector-protocol-test.js",
+      "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/inspector-protocol-test-subtarget.html",
       "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/http-interceptor.js",
     ]
 

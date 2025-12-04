@@ -133,7 +133,7 @@ void HeadlessProtocolBrowserTest::RunDevTooledTest() {
 void HeadlessProtocolBrowserTest::OnceSetUp(base::Value::Dict) {
   // Navigate to test harness page
   GURL page_url = embedded_test_server()->GetURL(
-      "harness.test", "/protocol/inspector-protocol-test.html");
+      "harness.test", "/resources/inspector-protocol-test-subtarget.html");
   devtools_client_.SendCommand("Page.navigate", Param("url", page_url.spec()));
 }
 

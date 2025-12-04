@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <!--
 Copyright 2018 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
@@ -17,7 +18,7 @@ DevToolsHost.sendMessageToEmbedder = (message) => {
 DevToolsHost.dummyPageURL = `http://127.0.0.1:${window.location.port}/protocol/inspector-protocol-page.html`;
 
 </script>
-<script src="../../resources/inspector-protocol-test.js"></script>
+<script src="../resources/inspector-protocol-test.js"></script>
 <script>
 DevToolsAPI._log = text => output.push(text);
 DevToolsAPI._completeTest = function() {
