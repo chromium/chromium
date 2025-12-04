@@ -45,6 +45,7 @@ struct ProfilePickerTestParam {
   bool no_glic_eligible_profiles = false;
   bool is_enterprise_badging_enabled = false;
   bool is_profile_picker_first_run = true;
+  bool open_all_profiles_experiment_enabled = false;
   std::string text_variation_feature_param;
 };
 
@@ -137,6 +138,12 @@ const ProfilePickerTestParam kTestParams[] = {
      .text_variation_feature_param = "sharing-a-computer"},
     {.pixel_test_param = {.test_suffix = "VariationKeepEverythingInChrome"},
      .text_variation_feature_param = "keep-everything-in-chrome"},
+    {.pixel_test_param = {.test_suffix = "OpenAllProfilesExperimentNoButton"},
+     .open_all_profiles_experiment_enabled = true},
+    {.pixel_test_param = {.test_suffix =
+                              "OpenAllProfilesExperimentButtonShown"},
+     .use_multiple_profiles = true,
+     .open_all_profiles_experiment_enabled = true},
 };
 
 enum class ProfileStatus {
@@ -244,6 +251,10 @@ class ProfilePickerUIPixelTest
             {{"profile-picker-variation",
               GetParam().text_variation_feature_param}}}},
           {});
+    }
+    if (GetParam().open_all_profiles_experiment_enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          switches::kOpenAllProfilesFromProfilePickerExperiment);
     }
   }
 
