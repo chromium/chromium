@@ -146,7 +146,7 @@ class CastStreamingSession {
     void GetVideoBuffer(base::OnceClosure no_frames_available_cb);
 
     // Stores the first frame of a DemuxerStream session, and then may use the
-    // frame to begin playback fo teh streaming session, depending on its
+    // frame to begin playback for the streaming session, depending on its
     // configuration.
     void PreloadAudioBuffer(media::mojom::DecoderBufferPtr buffer);
     void PreloadVideoBuffer(media::mojom::DecoderBufferPtr buffer);

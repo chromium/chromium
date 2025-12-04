@@ -105,7 +105,7 @@ class ThirdPartyMetricsObserver
   void RecordMetrics(
       const page_load_metrics::mojom::PageLoadTiming& main_frame_timing);
 
-  // Records feature usage for teh |access_type|, and also, when present, for
+  // Records feature usage for the |access_type|, and also, when present, for
   // generic access and activation for the |third_party_info|.
   void RecordUseCounters(AccessType access_type,
                          const ThirdPartyInfo* third_party_info);

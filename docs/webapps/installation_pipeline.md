@@ -40,7 +40,7 @@ Calls [`FetchManifestAndInstallCommand`][7] with the `WebContents` of the instal
 
 Fails if: _The user rejects the installation dialog_.
 
-Notably, this option does not go through the same exact pathway as the [omnibox install icon][10], as it shares the call-site as the "Create Shortcut" method below. The main functional difference here is that if the site becomes no longer [promotable][8] in between clicking on the menu option and the install actually happening, it will not fail and instead fall back to a fake manifest and/or fake icons based on the favicon. Practically, this option doesn't show up if the site is not [promotable][8]. Should it share installation pathways as the the [omnibox install icon?][10] Probably, yes.
+Notably, this option does not go through the same exact pathway as the [omnibox install icon][10], as it shares the call-site as the "Create Shortcut" method below. The main functional difference here is that if the site becomes no longer [promotable][8] in between clicking on the menu option and the install actually happening, it will not fail and instead fall back to a fake manifest and/or fake icons based on the favicon. Practically, this option doesn't show up if the site is not [promotable][8]. Should it share installation pathways as the [omnibox install icon?][10] Probably, yes.
 
 #### 3-dot menu option "Create Shortcut..."
 

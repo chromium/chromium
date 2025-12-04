@@ -1325,7 +1325,7 @@ Since the updater's periodic tasks are run every hour, in practice the update
 check period is always rounded up to the nearest hour.
 
 To prevent multiple updaters from synchronizing their update checks (for
-example, if a large cohort of machines is powered on at the the same time),
+example, if a large cohort of machines is powered on at the same time),
 the updater will randomly use a longer update check period (120% of the normal
 period) with 10% probability.
 

@@ -83,7 +83,7 @@ Possible issues / Things to know:
 1. Tests being removed are often replaced by a test that has all the same actions, plus some new ones. Finding these & replacing these tests inline helps the diff look more reasonable.
 2. Sometimes a test that is removed is currently disabled. If this is the case, **please find the new test that is being added that has all of the same actions as the old test, and also disable it (please add the same comments, etc)**. Because the old test was failing, likely the new test will be failing too.
 
-After all tests are added, `git cl format` is often required. It's a good idea to test all of the new tests locally if you can, and then after local verification a patch can be uploaded, the the trybots can be run, and a review can be requested from the team.
+After all tests are added, `git cl format` is often required. It's a good idea to test all of the new tests locally if you can, and then after local verification a patch can be uploaded, the trybots can be run, and a review can be requested from the team.
 
 Before submitting, make sure to also [run the trybots on mac][running-mac-tests], as these are sometimes disabled on the CQ.
 

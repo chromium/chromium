@@ -391,7 +391,7 @@ class MyClass {
   base::OnceClosure GetCallback() const {
     base::BindOnce(
         // A template error will prevent the non-const method from being bound
-        // to the the WeakPtr<const MyClass>.
+        // to the WeakPtr<const MyClass>.
         &MyClass::OnCallback,
         weak_factory_.GetWeakPtr());
   }
