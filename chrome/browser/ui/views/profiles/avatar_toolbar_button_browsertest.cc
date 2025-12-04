@@ -35,6 +35,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_delegate.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -1333,8 +1334,8 @@ class AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// TODO(crbug.com/447048341): Support more promos; align with
-// `signin::ProfileMenuAvatarButtonPromoInfo::Type`.
+// TODO(crbug.com/465718425): Support more promos; replace with
+// `signin::ProfileMenuAvatarButtonPromoInfo::Type` values directly.
 enum FeaturePromoType {
   // Enables `syncer::kReplaceSyncPromosWithSignInPromos` feature.
   kHistorySyncPromo,
@@ -1342,6 +1343,16 @@ enum FeaturePromoType {
   // checked through `switches::IsAvatarSyncPromoFeatureEnabled()`.
   kSyncPromo,
 };
+
+signin::ProfileMenuAvatarButtonPromoInfo::Type GetAvatarPromoType(
+    FeaturePromoType param_promo_type) {
+  switch (param_promo_type) {
+    case FeaturePromoType::kHistorySyncPromo:
+      return signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo;
+    case FeaturePromoType::kSyncPromo:
+      return signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo;
+  }
+}
 
 // The tests relying on this base class can test both the History Sync Promo and
 // the Sync Promo. It is important to ensure that one of the feature flags is
@@ -1696,7 +1707,7 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
-  // TODO(crbug.com/447048341): Change to enabling history sync instead of sync.
+  // TODO(crbug.com/465718425): Change to enabling history sync instead of sync.
   EnableSync(test_email(), test_given_name());
   // Once sync is turned on, the button should return to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
@@ -1844,19 +1855,16 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
-  // `Signin.SyncOptIn.IdentityPill.Shown` should be recorded with the correct
-  // access point.
-  histogram_tester.ExpectBucketCount(
-      "Signin.SyncOptIn.IdentityPill.Shown",
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup,
-      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Signin.AvatarPillPromo.Shown",
+                                     GetAvatarPromoType(GetParam()),
+                                     /*expected_count=*/1);
   // The button action should be overridden.
   histogram_tester.ExpectTotalCount(
-      "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
+      "Signin.AvatarPillPromo.DurationBeforeClick",
       /*expected_count=*/0);
   Click(avatar);
   histogram_tester.ExpectTotalCount(
-      "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
+      "Signin.AvatarPillPromo.DurationBeforeClick",
       /*expected_count=*/1);
   auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
   ASSERT_NE(coordinator, nullptr);
@@ -1971,12 +1979,11 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
   AvatarToolbarButton* avatar_2 = GetAvatarToolbarButton(browser_2);
   // The history sync opt-in should be shown in the second browser as well.
   EXPECT_EQ(avatar_2->GetText(), GetExpectedPromoText());
-  // `Signin.SyncOptIn.IdentityPill.Shown` histogram should be recorded only
+  // `Signin.AvatarPillPromo.Shown` histogram should be recorded only
   // once.
-  histogram_tester.ExpectBucketCount(
-      "Signin.SyncOptIn.IdentityPill.Shown",
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup,
-      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Signin.AvatarPillPromo.Shown",
+                                     GetAvatarPromoType(GetParam()),
+                                     /*expected_count=*/1);
   avatar_1->ClearActiveStateForTesting();
   // The button in both browsers comes back to the normal state.
   EXPECT_TRUE(avatar_1->GetText().empty());

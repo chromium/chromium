@@ -852,6 +852,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Sign out"/>
 </enum>
 
+<!-- LINT.IfChange(ProfileMenuAvatarButtonPromoType) -->
+
+<enum name="ProfileMenuAvatarButtonPromoType">
+  <int value="0" label="History Sync"/>
+  <int value="1" label="Batch Upload - Regular"/>
+  <int value="2" label="Batch Upload - Bookmarks deduplication"/>
+  <int value="3" label="Batch Upload - Windows10 Depreciation"/>
+  <int value="4" label="Sync Promo"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/signin_promo_util.h:ProfileMenuAvatarButtonPromoType) -->
+
 <!-- LINT.IfChange(ReauthAccessPoint) -->
 
 <enum name="ReauthAccessPoint">

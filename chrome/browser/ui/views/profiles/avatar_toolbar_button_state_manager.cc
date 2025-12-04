@@ -840,16 +840,9 @@ class HistorySyncOptinCoordinator
 
   void PromoUsed() {
     CHECK(before_promo_used_elapsed_timer_.has_value());
-    // TODO(crbug.com/440006977): Extend/Duplicate the below histogram to
-    // support the different promos.
-    if (promo_type_.value() ==
-            signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo ||
-        promo_type_.value() ==
-            signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
-      base::UmaHistogramMediumTimes(
-          "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
-          before_promo_used_elapsed_timer_->Elapsed());
-    }
+    base::UmaHistogramMediumTimes("Signin.AvatarPillPromo.DurationBeforeClick",
+                                  before_promo_used_elapsed_timer_->Elapsed());
+
     CHECK(promo_type_.has_value());
     sync_promo_identity_pill_manager_.RecordPromoUsed(promo_type_.value());
     Collapse();
@@ -1026,18 +1019,12 @@ class HistorySyncOptinCoordinator
     }
     before_promo_used_elapsed_timer_.emplace();
     has_been_shown_since_startup_ = true;
+
     CHECK(promo_type_.has_value());
     sync_promo_identity_pill_manager_.RecordPromoShown(promo_type_.value());
-    // TODO(crbug.com/447048341): Extend/Duplicate the below histogram to
-    // support the different promos.
-    if (promo_type_.value() ==
-            signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo ||
-        promo_type_.value() ==
-            signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
-      base::UmaHistogramEnumeration(
-          "Signin.SyncOptIn.IdentityPill.Shown",
-          signin::kHistoryOptinAvatarPromoAccessPoint);
-    }
+    base::UmaHistogramEnumeration("Signin.AvatarPillPromo.Shown",
+                                  promo_type_.value());
+
     collapse_timer_.Start(FROM_HERE,
                           g_history_sync_optin_duration_for_testing.value_or(
                               kHistorySyncOptinDuration),

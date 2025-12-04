@@ -799,6 +799,27 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
+<histogram name="Signin.AvatarPillPromo.DurationBeforeClick" units="ms"
+    expires_after="2026-12-13">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the time between when a promo is shown on the avatar pill and the
+    user interacts with it (clicks on it). If the user doesn't click the avatar
+    pill, the histogram should not be recorded.
+  </summary>
+</histogram>
+
+<histogram name="Signin.AvatarPillPromo.Shown"
+    enum="ProfileMenuAvatarButtonPromoType" expires_after="2026-12-13">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the promo type shown on the Avatar pill. Recorded when the promo is
+    shown.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Bookmarks.SyncTurnedOnWithAccountStorageEnabled"
     enum="BooleanOccurred" expires_after="2026-04-19">
   <owner>amelies@google.com</owner>
@@ -3583,29 +3604,6 @@ kept as long as profile signout is possible -->
     original access point associated with this event. This is recorded when the
     user chooses to opt-in, whether they chose to proceed with the default
     settings or to open the sync settings first.
-  </summary>
-</histogram>
-
-<histogram name="Signin.SyncOptIn.IdentityPill.DurationBeforeClick" units="ms"
-    expires_after="2026-05-17">
-  <owner>ernn@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records the time between the history sync opt-in identity pill promo is
-    opened and the user interacts with it (clicks on it). If the user doesn't
-    click the identity pill, the histogram should not be recorded.
-  </summary>
-</histogram>
-
-<histogram name="Signin.SyncOptIn.IdentityPill.Shown" enum="SigninAccessPoint"
-    expires_after="2026-01-12">
-  <owner>ernn@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Counts the number of times the history sync opt-in identity pill was shown.
-
-    Note: This is only recorded for `kHistorySyncOptinExpansionPill*` access
-    points.
   </summary>
 </histogram>
 

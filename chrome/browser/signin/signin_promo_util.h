@@ -82,13 +82,20 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
 struct ProfileMenuAvatarButtonPromoInfo {
   // Different promo types that can be shown in the ProfileMenu and
   // AvatarButton.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ProfileMenuAvatarButtonPromoType)
   enum class Type {
-    kHistorySyncPromo,
-    kBatchUploadPromo,
-    kBatchUploadBookmarksPromo,
-    kBatchUploadWindows10DepreciationPromo,
-    kSyncPromo,
+    kHistorySyncPromo = 0,
+    kBatchUploadPromo = 1,
+    kBatchUploadBookmarksPromo = 2,
+    kBatchUploadWindows10DepreciationPromo = 3,
+    kSyncPromo = 4,
+
+    kMaxValue = kSyncPromo,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ProfileMenuAvatarButtonPromoType)
 
   std::optional<Type> type = std::nullopt;
   size_t local_data_count = 0;
