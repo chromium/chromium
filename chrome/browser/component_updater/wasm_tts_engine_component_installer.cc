@@ -7,7 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
+#include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/browser_thread.h"
 
