@@ -33,18 +33,22 @@ XRLayerType XRQuadLayer::LayerType() const {
 }
 
 void XRQuadLayer::setWidth(float width) {
-  width_ = width;
+  width_ = std::max(width, std::numeric_limits<float>::epsilon());
   SetModified(true);
 }
 
 void XRQuadLayer::setHeight(float height) {
-  height_ = height;
+  height_ = std::max(height, std::numeric_limits<float>::epsilon());
   SetModified(true);
 }
 
 void XRQuadLayer::setTransform(XRRigidTransform* value) {
   if (transform_ != value) {
-    transform_ = value;
+    if (value) {
+      transform_ = value;
+    } else {
+      transform_ = MakeGarbageCollected<XRRigidTransform>(gfx::Transform{});
+    }
     SetModified(true);
   }
 }

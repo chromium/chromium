@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_webgl_texture_array_swap_chain.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -234,6 +235,20 @@ XRQuadLayer* XRWebGLBinding::createQuadLayer(const XRQuadLayerInit* init,
     return nullptr;
   }
 
+  // Check that width and height are greater than 0.f
+  if (!init->hasWidth() ||
+      init->width() <= std::numeric_limits<float>::epsilon()) {
+    exception_state.ThrowTypeError(
+        "width is required and must be greater than epsilon.");
+    return nullptr;
+  }
+  if (!init->hasHeight() ||
+      init->height() <= std::numeric_limits<float>::epsilon()) {
+    exception_state.ThrowTypeError(
+        "height is required and must be greater than epsilon.");
+    return nullptr;
+  }
+
   XRWebGLSwapChain* color_swap_chain =
       CreateColorSwapchain(init->colorFormat(), GetTextureSizeForLayer(init));
 
@@ -248,6 +263,28 @@ XRCylinderLayer* XRWebGLBinding::createCylinderLayer(
     ExceptionState& exception_state) {
   if (!CanCreateShapedLayer(init, exception_state) ||
       !ValidateShapedLayerTextureType(init->textureType(), exception_state)) {
+    return nullptr;
+  }
+
+  if (!init->hasRadius() || init->radius() < 0.f) {
+    exception_state.ThrowTypeError(
+        "radius is required and must be greater than or equal to zero.");
+    return nullptr;
+  }
+
+  if (!init->hasAspectRatio() ||
+      init->aspectRatio() < std::numeric_limits<float>::epsilon()) {
+    exception_state.ThrowTypeError(
+        "aspectRatio is required and must be greater than or equal to "
+        "epsilon.");
+    return nullptr;
+  }
+
+  if (!init->hasCentralAngle() || init->centralAngle() < 0.f ||
+      init->centralAngle() > kTwoPiFloat) {
+    exception_state.ThrowTypeError(
+        "The central angle is required and must be in the range [0.f, "
+        "2pi].");
     return nullptr;
   }
 

@@ -7,14 +7,16 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_cylinder_layer_init.h"
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
+#include "third_party/blink/renderer/modules/xr/xr_utils.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 XRCylinderLayer::XRCylinderLayer(const XRCylinderLayerInit* init,
                                  XRGraphicsBinding* binding,
                                  XRLayerDrawingContext* drawing_context)
     : XRShapedLayer(init, binding, drawing_context),
-      radius_(init->radius()),
-      central_angle_(init->centralAngle()),
+      radius_(ExcludeNegativeAndNoise(init->radius())),
+      central_angle_(ExcludeNegativeAndNoise(init->centralAngle())),
       aspect_ratio_(init->aspectRatio()) {
   if (init->hasTransform()) {
     transform_ = MakeGarbageCollected<XRRigidTransform>(
@@ -31,23 +33,29 @@ XRLayerType XRCylinderLayer::LayerType() const {
 }
 
 void XRCylinderLayer::setRadius(float radius) {
-  radius_ = radius;
+  radius_ = ExcludeNegativeAndNoise(radius);
   SetModified(true);
 }
 
 void XRCylinderLayer::setCentralAngle(float central_angle) {
-  central_angle_ = central_angle;
+  // Central angle should be in range [0.f, 2*pi].
+  central_angle_ =
+      std::clamp(ExcludeNegativeAndNoise(central_angle), 0.f, kTwoPiFloat);
   SetModified(true);
 }
 
 void XRCylinderLayer::setAspectRatio(float aspect_ratio) {
-  aspect_ratio_ = aspect_ratio;
+  aspect_ratio_ = std::max(aspect_ratio, std::numeric_limits<float>::epsilon());
   SetModified(true);
 }
 
 void XRCylinderLayer::setTransform(XRRigidTransform* value) {
   if (transform_ != value) {
-    transform_ = value;
+    if (value) {
+      transform_ = value;
+    } else {
+      transform_ = MakeGarbageCollected<XRRigidTransform>(gfx::Transform{});
+    }
     SetModified(true);
   }
 }

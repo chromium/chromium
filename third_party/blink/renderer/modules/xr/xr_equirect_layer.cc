@@ -7,14 +7,17 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_equirect_layer_init.h"
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
+#include "third_party/blink/renderer/modules/xr/xr_utils.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 XREquirectLayer::XREquirectLayer(const XREquirectLayerInit* init,
                                  XRGraphicsBinding* binding,
                                  XRLayerDrawingContext* drawing_context)
     : XRShapedLayer(init, binding, drawing_context),
-      radius_(init->radius()),
-      central_horizontal_angle_(init->centralHorizontalAngle()),
+      radius_(ExcludeNegativeAndNoise(init->radius())),
+      central_horizontal_angle_(
+          ExcludeNegativeAndNoise(init->centralHorizontalAngle())),
       upper_vertical_angle_(init->upperVerticalAngle()),
       lower_vertical_angle_(init->lowerVerticalAngle()) {
   if (init->hasTransform()) {
@@ -23,6 +26,15 @@ XREquirectLayer::XREquirectLayer(const XREquirectLayerInit* init,
   } else {
     transform_ = MakeGarbageCollected<XRRigidTransform>(gfx::Transform{});
   }
+
+  // Clamp angles according to spec.
+  central_horizontal_angle_ =
+      std::clamp(central_horizontal_angle_, 0.f, kTwoPiFloat);
+  upper_vertical_angle_ =
+      std::clamp(upper_vertical_angle_, -kPiOverTwoFloat, kPiOverTwoFloat);
+  lower_vertical_angle_ =
+      std::clamp(lower_vertical_angle_, -kPiOverTwoFloat, kPiOverTwoFloat);
+
   CreateLayerBackend();
 }
 
@@ -31,28 +43,34 @@ XRLayerType XREquirectLayer::LayerType() const {
 }
 
 void XREquirectLayer::setRadius(float radius) {
-  radius_ = radius;
+  radius_ = ExcludeNegativeAndNoise(radius);
   SetModified(true);
 }
 
 void XREquirectLayer::setCentralHorizontalAngle(float angle) {
-  central_horizontal_angle_ = angle;
+  central_horizontal_angle_ =
+      std::clamp(ExcludeNegativeAndNoise(angle), 0.f, kTwoPiFloat);
   SetModified(true);
 }
 
 void XREquirectLayer::setUpperVerticalAngle(float angle) {
-  upper_vertical_angle_ = angle;
+  upper_vertical_angle_ = std::clamp(angle, -kPiOverTwoFloat, kPiOverTwoFloat);
   SetModified(true);
 }
 
 void XREquirectLayer::setLowerVerticalAngle(float angle) {
-  lower_vertical_angle_ = angle;
+  // Clamp lower vertical angle.
+  lower_vertical_angle_ = std::clamp(angle, -kPiOverTwoFloat, kPiOverTwoFloat);
   SetModified(true);
 }
 
 void XREquirectLayer::setTransform(XRRigidTransform* value) {
   if (transform_ != value) {
-    transform_ = value;
+    if (value) {
+      transform_ = value;
+    } else {
+      transform_ = MakeGarbageCollected<XRRigidTransform>(gfx::Transform{});
+    }
     SetModified(true);
   }
 }

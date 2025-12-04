@@ -80,6 +80,10 @@ device::mojom::blink::XRLayerLayout V8ToMojomLayerLayout(
 uint16_t GetVerticalViewCount(V8XRLayerLayout);
 uint16_t GetHorizontalViewCount(V8XRLayerLayout);
 
+// Helper method to treat values that are smaller than epsilon
+// as float zero.
+float ExcludeNegativeAndNoise(float value);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_UTILS_H_

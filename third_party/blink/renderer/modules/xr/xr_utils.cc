@@ -342,4 +342,11 @@ uint16_t GetVerticalViewCount(V8XRLayerLayout layout) {
   }
 }
 
+float ExcludeNegativeAndNoise(float value) {
+  if (value < std::numeric_limits<float>::epsilon()) {
+    return 0.f;
+  }
+  return value;
+}
+
 }  // namespace blink
