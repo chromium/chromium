@@ -1591,6 +1591,12 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test, Main) {
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test,
+                       SecurityKeysSubpageDisabled) {
+  RunTest("settings/security_page_v2_test.js",
+          "runMochaSuite('SecurityKeysSubpageDisabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test,
                        SecurityPageHappinessTrackingSurveys) {
   RunTest("settings/security_page_v2_test.js",
           "runMochaSuite('SecurityPageV2HappinessTrackingSurveys')");

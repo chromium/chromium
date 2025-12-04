@@ -8,26 +8,41 @@ import type {CrExpandButtonElement, SettingsSecurityPageV2Element} from 'chrome:
 import {SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import type {ControlledRadioButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, Router, routes, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, Router, routes, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
+
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
+
 
 // clang-format on
 
 suite('Main', function() {
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let openWindowProxy: TestOpenWindowProxy;
   let settingsPrefs: SettingsPrefsElement;
   let page: SettingsSecurityPageV2Element;
 
   suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableSecurityKeysSubpage: true,
+    });
+
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
 
     page = document.createElement('settings-security-page-v2');
     page.prefs = settingsPrefs.prefs;
@@ -184,6 +199,49 @@ suite('Main', function() {
         page.getPref('generated.password_leak_detection').value,
         `Password leak detection should not be changed by switching to
          Standard bundle`);
+  });
+
+  test('ManageCertificatesClick', async function() {
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#manageCertificatesLinkRow')!.click();
+    const result =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.MANAGE_CERTIFICATES, result);
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('certManagementV2URL'));
+  });
+
+  test('ManageSecurityKeysSubpageVisible', function() {
+    assertTrue(isChildVisible(page, '#securityKeysSubpageTrigger'));
+  });
+});
+
+suite('SecurityKeysSubpageDisabled', function() {
+  let settingsPrefs: SettingsPrefsElement;
+  let page: SettingsSecurityPageV2Element;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableSecurityKeysSubpage: false,
+    });
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    page = document.createElement('settings-security-page-v2');
+    page.prefs = settingsPrefs.prefs;
+    document.body.appendChild(page);
+    flush();
+  });
+
+
+  test('ManageSecurityKeysSubpageNotVisible', function() {
+    assertFalse(isChildVisible(page, '#securityKeysSubpageTrigger'));
   });
 });
 

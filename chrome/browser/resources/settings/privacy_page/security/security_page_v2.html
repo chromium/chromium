@@ -199,5 +199,19 @@
         sub-label="$i18n{securityPasswordsLeakDetectionDesc}"
         class="box">
   </settings-toggle-button>
-</settings-section>
+  <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
+    <cr-link-row id="securityKeysSubpageTrigger" class="box"
+        label="$i18n{securityKeysTitle}"
+        sub-label="$i18n{securityKeysDesc}"
+        on-click="onSecurityKeysClick_"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+  </template>
+  <cr-link-row id="manageCertificatesLinkRow" class="box"
+      role-description="$i18n{subpageArrowRoleDescription}"
+      label="$i18n{manageCertificates}"
+      sub-label="$i18n{manageCertificatesDescription}"
+      on-click="onManageCertificatesClick_" external>
+  </cr-link-row>
+  </settings-section>
 </settings-subpage>
