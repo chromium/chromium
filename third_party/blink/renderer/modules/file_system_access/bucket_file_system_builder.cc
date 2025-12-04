@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/bucket_file_system_builder.h"
 
 #include "base/barrier_closure.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink-forward.h"
 
 namespace blink {

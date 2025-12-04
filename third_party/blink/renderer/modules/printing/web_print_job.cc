@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/printing/web_print_job.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_attributes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_state.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"

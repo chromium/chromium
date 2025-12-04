@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_observation.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_observation_collection.h"

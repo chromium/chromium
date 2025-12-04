@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/digital_goods/mojom/digital_goods.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"

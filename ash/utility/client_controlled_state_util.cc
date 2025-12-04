@@ -7,6 +7,7 @@
 #include "ash/wm/client_controlled_state.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"

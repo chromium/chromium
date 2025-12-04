@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/printing/web_printer.h"
 #include <limits>
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_template_attributes.h"

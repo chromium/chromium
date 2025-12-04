@@ -6,6 +6,7 @@
 
 #include "base/files/file_error_or.h"
 #include "base/numerics/checked_math.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/expected_macros.h"
 #include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"

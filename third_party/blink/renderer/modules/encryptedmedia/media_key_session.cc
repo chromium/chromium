@@ -32,6 +32,7 @@
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/to_string.h"
+#include "base/task/single_thread_task_runner.h"
 #include "encrypted_media_utils.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"

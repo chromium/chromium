@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/html_permission_icon_element.h"
 
 #include "base/functional/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_utils.h"

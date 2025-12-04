@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/extensions/webview/media_integrity/media_integrity_token_provider.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/webview/webview_media_integrity.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/extensions_webview/v8/v8_media_integrity_error_name.h"

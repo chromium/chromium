@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/gamepad/gamepad_haptic_actuator.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"

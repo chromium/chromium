@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/search_input_type.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"

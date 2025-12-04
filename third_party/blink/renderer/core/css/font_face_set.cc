@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/font_face_set.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_set_load_status.h"
 #include "third_party/blink/renderer/core/css/font_face_cache.h"

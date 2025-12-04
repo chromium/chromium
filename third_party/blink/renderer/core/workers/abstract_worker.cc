@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/workers/abstract_worker.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"

@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_utterance.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

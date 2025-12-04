@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/input/touch_timeout_handler.h"

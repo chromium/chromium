@@ -11,6 +11,7 @@
 #include "base/check_deref.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/callback.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"

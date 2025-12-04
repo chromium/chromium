@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/modules/webmidi/midi_port.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"

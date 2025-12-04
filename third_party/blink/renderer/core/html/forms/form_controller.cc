@@ -24,6 +24,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"

@@ -21,6 +21,10 @@
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/blink_features.h"
 
+namespace base {
+class SequencedTaskRunner;
+} // namespace base
+
 namespace content {
 class InputRouterImplTestBase;
 } // namespace content

@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
