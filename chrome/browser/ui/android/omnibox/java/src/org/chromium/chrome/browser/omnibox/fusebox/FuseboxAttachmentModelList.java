@@ -237,7 +237,13 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
         return null;
     }
 
-    int getRemainingAttachments() {
+    /**
+     * Returns the number of attachments that generally can be added. Does not have any
+     * understanding of the current request type/tool, and thus does not factor that into
+     * calculations. Instead any caller will need to make appropriate decisions about this instead
+     * if needed.
+     */
+    public int getRemainingAttachments() {
         return MAX_ATTACHMENTS - size();
     }
 
