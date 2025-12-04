@@ -89,6 +89,15 @@ std::u16string GetYearInTheFuture() {
   return base::NumberToString16(now.year + 4);
 }
 
+bool ShouldUseNewFopDisplay() {
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableNewFopDisplayDesktop);
+#endif
+}
+
 TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
   const std::u16string digits = u"1235";
   const std::u16string expected =
@@ -103,6 +112,12 @@ TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
 // of different possible summary strings.  Variations occur based on the
 // existence of credit card number, month, and year fields.
 TEST(CreditCardTest, LabelSummary) {
+  if (ShouldUseNewFopDisplay()) {
+    // Tests for New FOP display have been covered by *LabelPieces_WithNickname
+    // and *LabelPieces_WithoutNickname tests. Skip here.
+    return;
+  }
+
   std::u16string valid_nickname = u"My Visa Card";
 
   // Case 0: empty credit card.
@@ -1849,9 +1864,10 @@ TEST(CreditCardTest, IsDeletable) {
 }
 
 TEST(CreditCardTest, LabelPieces_WithNickname) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableNewFopDisplayDesktop);
+  if (!ShouldUseNewFopDisplay()) {
+    // Tests for New FOP display only.
+    return;
+  }
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                   "https://www.example.com/");
   // Set the card as Mastercard.
@@ -1867,9 +1883,10 @@ TEST(CreditCardTest, LabelPieces_WithNickname) {
 }
 
 TEST(CreditCardTest, LabelPieces_WithoutNickname) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableNewFopDisplayDesktop);
+  if (!ShouldUseNewFopDisplay()) {
+    // Tests for New FOP display only.
+    return;
+  }
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                   "https://www.example.com/");
   // Set the card as Mastercard.

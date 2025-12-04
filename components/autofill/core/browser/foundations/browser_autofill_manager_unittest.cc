@@ -411,8 +411,13 @@ Suggestion GenerateVirtualCardSuggestionFromCreditCardSuggestion(
   if (field_type == CREDIT_CARD_NUMBER) {
     virtual_card_suggestion.labels.clear();
   }
-  virtual_card_suggestion.labels.push_back(
-      std::vector<Suggestion::Text>{Suggestion::Text(virtual_card_label)});
+  if (suggestion.labels.size() > 0) {
+    // For other field types, we will show the network and last four digits as
+    // the first label.
+    virtual_card_suggestion.labels.clear();
+    virtual_card_suggestion.labels.push_back(std::vector<Suggestion::Text>{
+        Suggestion::Text(suggestion.labels[0][0].value)});
+  }
 #endif
   return virtual_card_suggestion;
 }

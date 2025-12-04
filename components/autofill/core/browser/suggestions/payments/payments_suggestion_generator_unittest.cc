@@ -3923,8 +3923,12 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
   // suggestion label when the virtual card metadata flag is enabled on Android
   // OS.
   expected_labels_size = 0;
-#else
+#elif BUILDFLAG(IS_IOS)
+  // For iOS, the expiration date is shown as a suggestion label.
   expected_labels_size = 1;
+#else
+  // For virtual cards, expiration date is not shown as a suggestion label.
+  expected_labels_size = 0;
 #endif
   EXPECT_EQ(virtual_card_suggestion.labels.size(), expected_labels_size);
 
@@ -3944,10 +3948,17 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
               &feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature);
 #endif
   } else {
+#if BUILDFLAG(IS_IOS)
     ASSERT_EQ(real_card_suggestion.labels.size(), 2U);
     ASSERT_EQ(real_card_suggestion.labels[1].size(), 1U);
     EXPECT_EQ(real_card_suggestion.labels[1][0].value,
               l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK));
+#elif !BUILDFLAG(IS_ANDROID)
+    ASSERT_EQ(real_card_suggestion.labels.size(), 1U);
+    ASSERT_EQ(real_card_suggestion.labels[0].size(), 1U);
+    EXPECT_EQ(real_card_suggestion.labels[0][0].value,
+              l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK));
+#endif
   }
 }
 
