@@ -298,6 +298,8 @@ should be able to be added at any place in this file.
       summary="For desktop PWAs launched via Link Capturing."/>
   <variant name="_DesktopPWAsLinkCapturingLaunchAppInTab"
       summary="For desktop PWAs launched in a tab via Link Capturing."/>
+  <variant name="_DesktopRealboxContextualSearchFeature"
+      summary="For Realbox Next contextual search feature."/>
   <variant name="_DesktopSharedHighlighting"
       summary="For DesktopSharedHighlighting feature."/>
   <variant name="_DesktopSnoozeFeature"

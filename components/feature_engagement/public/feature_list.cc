@@ -215,6 +215,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHComposeNewBadgeFeature,
     &kIPHDesktopCustomizeChromeExperimentFeature,
     &kIPHDesktopCustomizeChromeAutoOpenFeature,
+    &kIPHDesktopRealboxContextualSearchFeature,
     &kIPHDiscardRingFeature,
     &kIPHDownloadEsbPromoFeature,
     &kIPHExplicitBrowserSigninPreferenceRememberedFeature,
