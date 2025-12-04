@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.browser.webid;
 
-import android.app.Activity;
-
 import org.chromium.base.Promise;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.WindowAndroid;
 
 @NullMarked
 public class IdentityCredentialsDelegate {
@@ -34,13 +33,13 @@ public class IdentityCredentialsDelegate {
         return null;
     }
 
-    public Promise<DigitalCredential> get(Activity window, String origin, String request) {
+    public Promise<DigitalCredential> get(WindowAndroid window, String origin, String request) {
         DigitalCredentialsPresentationDelegate presentationDelegate =
                 new DigitalCredentialsPresentationDelegate();
         return presentationDelegate.get(window, origin, request);
     }
 
-    public Promise<DigitalCredential> create(Activity window, String origin, String request) {
+    public Promise<DigitalCredential> create(WindowAndroid window, String origin, String request) {
         DigitalCredentialsCreationDelegate creationDelegate =
                 new DigitalCredentialsCreationDelegate();
         return creationDelegate.create(window, origin, request);

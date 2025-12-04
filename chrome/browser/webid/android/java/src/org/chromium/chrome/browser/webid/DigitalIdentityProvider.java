@@ -85,7 +85,7 @@ public class DigitalIdentityProvider {
             @JniType("std::string") String origin,
             @JniType("std::string") String request) {
         sCredentials
-                .get(assumeNonNull(window.getActivity().get()), origin, request)
+                .get(window, origin, request)
                 .then(
                         response -> {
                             if (mDigitalIdentityProvider != 0) {
@@ -124,7 +124,7 @@ public class DigitalIdentityProvider {
             @JniType("std::string") String origin,
             @JniType("std::string") String request) {
         sCredentials
-                .create(assumeNonNull(window.getActivity().get()), origin, request)
+                .create(window, origin, request)
                 .then(
                         response -> {
                             if (mDigitalIdentityProvider != 0) {
