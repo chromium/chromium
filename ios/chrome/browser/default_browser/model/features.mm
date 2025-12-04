@@ -4,12 +4,6 @@
 
 #import "ios/chrome/browser/default_browser/model/features.h"
 
-BASE_FEATURE(kTailoredNonModalDBPromo, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsTailoredNonModalDBPromoEnabled() {
-  return base::FeatureList::IsEnabled(kTailoredNonModalDBPromo);
-}
-
 BASE_FEATURE(kShareDefaultBrowserStatus, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsShareDefaultBrowserStatusEnabled() {

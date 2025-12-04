@@ -596,11 +596,6 @@ const std::string IOSDefaultBrowserPromoActionToString(
 
 const base::Feature& GetFeatureForPromoReason(
     NonModalDefaultBrowserPromoReason promo_reason) {
-  if (!IsTailoredNonModalDBPromoEnabled()) {
-    return feature_engagement::
-        kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature;
-  }
-
   switch (promo_reason) {
     case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
       return feature_engagement::
@@ -617,11 +612,6 @@ const base::Feature& GetFeatureForPromoReason(
 
 const std::string GetFeatureEventNameForPromoReason(
     NonModalDefaultBrowserPromoReason promo_reason) {
-  if (!IsTailoredNonModalDBPromoEnabled()) {
-    return feature_engagement::events::
-        kNonModalDefaultBrowserPromoUrlPasteTrigger;
-  }
-
   switch (promo_reason) {
     case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
       return feature_engagement::events::

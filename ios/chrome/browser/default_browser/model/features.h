@@ -7,12 +7,6 @@
 
 #import "base/feature_list.h"
 
-// Feature to enable different text for the non-modal DB promo.
-BASE_DECLARE_FEATURE(kTailoredNonModalDBPromo);
-
-// Returns whether `kTailoredNonModalDBPromo` is enabled.
-bool IsTailoredNonModalDBPromoEnabled();
-
 // Feature to enable sharing default browser status with 1P apps.
 BASE_DECLARE_FEATURE(kShareDefaultBrowserStatus);
 
