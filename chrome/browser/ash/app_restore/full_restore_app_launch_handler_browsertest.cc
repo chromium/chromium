@@ -2921,15 +2921,8 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
 // Tests that apps maintain splitview snap status after being relaunched with
 // full restore.
-// TODO(crbug.com/452086032): Re-enable on "Linux Chromium OS ASan LSan Tests".
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
-    defined(LEAK_SANITIZER)
-#define MAYBE_TabletSplitView DISABLED_TabletSplitView
-#else
-#define MAYBE_TabletSplitView TabletSplitView
-#endif
 IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
-                       MAYBE_TabletSplitView) {
+                       TabletSplitView) {
   TabletMode::Get()->SetEnabledForTest(true);
 
   BrowserWindowInterface* const app1_browser = LaunchHelpSystemWebApp();
