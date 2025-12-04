@@ -51,8 +51,8 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
     private static final int sMetricsMaxValue;
 
     static {
-        // Max value is 23 - 1 obsolete value +1 for 0 indexing = 22 elements.
-        SparseIntArray map = new SparseIntArray(20);
+        // Max value is 26 - 1 obsolete value +1 for 0 indexing = 26 elements.
+        SparseIntArray map = new SparseIntArray(26);
         map.put(Type.TEXT_BUBBLE, 0);
         // map.put(Type.VR_DELEGATE, 1);
         // map.put(Type.AR_DELEGATE, 2);
@@ -76,9 +76,11 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
         map.put(Type.HUB, 21);
         map.put(Type.ARCHIVED_TABS_DIALOG, 22);
         map.put(Type.NATIVE_PAGE, 23);
+        map.put(Type.CANCEL_TAB_STRIP_DRAG, 24);
+        map.put(Type.CANCEL_TAB_SWITCHER_DRAG, 25);
 
         // Add new one here and update array size.
-        sMetricsMaxValue = 24;
+        sMetricsMaxValue = 26;
         sMetricsMap = map;
     }
 

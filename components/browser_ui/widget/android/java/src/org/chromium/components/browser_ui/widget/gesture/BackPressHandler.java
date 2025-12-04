@@ -48,7 +48,9 @@ public interface BackPressHandler {
         Type.SHOW_READING_LIST,
         Type.MINIMIZE_APP_AND_CLOSE_TAB,
         Type.ARCHIVED_TABS_DIALOG,
-        Type.NATIVE_PAGE
+        Type.NATIVE_PAGE,
+        Type.CANCEL_TAB_STRIP_DRAG,
+        Type.CANCEL_TAB_SWITCHER_DRAG
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
@@ -65,15 +67,17 @@ public interface BackPressHandler {
         int FULLSCREEN = 9;
         int SELECTION_POPUP = 10;
         int MANUAL_FILLING = 11;
-        int LOCATION_BAR = 12;
-        int TAB_MODAL_HANDLER = 13;
-        int CLOSE_WATCHER = 14;
-        int FIND_TOOLBAR = 15;
-        int BOTTOM_CONTROLS = 16;
-        int TAB_HISTORY = 17;
-        int NATIVE_PAGE = 18;
-        int SHOW_READING_LIST = 19;
-        int MINIMIZE_APP_AND_CLOSE_TAB = 20;
+        int CANCEL_TAB_STRIP_DRAG = 12;
+        int CANCEL_TAB_SWITCHER_DRAG = 13;
+        int LOCATION_BAR = 14;
+        int TAB_MODAL_HANDLER = 15;
+        int CLOSE_WATCHER = 16;
+        int FIND_TOOLBAR = 17;
+        int BOTTOM_CONTROLS = 18;
+        int TAB_HISTORY = 19;
+        int NATIVE_PAGE = 20;
+        int SHOW_READING_LIST = 21;
+        int MINIMIZE_APP_AND_CLOSE_TAB = 22;
         int NUM_TYPES = MINIMIZE_APP_AND_CLOSE_TAB + 1;
     }
 

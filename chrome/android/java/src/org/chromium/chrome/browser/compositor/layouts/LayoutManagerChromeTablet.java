@@ -14,6 +14,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
@@ -111,7 +112,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             DataSharingTabManager dataSharingTabManager,
             BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            @Nullable XrSceneCoreSessionManager xrSceneCoreSessionManager) {
+            @Nullable XrSceneCoreSessionManager xrSceneCoreSessionManager,
+            BackPressManager backPressManager) {
         super(
                 host,
                 contentContainer,
@@ -149,7 +151,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         dataSharingTabManager,
                         bottomSheetController,
                         shareDelegateSupplier,
-                        xrSpaceModeObservableSupplier);
+                        xrSpaceModeObservableSupplier,
+                        backPressManager);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
         mDesktopWindowStateManager = desktopWindowStateManager;

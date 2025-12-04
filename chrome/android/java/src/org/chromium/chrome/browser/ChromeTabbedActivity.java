@@ -1040,7 +1040,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             mRootUiCoordinator.getDataSharingTabManager(),
                             mRootUiCoordinator.getBottomSheetController(),
                             mRootUiCoordinator.getShareDelegateSupplier(),
-                            mXrSceneCoreSessionManagerSupplier.get());
+                            mXrSceneCoreSessionManagerSupplier.get(),
+                            mBackPressManager);
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }

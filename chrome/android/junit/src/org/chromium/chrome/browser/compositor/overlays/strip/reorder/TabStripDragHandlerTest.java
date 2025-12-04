@@ -292,6 +292,26 @@ public class TabStripDragHandlerTest {
     }
 
     @Test
+    public void test_startSingleTabDragAction_withEscKeyPressCancelDrag() {
+        mSourceInstance.startTabDragAction(
+                mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X, VIEW_WIDTH);
+
+        assertTrue(
+                "Should be in the dragging process.",
+                mSourceInstance.getHandleBackPressChangedSupplier().get());
+
+        Boolean res = mSourceInstance.handleEscPress();
+        assertEquals(true, res);
+        mSourceInstance.onDrag(
+                mTabsToolbarView,
+                mockDragEvent(DragEvent.ACTION_DRAG_ENDED, POS_X, mPosY, DragType.SINGLE_TAB));
+        assertFalse("Global state should be cleared after cancel.", DragDropGlobalState.hasValue());
+        assertFalse(
+                "Should not be in the dragging process after an ESC key press.",
+                mSourceInstance.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
     public void test_startTabDragAction_withTabDragDropFF_returnsTrueForValidTab() {
         DeviceInfo.setIsXrForTesting(true);
         // Act and verify.

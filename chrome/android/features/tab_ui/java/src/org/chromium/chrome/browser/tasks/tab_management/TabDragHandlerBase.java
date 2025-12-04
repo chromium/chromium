@@ -19,7 +19,9 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -36,6 +38,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -50,7 +53,8 @@ import java.util.function.Supplier;
 
 /** A helper class that provides access to common logic involved in tab dragging. */
 @NullMarked
-public abstract class TabDragHandlerBase implements View.OnDragListener, Destroyable {
+public abstract class TabDragHandlerBase
+        implements View.OnDragListener, Destroyable, BackPressHandler {
     private static final String TAG = "TabDragHandlerBase";
     private static @Nullable TrackerToken sDragTrackerToken;
 
@@ -64,6 +68,9 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable ObservableSupplier<@Nullable TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
+    private @Nullable View mDragSourceView;
+    private final ObservableSupplierImpl<Boolean> mDragInProgressSupplier =
+            new ObservableSupplierImpl<>(/* initialValue= */ false);
 
     /**
      * Prepares the tab container view to listen to the drag events and data drop after the drag is
@@ -325,6 +332,7 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
      */
     protected boolean startDrag(
             View dragSourceView, DragShadowBuilder builder, ChromeDropDataAndroid dropData) {
+        mDragSourceView = dragSourceView;
         sDragTrackerToken =
                 DragDropGlobalState.store(
                         mMultiInstanceManager.getCurrentInstanceId(), dropData, builder);
@@ -332,6 +340,7 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
         if (!res) {
             clearDragDropGlobalState();
         }
+        mDragInProgressSupplier.set(true);
         return res;
     }
 
@@ -351,6 +360,8 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
         boolean isMultiTabDrop = isMultiTabDrop();
 
         clearDragDropGlobalState();
+        mDragInProgressSupplier.set(false);
+        mDragSourceView = null;
 
         // Close the source instance window if it has no tabs.
         boolean didCloseWindow = mMultiInstanceManager.closeChromeWindowIfEmpty(sourceInstanceId);
@@ -405,6 +416,31 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
             return DragDropGlobalState.getState(sDragTrackerToken);
         }
         return null;
+    }
+
+    /** Currently, don't do anything during Backpress key while tabs being dragged. */
+    @Override
+    public boolean invokeBackActionOnEscape() {
+        return false;
+    }
+
+    @Override
+    public @Nullable Boolean handleEscPress() {
+        return cancelDrag() == BackPressResult.SUCCESS;
+    }
+
+    /** This handler is only active when the tabs are being dragged. */
+    @Override
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mDragInProgressSupplier;
+    }
+
+    private @BackPressResult int cancelDrag() {
+        if (mDragSourceView != null) {
+            mDragSourceView.cancelDragAndDrop();
+            return BackPressResult.SUCCESS;
+        }
+        return BackPressResult.FAILURE;
     }
 
     public static void setDragTrackerTokenForTesting(TrackerToken token) {
