@@ -19,7 +19,8 @@ namespace android {
 namespace {
 struct LockAndMap {
   base::Lock lock;
-  base::flat_map<const char*, ScopedJavaGlobalRef<jobject>> map;
+  base::flat_map<const char*, ScopedJavaGlobalRef<jobject>> map
+      GUARDED_BY(lock);
 };
 LockAndMap* GetLockAndMap() {
   static base::NoDestructor<LockAndMap> lock_and_map;
