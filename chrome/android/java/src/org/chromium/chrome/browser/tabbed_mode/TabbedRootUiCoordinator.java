@@ -36,6 +36,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
@@ -100,7 +101,6 @@ import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
-import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.language.AppLanguagePromoDialog;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -267,21 +267,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final Callback<Tab> mSendToBackground;
     private final LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
 
-    @SuppressWarnings("HidingField")
-    private final ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
-
     private Callback<Integer> mOnTabStripHeightChangedCallback;
     private final MultiInstanceManager mMultiInstanceManager;
     private int mStatusIndicatorHeight;
     private final OneshotSupplier<HubManager> mHubManagerSupplier;
     private TouchEventObserver mDragDropTouchObserver;
     private ViewGroup mCoordinator;
-
-    @SuppressWarnings("HidingField")
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-
     private final OneshotSupplierImpl<SystemBarColorHelper> mSystemBarColorHelperSupplier;
-    private final ManualFillingComponentSupplier mManualFillingComponentSupplier;
+    private final ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
     private final @NonNull DataSharingTabManager mDataSharingTabManager;
     private final Supplier<Boolean> mCanAnimateBrowserControls;
     protected @Nullable InstantMessageDelegateImpl mInstantMessageDelegateImpl;
@@ -442,7 +435,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
             @NonNull
-                    ObservableSupplierImpl<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+                    SettableObservableSupplier<EphemeralTabCoordinator>
+                            ephemeralTabCoordinatorSupplier,
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull InsetObserver insetObserver,
             @NonNull Function<Tab, Boolean> backButtonShouldCloseTabFn,
@@ -452,7 +446,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Nullable Bundle savedInstanceState,
             @Nullable MultiInstanceManager multiInstanceManager,
             @NonNull ObservableSupplier<Integer> overviewColorSupplier,
-            @NonNull ManualFillingComponentSupplier manualFillingComponentSupplier,
+            @NonNull ObservableSupplier<ManualFillingComponent> manualFillingComponentSupplier,
             @NonNull EdgeToEdgeManager edgeToEdgeManager,
             @NonNull ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
@@ -510,7 +504,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mInsetObserver = insetObserver;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
         mSendToBackground = sendToBackground;
-        mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
 
         mStatusBarColorController.maybeInitializeForCustomizedNtp(
                 mActivity,
@@ -541,7 +534,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mMultiInstanceManager = multiInstanceManager;
         mHubManagerSupplier = hubManagerSupplier;
         mStatusBarColorController.setAllowToolbarColorOnTablets(true);
-        mEdgeToEdgeControllerSupplier = edgeToEdgeSupplier;
         mSystemBarColorHelperSupplier = systemBarColorHelperSupplier;
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
         mInactivityTrackerSupplier = inactivityTrackerSupplier;
@@ -790,7 +782,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mContextualSearchManagerSupplier,
                         getBottomSheetController(),
                         mToolbarManager.getLocationBar().getOmniboxSuggestionsVisualState(),
-                        mManualFillingComponentSupplier,
+                        mManualFillingComponentSupplier.get(),
                         mOverviewColorSupplier,
                         mInsetObserver,
                         mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper());
@@ -1326,13 +1318,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     && tab != null
                     && tab.getWebContents() != null
                     && !tab.isNativePage()) {
-                PageZoomIphController mPageZoomIphController =
+                PageZoomIphController pageZoomIphController =
                         new PageZoomIphController(
                                 mActivity,
                                 profile,
                                 mAppMenuCoordinator.getAppMenuHandler(),
                                 mToolbarManager.getMenuButtonView());
-                mPageZoomIphController.showColdStartIph();
+                pageZoomIphController.showColdStartIph();
             }
         }
 

@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -134,7 +133,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private Tracker mTracker;
     @Mock private BackPressManager mBackpressManager;
     @Mock private CollaborationService mCollaborationService;
-    @Mock private ShareDelegateSupplier mShareDelegateSupplier;
     @Mock private TabBookmarker mTabBookmarker;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private UndoBarThrottle mUndoBarThrottle;
@@ -215,7 +213,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mBackpressManager,
                         /* desktopWindowStateManager= */ null,
                         mEdgeToEdgeSupplier,
-                        mShareDelegateSupplier,
+                        /* shareDelegateSupplier= */ ObservableSuppliers.alwaysNull(),
                         mTabBookmarkerSupplier,
                         mUndoBarThrottle,
                         mPaneManagerSupplier,

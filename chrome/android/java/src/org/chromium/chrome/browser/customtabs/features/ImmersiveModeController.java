@@ -19,6 +19,8 @@ import android.view.Window;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.display_cutout.ActivityDisplayCutoutModeSupplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -33,8 +35,8 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
     private static final int RESTORE_IMMERSIVE_MODE_DELAY_MILLIS = 3000;
 
     private final Activity mActivity;
-    private final ActivityDisplayCutoutModeSupplier mCutoutSupplier =
-            new ActivityDisplayCutoutModeSupplier();
+    private final SettableNonNullObservableSupplier<Integer> mCutoutSupplier =
+            ObservableSuppliers.createNonNull(LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
     private final Handler mHandler = new Handler();
     private final Runnable mUpdateImmersiveFlagsRunnable = this::updateImmersiveFlags;
 
@@ -61,7 +63,8 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
         mActivity = activity;
         lifecycleDispatcher.register(this);
 
-        mCutoutSupplier.attach(windowAndroid.getUnownedUserDataHost());
+        ActivityDisplayCutoutModeSupplier.attach(
+                windowAndroid.getUnownedUserDataHost(), mCutoutSupplier);
     }
 
     /**
@@ -179,6 +182,6 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
     @Override
     public void onDestroy() {
         mHandler.removeCallbacks(mUpdateImmersiveFlagsRunnable);
-        mCutoutSupplier.destroy();
+        ActivityDisplayCutoutModeSupplier.destroy(mCutoutSupplier);
     }
 }

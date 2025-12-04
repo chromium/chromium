@@ -52,8 +52,6 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
-import java.util.function.Supplier;
-
 /**
  * Works with the toolbar in a Custom Tab. Encapsulates interactions with Chrome's toolbar-related
  * classes such as {@link ToolbarManager} and {@link BrowserControlsVisibilityManager}.
@@ -235,7 +233,7 @@ public class CustomTabToolbarCoordinator {
         // The share button from CCT should have custom actions, however if the
         // ShareDelegateSupplier is null, we should fallback to the default share action without
         // custom buttons.
-        Supplier<ShareDelegate> supplier = ShareDelegateSupplier.from(mWindowAndroid);
+        var supplier = ShareDelegateSupplier.from(mWindowAndroid);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_CUSTOM_ACTIONS_IN_CCT)
                 && params.getType() == CustomButtonParams.ButtonType.CCT_SHARE_BUTTON
                 && supplier != null

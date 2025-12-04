@@ -56,15 +56,17 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PowerMonitor;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.memory.MemoryPurgeManager;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -310,31 +312,31 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     protected final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier =
             new ObservableSupplierImpl<>();
 
-    protected final ManualFillingComponentSupplier mManualFillingComponentSupplier =
-            new ManualFillingComponentSupplier();
+    protected final SettableObservableSupplier<ManualFillingComponent>
+            mManualFillingComponentSupplier = ObservableSuppliers.createMonotonic();
 
     /** Used to access the {@link ShareDelegate} from {@link WindowAndroid}. */
-    private final UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier =
-            new ShareDelegateSupplier();
+    private final SettableObservableSupplier<ShareDelegate> mShareDelegateSupplier =
+            ObservableSuppliers.createMonotonic();
 
     private final ObservableSupplierImpl<TabModelOrchestrator> mTabModelOrchestratorSupplier =
             new ObservableSupplierImpl<>();
 
     /** Used to access the {@link TabModelSelector} from {@link WindowAndroid}. */
-    private final UnownedUserDataSupplier<TabModelSelector> mTabModelSelectorSupplier =
-            new TabModelSelectorSupplier();
+    private final SettableObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
+            ObservableSuppliers.createMonotonic();
 
     /** Used to access the {@link EphemeralTabCoordinator} from {@link WindowAndroid}. */
-    private final UnownedUserDataSupplier<EphemeralTabCoordinator>
-            mEphemeralTabCoordinatorSupplier = new EphemeralTabCoordinatorSupplier();
+    private final SettableObservableSupplier<EphemeralTabCoordinator>
+            mEphemeralTabCoordinatorSupplier = ObservableSuppliers.createMonotonic();
 
     /** Used to hold a mutable reference to a {@link TabCreatorManager}. */
     private final ObservableSupplierImpl<TabCreatorManager> mTabCreatorManagerSupplier =
             new ObservableSupplierImpl<>();
 
     // TODO(crbug.com/40182241): Move ownership to RootUiCoordinator.
-    private final UnownedUserDataSupplier<BrowserControlsManager> mBrowserControlsManagerSupplier =
-            new BrowserControlsManagerSupplier();
+    private final SettableObservableSupplier<BrowserControlsManager>
+            mBrowserControlsManagerSupplier = ObservableSuppliers.createMonotonic();
 
     protected final TabModelSelectorProfileSupplier mTabModelProfileSupplier =
             new TabModelSelectorProfileSupplier(mTabModelSelectorSupplier);
@@ -613,11 +615,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     private void setupUnownedUserDataSuppliers() {
-        mShareDelegateSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
-        mTabModelSelectorSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
-        mEphemeralTabCoordinatorSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
-        mManualFillingComponentSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
-        mBrowserControlsManagerSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+        UnownedUserDataHost host = getWindowAndroid().getUnownedUserDataHost();
+        ShareDelegateSupplier.attach(host, mShareDelegateSupplier);
+        TabModelSelectorSupplier.attach(host, mTabModelSelectorSupplier);
+        EphemeralTabCoordinatorSupplier.attach(host, mEphemeralTabCoordinatorSupplier);
+        ManualFillingComponentSupplier.attach(host, mManualFillingComponentSupplier);
+        BrowserControlsManagerSupplier.attach(host, mBrowserControlsManagerSupplier);
         // BrowserControlsManager is ready immediately.
         mBrowserControlsManagerSupplier.set(
                 new BrowserControlsManager(
@@ -1796,13 +1799,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (manualFillingComponent != null) {
             manualFillingComponent.destroy();
         }
-        mManualFillingComponentSupplier.destroy();
+        ManualFillingComponentSupplier.destroy(mManualFillingComponentSupplier);
 
         var browserControlsManager = mBrowserControlsManagerSupplier.get();
         if (browserControlsManager != null) {
             browserControlsManager.destroy();
         }
-        mBrowserControlsManagerSupplier.destroy();
+        BrowserControlsManagerSupplier.destroy(mBrowserControlsManagerSupplier);
 
         if (mLegacyTabStartupMetricsTracker != null) {
             mLegacyTabStartupMetricsTracker.destroy();
@@ -1818,17 +1821,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         mBookmarkModelSupplier.set(null);
 
-        if (mShareDelegateSupplier != null) {
-            mShareDelegateSupplier.destroy();
-        }
-
-        if (mTabModelSelectorSupplier != null) {
-            mTabModelSelectorSupplier.destroy();
-        }
-
-        if (mEphemeralTabCoordinatorSupplier != null) {
-            mEphemeralTabCoordinatorSupplier.destroy();
-        }
+        mShareDelegateSupplier.destroy();
+        mTabModelSelectorSupplier.destroy();
+        EphemeralTabCoordinatorSupplier.destroy(mEphemeralTabCoordinatorSupplier);
 
         if (mBottomContainer != null) {
             mBottomContainer.destroy();
@@ -2152,8 +2147,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         return mTabModelSelectorSupplier;
     }
 
-    /** Returns an {@link ObservableSupplierImpl} for {@link EphemeralTabCoordinatorSupplier}. */
-    public final ObservableSupplierImpl<EphemeralTabCoordinator>
+    /** Returns an {@link SettableObservableSupplier} for {@link EphemeralTabCoordinator}. */
+    public final SettableObservableSupplier<EphemeralTabCoordinator>
             getEphemeralTabCoordinatorSupplier() {
         return mEphemeralTabCoordinatorSupplier;
     }

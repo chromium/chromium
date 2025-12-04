@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
-import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -102,7 +101,6 @@ public class BottomAttachedUiObserverTest {
     @Mock private OmniboxSuggestionsVisualState mOmniboxSuggestionsVisualState;
 
     @Mock private ManualFillingComponent mManualFillingComponent;
-    @Mock private ManualFillingComponentSupplier mManualFillingComponentSupplier;
 
     @Mock private KeyboardAccessoryVisualStateProvider mKeyboardAccessoryVisualStateProvider;
     private final ObservableSupplierImpl<KeyboardAccessoryVisualStateProvider>
@@ -129,7 +127,6 @@ public class BottomAttachedUiObserverTest {
         when(mOverlayPanelStateProvider.isFullWidthSizePanel()).thenReturn(true);
         mKeyboardAccessoryVisualStateSupplier.set(mKeyboardAccessoryVisualStateProvider);
         mAccessorySheetVisualStateSupplier.set(mAccessorySheetVisualStateProvider);
-        when(mManualFillingComponentSupplier.get()).thenReturn(mManualFillingComponent);
         when(mManualFillingComponent.getKeyboardAccessoryVisualStateProvider())
                 .thenReturn(mKeyboardAccessoryVisualStateSupplier);
         when(mManualFillingComponent.getAccessorySheetVisualStateProvider())
@@ -143,7 +140,7 @@ public class BottomAttachedUiObserverTest {
                         mContextualSearchManagerSupplier,
                         mBottomSheetController,
                         mOmniboxSuggestionsVisualState,
-                        mManualFillingComponentSupplier,
+                        mManualFillingComponent,
                         mInsetObserver);
         mBottomAttachedUiObserver.onInsetChanged();
 

@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
-import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -143,8 +142,8 @@ public class BottomAttachedUiObserver
      *     changes to the bottom sheet.
      * @param omniboxSuggestionsVisualState An optional {@link OmniboxSuggestionsVisualState} for
      *     access to the visual state of the omnibox suggestions.
-     * @param manualFillingComponentSupplier Supplies the {@link ManualFillingComponent} for
-     *     observing the visual state of keyboard accessories.
+     * @param manualFillingComponent The {@link ManualFillingComponent} for observing the visual
+     *     state of keyboard accessories.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
      */
     public BottomAttachedUiObserver(
@@ -154,7 +153,7 @@ public class BottomAttachedUiObserver
             NullableObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
             BottomSheetController bottomSheetController,
             @Nullable OmniboxSuggestionsVisualState omniboxSuggestionsVisualState,
-            ManualFillingComponentSupplier manualFillingComponentSupplier,
+            @Nullable ManualFillingComponent manualFillingComponent,
             InsetObserver insetObserver) {
         mObservers = new ObserverList<>();
 
@@ -176,7 +175,6 @@ public class BottomAttachedUiObserver
         mInsetObserver.addObserver(this);
         checkIfBottomNavbarIsPresent();
 
-        ManualFillingComponent manualFillingComponent = manualFillingComponentSupplier.get();
         if (manualFillingComponent != null) {
             mKeyboardAccessoryVisualStateProviderSupplier =
                     manualFillingComponent.getKeyboardAccessoryVisualStateProvider();

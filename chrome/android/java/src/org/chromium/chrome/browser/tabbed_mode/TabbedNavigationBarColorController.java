@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
-import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -156,7 +155,7 @@ class TabbedNavigationBarColorController
             NullableObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
             BottomSheetController bottomSheetController,
             @Nullable OmniboxSuggestionsVisualState omniboxSuggestionsVisualState,
-            ManualFillingComponentSupplier manualFillingComponentSupplier,
+            @Nullable ManualFillingComponent manualFillingComponent,
             ObservableSupplier<Integer> overviewColorSupplier,
             InsetObserver insetObserver,
             EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
@@ -175,7 +174,7 @@ class TabbedNavigationBarColorController
                         contextualSearchManagerSupplier,
                         bottomSheetController,
                         omniboxSuggestionsVisualState,
-                        manualFillingComponentSupplier,
+                        manualFillingComponent,
                         insetObserver));
     }
 

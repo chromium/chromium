@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -75,7 +76,6 @@ public class CustomTabToolbarCoordinatorUnitTest {
             new CustomTabActivityContentTestEnvironment();
 
     @Mock private ShareDelegate mShareDelegate;
-    @Mock private ShareDelegateSupplier mShareDelegateSupplier;
     @Mock private CustomTabActivityTabProvider mTabProvider;
     @Mock private ActivityWindowAndroid mActivityWindowAndroid;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
@@ -101,8 +101,8 @@ public class CustomTabToolbarCoordinatorUnitTest {
         mTabController = env.createTabController();
         mCoordinator = createCoordinator();
 
-        ShareDelegateSupplier.setInstanceForTesting(mShareDelegateSupplier);
-        when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
+        ShareDelegateSupplier.setInstanceForTesting(
+                ObservableSuppliers.createNonNull(mShareDelegate));
         when(mTabProvider.getTab()).thenReturn(mTab);
         when(mTab.getOriginalUrl()).thenReturn(GURL.emptyGURL());
         when(mTab.getTitle()).thenReturn("");
@@ -158,7 +158,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
                 .thenReturn(CustomButtonParams.ButtonType.CCT_SHARE_BUTTON);
 
         // Test null supplier.
-        when(mShareDelegateSupplier.get()).thenReturn(null);
+        ShareDelegateSupplier.setInstanceForTesting(ObservableSuppliers.alwaysNull());
         clickButtonAndVerifyPendingIntent();
     }
 

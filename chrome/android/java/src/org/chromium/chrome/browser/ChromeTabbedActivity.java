@@ -61,11 +61,12 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Nullable;
@@ -459,8 +460,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     // Supplier for a dependency to inform about the type of intent used to launch Chrome.
     private final OneshotSupplierImpl<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier =
             new OneshotSupplierImpl<>();
-    private final UnownedUserDataSupplier<StartupPaintPreviewHelper>
-            mStartupPaintPreviewHelperSupplier = new StartupPaintPreviewHelperSupplier();
+    private final SettableObservableSupplier<StartupPaintPreviewHelper>
+            mStartupPaintPreviewHelperSupplier = ObservableSuppliers.createMonotonic();
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<TabSwitcher> mTabSwitcherSupplier =
@@ -2868,7 +2869,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
         IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
-        mStartupPaintPreviewHelperSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+        StartupPaintPreviewHelperSupplier.attach(
+                getWindowAndroid().getUnownedUserDataHost(), mStartupPaintPreviewHelperSupplier);
         mDseNewTabUrlManager = new DseNewTabUrlManager(mTabModelProfileSupplier);
 
         initHub();
@@ -4376,7 +4378,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (startupPaintPreviewHelper != null) {
             startupPaintPreviewHelper.destroy();
         }
-        mStartupPaintPreviewHelperSupplier.destroy();
+        StartupPaintPreviewHelperSupplier.destroy(mStartupPaintPreviewHelperSupplier);
 
         var moduleRegistry = mModuleRegistrySupplier.get();
         if (moduleRegistry != null) {

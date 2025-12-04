@@ -27,7 +27,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.creator.test.R;
 import org.chromium.chrome.browser.feed.FeedReliabilityLoggingBridge;
@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.UnfollowResults;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -65,7 +64,6 @@ public class CreatorMediatorTest {
     @Mock private Profile mProfile;
     @Mock private WebContentsCreator mCreatorWebContents;
     @Mock private NewTabCreator mCreatorOpenTab;
-    @Mock private UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private SignInInterstitialInitiator mSignInInterstitialInitiator;
 
     @Captor private ArgumentCaptor<Callback<FollowResults>> mFollowResultsCallbackCaptor;
@@ -104,7 +102,7 @@ public class CreatorMediatorTest {
                         mUrl,
                         mCreatorWebContents,
                         mCreatorOpenTab,
-                        mShareDelegateSupplier,
+                        ObservableSuppliers.alwaysNull(),
                         SingleWebFeedEntryPoint.OTHER,
                         /* isFollowing= */ false,
                         mSignInInterstitialInitiator);

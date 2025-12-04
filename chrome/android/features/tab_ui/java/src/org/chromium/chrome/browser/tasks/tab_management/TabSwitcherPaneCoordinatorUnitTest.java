@@ -74,7 +74,6 @@ import org.chromium.chrome.browser.hub.SingleChildViewManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
@@ -147,7 +146,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private ServiceStatus mServiceStatus;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
-    @Mock private ShareDelegateSupplier mShareDelegateSupplier;
     @Mock private TabBookmarker mTabBookmarker;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private UndoBarThrottle mUndoBarThrottle;
@@ -260,7 +258,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         },
                         mEdgeToEdgeSupplier,
                         /* desktopWindowStateManager= */ null,
-                        mShareDelegateSupplier,
+                        /* shareDelegateSupplier= */ ObservableSuppliers.alwaysNull(),
                         mTabBookmarkerSupplier,
                         mUndoBarThrottle,
                         mOverlayViewSupplier::set,

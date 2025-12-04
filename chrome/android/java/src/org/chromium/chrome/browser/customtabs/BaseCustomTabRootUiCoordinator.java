@@ -32,6 +32,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -228,7 +229,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
             @NonNull
-                    ObservableSupplierImpl<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+                    SettableObservableSupplier<EphemeralTabCoordinator>
+                            ephemeralTabCoordinatorSupplier,
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull Supplier<CustomTabToolbarCoordinator> customTabToolbarCoordinator,
             @NonNull Supplier<BrowserServicesIntentDataProvider> intentDataProvider,
@@ -753,8 +755,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             final var desktopWindowStateManager = getDesktopWindowStateManager();
             assert desktopWindowStateManager != null;
 
-            OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier = new OneshotSupplierImpl<>();
-            mAppMenuSupplier.set(mAppMenuCoordinator);
+            OneshotSupplierImpl<AppMenuCoordinator> appMenuSupplier = new OneshotSupplierImpl<>();
+            appMenuSupplier.set(mAppMenuCoordinator);
 
             mWebAppHeaderLayoutCoordinator =
                     new WebAppHeaderLayoutCoordinator(
@@ -776,7 +778,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             },
                             this::setHeaderAsOverlay,
                             mBrowserControlsManager,
-                            mAppMenuSupplier,
+                            appMenuSupplier,
                             mBrowserControlsManager.getBrowserVisibilityDelegate(),
                             mWindowAndroid,
                             () -> mCompositorViewHolderSupplier.get().requestFocus(),

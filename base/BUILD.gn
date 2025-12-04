@@ -5046,7 +5046,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/supplier/SyncOneshotSupplier.java",
       "android/java/src/org/chromium/base/supplier/SyncOneshotSupplierImpl.java",
       "android/java/src/org/chromium/base/supplier/TransitiveObservableSupplier.java",
-      "android/java/src/org/chromium/base/supplier/UnownedUserDataSupplier.java",
       "android/java/src/org/chromium/base/supplier/UnwrapObservableSupplier.java",
     ]
     deps = [
@@ -5809,7 +5808,6 @@ if (is_android) {
       "android/junit/src/org/chromium/base/supplier/SupplierUtilsTest.java",
       "android/junit/src/org/chromium/base/supplier/SyncOneshotSupplierImplTest.java",
       "android/junit/src/org/chromium/base/supplier/TransitiveObservableSupplierTest.java",
-      "android/junit/src/org/chromium/base/supplier/UnownedUserDataSupplierTest.java",
       "android/junit/src/org/chromium/base/supplier/UnwrapObservableSupplierTest.java",
       "android/junit/src/org/chromium/base/task/AsyncTaskThreadTest.java",
       "android/junit/src/org/chromium/base/task/ChromiumExecutorServiceFactoryTest.java",

@@ -15,7 +15,8 @@ import android.view.MenuItem;
 import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -30,7 +31,6 @@ import org.chromium.chrome.browser.init.ActivityLifecycleDispatcherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
-import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -50,10 +50,13 @@ public class CreatorActivity extends SnackbarActivity {
     private @Nullable ActivityWindowAndroid mWindowAndroid;
     private @Nullable BottomSheetController mBottomSheetController;
     private @Nullable CreatorActionDelegateImpl mCreatorActionDelegate;
-    private ActivityTabProvider mActivityTabProvider;
-    private ActivityLifecycleDispatcherImpl mLifecycleDispatcher;
-    private UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier;
-    private UnownedUserDataSupplier<ShareDelegate> mTabShareDelegateSupplier;
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
+    private final ActivityLifecycleDispatcherImpl mLifecycleDispatcher =
+            new ActivityLifecycleDispatcherImpl(this);
+    private final SettableObservableSupplier<ShareDelegate> mShareDelegateSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableObservableSupplier<ShareDelegate> mTabShareDelegateSupplier =
+            ObservableSuppliers.createMonotonic();
 
     private static class TabShareDelegateImpl extends ShareDelegateImpl {
         public TabShareDelegateImpl(
@@ -86,10 +89,6 @@ public class CreatorActivity extends SnackbarActivity {
     @Initializer
     @Override
     protected void onCreateInternal(@Nullable Bundle savedInstanceState) {
-        mActivityTabProvider = new ActivityTabProvider();
-        mLifecycleDispatcher = new ActivityLifecycleDispatcherImpl(this);
-        mShareDelegateSupplier = new ShareDelegateSupplier();
-        mTabShareDelegateSupplier = new ShareDelegateSupplier();
 
         super.onCreateInternal(savedInstanceState);
     }
@@ -107,7 +106,7 @@ public class CreatorActivity extends SnackbarActivity {
                         .getIntExtra(
                                 CreatorIntentConstants.CREATOR_ENTRY_POINT,
                                 SingleWebFeedEntryPoint.OTHER);
-        int mParentTabId =
+        int parentTabId =
                 getIntent().getIntExtra(CreatorIntentConstants.CREATOR_TAB_ID, INVALID_TAB_ID);
 
         IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
@@ -168,7 +167,7 @@ public class CreatorActivity extends SnackbarActivity {
                         profile,
                         getSnackbarManager(),
                         coordinator,
-                        mParentTabId,
+                        parentTabId,
                         mBottomSheetController);
 
         coordinator.queryFeedStream(mCreatorActionDelegate, mShareDelegateSupplier);
@@ -197,25 +196,15 @@ public class CreatorActivity extends SnackbarActivity {
     @SuppressWarnings("NullAway")
     @Override
     protected void onDestroy() {
-        if (mLifecycleDispatcher != null) {
-            mLifecycleDispatcher.onDestroyStarted();
-        }
+        mLifecycleDispatcher.onDestroyStarted();
         if (mWindowAndroid != null) {
             mWindowAndroid.destroy();
             mWindowAndroid = null;
         }
-        if (mTabShareDelegateSupplier != null) {
-            mTabShareDelegateSupplier.destroy();
-            mTabShareDelegateSupplier = null;
-        }
-        if (mShareDelegateSupplier != null) {
-            mShareDelegateSupplier.destroy();
-            mShareDelegateSupplier = null;
-        }
+        mTabShareDelegateSupplier.destroy();
+        mShareDelegateSupplier.destroy();
         super.onDestroy();
-        if (mLifecycleDispatcher != null) {
-            mLifecycleDispatcher.dispatchOnDestroy();
-        }
+        mLifecycleDispatcher.dispatchOnDestroy();
     }
 
     // This implements the CreatorWebContents interface.

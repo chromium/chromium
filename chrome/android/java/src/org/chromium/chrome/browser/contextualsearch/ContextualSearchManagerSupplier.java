@@ -7,13 +7,12 @@ package org.chromium.chrome.browser.contextualsearch;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * A {@link UnownedUserDataSupplier} which manages the supplier and UnownedUserData for a {@link
+ * A {@link ObservableSupplier} which manages the supplier and UnownedUserData for a {@link
  * ContextualSearchManager}.
  */
 @NullMarked

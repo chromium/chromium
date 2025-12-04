@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -120,7 +120,7 @@ public class CreatorCoordinator
     private boolean mFullyOpened;
     private final WebContentsCreator mCreatorWebContents;
     private final NewTabCreator mCreatorOpenTab;
-    private final UnownedUserDataSupplier<ShareDelegate> mBottomsheetShareDelegateSupplier;
+    private final ObservableSupplier<ShareDelegate> mBottomsheetShareDelegateSupplier;
     private @MonotonicNonNull GURL mBottomSheetUrl;
     private final int mEntryPoint;
 
@@ -139,7 +139,7 @@ public class CreatorCoordinator
      * @param creatorWebContents the interface to generate webcontents for the bottomsheet.
      * @param creatorOpenTab the interface to open urls in a new tab, used by the bottomsheet.
      * @param bottomsheetShareDelegateSupplier an empty share delegate supplier, used by the
-     *         bottomsheet.
+     *     bottomsheet.
      * @param entryPoint the SingleWebFeedEntryPoint has the Activity been launched with.
      * @param isFollowing the initial state of if the creator is being followed.
      */
@@ -152,7 +152,7 @@ public class CreatorCoordinator
             String url,
             WebContentsCreator creatorWebContents,
             NewTabCreator creatorOpenTab,
-            UnownedUserDataSupplier<ShareDelegate> bottomsheetShareDelegateSupplier,
+            ObservableSupplier<ShareDelegate> bottomsheetShareDelegateSupplier,
             int entryPoint,
             boolean isFollowing,
             SignInInterstitialInitiator signInInterstitialInitiator) {
@@ -369,7 +369,7 @@ public class CreatorCoordinator
     }
 
     private void getWebFeedMetadata() {
-        Callback<WebFeedMetadata> metadata_callback =
+        Callback<WebFeedMetadata> metadataCallback =
                 result -> {
                     @WebFeedSubscriptionStatus
                     int subscriptionStatus =
@@ -396,7 +396,7 @@ public class CreatorCoordinator
                     }
                 };
         WebFeedBridge.getWebFeedMetadata(
-                mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY), metadata_callback);
+                mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY), metadataCallback);
     }
 
     /** Set up the bottom sheet for this activity. */
