@@ -4340,6 +4340,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Display and text size <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats. Temporarily links this data to your Google Account when you're signed in, to protect you across Google apps.</translation>
+<translation id="3924788966103416622">An external app wants full control over this Chrome session to debug it. This includes access to your saved data, cookies and site data, and the ability to navigate to any URL.</translation>
 <translation id="3925573269917483990">Camera:</translation>
 <translation id="3925926055063465902">Other users on this device can also use this network</translation>
 <translation id="3926002189479431949">Smart Lock phone changed</translation>
@@ -4478,6 +4479,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4015250302257349679">Press <ph name="ACCELERATOR" /> to focus this bubble, then again to focus the element that it is pointing to.</translation>
 <translation id="4016762287427926315">Permissions that you allow for <ph name="APP_NAME" /> will also be allowed for this app. <ph name="BEGIN_LINK" />Manage<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Create QR code for this link</translation>
+<translation id="4018953474106733212">Only web developers should turn on this feature and only use it with trusted apps.</translation>
 <translation id="4019983356493507433">Edit bookmark list</translation>
 <translation id="4020701737692625681">Your administrator can record your screen</translation>
 <translation id="4021279097213088397">–</translation>
@@ -6681,6 +6683,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="557722062034137776">Resetting your device will not affect your Google accounts or any data synced to these accounts. However, all files saved locally on your device will be deleted.</translation>
 <translation id="5578059481725149024">Auto sign-in</translation>
 <translation id="5578387000057347457">Enter a custom prompt or highlight text to create an image</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 item is saved only to this device. To use it on your other devices, <ph name="BEGIN_LINK" />save it in your Google Account<ph name="END_LINK" />.}other{{ITEM_COUNT} passwords are saved only to this device. To use them on your other devices, <ph name="BEGIN_LINK" />save them in your Google Account<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Remove <ph name="SITE" /> from the <ph name="SECTION_HEADER" /> list</translation>
 <translation id="5581134892342029705">Translation to <ph name="LANGUAGE" /> complete</translation>
 <translation id="558170650521898289">Microsoft Windows Hardware Driver Verification</translation>
@@ -7169,6 +7172,7 @@ You can assign multiple switches to this action.</translation>
     <ph name="LINE_BREAK" />
     This picture will appear on the Chromebook sign-in screen and lock screen.</translation>
 <translation id="5925147183566400388">Certification Practice Statement Pointer</translation>
+<translation id="5926936390113611560">Open all profiles</translation>
 <translation id="5927132638760172455">Casting to an unknown receiver</translation>
 <translation id="592740088639760830">Stop this container</translation>
 <translation id="592880897588170157">Download PDF files instead of automatically opening them in Chrome</translation>
@@ -7253,6 +7257,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5979421442488174909">&amp;Translate to <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">To bookmark pages, click the star in the address bar</translation>
 <translation id="5982578203375898585">Show downloads when they're complete</translation>
+<translation id="598347738324022917">Bookmark saved to this device</translation>
 <translation id="5983716913605894570">Generating…</translation>
 <translation id="5984222099446776634">Recently Visited</translation>
 <translation id="5984334442529819751">Error installing DLC (often, a reboot is needed, check Settings\&gt;\&gt;About ChromeOS for more information).</translation>
@@ -11515,6 +11520,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8910987510378294980">Hide device list</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8912810933860534797">Enable auto-scan</translation>
+<translation id="8914030287343429787">View your passwords even when you're not using Chrome or Android by signing in to <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8915307125957890427">Right-click on a tab and select 'Add tab to group' and then select 'New group'</translation>
 <translation id="8915370057835397490">Loading suggestion</translation>

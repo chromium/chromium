@@ -4327,6 +4327,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Dimensioni di visualizzazione e testo: <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Invia gli URL a Navigazione sicura per verificarli. Invia anche piccoli esempi di pagine, download, attività delle estensioni e informazioni di sistema per contribuire al rilevamento di nuove minacce. Quando hai effettuato l'accesso, collega temporaneamente questi dati al tuo Account Google per proteggerti nelle app Google.</translation>
+<translation id="3924788966103416622">Un'app esterna richiede il controllo completo di questa sessione di Chrome per eseguire il debug. Ciò include l'accesso ai dati salvati, ai cookie e ai dati dei siti, nonché la possibilità di visitare qualsiasi URL.</translation>
 <translation id="3925573269917483990">Fotocamera:</translation>
 <translation id="3925926055063465902">Anche altri utenti di questo dispositivo possono usare questa rete</translation>
 <translation id="3926002189479431949">Telefono con Smart Lock cambiato</translation>
@@ -4465,6 +4466,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4015250302257349679">Premi <ph name="ACCELERATOR" /> per selezionare questo fumetto, quindi premi di nuovo per selezionare l'elemento a cui rimanda il fumetto.</translation>
 <translation id="4016762287427926315">Le autorizzazioni consentite per <ph name="APP_NAME" /> saranno consentite anche per questa app. <ph name="BEGIN_LINK" />Gestisci<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crea codice QR per questo link</translation>
+<translation id="4018953474106733212">Solo gli sviluppatori web dovrebbero attivare questa funzionalità e utilizzarla unicamente con app attendibili.</translation>
 <translation id="4019983356493507433">Modifica elenco di preferiti</translation>
 <translation id="4020701737692625681">L'amministratore può registrare il tuo schermo</translation>
 <translation id="4021279097213088397">-</translation>
@@ -6667,6 +6669,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="557722062034137776">Il reset del dispositivo non influirà sui tuoi Account Google o sui dati sincronizzati con tali account. Tuttavia, tutti i file salvati localmente sul dispositivo verranno eliminati.</translation>
 <translation id="5578059481725149024">Accesso automatico</translation>
 <translation id="5578387000057347457">Inserisci un prompt personalizzato o evidenzia il testo per creare un'immagine</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 elemento è salvato solo su questo dispositivo. Per averlo su altri dispositivi, salvalo nel tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" />.}other{{ITEM_COUNT} elementi sono salvati solo su questo dispositivo. Per averli su altri dispositivi, salvali nel tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Rimuovi <ph name="SITE" /> dall'elenco <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">Traduzione verso la lingua <ph name="LANGUAGE" /> completata</translation>
 <translation id="558170650521898289">Verifica driver hardware Microsoft Windows</translation>
@@ -7153,6 +7156,7 @@ Puoi assegnare più sensori a questa azione.</translation>
     <ph name="LINE_BREAK" />
     Questa immagine verrà mostrata nelle schermate di accesso e di blocco del Chromebook.</translation>
 <translation id="5925147183566400388">Puntatore Certification Practice Statement</translation>
+<translation id="5926936390113611560">Apri tutti i profili</translation>
 <translation id="5927132638760172455">Trasmissione a un ricevitore sconosciuto</translation>
 <translation id="592740088639760830">Interrompi questo container</translation>
 <translation id="592880897588170157">Scarica i file PDF anziché aprirli automaticamente in Chrome</translation>
@@ -7236,6 +7240,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5979421442488174909">&amp;Traduci in <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Per aggiungere una pagina ai preferiti, fai clic sulla stella nella barra degli indirizzi</translation>
 <translation id="5982578203375898585">Mostra i download al termine dell'operazione</translation>
+<translation id="598347738324022917">Preferito salvato su questo dispositivo</translation>
 <translation id="5983716913605894570">Generazione in corso…</translation>
 <translation id="5984222099446776634">Visitati di recente</translation>
 <translation id="5984334442529819751">Errore durante l'installazione di DLC (spesso è necessario il riavvio; per ulteriori informazioni, vai a Impostazioni\&gt;\&gt;Informazioni su ChromeOS).</translation>
@@ -11498,6 +11503,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8910987510378294980">Nascondi elenco dispositivi</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8912810933860534797">Attiva scansione automatica</translation>
+<translation id="8914030287343429787">Visualizza le tue password anche quando non utilizzi Chrome o Android accedendo a <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Riavvia Chrome</translation>
 <translation id="8915307125957890427">Fai clic con il tasto destro del mouse su una scheda e seleziona "Aggiungi scheda a gruppo", quindi seleziona "Nuovo gruppo"</translation>
 <translation id="8915370057835397490">Caricamento suggerimento</translation>

@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">¿Quieres guardar el IBAN?</translation>
 <translation id="1113869188872983271">&amp;Deshacer Reorganizar</translation>
 <translation id="1118429183611783760">Aspiradoras y cuidado de pisos</translation>
+<translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar qué información de Chrome guardas en tu Cuenta de Google</translation>
 <translation id="1122714970786750095">Electrónica y electricidad</translation>
 <translation id="1123753900084781868">El Subtitulado instantáneo no está disponible en este momento</translation>
 <translation id="112840717907525620">Caché de política correcta</translation>
@@ -966,6 +967,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2536110899380797252">Agregar dirección</translation>
 <translation id="2537931901612099523">Las demás personas que usen este dispositivo no verán tu actividad, por lo que puedes navegar de forma más privada. Esto no cambiará la forma en que recopilan los datos los sitios web que visitas ni los servicios que usan, incluido Google. Se guardarán las descargas y los favoritos.</translation>
 <translation id="2541219929084442027">Una vez que cierres todas las pestañas de incógnito, las páginas que hayas visitado en ese modo no se guardarán en el historial del navegador, en la lista de cookies ni en el historial de búsqueda. Sí se guardarán los archivos que descargues y los favoritos que crees.</translation>
+<translation id="2541474152868747095">Para obtener el historial de tus otros dispositivos, verifica tu identidad. Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="2542106216580219892">Surf</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" /> – Para salir de la pantalla completa, mantén presionado |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Tu administrador reinició el dispositivo</translation>
@@ -1132,6 +1134,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2839501879576190149">El sitio al que quieres acceder es falso</translation>
 <translation id="2843623755398178332">¿Quieres desplazar y acercar la pestaña compartida?</translation>
 <translation id="2851291081585704741">No tienes conexión</translation>
+<translation id="2854163610915391726">Administrar qué información de Chrome guardas en tu Cuenta de Google</translation>
 <translation id="2858134430383535011">200 × 300 mm</translation>
 <translation id="2859383374160668142">Puedes ver reducciones de precios de los productos que sigues en cualquier momento.</translation>
 <translation id="2859806420264540918">Este sitio muestra anuncios intrusivos o engañosos.</translation>
@@ -1411,7 +1414,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3273757719652748628">El mensaje para guardar el IBAN está totalmente abierto.</translation>
 <translation id="3281350579597955952">{0,plural, =1{La política del administrador no recomienda abrir este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda abrir estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Tu organización, <ph name="ENROLLMENT_DOMAIN" />, envió parte de la información, como la configuración o las políticas, a los siguientes sitios web.</translation>
-<translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3286372614333682499">vertical</translation>
 <translation id="3287510313208355388">Descargar cuando haya conexión</translation>
 <translation id="3288238092761586174">Es posible que <ph name="URL" /> deba realizar pasos adicionales para verificar tu pago.</translation>
@@ -1619,6 +1621,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3623041590998910684">Para usar la cámara, otorga acceso a Chrome en la <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Películas románticas</translation>
 <translation id="3624292976554877583">Etiquetas (mate)</translation>
+<translation id="3626483107624019072">Administrar los datos de tu cuenta</translation>
 <translation id="3628905806504633297">{0,plural, =1{La política del administrador no recomienda transferir este archivo a <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda transferir estos archivos a <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Si ya está incluido como un programa con permiso para acceder a la red, intenta
       quitarlo de la lista y agregarlo de nuevo.</translation>
@@ -2032,6 +2035,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4255487295905690262">Recibirás alertas por correo electrónico si hay descuentos en algún sitio.</translation>
 <translation id="425582637250725228">Es posible que los cambios que implementaste no se puedan guardar.</translation>
 <translation id="4258748452823770588">Firma no válida</translation>
+<translation id="4260407128682690669">Para obtener el historial de tus otros dispositivos, sincroniza el historial y las pestañas con <ph name="ACCOUNT_EMAIL" />. Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="4265635050210404830">Tus tarjetas de lealtad</translation>
 <translation id="4265872034478892965">Permitido por tu administrador</translation>
 <translation id="4267590181863312380">Para obtener el historial de tus otros dispositivos, accede a tu cuenta y sincroniza el historial. También obtendrás tus contraseñas y más en todos tus dispositivos. Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
@@ -2168,7 +2172,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Este formulario no es seguro. Se desactivó la función Autocompletar.</translation>
 <translation id="4477350412780666475">Siguiente pista</translation>
-<translation id="4479915773139026885">Modo IA en la Búsqueda de Google</translation>
 <translation id="4480760608050410381">Video MP4</translation>
 <translation id="448363931695049633">Pizzerías</translation>
 <translation id="4489023393592172404">Sobre Kaku n.º 4</translation>
@@ -2221,7 +2224,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="457875822857220463">Entrega</translation>
 <translation id="4579699065574932398">Actividad bancaria</translation>
 <translation id="4582595824823167856">Recibir un mensaje de texto</translation>
-<translation id="4584094413232466841">¿Quieres quitar esta información de la función autocompletar de Chrome?</translation>
+<translation id="4584094413232466841">¿Quieres quitar esta información de la función Autocompletar de Chrome?</translation>
 <translation id="4586607503179159908">Se verificó la forma de pago</translation>
 <translation id="4587425331216688090">¿Confirmas que quieres quitar la dirección de Chrome?</translation>
 <translation id="459089498662672729">La política del administrador no recomienda pegar contenido de <ph name="ORIGIN_NAME" /> en esta ubicación</translation>
@@ -3010,6 +3013,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5886961930368713749">Enviar comentarios sobre la comparación</translation>
 <translation id="5887400589839399685">Tarjeta guardada</translation>
 <translation id="5887687176710214216">Última visita: ayer</translation>
+<translation id="5889251770650310375">Para obtener el historial de tus otros dispositivos, verifica tu identidad y sincroniza tu historial y pestañas. Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="5890248301649767931">¿Quieres guardar el número de rectificación?</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido el</translation>
@@ -3158,6 +3162,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6108849843016142864">Reptiles y anfibios</translation>
 <translation id="611018310643025551">Tus búsquedas, los resultados más relevantes y el contenido de sus páginas se envían a Google y es posible que los revisen personas para mejorar esta función.</translation>
 <translation id="6116338172782435947">Ver el texto y las imágenes copiados en el portapapeles</translation>
+<translation id="6116500665626559298">Botón de Administrar datos en tu cuenta: actívalo para administrar qué información de Chrome guardas en tu Cuenta de Google</translation>
 <translation id="6117833587752089929">Foto (satinado)</translation>
 <translation id="6118782133429281336">La lista de origen está vacía.</translation>
 <translation id="6120950591512958208">Usa este código cuando confirmes la compra.</translation>
@@ -3950,7 +3955,7 @@ Detalles adicionales:
 <translation id="7403392780200267761">Compartir esta pestaña con el vínculo, creando un código QR, transmitiendo la pestaña y más</translation>
 <translation id="7403591733719184120">Tu <ph name="DEVICE_NAME" /> está administrado</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> instaló aplicaciones para funciones adicionales. Las aplicaciones tienen acceso a algunos de tus datos.</translation>
-<translation id="740691708085211707">¿Quieres quitar la dirección de trabajo de la función autocompletar de Chrome?</translation>
+<translation id="740691708085211707">¿Quieres quitar la dirección de trabajo de la función Autocompletar de Chrome?</translation>
 <translation id="7407424307057130981">&lt;p&gt;Se muestra este error si tienes el software Superfish en tu computadora con Windows.&lt;/p&gt;
       &lt;p&gt;Realiza estos pasos para inhabilitar el software de forma temporal a fin de que puedas acceder a la Web. Necesitarás privilegios de administrador.&lt;/p&gt;
       &lt;ol&gt;
@@ -4052,7 +4057,7 @@ Detalles adicionales:
 <translation id="7534987659046836932">Sobre C7</translation>
 <translation id="7535087603100972091">Valor</translation>
 <translation id="753556296624075801">Con la tecnología de Google</translation>
-<translation id="753713322968419914">¿Quieres quitar la dirección de casa de la función autocompletar de Chrome?</translation>
+<translation id="753713322968419914">¿Quieres quitar la dirección de casa de la función Autocompletar de Chrome?</translation>
 <translation id="7537536606612762813">Obligatoria</translation>
 <translation id="7541043894191476250">Tareas contextuales</translation>
 <translation id="7543525346216957623">Solicita permiso a tu madre o padre</translation>
@@ -5003,6 +5008,7 @@ Detalles adicionales:
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para reanudar la búsqueda y ver la actividad relevante en tu historial de Chrome</translation>
 <translation id="9119042192571987207">Subido</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> quiere verificar tu identidad</translation>
+<translation id="9119764377203471454">No se pueden agregar archivos adjuntos</translation>
 <translation id="9120593907434185157">Guardar dirección</translation>
 <translation id="912327514020027767">Faldas</translation>
 <translation id="9128870381267983090">Conectarse a una red</translation>

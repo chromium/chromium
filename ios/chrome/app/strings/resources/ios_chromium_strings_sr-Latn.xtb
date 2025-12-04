@@ -351,7 +351,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="900560297598578021">Prijavljeni ste kao <ph name="EMAIL" />.
 
 Podaci su šifrovani pomoću pristupne fraze <ph name="TIME" />. Unesite je da biste koristili i sačuvali Chromium podatke na Google nalogu.</translation>
-<translation id="9022552996538154597">Prijavljivanje na Chromium</translation>
 <translation id="9031260906956926157">Neki Chromium podaci još nisu sačuvani na Google nalogu.
 Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci će biti izbrisani.</translation>
 <translation id="9050790730841755540">Koristite Chromium svaki put kada dodirujete linkove u drugim aplikacijama.</translation>

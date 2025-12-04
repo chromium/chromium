@@ -655,6 +655,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8493179195440786826">Chromium је застарео</translation>
 <translation id="850264194101621529">Хвала вам што сте одабрали Chromium као подразумевани прегледач.</translation>
 <translation id="8522801943730206384">Chromium може да проверава лозинке када их сачувате</translation>
+<translation id="8548787790260785208">Добијајте упозорења ако Chromium пронађе неку од лозинки у јавној повреди података</translation>
 <translation id="8555465886620020932">Грешка у услузи: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Можете да закачите претрагу слика ради једноставног приступа; кликните на дугме Закачи у врху бочне табле</translation>
 <translation id="856656450041460113">Претражите листу језика</translation>
@@ -687,7 +688,6 @@ Chromium не може да врати подешавања.</translation>
 <translation id="897581876605952338">Логотип Chromium-а за предузећа</translation>
 <translation id="8988036198400390003">Управљај Chromium профилима</translation>
 <translation id="9019929317751753759">Да бисмо учинили Chromium безбеднијим, онемогућили смо следећи додатак који <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не наводи и који је можда додат без вашег знања.</translation>
-<translation id="9022552996538154597">Пријављивање на Chromium</translation>
 <translation id="904366664621834601">Chromium је блокирао ово преузимање јер фајл архиве садржи друге фајлове који могу да крију малвер</translation>
 <translation id="9062666675513499497">Пријавите се у Chromium када се пријавите у друге Google услуге</translation>
 <translation id="9078733879136747090">Chromium је аутоматски затворен</translation>

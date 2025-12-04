@@ -1174,7 +1174,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Al desinstalar <ph name="APP_NAME" />, también se desinstalará esta aplicación:}other{Al desinstalar <ph name="APP_NAME" />, también se desinstalarán estas aplicaciones:}}</translation>
 <translation id="1786290960428378411">Solicitando leer y modificar</translation>
 <translation id="1790976235243700817">Quitar acceso</translation>
-<translation id="1791662854739702043">Ubicación</translation>
+<translation id="1791662854739702043">Instaladas</translation>
 <translation id="1792619191750875668">Pantalla extendida</translation>
 <translation id="1794212650797661990">Ocultar contraseña de <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Envíanos un comentario para ayudarnos a solucionar el problema.</translation>
@@ -4328,6 +4328,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Tamaño de la pantalla y del texto: <ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3924487862883651986">Envía URL a Navegación segura para que las compruebe. También envía una muestra pequeña de páginas, descargas, actividad de las extensiones e información del sistema para contribuir a detectar nuevas amenazas. Cuando inicias sesión, vincula estos datos a tu cuenta de Google de forma temporal para protegerte en las aplicaciones de Google.</translation>
+<translation id="3924788966103416622">Una aplicación externa quiere tener control total sobre esta sesión de Chrome para depurarla. Esto incluye el acceso a tus datos guardados, cookies y datos de sitios, así como la posibilidad de ir a cualquier URL.</translation>
 <translation id="3925573269917483990">Cámara:</translation>
 <translation id="3925926055063465902">Los demás usuarios de este dispositivo también pueden usar esta red</translation>
 <translation id="3926002189479431949">El teléfono de Smart Lock ha cambiado</translation>
@@ -4465,6 +4466,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4015250302257349679">Pulsa <ph name="ACCELERATOR" /> para enfocar este cuadro y vuelve a pulsar para enfocar el elemento que señala.</translation>
 <translation id="4016762287427926315">Los permisos que concedas a <ph name="APP_NAME" /> también se concederán a esta aplicación. <ph name="BEGIN_LINK" />Gestionar<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crear código QR para este enlace</translation>
+<translation id="4018953474106733212">Solo los desarrolladores web deben activar esta función y solo deben usarla con aplicaciones de confianza.</translation>
 <translation id="4019983356493507433">Editar lista de marcadores</translation>
 <translation id="4020701737692625681">Tu administrador puede grabar tu pantalla</translation>
 <translation id="4021279097213088397">–</translation>
@@ -6666,6 +6668,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="557722062034137776">El restablecimiento de tu dispositivo no afectará a tus cuentas de Google ni a los datos sincronizados con esas cuentas, pero se eliminarán todos los archivos guardados localmente en tu dispositivo.</translation>
 <translation id="5578059481725149024">Iniciar sesión automáticamente</translation>
 <translation id="5578387000057347457">Introducir una petición personalizada o destacar texto para crear una imagen</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 elemento está guardado solo en este dispositivo. Para usarlo en tus otros dispositivos, <ph name="BEGIN_LINK" />guárdalo en tu cuenta de Google<ph name="END_LINK" />.}other{{ITEM_COUNT} elementos están guardados solo en este dispositivo. Para usarlos en tus otros dispositivos, <ph name="BEGIN_LINK" />guárdalos en tu cuenta de Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Quitar <ph name="SITE" /> de la lista <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">Traducción a <ph name="LANGUAGE" /> finalizada</translation>
 <translation id="558170650521898289">Comprobación de los controladores de hardware de Windows de Microsoft</translation>
@@ -7154,6 +7157,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
     <ph name="LINE_BREAK" />
     Esta imagen se mostrará en la pantalla de bloqueo y en la de inicio de sesión del Chromebook.</translation>
 <translation id="5925147183566400388">Identificador de declaración de prácticas de certificación</translation>
+<translation id="5926936390113611560">Abrir todos los perfiles</translation>
 <translation id="5927132638760172455">Enviando contenido a un receptor desconocido</translation>
 <translation id="592740088639760830">Detener este contenedor</translation>
 <translation id="592880897588170157">Descargar archivos PDF en lugar de abrirlos automáticamente en Chrome</translation>
@@ -7238,6 +7242,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5979421442488174909">&amp;Traducir a <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Para añadir páginas a marcadores, haz clic en la estrella situada en la barra de direcciones</translation>
 <translation id="5982578203375898585">Mostrar las descargas cuando terminen</translation>
+<translation id="598347738324022917">Marcador guardado en este dispositivo</translation>
 <translation id="5983716913605894570">Generando...</translation>
 <translation id="5984222099446776634">Visitados recientemente</translation>
 <translation id="5984334442529819751">No se ha podido instalar el DLC (a menudo es necesario reiniciar el dispositivo; consulta Configuración\&gt;\&gt;Información de ChromeOS para obtener más información).</translation>
@@ -11500,6 +11505,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8910987510378294980">Ocultar lista de dispositivos</translation>
 <translation id="8912362522468806198">cuenta de Google</translation>
 <translation id="8912810933860534797">Habilitar búsqueda automática</translation>
+<translation id="8914030287343429787">Consulta tus contraseñas aunque no estés usando Chrome ni Android iniciando sesión en <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8915307125957890427">Haz clic con el botón derecho en una pestaña y selecciona "Añadir pestaña al grupo" &gt; "Nuevo grupo"</translation>
 <translation id="8915370057835397490">Cargando sugerencia</translation>

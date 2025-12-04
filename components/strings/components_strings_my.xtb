@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">အိုင်ဘီအေအန် (IBAN) သိမ်းမလား။</translation>
 <translation id="1113869188872983271">&amp;ပြန်စီစဉ်ကို ပြန်လုပ်ရန်</translation>
 <translation id="1118429183611783760">ဖုန်စုပ်စက်နှင့် ကြမ်းခင်းသန့်ရှင်းရေး</translation>
+<translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင်၏ Google Account တွင် သိမ်းသော Chrome အချက်အလက်ကို စီမံရန်အတွက် ‘တဘ်’ ကို နှိပ်ပြီးနောက် Enter ခလုတ်နှိပ်ပါ</translation>
 <translation id="1122714970786750095">အီလက်ထရွန်းနစ်နှင့် လျှပ်စစ်</translation>
 <translation id="1123753900084781868">'တိုက်ရိုက်စာတန်း' ကို ယခုမရနိုင်ပါ</translation>
 <translation id="112840717907525620">ပေါ်လစီ ကက်ရှ်အိုကေ</translation>
@@ -1138,6 +1139,7 @@
 <translation id="2839501879576190149">ရှေ့တွင် ဝဘ်ဆိုက်အတုရှိသည်</translation>
 <translation id="2843623755398178332">သင်၏မျှဝေထားသော တဘ်ကို လှိမ့်ပြီး ဇူးမ်ဆွဲမလား။</translation>
 <translation id="2851291081585704741">အော့ဖ်လိုင်းဖြစ်နေသည်</translation>
+<translation id="2854163610915391726">သင်၏ Google Account တွင် သိမ်းသော Chrome အချက်အလက်ကို စီမံရန်</translation>
 <translation id="2858134430383535011">၂၀၀ x ၃၀၀ မီလီမီတာ</translation>
 <translation id="2859383374160668142">သင်စောင့်ကြည့်သော ကုန်ပစ္စည်းများ၏ ဈေးကျမှုများကို အချိန်မရွေးကြည့်နိုင်သည်။</translation>
 <translation id="2859806420264540918">ဤဝဘ်ဆိုက်က စိတ်အနှောင့်အယှက်ဖြစ်စေသော (သို့) အထင်အမြင်မှားစေသော ကြော်ငြာများကို ပြသည်။</translation>
@@ -1413,7 +1415,6 @@
 <translation id="3273757719652748628">သိမ်းသည့် IBAN ကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်။</translation>
 <translation id="3281350579597955952">{0,plural, =1{စီမံခန့်ခွဲသူမူဝါဒက <ph name="DESTINATION_NAME" /> ရှိ ဤဖိုင်ဖွင့်ရန် အကြံမပြုပါ}other{စီမံခန့်ခွဲသူမူဝါဒက <ph name="DESTINATION_NAME" /> ရှိ ဤဖိုင်များဖွင့်ရန် အကြံမပြုပါ}}</translation>
 <translation id="3282085321714087552">သင့်အဖွဲ့အစည်း <ph name="ENROLLMENT_DOMAIN" /> သည် ဆက်တင်များ (သို့) မူဝါဒများကဲ့သို့ အချက်အလက်အချို့ကို အောက်ပါဝဘ်ဆိုက်များသို့ ပို့လိုက်သည်။</translation>
-<translation id="3282568296779691940">Chrome သို့ လက်မှတ်ထိုး ဝင်</translation>
 <translation id="3286372614333682499">ဒေါင်လိုက်</translation>
 <translation id="3287510313208355388">အွန်လိုင်းတက်သည့်အချိန် ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="3288238092761586174">သင့်ပေးချေမှုကို အတည်ပြုရန်အတွက် <ph name="URL" /> က နောက်ထပ်အဆင့်များ လုပ်ဆောင်ရန် လိုအပ်နိုင်သည်</translation>
@@ -1620,6 +1621,7 @@
 <translation id="3623041590998910684">သင့်ကင်မရာသုံးရန် <ph name="LINK" /> တွင် Chrome သုံးခွင့်ပေးပါ။</translation>
 <translation id="3623398832322170566">အချစ်ဇာတ်လမ်း ရုပ်ရှင်</translation>
 <translation id="3624292976554877583">လေဘယ်လ် (မှိုင်းပျပျ)</translation>
+<translation id="3626483107624019072">သင့်အကောင့်ရှိ ဒေတာကို စီမံရန်</translation>
 <translation id="3628905806504633297">{0,plural, =1{<ph name="DESTINATION_NAME" /> သို့ ဤဖိုင် လွှဲပြောင်းခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက အကြံပြုထားခြင်းမရှိပါ}other{<ph name="DESTINATION_NAME" /> သို့ ဤဖိုင်များ လွှဲပြောင်းခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက အကြံပြုထားခြင်းမရှိပါ}}</translation>
 <translation id="3630155396527302611">၎င်းကို ကွန်ရက်အသုံးပြုသည့် ပရိုဂရမ်အဖြစ် စာရင်းထည့်သွင်းပြီးဖြစ်လျှင်၊ စာရင်းမှ ဖယ်ရှားပြီး ထပ်မံထည့်သွင်းကြည့်ပါ။</translation>
 <translation id="3630426379756188722">Google Account ရှိ သင့်စက်ပစ္စည်းရှာခြင်းသို့ သွားရန်အတွက် Find My Device ခလုတ်ကို နှိပ်နိုင်သည်</translation>
@@ -2170,7 +2172,6 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />။ <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ဤဖောင်သည် မလုံခြုံပါ။ 'အော်တိုဖြည့်' ကို ပိတ်လိုက်ပါပြီ။</translation>
 <translation id="4477350412780666475">နောက်တစ်ပုဒ်</translation>
-<translation id="4479915773139026885">Google Search ရှိ AI မုဒ်</translation>
 <translation id="4480760608050410381">MP4 ဗီဒီယို</translation>
 <translation id="448363931695049633">ပီဇာမုန့်ဆိုင်</translation>
 <translation id="4489023393592172404">Kaku 4 စာအိတ်</translation>
@@ -3161,6 +3162,7 @@
 <translation id="6108849843016142864">တွားသွားသတ္တဝါ၊ ကုန်းနေရေနေသတ္တဝါ</translation>
 <translation id="611018310643025551">သင့်ရှာဖွေမှုများ၊ အကိုက်ညီဆုံးများ၊ သူ၏ စာမျက်နှာအကြောင်းအရာများကို Google သို့ပို့သည်။ ဤဝန်ဆောင်မှု ပိုကောင်းလာစေရန် ပြန်စစ်သည့် ပုဂ္ဂိုလ်များက ၎င်းတို့ကို ကြည့်နိုင်သည်။</translation>
 <translation id="6116338172782435947">ကလစ်ဘုတ်သို့ မိတ္တူကူးထားသည့် စာသားနှင့် ပုံများအား ကြည့်ရန်</translation>
+<translation id="6116500665626559298">သင်၏ Google Account တွင် သိမ်းသော Chrome အချက်အလက်ကို စီမံရန်အတွက် ‘သင့်အကောင့်ရှိ ဒေတာကို စီမံရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="6117833587752089929">ဓာတ်ပုံ (ဖဲ)</translation>
 <translation id="6118782133429281336">မူရင်းစာရင်း အလွတ်ဖြစ်နေသည်။</translation>
 <translation id="6120950591512958208">ငွေရှင်းသည့်အခါ ဤကုဒ်ကို သုံးပါ။</translation>

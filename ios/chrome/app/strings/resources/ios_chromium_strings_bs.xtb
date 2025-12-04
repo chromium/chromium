@@ -351,7 +351,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="900560297598578021">Prijavljeni ste kao <ph name="EMAIL" />.
 
 Vaši podaci su šifrirani pristupnim izrazom <ph name="TIME" /> Unesite ga da koristite i sačuvate podatke Chromiuma na Google računu.</translation>
-<translation id="9022552996538154597">Prijavite se u Chromium</translation>
 <translation id="9031260906956926157">Određeni podaci Chromiuma još uvijek nisu sačuvani na Google račun.
 Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će se izbrisati.</translation>
 <translation id="9050790730841755540">Koristite Chromium svaki put kada dodirnete linkove u drugim aplikacijama.</translation>

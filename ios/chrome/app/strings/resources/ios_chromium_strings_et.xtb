@@ -351,7 +351,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="900560297598578021">Sisse logitud kasutajana <ph name="EMAIL" />.
 
 Teie andmed krüpteeriti teie parooliga kuupäeval <ph name="TIME" />. Chromiumi andmete kasutamiseks ja salvestamiseks oma Google’i kontole sisestage parool.</translation>
-<translation id="9022552996538154597">Logige Chromiumi sisse</translation>
 <translation id="9031260906956926157">Teatud Chromiumi andmeid pole veel teie Google’i kontole salvestatud.
 Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed kustutatakse.</translation>
 <translation id="9050790730841755540">Saate Chromiumi kasutada iga kord, kui puudutate linke muudes rakendustes.</translation>

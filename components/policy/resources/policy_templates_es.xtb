@@ -1934,10 +1934,6 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Si se inhabilita esta política, esta función no estará disponible.</translation>
 <translation id="2342066287156668839">Habilitar la cuota persistente.</translation>
-<translation id="2343774133209251840">Si se habilita, las APIs de cuota de almacenamiento devolverán un valor estático igual al uso más un mínimo (10 GiB, espacio en disco redondeado al alza en tramos de 1 GiB).
-Si se inhabilita, las APIs de cuota de almacenamiento suelen devolver un valor dinámico proporcional al espacio total disponible en el dispositivo, independientemente del uso.
-Si no se define, el comportamiento se determinará mediante el lanzamiento de la función de cuota de almacenamiento previsible notificada o mediante marcas.
-Los sitios con permisos de almacenamiento ilimitado no se ven afectados por este ajuste. Tampoco se verá afectada la cuota obligatoria.</translation>
 <translation id="2344033063256716138">Configura políticas para controlar si se permite al usuario acceder a datos y funciones compartidos.</translation>
 <translation id="2345547870894930157">Habilitar DNS-over-HTTPS sin alternativa no segura</translation>
 <translation id="2347695338560092641">Controladores de impresión independientes permitidos</translation>
@@ -4449,6 +4445,11 @@ Si a esta política se le asigna el valor <ph name="ENABLE_FOR_FORCED_EXTENSIONS
 
 
 La disponibilidad de las extensiones seguirá estando controlada por otras políticas.</translation>
+<translation id="4112585124048467596">Si se define esta política, todos los tipos de datos especificados se excluirán de la sincronización de <ph name="CHROME_SYNC_NAME" /> y de la sincronización del perfil itinerante. Esto puede ser útil para reducir el tamaño del perfil itinerante o para limitar los tipos de datos que se podrán subir a los servidores de <ph name="CHROME_SYNC_NAME" />.
+
+      Los tipos de datos actuales para esta política son los siguientes: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "productComparison", "readingList", "tabs", "themes", "typedUrls" y "wifiConfigurations". Estos nombres distinguen entre mayúsculas y minúsculas.
+
+      Nota: La actualización dinámica de esta política solo se admite en la versión 123 y posteriores de <ph name="PRODUCT_NAME" />. Si inhabilitas "autofill", también se inhabilitará "payments". "typedUrls" hace referencia a todo el historial de navegación.</translation>
 <translation id="4115501011761259824">Habilita Conjuntos propios para todos los usuarios afectados</translation>
 <translation id="4120401094617902941">Intervalo en el que se muestrean y se recogen los contadores de tiempo de ejecución. El valor mínimo permitido es de 1 día.
 

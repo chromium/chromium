@@ -1824,7 +1824,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2234876718134438132">Sincronización y servicios de Google</translation>
 <translation id="2235344399760031203">Se bloquearon las cookies de terceros</translation>
 <translation id="2236949375853147973">Mi actividad</translation>
-<translation id="2236963250883149540">¿Quieres quitar tu dirección de trabajo de la función autocompletar de Chrome?</translation>
+<translation id="2236963250883149540">¿Quieres quitar tu dirección de trabajo de la función Autocompletar de Chrome?</translation>
 <translation id="2238379619048995541">Datos de estado de frecuencia</translation>
 <translation id="2240582393605484605">Los datos que se guarden solo en este dispositivo permanecerán en el perfil existente</translation>
 <translation id="2241053333139545397">Leer y modificar tus datos en una serie de sitios web</translation>
@@ -2401,7 +2401,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2624142942574147739">Esta página está accediendo a la cámara y al micrófono.</translation>
 <translation id="2626799779920242286">Vuelve a intentarlo más tarde.</translation>
 <translation id="2627424346328942291">No se puede compartir</translation>
-<translation id="2628258844236035475">¿Quieres quitar tu dirección de casa de la función autocompletar de Chrome?</translation>
+<translation id="2628258844236035475">¿Quieres quitar tu dirección de casa de la función Autocompletar de Chrome?</translation>
 <translation id="2628770867680720336">Para habilitar la depuración de adb, es necesario restablecer la configuración de fábrica de esta Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Desarrollar apps para Android</translation>
 <translation id="2629437048544561682">Borrar lienzo</translation>
@@ -4324,6 +4324,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Tamaño de la pantalla y el texto <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Envía las URL a la Navegación segura para verificarlas. También envía una pequeña muestra de páginas, descargas, información del sistema y actividad de extensiones para ayudar a descubrir nuevas amenazas. Vincula estos datos de manera temporal con tu Cuenta de Google cuando accedes a ella para protegerte en todas las apps de Google.</translation>
+<translation id="3924788966103416622">Una app externa quiere tener control total de esta sesión de Chrome para depurarla. Esto incluye el acceso a los datos de sitios, cookies y tus datos guardados, y la capacidad de navegar a cualquier URL.</translation>
 <translation id="3925573269917483990">Cámara:</translation>
 <translation id="3925926055063465902">Otros usuarios de este dispositivo también pueden usar esta red</translation>
 <translation id="3926002189479431949">Cambió el teléfono con Smart Lock</translation>
@@ -4462,6 +4463,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4015250302257349679">Presiona <ph name="ACCELERATOR" /> para enfocar el cuadro y, luego, otra vez para enfocar el elemento al que señala.</translation>
 <translation id="4016762287427926315">Los permisos que otorgues para <ph name="APP_NAME" /> también se otorgarán para esta app. <ph name="BEGIN_LINK" />Administrar<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crear un código QR para este vínculo</translation>
+<translation id="4018953474106733212">Solo los desarrolladores web deben activar esta función y solo deben usarla con apps de confianza.</translation>
 <translation id="4019983356493507433">Editar lista de Favoritos</translation>
 <translation id="4020701737692625681">El administrador puede grabar tu pantalla</translation>
 <translation id="4021279097213088397">–</translation>
@@ -5250,7 +5252,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4581774856936278355">Se produjo un error al restablecer Linux</translation>
 <translation id="4582297591746054421">Por lo general los sitios leen el portapapeles para habilitar funciones, como la de conservar el formato del texto que copias.</translation>
 <translation id="4582563038311694664">Restablecer toda la configuración</translation>
-<translation id="4584094413232466841">¿Quieres quitar esta información de la función autocompletar de Chrome?</translation>
+<translation id="4584094413232466841">¿Quieres quitar esta información de la función Autocompletar de Chrome?</translation>
 <translation id="4584770411839426377">Ventana</translation>
 <translation id="4584836561445313300">Tu organización podrá ver y administrar los datos de navegación existentes, como las contraseñas y mucho más</translation>
 <translation id="4585793705637313973">Editar página</translation>
@@ -6665,6 +6667,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="557722062034137776">Restablecer el dispositivo no afectará las cuentas de Google ni los datos sincronizados con esas cuentas. Sin embargo, se eliminarán todos los archivos guardados localmente en el dispositivo.</translation>
 <translation id="5578059481725149024">Acceso automático</translation>
 <translation id="5578387000057347457">Ingresa una instrucción personalizada o destaca texto para crear una imagen</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 elemento se guarda solo en este dispositivo. Para usarlo en tus otros dispositivos, <ph name="BEGIN_LINK" />guárdalo en tu Cuenta de Google<ph name="END_LINK" />.}other{{ITEM_COUNT} elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, <ph name="BEGIN_LINK" />guárdalos en tu Cuenta de Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Quitar <ph name="SITE" /> de la lista <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">Se completó la traducción al <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Verificación de controladores de hardware de Windows, Microsoft</translation>
@@ -7153,6 +7156,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
           <ph name="LINE_BREAK" />
           Se mostrará esta imagen en la pantalla bloqueada y de acceso de Chromebook.</translation>
 <translation id="5925147183566400388">Puntero de declaración de práctica de certificación</translation>
+<translation id="5926936390113611560">Abrir todos los perfiles</translation>
 <translation id="5927132638760172455">Transmitiendo a un receptor desconocido</translation>
 <translation id="592740088639760830">Detener este contenedor</translation>
 <translation id="592880897588170157">Descargar los archivos PDF en lugar de abrirlos de forma automática en Chrome</translation>
@@ -7237,6 +7241,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5979421442488174909">&amp;Traducir al <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Para agregar páginas a Favoritos, haz clic en la estrella que se encuentra en la barra de direcciones</translation>
 <translation id="5982578203375898585">Mostrar las descargas cuando finalicen</translation>
+<translation id="598347738324022917">Se guardó el favorito en este dispositivo</translation>
 <translation id="5983716913605894570">Generando…</translation>
 <translation id="5984222099446776634">Visitados recientemente</translation>
 <translation id="5984334442529819751">Se produjo un error al instalar el DLC (a menudo, se necesita un reinicio; consulta Configuración\&gt;\&gt;Acerca de ChromeOS para obtener más información).</translation>
@@ -11499,6 +11504,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8910987510378294980">Ocultar lista de dispositivos</translation>
 <translation id="8912362522468806198">Cuenta de Google</translation>
 <translation id="8912810933860534797">Habilitar la búsqueda automática</translation>
+<translation id="8914030287343429787">Para ver tus contraseñas incluso cuando no estés usando Chrome o Android, accede a <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8915307125957890427">Haz clic con el botón derecho en una pestaña, selecciona "Agregar pestaña al grupo" y, luego, selecciona "Grupo nuevo"</translation>
 <translation id="8915370057835397490">Cargando sugerencia</translation>

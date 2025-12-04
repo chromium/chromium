@@ -351,7 +351,6 @@
 <translation id="900560297598578021">已使用 <ph name="EMAIL" /> 的身分登入。
 
 你已在 <ph name="TIME" />使用密碼短語加密資料。如要在 Google 帳戶中使用及儲存 Chromium 資料，請輸入密碼短語。</translation>
-<translation id="9022552996538154597">登入 Chromium</translation>
 <translation id="9031260906956926157">部分 Chromium 資料尚未儲存至 Google 帳戶。
 請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除此資料。</translation>
 <translation id="9050790730841755540">隨時使用 Chromium 開啟其他應用程式中的連結。</translation>

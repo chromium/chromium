@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">IBAN সেভ করতে চান?</translation>
 <translation id="1113869188872983271">&amp;পুনর্বিন্যাসকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="1118429183611783760">ভ্যাকুম ও ক্লিনার</translation>
+<translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Google অ্যাকাউন্টে Chrome-এর কোন কোন তথ্য সেভ করবেন তা ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="1122714970786750095">ইলেকট্রনিক্স ও বৈদ্যুতিক</translation>
 <translation id="1123753900084781868">'লাইভ ক্যাপশন' ফিচারের সুবিধা এখনই পাওয়া যাবে না</translation>
 <translation id="112840717907525620">নীতি ক্যাশেটি ঠিক আছে</translation>
@@ -1134,6 +1135,7 @@
 <translation id="2839501879576190149">আপনি যে সাইটটি ভিজিট করতে চলেছেন সেটি ভুয়ো</translation>
 <translation id="2843623755398178332">আপনার শেয়ার করা ট্যাব স্ক্রল ও জুম করবেন?</translation>
 <translation id="2851291081585704741">আপনি অফলাইন আছেন</translation>
+<translation id="2854163610915391726">আপনার Google অ্যাকাউন্টে Chrome-এর কোন তথ্য সেভ করবেন তা ম্যানেজ করুন</translation>
 <translation id="2858134430383535011">২০০ x ৩০০ মিমি</translation>
 <translation id="2859383374160668142">আপনি ট্র্যাক করেন এমন প্রোডাক্টের দাম কমে যাওয়ার তথ্য যেকোনও সময় দেখতে পারবেন।</translation>
 <translation id="2859806420264540918">এই সাইট ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন দেখায়।</translation>
@@ -1412,7 +1414,6 @@
 <translation id="3273757719652748628">IBAN সেভ করার সুবিধা সম্পূর্ণ স্ক্রিনে খুলে দেওয়া হয়েছে।</translation>
 <translation id="3281350579597955952">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}}</translation>
 <translation id="3282085321714087552">আপনার সংস্থা, <ph name="ENROLLMENT_DOMAIN" />, নিম্নলিখিত ওয়েবসাইটগুলিকে সেটিংস বা নীতির মতো কিছু তথ্য পাঠিয়েছে।</translation>
-<translation id="3282568296779691940">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="3286372614333682499">পোর্ট্রেট</translation>
 <translation id="3287510313208355388">অনলাইন হয়ে ডাউনলোড করবেন</translation>
 <translation id="3288238092761586174">আপনার পেমেন্ট যাচাই করতে, <ph name="URL" />হয়ত আরও কিছু করতে পারে</translation>
@@ -1620,6 +1621,7 @@
 <translation id="3623041590998910684">আপনার ক্যামেরা ব্যবহার করতে, <ph name="LINK" /> লিঙ্কে গিয়ে Chrome-কে অ্যাক্সেস দিন।</translation>
 <translation id="3623398832322170566">প্রেমের সিনেমা</translation>
 <translation id="3624292976554877583">লেবেল (ম্যাট)</translation>
+<translation id="3626483107624019072">আপনার অ্যাকাউন্টে ডেটা ম্যানেজ করুন</translation>
 <translation id="3628905806504633297">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ট্রান্সফার করা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ট্রান্সফার করা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ট্রান্সফার করা যাবে না}}</translation>
 <translation id="3630155396527302611">নেটওয়ার্ক অ্যাক্সেস করতে এটি যদি ইতোমধ্যে মঞ্জুরিকৃত প্রোগ্রাম হিসাবে তালিকাতে থাকে, তাহলে
       তালিকাটি থেকে এটি সরানোর চেষ্টা করে আবার যোগ করে দেখুন।</translation>
@@ -2170,7 +2172,6 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />। <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">এই ফর্ম নিরাপদ নয়। অটোফিল বন্ধ করে দেওয়া হয়েছে।</translation>
 <translation id="4477350412780666475">পরের ট্র্যাক চালান</translation>
-<translation id="4479915773139026885">Google Search-এ AI মোড</translation>
 <translation id="4480760608050410381">MP4 ভিডিও</translation>
 <translation id="448363931695049633">পিৎজার রেস্তোরাঁ</translation>
 <translation id="4489023393592172404">এনভেলপ কাকু ৪</translation>
@@ -3161,6 +3162,7 @@
 <translation id="6108849843016142864">সরীসৃপ ও উভচর</translation>
 <translation id="611018310643025551">আপনার সার্চ, মিলে যাওয়া সেরা ফলাফল ও সেই পৃষ্ঠাগুলির কন্টেন্ট Google-এ পাঠানো হতে পারে এবং হিউম্যান রিভিউয়াররা দেখতে পারেন, যাতে এই ফিচারের উন্নতি করা যায়।</translation>
 <translation id="6116338172782435947">ক্লিপবোর্ডে কপি করা টেক্সট এবং ছবি দেখতে</translation>
+<translation id="6116500665626559298">'আপনার অ্যাকাউন্টে ডেটা ম্যানেজ করুন' বোতাম, এটি চালু করে আপনার Google অ্যাকাউন্টে Chrome-এর ব্যবহার সম্পর্কিত কোন তথ্য সেভ করবেন তা ম্যানেজ করুন</translation>
 <translation id="6117833587752089929">ফটো (স্যাটিন)</translation>
 <translation id="6118782133429281336">অরিজিন তালিকাতে কিছু নেই।</translation>
 <translation id="6120950591512958208">চেক-আউট করার সময় এই কোড ব্যবহার করুন।</translation>

@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Salvezi codul IBAN?</translation>
 <translation id="1113869188872983271">&amp;Anulați reordonarea</translation>
 <translation id="1118429183611783760">Aspiratoare și produse de îngrijire a podelelor</translation>
+<translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona informațiile din Chrome pe care le salvezi în Contul Google</translation>
 <translation id="1122714970786750095">Electronice și electrice</translation>
 <translation id="1123753900084781868">Funcția Subtitrări live nu este disponibilă în acest moment</translation>
 <translation id="112840717907525620">Memoria cache pentru politică este OK</translation>
@@ -1133,6 +1134,7 @@
 <translation id="2839501879576190149">Urmează un site fals</translation>
 <translation id="2843623755398178332">Derulezi și faci zoom în fila la care ai permis accesul?</translation>
 <translation id="2851291081585704741">Ești offline</translation>
+<translation id="2854163610915391726">Gestionează ce informații din Chrome salvezi în Contul Google</translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859383374160668142">Poți vedea oricând scăderile de prețuri pentru produsele pe care le urmărești.</translation>
 <translation id="2859806420264540918">Acest site afișează anunțuri deranjante sau înșelătoare.</translation>
@@ -1411,7 +1413,6 @@
 <translation id="3273757719652748628">Salvează codul IBAN deschis la înălțimea completă.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Politica implementată de administrator nu recomandă să deschizi acest fișier în <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să deschizi aceste fișiere în <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să deschizi aceste fișiere în <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organizația ta, <ph name="ENROLLMENT_DOMAIN" />, a trimis câteva informații următoarelor site-uri, cum ar fi setări sau politici.</translation>
-<translation id="3282568296779691940">Conectează-te la Chrome</translation>
 <translation id="3286372614333682499">portret</translation>
 <translation id="3287510313208355388">Descarcă când ești online</translation>
 <translation id="3288238092761586174">Poate fi necesar ca <ph name="URL" /> să parcurgă câțiva pași suplimentari pentru a confirma plata</translation>
@@ -1619,6 +1620,7 @@
 <translation id="3623041590998910684">Pentru a folosi camera foto, permite accesul browserului Chrome în <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Filme romantice</translation>
 <translation id="3624292976554877583">Etichete (mat)</translation>
+<translation id="3626483107624019072">Gestionează datele din cont</translation>
 <translation id="3628905806504633297">{0,plural, =1{Politica implementată de administrator nu recomandă să transferi acest fișier către <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să transferi aceste fișiere către <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să transferi aceste fișiere către <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Dacă este deja inclus ca program căruia i se permite să acceseze rețeaua, încearcă
       să îl elimini din listă și să îl adaugi din nou.</translation>
@@ -2169,7 +2171,6 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Acest formular nu este sigur. Completarea automată a fost dezactivată.</translation>
 <translation id="4477350412780666475">Melodia următoare</translation>
-<translation id="4479915773139026885">Modul AI în Căutarea Google</translation>
 <translation id="4480760608050410381">Videoclip MP4</translation>
 <translation id="448363931695049633">Pizzerii</translation>
 <translation id="4489023393592172404">Plic Kaku 4</translation>
@@ -3160,6 +3161,7 @@
 <translation id="6108849843016142864">Reptile și amfibieni</translation>
 <translation id="611018310643025551">Căutările tale, cele mai bune potriviri și conținutul paginilor acestora sunt trimise la Google și pot fi văzute de evaluatori umani pentru a îmbunătăți această funcție.</translation>
 <translation id="6116338172782435947">să afișeze textul și imaginile copiate în clipboard</translation>
+<translation id="6116500665626559298">Butonul Gestionează datele din cont, activează-l pentru a gestiona ce informații din Chrome salvezi în Contul Google</translation>
 <translation id="6117833587752089929">Foto (satin)</translation>
 <translation id="6118782133429281336">Lista de origini este goală.</translation>
 <translation id="6120950591512958208">Folosește codul la finalizarea achiziției.</translation>

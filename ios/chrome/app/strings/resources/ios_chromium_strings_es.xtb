@@ -351,7 +351,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="900560297598578021">Has iniciado sesión como <ph name="EMAIL" />.
 
 Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Introdúcela para usar y guardar datos de Chromium en tu cuenta de Google.</translation>
-<translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
 <translation id="9031260906956926157">Algunos de tus datos de Chromium aún no se han guardado en tu cuenta de Google.
 Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="9050790730841755540">Usa Chromium siempre que toques enlaces de otras aplicaciones.</translation>

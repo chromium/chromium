@@ -1413,7 +1413,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3273757719652748628">"Guardar IBAN" aberto à altura total.</translation>
 <translation id="3281350579597955952">{0,plural, =1{A política do administrador não recomenda abrir este ficheiro em <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda abrir estes ficheiros em <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A sua entidade, <ph name="ENROLLMENT_DOMAIN" />, enviou algumas informações para os seguintes Websites, como definições ou políticas.</translation>
-<translation id="3282568296779691940">Iniciar sessão no Chrome</translation>
 <translation id="3286372614333682499">retrato</translation>
 <translation id="3287510313208355388">Transferir quando estiver online</translation>
 <translation id="3288238092761586174"><ph name="URL" /> pode ter de efetuar passos adicionais para validar o seu pagamento</translation>
@@ -2172,7 +2171,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Este formulário não é seguro. O preenchimento automático foi desativado.</translation>
 <translation id="4477350412780666475">Faixa seguinte</translation>
-<translation id="4479915773139026885">Modo IA na Pesquisa Google</translation>
 <translation id="4480760608050410381">Vídeo MP4</translation>
 <translation id="448363931695049633">Pizarias</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>

@@ -1955,10 +1955,6 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 
       Nếu bạn đặt chính sách này thành Tắt, tính năng này sẽ không sử dụng được.</translation>
 <translation id="2342066287156668839">Bật hạn mức ổn định.</translation>
-<translation id="2343774133209251840">Khi bật, các API hạn mức bộ nhớ sẽ trả về một giá trị tĩnh bằng với mức sử dụng cộng thêm mức tối thiểu (10 GiB, dung lượng ổ đĩa được làm tròn đến 1 GiB gần nhất).
-Khi tắt, các API hạn mức bộ nhớ thường sẽ trả về một giá trị động tỷ lệ với tổng dung lượng trống trên thiết bị, bất kể mức sử dụng.
-Nếu bạn không đặt chính sách này, hành vi sẽ được xác định dựa trên trạng thái cờ hoặc trạng thái ra mắt của tính năng hạn mức bộ nhớ được báo cáo có thể dự đoán.
-Chế độ cài đặt này không ảnh hưởng đến những trang web có quyền truy cập bộ nhớ không giới hạn. Hạn mức được thực thi cũng không bị ảnh hưởng.</translation>
 <translation id="2344033063256716138">Thiết lập chính sách để kiểm soát việc người dùng có thể truy cập các tính năng và dữ liệu được chia sẻ hay không.</translation>
 <translation id="2345547870894930157">Bật chế độ DNS qua HTTPS không có phương án dự phòng cho truy vấn không an toàn</translation>
 <translation id="2347695338560092641">Cho phép trình điều khiển in ngoài quy trình</translation>

@@ -351,7 +351,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="900560297598578021">Signed in as <ph name="EMAIL" />.
 
 Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to use and save Chromium data in your Google Account.</translation>
-<translation id="9022552996538154597">Sign in to Chromium</translation>
 <translation id="9031260906956926157">Some of your Chromium data hasn't been saved in your Google Account yet.
 Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="9050790730841755540">Use Chrome whenever you tap links in other apps.</translation>

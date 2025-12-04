@@ -4341,6 +4341,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Tamanho de exibição e de texto: <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Envia URLs para a verificação pelo recurso Navegação segura. Também envia uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças. Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google.</translation>
+<translation id="3924788966103416622">Um app externo quer ter controle total desta sessão do Chrome para depurá-la. Isso inclui acesso aos seus dados salvos, a cookies e a informações do site, além da capacidade de navegar para qualquer URL.</translation>
 <translation id="3925573269917483990">Câmera:</translation>
 <translation id="3925926055063465902">Outros usuários deste dispositivo também podem usar esta rede</translation>
 <translation id="3926002189479431949">Smartphone com Smart Lock alterado</translation>
@@ -4479,6 +4480,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4015250302257349679">Pressione <ph name="ACCELERATOR" /> para focar no balão e mais uma vez para focar no elemento relacionado a ele.</translation>
 <translation id="4016762287427926315">As permissões concedidas para <ph name="APP_NAME" /> também serão dadas para este app. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Criar um QR code para este link</translation>
+<translation id="4018953474106733212">Somente desenvolvedores web devem ativar esse recurso. Use-o sempre com apps confiáveis.</translation>
 <translation id="4019983356493507433">Editar lista de favoritos</translation>
 <translation id="4020701737692625681">O administrador pode gravar sua tela</translation>
 <translation id="4021279097213088397">–</translation>
@@ -6682,6 +6684,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="557722062034137776">Redefinir o dispositivo não afetará suas Contas do Google ou quaisquer dados sincronizados com essas contas. No entanto, todos os arquivos salvos localmente em seu dispositivo serão excluídos.</translation>
 <translation id="5578059481725149024">Login automático</translation>
 <translation id="5578387000057347457">Insira um comando personalizado ou destaque o texto para criar uma imagem</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 item foi salvo apenas neste dispositivo. Para usar em outros dispositivos, <ph name="BEGIN_LINK" />salve-o na sua Conta do Google<ph name="END_LINK" />.}one{{ITEM_COUNT} item foi salvo apenas neste dispositivo. Para usar em outros dispositivos, <ph name="BEGIN_LINK" />salve-o na sua Conta do Google<ph name="END_LINK" />.}other{{ITEM_COUNT} itens foram salvos apenas neste dispositivo. Para usar em outros dispositivos, <ph name="BEGIN_LINK" />salve-os na sua Conta do Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Remover <ph name="SITE" /> da lista <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">A tradução para o <ph name="LANGUAGE" /> foi concluída</translation>
 <translation id="558170650521898289">Verificação de driver de hardware do Windows da Microsoft</translation>
@@ -7026,7 +7029,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5830205393314753525">Não foi possível abrir o app <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Sua senha é criptografada e nunca é vista por ninguém</translation>
 <translation id="5830720307094128296">Salvar página &amp;como...</translation>
-<translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831217499016131155">Carteira do Google</translation>
 <translation id="583179300286794292">Login feito como <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Excluir permissões e dados do site <ph name="SITE_NAME" />, todos os sites relacionados e o app instalado?</translation>
 <translation id="5832813618714645810">Perfis</translation>
@@ -7171,6 +7174,7 @@ Não exponha nenhuma informação confidencial.</translation>
     <ph name="LINE_BREAK" />
     Essa imagem será exibida na tela de login e na tela de bloqueio do Chromebook.</translation>
 <translation id="5925147183566400388">Indicador de Declaração de Práticas de Certificação</translation>
+<translation id="5926936390113611560">Abrir todos os perfis</translation>
 <translation id="5927132638760172455">Transmitindo para um destinatário desconhecido</translation>
 <translation id="592740088639760830">Interromper contêiner</translation>
 <translation id="592880897588170157">Fazer o download de arquivos PDF em vez de abri-los automaticamente no Chrome</translation>
@@ -7255,6 +7259,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5979421442488174909">&amp;Traduzir para o <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Para adicionar páginas aos favoritos, clique na estrela na barra de endereço</translation>
 <translation id="5982578203375898585">Mostrar os downloads quando eles forem concluídos</translation>
+<translation id="598347738324022917">Favorito salvo neste dispositivo</translation>
 <translation id="5983716913605894570">Gerando…</translation>
 <translation id="5984222099446776634">Visitados recentemente</translation>
 <translation id="5984334442529819751">Erro ao instalar o Conteúdo baixado. Muitas vezes, é necessário reiniciar o dispositivo. Acesse Configurações\&gt;\&gt;Sobre o ChromeOS para mais informações.</translation>
@@ -9851,7 +9856,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
     Visível para dispositivos por perto, como o <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="7786889348652477777">&amp;Recarregar aplicativo</translation>
 <translation id="7787308148023287649">Exibir em outra tela</translation>
-<translation id="7789895198197042595">Seu endereço de casa deixa os Serviços do Google, como receber resultados da Pesquisa e rotas do Google Maps, mais úteis e relevantes. Ele pode ser editado ou excluído na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
+<translation id="7789895198197042595">Seu endereço de casa deixa os Serviços do Google, como resultados da Pesquisa e rotas do Google Maps, mais úteis e relevantes. Ele pode ser editado ou excluído na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="7791269138074599214">Método de entrada</translation>
 <translation id="7791429245559955092">Esse app será instalado no perfil do Chrome usado no momento</translation>
 <translation id="7791436592012979144">Rolagem reversa ativada</translation>
@@ -11520,6 +11525,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8910987510378294980">Ocultar lista de dispositivos</translation>
 <translation id="8912362522468806198">Conta do Google</translation>
 <translation id="8912810933860534797">Ativar leitura automática</translation>
+<translation id="8914030287343429787">Acesse suas senhas mesmo quando não estiver usando o Chrome ou o Android, basta fazer login em <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Reiniciar o Google Chrome</translation>
 <translation id="8915307125957890427">Clique com o botão direito do mouse em uma guia e selecione as opções "Adicionar guia ao grupo" e "Novo grupo"</translation>
 <translation id="8915370057835397490">Carregando sugestão</translation>

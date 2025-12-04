@@ -184,6 +184,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="2910701580606108292">Před povolením spuštění chráněného obsahu na webu se zeptat</translation>
 <translation id="2918484639460781603">Přejít na nastavení</translation>
+<translation id="293060180538644702">Nechte si posílat oznámení s tipy pro Chrome</translation>
 <translation id="2932883381142163287">Nahlásit zneužití</translation>
 <translation id="2939338015096024043">Když je tato možnost zapnutá, weby mohou žádat o sledování polohy kamery a o informace o okolí. Když je vypnutá, weby nemohou sledovat polohu kamery ani získat informace o okolí.</translation>
 <translation id="2968755619301702150">Prohlížeč certifikátů</translation>
@@ -244,6 +245,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="3611658447322220736">Nedávno zavřené weby mohou dokončit odeslání a příjem dat</translation>
 <translation id="3619294456800709762">Weby mohou automaticky aktivovat režim obrazu v obraze</translation>
 <translation id="3628308229821498208">Navrhovaná vyhledávání</translation>
+<translation id="3632460243282703117">Odebírat</translation>
 <translation id="363748948745453283">Používá se přibližná poloha</translation>
 <translation id="3641456520301071208">Weby se mohou dotázat na vaši polohu</translation>
 <translation id="3658847490588580244">Spodní panel výchozího prohlížeče</translation>
@@ -522,6 +524,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="662080504995468778">Zůstat</translation>
 <translation id="6630443592285535486">Sem zadejte hexadecimální kód</translation>
 <translation id="6635327442719709864">Když je tato možnost zapnutá, mohou weby žádat o použití sériových portů. Když je vypnutá, weby sériové porty používat nemohou.</translation>
+<translation id="6669390930482049506">Chci dostávat oznámení</translation>
 <translation id="6678072580827808850">Provést bezpečnostní kontrolu</translation>
 <translation id="6682057173375416470">Nechte si na stránce Nová karta zobrazovat doporučené články</translation>
 <translation id="6683865262523156564">Tento web je ve skupině, která může sledovat vaši aktivitu. Skupinu definoval vlastník <ph name="RWS_OWNER" /></translation>
@@ -631,6 +634,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="7990211076305263060">Když je tato možnost zapnutá, weby mohou žádat o použití mikrofonu. Když je vypnutá, weby mikrofon používat nemohou.</translation>
 <translation id="8007176423574883786">Vypnuto v tomto zařízení</translation>
 <translation id="802154636333426148">Stažení se nezdařilo</translation>
+<translation id="8033047164036749181">Odebírat oznámení z tohoto webu</translation>
 <translation id="8042586301629853791">Řadit podle:</translation>
 <translation id="8051193500142930381">Funkce vyžadující fotoaparát nebudou k dispozici</translation>
 <translation id="8056330801132235235">Výchozí nastavení Chromu</translation>

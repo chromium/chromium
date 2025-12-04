@@ -184,6 +184,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="2910701580606108292">Pýtať sa, či chcete povoliť webu prehrávať chránený obsah</translation>
 <translation id="2918484639460781603">Prejsť na nastavenia</translation>
+<translation id="293060180538644702">Dostávajte upozornenia na tipy pre Chrome</translation>
 <translation id="2932883381142163287">Nahlásiť zneužitie</translation>
 <translation id="2939338015096024043">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie sledovať polohu vašej kamery a získať informácie o vašom okolí. Keď je táto možnosť vypnutá, weby nemôžu sledovať polohu vašej kamery ani získať informácie o vašom okolí.</translation>
 <translation id="2968755619301702150">Zobrazovač certifikátov</translation>
@@ -244,6 +245,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="3611658447322220736">Nedávno zatvorené weby môžu dokončiť odosielanie a prijímanie údajov</translation>
 <translation id="3619294456800709762">Weby môžu automaticky spúšťať obraz v obraze</translation>
 <translation id="3628308229821498208">Navrhované vyhľadávania</translation>
+<translation id="3632460243282703117">Odoberať</translation>
 <translation id="363748948745453283">Používa sa približná poloha</translation>
 <translation id="3641456520301071208">Weby môžu žiadať o vašu polohu</translation>
 <translation id="3658847490588580244">Dolný hárok predvoleného prehliadača</translation>
@@ -522,6 +524,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="662080504995468778">Zostať</translation>
 <translation id="6630443592285535486">Tu zadajte hexadecimálny kód</translation>
 <translation id="6635327442719709864">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať sériové porty. Keď je táto možnosť vypnutá, weby nemôžu používať sériové porty.</translation>
+<translation id="6669390930482049506">Upozorňovať</translation>
 <translation id="6678072580827808850">Vykonať kontrolu bezpečnosti</translation>
 <translation id="6682057173375416470">Získavajte navrhované články na stránke na novej karte</translation>
 <translation id="6683865262523156564">Tento web je v skupine, ktorej sa zobrazuje vaša aktivita. Skupina je definovaná vlastníkom <ph name="RWS_OWNER" />.</translation>
@@ -631,6 +634,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="7990211076305263060">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať váš mikrofón. Keď je táto možnosť vypnutá, weby nemôžu používať váš mikrofón.</translation>
 <translation id="8007176423574883786">Vypnuté v tomto zariadení</translation>
 <translation id="802154636333426148">Stiahnutie zlyhalo</translation>
+<translation id="8033047164036749181">Odoberať upozornenia z tohto webu</translation>
 <translation id="8042586301629853791">Zoradiť podľa:</translation>
 <translation id="8051193500142930381">Funkcie vyžadujúce kameru nebudú fungovať</translation>
 <translation id="8056330801132235235">Predvolené Chromom</translation>

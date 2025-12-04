@@ -1929,10 +1929,6 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
       Als je het beleid niet toepast, is deze functie niet beschikbaar.</translation>
 <translation id="2342066287156668839">Permanent quotum aanzetten.</translation>
-<translation id="2343774133209251840">Als dit beleid wordt toegepast, retourneren de API's voor opslagquotum een statische waarde die gelijk is aan gebruik + min (10 GiB, schijf afgerond naar boven naar de dichtstbijzijnde 1 GiB).
-Als het beleid niet wordt toegepast, retourneren de API's voor opslagquotum meestal een dynamische waarde die evenredig is aan de totale beschikbare ruimte op het apparaat, ongeacht het gebruik.
-Als het beleid niet is ingesteld, bepalen de lancering van de functie voor voorspelbaar gerapporteerd opslagquotum of de bijbehorende flags het gedrag.
-Deze instelling heeft geen invloed op sites met rechten voor onbeperkte opslag. Dit heeft ook geen invloed op het afgedwongen quotum.</translation>
 <translation id="2344033063256716138">Stel beleid in om te bepalen of gebruikers toegang hebben tot gedeelde gegevens en functies.</translation>
 <translation id="2345547870894930157">DNS-over-HTTPS zonder onbeveiligde fallback aanzetten</translation>
 <translation id="2347695338560092641">Printerstuurprogramma's buiten het proces toegestaan</translation>

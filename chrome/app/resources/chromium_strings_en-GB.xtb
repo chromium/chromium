@@ -503,6 +503,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 Some features may be unavailable. Please specify a different profile directory or use a newer version of Chromium.</translation>
 <translation id="6729124504294600478">To get personalisation and other features, include Chromium in Web &amp; App Activity and linked Google services</translation>
 <translation id="6734291798041940871">Chromium is already installed for all users on your computer.</translation>
+<translation id="6742093177587589736">To get your bookmarks and more on all your devices, sign in to Chromium. This bookmark will be saved in your Google Account after you sign in.</translation>
 <translation id="6751374565094704799">Speeds up sites with Chromium's V8 engine but makes Chromium slightly less resistant to attacks. This setting is on.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Some of your Chromium data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data (1 item) will be deleted.}other{Some of your Chromium data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data ({count} items) will be deleted.}}</translation>
 <translation id="67706546131546258">Chromium recommends scanning this file because it may be dangerous.</translation>
@@ -686,7 +687,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="897581876605952338">Chromium Enterprise logo</translation>
 <translation id="8988036198400390003">Manage Chromium profiles</translation>
 <translation id="9019929317751753759">To make Chromium safer, we disabled the following extension that isn't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
-<translation id="9022552996538154597">Sign in to Chromium</translation>
 <translation id="904366664621834601">Chromium blocked this download because the archive file includes other files that may hide malware</translation>
 <translation id="9062666675513499497">Sign in to Chromium when you sign in to other Google services</translation>
 <translation id="9078733879136747090">Chromium was automatically closed</translation>

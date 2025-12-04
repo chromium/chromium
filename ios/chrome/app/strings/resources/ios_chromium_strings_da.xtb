@@ -351,7 +351,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="900560297598578021">Logget ind som <ph name="EMAIL" />.
 
 Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgangssætningen for at bruge og gemme Chromium-data på din Google-konto.</translation>
-<translation id="9022552996538154597">Log ind på Chromium</translation>
 <translation id="9031260906956926157">Nogle af dine Chromium-data er endnu ikke gemt på din Google-konto.
 Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes de pågældende data.</translation>
 <translation id="9050790730841755540">Brug Chromium, hver gang du trykker på links i andre apps.</translation>

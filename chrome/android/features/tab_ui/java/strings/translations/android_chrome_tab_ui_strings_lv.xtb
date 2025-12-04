@@ -7,6 +7,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Izveidota pirms <ph name="NUM_YEARS_ONE" /> gada}zero{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gadiem}one{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gada}other{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gadiem}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Neaktīvās cilnes un grupas tiks aizvērtas pēc viena mēneša}zero{Neaktīvās cilnes un grupas tiks aizvērtas pēc <ph name="MONTH_COUNT_MANY" /> mēnešiem}one{Neaktīvās cilnes un grupas tiks aizvērtas pēc <ph name="MONTH_COUNT_MANY" /> mēneša}other{Neaktīvās cilnes un grupas tiks aizvērtas pēc <ph name="MONTH_COUNT_MANY" /> mēnešiem}}</translation>
 <translation id="1173894706177603556">Pārdēvēt</translation>
+<translation id="1203747227183434426">Notiek multivides satura ierakstīšana</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Atvērt grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT2" /> cilne}zero{Atvērt grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT2" /> cilnes}one{Atvērt grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT2" /> cilne}other{Atvērt grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT2" /> cilnes}}</translation>
 <translation id="1273910660700874265">Ciļņu grupas “<ph name="TITLE_OF_GROUP" />” iespējas</translation>
 <translation id="1300188005269437765">Izvēlieties, kad cilnes un ciļņu grupas tiek automātiski pārvietotas uz neaktīvo ciļņu sadaļu.</translation>
@@ -21,6 +22,7 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktīvs vienums}zero{<ph name="TABS_COUNT_MANY" /> neaktīvi vienumi}one{<ph name="TABS_COUNT_MANY" /> neaktīvs vienums}other{<ph name="TABS_COUNT_MANY" /> neaktīvi vienumi}}</translation>
 <translation id="1645759014353344461">Grupētas <ph name="TABS_COUNT_MANY" /> cilnes</translation>
 <translation id="1657719826150349398">Pārvietot cilni uz leju</translation>
+<translation id="1670942869417022142">Izslēgts audio</translation>
 <translation id="1697284962337958118">Pievienot:</translation>
 <translation id="1713541401465507417">Aizvērt visas cilnes un grupas</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> ciļņu grupa vairs nav pieejama.}zero{<ph name="TAB_GROUPS_COUNT_MANY" /> ciļņu grupas vairs nav pieejamas.}one{<ph name="TAB_GROUPS_COUNT_MANY" /> ciļņu grupa vairs nav pieejama.}other{<ph name="TAB_GROUPS_COUNT_MANY" /> ciļņu grupas vairs nav pieejamas.}}</translation>
@@ -110,6 +112,7 @@
 <translation id="4871719318659334896">Aizvērt grupu</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Atjaunot un atvērt ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_ONE" /> cilne (krāsa: <ph name="COLOR_NAME" />).}zero{Atjaunot un atvērt ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes (krāsa: <ph name="COLOR_NAME" />).}one{Atjaunot un atvērt ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilne (krāsa: <ph name="COLOR_NAME" />).}other{Atjaunot un atvērt ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes (krāsa: <ph name="COLOR_NAME" />).}}</translation>
 <translation id="4881695831933465202">Atvērt</translation>
+<translation id="4894777338623123366">Notiek cilnes ekrāna kopīgošana</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Aizvērt cilni}zero{Aizvērt cilnes}one{Aizvērt cilnes}other{Aizvērt cilnes}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> grupas ir saglabātas (cilnes tiks aizvērtas, un grupas tiks dzēstas)</translation>
 <translation id="492284538114688557">Konstatēts cenas kritums</translation>
@@ -142,6 +145,7 @@
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Pārvietot grupu uz jaunu logu}zero{Pārvietot grupu uz citu logu}one{Pārvietot grupu uz citu logu}other{Pārvietot grupu uz citu logu}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Pārvietot cilni pa labi}zero{Pārvietot cilnes pa labi}one{Pārvietot cilnes pa labi}other{Pārvietot cilnes pa labi}}</translation>
 <translation id="6228793724645064692">(veikala vērtējums)</translation>
+<translation id="6251046978189636310">Notiek audio atskaņošana</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Noņemt cilni no grupas}zero{Noņemt cilnes no grupas}one{Noņemt cilnes no grupas}other{Noņemt cilnes no grupas}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Pievienot cilni jaunai grupai}zero{Pievienot cilnes jaunai grupai}one{Pievienot cilnes jaunai grupai}other{Pievienot cilnes jaunai grupai}}</translation>
 <translation id="6333260925957816943">Informācija par šo veikalu</translation>
@@ -173,6 +177,7 @@
 <translation id="7326879924029668159">Skatiet atgriešanas politiku un citu informāciju.</translation>
 <translation id="7352298686197644113">Skatiet, kurai precei jūsu atvērtajās cilnēs ir zemāka cena.</translation>
 <translation id="7369451074646620503">Ciļņu grupa “<ph name="TAB_GROUP_NAME" />” vairs nav pieejama.</translation>
+<translation id="7402375256128852434">Pievienojiet nesen atvērtās cilnes</translation>
 <translation id="7452985128687107478">Ciļņu grupas tiek automātiski saglabātas un atjauninātas visās jūsu ierīcēs.</translation>
 <translation id="747459581954555080">Atjaunot visu</translation>
 <translation id="7489558427602531799">Pārvietot ciļņu grupu pa labi</translation>

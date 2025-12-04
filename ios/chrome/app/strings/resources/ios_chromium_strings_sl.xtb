@@ -351,7 +351,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="900560297598578021">Prijavljeni ste kot <ph name="EMAIL" />.
 
 Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če želite podatke iz Chromiuma uporabljati in shranjevati v računu Google.</translation>
-<translation id="9022552996538154597">Prijava v Chromium</translation>
 <translation id="9031260906956926157">Nekateri podatki v Chromiumu še niso shranjeni v računu Google.
 Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="9050790730841755540">Chromium lahko uporabljate, kadar koli se dotaknete povezav v drugih aplikacijah.</translation>

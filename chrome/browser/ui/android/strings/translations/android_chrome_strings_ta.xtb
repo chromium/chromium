@@ -525,7 +525,6 @@
 <translation id="3268048651973962414">தேடல் முடிவுகளைப் பார்க்க மேலே இழுக்கவும்</translation>
 <translation id="3269093882174072735">படத்தை ஏற்று</translation>
 <translation id="3280562213547448728">குரல் தேடல்</translation>
-<translation id="3282568296779691940">Chrome இல் உள்நுழைக</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> பக்கம்}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> பக்கங்கள்}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 கடவுச்சொல் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளது. உங்களின் பிற சாதனங்களில் அதைப் பயன்படுத்த, உங்கள் Google கணக்கில் சேமியுங்கள்.}other{# கடவுச்சொற்கள் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளன. உங்களின் பிற சாதனங்களில் அவற்றைப் பயன்படுத்த, உங்கள் Google கணக்கில் சேமியுங்கள்.}}</translation>
 <translation id="3293181007446299124">'இதுவரை இணையத்தில் பார்த்தவை' உங்கள் சாதனத்தில் தனிப்பட்ட முறையில் சேமிக்கப்படும். மேலும் உங்கள் அடையாளத்தைப் பாதுகாக்கும் வகையில் அறிக்கைகள் சிறிது தாமதத்திற்குப் பிறகு அனுப்பப்படும்</translation>
@@ -911,6 +910,7 @@
 <translation id="4905823827770127520">பக்கத்திற்கான இணைப்பைச் சேருங்கள்</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">கட்டணம் செலுத்துவதற்கான ஆப்ஸ்</translation>
+<translation id="4911042367886397055">வணக்கம் <ph name="USER_NAME" />!</translation>
 <translation id="4912413785358399818">பக்கத்தை நகர்த்து</translation>
 <translation id="4913169188695071480">புதுப்பிக்காதே</translation>
 <translation id="4921224083091001889">கடவுச்சொற்கள் மற்றும் பலவற்றை உங்கள் சாதனங்கள் எல்லாவற்றிலும் பெற Chromeமில் <ph name="EMAIL" /> என்ற கணக்கில் உள்நுழையுங்கள்</translation>
@@ -1941,6 +1941,7 @@
 <translation id="9104217018994036254">தாவலைப் பகிர்வதற்கான சாதனங்களின் பட்டியல்.</translation>
 <translation id="9106148373857059373">புக்மார்க் சேமிப்புச் செயல்முறை மூடப்பட்டது</translation>
 <translation id="9108808586816295166">பாதுகாப்பான DNS எப்போதும் கிடைக்காமல் போகலாம்</translation>
+<translation id="9112483451228487295">பிரவுசிங் தரவை விரைவாக நீக்குதல்</translation>
 <translation id="9124978074365039456">நீங்கள் பார்ப்பவற்றை உங்கள் கேமரா மற்றும் புகைப்பட கேலரியைப் பயன்படுத்தி ஷாப்பிங் செய்யலாம் மொழிபெயர்க்கலாம் அடையாளம் காணலாம்</translation>
 <translation id="9130135798965366513">தொடர, <ph name="FIELDS_STRING" /> ஐ இந்தத் தளத்துடன் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> பகிரும். இந்தத் தளத்தின் <ph name="BEGIN_LINK1" />தனியுரிமைக் கொள்கை<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றைப் பார்க்கவும்.</translation>
 <translation id="9131209053278896908">தடுக்கப்பட்ட தளங்கள் இங்கே காட்டப்படும்</translation>

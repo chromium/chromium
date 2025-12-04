@@ -4329,6 +4329,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Veličina prikaza i teksta: <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Šalje URL-ove Sigurnom pregledavanju na provjeru. Šalje i mali uzorak stranica, preuzimanja, aktivnosti proširenja i informacija o sustavu radi lakšeg otkrivanja novih prijetnji. Privremeno povezuje te podatke s vašim Google računom kada ste prijavljeni kako biste bili zaštićeni u raznim Googleovim aplikacijama.</translation>
+<translation id="3924788966103416622">Vanjska aplikacija traži potpunu kontrolu nad ovom sesijom Chromea radi otklanjanja pogrešaka. To uključuje pristup vašim spremljenim podacima, kolačićima i podacima web-lokacije te mogućnost otvaranja bilo kojeg URL-a.</translation>
 <translation id="3925573269917483990">Fotoaparat:</translation>
 <translation id="3925926055063465902">Drugi korisnici na ovom uređaju također mogu upotrebljavati mrežu</translation>
 <translation id="3926002189479431949">Telefon za Smart Lock promijenio se</translation>
@@ -4467,6 +4468,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4015250302257349679">Pritisnite <ph name="ACCELERATOR" /> da biste fokusirali ovaj oblačić, a zatim to ponovite da biste fokusirali element na koji se taj oblačić odnosi.</translation>
 <translation id="4016762287427926315">Dopuštenja koja date za aplikaciju <ph name="APP_NAME" /> vrijedit će i za ovu aplikaciju. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Izradi QR kôd za ovu vezu</translation>
+<translation id="4018953474106733212">Tu značajku trebaju uključiti samo web-programeri i upotrebljavati je samo s pouzdanim aplikacijama.</translation>
 <translation id="4019983356493507433">Uredite popis oznaka</translation>
 <translation id="4020701737692625681">Administrator može snimiti vaš zaslon</translation>
 <translation id="4021279097213088397">–</translation>
@@ -6668,6 +6670,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="557722062034137776">Vraćanje uređaja na tvorničke postavke neće utjecati na vaše Google račune ili bilo koje podatke sinkronizirane s tim računima. Međutim, izbrisat će se sve datoteke koje su spremljene lokalno na uređaju.</translation>
 <translation id="5578059481725149024">Automatska prijava</translation>
 <translation id="5578387000057347457">Unesite prilagođeni upit ili istaknuti tekst da biste izradili sliku</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{Jedna stavka sprema se samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, <ph name="BEGIN_LINK" />spremite je na svoj Google račun<ph name="END_LINK" />.}one{{ITEM_COUNT} stavka sprema se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, <ph name="BEGIN_LINK" />spremite ih na svoj Google račun<ph name="END_LINK" />.}few{{ITEM_COUNT} stavke spremaju se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, <ph name="BEGIN_LINK" />spremite ih na svoj Google račun<ph name="END_LINK" />.}other{{ITEM_COUNT} stavki sprema se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, <ph name="BEGIN_LINK" />spremite ih na svoj Google račun<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Uklonite web-lokaciju <ph name="SITE" /> s popisa <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">Dovršen je prijevod na <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Potvrda hardverskog upravljačkog programa sustava Microsoft Windows</translation>
@@ -7154,6 +7157,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
     <ph name="LINE_BREAK" />
     Ta će se slika prikazivati na zaslonu za prijavu i zaključanom zaslonu Chromebooka.</translation>
 <translation id="5925147183566400388">Pokazivač izjave o načinu dobivanja certifikata</translation>
+<translation id="5926936390113611560">Otvori sve profile</translation>
 <translation id="5927132638760172455">Emitiranje na nepoznati prijamnik</translation>
 <translation id="592740088639760830">Zaustavi ovaj spremnik</translation>
 <translation id="592880897588170157">Preuzmite PDF datoteke umjesto da se automatski otvaraju u Chromeu</translation>
@@ -7237,6 +7241,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5979421442488174909">&amp;Prevedi na <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Da biste označili stranice, kliknite zvjezdicu u adresnoj traci</translation>
 <translation id="5982578203375898585">Prikaži preuzimanja nakon dovršetka</translation>
+<translation id="598347738324022917">Oznaka je spremljena na ovaj uređaj</translation>
 <translation id="5983716913605894570">Generiranje...</translation>
 <translation id="5984222099446776634">Nedavno posjećeno</translation>
 <translation id="5984334442529819751">Pogreška pri instaliranju DLC-a (često je potrebno ponovno pokretanje; saznajte više u Postavkama\&gt;\&gt;O ChromeOS-u).</translation>
@@ -11505,6 +11510,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8910987510378294980">Sakrij popis uređaja</translation>
 <translation id="8912362522468806198">Google Račun</translation>
 <translation id="8912810933860534797">Omogući automatsko traženje</translation>
+<translation id="8914030287343429787">Pregledajte zaporke čak i kad ne upotrebljavate Chrome ili Android tako da se prijavite na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Ponovo pokrenite Chrome</translation>
 <translation id="8915307125957890427">Kliknite karticu desnom tipkom i odaberite Dodaj karticu u grupu, a zatim odaberite Nova grupa</translation>
 <translation id="8915370057835397490">Učitavanje prijedloga</translation>

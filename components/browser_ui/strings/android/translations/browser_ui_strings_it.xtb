@@ -184,6 +184,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="2903493209154104877">Indirizzi</translation>
 <translation id="2910701580606108292">Chiedi prima di consentire ai siti di riprodurre contenuti protetti</translation>
 <translation id="2918484639460781603">Passa alle impostazioni</translation>
+<translation id="293060180538644702">Ricevi notifiche sui suggerimenti di Chrome</translation>
 <translation id="2932883381142163287">Segnala abuso</translation>
 <translation id="2939338015096024043">Quando l'opzione è attiva, i siti possono chiedere di monitorare la posizione della fotocamera e scoprire di più sull'ambiente circostante. Quando l'opzione è disattivata, i siti non possono monitorare la posizione della fotocamera o scoprire l'ambiente circostante.</translation>
 <translation id="2968755619301702150">Visualizzatore certificati</translation>
@@ -244,6 +245,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="3611658447322220736">I siti chiusi di recente possono terminare l'invio e la ricezione di dati</translation>
 <translation id="3619294456800709762">I siti possono attivare automaticamente la modalità Picture in picture</translation>
 <translation id="3628308229821498208">Ricerche suggerite</translation>
+<translation id="3632460243282703117">Iscriviti</translation>
 <translation id="363748948745453283">Posizione approssimativa in uso</translation>
 <translation id="3641456520301071208">I siti possono chiederti la posizione</translation>
 <translation id="3658847490588580244">Riquadro inferiore del browser predefinito</translation>
@@ -522,6 +524,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="662080504995468778">Rimani</translation>
 <translation id="6630443592285535486">Digita qui l'esadecimale</translation>
 <translation id="6635327442719709864">Se questa opzione è attiva, i siti possono chiedere di usare le porte seriali. Se l'opzione non è attiva, i siti non possono utilizzare le porte seriali.</translation>
+<translation id="6669390930482049506">Avvisami</translation>
 <translation id="6678072580827808850">Rivedi il controllo di sicurezza</translation>
 <translation id="6682057173375416470">Visualizza articoli suggeriti nella pagina Nuova scheda</translation>
 <translation id="6683865262523156564">Questo sito fa parte di un gruppo che può vedere le tue attività. Il gruppo è definito da <ph name="RWS_OWNER" /></translation>
@@ -631,6 +634,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="7990211076305263060">Quando l'opzione è attiva, i siti potrebbero chiedere l'utilizzo del microfono. Quando l'opzione è disattivata, i siti non possono utilizzare il microfono.</translation>
 <translation id="8007176423574883786">Disattivata per questo dispositivo</translation>
 <translation id="802154636333426148">Download non riuscito</translation>
+<translation id="8033047164036749181">Iscriviti per ricevere notifiche da questo sito</translation>
 <translation id="8042586301629853791">Ordina per:</translation>
 <translation id="8051193500142930381">Le funzionalità che richiedono una videocamera non funzioneranno</translation>
 <translation id="8056330801132235235">Impostazione predefinita di Chrome</translation>

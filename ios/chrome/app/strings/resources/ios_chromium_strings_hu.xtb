@@ -351,7 +351,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="900560297598578021">Bejelentkezve a következőként: <ph name="EMAIL" />.
 
 Adatai az összetett jelszavával lettek titkosítva a következő időpontban: <ph name="TIME" />. Adja meg, ha Google-fiókjában Chromium-adatokat szeretne használni és menteni.</translation>
-<translation id="9022552996538154597">Bejelentkezés a Chromiumba</translation>
 <translation id="9031260906956926157">Az Ön bizonyos Chromium-adatait még nem mentette a rendszer a Google-fiókjába.
 A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
 <translation id="9050790730841755540">Bármikor használhatja a Chromiumot, amikor más alkalmazásokban linkekre kattint.</translation>

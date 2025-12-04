@@ -351,7 +351,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="900560297598578021">Kirjautuneena käyttäjänä <ph name="EMAIL" />.
 
 Datasi salattiin tunnuslauseella <ph name="TIME" />. Lisää se, niin voit käyttää ja tallentaa Chromium-dataa Google-tililläsi.</translation>
-<translation id="9022552996538154597">Kirjaudu sisään Chromiumiin</translation>
 <translation id="9031260906956926157">Osaa Chromium-datastasi ei ole vielä tallennettu Google-tilillesi.
 Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="9050790730841755540">Käytä Chromiumia aina, kun napautat linkkejä muissa sovelluksissa.</translation>

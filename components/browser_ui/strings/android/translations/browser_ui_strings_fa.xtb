@@ -22,7 +22,7 @@
 <translation id="131112695174432497">داده‌ای که بر شخصی‌سازی آگهی اثر بگذارد حذف می‌شود</translation>
 <translation id="1317194122196776028">فراموش کردن این سایت</translation>
 <translation id="1321110954513621549">مجاز است • تقریبی</translation>
-<translation id="1323433172918577554">نمایش موارد بیشتر</translation>
+<translation id="1323433172918577554">بیشتر نشان دادن</translation>
 <translation id="1333965224356556482">اجازه ندادن به سایت‌ها برای دیدن مکان شما</translation>
 <translation id="1343356790768851700">این سایت چیزهایی را که می‌پسندید تعیین می‌کند و سپس به سایت‌های دیگر آگهی پیشنهاد می‌دهد</translation>
 <translation id="1369915414381695676">سایت <ph name="SITE_NAME" /> اضافه شد</translation>
@@ -184,6 +184,7 @@
 <translation id="2903493209154104877">آدرس‌ها</translation>
 <translation id="2910701580606108292">قبل از اجازه دادن به سایت‌ها برای پخش محتوای محافظت‌شده سؤال شود</translation>
 <translation id="2918484639460781603">رفتن به تنظیمات</translation>
+<translation id="293060180538644702">‏اعلان‌های «نکته‌های Chrome» را دریافت کنید</translation>
 <translation id="2932883381142163287">گزارش سوءاستفاده</translation>
 <translation id="2939338015096024043">هرگاه روشن باشد، سایت‌ها می‌توانند ردیابی موقعیت دوربین شما را درخواست کنند و درباره محیط اطرافتان اطلاعات دریافت کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند موقعیت دوربین شما را ردیابی کنند و درباره محیط اطرافتان اطلاعات دریافت کنند.</translation>
 <translation id="2968755619301702150">بیننده گواهی</translation>
@@ -244,6 +245,7 @@
 <translation id="3611658447322220736">سایت‌هایی که اخیراً بسته شده‌اند می‌توانند ارسال و دریافت داده را تکمیل کنند</translation>
 <translation id="3619294456800709762">سایت‌ها می‌توانند به‌طور خودکار به حالت تصویر در تصویر بروند</translation>
 <translation id="3628308229821498208">جستجوهای پیشنهادی</translation>
+<translation id="3632460243282703117">مشترک شدن</translation>
 <translation id="363748948745453283">درحال استفاده از مکان تقریبی</translation>
 <translation id="3641456520301071208">اجازه داشتن سایت‌ها برای خواستن مکان شما</translation>
 <translation id="3658847490588580244">برگ زیرین مرورگر پیش‌فرض</translation>
@@ -512,7 +514,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}}</translation>
 <translation id="6554732001434021288">آخرین بازدید: <ph name="NUM_DAYS" /> روز پیش</translation>
 <translation id="6557290421156335491">میان‌برهای من</translation>
-<translation id="656065428026159829">موارد بیشتر</translation>
+<translation id="656065428026159829">بیشتر دیدن</translation>
 <translation id="6561560012278703671">استفاده از پیام‌رسانی کم‌صداتر (درخواست‌های اعلان را مسدود می‌کند تا مزاحمتان نشود)</translation>
 <translation id="6565144332292237355">سایت‌ها می‌توانند از این ویژگی برای جستجو کردن و وصل شدن به دستگاه‌های موجود در شبکه محلی شما استفاده کنند</translation>
 <translation id="6593061639179217415">سایت مخصوص رایانه</translation>
@@ -522,6 +524,7 @@
 <translation id="662080504995468778">ماندن</translation>
 <translation id="6630443592285535486">مبنای شانزده را اینجا تایپ کنید</translation>
 <translation id="6635327442719709864">وقتی روشن باشد، سایت‌ها می‌توانند درخواست استفاده از درگاه‌های سریال را داشته باشند. وقتی خاموش باشد، سایت‌ها نمی‌توانند از درگاه‌های سریال استفاده کنند.</translation>
+<translation id="6669390930482049506">مطلع شوم</translation>
 <translation id="6678072580827808850">ارزیابی کنترل ایمنی</translation>
 <translation id="6682057173375416470">مقاله‌های پیشنهادی را در صفحه «زبانه جدید» دریافت کنید</translation>
 <translation id="6683865262523156564">این سایت در گروهی است که می‌تواند فعالیت شما را ببیند. ‫<ph name="RWS_OWNER" /> این گروه را تعریف کرده است</translation>
@@ -631,6 +634,7 @@
 <translation id="7990211076305263060">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از میکروفون را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از میکروفون استفاده کنند.</translation>
 <translation id="8007176423574883786">برای این دستگاه غیرفعال شد</translation>
 <translation id="802154636333426148">بارگیری نشد</translation>
+<translation id="8033047164036749181">برای دریافت اعلان‌های این سایت، مشترک شوید</translation>
 <translation id="8042586301629853791">مرتب‌سازی براساس:</translation>
 <translation id="8051193500142930381">ویژگی‌هایی که به دوربین نیاز دارند کار نخواهند کرد</translation>
 <translation id="8056330801132235235">‏پیش‌فرض Chrome</translation>

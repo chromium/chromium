@@ -351,7 +351,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="900560297598578021">Zalogowano jako <ph name="EMAIL" />.
 
 Dane zostały zaszyfrowane hasłem wielowyrazowym <ph name="TIME" />. Podaj to hasło, aby korzystać z danych Chromium i zapisywać je na swoim koncie Google.</translation>
-<translation id="9022552996538154597">Zaloguj się w Chromium</translation>
 <translation id="9031260906956926157">Niektóre dane z Chromium nie zostały jeszcze zapisane na Twoim koncie Google.
 Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te dane zostaną usunięte.</translation>
 <translation id="9050790730841755540">Używaj Chromium, zawsze gdy klikasz linki w innych aplikacjach.</translation>

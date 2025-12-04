@@ -351,7 +351,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="900560297598578021">Has iniciat la sessió com a <ph name="EMAIL" />.
 
 Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME" />. Per utilitzar i desar les dades de Chromium al teu Compte de Google, introdueix la frase de contrasenya.</translation>
-<translation id="9022552996538154597">Inicia la sessió a Chromium</translation>
 <translation id="9031260906956926157">Algunes dades de Chromium encara no s'han desat al teu Compte de Google.
 Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
 <translation id="9050790730841755540">Utilitza Chromium cada vegada que toquis enllaços en altres aplicacions.</translation>

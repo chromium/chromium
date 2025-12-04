@@ -2009,10 +2009,6 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
       Se a política for definida como "Desativada", esse recurso não estará disponível.</translation>
 <translation id="2342066287156668839">Ativar cota persistente.</translation>
-<translation id="2343774133209251840">Quando ativadas, as APIs de cota de armazenamento vão retornar um valor estático igual ao uso e mais um mínimo de 10 GiB de disco, arredondado para o próximo 1 GiB.
-Quando desativadas, as APIs de cota de armazenamento geralmente vão retornar um valor dinâmico proporcional ao espaço total disponível no dispositivo, não importando o uso.
-Se não forem definidas, o comportamento será determinado pelo lançamento de recursos ou pelas flags da cota de armazenamento informada e previsível.
-Os sites com permissões de armazenamento ilimitado não são afetados por essa configuração. A cota obrigatória também não é impactada.</translation>
 <translation id="2344033063256716138">Configure políticas para controlar se o usuário tem permissão para acessar dados e recursos compartilhados.</translation>
 <translation id="2345547870894930157">Ativar DNS sobre HTTPS sem substituto inseguro</translation>
 <translation id="2347695338560092641">Drivers de impressão fora do processo são permitidos</translation>
@@ -4614,6 +4610,11 @@ Se a política for definida como <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3),
 
 
 A disponibilidade das extensões ainda é controlada por outras políticas.</translation>
+<translation id="4112585124048467596">Se esta política for definida, todos os tipos de dados especificados serão excluídos da sincronização, tanto para a <ph name="CHROME_SYNC_NAME" /> quanto para a sincronização de perfil de roaming. Isso pode ajudar a reduzir o tamanho do perfil de roaming ou limitar o tipo de dado que será enviado por upload aos servidores da <ph name="CHROME_SYNC_NAME" />.
+
+      Atualmente, os tipos de dados para esta política são: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "productComparison", "readingList", "tabs", "themes", "typedUrls" e "wifiConfigurations". Esses nomes diferenciam letras maiúsculas de minúsculas.
+
+      Observações: a atualização dinâmica de políticas está disponível apenas na versão 123 e mais recentes do <ph name="PRODUCT_NAME" />. Desativar a opção "autofill" também desativa "payments". "typedUrls" refere-se a todo o histórico de navegação.</translation>
 <translation id="4115501011761259824">Ativar o First-Party Sets para todos os usuários afetados</translation>
 <translation id="4120401094617902941">Taxa em que os contadores de tempo de execução são amostrados e coletados. O mínimo permitido é de um dia.
 

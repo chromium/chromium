@@ -351,7 +351,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="900560297598578021">Accesso eseguito come <ph name="EMAIL" />.
 
 I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" />. Inseriscila per utilizzare e salvare i dati di Chromium nel tuo Account Google.</translation>
-<translation id="9022552996538154597">Accedi a Chromium</translation>
 <translation id="9031260906956926157">Alcuni dati di Chromium non sono ancora stati salvati nel tuo Account Google.
 Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="9050790730841755540">Utilizza Chromium ogni volta che tocchi i link in altre app.</translation>

@@ -211,6 +211,7 @@
 <translation id="1764070164487214210">Trasa</translation>
 <translation id="1767766085187034454">Tłumacz Google</translation>
 <translation id="1771016937398045251">Menu Narzędzia</translation>
+<translation id="1772468122139624049">Nie udało się ponownie wczytać kart</translation>
 <translation id="1779354709911146450">Błąd uwierzytelniania</translation>
 <translation id="1780152987505130652">Zamknij grupę</translation>
 <translation id="178400879184240105">Twoje hasła są unikalne</translation>
@@ -709,6 +710,7 @@
 <translation id="3779810277399252432">Brak połączenia z internetem.</translation>
 <translation id="3782614601387961027">Zamknij ostrzeżenie</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
+<translation id="3789849526426236410">Otwórz nową kartę</translation>
 <translation id="380329542618494757">Imię i nazwisko</translation>
 <translation id="3803696231112616155">Proponuj tłumaczenie tej strony</translation>
 <translation id="3810973564298564668">Zarządzaj</translation>
@@ -2018,7 +2020,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8545276357312221485">Sprawdź ustawienia przeglądarki domyślnej</translation>
 <translation id="854938212724803178">Masz 1 przejęte hasło. Dla bezpieczeństwa zmień je jak najszybciej.</translation>
 <translation id="8551311254462607218">Na pasku adresu kliknij ikonę aparatu Obiektywu Google</translation>
-<translation id="8556590991644167667">{count,plural, =1{Odrzucono {count} ostrzeżenie}few{Odrzucono {count} ostrzeżenia}many{Odrzucono {count} ostrzeżeń}other{Odrzucono {count} ostrzeżenia}}</translation>
+<translation id="8556590991644167667">{count,plural, =1{Odrzuciłeś(-aś) {count} ostrzeżenie}few{Odrzuciłeś(-aś) {count} ostrzeżenia}many{Odrzuciłeś(-aś) {count} ostrzeżeń}other{Odrzuciłeś(-aś) {count} ostrzeżenia}}</translation>
 <translation id="8558046478684552694">Zamknij grupę.</translation>
 <translation id="8559858985063901027">Klucze dostępu</translation>
 <translation id="8560253818350321773">Najpierw pokazuj elementy często używane.</translation>

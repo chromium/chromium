@@ -351,7 +351,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="900560297598578021"><ph name="EMAIL" /> olarak oturum açtınız.
 
 Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chromium verilerini kullanmak ve Google Hesabınıza kaydetmek için parolanızı girin.</translation>
-<translation id="9022552996538154597">Chromium'da oturum aç</translation>
 <translation id="9031260906956926157">Chromium verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi.
 Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
 <translation id="9050790730841755540">Diğer uygulamalardaki bağlantılara her dokunduğunuzda Chromium'u kullanın.</translation>

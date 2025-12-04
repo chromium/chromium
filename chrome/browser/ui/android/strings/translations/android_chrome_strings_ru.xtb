@@ -525,7 +525,6 @@
 <translation id="3268048651973962414">Перетащите вверх, чтобы увидеть результаты поиска.</translation>
 <translation id="3269093882174072735">Загрузить изображение</translation>
 <translation id="3280562213547448728">Голосовой поиск</translation>
-<translation id="3282568296779691940">Войдите в Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> вкладка}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладка}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладки}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладок}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладки}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 пароль доступен только на этом устройстве. Добавьте его в аккаунт Google, чтобы использовать на других устройствах.}one{# пароль доступен только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах.}few{# пароля доступны только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах.}many{# паролей доступны только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах.}other{# пароля доступно только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах.}}</translation>
 <translation id="3293181007446299124">История браузера хранится на устройстве и доступна только вам. Для защиты персональных данных отчеты отправляются с задержкой.</translation>
@@ -911,6 +910,7 @@
 <translation id="4905823827770127520">Укажите ссылку на страницу</translation>
 <translation id="4908869848243824489">Рекомендации от Google</translation>
 <translation id="4910889077668685004">Платежные приложения</translation>
+<translation id="4911042367886397055">С возвращением, <ph name="USER_NAME" />!</translation>
 <translation id="4912413785358399818">Переместить вкладку</translation>
 <translation id="4913169188695071480">Остановить обновление</translation>
 <translation id="4921224083091001889">Чтобы синхронизировать пароли и другие данные на всех своих устройствах, войдите как <ph name="EMAIL" /> в Chrome.</translation>
@@ -1941,6 +1941,7 @@
 <translation id="9104217018994036254">Список устройств для отправки вкладки.</translation>
 <translation id="9106148373857059373">Страница сохранения закладки закрыта</translation>
 <translation id="9108808586816295166">Иногда безопасный DNS-сервер может быть недоступен.</translation>
+<translation id="9112483451228487295">Быстрое удаление данных о работе в браузере</translation>
 <translation id="9124978074365039456">Находите товары, переводите тексты и получайте информацию о том, что вас окружает, используя камеру или фото из галереи.</translation>
 <translation id="9130135798965366513">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши данные (<ph name="FIELDS_STRING" />). Ознакомьтесь с <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" /> сайта.</translation>
 <translation id="9131209053278896908">Здесь появятся заблокированные сайты.</translation>

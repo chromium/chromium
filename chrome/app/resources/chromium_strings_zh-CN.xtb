@@ -500,6 +500,7 @@
 某些功能可能会无法使用。请指定其他个人资料目录或使用更高版本的 Chromium。</translation>
 <translation id="6729124504294600478">若要获得个性化体验和其他功能，请在“网络与应用活动记录”和关联的 Google 服务中包含 Chromium</translation>
 <translation id="6734291798041940871">已为您计算机上的所有用户都安装 Chromium。</translation>
+<translation id="6742093177587589736">如需在您的所有设备上获取书签等信息，请登录 Chromium。登录后，此书签将保存到您的 Google 账号。</translation>
 <translation id="6751374565094704799">使用 Chromium 的 V8 引擎加速网站，但 Chromium 的防攻击能力会略微降低。此设置已开启。</translation>
 <translation id="6754665438209053659">{count,plural, =1{某些 Chromium 数据尚未保存到您的 Google 账号中。建议等待几分钟，然后再尝试退出账号。如果现在就退出账号，这些数据（1 项）将被删除。}other{某些 Chromium 数据尚未保存到您的 Google 账号中。建议等待几分钟，然后再尝试退出账号。如果现在就退出账号，这些数据（{count} 项）将被删除。}}</translation>
 <translation id="67706546131546258">Chromium 建议您扫描此文件，因为它可能包含危险因素。</translation>
@@ -683,7 +684,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="897581876605952338">Chromium 企业版徽标</translation>
 <translation id="8988036198400390003">管理 Chromium 个人资料</translation>
 <translation id="9019929317751753759">为了提高 Chromium 的安全性，我们停用了以下扩展程序（该扩展程序未列在<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并且可能是在您不知情的情况下添加的）。</translation>
-<translation id="9022552996538154597">登录 Chromium</translation>
 <translation id="904366664621834601">Chromium 阻止了此项下载操作，因为归档文件包含可能隐藏恶意软件的其他文件</translation>
 <translation id="9062666675513499497">登录其他 Google 服务时登录 Chromium</translation>
 <translation id="9078733879136747090">Chromium 已自动关闭</translation>

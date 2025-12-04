@@ -211,6 +211,7 @@
 <translation id="1764070164487214210">Cyfarwyddiadau</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">Dewislen offer</translation>
+<translation id="1772468122139624049">Methu ag ail-lwytho tabiau</translation>
 <translation id="1779354709911146450">Gwall dilysu</translation>
 <translation id="1780152987505130652">Cau'r Grŵp</translation>
 <translation id="178400879184240105">Mae eich cyfrineiriau yn unigryw</translation>
@@ -709,6 +710,7 @@
 <translation id="3779810277399252432">Dim cysylltiad rhyngrwyd.</translation>
 <translation id="3782614601387961027">Diystyru'r rhybudd</translation>
 <translation id="3789841737615482174">Gosod</translation>
+<translation id="3789849526426236410">Agor Tab Newydd</translation>
 <translation id="380329542618494757">Enw</translation>
 <translation id="3803696231112616155">Cynnig cyfieithu'r wefan hon</translation>
 <translation id="3810973564298564668">Rheoli</translation>
@@ -1290,7 +1292,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5902752768726620872">{count,plural, =1{{count} tab newydd}zero{{count} tab newydd}two{{count} dab newydd}few{{count} thab newydd}many{{count} thab newydd}other{{count} tab newydd}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">Llusgwch y tab yma i'w binio.</translation>
-<translation id="5930982343430790032">{COUNT,plural, =1{Ychwanegwch hyd at 1 ffeil, tab, neu lun}zero{Ychwanegwch hyd at {COUNT} ffeil, tabiau neu luniau}two{Ychwanegwch hyd at {COUNT} ffeil, tabiau neu luniau}few{Ychwanegwch hyd at {COUNT} ffeil, tabiau neu luniau}many{Ychwanegwch hyd at {COUNT} ffeil, tabiau neu luniau}other{Ychwanegwch hyd at {COUNT} ffeil, tabiau neu luniau}}</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Ychwanegwch hyd at 1 ffeil, tab, neu lun}zero{Ychwanegwch hyd at {COUNT} ffeil, tab neu lun}two{Ychwanegwch hyd at {COUNT} ffeil, tab neu lun}few{Ychwanegwch hyd at {COUNT} ffeil, tab neu lun}many{Ychwanegwch hyd at {COUNT} ffeil, tab neu lun}other{Ychwanegwch hyd at {COUNT} ffeil, tab neu lun}}</translation>
 <translation id="5936006948844852401">Rheoli'r storfa</translation>
 <translation id="5936065461722368675">Cyfieithu'r dudalen lawn</translation>
 <translation id="5937560539988385583">Mae'r dudalen wedi'i chyfieithu</translation>

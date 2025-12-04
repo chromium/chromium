@@ -351,7 +351,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="900560297598578021">Logget på som <ph name="EMAIL" />.
 
 Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den inn for å bruke og lagre Chromium-data i Google-kontoen din.</translation>
-<translation id="9022552996538154597">Logg på Chromium</translation>
 <translation id="9031260906956926157">Noen av Chromium-dataene dine er ikke lagret i Google-kontoen din ennå.
 Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="9050790730841755540">Bruk Chromium hver gang du trykker på linker i andre apper.</translation>

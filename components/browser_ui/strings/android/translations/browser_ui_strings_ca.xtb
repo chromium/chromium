@@ -184,6 +184,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="2903493209154104877">Adreces</translation>
 <translation id="2910701580606108292">Pregunta abans de permetre que els llocs web reprodueixin contingut protegit</translation>
 <translation id="2918484639460781603">Ves a la configuració</translation>
+<translation id="293060180538644702">Rep notificacions de Consells de Chrome</translation>
 <translation id="2932883381142163287">Informa d'un ús abusiu</translation>
 <translation id="2939338015096024043">Quan aquesta opció està activada, els llocs web poden demanar permís per fer un seguiment de la posició de la càmera i obtenir informació sobre el teu entorn. Quan aquesta opció està desactivada, els llocs web no poden fer un seguiment de la posició de la càmera ni obtenir informació sobre el teu entorn.</translation>
 <translation id="2968755619301702150">Lector de certificats</translation>
@@ -523,6 +524,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="662080504995468778">No surtis</translation>
 <translation id="6630443592285535486">Escriu el valor hexadecimal aquí</translation>
 <translation id="6635327442719709864">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar els ports en sèrie. Quan aquesta opció està desactivada, els llocs web no poden utilitzar els ports en sèrie.</translation>
+<translation id="6669390930482049506">Vull rebre notificacions</translation>
 <translation id="6678072580827808850">Revisa Comprovació de seguretat</translation>
 <translation id="6682057173375416470">Obtén articles suggerits a la pàgina Pestanya nova</translation>
 <translation id="6683865262523156564">Aquest lloc web forma part d'un grup que pot veure la teva activitat. <ph name="RWS_OWNER" /> defineix el grup.</translation>

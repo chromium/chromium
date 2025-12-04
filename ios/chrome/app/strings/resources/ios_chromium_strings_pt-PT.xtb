@@ -351,7 +351,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="900560297598578021">Com sessão iniciada como <ph name="EMAIL" />.
 
 Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. Introduza-a para usar e guardar os dados do Chromium na sua Conta Google.</translation>
-<translation id="9022552996538154597">Iniciar sessão no Chromium</translation>
 <translation id="9031260906956926157">Alguns dos seus dados do Chromium ainda não foram guardados na sua Conta Google.
 Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="9050790730841755540">Use o Chromium sempre que tocar em links noutras apps.</translation>

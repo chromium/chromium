@@ -1931,10 +1931,6 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
       Si cette règle est désactivée, cette fonctionnalité n'est pas disponible.</translation>
 <translation id="2342066287156668839">Activer le quota persistant.</translation>
-<translation id="2343774133209251840">Lorsque cette règle est activée, les API de quota de stockage renvoient une valeur statique égale à l'utilisation + min (10 Gio, espace disque arrondi à l'entier le plus proche de 1 Gio).
-Lorsque cette règle est désactivée, les API de quota de stockage renvoient généralement une valeur dynamique proportionnelle à l'espace total disponible sur l'appareil, quelle que soit l'utilisation.
-Si cette règle n'est pas définie, le lancement de la fonctionnalité de quota de stockage enregistré prévisible ou les flags déterminent le comportement.
-Les sites disposant d'autorisations de stockage illimité ne sont pas concernés par ce paramètre. Le quota appliqué n'est pas non plus affecté.</translation>
 <translation id="2344033063256716138">Configurer des règles pour déterminer si l'utilisateur est autorisé à accéder aux données et fonctionnalités partagées.</translation>
 <translation id="2345547870894930157">Activer DNS-over-HTTPS sans solution de secours à risque</translation>
 <translation id="2347695338560092641">Pilotes d'impression hors processus autorisés</translation>
@@ -4433,6 +4429,11 @@ Si cette règle est définie sur <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3),
 
 
 La disponibilité des extensions est toujours contrôlée par d'autres règles.</translation>
+<translation id="4112585124048467596">Si cette règle est configurée, tous les types de données spécifiés ne seront pas synchronisés avec <ph name="CHROME_SYNC_NAME" /> ni avec le profil itinérant. Cela peut permettre de réduire la taille du profil itinérant ou de limiter les types de données importés sur les serveurs <ph name="CHROME_SYNC_NAME" />.
+
+      Les types de données actuels pour cette règle sont : "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "productComparison", "readingList", "tabs", "themes", "typedUrls" et "wifiConfigurations". Ces noms sont sensibles à la casse.
+
+      Remarques : L'actualisation dynamique des stratégies n'est disponible qu'à partir de la version 123 de <ph name="PRODUCT_NAME" />. La désactivation du type de données "autofill" désactive également le type "payments". "typedUrls" fait référence à tout l'historique de navigation.</translation>
 <translation id="4115501011761259824">Activer les ensembles propriétaires pour tous les utilisateurs concernés</translation>
 <translation id="4120401094617902941">Fréquence d'échantillonnage et de collecte des compteurs d'exécution. La valeur minimale autorisée est de 1 jour.
 

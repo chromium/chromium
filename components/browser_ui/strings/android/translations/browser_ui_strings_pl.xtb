@@ -184,6 +184,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="2910701580606108292">Pytaj, zanim zezwolisz stronom na odtwarzanie treści chronionej</translation>
 <translation id="2918484639460781603">Przejdź do ustawień</translation>
+<translation id="293060180538644702">Otrzymuj powiadomienia z wskazówkami dotyczącymi Chrome</translation>
 <translation id="2932883381142163287">Zgłoś nadużycie</translation>
 <translation id="2939338015096024043">Gdy ta opcja jest włączona, strony internetowe mogą prosić o możliwość śledzenia pozycji kamery i uzyskiwania informacji o otoczeniu. Gdy jest wyłączona, strony nie mogą śledzić pozycji kamery ani poznawać otoczenia.</translation>
 <translation id="2968755619301702150">Przeglądarka certyfikatów</translation>
@@ -523,6 +524,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="662080504995468778">Zostań</translation>
 <translation id="6630443592285535486">Wpisz tutaj wartość szesnastkową</translation>
 <translation id="6635327442719709864">Gdy to ustawienie jest włączone, strony mogą prosić o zgodę na używanie portów szeregowych. Gdy jest wyłączone, strony nie mogą używać portów szeregowych.</translation>
+<translation id="6669390930482049506">Powiadom mnie</translation>
 <translation id="6678072580827808850">Przeprowadź kontrolę zabezpieczeń</translation>
 <translation id="6682057173375416470">Otrzymuj sugerowane artykuły na stronie Nowa karta</translation>
 <translation id="6683865262523156564">Ta witryna należy do grupy, która ma dostęp do danych o Twojej aktywności. Grupa jest zdefiniowana przez <ph name="RWS_OWNER" /></translation>

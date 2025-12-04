@@ -350,7 +350,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="900560297598578021">Jste přihlášeni jako <ph name="EMAIL" />.
 
 Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud chcete používat a ukládat data prohlížeče Chromium ve svém účtu Google, zadejte ji.</translation>
-<translation id="9022552996538154597">Přihlásit se do prohlížeče Chromium</translation>
 <translation id="9031260906956926157">Některá data prohlížeče Chromium ještě nebyla uložena do vašeho účtu Google.
 Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>
 <translation id="9050790730841755540">Používejte Chromium, kdykoli klepnete na odkazy v jiných aplikacích.</translation>

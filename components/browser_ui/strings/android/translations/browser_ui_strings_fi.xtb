@@ -184,6 +184,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="2903493209154104877">Osoitteet</translation>
 <translation id="2910701580606108292">Kysy, saavatko sivustot toistaa suojattua sisältöä</translation>
 <translation id="2918484639460781603">Avaa asetukset</translation>
+<translation id="293060180538644702">Vastaanota Chrome-vinkki-ilmoituksia</translation>
 <translation id="2932883381142163287">Ilmoita väärinkäytöstä</translation>
 <translation id="2939338015096024043">Kun tämä on päällä, sivustot voivat pyytää lupaa seurata kameran sijaintia ja saada tietoa ympäristöstäsi. Kun tämä on pois päältä, sivustot eivät voi seurata kameran sijaintia tai saada tietoa ympäristöstäsi.</translation>
 <translation id="2968755619301702150">Varmennetiedot</translation>
@@ -523,6 +524,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="662080504995468778">Jää</translation>
 <translation id="6630443592285535486">Kirjoita heksadesimaali tähän</translation>
 <translation id="6635327442719709864">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää sarjaportteja. Kun tämä on pois päältä, sivustot eivät voi käyttää sarjaportteja.</translation>
+<translation id="6669390930482049506">Ilmoita minulle</translation>
 <translation id="6678072580827808850">Tarkista turvatarkistus</translation>
 <translation id="6682057173375416470">Saa ehdotettuja artikkeleita Uusi välilehti ‑sivulla</translation>
 <translation id="6683865262523156564">Tämä sivusto kuuluu ryhmään, joka voi nähdä toimintasi. <ph name="RWS_OWNER" /> on määrittänyt ryhmän</translation>

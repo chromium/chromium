@@ -211,7 +211,6 @@
 <translation id="3226612997184048185">ブックマークを Google アカウントにも保存している場合は、Chrome で商品価格をトラッキングして、値下げがあったときに通知を受け取ることができます</translation>
 <translation id="3242123554343253302">Chrome プロファイルを追加</translation>
 <translation id="3245429137663807393">Chrome の使用状況レポートを送信する場合は、アクセスした URL がこのレポートに含められます</translation>
-<translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
 <translation id="3292333338048274092">その後、Chrome を再起動する必要があります。</translation>
 <translation id="3324218984287646518">Google レンズでこの動画について質問する</translation>
@@ -321,6 +320,7 @@
 <translation id="459622048091363950">Chrome にアクセスを許可すると、ウェブサイトからアクセスをリクエストできるようになります。</translation>
 <translation id="4598116752460667024">リストからプロセスを検索します。</translation>
 <translation id="4600710005438004015">Chrome を最新版に更新できませんでした。新しい機能とセキュリティ修正は適用されていません。</translation>
+<translation id="4606805686144157064">一般に報告されているデータ侵害でパスワードが検出された場合、警告が表示されます</translation>
 <translation id="4608435347866444037">Google レンズでこの画像を検索する</translation>
 <translation id="4624065194742029982">Chrome のシークレット モード</translation>
 <translation id="4627412468266359539">オプション: 診断と使用状況のデータを Google に自動送信して ChromeOS Flex の機能と動作の改善に役立てる。</translation>

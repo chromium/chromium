@@ -501,6 +501,7 @@
 On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloog või kasutage Chromiumi uuemat versiooni.</translation>
 <translation id="6729124504294600478">Isikupärastatud kasutuskogemuse saamiseks ja muude funktsioonide kasutamiseks kaasake Chromium veebi- ja rakendustegevustesse ning lingitud Google'i teenustesse</translation>
 <translation id="6734291798041940871">Chromium on arvutisse kõigi kasutajate jaoks juba installitud.</translation>
+<translation id="6742093177587589736">Kõigis seadmetes oma järjehoidjate ja muu sisu kasutamiseks logige Chromiumisse sisse. See järjehoidja salvestatakse pärast sisselogimist teie Google’i kontole.</translation>
 <translation id="6751374565094704799">Kiirendab Chromiumi V8 mootoriga saite, kuid muudab Chromiumi rünnetele veidi vähem vastupidavaks. See seade on sisse lülitatud.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Teatud Chromiumi andmeid pole veel teie Google'i kontole salvestatud. Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed (üks üksus) kustutatakse.}other{Teatud Chromiumi andmeid pole veel teie Google'i kontole salvestatud. Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed ({count} üksust) kustutatakse.}}</translation>
 <translation id="67706546131546258">Chromium soovitab seda faili skannida, kuna see võib olla ohtlik.</translation>
@@ -652,6 +653,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8493179195440786826">Chromium on aegunud</translation>
 <translation id="850264194101621529">Täname, et valisite Chromiumi oma vaikebrauseriks!</translation>
 <translation id="8522801943730206384">Chromium saab teie paroole kontrollida, kui olete need salvestanud</translation>
+<translation id="8548787790260785208">Teid hoiatatakse, kui Chromium leiab avalikust andmetega seotud rikkumisest mõne teie parooli.</translation>
 <translation id="8555465886620020932">Teenuse viga: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Saate pildiotsingu hõlpsaks juurdepääsuks kinnitada; klõpsake külgpaneeli ülaosas nupul Kinnita</translation>
 <translation id="856656450041460113">Keeleloendi otsing</translation>
@@ -684,7 +686,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="897581876605952338">Chromium Enterprise'i logo</translation>
 <translation id="8988036198400390003">Halda Chromiumi profiile</translation>
 <translation id="9019929317751753759">Chromiumi turvalisemaks muutmiseks keelasime järgmise laienduse, mida ei leidu veebipoes <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ja mis võidi lisada teie teadmata.</translation>
-<translation id="9022552996538154597">Logige Chromiumi sisse</translation>
 <translation id="904366664621834601">Chromium blokeeris selle allalaadimise, kuna arhiivifail sisaldab muid faile, mis võivad peita pahavara</translation>
 <translation id="9062666675513499497">Chromiumi sisselogimine teistesse Google'i teenustesse sisselogimisel</translation>
 <translation id="9078733879136747090">Chromium suleti automaatselt</translation>

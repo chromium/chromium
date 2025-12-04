@@ -351,7 +351,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="900560297598578021">Naka-sign in bilang <ph name="EMAIL" />.
 
 Na-encrypt ang iyong data gamit ang passphrase mo noong <ph name="TIME" />. Ilagay ito para magamit at ma-save ang data sa Chromium sa iyong Google Account.</translation>
-<translation id="9022552996538154597">Mag-sign in sa Chromium</translation>
 <translation id="9031260906956926157">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium.
 Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
 <translation id="9050790730841755540">Gamitin ang Chromium sa tuwing magta-tap ka ng mga link sa iba pang app.</translation>

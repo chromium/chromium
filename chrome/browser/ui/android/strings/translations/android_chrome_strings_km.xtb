@@ -525,7 +525,6 @@
 <translation id="3268048651973962414">អូស​ឡើងលើ ដើម្បីមើលឃើញ​លទ្ធផល​ស្វែងរក</translation>
 <translation id="3269093882174072735">ដំណើរការរូបភាព</translation>
 <translation id="3280562213547448728">ស្វែងរក​តាម​សំឡេង</translation>
-<translation id="3282568296779691940">ចូលទៅ Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ផ្ទាំង}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ផ្ទាំង}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{ពាក្យសម្ងាត់ 1 ត្រូវបាន​រក្សាទុក​តែនៅលើ​ឧបករណ៍នេះ​ប៉ុណ្ណោះ។ ដើម្បី​ប្រើវា​នៅលើ​ឧបករណ៍​ផ្សេងទៀត​របស់អ្នក សូម​រក្សាទុកវា​នៅក្នុង​គណនី Google របស់អ្នក។}other{ពាក្យសម្ងាត់ # ត្រូវបាន​រក្សាទុក​តែនៅលើ​ឧបករណ៍នេះ​ប៉ុណ្ណោះ។ ដើម្បីប្រើ​ពួកវា​នៅលើ​ឧបករណ៍​ផ្សេងទៀត​របស់អ្នក សូមរក្សាទុក​ពួកវា​នៅក្នុង​គណនី Google របស់អ្នក។}}</translation>
 <translation id="3293181007446299124">ប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​របស់​អ្នក​ត្រូវបាន​រក្សាទុក​ជាលក្ខណៈ​ឯកជន​នៅលើ​ឧបករណ៍​របស់​អ្នក ហើយរបាយការណ៍​ត្រូវ​បាន​ផ្ញើ​ដោយមាន​ការពន្យារ​ពេល​ ដើម្បីការពារ​អត្តសញ្ញាណ​របស់​អ្នក</translation>
@@ -911,6 +910,7 @@
 <translation id="4905823827770127520">រួមបញ្ចូល​តំណទៅកាន់​ទំព័រ</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">កម្មវិធី​បង់ប្រាក់</translation>
+<translation id="4911042367886397055">សូមស្វាគមន៍​សម្រាប់​ការវិល​ត្រឡប់​មកវិញ <ph name="USER_NAME" />!</translation>
 <translation id="4912413785358399818">ផ្លាស់ទីផ្ទាំង</translation>
 <translation id="4913169188695071480">បញ្ឃប់ការផ្ទុក​ឡើងវិញ</translation>
 <translation id="4921224083091001889">ដើម្បី​ទទួលបាន​ពាក្យ​សម្ងាត់​របស់អ្នក និង​អ្វីៗជាច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក សូម​ចូលគណនី Chrome ជា <ph name="EMAIL" /></translation>
@@ -1941,6 +1941,7 @@
 <translation id="9104217018994036254">បញ្ជី​ឧបករណ៍​ដែលត្រូវ​ចែករំលែក​ផ្ទាំងជាមួយ។</translation>
 <translation id="9106148373857059373">លំហូរនៃការរក្សាទុកចំណាំបានបិទ</translation>
 <translation id="9108808586816295166">DNS សុវត្ថិភាពប្រហែលជាមិនអាចប្រើបានគ្រប់ពេលនោះទេ</translation>
+<translation id="9112483451228487295">លុប​ទិន្នន័យរុករក​យ៉ាងរហ័ស</translation>
 <translation id="9124978074365039456">រកទិញ បកប្រែ និងកំណត់អ្វីដែលអ្នកមើលឃើញដោយប្រើកាមេរ៉ា និងសាលរូបថតរបស់អ្នក</translation>
 <translation id="9130135798965366513">ដើម្បី​បន្ត <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> នឹង​ចែករំលែក<ph name="FIELDS_STRING" />របស់អ្នក​ជាមួយ​គេហទំព័រ​នេះ។ សូមមើល<ph name="BEGIN_LINK1" />គោលការណ៍​ឯកជនភាព<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />លក្ខខណ្ឌ​ប្រើប្រាស់<ph name="END_LINK2" />របស់​គេហទំព័រ​នេះ។</translation>
 <translation id="9131209053278896908">គេហទំព័រ​ដែល​បាន​ទប់ស្កាត់​បង្ហាញ​នៅទីនេះ</translation>

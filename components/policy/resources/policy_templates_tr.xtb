@@ -1963,10 +1963,6 @@ Bu politikayı ayarlarsanız kullanıcılar <ph name="PRODUCT_NAME" /> ürünün
 
       Politika, Devre Dışı değerine ayarlanırsa bu özellik kullanılamaz.</translation>
 <translation id="2342066287156668839">Kalıcı kotayı etkinleştir.</translation>
-<translation id="2343774133209251840">Bu politika etkinleştirildiğinde depolama alanı kotası API'leri, kullanım + minimum (10 GiB, disk en yakın 1 GiB'a yuvarlanır) değere eşit statik bir değer döndürür.
-Politika devre dışı bırakıldığında depolama alanı kotası API'leri, genellikle kullanımdan bağımsız olarak cihazda mevcut toplam alanla orantılı dinamik bir değer döndürür.
-Politika ayarlanmadan bırakılırsa davranış, tahmin edilebilir raporlanan depolama alanı kotası özelliğinin yayınlanması veya flag'ler tarafından belirlenir.
-Sınırsız depolama izni olan siteler bu ayardan etkilenmez. Zorunlu kılınan kota da etkilenmez.</translation>
 <translation id="2344033063256716138">Kullanıcının paylaşılan verilere ve özelliklere erişmesine izin verilip verilmeyeceğini kontrol etmek için politikaları yapılandırın.</translation>
 <translation id="2345547870894930157">DNS-over-HTTPS'i güvenli olmayan geçiş olmadan etkinleştir</translation>
 <translation id="2347695338560092641">İşlem dışı yazıcı sürücülerine izin veriliyor</translation>
@@ -4541,6 +4537,11 @@ Politika, <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3) değerine ayarlanırsa 
 
 
 Uzantıların kullanılabilirliği diğer politikalar tarafından kontrol edilmeye devam eder.</translation>
+<translation id="4112585124048467596">Bu politika ayarlanırsa belirtilen tüm veri türleri hem <ph name="CHROME_SYNC_NAME" /> senkronizasyonunun hem de dolaşım profili senkronizasyonunun dışında tutulur. Bu, dolaşım profilinin boyutunu küçültmeye veya <ph name="CHROME_SYNC_NAME" /> sunucularına yüklenen veri türlerini sınırlandırmaya yarayabilir.
+
+      Şu anda bu politika kapsamında bulunan veri türleri şunlardır: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "productComparison", "readingList", "tabs", "themes", "typedUrls", "wifiConfigurations". Bu adlar büyük/küçük harfe duyarlıdır.
+
+      Notlar: Dinamik politika yenileme yalnızca <ph name="PRODUCT_NAME" /> 123 sürümünde ve sonraki sürümlerde desteklenir. "autofill" veri türü devre dışı bırakıldığında "payments" türü de devre dışı bırakılır. "typedUrls", tüm tarama geçmişini ifade eder.</translation>
 <translation id="4115501011761259824">Etkilenen tüm kullanıcılar için First-Party Sets özelliğini etkinleştir</translation>
 <translation id="4120401094617902941">Çalışma zamanı sayaçlarının örneklenme ve toplanma hızı. İzin verilen minimum sınır 1 gündür.
 

@@ -211,6 +211,7 @@
 <translation id="1764070164487214210">Маршрут</translation>
 <translation id="1767766085187034454">Google Переводчик</translation>
 <translation id="1771016937398045251">Меню "Инструменты"</translation>
+<translation id="1772468122139624049">Не удалось перезагрузить вкладки.</translation>
 <translation id="1779354709911146450">Ошибка аутентификации</translation>
 <translation id="1780152987505130652">Закрыть группу</translation>
 <translation id="178400879184240105">Нет одинаковых паролей</translation>
@@ -709,6 +710,7 @@
 <translation id="3779810277399252432">Нет доступа к Интернету</translation>
 <translation id="3782614601387961027">Скрыть предупреждение</translation>
 <translation id="3789841737615482174">Установить</translation>
+<translation id="3789849526426236410">Открыть новую вкладку</translation>
 <translation id="380329542618494757">Имя</translation>
 <translation id="3803696231112616155">Предлагать переводить этот сайт</translation>
 <translation id="3810973564298564668">Управление</translation>
@@ -1104,7 +1106,7 @@
 <translation id="5220945116117011963">Как создать мероприятия в календаре на странице с датами</translation>
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="5225388483876575107">A</translation>
-<translation id="5229315183665181733">Редактировать сайт</translation>
+<translation id="5229315183665181733">Изменить сайт</translation>
 <translation id="5233638681132016545">Новая вкладка</translation>
 <translation id="5234094073825090254">{count,plural, =1{Закладка сохранена в аккаунте Google ({email}).}one{Закладки сохранены в аккаунте Google ({email}).}few{Закладки сохранены в аккаунте Google ({email}).}many{Закладки сохранены в аккаунте Google ({email}).}other{Закладки сохранены в аккаунте Google ({email}).}}</translation>
 <translation id="5234764350956374838">Закрыть</translation>

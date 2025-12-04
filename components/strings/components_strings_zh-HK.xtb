@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">要儲存 IBAN 嗎？</translation>
 <translation id="1113869188872983271">復原重新排序(&amp;U)</translation>
 <translation id="1118429183611783760">吸塵機和地板護理</translation>
+<translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理 Google 帳戶儲存邊啲 Chrome 資料</translation>
 <translation id="1122714970786750095">電子及電機產品</translation>
 <translation id="1123753900084781868">目前無法使用即時字幕</translation>
 <translation id="112840717907525620">政策快取正確</translation>
@@ -1133,6 +1134,7 @@
 <translation id="2839501879576190149">您將要瀏覽假網站</translation>
 <translation id="2843623755398178332">要捲動和縮放已分享的分頁嗎？</translation>
 <translation id="2851291081585704741">您已離線</translation>
+<translation id="2854163610915391726">管理要儲存在 Google 帳戶中的 Chrome 資料</translation>
 <translation id="2858134430383535011">200 x 300 毫米</translation>
 <translation id="2859383374160668142">你可隨時查看所追蹤產品的降價消息。</translation>
 <translation id="2859806420264540918">此網站顯示滋擾性或誤導廣告。</translation>
@@ -1411,7 +1413,6 @@
 <translation id="3273757719652748628">打開咗儲存 IBAN 嘅底部工作表，宜家顯示喺成個畫面。</translation>
 <translation id="3281350579597955952">{0,plural, =1{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這個檔案}other{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這些檔案}}</translation>
 <translation id="3282085321714087552">機構 (<ph name="ENROLLMENT_DOMAIN" />) 已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
-<translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3286372614333682499">直向</translation>
 <translation id="3287510313208355388">上網時下載</translation>
 <translation id="3288238092761586174"><ph name="URL" /> 可能需要採取其他步驟，才能驗證付款方式</translation>
@@ -1618,6 +1619,7 @@
 <translation id="3623041590998910684">如要使用攝錄機，請在<ph name="LINK" />向 Chrome 授予存取權。</translation>
 <translation id="3623398832322170566">愛情電影</translation>
 <translation id="3624292976554877583">標籤 (啞面)</translation>
+<translation id="3626483107624019072">管理帳戶中的資料</translation>
 <translation id="3628905806504633297">{0,plural, =1{管理員政策不建議傳輸此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議傳輸這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">如果程式已列在允許存取網絡的清單中，建議您
       從清單中移除該程式，然後重新加入。</translation>
@@ -2168,7 +2170,6 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">此表格不安全，自動填入功能已關閉。</translation>
 <translation id="4477350412780666475">下一首曲目</translation>
-<translation id="4479915773139026885">Google 搜尋的 AI 模式</translation>
 <translation id="4480760608050410381">MP4 影片</translation>
 <translation id="448363931695049633">薄餅店</translation>
 <translation id="4489023393592172404">Kaku 4 信封</translation>
@@ -3159,6 +3160,7 @@
 <translation id="6108849843016142864">爬蟲類和兩棲類</translation>
 <translation id="611018310643025551">你的搜尋、最相符項目及相應頁面內容會傳送給 Google，並可能送交人手審查以改善有關功能。</translation>
 <translation id="6116338172782435947">查看複製到剪貼簿的文字和圖片</translation>
+<translation id="6116500665626559298">管理帳戶資料按鈕，啟動之後就可以管理喺 Google 帳戶度儲存邊啲 Chrome 資料</translation>
 <translation id="6117833587752089929">相紙 (光滑)</translation>
 <translation id="6118782133429281336">來源清單空白。</translation>
 <translation id="6120950591512958208">在結帳時使用此折扣代碼。</translation>

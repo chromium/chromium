@@ -6667,6 +6667,7 @@
 <translation id="557722062034137776">‏آپ کے آلہ کو دوبارہ ترتیب دینے سے آپ کے Google اکاؤنٹس یا ان اکاؤنٹس کے کسی بھی مطابقت پذیر ڈیٹا پر اثر نہیں پڑے گا۔ تاہم، آپ کے آلہ پر مقامی طور پر محفوظ کردہ سبھی فائلیں حذف کر دی جائیں گی۔</translation>
 <translation id="5578059481725149024">خودکار سائن ان</translation>
 <translation id="5578387000057347457">تصویر بنانے کے لیے حسب ضرورت پرامپٹ درج کریں یا ٹیکسٹ کو ہائی لائٹ کریں</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{‏‫1 آئٹم صرف اس آلے پر محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کیلئے، <ph name="BEGIN_LINK" />اسے اپنے Google اکاؤنٹ میں محفوظ کریں<ph name="END_LINK" />۔}other{‏‫{ITEM_COUNT} آئٹمز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، <ph name="BEGIN_LINK" />انہیں اپنے Google اکاؤنٹ میں محفوظ کریں<ph name="END_LINK" />۔}}</translation>
 <translation id="5579225964082017560">‫<ph name="SECTION_HEADER" /> فہرست سے <ph name="SITE" /> ہٹائیں</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> میں ترجمہ مکمل ہو گیا ہے</translation>
 <translation id="558170650521898289">‏Microsoft Windows ہارڈ ویئر ڈرائیور کی توثیق</translation>
@@ -7155,6 +7156,7 @@
           <ph name="LINE_BREAK" />
           یہ تصویر Chromebook سائن ان اسکرین اور مقفل اسکرین پر ظاہر ہوگی۔</translation>
 <translation id="5925147183566400388">سرٹیفیکیشن پریکٹس اسٹیٹمنٹ پوائنٹر</translation>
+<translation id="5926936390113611560">تمام پروفائلز کھولیں</translation>
 <translation id="5927132638760172455">ایک نامعلوم موصول کنندہ پر کاسٹ کیا جا رہا ہے</translation>
 <translation id="592740088639760830">اس کنٹینر کو روکیں</translation>
 <translation id="592880897588170157">‏PDF فائلیں Chrome میں خودکار طور پر کھولنے کے بجائے انہیں ڈاؤن لوڈ کریں</translation>
@@ -7239,6 +7241,7 @@
 <translation id="5979421442488174909"><ph name="LANGUAGE" /> میں &amp;ترجمہ کریں</translation>
 <translation id="5979469435153841984">صفحات کے بک مارکس محفوظ کرنے کیلئے ایڈریس بار میں ستارہ پر کلک کریں</translation>
 <translation id="5982578203375898585">ڈاؤن لوڈز مکمل ہو جانے پر دکھائیں</translation>
+<translation id="598347738324022917">بُک مارک کو اس آلہ میں محفوظ کیا گیا</translation>
 <translation id="5983716913605894570">تخلیق کی جا رہی ہیں...</translation>
 <translation id="5984222099446776634">حال ہی میں ملاحظہ کردہ</translation>
 <translation id="5984334442529819751">‏‫DLC انسٹال کرنے میں خرابی (اکثر اوقات ریبوٹ کی ضرورت ہوتی ہے، مزید معلومات کے لیے ترتیبات\&gt;\&gt;ChromeOS کے بارے میں دیکھیں)۔</translation>

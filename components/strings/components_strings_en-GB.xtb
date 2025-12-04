@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Save IBAN?</translation>
 <translation id="1113869188872983271">&amp;Undo reorder</translation>
 <translation id="1118429183611783760">Vacuums and Floor Care</translation>
+<translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to manage what Chrome info you save in your Google Account</translation>
 <translation id="1122714970786750095">Electronics and Electrical</translation>
 <translation id="1123753900084781868">Live Caption is not available at the moment</translation>
 <translation id="112840717907525620">Policy cache OK</translation>
@@ -966,6 +967,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2536110899380797252">Add Address</translation>
 <translation id="2537931901612099523">Others who use this device won’t see your activity, so you can browse more privately. This won't change how data is collected by websites that you visit and the services that they use, including Google. Downloads and bookmarks will be saved.</translation>
 <translation id="2541219929084442027">Pages that you view in Incognito tabs won’t stick around in your browser’s history, cookie store or search history after you’ve closed all of your Incognito tabs. Any files that you download or bookmarks that you create will be kept.</translation>
+<translation id="2541474152868747095">To get your history from your other devices, verify that it's you. You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="2542106216580219892">Surfing</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" /> – to exit full screen, press and hold |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Your administrator restarted your device</translation>
@@ -1132,6 +1134,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2839501879576190149">Fake site ahead</translation>
 <translation id="2843623755398178332">Scroll and zoom your shared tab?</translation>
 <translation id="2851291081585704741">You're offline</translation>
+<translation id="2854163610915391726">Manage what Chrome info you save in your Google Account</translation>
 <translation id="2858134430383535011">200 mm x 300 mm</translation>
 <translation id="2859383374160668142">You can view price drops for products you track at any time.</translation>
 <translation id="2859806420264540918">This site shows intrusive or misleading ads.</translation>
@@ -1410,7 +1413,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3273757719652748628">Save IBAN opened at full height.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administrator policy doesn’t recommend opening this file in <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend opening these files in <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Your organisation, <ph name="ENROLLMENT_DOMAIN" />, has sent some info to the following websites, like settings or policies.</translation>
-<translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3286372614333682499">portrait</translation>
 <translation id="3287510313208355388">Download when online</translation>
 <translation id="3288238092761586174"><ph name="URL" /> may need to take additional steps to verify your payment</translation>
@@ -1618,6 +1620,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3623041590998910684">To use your camera, give Chrome access in <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Romance films</translation>
 <translation id="3624292976554877583">Labels (matte)</translation>
+<translation id="3626483107624019072">Manage data in your account</translation>
 <translation id="3628905806504633297">{0,plural, =1{Administrator policy doesn’t recommend transferring this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend transferring these files to <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">If it is already listed as a program allowed to access the network, try
       removing it from the list and adding it again.</translation>
@@ -2031,6 +2034,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4255487295905690262">You’ll get email alerts if the price drops on any site.</translation>
 <translation id="425582637250725228">Changes that you made may not be saved.</translation>
 <translation id="4258748452823770588">Bad signature</translation>
+<translation id="4260407128682690669">To get your history from your other devices, sync your history and tabs to <ph name="ACCOUNT_EMAIL" />. You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="4265635050210404830">Your loyalty cards</translation>
 <translation id="4265872034478892965">Allowed by your administrator</translation>
 <translation id="4267590181863312380">To get your history from your other devices, sign in and sync history. You'll also get your passwords and more on all your devices. You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
@@ -2167,7 +2171,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">This form is not secure. Auto-fill has been turned off.</translation>
 <translation id="4477350412780666475">Next track</translation>
-<translation id="4479915773139026885">AI Mode in Google Search</translation>
 <translation id="4480760608050410381">MP4 video</translation>
 <translation id="448363931695049633">Pizzerias</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -3009,6 +3012,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5886961930368713749">Send feedback for compare</translation>
 <translation id="5887400589839399685">Card saved</translation>
 <translation id="5887687176710214216">Last visited yesterday</translation>
+<translation id="5889251770650310375">To get your history from your other devices, verify that it's you and sync your history and tabs. You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="5890248301649767931">Save redress number?</translation>
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5895187275912066135">Issued On</translation>
@@ -3157,6 +3161,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6108849843016142864">Reptiles and amphibians</translation>
 <translation id="611018310643025551">Your searches, best matches and their page contents are sent to Google and may be seen by human reviewers to improve this feature.</translation>
 <translation id="6116338172782435947">See text and images copied to the clipboard</translation>
+<translation id="6116500665626559298">Manage data in your account button, activate to manage what Chrome info you save in your Google Account</translation>
 <translation id="6117833587752089929">Photo (satin)</translation>
 <translation id="6118782133429281336">Origin list is empty.</translation>
 <translation id="6120950591512958208">Use this code at checkout.</translation>
@@ -5001,6 +5006,7 @@ Additional details:
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to resume your journey and see relevant activity in your Chrome history</translation>
 <translation id="9119042192571987207">Uploaded</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> wants to verify that it's you</translation>
+<translation id="9119764377203471454">Unable to add attachments</translation>
 <translation id="9120593907434185157">Save address</translation>
 <translation id="912327514020027767">Skirts</translation>
 <translation id="9128870381267983090">Connect to network</translation>

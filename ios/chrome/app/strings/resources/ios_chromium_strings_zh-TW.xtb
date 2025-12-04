@@ -351,7 +351,6 @@
 <translation id="900560297598578021">目前登入的帳戶是 <ph name="EMAIL" />。
 
 你已在 <ph name="TIME" />使用通關密語加密資料。輸入通關密語後，你就可以將 Chromium 的資料儲存到 Google 帳戶及使用這類資料。</translation>
-<translation id="9022552996538154597">登入 Chromium</translation>
 <translation id="9031260906956926157">部分 Chromium 資料尚未儲存到 Google 帳戶，
 請稍待幾分鐘後再嘗試登出。如果現在登出，系統將刪除這類資料。</translation>
 <translation id="9050790730841755540">隨時可以使用 Chromium 開啟其他應用程式中的連結。</translation>

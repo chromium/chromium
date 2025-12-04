@@ -7,6 +7,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> yıl önce oluşturuldu}other{<ph name="NUM_YEARS_MANY" /> yıl önce oluşturuldu}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Etkin olmayan sekmeler ve gruplar 1 ay sonra kapatılır.}other{Etkin olmayan sekmeler ve gruplar <ph name="MONTH_COUNT_MANY" /> ay sonra kapatılır.}}</translation>
 <translation id="1173894706177603556">Yeniden adlandır</translation>
+<translation id="1203747227183434426">Kayıt yapılıyor</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> grubunu <ph name="TAB_COUNT2" /> sekmeyle aç}other{<ph name="TITLE_OF_GROUP" /> grubunu <ph name="TAB_COUNT2" /> sekmeyle aç}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> sekme grubu seçenekleri</translation>
 <translation id="1300188005269437765">Sekmelerin ve sekme gruplarının etkin olmayanlar bölümüne otomatik olarak ne zaman taşınacağını seçin.</translation>
@@ -21,6 +22,7 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{Etkin olmayan <ph name="TABS_COUNT_ONE" /> öğe}other{Etkin olmayan <ph name="TABS_COUNT_MANY" /> öğe}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> sekme gruplandı</translation>
 <translation id="1657719826150349398">Sekmeyi aşağı taşı</translation>
+<translation id="1670942869417022142">Ses kapatıldı</translation>
 <translation id="1697284962337958118">Ekle</translation>
 <translation id="1713541401465507417">Tüm sekmeleri ve grupları kapat</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> sekme grubu artık kullanılamıyor}other{<ph name="TAB_GROUPS_COUNT_MANY" /> sekme grubu artık kullanılamıyor}}</translation>
@@ -110,6 +112,7 @@
 <translation id="4871719318659334896">Grubu kapat</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren, <ph name="COLOR_NAME" /> renkli <ph name="TITLE_OF_GROUP" /> sekme grubunu geri yükleyip açın.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren, <ph name="COLOR_NAME" /> renkli <ph name="TITLE_OF_GROUP" /> sekme grubunu geri yükleyip açın.}}</translation>
 <translation id="4881695831933465202">Aç</translation>
+<translation id="4894777338623123366">Sekme ekranı paylaşılıyor</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Sekmeyi kapat}other{Sekmeleri kapat}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> grup kaydedildi (sekmeler kapatılıp gruplar silinecek)</translation>
 <translation id="492284538114688557">Fiyat düşüşü belirlendi</translation>
@@ -142,6 +145,7 @@
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Grubu yeni pencereye taşı}other{Grubu başka bir pencereye taşı}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Sekmeyi sağa taşı}other{Sekmeleri sağa taşı}}</translation>
 <translation id="6228793724645064692">(mağaza puanı)</translation>
+<translation id="6251046978189636310">Ses çalınıyor</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Sekmeyi gruptan kaldır}other{Sekmeleri gruptan kaldır}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Sekmeyi yeni gruba ekle}other{Sekmeleri yeni gruba ekle}}</translation>
 <translation id="6333260925957816943">Bu mağazayla ilgili bilgiler</translation>
@@ -173,6 +177,7 @@
 <translation id="7326879924029668159">İade politikasını ve daha fazlasını görün</translation>
 <translation id="7352298686197644113">Açık sekmelerinizdeki hangi öğenin fiyatının daha düşük olduğunu görün</translation>
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" sekme grubu artık kullanılamıyor</translation>
+<translation id="7402375256128852434">Son sekmeleri ekle</translation>
 <translation id="7452985128687107478">Sekme grupları tüm cihazlarınızda otomatik olarak kaydedilip güncellenir</translation>
 <translation id="747459581954555080">Tümünü geri yükle</translation>
 <translation id="7489558427602531799">Sekme grubunu sağa taşı</translation>

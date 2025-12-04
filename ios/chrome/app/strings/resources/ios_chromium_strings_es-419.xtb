@@ -351,7 +351,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="900560297598578021">Accediste como <ph name="EMAIL" />.
 
 Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingrésala para usar y guardar datos de Chromium en tu Cuenta de Google.</translation>
-<translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
 <translation id="9031260906956926157">Aún no se guardaron algunos de tus datos de Chromium en tu Cuenta de Google.
 Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</translation>
 <translation id="9050790730841755540">Usa Chromium cada vez que presiones vínculos en otras apps.</translation>

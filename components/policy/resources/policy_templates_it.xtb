@@ -1985,10 +1985,6 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 
       Se la policy viene impostata su Disattivata, questa funzionalità non è disponibile.</translation>
 <translation id="2342066287156668839">Attiva la quota permanente.</translation>
-<translation id="2343774133209251840">Se la policy viene attivata, le API per la quota di spazio di archiviazione restituiranno un valore statico pari a utilizzo + min (10 GiB, disco arrotondato per eccesso al GiB più vicino).
-Se la policy viene disattivata, le API per la quota di spazio di archiviazione in genere restituiranno un valore dinamico proporzionale allo spazio totale disponibile sul dispositivo, indipendentemente dall'utilizzo.
-Se la policy non viene configurata, il comportamento sarà determinato dal lancio della funzionalità di quota di spazio di archiviazione segnalata prevedibile o dai flag.
-Questa impostazione non influisce sui siti con autorizzazioni di spazio di archiviazione illimitato. Neanche la quota applicata è interessata.</translation>
 <translation id="2344033063256716138">Configura le policy per controllare se l'utente è autorizzato ad accedere a funzionalità e dati condivisi.</translation>
 <translation id="2345547870894930157">Attiva DNS over HTTPS senza fallback non sicuro</translation>
 <translation id="2347695338560092641">Driver di stampa out-of-process consentiti</translation>
@@ -4520,6 +4516,11 @@ Se la policy viene impostata su <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), 
 
 
 La disponibilità delle estensioni è comunque controllata da altre policy.</translation>
+<translation id="4112585124048467596">Se questa policy viene impostata, tutti i tipi di dati specificati verranno esclusi dalla sincronizzazione sia per <ph name="CHROME_SYNC_NAME" /> sia per la sincronizzazione del profilo di roaming. Questa operazione può essere utile per ridurre le dimensioni del profilo di roaming o per limitare il tipo di dati caricati sui server di <ph name="CHROME_SYNC_NAME" />.
+
+      Attualmente i tipi di dati per questa policy sono: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "productComparison", "readingList", "tabs", "themes", "typedUrls", "wifiConfigurations". Questi nomi sono sensibili alle maiuscole.
+
+      Note: l'aggiornamento dinamico delle policy è supportato solo in <ph name="PRODUCT_NAME" /> 123 e versioni successive. La disattivazione di "autofill" disattiva anche "payments". "typedUrls" si riferisce all'intera cronologia di navigazione.</translation>
 <translation id="4115501011761259824">Attiva First-Party Sets per tutti gli utenti interessati</translation>
 <translation id="4120401094617902941">La velocità di campionamento e raccolta dei contatori del tempo di esecuzione. Il minimo consentito è 1 giorno.
 

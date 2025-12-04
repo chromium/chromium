@@ -7,6 +7,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Krijuar <ph name="NUM_YEARS_ONE" /> vit më parë}other{Krijuar <ph name="NUM_YEARS_MANY" /> vite më parë}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Skedat dhe grupet joaktive do të mbyllen pas 1 muaji}other{Skedat dhe grupet joaktive do të mbyllen pas <ph name="MONTH_COUNT_MANY" /> muajsh}}</translation>
 <translation id="1173894706177603556">Riemërto</translation>
+<translation id="1203747227183434426">Media po regjistrohet</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Hap "<ph name="TITLE_OF_GROUP" />" me <ph name="TAB_COUNT2" /> skedë}other{Hap "<ph name="TITLE_OF_GROUP" />" me <ph name="TAB_COUNT2" /> skeda}}</translation>
 <translation id="1273910660700874265">Opsionet e grupit të skedave "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="1300188005269437765">Zgjidh se kur skedat dhe grupet e skedave zhvendosen automatikisht në seksionin joaktiv.</translation>
@@ -21,6 +22,7 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> artikull joaktiv}other{<ph name="TABS_COUNT_MANY" /> artikuj joaktivë}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> skeda të grupuara</translation>
 <translation id="1657719826150349398">Lëviz skedën poshtë</translation>
+<translation id="1670942869417022142">Audioja e vendosur në heshtje</translation>
 <translation id="1697284962337958118">Shto në</translation>
 <translation id="1713541401465507417">Mbyll të gjitha skedat dhe grupet</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> grup skedash nuk ofrohet më}other{<ph name="TAB_GROUPS_COUNT_MANY" /> grupe skedash nuk ofrohen më}}</translation>
@@ -110,6 +112,7 @@
 <translation id="4871719318659334896">Mbyll grupin</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Restauro dhe hap <ph name="TITLE_OF_GROUP" /> grup skedash me <ph name="TABS_COUNT_ONE" /> skedë, ngjyra <ph name="COLOR_NAME" />.}other{Restauro dhe hap <ph name="TITLE_OF_GROUP" /> grup skedash me <ph name="TABS_COUNT_MANY" /> skeda, ngjyra <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">Hap</translation>
+<translation id="4894777338623123366">Ekrani i skedës po ndahet</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Mbyll skedën}other{Mbyll skedat}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> grupe të ruajtura (do të mbyllë skedat dhe do të fshijë grupet)</translation>
 <translation id="492284538114688557">U zbulua rënie çmimi</translation>
@@ -142,6 +145,7 @@
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Zhvendose grupin në dritaren e re}other{Zhvendose grupin në një dritare tjetër}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Zhvendos skedën djathtas}other{Zhvendos skedat djathtas}}</translation>
 <translation id="6228793724645064692">(vlerësimi i dyqanit)</translation>
+<translation id="6251046978189636310">Po luhet audioja</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Hiqe skedën nga grupi}other{Hiqi skedat nga grupi}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Shto skedën te grupi i ri}other{Shto skedat te grupi i ri}}</translation>
 <translation id="6333260925957816943">Informacioni për këtë dyqan</translation>
@@ -173,6 +177,7 @@
 <translation id="7326879924029668159">Shiko politikën e kthimit etj.</translation>
 <translation id="7352298686197644113">Shiko se cili artikull në skedat e tua të hapura ka çmim më të ulët</translation>
 <translation id="7369451074646620503">Grupi i skedave "<ph name="TAB_GROUP_NAME" />" nuk ofrohet më</translation>
+<translation id="7402375256128852434">Shto skedat e fundit</translation>
 <translation id="7452985128687107478">Grupet e skedave ruhen dhe përditësohen automatikisht në të gjitha pajisjet e tua</translation>
 <translation id="747459581954555080">Restauroji të gjitha</translation>
 <translation id="7489558427602531799">Zhvendos grupin e skedave djathtas</translation>

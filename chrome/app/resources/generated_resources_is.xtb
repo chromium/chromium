@@ -4341,6 +4341,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Stærð skjás og texta <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Sendir vefslóðir til athugunar í Öruggri vefskoðun. Sendir einnig lítið brot af síðum, niðurhali, virkni viðbóta og kerfisupplýsingar til að auðvelda leit að nýjum ógnum. Tengir þessi gögn tímabundið við Google-reikninginn þinn þegar þú ert skráð(ur) inn til að auka öryggi þitt í Google-forritum.</translation>
+<translation id="3924788966103416622">Utanaðkomandi forrit vill fá fulla stjórn á þessari Chrome-lotu til að kemba hana. Það veitir forritinu meðal annars aðgang að vistuðum gögnum, fótsporum og vefsvæðisgögnum og gerir því kleift að fara á hvaða vefslóð sem er.</translation>
 <translation id="3925573269917483990">Myndavél:</translation>
 <translation id="3925926055063465902">Aðrir notendur þessa tækis geta einnig notað þetta net</translation>
 <translation id="3926002189479431949">Skipt um síma Smart Lock</translation>
@@ -4479,6 +4480,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4015250302257349679">Ýttu á <ph name="ACCELERATOR" /> til að setja þessa blöðru í fókus og ýttu svo aftur til að fókusa á eininguna sem hún vísar á.</translation>
 <translation id="4016762287427926315">Heimildir sem þú veitir <ph name="APP_NAME" /> verða einnig notaðar fyrir þetta forrit. <ph name="BEGIN_LINK" />Stjórna<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Búa til QR-kóða fyrir þennan tengil</translation>
+<translation id="4018953474106733212">Aðeins vefhönnuðir skulu kveikja á þessum eiginleika og eingöngu til að nota hann með forritum sem þeir treysta.</translation>
 <translation id="4019983356493507433">Breyta bókamerkjalista</translation>
 <translation id="4020701737692625681">Kerfisstjórinn þinn getur tekið upp af skjánum þínum</translation>
 <translation id="4021279097213088397">–</translation>
@@ -6682,6 +6684,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="557722062034137776">Endurstilling tækisins hefur engin áhrif á Google reikningana þína eða gögn sem samstillt hafa verið við reikningana. Öllum skrám sem vistaðar hafa verið í tækinu verður hins vegar eytt.</translation>
 <translation id="5578059481725149024">Sjálfvirk innskráning</translation>
 <translation id="5578387000057347457">Sláðu inn sérsniðna skipun eða yfirstrikaðu texta til að búa til mynd</translation>
+<translation id="5579039729633239699">{ITEM_COUNT,plural, =1{Eitt atriði er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu <ph name="BEGIN_LINK" />vista það á Google-reikningnum þínum<ph name="END_LINK" />.}one{{ITEM_COUNT} atriði er aðeins vistað í þessu tæki. Til að nota þau í öðrum tækjum skaltu <ph name="BEGIN_LINK" />vista þau á Google-reikningnum þínum<ph name="END_LINK" />.}other{{ITEM_COUNT} atriði eru aðeins vistuð í þessu tæki. Til að nota þau í öðrum tækjum skaltu <ph name="BEGIN_LINK" />vista þau á Google-reikningnum þínum<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Fjarlægja <ph name="SITE" /> af listanum <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">Þýðingu yfir á <ph name="LANGUAGE" /> er lokið</translation>
 <translation id="558170650521898289">Staðfesting Microsoft Windows vélbúnaðarrekla</translation>
@@ -7170,6 +7173,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
     <ph name="LINE_BREAK" />
     Þessi mynd birtist á innskráningarskjá og lásskjá Chromebook.</translation>
 <translation id="5925147183566400388">Vísun í verklagsyfirlýsingu vottunar</translation>
+<translation id="5926936390113611560">Opna alla prófíla</translation>
 <translation id="5927132638760172455">Sendir út í óþekkt tæki</translation>
 <translation id="592740088639760830">Stöðva þennan geymi</translation>
 <translation id="592880897588170157">Sækja PDF-skrár í stað þess að opna þær sjálfkrafa í Chrome</translation>
@@ -7254,6 +7258,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5979421442488174909">Þýða yfir á <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Smelltu á stjörnuna í veffangastikunni til að setja síður í bókamerki</translation>
 <translation id="5982578203375898585">Sýna niðurhal þegar því er lokið</translation>
+<translation id="598347738324022917">Bókamerki vistað í þessu tæki</translation>
 <translation id="5983716913605894570">Býr til...</translation>
 <translation id="5984222099446776634">Nýlega heimsótt</translation>
 <translation id="5984334442529819751">Villa kom upp við uppsetningu DLC (í mörgum tilfellum er þörf á endurræsingu. Skoðaðu „Stillingar\&gt;\&gt;Um ChromeOS“ til að fá frekari upplýsingar).</translation>
@@ -11517,6 +11522,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8910987510378294980">Fela tækjalista</translation>
 <translation id="8912362522468806198">Google-reikningur</translation>
 <translation id="8912810933860534797">Kveikja á sjálfvirkri skönnun</translation>
+<translation id="8914030287343429787">Þú getur séð aðgangsorðin þín með því að skrá þig inn á <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />, jafnvel þótt þú sért ekki að nota Chrome eða Android.</translation>
 <translation id="8914504000324227558">Endurræsa Chrome</translation>
 <translation id="8915307125957890427">Hægrismelltu á flipa og veldu „Bæta flipa við hóp“ og veldu síðan „Nýr hópur“</translation>
 <translation id="8915370057835397490">Hleður tillögu</translation>
