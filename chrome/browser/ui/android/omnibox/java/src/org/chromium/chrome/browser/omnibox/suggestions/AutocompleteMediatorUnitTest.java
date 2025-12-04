@@ -1689,6 +1689,14 @@ public class AutocompleteMediatorUnitTest {
             ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":disable_zero_suggest/true")
     public void
             onTextChanged_cachedZpsNotInvoked_whenOmniboxAutofocusOnIncognitoNtpAllowed_withoutZeroSuggest() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                OmniboxMetrics.HISTOGRAM_ZERO_SUGGEST_SUPPRESSED_ON_INCOGNITO_NTP,
+                                true,
+                                1)
+                        .build();
+
         NewTabPageDelegate ntpDelegate = mock(NewTabPageDelegate.class);
         doReturn(ntpDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         mMediator
@@ -1702,13 +1710,21 @@ public class AutocompleteMediatorUnitTest {
         // Cached suggestions should be suppressed when on an Incognito NTP with autofocus enabled
         // and zero suggest disabled.
         doReturn(true).when(ntpDelegate).isIncognitoNewTabPageCurrentlyVisible();
-        mMediator.onTextChanged("", /* isOnFocusContext= */ false);
+        mMediator.onTextChanged("", /* isOnFocusContext= */ true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mMockCachedZeroSuggestionsManager, never()).readFromCache(anyInt());
+
+        // Histogram should be recorded once.
+        histogramWatcher.assertExpected();
 
         // When not on an Incognito NTP, cached suggestions should be shown.
         doReturn(false).when(ntpDelegate).isIncognitoNewTabPageCurrentlyVisible();
-        mMediator.onTextChanged("", /* isOnFocusContext= */ false);
+        mMediator.onTextChanged("", /* isOnFocusContext= */ true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mMockCachedZeroSuggestionsManager, times(1)).readFromCache(anyInt());
+
+        // Histogram record count should not be increased.
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -1717,6 +1733,12 @@ public class AutocompleteMediatorUnitTest {
             ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":disable_zero_suggest/false")
     public void
             onTextChanged_cachedZpsShown_whenOmniboxAutofocusOnIncognitoNtpAllowed_withZeroSuggest() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                OmniboxMetrics.HISTOGRAM_ZERO_SUGGEST_SUPPRESSED_ON_INCOGNITO_NTP)
+                        .build();
+
         mMediator
                 .getAutocompleteInputForTesting()
                 .setPageClassification(PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
@@ -1729,5 +1751,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onTextChanged("", /* isOnFocusContext= */ false);
         verify(mMockCachedZeroSuggestionsManager, times(1)).readFromCache(anyInt());
         verify(mLocationBarDataProvider, never()).getNewTabPageDelegate();
+
+        histogramWatcher.assertExpected();
     }
 }
