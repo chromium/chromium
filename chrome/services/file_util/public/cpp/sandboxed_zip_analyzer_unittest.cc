@@ -6,10 +6,13 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -24,6 +27,9 @@
 #include "chrome/services/file_util/fake_file_util_service.h"
 #include "chrome/services/file_util/file_util_service.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
+#include "components/enterprise/obfuscation/core/obfuscated_file_reader.h"
+#include "components/enterprise/obfuscation/core/utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -119,6 +125,41 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
             std::move(remote));
     analyzer->Start();
     run_loop.Run();
+  }
+
+  void RunObfuscatedAnalyzer(const base::FilePath& file_path,
+                             const std::string& password,
+                             safe_browsing::ArchiveAnalyzerResults* results) {
+    DCHECK(results);
+    mojo::PendingRemote<chrome::mojom::FileUtilService> remote;
+    FileUtilService service(remote.InitWithNewPipeAndPassReceiver());
+    base::RunLoop run_loop;
+    ResultsGetter results_getter(run_loop.QuitClosure(), results);
+    std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter> analyzer =
+        SandboxedZipAnalyzer::CreateObfuscatedAnalyzer(
+            file_path, base::optional_ref(password),
+            results_getter.GetCallback(), std::move(remote));
+    analyzer->Start();
+    run_loop.Run();
+  }
+
+  void ObfuscateFile(const base::FilePath& input_path,
+                     const base::FilePath& output_path) {
+    base::File input_file(input_path,
+                          base::File::FLAG_OPEN | base::File::FLAG_READ);
+    ASSERT_TRUE(input_file.IsValid());
+    base::File output_file(
+        output_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+    ASSERT_TRUE(output_file.IsValid());
+
+    enterprise_obfuscation::DownloadObfuscator obfuscator;
+    int64_t file_size = input_file.GetLength();
+    std::vector<uint8_t> content(file_size);
+    ASSERT_TRUE(input_file.Read(0, base::span(content)).has_value());
+
+    auto result = obfuscator.ObfuscateChunk(content, true);
+    ASSERT_TRUE(result.has_value());
+    output_file.WriteAtCurrentPos(base::span(result.value()));
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -605,4 +646,73 @@ TEST_F(SandboxedZipAnalyzerTest, NestedEncryptedRar) {
   EXPECT_TRUE(results.success);
   EXPECT_TRUE(results.encryption_info.is_encrypted);
   EXPECT_FALSE(results.encryption_info.is_top_level_encrypted);
+}
+
+TEST_F(SandboxedZipAnalyzerTest, ObfuscatedEncryptedZip) {
+  base::FilePath original_path =
+      dir_test_data_.AppendASCII("download_protection/encrypted.zip");
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath temp_path = temp_dir.GetPath().AppendASCII("obfuscated.zip");
+
+  ObfuscateFile(original_path, temp_path);
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunObfuscatedAnalyzer(temp_path, "12345", &results);
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  EXPECT_FALSE(results.has_archive);
+  ASSERT_EQ(1, results.archived_binary.size());
+  EXPECT_EQ("signed.exe", results.archived_binary.Get(0).file_path());
+
+  EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
+  EXPECT_EQ(results.encryption_info.password_status,
+            safe_browsing::EncryptionInfo::kKnownCorrect);
+}
+
+TEST_F(SandboxedZipAnalyzerTest, ObfuscatedEncryptedZipWrongPassword) {
+  base::FilePath original_path =
+      dir_test_data_.AppendASCII("download_protection/encrypted.zip");
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath temp_path = temp_dir.GetPath().AppendASCII("obfuscated.zip");
+
+  ObfuscateFile(original_path, temp_path);
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunObfuscatedAnalyzer(temp_path, "wrong", &results);
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  EXPECT_FALSE(results.has_archive);
+  ASSERT_EQ(1, results.archived_binary.size());
+
+  const safe_browsing::ClientDownloadRequest_ArchivedBinary& binary =
+      results.archived_binary.Get(0);
+  EXPECT_EQ("signed.exe", binary.file_path());
+  EXPECT_EQ(safe_browsing::ClientDownloadRequest_DownloadType_WIN_EXECUTABLE,
+            binary.download_type());
+
+  EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
+  EXPECT_EQ(results.encryption_info.password_status,
+            safe_browsing::EncryptionInfo::kKnownIncorrect);
+}
+
+TEST_F(SandboxedZipAnalyzerTest, ObfuscatedNestedZip) {
+  base::FilePath original_path = dir_test_data_.AppendASCII(
+      "download_protection/zipfile_nested_archives.zip");
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath temp_path = temp_dir.GetPath().AppendASCII("obfuscated.zip");
+
+  ObfuscateFile(original_path, temp_path);
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunObfuscatedAnalyzer(temp_path, "", &results);
+
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  EXPECT_FALSE(results.has_archive);
+  EXPECT_EQ(6, results.archived_binary.size());
 }

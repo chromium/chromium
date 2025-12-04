@@ -65,6 +65,15 @@ class MockSafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
        mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
        AnalyzeSevenZipFileCallback callback),
       (override));
+  MOCK_METHOD(
+      void,
+      AnalyzeObfuscatedZipFile,
+      (base::File zip_file,
+       const std::optional<std::string>& password,
+       chrome::mojom::ObfuscatedFileUtilHeaderDataPtr header_data,
+       mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
+       AnalyzeObfuscatedZipFileCallback callback),
+      (override));
 
  private:
   mojo::ReceiverSet<chrome::mojom::SafeArchiveAnalyzer> receivers_;

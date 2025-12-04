@@ -50,6 +50,15 @@ interface SafeArchiveAnalyzer {
   AnalyzeSevenZipFile(mojo_base.mojom.ReadOnlyFile seven_zip_file,
                       pending_remote<TemporaryFileGetter> temp_file_getter)
       => (SafeArchiveAnalyzerResults results);
+
+  // Build flag SAFE_BROWSING_DOWNLOAD_PROTECTION: Analyze the `zip_file` for
+  // malicious download protection. The file is encrypted/obfuscated.
+  // This uses the enterprise delegate for decryption.
+  AnalyzeObfuscatedZipFile(mojo_base.mojom.ReadOnlyFile zip_file,
+                           string? password,
+                           ObfuscatedFileUtilHeaderData header_data,
+                           pending_remote<TemporaryFileGetter> temp_file_getter)
+      => (SafeArchiveAnalyzerResults results);
 };
 
 // TemporaryFileGetter is provided by the browser process and exposed
@@ -61,6 +70,12 @@ interface TemporaryFileGetter {
   // will be returned with a valid file descriptor. If the request is
   // rejected, `temp_file` will be invalid.
   RequestTemporaryFile() => (mojo_base.mojom.File? temp_file);
+};
+
+// Corresponds to enterprise_obfuscation::HeaderData.
+struct ObfuscatedFileUtilHeaderData {
+  array<uint8, 32> derived_key;
+  array<uint8, 7> nonce_prefix;
 };
 
 [Native]

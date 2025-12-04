@@ -57,6 +57,7 @@ bool ZipAnalyzer::ResumeExtraction() {
 
     bool extract_success = reader_.ExtractCurrentEntry(
         writer.get(), std::numeric_limits<uint64_t>::max());
+    writer->Close();
 
     has_encrypted_ |= entry->is_encrypted;
     has_aes_encrypted_ |= entry->uses_aes_encryption;

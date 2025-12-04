@@ -7,8 +7,11 @@
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
+#include "chrome/services/file_util/obfuscated_archive_analysis_delegate.h"
 #include "chrome/services/file_util/regular_archive_analysis_delegate.h"
+#include "chrome/services/file_util/safe_archive_analyzer.h"
 #include "chrome/utility/safe_browsing/archive_analysis_delegate.h"
+#include "components/enterprise/obfuscation/core/utils.h"
 
 namespace {
 // The maximum duration of analysis, in milliseconds.
@@ -128,6 +131,39 @@ void SafeArchiveAnalyzer::AnalyzeSevenZipFile(
                               /*password=*/std::nullopt,
                               std::move(analysis_finished_callback),
                               std::move(temp_file_getter_callback), &results_);
+}
+
+void SafeArchiveAnalyzer::AnalyzeObfuscatedZipFile(
+    base::File zip_file,
+    const std::optional<std::string>& password,
+    chrome::mojom::ObfuscatedFileUtilHeaderDataPtr header_data,
+    mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
+    AnalyzeObfuscatedZipFileCallback callback) {
+  DCHECK(zip_file.IsValid());
+  temp_file_getter_.Bind(std::move(temp_file_getter));
+  callback_ = std::move(callback);
+  AnalysisFinishedCallback analysis_finished_callback =
+      base::BindOnce(&SafeArchiveAnalyzer::AnalysisFinished,
+                     weak_factory_.GetWeakPtr(), base::FilePath());
+
+  base::RepeatingCallback<void(GetTempFileCallback callback)>
+      temp_file_getter_callback =
+          base::BindRepeating(&SafeArchiveAnalyzer::RequestTemporaryFile,
+                              weak_factory_.GetWeakPtr());
+  timeout_timer_.Start(FROM_HERE, kArchiveAnalysisTimeout, this,
+                       &SafeArchiveAnalyzer::Timeout);
+
+  enterprise_obfuscation::HeaderData data(
+      base::span<const uint8_t, 32>(header_data->derived_key),
+      std::vector<uint8_t>(header_data->nonce_prefix.begin(),
+                           header_data->nonce_prefix.end()));
+
+  zip_analyzer_.SetAnalysisDelegate(
+      std::make_unique<safe_browsing::ObfuscatedArchiveAnalysisDelegate>(
+          std::move(data)));
+  zip_analyzer_.Analyze(std::move(zip_file), base::FilePath(), password,
+                        std::move(analysis_finished_callback),
+                        std::move(temp_file_getter_callback), &results_);
 }
 
 void SafeArchiveAnalyzer::RequestTemporaryFile(GetTempFileCallback callback) {

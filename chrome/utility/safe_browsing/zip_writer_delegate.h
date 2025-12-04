@@ -14,6 +14,7 @@ class SafeBrowsingZipWriterDelegate : public zip::WriterDelegate {
  public:
   virtual bool has_disk_error() const = 0;
   virtual int64_t file_length() const = 0;
+  virtual void Close() {}
 };
 
 }  // namespace safe_browsing

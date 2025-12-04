@@ -21,6 +21,7 @@ source_set("file_util") {
     ":buildflags",
     "//base",
     "//build:chromeos_buildflags",
+    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     "//components/safe_browsing:buildflags",
     "//extensions/buildflags",
     "//mojo/public/cpp/bindings",
@@ -51,6 +52,8 @@ source_set("file_util") {
 
   if (safe_browsing_mode == 1) {
     sources += [
+      "obfuscated_archive_analysis_delegate.cc",
+      "obfuscated_archive_analysis_delegate.h",
       "regular_archive_analysis_delegate.cc",
       "regular_archive_analysis_delegate.h",
       "safe_archive_analyzer.cc",
@@ -61,6 +64,7 @@ source_set("file_util") {
       "//chrome/common/safe_browsing",
       "//chrome/common/safe_browsing:archive_analyzer_results",
       "//chrome/utility/safe_browsing",
+      "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     ]
 
     defines += [ "USE_UNRAR=$safe_browsing_use_unrar" ]
