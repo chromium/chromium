@@ -10,13 +10,6 @@ import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
-} else if (is_mac) {
-  import("//build/apple/tweak_info_plist.gni")
-  import("//build/config/mac/rules.gni")
-  import("//content/public/app/mac_helpers.gni")
-  import("//third_party/icu/config.gni")
-  import("//ui/gl/features.gni")
-  import("//v8/gni/v8.gni")
 }
 
 mojom("web_test_common_mojom") {
