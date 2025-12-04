@@ -137,6 +137,12 @@ interface PinFactorEditor {
 enum PasswordComplexity {
   kOk,
   kTooShort,
+  // These values correspond to the values of the LocalAuthFactorsComplexity
+  // policy (components/policy/resources/templates/policy_definitions/Signin/LocalAuthFactorsComplexity.yaml).
+  kErrNone,
+  kErrLow,
+  kErrMedium,
+  kErrHigh,
 };
 
 // Interface for methods specific to password authentication. Served from chrome
