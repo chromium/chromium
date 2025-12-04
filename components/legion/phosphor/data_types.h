@@ -17,8 +17,9 @@ namespace legion::phosphor {
 // The result of a fetch of tokens from the auth token server.
 //
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class GetAuthnTokensResult {
+// numeric values should never be reused. Keep this in sync with
+// LegionTryGetAuthTokensResult in enums.xml.
+enum class TryGetAuthTokensResult {
   // The request was successful and resulted in new tokens.
   kSuccess = 0,
   // No primary account is set.
@@ -43,7 +44,11 @@ enum class GetAuthnTokensResult {
   // account.
   kFailedOAuthTokenPersistent = 9,
 
-  kMaxValue = kFailedOAuthTokenPersistent,
+  // The attempt to request tokens failed because the feature was disabled by
+  // the user.
+  kFailedDisabledByUser = 10,
+
+  kMaxValue = kFailedDisabledByUser,
 };
 
 // A blind-signed auth token for Legion proxies.
