@@ -12,8 +12,8 @@
 #include <string_view>
 
 #include "base/functional/bind.h"
-#include "base/hash/sha1.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/metrics_log.h"
@@ -21,6 +21,7 @@
 #include "components/metrics/metrics_upload_scheduler.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/prefs/testing_pref_service.h"
+#include "crypto/obsolete/sha1.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -71,7 +72,7 @@ class TestLogStore : public LogStore {
   }
   void StageNextLog() override {
     if (has_unsent_logs()) {
-      staged_log_hash_ = base::SHA1HashString(logs_.front().log);
+      staged_log_hash_ = metrics::Sha1ForUnsentLogStore(logs_.front().log);
     }
   }
   void DiscardStagedLog(std::string_view reason) override {

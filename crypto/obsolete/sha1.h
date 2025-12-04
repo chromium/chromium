@@ -41,6 +41,11 @@ namespace kcer::internal {
 std::vector<uint8_t> Sha1ForPkcs11Id(base::span<const uint8_t> data);
 }  // namespace kcer::internal
 
+namespace metrics {
+std::string Sha1AsHexForSystemProfile(std::string_view data);
+std::string Sha1ForUnsentLogStore(std::string_view data);
+}  // namespace metrics
+
 namespace net {
 std::string ComputeSecWebSocketAccept(std::string_view key);
 std::array<uint8_t, crypto::obsolete::kSha1Size> Sha1ForNSSTrust(
@@ -121,6 +126,11 @@ class CRYPTO_EXPORT Sha1 {
   // TODO(crbug.com/459863801): get rid of this.
   friend std::vector<uint8_t> kcer::internal::Sha1ForPkcs11Id(
       base::span<const uint8_t> data);
+
+  // TODO(crbug.com/462463432): get rid of this once SHA-1 isn't used anymore
+  // here.
+  friend std::string metrics::Sha1AsHexForSystemProfile(std::string_view data);
+  friend std::string metrics::Sha1ForUnsentLogStore(std::string_view data);
 
   // TODO(b/460489502): remove once SHA-1 is no longer used for hashing client
   // IDs.

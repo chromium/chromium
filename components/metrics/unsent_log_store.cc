@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/hash/sha1.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -22,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "crypto/hmac.h"
+#include "crypto/obsolete/sha1.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace metrics {
@@ -154,7 +154,7 @@ UnsentLogStore::LogInfo::LogInfo(const std::string& log_data,
     return;
   }
 
-  hash = base::SHA1HashString(log_data);
+  hash = Sha1ForUnsentLogStore(log_data);
   signature = ComputeHMACForLog(log_data, signing_key);
 
   timestamp = log_timestamp;
@@ -580,6 +580,16 @@ void UnsentLogStore::NotifyLogsEvent(base::span<std::unique_ptr<LogInfo>> logs,
   for (const std::unique_ptr<LogInfo>& info : logs) {
     logs_event_manager_->NotifyLogEvent(event, info->hash, message);
   }
+}
+
+// Computes a SHA-1 hash of |data| and returns it as a string. This is
+// required for backward compatibility with existing on-disk data. This function
+// is intentionally declared in a separate header file "crypto/obsolete/sha1.h",
+// so as to easily monitor current usage of SHA-1 in Chrome, since SHA-1 is now
+// discouraged for new code.
+std::string Sha1ForUnsentLogStore(std::string_view data) {
+  return std::string(base::as_string_view(
+      crypto::obsolete::Sha1::Hash(base::as_byte_span(data))));
 }
 
 }  // namespace metrics
