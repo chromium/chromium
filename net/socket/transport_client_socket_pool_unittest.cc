@@ -164,13 +164,15 @@ class TransportClientSocketPoolTest : public ::testing::Test,
         connect_backup_jobs_enabled_);
   }
 
-  int StartRequest(const std::string& host_name, RequestPriority priority) {
+  int StartRequest(const std::string& host_name,
+                   RequestPriority priority,
+                   TransportClientSocketPool* non_default_pool = nullptr) {
     ClientSocketPool::GroupId group_id(
         url::SchemeHostPort(url::kHttpScheme, host_name, 80),
         PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
         SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
     return test_base_.StartRequestUsingPool(
-        pool_.get(), group_id, priority,
+        non_default_pool ?: pool_.get(), group_id, priority,
         ClientSocketPool::RespectLimits::ENABLED,
         ClientSocketPool::SocketParams::CreateForHttpForTesting());
   }
@@ -2287,6 +2289,27 @@ TEST_F(TransportClientSocketPoolTest, HasActiveSocket) {
   // HasActiveSocket() must return false after closing the socket.
   EXPECT_FALSE(pool_->HasActiveSocket(group_id1));
   EXPECT_FALSE(pool_->HasActiveSocket(group_id2));
+}
+
+TEST_F(TransportClientSocketPoolTest,
+       ValidateAdditionalCapacityForTransportClientSocketPool) {
+  TransportClientSocketPool pool(
+      /*socket_soft_cap=*/256, kMaxSocketsPerGroup, kFieldTrialPool,
+      kUnusedIdleSocketTimeout, ProxyChain::Direct(),
+      /*is_for_websockets=*/false, common_connect_job_params_.get());
+  ValidateAdditionalCapacityForSocketPool(
+      base::BindLambdaForTesting([&]() {
+        StartRequest(base::StringPrintf("a%da", base::RandUint64()),
+                     kDefaultPriority, &pool);
+        return pool.StateForTest();
+      }),
+      base::BindLambdaForTesting([&]() { RunUntilIdle(); }),
+      base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(ReleaseOneConnection(ClientSocketPoolTest::NO_KEEP_ALIVE));
+        return pool.StateForTest();
+      }),
+      base::BindLambdaForTesting([&]() { return pool.SocketsInUse(); }));
+  ReleaseAllConnections(ClientSocketPoolTest::NO_KEEP_ALIVE);
 }
 
 // Test that SocketTag passed into TransportClientSocketPool is applied to

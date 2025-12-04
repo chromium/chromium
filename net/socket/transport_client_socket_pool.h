@@ -716,9 +716,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // requests, and then deleting groups if they are no longer needed.
   void CancelAllRequestsWithError(int error);
 
-  // Returns true if we can't create any more sockets due to the total limit.
-  bool ReachedMaxSocketsLimit() const;
-
   // This is the internal implementation of RequestSocket().  It differs in that
   // it does not handle logging into NetLog of the queueing status of
   // |request|.

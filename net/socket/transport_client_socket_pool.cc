@@ -405,6 +405,8 @@ int TransportClientSocketPool::RequestSocketInternal(
   const bool preconnecting = !handle;
   DCHECK_EQ(preconnecting, !!preconnect_done_closure);
 
+  UpdateStateBeforeAllocation();
+
   Group* group = nullptr;
   auto group_it = group_map_.find(group_id);
   if (group_it != group_map_.end()) {
@@ -435,7 +437,7 @@ int TransportClientSocketPool::RequestSocketInternal(
     }
   }
 
-  if (ReachedMaxSocketsLimit() &&
+  if (State() == SocketPoolState::kCapped &&
       request.respect_limits() == RespectLimits::ENABLED) {
     // NOTE(mmenke):  Wonder if we really need different code for each case
     // here.  Only reason for them now seems to be preconnects.
@@ -626,6 +628,7 @@ void TransportClientSocketPool::CancelRequest(const GroupId& group_id,
   std::unique_ptr<Request> request = group->FindAndRemoveBoundRequest(handle);
   if (request) {
     --connecting_socket_count_;
+    UpdateStateAfterRelease();
     OnAvailableSocketSlot(group_id, group);
     CheckForStalledSocketGroups();
     return;
@@ -639,12 +642,13 @@ void TransportClientSocketPool::CancelRequest(const GroupId& group_id,
 
     // Let the job run, unless |cancel_connect_job| is true, or we're at the
     // socket limit and there are no other requests waiting on the job.
-    bool reached_limit = ReachedMaxSocketsLimit();
+    bool reached_limit = State() == SocketPoolState::kCapped;
     if (group->jobs().size() > group->unbound_request_count() &&
         (cancel_connect_job || reached_limit)) {
       RemoveConnectJob(group->jobs().begin()->get(), group);
       if (group->IsEmpty())
         RemoveGroup(group->group_id());
+      UpdateStateAfterRelease();
       if (reached_limit)
         CheckForStalledSocketGroups();
     }
@@ -1057,6 +1061,8 @@ void TransportClientSocketPool::ReleaseSocket(
   CHECK_GT(group->active_socket_count(), 0u);
   group->DecrementActiveSocketCount();
 
+  UpdateStateAfterRelease();
+
   bool can_resuse_socket = false;
   std::string_view not_reusable_reason;
   if (!socket->IsConnectedAndIdle()) {
@@ -1100,7 +1106,7 @@ void TransportClientSocketPool::CheckForStalledSocketGroups() {
     if (!FindTopStalledGroup(&top_group, &top_group_id))
       return;
 
-    if (ReachedMaxSocketsLimit()) {
+    if (State() == SocketPoolState::kCapped) {
       if (idle_socket_count_ > 0) {
         CloseOneIdleSocket();
       } else {
@@ -1174,6 +1180,7 @@ void TransportClientSocketPool::FlushWithError(
   for (const auto& group : group_map_) {
     group.second->IncrementGeneration();
   }
+  ResetState();
 }
 
 void TransportClientSocketPool::RemoveConnectJob(ConnectJob* job,
@@ -1308,12 +1315,6 @@ void TransportClientSocketPool::CancelAllRequestsWithError(int error) {
       ++i;
     }
   }
-}
-
-bool TransportClientSocketPool::ReachedMaxSocketsLimit() const {
-  // There can be more sockets than the limit since some requests can ignore
-  // the limit.
-  return SocketsInUse() >= SocketSoftCap();
 }
 
 bool TransportClientSocketPool::CloseOneIdleSocketExceptInGroup(
@@ -1659,7 +1660,7 @@ void TransportClientSocketPool::Group::OnBackupJobTimerFired(
 
   // If our old job is waiting on DNS, or if we can't create any sockets
   // right now due to limits, just reset the timer.
-  if (client_socket_pool_->ReachedMaxSocketsLimit() ||
+  if (client_socket_pool_->State() == SocketPoolState::kCapped ||
       !HasAvailableSocketSlot(client_socket_pool_->max_sockets_per_group_) ||
       (*jobs_.begin())->GetLoadState() == LOAD_STATE_RESOLVING_HOST) {
     StartBackupJobTimer(group_id);
