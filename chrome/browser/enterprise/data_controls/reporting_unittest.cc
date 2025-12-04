@@ -342,7 +342,11 @@ TEST_F(DataControlsReportingTest, PasteInManagedProfile_OSClipboardSource) {
       /*expected_url=*/
       kChromiumUrl,
       /*expected_tab_url=*/kChromiumUrl,
+#if BUILDFLAG(IS_CHROMEOS)
+      /*expected_source=*/"https://google.com/",
+#else
       /*expected_source=*/"CLIPBOARD",
+#endif  // BUILDFLAG(IS_CHROMEOS)
       /*expected_destination=*/kChromiumUrl,
       /*expected_mimetypes=*/
       []() {
@@ -502,7 +506,11 @@ TEST_F(DataControlsReportingTest,
       /*expected_url=*/
       kChromiumUrl,
       /*expected_tab_url=*/kChromiumUrl,
+#if BUILDFLAG(IS_CHROMEOS)
+      /*source=*/"https://google.com/",
+#else
       /*source=*/"OTHER_PROFILE",
+#endif  // BUILDFLAG(IS_CHROMEOS)
       /*destination=*/kChromiumUrl,
       /*mime_types=*/
       []() {
@@ -823,7 +831,11 @@ TEST_F(DataControlsReportingTest,
   ASSERT_EQ(
       enterprise_connectors::ReportingEventRouter ::GetClipboardSourceString(
           os_clipboard_copy_source),
+#if BUILDFLAG(IS_CHROMEOS)
+      "https://google.com/");
+#else
       "CLIPBOARD");
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(DataControlsReportingTest,
@@ -858,7 +870,11 @@ TEST_F(DataControlsReportingTest,
   ASSERT_EQ(
       enterprise_connectors::ReportingEventRouter ::GetClipboardSourceString(
           unmanaged_copy_source),
+#if BUILDFLAG(IS_CHROMEOS)
+      "https://google.com/");
+#else
       "OTHER_PROFILE");
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(DataControlsReportingTest,
@@ -875,7 +891,11 @@ TEST_F(DataControlsReportingTest,
   ASSERT_EQ(
       enterprise_connectors::ReportingEventRouter ::GetClipboardSourceString(
           guest_copy_source),
+#if BUILDFLAG(IS_CHROMEOS)
+      "https://google.com/");
+#else
       "OTHER_PROFILE");
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace data_controls

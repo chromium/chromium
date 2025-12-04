@@ -23,6 +23,7 @@ GURL GetURL(const content::ClipboardEndpoint& endpoint) {
   return *endpoint.data_transfer_endpoint()->GetURL();
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 bool PolicyAppliedAtUserScope(content::BrowserContext* browser_context,
                               const char* scope_pref) {
   CHECK(browser_context);
@@ -32,6 +33,7 @@ bool PolicyAppliedAtUserScope(content::BrowserContext* browser_context,
              ->GetPrefs()
              ->GetInteger(scope_pref) == policy::POLICY_SCOPE_USER;
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -99,11 +101,16 @@ ChromeClipboardContext::GetClipboardSource(
       // conditions above.
       [[fallthrough]];
     case SourceType::OTHER_PROFILE:
+#if !BUILDFLAG(IS_CHROMEOS)
       // Only add a source URL if the other profile is getting the policy
       // applied at the machine scope, not the user scope.
+      //
+      // This doesn't apply to ChromeOS as the policy scope is always
+      // user-level, even though the policy is applied to the whole device.
       if (PolicyAppliedAtUserScope(destination.browser_context(), scope_pref)) {
         break;
       }
+#endif  // BUILDFLAG(IS_CHROMEOS)
       [[fallthrough]];
     case SourceType::SAME_PROFILE:
       if (source.data_transfer_endpoint() &&
