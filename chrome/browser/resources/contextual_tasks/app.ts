@@ -106,6 +106,10 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.browserProxy_.callbackRouter.onContextUpdated.addListener(
             (tabs: Tab[]) => {
               this.contextTabs_ = tabs;
+            }),
+        this.browserProxy_.callbackRouter.setOAuthToken.addListener(
+            (oauthToken: string) => {
+              this.oauthToken_ = oauthToken;
             }));
 
     this.updateToolbarVisibility();
@@ -161,12 +165,6 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   private setupWebviewRequestOverrides() {
-    // TODO(crbug.com/461595196): Currently, this grabs the OAuth token once,
-    // but it should be refreshed if it expires.
-    this.browserProxy_.handler.getOAuthToken().then(({oauthToken}) => {
-      this.oauthToken_ = oauthToken;
-    });
-
     // Setup the webview request overrides to add the OAuth token to the request
     // headers.
     this.$.threadFrame.request.onBeforeSendHeaders.addListener(

@@ -209,6 +209,48 @@ source_set("test_support") {
   ]
 }
 
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "contextual_tasks_context_service_browsertest.cc",
+      "contextual_tasks_ui_browsertest.cc",
+    ]
+
+    deps = [
+      ":contextual_tasks",
+      ":test_support",
+      ":ui",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/optimization_guide",
+      "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/page_content_annotations",
+      "//chrome/browser/page_content_annotations:extraction_service",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/contextual_tasks/public:feature_list",
+      "//components/optimization_guide/core:model_execution_test_support",
+      "//components/page_content_annotations/core",
+      "//components/page_content_annotations/core:test_support",
+      "//components/passage_embeddings",
+      "//components/passage_embeddings:test_support",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//content/test:test_support",
+      "//google_apis",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
 

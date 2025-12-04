@@ -17,8 +17,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 
-class GoogleServiceAuthError;
-
 namespace base {
 class Uuid;
 }
@@ -29,11 +27,6 @@ namespace contextual_tasks {
 class ContextualTasksContextController;
 class ContextualTasksUiService;
 }  // namespace contextual_tasks
-
-namespace signin {
-class AccessTokenFetcher;
-struct AccessTokenInfo;
-}  // namespace signin
 
 class ContextualTasksPageHandler
     : public contextual_tasks::mojom::PageHandler,
@@ -59,7 +52,6 @@ class ContextualTasksPageHandler
   void OpenMyActivityUi() override;
   void OpenHelpUi() override;
   void MoveTaskUiToNewTab() override;
-  void GetOAuthToken(GetOAuthTokenCallback callback) override;
   void OnTabClickedFromSourcesMenu(int32_t tab_id, const GURL& url) override;
   void OnWebviewMessage(const std::vector<uint8_t>& message) override;
   void PostMessageToWebview(const lens::ClientToAimMessage& message);
@@ -72,11 +64,6 @@ class ContextualTasksPageHandler
  private:
   void UpdateContextForTask(const base::Uuid& task_id);
 
-  void OnOAuthTokenReceived(GetOAuthTokenCallback callback,
-                            GoogleServiceAuthError error,
-                            signin::AccessTokenInfo access_token_info);
-
-  std::unique_ptr<signin::AccessTokenFetcher> oauth_token_fetcher_;
   mojo::Receiver<contextual_tasks::mojom::PageHandler> receiver_;
   raw_ptr<ContextualTasksUI> web_ui_controller_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
