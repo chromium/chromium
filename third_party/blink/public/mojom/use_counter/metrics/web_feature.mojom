@@ -5047,6 +5047,18 @@ enum WebFeature {
   kSharedStorageAPIAll = 5731,
   kGamepadRawInputChangeEventListener = 5732,
   kLetterSpacingWithMargin = 5733,
+  kV8PerformanceContainerTiming_IntersectionRect_AttributeGetter = 5734,
+  kV8PerformanceContainerTiming_Size_AttributeGetter = 5735,
+  kV8PerformanceContainerTiming_RootElement_AttributeGetter = 5736,
+  kV8PerformanceContainerTiming_Identifier_AttributeGetter = 5737,
+  kV8PerformanceContainerTiming_LastPaintedElement_AttributeGetter = 5738,
+  kV8PerformanceContainerTiming_FirstRenderTime_AttributeGetter = 5739,
+  kV8Element_ContainerTiming_AttributeGetter = 5740,
+  kV8Element_ContainerTiming_AttributeSetter = 5741,
+  kV8Element_ContainerTimingIgnore_AttributeGetter = 5742,
+  kV8Element_ContainerTimingIgnore_AttributeSetter = 5743,
+  kContainerTimingObserverRegistered = 5744,
+  kContainerTimingObserverReportedEntries = 5745,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -6367,6 +6367,23 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5731" label="SharedStorageAPIAll"/>
   <int value="5732" label="GamepadRawInputChangeEventListener"/>
   <int value="5733" label="LetterSpacingWithMargin"/>
+  <int value="5734"
+      label="V8PerformanceContainerTiming_IntersectionRect_AttributeGetter"/>
+  <int value="5735" label="V8PerformanceContainerTiming_Size_AttributeGetter"/>
+  <int value="5736"
+      label="V8PerformanceContainerTiming_RootElement_AttributeGetter"/>
+  <int value="5737"
+      label="V8PerformanceContainerTiming_Identifier_AttributeGetter"/>
+  <int value="5738"
+      label="V8PerformanceContainerTiming_LastPaintedElement_AttributeGetter"/>
+  <int value="5739"
+      label="V8PerformanceContainerTiming_FirstRenderTime_AttributeGetter"/>
+  <int value="5740" label="V8Element_ContainerTiming_AttributeGetter"/>
+  <int value="5741" label="V8Element_ContainerTiming_AttributeSetter"/>
+  <int value="5742" label="V8Element_ContainerTimingIgnore_AttributeGetter"/>
+  <int value="5743" label="V8Element_ContainerTimingIgnore_AttributeSetter"/>
+  <int value="5744" label="ContainerTimingObserverRegistered"/>
+  <int value="5745" label="ContainerTimingObserverReportedEntries"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -314,6 +314,10 @@ void PerformanceObserver::observe(ScriptState* script_state,
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kLongAnimationFrameObserver);
   }
+  if (filter_options_ & PerformanceEntry::kContainer) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kContainerTimingObserverRegistered);
+  }
 
   requires_dropped_entries_ = true;
   if (is_registered_)

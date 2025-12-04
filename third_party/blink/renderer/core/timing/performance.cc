@@ -1172,12 +1172,18 @@ void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
 
 void Performance::NotifyObserversOfContainerEntry(
     PerformanceEntry& entry) const {
+  bool observer_found = false;
   CHECK(entry.EntryTypeEnum() == PerformanceEntry::kContainer);
   for (auto& observer : observers_) {
     if (observer->FilterOptions() & entry.EntryTypeEnum() &&
         observer->CanObserve(entry)) {
       observer->EnqueuePerformanceEntry(entry);
+      observer_found = true;
     }
+  }
+  if (observer_found) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kContainerTimingObserverReportedEntries);
   }
 }
 

@@ -175,8 +175,8 @@ dictionary SetHTMLUnsafeOptions {
 
     // Element Timing
     [CEReactions, Reflect=elementtiming] attribute DOMString elementTiming;
-    [RuntimeEnabled=ContainerTiming, CEReactions, Reflect=containertiming] attribute DOMString containerTiming;
-    [RuntimeEnabled=ContainerTiming, CEReactions, Reflect=containertiming-ignore] attribute boolean containerTimingIgnore;
+    [RuntimeEnabled=ContainerTiming, CEReactions, Reflect=containertiming, Measure] attribute DOMString containerTiming;
+    [RuntimeEnabled=ContainerTiming, CEReactions, Reflect=containertiming-ignore, Measure] attribute boolean containerTimingIgnore;
 
     // Heading Offset
     [CEReactions, RuntimeEnabled=HeadingOffset] attribute unsigned long headingOffset;
