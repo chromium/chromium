@@ -59,7 +59,7 @@ packager_builder(
         category = "packager|3pp|linux",
         short_name = "amd64",
     ),
-    execution_timeout = 5 * time.hour,
+    execution_timeout = 7 * time.hour,
     notifies = ["chromium-infra"],
     properties = {
         "$build/chromium_3pp": {
