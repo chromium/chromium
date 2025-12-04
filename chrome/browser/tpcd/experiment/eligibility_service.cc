@@ -80,9 +80,6 @@ void EligibilityService::MarkProfileEligibility(bool is_client_eligible) {
     if (kDisable3PCookies.Get()) {
       MaybeNotifyManagerTrackingProtectionOnboarded(
           onboarding_service_->GetOnboardingStatus());
-    } else if (kEnableSilentOnboarding.Get()) {
-      MaybeNotifyManagerTrackingProtectionSilentOnboarded(
-          onboarding_service_->GetSilentOnboardingStatus());
     }
   }
 }
@@ -99,15 +96,6 @@ void EligibilityService::MaybeNotifyManagerTrackingProtectionOnboarded(
         onboarding_status) {
   if (onboarding_status == privacy_sandbox::TrackingProtectionOnboarding::
                                OnboardingStatus::kOnboarded) {
-    experiment_manager_->NotifyProfileTrackingProtectionOnboarded();
-  }
-}
-
-void EligibilityService::MaybeNotifyManagerTrackingProtectionSilentOnboarded(
-    privacy_sandbox::TrackingProtectionOnboarding::SilentOnboardingStatus
-        onboarding_status) {
-  if (onboarding_status == privacy_sandbox::TrackingProtectionOnboarding::
-                               SilentOnboardingStatus::kOnboarded) {
     experiment_manager_->NotifyProfileTrackingProtectionOnboarded();
   }
 }

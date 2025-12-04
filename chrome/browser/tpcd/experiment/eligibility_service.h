@@ -56,9 +56,6 @@ class EligibilityService : public KeyedService {
   void MaybeNotifyManagerTrackingProtectionOnboarded(
       privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
           onboarding_status);
-  void MaybeNotifyManagerTrackingProtectionSilentOnboarded(
-      privacy_sandbox::TrackingProtectionOnboarding::SilentOnboardingStatus
-          onboarding_status);
 
   raw_ptr<Profile> profile_;
   // `onboarding_service_` may be null for OTR and system profiles.

@@ -16,21 +16,12 @@ namespace privacy_sandbox {
 namespace {
 
 using ::privacy_sandbox::tracking_protection::
-    TrackingProtectionOnboardingAckAction;
-using ::privacy_sandbox::tracking_protection::
     TrackingProtectionOnboardingStatus;
 
 TrackingProtectionOnboardingStatus GetInternalModeBOnboardingStatus(
     PrefService* pref_service) {
   return static_cast<TrackingProtectionOnboardingStatus>(
       pref_service->GetInteger(prefs::kTrackingProtectionOnboardingStatus));
-}
-
-TrackingProtectionOnboardingStatus GetInternalModeBSilentOnboardingStatus(
-    PrefService* pref_service) {
-  return static_cast<TrackingProtectionOnboardingStatus>(
-      pref_service->GetInteger(
-          prefs::kTrackingProtectionSilentOnboardingStatus));
 }
 
 }  // namespace
@@ -58,22 +49,6 @@ TrackingProtectionOnboarding::GetOnboardingStatus() const {
       return OnboardingStatus::kEligible;
     case TrackingProtectionOnboardingStatus::kOnboarded:
       return OnboardingStatus::kOnboarded;
-  }
-}
-
-TrackingProtectionOnboarding::SilentOnboardingStatus
-TrackingProtectionOnboarding::GetSilentOnboardingStatus() const {
-  auto onboarding_status =
-      GetInternalModeBSilentOnboardingStatus(pref_service_);
-  switch (onboarding_status) {
-    case TrackingProtectionOnboardingStatus::kIneligible:
-      return SilentOnboardingStatus::kIneligible;
-    case TrackingProtectionOnboardingStatus::kEligible:
-      return SilentOnboardingStatus::kEligible;
-    case TrackingProtectionOnboardingStatus::kRequested:
-      NOTREACHED();
-    case TrackingProtectionOnboardingStatus::kOnboarded:
-      return SilentOnboardingStatus::kOnboarded;
   }
 }
 
