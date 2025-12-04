@@ -2527,6 +2527,22 @@ TEST_F(ComposeboxQueryControllerTest, UploadFileBeforeClusterInfoUpdatesRequestI
                 .routing_info()
                 .server_address(),
             kTestServerAddress);
+
+  // Assert: The actual sent request should also have the routing info.
+  auto last_request = controller().last_sent_file_upload_request();
+  ASSERT_TRUE(last_request.has_value());
+  EXPECT_EQ(last_request->objects_request()
+                .request_context()
+                .request_id()
+                .routing_info()
+                .cell_address(),
+            kTestCellAddress);
+  EXPECT_EQ(last_request->objects_request()
+                .request_context()
+                .request_id()
+                .routing_info()
+                .server_address(),
+            kTestServerAddress);
 }
 
 }  // namespace contextual_search
