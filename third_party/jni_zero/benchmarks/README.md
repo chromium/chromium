@@ -93,7 +93,7 @@ BenchmarkJni.get().sendLargeIntArray(intArray);
 // C++
 void JNI_Benchmark_SendLargeIntArray(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jintArray>& j_array) {
+    const jni_zero::JavaRef<jintArray>& j_array) {
   size_t array_size = static_cast<size_t>(env->GetArrayLength(j_array.obj()));
   jint* array = env->GetIntArrayElements(j_array.obj(), nullptr);
   for (size_t i = 0; i < array_size; i++) {
@@ -201,11 +201,11 @@ BenchmarkJni.get().sendLargeObjectArray(integerArray);
 // C++
 void JNI_Benchmark_SendLargeObjectArray(
     JNIEnv* env,
-    const JavaParamRef<jobjectArray>& j_array) {
+    const JavaRef<jobjectArray>& j_array) {
   size_t array_size = static_cast<size_t>(env->GetArrayLength(j_array.obj()));
   for (size_t i = 0; i < array_size; i++) {
     count += JNI_Integer::Java_Integer_intValue(
-        env, JavaParamRef(env, env->GetObjectArrayElement(j_array.obj(), i)));
+        env, JavaRef(env, env->GetObjectArrayElement(j_array.obj(), i)));
   }
 }
 ```
@@ -229,7 +229,7 @@ BenchmarkJni.get().sendLargeObjectList(integerList);
 // C++
 static void JNI_Benchmark_SendLargeObjectList(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_list) {
+    const JavaRef<jobject>& j_list) {
   size_t array_size = static_cast<size_t>(CollectionSize(env, j_list));
   for (size_t i = 0; i < array_size; i++) {
     count += JNI_Integer::Java_Integer_intValue(env, ListGet(env, j_list, i));
@@ -365,7 +365,7 @@ for (int i = 0; i < 10000; i++) {
 // C++
 static void JNI_Benchmark_SendSingleInteger(
     JNIEnv* env,
-    const JavaParamRef<jobject>& param) {
+    const JavaRef<jobject>& param) {
   count += JNI_Integer::Java_Integer_intValue(env, param);
 }
 ```
@@ -415,16 +415,16 @@ for (int k = 0; k < 10000; k++) {
 ```c++
 // C++
 static void JNI_Benchmark_Send10Integers(JNIEnv* env,
-                                         const JavaParamRef<jobject>& a,
-                                         const JavaParamRef<jobject>& b,
-                                         const JavaParamRef<jobject>& c,
-                                         const JavaParamRef<jobject>& d,
-                                         const JavaParamRef<jobject>& e,
-                                         const JavaParamRef<jobject>& f,
-                                         const JavaParamRef<jobject>& g,
-                                         const JavaParamRef<jobject>& h,
-                                         const JavaParamRef<jobject>& i,
-                                         const JavaParamRef<jobject>& j) {
+                                         const JavaRef<jobject>& a,
+                                         const JavaRef<jobject>& b,
+                                         const JavaRef<jobject>& c,
+                                         const JavaRef<jobject>& d,
+                                         const JavaRef<jobject>& e,
+                                         const JavaRef<jobject>& f,
+                                         const JavaRef<jobject>& g,
+                                         const JavaRef<jobject>& h,
+                                         const JavaRef<jobject>& i,
+                                         const JavaRef<jobject>& j) {
   count += JNI_Integer::Java_Integer_intValue(env, a);
   count += JNI_Integer::Java_Integer_intValue(env, b);
   count += JNI_Integer::Java_Integer_intValue(env, c);

@@ -475,9 +475,10 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef : public JavaRef<T> {
   }
 };
 
-// TODO(crbug.com/40425392): Remove this alias.
+#if JNI_ZERO_ENABLE_COMPAT_API
 template <typename T>
 using JavaParamRef = JavaRef<T>;
+#endif
 
 }  // namespace jni_zero
 
