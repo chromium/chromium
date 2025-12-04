@@ -30,6 +30,7 @@
 #include "chrome/grit/omnibox_popup_resources_map.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
@@ -103,6 +104,10 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                          aim_eligibility_service->IsPdfUploadEligible() &&
                          composebox_config.is_pdf_upload_enabled();
   source->AddBoolean("composeboxShowPdfUpload", show_pdf_upload);
+
+  source->AddBoolean(
+      "showContextMenuEntrypoint",
+      aim_eligibility_service && aim_eligibility_service->IsAimEligible());
 
   source->AddBoolean("composeboxCloseByClickOutside",
                      omnibox::kCloseComposeboxByClickOutside.Get());
