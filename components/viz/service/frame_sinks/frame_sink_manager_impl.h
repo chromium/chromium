@@ -387,6 +387,12 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // This call is only valid after BindAndSetClient().
   gpu::SharedImageInterface* GetSharedImageInterface();
 
+  // Returns a callback that triggers the resource capture signal.
+  // This encapsulates the binding logic so clients don't need to know the
+  // implementation details.
+  base::OnceCallback<void(const blink::ViewTransitionToken&)>
+  GetViewTransitionResourcesCapturedCallback();
+
   ReservedResourceIdTracker* reserved_resource_id_tracker() {
     return &reserved_resource_id_tracker_;
   }
@@ -400,6 +406,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   GpuServiceImpl* GetGpuService();
 
  private:
+  void OnViewTransitionResourcesCaptured(
+      const blink::ViewTransitionToken& transition_token);
+
   friend class FrameSinkManagerTest;
   friend class CompositorFrameSinkSupportTestBase;
   friend class FlingSchedulerTest;

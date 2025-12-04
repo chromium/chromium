@@ -74,6 +74,12 @@ void HostFrameSinkManager::SetConnectionLostCallback(
   connection_lost_callback_ = std::move(callback);
 }
 
+void HostFrameSinkManager::SetViewTransitionResourcesCapturedCallback(
+    const blink::ViewTransitionToken& token,
+    base::OnceClosure callback) {
+  view_transition_callbacks_[token] = std::move(callback);
+}
+
 void HostFrameSinkManager::RegisterFrameSinkId(
     const FrameSinkId& frame_sink_id,
     HostFrameSinkClient* client,
@@ -561,6 +567,18 @@ void HostFrameSinkManager::OnVizTouchStateAvailable(
   }
 }
 
+void HostFrameSinkManager::OnViewTransitionResourcesCaptured(
+    const blink::ViewTransitionToken& transition_token) {
+  auto it = view_transition_callbacks_.find(transition_token);
+  if (it == view_transition_callbacks_.end()) {
+    return;
+  }
+
+  auto closure = std::move(it->second);
+  view_transition_callbacks_.erase(it);
+  std::move(closure).Run();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 uint32_t HostFrameSinkManager::CacheBackBufferForRootSink(
     const FrameSinkId& root_sink_id) {
@@ -638,6 +656,7 @@ HostFrameSinkManager::GetFrameSinkManagerTestApi() {
 
 void HostFrameSinkManager::ClearUnclaimedViewTransitionResources(
     const blink::ViewTransitionToken& transition_token) {
+  view_transition_callbacks_.erase(transition_token);
   frame_sink_manager_->ClearUnclaimedViewTransitionResources(transition_token);
 }
 

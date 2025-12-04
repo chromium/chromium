@@ -2505,13 +2505,13 @@ void RenderProcessHostImpl::SetVideoDecoderEventCBForTesting(
 }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
-void RenderProcessHostImpl::DelayProcessShutdown(
+base::ScopedClosureRunner RenderProcessHostImpl::DelayProcessShutdown(
     const base::TimeDelta& subframe_shutdown_timeout,
     const base::TimeDelta& unload_handler_timeout,
     const SiteInfo& site_info) {
   // No need to delay shutdown if the process is already shutting down.
   if (AreRefCountsDisabled() || deleting_soon_ || fast_shutdown_started_) {
-    return;
+    return base::ScopedClosureRunner();
   }
 
   shutdown_delay_ref_count_++;
@@ -2526,16 +2526,25 @@ void RenderProcessHostImpl::DelayProcessShutdown(
     delayed_shutdown_tracker->IncrementSiteProcessCount(site_info, GetID());
   }
 
+  // Create a callback shared between the delayed task and the returned
+  // ScopedClosureRunner. Since callbacks are internally ref-counted, the
+  // `base::OwnedRef` boolean is shared between both paths to ensure the
+  // cancellation logic runs exactly once (whether triggered by the timeout or
+  // the runner).
+  auto callback = base::BindRepeating(
+      &RenderProcessHostImpl::CancelProcessShutdownDelay,
+      instance_weak_factory_.GetWeakPtr(), site_info, base::OwnedRef(false));
+
   // Don't delay shutdown longer than the maximum delay for renderer process,
   // enforced for security reasons (https://crbug.com/1177674).
   GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&RenderProcessHostImpl::CancelProcessShutdownDelay,
-                     instance_weak_factory_.GetWeakPtr(), site_info),
+      FROM_HERE, callback,
       std::min(subframe_shutdown_timeout + unload_handler_timeout,
                kKeepAliveHandleFactoryTimeout));
 
   time_spent_running_unload_handlers_ = unload_handler_timeout;
+
+  return base::ScopedClosureRunner(callback);
 }
 
 bool RenderProcessHostImpl::IsProcessShutdownDelayedForTesting() {
@@ -6054,9 +6063,17 @@ void RenderProcessHostImpl::GetBrowserHistogram(
 }
 
 void RenderProcessHostImpl::CancelProcessShutdownDelay(
-    const SiteInfo& site_info) {
-  if (AreRefCountsDisabled())
+    const SiteInfo& site_info,
+    bool& did_run_cancel_process_shutdown_delay) {
+  if (AreRefCountsDisabled()) {
     return;
+  }
+
+  // Early return if the shutdown delay has already been cancelled.
+  if (did_run_cancel_process_shutdown_delay) {
+    return;
+  }
+  did_run_cancel_process_shutdown_delay = true;
 
   // Remove from the delayed-shutdown tracker. This may have already been done
   // in StopTrackingProcessForShutdownDelay() if the process was reused before

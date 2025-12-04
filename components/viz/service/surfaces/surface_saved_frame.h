@@ -33,6 +33,8 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
  public:
   using CopyFinishedCallback =
       base::OnceCallback<void(const CompositorFrameTransitionDirective&)>;
+  using OnViewTransitionResourcesCapturedCallback =
+      base::OnceCallback<void(const blink::ViewTransitionToken&)>;
 
   struct OutputCopyResult {
     OutputCopyResult();
@@ -61,10 +63,15 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
   static std::unique_ptr<SurfaceSavedFrame> CreateForTesting(
       CompositorFrameTransitionDirective directive,
-      gpu::SharedImageInterface* shared_image_interface);
+      gpu::SharedImageInterface* shared_image_interface,
+      OnViewTransitionResourcesCapturedCallback
+          view_transition_resources_captured_callback =
+              OnViewTransitionResourcesCapturedCallback());
 
   SurfaceSavedFrame(CompositorFrameTransitionDirective directive,
-                    gpu::SharedImageInterface* shared_image_interface);
+                    gpu::SharedImageInterface* shared_image_interface,
+                    OnViewTransitionResourcesCapturedCallback
+                        view_transition_resources_captured_callback);
   ~SurfaceSavedFrame();
 
   // Returns true iff the frame is valid and complete.
@@ -88,7 +95,9 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
  private:
   explicit SurfaceSavedFrame(base::PassKey<SurfaceSavedFrame>,
                              CompositorFrameTransitionDirective directive,
-                             gpu::SharedImageInterface* shared_image_interface);
+                             gpu::SharedImageInterface* shared_image_interface,
+                             OnViewTransitionResourcesCapturedCallback
+                                 view_transition_resources_captured_callback);
 
   std::unique_ptr<CopyOutputRequest> CreateCopyRequestIfNeeded(
       const CompositorRenderPass& render_pass,
@@ -101,6 +110,9 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // The `directive_finished_callback_` is dispatched asynchronously since the
   // callback can access *and* delete this object.
   void DispatchCopyDoneCallback();
+
+  // Called once all view transitions COR have completed
+  void DispatchViewTransitionResourcesCaptured();
 
   size_t ExpectedResultCount(
       const CompositorRenderPassList& render_pass_list) const;
@@ -135,6 +147,8 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   CompositorFrameTransitionDirective directive_;
   raw_ptr<gpu::SharedImageInterface> shared_image_interface_;
   CopyFinishedCallback directive_finished_callback_;
+  OnViewTransitionResourcesCapturedCallback
+      view_transition_resources_captured_callback_;
 
   // Store the blit images while the copy output request is ongoing.
   base::flat_map<size_t, scoped_refptr<gpu::ClientSharedImage>>

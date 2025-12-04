@@ -1264,7 +1264,7 @@ void RenderFrameHostManager::UnloadOldFrame(
                 "old_render_frame_host", old_render_frame_host,
                 "bfcache_eligibility",
                 bfcache_eligibility.flattened_reasons.ToString());
-    if (view_transition_commit_info.has_view_transition_resources) {
+    if (view_transition_commit_info.HasViewTransitionResources()) {
       base::UmaHistogramBoolean("Navigation.ViewTransition.PerformsUnload",
                                 !can_store);
     }
@@ -1339,10 +1339,9 @@ void RenderFrameHostManager::UnloadOldFrame(
   // which has security implications if exceeded (https://crbug.com/1177674).
   if (features::ShouldAckCOREarlyForViewTransition() &&
       !old_render_frame_host->GetParentOrOuterDocument() &&
-      view_transition_commit_info.has_view_transition_resources) {
-    old_render_frame_host->GetProcess()->DelayProcessShutdown(
-        base::Seconds(4), base::TimeDelta(),
-        old_render_frame_host->GetSiteInstance()->GetSiteInfo());
+      view_transition_commit_info.HasViewTransitionResources()) {
+    view_transition_commit_info.view_transition_resources
+        ->MaybeDelayProcessShutdown(base::Seconds(4), *old_render_frame_host);
   }
 
   // Create a replacement proxy for the old RenderFrameHost when we're switching
@@ -1735,8 +1734,8 @@ void RenderFrameHostManager::PerformEarlyRenderFrameHostSwapIfNeeded(
   }
 
   const RenderFrameHostManager::ViewTransitionCommitInfo
-      view_transition_commit_info{.has_view_transition_resources =
-                                      request->HasViewTransitionResources()};
+      view_transition_commit_info{.view_transition_resources =
+                                      request->GetViewTransitionResources()};
   CommitPending(
       std::move(speculative_render_frame_host_),
       /*pending_stored_page=*/nullptr,
@@ -5874,7 +5873,7 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
   // WebContents::AttachToOuterWebContentsFrame is called.
   speculative_render_frame_host_->SwapIn();
   const RenderFrameHostManager::ViewTransitionCommitInfo
-      view_transition_commit_info{.has_view_transition_resources = false};
+      view_transition_commit_info{.view_transition_resources = nullptr};
   CommitPending(std::move(speculative_render_frame_host_),
                 /*pending_stored_page=*/nullptr,
                 /*clear_proxies_on_commit=*/false,

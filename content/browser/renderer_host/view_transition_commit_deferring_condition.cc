@@ -146,9 +146,13 @@ ViewTransitionCommitDeferringCondition::WillCommitNavigation(
       navigation_request->WillDispatchPageSwap();
   CHECK(page_swap_event_params);
 
+  RenderProcessHost* const render_process_host =
+      render_frame_host->GetProcess();
+  CHECK(render_process_host);
+
   blink::ViewTransitionToken transition_token;
-  resources_ =
-      std::make_unique<ScopedViewTransitionResources>(transition_token);
+  resources_ = std::make_unique<ScopedViewTransitionResources>(
+      transition_token, *render_process_host);
   resume_navigation_ = std::move(resume);
   old_rfh_ = render_frame_host->GetWeakPtr();
 

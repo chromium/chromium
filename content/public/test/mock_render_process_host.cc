@@ -692,4 +692,13 @@ MockRenderProcessHostFactory::BuildRenderProcessHost(
       browser_context, storage_partition_config, is_for_guests_only);
 }
 
+base::ScopedClosureRunner MockRenderProcessHost::DelayProcessShutdown(
+    const base::TimeDelta& subframe_shutdown_timeout,
+    const base::TimeDelta& unload_handler_timeout,
+    const SiteInfo& site_info) {
+  return base::ScopedClosureRunner();
+}
+
+void MockRenderProcessHost::StopTrackingProcessForShutdownDelay() {}
+
 }  // namespace content

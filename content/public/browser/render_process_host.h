@@ -15,6 +15,7 @@
 #include "base/clang_profiling_buildflags.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/id_map.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/safety_checks.h"
 #include "base/process/kill.h"
@@ -638,7 +639,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
 
   // The following several methods are for internal use only, and are only
   // exposed here to support MockRenderProcessHost usage in tests.
-  virtual void DelayProcessShutdown(
+  [[nodiscard]] virtual base::ScopedClosureRunner DelayProcessShutdown(
       const base::TimeDelta& subframe_shutdown_timeout,
       const base::TimeDelta& unload_handler_timeout,
       const SiteInfo& site_info) = 0;

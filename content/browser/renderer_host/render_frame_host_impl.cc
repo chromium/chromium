@@ -4492,9 +4492,13 @@ void RenderFrameHostImpl::DeleteRenderFrame(
 
       if (!subframe_shutdown_timeout.is_zero() ||
           !unload_handler_timeout.is_zero()) {
-        GetProcess()->DelayProcessShutdown(subframe_shutdown_timeout,
-                                           unload_handler_timeout,
-                                           site_instance_->GetSiteInfo());
+        // Release the runner to allow the delay to persist until the fallback
+        // timeout expires.
+        std::ignore = GetProcess()
+                          ->DelayProcessShutdown(subframe_shutdown_timeout,
+                                                 unload_handler_timeout,
+                                                 site_instance_->GetSiteInfo())
+                          .Release();
       }
       // If the subframe takes too long to unload, force its removal from the
       // tree. See https://crbug.com/950625.

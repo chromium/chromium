@@ -10293,6 +10293,9 @@ class OnScreenshotCapturedWaiter : public mojom::FrameSinkManagerClient {
 
   void Wait() { run_loop_.Run(); }
 
+  void OnViewTransitionResourcesCaptured(
+      const blink::ViewTransitionToken& transition_token) override {}
+
   const blink::SameDocNavigationScreenshotDestinationToken& observed_token() {
     return observed_token_;
   }

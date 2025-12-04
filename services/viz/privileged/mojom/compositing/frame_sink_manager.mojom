@@ -282,6 +282,11 @@ interface FrameSinkManagerClient {
   // Called by Viz when the connection is established and the shared memory for
   // touch state is available.
   OnVizTouchStateAvailable(mojo_base.mojom.ReadOnlySharedMemoryRegion region);
+
+  // Called by Viz when a view transition requests to allow the browser to
+  // shutdown the old renderer process.
+  OnViewTransitionResourcesCaptured(
+      blink.mojom.ViewTransitionToken transition_token);
 };
 
 // Implemented by the GPU process (VizCompositorThread) and called from the

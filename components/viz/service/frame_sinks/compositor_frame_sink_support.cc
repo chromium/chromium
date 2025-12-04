@@ -1601,7 +1601,9 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
               frame_sink_manager_->reserved_resource_id_tracker(),
               base::BindOnce(&CompositorFrameSinkSupport::
                                  OnSaveTransitionDirectiveProcessed,
-                             base::Unretained(this)));
+                             base::Unretained(this)),
+              frame_sink_manager_
+                  ->GetViewTransitionResourcesCapturedCallback());
       if (surface_animation_manager_callback_) {
         std::move(surface_animation_manager_callback_).Run();
       }

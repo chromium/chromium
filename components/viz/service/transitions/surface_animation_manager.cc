@@ -132,10 +132,13 @@ SurfaceAnimationManager::CreateWithSave(
     Surface* surface,
     gpu::SharedImageInterface* shared_image_interface,
     ReservedResourceIdTracker* id_tracker,
-    SaveDirectiveCompleteCallback sequence_id_finished_callback) {
+    SaveDirectiveCompleteCallback sequence_id_finished_callback,
+    ViewTransitionResourcesCapturedCallback
+        view_transition_resources_captured_callback) {
   return base::WrapUnique(new SurfaceAnimationManager(
       directive, surface, shared_image_interface, id_tracker,
-      std::move(sequence_id_finished_callback)));
+      std::move(sequence_id_finished_callback),
+      std::move(view_transition_resources_captured_callback)));
 }
 
 SurfaceAnimationManager::SurfaceAnimationManager(
@@ -143,9 +146,13 @@ SurfaceAnimationManager::SurfaceAnimationManager(
     Surface* surface,
     gpu::SharedImageInterface* shared_image_interface,
     ReservedResourceIdTracker* id_tracker,
-    SaveDirectiveCompleteCallback sequence_id_finished_callback)
+    SaveDirectiveCompleteCallback sequence_id_finished_callback,
+    ViewTransitionResourcesCapturedCallback
+        view_transition_resources_captured_callback)
     : transferable_resource_tracker_(id_tracker),
-      saved_frame_(directive, shared_image_interface),
+      saved_frame_(directive,
+                   shared_image_interface,
+                   std::move(view_transition_resources_captured_callback)),
       surface_id_(surface->surface_id()) {
   DCHECK(directive.type() == CompositorFrameTransitionDirective::Type::kSave);
 

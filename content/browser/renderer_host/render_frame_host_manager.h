@@ -22,6 +22,7 @@
 #include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/scoped_view_transition_resources.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/renderer_host/stored_page.h"
 #include "content/browser/security/coop/cross_origin_opener_policy_status.h"
@@ -277,11 +278,19 @@ class CONTENT_EXPORT RenderFrameHostManager {
 
   // Information about the ViewTransition state for the navigation commit.
   //
-  // TODO(crbug.com/463643277): This struct will be extended to include an
-  // additional view_transition_token variable in a follow up CL, which is why
-  // it's a struct not just a bool.
+  // TODO(crbug.com/420648512): This struct will be extended to include an
+  // additional delay_layer_tree_view_deletion variable in a follow up CL, which
+  // is why it's a struct not just a bool.
   struct ViewTransitionCommitInfo {
-    bool has_view_transition_resources = false;
+    bool HasViewTransitionResources() const {
+      return !!view_transition_resources;
+    }
+
+    // The ScopedViewTransitionResources object is owned by the
+    // NavigationRequest. This struct is created on the stack during the
+    // navigation commit flow in Navigator::DidNavigate, ensuring the pointer
+    // remains valid for the duration of its use.
+    raw_ptr<ScopedViewTransitionResources> view_transition_resources;
   };
 
   // The delegate pointer must be non-null and is not owned by this class. It

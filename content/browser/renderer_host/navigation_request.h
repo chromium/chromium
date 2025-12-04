@@ -1689,6 +1689,11 @@ class CONTENT_EXPORT NavigationRequest
     return !!view_transition_resources_;
   }
 
+  // Get the view transition resources for this navigation request
+  ScopedViewTransitionResources* GetViewTransitionResources() const {
+    return view_transition_resources_.get();
+  }
+
   bool HasCookieChangeListener() const {
     return !!cookie_change_listener_.get();
   }

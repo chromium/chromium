@@ -6660,18 +6660,23 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplSubframeReuseBrowserTest,
   // Delay process shutdown twice from the same site info.
   const SiteInfo site_info = rfh->GetSiteInstance()->GetSiteInfo();
   const base::TimeDelta delay = base::Seconds(5);
-  process->DelayProcessShutdown(delay, base::TimeDelta(), site_info);
+  base::ScopedClosureRunner runner1 =
+      process->DelayProcessShutdown(delay, base::TimeDelta(), site_info);
   EXPECT_EQ(RenderProcessHostImpl::ShouldDelayProcessShutdown(),
             process->IsProcessShutdownDelayedForTesting());
-  process->DelayProcessShutdown(delay, base::TimeDelta(), site_info);
+  base::ScopedClosureRunner runner2 =
+      process->DelayProcessShutdown(delay, base::TimeDelta(), site_info);
   EXPECT_EQ(RenderProcessHostImpl::ShouldDelayProcessShutdown(),
             process->IsProcessShutdownDelayedForTesting());
 
   // When one delay is cancelled, the other should remain in effect.
-  process->CancelProcessShutdownDelay(site_info);
+  EXPECT_EQ(2u, process->GetShutdownDelayRefCount());
+  runner1.RunAndReset();
   EXPECT_EQ(RenderProcessHostImpl::ShouldDelayProcessShutdown(),
             process->IsProcessShutdownDelayedForTesting());
-  process->CancelProcessShutdownDelay(site_info);
+  EXPECT_EQ(1u, process->GetShutdownDelayRefCount());
+  runner2.RunAndReset();
+  EXPECT_EQ(0u, process->GetShutdownDelayRefCount());
   EXPECT_FALSE(process->IsProcessShutdownDelayedForTesting());
 }
 

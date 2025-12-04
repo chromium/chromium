@@ -42,13 +42,17 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
  public:
   using SaveDirectiveCompleteCallback =
       base::OnceCallback<void(const CompositorFrameTransitionDirective&)>;
+  using ViewTransitionResourcesCapturedCallback =
+      base::OnceCallback<void(const blink::ViewTransitionToken&)>;
 
   static std::unique_ptr<SurfaceAnimationManager> CreateWithSave(
       const CompositorFrameTransitionDirective& directive,
       Surface* surface,
       gpu::SharedImageInterface* shared_image_interface,
       ReservedResourceIdTracker* id_tracker,
-      SaveDirectiveCompleteCallback sequence_id_finished_callback);
+      SaveDirectiveCompleteCallback sequence_id_finished_callback,
+      ViewTransitionResourcesCapturedCallback
+          view_transition_resources_captured_callback);
 
   // Replaces ViewTransitionElementResourceIds with corresponding ResourceIds if
   // necessary.
@@ -89,7 +93,9 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
       Surface* surface,
       gpu::SharedImageInterface* shared_image_interface,
       ReservedResourceIdTracker* id_tracker,
-      SaveDirectiveCompleteCallback sequence_id_finished_callback);
+      SaveDirectiveCompleteCallback sequence_id_finished_callback,
+      ViewTransitionResourcesCapturedCallback
+          view_transition_resources_captured_callback);
 
   void OnSaveDirectiveProcessed(
       SaveDirectiveCompleteCallback callback,

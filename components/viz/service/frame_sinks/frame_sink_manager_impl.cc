@@ -1157,6 +1157,13 @@ void FrameSinkManagerImpl::OnScreenshotCaptured(
                                 std::move(copy_output_result));
 }
 
+void FrameSinkManagerImpl::OnViewTransitionResourcesCaptured(
+    const blink::ViewTransitionToken& transition_token) {
+  if (client_) {
+    client_->OnViewTransitionResourcesCaptured(transition_token);
+  }
+}
+
 bool FrameSinkManagerImpl::IsFrameSinkIdInRootSinkMap(
     const FrameSinkId& frame_sink_id) {
   return base::Contains(root_sink_map_, frame_sink_id);
@@ -1165,6 +1172,13 @@ bool FrameSinkManagerImpl::IsFrameSinkIdInRootSinkMap(
 gpu::SharedImageInterface* FrameSinkManagerImpl::GetSharedImageInterface() {
   DCHECK(shared_image_interface_provider_);
   return shared_image_interface_provider_->GetSharedImageInterface();
+}
+
+base::OnceCallback<void(const blink::ViewTransitionToken&)>
+FrameSinkManagerImpl::GetViewTransitionResourcesCapturedCallback() {
+  return base::BindOnce(
+      &FrameSinkManagerImpl::OnViewTransitionResourcesCaptured,
+      weak_factory_.GetWeakPtr());
 }
 
 void FrameSinkManagerImpl::StartFrameCounting(base::TimeTicks start_time,

@@ -85,6 +85,10 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // on |frame_sink_manager_remote_| is lost.
   void SetConnectionLostCallback(base::RepeatingClosure callback);
 
+  void SetViewTransitionResourcesCapturedCallback(
+      const blink::ViewTransitionToken& token,
+      base::OnceClosure callback);
+
   // Registers `frame_sink_id` so that a client can submit CompositorFrames
   // using it. This must be called before creating a CompositorFrameSink or
   // registering FrameSinkId hierarchy.
@@ -391,6 +395,8 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       std::unique_ptr<CopyOutputResult> copy_output_result) override;
   void OnVizTouchStateAvailable(
       base::ReadOnlySharedMemoryRegion region) override;
+  void OnViewTransitionResourcesCaptured(
+      const blink::ViewTransitionToken& transition_token) override;
 
   mojo::Remote<mojom::RendererInputRouterDelegateRegistry>
       rir_delegate_registry_;
@@ -419,6 +425,9 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   bool connection_was_lost_ = false;
 
   base::RepeatingClosure connection_lost_callback_;
+
+  base::flat_map<blink::ViewTransitionToken, base::OnceClosure>
+      view_transition_callbacks_;
 
   DisplayHitTestQueryMap display_hit_test_query_;
 
