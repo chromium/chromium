@@ -2512,6 +2512,8 @@ void ExtensionPrefs::FinishExtensionInfoPrefs(
   // Clear state that may be registered from a previous install.
   extension_dict->Remove(EventRouter::kRegisteredLazyEvents);
   extension_dict->Remove(EventRouter::kRegisteredServiceWorkerEvents);
+  extension_dict->Remove(EventRouter::kFilteredEvents);
+  extension_dict->Remove(EventRouter::kFilteredServiceWorkerEvents);
   extension_dict->Remove(WebRequestEventRouter::kFilteredLazyListeners);
 
   // FYI, all code below here races on sudden shutdown because |extension_dict|,
