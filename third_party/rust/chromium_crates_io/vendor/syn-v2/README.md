@@ -46,8 +46,6 @@ contains some APIs that may be useful more generally.
 [`syn::DeriveInput`]: https://docs.rs/syn/2.0/syn/struct.DeriveInput.html
 [parser functions]: https://docs.rs/syn/2.0/syn/parse/index.html
 
-*Version requirement: Syn supports rustc 1.61 and up.*
-
 [*Release notes*](https://github.com/dtolnay/syn/releases)
 
 <br>

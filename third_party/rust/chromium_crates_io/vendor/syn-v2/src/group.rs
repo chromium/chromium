@@ -148,6 +148,7 @@ macro_rules! parenthesized {
         match $crate::__private::parse_parens(&$cursor) {
             $crate::__private::Ok(parens) => {
                 $content = parens.content;
+                _ = $content;
                 parens.token
             }
             $crate::__private::Err(error) => {
@@ -226,6 +227,7 @@ macro_rules! braced {
         match $crate::__private::parse_braces(&$cursor) {
             $crate::__private::Ok(braces) => {
                 $content = braces.content;
+                _ = $content;
                 braces.token
             }
             $crate::__private::Err(error) => {
@@ -281,6 +283,7 @@ macro_rules! bracketed {
         match $crate::__private::parse_brackets(&$cursor) {
             $crate::__private::Ok(brackets) => {
                 $content = brackets.content;
+                _ = $content;
                 brackets.token
             }
             $crate::__private::Err(error) => {

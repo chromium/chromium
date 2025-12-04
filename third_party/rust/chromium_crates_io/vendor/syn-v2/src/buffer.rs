@@ -5,11 +5,11 @@
 // Syn, and caution should be used when editing it. The public-facing interface
 // is 100% safe but the implementation is fragile internally.
 
+use crate::ext::TokenStreamExt as _;
 use crate::Lifetime;
 use proc_macro2::extra::DelimSpan;
 use proc_macro2::{Delimiter, Group, Ident, Literal, Punct, Spacing, Span, TokenStream, TokenTree};
 use std::cmp::Ordering;
-use std::iter;
 use std::marker::PhantomData;
 use std::ptr;
 
@@ -289,7 +289,7 @@ impl<'a> Cursor<'a> {
         let mut tokens = TokenStream::new();
         let mut cursor = self;
         while let Some((tt, rest)) = cursor.token_tree() {
-            tokens.extend(iter::once(tt));
+            tokens.append(tt);
             cursor = rest;
         }
         tokens

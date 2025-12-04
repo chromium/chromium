@@ -2946,7 +2946,7 @@ mod printing {
     use crate::print::TokensOrDefault;
     use crate::ty::Type;
     use proc_macro2::TokenStream;
-    use quote::{ToTokens, TokenStreamExt};
+    use quote::{ToTokens, TokenStreamExt as _};
 
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     impl ToTokens for ItemExternCrate {

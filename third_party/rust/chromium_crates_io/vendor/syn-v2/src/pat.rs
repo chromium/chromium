@@ -814,7 +814,7 @@ mod printing {
     use crate::path;
     use crate::path::printing::PathStyle;
     use proc_macro2::TokenStream;
-    use quote::{ToTokens, TokenStreamExt};
+    use quote::{ToTokens, TokenStreamExt as _};
 
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     impl ToTokens for PatIdent {

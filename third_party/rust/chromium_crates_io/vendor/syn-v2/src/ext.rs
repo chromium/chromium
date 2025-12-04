@@ -1,12 +1,19 @@
 //! Extension traits to provide parsing methods on foreign types.
 
+#[cfg(feature = "parsing")]
 use crate::buffer::Cursor;
+#[cfg(feature = "parsing")]
 use crate::error::Result;
+#[cfg(feature = "parsing")]
 use crate::parse::ParseStream;
+#[cfg(feature = "parsing")]
 use crate::parse::Peek;
+#[cfg(feature = "parsing")]
 use crate::sealed::lookahead;
+#[cfg(feature = "parsing")]
 use crate::token::CustomToken;
-use proc_macro2::Ident;
+use proc_macro2::{Ident, Punct, Spacing, Span, TokenStream, TokenTree};
+use std::iter;
 
 /// Additional methods for `Ident` not provided by proc-macro2 or libproc_macro.
 ///
@@ -43,6 +50,8 @@ pub trait IdentExt: Sized + private::Sealed {
     ///     Ok(name)
     /// }
     /// ```
+    #[cfg(feature = "parsing")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
     fn parse_any(input: ParseStream) -> Result<Self>;
 
     /// Peeks any identifier including keywords. Usage:
@@ -50,6 +59,8 @@ pub trait IdentExt: Sized + private::Sealed {
     ///
     /// This is different from `input.peek(Ident)` which only returns true in
     /// the case of an ident which is not a Rust keyword.
+    #[cfg(feature = "parsing")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
     #[allow(non_upper_case_globals)]
     const peek_any: private::PeekFn = private::PeekFn;
 
@@ -84,6 +95,7 @@ pub trait IdentExt: Sized + private::Sealed {
 }
 
 impl IdentExt for Ident {
+    #[cfg(feature = "parsing")]
     fn parse_any(input: ParseStream) -> Result<Self> {
         input.step(|cursor| match cursor.ident() {
             Some((ident, rest)) => Ok((ident, rest)),
@@ -101,10 +113,12 @@ impl IdentExt for Ident {
     }
 }
 
+#[cfg(feature = "parsing")]
 impl Peek for private::PeekFn {
     type Token = private::IdentAny;
 }
 
+#[cfg(feature = "parsing")]
 impl CustomToken for private::IdentAny {
     fn peek(cursor: Cursor) -> bool {
         cursor.ident().is_some()
@@ -115,7 +129,30 @@ impl CustomToken for private::IdentAny {
     }
 }
 
+#[cfg(feature = "parsing")]
 impl lookahead::Sealed for private::PeekFn {}
+
+pub(crate) trait TokenStreamExt {
+    fn append(&mut self, token: TokenTree);
+}
+
+impl TokenStreamExt for TokenStream {
+    fn append(&mut self, token: TokenTree) {
+        self.extend(iter::once(token));
+    }
+}
+
+pub(crate) trait PunctExt {
+    fn new_spanned(ch: char, spacing: Spacing, span: Span) -> Self;
+}
+
+impl PunctExt for Punct {
+    fn new_spanned(ch: char, spacing: Spacing, span: Span) -> Self {
+        let mut punct = Punct::new(ch, spacing);
+        punct.set_span(span);
+        punct
+    }
+}
 
 mod private {
     use proc_macro2::Ident;
@@ -124,10 +161,16 @@ mod private {
 
     impl Sealed for Ident {}
 
+    #[cfg(feature = "parsing")]
     pub struct PeekFn;
+
+    #[cfg(feature = "parsing")]
     pub struct IdentAny;
 
+    #[cfg(feature = "parsing")]
     impl Copy for PeekFn {}
+
+    #[cfg(feature = "parsing")]
     impl Clone for PeekFn {
         fn clone(&self) -> Self {
             *self
